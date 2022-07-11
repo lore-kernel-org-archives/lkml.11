@@ -2,101 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0600C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B636C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230462AbiGKLPg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53632 "EHLO
+        id S230507AbiGKLQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230268AbiGKLPD (ORCPT
+        with ESMTP id S229937AbiGKLPq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:15:03 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE21301;
-        Mon, 11 Jul 2022 03:33:33 -0700 (PDT)
-Received: from zn.tnic (p200300ea970ff601329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:f601:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 317821EC0567;
-        Mon, 11 Jul 2022 12:33:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657535606;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=mtjDsDO71nPhY5TZ9r2wPpSA0kUObkSTB+i8h+NQfsw=;
-        b=M+c3B7xVKSjX18CkA4XSZarUwA9h9PAxou8AWmpppYs69p36vamcy9Gj467He+fOihRu+n
-        mDIGn/qZQZ5HIj3wI4ly3WwM17zZIk/Lz8K51d0lEjqHmtgwL6cLfbyQ+/R7odH5VQvrO+
-        7Zn8arslSwSwEqL0cbIpNTaPSAhJRaA=
-Date:   Mon, 11 Jul 2022 12:33:20 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Alexey Dobriyan <adobriyan@gmail.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Mark Hemment <markhemm@googlemail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        patrice.chotard@foss.st.com, Mikulas Patocka <mpatocka@redhat.com>,
-        Lukas Czerner <lczerner@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Hugh Dickins <hughd@google.com>, patches@lists.linux.dev,
-        Linux-MM <linux-mm@kvack.org>, mm-commits@vger.kernel.org,
-        Mel Gorman <mgorman@suse.de>
-Subject: Re: [PATCH -final] x86/clear_user: Make it faster
-Message-ID: <Ysv8cAa7wcDmQlpm@zn.tnic>
-References: <YnqqhmYv75p+xl73@zn.tnic>
- <Ynq1nVpu1xCpjnXm@zn.tnic>
- <YozQZMyQ0NDdD8cH@zn.tnic>
- <YrMlVBoDxB21l/kD@zn.tnic>
- <CAHk-=wgmOfipHDvshwooTV81hMh6FHieSvhgGVWZMX8w+E-2DQ@mail.gmail.com>
- <YrN4DdR9HN0srNWe@zn.tnic>
- <CAHk-=wj_MeMUnKyRDuQTiU1OmQ=gfZVZhcD=G7Uma=1gkKkzxg@mail.gmail.com>
- <YrQ1PPB77PBWyaHs@zn.tnic>
- <YsRuUl24zkhpE3s/@zn.tnic>
- <YsVUvK/zQaIW749P@localhost.localdomain>
+        Mon, 11 Jul 2022 07:15:46 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668A552FC8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:35:45 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id r18so5669229edb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 03:35:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=szeredi.hu; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=17Ntu7u7zL0owgy2AXHqHsIDETCSIzpTPW2VE5tWiYs=;
+        b=QzlsXM01+eHeF1/SAU+u7zrD7f9xTS62efNCWfVZ6g/lSK+bWdoQdkr1DlYUGTNBNY
+         LKZlhAvyZfZBOIaXua+9MLaMo06cMSuJwff9w/EbvJbhOb0vfO+ptJOe/zKsjfYXAUt9
+         CNmLfpnBiRBl8EOBNSk7/T4Q/0nknjUoA4yAc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=17Ntu7u7zL0owgy2AXHqHsIDETCSIzpTPW2VE5tWiYs=;
+        b=SpzA+amCjwVhqI6Vzx7EYae4yRw3wLTZoexNY1InXbH1saNMsuT+sFmp+IEVP6nAPj
+         MN0vrPfHLkKhQ9yjZU7gXkPHAwWqFrqI6/EV6NukerY/SklXz2uvfnp6sSmO21sHVbwm
+         9KLmBX7R6GPOy7Qy0bcr/H9+TYDmPwVQ9YpK6vbyXyd1f653quMU5v2Qwp8RmtWm2x0B
+         tKCHemBUAGww4wMCnJEKiVq7Y/LdcoTGsotoTh5e8sZqPQKzoo+4NVszlgZae0YMBI3p
+         qbCUpSnSP3qrGPt2+iMecjnsyVK3QF6a+PPBEfsPwqWevHjsKof50WmR/YAedTqMhpdj
+         9ftw==
+X-Gm-Message-State: AJIora/UuUyW70JX9OPZLYKPQzsXHmbTdhJqQLoVwC+ONFgZoKhG80LN
+        blzT8oO6IFVLzE32i5EI1nPRSsPy/YtX69t+lrNGRw==
+X-Google-Smtp-Source: AGRyM1vWJDB6ChHbko8qaqB8zHCS7nZITLWnWRoVQjOYBOB1coargybjk1cKLA0Ef3tXyF2YAmAB0isyete1cUJQKZ0=
+X-Received: by 2002:a05:6402:4245:b0:43a:961a:583f with SMTP id
+ g5-20020a056402424500b0043a961a583fmr23724564edb.374.1657535743970; Mon, 11
+ Jul 2022 03:35:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YsVUvK/zQaIW749P@localhost.localdomain>
+References: <YrShFXRLtRt6T/j+@risky>
+In-Reply-To: <YrShFXRLtRt6T/j+@risky>
+From:   Miklos Szeredi <miklos@szeredi.hu>
+Date:   Mon, 11 Jul 2022 12:35:32 +0200
+Message-ID: <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
+Subject: Re: strange interaction between fuse + pidns
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     Eric Biederman <ebiederm@xmission.com>,
+        Christian Brauner <brauner@kernel.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: multipart/mixed; boundary="00000000000039912305e3851d71"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 12:24:12PM +0300, Alexey Dobriyan wrote:
-> On Tue, Jul 05, 2022 at 07:01:06PM +0200, Borislav Petkov wrote:
-> 
-> > +	asm volatile(
-> > +		"1:\n\t"
-> > +		ALTERNATIVE_3("rep stosb",
-> > +			      "call clear_user_erms",	  ALT_NOT(X86_FEATURE_FSRM),
-> > +			      "call clear_user_rep_good", ALT_NOT(X86_FEATURE_ERMS),
-> > +			      "call clear_user_original", ALT_NOT(X86_FEATURE_REP_GOOD))
-> > +		"2:\n"
-> > +	       _ASM_EXTABLE_UA(1b, 2b)
-> > +	       : "+&c" (size), "+&D" (addr), ASM_CALL_CONSTRAINT
-> > +	       : "a" (0)
-> > +		/* rep_good clobbers %rdx */
-> > +	       : "rdx");
-> 
-> "+c" and "+D" should be enough for 1 instruction assembly?
+--00000000000039912305e3851d71
+Content-Type: text/plain; charset="UTF-8"
 
-I'm looking at
+On Thu, 23 Jun 2022 at 19:21, Tycho Andersen <tycho@tycho.pizza> wrote:
 
-  e0a96129db57 ("x86: use early clobbers in usercopy*.c")
+>         /*
+> -        * Either request is already in userspace, or it was forced.
+> -        * Wait it out.
+> +        * Womp womp. We sent a request to userspace and now we're getting
+> +        * killed.
+>          */
+> -       wait_event(req->waitq, test_bit(FR_FINISHED, &req->flags));
 
-which introduced the early clobbers and I'm thinking we want them
-because "this operand is an earlyclobber operand, which is written
-before the instruction is finished using the input operands" and we have
-exception handling.
+You can't remove this, it's a crucial part of fuse request handling.
+Yes, it causes pain, but making *sent* requests killable is a lot more
+work.
 
-But maybe you need to be more verbose as to what you mean exactly...
+For one: need to duplicate caller's locking state (i_rwsem, ...) and
+move the request into a backround queue instead of just finishing it
+off immediately so that the shadow locking can be torn down when the
+reply actually arrives.  This affects a lot of requests.
 
--- 
-Regards/Gruss,
-    Boris.
+Or we could special case FUSE_FLUSH, which doesn't have any locking.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+The reason force=true is needed for FUSE_FLUSH is because it affects
+posix lock state.   Not waiting for the reply if the task is killed
+could have observable consequences, but my guess is that it's an
+uninteresting corner case and would not cause regressions in real
+life.
+
+Can you try the attached untested patch?
+
+Thanks,
+Miklos
+
+--00000000000039912305e3851d71
+Content-Type: text/x-patch; charset="US-ASCII"; name="fuse-allow-flush-to-be-killed.patch"
+Content-Disposition: attachment; 
+	filename="fuse-allow-flush-to-be-killed.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5gly66p0>
+X-Attachment-Id: f_l5gly66p0
+
+LS0tCiBmcy9mdXNlL2Rldi5jICAgIHwgICAgOSArKysrKysrKy0KIGZzL2Z1c2UvZmlsZS5jICAg
+fCAgICAxICsKIGZzL2Z1c2UvZnVzZV9pLmggfCAgICAxICsKIDMgZmlsZXMgY2hhbmdlZCwgMTAg
+aW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQoKLS0tIGEvZnMvZnVzZS9kZXYuYworKysgYi9m
+cy9mdXNlL2Rldi5jCkBAIC0zOTcsNiArMzk3LDEyIEBAIHN0YXRpYyB2b2lkIHJlcXVlc3Rfd2Fp
+dF9hbnN3ZXIoc3RydWN0IGYKIAkJCXJlcS0+b3V0LmguZXJyb3IgPSAtRUlOVFI7CiAJCQlyZXR1
+cm47CiAJCX0KKwkJaWYgKHJlcS0+YXJncy0+a2lsbGFibGUpIHsKKwkJCXJlcS0+b3V0LmguZXJy
+b3IgPSAtRUlOVFI7CisJCQkvKiBmdXNlX3JlcXVlc3RfZW5kKCkgd2lsbCBkcm9wIGZpbmFsIHJl
+ZiAqLworCQkJc3Bpbl91bmxvY2soJmZpcS0+bG9jayk7CisJCQlyZXR1cm47CisJCX0KIAkJc3Bp
+bl91bmxvY2soJmZpcS0+bG9jayk7CiAJfQogCkBAIC00OTQsNyArNTAwLDggQEAgc3NpemVfdCBm
+dXNlX3NpbXBsZV9yZXF1ZXN0KHN0cnVjdCBmdXNlXwogCQkJZnVzZV9mb3JjZV9jcmVkcyhyZXEp
+OwogCiAJCV9fc2V0X2JpdChGUl9XQUlUSU5HLCAmcmVxLT5mbGFncyk7Ci0JCV9fc2V0X2JpdChG
+Ul9GT1JDRSwgJnJlcS0+ZmxhZ3MpOworCQlpZiAoIWFyZ3MtPmtpbGxhYmxlKQorCQkJX19zZXRf
+Yml0KEZSX0ZPUkNFLCAmcmVxLT5mbGFncyk7CiAJfSBlbHNlIHsKIAkJV0FSTl9PTihhcmdzLT5u
+b2NyZWRzKTsKIAkJcmVxID0gZnVzZV9nZXRfcmVxKGZtLCBmYWxzZSk7Ci0tLSBhL2ZzL2Z1c2Uv
+ZmlsZS5jCisrKyBiL2ZzL2Z1c2UvZmlsZS5jCkBAIC01MDQsNiArNTA0LDcgQEAgc3RhdGljIGlu
+dCBmdXNlX2ZsdXNoKHN0cnVjdCBmaWxlICpmaWxlLAogCWFyZ3MuaW5fYXJnc1swXS5zaXplID0g
+c2l6ZW9mKGluYXJnKTsKIAlhcmdzLmluX2FyZ3NbMF0udmFsdWUgPSAmaW5hcmc7CiAJYXJncy5m
+b3JjZSA9IHRydWU7CisJYXJncy5raWxsYWJsZSA9IHRydWU7CiAKIAllcnIgPSBmdXNlX3NpbXBs
+ZV9yZXF1ZXN0KGZtLCAmYXJncyk7CiAJaWYgKGVyciA9PSAtRU5PU1lTKSB7Ci0tLSBhL2ZzL2Z1
+c2UvZnVzZV9pLmgKKysrIGIvZnMvZnVzZS9mdXNlX2kuaApAQCAtMjYxLDYgKzI2MSw3IEBAIHN0
+cnVjdCBmdXNlX2FyZ3MgewogCWJvb2wgcGFnZV96ZXJvaW5nOjE7CiAJYm9vbCBwYWdlX3JlcGxh
+Y2U6MTsKIAlib29sIG1heV9ibG9jazoxOworCWJvb2wga2lsbGFibGU6MTsKIAlzdHJ1Y3QgZnVz
+ZV9pbl9hcmcgaW5fYXJnc1szXTsKIAlzdHJ1Y3QgZnVzZV9hcmcgb3V0X2FyZ3NbMl07CiAJdm9p
+ZCAoKmVuZCkoc3RydWN0IGZ1c2VfbW91bnQgKmZtLCBzdHJ1Y3QgZnVzZV9hcmdzICphcmdzLCBp
+bnQgZXJyb3IpOwo=
+--00000000000039912305e3851d71--
