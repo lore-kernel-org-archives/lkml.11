@@ -2,201 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96F0DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:30:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E936EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230442AbiGKQaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
+        id S231936AbiGKQaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229957AbiGKQaQ (ORCPT
+        with ESMTP id S230247AbiGKQaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:30:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5BC311C09;
-        Mon, 11 Jul 2022 09:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35AAFB8105D;
-        Mon, 11 Jul 2022 16:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B8DC34115;
-        Mon, 11 Jul 2022 16:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657557011;
-        bh=mvqPbuaTIeF07jDnNksf18FEDwVUT+8krl/Dwsc6qno=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=sW4BxRBTLmwTu7pEMQct6C84C9TbhXs+7hJQQIh/SBV8ml9HL8ngYkDl842xy671o
-         cNstVweeRHTuUPPJL/2PXsbAr8d3TXWeBJQmkGrP1vS+InJilS7jK9HCo0bSaEuQTD
-         0HQHaa5RKQBq9BL6+yzMsFqvPEvMkj18aZf7tjq7OL+fzhF9qyVU7+ZOfdstXom6JM
-         FPOSpk+KmezzAmH0MksG8opnbea9yOLH29jIVy/ygiWftyhP9fiwlqbsQ+KtiqU5z9
-         e/zbzBSNaFMfjOu+94vfFrtZJfMOVuyKJp+FlQkeeMBui3jggDiGKF9kpXTTAOzY1B
-         cfUpNlnkxl+wA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 78BFF5C03B9; Mon, 11 Jul 2022 09:30:11 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 09:30:11 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Paul =?iso-8859-1?Q?Heidekr=FCger?= <Paul.Heidekrueger@in.tum.de>
-Cc:     Alan Stern <stern@rowland.harvard.edu>,
-        Marco Elver <elver@google.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
+        Mon, 11 Jul 2022 12:30:18 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8221BE94;
+        Mon, 11 Jul 2022 09:30:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657557017; x=1689093017;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=M7gQthUQ8v0LKr/DjxFP5tYXmCHQe3FMOrvQefnZBAQ=;
+  b=LtMk+DtscddZ7bXbLNwXgG3JsJc5kNcsh94PKXnkGgFNUif+lB1wjc+0
+   ExcO7HqYcuUDu9WJkjMiS2BCkOmGFXZO6c6I8SDKe5VkxLLbNaLKo7Yqx
+   fX2+UJy5BRXK1ez37lOiQW3jXYANpx0Oz0U6bUuA6OCVWqo5Xj37tQd/k
+   B3kcQgvhEMk4XEZD0xbiPb0FymJy2nYdO0mfwuS2cvJgfp1nBMc4rfomf
+   3I25UJ+r5mrsk9bOQN92lQ47Q8yeI5bNnCJ+6V++61pq6suJLO9LRsJjp
+   qa0Yn/ZFQ19oQtRYm+u6Dl+q0aaBXG2Lkxi2IljtiaHRuR2YR9eIdGJs3
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282257602"
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="282257602"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 09:29:52 -0700
+X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
+   d="scan'208";a="921846535"
+Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 09:29:49 -0700
+Date:   Mon, 11 Jul 2022 17:29:39 +0100
+From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+To:     lkp@intel.com, Vlad Dronov <vdronov@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-Subject: Re: [PATCH v2] tools/memory-model: Clarify LKMM's limitations in
- litmus-tests.txt
-Message-ID: <20220711163011.GN1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <Yqdb3CZ8bKtbWZ+z@rowland.harvard.edu>
- <20220614154812.1870099-1-paul.heidekrueger@in.tum.de>
- <CANpmjNOkXz=+221i70CWJexQWwfA_By3+7Cnimwgjmwn7RQdBg@mail.gmail.com>
- <YshC8sJ4dZq3m2wy@rowland.harvard.edu>
- <20220708184749.GW1790663@paulmck-ThinkPad-P17-Gen-1>
- <EE1854E3-C33D-4A4E-AC31-4194A701052B@in.tum.de>
+        Tomasz Kowallik <tomaszx.kowalik@intel.com>,
+        Adam Guerin <adam.guerin@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH RESEND] crypto: qat - fix indentation in ABI documentation
+Message-ID: <YsxP5n0rjUaX0mL8@silpixa00400314>
+References: <202207090803.TEGI95qw-lkp@intel.com>
+ <YsvuJsjxEjp/LHZa@silpixa00400314>
+ <CAMusb+QfUZwq+JRkUrOLGO7mQLZbg_ueFVo2_PTSiSRiq7BoEA@mail.gmail.com>
+ <YsxJnq32lAJIRSET@silpixa00400314>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <EE1854E3-C33D-4A4E-AC31-4194A701052B@in.tum.de>
+In-Reply-To: <YsxJnq32lAJIRSET@silpixa00400314>
+Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
+ Collinstown Industrial Park, Leixlip, County Kildare - Ireland
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 05:14:55PM +0200, Paul Heidekrüger wrote:
-> > On 8. Jul 2022, at 20:47, Paul E. McKenney <paulmck@kernel.org> wrote:
+On Mon, Jul 11, 2022 at 05:05:18PM +0100, Giovanni Cabiddu wrote:
+> On Mon, Jul 11, 2022 at 02:35:07PM +0200, Vlad Dronov wrote:
+> > Hi,
 > > 
-> > On Fri, Jul 08, 2022 at 10:45:06AM -0400, Alan Stern wrote:
-> >> On Fri, Jul 08, 2022 at 01:44:06PM +0200, Marco Elver wrote:
-> >>> On Tue, 14 Jun 2022 at 17:49, Paul Heidekrüger
-> >>> <paul.heidekrueger@in.tum.de> wrote:
-> >>>> As discussed, clarify LKMM not recognizing certain kinds of orderings.
-> >>>> In particular, highlight the fact that LKMM might deliberately make
-> >>>> weaker guarantees than compilers and architectures.
-> >>>> 
-> >>>> Link: https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/#u
-> >>>> Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> >>>> Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
-> >>> 
-> >>> Reviewed-by: Marco Elver <elver@google.com>
-> >>> 
-> >>> However with the Co-developed-by, this is missing Alan's SOB.
-> >> 
-> >> For the record:
-> >> 
-> >> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> >> 
-> >> (Note that according to Documentation/process/submitting-patches.rst, 
-> >> the submitting author's SOB is supposed to come last.)
+> > On Mon, Jul 11, 2022 at 11:32 AM Giovanni Cabiddu
+> > <giovanni.cabiddu@intel.com> wrote:
+> > >
+> > > On Sat, Jul 09, 2022 at 08:23:35AM +0800, kernel test robot wrote:
+> > ...skip...
+> > > > >> Documentation/ABI/testing/sysfs-driver-qat:24: WARNING: Unexpected indentation.
+> > > >
+> > > > vim +24 Documentation/ABI/testing/sysfs-driver-qat
+> > > >
+> > > >   > 24        Date:           June 2022
+> > > I'm not able to spot what the issue is. Any suggestions?
 > > 
-> > And this is what I ended up with. Please provide additional feedback
-> > as needed, and in the meantime, thank you all!
-> > 
-> > 							Thanx, Paul
-> 
-> Looks great - my first commit in the Linux kernel!
+> > Same here. I do not see what issue the test robot is reporting.
+> I found what the issue is. It seems Sphinx doesn't like the extra
+> indentation in the sections.
 
-Congratulations!!!  ;-)
+Resending including linux-crypto. Apologies for the duplicate.
 
-My commits for the upcoming merge window, which is probably 2-3 weeks
-from now, are already set.  So this is targeted at the merge window
-after that, which is likely to be in late September or early October.
+----8<----
 
-So it is well on its way!
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Date: Mon, 11 Jul 2022 16:18:43 +0100
+Subject: [PATCH] crypto: qat - fix indentation in ABI documentation
+Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 - Collinstown Industrial Park, Leixlip, County Kildare - Ireland
 
-							Thanx, Paul
+Change the indentation in the file sysfs-driver-qat to resolve the
+following warning when generating documentation with `make htmldocs`:
 
-> Thanks everyone!
-> 
-> Paul
-> 
-> > ------------------------------------------------------------------------
-> > 
-> > commit 3c7753e959706f39e1ee183ef8dcde3b4cfbb4c7
-> > Author: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> > Date: Tue Jun 14 15:48:11 2022 +0000
-> > 
-> > tools/memory-model: Clarify LKMM's limitations in litmus-tests.txt
-> > 
-> > As discussed, clarify LKMM not recognizing certain kinds of orderings.
-> > In particular, highlight the fact that LKMM might deliberately make
-> > weaker guarantees than compilers and architectures.
-> > 
-> > Link: https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/#u
-> > Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
-> > Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-> > Signed-off-by: Paul Heidekrüger <paul.heidekrueger@in.tum.de>
-> > Reviewed-by: Marco Elver <elver@google.com>
-> > Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
-> > Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
-> > Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
-> > Cc: Martin Fink <martin.fink@in.tum.de>
-> > Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-> > 
-> > diff --git a/tools/memory-model/Documentation/litmus-tests.txt b/tools/memory-model/Documentation/litmus-tests.txt
-> > index 8a9d5d2787f9e..cc355999815cb 100644
-> > --- a/tools/memory-model/Documentation/litmus-tests.txt
-> > +++ b/tools/memory-model/Documentation/litmus-tests.txt
-> > @@ -946,22 +946,39 @@ Limitations of the Linux-kernel memory model (LKMM) include:
-> > 	carrying a dependency, then the compiler can break that dependency
-> > 	by substituting a constant of that value.
-> > 
-> > -	Conversely, LKMM sometimes doesn't recognize that a particular
-> > -	optimization is not allowed, and as a result, thinks that a
-> > -	dependency is not present (because the optimization would break it).
-> > -	The memory model misses some pretty obvious control dependencies
-> > -	because of this limitation. A simple example is:
-> > +	Conversely, LKMM will sometimes overestimate the amount of
-> > +	reordering compilers and CPUs can carry out, leading it to miss
-> > +	some pretty obvious cases of ordering. A simple example is:
-> > 
-> > 		r1 = READ_ONCE(x);
-> > 		if (r1 == 0)
-> > 			smp_mb();
-> > 		WRITE_ONCE(y, 1);
-> > 
-> > -	There is a control dependency from the READ_ONCE to the WRITE_ONCE,
-> > -	even when r1 is nonzero, but LKMM doesn't realize this and thinks
-> > -	that the write may execute before the read if r1 != 0. (Yes, that
-> > -	doesn't make sense if you think about it, but the memory model's
-> > -	intelligence is limited.)
-> > +	The WRITE_ONCE() does not depend on the READ_ONCE(), and as a
-> > +	result, LKMM does not claim ordering. However, even though no
-> > +	dependency is present, the WRITE_ONCE() will not be executed before
-> > +	the READ_ONCE(). There are two reasons for this:
-> > +
-> > + The presence of the smp_mb() in one of the branches
-> > + prevents the compiler from moving the WRITE_ONCE()
-> > + up before the "if" statement, since the compiler has
-> > + to assume that r1 will sometimes be 0 (but see the
-> > + comment below);
-> > +
-> > + CPUs do not execute stores before po-earlier conditional
-> > + branches, even in cases where the store occurs after the
-> > + two arms of the branch have recombined.
-> > +
-> > +	It is clear that it is not dangerous in the slightest for LKMM to
-> > +	make weaker guarantees than architectures. In fact, it is
-> > +	desirable, as it gives compilers room for making optimizations. 
-> > +	For instance, suppose that a 0 value in r1 would trigger undefined
-> > +	behavior elsewhere. Then a clever compiler might deduce that r1
-> > +	can never be 0 in the if condition. As a result, said clever
-> > +	compiler might deem it safe to optimize away the smp_mb(),
-> > +	eliminating the branch and any ordering an architecture would
-> > +	guarantee otherwise.
-> > 
-> > 2.	Multiple access sizes for a single variable are not supported,
-> > 	and neither are misaligned or partially overlapping accesses.
+    Documentation/ABI/testing/sysfs-driver-qat:24: WARNING: Unexpected indentation.
+
+Fixes: d4cfb144f605 ("crypto: qat - expose device config through sysfs for 4xxx")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+---
+ Documentation/ABI/testing/sysfs-driver-qat | 38 ++++++++++------------
+ 1 file changed, 17 insertions(+), 21 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-driver-qat b/Documentation/ABI/testing/sysfs-driver-qat
+index a600531e9562..741d97fa5ae1 100644
+--- a/Documentation/ABI/testing/sysfs-driver-qat
++++ b/Documentation/ABI/testing/sysfs-driver-qat
+@@ -8,12 +8,12 @@ Description:	Reports the current state of the QAT device and allows to
+ 		This attribute is RW.
+ 
+ 		Returned values:
+-			up: the device is up and running
+-			down: the device is down
++		up: the device is up and running
++		down: the device is down
+ 
+ 		Allowed values:
+-			up: initialize and start the device
+-			down: stop the device and bring it down
++		up: initialize and start the device
++		down: stop the device and bring it down
+ 
+ 		It is possible to transition the device from up to down only
+ 		if the device is up and vice versa.
+@@ -30,16 +30,12 @@ Description:	Reports the current configuration of the QAT device and allows
+ 		This attribute is RW.
+ 
+ 		Returned values:
+-			sym;asym:	the device is configured for running
+-					crypto services
+-			dc:		the device is configured for running
+-					compression services
++		sym;asym:  the device is configured for running crypto services
++		dc:        the device is configured for running compression services
+ 
+ 		Allowed values:
+-			sym;asym:	configure the device for running
+-					crypto services
+-			dc:		configure the device for running
+-					compression services
++		sym;asym:  configure the device for running crypto services
++		dc:        configure the device for running compression services
+ 
+ 		It is possible to set the configuration only if the device
+ 		is in the `down` state (see /sys/bus/pci/devices/<BDF>/qat/state)
+@@ -47,14 +43,14 @@ Description:	Reports the current configuration of the QAT device and allows
+ 		The following example shows how to change the configuration of
+ 		a device configured for running crypto services in order to
+ 		run data compression:
+-			# cat /sys/bus/pci/devices/<BDF>/qat/state
+-			up
+-			# cat /sys/bus/pci/devices/<BDF>/qat/cfg_services
+-			sym;asym
+-			# echo down > /sys/bus/pci/devices/<BDF>/qat/state
+-			# echo dc > /sys/bus/pci/devices/<BDF>/qat/cfg_services
+-			# echo up > /sys/bus/pci/devices/<BDF>/qat/state
+-			# cat /sys/bus/pci/devices/<BDF>/qat/cfg_services
+-			dc
++		# cat /sys/bus/pci/devices/<BDF>/qat/state
++		up
++		# cat /sys/bus/pci/devices/<BDF>/qat/cfg_services
++		sym;asym
++		# echo down > /sys/bus/pci/devices/<BDF>/qat/state
++		# echo dc > /sys/bus/pci/devices/<BDF>/qat/cfg_services
++		# echo up > /sys/bus/pci/devices/<BDF>/qat/state
++		# cat /sys/bus/pci/devices/<BDF>/qat/cfg_services
++		dc
+ 
+ 		This attribute is only available for qat_4xxx devices.
+-- 
+2.36.1
+
