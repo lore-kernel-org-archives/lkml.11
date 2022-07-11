@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03898C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 671A3CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiGKJuF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:50:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
+        id S233738AbiGKJuI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:50:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233791AbiGKJtP (ORCPT
+        with ESMTP id S233795AbiGKJtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:49:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FFFC7AB23;
-        Mon, 11 Jul 2022 02:23:56 -0700 (PDT)
+        Mon, 11 Jul 2022 05:49:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B99FACEC5;
+        Mon, 11 Jul 2022 02:23:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 129FD6134C;
-        Mon, 11 Jul 2022 09:23:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11106C34115;
-        Mon, 11 Jul 2022 09:23:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E63F261356;
+        Mon, 11 Jul 2022 09:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC88CC34115;
+        Mon, 11 Jul 2022 09:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531435;
-        bh=3I3gg384dMTs0wQ0ZdufSMp00jh+Tq4Oo6AjInUC+LE=;
+        s=korg; t=1657531438;
+        bh=tOrTmnkvypOInQwBGOplI6UmHax23uF7QhIN1+eDHZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vMnf0XQbh2ccrstp3v/SOgVnSvcgCtfjqcQh3PcTcx4cROfOC9IwseNA4n+LzctAz
-         I8vLdWhxrSfsrnP6jiuNLQYOgqO4OPWaQoWLggLfwKganiNi3pOjU5Xg0Y4RIiXHmq
-         Ywzl7B7yMljvRybram6pMWYHRa927HVQiZwb+PO0=
+        b=GkrkpNa3Wm9rpwDRuqOHZRfUgVAI00rvMT2ZTzmVhewUDTQAK/5+VhOAaj+mksWnU
+         q70nvGMnO0sWeT9t6frL5VPh2p7PgHfO66QSvaRxFD6tPFBVDyO923rPnjHiPA1wy1
+         /N3YyFyzhhS+hujb37vTvoX8qV3tf1lfN/zCkeQI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marco Patalano <mpatalan@redhat.com>,
-        Himanshu Madhani <himanshu.madhani@oracle.com>,
-        Arun Easi <aeasi@marvell.com>,
-        Nilesh Javali <njavali@marvell.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/230] scsi: qla2xxx: Fix loss of NVMe namespaces after driver reload test
-Date:   Mon, 11 Jul 2022 11:06:01 +0200
-Message-Id: <20220711090607.046745625@linuxfoundation.org>
+Subject: [PATCH 5.15 106/230] powerpc/32: Dont use lmw/stmw for saving/restoring non volatile regs
+Date:   Mon, 11 Jul 2022 11:06:02 +0200
+Message-Id: <20220711090607.074732684@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -52,72 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arun Easi <aeasi@marvell.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit db212f2eb3fb7f546366777e93c8f54614d39269 ]
+[ Upstream commit a85c728cb5e12216c19ae5878980c2cbbbf8616d ]
 
-Driver registration of localport can race when it happens at the remote
-port discovery time. Fix this by calling the registration under a mutex.
+Instructions lmw/stmw are interesting for functions that are rarely
+used and not in the cache, because only one instruction is to be
+copied into the instruction cache instead of 19. However those
+instruction are less performant than 19x raw lwz/stw as they require
+synchronisation plus one additional cycle.
 
-Link: https://lore.kernel.org/r/20220310092604.22950-4-njavali@marvell.com
-Fixes: e84067d74301 ("scsi: qla2xxx: Add FC-NVMe F/W initialization and transport registration")
-Cc: stable@vger.kernel.org
-Reported-by: Marco Patalano <mpatalan@redhat.com>
-Tested-by: Marco Patalano <mpatalan@redhat.com>
-Reviewed-by: Himanshu Madhani <himanshu.madhani@oracle.com>
-Signed-off-by: Arun Easi <aeasi@marvell.com>
-Signed-off-by: Nilesh Javali <njavali@marvell.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+SAVE_NVGPRS / REST_NVGPRS are used in only a few places which are
+mostly in interrupts entries/exits and in task switch so they are
+likely already in the cache.
+
+Using standard lwz improves null_syscall selftest by:
+- 10 cycles on mpc832x.
+- 2 cycles on mpc8xx.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/316c543b8906712c108985c8463eec09c8db577b.1629732542.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/qla2xxx/qla_nvme.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ arch/powerpc/include/asm/ppc_asm.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/qla2xxx/qla_nvme.c b/drivers/scsi/qla2xxx/qla_nvme.c
-index 42b29f4fd937..1bf3ab10846a 100644
---- a/drivers/scsi/qla2xxx/qla_nvme.c
-+++ b/drivers/scsi/qla2xxx/qla_nvme.c
-@@ -775,7 +775,6 @@ int qla_nvme_register_hba(struct scsi_qla_host *vha)
- 	ha = vha->hw;
- 	tmpl = &qla_nvme_fc_transport;
+diff --git a/arch/powerpc/include/asm/ppc_asm.h b/arch/powerpc/include/asm/ppc_asm.h
+index 1c538a9a11e0..7be24048b8d1 100644
+--- a/arch/powerpc/include/asm/ppc_asm.h
++++ b/arch/powerpc/include/asm/ppc_asm.h
+@@ -28,8 +28,8 @@
+ #else
+ #define SAVE_GPR(n, base)	stw	n,GPR0+4*(n)(base)
+ #define REST_GPR(n, base)	lwz	n,GPR0+4*(n)(base)
+-#define SAVE_NVGPRS(base)	stmw	13, GPR0+4*13(base)
+-#define REST_NVGPRS(base)	lmw	13, GPR0+4*13(base)
++#define SAVE_NVGPRS(base)	SAVE_GPR(13, base); SAVE_8GPRS(14, base); SAVE_10GPRS(22, base)
++#define REST_NVGPRS(base)	REST_GPR(13, base); REST_8GPRS(14, base); REST_10GPRS(22, base)
+ #endif
  
--	WARN_ON(vha->nvme_local_port);
- 
- 	qla_nvme_fc_transport.max_hw_queues =
- 	    min((uint8_t)(qla_nvme_fc_transport.max_hw_queues),
-@@ -786,13 +785,25 @@ int qla_nvme_register_hba(struct scsi_qla_host *vha)
- 	pinfo.port_role = FC_PORT_ROLE_NVME_INITIATOR;
- 	pinfo.port_id = vha->d_id.b24;
- 
--	ql_log(ql_log_info, vha, 0xffff,
--	    "register_localport: host-traddr=nn-0x%llx:pn-0x%llx on portID:%x\n",
--	    pinfo.node_name, pinfo.port_name, pinfo.port_id);
--	qla_nvme_fc_transport.dma_boundary = vha->host->dma_boundary;
--
--	ret = nvme_fc_register_localport(&pinfo, tmpl,
--	    get_device(&ha->pdev->dev), &vha->nvme_local_port);
-+	mutex_lock(&ha->vport_lock);
-+	/*
-+	 * Check again for nvme_local_port to see if any other thread raced
-+	 * with this one and finished registration.
-+	 */
-+	if (!vha->nvme_local_port) {
-+		ql_log(ql_log_info, vha, 0xffff,
-+		    "register_localport: host-traddr=nn-0x%llx:pn-0x%llx on portID:%x\n",
-+		    pinfo.node_name, pinfo.port_name, pinfo.port_id);
-+		qla_nvme_fc_transport.dma_boundary = vha->host->dma_boundary;
-+
-+		ret = nvme_fc_register_localport(&pinfo, tmpl,
-+						 get_device(&ha->pdev->dev),
-+						 &vha->nvme_local_port);
-+		mutex_unlock(&ha->vport_lock);
-+	} else {
-+		mutex_unlock(&ha->vport_lock);
-+		return 0;
-+	}
- 	if (ret) {
- 		ql_log(ql_log_warn, vha, 0xffff,
- 		    "register_localport failed: ret=%x\n", ret);
+ #define SAVE_2GPRS(n, base)	SAVE_GPR(n, base); SAVE_GPR(n+1, base)
 -- 
 2.35.1
 
