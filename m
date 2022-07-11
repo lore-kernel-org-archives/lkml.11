@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDEBC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:25:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232223AbiGKJZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
+        id S232233AbiGKJZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232332AbiGKJYa (ORCPT
+        with ESMTP id S232326AbiGKJY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B9E286F7;
-        Mon, 11 Jul 2022 02:14:33 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3690E28701;
+        Mon, 11 Jul 2022 02:14:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 92F6A6115B;
-        Mon, 11 Jul 2022 09:14:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B407C34115;
-        Mon, 11 Jul 2022 09:14:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6208B80CEF;
+        Mon, 11 Jul 2022 09:14:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C5BC34115;
+        Mon, 11 Jul 2022 09:14:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530873;
-        bh=sp7b6ESRpulFFd9mvznL9RA2PFRIIr/6Tdch+jz+hkI=;
+        s=korg; t=1657530867;
+        bh=md5Iwx5idA89husX/GHelj2HKMmJ5QIfXFbbhQRgCII=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AVSpHnx+kKupwjnSL2bXMEwHF8ANgOnOiUobf8OhUrKrs9GXlK3mF76Z0oYQHsHxO
-         Iuy5eFx1kX8Y9KCbCFkV3gV40lEOmhtrR+pwKnMAsr7k/T5Cw307kJL5aL6YmS2V34
-         pH107yctn4tIDrKOxDHJcqxOAzKkwUzIBzXRrwEM=
+        b=A4z3PlloF/0/XYClrygbl8Yw8WsuzNjrngy23x0qG5HOg16WVjagPc3JkP59JJG/4
+         xzfXHZFvUp/H7BtVvT8WOhi9LOE9vPzCO16VT4GPqRLuXdyZYRWrAuFpcHYMtv9AI/
+         xtjypcEWdPw2wqKWdPXHzXYK/+hL4bU52jV7aqrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Pavel Modilaynen <pavel.modilaynen@volvocars.com>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.18 015/112] can: mcp251xfd: mcp251xfd_stop(): add missing hrtimer_cancel()
-Date:   Mon, 11 Jul 2022 11:06:15 +0200
-Message-Id: <20220711090549.991364775@linuxfoundation.org>
+Subject: [PATCH 5.18 013/112] can: mcp251xfd: mcp251xfd_regmap_crc_read(): improve workaround handling for mcp2517fd
+Date:   Mon, 11 Jul 2022 11:06:13 +0200
+Message-Id: <20220711090549.934935044@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -49,38 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Thomas Kopp <thomas.kopp@microchip.com>
 
-commit d5a972f561a003e302e4267340c57e8fbd096fa4 upstream.
+commit 406cc9cdb3e8d644b15e8028948f091b82abdbca upstream.
 
-In commit 169d00a25658 ("can: mcp251xfd: add TX IRQ coalescing
-support") software based TX coalescing was added to the driver. The
-key idea is to keep the TX complete IRQ disabled for some time after
-processing it and re-enable later by a hrtimer. When bringing the
-interface down, this timer has to be stopped.
+The mcp251xfd compatible chips have an erratum ([1], [2]), where the
+received CRC doesn't match the calculated CRC. In commit
+c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work
+around broken CRC on TBC register") the following workaround was
+implementierend.
 
-Add the missing hrtimer_cancel() of the tx_irq_time hrtimer to
-mcp251xfd_stop().
+- If a CRC read error on the TBC register is detected and the first
+  byte is 0x00 or 0x80, the most significant bit of the first byte is
+  flipped and the CRC is calculated again.
+- If the CRC now matches, the _original_ data is passed to the reader.
+  For now we assume transferred data was OK.
 
-Link: https://lore.kernel.org/all/20220620143942.891811-1-mkl@pengutronix.de
-Fixes: 169d00a25658 ("can: mcp251xfd: add TX IRQ coalescing support")
-Cc: stable@vger.kernel.org # v5.18
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Measurements on the mcp2517fd show that the workaround is applicable
+not only of the lowest byte is 0x00 or 0x80, but also if 3 least
+significant bits are set.
+
+Update check on 1st data byte and workaround description accordingly.
+
+[1] mcp2517fd: DS80000792C: "Incorrect CRC for certain READ_CRC commands"
+[2] mcp2518fd: DS80000789C: "Incorrect CRC for certain READ_CRC commands"
+
+Link: https://lore.kernel.org/all/DM4PR11MB53901D49578FE265B239E55AFB7C9@DM4PR11MB5390.namprd11.prod.outlook.com
+Fixes: c7eb923c3caf ("can: mcp251xfd: mcp251xfd_regmap_crc_read(): work around broken CRC on TBC register")
+Cc: stable@vger.kernel.org
+Reported-by: Pavel Modilaynen <pavel.modilaynen@volvocars.com>
+Signed-off-by: Thomas Kopp <thomas.kopp@microchip.com>
+[mkl: split into 2 patches, update patch description and documentation]
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -1641,6 +1641,7 @@ static int mcp251xfd_stop(struct net_dev
- 	netif_stop_queue(ndev);
- 	set_bit(MCP251XFD_FLAGS_DOWN, priv->flags);
- 	hrtimer_cancel(&priv->rx_irq_timer);
-+	hrtimer_cancel(&priv->tx_irq_timer);
- 	mcp251xfd_chip_interrupts_disable(priv);
- 	free_irq(ndev->irq, priv);
- 	can_rx_offload_disable(&priv->offload);
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+@@ -334,10 +334,12 @@ mcp251xfd_regmap_crc_read(void *context,
+ 		 * register. It increments once per SYS clock tick,
+ 		 * which is 20 or 40 MHz.
+ 		 *
+-		 * Observation shows that if the lowest byte (which is
+-		 * transferred first on the SPI bus) of that register
+-		 * is 0x00 or 0x80 the calculated CRC doesn't always
+-		 * match the transferred one.
++		 * Observation on the mcp2518fd shows that if the
++		 * lowest byte (which is transferred first on the SPI
++		 * bus) of that register is 0x00 or 0x80 the
++		 * calculated CRC doesn't always match the transferred
++		 * one. On the mcp2517fd this problem is not limited
++		 * to the first byte being 0x00 or 0x80.
+ 		 *
+ 		 * If the highest bit in the lowest byte is flipped
+ 		 * the transferred CRC matches the calculated one. We
+@@ -346,7 +348,8 @@ mcp251xfd_regmap_crc_read(void *context,
+ 		 * correct.
+ 		 */
+ 		if (reg == MCP251XFD_REG_TBC &&
+-		    (buf_rx->data[0] == 0x0 || buf_rx->data[0] == 0x80)) {
++		    ((buf_rx->data[0] & 0xf8) == 0x0 ||
++		     (buf_rx->data[0] & 0xf8) == 0x80)) {
+ 			/* Flip highest bit in lowest byte of le32 */
+ 			buf_rx->data[0] ^= 0x80;
+ 
 
 
