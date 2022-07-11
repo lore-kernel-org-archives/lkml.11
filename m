@@ -2,159 +2,377 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C20A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7194BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230045AbiGKIuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        id S230316AbiGKIuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229844AbiGKIuC (ORCPT
+        with ESMTP id S230113AbiGKIuF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:50:02 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190D129B;
-        Mon, 11 Jul 2022 01:50:02 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C835321F54;
-        Mon, 11 Jul 2022 08:50:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657529400; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qvPFqfKyiFIdK1AaFm8I5SaQdT4uELrcI/tqDk8uoEQ=;
-        b=naZydrjLQmyMTvqCOZ6jvyglCish5w/UNgZOV2Kw+vY1znRyflwQ+AL4gaHEzRoH7ROHsG
-        sOQiaYvWf4BduSa+iaKvlWtjdIbnmY6mfVZoJW3KycIg7zI+/b/pS9t4DmfItaNckEkpNh
-        TMJ8j9hDC+AlyJEMMIB0VyKPE6iDpNI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657529400;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qvPFqfKyiFIdK1AaFm8I5SaQdT4uELrcI/tqDk8uoEQ=;
-        b=09rLuyvVHGQaSpTdsLMUK46nPsVqUnPxKrGTvD4plgYYsEsOCuh8gCTTBEeAzfGkZ5qfDi
-        VYwiK4+40xM5KkDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 93CF713322;
-        Mon, 11 Jul 2022 08:50:00 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id w78qIzjky2IhLwAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Mon, 11 Jul 2022 08:50:00 +0000
-Message-ID: <d6e5204e-5bbb-fe51-fd29-5452198bf368@suse.de>
-Date:   Mon, 11 Jul 2022 10:50:00 +0200
+        Mon, 11 Jul 2022 04:50:05 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7AEB29B
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657529403; x=1689065403;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1e+xGPIhxvMvpq200nX++mzDTD6BRkGQgKdN81HYoWs=;
+  b=m5mN4mNRKldcVAmGkdGVpSJbsWRuZElsUVRw7+fs1SjqEKQGtmIMU1lr
+   qXCpyBqhqL8CwPTO4O0TAqQFkzqUcjpcvxQ6ApMmnc3kfcPWZofyMSdqm
+   loTWIhyc3Xs/P8o0XoBIoOE9e7JLxLaZ/MqAT8GcHRiQXGQ1tIR11Rh+v
+   2F55zdGrdSsHa1Wx0W2jiRwjb3zMuB0B8vIq7kADAfplV27HqtQT92X76
+   Ecg6kN/xJZBtnq+e/kua85hfcEd1jyovfvsZIiRPBIvu9IbL6O35gwL/Y
+   8I6Uw9pPE84K9RTMomCOylXr+41svKZEQVMRXQLHIRaY0Br2o+0jPgPO2
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="284637827"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="284637827"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:50:03 -0700
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="652374085"
+Received: from yhuang6-mobl1.sh.intel.com ([10.238.5.168])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:50:01 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        "Huang, Ying" <ying.huang@intel.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
+Subject: [PATCH -V2 0/7] migrate_pages(): fix several bugs in error path
+Date:   Mon, 11 Jul 2022 16:49:41 +0800
+Message-Id: <20220711084948.274787-1-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 00/10] drm: Add support for low-color frame buffer
- formats
-Content-Language: en-US
-To:     Sam Ravnborg <sam@ravnborg.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org,
-        linux-m68k@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1657294931.git.geert@linux-m68k.org>
- <YsmE1D8lGp4XKs99@ravnborg.org>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <YsmE1D8lGp4XKs99@ravnborg.org>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------Ct62SAFYiBl9No95sn0kEftp"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------Ct62SAFYiBl9No95sn0kEftp
-Content-Type: multipart/mixed; boundary="------------bwmKnOaXzIJOCqFUF8X28tun";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Sam Ravnborg <sam@ravnborg.org>, Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Airlie <airlied@linux.ie>,
- Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org,
- linux-m68k@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org
-Message-ID: <d6e5204e-5bbb-fe51-fd29-5452198bf368@suse.de>
-Subject: Re: [PATCH v3 00/10] drm: Add support for low-color frame buffer
- formats
-References: <cover.1657294931.git.geert@linux-m68k.org>
- <YsmE1D8lGp4XKs99@ravnborg.org>
-In-Reply-To: <YsmE1D8lGp4XKs99@ravnborg.org>
+From: "Huang, Ying" <ying.huang@intel.com>
 
---------------bwmKnOaXzIJOCqFUF8X28tun
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+During review the code of migrate_pages() and build a test program for
+it.  Several bugs in error path are identified and fixed in this
+series.
 
-SGkNCg0KQW0gMDkuMDcuMjIgdW0gMTU6Mzggc2NocmllYiBTYW0gUmF2bmJvcmc6DQo+IEhp
-IEdlZXJ0LA0KPiANCj4gT24gRnJpLCBKdWwgMDgsIDIwMjIgYXQgMDg6MjA6NDVQTSArMDIw
-MCwgR2VlcnQgVXl0dGVyaG9ldmVuIHdyb3RlOg0KPj4gCUhpIGFsbCwNCj4+DQo+PiBBIGxv
-bmcgb3V0c3RhbmRpbmcgaXNzdWUgd2l0aCB0aGUgRFJNIHN1YnN5c3RlbSBoYXMgYmVlbiB0
-aGUgbGFjayBvZg0KPj4gc3VwcG9ydCBmb3IgbG93LWNvbG9yIGRpc3BsYXlzLCBhcyB1c2Vk
-IHR5cGljYWxseSBvbiBvbGRlciBkZXNrdG9wDQo+PiBzeXN0ZW1zLCBhbmQgb24gc21hbGwg
-ZW1iZWRkZWQgZGlzcGxheXMuDQoNCkZvciB0aGUgcGF0Y2hzZXQNCg0KQWNrZWQtYnk6IFRo
-b21hcyBaaW1lbXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPg0KDQo+IA0KPiBJVCBpcyBz
-dXBlciB0byBoYXZlIHRoaXMgYWRkcmVzc2VkIC0gdGhhbmtzIQ0KPiANCj4+DQo+PiBUaGlz
-IHBhdGNoIHNlcmllcyBhZGRzIHN1cHBvcnQgZm9yIGNvbG9yLWluZGV4ZWQgZnJhbWUgYnVm
-ZmVyIGZvcm1hdHMNCj4+IHdpdGggMiwgNCwgYW5kIDE2IGNvbG9ycy4gIEl0IGhhcyBiZWVu
-IHRlc3RlZCBvbiBBUkFueU0gdXNpbmcgYQ0KPj4gd29yay1pbi1wcm9ncmVzcyBBdGFyaSBE
-Uk0gZHJpdmVyIHN1cHBvcnRpbmcgMiwgNCwgMTYsIDI1NiwgYW5kIDY1NTM2DQo+PiBjb2xv
-cnMsIHdpdGggdGV4dCBjb25zb2xlIG9wZXJhdGlvbiwgZmJ0ZXN0LCBhbmQgbW9kZXRlc3Qu
-DQo+Pg0KPj4gT3ZlcnZpZXc6DQo+PiAgICAtIFBhdGNoIDEgaW50cm9kdWNlcyBhIGhlbHBl
-ciwgdG8gYmUgdXNlZCBieSBsYXRlciBwYXRjaGVzIGluIHRoZQ0KPj4gICAgICBzZXJpZXMs
-DQo+PiAgICAtIFBhdGNoIDIgaW50cm9kdWNlcyBhIGZsYWcgdG8gaW5kaWNhdGUgY29sb3It
-aW5kZXhlZCBmb3JtYXRzLA0KPj4gICAgLSBQYXRjaGVzIDMgYW5kIDQgY29ycmVjdCBjYWxj
-dWxhdGlvbnMgb2YgYml0cyBwZXIgcGl4ZWwgZm9yIHN1Yi1ieXRlDQo+PiAgICAgIHBpeGVs
-IGZvcm1hdHMsDQo+PiAgICAtIFBhdGNoZXMgNSBhbmQgNiBpbnRyb2R1Y2UgdGhlIG5ldyBD
-WzEyNF0gZm9ybWF0cywNCj4+ICAgIC0gUGF0Y2ggNyBmaXhlcyBhbiB1bnRlc3RlZCBjb2Rl
-IHBhdGgsDQo+PiAgICAtIFBhdGNoIDggZG9jdW1lbnRzIHRoZSB1c2Ugb2YgInJlZCIgZm9y
-IGxpZ2h0LW9uLWRhcmsgZGlzcGxheXMsDQo+PiAgICAtIFBhdGNoZXMgOSBhbmQgMTAgYWRk
-IG1vcmUgZm91cmNjIGNvZGVzIGZvciBsaWdodC1vbi1kYXJrIGFuZA0KPj4gICAgICBkYXJr
-LW9uLWxpZ2h0IGZyYW1lIGJ1ZmZlciBmb3JtYXRzLCB3aGljaCBtYXkgYmUgdXNlZnVsIGZv
-ciBlLmcuIHRoZQ0KPj4gICAgICBzc2QxMzB4IGFuZCByZXBhcGVyIGRyaXZlcnMuDQo+IA0K
-PiBBcHBsaWVkIGFsbCBwYXRjaGVzIHRvIGRybS1taXNjIChkcm0tbWlzYy1uZXh0KSwgaW5j
-bHVkaW5nIHRoZSBsYXN0IHR3bw0KPiBSRkMgcGF0Y2hlcyBhcyB3ZSB0aGVuIGhhdmUgdGhl
-IGZvcm1hdHMgcmVhZHkgd2hlbiBhIHVzZXIgcG9wcyB1cC4NCg0KSSBrbm93IGl0J3MgdjMg
-YWxyZWFkeSwgYnV0IGdpdmUgcGVvcGxlIGF0IGxlYXN0IGEgd29ya2RheSBmb3IgcmV2aWV3
-aW5nIA0KYmVmb3JlIG1lcmdpbmcgcGF0Y2hlcyBvZiB0aGlzIHNpemUgYW5kIGltcGFjdC4g
-RnJpZGF5LWV2ZW5pbmcgcGF0Y2hlcyANCmFyZSBub3Qgc3VwcG9zZWQgdG8gYmUgbWVyZ2Vk
-IG9uIFNhdHVyZGF5IGFmdGVybm9vbnMuDQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4g
-DQo+IAlTYW0NCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERl
-dmVsb3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxk
-c3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJu
-YmVyZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
+Most patches are tested via
 
---------------bwmKnOaXzIJOCqFUF8X28tun--
+- Apply error-inject.patch in Linux kernel
+- Compile test-migrate.c (with -lnuma)
+- Test with test-migrate.sh
 
---------------Ct62SAFYiBl9No95sn0kEftp
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+error-inject.patch, test-migrate.c, and test-migrate.sh are as below.
+It turns out that error injection is an important tool to fix bugs in
+error path.
 
------BEGIN PGP SIGNATURE-----
+Changes:
 
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLL5DgFAwAAAAAACgkQlh/E3EQov+Ag
-/hAAmfLI4ietyVtlvjaCUPNsT3uQiSNAvA0tw2rXP3RilWRGWaNy6anrpgo5MXFj0xgDLc4kNpBi
-htfyzvhVQtdZn7MuY6fXbAMbMU8J8eQx809swJTydQtJ6puziZRA/hVaiR67kerbxSRh1ecnYjcV
-2Ywl6pd7KzWM2gl93pjyAq4JB7ydymb4M1wS1vVFSTGGrMe/D4qX2ZS/4cURh5gwzpwNeGDV5nU1
-/sLpk8V0sCDWxRqK/nU5Tmga60ns+ebboQjoulzZQTSh4SgVBhINgJ9ZdHG+Hq7zZOTqyXyzmJdC
-3tHAIOZh88OjEiP7c/Y3uXsrPSjJWCIKOV2qcTrNQtG+484alIn+3ImoXnMndg6OBZ7USdy641YB
-tMU7HRZk8mEZDHvE4tT5ZJhLEqqiMfHlgeI4ISh3uvBHBGVEVlqgUOnb26jkmIrzJrB3dVguvR/4
-ElNApWGtJoFuqiXehuY/37ogOQrMLJFioSU/tQ2IEa12me9bcKULIx9CJIjOn74rt6gA1Hx//4TY
-AzrH1LnXj6C7v4ryR1+YcRuw/Pkliz8VxYN5oGZi96L1/LZ7I21yiIYA72YFsjrdtUNmzbmZlPGc
-wJuPSfDseGyvwcK8SmJ3x5cXn6JB4NaseBu8lLYwJ6qzcMdOO9cbyQspNbzofCBRnLGuUFx4UqN+
-cbw=
-=Q8GO
------END PGP SIGNATURE-----
+v2:
 
---------------Ct62SAFYiBl9No95sn0kEftp--
+- Rebased on v5.19-rc5
+
+- Addressed some comments from Baolin, Thanks!
+
+- Added reviewed-by tags
+
+Best Regards,
+Huang, Ying
+
+------------------------- error-inject.patch -------------------------
+From 295ea21204f3f025a041fe39c68a2eaec8313c68 Mon Sep 17 00:00:00 2001
+From: Huang Ying <ying.huang@intel.com>
+Date: Tue, 21 Jun 2022 11:08:30 +0800
+Subject: [PATCH] migrate_pages: error inject
+
+---
+ mm/migrate.c | 58 +++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 399904015d23..87d47064ec6c 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -337,6 +337,42 @@ void pmd_migration_entry_wait(struct mm_struct *mm, pmd_t *pmd)
+ }
+ #endif
+ 
++#define EI_MP_ENOSYS		0x0001
++#define EI_MP_THP_ENOMEM	0x0002
++#define EI_MP_NP_ENOMEM		0x0004
++#define EI_MP_EAGAIN		0x0008
++#define EI_MP_EOTHER		0x0010
++#define EI_MP_NOSPLIT		0x0020
++#define EI_MP_SPLIT_FAIL	0x0040
++#define EI_MP_EAGAIN_PERM	0x0080
++#define EI_MP_EBUSY		0x0100
++
++static unsigned int ei_migrate_pages;
++
++module_param(ei_migrate_pages, uint, 0644);
++
++static bool ei_thp_migration_supported(void)
++{
++	if (ei_migrate_pages & EI_MP_ENOSYS)
++		return false;
++	else
++		return thp_migration_supported();
++}
++
++static int ei_trylock_page(struct page *page)
++{
++	if (ei_migrate_pages & EI_MP_EAGAIN)
++		return 0;
++	return trylock_page(page);
++}
++
++static int ei_split_huge_page_to_list(struct page *page, struct list_head *list)
++{
++	if (ei_migrate_pages & EI_MP_SPLIT_FAIL)
++		return -EBUSY;
++	return split_huge_page_to_list(page, list);
++}
++
+ static int expected_page_refs(struct address_space *mapping, struct page *page)
+ {
+ 	int expected_count = 1;
+@@ -368,6 +404,9 @@ int folio_migrate_mapping(struct address_space *mapping,
+ 		if (folio_ref_count(folio) != expected_count)
+ 			return -EAGAIN;
+ 
++		if (ei_migrate_pages & EI_MP_EAGAIN_PERM)
++			return -EAGAIN;
++
+ 		/* No turning back from here */
+ 		newfolio->index = folio->index;
+ 		newfolio->mapping = folio->mapping;
+@@ -929,7 +968,7 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 	struct anon_vma *anon_vma = NULL;
+ 	bool is_lru = !__PageMovable(page);
+ 
+-	if (!trylock_page(page)) {
++	if (!ei_trylock_page(page)) {
+ 		if (!force || mode == MIGRATE_ASYNC)
+ 			goto out;
+ 
+@@ -952,6 +991,11 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 		lock_page(page);
+ 	}
+ 
++	if (ei_migrate_pages & EI_MP_EBUSY) {
++		rc = -EBUSY;
++		goto out_unlock;
++	}
++
+ 	if (PageWriteback(page)) {
+ 		/*
+ 		 * Only in the case of a full synchronous migration is it
+@@ -1086,7 +1130,7 @@ static int unmap_and_move(new_page_t get_new_page,
+ 	int rc = MIGRATEPAGE_SUCCESS;
+ 	struct page *newpage = NULL;
+ 
+-	if (!thp_migration_supported() && PageTransHuge(page))
++	if (!ei_thp_migration_supported() && PageTransHuge(page))
+ 		return -ENOSYS;
+ 
+ 	if (page_count(page) == 1) {
+@@ -1102,6 +1146,11 @@ static int unmap_and_move(new_page_t get_new_page,
+ 		goto out;
+ 	}
+ 
++	if ((ei_migrate_pages & EI_MP_THP_ENOMEM) && PageTransHuge(page))
++		return -ENOMEM;
++	if ((ei_migrate_pages & EI_MP_NP_ENOMEM) && !PageTransHuge(page))
++		return -ENOMEM;
++
+ 	newpage = get_new_page(page, private);
+ 	if (!newpage)
+ 		return -ENOMEM;
+@@ -1305,7 +1354,7 @@ static inline int try_split_thp(struct page *page, struct list_head *split_pages
+ 	int rc;
+ 
+ 	lock_page(page);
+-	rc = split_huge_page_to_list(page, split_pages);
++	rc = ei_split_huge_page_to_list(page, split_pages);
+ 	unlock_page(page);
+ 
+ 	return rc;
+@@ -1358,6 +1407,9 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+ 	bool nosplit = (reason == MR_NUMA_MISPLACED);
+ 	bool no_subpage_counting = false;
+ 
++	if (ei_migrate_pages & EI_MP_NOSPLIT)
++		nosplit = true;
++
+ 	trace_mm_migrate_pages_start(mode, reason);
+ 
+ thp_subpage_migration:
+-- 
+2.30.2
+
+------------------------- test-migrate.c -------------------------------------
+ #define _GNU_SOURCE
+
+ #include <stdbool.h>
+ #include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+ #include <errno.h>
+
+ #include <fcntl.h>
+ #include <sys/uio.h>
+ #include <sys/mman.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <numaif.h>
+ #include <numa.h>
+
+ #ifndef MADV_FREE
+ #define MADV_FREE	8		/* free pages only if memory pressure */
+ #endif
+
+ #define ONE_MB		(1024 * 1024)
+ #define MAP_SIZE	(16 * ONE_MB)
+ #define THP_SIZE	(2 * ONE_MB)
+ #define THP_MASK	(THP_SIZE - 1)
+
+ #define ERR_EXIT_ON(cond, msg)					\
+	 do {							\
+		 int __cond_in_macro = (cond);			\
+		 if (__cond_in_macro)				\
+			 error_exit(__cond_in_macro, (msg));	\
+	 } while (0)
+
+ void error_msg(int ret, int nr, int *status, const char *msg)
+ {
+	 int i;
+
+	 fprintf(stderr, "Error: %s, ret : %d, error: %s\n",
+		 msg, ret, strerror(errno));
+
+	 if (!nr)
+		 return;
+	 fprintf(stderr, "status: ");
+	 for (i = 0; i < nr; i++)
+		 fprintf(stderr, "%d ", status[i]);
+	 fprintf(stderr, "\n");
+ }
+
+ void error_exit(int ret, const char *msg)
+ {
+	 error_msg(ret, 0, NULL, msg);
+	 exit(1);
+ }
+
+ void *addr_thp;
+ void *addr;
+ char *pn;
+ char *pn1;
+ char *pn2;
+ char *pn3;
+ void *pages[4];
+ int status[4];
+
+ void create_map(bool thp)
+ {
+	 int ret;
+	 void *p;
+
+	 p = mmap(NULL, MAP_SIZE, PROT_READ | PROT_WRITE,
+		  MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+	 ERR_EXIT_ON(p == MAP_FAILED, "mmap");
+	 if (thp) {
+		 ret = madvise(p, MAP_SIZE, MADV_HUGEPAGE);
+		 ERR_EXIT_ON(ret, "advise hugepage");
+		 addr_thp = p;
+	 } else {
+		 addr = p;
+	 }
+ }
+
+ void prepare()
+ {
+	 int ret;
+	 struct iovec iov;
+
+	 if (addr) {
+		 munmap(addr_thp, MAP_SIZE);
+		 munmap(addr, MAP_SIZE);
+	 }
+
+	 create_map(true);
+	 create_map(false);
+
+	 pn = (char *)(((unsigned long)addr_thp + THP_SIZE) & ~THP_MASK);
+	 pn1 = pn + THP_SIZE;
+	 pages[0] = pn;
+	 pages[1] = pn1;
+	 *pn = 1;
+
+	 pn2 = (char *)(((unsigned long)addr + THP_SIZE) & ~THP_MASK);
+	 pn3 = pn2 + THP_SIZE;
+	 pages[2] = pn2;
+	 pages[3] = pn3;
+
+	 status[0] = status[1] = status[2] = status[3] = 1024;
+ }
+
+ void test_migrate()
+ {
+	 int ret;
+	 int nodes[4] = { 1, 1, 1, 1 };
+	 pid_t pid = getpid();
+
+	 prepare();
+	 *pn1 = 1;
+	 *pn2 = 1;
+	 *pn3 = 1;
+	 ret = move_pages(pid, 4, pages, nodes, status, MPOL_MF_MOVE_ALL);
+	 error_msg(ret, 4, status, "move 4 pages");
+ }
+
+ int main(int argc, char *argv[])
+ {
+	 numa_run_on_node(0);
+
+	 test_migrate();
+
+	 return 0;
+ }
+--------------------- test-migrate.sh ----------------------------
+ #!/bin/bash
+
+ PARAM=/sys/module/migrate/parameters/ei_migrate_pages
+
+ get_vmstat()
+ {
+	 echo ================= $* ================
+	 cat /proc/vmstat | grep -e '\(pgmigrate\|thp_migration\)'
+ }
+
+ simple_test()
+ {
+	 echo $1 > $PARAM
+	 shift
+	 get_vmstat before $*
+	 ./test-migrate
+	 get_vmstat after $*
+ }
+
+ #define EI_MP_ENOSYS		0x0001
+ #define EI_MP_THP_ENOMEM	0x0002
+ #define EI_MP_NP_ENOMEM		0x0004
+ #define EI_MP_EAGAIN		0x0008
+ #define EI_MP_EOTHER		0x0010
+ #define EI_MP_NOSPLIT		0x0020
+ #define EI_MP_SPLIT_FAIL	0x0040
+ #define EI_MP_EAGAIN_PERM	0x0080
+ #define EI_MP_EBUSY		0x0100
+
+ simple_test 0x26 ENOMEM
+ simple_test 0x81 retry THP subpages
+ simple_test 0xc1 ENOSYS
+ simple_test 0x101 ENOSYS
