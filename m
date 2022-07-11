@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D69BACCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF67C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234076AbiGKJzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46364 "EHLO
+        id S233956AbiGKJzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbiGKJy3 (ORCPT
+        with ESMTP id S234000AbiGKJyG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:54:29 -0400
+        Mon, 11 Jul 2022 05:54:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818F9B0269;
-        Mon, 11 Jul 2022 02:26:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5B1AEF73;
+        Mon, 11 Jul 2022 02:25:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7A42B80E84;
-        Mon, 11 Jul 2022 09:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 179C8C34115;
-        Mon, 11 Jul 2022 09:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0E5B80E7E;
+        Mon, 11 Jul 2022 09:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E226C34115;
+        Mon, 11 Jul 2022 09:25:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531557;
-        bh=cklb2sVuuc/uXDDNwPufVaIA5HGokBkhDzSFJjd6AJc=;
+        s=korg; t=1657531543;
+        bh=0OYdaRbdLWNZ8z/6ur+Zqcb5Wq5UHeldQUWNjF/45oE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FyZ4Ixu2yoKE8c3LtIKYLA7YglwAOgc/QS8ywGJy8J/dPQaYWVaSb9kJE716qT9J5
-         ALK19IxynYZPnf4WyxeWukLlQue8olCpTGf6KBHgKejQh7P9BKWduoHkvZX6tgLbv1
-         NEQTIc2C7vHRqk2GGYKRKx5h/VNjdP5inSLab5iA=
+        b=AgxpaJq9rYp2SDJr9BErdngy26ItLhQwe1AqayuhAefL5CnT3qNU4bpM7tSUEs0tE
+         M6DY44lR9aFNaODwPHcoo8GQazMpKXmsGjWLhgsUOak+KvRFZBR9FHIwtdOVfR5YtU
+         ea6hqlpPXcqBGhsJSXPNt/Nr/RPKWndDeOUdPIjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Niels Dossche <dossche.niels@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        "jason-jh.lin" <jason-jh.lin@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 149/230] Bluetooth: protect le accept and resolv lists with hdev->lock
-Date:   Mon, 11 Jul 2022 11:06:45 +0200
-Message-Id: <20220711090608.287671349@linuxfoundation.org>
+Subject: [PATCH 5.15 144/230] drm/mediatek: Use mailbox rx_callback instead of cmdq_task_cb
+Date:   Mon, 11 Jul 2022 11:06:40 +0200
+Message-Id: <20220711090608.147755342@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,94 +49,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niels Dossche <dossche.niels@gmail.com>
+From: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 
-[ Upstream commit 5e2b6064cbc5fd582396768c5f9583f65085e368 ]
+[ Upstream commit 1ee07a683b7e4e6ad9ad4f77fce4751741bc8ceb ]
 
-Concurrent operations from events on le_{accept,resolv}_list are
-currently unprotected by hdev->lock.
-Most existing code do already protect the lists with that lock.
-This can be observed in hci_debugfs and hci_sync.
-Add the protection for these events too.
+rx_callback is a standard mailbox callback mechanism and could cover the
+function of proprietary cmdq_task_cb, so use the standard one instead of
+the proprietary one.
 
-Fixes: b950aa88638c ("Bluetooth: Add definitions and track LE resolve list modification")
-Fixes: 0f36b589e4ee ("Bluetooth: Track LE white list modification via HCI commands")
-Signed-off-by: Niels Dossche <dossche.niels@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 5ac3aca6deeb..2337e9275863 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1559,7 +1559,9 @@ static void hci_cc_le_clear_accept_list(struct hci_dev *hdev,
- 	if (status)
- 		return;
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+index a4e80e499674..369d3e68c0b6 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+@@ -4,6 +4,8 @@
+  */
  
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_clear(&hdev->le_accept_list);
-+	hci_dev_unlock(hdev);
+ #include <linux/clk.h>
++#include <linux/dma-mapping.h>
++#include <linux/mailbox_controller.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/soc/mediatek/mtk-cmdq.h>
+ #include <linux/soc/mediatek/mtk-mmsys.h>
+@@ -222,9 +224,11 @@ struct mtk_ddp_comp *mtk_drm_ddp_comp_for_plane(struct drm_crtc *crtc,
  }
  
- static void hci_cc_le_add_to_accept_list(struct hci_dev *hdev,
-@@ -1577,8 +1579,10 @@ static void hci_cc_le_add_to_accept_list(struct hci_dev *hdev,
- 	if (!sent)
- 		return;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_add(&hdev->le_accept_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
+ #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+-static void ddp_cmdq_cb(struct cmdq_cb_data data)
++static void ddp_cmdq_cb(struct mbox_client *cl, void *mssg)
+ {
+-	cmdq_pkt_destroy(data.data);
++	struct cmdq_cb_data *data = mssg;
++
++	cmdq_pkt_destroy(data->pkt);
  }
+ #endif
  
- static void hci_cc_le_del_from_accept_list(struct hci_dev *hdev,
-@@ -1596,8 +1600,10 @@ static void hci_cc_le_del_from_accept_list(struct hci_dev *hdev,
- 	if (!sent)
- 		return;
+@@ -475,7 +479,12 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
+ 		cmdq_pkt_wfe(cmdq_handle, mtk_crtc->cmdq_event, false);
+ 		mtk_crtc_ddp_config(crtc, cmdq_handle);
+ 		cmdq_pkt_finalize(cmdq_handle);
+-		cmdq_pkt_flush_async(cmdq_handle, ddp_cmdq_cb, cmdq_handle);
++		dma_sync_single_for_device(mtk_crtc->cmdq_client->chan->mbox->dev,
++					   cmdq_handle->pa_base,
++					   cmdq_handle->cmd_buf_size,
++					   DMA_TO_DEVICE);
++		mbox_send_message(mtk_crtc->cmdq_client->chan, cmdq_handle);
++		mbox_client_txdone(mtk_crtc->cmdq_client->chan, 0);
+ 	}
+ #endif
+ 	mtk_crtc->config_updating = false;
+@@ -839,6 +848,7 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+ 	}
  
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_del(&hdev->le_accept_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
- }
- 
- static void hci_cc_le_read_supported_states(struct hci_dev *hdev,
-@@ -1661,9 +1667,11 @@ static void hci_cc_le_add_to_resolv_list(struct hci_dev *hdev,
- 	if (!sent)
- 		return;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_add_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
- 				sent->bdaddr_type, sent->peer_irk,
- 				sent->local_irk);
-+	hci_dev_unlock(hdev);
- }
- 
- static void hci_cc_le_del_from_resolv_list(struct hci_dev *hdev,
-@@ -1681,8 +1689,10 @@ static void hci_cc_le_del_from_resolv_list(struct hci_dev *hdev,
- 	if (!sent)
- 		return;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_del_with_irk(&hdev->le_resolv_list, &sent->bdaddr,
- 			    sent->bdaddr_type);
-+	hci_dev_unlock(hdev);
- }
- 
- static void hci_cc_le_clear_resolv_list(struct hci_dev *hdev,
-@@ -1695,7 +1705,9 @@ static void hci_cc_le_clear_resolv_list(struct hci_dev *hdev,
- 	if (status)
- 		return;
- 
-+	hci_dev_lock(hdev);
- 	hci_bdaddr_list_clear(&hdev->le_resolv_list);
-+	hci_dev_unlock(hdev);
- }
- 
- static void hci_cc_le_read_resolv_list_size(struct hci_dev *hdev,
+ 	if (mtk_crtc->cmdq_client) {
++		mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
+ 		ret = of_property_read_u32_index(priv->mutex_node,
+ 						 "mediatek,gce-events",
+ 						 drm_crtc_index(&mtk_crtc->base),
 -- 
 2.35.1
 
