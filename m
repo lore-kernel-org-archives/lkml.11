@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E58AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE77EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiGKJ0p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:26:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S232388AbiGKJ0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232427AbiGKJYl (ORCPT
+        with ESMTP id S232450AbiGKJYo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:24:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18ED82A42E;
-        Mon, 11 Jul 2022 02:15:07 -0700 (PDT)
+        Mon, 11 Jul 2022 05:24:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C642F326CE;
+        Mon, 11 Jul 2022 02:15:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A87D46125D;
-        Mon, 11 Jul 2022 09:15:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4F58C34115;
-        Mon, 11 Jul 2022 09:15:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5051561226;
+        Mon, 11 Jul 2022 09:15:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65F63C341C8;
+        Mon, 11 Jul 2022 09:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530906;
-        bh=OLnwXVKD707ZZ+mGhuVMLJQBSfiNvdmdll5ulhhZKEM=;
+        s=korg; t=1657530908;
+        bh=XIRK/QPcy0fpo090+o2Pp+uylOSPt5DoDRhcqmsfk6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MSLGebucLkhOlmKH+KekzFkdwBbo7xt08Fss2snbkyafpyZGa/U4f4EC5jKVPLEsJ
-         6MBaGGizjuSJf4r+KwBRkgive8ye6uSBGX//6D1Ry4abLuUzuGjgc5K9GToDBXaVvk
-         f2KphAPTOnofuSiHsGBPbnFbqCWlsr3xzVmiYVMg=
+        b=ezXSJBsEvo+KGZwDs1dL1/dL6SQ0lKTzbLOQ8MYdRrGfdoqV4Qcuantc80gYjo4wi
+         P7xWwM8JS0VTpRMAKTwl+SF35e2H0F1WIcutelmZzBMCn0g4FJK/aEHhKuR+gKkj0L
+         Nf9cCa5rIPfbDuCfCQzxA7P5xnneiZviEc/pn3uU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Duy Nguyen <duy.nguyen.rh@renesas.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 5.18 026/112] can: rcar_canfd: Fix data transmission failed on R-Car V3U
-Date:   Mon, 11 Jul 2022 11:06:26 +0200
-Message-Id: <20220711090550.302308045@linuxfoundation.org>
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.18 027/112] ASoC: qdsp6: q6apm-dai: unprepare stream if its already prepared
+Date:   Mon, 11 Jul 2022 11:06:27 +0200
+Message-Id: <20220711090550.330720531@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -51,37 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duy Nguyen <duy.nguyen.rh@renesas.com>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-commit 374e11f1bde91545674233459e5a0416ba842b69 upstream.
+commit 58136d93d4e2c1207a5e4f3044815cd40b1d95fd upstream.
 
-On R-Car V3U, this driver should use suitable register offset instead of
-other SoCs' one. Otherwise, data transmission failed on R-Car V3U.
+prepare callback can be called multiple times, so unprepare the stream
+if its already prepared.
 
-Fixes: 45721c406dcf ("can: rcar_canfd: Add support for r8a779a0 SoC")
-Link: https://lore.kernel.org/all/20220704074611.957191-1-yoshihiro.shimoda.uh@renesas.com
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Signed-off-by: Duy Nguyen <duy.nguyen.rh@renesas.com>
-Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Without this DSP is not happy to setting the params on a already
+prepared graph.
+
+Fixes: 9b4fe0f1cd79 ("ASoC: qdsp6: audioreach: add q6apm-dai support")
+Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20220610144818.511797-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/rcar/rcar_canfd.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ sound/soc/qcom/qdsp6/q6apm-dai.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/net/can/rcar/rcar_canfd.c
-+++ b/drivers/net/can/rcar/rcar_canfd.c
-@@ -1334,7 +1334,10 @@ static void rcar_canfd_set_bittiming(str
- 		cfg = (RCANFD_DCFG_DTSEG1(gpriv, tseg1) | RCANFD_DCFG_DBRP(brp) |
- 		       RCANFD_DCFG_DSJW(sjw) | RCANFD_DCFG_DTSEG2(gpriv, tseg2));
+--- a/sound/soc/qcom/qdsp6/q6apm-dai.c
++++ b/sound/soc/qcom/qdsp6/q6apm-dai.c
+@@ -147,6 +147,12 @@ static int q6apm_dai_prepare(struct snd_
+ 	cfg.num_channels = runtime->channels;
+ 	cfg.bit_width = prtd->bits_per_sample;
  
--		rcar_canfd_write(priv->base, RCANFD_F_DCFG(ch), cfg);
-+		if (is_v3u(gpriv))
-+			rcar_canfd_write(priv->base, RCANFD_V3U_DCFG(ch), cfg);
-+		else
-+			rcar_canfd_write(priv->base, RCANFD_F_DCFG(ch), cfg);
- 		netdev_dbg(priv->ndev, "drate: brp %u, sjw %u, tseg1 %u, tseg2 %u\n",
- 			   brp, sjw, tseg1, tseg2);
- 	} else {
++	if (prtd->state) {
++		/* clear the previous setup if any  */
++		q6apm_graph_stop(prtd->graph);
++		q6apm_unmap_memory_regions(prtd->graph, substream->stream);
++	}
++
+ 	prtd->pcm_count = snd_pcm_lib_period_bytes(substream);
+ 	prtd->pos = 0;
+ 	/* rate and channels are sent to audio driver */
 
 
