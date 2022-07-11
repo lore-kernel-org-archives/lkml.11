@@ -2,132 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1626C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 17:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231264AbiGKRM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 13:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50338 "EHLO
+        id S231201AbiGKRO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 13:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230460AbiGKRMw (ORCPT
+        with ESMTP id S229629AbiGKROy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 13:12:52 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35FF37FAC;
-        Mon, 11 Jul 2022 10:12:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657559570; x=1689095570;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=UGq5Gzr0ziO1J3esOfv3AHluUVXjQNM4yjg4DeRb35Q=;
-  b=nI2XvYNdVMQPhrbWnP01+xr04gdGhd1mVkFT3llNA6G6KprFeM69Sa3b
-   FbHHfo4I795t8uTZuSzlbegti9h4Hq/mzFmFBhO2kn//mKagh3frEpe91
-   m0Q7i+qrodKpsoa5db5G+xT2J5dlnPvg+0JqxL5suOFxcMkQDGegvLvoM
-   dqZbUixM7C83kuBrSz4wTW8pGIaqWKcHZOPC/Enxpchl9e5KqA8tQ9GxQ
-   HyLOvZP+JIYCkAE3uYg//aOtqFmNhOcRCVVteJBv9OiJcZK7ulXBVtmgs
-   t/cxqvrYSC7bRzIcvP8FLAkHnuzA+vxACqggN88PzYQDK846A5pqARaDj
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="348697922"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="348697922"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 10:12:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="652544240"
-Received: from chang-linux-3.sc.intel.com ([172.25.66.173])
-  by fmsmga008.fm.intel.com with ESMTP; 11 Jul 2022 10:12:49 -0700
-From:   "Chang S. Bae" <chang.seok.bae@intel.com>
-To:     linux-kselftest@vger.kernel.org, shuah@kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     dave.hansen@linux.intel.com, tglx@linutronix.de, bp@suse.de,
-        chang.seok.bae@intel.com
-Subject: [PATCH v2 2/2] selftests/x86/amx: Fix the test to avoid failure when AMX is unavailable
-Date:   Mon, 11 Jul 2022 10:03:30 -0700
-Message-Id: <20220711170330.27138-3-chang.seok.bae@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220711170330.27138-1-chang.seok.bae@intel.com>
-References: <20220711170330.27138-1-chang.seok.bae@intel.com>
+        Mon, 11 Jul 2022 13:14:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 960685140C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:14:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657559692;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=35DqiAZ6Rz9bU45GAwcR4RKA7a4vhTM0nhoXy16hhhQ=;
+        b=eW/IwLJQ+z7Ykkiawqao8mw5Y6szEirO28cVe6thFJJMnjSecLEsJlX3Vso/wQvjxsuLkN
+        UPKDv6YC/FDhnFRoNkSkEJQYp2XwCGk79pvKrAdl4naCxgcrTzkgbCgD+VrdnvH/z31PmN
+        rb3QN+BTYkVcLK0R0zxjfh6juxkBizM=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-563-LaRfEAZFNH2QG_PgoSIp3w-1; Mon, 11 Jul 2022 13:14:51 -0400
+X-MC-Unique: LaRfEAZFNH2QG_PgoSIp3w-1
+Received: by mail-ed1-f72.google.com with SMTP id h17-20020a056402281100b0043aa5c0493dso4582809ede.16
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 10:14:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=35DqiAZ6Rz9bU45GAwcR4RKA7a4vhTM0nhoXy16hhhQ=;
+        b=GrEpMViiNUon/+o+gbY8ZUQXYubRRAEzWcL+Gz9nW+WyoDfeIj0FDUbjLxmQCDFJgO
+         qxzuYAEPexdQox5dJYY0nFzYuTI2GQpVFS5Ef99kzrF9TZ5AmM7P3kd5SG/klagCTY4D
+         6seBG9N2HAwEUKGRYDpT67bWcxhQoWAeL7cLaQRLesgeB04wTrnwNvHoulI76xlO/zFK
+         q+c0RU3/qMiR+E7h9gXQOlHJXndgyyEkA4JIWe9BOVCQ+4uaSVDGzLNUakJDzTTWkbhN
+         Va2poi1zs/8QwESHtdrOS24M7Ez5Jb1HwFXuu/w/2ZgtrEAjqr6MSma7seblkgPltVIr
+         j88Q==
+X-Gm-Message-State: AJIora9JO84CmiZd37TDPi4xnw6gi1waBpsvmns6+9qDJIZIaZ8+gbLY
+        f/SJs4fG8RYukpEztXvNeCZEx7ra11FLgKqlbwM6VCQK3nHWaN7QTlB/w9pFC/rUcJcQT21zc3j
+        tM/vz/M1+6GdZrufPAH8OeXHK
+X-Received: by 2002:a17:906:98c7:b0:72b:20fe:807d with SMTP id zd7-20020a17090698c700b0072b20fe807dmr20024454ejb.75.1657559689853;
+        Mon, 11 Jul 2022 10:14:49 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u9ZWTo7LZGXSyJRODCmNvfVx0G0jU4xWGbua1KvPEwjej7JxnKJiwXOn4I8RodSYxpIdnXhA==
+X-Received: by 2002:a17:906:98c7:b0:72b:20fe:807d with SMTP id zd7-20020a17090698c700b0072b20fe807dmr20024434ejb.75.1657559689637;
+        Mon, 11 Jul 2022 10:14:49 -0700 (PDT)
+Received: from localhost ([185.140.112.229])
+        by smtp.gmail.com with ESMTPSA id z3-20020a170906814300b0072ab06bf296sm2840101ejw.23.2022.07.11.10.14.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 10:14:49 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 19:14:47 +0200
+From:   Igor Mammedov <imammedo@redhat.com>
+To:     Chuck Lever <chuck.lever@oracle.com>
+Cc:     linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] NFSD: Decode NFSv4 birth time attribute
+Message-ID: <20220711191447.1046538c@redhat.com>
+In-Reply-To: <165747876458.1259.8334435718280903102.stgit@bazille.1015granger.net>
+References: <165747876458.1259.8334435718280903102.stgit@bazille.1015granger.net>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a CPU does not have AMX, the test fails. But this is wrong as it
-should be runnable regardless. Skip the test instead.
+On Sun, 10 Jul 2022 14:46:04 -0400
+Chuck Lever <chuck.lever@oracle.com> wrote:
 
-Also, simplify the feature check using arch_prctl() instead of CPUID. The
-syscall is more trustworthy as the kernel controls the feature permission.
+> NFSD has advertised support for the NFSv4 time_create attribute
+> since commit e377a3e698fb ("nfsd: Add support for the birth time
+> attribute").
+> 
+> Igor Mammedov reports that Mac OS clients attempt to set the NFSv4
+> birth time attribute via OPEN(CREATE) and SETATTR if the server
+> indicates that it supports it, but since the above commit was
+> merged, those attempts now fail.
+> 
+> Table 5 in RFC 8881 lists the time_create attribute as one that can
+> be both set and retrieved, but the above commit did not add server
+> support for clients to provide a time_create attribute. IMO that's
+> a bug in our implementation of the NFSv4 protocol, which this commit
+> addresses.
+> 
+> Whether NFSD silently ignores the new birth time or actually sets it
+> is another matter. I haven't found another filesystem service in the
+> Linux kernel that enables users or clients to modify a file's birth
+> time attribute.
+> 
+> This commit reflects my (perhaps incorrect) understanding of whether
+> Linux users can set a file's birth time. NFSD will now recognize a
+> time_create attribute but it ignores its value. It clears the
+> time_create bit in the returned attribute bitmask to indicate that
+> the value was not used.
+> 
+> Reported-by: Igor Mammedov <imammedo@redhat.com>
+> Fixes: e377a3e698fb ("nfsd: Add support for the birth time attribute")
+> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 
-Reported-by: Thomas Gleixner <tglx@linutronix.de>
-Fixes: 6a3e0651b4a ("selftests/x86/amx: Add test cases for AMX state management")
-Signed-off-by: Chang S. Bae <chang.seok.bae@intel.com>
-Cc: linux-kselftest@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
-Changes from v1:
-* Simplify the feature check code (Shuah Khan).
----
- tools/testing/selftests/x86/amx.c | 31 ++++++++++---------------------
- 1 file changed, 10 insertions(+), 21 deletions(-)
+Thanks for fixing it,
+tested 'touch', 'cp', 'tar' within CLI and copying file with Finder
 
-diff --git a/tools/testing/selftests/x86/amx.c b/tools/testing/selftests/x86/amx.c
-index 625e42901237..52e7dec50018 100644
---- a/tools/testing/selftests/x86/amx.c
-+++ b/tools/testing/selftests/x86/amx.c
-@@ -99,24 +99,6 @@ static void clearhandler(int sig)
- #define XFEATURE_MASK_XTILEDATA	(1 << XFEATURE_XTILEDATA)
- #define XFEATURE_MASK_XTILE	(XFEATURE_MASK_XTILECFG | XFEATURE_MASK_XTILEDATA)
- 
--#define CPUID_LEAF1_ECX_XSAVE_MASK	(1 << 26)
--#define CPUID_LEAF1_ECX_OSXSAVE_MASK	(1 << 27)
--static inline void check_cpuid_xsave(void)
--{
--	uint32_t eax, ebx, ecx, edx;
--
--	/*
--	 * CPUID.1:ECX.XSAVE[bit 26] enumerates general
--	 * support for the XSAVE feature set, including
--	 * XGETBV.
--	 */
--	__cpuid_count(1, 0, eax, ebx, ecx, edx);
--	if (!(ecx & CPUID_LEAF1_ECX_XSAVE_MASK))
--		fatal_error("cpuid: no CPU xsave support");
--	if (!(ecx & CPUID_LEAF1_ECX_OSXSAVE_MASK))
--		fatal_error("cpuid: no OS xsave support");
--}
--
- static uint32_t xbuf_size;
- 
- static struct {
-@@ -348,6 +330,7 @@ enum expected_result { FAIL_EXPECTED, SUCCESS_EXPECTED };
- 
- /* arch_prctl() and sigaltstack() test */
- 
-+#define ARCH_GET_XCOMP_SUPP	0x1021
- #define ARCH_GET_XCOMP_PERM	0x1022
- #define ARCH_REQ_XCOMP_PERM	0x1023
- 
-@@ -828,10 +811,16 @@ static void test_context_switch(void)
- 
- int main(void)
- {
--	/* Check hardware availability at first */
--	check_cpuid_xsave();
--	check_cpuid_xtiledata();
-+	unsigned long features;
-+	long rc;
- 
-+	rc = syscall(SYS_arch_prctl, ARCH_GET_XCOMP_SUPP, &features);
-+	if (rc || (features & XFEATURE_MASK_XTILE) != XFEATURE_MASK_XTILE) {
-+		printf("[SKIP]\tno AMX support.\n");
-+		exit(KSFT_FAIL);
-+	}
-+
-+	check_cpuid_xtiledata();
- 	init_stashed_xsave();
- 	sethandler(SIGILL, handle_noperm, 0);
- 
--- 
-2.17.1
+Tested-by: Igor Mammedov <imammedo@redhat.com>
+
+
+on tangent:
+when copying file from Mac (used 'cp') there is a delay ~4sec/file
+'cp' does first triggers create then extra open and then setattr
+which returns
+   SETATTR Status: NFS4ERR_DELAY
+after which the client stalls for a few seconds before repeating setattr.
+So question is what makes server unhappy to trigger this error
+and if it could be fixed on server side.
+
+it seems to affect other methods of copying. So if one extracted
+an archive with multiple files or copied multiple files, that
+would be a pain.
+
+With vers=3 copying is 'instant'
+with linux client and vers=4.0 copying is 'instant' as well but it
+doesn't use the same call sequence.
+
+PS:
+it is not regression (I think slowness was there for a long time)
+
+> ---
+>  fs/nfsd/nfs4xdr.c |    9 +++++++++
+>  fs/nfsd/nfsd.h    |    3 ++-
+>  2 files changed, 11 insertions(+), 1 deletion(-)
+> 
+> diff --git a/fs/nfsd/nfs4xdr.c b/fs/nfsd/nfs4xdr.c
+> index 61b2aae81abb..2acea7792bb2 100644
+> --- a/fs/nfsd/nfs4xdr.c
+> +++ b/fs/nfsd/nfs4xdr.c
+> @@ -470,6 +470,15 @@ nfsd4_decode_fattr4(struct nfsd4_compoundargs *argp, u32 *bmval, u32 bmlen,
+>  			return nfserr_bad_xdr;
+>  		}
+>  	}
+> +	if (bmval[1] & FATTR4_WORD1_TIME_CREATE) {
+> +		struct timespec64 ts;
+> +
+> +		/* No Linux filesystem supports setting this attribute. */
+> +		bmval[1] &= ~FATTR4_WORD1_TIME_CREATE;
+> +		status = nfsd4_decode_nfstime4(argp, &ts);
+> +		if (status)
+> +			return status;
+> +	}
+>  	if (bmval[1] & FATTR4_WORD1_TIME_MODIFY_SET) {
+>  		u32 set_it;
+>  
+> diff --git a/fs/nfsd/nfsd.h b/fs/nfsd/nfsd.h
+> index 847b482155ae..9a8b09afc173 100644
+> --- a/fs/nfsd/nfsd.h
+> +++ b/fs/nfsd/nfsd.h
+> @@ -465,7 +465,8 @@ static inline bool nfsd_attrs_supported(u32 minorversion, const u32 *bmval)
+>  	(FATTR4_WORD0_SIZE | FATTR4_WORD0_ACL)
+>  #define NFSD_WRITEABLE_ATTRS_WORD1 \
+>  	(FATTR4_WORD1_MODE | FATTR4_WORD1_OWNER | FATTR4_WORD1_OWNER_GROUP \
+> -	| FATTR4_WORD1_TIME_ACCESS_SET | FATTR4_WORD1_TIME_MODIFY_SET)
+> +	| FATTR4_WORD1_TIME_ACCESS_SET | FATTR4_WORD1_TIME_CREATE \
+> +	| FATTR4_WORD1_TIME_MODIFY_SET)
+>  #ifdef CONFIG_NFSD_V4_SECURITY_LABEL
+>  #define MAYBE_FATTR4_WORD2_SECURITY_LABEL \
+>  	FATTR4_WORD2_SECURITY_LABEL
+> 
+> 
 
