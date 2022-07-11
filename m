@@ -2,225 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 017D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B20CEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbiGKIoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        id S229806AbiGKIr0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:47:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiGKInv (ORCPT
+        with ESMTP id S229725AbiGKIrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:43:51 -0400
-Received: from relay02.th.seeweb.it (relay02.th.seeweb.it [IPv6:2001:4b7a:2000:18::163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41641E5;
-        Mon, 11 Jul 2022 01:43:30 -0700 (PDT)
-Received: from [192.168.1.101] (abxi46.neoplus.adsl.tpnet.pl [83.9.2.46])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 107EA1F53F;
-        Mon, 11 Jul 2022 10:43:28 +0200 (CEST)
-Message-ID: <0004504d-d009-1eb7-d544-5f8a28aa565a@somainline.org>
-Date:   Mon, 11 Jul 2022 10:43:27 +0200
+        Mon, 11 Jul 2022 04:47:25 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA93E1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:47:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657529244; x=1689065244;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Xw6OHT7991qA0gPSK1K8fXgEAI5lngmMQOM1IeqHWZI=;
+  b=h5oHWhZ3hJq4hArxElmfFaErKfUQHzHymAo6fRYA+/v4Qo56oPllare9
+   RaiCCupGMl5mamKDkCsv9IiI3ifkclHpz77P0sRCav3KDJje8VNqNOk83
+   7qBYO1tPjBtr/EejsIvIY9izOyUY79H/KoeEw/RRHPvSQb7kHZh3Vnm0L
+   U/Kgzf6GJAtlNd35UAdqNos9twVMpGu3q+S6UPoGvcTNt24D+gF43ArtQ
+   2L2fuKWDi1NPFrAyMElTfziAxaidM8uwinRgyRquZjgBTj3v5VtdX1Wrf
+   KCjIUQJbAULfBJOuv+P8xdFAvX0sPg7M3WvuxnZSt+T/RcfvXOQG4w3Vq
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="267651480"
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="267651480"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:47:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
+   d="scan'208";a="621990628"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 11 Jul 2022 01:47:22 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oAp4c-0000dN-1d;
+        Mon, 11 Jul 2022 08:47:22 +0000
+Date:   Mon, 11 Jul 2022 16:47:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     YunQiang Su <yunqiang.su@cipunited.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: arch/mips/boot/compressed/uart-16550.c:44:6: warning: no previous
+ prototype for function 'putc'
+Message-ID: <202207111655.stMxhZ0j-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 5/5] ARM: dts: qcom: align SDHCI clocks with DT schema
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Douglas Anderson <dianders@chromium.org>
-References: <20220711082940.39539-1-krzysztof.kozlowski@linaro.org>
- <20220711082940.39539-6-krzysztof.kozlowski@linaro.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <20220711082940.39539-6-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi YunQiang,
+
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   32346491ddf24599decca06190ebca03ff9de7f8
+commit: 31b2f3dc851c65fee288612432c4fc956f1a264e MIPS: enable both vmlinux.gz.itb and vmlinuz for generic
+date:   6 months ago
+config: mips-buildonly-randconfig-r003-20220711 (https://download.01.org/0day-ci/archive/20220711/202207111655.stMxhZ0j-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 6ce63e267aab79ca87bf63453d34dd3909ab978d)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mipsel-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=31b2f3dc851c65fee288612432c4fc956f1a264e
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 31b2f3dc851c65fee288612432c4fc956f1a264e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+Note: functions only called from assembly code should be annotated with the asmlinkage attribute
+All warnings (new ones prefixed by >>):
+
+>> arch/mips/boot/compressed/uart-16550.c:44:6: warning: no previous prototype for function 'putc' [-Wmissing-prototypes]
+   void putc(char c)
+        ^
+   arch/mips/boot/compressed/uart-16550.c:44:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   void putc(char c)
+   ^
+   static 
+   1 warning generated.
 
 
-On 11.07.2022 10:29, Krzysztof Kozlowski wrote:
-> The DT schema expects clocks iface-core order.  No functional change.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> ---
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+vim +/putc +44 arch/mips/boot/compressed/uart-16550.c
 
-Konrad
->  arch/arm/boot/dts/qcom-apq8084.dtsi    | 12 ++++++------
->  arch/arm/boot/dts/qcom-ipq4019.dtsi    |  4 ++--
->  arch/arm/boot/dts/qcom-msm8226.dtsi    | 18 +++++++++---------
->  arch/arm/boot/dts/qcom-msm8974.dtsi    | 18 +++++++++---------
->  arch/arm/boot/dts/qcom-msm8974pro.dtsi |  6 +++---
->  5 files changed, 29 insertions(+), 29 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
-> index 45f3cbcf6238..c887ac5cdd7d 100644
-> --- a/arch/arm/boot/dts/qcom-apq8084.dtsi
-> +++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
-> @@ -425,10 +425,10 @@ mmc@f9824900 {
->  			reg-names = "hc", "core";
->  			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
-> -				 <&gcc GCC_SDCC1_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-> +				 <&gcc GCC_SDCC1_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			status = "disabled";
->  		};
->  
-> @@ -438,10 +438,10 @@ mmc@f98a4900 {
->  			reg-names = "hc", "core";
->  			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
-> -				 <&gcc GCC_SDCC2_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-> +				 <&gcc GCC_SDCC2_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			status = "disabled";
->  		};
->  
-> diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-> index 1b98764bab7a..a8a32a5e7e5d 100644
-> --- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-> +++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-> @@ -228,9 +228,9 @@ sdhci: mmc@7824900 {
->  			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
->  			bus-width = <8>;
-> -			clocks = <&gcc GCC_SDCC1_APPS_CLK>, <&gcc GCC_SDCC1_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC1_AHB_CLK>, <&gcc GCC_SDCC1_APPS_CLK>,
->  				 <&gcc GCC_DCD_XO_CLK>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			status = "disabled";
->  		};
->  
-> diff --git a/arch/arm/boot/dts/qcom-msm8226.dtsi b/arch/arm/boot/dts/qcom-msm8226.dtsi
-> index f711463d22dc..9d4223bf8fc1 100644
-> --- a/arch/arm/boot/dts/qcom-msm8226.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8226.dtsi
-> @@ -141,10 +141,10 @@ sdhc_1: mmc@f9824900 {
->  			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
-> -				 <&gcc GCC_SDCC1_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-> +				 <&gcc GCC_SDCC1_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			pinctrl-names = "default";
->  			pinctrl-0 = <&sdhc1_default_state>;
->  			status = "disabled";
-> @@ -157,10 +157,10 @@ sdhc_2: mmc@f98a4900 {
->  			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
-> -				 <&gcc GCC_SDCC2_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-> +				 <&gcc GCC_SDCC2_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			pinctrl-names = "default";
->  			pinctrl-0 = <&sdhc2_default_state>;
->  			status = "disabled";
-> @@ -173,10 +173,10 @@ sdhc_3: mmc@f9864900 {
->  			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC3_APPS_CLK>,
-> -				 <&gcc GCC_SDCC3_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC3_AHB_CLK>,
-> +				 <&gcc GCC_SDCC3_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			pinctrl-names = "default";
->  			pinctrl-0 = <&sdhc3_default_state>;
->  			status = "disabled";
-> diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> index 971eceaef3d1..1f4baa6ac64d 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-> @@ -443,10 +443,10 @@ sdhc_1: mmc@f9824900 {
->  			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
-> -				 <&gcc GCC_SDCC1_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-> +				 <&gcc GCC_SDCC1_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			bus-width = <8>;
->  			non-removable;
->  
-> @@ -460,10 +460,10 @@ sdhc_3: mmc@f9864900 {
->  			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC3_APPS_CLK>,
-> -				 <&gcc GCC_SDCC3_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC3_AHB_CLK>,
-> +				 <&gcc GCC_SDCC3_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			bus-width = <4>;
->  
->  			#address-cells = <1>;
-> @@ -479,10 +479,10 @@ sdhc_2: mmc@f98a4900 {
->  			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
->  				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
->  			interrupt-names = "hc_irq", "pwr_irq";
-> -			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
-> -				 <&gcc GCC_SDCC2_AHB_CLK>,
-> +			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-> +				 <&gcc GCC_SDCC2_APPS_CLK>,
->  				 <&xo_board>;
-> -			clock-names = "core", "iface", "xo";
-> +			clock-names = "iface", "core", "xo";
->  			bus-width = <4>;
->  
->  			#address-cells = <1>;
-> diff --git a/arch/arm/boot/dts/qcom-msm8974pro.dtsi b/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-> index 1e882e16a221..58df6e75ab6d 100644
-> --- a/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-> +++ b/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-> @@ -10,10 +10,10 @@ &gpu {
->  };
->  
->  &sdhc_1 {
-> -	clocks = <&gcc GCC_SDCC1_APPS_CLK>,
-> -		 <&gcc GCC_SDCC1_AHB_CLK>,
-> +	clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-> +		 <&gcc GCC_SDCC1_APPS_CLK>,
->  		 <&xo_board>,
->  		 <&gcc GCC_SDCC1_CDCCAL_FF_CLK>,
->  		 <&gcc GCC_SDCC1_CDCCAL_SLEEP_CLK>;
-> -	clock-names = "core", "iface", "xo", "cal", "sleep";
-> +	clock-names = "iface", "core", "xo", "cal", "sleep";
->  };
+1b93b3c3e94be2 Wu Zhangjin 2009-10-14  43  
+1b93b3c3e94be2 Wu Zhangjin 2009-10-14 @44  void putc(char c)
+
+:::::: The code at line 44 was first introduced by commit
+:::::: 1b93b3c3e94be2605759735a89fc935ba5f58dcf MIPS: Add support for GZIP / BZIP2 / LZMA compressed kernel images
+
+:::::: TO: Wu Zhangjin <wuzhangjin@gmail.com>
+:::::: CC: Ralf Baechle <ralf@linux-mips.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
