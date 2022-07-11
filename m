@@ -2,65 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF13DCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2B22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:25:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230451AbiGKUZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44394 "EHLO
+        id S229517AbiGKUZs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:25:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229909AbiGKUZ0 (ORCPT
+        with ESMTP id S230156AbiGKUZ0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E613C14C
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE55A3C8C7
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A70E46160E
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71863B81208
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2894FC341D2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B18AC341C0;
         Mon, 11 Jul 2022 20:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657571123;
-        bh=Ftp7lyR/xctlUKTKexMaEpblz+zHMJN2h1fCC828awA=;
+        bh=OjD8Yz9UzTzgG3RG67dsf3NiVnBD+9tO+AINCZ654a0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cHboK/qq3Zbah34KTnXsP4mFCBxUJIqBnt8GOWo4kiBBJBbNzeMeU5Lq6bgtPoSqD
-         kC33Nm512lO7AsGMbT0H+mK1bsQfiudf+xgeKuHC3FMFlODIpRw6P1L9ESJNOq4Go0
-         LoDxcWe7QkxmgYXat6GQoGKPGhfZC168Vh5UfyXN/5/d5S/MGF6sNmDBK9Mzpdgs/J
-         YMNA9rMdElGuOsOM04QZ2NhTMgtZ3G0dVyq2888kFuETxXvlNLW0J9M0Te8JVK51x2
-         0nm8FJvdrNT+AhmJ+pwT7YOkp7dASgmqQ7CJIdmvuB697F/r4jYXtTC77zrZHrSN4S
-         u6Detn8y4HJwQ==
+        b=bwbwfTsWqSl9CjGQhFHIyg7zWeQ2QO57aLRlgOpmPe7iOX4Z8SF5yv8pVhFtVyNbu
+         Pr1IZ/lhEbkwwVC1JecuODFe2LSSPM/zcsMTSo3WVi8NMm59JCkiHNQ5Fes9EvUPYh
+         6AUoQvzDvSz6CFwduOfMIEEq6+ZlBIP9vk6bBUjv2zBgdj5+iV5qu5srSCmrTm3iLI
+         H/9sJUUnBiqySZHwA6sYjLfL9aGdPl2TV4HWPUEPV0fBr2BlEX8VZdmxGdOzmHyqQ5
+         dCGum0NxThwvAULWVj8vgXshfF4eUn+ZLhV+hFjz6Vn6NkaSZLpDTXvZgAHLZyugnO
+         89qni2QCs9oTA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e7X-AU;
+        id 1oAzy3-004e84-Ie;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         "Jani Nikula" <jani.nikula@linux.intel.com>,
-        =?UTF-8?q?Jos=C3=A9=20Roberto=20de=20Souza?= <jose.souza@intel.com>,
-        =?UTF-8?q?Jouni=20H=C3=B6gander?= <jouni.hogander@intel.com>,
+        =?UTF-8?q?Juha-Pekka=20Heikkil=C3=A4?= 
+        <juha-pekka.heikkila@intel.com>,
         "Lucas De Marchi" <lucas.demarchi@intel.com>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>,
-        Anshuman Gupta <anshuman.gupta@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Fernando Ramos <greenfoo@u92.eu>,
         Imre Deak <imre.deak@intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Patnana Venkata Sai <venkata.sai.patnana@intel.com>,
-        Sean Paul <seanpaul@chromium.org>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 02/32] drm/i915: display: fix kernel-doc markup warnings
-Date:   Mon, 11 Jul 2022 21:24:47 +0100
-Message-Id: <2f9a9a9b0e1eced6e628b92add45fb4fae43ff78.1657565224.git.mchehab@kernel.org>
+Subject: [PATCH 13/32] drm/i915: intel_fb: fix a kernel-doc issue with Sphinx
+Date:   Mon, 11 Jul 2022 21:24:58 +0100
+Message-Id: <715c9d4674cdcbc07da5b63221f41319f1d2acfd.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
@@ -71,15 +65,11 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are a couple of issues at i915 display kernel-doc markups:
+We can't use %foo[<something>] as this produces a bad markup.
+Use instead, the emphasis markup directly.
 
-	drivers/gpu/drm/i915/display/intel_display_debugfs.c:2238: warning: Function parameter or member 'intel_connector' not described in 'intel_connector_debugfs_add'
-	drivers/gpu/drm/i915/display/intel_display_debugfs.c:2238: warning: Excess function parameter 'connector' description in 'intel_connector_debugfs_add'
-	drivers/gpu/drm/i915/display/intel_display_power.c:700: warning: expecting prototype for intel_display_power_put_async(). Prototype was for __intel_display_power_put_async() instead
-	drivers/gpu/drm/i915/display/intel_tc.c:807: warning: Function parameter or member 'work' not described in 'intel_tc_port_disconnect_phy_work'
-	drivers/gpu/drm/i915/display/intel_tc.c:807: warning: Excess function parameter 'dig_port' description in 'intel_tc_port_disconnect_phy_work'
-
-Those are due to wrong parameter of function name. Address them.
+Fix this issue:
+	Documentation/gpu/i915:136: ./drivers/gpu/drm/i915/display/intel_fb.c:280: WARNING: Inline strong start-string without end-string.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -87,50 +77,22 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/display/intel_display_debugfs.c | 2 +-
- drivers/gpu/drm/i915/display/intel_display_power.c   | 2 +-
- drivers/gpu/drm/i915/display/intel_tc.c              | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/display/intel_fb.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_display_debugfs.c b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-index 6c3954479047..1e35eb01742b 100644
---- a/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-+++ b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
-@@ -2229,7 +2229,7 @@ DEFINE_SHOW_ATTRIBUTE(i915_current_bpc);
- 
- /**
-  * intel_connector_debugfs_add - add i915 specific connector debugfs files
-- * @connector: pointer to a registered drm_connector
-+ * @intel_connector: pointer to a registered drm_connector
+diff --git a/drivers/gpu/drm/i915/display/intel_fb.c b/drivers/gpu/drm/i915/display/intel_fb.c
+index b191915ab351..fe72c75a9c79 100644
+--- a/drivers/gpu/drm/i915/display/intel_fb.c
++++ b/drivers/gpu/drm/i915/display/intel_fb.c
+@@ -276,7 +276,7 @@ lookup_format_info(const struct drm_format_info formats[],
+  * @cmd: FB add command structure
   *
-  * Cleanup will be done by drm_connector_unregister() through a call to
-  * drm_debugfs_connector_remove().
-diff --git a/drivers/gpu/drm/i915/display/intel_display_power.c b/drivers/gpu/drm/i915/display/intel_display_power.c
-index 589af257edeb..fd6b71160a06 100644
---- a/drivers/gpu/drm/i915/display/intel_display_power.c
-+++ b/drivers/gpu/drm/i915/display/intel_display_power.c
-@@ -685,7 +685,7 @@ intel_display_power_put_async_work(struct work_struct *work)
- }
- 
- /**
-- * intel_display_power_put_async - release a power domain reference asynchronously
-+ * __intel_display_power_put_async - release a power domain reference asynchronously
-  * @i915: i915 device instance
-  * @domain: power domain to reference
-  * @wakeref: wakeref acquired for the reference that is being released
-diff --git a/drivers/gpu/drm/i915/display/intel_tc.c b/drivers/gpu/drm/i915/display/intel_tc.c
-index 6773840f6cc7..7ce0cbe0de05 100644
---- a/drivers/gpu/drm/i915/display/intel_tc.c
-+++ b/drivers/gpu/drm/i915/display/intel_tc.c
-@@ -797,7 +797,7 @@ void intel_tc_port_lock(struct intel_digital_port *dig_port)
- 
- /**
-  * intel_tc_port_disconnect_phy_work: disconnect TypeC PHY from display port
-- * @dig_port: digital port
-+ * @work: workqueue struct
-  *
-  * Disconnect the given digital port from its TypeC PHY (handing back the
-  * control of the PHY to the TypeC subsystem). This will happen in a delayed
+  * Returns:
+- * Returns the format information for @cmd->pixel_format specific to @cmd->modifier[0],
++ * Returns the format information for @cmd->pixel_format specific to **cmd->modifier[0]**,
+  * or %NULL if the modifier doesn't override the format.
+  */
+ const struct drm_format_info *
 -- 
 2.36.1
 
