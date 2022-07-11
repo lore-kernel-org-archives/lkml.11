@@ -2,83 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E50C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B7A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231989AbiGKJVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S231953AbiGKJVw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231779AbiGKJVH (ORCPT
+        with ESMTP id S231867AbiGKJVU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:21:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D9162B272;
-        Mon, 11 Jul 2022 02:12:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25A9B61188;
-        Mon, 11 Jul 2022 09:12:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BA33C34115;
-        Mon, 11 Jul 2022 09:12:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530773;
-        bh=5q/ing+ZFjHHIXvmreVU/uaobiUDzeN2y1kR0B3z56w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CKMjjVFYLECO0FOKddIFWSecOEnvpB8xIJ0I1nQyvJ+3yVMrSzlV8ED2CfpUEK7pG
-         JURSyjs3u2TF2jXYeVKZnVYdcx/zmpbKun1onqDLWRCsdZ2wSdicW2JVYRRdrcd/71
-         olHnV/cubWPuZs3q66NDhsc+5geqHgUdjX1EM7ZM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 34/55] ARM: at91: pm: use proper compatible for sama5d2s rtc
-Date:   Mon, 11 Jul 2022 11:07:22 +0200
-Message-Id: <20220711090542.767387434@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
-References: <20220711090541.764895984@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 11 Jul 2022 05:21:20 -0400
+Received: from mailrelay4-1.pub.mailoutpod1-cph3.one.com (mailrelay4-1.pub.mailoutpod1-cph3.one.com [46.30.210.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950872B622
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:12:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=rsa1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=f6AwxXcU7KZ2ZFztEJq0GqcoNxoKfO83tkLfZGsyscY=;
+        b=L3OH2tT6bYzKyTGPRe/w4pndW/HB8la94SNlC5QOyO3fY/bu+2Py+tLWfxsrEh3m9XV+fvX08AVsU
+         pMHjuUmZRcQNnTcjx8Wnm5ogIYRFb+QMJtiyrGoXPUhuUtP4pQ4ieSuI1YFqeWmWRWiPkVIsBzpLPu
+         cxBYJsb59MgFyjXLqcyKIP+lWzN2GhFY3qK25YvFJldwNQdwcafAPjnoFg1QMGzA+6t726HsF5G2fP
+         Dxeia/AZYWxVfXfYBuwi/j95I0bi33u79FOacbp1hXFvMmdbV7xbatSjV7r6L7D3dDbUO2okjdQBN7
+         sm2rz5uGuQLO26qa7rHhEnW8hxT03DQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
+        d=ravnborg.org; s=ed1;
+        h=in-reply-to:content-type:mime-version:references:message-id:subject:cc:to:
+         from:date:from;
+        bh=f6AwxXcU7KZ2ZFztEJq0GqcoNxoKfO83tkLfZGsyscY=;
+        b=xlst8vfqPMpyAQ0qQK3asUPcpYaLxYW2L70+BUhavZpWrLJ93dqJmv52ChMd0RCpRn/u5usymCLtH
+         OGrgKb8BQ==
+X-HalOne-Cookie: 591724b09f00c8e44a00df13aa95246b0d36be5d
+X-HalOne-ID: a4b26c09-00f9-11ed-823e-d0431ea8bb10
+Received: from mailproxy1.cst.dirpod3-cph3.one.com (2-105-2-98-cable.dk.customer.tdc.net [2.105.2.98])
+        by mailrelay4.pub.mailoutpod1-cph3.one.com (Halon) with ESMTPSA
+        id a4b26c09-00f9-11ed-823e-d0431ea8bb10;
+        Mon, 11 Jul 2022 09:12:53 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 11:12:51 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 00/10] drm: Add support for low-color frame buffer
+ formats
+Message-ID: <Ysvpk4fzef6caO5y@ravnborg.org>
+References: <cover.1657294931.git.geert@linux-m68k.org>
+ <YsmE1D8lGp4XKs99@ravnborg.org>
+ <d6e5204e-5bbb-fe51-fd29-5452198bf368@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d6e5204e-5bbb-fe51-fd29-5452198bf368@suse.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+Hi Thomas,
 
-[ Upstream commit ddc980da8043779119acaca106c6d9b445c9b65b ]
+On Mon, Jul 11, 2022 at 10:50:00AM +0200, Thomas Zimmermann wrote:
+> Hi
+> 
+> Am 09.07.22 um 15:38 schrieb Sam Ravnborg:
+> > Hi Geert,
+> > 
+> > On Fri, Jul 08, 2022 at 08:20:45PM +0200, Geert Uytterhoeven wrote:
+> > > 	Hi all,
+> > > 
+> > > A long outstanding issue with the DRM subsystem has been the lack of
+> > > support for low-color displays, as used typically on older desktop
+> > > systems, and on small embedded displays.
+> 
+> For the patchset
+> 
+> Acked-by: Thomas Zimemrmann <tzimmermann@suse.de>
+> 
+> > 
+> > IT is super to have this addressed - thanks!
+> > 
+> > > 
+> > > This patch series adds support for color-indexed frame buffer formats
+> > > with 2, 4, and 16 colors.  It has been tested on ARAnyM using a
+> > > work-in-progress Atari DRM driver supporting 2, 4, 16, 256, and 65536
+> > > colors, with text console operation, fbtest, and modetest.
+> > > 
+> > > Overview:
+> > >    - Patch 1 introduces a helper, to be used by later patches in the
+> > >      series,
+> > >    - Patch 2 introduces a flag to indicate color-indexed formats,
+> > >    - Patches 3 and 4 correct calculations of bits per pixel for sub-byte
+> > >      pixel formats,
+> > >    - Patches 5 and 6 introduce the new C[124] formats,
+> > >    - Patch 7 fixes an untested code path,
+> > >    - Patch 8 documents the use of "red" for light-on-dark displays,
+> > >    - Patches 9 and 10 add more fourcc codes for light-on-dark and
+> > >      dark-on-light frame buffer formats, which may be useful for e.g. the
+> > >      ssd130x and repaper drivers.
+> > 
+> > Applied all patches to drm-misc (drm-misc-next), including the last two
+> > RFC patches as we then have the formats ready when a user pops up.
+> 
+> I know it's v3 already, but give people at least a workday for reviewing
+> before merging patches of this size and impact. Friday-evening patches are
+> not supposed to be merged on Saturday afternoons.
 
-Use proper compatible strings for SAMA5D2's RTC IPs. This is necessary
-for configuring wakeup sources for ULP1 PM mode.
+Sorry for being too enthusiastic on this one.
+Will wait a bit more in the future for these kind of patches.
 
-Fixes: d7484f5c6b3b ("ARM: at91: pm: configure wakeup sources for ULP1 mode")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220523092421.317345-2-claudiu.beznea@microchip.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm/mach-at91/pm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 3f015cb6ec2b..6a68ff0466e0 100644
---- a/arch/arm/mach-at91/pm.c
-+++ b/arch/arm/mach-at91/pm.c
-@@ -104,7 +104,7 @@ static const struct wakeup_source_info ws_info[] = {
- 
- static const struct of_device_id sama5d2_ws_ids[] = {
- 	{ .compatible = "atmel,sama5d2-gem",		.data = &ws_info[0] },
--	{ .compatible = "atmel,at91rm9200-rtc",		.data = &ws_info[1] },
-+	{ .compatible = "atmel,sama5d2-rtc",		.data = &ws_info[1] },
- 	{ .compatible = "atmel,sama5d3-udc",		.data = &ws_info[2] },
- 	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
- 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
--- 
-2.35.1
-
-
-
+	Sam
