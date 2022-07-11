@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:49:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233714AbiGKJsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48702 "EHLO
+        id S233687AbiGKJtC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:49:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233665AbiGKJsH (ORCPT
+        with ESMTP id S233535AbiGKJsd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:48:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D922AAC05A;
-        Mon, 11 Jul 2022 02:23:28 -0700 (PDT)
+        Mon, 11 Jul 2022 05:48:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5A621AA;
+        Mon, 11 Jul 2022 02:23:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 124C56134C;
-        Mon, 11 Jul 2022 09:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C952C34115;
-        Mon, 11 Jul 2022 09:23:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CDEB6612FE;
+        Mon, 11 Jul 2022 09:23:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABD77C34115;
+        Mon, 11 Jul 2022 09:23:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531407;
-        bh=TfdIL7rU0ltrXpRZtd8xYeEWIr2ewaX2dINJEnxfA1E=;
+        s=korg; t=1657531413;
+        bh=8Hp75SX0vLGmD71SdPF4zbXYt3vUEF4vh8eSbNgZBBs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lIBefv5ZQebgiD+7YMbbXcmN8zLTL+KUiztar/gpY2a60cks4+QkR5GV+eRROprb7
-         ceyoG96MLvbfKgwwwmqdKv68pruk7Am7PD8TiGaBengxMw0BTTH3Ui3QU1XKkvhiC9
-         9GjNhopk+dtyX80RgCxM8J5maUl7DTUMDwkoquNg=
+        b=Ocf4FM+1n1yXaOvkZnePe6GUa+G5Tsiyz9t1FOXAsdVwWMvLmzrasUXmyHwpwHOdg
+         u4SV5Sr/gzAmfJNyd2P8HRrWYZNnoUsAlLWBpNk5viK6Va8HuLQVcVZpNEJqydYnAY
+         QW0zJ1ByArjkn3xZA9sgH58irw5V9k43vEf0ky/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 044/230] mt76: mt7921: introduce mt7921_mcu_set_beacon_filter utility routine
-Date:   Mon, 11 Jul 2022 11:05:00 +0200
-Message-Id: <20220711090605.332748198@linuxfoundation.org>
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Martin Kepplinger <martink@posteo.de>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 097/230] iio: accel: mma8452: use the correct logic to get mma8452_data
+Date:   Mon, 11 Jul 2022 11:05:53 +0200
+Message-Id: <20220711090606.821624396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,240 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit 890809ca1986e63d29dd1591090af67b655ed89c ]
+[ Upstream commit c87b7b12f48db86ac9909894f4dc0107d7df6375 ]
 
-Introduce mt7921_mcu_set_beacon_filter utility routine in order to
-remove duplicated code for hw beacon filtering.
-Move mt7921_pm_interface_iter in debugfs since it is just used there.
-Make the following routine static:
-- mt7921_pm_interface_iter
-- mt7921_mcu_uni_bss_bcnft
-- mt7921_mcu_set_bss_pm
+The original logic to get mma8452_data is wrong, the *dev point to
+the device belong to iio_dev. we can't use this dev to find the
+correct i2c_client. The original logic happen to work because it
+finally use dev->driver_data to get iio_dev. Here use the API
+to_i2c_client() is wrong and make reader confuse. To correct the
+logic, it should be like this
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  struct mma8452_data *data = iio_priv(dev_get_drvdata(dev));
+
+But after commit 8b7651f25962 ("iio: iio_device_alloc(): Remove
+unnecessary self drvdata"), the upper logic also can't work.
+When try to show the avialable scale in userspace, will meet kernel
+dump, kernel handle NULL pointer dereference.
+
+So use dev_to_iio_dev() to correct the logic.
+
+Dual fixes tags as the second reflects when the bug was exposed, whilst
+the first reflects when the original bug was introduced.
+
+Fixes: c3cdd6e48e35 ("iio: mma8452: refactor for seperating chip specific data")
+Fixes: 8b7651f25962 ("iio: iio_device_alloc(): Remove unnecessary self drvdata")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Reviewed-by: Martin Kepplinger <martink@posteo.de>
+Cc: <Stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/1645497741-5402-1-git-send-email-haibo.chen@nxp.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/mediatek/mt76/mt7921/debugfs.c   | 20 +++++---
- .../net/wireless/mediatek/mt76/mt7921/main.c  | 33 +------------
- .../net/wireless/mediatek/mt76/mt7921/mcu.c   | 47 ++++++++++---------
- .../wireless/mediatek/mt76/mt7921/mt7921.h    |  8 ++--
- 4 files changed, 45 insertions(+), 63 deletions(-)
+ drivers/iio/accel/mma8452.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-index 8d5e261cd10f..82fb2585f413 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/debugfs.c
-@@ -262,30 +262,38 @@ mt7921_txpwr(struct seq_file *s, void *data)
- 	return 0;
- }
- 
-+static void
-+mt7921_pm_interface_iter(void *priv, u8 *mac, struct ieee80211_vif *vif)
-+{
-+	struct mt7921_dev *dev = priv;
-+
-+	mt7921_mcu_set_beacon_filter(dev, vif, dev->pm.enable);
-+}
-+
- static int
- mt7921_pm_set(void *data, u64 val)
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 373b59557afe..1f46a73aafea 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -380,8 +380,8 @@ static ssize_t mma8452_show_scale_avail(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
  {
- 	struct mt7921_dev *dev = data;
- 	struct mt76_connac_pm *pm = &dev->pm;
--	struct mt76_phy *mphy = dev->phy.mt76;
--
--	if (val == pm->enable)
--		return 0;
+-	struct mma8452_data *data = iio_priv(i2c_get_clientdata(
+-					     to_i2c_client(dev)));
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct mma8452_data *data = iio_priv(indio_dev);
  
- 	mt7921_mutex_acquire(dev);
- 
-+	if (val == pm->enable)
-+		goto out;
-+
- 	if (!pm->enable) {
- 		pm->stats.last_wake_event = jiffies;
- 		pm->stats.last_doze_event = jiffies;
- 	}
- 	pm->enable = val;
- 
--	ieee80211_iterate_active_interfaces(mphy->hw,
-+	ieee80211_iterate_active_interfaces(mt76_hw(dev),
- 					    IEEE80211_IFACE_ITER_RESUME_ALL,
--					    mt7921_pm_interface_iter, mphy->priv);
-+					    mt7921_pm_interface_iter, dev);
- 
- 	mt76_connac_mcu_set_deep_sleep(&dev->mt76, pm->ds_enable);
- 
-+out:
- 	mt7921_mutex_release(dev);
- 
- 	return 0;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index 30252f408ddc..13a7ae3d8351 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -528,36 +528,6 @@ static void mt7921_configure_filter(struct ieee80211_hw *hw,
- 	mt7921_mutex_release(dev);
- }
- 
--static int
--mt7921_bss_bcnft_apply(struct mt7921_dev *dev, struct ieee80211_vif *vif,
--		       bool assoc)
--{
--	int ret;
--
--	if (!dev->pm.enable)
--		return 0;
--
--	if (assoc) {
--		ret = mt7921_mcu_uni_bss_bcnft(dev, vif, true);
--		if (ret)
--			return ret;
--
--		vif->driver_flags |= IEEE80211_VIF_BEACON_FILTER;
--		mt76_set(dev, MT_WF_RFCR(0), MT_WF_RFCR_DROP_OTHER_BEACON);
--
--		return 0;
--	}
--
--	ret = mt7921_mcu_set_bss_pm(dev, vif, false);
--	if (ret)
--		return ret;
--
--	vif->driver_flags &= ~IEEE80211_VIF_BEACON_FILTER;
--	mt76_clear(dev, MT_WF_RFCR(0), MT_WF_RFCR_DROP_OTHER_BEACON);
--
--	return 0;
--}
--
- static void mt7921_bss_info_changed(struct ieee80211_hw *hw,
- 				    struct ieee80211_vif *vif,
- 				    struct ieee80211_bss_conf *info,
-@@ -587,7 +557,8 @@ static void mt7921_bss_info_changed(struct ieee80211_hw *hw,
- 	if (changed & BSS_CHANGED_ASSOC) {
- 		mt7921_mcu_sta_update(dev, NULL, vif, true,
- 				      MT76_STA_INFO_STATE_ASSOC);
--		mt7921_bss_bcnft_apply(dev, vif, info->assoc);
-+		if (dev->pm.enable)
-+			mt7921_mcu_set_beacon_filter(dev, vif, info->assoc);
- 	}
- 
- 	if (changed & BSS_CHANGED_ARP_FILTER) {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-index 4119f8efd896..dabc0de2ec65 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
-@@ -1205,8 +1205,9 @@ int mt7921_mcu_uni_bss_ps(struct mt7921_dev *dev, struct ieee80211_vif *vif)
- 				 &ps_req, sizeof(ps_req), true);
- }
- 
--int mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
--			     bool enable)
-+static int
-+mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
-+			 bool enable)
- {
- 	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
- 	struct {
-@@ -1240,8 +1241,9 @@ int mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
- 				 &bcnft_req, sizeof(bcnft_req), true);
- }
- 
--int mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
--			  bool enable)
-+static int
-+mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
-+		      bool enable)
- {
- 	struct mt7921_vif *mvif = (struct mt7921_vif *)vif->drv_priv;
- 	struct {
-@@ -1390,31 +1392,34 @@ int mt7921_mcu_fw_pmctrl(struct mt7921_dev *dev)
- 	return err;
- }
- 
--void
--mt7921_pm_interface_iter(void *priv, u8 *mac, struct ieee80211_vif *vif)
-+int mt7921_mcu_set_beacon_filter(struct mt7921_dev *dev,
-+				 struct ieee80211_vif *vif,
-+				 bool enable)
- {
--	struct mt7921_phy *phy = priv;
--	struct mt7921_dev *dev = phy->dev;
- 	struct ieee80211_hw *hw = mt76_hw(dev);
--	int ret;
--
--	if (dev->pm.enable)
--		ret = mt7921_mcu_uni_bss_bcnft(dev, vif, true);
--	else
--		ret = mt7921_mcu_set_bss_pm(dev, vif, false);
-+	int err;
- 
--	if (ret)
--		return;
-+	if (enable) {
-+		err = mt7921_mcu_uni_bss_bcnft(dev, vif, true);
-+		if (err)
-+			return err;
- 
--	if (dev->pm.enable) {
- 		vif->driver_flags |= IEEE80211_VIF_BEACON_FILTER;
- 		ieee80211_hw_set(hw, CONNECTION_MONITOR);
- 		mt76_set(dev, MT_WF_RFCR(0), MT_WF_RFCR_DROP_OTHER_BEACON);
--	} else {
--		vif->driver_flags &= ~IEEE80211_VIF_BEACON_FILTER;
--		__clear_bit(IEEE80211_HW_CONNECTION_MONITOR, hw->flags);
--		mt76_clear(dev, MT_WF_RFCR(0), MT_WF_RFCR_DROP_OTHER_BEACON);
-+
-+		return 0;
- 	}
-+
-+	err = mt7921_mcu_set_bss_pm(dev, vif, false);
-+	if (err)
-+		return err;
-+
-+	vif->driver_flags &= ~IEEE80211_VIF_BEACON_FILTER;
-+	__clear_bit(IEEE80211_HW_CONNECTION_MONITOR, hw->flags);
-+	mt76_clear(dev, MT_WF_RFCR(0), MT_WF_RFCR_DROP_OTHER_BEACON);
-+
-+	return 0;
- }
- 
- int mt7921_get_txpwr_info(struct mt7921_dev *dev, struct mt7921_txpwr *txpwr)
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-index 1aafd8723b3a..32d4f2cab94e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mt7921.h
-@@ -363,6 +363,9 @@ void mt7921_set_stream_he_caps(struct mt7921_phy *phy);
- void mt7921_update_channel(struct mt76_phy *mphy);
- int mt7921_init_debugfs(struct mt7921_dev *dev);
- 
-+int mt7921_mcu_set_beacon_filter(struct mt7921_dev *dev,
-+				 struct ieee80211_vif *vif,
-+				 bool enable);
- int mt7921_mcu_uni_tx_ba(struct mt7921_dev *dev,
- 			 struct ieee80211_ampdu_params *params,
- 			 bool enable);
-@@ -371,17 +374,12 @@ int mt7921_mcu_uni_rx_ba(struct mt7921_dev *dev,
- 			 bool enable);
- void mt7921_scan_work(struct work_struct *work);
- int mt7921_mcu_uni_bss_ps(struct mt7921_dev *dev, struct ieee80211_vif *vif);
--int mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
--			     bool enable);
--int mt7921_mcu_set_bss_pm(struct mt7921_dev *dev, struct ieee80211_vif *vif,
--			  bool enable);
- int __mt7921_mcu_drv_pmctrl(struct mt7921_dev *dev);
- int mt7921_mcu_drv_pmctrl(struct mt7921_dev *dev);
- int mt7921_mcu_fw_pmctrl(struct mt7921_dev *dev);
- void mt7921_pm_wake_work(struct work_struct *work);
- void mt7921_pm_power_save_work(struct work_struct *work);
- bool mt7921_wait_for_mcu_init(struct mt7921_dev *dev);
--void mt7921_pm_interface_iter(void *priv, u8 *mac, struct ieee80211_vif *vif);
- void mt7921_coredump_work(struct work_struct *work);
- int mt7921_wfsys_reset(struct mt7921_dev *dev);
- int mt7921_get_txpwr_info(struct mt7921_dev *dev, struct mt7921_txpwr *txpwr);
+ 	return mma8452_show_int_plus_micros(buf, data->chip_info->mma_scales,
+ 		ARRAY_SIZE(data->chip_info->mma_scales));
 -- 
 2.35.1
 
