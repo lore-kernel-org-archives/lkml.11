@@ -2,97 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 241B4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE21C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:21:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230162AbiGKVVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
+        id S231747AbiGKVVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:21:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229717AbiGKVVL (ORCPT
+        with ESMTP id S229832AbiGKVVL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 17:21:11 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63142A716;
-        Mon, 11 Jul 2022 14:21:09 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 696A422AB2;
-        Mon, 11 Jul 2022 21:21:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657574468; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=BrBDvl4qC4LTS72QHk/hrHRE5XNXQVEeAobhMNDASnU=;
-        b=r/ycO6YwLIT/Nm+rYaY6umt8Vo7zdVhhQpFUG2p3wZgGrxdkjTAkivKMwSnVz3sXw3RZuI
-        JGfCozr6mDWu+p83F5s/4bF0fc7sSbEBs99y9M3KcMcIb45hd9SAJcH1PsjM1ucP9nfdlu
-        InPp3N3vz/+6x5SDWbyDqMDpH0IHEb0=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 383EA13524;
-        Mon, 11 Jul 2022 21:21:08 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id q/6RDESUzGIuWwAAMHmgww
-        (envelope-from <dsterba@suse.com>); Mon, 11 Jul 2022 21:21:08 +0000
-Date:   Mon, 11 Jul 2022 23:16:19 +0200
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Btrfs fixes for 5.19-rc7
-Message-ID: <cover.1657571742.git.dsterba@suse.com>
-Mail-Followup-To: David Sterba <dsterba@suse.com>,
-        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26C12A71A;
+        Mon, 11 Jul 2022 14:21:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1657574465;
+        bh=pulbl6ZVMF89zqi4FCDK9+iI1hZBrDJ8HumaDHMz+4s=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=AxTWPobAALVtt6qz0PnEwWDJhaQKiIIYYtayCZo8Ee+NdMHNcKnVmSKaACz3nugzy
+         HetiOTydYhFfpK20CqdQJhDexwMD9UQ5ul4bMyCi3g3RqW3id/cifYXpo2UW3PA1XC
+         BvQUZBgMyDa8KnWSuHA0T0aQZhJ8MfK7rMxnHgkc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.184.221]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MVN6t-1o22Xn3SKt-00SKrM; Mon, 11
+ Jul 2022 23:21:04 +0200
+Message-ID: <681e1739-d251-661a-a46f-9412f3b6e165@gmx.de>
+Date:   Mon, 11 Jul 2022 23:20:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] video: fbdev: amiga: Simplify amifb_pan_display()
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <b803f10a2b3b85386b25a2e25b98fb4e59413ea9.1657553681.git.geert@linux-m68k.org>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <b803f10a2b3b85386b25a2e25b98fb4e59413ea9.1657553681.git.geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:nVTr6BBwsWtnZx2aandyv+fUBwA/rXHQ6laYCVuq5K6BMshiorz
+ oSUQh06r/DOmXqzDdd5MVI7jLmIlTNgzFGwmwDnAR2OzyUN2qCk2pjlhQH6V4Wl+skQ/cq2
+ 1poDea8TEluhigguiyqt+Ash7248Rhgqdb6x25clkWzCQUlwIr/oUuE5umGLWMaz82xDURS
+ 50wroyX+c1Zo0C2Dtrf9A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:NZ4kLPOUqWI=:ddtZJMwIk26PDP1AFeNs1I
+ CK9cdRIKjSuTZTp1SQ8KYb/TLEpyJQfas9W/uqwufPJgcZyDeOmyK0QOFEOxd/BngpwArrQIE
+ c6Ru/c4/rDTsanux1uA/krsBHHCkXGL9QJVw6MuAhlP1sisi/iN/AF4MGwEGmyDGsS1PfVwuZ
+ GhC9iwzbxs12fzBjG6++qyDiFJHMwHSLfAJ+ZPwQJkbRiCpLQbRfMxNhyIYDi2iPkpnbsKfKk
+ zFj41bGRf+TwVjpwhaSsN3ChpuNgxUEHRxxgTEK2ZIvbaEZ5jFQdngNVJQ4AN79eou+GuUL53
+ vjQnWxknd/UpgIGIgQ7Y/1kl/wiiTKAd43W32IcdiZDO95JVKp8oD595IFgHmwl/lcKLXDfld
+ qdX//ZJBrqBwL7d9dsCtQ1aQs8A50MYWtJT9AcrAZVXAup4eJO9p2hc27L9ijE7rl43XWFQ5n
+ UdN2okVmidi/HEWbBqlyg8Fg5b63I+sf0Bj7e0Pav4/heM0Gk83OL2axdVJdmB3wuX4tPoD87
+ zuFAMP7S0U2IetH8GckowCnU5qmgxQMDxbqbF97T+zduYczc6p+dHbPv83HSBgO9OY9bK4Pef
+ oJnfIH1FgdySEhD1QuZ7LvMpX16RodLvbXuj2u/NlU7N72DEgXGmc2ZsL/ClFJKGUmGGAVLtw
+ v6c7YepDyAIxLnIKxsRU37MWT+yGaTf2NqNiPxXuuuHaZJ3NfyWysn2lko9ThNXkuHJ0WvcZn
+ g63SJB+apu0mgvrEIUXQiD+70i8roxHz2gZGzWow8doisq945ActjgeVRyWLRztPlEG7UWuZC
+ st9LRE+wGnEp5S7TYMAaM4eaQYMwdfI0EoQyFZSu04mo0F6l/uYV056R6uR/dZUHeFFf/eT0c
+ VofMUn0GKy2BcAuJDYBnyKJOi0nSaNFwwM6wFGI1mmvBluksLL1lM51qMC5U4EwxvYk5w/jy+
+ pweCuDF4U9xow9b+XF2M7LOmKLCuiH00wfSoeVp5+PJFTFl5SNWnG4uGKHRetPXFzi0vW+tUJ
+ 1yq2HC+N3Nbw9+7fqknLNIJLssDMPxGsdcT7/G/EPRIWNunhLGMyfjzJH4G5KzilESJUDrhJH
+ r5+1ci5/NfJFG26RzRLFY6F1qGN/DLMsPbyHSfacItYZnZ/bFdkIsTTmA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On 7/11/22 17:35, Geert Uytterhoeven wrote:
+> The fb_pan_display() function in the core already takes care of
+> validating most panning parameters before calling the driver's
+> .fb_pan_display() callback, and of updating the panning state
+> afterwards, so there is no need to repeat that in the driver.
+>
+> Remove the duplicate code.
+>
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-a few more fixes that seem to me to be important enough to get merged
-before release, described below. Please pull, thanks.
+I've applied this and the other 3 patches to the fbdev git tree.
 
-- in zoned mode, fix leak of a structure when reading zone info, this
-  happens on normal path so this can be significant
+Thanks!
+Helge
 
-- in zoned mode, revert an optimization added in 5.19-rc1 to finish a
-  zone when the capacity is full, but this is not reliable in all cases
 
-- try to avoid short reads for compressed data or inline files when it's
-  a NOWAIT read, applications should handle that but there are two,
-  qemu and mariadb, that are affected
+> ---
+>  drivers/video/fbdev/amifb.c | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
+>
+> diff --git a/drivers/video/fbdev/amifb.c b/drivers/video/fbdev/amifb.c
+> index 6e07a97bbd31a1dd..d88265dbebf4cb19 100644
+> --- a/drivers/video/fbdev/amifb.c
+> +++ b/drivers/video/fbdev/amifb.c
+> @@ -2540,27 +2540,16 @@ static int amifb_blank(int blank, struct fb_info=
+ *info)
+>  static int amifb_pan_display(struct fb_var_screeninfo *var,
+>  			     struct fb_info *info)
+>  {
+> -	if (var->vmode & FB_VMODE_YWRAP) {
+> -		if (var->yoffset < 0 ||
+> -			var->yoffset >=3D info->var.yres_virtual || var->xoffset)
+> -				return -EINVAL;
+> -	} else {
+> +	if (!(var->vmode & FB_VMODE_YWRAP)) {
+>  		/*
+>  		 * TODO: There will be problems when xpan!=3D1, so some columns
+>  		 * on the right side will never be seen
+>  		 */
+>  		if (var->xoffset + info->var.xres >
+> -		    upx(16 << maxfmode, info->var.xres_virtual) ||
+> -		    var->yoffset + info->var.yres > info->var.yres_virtual)
+> +		    upx(16 << maxfmode, info->var.xres_virtual))
+>  			return -EINVAL;
+>  	}
+>  	ami_pan_var(var, info);
+> -	info->var.xoffset =3D var->xoffset;
+> -	info->var.yoffset =3D var->yoffset;
+> -	if (var->vmode & FB_VMODE_YWRAP)
+> -		info->var.vmode |=3D FB_VMODE_YWRAP;
+> -	else
+> -		info->var.vmode &=3D ~FB_VMODE_YWRAP;
+>  	return 0;
+>  }
+>
 
-----------------------------------------------------------------
-The following changes since commit 037e127452b973f45b34c1e88a1af183e652e657:
-
-  Documentation: update btrfs list of features and link to readthedocs.io (2022-06-21 14:47:19 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc6-tag
-
-for you to fetch changes up to b3a3b0255797e1d395253366ba24a4cc6c8bdf9c:
-
-  btrfs: zoned: drop optimization of zone finish (2022-07-08 19:18:00 +0200)
-
-----------------------------------------------------------------
-Christoph Hellwig (1):
-      btrfs: zoned: fix a leaked bioc in read_zone_info
-
-Filipe Manana (1):
-      btrfs: return -EAGAIN for NOWAIT dio reads/writes on compressed and inline extents
-
-Naohiro Aota (1):
-      btrfs: zoned: drop optimization of zone finish
-
- fs/btrfs/inode.c | 14 +++++++++++++-
- fs/btrfs/zoned.c | 34 ++++++++++++++--------------------
- 2 files changed, 27 insertions(+), 21 deletions(-)
