@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2A2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:36:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03850C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232942AbiGKJgH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
+        id S232592AbiGKJgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:36:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233133AbiGKJeo (ORCPT
+        with ESMTP id S232118AbiGKJeu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:34:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A8965A5;
-        Mon, 11 Jul 2022 02:18:38 -0700 (PDT)
+        Mon, 11 Jul 2022 05:34:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D086330;
+        Mon, 11 Jul 2022 02:18:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF67B61227;
-        Mon, 11 Jul 2022 09:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F46C34115;
-        Mon, 11 Jul 2022 09:18:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 183FEB80833;
+        Mon, 11 Jul 2022 09:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB0FC34115;
+        Mon, 11 Jul 2022 09:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531117;
-        bh=lh7AYL4Z8YvuRd3eo1vbbmlhCCo0hOo/6FSah1I1Stk=;
+        s=korg; t=1657531119;
+        bh=mtlslkPZOGbYO1mkm2rsME8Fmx8ft0J7wjRxl8Q0S6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XnXAKEEcCxLV5Pxm9RMvtB92AMjidQ215doMoEsWLwR9qGvdgXtv2r0yHyREpPhWy
-         BX5vSEPgIvFdjD4bifU/fmIj9W2HwkTr4TeVPfWZWm1OZcs+9xeXxPfVfq5N9ePIDk
-         JslGHFmBArHfUEkRUkH64vEiNNdCC13FJkwXvvTc=
+        b=UTHyPNEtckOlWmioD52H87fPcpfwPgg+Xz0udjgVcw3qnedyPkqiVWqmVpUdfmdNd
+         1LcQ0OPHXQ04FxeewAxHtj4kUfB8DTB7keAJMm1q6sI9erJ2euzCVGe8p6OZ5rh75S
+         NCDQEZ787T68JiX51QduU5mWqVbMWZXVT9JpE5Ns=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable <stable@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>
-Subject: [PATCH 5.18 102/112] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Mon, 11 Jul 2022 11:07:42 +0200
-Message-Id: <20220711090552.465851390@linuxfoundation.org>
+        stable@vger.kernel.org, Samin Guo <samin.guo@starfivetech.com>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.18 103/112] dmaengine: dw-axi-dmac: Fix RMW on channel suspend register
+Date:   Mon, 11 Jul 2022 11:07:43 +0200
+Message-Id: <20220711090552.494344585@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -49,50 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Emil Renner Berthing <kernel@esmil.dk>
 
-commit 2cd37c2e72449a7add6da1183d20a6247d6db111 upstream.
+commit 49db68d45bdcad06e28a420d5d911e4178389666 upstream.
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+When the DMA is configured for more than 8 channels the bits controlling
+suspend moves to another register. However when adding support for this
+the new register would be completely overwritten in one case and
+overwritten with values from the old register in another case.
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
+Found by comparing the parallel implementation of more than 8 channel
+support for the StarFive JH7100 SoC by Samin.
 
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220701165352.15687-1-skhan@linuxfoundation.org
+Fixes: 824351668a41 ("dmaengine: dw-axi-dmac: support DMAX_NUM_CHANNELS > 8")
+Co-developed-by: Samin Guo <samin.guo@starfivetech.com>
+Signed-off-by: Samin Guo <samin.guo@starfivetech.com>
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Link: https://lore.kernel.org/r/20220627090939.1775717-1-emil.renner.berthing@canonical.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/cardreader/rtsx_usb.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/misc/cardreader/rtsx_usb.c
-+++ b/drivers/misc/cardreader/rtsx_usb.c
-@@ -636,8 +636,10 @@ static int rtsx_usb_probe(struct usb_int
- 		return -ENOMEM;
+--- a/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
++++ b/drivers/dma/dw-axi-dmac/dw-axi-dmac-platform.c
+@@ -1164,8 +1164,9 @@ static int dma_chan_pause(struct dma_cha
+ 			BIT(chan->id) << DMAC_CHAN_SUSP_WE_SHIFT;
+ 		axi_dma_iowrite32(chan->chip, DMAC_CHEN, val);
+ 	} else {
+-		val = BIT(chan->id) << DMAC_CHAN_SUSP2_SHIFT |
+-		      BIT(chan->id) << DMAC_CHAN_SUSP2_WE_SHIFT;
++		val = axi_dma_ioread32(chan->chip, DMAC_CHSUSPREG);
++		val |= BIT(chan->id) << DMAC_CHAN_SUSP2_SHIFT |
++			BIT(chan->id) << DMAC_CHAN_SUSP2_WE_SHIFT;
+ 		axi_dma_iowrite32(chan->chip, DMAC_CHSUSPREG, val);
+ 	}
  
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
-+	}
+@@ -1190,12 +1191,13 @@ static inline void axi_chan_resume(struc
+ {
+ 	u32 val;
  
- 	usb_set_intfdata(intf, ucr);
- 
+-	val = axi_dma_ioread32(chan->chip, DMAC_CHEN);
+ 	if (chan->chip->dw->hdata->reg_map_8_channels) {
++		val = axi_dma_ioread32(chan->chip, DMAC_CHEN);
+ 		val &= ~(BIT(chan->id) << DMAC_CHAN_SUSP_SHIFT);
+ 		val |=  (BIT(chan->id) << DMAC_CHAN_SUSP_WE_SHIFT);
+ 		axi_dma_iowrite32(chan->chip, DMAC_CHEN, val);
+ 	} else {
++		val = axi_dma_ioread32(chan->chip, DMAC_CHSUSPREG);
+ 		val &= ~(BIT(chan->id) << DMAC_CHAN_SUSP2_SHIFT);
+ 		val |=  (BIT(chan->id) << DMAC_CHAN_SUSP2_WE_SHIFT);
+ 		axi_dma_iowrite32(chan->chip, DMAC_CHSUSPREG, val);
 
 
