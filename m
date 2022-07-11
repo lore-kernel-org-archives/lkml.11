@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE24CCA482
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234436AbiGKKEw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:04:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
+        id S234481AbiGKKEz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:04:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234513AbiGKKDa (ORCPT
+        with ESMTP id S234511AbiGKKDa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 06:03:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0501B48E8F;
-        Mon, 11 Jul 2022 02:29:29 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC10C48E8C;
+        Mon, 11 Jul 2022 02:29:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96B8961414;
-        Mon, 11 Jul 2022 09:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E03AC34115;
-        Mon, 11 Jul 2022 09:29:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 786DDB80E6D;
+        Mon, 11 Jul 2022 09:29:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D92FAC34115;
+        Mon, 11 Jul 2022 09:29:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531768;
-        bh=dXCyeXMzsanEOjnWTi9p5QfZZN2jI9uPP4wKsJmHxbs=;
+        s=korg; t=1657531765;
+        bh=s1ijYzDz9YDw93VsXIoGWIkfJnpWGJMooOl/cYJ8gQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GlnXxTNFq43952O+l3WRpGCDBm8Iu7DnF9GSwDIzEdoT3zZw49N99fY+hMEgn2ZqD
-         8BT+u5MUE+ynUBzKP2WJ5JPFHmpbXYuWGnVYyHEOTVSFIDMnLDBj1YvRDG6rdTBcK7
-         7bUC/zbZSs/nM4atY9XnPWMkkDcueFAtZkKrhB1M=
+        b=OAnH1cQHTbEdMEfC8SrxWZSkgE/DOXJ4edKEMqprom7VX2s2bv34OTHg9Koc5O0df
+         zClOdlZ9pVo7rp39Sx8JOsY4RpMvVka7sUkC9ts0GAqOfiMnIr2a7AZXro4tZc1IR2
+         UGlH/m+5rJMXzExjDTq01QvmhDV83G8VRgNZ5J/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 173/230] btrfs: fix error pointer dereference in btrfs_ioctl_rm_dev_v2()
-Date:   Mon, 11 Jul 2022 11:07:09 +0200
-Message-Id: <20220711090608.969302812@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 182/230] arm64: dts: qcom: msm8994: Fix CPU6/7 reg values
+Date:   Mon, 11 Jul 2022 11:07:18 +0200
+Message-Id: <20220711090609.274114574@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -49,38 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-commit d815b3f2f273537cb8afaf5ab11a46851f6c03e5 upstream.
+[ Upstream commit 47bf59c4755930f616dd90c8c6a85f40a6d347ea ]
 
-If memdup_user() fails the error handing will crash when it tries
-to kfree() an error pointer.  Just return directly because there is
-no cleanup required.
+CPU6 and CPU7 were mistakengly pointing to CPU5 reg. Fix it.
 
-Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
-Reviewed-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 02d8091bbca0 ("arm64: dts: qcom: msm8994: Add a proper CPU map")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20220501184016.64138-1-konrad.dybcio@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ioctl.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8994.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -3231,10 +3231,8 @@ static long btrfs_ioctl_rm_dev_v2(struct
- 		return -EPERM;
- 
- 	vol_args = memdup_user(arg, sizeof(*vol_args));
--	if (IS_ERR(vol_args)) {
--		ret = PTR_ERR(vol_args);
--		goto out;
--	}
-+	if (IS_ERR(vol_args))
-+		return PTR_ERR(vol_args);
- 
- 	if (vol_args->flags & ~BTRFS_DEVICE_REMOVE_ARGS_MASK) {
- 		ret = -EOPNOTSUPP;
+diff --git a/arch/arm64/boot/dts/qcom/msm8994.dtsi b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+index 3c27671c8b5c..a8dc8163ee82 100644
+--- a/arch/arm64/boot/dts/qcom/msm8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8994.dtsi
+@@ -93,7 +93,7 @@
+ 		CPU6: cpu@102 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x102>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
+@@ -101,7 +101,7 @@
+ 		CPU7: cpu@103 {
+ 			device_type = "cpu";
+ 			compatible = "arm,cortex-a57";
+-			reg = <0x0 0x101>;
++			reg = <0x0 0x103>;
+ 			enable-method = "psci";
+ 			next-level-cache = <&L2_1>;
+ 		};
+-- 
+2.35.1
+
 
 
