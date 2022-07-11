@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E14C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbiGKJQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:16:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
+        id S231602AbiGKJQV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231736AbiGKJOk (ORCPT
+        with ESMTP id S229899AbiGKJOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:14:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145F92A414;
-        Mon, 11 Jul 2022 02:10:36 -0700 (PDT)
+        Mon, 11 Jul 2022 05:14:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0DFA2A411;
+        Mon, 11 Jul 2022 02:10:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B896B80E5E;
-        Mon, 11 Jul 2022 09:10:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967A4C34115;
-        Mon, 11 Jul 2022 09:10:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4144FB80D2C;
+        Mon, 11 Jul 2022 09:10:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 962D2C34115;
+        Mon, 11 Jul 2022 09:10:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530633;
-        bh=dChCWsb+4khBPPsnfWD9LiN8uRlrpm1uvS/5ig3Xag0=;
+        s=korg; t=1657530639;
+        bh=/Vlpw6/HGAgbn6PtVQ9mDsztGe7XJM2vq+5z3tLfz7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdMtt6zrQZUWo6vieh+38fmd/fbGSELQ5CWWO6S5c1his4JO59urTa79/GSd/nPoi
-         F+132Zeq5hZ8Rnbnfa80Q75AvRwo+kWkEB1hsBDXyySDnW4k7XfDFEmpId0NQCbZaZ
-         +ETFWu0kdDlZD7gKyKUx6Qvr0oCyF+s5OWMwfod4=
+        b=mUKip51wENfkEWj3mIRb+JZy82WGSbrRlCmbOWs34cEIV8g0bTPWm0IOlNZ5HCjBS
+         eUIz8uUllM0ZBFLYi57yqc4qW3LLOY27ZVG7wdv6jQzx76nifADlgqnFYPawJCrirn
+         o5pCODusOSynnJGtwB3Ag6NTepMM0hk+syZu5/ak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 06/38] usbnet: fix memory leak in error case
-Date:   Mon, 11 Jul 2022 11:06:48 +0200
-Message-Id: <20220711090538.916851659@linuxfoundation.org>
+        stable@vger.kernel.org, "Zhang, Bernice" <bernice.zhang@intel.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Yian Chen <yian.chen@intel.com>,
+        Joerg Roedel <jroedel@suse.de>, Zhang@vger.kernel.org
+Subject: [PATCH 5.4 08/38] iommu/vt-d: Fix PCI bus rescan device hot add
+Date:   Mon, 11 Jul 2022 11:06:50 +0200
+Message-Id: <20220711090538.973522031@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -48,69 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
+From: Yian Chen <yian.chen@intel.com>
 
-commit b55a21b764c1e182014630fa5486d717484ac58f upstream.
+commit 316f92a705a4c2bf4712135180d56f3cca09243a upstream.
 
-usbnet_write_cmd_async() mixed up which buffers
-need to be freed in which error case.
+Notifier calling chain uses priority to determine the execution
+order of the notifiers or listeners registered to the chain.
+PCI bus device hot add utilizes the notification mechanism.
 
-v2: add Fixes tag
-v3: fix uninitialized buf pointer
+The current code sets low priority (INT_MIN) to Intel
+dmar_pci_bus_notifier and postpones DMAR decoding after adding
+new device into IOMMU. The result is that struct device pointer
+cannot be found in DRHD search for the new device's DMAR/IOMMU.
+Subsequently, the device is put under the "catch-all" IOMMU
+instead of the correct one. This could cause system hang when
+device TLB invalidation is sent to the wrong IOMMU. Invalidation
+timeout error and hard lockup have been observed and data
+inconsistency/crush may occur as well.
 
-Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
-Signed-off-by: Oliver Neukum <oneukum@suse.com>
-Link: https://lore.kernel.org/r/20220705125351.17309-1-oneukum@suse.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This patch fixes the issue by setting a positive priority(1) for
+dmar_pci_bus_notifier while the priority of IOMMU bus notifier
+uses the default value(0), therefore DMAR decoding will be in
+advance of DRHD search for a new device to find the correct IOMMU.
+
+Following is a 2-step example that triggers the bug by simulating
+PCI device hot add behavior in Intel Sapphire Rapids server.
+
+echo 1 > /sys/bus/pci/devices/0000:6a:01.0/remove
+echo 1 > /sys/bus/pci/rescan
+
+Fixes: 59ce0515cdaf ("iommu/vt-d: Update DRHD/RMRR/ATSR device scope")
+Cc: stable@vger.kernel.org # v3.15+
+Reported-by: Zhang, Bernice <bernice.zhang@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Yian Chen <yian.chen@intel.com>
+Link: https://lore.kernel.org/r/20220521002115.1624069-1-yian.chen@intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/usbnet.c |   17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/iommu/dmar.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -2120,7 +2120,7 @@ static void usbnet_async_cmd_cb(struct u
- int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
- 			   u16 value, u16 index, const void *data, u16 size)
- {
--	struct usb_ctrlrequest *req = NULL;
-+	struct usb_ctrlrequest *req;
- 	struct urb *urb;
- 	int err = -ENOMEM;
- 	void *buf = NULL;
-@@ -2138,7 +2138,7 @@ int usbnet_write_cmd_async(struct usbnet
- 		if (!buf) {
- 			netdev_err(dev->net, "Error allocating buffer"
- 				   " in %s!\n", __func__);
--			goto fail_free;
-+			goto fail_free_urb;
- 		}
- 	}
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -363,7 +363,7 @@ static int dmar_pci_bus_notifier(struct
  
-@@ -2162,14 +2162,21 @@ int usbnet_write_cmd_async(struct usbnet
- 	if (err < 0) {
- 		netdev_err(dev->net, "Error submitting the control"
- 			   " message: status=%d\n", err);
--		goto fail_free;
-+		goto fail_free_all;
- 	}
- 	return 0;
+ static struct notifier_block dmar_pci_bus_nb = {
+ 	.notifier_call = dmar_pci_bus_notifier,
+-	.priority = INT_MIN,
++	.priority = 1,
+ };
  
-+fail_free_all:
-+	kfree(req);
- fail_free_buf:
- 	kfree(buf);
--fail_free:
--	kfree(req);
-+	/*
-+	 * avoid a double free
-+	 * needed because the flag can be set only
-+	 * after filling the URB
-+	 */
-+	urb->transfer_flags = 0;
-+fail_free_urb:
- 	usb_free_urb(urb);
- fail:
- 	return err;
+ static struct dmar_drhd_unit *
 
 
