@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19AC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 22:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230194AbiGKWby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 18:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
+        id S230429AbiGKWb5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 18:31:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiGKWbv (ORCPT
+        with ESMTP id S229707AbiGKWbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 18:31:51 -0400
+        Mon, 11 Jul 2022 18:31:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFF7852E7D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:31:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A4052E75
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:31:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C95C611F6
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B942C34115;
-        Mon, 11 Jul 2022 22:31:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10FE861210
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:31:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9062C3411C;
+        Mon, 11 Jul 2022 22:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657578709;
-        bh=hnPirb/Cj9dkurnAnavzWRfntXOHgedcvCNBeLS/u7I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gif6OrSIsoeBx4hgHOp62r6YMWDTXAIyxQQ7of8EfaCJD7z8pYPQKTZEaMx24uChh
-         HKwcUEqBwkKsDDMgDteqZs5R/pCUq/ptMLHnjAeYFh42FePGRP9LMN8lH1GvuG/cTu
-         fuuIpQoQ4OPLfTonkVYgLtZYTd0UtCkDGQULbtfX9Bw5qQmFY3kM2ZNb3dHVEJpi0g
-         qCoEvdx8mv+DFvymMuR5ao5tHaH44WuCDbffKDtF167xZh+eTPUvZmZuJd2xodY6L3
-         aivwDtqxdmlW4qtDWbM9o5dsGfLOJBEgtSshVcPIu2cgydH2yKXxFAWLPnUVBXboxG
-         ey7rjrKAXjuUA==
+        s=k20201202; t=1657578711;
+        bh=KVc/xJI9WBjl1MwUqc/PQZOUujpZ2jie65h7TE7rdCs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eRbgX/+IVF3eOvLT+SEn58EUpWnxyGLT57h9sXtZDMguls5rVuZv4Pn40WaLVOe3j
+         CILJ+Vz+ZUVVLWNLcvG24wvWZ5fghCXtHYbTVkCd/NkxXrFSzAwYZiJ/XyWsrgi9Do
+         1tR6WurhgsokdqYojhdQ01QHnre2FbGz3O1khVLuGXYsL8rOcd4Izs0j66pm1kmCbD
+         uOeTAAIEeU5P2KeRDkLAZFHnFXuEU2Rob2EjoXmy/zMsVvGUwLeHVsEqOra2NXezRZ
+         0kQmBwPwZBY0D6lx008Fb2aXlD156WlbLL5Z/iJlcrX8pUkonsh1b5U9OZDG3lSm7d
+         bRSX/46d85r/w==
 From:   Dinh Nguyen <dinguyen@kernel.org>
 To:     gregkh@linuxfoundation.org
 Cc:     dinguyen@kernel.org, linux-kernel@vger.kernel.org,
         Ang Tien Sung <tien.sung.ang@intel.com>
-Subject: [PATCH 1/6] firmware: stratix10-svc: Add support for FCS
-Date:   Mon, 11 Jul 2022 17:31:35 -0500
-Message-Id: <20220711223140.2307945-1-dinguyen@kernel.org>
+Subject: [PATCH 3/6] firmware: stratix10-svc: add new FCS commands
+Date:   Mon, 11 Jul 2022 17:31:37 -0500
+Message-Id: <20220711223140.2307945-3-dinguyen@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220711223140.2307945-1-dinguyen@kernel.org>
+References: <20220711223140.2307945-1-dinguyen@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,113 +50,419 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ang Tien Sung <tien.sung.ang@intel.com>
 
-Extend Intel service layer driver to support FPGA Crypto service(FCS)
-features on Intel Soc platforms. Adding an additional channel and FCS
-platform driver ("intel_fcs") as part of the probe method.
-FCS driver uses the driver to send crypto operations' commands to
-the secure device manager(SDM) on Intel Soc platforms Stratix10 and
-Agilex.
+Extending the fpga svc driver to support 6 new FPGA Crypto
+Service(FCS) commands.
+We are adding FCS SDOS data encryption and decryption,
+random number generator, image validation request,
+reading the data provision and certificate validation.
 
 Signed-off-by: Ang Tien Sung <tien.sung.ang@intel.com>
 Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
 ---
- drivers/firmware/stratix10-svc.c              | 30 +++++++++++++++----
- .../firmware/intel/stratix10-svc-client.h     |  1 +
- 2 files changed, 26 insertions(+), 5 deletions(-)
+ drivers/firmware/stratix10-svc.c              | 105 +++++++++++++++--
+ include/linux/firmware/intel/stratix10-smc.h  | 111 ++++++++++++++++++
+ .../firmware/intel/stratix10-svc-client.h     |  41 ++++++-
+ 3 files changed, 245 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/firmware/stratix10-svc.c b/drivers/firmware/stratix10-svc.c
-index 14663f671323..1fe748c047df 100644
+index 439a4bdf8207..1cf9f4f47b94 100644
 --- a/drivers/firmware/stratix10-svc.c
 +++ b/drivers/firmware/stratix10-svc.c
-@@ -34,12 +34,13 @@
-  * timeout is set to 30 seconds (30 * 1000) at Intel Stratix10 SoC.
-  */
- #define SVC_NUM_DATA_IN_FIFO			32
--#define SVC_NUM_CHANNEL				2
-+#define SVC_NUM_CHANNEL				3
- #define FPGA_CONFIG_DATA_CLAIM_TIMEOUT_MS	200
- #define FPGA_CONFIG_STATUS_TIMEOUT_SEC		30
- 
- /* stratix10 service layer clients */
- #define STRATIX10_RSU				"stratix10-rsu"
-+#define INTEL_FCS				"intel-fcs"
- 
- typedef void (svc_invoke_fn)(unsigned long, unsigned long, unsigned long,
- 			     unsigned long, unsigned long, unsigned long,
-@@ -53,6 +54,7 @@ struct stratix10_svc_chan;
-  */
- struct stratix10_svc {
- 	struct platform_device *stratix10_svc_rsu;
-+	struct platform_device *intel_svc_fcs;
- };
- 
+@@ -99,8 +99,10 @@ struct stratix10_svc_data_mem {
  /**
-@@ -1036,6 +1038,11 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
- 	chans[1].name = SVC_CLIENT_RSU;
- 	spin_lock_init(&chans[1].lock);
+  * struct stratix10_svc_data - service data structure
+  * @chan: service channel
+- * @paddr: playload physical address
+- * @size: playload size
++ * @paddr: physical address of to be processed payload
++ * @size: to be processed playload size
++ * @paddr_output: physical address of processed payload
++ * @size_output: processed payload size
+  * @command: service command requested by client
+  * @flag: configuration type (full or partial)
+  * @arg: args to be passed via registers and not physically mapped buffers
+@@ -111,6 +113,8 @@ struct stratix10_svc_data {
+ 	struct stratix10_svc_chan *chan;
+ 	phys_addr_t paddr;
+ 	size_t size;
++	phys_addr_t paddr_output;
++	size_t size_output;
+ 	u32 command;
+ 	u32 flag;
+ 	u64 arg[3];
+@@ -320,7 +324,10 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
+ 	case COMMAND_RECONFIG:
+ 	case COMMAND_RSU_UPDATE:
+ 	case COMMAND_RSU_NOTIFY:
+-	case COMMAND_POLL_SERVICE_STATUS:
++	case COMMAND_FCS_REQUEST_SERVICE:
++	case COMMAND_FCS_SEND_CERTIFICATE:
++	case COMMAND_FCS_DATA_ENCRYPTION:
++	case COMMAND_FCS_DATA_DECRYPTION:
+ 		cb_data->status = BIT(SVC_STATUS_OK);
+ 		break;
+ 	case COMMAND_RECONFIG_DATA_SUBMIT:
+@@ -340,6 +347,14 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
+ 		cb_data->kaddr1 = &res.a1;
+ 		cb_data->kaddr2 = &res.a2;
+ 		break;
++	case COMMAND_FCS_RANDOM_NUMBER_GEN:
++	case COMMAND_FCS_GET_PROVISION_DATA:
++	case COMMAND_POLL_SERVICE_STATUS:
++		cb_data->status = BIT(SVC_STATUS_OK);
++		cb_data->kaddr1 = &res.a1;
++		cb_data->kaddr2 = svc_pa_to_va(res.a2);
++		cb_data->kaddr3 = &res.a3;
++		break;
+ 	default:
+ 		pr_warn("it shouldn't happen\n");
+ 		break;
+@@ -366,7 +381,7 @@ static int svc_normal_to_secure_thread(void *data)
+ 	struct stratix10_svc_data *pdata;
+ 	struct stratix10_svc_cb_data *cbdata;
+ 	struct arm_smccc_res res;
+-	unsigned long a0, a1, a2;
++	unsigned long a0, a1, a2, a3, a4, a5, a6, a7;
+ 	int ret_fifo = 0;
  
-+	chans[2].scl = NULL;
-+	chans[2].ctrl = controller;
-+	chans[2].name = SVC_CLIENT_FCS;
-+	spin_lock_init(&chans[2].lock);
+ 	pdata =  kmalloc(sizeof(*pdata), GFP_KERNEL);
+@@ -383,6 +398,11 @@ static int svc_normal_to_secure_thread(void *data)
+ 	a0 = INTEL_SIP_SMC_FPGA_CONFIG_LOOPBACK;
+ 	a1 = 0;
+ 	a2 = 0;
++	a3 = 0;
++	a4 = 0;
++	a5 = 0;
++	a6 = 0;
++	a7 = 0;
+ 
+ 	pr_debug("smc_hvc_shm_thread is running\n");
+ 
+@@ -453,12 +473,50 @@ static int svc_normal_to_secure_thread(void *data)
+ 			a1 = 0;
+ 			a2 = 0;
+ 			break;
 +
- 	list_add_tail(&controller->node, &svc_ctrl);
- 	platform_set_drvdata(pdev, controller);
++		/* for FCS */
++		case COMMAND_FCS_DATA_ENCRYPTION:
++			a0 = INTEL_SIP_SMC_FCS_CRYPTION;
++			a1 = 1;
++			a2 = (unsigned long)pdata->paddr;
++			a3 = (unsigned long)pdata->size;
++			a4 = (unsigned long)pdata->paddr_output;
++			a5 = (unsigned long)pdata->size_output;
++			break;
++		case COMMAND_FCS_DATA_DECRYPTION:
++			a0 = INTEL_SIP_SMC_FCS_CRYPTION;
++			a1 = 0;
++			a2 = (unsigned long)pdata->paddr;
++			a3 = (unsigned long)pdata->size;
++			a4 = (unsigned long)pdata->paddr_output;
++			a5 = (unsigned long)pdata->size_output;
++			break;
++		case COMMAND_FCS_RANDOM_NUMBER_GEN:
++			a0 = INTEL_SIP_SMC_FCS_RANDOM_NUMBER;
++			a1 = (unsigned long)pdata->paddr;
++			a2 = 0;
++			break;
++		case COMMAND_FCS_REQUEST_SERVICE:
++			a0 = INTEL_SIP_SMC_FCS_SERVICE_REQUEST;
++			a1 = (unsigned long)pdata->paddr;
++			a2 = (unsigned long)pdata->size;
++			break;
++		case COMMAND_FCS_SEND_CERTIFICATE:
++			a0 = INTEL_SIP_SMC_FCS_SEND_CERTIFICATE;
++			a1 = (unsigned long)pdata->paddr;
++			a2 = (unsigned long)pdata->size;
++			break;
++		case COMMAND_FCS_GET_PROVISION_DATA:
++			a0 = INTEL_SIP_SMC_FCS_GET_PROVISION_DATA;
++			a1 = (unsigned long)pdata->paddr;
++			a2 = 0;
++			break;
++
+ 		/* for polling */
+ 		case COMMAND_POLL_SERVICE_STATUS:
+ 			a0 = INTEL_SIP_SMC_SERVICE_COMPLETED;
+ 			a1 = (unsigned long)pdata->paddr;
+ 			a2 = (unsigned long)pdata->size;
+-
+ 			break;
  
-@@ -1054,8 +1061,22 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
+ 		default:
+@@ -466,10 +524,14 @@ static int svc_normal_to_secure_thread(void *data)
+ 			break;
+ 		}
+ 		pr_debug("%s: before SMC call -- a0=0x%016x a1=0x%016x",
+-			 __func__, (unsigned int)a0, (unsigned int)a1);
++			 __func__,
++			 (unsigned int)a0,
++			 (unsigned int)a1);
+ 		pr_debug(" a2=0x%016x\n", (unsigned int)a2);
+-
+-		ctrl->invoke_fn(a0, a1, a2, 0, 0, 0, 0, 0, &res);
++		pr_debug(" a3=0x%016x\n", (unsigned int)a3);
++		pr_debug(" a4=0x%016x\n", (unsigned int)a4);
++		pr_debug(" a5=0x%016x\n", (unsigned int)a5);
++		ctrl->invoke_fn(a0, a1, a2, a3, a4, a5, a6, a7, &res);
+ 
+ 		pr_debug("%s: after SMC call -- res.a0=0x%016x",
+ 			 __func__, (unsigned int)res.a0);
+@@ -512,6 +574,22 @@ static int svc_normal_to_secure_thread(void *data)
+ 			break;
+ 		case INTEL_SIP_SMC_STATUS_REJECTED:
+ 			pr_debug("%s: STATUS_REJECTED\n", __func__);
++			/* for FCS */
++			switch (pdata->command) {
++			case COMMAND_FCS_REQUEST_SERVICE:
++			case COMMAND_FCS_SEND_CERTIFICATE:
++			case COMMAND_FCS_GET_PROVISION_DATA:
++			case COMMAND_FCS_DATA_ENCRYPTION:
++			case COMMAND_FCS_DATA_DECRYPTION:
++			case COMMAND_FCS_RANDOM_NUMBER_GEN:
++				cbdata->status = BIT(SVC_STATUS_INVALID_PARAM);
++				cbdata->kaddr1 = NULL;
++				cbdata->kaddr2 = NULL;
++				cbdata->kaddr3 = NULL;
++				pdata->chan->scl->receive_cb(pdata->chan->scl,
++							     cbdata);
++				break;
++			}
+ 			break;
+ 		case INTEL_SIP_SMC_STATUS_ERROR:
+ 		case INTEL_SIP_SMC_RSU_ERROR:
+@@ -886,8 +964,19 @@ int stratix10_svc_send(struct stratix10_svc_chan *chan, void *msg)
+ 		list_for_each_entry(p_mem, &svc_data_mem, node)
+ 			if (p_mem->vaddr == p_msg->payload) {
+ 				p_data->paddr = p_mem->paddr;
++				p_data->size = p_msg->payload_length;
+ 				break;
+ 			}
++		if (p_msg->payload_output) {
++			list_for_each_entry(p_mem, &svc_data_mem, node)
++				if (p_mem->vaddr == p_msg->payload_output) {
++					p_data->paddr_output =
++						p_mem->paddr;
++					p_data->size_output =
++						p_msg->payload_length_output;
++					break;
++				}
++		}
  	}
  
- 	ret = platform_device_add(svc->stratix10_svc_rsu);
--	if (ret)
--		goto err_put_device;
-+	if (ret) {
-+		platform_device_put(svc->stratix10_svc_rsu);
-+		return ret;
-+	}
+ 	p_data->command = p_msg->command;
+diff --git a/include/linux/firmware/intel/stratix10-smc.h b/include/linux/firmware/intel/stratix10-smc.h
+index 0de104009566..8c198984a47c 100644
+--- a/include/linux/firmware/intel/stratix10-smc.h
++++ b/include/linux/firmware/intel/stratix10-smc.h
+@@ -445,4 +445,115 @@ INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FPGA_CONFIG_COMPLETED_WRITE)
+ #define INTEL_SIP_SMC_FIRMWARE_VERSION \
+         INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FIRMWARE_VERSION)
+ 
++/**
++ * SMC call protocol for FPGA Crypto Service (FCS)
++ * FUNCID starts from 90
++ */
 +
-+	svc->intel_svc_fcs = platform_device_alloc(INTEL_FCS, 1);
-+	if (!svc->intel_svc_fcs) {
-+		dev_err(dev, "failed to allocate %s device\n", INTEL_FCS);
-+		return -ENOMEM;
-+	}
++/**
++ * Request INTEL_SIP_SMC_FCS_RANDOM_NUMBER
++ *
++ * Sync call used to query the random number generated by the firmware
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_FCS_RANDOM_NUMBER
++ * a1 the physical address for firmware to write generated random data
++ * a2-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK, INTEL_SIP_SMC_FCS_ERROR or
++ *      INTEL_SIP_SMC_FCS_REJECTED
++ * a1 mailbox error
++ * a2 the physical address of generated random number
++ * a3 size
++ */
++#define INTEL_SIP_SMC_FUNCID_FCS_RANDOM_NUMBER 90
++#define INTEL_SIP_SMC_FCS_RANDOM_NUMBER \
++	INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FCS_RANDOM_NUMBER)
 +
-+	ret = platform_device_add(svc->intel_svc_fcs);
-+	if (ret) {
-+		platform_device_put(svc->intel_svc_fcs);
-+		return ret;
-+	}
- 
- 	dev_set_drvdata(dev, svc);
- 
-@@ -1063,8 +1084,6 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
- 
- 	return 0;
- 
--err_put_device:
--	platform_device_put(svc->stratix10_svc_rsu);
- err_free_kfifo:
- 	kfifo_free(&controller->svc_fifo);
- 	return ret;
-@@ -1075,6 +1094,7 @@ static int stratix10_svc_drv_remove(struct platform_device *pdev)
- 	struct stratix10_svc *svc = dev_get_drvdata(&pdev->dev);
- 	struct stratix10_svc_controller *ctrl = platform_get_drvdata(pdev);
- 
-+	platform_device_unregister(svc->intel_svc_fcs);
- 	platform_device_unregister(svc->stratix10_svc_rsu);
- 
- 	kfifo_free(&ctrl->svc_fifo);
++/**
++ * Request INTEL_SIP_SMC_FCS_CRYPTION
++ * Async call for data encryption and HMAC signature generation, or for
++ * data decryption and HMAC verification.
++ *
++ * Call INTEL_SIP_SMC_SERVICE_COMPLETED to get the output encrypted or
++ * decrypted data
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_FCS_CRYPTION
++ * a1 cryption mode (1 for encryption and 0 for decryption)
++ * a2 physical address which stores to be encrypted or decrypted data
++ * a3 input data size
++ * a4 physical address which will hold the encrypted or decrypted output data
++ * a5 output data size
++ * a6-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK, INTEL_SIP_SMC_STATUS_ERROR or
++ *      INTEL_SIP_SMC_STATUS_REJECTED
++ * a1-3 not used
++ */
++#define INTEL_SIP_SMC_FUNCID_FCS_CRYPTION 91
++#define INTEL_SIP_SMC_FCS_CRYPTION \
++	INTEL_SIP_SMC_STD_CALL_VAL(INTEL_SIP_SMC_FUNCID_FCS_CRYPTION)
++
++/**
++ * Request INTEL_SIP_SMC_FCS_SERVICE_REQUEST
++ * Async call for authentication service of HPS software
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_FCS_SERVICE_REQUEST
++ * a1 the physical address of data block
++ * a2 size of data block
++ * a3-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK, INTEL_SIP_SMC_ERROR or
++ *      INTEL_SIP_SMC_REJECTED
++ * a1-a3 not used
++ */
++#define INTEL_SIP_SMC_FUNCID_FCS_SERVICE_REQUEST 92
++#define INTEL_SIP_SMC_FCS_SERVICE_REQUEST \
++	INTEL_SIP_SMC_STD_CALL_VAL(INTEL_SIP_SMC_FUNCID_FCS_SERVICE_REQUEST)
++
++/**
++ * Request INTEL_SIP_SMC_FUNCID_FCS_SEND_CERTIFICATE
++ * Sync call to send a signed certificate
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_FCS_SEND_CERTIFICATE
++ * a1 the physical address of CERTIFICATE block
++ * a2 size of data block
++ * a3-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK or INTEL_SIP_SMC_FCS_REJECTED
++ * a1-a3 not used
++ */
++#define INTEL_SIP_SMC_FUNCID_FCS_SEND_CERTIFICATE 93
++#define INTEL_SIP_SMC_FCS_SEND_CERTIFICATE \
++	INTEL_SIP_SMC_STD_CALL_VAL(INTEL_SIP_SMC_FUNCID_FCS_SEND_CERTIFICATE)
++
++/**
++ * Request INTEL_SIP_SMC_FCS_GET_PROVISION_DATA
++ * Sync call to dump all the fuses and key hashes
++ *
++ * Call register usage:
++ * a0 INTEL_SIP_SMC_FCS_GET_PROVISION_DATA
++ * a1 the physical address for firmware to write structure of fuse and
++ *    key hashes
++ * a2-a7 not used
++ *
++ * Return status:
++ * a0 INTEL_SIP_SMC_STATUS_OK, INTEL_SIP_SMC_FCS_ERROR or
++ *      INTEL_SIP_SMC_FCS_REJECTED
++ * a1 mailbox error
++ * a2 physical address for the structure of fuse and key hashes
++ * a3 the size of structure
++ *
++ */
++#define INTEL_SIP_SMC_FUNCID_FCS_GET_PROVISION_DATA 94
++#define INTEL_SIP_SMC_FCS_GET_PROVISION_DATA \
++	INTEL_SIP_SMC_FAST_CALL_VAL(INTEL_SIP_SMC_FUNCID_FCS_GET_PROVISION_DATA)
++
+ #endif
 diff --git a/include/linux/firmware/intel/stratix10-svc-client.h b/include/linux/firmware/intel/stratix10-svc-client.h
-index 18c1841fdb1f..24121f8e0d7c 100644
+index 5d0e814e0c41..677720792259 100644
 --- a/include/linux/firmware/intel/stratix10-svc-client.h
 +++ b/include/linux/firmware/intel/stratix10-svc-client.h
-@@ -14,6 +14,7 @@
-  */
- #define SVC_CLIENT_FPGA			"fpga"
- #define SVC_CLIENT_RSU			"rsu"
-+#define SVC_CLIENT_FCS			"fcs"
+@@ -50,8 +50,8 @@
+ #define SVC_STATUS_BUSY			4
+ #define SVC_STATUS_ERROR		5
+ #define SVC_STATUS_NO_SUPPORT		6
+-
+-/*
++#define SVC_STATUS_INVALID_PARAM	7
++/**
+  * Flag bit for COMMAND_RECONFIG
+  *
+  * COMMAND_RECONFIG_FLAG_PARTIAL:
+@@ -67,6 +67,8 @@
+ #define SVC_RECONFIG_REQUEST_TIMEOUT_MS         300
+ #define SVC_RECONFIG_BUFFER_TIMEOUT_MS          720
+ #define SVC_RSU_REQUEST_TIMEOUT_MS              300
++#define SVC_FCS_REQUEST_TIMEOUT_MS		2000
++#define SVC_COMPLETED_TIMEOUT_MS		30000
  
- /*
-  * Status of the sent command, in bit number
+ struct stratix10_svc_chan;
+ 
+@@ -111,20 +113,47 @@ struct stratix10_svc_chan;
+  *
+  * @COMMAND_FIRMWARE_VERSION: query running firmware version, return status
+  * is SVC_STATUS_OK or SVC_STATUS_ERROR
++ *
++ * @COMMAND_FCS_REQUEST_SERVICE: request validation of image from firmware,
++ * return status is SVC_STATUS_OK, SVC_STATUS_INVALID_PARAM
++ *
++ * @COMMAND_FCS_SEND_CERTIFICATE: send a certificate, return status is
++ * SVC_STATUS_OK, SVC_STATUS_INVALID_PARAM, SVC_STATUS_ERROR
++ *
++ * @COMMAND_FCS_GET_PROVISION_DATA: read the provisioning data, return status is
++ * SVC_STATUS_OK, SVC_STATUS_INVALID_PARAM, SVC_STATUS_ERROR
++ *
++ * @COMMAND_FCS_DATA_ENCRYPTION: encrypt the data, return status is
++ * SVC_STATUS_OK, SVC_STATUS_INVALID_PARAM, SVC_STATUS_ERROR
++ *
++ * @COMMAND_FCS_DATA_DECRYPTION: decrypt the data, return status is
++ * SVC_STATUS_OK, SVC_STATUS_INVALID_PARAM, SVC_STATUS_ERROR
++ *
++ * @COMMAND_FCS_RANDOM_NUMBER_GEN: generate a random number, return status
++ * is SVC_STATUS_OK, SVC_STATUS_ERROR
+  */
+ enum stratix10_svc_command_code {
++	/* for FPGA */
+ 	COMMAND_NOOP = 0,
+ 	COMMAND_RECONFIG,
+ 	COMMAND_RECONFIG_DATA_SUBMIT,
+ 	COMMAND_RECONFIG_DATA_CLAIM,
+ 	COMMAND_RECONFIG_STATUS,
+-	COMMAND_RSU_STATUS,
++	/* for RSU */
++	COMMAND_RSU_STATUS = 10,
+ 	COMMAND_RSU_UPDATE,
+ 	COMMAND_RSU_NOTIFY,
+ 	COMMAND_RSU_RETRY,
+ 	COMMAND_RSU_MAX_RETRY,
+ 	COMMAND_RSU_DCMF_VERSION,
+ 	COMMAND_FIRMWARE_VERSION,
++	/* for FCS */
++	COMMAND_FCS_REQUEST_SERVICE = 20,
++	COMMAND_FCS_SEND_CERTIFICATE,
++	COMMAND_FCS_GET_PROVISION_DATA,
++	COMMAND_FCS_DATA_ENCRYPTION,
++	COMMAND_FCS_DATA_DECRYPTION,
++	COMMAND_FCS_RANDOM_NUMBER_GEN,
+ 	/* for general status poll */
+ 	COMMAND_POLL_SERVICE_STATUS = 40,
+ };
+@@ -132,13 +161,17 @@ enum stratix10_svc_command_code {
+ /**
+  * struct stratix10_svc_client_msg - message sent by client to service
+  * @payload: starting address of data need be processed
+- * @payload_length: data size in bytes
++ * @payload_length: to be processed data size in bytes
++ * @payload_output: starting address of processed data
++ * @payload_length_output: processed data size in bytes
+  * @command: service command
+  * @arg: args to be passed via registers and not physically mapped buffers
+  */
+ struct stratix10_svc_client_msg {
+ 	void *payload;
+ 	size_t payload_length;
++	void *payload_output;
++	size_t payload_length_output;
+ 	enum stratix10_svc_command_code command;
+ 	u64 arg[3];
+ };
 -- 
 2.25.1
 
