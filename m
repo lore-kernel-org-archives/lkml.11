@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C11CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69041CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiGKJVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
+        id S231802AbiGKJV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231876AbiGKJUs (ORCPT
+        with ESMTP id S231919AbiGKJUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA983550B8;
-        Mon, 11 Jul 2022 02:12:43 -0700 (PDT)
+        Mon, 11 Jul 2022 05:20:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFBA558E0;
+        Mon, 11 Jul 2022 02:12:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E684061148;
-        Mon, 11 Jul 2022 09:12:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05387C341CB;
-        Mon, 11 Jul 2022 09:12:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEEE16111F;
+        Mon, 11 Jul 2022 09:12:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4360C385A5;
+        Mon, 11 Jul 2022 09:12:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530762;
-        bh=+vTkH3RZDBI92uQCYAYfCPRyOw85ue/9OySuXaIhlos=;
+        s=korg; t=1657530765;
+        bh=83a72sjXNaJzb4ILacnxZowX5LjUNTxN6KSv30OSb0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ju5sM/yH1rPtHOxn382t8rivyUlauYbUvhbwgEYm1d1kW0Fx7nhSjwFMd3InuplDq
-         dNOxGUg4cliHdjIFQ7iSrNwHiPbjfUwsmD8Q/IbcHn1NQNy0r2dr0Vh0lwR014g3rA
-         uFJ9h1Kf593R8ivPzh4y10rVlzOFGUsexP7pZKok=
+        b=bLtvDCOmWiVpedQvrCiovvMocfsIRyCg47MtWfN6qEbnE/JnJJbWbbkB2+gUo3XBd
+         fXMG3toElnvVp9XCAurqAG8NUlqU9MWz2iY688TewwEk8vVu32lYYs2WaH8l4ymlTv
+         IM9DNgv7ZonuSmtUHAoIXa7Av8OHH/jaB5Y3PYF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Andrei Lalaev <andrey.lalaev@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 31/55] arm64: dts: imx8mp-evk: correct I2C3 pad settings
-Date:   Mon, 11 Jul 2022 11:07:19 +0200
-Message-Id: <20220711090542.681601764@linuxfoundation.org>
+Subject: [PATCH 5.10 32/55] pinctrl: sunxi: sunxi_pconf_set: use correct offset
+Date:   Mon, 11 Jul 2022 11:07:20 +0200
+Message-Id: <20220711090542.710329127@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -50,40 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Andrei Lalaev <andrey.lalaev@gmail.com>
 
-[ Upstream commit 0836de513ebaae5f03014641eac996290d67493d ]
+[ Upstream commit cd4c1e65a32afd003b08ad4aafe1e4d3e4e8e61b ]
 
-According to RM bit layout, BIT3 and BIT0 are reserved.
- 8  7   6   5   4   3  2 1  0
-PE HYS PUE ODE FSEL X  DSE  X
+Some Allwinner SoCs have 2 pinctrls (PIO and R_PIO).
+Previous implementation used absolute pin numbering and it was incorrect
+for R_PIO pinctrl.
+It's necessary to take into account the base pin number.
 
-Although function is not broken, we should not set reserved bit.
-
-Fixes: 5e4a67ff7f69 ("arm64: dts: imx8mp-evk: Add i2c3 support")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 90be64e27621 ("pinctrl: sunxi: implement pin_config_set")
+Signed-off-by: Andrei Lalaev <andrey.lalaev@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220525190423.410609-1-andrey.lalaev@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index c0663a6c8376..c016f5b7d24a 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -154,8 +154,8 @@
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+index be7f4f95f455..24c861434bf1 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -544,6 +544,8 @@ static int sunxi_pconf_set(struct pinctrl_dev *pctldev, unsigned pin,
+ 	struct sunxi_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
+ 	int i;
  
- 	pinctrl_i2c3: i2c3grp {
- 		fsl,pins = <
--			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c3
--			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c3
-+			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c2
-+			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c2
- 		>;
- 	};
- 
++	pin -= pctl->desc->pin_base;
++
+ 	for (i = 0; i < num_configs; i++) {
+ 		enum pin_config_param param;
+ 		unsigned long flags;
 -- 
 2.35.1
 
