@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2F79CCA480
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:56:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234170AbiGKJ4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:56:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
+        id S234049AbiGKJ4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234133AbiGKJ4M (ORCPT
+        with ESMTP id S234034AbiGKJ4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:56:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5BEB31C8;
-        Mon, 11 Jul 2022 02:26:35 -0700 (PDT)
+        Mon, 11 Jul 2022 05:56:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F997B31D9;
+        Mon, 11 Jul 2022 02:26:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0B2D61383;
-        Mon, 11 Jul 2022 09:26:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4618C34115;
-        Mon, 11 Jul 2022 09:26:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E140612E8;
+        Mon, 11 Jul 2022 09:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29020C34115;
+        Mon, 11 Jul 2022 09:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531593;
-        bh=kIuWGbz5DEODWD0dV/0NoRWJI6rMTuCyhXGaKzuwQ3I=;
+        s=korg; t=1657531587;
+        bh=FEfMHg6hOiOU9NuBqymi/4Nkwi5QgLNr/8rryIS5iF8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ze9IgzQHF7HmQIp5pZzA7TPZd40t08pIsQPzUPoHMwUUiXLd/lCo+StSD8E5iKXwj
-         TfSfePebUQ4SfIduEqF8ziPZqNzGBzfhYM0dkZfAitLfhhMLUlIEhquHUU1JTQHNS1
-         kDRSAUmGjPl33I2bM/AZyZ0GIbveHdUwG/52BoL8=
+        b=UdZo5tNev8AoZKuPpoxcwH9G1yj34OkDVn07hFuAnYoAcuvzJ4nH3i9ZVj64jzIGT
+         /KVpXZ32sYG2Ndjyw9wP8RE6UUlibo0AnzpCYzFapDGeJbpIpZqGhEruwg16wPbV06
+         HM4dXMZuegBlS0hvGoFKRG6TCmsk3BLDIWH7dyGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Helge Deller <deller@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 5.15 160/230] fbmem: Check virtual screen sizes in fb_set_var()
-Date:   Mon, 11 Jul 2022 11:06:56 +0200
-Message-Id: <20220711090608.599372121@linuxfoundation.org>
+        stable@vger.kernel.org, Guiling Deng <greens9@163.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.15 159/230] fbdev: fbmem: Fix logo center image dx issue
+Date:   Mon, 11 Jul 2022 11:06:55 +0200
+Message-Id: <20220711090608.570810128@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,40 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Helge Deller <deller@gmx.de>
+From: Guiling Deng <greens9@163.com>
 
-commit 6c11df58fd1ac0aefcb3b227f72769272b939e56 upstream.
+commit 955f04766d4e6eb94bf3baa539e096808c74ebfb upstream.
 
-Verify that the fbdev or drm driver correctly adjusted the virtual
-screen sizes. On failure report the failing driver and reject the screen
-size change.
+Image.dx gets wrong value because of missing '()'.
 
+If xres == logo->width and n == 1, image.dx = -16.
+
+Signed-off-by: Guiling Deng <greens9@163.com>
+Fixes: 3d8b1933eb1c ("fbdev: fbmem: add config option to center the bootup logo")
+Cc: stable@vger.kernel.org # v5.0+
 Signed-off-by: Helge Deller <deller@gmx.de>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: stable@vger.kernel.org # v5.4+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/video/fbdev/core/fbmem.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/video/fbdev/core/fbmem.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/drivers/video/fbdev/core/fbmem.c
 +++ b/drivers/video/fbdev/core/fbmem.c
-@@ -1020,6 +1020,16 @@ fb_set_var(struct fb_info *info, struct
- 	if (ret)
- 		return ret;
+@@ -514,7 +514,7 @@ static int fb_show_logo_line(struct fb_i
  
-+	/* verify that virtual resolution >= physical resolution */
-+	if (var->xres_virtual < var->xres ||
-+	    var->yres_virtual < var->yres) {
-+		pr_warn("WARNING: fbcon: Driver '%s' missed to adjust virtual screen size (%ux%u vs. %ux%u)\n",
-+			info->fix.id,
-+			var->xres_virtual, var->yres_virtual,
-+			var->xres, var->yres);
-+		return -EINVAL;
-+	}
-+
- 	if ((var->activate & FB_ACTIVATE_MASK) != FB_ACTIVATE_NOW)
- 		return 0;
- 
+ 		while (n && (n * (logo->width + 8) - 8 > xres))
+ 			--n;
+-		image.dx = (xres - n * (logo->width + 8) - 8) / 2;
++		image.dx = (xres - (n * (logo->width + 8) - 8)) / 2;
+ 		image.dy = y ?: (yres - logo->height) / 2;
+ 	} else {
+ 		image.dx = 0;
 
 
