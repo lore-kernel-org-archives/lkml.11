@@ -2,220 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229691AbiGKGaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        id S229738AbiGKGaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiGKGaM (ORCPT
+        with ESMTP id S229555AbiGKGaN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 02:30:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F29D615A
-        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:11 -0700 (PDT)
+        Mon, 11 Jul 2022 02:30:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2E695B3
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B3B6B80D75
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 086AFC34115;
-        Mon, 11 Jul 2022 06:30:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21225611E0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1DCCC34115;
+        Mon, 11 Jul 2022 06:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657521008;
-        bh=4dmm6fcCZk+sXewwMD07mRmlyFqgLm5LpNmD8IdAyU0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=KF2plprpEtGm8/TUgEsc6b9mggrBMvS7wHnt1mbYsBLxzgEmKXgyJnAytmJbk5Uvv
-         BeUM9FKSXHADn2FzfxwLQCfSrXY5614x8z2+AcE+43a7lxGCsM8euvtcUo7jpgh/6L
-         ruAdpOnE99ZdR7gYfSrNdRY2/sFvoqPxjjX/Uao0TXZ+r37z7JRUX8T52rYyo3lQS0
-         y2I/a+5IegXu7ii6fBURbtRrdf2h7bIwctSs9yoHwNjunX0TAz5q2fi/Au1hI6OIYy
-         ufG77qcq5Gz9pMCU+x9ddRXrrmcNKRvO5wWgADwL6UikS7OY/r4HD9VbVx6W8bzsdu
-         yLPVQJsqiljVw==
+        s=k20201202; t=1657521011;
+        bh=QJTLi8411aVXpB+pMG8RYZBgHCHone2O2BCCOD7IaaA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mGEaOqeQkCn4CMu5ESndBow0HiByXhu4OYot6xLZJfEklqxxP5j/3nEhy28IptNpJ
+         uHW/DLjgBMMVWMzBHyYJbkac7uX5AeXhcRrzc1MH20yaE5wBZsgVRhn1uBpfFnrnh5
+         df2eUBnMRMXF4TbQK46a1PnW2Hr5kYtdUygvpewbqI59B6bvfeg/vYEhjpQ7iM0ibQ
+         wRfgojryLN5U0kCSX/0Gp62Z+hhFp6nUmT+brSIxti+6WC+WEM8bZXUd1jmpD78FzQ
+         bmF4dcj9PR9sLfHts+PFCJcauz/nyGtprA3NWfSd2frjATXKsEjV5mBEzdp5ape6XP
+         j4PToKNGNpw8A==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Ohad Sharabi <osharabi@habana.ai>
-Subject: [PATCH 01/12] habanalabs: fixes to the poll-timeout macros
-Date:   Mon, 11 Jul 2022 09:29:52 +0300
-Message-Id: <20220711063003.3182795-1-ogabbay@kernel.org>
+Cc:     Tomer Tayar <ttayar@habana.ai>
+Subject: [PATCH 03/12] habanalabs/gaudi2: configure virtual MSI-X doorbell interface
+Date:   Mon, 11 Jul 2022 09:29:54 +0300
+Message-Id: <20220711063003.3182795-3-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220711063003.3182795-1-ogabbay@kernel.org>
+References: <20220711063003.3182795-1-ogabbay@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ohad Sharabi <osharabi@habana.ai>
+From: Tomer Tayar <ttayar@habana.ai>
 
-- use conventional internal macro variables (double underscore prefix)
-- adjust address casting
-- on register poll using ELBI use ELBI read rather than BAR read on
-  error condition
-- remove unused macro
+Due to a watchdog timer in the LBW path, writes to the MSI-X doorbell
+can return sporadic error responses.
+To work-around this issue, a virtual MSI-X doorbell on the HBW path is
+configured, using the MSI-X AXI slave interface in the PCIe controller.
+Upon an access to a configured HBW host address, the controller will
+generate MSI-X interrupt instead of treating the access as regular host
+memory access.
 
-Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+This patch allocates the dedicate host memory page, and communicate the
+address to F/W, so it will configure the relevant address match
+registers in the controller, and will use this address to generate MSI-X
+interrupts for F/W events.
+
+Following patches will handle other initiators in the device, to move
+them to use the virtual MSI-X doorbell.
+
+Signed-off-by: Tomer Tayar <ttayar@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/habanalabs.h | 119 +++++++++++++++-----
- 1 file changed, 90 insertions(+), 29 deletions(-)
+ drivers/misc/habanalabs/gaudi2/gaudi2.c       | 23 ++++++++++++++++---
+ drivers/misc/habanalabs/gaudi2/gaudi2P.h      |  5 ++++
+ drivers/misc/habanalabs/gaudi2/gaudi2_masks.h |  3 +++
+ 3 files changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 72cb12f2068a..3c51eaca521c 100644
---- a/drivers/misc/habanalabs/common/habanalabs.h
-+++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -2473,9 +2473,11 @@ void hl_wreg(struct hl_device *hdev, u32 reg, u32 val);
- /* Timeout should be longer when working with simulator but cap the
-  * increased timeout to some maximum
-  */
--#define hl_poll_timeout(hdev, addr, val, cond, sleep_us, timeout_us) \
-+#define hl_poll_timeout_common(hdev, addr, val, cond, sleep_us, timeout_us, elbi) \
- ({ \
- 	ktime_t __timeout; \
-+	u32 __elbi_read; \
-+	int __rc = 0; \
- 	if (hdev->pdev) \
- 		__timeout = ktime_add_us(ktime_get(), timeout_us); \
- 	else \
-@@ -2484,19 +2486,103 @@ void hl_wreg(struct hl_device *hdev, u32 reg, u32 val);
- 					(u64) HL_SIM_MAX_TIMEOUT_US)); \
- 	might_sleep_if(sleep_us); \
- 	for (;;) { \
--		(val) = RREG32(addr); \
-+		if (elbi) { \
-+			__rc = hl_pci_elbi_read(hdev, addr, &__elbi_read); \
-+			if (__rc) \
-+				break; \
-+			(val) = __elbi_read; \
-+		} else {\
-+			(val) = RREG32((u32)addr); \
-+		} \
- 		if (cond) \
- 			break; \
- 		if (timeout_us && ktime_compare(ktime_get(), __timeout) > 0) { \
--			(val) = RREG32(addr); \
-+			if (elbi) { \
-+				__rc = hl_pci_elbi_read(hdev, addr, &__elbi_read); \
-+				if (__rc) \
-+					break; \
-+				(val) = __elbi_read; \
-+			} else {\
-+				(val) = RREG32((u32)addr); \
-+			} \
- 			break; \
- 		} \
- 		if (sleep_us) \
- 			usleep_range((sleep_us >> 2) + 1, sleep_us); \
- 	} \
--	(cond) ? 0 : -ETIMEDOUT; \
-+	__rc ? __rc : ((cond) ? 0 : -ETIMEDOUT); \
- })
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index d9a85ea56f75..539cb88a88e4 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -2673,9 +2673,11 @@ static void gaudi2_scrub_arcs_dccm(struct hl_device *hdev)
  
-+#define hl_poll_timeout(hdev, addr, val, cond, sleep_us, timeout_us) \
-+		hl_poll_timeout_common(hdev, addr, val, cond, sleep_us, timeout_us, false)
-+
-+#define hl_poll_timeout_elbi(hdev, addr, val, cond, sleep_us, timeout_us) \
-+		hl_poll_timeout_common(hdev, addr, val, cond, sleep_us, timeout_us, true)
-+
-+/*
-+ * poll array of register addresses.
-+ * condition is satisfied if all registers values match the expected value.
-+ * once some register in the array satisfies the condition it will not be polled again,
-+ * this is done both for efficiency and due to some registers are "clear on read".
-+ * TODO: use read from PCI bar in other places in the code (SW-91406)
-+ */
-+#define hl_poll_reg_array_timeout_common(hdev, addr_arr, arr_size, expected_val, sleep_us, \
-+						timeout_us, elbi) \
-+({ \
-+	ktime_t __timeout; \
-+	u64 __elem_bitmask; \
-+	u32 __read_val;	\
-+	u8 __arr_idx;	\
-+	int __rc = 0; \
-+	\
-+	if (hdev->pdev) \
-+		__timeout = ktime_add_us(ktime_get(), timeout_us); \
-+	else \
-+		__timeout = ktime_add_us(ktime_get(),\
-+				min(((u64)timeout_us * 10), \
-+					(u64) HL_SIM_MAX_TIMEOUT_US)); \
-+	\
-+	might_sleep_if(sleep_us); \
-+	if (arr_size >= 64) \
-+		__rc = -EINVAL; \
-+	else \
-+		__elem_bitmask = BIT_ULL(arr_size) - 1; \
-+	for (;;) { \
-+		if (__rc) \
-+			break; \
-+		for (__arr_idx = 0; __arr_idx < (arr_size); __arr_idx++) {	\
-+			if (!(__elem_bitmask & BIT_ULL(__arr_idx)))	\
-+				continue;	\
-+			if (elbi) { \
-+				__rc = hl_pci_elbi_read(hdev, (addr_arr)[__arr_idx], &__read_val); \
-+				if (__rc) \
-+					break; \
-+			} else { \
-+				__read_val = RREG32((u32)(addr_arr)[__arr_idx]); \
-+			} \
-+			if (__read_val == (expected_val))	\
-+				__elem_bitmask &= ~BIT_ULL(__arr_idx);	\
-+		}	\
-+		if (__rc || (__elem_bitmask == 0)) \
-+			break; \
-+		if (timeout_us && ktime_compare(ktime_get(), __timeout) > 0) \
-+			break; \
-+		if (sleep_us) \
-+			usleep_range((sleep_us >> 2) + 1, sleep_us); \
-+	} \
-+	__rc ? __rc : ((__elem_bitmask == 0) ? 0 : -ETIMEDOUT); \
-+})
-+
-+#define hl_poll_reg_array_timeout(hdev, addr_arr, arr_size, expected_val, sleep_us, \
-+					timeout_us) \
-+	hl_poll_reg_array_timeout_common(hdev, addr_arr, arr_size, expected_val, sleep_us, \
-+						timeout_us, false)
-+
-+#define hl_poll_reg_array_timeout_elbi(hdev, addr_arr, arr_size, expected_val, sleep_us, \
-+					timeout_us) \
-+	hl_poll_reg_array_timeout_common(hdev, addr_arr, arr_size, expected_val, sleep_us, \
-+						timeout_us, true)
-+
- /*
-  * address in this macro points always to a memory location in the
-  * host's (server's) memory. That location is updated asynchronously
-@@ -2540,31 +2626,6 @@ void hl_wreg(struct hl_device *hdev, u32 reg, u32 val);
- 	(cond) ? 0 : -ETIMEDOUT; \
- })
+ static int gaudi2_late_init(struct hl_device *hdev)
+ {
++	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+ 	int rc;
  
--#define hl_poll_timeout_device_memory(hdev, addr, val, cond, sleep_us, \
--					timeout_us) \
--({ \
--	ktime_t __timeout; \
--	if (hdev->pdev) \
--		__timeout = ktime_add_us(ktime_get(), timeout_us); \
--	else \
--		__timeout = ktime_add_us(ktime_get(),\
--				min((u64)(timeout_us * 10), \
--					(u64) HL_SIM_MAX_TIMEOUT_US)); \
--	might_sleep_if(sleep_us); \
--	for (;;) { \
--		(val) = readl(addr); \
--		if (cond) \
--			break; \
--		if (timeout_us && ktime_compare(ktime_get(), __timeout) > 0) { \
--			(val) = readl(addr); \
--			break; \
--		} \
--		if (sleep_us) \
--			usleep_range((sleep_us >> 2) + 1, sleep_us); \
--	} \
--	(cond) ? 0 : -ETIMEDOUT; \
--})
--
- #define HL_USR_MAPPED_BLK_INIT(blk, base, sz) \
- ({ \
- 	struct user_mapped_block *p = blk; \
+-	rc = hl_fw_send_pci_access_msg(hdev, CPUCP_PACKET_ENABLE_PCI_ACCESS, 0x0);
++	rc = hl_fw_send_pci_access_msg(hdev, CPUCP_PACKET_ENABLE_PCI_ACCESS,
++					gaudi2->virt_msix_db_dma_addr);
+ 	if (rc) {
+ 		dev_err(hdev->dev, "Failed to enable PCI access from CPU\n");
+ 		return rc;
+@@ -2922,6 +2924,7 @@ static inline int gaudi2_get_non_zero_random_int(void)
+ 
+ static int gaudi2_sw_init(struct hl_device *hdev)
+ {
++	struct asic_fixed_properties *prop = &hdev->asic_prop;
+ 	struct gaudi2_device *gaudi2;
+ 	int i, rc;
+ 
+@@ -2982,6 +2985,14 @@ static int gaudi2_sw_init(struct hl_device *hdev)
+ 		goto free_cpu_accessible_dma_pool;
+ 	}
+ 
++	gaudi2->virt_msix_db_cpu_addr = hl_cpu_accessible_dma_pool_alloc(hdev, prop->pmmu.page_size,
++								&gaudi2->virt_msix_db_dma_addr);
++	if (!gaudi2->virt_msix_db_cpu_addr) {
++		dev_err(hdev->dev, "Failed to allocate DMA memory for virtual MSI-X doorbell\n");
++		rc = -ENOMEM;
++		goto free_cpu_accessible_dma_pool;
++	}
++
+ 	spin_lock_init(&gaudi2->hw_queues_lock);
+ 	spin_lock_init(&gaudi2->kdma_lock);
+ 
+@@ -2990,7 +3001,7 @@ static int gaudi2_sw_init(struct hl_device *hdev)
+ 							GFP_KERNEL | __GFP_ZERO);
+ 	if (!gaudi2->scratchpad_kernel_address) {
+ 		rc = -ENOMEM;
+-		goto free_cpu_accessible_dma_pool;
++		goto free_virt_msix_db_mem;
+ 	}
+ 
+ 	gaudi2_user_mapped_blocks_init(hdev);
+@@ -2999,15 +3010,18 @@ static int gaudi2_sw_init(struct hl_device *hdev)
+ 	gaudi2_user_interrupt_setup(hdev);
+ 
+ 	hdev->supports_coresight = true;
+-	hdev->asic_prop.supports_soft_reset = true;
+ 	hdev->supports_sync_stream = true;
+ 	hdev->supports_cb_mapping = true;
+ 	hdev->supports_wait_for_multi_cs = false;
+ 
++	prop->supports_soft_reset = true;
++
+ 	hdev->asic_funcs->set_pci_memory_regions(hdev);
+ 
+ 	return 0;
+ 
++free_virt_msix_db_mem:
++	hl_cpu_accessible_dma_pool_free(hdev, prop->pmmu.page_size, gaudi2->virt_msix_db_cpu_addr);
+ free_cpu_accessible_dma_pool:
+ 	gen_pool_destroy(hdev->cpu_accessible_dma_pool);
+ free_cpu_dma_mem:
+@@ -3022,8 +3036,11 @@ static int gaudi2_sw_init(struct hl_device *hdev)
+ 
+ static int gaudi2_sw_fini(struct hl_device *hdev)
+ {
++	struct asic_fixed_properties *prop = &hdev->asic_prop;
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+ 
++	hl_cpu_accessible_dma_pool_free(hdev, prop->pmmu.page_size, gaudi2->virt_msix_db_cpu_addr);
++
+ 	gen_pool_destroy(hdev->cpu_accessible_dma_pool);
+ 
+ 	hl_asic_dma_free_coherent(hdev, HL_CPU_ACCESSIBLE_MEM_SIZE, hdev->cpu_accessible_dma_mem,
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2P.h b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
+index dc0094a2a911..012413d7df9a 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2P.h
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2P.h
+@@ -439,6 +439,8 @@ struct dup_block_ctx {
+  *                             currently used for HBW QMAN writes which is
+  *                             redundant.
+  * @scratchpad_bus_address: scratchpad bus address
++ * @virt_msix_db_cpu_addr: host memory page for the virtual MSI-X doorbell.
++ * @virt_msix_db_dma_addr: bus address of the page for the virtual MSI-X doorbell.
+  * @dram_bar_cur_addr: current address of DRAM PCI bar.
+  * @hw_cap_initialized: This field contains a bit per H/W engine. When that
+  *                      engine is initialized, that bit is set by the driver to
+@@ -499,6 +501,9 @@ struct gaudi2_device {
+ 	void				*scratchpad_kernel_address;
+ 	dma_addr_t			scratchpad_bus_address;
+ 
++	void				*virt_msix_db_cpu_addr;
++	dma_addr_t			virt_msix_db_dma_addr;
++
+ 	u64				dram_bar_cur_addr;
+ 	u64				hw_cap_initialized;
+ 	u64				active_hw_arc;
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
+index 19ec1f130bef..3fd5cf4a8645 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2_masks.h
+@@ -132,4 +132,7 @@
+ #define ROT_MSS_HALT_RSB_MASK	BIT(1)
+ #define ROT_MSS_HALT_MRSB_MASK	BIT(2)
+ 
++#define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_SHIFT	0
++#define PCIE_DBI_MSIX_ADDRESS_MATCH_LOW_OFF_MSIX_ADDRESS_MATCH_EN_MASK	0x1
++
+ #endif /* GAUDI2_MASKS_H_ */
 -- 
 2.25.1
 
