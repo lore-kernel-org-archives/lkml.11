@@ -2,112 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A763C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B42C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 07:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230223AbiGKHvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 03:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35278 "EHLO
+        id S230011AbiGKHwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 03:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229866AbiGKHvl (ORCPT
+        with ESMTP id S229526AbiGKHwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 03:51:41 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A0D1B7A3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:51:40 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so2519008wmb.3
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 00:51:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ztvaz5BdnKGZMhPHdfgEZYHb0hAaDWz8do9AwzsiSBg=;
-        b=Hwn6nzpGX+T+LutaM8+KjYmqBSQV517VD113jCKqsTVABZpL3RajgVlzsBUtJOj6+w
-         4MEC0eMoLndBf/WUzEJ7yzPiCK1SWNCKgIu1M9hYuXO5BmJkIGbetDA8FrXCbRB72Iv8
-         cuGtRCIzhnji6qdtB8kjxdp0cHFvMmJ4n0mnOOT3LWt8AMxcvOZGxpsqvtuzWUCKuIMC
-         fFdzRXrnV0BOKOs3upAtIl7HIPMA9dScmdkiB7B+/S49RiMn5in2NNk8xfF7F3HOHyiq
-         5qfuoOVPIgj2+dKEiBbHEPrrp2a62s/B7gZFv9XINNIpZY787eCcGOnl4p2D5P4utq63
-         3Hng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ztvaz5BdnKGZMhPHdfgEZYHb0hAaDWz8do9AwzsiSBg=;
-        b=7FOrDmnL7RgPmr/Zn9+t+arn9CIaRtVIaArzCN5YbmG3KwAOghX0GPFDKaH0iK2BWe
-         SwlEogOGASLJkq2f5C/Ij4mYVAnmoqr7srhWNEwop762ewYJ3f0qAfyYBIiqoqzqifBC
-         +1lLknDQMN27TqqR4j0zL4bO0a4f7ptbuTGznE3WcfEHdIr/CrQ/6KqH9536R/ED9hIa
-         WrjkvfrxthvFFRQLIGd92aSzNXbEuRBoT6Hc4ROTOsZcj7Y08nqFdFLF3vT2BjIWLtLD
-         fh5LQGuuDVVZ5CPEdD20i2auDgb39kUepk7+jXl6Wcr18+X8y/GdiR3FivzbPzSJiikB
-         cjng==
-X-Gm-Message-State: AJIora+RQZZEWXXVZ8Uz4EkkzsUXLC7msLa0f4ugkVsBwjK+vZcoYpi/
-        GueJrO49fm3TGRe8bX0GPRM6pnmoQk9Cwg==
-X-Google-Smtp-Source: AGRyM1t2LVG3w5w5knczU+KZudV327hkRGwLX8FTdhh12km7FALGEq592+7HTWIKyz30zF/nq6jpkw==
-X-Received: by 2002:a05:600c:215a:b0:3a2:cf18:6dcc with SMTP id v26-20020a05600c215a00b003a2cf186dccmr14590732wml.53.1657525898761;
-        Mon, 11 Jul 2022 00:51:38 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id j5-20020adff545000000b0021d864d4461sm5112097wrp.83.2022.07.11.00.51.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 00:51:38 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 08:51:35 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, Wolfram Sang <wsa@kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        katie.morris@in-advantage.com
-Subject: Re: [PATCH v13 net-next 0/9] add support for VSC7512 control over SPI
-Message-ID: <YsvWh8YJGeJNbQFB@google.com>
-References: <20220705204743.3224692-1-colin.foster@in-advantage.com>
- <20220708200918.131c0950@kernel.org>
+        Mon, 11 Jul 2022 03:52:22 -0400
+Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C1C1C922;
+        Mon, 11 Jul 2022 00:52:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=7zyLGVcEIyQkC+gl1zpwEzMAKU5QvqQXdssCJTKoXVE=; b=WL1SOL694htlJ6V9kixrsLc3+l
+        nkMyBDfR9rX8pFnBzj16yzkxbOI5mDNEA88W49Rrh6H2+wX+1oe4XuFX5PqFpvZcoB05p64TvrQDq
+        LDQKKyhQa060vAMecHWOLaP1r64sTnAp4dL4iyIYKJ/scUwMl6LNarizhLn5+fkMOLvBa+DdPT4qn
+        MIGoJ60RTFIHjRnRvLvl7xgT0ab2CccVoO6Onov7mlznOlUjAyDsE7X5WRdx+35jeu+C7RtF6Cy8M
+        FpSYfp13IEh8x5zctziqSeDc/dl3Y3f8pQKLDMdgMgqAsOpLS6dBgNGAdbPKWVthzOPg/1neSg143
+        hUewiJbg==;
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1oAoDA-000Cc6-7p; Mon, 11 Jul 2022 09:52:08 +0200
+Received: from [2001:a61:2a49:8301:9e5c:8eff:fe01:8578]
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1oAoD9-000551-Rv; Mon, 11 Jul 2022 09:52:07 +0200
+Message-ID: <6b81cb4d-4080-188d-df7c-1529e55ddf7f@metafoo.de>
+Date:   Mon, 11 Jul 2022 09:52:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220708200918.131c0950@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v1 27/33] iio/drivers/sun4i_gpadc: Switch to new of
+ thermal API
+Content-Language: en-US
+To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
+        daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, khilman@baylibre.com, abailon@baylibre.com,
+        amitk@kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "moderated list:ARM/Allwinner sunXi SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Allwinner sunXi SoC support" 
+        <linux-sunxi@lists.linux.dev>
+References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
+ <20220710212423.681301-28-daniel.lezcano@linexp.org>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+In-Reply-To: <20220710212423.681301-28-daniel.lezcano@linexp.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.6/26597/Sun Jul 10 09:56:43 2022)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 08 Jul 2022, Jakub Kicinski wrote:
+On 7/10/22 23:24, Daniel Lezcano wrote:
+> The thermal OF code has a new API allowing to migrate the OF
+> initialization to a simpler approach.
+>
+> Use this new API.
+>
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+> ---
+>   drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
+>   1 file changed, 6 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+> index 2d393a4dfff6..7aebfd337871 100644
+> --- a/drivers/iio/adc/sun4i-gpadc-iio.c
+> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+> @@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+>   	return 0;
+>   }
+>   
+> -static int sun4i_gpadc_get_temp(void *data, int *temp)
+> +static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
+>   {
+> -	struct sun4i_gpadc_iio *info = data;
+> +	struct sun4i_gpadc_iio *info = tz->devdata;
+>   	int val, scale, offset;
+>   
+>   	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+> @@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
+>   	return 0;
+>   }
+>   
+> -static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
+> +static struct thermal_zone_device_ops sun4i_ts_tz_ops = {
+>   	.get_temp = &sun4i_gpadc_get_temp,
+>   };
+Why is the const removed? If the framework modifies the structure you 
+need a per device copy of the struct.
+>   
+> @@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
+>   	pm_runtime_enable(&pdev->dev);
+>   
+>   	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+> -		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
+> -							    0, info,
+> -							    &sun4i_ts_tz_ops);
+> +		info->tzd = thermal_of_zone_register(info->sensor_device,
+> +						     0, info,
+> +						     &sun4i_ts_tz_ops);
+>   		/*
+>   		 * Do not fail driver probing when failing to register in
+>   		 * thermal because no thermal DT node is found.
 
-> On Tue,  5 Jul 2022 13:47:34 -0700 Colin Foster wrote:
-> > The patch set in general is to add support for the VSC7512, and
-> > eventually the VSC7511, VSC7513 and VSC7514 devices controlled over
-> > SPI. Specifically this patch set enables pinctrl, serial gpio expander
-> > access, and control of an internal and an external MDIO bus.
-> 
-> Can this go into net-next if there are no more complains over the
-> weekend? Anyone still planning to review?
 
-As the subsystem with the fewest changes, I'm not sure why it would.
-
-I'd planed to route this in via MFD and send out a pull-request for
-other sub-system maintainers to pull from.
-
-If you would like to co-ordinate it instead, you'd be welcome to.
-However, I (and probably Linus) would need a succinct immutable branch
-to pull from.
-
-> Linus's ack on patch 6 and an MFD Ack from Lee would be great.
-
--- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
