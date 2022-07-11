@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CE9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230394AbiGKJNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58880 "EHLO
+        id S231400AbiGKJNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:13:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbiGKJNE (ORCPT
+        with ESMTP id S231337AbiGKJNG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:13:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D38232E9D8;
-        Mon, 11 Jul 2022 02:09:37 -0700 (PDT)
+        Mon, 11 Jul 2022 05:13:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B84E2F3BB;
+        Mon, 11 Jul 2022 02:09:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66239B80E5E;
-        Mon, 11 Jul 2022 09:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0D61C34115;
-        Mon, 11 Jul 2022 09:09:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76BF26115B;
+        Mon, 11 Jul 2022 09:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88EEAC34115;
+        Mon, 11 Jul 2022 09:09:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530575;
-        bh=xq8HCtW37IJxYLJS4TXRzEzTYs1HB5K7at8Nguj+mgY=;
+        s=korg; t=1657530577;
+        bh=NZfE0H/w5NIGJFcWdjQPXZinzAVGglJvOVXLLc32h1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kWOEoEaStpFIq9rj9Otfcp6P4NWsnmxuZIJrWazxS9+IOMnKoncecNkibQ4andFuF
-         Aws1iww4jRKbAXYS/HY67J1RBNLf6oHcOvLLQeBY38ZMIyu8nyWPMapK/EzT9IAHmE
-         5rtq2J2Hi7m/w5X3EZjBihE4K4DHGjm1v2EFIwLY=
+        b=RmFclwm1L86PTEKxh9ZMAo7mKodTjndzDpJHhgOJdUzuhFmdcs1J8zY3yBdByb6Bq
+         nYyvEY1xBqchXqb+lB0IDMp2Qhb1vkZh9yw0SB9xzSM3RksspQwDhKuehSjKCIXnPR
+         IH52g+BYMkPInmvgigzr3ygnLk9EFVl5axE3RFhw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        stable@vger.kernel.org, Nick Child <nnac123@linux.ibm.com>,
+        Brian King <brking@linux.vnet.ibm.com>,
+        Rick Lindsley <ricklind@us.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 18/31] ARM: at91: pm: use proper compatible for sama5d2s rtc
-Date:   Mon, 11 Jul 2022 11:06:57 +0200
-Message-Id: <20220711090538.386364976@linuxfoundation.org>
+Subject: [PATCH 4.19 19/31] ibmvnic: Properly dispose of all skbs during a failover.
+Date:   Mon, 11 Jul 2022 11:06:58 +0200
+Message-Id: <20220711090538.414969149@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -49,34 +51,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Rick Lindsley <ricklind@us.ibm.com>
 
-[ Upstream commit ddc980da8043779119acaca106c6d9b445c9b65b ]
+[ Upstream commit 1b18f09d31cfa7148df15a7d5c5e0e86f105f7d1 ]
 
-Use proper compatible strings for SAMA5D2's RTC IPs. This is necessary
-for configuring wakeup sources for ULP1 PM mode.
+During a reset, there may have been transmits in flight that are no
+longer valid and cannot be fulfilled.  Resetting and clearing the
+queues is insufficient; each skb also needs to be explicitly freed
+so that upper levels are not left waiting for confirmation of a
+transmit that will never happen.  If this happens frequently enough,
+the apparent backlog will cause TCP to begin "congestion control"
+unnecessarily, culminating in permanently decreased throughput.
 
-Fixes: d7484f5c6b3b ("ARM: at91: pm: configure wakeup sources for ULP1 mode")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220523092421.317345-2-claudiu.beznea@microchip.com
+Fixes: d7c0ef36bde03 ("ibmvnic: Free and re-allocate scrqs when tx/rx scrqs change")
+Tested-by: Nick Child <nnac123@linux.ibm.com>
+Reviewed-by: Brian King <brking@linux.vnet.ibm.com>
+Signed-off-by: Rick Lindsley <ricklind@us.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-at91/pm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 21bfe9b6e16a..3ba0c6c560d8 100644
---- a/arch/arm/mach-at91/pm.c
-+++ b/arch/arm/mach-at91/pm.c
-@@ -95,7 +95,7 @@ static const struct wakeup_source_info ws_info[] = {
- 
- static const struct of_device_id sama5d2_ws_ids[] = {
- 	{ .compatible = "atmel,sama5d2-gem",		.data = &ws_info[0] },
--	{ .compatible = "atmel,at91rm9200-rtc",		.data = &ws_info[1] },
-+	{ .compatible = "atmel,sama5d2-rtc",		.data = &ws_info[1] },
- 	{ .compatible = "atmel,sama5d3-udc",		.data = &ws_info[2] },
- 	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
- 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index ae3eea4a4213..1463cf4321a8 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4691,6 +4691,15 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter)
+ 			release_sub_crqs(adapter, 0);
+ 			rc = init_sub_crqs(adapter);
+ 		} else {
++			/* no need to reinitialize completely, but we do
++			 * need to clean up transmits that were in flight
++			 * when we processed the reset.  Failure to do so
++			 * will confound the upper layer, usually TCP, by
++			 * creating the illusion of transmits that are
++			 * awaiting completion.
++			 */
++			clean_tx_pools(adapter);
++
+ 			rc = reset_sub_crq_queues(adapter);
+ 		}
+ 	} else {
 -- 
 2.35.1
 
