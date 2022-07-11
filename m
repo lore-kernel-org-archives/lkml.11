@@ -2,84 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25449C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:39:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C2B4C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:39:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230344AbiGKIjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:39:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46534 "EHLO
+        id S229735AbiGKIjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbiGKIib (ORCPT
+        with ESMTP id S230456AbiGKIjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:38:31 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3626221837
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:38:01 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id v14so6019095wra.5
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:38:01 -0700 (PDT)
+        Mon, 11 Jul 2022 04:39:19 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67A0222BE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:38:22 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id be14-20020a05600c1e8e00b003a04a458c54so2582722wmb.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:38:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=o8pB0WCFFerRUHBjDvUy3qhRaoM3S8BY8gjio25xw3I=;
-        b=rmoZZEeYDmDhNmztEBdG5OBsjuefUSqGUluPr7G4LlMrGyneaBKfc3zaAripcWP4LM
-         i6IQdHu0MI3gPsI0u6r6G8VblscY5gC2P/tX/xIHVvFebStGqA5YMrmrVewgleKNMqiR
-         tBTfvnrzx1Hm24Iv4y3XugvBVkRot1DBcS2ePGhwKe7HZmbOdeXpIOlDNymiSBXzGo0s
-         kcr+cNYSzOhzWgB4MGNevdjy3k8ZaRg11/5nO422Y9zyBXWFhNmRnjDrXpZZUaHNvHkC
-         R1MfTiZJq11Uer0c6kR2mre3u343nUEkTkmLIXPY6iF63M3RYFlsRfV0crZs0O1SSuDM
-         1alQ==
+        bh=Kgo58hYFJMv0Dv334lipPvuc1y1O+OqlmbGXxQSTx84=;
+        b=K8QZKZgydQK0fXlg54LgQ12ser5eS7Q8wd5H94r6dkqIc0tbXKk53fkUAtZs7z7Tq6
+         tTkGPJbzjvV0G5G6DXlsjA0m6eWg4DDVcXeQPjVv6vAoDl44uOSXhMsNkKNWndb+oY0X
+         eYNeBnkeOu2/9vDJummfHTru7bzQXMnzB5tKzxN9GfTqf+Oi5kGEdbltWyhtVA/nZ5Iv
+         WJz0diNVvFyp9D2/vn5h5wLZdJlsQtrBNWIWvWAp6UbohHZnqwTA/98syJTO/zU4MIHT
+         b9ZI3BiqXMh3E7ST6/grY8HLKCqChVKhkMcuGp6Z6GjD+XgGJ6qvBpZTlD2t4XinimGp
+         EnBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=o8pB0WCFFerRUHBjDvUy3qhRaoM3S8BY8gjio25xw3I=;
-        b=HYx/AynDW8dBYwx4zc80kWMUyIqWHYuiwrmTkOg+EWKBITFWyLDHE07njbX+SzSNA6
-         t5H+Pqbrijh8UUiJnpnAwvhR9AmKfyZmvoPwQ7QprJFtGZKh/+l1QgAdaoTScFpTq7Wd
-         IQDbhvuGObUiVGY76zp4CdyYEwB1RLAJYb/d8kZ09hQ1TzUVavjgH4kd5wj53ngZTi+7
-         SiQ5QzPfWpUXGcBbAvy/9mVu357sT+nfwq5wqd2ZtEAthM58D+ztkHnY1Vo9YioZtMBC
-         P7lZ+UrsxSxnP+999VBasb4peUGqDcL6WAC8DJHgVDos6X+9/xHvq+2zLOLpYvSPK6YC
-         0v3g==
-X-Gm-Message-State: AJIora/Knqrz6fWttzEp/0MS2LT2jewS4WnOfrvk9uUzgEu773tJ9E9A
-        tgOY+/3/0YSCfwhChSs2EqfHR2YSU3T2Fw==
-X-Google-Smtp-Source: AGRyM1uRQwe3P0Crn3A+6fjmmX8oqa98UuwFRdclzV4Tuf1SBY0SIHU4yfCTKS3LMr2VG0aEt2jzwQ==
-X-Received: by 2002:a05:6000:617:b0:21d:9873:bbf4 with SMTP id bn23-20020a056000061700b0021d9873bbf4mr10189561wrb.389.1657528679669;
-        Mon, 11 Jul 2022 01:37:59 -0700 (PDT)
+        bh=Kgo58hYFJMv0Dv334lipPvuc1y1O+OqlmbGXxQSTx84=;
+        b=UhjF28ON+knPH2H97AJhulK1OuIdWu4+2WxaRLq4mAn9j6fpDze+eYe64TC/8KfRu/
+         yZJyEkKalGJQPw+sWbAhjUjzNt3q48k8LWKy5bolHIk5W80kXMQIqGNXWYJmQKCiutAU
+         ydZVZJLC76TWg1idcyBNYlizCtgFTjHaCKgsUUgSE+8v4oEHiGg6SFsidaitJIgLc9m2
+         Udju/GGBaVL1GItanrzvu/RYYkBPqnJ+Eq4JmMBdoKhaA5hcfy5iAzMgCkT1p4vp6zaM
+         GVzVRtVfuFmK2tPxWkEVY5+kD794NOjLp6ONYe7xkeFXfalQMTvOcxkhW4WxLJNEOXnS
+         7QjQ==
+X-Gm-Message-State: AJIora/cR7s4iYkgM/m+/CEKA/TsXZ5vkpFeYXU3T40CsGwaDk4JTdW/
+        Ey3z0uZoim3PCej0j40AcJ4TGM/FdXajKA==
+X-Google-Smtp-Source: AGRyM1tll8h9ClZT0BKRzXJTL8n72YZiTNj7I0xCeHV15MfD2ops0UsjrKo/4GklacsIdmqhbpeNig==
+X-Received: by 2002:a1c:7703:0:b0:3a2:d01c:c4e9 with SMTP id t3-20020a1c7703000000b003a2d01cc4e9mr15000947wmi.200.1657528701322;
+        Mon, 11 Jul 2022 01:38:21 -0700 (PDT)
 Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id h17-20020a05600c351100b003973ea7e725sm12793308wmq.0.2022.07.11.01.37.58
+        by smtp.gmail.com with ESMTPSA id g6-20020a5d64e6000000b0021d887f9468sm5146668wri.25.2022.07.11.01.38.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 01:37:59 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 09:37:57 +0100
+        Mon, 11 Jul 2022 01:38:20 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 09:38:19 +0100
 From:   Lee Jones <lee.jones@linaro.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-kernel@vger.kernel.org, Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 09/11] mfd: intel_soc_pmic_bxtwc: Use sysfs_emit()
- instead of sprintf()
-Message-ID: <YsvhZbqgekY9lHTe@google.com>
+Subject: Re: [PATCH v2 10/11] mfd: intel_soc_pmic_bxtwc: Drop unneeded casting
+Message-ID: <YsvheyLSWVrCiHLE@google.com>
 References: <20220628221747.33956-1-andriy.shevchenko@linux.intel.com>
- <20220628221747.33956-9-andriy.shevchenko@linux.intel.com>
+ <20220628221747.33956-10-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220628221747.33956-9-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20220628221747.33956-10-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On Wed, 29 Jun 2022, Andy Shevchenko wrote:
 
-> sysfs_emit() is preferred over sprintf() when formatting the value to be
-> returned to user space in show() functions, because it knows about sysfs
-> buffer specifics and has sanity checks.
+> The casting from size_t to ssize_t is not needed in addr_store(),
+> drop it.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 > ---
 > v2: added tag (Lee)
 > 
->  drivers/mfd/intel_soc_pmic_bxtwc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/mfd/intel_soc_pmic_bxtwc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Applied, thanks.
 
