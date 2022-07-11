@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D643C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61C75C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:27:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232426AbiGKJ1N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54928 "EHLO
+        id S232347AbiGKJ10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232193AbiGKJZa (ORCPT
+        with ESMTP id S232285AbiGKJ0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:25:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 190AC3C16B;
-        Mon, 11 Jul 2022 02:15:23 -0700 (PDT)
+        Mon, 11 Jul 2022 05:26:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DBC6053D;
+        Mon, 11 Jul 2022 02:15:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E72B61226;
-        Mon, 11 Jul 2022 09:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB432C36AE2;
-        Mon, 11 Jul 2022 09:15:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20C31B80E74;
+        Mon, 11 Jul 2022 09:15:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 636BDC341CB;
+        Mon, 11 Jul 2022 09:15:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530922;
-        bh=VPZKuoyCmG6wEttXmpKkWoqkMqKHAQupFqKBA0qKEA4=;
+        s=korg; t=1657530924;
+        bh=4WZcDCsFE9fpCFpZDFTLUsccbZ30dyi6tyVEhn+pBDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sOj5P1uzD/2dzj8ii78QzFVk37JHVaPjSjltRFwkgizPqVg4P+uYoPPs8/kEFV6W/
-         TUMICy2xUhLbsT5C37azwGo0g5bZFCQIFhIWSXHV04KGpfVUfXM4VSG7bnl+2PMHyR
-         j/q+eGs7KI0Zgy1C4bov/K8XQwB+F/oPtOrQIhwY=
+        b=krFgbsDpY/UniGQpiEkABPmpalTYOkb0xXMkmVHlcV8CP9MZv0P43h08zoQ9dLYXR
+         JeNgzvAJkCMXlarzjtjl8cxmIPeVaVw/yRiQZ8B2ATGVxBZFn9GVd9GHLIVphUc4jG
+         wJdtgv3QYNH9hNJEEHeIWvbzYRJ7qpLmeb2ZEsr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
-        Alison Schofield <alison.schofield@intel.com>
-Subject: [PATCH 5.18 031/112] cxl/mbox: Use __le32 in get,set_lsa mailbox structures
-Date:   Mon, 11 Jul 2022 11:06:31 +0200
-Message-Id: <20220711090550.450548703@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Jan Engelhardt <jengelh@inai.de>
+Subject: [PATCH 5.18 004/112] ALSA: cs46xx: Fix missing snd_card_free() call at probe error
+Date:   Mon, 11 Jul 2022 11:06:04 +0200
+Message-Id: <20220711090549.674639067@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -48,64 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alison Schofield <alison.schofield@intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 8a66487506161dbc1d22fd154d2de0244e232040 upstream.
+commit c5e58c4545a69677d078b4c813b5d10d3481be9c upstream.
 
-CXL specification defines these as little endian.
+The previous cleanup with devres may lead to the incorrect release
+orders at the probe error handling due to the devres's nature.  Until
+we register the card, snd_card_free() has to be called at first for
+releasing the stuff properly when the driver tries to manage and
+release the stuff via card->private_free().
 
-Fixes: 60b8f17215de ("cxl/pmem: Translate NVDIMM label commands to CXL label commands")
-Reported-by: Dan Williams <dan.j.williams@intel.com>
-Signed-off-by: Alison Schofield <alison.schofield@intel.com>
-Link: https://lore.kernel.org/r/20220225221456.1025635-1-alison.schofield@intel.com
-Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+This patch fixes it by calling snd_card_free() manually on the error
+from the probe callback.
+
+Fixes: 5bff69b3645d ("ALSA: cs46xx: Allocate resources with device-managed APIs")
+Cc: <stable@vger.kernel.org>
+Reported-and-tested-by: Jan Engelhardt <jengelh@inai.de>
+Link: https://lore.kernel.org/r/p2p1s96o-746-74p4-s95-61qo1p7782pn@vanv.qr
+Link: https://lore.kernel.org/r/20220705152336.350-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/cxl/cxlmem.h |    8 ++++----
- drivers/cxl/pmem.c   |    6 +++---
- 2 files changed, 7 insertions(+), 7 deletions(-)
+ sound/pci/cs46xx/cs46xx.c |   22 +++++++++++++---------
+ 1 file changed, 13 insertions(+), 9 deletions(-)
 
---- a/drivers/cxl/cxlmem.h
-+++ b/drivers/cxl/cxlmem.h
-@@ -252,13 +252,13 @@ struct cxl_mbox_identify {
- } __packed;
+--- a/sound/pci/cs46xx/cs46xx.c
++++ b/sound/pci/cs46xx/cs46xx.c
+@@ -74,36 +74,36 @@ static int snd_card_cs46xx_probe(struct
+ 	err = snd_cs46xx_create(card, pci,
+ 				external_amp[dev], thinkpad[dev]);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	card->private_data = chip;
+ 	chip->accept_valid = mmap_valid[dev];
+ 	err = snd_cs46xx_pcm(chip, 0);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #ifdef CONFIG_SND_CS46XX_NEW_DSP
+ 	err = snd_cs46xx_pcm_rear(chip, 1);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	err = snd_cs46xx_pcm_iec958(chip, 2);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #endif
+ 	err = snd_cs46xx_mixer(chip, 2);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ #ifdef CONFIG_SND_CS46XX_NEW_DSP
+ 	if (chip->nr_ac97_codecs ==2) {
+ 		err = snd_cs46xx_pcm_center_lfe(chip, 3);
+ 		if (err < 0)
+-			return err;
++			goto error;
+ 	}
+ #endif
+ 	err = snd_cs46xx_midi(chip, 0);
+ 	if (err < 0)
+-		return err;
++		goto error;
+ 	err = snd_cs46xx_start_dsp(chip);
+ 	if (err < 0)
+-		return err;
++		goto error;
  
- struct cxl_mbox_get_lsa {
--	u32 offset;
--	u32 length;
-+	__le32 offset;
-+	__le32 length;
- } __packed;
+ 	snd_cs46xx_gameport(chip);
  
- struct cxl_mbox_set_lsa {
--	u32 offset;
--	u32 reserved;
-+	__le32 offset;
-+	__le32 reserved;
- 	u8 data[];
- } __packed;
+@@ -117,11 +117,15 @@ static int snd_card_cs46xx_probe(struct
  
---- a/drivers/cxl/pmem.c
-+++ b/drivers/cxl/pmem.c
-@@ -108,8 +108,8 @@ static int cxl_pmem_get_config_data(stru
- 		return -EINVAL;
+ 	err = snd_card_register(card);
+ 	if (err < 0)
+-		return err;
++		goto error;
  
- 	get_lsa = (struct cxl_mbox_get_lsa) {
--		.offset = cmd->in_offset,
--		.length = cmd->in_length,
-+		.offset = cpu_to_le32(cmd->in_offset),
-+		.length = cpu_to_le32(cmd->in_length),
- 	};
+ 	pci_set_drvdata(pci, card);
+ 	dev++;
+ 	return 0;
++
++ error:
++	snd_card_free(card);
++	return err;
+ }
  
- 	rc = cxl_mbox_send_cmd(cxlds, CXL_MBOX_OP_GET_LSA, &get_lsa,
-@@ -139,7 +139,7 @@ static int cxl_pmem_set_config_data(stru
- 		return -ENOMEM;
- 
- 	*set_lsa = (struct cxl_mbox_set_lsa) {
--		.offset = cmd->in_offset,
-+		.offset = cpu_to_le32(cmd->in_offset),
- 	};
- 	memcpy(set_lsa->data, cmd->in_buf, cmd->in_length);
- 
+ static struct pci_driver cs46xx_driver = {
 
 
