@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6B1CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3117CCCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbiGKPun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        id S231168AbiGKPuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGKPul (ORCPT
+        with ESMTP id S229530AbiGKPum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:50:41 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FCB95A467
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:50:39 -0700 (PDT)
+        Mon, 11 Jul 2022 11:50:42 -0400
+Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6BA777A53
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:50:40 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by xavier.telenet-ops.be with bizsmtp
-        id trqd2700e4C55Sk01rqd4B; Mon, 11 Jul 2022 17:50:38 +0200
+        by andre.telenet-ops.be with bizsmtp
+        id trqe2700J4C55Sk01rqe5Y; Mon, 11 Jul 2022 17:50:38 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgD-0036wz-AP; Mon, 11 Jul 2022 17:50:37 +0200
+        id 1oAvgD-0036xI-Rt; Mon, 11 Jul 2022 17:50:37 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgC-006shN-T7; Mon, 11 Jul 2022 17:50:36 +0200
+        id 1oAvgD-006siC-6A; Mon, 11 Jul 2022 17:50:37 +0200
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Helge Deller <deller@gmx.de>
 Cc:     Michael Schmitz <schmitzmic@gmail.com>,
@@ -33,68 +33,57 @@ Cc:     Michael Schmitz <schmitzmic@gmail.com>,
         linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 03/10] video: fbdev: atari: Fix inverse handling
-Date:   Mon, 11 Jul 2022 17:50:27 +0200
-Message-Id: <b24ff02cb947e5b3a00ca74268db1b504d7346ba.1657554353.git.geert@linux-m68k.org>
+Subject: [PATCH 10/10] [RFC] video: fbdev: atari: Remove backward bug-compatibility
+Date:   Mon, 11 Jul 2022 17:50:34 +0200
+Message-Id: <52d52566a80bfd00acdcfc28a24799d3fbf638f6.1657554353.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1657554353.git.geert@linux-m68k.org>
 References: <cover.1657554353.git.geert@linux-m68k.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, the "inverse" option does not do anything, as it just sets a
-flag, which is further unused.
+As of v2.1.0, falcon_decode_var() contains a quirk to fix a rounding
+error, as explained by Günther Kelleter on Fri, 30 Aug 1996:
 
-Fix this by calling fb_invert_cmaps() instead, like other drivers do.
-As this only affects the console colormap, this does not affect X.
-Update the documentation to match the actual behavior.
+    This diff removes the now obsolete Falcon video option "pwrsave", and
+    fixes a rounding error that is triggered by the resolution switching X
+    server (those who use the pixel clock value 39722 in their /etc/fb.modes
+    should change it to 39721).
+
+However, this causes the modified video mode returned by
+falcon_decode_var() to not match the video mode returned by
+falcon_encode_var().  Fix this by dropping the quirk.
+
+Unfortunately /etc/fb.modes in fbset was never updated, so the
+"640x480-60" mode still contains the wrong pixclock.
+Hence this change may introduce a regression.
 
 Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- Documentation/m68k/kernel-options.rst | 4 ++--
- drivers/video/fbdev/atafb.c           | 4 +---
- 2 files changed, 3 insertions(+), 5 deletions(-)
+Any comments?
+---
+ drivers/video/fbdev/atafb.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/Documentation/m68k/kernel-options.rst b/Documentation/m68k/kernel-options.rst
-index cabd9419740d5ada..2008a20b43295bd5 100644
---- a/Documentation/m68k/kernel-options.rst
-+++ b/Documentation/m68k/kernel-options.rst
-@@ -367,8 +367,8 @@ activated by a "external:" sub-option.
- 4.1.2) inverse
- --------------
- 
--Invert the display. This affects both, text (consoles) and graphics
--(X) display. Usually, the background is chosen to be black. With this
-+Invert the display. This affects only text consoles.
-+Usually, the background is chosen to be black. With this
- option, you can make the background white.
- 
- 4.1.3) font
 diff --git a/drivers/video/fbdev/atafb.c b/drivers/video/fbdev/atafb.c
-index 172ef547ff6f4883..39c3b860a797d4bc 100644
+index e8b178e732e2c785..2bc4089865e60ac2 100644
 --- a/drivers/video/fbdev/atafb.c
 +++ b/drivers/video/fbdev/atafb.c
-@@ -236,8 +236,6 @@ static int *MV300_reg = MV300_reg_8bit;
- #endif /* ATAFB_EXT */
+@@ -1008,10 +1008,6 @@ static int falcon_decode_var(struct fb_var_screeninfo *var,
+ 	else if (yres_virtual < yres)
+ 		yres_virtual = yres;
  
- 
--static int inverse;
+-	/* backward bug-compatibility */
+-	if (var->pixclock > 1)
+-		var->pixclock -= 1;
 -
- /*
-  * struct fb_ops {
-  *	* open/release and usage marking
-@@ -2971,7 +2969,7 @@ static int __init atafb_setup(char *options)
- 			default_par = temp;
- 			mode_option = this_opt;
- 		} else if (!strcmp(this_opt, "inverse"))
--			inverse = 1;
-+			fb_invert_cmaps();
- 		else if (!strncmp(this_opt, "hwscroll_", 9)) {
- 			hwscroll = simple_strtoul(this_opt + 9, NULL, 10);
- 			if (hwscroll < 0)
+ 	par->hw.falcon.line_width = bpp * xres / 16;
+ 	par->hw.falcon.line_offset = bpp * (xres_virtual - xres) / 16;
+ 
 -- 
 2.25.1
 
