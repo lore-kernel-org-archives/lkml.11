@@ -2,207 +2,684 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 253D3C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86E86C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:50:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233740AbiGKJuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S233766AbiGKJuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiGKJtT (ORCPT
+        with ESMTP id S233847AbiGKJtV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:49:19 -0400
-Received: from JPN01-OS0-obe.outbound.protection.outlook.com (mail-os0jpn01on2082.outbound.protection.outlook.com [40.107.113.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D9FACEDB
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 02:24:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HZnitXzwBY1+p9K0EpCMWCzc4f6dzuYBkUjhbHljz5s82VyXaXvK/l3zfyewy/+I3U4GXZhtj8zacebuEvJhYz1wsAvz1lfWba55lJsfzyE/Re1SVU5hln6EHPSsdo+DapMRS4y6o9Kp63qC6rPDtAKgFXb2sWX3Xa6kxvs7x+CsdyGpy9KIbUz6B8UYRzPEsy7M56PwCcuN0MovrKtgZd3YhF8dsspFmeyTZquyfuIrXCUJV0H1JB6r++61Vbq+ODDg/Aetx/WKvxZ33GQyqGOdgtCDa025HLNEmTOp2KlRuyneXcvh1Z+2Ai5Mj6ehCjomZbLaLNSXTqEn9chDTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Nh9g7t/UyyqVINQfTmR3betTWGqYlS8VgjUcNSawREc=;
- b=BxJDxDGo7d/HpCR+xNecL7AFHJLBJggKJCiXZLxiCOIxpohXwewUxLsUP2jQN84IhAYYx3BgAk6YooPIzCZ0mxWqYRkxP1eJKBKKBrq2/SR52p2HekEP6JK7SWbtOGjJmLxRlN+ZLNtKUcnaudd1euzx7Gkr43p6xlEWhgExj2EXcWY9IKgjXUdfpY/yNDYB1oo9xUj5JeRi/8rd3PXumShwZKbV9qI0JHX7hC0+4ZVqvOK7+63tN2TrKzn7fgA4kqNWyR9J63cV3JLP/MbbJ9KBiUONtNk0GCDtDqD1ULPAD16eveIQ+I76kJGGCtRy+pBGTWYNAiIha1LjeeI76A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nec.com; dmarc=pass action=none header.from=nec.com; dkim=pass
- header.d=nec.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nec.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Nh9g7t/UyyqVINQfTmR3betTWGqYlS8VgjUcNSawREc=;
- b=ewTzW+8LdNPySv7NFjCuXe8Y/lko4nmBDANmm292782JdaGrGbskgw/6jXhXQVJCRoBNCJeBo5FjYPImmx3bsMTZKJXejYscYIcOAAS16+X3cfmdKkewx9s5TVIUM5m7tzx/PIDA2lpgayX9TDunV0wVdfrJHmkyLAdQFIpeK74=
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com (2603:1096:400:13c::10)
- by OSBPR01MB3797.jpnprd01.prod.outlook.com (2603:1096:604:43::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Mon, 11 Jul
- 2022 09:24:01 +0000
-Received: from TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::5d07:3dbc:2b8c:d836]) by TYWPR01MB8591.jpnprd01.prod.outlook.com
- ([fe80::5d07:3dbc:2b8c:d836%7]) with mapi id 15.20.5417.026; Mon, 11 Jul 2022
- 09:24:01 +0000
-From:   =?utf-8?B?SE9SSUdVQ0hJIE5BT1lBKOWggOWPo+OAgOebtOS5nyk=?= 
-        <naoya.horiguchi@nec.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-CC:     Naoya Horiguchi <naoya.horiguchi@linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [mm-unstable PATCH v5 4/8] mm, hwpoison: make unpoison aware of
- raw error info in hwpoisoned hugepage
-Thread-Topic: [mm-unstable PATCH v5 4/8] mm, hwpoison: make unpoison aware of
- raw error info in hwpoisoned hugepage
-Thread-Index: AQHYlPUoUwdWWwIys0CRkgeP8Ka/g6145f0A
-Date:   Mon, 11 Jul 2022 09:24:01 +0000
-Message-ID: <20220711092400.GA2741993@hori.linux.bs1.fc.nec.co.jp>
-References: <20220708053653.964464-1-naoya.horiguchi@linux.dev>
- <20220708053653.964464-5-naoya.horiguchi@linux.dev>
- <3c66e7f6-e499-9802-409a-a32404fc87cc@huawei.com>
-In-Reply-To: <3c66e7f6-e499-9802-409a-a32404fc87cc@huawei.com>
-Accept-Language: ja-JP, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nec.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 939af9f6-e6ee-4df4-11c8-08da631f17b2
-x-ms-traffictypediagnostic: OSBPR01MB3797:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ebtji+ZD3OmGkY4OZJIWuJZFKGeOCgnQgWY3NAwZm/+fbvK52dvcyjVlbHOa14I47UtsDRdRd9mzOBt0bIVBunSXbBFghs4pJnK1ZvQI8hrURNEJj/x86gdGqnFSHk3WbH3OcBXXUy5DFH2CA44WCInIoQ0ELULSL2Qi2IYrjCAW0+xjkzBOxqSR9Zxi1bmMz72OwJkm8KAndIvQOBSXPrJNN3K6tM7zVUrHUj16T1qLqrJLLbR37A5yUkfQ8Yl4d129UU+puVLBCL/5ZS/Guhucxnur3pk++yIKa2qdtbYMIgTJ6o9fqLXh2DMIU++GRI6KwnyEde1Gp+AHrTp5Ct/BawqySCnSYjO83gKERvgs1j9/idNshCvWyyYkGbQ2IpMQdC5Kj1RveAp7GQqIFSIC8x7oeBMYi7J0XR43639/WYurHd0bSUGyy1i29zm/v/ZrXNcIhnLbojm0kyhnYxydzfaE+47X+EsZIYP4gjp+5WWfT2cXPwTsYv6DppQ4pMv1OP8xSMd+jKm9az0uKnxFv0WHZjs9k4TY3J8Uh6kqb9zf2Gi3ed/MD4eA+LV9q6RGRxkVsRjrp1g6HxVLJpdcI3/V1tH6eTr5D5JPjEbUmg58NZKLMrPIhfMls2BRe2Zed9VdRmXuopV3pyLUhDAYaTPxFJ2buwRFAyMFy7SgydU2VPFcJrhfwelTcZuwtQM3eYGO0d/rNdZEx5cyGrPlXK9t+vPENicLEH477DD5+kEDDne7kH6W6bfLO5b6VWBNLsjCVmuBpAvGGZQF9+p4qx4m+YRoqy40anPbOGrXY34/hCG11GuMbc/ufdKS
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYWPR01MB8591.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(38100700002)(186003)(122000001)(5660300002)(83380400001)(66446008)(66946007)(6916009)(4326008)(316002)(71200400001)(66476007)(85182001)(66556008)(9686003)(82960400001)(8676002)(64756008)(33656002)(26005)(86362001)(54906003)(6506007)(76116006)(2906002)(478600001)(8936002)(6486002)(41300700001)(6512007)(1076003)(38070700005)(7416002)(55236004)(53546011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?alY2a1AvdDJSc1BsTm5TZlZLd00yRlhDZHlsUFZtbFRnQVE4WlFZaWxsNnRx?=
- =?utf-8?B?MlZVa252amhTN1RZdVFkdFlSU3cvOVowRGpPUWxodTZUQXVrMktiUmx2NWNj?=
- =?utf-8?B?M1k5NkduQ0I4eVY4Y1NSdEF4SjB2NjdjQlB5aEV0OHZKc0VqMFZOZExzZmNU?=
- =?utf-8?B?QWdiSjc0ZXNwVjBLMHp2ZU90T21DQnFjQm9FSzF0VS9XUDlJOVBwNkViam16?=
- =?utf-8?B?RjIwWXV4cHpxQ3V0TmFYLzB1dU1LRHNDUWdFQStFMEUyNzJtRVdZVkwvUHJF?=
- =?utf-8?B?am16THRSbEMxK2dMWE14OFZpbDVJZXo4UmEvY2M2ZU4xcUwwb1c4MGN4TVM5?=
- =?utf-8?B?YzBOSGI4c0VCZ0dldlp0Tk1ZVC9nNCtKQm8rUmgxWDJ6THR6RDc5eW84NmQy?=
- =?utf-8?B?ZkdrTFo2d0hHWE1HOEJKUVFWZmVQZ2tpUm1HRFJCbnFXS0dYbmRqNEtVUVhz?=
- =?utf-8?B?UzJKQ3MwZEFub0MyK0lVTDlLcTZURzF3K0hjbE5zcWx0ci92TG5tQWU2Wlow?=
- =?utf-8?B?eW5qajE4L3JYcngrbzRqSnFpd2oweGVsdGZXMDMyM3ZlbFBpM0ZPVVNmT0Fh?=
- =?utf-8?B?WDJXK3NBVXQ5Yno1T0RTeUpNMnA2L0ZmMjdFSnR4Z2wxTnZNVHh5Sy83MExz?=
- =?utf-8?B?SkFlZzVsOXB2YlArQTkvOG83U3BaM2h0QTZGNUtONWFibUliTGRXRUhhOVl4?=
- =?utf-8?B?SHg0VzVKeTJoNDRidS95blp6UGp4VURhS20zUUxQYmc3RXlvdXFScVVoUFRn?=
- =?utf-8?B?RVU2ejcrTmNKbTk0YzVSRnBiaEhXVlk3SnBQOXoxQ2cwZnRJTzZ3QjhmZnBp?=
- =?utf-8?B?aXk5aHovYm5GZ3hlc1VKRDc1WmtSa2gzb1JKM1hOczk1R2J2Y1d1Yys2VE5m?=
- =?utf-8?B?SGFocndpOU03a0VmRVVab3lnWllUQnRQcHV0d0tpcHBQUVloQlQ4VHU4RkxS?=
- =?utf-8?B?ZjEvc3RnQzAvLzFWK0Q2OGs2NmlEZTNmUGlwaXY1WDcrQnlYaUxMQy8xb1lm?=
- =?utf-8?B?S29aeC9GY0hQU3QyVjZ0Ti9vclZOTkk4RWFSVjQwNmxkZlVmWGdjb2NLN210?=
- =?utf-8?B?RzdWMlMzeFkyTHZHVFgwMWovdWZWZ1lEVnhWTzZhT0MxakdHL0RKU2MvdzZ0?=
- =?utf-8?B?MzN0RjlGdFVuNURJY2VzOWdqSnlPSlRaWFVWWXl2K1ZSRkdWUTY0UzFtWVdH?=
- =?utf-8?B?WjYzUmc4azQ5aVdBdGg2a2txbWVmc3dmTFVSTU1Tdk9pcm96azBKZ1lvb01D?=
- =?utf-8?B?VGFMSERhYVNoRzZDUE8zRkd3TUo5VzBpdGZIZURqMkMvYm0zc1RtcUc1V0RQ?=
- =?utf-8?B?NlVFeWV5YVpxZEFPcUsrdFNxN3FBekE0SkIycytBUHpSVXNKZkJIdklIS2lS?=
- =?utf-8?B?WHlBMlRPSDRhSDkzRU9wdVhIQXRnaUlFWVF0WXpOT21La0xmMkVCajhHQ2VL?=
- =?utf-8?B?R09BSnV4dXovWC8wMXFPZlRLemxOZXNVQURSQktoQjlwaFMzZmxEQWttSVVQ?=
- =?utf-8?B?TGQzM0xVVmNmVUJJM2gycWtTRnpRRUhQK29qaFBOS2o4ZGpUTUVJcXJVamUz?=
- =?utf-8?B?SFlxelRPOXZCQ3piU0treWExYUNNMXIzRUhUSWV1ZElYU2gralBUSWRFTFB6?=
- =?utf-8?B?UVQ2ZTNKTExkZjlGdXk1bU9sRDJTd0w1QWpaQlViU0lnU0NtNWg5alVzUmxo?=
- =?utf-8?B?a0xieUwyaGJ6QzczdTl4OVVIemRESW1lSXdENzdQcjNvWjB3UVBsUkY1Nk9I?=
- =?utf-8?B?NTRDZFB6WlI3RklyWE5lZW5Ya0ZCa3ZCU3ovMUNIblZBMHlSSXV5Z2lsWGZV?=
- =?utf-8?B?cDA5Z1BVTzBscm40VzNIaEs5R0lLUnZsZDdYa0pSLzBFb1ZmSUt2ai9BYkRs?=
- =?utf-8?B?RkpFQUVnMFhqbTlUUkNkd1RwcXdoVWR5MVFjdWlQWDNhMXpkREYwUmtPc2xw?=
- =?utf-8?B?RVh1NHc3RG8wNmZWai9NbnZ6aWdEMHo0UzZLTE9oZ0ZvckQ4ZVJLaTdReDJl?=
- =?utf-8?B?aFp1bHY5RnZtRlFjdllpbEYrSmpvSnZmKzhiQ3JQU2drMisrOGVLNS9oNmMz?=
- =?utf-8?B?bVc3NHR4aGU1QzZ5eUpXMUR3TjNEU1hhMElKbjBRUVpLZzNyMTR5R3cra0k3?=
- =?utf-8?B?RmJPblAzNmc3QzNwQnREVGg0RTFWZmtQcDIwcFk5dCtjalBYY1M3R1JuS2JI?=
- =?utf-8?B?RGc9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3295CCE1238E8C42B9F09355221EA55F@jpnprd01.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Mon, 11 Jul 2022 05:49:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D373C248FA;
+        Mon, 11 Jul 2022 02:24:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BB28B80E7E;
+        Mon, 11 Jul 2022 09:24:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84599C34115;
+        Mon, 11 Jul 2022 09:24:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657531443;
+        bh=o7GX/JBWNVpVdHKDfQXCW02YKTtRL9r0qkWI7tB9csQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KVtZ85MkkosGEhVXWXxY6oj3Obj0pYMzZsymIyP73lgQs4Y3WZeMA69U/bM/zkrf7
+         +lXaxcwU5+KOBL/rLJ7NkvyxuVuJj9loX/8FecqKyV3ksUOAGda5N20udSBaKBINXk
+         C+KTP9m4++loqvLAMzyADlAEqw8J4ep7694E69YM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 107/230] powerpc: flexible GPR range save/restore macros
+Date:   Mon, 11 Jul 2022 11:06:03 +0200
+Message-Id: <20220711090607.103010388@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
+References: <20220711090604.055883544@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-OriginatorOrg: nec.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYWPR01MB8591.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 939af9f6-e6ee-4df4-11c8-08da631f17b2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jul 2022 09:24:01.8872
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: e67df547-9d0d-4f4d-9161-51c6ed1f7d11
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5h5xyp0re2DJegVkWuuaRNcwA99ov2uNUkUTqdMoIPF69WDhYReGPr4LtogB3dDYquoK5CIdixv0jKjLP+raAQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3797
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gTW9uLCBKdWwgMTEsIDIwMjIgYXQgMDM6MDk6MDFQTSArMDgwMCwgTWlhb2hlIExpbiB3cm90
-ZToNCj4gT24gMjAyMi83LzggMTM6MzYsIE5hb3lhIEhvcmlndWNoaSB3cm90ZToNCj4gPiBGcm9t
-OiBOYW95YSBIb3JpZ3VjaGkgPG5hb3lhLmhvcmlndWNoaUBuZWMuY29tPg0KPiA+IA0KPiA+IFJh
-dyBlcnJvciBpbmZvIGxpc3QgbmVlZHMgdG8gYmUgcmVtb3ZlZCB3aGVuIGh3cG9pc29uZWQgaHVn
-ZXRsYiBpcw0KPiA+IHVucG9pc29uZWQuICBBbmQgdW5wb2lzb24gaGFuZGxlciBuZWVkcyB0byBr
-bm93IGhvdyBtYW55IGVycm9ycyB0aGVyZQ0KPiA+IGFyZSBpbiB0aGUgdGFyZ2V0IGh1Z2VwYWdl
-LiBTbyBhZGQgdGhlbS4NCj4gPiANCj4gPiBIUGFnZVZtZW1tYXBPcHRpbWl6ZWQoaHBhZ2UpIGFu
-ZCBIUGFnZVJhd0h3cFVucmVsaWFibGUoaHBhZ2UpKSBjYW4ndCBiZQ0KPiA+IHVucG9pc29uZWQs
-IHNvIGxldCdzIHNraXAgdGhlbS4NCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBOYW95YSBIb3Jp
-Z3VjaGkgPG5hb3lhLmhvcmlndWNoaUBuZWMuY29tPg0KPiA+IFJlcG9ydGVkLWJ5OiBrZXJuZWwg
-dGVzdCByb2JvdCA8bGtwQGludGVsLmNvbT4NCj4gPiAtLS0NCj4gPiB2NCAtPiB2NToNCj4gPiAt
-IGZpeCB0eXBlIG9mIHJldHVybiB2YWx1ZSBvZiBmcmVlX3Jhd19od3BfcGFnZXMoKQ0KPiA+ICAg
-KGZvdW5kIGJ5IGtlcm5lbCB0ZXN0IHJvYm90KSwNCj4gPiAtIHByZXZlbnQgdW5wb2lzb24gZm9y
-IEhQYWdlVm1lbW1hcE9wdGltaXplZCBhbmQgSFBhZ2VSYXdId3BVbnJlbGlhYmxlLg0KPiA+IC0t
-LQ0KLi4uDQo+ID4gZGlmZiAtLWdpdCBhL21tL21lbW9yeS1mYWlsdXJlLmMgYi9tbS9tZW1vcnkt
-ZmFpbHVyZS5jDQo+ID4gaW5kZXggNjgzM2M1ZTRiNDEwLi44OWU3NGVjOGE5NWYgMTAwNjQ0DQo+
-ID4gLS0tIGEvbW0vbWVtb3J5LWZhaWx1cmUuYw0KPiA+ICsrKyBiL21tL21lbW9yeS1mYWlsdXJl
-LmMNCj4gPiBAQCAtMTcyMCwyMiArMTcyMCw0MSBAQCBzdGF0aWMgaW50IGh1Z2V0bGJfc2V0X3Bh
-Z2VfaHdwb2lzb24oc3RydWN0IHBhZ2UgKmhwYWdlLCBzdHJ1Y3QgcGFnZSAqcGFnZSkNCj4gPiAg
-CXJldHVybiByZXQ7DQo+ID4gIH0NCj4gPiAgDQo+ID4gLWludCBodWdldGxiX2NsZWFyX3BhZ2Vf
-aHdwb2lzb24oc3RydWN0IHBhZ2UgKmhwYWdlKQ0KPiA+ICtzdGF0aWMgbG9uZyBmcmVlX3Jhd19o
-d3BfcGFnZXMoc3RydWN0IHBhZ2UgKmhwYWdlLCBib29sIG1vdmVfZmxhZykNCj4gDQo+IE5PIHN0
-cm9uZyBvcGluaW9uOiBNYXliZSB0aGUgcmV0dXJuIHR5cGUgc2hvdWxkIGJlICJ1bnNpZ25lZCIg
-YXMgaXQgYWx3YXlzID49IDAgPw0KDQpZZXMsIHdpbGwgdXBkYXRlLg0KDQo+IA0KPiA+ICB7DQo+
-ID4gIAlzdHJ1Y3QgbGxpc3RfaGVhZCAqaGVhZDsNCj4gPiAgCXN0cnVjdCBsbGlzdF9ub2RlICp0
-LCAqdG5vZGU7DQo+ID4gKwlsb25nIGNvdW50ID0gMDsNCj4gPiAgDQo+ID4gLQlpZiAoIUhQYWdl
-UmF3SHdwVW5yZWxpYWJsZShocGFnZSkpDQo+ID4gLQkJQ2xlYXJQYWdlSFdQb2lzb24oaHBhZ2Up
-Ow0KPiA+ICsJLyoNCj4gPiArCSAqIEhQYWdlVm1lbW1hcE9wdGltaXplZCBodWdlcGFnZXMgY2Fu
-J3QgYmUgdW5wb2lzb25lZCBiZWNhdXNlDQo+ID4gKwkgKiBzdHJ1Y3QgcGFnZXMgZm9yIHRhaWwg
-cGFnZXMgYXJlIHJlcXVpcmVkIHRvIGZyZWUgaHdwb2lzb25lZA0KPiA+ICsJICogaHVnZXBhZ2Vz
-LiAgSFBhZ2VSYXdId3BVbnJlbGlhYmxlIGh1Z2VwYWdlcyBzaG91bGRuJ3QgYmUNCj4gPiArCSAq
-IHVucG9pc29uZWQgYnkgZGVmaW5pdGlvbi4NCj4gPiArCSAqLw0KPiA+ICsJaWYgKEhQYWdlVm1l
-bW1hcE9wdGltaXplZChocGFnZSkgfHwgSFBhZ2VSYXdId3BVbnJlbGlhYmxlKGhwYWdlKSkNCj4g
-PiArCQlyZXR1cm4gMDsNCj4gPiAgCWhlYWQgPSByYXdfaHdwX2xpc3RfaGVhZChocGFnZSk7DQo+
-ID4gIAlsbGlzdF9mb3JfZWFjaF9zYWZlKHRub2RlLCB0LCBoZWFkLT5maXJzdCkgew0KPiA+ICAJ
-CXN0cnVjdCByYXdfaHdwX3BhZ2UgKnAgPSBjb250YWluZXJfb2YodG5vZGUsIHN0cnVjdCByYXdf
-aHdwX3BhZ2UsIG5vZGUpOw0KPiA+ICANCj4gPiAtCQlTZXRQYWdlSFdQb2lzb24ocC0+cGFnZSk7
-DQo+ID4gKwkJaWYgKG1vdmVfZmxhZykNCj4gPiArCQkJU2V0UGFnZUhXUG9pc29uKHAtPnBhZ2Up
-Ow0KPiA+ICAJCWtmcmVlKHApOw0KPiA+ICsJCWNvdW50Kys7DQo+ID4gIAl9DQo+ID4gIAlsbGlz
-dF9kZWxfYWxsKGhlYWQpOw0KPiA+IC0JcmV0dXJuIDA7DQo+ID4gKwlyZXR1cm4gY291bnQ7DQo+
-ID4gK30NCj4gPiArDQo+ID4gK2ludCBodWdldGxiX2NsZWFyX3BhZ2VfaHdwb2lzb24oc3RydWN0
-IHBhZ2UgKmhwYWdlKQ0KPiANCj4gSXQgc2VlbXMgdGhlIHJldHVybiB2YWx1ZSBpcyB1bnVzZWQ/
-DQoNClllcywgdGhlIHJldHVybiB2YWx1ZSBpcyBub3QgbmVlZGVkIG5vdy4NCg0KPiANCj4gPiAr
-ew0KPiA+ICsJaW50IHJldCA9IC1FQlVTWTsNCj4gPiArDQo+ID4gKwlpZiAoIUhQYWdlUmF3SHdw
-VW5yZWxpYWJsZShocGFnZSkpDQo+ID4gKwkJcmV0ID0gIVRlc3RDbGVhclBhZ2VIV1BvaXNvbiho
-cGFnZSk7DQo+ID4gKwlmcmVlX3Jhd19od3BfcGFnZXMoaHBhZ2UsIHRydWUpOw0KPiA+ICsJcmV0
-dXJuIHJldDsNCj4gPiAgfQ0KPiA+ICANCj4gPiAgLyoNCj4gPiBAQCAtMTg3OSw2ICsxODk4LDEw
-IEBAIHN0YXRpYyBpbmxpbmUgaW50IHRyeV9tZW1vcnlfZmFpbHVyZV9odWdldGxiKHVuc2lnbmVk
-IGxvbmcgcGZuLCBpbnQgZmxhZ3MsIGludCAqDQo+ID4gIAlyZXR1cm4gMDsNCj4gPiAgfQ0KPiA+
-ICANCj4gPiArc3RhdGljIGlubGluZSBsb25nIGZyZWVfcmF3X2h3cF9wYWdlcyhzdHJ1Y3QgcGFn
-ZSAqaHBhZ2UsIGJvb2wgbW92ZV9mbGFnKQ0KPiANCj4gSWYgcmV0dXJuIHR5cGUgaXMgY2hhbmdl
-ZCwgcmVtZW1iZXIgdG8gY2hhbmdlIGhlcmUgdG9vLg0KDQpPSy4NCg0KPiA+ICt7DQo+ID4gKwly
-ZXR1cm4gMDsNCj4gPiArfQ0KPiA+ICAjZW5kaWYJLyogQ09ORklHX0hVR0VUTEJfUEFHRSAqLw0K
-PiA+ICANCj4gPiAgc3RhdGljIGludCBtZW1vcnlfZmFpbHVyZV9kZXZfcGFnZW1hcCh1bnNpZ25l
-ZCBsb25nIHBmbiwgaW50IGZsYWdzLA0KPiA+IEBAIC0yMjg0LDYgKzIzMDcsNyBAQCBpbnQgdW5w
-b2lzb25fbWVtb3J5KHVuc2lnbmVkIGxvbmcgcGZuKQ0KPiA+ICAJc3RydWN0IHBhZ2UgKnA7DQo+
-ID4gIAlpbnQgcmV0ID0gLUVCVVNZOw0KPiA+ICAJaW50IGZyZWVpdCA9IDA7DQo+ID4gKwlsb25n
-IGNvdW50ID0gMTsNCj4gPiAgCXN0YXRpYyBERUZJTkVfUkFURUxJTUlUX1NUQVRFKHVucG9pc29u
-X3JzLCBERUZBVUxUX1JBVEVMSU1JVF9JTlRFUlZBTCwNCj4gPiAgCQkJCQlERUZBVUxUX1JBVEVM
-SU1JVF9CVVJTVCk7DQo+ID4gIA0KPiA+IEBAIC0yMzMxLDYgKzIzNTUsMTMgQEAgaW50IHVucG9p
-c29uX21lbW9yeSh1bnNpZ25lZCBsb25nIHBmbikNCj4gPiAgDQo+ID4gIAlyZXQgPSBnZXRfaHdw
-b2lzb25fcGFnZShwLCBNRl9VTlBPSVNPTik7DQo+ID4gIAlpZiAoIXJldCkgew0KPiA+ICsJCWlm
-IChQYWdlSHVnZShwKSkgew0KPiA+ICsJCQljb3VudCA9IGZyZWVfcmF3X2h3cF9wYWdlcyhwYWdl
-LCBmYWxzZSk7DQo+IA0KPiBJdCBzZWVtcyB0aGUgY3VycmVudCBiZWhhdmlvciBpczogaWYgYW55
-IHN1YnBhZ2Ugb2YgYSBodWdldGxiIHBhZ2UgaXMgdW5wb2lzb25lZCwgdGhlbiBhbGwgb2YgdGhl
-DQo+IGh3cG9pc29uZWQgc3VicGFnZXMgd2lsbCBiZSB1bnBvaXNvbmVkLiBJJ20gbm90IHN1cmUg
-d2hldGhlciB0aGlzIGlzIHdoYXQgd2Ugd2FudC4NCg0KQmFzaWNhbGx5IHJhd19od3BfaW5mbyBp
-cyBub3QgYXZhaWxhYmxlIHRvIHVzZXJzcGFjZSAoaXQgbWlnaHQgYmUgcmVjb3JkZWQNCmluIGRt
-ZXNnIGJ1dCBub3QgYXZhaWxhYmxlIHZpYSAvcHJvYy9rcGFnZWZsYWdzKSwgc28gdW5wb2lzb25p
-bmcgZXJyb3INCnN1YnBhZ2VzIG9uZS1ieS1vbmUgaXMgc29tZXRpbWVzIGJvdGhlcmluZy4gIElm
-IHNvbWVvbmUgd291bGQgbGlrZSB0bw0KdW5wb2lzb24gb25lLWJ5LW9uZSAoSSBleHBlY3Qgbm9i
-b2R5IHdvdWxkKSwgSSBjYW4gZG8gdGhpcy4NCg0KPiBUaGFua3MuDQoNClRoYW5rIHlvdSENCg0K
-LSBOYW95YSBIb3JpZ3VjaGk=
+From: Nicholas Piggin <npiggin@gmail.com>
+
+[ Upstream commit aebd1fb45c622e9a2b06fb70665d084d3a8d6c78 ]
+
+Introduce macros that operate on a (start, end) range of GPRs, which
+reduces lines of code and need to do mental arithmetic while reading the
+code.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
+Reviewed-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211022061322.2671178-1-npiggin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/boot/crt0.S                      | 31 +++++++------
+ arch/powerpc/crypto/md5-asm.S                 | 10 ++---
+ arch/powerpc/crypto/sha1-powerpc-asm.S        |  6 +--
+ arch/powerpc/include/asm/ppc_asm.h            | 43 ++++++++++++-------
+ arch/powerpc/kernel/entry_32.S                | 23 ++++------
+ arch/powerpc/kernel/exceptions-64e.S          | 14 ++----
+ arch/powerpc/kernel/exceptions-64s.S          |  6 +--
+ arch/powerpc/kernel/head_32.h                 |  3 +-
+ arch/powerpc/kernel/head_booke.h              |  3 +-
+ arch/powerpc/kernel/interrupt_64.S            | 34 ++++++---------
+ arch/powerpc/kernel/optprobes_head.S          |  4 +-
+ arch/powerpc/kernel/tm.S                      | 15 ++-----
+ .../powerpc/kernel/trace/ftrace_64_mprofile.S | 15 +++----
+ arch/powerpc/kvm/book3s_hv_rmhandlers.S       |  5 +--
+ .../lib/test_emulate_step_exec_instr.S        |  8 ++--
+ 15 files changed, 94 insertions(+), 126 deletions(-)
+
+diff --git a/arch/powerpc/boot/crt0.S b/arch/powerpc/boot/crt0.S
+index 1d83966f5ef6..e8f10a599659 100644
+--- a/arch/powerpc/boot/crt0.S
++++ b/arch/powerpc/boot/crt0.S
+@@ -226,16 +226,19 @@ p_base:	mflr	r10		/* r10 now points to runtime addr of p_base */
+ #ifdef __powerpc64__
+ 
+ #define PROM_FRAME_SIZE 512
+-#define SAVE_GPR(n, base)       std     n,8*(n)(base)
+-#define REST_GPR(n, base)       ld      n,8*(n)(base)
+-#define SAVE_2GPRS(n, base)     SAVE_GPR(n, base); SAVE_GPR(n+1, base)
+-#define SAVE_4GPRS(n, base)     SAVE_2GPRS(n, base); SAVE_2GPRS(n+2, base)
+-#define SAVE_8GPRS(n, base)     SAVE_4GPRS(n, base); SAVE_4GPRS(n+4, base)
+-#define SAVE_10GPRS(n, base)    SAVE_8GPRS(n, base); SAVE_2GPRS(n+8, base)
+-#define REST_2GPRS(n, base)     REST_GPR(n, base); REST_GPR(n+1, base)
+-#define REST_4GPRS(n, base)     REST_2GPRS(n, base); REST_2GPRS(n+2, base)
+-#define REST_8GPRS(n, base)     REST_4GPRS(n, base); REST_4GPRS(n+4, base)
+-#define REST_10GPRS(n, base)    REST_8GPRS(n, base); REST_2GPRS(n+8, base)
++
++.macro OP_REGS op, width, start, end, base, offset
++	.Lreg=\start
++	.rept (\end - \start + 1)
++	\op	.Lreg,\offset+\width*.Lreg(\base)
++	.Lreg=.Lreg+1
++	.endr
++.endm
++
++#define SAVE_GPRS(start, end, base)	OP_REGS std, 8, start, end, base, 0
++#define REST_GPRS(start, end, base)	OP_REGS ld, 8, start, end, base, 0
++#define SAVE_GPR(n, base)		SAVE_GPRS(n, n, base)
++#define REST_GPR(n, base)		REST_GPRS(n, n, base)
+ 
+ /* prom handles the jump into and return from firmware.  The prom args pointer
+    is loaded in r3. */
+@@ -246,9 +249,7 @@ prom:
+ 	stdu	r1,-PROM_FRAME_SIZE(r1) /* Save SP and create stack space */
+ 
+ 	SAVE_GPR(2, r1)
+-	SAVE_GPR(13, r1)
+-	SAVE_8GPRS(14, r1)
+-	SAVE_10GPRS(22, r1)
++	SAVE_GPRS(13, 31, r1)
+ 	mfcr    r10
+ 	std     r10,8*32(r1)
+ 	mfmsr   r10
+@@ -283,9 +284,7 @@ prom:
+ 
+ 	/* Restore other registers */
+ 	REST_GPR(2, r1)
+-	REST_GPR(13, r1)
+-	REST_8GPRS(14, r1)
+-	REST_10GPRS(22, r1)
++	REST_GPRS(13, 31, r1)
+ 	ld      r10,8*32(r1)
+ 	mtcr	r10
+ 
+diff --git a/arch/powerpc/crypto/md5-asm.S b/arch/powerpc/crypto/md5-asm.S
+index 948d100a2934..fa6bc440cf4a 100644
+--- a/arch/powerpc/crypto/md5-asm.S
++++ b/arch/powerpc/crypto/md5-asm.S
+@@ -38,15 +38,11 @@
+ 
+ #define INITIALIZE \
+ 	PPC_STLU r1,-INT_FRAME_SIZE(r1); \
+-	SAVE_8GPRS(14, r1);		/* push registers onto stack	*/ \
+-	SAVE_4GPRS(22, r1);						   \
+-	SAVE_GPR(26, r1)
++	SAVE_GPRS(14, 26, r1)		/* push registers onto stack	*/
+ 
+ #define FINALIZE \
+-	REST_8GPRS(14, r1);		/* pop registers from stack	*/ \
+-	REST_4GPRS(22, r1);						   \
+-	REST_GPR(26, r1);						   \
+-	addi	r1,r1,INT_FRAME_SIZE;
++	REST_GPRS(14, 26, r1);		/* pop registers from stack	*/ \
++	addi	r1,r1,INT_FRAME_SIZE
+ 
+ #ifdef __BIG_ENDIAN__
+ #define LOAD_DATA(reg, off) \
+diff --git a/arch/powerpc/crypto/sha1-powerpc-asm.S b/arch/powerpc/crypto/sha1-powerpc-asm.S
+index 23e248beff71..f0d5ed557ab1 100644
+--- a/arch/powerpc/crypto/sha1-powerpc-asm.S
++++ b/arch/powerpc/crypto/sha1-powerpc-asm.S
+@@ -125,8 +125,7 @@
+ 
+ _GLOBAL(powerpc_sha_transform)
+ 	PPC_STLU r1,-INT_FRAME_SIZE(r1)
+-	SAVE_8GPRS(14, r1)
+-	SAVE_10GPRS(22, r1)
++	SAVE_GPRS(14, 31, r1)
+ 
+ 	/* Load up A - E */
+ 	lwz	RA(0),0(r3)	/* A */
+@@ -184,7 +183,6 @@ _GLOBAL(powerpc_sha_transform)
+ 	stw	RD(0),12(r3)
+ 	stw	RE(0),16(r3)
+ 
+-	REST_8GPRS(14, r1)
+-	REST_10GPRS(22, r1)
++	REST_GPRS(14, 31, r1)
+ 	addi	r1,r1,INT_FRAME_SIZE
+ 	blr
+diff --git a/arch/powerpc/include/asm/ppc_asm.h b/arch/powerpc/include/asm/ppc_asm.h
+index 7be24048b8d1..f21e6bde17a1 100644
+--- a/arch/powerpc/include/asm/ppc_asm.h
++++ b/arch/powerpc/include/asm/ppc_asm.h
+@@ -16,30 +16,41 @@
+ 
+ #define SZL			(BITS_PER_LONG/8)
+ 
++/*
++ * This expands to a sequence of operations with reg incrementing from
++ * start to end inclusive, of this form:
++ *
++ *   op  reg, (offset + (width * reg))(base)
++ *
++ * Note that offset is not the offset of the first operation unless start
++ * is zero (or width is zero).
++ */
++.macro OP_REGS op, width, start, end, base, offset
++	.Lreg=\start
++	.rept (\end - \start + 1)
++	\op	.Lreg, \offset + \width * .Lreg(\base)
++	.Lreg=.Lreg+1
++	.endr
++.endm
++
+ /*
+  * Macros for storing registers into and loading registers from
+  * exception frames.
+  */
+ #ifdef __powerpc64__
+-#define SAVE_GPR(n, base)	std	n,GPR0+8*(n)(base)
+-#define REST_GPR(n, base)	ld	n,GPR0+8*(n)(base)
+-#define SAVE_NVGPRS(base)	SAVE_8GPRS(14, base); SAVE_10GPRS(22, base)
+-#define REST_NVGPRS(base)	REST_8GPRS(14, base); REST_10GPRS(22, base)
++#define SAVE_GPRS(start, end, base)	OP_REGS std, 8, start, end, base, GPR0
++#define REST_GPRS(start, end, base)	OP_REGS ld, 8, start, end, base, GPR0
++#define SAVE_NVGPRS(base)		SAVE_GPRS(14, 31, base)
++#define REST_NVGPRS(base)		REST_GPRS(14, 31, base)
+ #else
+-#define SAVE_GPR(n, base)	stw	n,GPR0+4*(n)(base)
+-#define REST_GPR(n, base)	lwz	n,GPR0+4*(n)(base)
+-#define SAVE_NVGPRS(base)	SAVE_GPR(13, base); SAVE_8GPRS(14, base); SAVE_10GPRS(22, base)
+-#define REST_NVGPRS(base)	REST_GPR(13, base); REST_8GPRS(14, base); REST_10GPRS(22, base)
++#define SAVE_GPRS(start, end, base)	OP_REGS stw, 4, start, end, base, GPR0
++#define REST_GPRS(start, end, base)	OP_REGS lwz, 4, start, end, base, GPR0
++#define SAVE_NVGPRS(base)		SAVE_GPRS(13, 31, base)
++#define REST_NVGPRS(base)		REST_GPRS(13, 31, base)
+ #endif
+ 
+-#define SAVE_2GPRS(n, base)	SAVE_GPR(n, base); SAVE_GPR(n+1, base)
+-#define SAVE_4GPRS(n, base)	SAVE_2GPRS(n, base); SAVE_2GPRS(n+2, base)
+-#define SAVE_8GPRS(n, base)	SAVE_4GPRS(n, base); SAVE_4GPRS(n+4, base)
+-#define SAVE_10GPRS(n, base)	SAVE_8GPRS(n, base); SAVE_2GPRS(n+8, base)
+-#define REST_2GPRS(n, base)	REST_GPR(n, base); REST_GPR(n+1, base)
+-#define REST_4GPRS(n, base)	REST_2GPRS(n, base); REST_2GPRS(n+2, base)
+-#define REST_8GPRS(n, base)	REST_4GPRS(n, base); REST_4GPRS(n+4, base)
+-#define REST_10GPRS(n, base)	REST_8GPRS(n, base); REST_2GPRS(n+8, base)
++#define SAVE_GPR(n, base)		SAVE_GPRS(n, n, base)
++#define REST_GPR(n, base)		REST_GPRS(n, n, base)
+ 
+ #define SAVE_FPR(n, base)	stfd	n,8*TS_FPRWIDTH*(n)(base)
+ #define SAVE_2FPRS(n, base)	SAVE_FPR(n, base); SAVE_FPR(n+1, base)
+diff --git a/arch/powerpc/kernel/entry_32.S b/arch/powerpc/kernel/entry_32.S
+index 61fdd53cdd9a..c62dd9815965 100644
+--- a/arch/powerpc/kernel/entry_32.S
++++ b/arch/powerpc/kernel/entry_32.S
+@@ -90,8 +90,7 @@ transfer_to_syscall:
+ 	stw	r12,8(r1)
+ 	stw	r2,_TRAP(r1)
+ 	SAVE_GPR(0, r1)
+-	SAVE_4GPRS(3, r1)
+-	SAVE_2GPRS(7, r1)
++	SAVE_GPRS(3, 8, r1)
+ 	addi	r2,r10,-THREAD
+ 	SAVE_NVGPRS(r1)
+ 
+@@ -139,7 +138,7 @@ syscall_exit_finish:
+ 	mtxer	r5
+ 	lwz	r0,GPR0(r1)
+ 	lwz	r3,GPR3(r1)
+-	REST_8GPRS(4,r1)
++	REST_GPRS(4, 11, r1)
+ 	lwz	r12,GPR12(r1)
+ 	b	1b
+ 
+@@ -232,9 +231,9 @@ fast_exception_return:
+ 	beq	3f			/* if not, we've got problems */
+ #endif
+ 
+-2:	REST_4GPRS(3, r11)
++2:	REST_GPRS(3, 6, r11)
+ 	lwz	r10,_CCR(r11)
+-	REST_2GPRS(1, r11)
++	REST_GPRS(1, 2, r11)
+ 	mtcr	r10
+ 	lwz	r10,_LINK(r11)
+ 	mtlr	r10
+@@ -298,16 +297,14 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	 * the reliable stack unwinder later on. Clear it.
+ 	 */
+ 	stw	r0,8(r1)
+-	REST_4GPRS(7, r1)
+-	REST_2GPRS(11, r1)
++	REST_GPRS(7, 12, r1)
+ 
+ 	mtcr	r3
+ 	mtlr	r4
+ 	mtctr	r5
+ 	mtspr	SPRN_XER,r6
+ 
+-	REST_4GPRS(2, r1)
+-	REST_GPR(6, r1)
++	REST_GPRS(2, 6, r1)
+ 	REST_GPR(0, r1)
+ 	REST_GPR(1, r1)
+ 	rfi
+@@ -341,8 +338,7 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	lwz	r6,_CCR(r1)
+ 	li	r0,0
+ 
+-	REST_4GPRS(7, r1)
+-	REST_2GPRS(11, r1)
++	REST_GPRS(7, 12, r1)
+ 
+ 	mtlr	r3
+ 	mtctr	r4
+@@ -354,7 +350,7 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	 */
+ 	stw	r0,8(r1)
+ 
+-	REST_4GPRS(2, r1)
++	REST_GPRS(2, 5, r1)
+ 
+ 	bne-	cr1,1f /* emulate stack store */
+ 	mtcr	r6
+@@ -430,8 +426,7 @@ _ASM_NOKPROBE_SYMBOL(interrupt_return)
+ 	bne	interrupt_return;					\
+ 	lwz	r0,GPR0(r1);						\
+ 	lwz	r2,GPR2(r1);						\
+-	REST_4GPRS(3, r1);						\
+-	REST_2GPRS(7, r1);						\
++	REST_GPRS(3, 8, r1);						\
+ 	lwz	r10,_XER(r1);						\
+ 	lwz	r11,_CTR(r1);						\
+ 	mtspr	SPRN_XER,r10;						\
+diff --git a/arch/powerpc/kernel/exceptions-64e.S b/arch/powerpc/kernel/exceptions-64e.S
+index 711c66b76df1..67dc4e3179a0 100644
+--- a/arch/powerpc/kernel/exceptions-64e.S
++++ b/arch/powerpc/kernel/exceptions-64e.S
+@@ -198,8 +198,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_EMB_HV)
+ 
+ 	stdcx.	r0,0,r1		/* to clear the reservation */
+ 
+-	REST_4GPRS(2, r1)
+-	REST_4GPRS(6, r1)
++	REST_GPRS(2, 9, r1)
+ 
+ 	ld	r10,_CTR(r1)
+ 	ld	r11,_XER(r1)
+@@ -375,9 +374,7 @@ ret_from_mc_except:
+ exc_##n##_common:							    \
+ 	std	r0,GPR0(r1);		/* save r0 in stackframe */	    \
+ 	std	r2,GPR2(r1);		/* save r2 in stackframe */	    \
+-	SAVE_4GPRS(3, r1);		/* save r3 - r6 in stackframe */    \
+-	SAVE_2GPRS(7, r1);		/* save r7, r8 in stackframe */	    \
+-	std	r9,GPR9(r1);		/* save r9 in stackframe */	    \
++	SAVE_GPRS(3, 9, r1);		/* save r3 - r9 in stackframe */    \
+ 	std	r10,_NIP(r1);		/* save SRR0 to stackframe */	    \
+ 	std	r11,_MSR(r1);		/* save SRR1 to stackframe */	    \
+ 	beq	2f;			/* if from kernel mode */	    \
+@@ -1061,9 +1058,7 @@ bad_stack_book3e:
+ 	std	r11,_ESR(r1)
+ 	std	r0,GPR0(r1);		/* save r0 in stackframe */	    \
+ 	std	r2,GPR2(r1);		/* save r2 in stackframe */	    \
+-	SAVE_4GPRS(3, r1);		/* save r3 - r6 in stackframe */    \
+-	SAVE_2GPRS(7, r1);		/* save r7, r8 in stackframe */	    \
+-	std	r9,GPR9(r1);		/* save r9 in stackframe */	    \
++	SAVE_GPRS(3, 9, r1);		/* save r3 - r9 in stackframe */    \
+ 	ld	r3,PACA_EXGEN+EX_R10(r13);/* get back r10 */		    \
+ 	ld	r4,PACA_EXGEN+EX_R11(r13);/* get back r11 */		    \
+ 	mfspr	r5,SPRN_SPRG_GEN_SCRATCH;/* get back r13 XXX can be wrong */ \
+@@ -1077,8 +1072,7 @@ bad_stack_book3e:
+ 	std	r10,_LINK(r1)
+ 	std	r11,_CTR(r1)
+ 	std	r12,_XER(r1)
+-	SAVE_10GPRS(14,r1)
+-	SAVE_8GPRS(24,r1)
++	SAVE_GPRS(14, 31, r1)
+ 	lhz	r12,PACA_TRAP_SAVE(r13)
+ 	std	r12,_TRAP(r1)
+ 	addi	r11,r1,INT_FRAME_SIZE
+diff --git a/arch/powerpc/kernel/exceptions-64s.S b/arch/powerpc/kernel/exceptions-64s.S
+index eaf1f72131a1..277eccf0f086 100644
+--- a/arch/powerpc/kernel/exceptions-64s.S
++++ b/arch/powerpc/kernel/exceptions-64s.S
+@@ -574,8 +574,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_CFAR)
+ 	ld	r10,IAREA+EX_CTR(r13)
+ 	std	r10,_CTR(r1)
+ 	std	r2,GPR2(r1)		/* save r2 in stackframe	*/
+-	SAVE_4GPRS(3, r1)		/* save r3 - r6 in stackframe   */
+-	SAVE_2GPRS(7, r1)		/* save r7, r8 in stackframe	*/
++	SAVE_GPRS(3, 8, r1)		/* save r3 - r8 in stackframe   */
+ 	mflr	r9			/* Get LR, later save to stack	*/
+ 	ld	r2,PACATOC(r13)		/* get kernel TOC into r2	*/
+ 	std	r9,_LINK(r1)
+@@ -693,8 +692,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_CFAR)
+ 	mtlr	r9
+ 	ld	r9,_CCR(r1)
+ 	mtcr	r9
+-	REST_8GPRS(2, r1)
+-	REST_4GPRS(10, r1)
++	REST_GPRS(2, 13, r1)
+ 	REST_GPR(0, r1)
+ 	/* restore original r1. */
+ 	ld	r1,GPR1(r1)
+diff --git a/arch/powerpc/kernel/head_32.h b/arch/powerpc/kernel/head_32.h
+index 349c4a820231..261c79bdbe53 100644
+--- a/arch/powerpc/kernel/head_32.h
++++ b/arch/powerpc/kernel/head_32.h
+@@ -115,8 +115,7 @@ _ASM_NOKPROBE_SYMBOL(\name\()_virt)
+ 	stw	r10,8(r1)
+ 	li	r10, \trapno
+ 	stw	r10,_TRAP(r1)
+-	SAVE_4GPRS(3, r1)
+-	SAVE_2GPRS(7, r1)
++	SAVE_GPRS(3, 8, r1)
+ 	SAVE_NVGPRS(r1)
+ 	stw	r2,GPR2(r1)
+ 	stw	r12,_NIP(r1)
+diff --git a/arch/powerpc/kernel/head_booke.h b/arch/powerpc/kernel/head_booke.h
+index ef8d1b1c234e..bb6d5d0fc4ac 100644
+--- a/arch/powerpc/kernel/head_booke.h
++++ b/arch/powerpc/kernel/head_booke.h
+@@ -87,8 +87,7 @@ END_BTB_FLUSH_SECTION
+ 	stw	r10, 8(r1)
+ 	li	r10, \trapno
+ 	stw	r10,_TRAP(r1)
+-	SAVE_4GPRS(3, r1)
+-	SAVE_2GPRS(7, r1)
++	SAVE_GPRS(3, 8, r1)
+ 	SAVE_NVGPRS(r1)
+ 	stw	r2,GPR2(r1)
+ 	stw	r12,_NIP(r1)
+diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
+index 4c6d1a8dcefe..ff8c8c03f41a 100644
+--- a/arch/powerpc/kernel/interrupt_64.S
++++ b/arch/powerpc/kernel/interrupt_64.S
+@@ -166,10 +166,9 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	 * The value of AMR only matters while we're in the kernel.
+ 	 */
+ 	mtcr	r2
+-	ld	r2,GPR2(r1)
+-	ld	r3,GPR3(r1)
+-	ld	r13,GPR13(r1)
+-	ld	r1,GPR1(r1)
++	REST_GPRS(2, 3, r1)
++	REST_GPR(13, r1)
++	REST_GPR(1, r1)
+ 	RFSCV_TO_USER
+ 	b	.	/* prevent speculative execution */
+ 
+@@ -187,9 +186,8 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	mtctr	r3
+ 	mtlr	r4
+ 	mtspr	SPRN_XER,r5
+-	REST_10GPRS(2, r1)
+-	REST_2GPRS(12, r1)
+-	ld	r1,GPR1(r1)
++	REST_GPRS(2, 13, r1)
++	REST_GPR(1, r1)
+ 	RFI_TO_USER
+ .Lsyscall_vectored_\name\()_rst_end:
+ 
+@@ -378,10 +376,9 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	 * The value of AMR only matters while we're in the kernel.
+ 	 */
+ 	mtcr	r2
+-	ld	r2,GPR2(r1)
+-	ld	r3,GPR3(r1)
+-	ld	r13,GPR13(r1)
+-	ld	r1,GPR1(r1)
++	REST_GPRS(2, 3, r1)
++	REST_GPR(13, r1)
++	REST_GPR(1, r1)
+ 	RFI_TO_USER
+ 	b	.	/* prevent speculative execution */
+ 
+@@ -392,8 +389,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_HAS_PPR)
+ 	mtctr	r3
+ 	mtspr	SPRN_XER,r4
+ 	ld	r0,GPR0(r1)
+-	REST_8GPRS(4, r1)
+-	ld	r12,GPR12(r1)
++	REST_GPRS(4, 12, r1)
+ 	b	.Lsyscall_restore_regs_cont
+ .Lsyscall_rst_end:
+ 
+@@ -522,17 +518,14 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	ld	r6,_XER(r1)
+ 	li	r0,0
+ 
+-	REST_4GPRS(7, r1)
+-	REST_2GPRS(11, r1)
+-	REST_GPR(13, r1)
++	REST_GPRS(7, 13, r1)
+ 
+ 	mtcr	r3
+ 	mtlr	r4
+ 	mtctr	r5
+ 	mtspr	SPRN_XER,r6
+ 
+-	REST_4GPRS(2, r1)
+-	REST_GPR(6, r1)
++	REST_GPRS(2, 6, r1)
+ 	REST_GPR(0, r1)
+ 	REST_GPR(1, r1)
+ 	.ifc \srr,srr
+@@ -629,8 +622,7 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	ld	r6,_CCR(r1)
+ 	li	r0,0
+ 
+-	REST_4GPRS(7, r1)
+-	REST_2GPRS(11, r1)
++	REST_GPRS(7, 12, r1)
+ 
+ 	mtlr	r3
+ 	mtctr	r4
+@@ -642,7 +634,7 @@ ALT_FTR_SECTION_END_IFCLR(CPU_FTR_STCX_CHECKS_ADDRESS)
+ 	 */
+ 	std	r0,STACK_FRAME_OVERHEAD-16(r1)
+ 
+-	REST_4GPRS(2, r1)
++	REST_GPRS(2, 5, r1)
+ 
+ 	bne-	cr1,1f /* emulate stack store */
+ 	mtcr	r6
+diff --git a/arch/powerpc/kernel/optprobes_head.S b/arch/powerpc/kernel/optprobes_head.S
+index 19ea3312403c..5c7f0b4b784b 100644
+--- a/arch/powerpc/kernel/optprobes_head.S
++++ b/arch/powerpc/kernel/optprobes_head.S
+@@ -10,8 +10,8 @@
+ #include <asm/asm-offsets.h>
+ 
+ #ifdef CONFIG_PPC64
+-#define SAVE_30GPRS(base) SAVE_10GPRS(2,base); SAVE_10GPRS(12,base); SAVE_10GPRS(22,base)
+-#define REST_30GPRS(base) REST_10GPRS(2,base); REST_10GPRS(12,base); REST_10GPRS(22,base)
++#define SAVE_30GPRS(base) SAVE_GPRS(2, 31, base)
++#define REST_30GPRS(base) REST_GPRS(2, 31, base)
+ #define TEMPLATE_FOR_IMM_LOAD_INSNS	nop; nop; nop; nop; nop
+ #else
+ #define SAVE_30GPRS(base) stmw	r2, GPR2(base)
+diff --git a/arch/powerpc/kernel/tm.S b/arch/powerpc/kernel/tm.S
+index 2b91f233b05d..3beecc32940b 100644
+--- a/arch/powerpc/kernel/tm.S
++++ b/arch/powerpc/kernel/tm.S
+@@ -226,11 +226,8 @@ _GLOBAL(tm_reclaim)
+ 
+ 	/* Sync the userland GPRs 2-12, 14-31 to thread->regs: */
+ 	SAVE_GPR(0, r7)				/* user r0 */
+-	SAVE_GPR(2, r7)				/* user r2 */
+-	SAVE_4GPRS(3, r7)			/* user r3-r6 */
+-	SAVE_GPR(8, r7)				/* user r8 */
+-	SAVE_GPR(9, r7)				/* user r9 */
+-	SAVE_GPR(10, r7)			/* user r10 */
++	SAVE_GPRS(2, 6, r7)			/* user r2-r6 */
++	SAVE_GPRS(8, 10, r7)			/* user r8-r10 */
+ 	ld	r3, GPR1(r1)			/* user r1 */
+ 	ld	r4, GPR7(r1)			/* user r7 */
+ 	ld	r5, GPR11(r1)			/* user r11 */
+@@ -445,12 +442,8 @@ restore_gprs:
+ 	ld	r6, THREAD_TM_PPR(r3)
+ 
+ 	REST_GPR(0, r7)				/* GPR0 */
+-	REST_2GPRS(2, r7)			/* GPR2-3 */
+-	REST_GPR(4, r7)				/* GPR4 */
+-	REST_4GPRS(8, r7)			/* GPR8-11 */
+-	REST_2GPRS(12, r7)			/* GPR12-13 */
+-
+-	REST_NVGPRS(r7)				/* GPR14-31 */
++	REST_GPRS(2, 4, r7)			/* GPR2-4 */
++	REST_GPRS(8, 31, r7)			/* GPR8-31 */
+ 
+ 	/* Load up PPR and DSCR here so we don't run with user values for long */
+ 	mtspr	SPRN_DSCR, r5
+diff --git a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S b/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+index f9fd5f743eba..d636fc755f60 100644
+--- a/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
++++ b/arch/powerpc/kernel/trace/ftrace_64_mprofile.S
+@@ -41,15 +41,14 @@ _GLOBAL(ftrace_regs_caller)
+ 
+ 	/* Save all gprs to pt_regs */
+ 	SAVE_GPR(0, r1)
+-	SAVE_10GPRS(2, r1)
++	SAVE_GPRS(2, 11, r1)
+ 
+ 	/* Ok to continue? */
+ 	lbz	r3, PACA_FTRACE_ENABLED(r13)
+ 	cmpdi	r3, 0
+ 	beq	ftrace_no_trace
+ 
+-	SAVE_10GPRS(12, r1)
+-	SAVE_10GPRS(22, r1)
++	SAVE_GPRS(12, 31, r1)
+ 
+ 	/* Save previous stack pointer (r1) */
+ 	addi	r8, r1, SWITCH_FRAME_SIZE
+@@ -108,10 +107,8 @@ ftrace_regs_call:
+ #endif
+ 
+ 	/* Restore gprs */
+-	REST_GPR(0,r1)
+-	REST_10GPRS(2,r1)
+-	REST_10GPRS(12,r1)
+-	REST_10GPRS(22,r1)
++	REST_GPR(0, r1)
++	REST_GPRS(2, 31, r1)
+ 
+ 	/* Restore possibly modified LR */
+ 	ld	r0, _LINK(r1)
+@@ -157,7 +154,7 @@ _GLOBAL(ftrace_caller)
+ 	stdu	r1, -SWITCH_FRAME_SIZE(r1)
+ 
+ 	/* Save all gprs to pt_regs */
+-	SAVE_8GPRS(3, r1)
++	SAVE_GPRS(3, 10, r1)
+ 
+ 	lbz	r3, PACA_FTRACE_ENABLED(r13)
+ 	cmpdi	r3, 0
+@@ -194,7 +191,7 @@ ftrace_call:
+ 	mtctr	r3
+ 
+ 	/* Restore gprs */
+-	REST_8GPRS(3,r1)
++	REST_GPRS(3, 10, r1)
+ 
+ 	/* Restore callee's TOC */
+ 	ld	r2, 24(r1)
+diff --git a/arch/powerpc/kvm/book3s_hv_rmhandlers.S b/arch/powerpc/kvm/book3s_hv_rmhandlers.S
+index 32a4b4d412b9..81fc1e0ebe9a 100644
+--- a/arch/powerpc/kvm/book3s_hv_rmhandlers.S
++++ b/arch/powerpc/kvm/book3s_hv_rmhandlers.S
+@@ -2711,8 +2711,7 @@ kvmppc_bad_host_intr:
+ 	std	r0, GPR0(r1)
+ 	std	r9, GPR1(r1)
+ 	std	r2, GPR2(r1)
+-	SAVE_4GPRS(3, r1)
+-	SAVE_2GPRS(7, r1)
++	SAVE_GPRS(3, 8, r1)
+ 	srdi	r0, r12, 32
+ 	clrldi	r12, r12, 32
+ 	std	r0, _CCR(r1)
+@@ -2735,7 +2734,7 @@ kvmppc_bad_host_intr:
+ 	ld	r9, HSTATE_SCRATCH2(r13)
+ 	ld	r12, HSTATE_SCRATCH0(r13)
+ 	GET_SCRATCH0(r0)
+-	SAVE_4GPRS(9, r1)
++	SAVE_GPRS(9, 12, r1)
+ 	std	r0, GPR13(r1)
+ 	SAVE_NVGPRS(r1)
+ 	ld	r5, HSTATE_CFAR(r13)
+diff --git a/arch/powerpc/lib/test_emulate_step_exec_instr.S b/arch/powerpc/lib/test_emulate_step_exec_instr.S
+index 9ef941d958d8..5473f9d03df3 100644
+--- a/arch/powerpc/lib/test_emulate_step_exec_instr.S
++++ b/arch/powerpc/lib/test_emulate_step_exec_instr.S
+@@ -37,7 +37,7 @@ _GLOBAL(exec_instr)
+ 	 * The stack pointer (GPR1) and the thread pointer (GPR13) are not
+ 	 * saved as these should not be modified anyway.
+ 	 */
+-	SAVE_2GPRS(2, r1)
++	SAVE_GPRS(2, 3, r1)
+ 	SAVE_NVGPRS(r1)
+ 
+ 	/*
+@@ -75,8 +75,7 @@ _GLOBAL(exec_instr)
+ 
+ 	/* Load GPRs from pt_regs */
+ 	REST_GPR(0, r31)
+-	REST_10GPRS(2, r31)
+-	REST_GPR(12, r31)
++	REST_GPRS(2, 12, r31)
+ 	REST_NVGPRS(r31)
+ 
+ 	/* Placeholder for the test instruction */
+@@ -99,8 +98,7 @@ _GLOBAL(exec_instr)
+ 	subi	r3, r3, GPR0
+ 	SAVE_GPR(0, r3)
+ 	SAVE_GPR(2, r3)
+-	SAVE_8GPRS(4, r3)
+-	SAVE_GPR(12, r3)
++	SAVE_GPRS(4, 12, r3)
+ 	SAVE_NVGPRS(r3)
+ 
+ 	/* Save resulting LR to pt_regs */
+-- 
+2.35.1
+
+
+
