@@ -2,259 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929CBC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CDEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:49:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231791AbiGKOte (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:49:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43286 "EHLO
+        id S231782AbiGKOt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231810AbiGKOtN (ORCPT
+        with ESMTP id S231800AbiGKOtt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:49:13 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954B11A048
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:49:11 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 73so4905483pgb.10
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:49:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=2oP3T6c8OpT+jPKMLUEc9deKD2a+lLCkI+dr67TTYwo=;
-        b=ZICQhKxTE/AbBfYgMsZz7KcdulqKDANLGdb04sKxtxz/TrCHbPpzfL/sOwT3GRXGJy
-         MAY+h4gvpEgKuf7samwmBG1GwFmvGuPoBzMrna/7VItibnWVPruMUsk0T9bR0zV18XH2
-         MBEZ3WehzP6JfXIyMFxUEwwLB7iqh4jV1Gcdd8KVVBYO5zOhNAnlAoNaoRMxf//fDj94
-         mnLbZLRdqLTu0H4v344mgsFHUOLpYsulbIZSbtIO0FMexDZ/8TB1xZqVarPuL9uw0Zw+
-         W11sIojqscGxYeaTbQoIT/FzXvd1BbAaVAD7af1V3mvWokQHEpe0v0nKw++RynAdoDi1
-         PO7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=2oP3T6c8OpT+jPKMLUEc9deKD2a+lLCkI+dr67TTYwo=;
-        b=zdZpeczbFPJiHDuOB4sNhjtnaZMoqAdWOjUwhVGiUBAp/SBaUvh9qzSD9fPKhpruNF
-         sdr30I4f09eH3RIH6pbzokhgdX3wnPy73KNwZN36YIDGtvirvmUQUO5s7fy2dyX7tS2I
-         rq49PqZLCe49dugVHJn82rmR2Xj9gqHmoP8Vb6nzP6fGF9LFc7/RjeZB6xWMV/611CS6
-         q0sdbu3t8pojnlClov3/5xo0w3X4ABlO65ZBwXG2cF26s0W4In63dZIowjc9C71kqMlh
-         GvPgzk3V46ASDWBBqZhV75TIIGOOwOBbEJjKbeUKm1frEAr8+1t2WyDPFfY1zHLLRL9W
-         ViFw==
-X-Gm-Message-State: AJIora+YkecP5jc6mLLL7bwXaFNhf3xlH6yJLQDV0ZraCpRKWGjl9Hib
-        n1UZDepqaKUJ58rqe1d96iMK
-X-Google-Smtp-Source: AGRyM1v3TK5Vbpo67oR7pAlvIP0+PUdOk31RICXvVEiPfRHQ8XQJRRwK9MmOGkPlm1n97IUQcwingQ==
-X-Received: by 2002:a65:4501:0:b0:3fc:4895:283b with SMTP id n1-20020a654501000000b003fc4895283bmr16621998pgq.231.1657550950982;
-        Mon, 11 Jul 2022 07:49:10 -0700 (PDT)
-Received: from thinkpad ([117.207.27.92])
-        by smtp.gmail.com with ESMTPSA id y64-20020a626443000000b005289e190956sm4967534pfb.177.2022.07.11.07.49.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 07:49:10 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 20:19:03 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Serge Semin <fancer.lancer@gmail.com>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        linux-pci@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 00/24] dmaengine: dw-edma: Add RP/EP local DMA
- controllers support
-Message-ID: <20220711144903.GB3830@thinkpad>
-References: <20220610091459.17612-1-Sergey.Semin@baikalelectronics.ru>
- <20220610092133.uhsu5gphhvjhe2jm@mobilestation>
- <20220711144533.GA3830@thinkpad>
+        Mon, 11 Jul 2022 10:49:49 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A136B32449;
+        Mon, 11 Jul 2022 07:49:48 -0700 (PDT)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LhRWV2BZ9z67XMQ;
+        Mon, 11 Jul 2022 22:45:26 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 16:49:46 +0200
+Received: from [10.202.227.197] (10.202.227.197) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 11 Jul 2022 15:49:45 +0100
+Message-ID: <2b36e407-f053-20cc-1d7f-983a4424665c@huawei.com>
+Date:   Mon, 11 Jul 2022 15:49:46 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220711144533.GA3830@thinkpad>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Christoph Hellwig <hch@lst.de>
+CC:     <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+ <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+ <6367a264-a3d3-8857-9b5a-2afcd25580cb@opensource.wdc.com>
+ <a415e4a1-72ce-53e1-437a-fc7e56e4b913@huawei.com>
+ <62b801e8-66b6-0af7-b0c9-195823bf9f62@opensource.wdc.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <62b801e8-66b6-0af7-b0c9-195823bf9f62@opensource.wdc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.227.197]
+X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 08:15:41PM +0530, Manivannan Sadhasivam wrote:
-> On Fri, Jun 10, 2022 at 12:21:33PM +0300, Serge Semin wrote:
-> > On Fri, Jun 10, 2022 at 12:14:35PM +0300, Serge Semin wrote:
-> > > This is a final patchset in the series created in the framework of
-> > > my Baikal-T1 PCIe/eDMA-related work:
-> > > 
-> > > [1: In-progress v4] PCI: dwc: Various fixes and cleanups
-> > > Link: https://lore.kernel.org/linux-pci/20220610082535.12802-1-Sergey.Semin@baikalelectronics.ru/
-> > > [2: In-progress v3] PCI: dwc: Add hw version and dma-ranges support
-> > > Link: https://lore.kernel.org/linux-pci/20220610084444.14549-1-Sergey.Semin@baikalelectronics.ru/
-> > > [3: In-progress v3] PCI: dwc: Add generic resources and Baikal-T1 support
-> > > Link: https://lore.kernel.org/linux-pci/20220610085706.15741-1-Sergey.Semin@baikalelectronics.ru/
-> > > [4: In-progress v3] dmaengine: dw-edma: Add RP/EP local DMA support
-> > > Link: ---you are looking at it---
-> > > 
-> > > Note it is very recommended to merge the patchsets in the same order as
-> > > they are listed in the set above in order to have them applied smoothly.
-> > > Nothing prevents them from being reviewed synchronously though.
-> > > 
-> > > Please note originally this series was self content, but due to Frank
-> > > being a bit faster in his work submission I had to rebase my patchset onto
-> > > his one. So now this patchset turns to be dependent on the Frank' work:
-> > > 
-> > > Link: https://lore.kernel.org/linux-pci/20220524152159.2370739-1-Frank.Li@nxp.com/
-> > > 
-> > > So please merge Frank' series first before applying this one.
-> > > 
-> > > Here is a short summary regarding this patchset. The series starts with
-> > > fixes patches. We discovered that the dw-edma-pcie.c driver incorrectly
-> > > initializes the LL/DT base addresses for the platforms with not matching
-> > > CPU and PCIe memory spaces. It is fixed by using the pci_bus_address()
-> > > method to get a correct base address. After that you can find a series of
-> > > the interleaved xfers fixes. It turned out the interleaved transfers
-> > > implementation didn't work quite correctly from the very beginning for
-> > > instance missing src/dst addresses initialization, etc. In the framework
-> > > of the next two patches we suggest to add a new platform-specific
-> > > callback - pci_address() and use it to convert the CPU address to the PCIe
-> > > space address. It is at least required for the DW eDMA remote End-point
-> > > setup on the platforms with not-matching CPU/PCIe address spaces. In case
-> > > of the DW eDMA local RP/EP setup the conversion will be done automatically
-> > > by the outbound iATU (if no DMA-bypass flag is specified for the
-> > > corresponding iATU window). Then we introduce a set of the patches to make
-> > > the DebugFS part of the code supporting the multi-eDMA controllers
-> > > platforms. It starts with several cleanup patches and is closed joining
-> > > the Read/Write channels into a single DMA-device as they originally should
-> > > have been. After that you can find the patches with adding the non-atomic
-> > > io-64 methods usage, dropping DT-region descriptors allocation, replacing
-> > > chip IDs with the device name. In addition to that in order to have the
-> > > eDMA embedded into the DW PCIe RP/EP supported we need to bypass the
-> > > dma-ranges-based memory ranges mapping since in case of the root port DT
-> > > node it's applicable for the peripheral PCIe devices only. Finally at the
-> > > series closure we introduce a generic DW eDMA controller support being
-> > > available in the DW PCIe Root Port/Endpoint driver.
-> > > 
-> > > Link: https://lore.kernel.org/linux-pci/20220324014836.19149-1-Sergey.Semin@baikalelectronics.ru/
-> > > Changelog v2:
-> > > - Drop the patches:
-> > >   [PATCH 1/25] dmaengine: dw-edma: Drop dma_slave_config.direction field usage
-> > >   [PATCH 2/25] dmaengine: dw-edma: Fix eDMA Rd/Wr-channels and DMA-direction semantics
-> > >   since they are going to be merged in in the framework of the
-> > >   Frank's patchset.
-> > > - Add a new patch: "dmaengine: dw-edma: Release requested IRQs on
-> > >   failure."
-> > > - Drop __iomem qualifier from the struct dw_edma_debugfs_entry instance
-> > >   definition in the dw_edma_debugfs_u32_get() method. (@Manivannan)
-> > > - Add a new patch: "dmaengine: dw-edma: Rename DebugFS dentry variables to
-> > >   'dent'." (@Manivannan)
-> > > - Slightly extend the eDMA name array size. (@Manivannan)
-> > > - Change the specific DMA mapping comment a bit to being
-> > >   clearer. (@Manivannan)
-> > > - Add a new patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
-> > >   method."
-> > > - Don't fail eDMA detection procedure if the DW eDMA driver couldn't probe
-> > >   device. That happens if the driver is disabled. (@Manivannan)
-> > > - Add "dma" registers resource mapping procedure. (@Manivannan)
-> > > - Move the eDMA CSRs space detection into the dw_pcie_map_detect() method.
-> > > - Remove eDMA on the dw_pcie_ep_init() internal errors. (@Manivannan)
-> > > - Remove eDMA in the dw_pcie_ep_exit() method.
-> > > - Move the dw_pcie_edma_detect() method execution to the tail of the
-> > >   dw_pcie_ep_init() function.
-> > > 
-> > > Link: https://lore.kernel.org/linux-pci/20220503225104.12108-1-Sergey.Semin@baikalelectronics.ru/
-> > > Changelog v3:
-> > 
-> > > - Conditionally set dchan->dev->device.dma_coherent field since it can
-> > >   be missing on some platforms. (@Manivannan)
-> > > - Drop the patch: "PCI: dwc: Add generic iATU/eDMA CSRs space detection
-> > >   method". A similar modification has been done in another patchset.
-> > > - Add more comprehensive and less regression prune eDMA block detection
-> > >   procedure.
-> > > - Drop the patch: "dma-direct: take dma-ranges/offsets into account in
-> > >   resource mapping". It will be separately reviewed.
-> > > - Remove Manivannan tb tag from the modified patches.
-> > 
-> > @Mani, several patches have been changed. Could you have a look at the
-> > series one more time?
-> > 
+On 11/07/2022 11:40, Damien Le Moal wrote:
+> On 7/11/22 16:36, John Garry wrote:
+>> On 11/07/2022 00:08, Damien Le Moal wrote:
+>>>> Ah, I think that I misunderstood Damien's question. I thought he was
+>>>> asking why not keep shost max_sectors at dma_max_mapping_size() and then
+>>>> init each sdev request queue max hw sectors at dma_opt_mapping_size().
+>>> I was suggesting the reverse:)  Keep the device hard limit
+>>> (max_hw_sectors) to the max dma mapping and set the soft limit
+>>> (max_sectors) to the optimal dma mapping size.
+>>
+>> Sure, but as I mentioned below, I only see a small % of requests whose
+>> mapping size exceeds max_sectors but that still causes a big performance
+>> hit. So that is why I want to set the hard limit as the optimal dma
+>> mapping size.
 > 
-> Reviewed all patches in this series. I believe this will still work on my
-> hardware once I test it. But even if it doesn't work, we can fix it in
-> 5.20-rc's as it supposed to be. So definitely not a show stopper.
-> 
-> Vinod: Could you please merge this one for 5.20?
+> How can you possibly end-up with requests larger than max_sectors ? BIO
+> split is done using this limit, right ? Or is it that request merging is
+> allowed up to max_hw_sectors even if the resulting request size exceeds
+> max_sectors ?
 > 
 
-Hmm, maybe this can go through pci tree as Bjorn merged earlier edma series as
-well. In that case Vinod's ack is sufficient.
+Ah, I see how I thought that I was seeing requests whose size exceeded 
+max_sectors. Somebody must have changed a single disk in my system and 
+this odd disk has a higher default max_sectors_kb -- 512 vs 128 for the 
+rest.
 
-But I'll leave it up to Bjorn and Vinod.
+So ignoring my nonesence that I was seeing oversize requests, as for the 
+idea to set default max_sectors at dma_opt_mapping_size(), I see some 
+issues:
+- for SAS disks I have no common point to impose this limit. Maybe in 
+the slave configure callback, but each SAS driver has its own 
+implementation generally
+- Even if we do config in slave_configure callback the max_sectors value 
+is overwritten later in sd_revalidate_disk().
+
+This following change could sort the issue though:
+
+---8<----
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 895b56c8f25e..bb49bea3d161 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -3214,6 +3214,8 @@ static int sd_revalidate_disk(struct gendisk *disk)
+         sector_t old_capacity = sdkp->capacity;
+         unsigned char *buffer;
+         unsigned int dev_max, rw_max;
++       struct Scsi_Host *host = sdp->host;
++       struct device *dev = host->dma_dev;
+
+         SCSI_LOG_HLQUEUE(3, sd_printk(KERN_INFO, sdkp,
+                                       "sd_revalidate_disk\n"));
+@@ -3296,8 +3298,13 @@ static int sd_revalidate_disk(struct gendisk *disk)
+                                       (sector_t)BLK_DEF_MAX_SECTORS);
+         }
+
+-       /* Do not exceed controller limit */
+-       rw_max = min(rw_max, queue_max_hw_sectors(q));
++       if (dev->dma_mask) {
++               /* Do not exceed dma optimal limit */
++               rw_max = min_t(unsigned int, rw_max,
++                               dma_opt_mapping_size(dev) >> SECTOR_SHIFT);
++       } else {
++               rw_max = min(rw_max, queue_max_hw_sectors(q));
++       }
+
+         /*
+          * Only update max_sectors if previously unset or if the 
+current value
+
+--->8---
+
+Or I could go with the method in this series, which is not preferred. 
+Let me know what you think.
 
 Thanks,
-Mani
+John
 
-> Thanks,
-> Mani
-> 
-> > -Sergey
-> > 
-> > > - Rebase onto the kernel v5.18.
-> > > 
-> > > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > > Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> > > Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> > > Cc: "Krzysztof Wilczyński" <kw@linux.com>
-> > > Cc: linux-pci@vger.kernel.org
-> > > Cc: dmaengine@vger.kernel.org
-> > > Cc: linux-kernel@vger.kernel.org
-> > > 
-> > > Serge Semin (24):
-> > >   dmaengine: Fix dma_slave_config.dst_addr description
-> > >   dmaengine: dw-edma: Release requested IRQs on failure
-> > >   dmaengine: dw-edma: Convert ll/dt phys-address to PCIe bus/DMA address
-> > >   dmaengine: dw-edma: Fix missing src/dst address of the interleaved
-> > >     xfers
-> > >   dmaengine: dw-edma: Don't permit non-inc interleaved xfers
-> > >   dmaengine: dw-edma: Fix invalid interleaved xfers semantics
-> > >   dmaengine: dw-edma: Add CPU to PCIe bus address translation
-> > >   dmaengine: dw-edma: Add PCIe bus address getter to the remote EP
-> > >     glue-driver
-> > >   dmaengine: dw-edma: Drop chancnt initialization
-> > >   dmaengine: dw-edma: Fix DebugFS reg entry type
-> > >   dmaengine: dw-edma: Stop checking debugfs_create_*() return value
-> > >   dmaengine: dw-edma: Add dw_edma prefix to the DebugFS nodes descriptor
-> > >   dmaengine: dw-edma: Convert DebugFS descs to being kz-allocated
-> > >   dmaengine: dw-edma: Rename DebugFS dentry variables to 'dent'
-> > >   dmaengine: dw-edma: Simplify the DebugFS context CSRs init procedure
-> > >   dmaengine: dw-edma: Move eDMA data pointer to DebugFS node descriptor
-> > >   dmaengine: dw-edma: Join Write/Read channels into a single device
-> > >   dmaengine: dw-edma: Use DMA-engine device DebugFS subdirectory
-> > >   dmaengine: dw-edma: Use non-atomic io-64 methods
-> > >   dmaengine: dw-edma: Drop DT-region allocation
-> > >   dmaengine: dw-edma: Replace chip ID number with device name
-> > >   dmaengine: dw-edma: Bypass dma-ranges mapping for the local setup
-> > >   dmaengine: dw-edma: Skip cleanup procedure if no private data found
-> > >   PCI: dwc: Add DW eDMA engine support
-> > > 
-> > >  drivers/dma/dw-edma/dw-edma-core.c            | 216 +++++-----
-> > >  drivers/dma/dw-edma/dw-edma-core.h            |  10 +-
-> > >  drivers/dma/dw-edma/dw-edma-pcie.c            |  24 +-
-> > >  drivers/dma/dw-edma/dw-edma-v0-core.c         |  76 ++--
-> > >  drivers/dma/dw-edma/dw-edma-v0-core.h         |   1 -
-> > >  drivers/dma/dw-edma/dw-edma-v0-debugfs.c      | 372 ++++++++----------
-> > >  drivers/dma/dw-edma/dw-edma-v0-debugfs.h      |   5 -
-> > >  .../pci/controller/dwc/pcie-designware-ep.c   |  12 +-
-> > >  .../pci/controller/dwc/pcie-designware-host.c |  13 +-
-> > >  drivers/pci/controller/dwc/pcie-designware.c  | 186 +++++++++
-> > >  drivers/pci/controller/dwc/pcie-designware.h  |  20 +
-> > >  include/linux/dma/edma.h                      |  18 +-
-> > >  include/linux/dmaengine.h                     |   2 +-
-> > >  13 files changed, 589 insertions(+), 366 deletions(-)
-> > > 
-> > > -- 
-> > > 2.35.1
-> > > 
-> 
-> -- 
-> மணிவண்ணன் சதாசிவம்
-
--- 
-மணிவண்ணன் சதாசிவம்
