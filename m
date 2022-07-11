@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A9ABCCA483
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C11CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231300AbiGKJVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:21:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
+        id S231920AbiGKJVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231905AbiGKJUr (ORCPT
+        with ESMTP id S231876AbiGKJUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:20:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EA0254CBC;
-        Mon, 11 Jul 2022 02:12:42 -0700 (PDT)
+        Mon, 11 Jul 2022 05:20:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA983550B8;
+        Mon, 11 Jul 2022 02:12:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5F8BB80956;
-        Mon, 11 Jul 2022 09:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50A32C34115;
-        Mon, 11 Jul 2022 09:12:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E684061148;
+        Mon, 11 Jul 2022 09:12:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05387C341CB;
+        Mon, 11 Jul 2022 09:12:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530759;
-        bh=+L9JjLDxzqw+0yrDi4hRO6YshXQDQqOAc1leq9TyQg8=;
+        s=korg; t=1657530762;
+        bh=+vTkH3RZDBI92uQCYAYfCPRyOw85ue/9OySuXaIhlos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4WykBUGDfTfNFOroZIM42AEi6Ocw3eimi4a9gMessokUDoJGkOc6rut/2uI2xNO3
-         8XYO1BamcQiv1JmkBsFYeMQsYLgl3eUiDGDGZXLL8/u771NcjAOmWpaZX2FttqHZra
-         SvBcF8jA6Kd+El6BsFi15bf7k1LLfwuIr5wCixXA=
+        b=ju5sM/yH1rPtHOxn382t8rivyUlauYbUvhbwgEYm1d1kW0Fx7nhSjwFMd3InuplDq
+         dNOxGUg4cliHdjIFQ7iSrNwHiPbjfUwsmD8Q/IbcHn1NQNy0r2dr0Vh0lwR014g3rA
+         uFJ9h1Kf593R8ivPzh4y10rVlzOFGUsexP7pZKok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 30/55] arm64: dts: imx8mp-evk: correct gpio-led pad settings
-Date:   Mon, 11 Jul 2022 11:07:18 +0200
-Message-Id: <20220711090542.651570932@linuxfoundation.org>
+Subject: [PATCH 5.10 31/55] arm64: dts: imx8mp-evk: correct I2C3 pad settings
+Date:   Mon, 11 Jul 2022 11:07:19 +0200
+Message-Id: <20220711090542.681601764@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 References: <20220711090541.764895984@linuxfoundation.org>
@@ -52,34 +52,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit b838582ab8d5fb11b2c0275056a9f34e1d94fece ]
+[ Upstream commit 0836de513ebaae5f03014641eac996290d67493d ]
 
-0x19 is not a valid setting. According to RM bit layout,
-BIT3 and BIT0 are reserved.
-  8  7   6   5   4   3  2 1  0
- PE HYS PUE ODE FSEL X  DSE  X
+According to RM bit layout, BIT3 and BIT0 are reserved.
+ 8  7   6   5   4   3  2 1  0
+PE HYS PUE ODE FSEL X  DSE  X
 
-Correct setting with PE PUE set, DSE set to 0.
+Although function is not broken, we should not set reserved bit.
 
-Fixes: 50d336b12f34 ("arm64: dts: imx8mp-evk: Add GPIO LED support")
+Fixes: 5e4a67ff7f69 ("arm64: dts: imx8mp-evk: Add i2c3 support")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/freescale/imx8mp-evk.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 5011adb5ff1f..c0663a6c8376 100644
+index c0663a6c8376..c016f5b7d24a 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -148,7 +148,7 @@
+@@ -154,8 +154,8 @@
  
- 	pinctrl_gpio_led: gpioledgrp {
+ 	pinctrl_i2c3: i2c3grp {
  		fsl,pins = <
--			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x19
-+			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16	0x140
+-			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c3
+-			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c3
++			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c2
++			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c2
  		>;
  	};
  
