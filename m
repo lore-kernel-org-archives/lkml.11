@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D51C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7262C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234346AbiGKKAe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49280 "EHLO
+        id S234372AbiGKKAn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiGKJ72 (ORCPT
+        with ESMTP id S234406AbiGKJ7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:59:28 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243F5643E2;
-        Mon, 11 Jul 2022 02:27:47 -0700 (PDT)
+        Mon, 11 Jul 2022 05:59:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF80174E1E;
+        Mon, 11 Jul 2022 02:27:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1C9F7CE1267;
-        Mon, 11 Jul 2022 09:27:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B50C34115;
-        Mon, 11 Jul 2022 09:27:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29A7B61366;
+        Mon, 11 Jul 2022 09:27:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F43EC34115;
+        Mon, 11 Jul 2022 09:27:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531659;
-        bh=pvAUyeDuhA9Doy3U65eCiwgeQOavBWcDdXsmnMt2JGU=;
+        s=korg; t=1657531673;
+        bh=XYSrlgUfVeeMUNKDUAFz/eoIPxrvViOlDqPHy0wiAxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lN5uGUmdiKxegNotZ2X8eaJHxX6fPRvXF0IHN0h+6OUukshbqU+zRhRKy3bdnTVha
-         wL/zktvsE8fUe9aZC41KkfZBWYjiRoLdmudZV608nC4pquA2/YyMjzZHabDCa+HKa5
-         O9KCHJpXJgaJ3ATkn5NR6mgfJPMA6dvTukX1wfzM=
+        b=KjXdiOPqbBJwFj9ToE4RgcGQoEbjpiOMNFsa4Et2xwsCpM1e8nyHGfKQq5/6WZ7YY
+         hZpvXcVfIYK1LF981SMKrcw1Z/FHJC5taG4uUtj944a0SezBlVblDk/sF1r5104pOG
+         lEegvqtHFBUGSziC2zpG7/c2qiTPcY6ch1NbVcyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>, Peng Fan <peng.fan@nxp.com>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
         Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
         Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 186/230] arm64: dts: imx8mp-evk: correct the uart2 pinctl value
-Date:   Mon, 11 Jul 2022 11:07:22 +0200
-Message-Id: <20220711090609.384953911@linuxfoundation.org>
+Subject: [PATCH 5.15 191/230] arm64: dts: imx8mp-evk: correct I2C3 pad settings
+Date:   Mon, 11 Jul 2022 11:07:27 +0200
+Message-Id: <20220711090609.524474701@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,19 +50,17 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sherry Sun <sherry.sun@nxp.com>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit 2d4fb72b681205eed4553d8802632bd3270be3ba ]
+[ Upstream commit 0836de513ebaae5f03014641eac996290d67493d ]
 
-According to the IOMUXC_SW_PAD_CTL_PAD_UART2_RXD/TXD register define in
-imx8mp RM, bit0 and bit3 are reserved, and the uart2 rx/tx pin should
-enable the pull up, so need to set bit8 to 1. The original pinctl value
-0x49 is incorrect and needs to be changed to 0x140, same as uart1 and
-uart3.
+According to RM bit layout, BIT3 and BIT0 are reserved.
+ 8  7   6   5   4   3  2 1  0
+PE HYS PUE ODE FSEL X  DSE  X
 
-Fixes: 9e847693c6f3 ("arm64: dts: freescale: Add i.MX8MP EVK board support")
-Reviewed-by: Haibo Chen <haibo.chen@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Although function is not broken, we should not set reserved bit.
+
+Fixes: 5e4a67ff7f69 ("arm64: dts: imx8mp-evk: Add i2c3 support")
 Signed-off-by: Peng Fan <peng.fan@nxp.com>
 Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Signed-off-by: Shawn Guo <shawnguo@kernel.org>
@@ -73,17 +70,17 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-index 3c4369d6468c..3f424a8937f1 100644
+index de6f3297fea4..5c9fb39dd99e 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mp-evk.dts
-@@ -383,8 +383,8 @@
+@@ -364,8 +364,8 @@
  
- 	pinctrl_uart2: uart2grp {
+ 	pinctrl_i2c3: i2c3grp {
  		fsl,pins = <
--			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x49
--			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x49
-+			MX8MP_IOMUXC_UART2_RXD__UART2_DCE_RX	0x140
-+			MX8MP_IOMUXC_UART2_TXD__UART2_DCE_TX	0x140
+-			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c3
+-			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c3
++			MX8MP_IOMUXC_I2C3_SCL__I2C3_SCL		0x400001c2
++			MX8MP_IOMUXC_I2C3_SDA__I2C3_SDA		0x400001c2
  		>;
  	};
  
