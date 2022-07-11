@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B93C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB527C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233930AbiGKJvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33140 "EHLO
+        id S233938AbiGKJve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:51:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiGKJuh (ORCPT
+        with ESMTP id S233803AbiGKJuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 05:50:37 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99BC27FF6;
-        Mon, 11 Jul 2022 02:24:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665E723150;
+        Mon, 11 Jul 2022 02:24:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 491A16112E;
-        Mon, 11 Jul 2022 09:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59B57C341C0;
-        Mon, 11 Jul 2022 09:24:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C2961363;
+        Mon, 11 Jul 2022 09:24:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12865C34115;
+        Mon, 11 Jul 2022 09:24:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531485;
-        bh=utpFc4eprk1ZOCb4ywBMrgGC5I9nTAOGmMQyCLDsbcY=;
+        s=korg; t=1657531488;
+        bh=sU8MHd1BAT9pPPmpxJARHgNTc6LMa/2QtgH3sVlDSB8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PweaJCB26qzp9Dy5I1pLT3o49QkIMxRzSaPaZg7G2cpWhg3mw6GW6vwJBaVAwIfbR
-         5lN2kO4Y5qgTn7tY/XYJvkr8sQyJ2b6OYAgLLw530xSLJ6VA9cY2g3Kcgz8W0krqGI
-         fq1wpHzpS4Zxxo6misfZCTEkFCgMx81nkQ2nk6wU=
+        b=ZJqGIbYlHnyo2Dn3Us2xjj2cjycwcaCndA+8VpJbngON6fGdT9lLtv8m4Ui8Esd0W
+         BM8tGTG2u6OqIZY1DRojTqupiBDws75g1u6IbcZrZ3dzyeGFeNxd6IjPHD5MNLS7ma
+         NIV8rQ0YnjnLcovf6w6EV9hZ0iHEqTQb3p6Nj+zM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Schickel <lordhoto@gmail.com>,
+        stable@vger.kernel.org, Maurizio Avogadro <mavoga@gmail.com>,
         Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 121/230] ALSA: usb-audio: add mapping for MSI MPG X570S Carbon Max Wifi.
-Date:   Mon, 11 Jul 2022 11:06:17 +0200
-Message-Id: <20220711090607.497626700@linuxfoundation.org>
+Subject: [PATCH 5.15 122/230] ALSA: usb-audio: add mapping for MSI MAG X570S Torpedo MAX.
+Date:   Mon, 11 Jul 2022 11:06:18 +0200
+Message-Id: <20220711090607.526500681@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,55 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Schickel <lordhoto@gmail.com>
+From: Maurizio Avogadro <mavoga@gmail.com>
 
-[ Upstream commit 5762f980ca10dcfe5eead7c40d1c34cae61f409b ]
+[ Upstream commit 4ddef9c4d70aae0c9029bdec7c3f7f1c1c51ff8c ]
 
-The USB audio device 0db0:419c based on the Realtek ALC4080 chip exposes
-all playback volume controls as "PCM". This is makes distinguishing the
-individual functions hard.
+The USB audio device 0db0:a073 based on the Realtek ALC4080 chipset
+exposes all playback volume controls as "PCM". This makes
+distinguishing the individual functions hard.
+The mapping already adopted for device 0db0:419c based on the same
+chipset fixes the issue, apply it for this device too.
 
-The added mapping distinguishes all playback volume controls as their
-respective function:
- - Speaker              - for back panel output
- - Frontpanel Headphone - for front panel output
- - IEC958               - for digital output on the back panel
-
-This clarifies the individual volume control functions for users.
-
-Signed-off-by: Johannes Schickel <lordhoto@gmail.com>
-Link: https://lore.kernel.org/r/20220115140257.8751-1-lordhoto@gmail.com
+Signed-off-by: Maurizio Avogadro <mavoga@gmail.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/Yl1ykPaGgsFf3SnW@ryzen
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/mixer_maps.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ sound/usb/mixer_maps.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/sound/usb/mixer_maps.c b/sound/usb/mixer_maps.c
-index 6ffd23f2ee65..64fdca76b40e 100644
+index 64fdca76b40e..997425ef0a29 100644
 --- a/sound/usb/mixer_maps.c
 +++ b/sound/usb/mixer_maps.c
-@@ -423,6 +423,14 @@ static const struct usbmix_name_map aorus_master_alc1220vb_map[] = {
- 	{}
- };
- 
-+/* MSI MPG X570S Carbon Max Wifi with ALC4080  */
-+static const struct usbmix_name_map msi_mpg_x570s_carbon_max_wifi_alc4080_map[] = {
-+	{ 29, "Speaker Playback" },
-+	{ 30, "Front Headphone Playback" },
-+	{ 32, "IEC958 Playback" },
-+	{}
-+};
-+
- /*
-  * Control map entries
-  */
-@@ -574,6 +582,10 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
- 		.map = trx40_mobo_map,
- 		.connector_map = trx40_mobo_connector_map,
+@@ -586,6 +586,10 @@ static const struct usbmix_ctl_map usbmix_ctl_maps[] = {
+ 		.id = USB_ID(0x0db0, 0x419c),
+ 		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
  	},
-+	{	/* MSI MPG X570S Carbon Max Wifi */
-+		.id = USB_ID(0x0db0, 0x419c),
++	{	/* MSI MAG X570S Torpedo Max */
++		.id = USB_ID(0x0db0, 0xa073),
 +		.map = msi_mpg_x570s_carbon_max_wifi_alc4080_map,
 +	},
  	{	/* MSI TRX40 */
