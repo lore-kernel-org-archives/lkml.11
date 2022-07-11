@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC02C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E14C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231585AbiGKJQQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        id S231592AbiGKJQT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:16:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231742AbiGKJOl (ORCPT
+        with ESMTP id S231736AbiGKJOk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:14:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCD62A428;
-        Mon, 11 Jul 2022 02:10:37 -0700 (PDT)
+        Mon, 11 Jul 2022 05:14:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 145F92A414;
+        Mon, 11 Jul 2022 02:10:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB68F611F9;
-        Mon, 11 Jul 2022 09:10:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EDAC34115;
-        Mon, 11 Jul 2022 09:10:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B896B80E5E;
+        Mon, 11 Jul 2022 09:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 967A4C34115;
+        Mon, 11 Jul 2022 09:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530636;
-        bh=lIq5QL1O+Kc+TdTym8+QkepgY8j0DpxAsVZjsV1n+AI=;
+        s=korg; t=1657530633;
+        bh=dChCWsb+4khBPPsnfWD9LiN8uRlrpm1uvS/5ig3Xag0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nkUgLCsskKyZLF7qmoxehx6brgjuA2RcEyjLRopAISTleALkPWg7bhOlcEYbN0diK
-         os94p6TxCI+OdzWUZcl1/FuFGf5D2zMmi7wdtrBMshXsi2xQS57dMpyaTgD3kHb92m
-         1O5JEAvnojSO0bnLM5bAonCBGwgxevRepBuSGDIQ=
+        b=EdMtt6zrQZUWo6vieh+38fmd/fbGSELQ5CWWO6S5c1his4JO59urTa79/GSd/nPoi
+         F+132Zeq5hZ8Rnbnfa80Q75AvRwo+kWkEB1hsBDXyySDnW4k7XfDFEmpId0NQCbZaZ
+         +ETFWu0kdDlZD7gKyKUx6Qvr0oCyF+s5OWMwfod4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>,
+        stable@vger.kernel.org, Oliver Neukum <oneukum@suse.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 07/38] net: rose: fix UAF bug caused by rose_t0timer_expiry
-Date:   Mon, 11 Jul 2022 11:06:49 +0200
-Message-Id: <20220711090538.945388564@linuxfoundation.org>
+Subject: [PATCH 5.4 06/38] usbnet: fix memory leak in error case
+Date:   Mon, 11 Jul 2022 11:06:48 +0200
+Message-Id: <20220711090538.916851659@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -48,73 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Duoming Zhou <duoming@zju.edu.cn>
+From: Oliver Neukum <oneukum@suse.com>
 
-commit 148ca04518070910739dfc4eeda765057856403d upstream.
+commit b55a21b764c1e182014630fa5486d717484ac58f upstream.
 
-There are UAF bugs caused by rose_t0timer_expiry(). The
-root cause is that del_timer() could not stop the timer
-handler that is running and there is no synchronization.
-One of the race conditions is shown below:
+usbnet_write_cmd_async() mixed up which buffers
+need to be freed in which error case.
 
-    (thread 1)             |        (thread 2)
-                           | rose_device_event
-                           |   rose_rt_device_down
-                           |     rose_remove_neigh
-rose_t0timer_expiry        |       rose_stop_t0timer(rose_neigh)
-  ...                      |         del_timer(&neigh->t0timer)
-                           |         kfree(rose_neigh) //[1]FREE
-  neigh->dce_mode //[2]USE |
+v2: add Fixes tag
+v3: fix uninitialized buf pointer
 
-The rose_neigh is deallocated in position [1] and use in
-position [2].
-
-The crash trace triggered by POC is like below:
-
-BUG: KASAN: use-after-free in expire_timers+0x144/0x320
-Write of size 8 at addr ffff888009b19658 by task swapper/0/0
-...
-Call Trace:
- <IRQ>
- dump_stack_lvl+0xbf/0xee
- print_address_description+0x7b/0x440
- print_report+0x101/0x230
- ? expire_timers+0x144/0x320
- kasan_report+0xed/0x120
- ? expire_timers+0x144/0x320
- expire_timers+0x144/0x320
- __run_timers+0x3ff/0x4d0
- run_timer_softirq+0x41/0x80
- __do_softirq+0x233/0x544
- ...
-
-This patch changes rose_stop_ftimer() and rose_stop_t0timer()
-in rose_remove_neigh() to del_timer_sync() in order that the
-timer handler could be finished before the resources such as
-rose_neigh and so on are deallocated. As a result, the UAF
-bugs could be mitigated.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Link: https://lore.kernel.org/r/20220705125610.77971-1-duoming@zju.edu.cn
+Fixes: 877bd862f32b8 ("usbnet: introduce usbnet 3 command helpers")
+Signed-off-by: Oliver Neukum <oneukum@suse.com>
+Link: https://lore.kernel.org/r/20220705125351.17309-1-oneukum@suse.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/rose/rose_route.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/usbnet.c |   17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -227,8 +227,8 @@ static void rose_remove_neigh(struct ros
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -2120,7 +2120,7 @@ static void usbnet_async_cmd_cb(struct u
+ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
+ 			   u16 value, u16 index, const void *data, u16 size)
  {
- 	struct rose_neigh *s;
+-	struct usb_ctrlrequest *req = NULL;
++	struct usb_ctrlrequest *req;
+ 	struct urb *urb;
+ 	int err = -ENOMEM;
+ 	void *buf = NULL;
+@@ -2138,7 +2138,7 @@ int usbnet_write_cmd_async(struct usbnet
+ 		if (!buf) {
+ 			netdev_err(dev->net, "Error allocating buffer"
+ 				   " in %s!\n", __func__);
+-			goto fail_free;
++			goto fail_free_urb;
+ 		}
+ 	}
  
--	rose_stop_ftimer(rose_neigh);
--	rose_stop_t0timer(rose_neigh);
-+	del_timer_sync(&rose_neigh->ftimer);
-+	del_timer_sync(&rose_neigh->t0timer);
+@@ -2162,14 +2162,21 @@ int usbnet_write_cmd_async(struct usbnet
+ 	if (err < 0) {
+ 		netdev_err(dev->net, "Error submitting the control"
+ 			   " message: status=%d\n", err);
+-		goto fail_free;
++		goto fail_free_all;
+ 	}
+ 	return 0;
  
- 	skb_queue_purge(&rose_neigh->queue);
- 
++fail_free_all:
++	kfree(req);
+ fail_free_buf:
+ 	kfree(buf);
+-fail_free:
+-	kfree(req);
++	/*
++	 * avoid a double free
++	 * needed because the flag can be set only
++	 * after filling the URB
++	 */
++	urb->transfer_flags = 0;
++fail_free_urb:
+ 	usb_free_urb(urb);
+ fail:
+ 	return err;
 
 
