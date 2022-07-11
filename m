@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9386C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232713AbiGKJcS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:32:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45504 "EHLO
+        id S232695AbiGKJcX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiGKJbf (ORCPT
+        with ESMTP id S232682AbiGKJbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:31:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 143F574DDD;
-        Mon, 11 Jul 2022 02:17:13 -0700 (PDT)
+        Mon, 11 Jul 2022 05:31:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA2C74DF0;
+        Mon, 11 Jul 2022 02:17:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83C2DB80DB7;
-        Mon, 11 Jul 2022 09:17:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DD6C34115;
-        Mon, 11 Jul 2022 09:17:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D7F5B80D2C;
+        Mon, 11 Jul 2022 09:17:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A83C341CB;
+        Mon, 11 Jul 2022 09:17:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531030;
-        bh=IScW0LFMmcTStFPx2URycrFLwFhfPk+cUhNi93H2wMg=;
+        s=korg; t=1657531032;
+        bh=mlI1Uud6q9h62IR3vOayBWgTsVubl46hJHtd1vn7oWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bnFeZpc7kD3FfA717v8R3QJC0V3yvUhfJeoHN01iHLPWOgQ0uFmBRKDsetsznL0DV
-         TkDFEbl3X3G0TiL7LmPM611AIZBMSqa/569AkzGUfs4yhEIS+FquXNUkvaH9aDYtXU
-         lzN9V+vrZT6gl33MNeblRbncyvac3RXan/gSyT1Y=
+        b=pAIL7HEO1c83jT0NM+3MBtSUp7GrRZCLIAH9X88sh8ggn4cbkj7JyfQmz71b8JE22
+         HZ27jKGjQFM5fpsKjJtgPQSE2mBD3qQ2TgJZQ79XxhlD/gFwvbByZYGnxRtthVRaOb
+         98EK3oOkybzphEefeWWwvQutQfwP5kYWWTkdhS9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/112] ARM: at91: pm: use proper compatible for sama5d2s rtc
-Date:   Mon, 11 Jul 2022 11:07:10 +0200
-Message-Id: <20220711090551.560301623@linuxfoundation.org>
+Subject: [PATCH 5.18 071/112] ARM: at91: pm: use proper compatibles for sam9x60s rtc and rtt
+Date:   Mon, 11 Jul 2022 11:07:11 +0200
+Message-Id: <20220711090551.588383999@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -51,32 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit ddc980da8043779119acaca106c6d9b445c9b65b ]
+[ Upstream commit 641522665dbb25ce117c78746df1aad8b58c80e5 ]
 
-Use proper compatible strings for SAMA5D2's RTC IPs. This is necessary
-for configuring wakeup sources for ULP1 PM mode.
+Use proper compatible strings for SAM9X60's RTC and RTT IPs. These are
+necessary for configuring wakeup sources for ULP1 PM mode.
 
-Fixes: d7484f5c6b3b ("ARM: at91: pm: configure wakeup sources for ULP1 mode")
+Fixes: eaedc0d379da ("ARM: at91: pm: add ULP1 support for SAM9X60")
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220523092421.317345-2-claudiu.beznea@microchip.com
+Link: https://lore.kernel.org/r/20220523092421.317345-3-claudiu.beznea@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-at91/pm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-at91/pm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 0fd609e26615..0da13a7afa31 100644
+index 0da13a7afa31..464b7dea5bbe 100644
 --- a/arch/arm/mach-at91/pm.c
 +++ b/arch/arm/mach-at91/pm.c
-@@ -146,7 +146,7 @@ static const struct wakeup_source_info ws_info[] = {
+@@ -157,12 +157,12 @@ static const struct of_device_id sama5d2_ws_ids[] = {
+ };
  
- static const struct of_device_id sama5d2_ws_ids[] = {
- 	{ .compatible = "atmel,sama5d2-gem",		.data = &ws_info[0] },
--	{ .compatible = "atmel,at91rm9200-rtc",		.data = &ws_info[1] },
-+	{ .compatible = "atmel,sama5d2-rtc",		.data = &ws_info[1] },
- 	{ .compatible = "atmel,sama5d3-udc",		.data = &ws_info[2] },
+ static const struct of_device_id sam9x60_ws_ids[] = {
+-	{ .compatible = "atmel,at91sam9x5-rtc",		.data = &ws_info[1] },
++	{ .compatible = "microchip,sam9x60-rtc",	.data = &ws_info[1] },
  	{ .compatible = "atmel,at91rm9200-ohci",	.data = &ws_info[2] },
  	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
+ 	{ .compatible = "atmel,at91sam9g45-ehci",	.data = &ws_info[2] },
+ 	{ .compatible = "usb-ehci",			.data = &ws_info[2] },
+-	{ .compatible = "atmel,at91sam9260-rtt",	.data = &ws_info[4] },
++	{ .compatible = "microchip,sam9x60-rtt",	.data = &ws_info[4] },
+ 	{ .compatible = "cdns,sam9x60-macb",		.data = &ws_info[5] },
+ 	{ /* sentinel */ }
+ };
 -- 
 2.35.1
 
