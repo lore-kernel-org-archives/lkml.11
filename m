@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECABC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAD5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233973AbiGKJyo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39012 "EHLO
+        id S233992AbiGKJys (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233943AbiGKJx5 (ORCPT
+        with ESMTP id S234051AbiGKJyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:53:57 -0400
+        Mon, 11 Jul 2022 05:54:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4294AEF53;
-        Mon, 11 Jul 2022 02:25:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D9ADAF743;
+        Mon, 11 Jul 2022 02:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9487D6136F;
-        Mon, 11 Jul 2022 09:25:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F6C1C36AED;
-        Mon, 11 Jul 2022 09:25:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EF3061366;
+        Mon, 11 Jul 2022 09:25:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB2BC34115;
+        Mon, 11 Jul 2022 09:25:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531541;
-        bh=nY92Q6t9HQ1EGT2GXplwzbOzFAiJHfULIB3VSs63zjY=;
+        s=korg; t=1657531546;
+        bh=y6KWV1l7vFa0AvPblk5Xk5IqSRITdwavbUj/jVWrbMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wgko3kNsBIzDMdOsWkE0CyVbcojpPg6XqkMicw5x20s1dVk9X0lk0HXhILEHYJY2P
-         p4DL36uH8ZvW2d5XAd1TYIM52MpvHXd/gJxf5c6j6sXdA9XhRqEiKzdyK8jq1ZFWPH
-         KdxOZ3lbO7su0vO1T4OmlONJXfGTKagbqcTxjK1Q=
+        b=IttRf0t12GDfEPitC9FLR2iXKOngwGS0p8NIqZCDHnCdz2EVAKQfBCWqbXWQS9WHj
+         wmrdQWrJrzWbW3KOinKn6SwzDOMZEp/VWJlSZWo3d2woXLERIuvTpNycBpTeU2u2ij
+         m92XUT3S35y/XPXX9YkeDMUgw70ZTQMXquzkNFXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        stable@vger.kernel.org, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        "jason-jh.lin" <jason-jh.lin@mediatek.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 143/230] drm/i915: Fix a race between vma / object destruction and unbinding
-Date:   Mon, 11 Jul 2022 11:06:39 +0200
-Message-Id: <20220711090608.119577076@linuxfoundation.org>
+Subject: [PATCH 5.15 145/230] drm/mediatek: Remove the pointer of struct cmdq_client
+Date:   Mon, 11 Jul 2022 11:06:41 +0200
+Message-Id: <20220711090608.175503461@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -51,50 +49,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+From: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 
-[ Upstream commit bc1922e5d349db4be14c55513102c024c2ae8a50 ]
+[ Upstream commit 563c9d4a5b117552150efbecbaf0877947e98a32 ]
 
-The vma destruction code was using an unlocked advisory check for
-drm_mm_node_allocated() to avoid racing with eviction code unbinding
-the vma.
+In mailbox rx_callback, it pass struct mbox_client to callback
+function, but it could not map back to mtk_drm_crtc instance
+because struct cmdq_client use a pointer to struct mbox_client:
 
-This is very fragile and prohibits the dereference of non-refcounted
-pointers of dying vmas after a call to __i915_vma_unbind(). It also
-prohibits the dereference of vma->obj of refcounted pointers of
-dying vmas after a call to __i915_vma_unbind(), since even if a
-refcount is held on the vma, that won't guarantee that its backing
-object doesn't get destroyed.
+struct cmdq_client {
+	struct mbox_client client;
+	struct mbox_chan *chan;
+};
 
-So introduce an unbind under the vm mutex at object destroy time,
-removing all weak references of the vma and its object from the
-object vma list and from the vm bound list.
+struct mtk_drm_crtc {
+	/* client instance data */
+	struct cmdq_client *cmdq_client;
+};
 
-Signed-off-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Reviewed-by: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220127115622.302970-1-thomas.hellstrom@linux.intel.com
+so remove the pointer of struct cmdq_client and let mtk_drm_crtc
+instance define cmdq_client as:
+
+struct mtk_drm_crtc {
+	/* client instance data */
+	struct cmdq_client cmdq_client;
+};
+
+and in rx_callback function, use struct mbox_client to get
+struct mtk_drm_crtc.
+
+Signed-off-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/mediatek/mtk_drm_crtc.c | 37 +++++++++++++------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index 6fb9afb65034..5f48d5ea5c15 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -224,6 +224,12 @@ void __i915_gem_free_object(struct drm_i915_gem_object *obj)
- 			GEM_BUG_ON(vma->obj != obj);
- 			spin_unlock(&obj->vma.lock);
+diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+index 369d3e68c0b6..e23e3224ac67 100644
+--- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
++++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+@@ -52,7 +52,7 @@ struct mtk_drm_crtc {
+ 	bool				pending_async_planes;
  
-+			/* Verify that the vma is unbound under the vm mutex. */
-+			mutex_lock(&vma->vm->mutex);
-+			atomic_and(~I915_VMA_PIN_MASK, &vma->flags);
-+			__i915_vma_unbind(vma);
-+			mutex_unlock(&vma->vm->mutex);
-+
- 			__i915_vma_put(vma);
+ #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+-	struct cmdq_client		*cmdq_client;
++	struct cmdq_client		cmdq_client;
+ 	u32				cmdq_event;
+ #endif
  
- 			spin_lock(&obj->vma.lock);
+@@ -472,19 +472,19 @@ static void mtk_drm_crtc_update_config(struct mtk_drm_crtc *mtk_crtc,
+ 		mtk_mutex_release(mtk_crtc->mutex);
+ 	}
+ #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+-	if (mtk_crtc->cmdq_client) {
+-		mbox_flush(mtk_crtc->cmdq_client->chan, 2000);
+-		cmdq_handle = cmdq_pkt_create(mtk_crtc->cmdq_client, PAGE_SIZE);
++	if (mtk_crtc->cmdq_client.chan) {
++		mbox_flush(mtk_crtc->cmdq_client.chan, 2000);
++		cmdq_handle = cmdq_pkt_create(&mtk_crtc->cmdq_client, PAGE_SIZE);
+ 		cmdq_pkt_clear_event(cmdq_handle, mtk_crtc->cmdq_event);
+ 		cmdq_pkt_wfe(cmdq_handle, mtk_crtc->cmdq_event, false);
+ 		mtk_crtc_ddp_config(crtc, cmdq_handle);
+ 		cmdq_pkt_finalize(cmdq_handle);
+-		dma_sync_single_for_device(mtk_crtc->cmdq_client->chan->mbox->dev,
++		dma_sync_single_for_device(mtk_crtc->cmdq_client.chan->mbox->dev,
+ 					   cmdq_handle->pa_base,
+ 					   cmdq_handle->cmd_buf_size,
+ 					   DMA_TO_DEVICE);
+-		mbox_send_message(mtk_crtc->cmdq_client->chan, cmdq_handle);
+-		mbox_client_txdone(mtk_crtc->cmdq_client->chan, 0);
++		mbox_send_message(mtk_crtc->cmdq_client.chan, cmdq_handle);
++		mbox_client_txdone(mtk_crtc->cmdq_client.chan, 0);
+ 	}
+ #endif
+ 	mtk_crtc->config_updating = false;
+@@ -498,7 +498,7 @@ static void mtk_crtc_ddp_irq(void *data)
+ 	struct mtk_drm_private *priv = crtc->dev->dev_private;
+ 
+ #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+-	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client)
++	if (!priv->data->shadow_register && !mtk_crtc->cmdq_client.chan)
+ #else
+ 	if (!priv->data->shadow_register)
+ #endif
+@@ -838,17 +838,20 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+ 	mutex_init(&mtk_crtc->hw_lock);
+ 
+ #if IS_REACHABLE(CONFIG_MTK_CMDQ)
+-	mtk_crtc->cmdq_client =
+-			cmdq_mbox_create(mtk_crtc->mmsys_dev,
+-					 drm_crtc_index(&mtk_crtc->base));
+-	if (IS_ERR(mtk_crtc->cmdq_client)) {
++	mtk_crtc->cmdq_client.client.dev = mtk_crtc->mmsys_dev;
++	mtk_crtc->cmdq_client.client.tx_block = false;
++	mtk_crtc->cmdq_client.client.knows_txdone = true;
++	mtk_crtc->cmdq_client.client.rx_callback = ddp_cmdq_cb;
++	mtk_crtc->cmdq_client.chan =
++			mbox_request_channel(&mtk_crtc->cmdq_client.client,
++					     drm_crtc_index(&mtk_crtc->base));
++	if (IS_ERR(mtk_crtc->cmdq_client.chan)) {
+ 		dev_dbg(dev, "mtk_crtc %d failed to create mailbox client, writing register by CPU now\n",
+ 			drm_crtc_index(&mtk_crtc->base));
+-		mtk_crtc->cmdq_client = NULL;
++		mtk_crtc->cmdq_client.chan = NULL;
+ 	}
+ 
+-	if (mtk_crtc->cmdq_client) {
+-		mtk_crtc->cmdq_client->client.rx_callback = ddp_cmdq_cb;
++	if (mtk_crtc->cmdq_client.chan) {
+ 		ret = of_property_read_u32_index(priv->mutex_node,
+ 						 "mediatek,gce-events",
+ 						 drm_crtc_index(&mtk_crtc->base),
+@@ -856,8 +859,8 @@ int mtk_drm_crtc_create(struct drm_device *drm_dev,
+ 		if (ret) {
+ 			dev_dbg(dev, "mtk_crtc %d failed to get mediatek,gce-events property\n",
+ 				drm_crtc_index(&mtk_crtc->base));
+-			cmdq_mbox_destroy(mtk_crtc->cmdq_client);
+-			mtk_crtc->cmdq_client = NULL;
++			mbox_free_channel(mtk_crtc->cmdq_client.chan);
++			mtk_crtc->cmdq_client.chan = NULL;
+ 		}
+ 	}
+ #endif
 -- 
 2.35.1
 
