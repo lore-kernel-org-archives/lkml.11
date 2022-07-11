@@ -2,119 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:53:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF73C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233959AbiGKJxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:53:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33412 "EHLO
+        id S233981AbiGKJxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:53:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiGKJwZ (ORCPT
+        with ESMTP id S233499AbiGKJwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:52:25 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95E303AB0E;
-        Mon, 11 Jul 2022 02:25:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 37F3315BF;
-        Mon, 11 Jul 2022 02:25:15 -0700 (PDT)
-Received: from [10.163.45.183] (unknown [10.163.45.183])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53DC93F73D;
-        Mon, 11 Jul 2022 02:25:12 -0700 (PDT)
-Message-ID: <d03e334a-ec7e-cd87-7f0b-ac7564266d3a@arm.com>
-Date:   Mon, 11 Jul 2022 14:55:12 +0530
+        Mon, 11 Jul 2022 05:52:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B553AB39;
+        Mon, 11 Jul 2022 02:25:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3C11B80D2C;
+        Mon, 11 Jul 2022 09:25:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29723C34115;
+        Mon, 11 Jul 2022 09:25:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657531518;
+        bh=6yGShLJBClWDowMoevtSmpngGA0EyC9sGK0/MTq4gsw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oXE6WviASoN1Luj5MaXvtIv6N5f0uZWcrkLi7yv9iCsvoWso0d/j9axgTgSK93gVJ
+         Eb/ePLgETUpeIvYnN9FXi1Phw0QZYFT9ZRm82GFZiYrJYwoXiq4KsKOGq5tq7cWzQV
+         u4hl2Th8V7g8Xek8UPbUVAjKAMNNjLOisDX9VgP8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 094/230] NFSD: De-duplicate net_generic(nf->nf_net, nfsd_net_id)
+Date:   Mon, 11 Jul 2022 11:05:50 +0200
+Message-Id: <20220711090606.738860895@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
+References: <20220711090604.055883544@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] perf/core: Add macros for possible
- sysctl_perf_event_paranoid values
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        James Clark <james.clark@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-perf-users@vger.kernel.org
-References: <20220701063949.1769434-1-anshuman.khandual@arm.com>
- <b9da8d22-6896-68a3-b4e5-e8fd7b82b711@arm.com>
- <Ysgxzxl0N7+J8Vbt@worktop.programming.kicks-ass.net>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <Ysgxzxl0N7+J8Vbt@worktop.programming.kicks-ass.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Chuck Lever <chuck.lever@oracle.com>
+
+[ Upstream commit 2c445a0e72cb1fbfbdb7f9473c53556ee27c1d90 ]
+
+Since this pointer is used repeatedly, move it to a stack variable.
+
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/nfsd/vfs.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/fs/nfsd/vfs.c b/fs/nfsd/vfs.c
+index 5f62fa0963ce..c8e3f81d110e 100644
+--- a/fs/nfsd/vfs.c
++++ b/fs/nfsd/vfs.c
+@@ -1121,6 +1121,7 @@ __be32
+ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
+                loff_t offset, unsigned long count, __be32 *verf)
+ {
++	struct nfsd_net		*nn;
+ 	struct nfsd_file	*nf;
+ 	loff_t			end = LLONG_MAX;
+ 	__be32			err = nfserr_inval;
+@@ -1137,6 +1138,7 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
+ 			NFSD_MAY_WRITE|NFSD_MAY_NOT_BREAK_LEASE, &nf);
+ 	if (err)
+ 		goto out;
++	nn = net_generic(nf->nf_net, nfsd_net_id);
+ 	if (EX_ISSYNC(fhp->fh_export)) {
+ 		errseq_t since = READ_ONCE(nf->nf_file->f_wb_err);
+ 		int err2;
+@@ -1144,8 +1146,7 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
+ 		err2 = vfs_fsync_range(nf->nf_file, offset, end, 0);
+ 		switch (err2) {
+ 		case 0:
+-			nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
+-						nfsd_net_id));
++			nfsd_copy_boot_verifier(verf, nn);
+ 			err2 = filemap_check_wb_err(nf->nf_file->f_mapping,
+ 						    since);
+ 			err = nfserrno(err2);
+@@ -1154,13 +1155,11 @@ nfsd_commit(struct svc_rqst *rqstp, struct svc_fh *fhp,
+ 			err = nfserr_notsupp;
+ 			break;
+ 		default:
+-			nfsd_reset_boot_verifier(net_generic(nf->nf_net,
+-						 nfsd_net_id));
++			nfsd_reset_boot_verifier(nn);
+ 			err = nfserrno(err2);
+ 		}
+ 	} else
+-		nfsd_copy_boot_verifier(verf, net_generic(nf->nf_net,
+-					nfsd_net_id));
++		nfsd_copy_boot_verifier(verf, nn);
+ 
+ 	nfsd_file_put(nf);
+ out:
+-- 
+2.35.1
 
 
-On 7/8/22 19:01, Peter Zijlstra wrote:
-> On Fri, Jul 08, 2022 at 10:10:15AM +0100, James Clark wrote:
->>
->>
->> On 01/07/2022 07:39, Anshuman Khandual wrote:
->>> sysctl_perf_event_paranoid can have values from [-1, 0, 1, 2] which decides
->>> on perf event restrictions for unprivileged users. But using them directly
->>> makes it difficult to correlate exact restriction level they might impose.
->>> This just adds macros for those numerical restriction values, making them
->>> clear and improving readability.
->>>
->>> Cc: Peter Zijlstra <peterz@infradead.org>
->>> Cc: Ingo Molnar <mingo@redhat.com>
->>> Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
->>> Cc: Mark Rutland <mark.rutland@arm.com>
->>> Cc: linux-perf-users@vger.kernel.org
->>> Cc: linux-kernel@vger.kernel.org
->>> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
->>> ---
->>>  include/linux/perf_event.h | 22 ++++++++++++++++++----
->>>  kernel/events/core.c       |  9 +--------
->>>  kernel/kallsyms.c          |  3 ++-
->>>  3 files changed, 21 insertions(+), 13 deletions(-)
->>>
->>> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
->>> index da759560eec5..78156b9154df 100644
->>> --- a/include/linux/perf_event.h
->>> +++ b/include/linux/perf_event.h
->>> @@ -1359,14 +1359,28 @@ int perf_event_max_stack_handler(struct ctl_table *table, int write,
->>>  #define PERF_SECURITY_KERNEL		2
->>>  #define PERF_SECURITY_TRACEPOINT	3
->>>  
->>> +/*
->>> + * perf event paranoia level:
->>> + *  -1 - not paranoid at all
->>> + *   0 - disallow raw tracepoint access for unpriv
->>> + *   1 - disallow cpu events for unpriv
->>> + *   2 - disallow kernel profiling for unpriv
->>> + */
->>> +enum {
->>> +	PERF_EVENT_DISALLOW_NONE	= -1,
->>> +	PERF_EVENT_DISALLOW_TRACE,
->>> +	PERF_EVENT_DISALLOW_CPU,
->>> +	PERF_EVENT_DISALLOW_KERNEL
->>> +};
->>> +
->>>  static inline int perf_is_paranoid(void)
->>>  {
->>> -	return sysctl_perf_event_paranoid > -1;
->>> +	return sysctl_perf_event_paranoid > PERF_EVENT_DISALLOW_NONE;
->>>  }
->>>  
->>
->> Hi Anshuman,
->>
->> There are quite a few other instances of integers left in the tools code.
->> If you search for perf_event_paranoid_check() and perf_event_paranoid()
->> you will find them.
->>
->> I'm also wondering if it makes sense to return your new enum from all of
->> the helper functions instead of an int and make it explicit that it's
->> an instance of this new type? Although the compiler doesn't seem to warn
->> about using integers so maybe it's not worth doing this.
-> 
-> so I don't see the point of all this; it's already wrapped in these
-> helper functions that have a descriptive name, why do we need more muck
-> on top?
 
-Enumerating [-1, 0, 1, 2] paranoid range values in kernel too, does not add
-much value as well ?
