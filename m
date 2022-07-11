@@ -2,67 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF39FCCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E064C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiGKU0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:26:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44404 "EHLO
+        id S231864AbiGKU0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:26:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbiGKUZa (ORCPT
+        with ESMTP id S230255AbiGKUZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 16:25:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4D3233432
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF6232EF1
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:25:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADD7D61655
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56A1F61644
         for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B205C341CE;
-        Mon, 11 Jul 2022 20:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D98D3C34115;
+        Mon, 11 Jul 2022 20:25:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657571125;
-        bh=MNMeZhuD3We0f5k6/l38Zg8R7bfXpGxiZpanl7NDmQ8=;
+        s=k20201202; t=1657571124;
+        bh=jxbhLwK4nn8GieBSkhhGJWg4z+oHKXPl5FohZIL4fP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=roza2Xe+B9s5tkF/hjH8IEuuk3dnWtfh2IhFruRhrblYcdwP5o8aD04hfPqLULxLY
-         nBYv/ECpV1puJHp0T0Tnc0M5yMYipCQtFmPSYYFQrXbiB5yy3Bn7uXCpVy2AAHHI0y
-         arI0r/JA3x7U/ESpj/6FSAOk66tG4+hvAzrJ/u4qcuNuM3WLWjJOtLpjZe5sku+LoP
-         eXp9zJXl1Im4oiiB3zO06JqPn6oxJW1NwDwuwHdmZwxmvi7/dkgynFXWmfUhRFZ9AB
-         mh8J+MTlIWwgbFbIATHeCJVCZEaVnhdvaC6YZm4T+2CMXGeQTgbNcc42m0B6vdLl+e
-         h+9sYn6g83UHA==
+        b=ov0HENGx2I+siR9tDn3mbByAbtREOxPRE1wB3n7Hu4BXSPqLkiKrvJhTEWTQfFup9
+         1ehXLs6lKTezyKShmMhMv1HlkODJvlMLBXQTDWQePVtVvqByY9vfDpe2ych1sxKvXF
+         hpRsOa16f2AhPP3F+XiajDAjxpmofGlFbBNkFh8DbK1uD7ZVMF/dN2KTOS1bYeQEt8
+         qPFO52OxeZtMcEfm9ShDqbtVwZ1jaeaz/owp5mNrW5XDuNCKNq5LG6bMPcCwG5QWLr
+         3i0V+oYNx8nzD/gzNxgnEj5a7VaO2hi0hqpzlNbAtQCU3mMWvtdPjgeYiiVlcvIiOU
+         GEkqj/8rjriWw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e8c-O3;
+        id 1oAzy3-004e8Q-M9;
         Mon, 11 Jul 2022 21:25:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         "Jani Nikula" <jani.nikula@linux.intel.com>,
         "Lucas De Marchi" <lucas.demarchi@intel.com>,
         "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
+        Jasmine Newsome <jasmine.newsome@intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Matt Roper <matthew.d.roper@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 20/32] drm/i915: dvo_ch7xxx.c: use SPDX header
-Date:   Mon, 11 Jul 2022 21:25:05 +0100
-Message-Id: <52b547f3f26b8cce3d975962cc3eb5204c97f4f6.1657565224.git.mchehab@kernel.org>
+Subject: [PATCH 18/32] drm/i915: fix i915_gem_ttm_move.c DOC: markup
+Date:   Mon, 11 Jul 2022 21:25:03 +0100
+Message-Id: <ff6aa6a9e0ec16abf09687748ab2a7d83f892f69.1657565224.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
 References: <cover.1657565224.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This file is licensed with MIT license. Change its license text
-to use SPDX.
+The doc markup should not end with ":", as it would generate a
+warning on Sphinx while generating the cross-reference tag.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -70,50 +75,22 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/display/dvo_ch7xxx.c | 33 +++++------------------
- 1 file changed, 6 insertions(+), 27 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/display/dvo_ch7xxx.c b/drivers/gpu/drm/i915/display/dvo_ch7xxx.c
-index 1c1fe1f29675..b4d94a565fdb 100644
---- a/drivers/gpu/drm/i915/display/dvo_ch7xxx.c
-+++ b/drivers/gpu/drm/i915/display/dvo_ch7xxx.c
-@@ -1,30 +1,9 @@
--/**************************************************************************
--
--Copyright © 2006 Dave Airlie
--
--All Rights Reserved.
--
--Permission is hereby granted, free of charge, to any person obtaining a
--copy of this software and associated documentation files (the
--"Software"), to deal in the Software without restriction, including
--without limitation the rights to use, copy, modify, merge, publish,
--distribute, sub license, and/or sell copies of the Software, and to
--permit persons to whom the Software is furnished to do so, subject to
--the following conditions:
--
--The above copyright notice and this permission notice (including the
--next paragraph) shall be included in all copies or substantial portions
--of the Software.
--
--THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
--OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
--MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
--IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
--ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
--TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
--SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
--
--**************************************************************************/
-+// SPDX-License-Identifier: MIT
-+/*
-+ * Copyright © 2006 Dave Airlie
-+ *
-+ * All Rights Reserved.
-+ */
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index 56217d324a9b..16dd4991d527 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -20,7 +20,7 @@
+ #include "gt/intel_migrate.h"
  
- #include "intel_display_types.h"
- #include "intel_dvo_dev.h"
+ /**
+- * DOC: Selftest failure modes for failsafe migration:
++ * DOC: Selftest failure modes for failsafe migration
+  *
+  * For fail_gpu_migration, the gpu blit scheduled is always a clear blit
+  * rather than a copy blit, and then we force the failure paths as if
 -- 
 2.36.1
 
