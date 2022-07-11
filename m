@@ -2,541 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA1CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:05:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229675AbiGKIFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44848 "EHLO
+        id S229716AbiGKIGE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229635AbiGKIFr (ORCPT
+        with ESMTP id S229688AbiGKIF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:05:47 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C16DA13F07;
-        Mon, 11 Jul 2022 01:05:44 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7E44222753;
-        Mon, 11 Jul 2022 08:05:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657526743;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0FmQDMDhEROJPpNik7354XOKHSx8QnaoByHX9y5rRmw=;
-        b=kKZnwJPvsCkcs74wY3KB/LaNpmuiTPnfWxooo6XtLAQTQr/jJ21DiThZtB++DfOKJvWeOZ
-        5DcXxapmG3mDaTvUu0x7ZRhJ7eqWeK0qv+bAKVzicybBt/AtVTipTAl65sdDCl0gg+sHj2
-        FQ+WbnQs+eNe+hu12aCFHzhGfW1upvQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657526743;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0FmQDMDhEROJPpNik7354XOKHSx8QnaoByHX9y5rRmw=;
-        b=lpXYK35V2VLyeW3DwZfySgCugfC7EU3wWMAiEGvLBVZwMFVlRpL8JTQywfDsNQBXBz5MAj
-        PlMc3uYRZnOHwCAA==
-Received: from g78 (unknown [10.163.24.226])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id B47402C141;
-        Mon, 11 Jul 2022 08:05:41 +0000 (UTC)
-References: <Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020>
-User-agent: mu4e 1.6.10; emacs 28.1
-From:   Richard Palethorpe <rpalethorpe@suse.de>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        lkp@intel.com, lkp@lists.01.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-can@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, ltp@lists.linux.it
-Subject: Re: [LTP] [can] c4e54b063f:
- BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c
-Date:   Mon, 11 Jul 2022 08:57:39 +0100
-Reply-To: rpalethorpe@suse.de
-In-reply-to: <Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020>
-Message-ID: <87wncknkfe.fsf@suse.de>
+        Mon, 11 Jul 2022 04:05:59 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2054.outbound.protection.outlook.com [40.107.220.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC9F51D0E2;
+        Mon, 11 Jul 2022 01:05:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O+2qG/y+L5Plnf4pA7z2x6ILKUfWDJlGRofwU9SXKk7BuXgdttDesUO3951AF+4WTOE3VIrBubHku1XT18Z9Qen1cR+8qXvgsSQXYkJ/b5hdWWlqezrKFdIZvQ+gM0xdxRrB775Wz3tgW5JyOhmDW/6/PoWMKUchZwuk6LASwQEmmeY3ZWOiSbDY32BBkhXuEAIr8klsGNJDO0TvZopnjWzy3U4LKwpXIZuKneMhuMT8e8cVjwyeVIeq9nkyzjm8VAlDMpMR3z9GoP5tupPCZaJQXt/LAjHRW+NOkRZ+Ds59137thM7rsxyYPwm/BCUKlwUh1tMC0roeuIuVpszhgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=AShQGiUOJkL+QN9HjFT1tpZk9/MlPWUgTxspdXuYH5s=;
+ b=ZLoUkTlXP0/wf8JxexTEq3MR0HF4HNh4uKmCwPKlIFIb58RCGqJ+YvhgS2EmRXLRLAcTicyfEWJXYskftoNOhb97j3g2mYPm9VXvvhGDMy001g8v/RanxVZHfBQMYqL9A0xOaP/k2BSWqsNphzfI9C14jw/brds54BALPptUNNWZ1VIWVtzg01/NV27UwaqL9lbNkKsmMahzvattXC5tZ0zHus4IQCknPf4oAs5QO8GOLbgHRwiQcsUiFk514jHxcQ6JqWSd/YOtmy8G0hm2d3EF4zOh5bS6gjQCOevDbhuriGTwYcs/0DziWyblLxpZE4gOfLmY+46FoJktdrIvgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AShQGiUOJkL+QN9HjFT1tpZk9/MlPWUgTxspdXuYH5s=;
+ b=yCOOrw5niXStAu9qd8YcEIgs6HAGG8CFRIh5DA57HUmMVKLFJvQpUjRV0IRFlYGjcp++j3O1COjC02aDNFzalITPLXrvFjxfiI7B4OAb+0W9du09BouDcVFu/ImSLX0VlmIqaHa2MubF6Lf4wmVBfyXsLpwDZto/+LrdBehlSFs=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by SN6PR12MB4751.namprd12.prod.outlook.com (2603:10b6:805:df::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Mon, 11 Jul
+ 2022 08:05:51 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5417.025; Mon, 11 Jul 2022
+ 08:05:51 +0000
+Message-ID: <6e60d396-2a52-d1fa-f125-3c585605b531@amd.com>
+Date:   Mon, 11 Jul 2022 10:05:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: linux-next: manual merge of the drm tree with the drm-misc-fixes
+ tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>
+Cc:     Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Arunpravin Paneer Selvam <Arunpravin.PaneerSelvam@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220711124742.3b151992@canb.auug.org.au>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <20220711124742.3b151992@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR0P281CA0015.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:15::20) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 68869396-f461-4a1c-6c19-08da63142bea
+X-MS-TrafficTypeDiagnostic: SN6PR12MB4751:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yAgGBG4jTpFjRyimtq6wPO13YrRC9Iy/7xY6UpHOAHJPKwKxiElQGavgIkC+sUkkWvecGwXSwazM+26naIea6eZxWej67/S9timzD+rD74w2TZlcc38zKBMFcfwcByxngRhcAUb8aY9DC4/hdbmU6NOoNp96tcQTPWwWBdqs/dJv66hDlezYIXUeYGF+hKEXAEpwOrT2TmTcUqUiM19kd+PtPTrTiVMbDyq0cVdqxMnTri6JPym1RkvzzTiWIehfEXZRX7hKjzjJ3uFST0JDhV2TIlSh72+vNJN/nNGAB/Pv1d/IhlgT+7NWwK7qOkhO3kPFOS0kuPt+CH2oCUr3V2h5+ef9J/3YdNW6HTLja9kGernerVGjXQAFeI8E42UR1Zskr5qn/4e9XuMZ6sTCcwdqGOLIJHRHSsrqB2ZV2orWe8ByxdoHM2pcFZAeHbl0qrmJ9muhViy39XV0C78Nsb7iU88SorO4gLgaktTrpT1w0H3FPD2kz9yb5APramo5vJgdaAz6S4utD7lCD+8t29Lo3vc+vi0XPjqcYBCHjzvDO3+ia4lDsc5KNPnZC2EPiceovcnUv8B7eFQgFj2rbcsJO+ASJ1dWPL0jncEMdFXUfwlDG3qVIll0uOWJQ/LhdGTBND6sZkI8d2MmD9TFfvnyKRLcXOx0cov4eOOUlHv3Nt0/j5LUYj+hvOwvgxRZNeKmeGEpCQxsGS1l4oGYLr0/SHU+2kfRPtnddeYK/zHeuuvcSmp6MCSergUoDNWYG5YQ5RiaKDpljBq1gc/xq3DOQGP4VHciXaKzlImhTLqvfbFWkPIxE5IaMBI7jIRONE49Nj5/Q0Wjxq+dhFtbWhwffkQiba4Xixn73j66+C4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(39860400002)(396003)(376002)(366004)(36756003)(8936002)(4326008)(4744005)(31686004)(110136005)(6506007)(6666004)(38100700002)(54906003)(41300700001)(26005)(2616005)(6512007)(66476007)(2906002)(66556008)(8676002)(66946007)(316002)(6486002)(478600001)(5660300002)(186003)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cUxoYVlMN2VBWEJTQWpPK1V1eU9BdGVYeWl4K0EyK3pacU5abitNb2RobW5W?=
+ =?utf-8?B?UWcza290Z204amxJcWZvNHFuZXJpSGxMTTAzWUwvSFk1Sk9idHl5VFB0M3ZB?=
+ =?utf-8?B?Y2o3YXpJTEVlbSs1bkY5c3lXYUMwMmhYc2FDTHlLNHE1S24ycERJajhMbmw4?=
+ =?utf-8?B?ZTQ2Yys5ZW5tN2tpMzVmOUlMdWxvYnlYNGRQYldVUEQ5OEI1VlQ1ZlVucVNN?=
+ =?utf-8?B?Tnc3MWdSWkVJWWhldzAxN1pKNVlJdUgyQzhhcXZ3QnBsNzZXY2RtN2plTFU2?=
+ =?utf-8?B?S3FlQnRlREFpSDlHQm5lb0pQVkpuRWtSTUNPUW1BUE9XMUZKVVRuem1FNzBj?=
+ =?utf-8?B?NEtod3BxWmRLMUZhSFozYXdySlJ6a2Qvak83WmZDcXRWMjVSU1Boa1Zra2hr?=
+ =?utf-8?B?YkNQUjh1RUFQM1dZTGczdTFlYzNHWEtuZTJOb0ZYOTRISS9ra21NSlI0SVBx?=
+ =?utf-8?B?VFpWSTY1Q0dJcU9neWN5WjVTbnFsZS9iWnB1S3hRWGpaeVRsbS9qWkhhQU5s?=
+ =?utf-8?B?alJoTG1lTGd4QVQ3WXpNanJNWUJpY0VzeHl5RFFMRVpseEVuN2ZqRmRIejlz?=
+ =?utf-8?B?d1hRSVAwU0pJQWpYdDBndjdtSkxxS2hMMkIzc0JvR2FSSThsY080OVZ6YUlj?=
+ =?utf-8?B?QnNjUGhabzIwbXptdjgraGhJcG9uRlFEV3BRRjIzV0I2VTZZWXVEUnhHN3Bw?=
+ =?utf-8?B?Vm1yK0FIaUJZK0ZaRzJ6eDRLUWx0em9BZXJtVS9xWUwrb0ZTeDlVMHJ0eHhq?=
+ =?utf-8?B?OVoxWkxjTWJCOHozSFVQazZOUzFUZDlleG01bCs1RFAxRSsvQnRlRWxjcGtl?=
+ =?utf-8?B?TFhkM24wcktjaEhVcnZPUEFidkloZHk5cHVKd2p4WjFuTDVQcHdBdnFYSHJz?=
+ =?utf-8?B?Y09NQUVPWFVSMU1wampSOFZHZUF3TG1tRkY0NUJTcEp0aW5WRU5LbFpYVnNJ?=
+ =?utf-8?B?ZDF2VmV6aGZOL1JZQ256WkhTYjh2UGc1Qi9yYUhHUjI0cVF2VjZZbGR5V0hh?=
+ =?utf-8?B?bDNYbFJhMDlwN29ZUjBHajZaSDdjWDlpMGZWcklOYktYMU9OMi9RYThMUE5z?=
+ =?utf-8?B?b1V6U1hINExReEs0SnpzWE5abUdzR3AwOEFGZi9TbSt5OUtSSEVzQXYyS2s2?=
+ =?utf-8?B?RDZheFVnYVhFai9aWFptM0lVaktKc0VGaC9hS2dhUi85U2pHWlhKVlZWb0hB?=
+ =?utf-8?B?NllIOVhnZS95RS9qVkpuZXhUOC9lWTRuSzAwVnE5cE1VQWZDRGZTS2hROVJh?=
+ =?utf-8?B?NVNZNVZndmpZUEoyNXh3SU1NaU1yR2ZEWkY2dTdDd3lVc3pwNlpzeHhwdnc3?=
+ =?utf-8?B?VllLbVRSMjlsaERTNU5kb2tRcWFXRkxDUEhURFVYTk5meThlRWFxQ2M1MnRR?=
+ =?utf-8?B?SjlPVVBielQrWGl2dTlMOSt4UUt3TlB3a3FhZFRLcTdaREJ5TFVqZ29EMzBL?=
+ =?utf-8?B?NmJUUVBlRHlpNUJFTmRvUmJSUE9ydEdFWE5SbFFsSDh4K0kyNklVTVlubWRG?=
+ =?utf-8?B?YjBxb3dhRDR6TUZNZTRvenpQaE9oREx6TWpxL2NjWldIZEJDZ0czZGVKNmlG?=
+ =?utf-8?B?cFdEbFNpWHYraDRsMkhZRUkrQVgwd1Y2Z1pxTjNTSmdBUGlJWGR5MWxzdUNB?=
+ =?utf-8?B?bU9JMjdBRnhVWHVpOGpDangxR2JtVWtJTXFLRCtPVWgyallERmE0UVNKanpR?=
+ =?utf-8?B?TTc4S3ZHTHlGeEhpTUxnaWh1aUc5bnBtUXIvTmx5ZEhzSGp5a0g5S1VtYTUz?=
+ =?utf-8?B?ZHFBQ2RnT1JvWWdCT0FjMkZiZkdqZzlNeDRsWExmTkVvRkhqcmhhUlN6b3hF?=
+ =?utf-8?B?NXM3ZUFFVGVKRmsxdjg3QmJML2tleGVaUXhmUlArSTY0UDdscUFnVHQySlFS?=
+ =?utf-8?B?K1JCSllYK0hUbVRTb05pOUcybWZ1SVVuTVJKK0J3QjNtTll1YzVhT0wycXVz?=
+ =?utf-8?B?VzQvSFppRllaZWNHdU1JMWFocWIvcElBZzBQS0s4eThDcFhHL05aZUd3MS96?=
+ =?utf-8?B?LzV3YlRET1dwa0tYblBvSHE1TVpWQXI1ZXhwMFFhUkR2RkhGWUttYVJXVmVG?=
+ =?utf-8?B?R1B0UU05NHR4TmJTWVI0VGltcXNYdFNlbVp0RWtqeUFFUHErbTY1NzVZUS9X?=
+ =?utf-8?Q?8VRlMpfTqvyApm13yp7Gf/KIY?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68869396-f461-4a1c-6c19-08da63142bea
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2022 08:05:51.7219
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vN/qXaRD+K/YwjRqNHL+z8Oi+FndnW3v+i+eXIrizxITrSFMdOCUpEfVTYvopshC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4751
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Stephen,
 
-kernel test robot <oliver.sang@intel.com> writes:
-
-> Greeting,
+Am 11.07.22 um 04:47 schrieb Stephen Rothwell:
+> Hi all,
 >
-> FYI, we noticed the following commit (built with gcc-11):
+> Today's linux-next merge of the drm tree got a conflict in:
 >
-> commit: c4e54b063f42f20a6b3ad1ffa61c574e631e0216 ("can: slcan: use CAN network device driver API")
-> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
-> master
+>    drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c
+>
+> between commit:
+>
+>    925b6e59138c ("Revert "drm/amdgpu: add drm buddy support to amdgpu"")
+>
+> from the drm-misc-fixes tree and commit:
+>
+>    5e3f1e7729ec ("drm/amdgpu: fix start calculation in amdgpu_vram_mgr_new")
+>
+> from the drm tree.
+>
+> This is a mess :-(  I have just reverted the above revert before mergin
+> the drm tree for today, please fix it up.
 
-I guess the problem is this may sleep with soft irqs disabled.
+Sorry for the noise, the patch "5e3f1e7729ec ("drm/amdgpu: fix start 
+calculation in amdgpu_vram_mgr_new")" and another one is going to be 
+reverted from the drm tree as well.
 
-static int slc_close(struct net_device *dev)
-{
-	struct slcan *sl = netdev_priv(dev);
-	int err;
+It's just that -fixes patches where faster than -next patches.
 
-	spin_lock_bh(&sl->lock); <-- takes lock
-	if (sl->tty) {
-		if (sl->can.bittiming.bitrate &&
-		    sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
-			spin_unlock_bh(&sl->lock);
-			err = slcan_transmit_cmd(sl, "C\r");
-			spin_lock_bh(&sl->lock);
-			if (err)
-				netdev_warn(dev,
-					    "failed to send close command 'C\\r'\n");
-		}
-
-		/* TTY discipline is running. */
-		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
-	}
-	netif_stop_queue(dev);
-	close_candev(dev); <-- calls cancel_delayed_work_sync()
-
+Regards,
+Christian.
 
 
 >
-> in testcase: ltp
-> version: ltp-x86_64-14c1f76-1_20220625
-> with following parameters:
->
-> 	test: pty
-> 	ucode: 0x21
->
-> test-description: The LTP testsuite contains a collection of tools for testing the Linux kernel and related features.
-> test-url: http://linux-test-project.github.io/
->
->
-> on test machine: 4 threads 1 sockets Intel(R) Core(TM) i3-3220 CPU @ 3.30GHz with 8G memory
->
-> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
->
->
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kernel test robot <oliver.sang@intel.com>
->
->
-> [  164.229702][ T3796] BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
-> [  164.229710][ T3796] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3796, name: pty03
-> [  164.229715][ T3796] preempt_count: 201, expected: 0
-> [  164.229719][ T3796] CPU: 1 PID: 3796 Comm: pty03 Tainted: G S                5.19.0-rc3-00630-gc4e54b063f42 #1
-> [  164.229724][ T3796] Hardware name: Hewlett-Packard p6-1451cx/2ADA, BIOS 8.15 02/05/2013
-> [  164.229727][ T3796] Call Trace:
-> [  164.229729][ T3796]  <TASK>
-> [ 164.229732][ T3796] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-> [ 164.229742][ T3796] __might_resched.cold (kernel/sched/core.c:9822) 
-> [ 164.229749][ T3796] start_flush_work+0x2a/0x680 
-> [ 164.229756][ T3796] __flush_work+0xa1/0x140 
-> [ 164.229761][ T3796] ? start_flush_work+0x680/0x680 
-> [ 164.229766][ T3796] ? out_of_line_wait_on_bit_timeout (kernel/sched/completion.c:100) 
-> [ 164.229774][ T3796] ? detach_if_pending (kernel/time/timer.c:1252) 
-> [ 164.229779][ T3796] ? try_to_grab_pending+0x23/0x480 
-> [ 164.229784][ T3796] __cancel_work_timer (kernel/workqueue.c:3162) 
-> [ 164.229789][ T3796] ? start_flush_work+0xac/0x680 
-> [ 164.229794][ T3796] ? try_to_grab_pending+0x480/0x480 
-> [ 164.229799][ T3796] ? flush_work (kernel/workqueue.c:3074 kernel/workqueue.c:3096) 
-> [ 164.229803][ T3796] ? flush_rcu_work (kernel/workqueue.c:3095) 
-> [ 164.229807][ T3796] ? synchronize_rcu_expedited (kernel/rcu/tree.c:3835) 
-> [ 164.229813][ T3796] ? _raw_spin_lock_bh (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:127 kernel/locking/spinlock.c:178) 
-> [ 164.229817][ T3796] ? _raw_spin_lock (kernel/locking/spinlock.c:177) 
-> [ 164.229824][ T3796] close_candev (drivers/net/can/dev/dev.c:389) can_dev
-> [ 164.229835][ T3796] slc_close (drivers/net/can/slcan.c:398) slcan
-> [ 164.229842][ T3796] slcan_close (drivers/net/can/slcan.c:657) slcan
-> [ 164.229849][ T3796] tty_ldisc_hangup (drivers/tty/tty_ldisc.c:282 drivers/tty/tty_ldisc.c:701) 
-> [ 164.229855][ T3796] ? fasync_remove_entry (fs/fcntl.c:868) 
-> [ 164.229862][ T3796] __tty_hangup+0x410/0x8c0 
-> [ 164.229868][ T3796] tty_ioctl (drivers/tty/tty_io.c:2719) 
-> [ 164.229873][ T3796] ? tty_release (drivers/tty/tty_io.c:2655) 
-> [ 164.229877][ T3796] ? __switch_to (arch/x86/kernel/process.h:38 arch/x86/kernel/process_64.c:627) 
-> [ 164.229883][ T3796] ? __schedule (kernel/sched/core.c:6340) 
-> [ 164.229888][ T3796] ? io_schedule_timeout (kernel/sched/core.c:6340) 
-> [ 164.229894][ T3796] ? __fget_files (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-arch-fallback.h:2363 include/linux/atomic/atomic-arch-fallback.h:2388 include/linux/atomic/atomic-arch-fallback.h:2404 include/linux/atomic/atomic-long.h:497 include/linux/atomic/atomic-instrumented.h:1854 fs/file.c:882 fs/file.c:913) 
-> [ 164.229901][ T3796] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 164.229907][ T3796] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-> [ 164.229913][ T3796] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115) 
-> [  164.229918][ T3796] RIP: 0033:0x7fd1923fbcc7
-> [ 164.229923][ T3796] Code: 00 00 00 48 8b 05 c9 91 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 99 91 0c 00 f7 d8 64 89 01 48
-> All code
-> ========
->    0:	00 00                	add    %al,(%rax)
->    2:	00 48 8b             	add    %cl,-0x75(%rax)
->    5:	05 c9 91 0c 00       	add    $0xc91c9,%eax
->    a:	64 c7 00 26 00 00 00 	movl   $0x26,%fs:(%rax)
->   11:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
->   18:	c3                   	retq   
->   19:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   20:	00 00 00 
->   23:	b8 10 00 00 00       	mov    $0x10,%eax
->   28:	0f 05                	syscall 
->   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->   30:	73 01                	jae    0x33
->   32:	c3                   	retq   
->   33:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91d3
->   3a:	f7 d8                	neg    %eax
->   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->   3f:	48                   	rex.W
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->    6:	73 01                	jae    0x9
->    8:	c3                   	retq   
->    9:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91a9
->   10:	f7 d8                	neg    %eax
->   12:	64 89 01             	mov    %eax,%fs:(%rcx)
->   15:	48                   	rex.W
-> [  164.229927][ T3796] RSP: 002b:00007fff0f3bfc88 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [  164.229934][ T3796] RAX: ffffffffffffffda RBX: 000055ed576c7700 RCX: 00007fd1923fbcc7
-> [  164.229938][ T3796] RDX: 0000000000000000 RSI: 0000000000005437 RDI: 000000000000000d
-> [  164.229940][ T3796] RBP: 000055ed576c7b20 R08: 000000000003e5d8 R09: 0000000000000004
-> [  164.229943][ T3796] R10: 00007fff0f3cd170 R11: 0000000000000246 R12: 000000000000000d
-> [  164.229946][ T3796] R13: 0000000000000006 R14: 000055ed576c76a0 R15: 0000000000000004
-> [  164.229951][ T3796]  </TASK>
-> [  165.244520][ T3796] BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
-> [  165.244528][ T3796] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3796, name: pty03
-> [  165.244532][ T3796] preempt_count: 201, expected: 0
-> [  165.244537][ T3796] CPU: 0 PID: 3796 Comm: pty03 Tainted: G S      W         5.19.0-rc3-00630-gc4e54b063f42 #1
-> [  165.244543][ T3796] Hardware name: Hewlett-Packard p6-1451cx/2ADA, BIOS 8.15 02/05/2013
-> [  165.244546][ T3796] Call Trace:
-> [  165.244548][ T3796]  <TASK>
-> [ 165.244551][ T3796] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-> [ 165.244562][ T3796] __might_resched.cold (kernel/sched/core.c:9822) 
-> [ 165.244569][ T3796] start_flush_work+0x2a/0x680 
-> [ 165.244576][ T3796] __flush_work+0xa1/0x140 
-> [ 165.244582][ T3796] ? start_flush_work+0x680/0x680 
-> [ 165.244587][ T3796] ? out_of_line_wait_on_bit_timeout (kernel/sched/completion.c:100) 
-> [ 165.244594][ T3796] ? __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 165.244601][ T3796] ? detach_if_pending (kernel/time/timer.c:1252) 
-> [ 165.244607][ T3796] ? try_to_grab_pending+0x23/0x480 
-> [ 165.244612][ T3796] __cancel_work_timer (kernel/workqueue.c:3162) 
-> [ 165.244617][ T3796] ? start_flush_work+0xac/0x680 
-> [ 165.244622][ T3796] ? try_to_grab_pending+0x480/0x480 
-> [ 165.244627][ T3796] ? flush_work (kernel/workqueue.c:3074 kernel/workqueue.c:3096) 
-> [ 165.244632][ T3796] ? flush_rcu_work (kernel/workqueue.c:3095) 
-> [ 165.244636][ T3796] ? synchronize_rcu_expedited (kernel/rcu/tree.c:3835) 
-> [ 165.244641][ T3796] ? _raw_spin_lock_bh (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:127 kernel/locking/spinlock.c:178) 
-> [ 165.244647][ T3796] ? _raw_spin_lock (kernel/locking/spinlock.c:177) 
-> [ 165.244653][ T3796] close_candev (drivers/net/can/dev/dev.c:389) can_dev
-> [ 165.244665][ T3796] slc_close (drivers/net/can/slcan.c:398) slcan
-> [ 165.244672][ T3796] slcan_close (drivers/net/can/slcan.c:657) slcan
-> [ 165.244679][ T3796] tty_ldisc_hangup (drivers/tty/tty_ldisc.c:282 drivers/tty/tty_ldisc.c:701) 
-> [ 165.244685][ T3796] ? fasync_remove_entry (fs/fcntl.c:868) 
-> [ 165.244691][ T3796] __tty_hangup+0x410/0x8c0 
-> [ 165.244696][ T3796] tty_ioctl (drivers/tty/tty_io.c:2719) 
-> [ 165.244701][ T3796] ? tty_release (drivers/tty/tty_io.c:2655) 
-> [ 165.244705][ T3796] ? __switch_to (arch/x86/kernel/process.h:38 arch/x86/kernel/process_64.c:627) 
-> [ 165.244711][ T3796] ? __schedule (kernel/sched/core.c:6340) 
-> [ 165.244716][ T3796] ? io_schedule_timeout (kernel/sched/core.c:6340) 
-> [ 165.244721][ T3796] ? __fget_files (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-arch-fallback.h:2363 include/linux/atomic/atomic-arch-fallback.h:2388 include/linux/atomic/atomic-arch-fallback.h:2404 include/linux/atomic/atomic-long.h:497 include/linux/atomic/atomic-instrumented.h:1854 fs/file.c:882 fs/file.c:913) 
-> [ 165.244727][ T3796] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 165.244733][ T3796] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-> [ 165.244739][ T3796] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115) 
-> [  165.244744][ T3796] RIP: 0033:0x7fd1923fbcc7
-> [ 165.244749][ T3796] Code: 00 00 00 48 8b 05 c9 91 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 99 91 0c 00 f7 d8 64 89 01 48
-> All code
-> ========
->    0:	00 00                	add    %al,(%rax)
->    2:	00 48 8b             	add    %cl,-0x75(%rax)
->    5:	05 c9 91 0c 00       	add    $0xc91c9,%eax
->    a:	64 c7 00 26 00 00 00 	movl   $0x26,%fs:(%rax)
->   11:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
->   18:	c3                   	retq   
->   19:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   20:	00 00 00 
->   23:	b8 10 00 00 00       	mov    $0x10,%eax
->   28:	0f 05                	syscall 
->   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->   30:	73 01                	jae    0x33
->   32:	c3                   	retq   
->   33:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91d3
->   3a:	f7 d8                	neg    %eax
->   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->   3f:	48                   	rex.W
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->    6:	73 01                	jae    0x9
->    8:	c3                   	retq   
->    9:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91a9
->   10:	f7 d8                	neg    %eax
->   12:	64 89 01             	mov    %eax,%fs:(%rcx)
->   15:	48                   	rex.W
-> [  165.244753][ T3796] RSP: 002b:00007fff0f3bfc88 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [  165.244759][ T3796] RAX: ffffffffffffffda RBX: 000055ed576c7700 RCX: 00007fd1923fbcc7
-> [  165.244762][ T3796] RDX: 0000000000000000 RSI: 0000000000005437 RDI: 000000000000000d
-> [  165.244765][ T3796] RBP: 000055ed576c7b20 R08: 000000000003edc6 R09: 0000000000000004
-> [  165.244768][ T3796] R10: 00007fff0f3cd170 R11: 0000000000000246 R12: 000000000000000d
-> [  165.244771][ T3796] R13: 0000000000000006 R14: 000055ed576c76a0 R15: 0000000000000004
-> [  165.244775][ T3796]  </TASK>
-> [  166.256559][ T3796] BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
-> [  166.256569][ T3796] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3796, name: pty03
-> [  166.256574][ T3796] preempt_count: 201, expected: 0
-> [  166.256578][ T3796] CPU: 0 PID: 3796 Comm: pty03 Tainted: G S      W         5.19.0-rc3-00630-gc4e54b063f42 #1
-> [  166.256584][ T3796] Hardware name: Hewlett-Packard p6-1451cx/2ADA, BIOS 8.15 02/05/2013
-> [  166.256587][ T3796] Call Trace:
-> [  166.256590][ T3796]  <TASK>
-> [ 166.256592][ T3796] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-> [ 166.256602][ T3796] __might_resched.cold (kernel/sched/core.c:9822) 
-> [ 166.256609][ T3796] start_flush_work+0x2a/0x680 
-> [ 166.256617][ T3796] __flush_work+0xa1/0x140 
-> [ 166.256622][ T3796] ? start_flush_work+0x680/0x680 
-> [ 166.256628][ T3796] ? out_of_line_wait_on_bit_timeout (kernel/sched/completion.c:100) 
-> [ 166.256634][ T3796] ? __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 166.256642][ T3796] ? detach_if_pending (kernel/time/timer.c:1252) 
-> [ 166.256647][ T3796] ? try_to_grab_pending+0x23/0x480 
-> [ 166.256652][ T3796] __cancel_work_timer (kernel/workqueue.c:3162) 
-> [ 166.256657][ T3796] ? start_flush_work+0xac/0x680 
-> [ 166.256662][ T3796] ? try_to_grab_pending+0x480/0x480 
-> [ 166.256668][ T3796] ? flush_work (kernel/workqueue.c:3074 kernel/workqueue.c:3096) 
-> [ 166.256672][ T3796] ? flush_rcu_work (kernel/workqueue.c:3095) 
-> [ 166.256677][ T3796] ? synchronize_rcu_expedited (kernel/rcu/tree.c:3835) 
-> [ 166.256683][ T3796] ? _raw_spin_lock_bh (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:127 kernel/locking/spinlock.c:178) 
-> [ 166.256687][ T3796] ? _raw_spin_lock (kernel/locking/spinlock.c:177) 
-> [ 166.256694][ T3796] close_candev (drivers/net/can/dev/dev.c:389) can_dev
-> [ 166.256707][ T3796] slc_close (drivers/net/can/slcan.c:398) slcan
-> [ 166.256714][ T3796] slcan_close (drivers/net/can/slcan.c:657) slcan
-> [ 166.256721][ T3796] tty_ldisc_hangup (drivers/tty/tty_ldisc.c:282 drivers/tty/tty_ldisc.c:701) 
-> [ 166.256728][ T3796] ? fasync_remove_entry (fs/fcntl.c:868) 
-> [ 166.256734][ T3796] __tty_hangup+0x410/0x8c0 
-> [ 166.256741][ T3796] tty_ioctl (drivers/tty/tty_io.c:2719) 
-> [ 166.256746][ T3796] ? tty_release (drivers/tty/tty_io.c:2655) 
-> [ 166.256751][ T3796] ? __switch_to (arch/x86/kernel/process.h:38 arch/x86/kernel/process_64.c:627) 
-> [ 166.256756][ T3796] ? __schedule (kernel/sched/core.c:6340) 
-> [ 166.256761][ T3796] ? io_schedule_timeout (kernel/sched/core.c:6340) 
-> [ 166.256767][ T3796] ? __fget_files (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-arch-fallback.h:2363 include/linux/atomic/atomic-arch-fallback.h:2388 include/linux/atomic/atomic-arch-fallback.h:2404 include/linux/atomic/atomic-long.h:497 include/linux/atomic/atomic-instrumented.h:1854 fs/file.c:882 fs/file.c:913) 
-> [ 166.256773][ T3796] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 166.256780][ T3796] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-> [ 166.256786][ T3796] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115) 
-> [  166.256791][ T3796] RIP: 0033:0x7fd1923fbcc7
-> [ 166.256797][ T3796] Code: 00 00 00 48 8b 05 c9 91 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 99 91 0c 00 f7 d8 64 89 01 48
-> All code
-> ========
->    0:	00 00                	add    %al,(%rax)
->    2:	00 48 8b             	add    %cl,-0x75(%rax)
->    5:	05 c9 91 0c 00       	add    $0xc91c9,%eax
->    a:	64 c7 00 26 00 00 00 	movl   $0x26,%fs:(%rax)
->   11:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
->   18:	c3                   	retq   
->   19:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   20:	00 00 00 
->   23:	b8 10 00 00 00       	mov    $0x10,%eax
->   28:	0f 05                	syscall 
->   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->   30:	73 01                	jae    0x33
->   32:	c3                   	retq   
->   33:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91d3
->   3a:	f7 d8                	neg    %eax
->   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->   3f:	48                   	rex.W
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->    6:	73 01                	jae    0x9
->    8:	c3                   	retq   
->    9:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91a9
->   10:	f7 d8                	neg    %eax
->   12:	64 89 01             	mov    %eax,%fs:(%rcx)
->   15:	48                   	rex.W
-> [  166.256802][ T3796] RSP: 002b:00007fff0f3bfc88 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [  166.256809][ T3796] RAX: ffffffffffffffda RBX: 000055ed576c7700 RCX: 00007fd1923fbcc7
-> [  166.256813][ T3796] RDX: 0000000000000000 RSI: 0000000000005437 RDI: 000000000000000d
-> [  166.256815][ T3796] RBP: 000055ed576c7b20 R08: 000000000003f5ac R09: 0000000000000004
-> [  166.256818][ T3796] R10: 00007fff0f3cd170 R11: 0000000000000246 R12: 000000000000000d
-> [  166.256822][ T3796] R13: 0000000000000006 R14: 000055ed576c76a0 R15: 0000000000000004
-> [  166.256827][ T3796]  </TASK>
-> [  167.261649][ T3796] BUG: sleeping function called from invalid context at kernel/workqueue.c:3010
-> [  167.261657][ T3796] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 3796, name: pty03
-> [  167.261662][ T3796] preempt_count: 201, expected: 0
-> [  167.261666][ T3796] CPU: 2 PID: 3796 Comm: pty03 Tainted: G S      W         5.19.0-rc3-00630-gc4e54b063f42 #1
-> [  167.261672][ T3796] Hardware name: Hewlett-Packard p6-1451cx/2ADA, BIOS 8.15 02/05/2013
-> [  167.261675][ T3796] Call Trace:
-> [  167.261677][ T3796]  <TASK>
-> [ 167.261680][ T3796] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1)) 
-> [ 167.261690][ T3796] __might_resched.cold (kernel/sched/core.c:9822) 
-> [ 167.261697][ T3796] start_flush_work+0x2a/0x680 
-> [ 167.261705][ T3796] __flush_work+0xa1/0x140 
-> [ 167.261711][ T3796] ? start_flush_work+0x680/0x680 
-> [ 167.261716][ T3796] ? out_of_line_wait_on_bit_timeout (kernel/sched/completion.c:100) 
-> [ 167.261724][ T3796] ? __schedule (kernel/sched/core.c:6340) 
-> [ 167.261729][ T3796] ? detach_if_pending (kernel/time/timer.c:1252) 
-> [ 167.261735][ T3796] ? try_to_grab_pending+0x23/0x480 
-> [ 167.261740][ T3796] __cancel_work_timer (kernel/workqueue.c:3162) 
-> [ 167.261745][ T3796] ? start_flush_work+0xac/0x680 
-> [ 167.261750][ T3796] ? try_to_grab_pending+0x480/0x480 
-> [ 167.261756][ T3796] ? flush_work (kernel/workqueue.c:3074 kernel/workqueue.c:3096) 
-> [ 167.261760][ T3796] ? flush_rcu_work (kernel/workqueue.c:3095) 
-> [ 167.261765][ T3796] ? synchronize_rcu_expedited (kernel/rcu/tree.c:3835) 
-> [ 167.261770][ T3796] ? _raw_spin_lock_bh (arch/x86/include/asm/atomic.h:202 include/linux/atomic/atomic-instrumented.h:543 include/asm-generic/qspinlock.h:111 include/linux/spinlock.h:185 include/linux/spinlock_api_smp.h:127 kernel/locking/spinlock.c:178) 
-> [ 167.261776][ T3796] ? _raw_spin_lock (kernel/locking/spinlock.c:177) 
-> [ 167.261782][ T3796] close_candev (drivers/net/can/dev/dev.c:389) can_dev
-> [ 167.261794][ T3796] slc_close (drivers/net/can/slcan.c:398) slcan
-> [ 167.261801][ T3796] slcan_close (drivers/net/can/slcan.c:657) slcan
-> [ 167.261809][ T3796] tty_ldisc_hangup (drivers/tty/tty_ldisc.c:282 drivers/tty/tty_ldisc.c:701) 
-> [ 167.261816][ T3796] ? fasync_remove_entry (fs/fcntl.c:868) 
-> [ 167.261823][ T3796] __tty_hangup+0x410/0x8c0 
-> [ 167.261830][ T3796] tty_ioctl (drivers/tty/tty_io.c:2719) 
-> [ 167.261835][ T3796] ? tty_release (drivers/tty/tty_io.c:2655) 
-> [ 167.261840][ T3796] ? __switch_to (arch/x86/kernel/process.h:38 arch/x86/kernel/process_64.c:627) 
-> [ 167.261846][ T3796] ? __schedule (kernel/sched/core.c:6340) 
-> [ 167.261852][ T3796] ? io_schedule_timeout (kernel/sched/core.c:6340) 
-> [ 167.261857][ T3796] ? __fget_files (arch/x86/include/asm/atomic64_64.h:22 include/linux/atomic/atomic-arch-fallback.h:2363 include/linux/atomic/atomic-arch-fallback.h:2388 include/linux/atomic/atomic-arch-fallback.h:2404 include/linux/atomic/atomic-long.h:497 include/linux/atomic/atomic-instrumented.h:1854 fs/file.c:882 fs/file.c:913) 
-> [ 167.261865][ T3796] __x64_sys_ioctl (fs/ioctl.c:52 fs/ioctl.c:870 fs/ioctl.c:856 fs/ioctl.c:856) 
-> [ 167.261871][ T3796] do_syscall_64 (arch/x86/entry/common.c:50 arch/x86/entry/common.c:80) 
-> [ 167.261877][ T3796] entry_SYSCALL_64_after_hwframe (arch/x86/entry/entry_64.S:115) 
-> [  167.261883][ T3796] RIP: 0033:0x7fd1923fbcc7
-> [ 167.261888][ T3796] Code: 00 00 00 48 8b 05 c9 91 0c 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 99 91 0c 00 f7 d8 64 89 01 48
-> All code
-> ========
->    0:	00 00                	add    %al,(%rax)
->    2:	00 48 8b             	add    %cl,-0x75(%rax)
->    5:	05 c9 91 0c 00       	add    $0xc91c9,%eax
->    a:	64 c7 00 26 00 00 00 	movl   $0x26,%fs:(%rax)
->   11:	48 c7 c0 ff ff ff ff 	mov    $0xffffffffffffffff,%rax
->   18:	c3                   	retq   
->   19:	66 2e 0f 1f 84 00 00 	nopw   %cs:0x0(%rax,%rax,1)
->   20:	00 00 00 
->   23:	b8 10 00 00 00       	mov    $0x10,%eax
->   28:	0f 05                	syscall 
->   2a:*	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax		<-- trapping instruction
->   30:	73 01                	jae    0x33
->   32:	c3                   	retq   
->   33:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91d3
->   3a:	f7 d8                	neg    %eax
->   3c:	64 89 01             	mov    %eax,%fs:(%rcx)
->   3f:	48                   	rex.W
->
-> Code starting with the faulting instruction
-> ===========================================
->    0:	48 3d 01 f0 ff ff    	cmp    $0xfffffffffffff001,%rax
->    6:	73 01                	jae    0x9
->    8:	c3                   	retq   
->    9:	48 8b 0d 99 91 0c 00 	mov    0xc9199(%rip),%rcx        # 0xc91a9
->   10:	f7 d8                	neg    %eax
->   12:	64 89 01             	mov    %eax,%fs:(%rcx)
->   15:	48                   	rex.W
-> [  167.261893][ T3796] RSP: 002b:00007fff0f3bfc88 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-> [  167.261900][ T3796] RAX: ffffffffffffffda RBX: 000055ed576c7700 RCX: 00007fd1923fbcc7
-> [  167.261904][ T3796] RDX: 0000000000000000 RSI: 0000000000005437 RDI: 000000000000000d
-> [  167.261907][ T3796] RBP: 000055ed576c7b20 R08: 000000000003fd86 R09: 0000000000000004
-> [  167.261910][ T3796] R10: 00007fff0f3cd170 R11: 0000000000000246 R12: 000000000000000d
-> [  167.261913][ T3796] R13: 0000000000000006 R14: 000055ed576c76a0 R15: 0000000000000004
-> [  167.261918][ T3796]  </TASK>
-> [  167.718896][  T308] Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 popcnt tsc_deadline_timer xsave avx f16c lahf_lm cpuid_fault epb pti ssbd ibrs ibpb stibp fsgsbase smep erms xsaveopt dtherm arat pln pts md_clear flush_l1d
-> [  167.718915][  T308]
-> [  167.718952][  T308]
-> [  167.718961][  T308]
-> [  167.719897][  T308] available filesystems:
-> [  167.719908][  T308]
-> [  167.729228][  T308] 9p autofs bdev bpf btrfs cgroup cgroup2 configfs cpuset debugfs devpts devtmpfs ext3 ext4 fuse fuseblk fusectl hugetlbfs mqueue nfs nfs4 pipefs proc pstore ramfs rpc_pipefs securityfs sockfs sysfs tmpfs tracefs
-> [  167.729245][  T308]
-> [  167.729281][  T308]
-> [  167.729290][  T308]
-> [  167.731408][  T308] mounted filesystems (/proc/mounts):
-> [  167.731421][  T308]
-> [  167.732603][  T308] rootfs / rootfs rw 0 0
-> [  167.732616][  T308]
-> [  167.734793][  T308] proc /proc proc rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.734805][  T308]
-> [  167.737074][  T308] sysfs /sys sysfs rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.737087][  T308]
-> [  167.740630][  T308] devtmpfs /dev devtmpfs rw,nosuid,noexec,size=4096k,nr_inodes=65536,mode=755 0 0
-> [  167.740643][  T308]
-> [  167.743870][  T308] securityfs /sys/kernel/security securityfs rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.743884][  T308]
-> [  167.745551][  T308] tmpfs /dev/shm tmpfs rw,nosuid,nodev 0 0
-> [  167.745560][  T308]
-> [  167.749122][  T308] devpts /dev/pts devpts rw,nosuid,noexec,relatime,gid=5,mode=620,ptmxmode=000 0 0
-> [  167.749137][  T308]
-> [  167.752335][  T308] tmpfs /run tmpfs rw,nosuid,nodev,size=1328156k,nr_inodes=819200,mode=755 0 0
-> [  167.752350][  T308]
-> [  167.755303][  T308] tmpfs /run/lock tmpfs rw,nosuid,nodev,noexec,relatime,size=5120k 0 0
-> [  167.755317][  T308]
-> [  167.759879][  T308] cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot 0 0
-> [  167.759893][  T308]
-> [  167.762861][  T308] pstore /sys/fs/pstore pstore rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.762875][  T308]
-> [  167.765829][  T308] bpf /sys/fs/bpf bpf rw,nosuid,nodev,noexec,relatime,mode=700 0 0
-> [  167.765844][  T308]
-> [  167.771116][  T308] systemd-1 /proc/sys/fs/binfmt_misc autofs rw,relatime,fd=30,pgrp=1,timeout=0,minproto=5,maxproto=5,direct,pipe_ino=15317 0 0
-> [  167.771132][  T308]
-> [  167.774045][  T308] hugetlbfs /dev/hugepages hugetlbfs rw,relatime,pagesize=2M 0 0
-> [  167.774060][  T308]
-> [  167.776802][  T308] mqueue /dev/mqueue mqueue rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.776816][  T308]
-> [  167.778953][  T308] sunrpc /run/rpc_pipefs rpc_pipefs rw,relatime 0 0
-> [  167.778966][  T308]
-> [  167.781419][  T308] debugfs /sys/kernel/debug debugfs rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.781429][  T308]
-> [  167.783722][  T308] tracefs /sys/kernel/tracing tracefs rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.783736][  T308]
-> [  167.786434][  T308] fusectl /sys/fs/fuse/connections fusectl rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.786447][  T308]
-> [  167.789106][  T308] configfs /sys/kernel/config configfs rw,nosuid,nodev,noexec,relatime 0 0
-> [  167.789117][  T308]
-> [  167.790149][  T308] tmp /tmp tmpfs rw,relatime 0 0
-> [  167.790157][  T308]
-> [  167.792476][  T308] /dev/sda1 /opt/rootfs btrfs rw,relatime,ssd,space_cache,subvolid=5,subvol=/ 0 0
-> [  167.792530][  T308]
-> [  167.792555][  T308]
-> [  167.792560][  T308]
-> [  167.793218][  T308] mounted filesystems (df):
-> [  167.793224][  T308]
-> [  167.795097][  T308] Filesystem     Type      Size  Used Avail Use% Mounted on
-> [  167.795108][  T308]
-> [  167.797044][  T308] devtmpfs       devtmpfs  4.0M     0  4.0M   0% /dev
-> [  167.797057][  T308]
-> [  167.799451][  T308] tmpfs          tmpfs     3.2G     0  3.2G   0% /dev/shm
-> [  167.799465][  T308]
-> [  167.801444][  T308] tmpfs          tmpfs     1.3G  616K  1.3G   1% /run
-> [  167.801456][  T308]
-> [  167.803965][  T308] tmpfs          tmpfs     5.0M     0  5.0M   0% /run/lock
-> [  167.803977][  T308]
-> [  167.806314][  T308] tmp            tmpfs     3.2G  324K  3.2G   1% /tmp
-> [  167.806327][  T308]
-> [  167.809011][  T308] /dev/sda1      btrfs     500G   32G  468G   7% /opt/rootfs
-> [  167.809025][  T308]
->
->
-> To reproduce:
->
->         git clone https://github.com/intel/lkp-tests.git
->         cd lkp-tests
->         sudo bin/lkp install job.yaml           # job file is attached in this email
->         bin/lkp split-job --compatible job.yaml # generate the yaml file for lkp run
->         sudo bin/lkp run generated-yaml-file
->
->         # if come across any failure that blocks the test,
->         # please remove ~/.lkp and /lkp dir to run from a clean state.
->
->
->
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
->
->
-> [2. text/plain; config-5.19.0-rc3-00630-gc4e54b063f42]...
->
-> [3. text/plain; job-script]...
->
-> [4. application/x-xz; dmesg.xz]...
->
-> [5. text/plain; ltp]...
->
-> [6. text/plain; job.yaml]...
->
-> [7. text/plain; reproduce]...
 
-
--- 
-Thank you,
-Richard.
