@@ -2,108 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A520C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26516C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231186AbiGKOXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:23:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45050 "EHLO
+        id S230249AbiGKO02 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbiGKOXR (ORCPT
+        with ESMTP id S229536AbiGKO01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:23:17 -0400
-Received: from out28-123.mail.aliyun.com (out28-123.mail.aliyun.com [115.124.28.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 189586556C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:23:06 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1266826|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.136972-0.0747228-0.788305;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047208;MF=michael@allwinnertech.com;NM=1;PH=DS;RN=5;RT=5;SR=0;TI=SMTPD_---.OPswRor_1657549378;
-Received: from 192.168.220.136(mailfrom:michael@allwinnertech.com fp:SMTPD_---.OPswRor_1657549378)
-          by smtp.aliyun-inc.com;
-          Mon, 11 Jul 2022 22:23:02 +0800
-Message-ID: <e87feac9-e00e-1c83-79fe-c790e2f99e15@allwinnertech.com>
-Date:   Mon, 11 Jul 2022 22:22:57 +0800
+        Mon, 11 Jul 2022 10:26:27 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D2BA3E777;
+        Mon, 11 Jul 2022 07:26:26 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 4981622883;
+        Mon, 11 Jul 2022 14:26:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657549585; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=488ybXHyQ9dTQxv/0NhYicS8m3azVQFOTjaP5asAGEw=;
+        b=BxaZfbhRNeSmWsq7zQTbPI6jAcEpVWRK1VlgQEsnRXCs4xQXk3ACp30FlQg6Ws9s0pziXX
+        jhMkagbr81VVz8T6iLpbYWn3H89BJfzFXGdkTpYssoZYkXOj8dy72OfYyiIdgdLs/Z104o
+        c+AvhPO0OYkhgxLx5zMIL6+UWTr/mME=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657549585;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=488ybXHyQ9dTQxv/0NhYicS8m3azVQFOTjaP5asAGEw=;
+        b=YNR64VJxa20mVAWdeq+KFvh6/4AiC47WSrHuote5zCqrVK+pgD33nhrhUfb0802iAqnbHM
+        +rhShpDi0gwmtrAg==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id E8E1A2C141;
+        Mon, 11 Jul 2022 14:26:24 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 9B961A063F; Mon, 11 Jul 2022 16:26:23 +0200 (CEST)
+Date:   Mon, 11 Jul 2022 16:26:23 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     axboe@kernel.dk, asml.silence@gmail.com, osandov@fb.com,
+        jack@suse.cz, kbusch@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH RFC v3 2/3] sbitmap: fix invalid wakeup on the wrong
+ waitqueue
+Message-ID: <20220711142623.haam2wks36xa5nde@quack3.lan>
+References: <20220710042200.20936-1-yukuai1@huaweicloud.com>
+ <20220710042200.20936-3-yukuai1@huaweicloud.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] extcon: Add EXTCON_DISP_CVBS and EXTCON_DISP_EDP
-Content-Language: en-US
-To:     Chanwoo Choi <cwchoi00@gmail.com>, myungjoo.ham@samsung.com,
-        cw00.choi@samsung.com
-Cc:     linux-kernel@vger.kernel.org,
-        allwinner-opensource-support@allwinnertech.com
-References: <20220708095714.127736-1-michael@allwinnertech.com>
- <0cef31e4-7e07-087a-1d4b-241cdce76970@gmail.com>
-From:   Michael Wu <michael@allwinnertech.com>
-In-Reply-To: <0cef31e4-7e07-087a-1d4b-241cdce76970@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220710042200.20936-3-yukuai1@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/9/2022 9:03 AM, Chanwoo Choi wrote:
-> On 22. 7. 8. 18:57, Michael Wu wrote:
->> Add EXTCON_DISP_CVBS for Composite Video Broadcast Signal.
->> Add EXTCON_DISP_EDP for Embedded Display Port
->>
->> [1] https://en.wikipedia.org/wiki/Composite_video
->> [2] https://en.wikipedia.org/wiki/DisplayPort#eDP
->>
->> Signed-off-by: Michael Wu <michael@allwinnertech.com>
->> ---
->>   drivers/extcon/extcon.c | 10 ++++++++++
->>   include/linux/extcon.h  |  2 ++
->>   2 files changed, 12 insertions(+)
->>
->> diff --git a/drivers/extcon/extcon.c b/drivers/extcon/extcon.c
->> index d3a32b8064994..774607a616f7b 100644
->> --- a/drivers/extcon/extcon.c
->> +++ b/drivers/extcon/extcon.c
->> @@ -167,6 +167,16 @@ static const struct __extcon_info {
->>   		.id = EXTCON_DISP_HMD,
->>   		.name = "HMD",
->>   	},
->> +	[EXTCON_DISP_CVBS] = {
->> +		.type = EXTCON_TYPE_DISP,
->> +		.id = EXTCON_DISP_CVBS,
->> +		.name = "CVBS",
->> +	},
->> +	[EXTCON_DISP_EDP] = {
->> +		.type = EXTCON_TYPE_DISP,
->> +		.id = EXTCON_DISP_EDP,
->> +		.name = "EDP",
->> +	},
->>   
->>   	/* Miscellaneous external connector */
->>   	[EXTCON_DOCK] = {
->> diff --git a/include/linux/extcon.h b/include/linux/extcon.h
->> index 685401d94d398..3c45c3846fe94 100644
->> --- a/include/linux/extcon.h
->> +++ b/include/linux/extcon.h
->> @@ -76,6 +76,8 @@
->>   #define EXTCON_DISP_VGA		43	/* Video Graphics Array */
->>   #define EXTCON_DISP_DP		44	/* Display Port */
->>   #define EXTCON_DISP_HMD		45	/* Head-Mounted Display */
->> +#define EXTCON_DISP_CVBS	46	/* Composite Video Broadcast Signal */
->> +#define EXTCON_DISP_EDP		47	/* Embedded Display Port */
->>   
->>   /* Miscellaneous external connector */
->>   #define EXTCON_DOCK		60
+On Sun 10-07-22 12:21:59, Yu Kuai wrote:
+> From: Yu Kuai <yukuai3@huawei.com>
 > 
-> Applied it. Thanks.
+> For example, 2 * wake_batch tags are put, while only wake_batch threads
+> are woken:
 > 
-> Do you have a plan to send extcon driver with newly added connector type?
+> __sbq_wake_up
+>  atomic_cmpxchg -> reset wait_cnt
+> 			__sbq_wake_up -> decrease wait_cnt
+> 			...
+> 			__sbq_wake_up -> wait_cnt is decreased to 0 again
+> 			 atomic_cmpxchg
+> 			 sbq_index_atomic_inc -> increase wake_index
+> 			 wake_up_nr -> wake up and waitqueue might be empty
+>  sbq_index_atomic_inc -> increase again, one waitqueue is skipped
+>  wake_up_nr -> invalid wake up because old wakequeue might be empty
 > 
+> To fix the problem, increasing 'wake_index' before resetting 'wait_cnt'.
+> 
+> Fixes: 88459642cba4 ("blk-mq: abstract tag allocation out into sbitmap library")
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-Hi Chanwoo,
-Thank you for the inviting. I'd like to send more patches for extcon, 
-unfortunately the SoCs I'm using only covers CVBS and EDP among the new 
-connector types. Once I had a chance to verify a new type, I'll surely 
-send it here.
-BTW, should I send a patch-v2 with 'Reviewed-by Chanwoo Choi 
-<cwchoi00@gmail.com>' or 'Acked-by Chanwoo Choi <cwchoi00@gmail.com>', 
-or should I just wait?
-Thanks again.
+This patch and the following one look sane to me but please merge them to a
+single patch. They fix the same race of two concurrent wakers just with a
+slightly different timing so there isn't a point in having two patches for
+this (in particular changes in this patch are difficult to reason about
+when we know the result is still buggy).
 
+								Honza
+
+> ---
+>  lib/sbitmap.c | 45 +++++++++++++++++++++++----------------------
+>  1 file changed, 23 insertions(+), 22 deletions(-)
+> 
+> diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+> index b46fce1beb3a..57095dd88a33 100644
+> --- a/lib/sbitmap.c
+> +++ b/lib/sbitmap.c
+> @@ -616,32 +616,33 @@ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
+>  		return false;
+>  
+>  	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+> -	if (wait_cnt <= 0) {
+> -		int ret;
+> +	if (wait_cnt > 0)
+> +		return false;
+>  
+> -		wake_batch = READ_ONCE(sbq->wake_batch);
+> +	/*
+> +	 * For concurrent callers of this, callers should call this function
+> +	 * again to wakeup a new batch on a different 'ws'.
+> +	 */
+> +	if (wait_cnt < 0)
+> +		return true;
+>  
+> -		/*
+> -		 * Pairs with the memory barrier in sbitmap_queue_resize() to
+> -		 * ensure that we see the batch size update before the wait
+> -		 * count is reset.
+> -		 */
+> -		smp_mb__before_atomic();
+> +	wake_batch = READ_ONCE(sbq->wake_batch);
+>  
+> -		/*
+> -		 * For concurrent callers of this, the one that failed the
+> -		 * atomic_cmpxhcg() race should call this function again
+> -		 * to wakeup a new batch on a different 'ws'.
+> -		 */
+> -		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
+> -		if (ret == wait_cnt) {
+> -			sbq_index_atomic_inc(&sbq->wake_index);
+> -			wake_up_nr(&ws->wait, wake_batch);
+> -			return false;
+> -		}
+> +	/*
+> +	 * Pairs with the memory barrier in sbitmap_queue_resize() to
+> +	 * ensure that we see the batch size update before the wait
+> +	 * count is reset.
+> +	 */
+> +	smp_mb__before_atomic();
+>  
+> -		return true;
+> -	}
+> +	/*
+> +	 * Increase wake_index before updating wait_cnt, otherwise concurrent
+> +	 * callers can see valid wait_cnt in old waitqueue, which can cause
+> +	 * invalid wakeup on the old waitqueue.
+> +	 */
+> +	sbq_index_atomic_inc(&sbq->wake_index);
+> +	atomic_set(&ws->wait_cnt, wake_batch);
+> +	wake_up_nr(&ws->wait, wake_batch);
+>  
+>  	return false;
+>  }
+> -- 
+> 2.31.1
+> 
 -- 
-Regards,
-Michael Wu
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
