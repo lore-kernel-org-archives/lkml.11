@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D58C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDE0C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 08:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230249AbiGKIvF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 04:51:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
+        id S231129AbiGKIvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 04:51:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230450AbiGKIu3 (ORCPT
+        with ESMTP id S230414AbiGKIu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 04:50:29 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21BB221E00
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 01:50:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657529418; x=1689065418;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=pYmlZTWW8T052yrvDTxhlle8aydW1U/tmRbuqMhTmdg=;
-  b=U7NBQ0XAg6UAFeQvINvPB9l5hIC1GyHseVbtq69PiUL4tSDBxabGJ5yK
-   xEd59igNbDrmToEN8AKC8Lz1UMFfqYvbUJDkJNbPMwn02HNu1TvWMDavv
-   ppUOjsctli2bDoQebriLBIgb65Pbo9nYYII3BnH1+LZXyrZAgR2anWgk2
-   jrdszTYZHaPdJrlv6Eu6gLLnIHq671VN2uAWRmKi/ZZwySgIyzAkJoKXu
-   +RPT7zjioFCLKk1ZC5MhgrFctoI8TsRjain6BkbkOdMwdrvtQxz+T9bwC
-   V5eYG57mixgRFTN1ksEvAgWcNlL7+6zRNd5ndB/550JObsieS8TSKRfax
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10404"; a="284637866"
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="284637866"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:50:17 -0700
-X-IronPort-AV: E=Sophos;i="5.92,262,1650956400"; 
-   d="scan'208";a="652374188"
-Received: from yhuang6-mobl1.sh.intel.com ([10.238.5.168])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 01:50:16 -0700
-From:   Huang Ying <ying.huang@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
-Subject: [PATCH -V2 7/7] migrate_pages(): fix failure counting for retry
-Date:   Mon, 11 Jul 2022 16:49:48 +0800
-Message-Id: <20220711084948.274787-8-ying.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220711084948.274787-1-ying.huang@intel.com>
-References: <20220711084948.274787-1-ying.huang@intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 11 Jul 2022 04:50:59 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C03113CE5;
+        Mon, 11 Jul 2022 01:50:29 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id l124so4212810pfl.8;
+        Mon, 11 Jul 2022 01:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=5g/2NksbO4TUZ12uNSjT5a+ira1ltuOc9HP/0hIVc7w=;
+        b=KLLHc9drTZpul79nRihIyI5PAyxXRTmdJkXV8pzA8J0w53gdZiHv+aCEKAOoj5htXN
+         WukzwCYDOFLeN9WMRfuWgHNfFY3WTACBv3kpUvoltkku6OyB0kfynjWHVWqCWgGxymlO
+         eARtdYfOu6/d+ODhfp+g+RM5KlvTXdN6fQI5IhyYHO22XNZtH0s/N+G2KS2uTcRPl2/R
+         92Wq/IBaQjOpleIN3NsSVRoGqaYsFbLCogPpYOWc3A7G7eQgfVjOSFDzxZwKO2hwgmsy
+         n2AT2E+M/PFLrO0q9yRstAXHsI3rmIju8eUFoKv0mMzTEhMbUudGiOCOA7/qgfET06ZK
+         XkZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5g/2NksbO4TUZ12uNSjT5a+ira1ltuOc9HP/0hIVc7w=;
+        b=z4pmQ+Exc/i1vwmLI0Iro4sGiSqyeXF0/7FQNV4OVvuR+TBd0Iy0Tkr+2305acc/XM
+         5+sy3HPNBrNb+JtY+tgRoaLie2lHspcEMNEKlL3cp7aJ6Dn6pM38wYn4pNiHL25uaBjN
+         +T1wQi1oMyUktIp0pTySK5GDQQH8uyGdeyuI6fldo9g1YUC85g2jxprvUckSzBagzQ+E
+         gefhleNPT3St7PkJn1SdVCZ1H5IUQeGEzYo3BK4HJCSQcMvm3Na++iYvx4Hf9tJto1qc
+         39JPzefIzzRp5WKRcVEpWcLdmXUKnae27+4bVvwUxvl9mwlseMoBRX8D6RgS3y4QazTS
+         qzAA==
+X-Gm-Message-State: AJIora9Y/3ynX9679eiQibiljo/eCLKYRHKiRXfj458UO8+sRQRZai60
+        QDMv8Upd1k2CJ7lgQXqfd/8=
+X-Google-Smtp-Source: AGRyM1skthwwca9xztYJduWQLAXrcwAXdYzCophm5dltSeq/9zR0kDVYVJguSnQHST3WWGzv/qygdw==
+X-Received: by 2002:a63:ff66:0:b0:412:6f4c:1e11 with SMTP id s38-20020a63ff66000000b004126f4c1e11mr15162809pgk.396.1657529428611;
+        Mon, 11 Jul 2022 01:50:28 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id b21-20020aa79515000000b0052ac5e304ccsm2489388pfp.194.2022.07.11.01.50.26
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 Jul 2022 01:50:28 -0700 (PDT)
+From:   Vincent Shih <vincent.sunplus@gmail.com>
+To:     kishon@ti.com, vkoul@kernel.org, p.zabel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        wells.lu@sunplus.com
+Cc:     Vincent Shih <vincent.sunplus@gmail.com>
+Subject: [PATCH v3 0/2] Add USB2.0 phy driver for Sunplus SP7021
+Date:   Mon, 11 Jul 2022 16:50:01 +0800
+Message-Id: <1657529403-18084-1-git-send-email-vincent.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After 10 retries, we will give up and the remaining pages will be
-counted as failure in nr_failed and nr_thp_failed.  We should count
-the failure in nr_failed_pages too.  This is done in this patch.
+This is a patch series for USB2.0 phy driver for Sunplus SP7021 SoC.
 
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Yang Shi <shy828301@gmail.com>
----
- mm/migrate.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Sunplus SP7021 is an ARM Coretex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD Card and
+etc.) into a single chip. It is designed for industrial control.
 
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 557708ce13a1..cee6fc5a2d31 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -1345,6 +1345,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
- 	int thp_retry = 1;
- 	int nr_failed = 0;
- 	int nr_failed_pages = 0;
-+	int nr_retry_pages = 0;
- 	int nr_succeeded = 0;
- 	int nr_thp_succeeded = 0;
- 	int nr_thp_failed = 0;
-@@ -1365,6 +1366,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
- 	for (pass = 0; pass < 10 && (retry || thp_retry); pass++) {
- 		retry = 0;
- 		thp_retry = 0;
-+		nr_retry_pages = 0;
- 
- 		list_for_each_entry_safe(page, page2, from, lru) {
- 			/*
-@@ -1439,7 +1441,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
- 					nr_failed++;
- 				}
- 
--				nr_failed_pages += nr_subpages;
-+				nr_failed_pages += nr_subpages + nr_retry_pages;
- 				/*
- 				 * There might be some subpages of fail-to-migrate THPs
- 				 * left in thp_split_pages list. Move them back to migration
-@@ -1455,6 +1457,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
- 					thp_retry++;
- 				else
- 					retry++;
-+				nr_retry_pages += nr_subpages;
- 				break;
- 			case MIGRATEPAGE_SUCCESS:
- 				nr_succeeded += nr_subpages;
-@@ -1481,6 +1484,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
- 	if (!no_subpage_counting)
- 		nr_failed += retry;
- 	nr_thp_failed += thp_retry;
-+	nr_failed_pages += nr_retry_pages;
- 	/*
- 	 * Try to migrate subpages of fail-to-migrate THPs, no nr_failed
- 	 * counting in this round, since all subpages of a THP is counted
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Vincent Shih (2):
+  phy: usb: Add USB2.0 phy driver for Sunplus SP7021
+  dt-bindings: phy: Add bindings doc for Sunplus USB2 PHY driver
+
+ .../bindings/phy/sunplus,sp7021-usb2-phy.yaml      |  73 +++++
+ MAINTAINERS                                        |   9 +
+ drivers/phy/Kconfig                                |   1 +
+ drivers/phy/Makefile                               |   1 +
+ drivers/phy/sunplus/Kconfig                        |  13 +
+ drivers/phy/sunplus/Makefile                       |   2 +
+ drivers/phy/sunplus/phy-sunplus-usb2.c             | 297 +++++++++++++++++++++
+ 7 files changed, 396 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/sunplus,sp7021-usb2-phy.yaml
+ create mode 100644 drivers/phy/sunplus/Kconfig
+ create mode 100644 drivers/phy/sunplus/Makefile
+ create mode 100644 drivers/phy/sunplus/phy-sunplus-usb2.c
+
 -- 
-2.30.2
+2.7.4
 
