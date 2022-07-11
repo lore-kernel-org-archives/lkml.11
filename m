@@ -2,184 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83DA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 14:42:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231700AbiGKOmM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 10:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        id S231781AbiGKOm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 10:42:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbiGKOl6 (ORCPT
+        with ESMTP id S231678AbiGKOmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 10:41:58 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41E8C6D2FE;
-        Mon, 11 Jul 2022 07:41:51 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id va17so9261528ejb.0;
-        Mon, 11 Jul 2022 07:41:50 -0700 (PDT)
+        Mon, 11 Jul 2022 10:42:07 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A32936D2ED
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:42:05 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id e5so5100618iof.2
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 07:42:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OGhZTj5ZWGv/eTym6XOpCg2bZQb8uWXBpna96uNZQLA=;
-        b=pLXX7QjLGzJMlrsyc7zv0canr2KOOS+gjDPGHDNPiUiqPlMRg3H4yA4NHLCg28lv6l
-         Sw6VhScDmz5ipC5Em63Q1TJiKd8tU9x6HjwogT7UrlSS82yOEaFG3RZoKiD7LOaRvXj0
-         uCIV5w1cyStDGjwb6PdYzdvNIRZqej0owWzc2LuP3ZWcw8AppIwEi51Sq7xWtGjrRYrn
-         6Snp9U8EZVktyg/0/NRmgiwPdGkW5TcaA8pc/SUHjCE6e28pk99thQB1vBupYy42D5QG
-         JZOyjnKRmZhsDo+ltCSjPGU9FOj+tHAWDMOnnhEbFRYsACmXKESkMStoPlw1nHu1qu9J
-         FsmQ==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=A6cQ25aRnwcaLYA+THouzTgrCw6BaJucMoUnEGF0gbs=;
+        b=S2KwqRIx7+KCCa4W4VwX2KnXxEegwxZMR1+YmdkB84FWfA8DBXBCW/4gHLNCZ6ZuhE
+         T3zC/6bjvMfENk1OrzRuiRm2FNKBGL1JZ+BoFuHF2dU2qx7JkQbrrLhysIfAzQyur2nc
+         wgvHhrf4QllwOEm2IdGYsveH2q0HzyBjsdynFt6glIi12Qr1z47LLvrDn5O4NzuMTPln
+         /rpVXi9aVO59C/KkyQpdX+KTyKEBj01GpQdnwfoy1FRHknerDHKRsXEkpesy+xKTZkmG
+         MJv4kKmehDGc6JdkZQdtRBmh+rYxQo5yDjV4Doz9Zotw8hVrnSOPsSs5yGDrkSug5g5a
+         bwWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OGhZTj5ZWGv/eTym6XOpCg2bZQb8uWXBpna96uNZQLA=;
-        b=k55o1rMeUJfqEDuy/UqFs16XKHhAUoDq8K+x0ctS5uvg2vOR0gY5pdQB6OryUf6Hpi
-         H7TW/K3SEwR/UdjXlRgBdsKbQ/Nf/yjeZNWubxfsr7QgnAwO9xGLnZztDjviZWB58hyM
-         wA0HdORVOX13+zBCan3/9SgGZzqMMrd2Y0HkLZLNRHIbhxGfix54ofAU+uO2dUKUK3XZ
-         f3vfVM8RS1Yns8wgaiIjTV9EnoQ/OC0Kw104FMKM1ZeBeVE+KPa7gDW47Gz9RActT2/6
-         IRe0iDe17OIU7xi9JHTtybAb7/4xwijyG68cjlw+ZFFv83LgDKuDsdfXtsvVLe6DJpK0
-         Vsfg==
-X-Gm-Message-State: AJIora9qulF5omWERkgj9alaHk7dTq9iHOBuLw0KW8JZPo/M2dBXdPQY
-        6KxMjm+qmyNvFXEfKPwLK3I/matCtigZL/+D
-X-Google-Smtp-Source: AGRyM1vl9kBGEmWp2DTA164KVmbJv1lySwAvttmKioVX7GsaVLslW4UHHcVKMosu7TifmP8HU6Rr+Q==
-X-Received: by 2002:a17:907:1361:b0:72b:3554:4f7 with SMTP id yo1-20020a170907136100b0072b355404f7mr13449704ejb.420.1657550509279;
-        Mon, 11 Jul 2022 07:41:49 -0700 (PDT)
-Received: from localhost.localdomain (89-39-107-113.hosted-by-worldstream.net. [89.39.107.113])
-        by smtp.gmail.com with ESMTPSA id cm10-20020a0564020c8a00b00436f3107bdasm4461390edb.38.2022.07.11.07.41.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 07:41:48 -0700 (PDT)
-From:   Yassine Oudjana <yassine.oudjana@gmail.com>
-X-Google-Original-From: Yassine Oudjana <y.oudjana@protonmail.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Tianshu Qiu <tian.shu.qiu@intel.com>,
-        Bingbu Cao <bingbu.cao@intel.com>
-Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
-        Yassine Oudjana <yassine.oudjana@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>, linux-media@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/3] media: i2c: ak7375: Add regulator management
-Date:   Mon, 11 Jul 2022 18:40:39 +0400
-Message-Id: <20220711144039.232196-4-y.oudjana@protonmail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220711144039.232196-1-y.oudjana@protonmail.com>
-References: <20220711144039.232196-1-y.oudjana@protonmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=A6cQ25aRnwcaLYA+THouzTgrCw6BaJucMoUnEGF0gbs=;
+        b=A8obyLPhyKvLbAUxXmWuNdnEGIbAIsqohXq4el4IAuIHxBgtIt8XmLBjM8ditcYouy
+         NUPwZJzpbPYAJTtM85pKNInZrcxIlcjA2CSt92UG/jzIpaK1Ru62elRZArIT2phVkddO
+         8etKCeE6GAZe0IeqadcrFrT4+KW0hUwbCHqptC9pasu756Nb3aueMfXNUO9xV8XbhHP6
+         +vckcy6qpQepH8nha/a6BjwSiawK5G8Fb6XwXGrXM+Fqqvuye4g0tPEnnt/bW9hxp4eN
+         Rhd2YnrXONVPv+1dp21TRIVjhg3ihCkLlCp1MMTsKiNW/1Y4P3W3QMBU7h3caSRIGCyt
+         KrZA==
+X-Gm-Message-State: AJIora+9GHKA5bVjWRQhqACVlIaYr+WcOd50wweA2vdpMPJL/uk4uTI0
+        heGeuLmd622yQVGS+TIdzZhNmRS5IaBwiHSQm2Qaxw==
+X-Google-Smtp-Source: AGRyM1tbft5+RC0NfpSCIgWK7XJp29V8Jnopf/Mw/Cg3zxE0noFwh/RcnJnd1MAtBQNibxoVhRzzXVPvTpx1Ch5ZI5M=
+X-Received: by 2002:a05:6638:24c7:b0:33c:d725:6f42 with SMTP id
+ y7-20020a05663824c700b0033cd7256f42mr10956723jat.114.1657550524854; Mon, 11
+ Jul 2022 07:42:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220710175043.192901-1-jose.exposito89@gmail.com> <20220710175043.192901-2-jose.exposito89@gmail.com>
+In-Reply-To: <20220710175043.192901-2-jose.exposito89@gmail.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Mon, 11 Jul 2022 07:41:53 -0700
+Message-ID: <CAGS_qxpotikOpURnnx5mVtormgEbkn7xp5Hi5FScnODa5P+_fg@mail.gmail.com>
+Subject: Re: [PATCH 1/7] HID: uclogic: KUnit best practices and naming conventions
+To:     =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>
+Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        j.witteveen@gmail.com, stefanberzl@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yassine Oudjana <y.oudjana@protonmail.com>
+On Sun, Jul 10, 2022 at 10:51 AM Jos=C3=A9 Exp=C3=B3sito
+<jose.exposito89@gmail.com> wrote:
+>
+> The KUnit documentation [1] suggests allowing build tests as a module.
+>
+> In addition, it is recommended [2] to use snake case names for
+> kunit_suite and test cases.
 
-Make the driver get needed regulators on probe and enable/disable
-them on runtime PM callbacks.
+Test parameters don't fall under "test cases", though I see how that
+can be construed as such.
+I don't think anyone has stated any preference to standardize the naming th=
+ere.
 
-Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
----
-Changes since v1:
-  - Reorganize variable declaration
-  - Change the power-on delay range to 3000-3500 microseconds.
+We currently have parameterized tests using spaces and punctuation, e.g.
+ok 7 - binfmt_elf
+    # Subtest: ext4_inode_test
+    1..1
+        # Subtest: inode_test_xtimestamp_decoding
+        ok 1 - 1901-12-13 Lower bound of 32bit < 0 timestamp, no extra bits
+        ok 2 - 1969-12-31 Upper bound of 32bit < 0 timestamp, no extra bits
+...
+    ok 1 - mctp_test_fragment
+        # Subtest: mctp_test_rx_input
+        ok 1 - {1,a,8,0}
+        ok 2 - {1,a,9,0}
+        ok 3 - {2,a,8,0}
 
- drivers/media/i2c/ak7375.c | 39 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+So I think the old names were more conventional.
 
-diff --git a/drivers/media/i2c/ak7375.c b/drivers/media/i2c/ak7375.c
-index 40b1a4aa846c..c2b2542a0056 100644
---- a/drivers/media/i2c/ak7375.c
-+++ b/drivers/media/i2c/ak7375.c
-@@ -6,6 +6,7 @@
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/pm_runtime.h>
-+#include <linux/regulator/consumer.h>
- #include <media/v4l2-ctrls.h>
- #include <media/v4l2-device.h>
- 
-@@ -23,17 +24,32 @@
-  */
- #define AK7375_CTRL_STEPS	64
- #define AK7375_CTRL_DELAY_US	1000
-+/*
-+ * The vcm takes around 3 ms to power on and start taking
-+ * I2C messages. This value was found experimentally due to
-+ * lack of documentation.
-+ */
-+#define AK7375_POWER_DELAY_US	3000
- 
- #define AK7375_REG_POSITION	0x0
- #define AK7375_REG_CONT		0x2
- #define AK7375_MODE_ACTIVE	0x0
- #define AK7375_MODE_STANDBY	0x40
- 
-+static const char * const ak7375_supply_names[] = {
-+	"vdd",
-+	"vio",
-+};
-+
-+#define AK7375_NUM_SUPPLIES ARRAY_SIZE(ak7375_supply_names)
-+
- /* ak7375 device structure */
- struct ak7375_device {
- 	struct v4l2_ctrl_handler ctrls_vcm;
- 	struct v4l2_subdev sd;
- 	struct v4l2_ctrl *focus;
-+	struct regulator_bulk_data supplies[AK7375_NUM_SUPPLIES];
-+
- 	/* active or standby mode */
- 	bool active;
- };
-@@ -133,12 +149,24 @@ static int ak7375_probe(struct i2c_client *client)
- {
- 	struct ak7375_device *ak7375_dev;
- 	int ret;
-+	int i;
- 
- 	ak7375_dev = devm_kzalloc(&client->dev, sizeof(*ak7375_dev),
- 				  GFP_KERNEL);
- 	if (!ak7375_dev)
- 		return -ENOMEM;
- 
-+	for (i = 0; i < AK7375_NUM_SUPPLIES; i++)
-+		ak7375_dev->supplies[i].supply = ak7375_supply_names[i];
-+
-+	ret = devm_regulator_bulk_get(&client->dev, AK7375_NUM_SUPPLIES,
-+				      ak7375_dev->supplies);
-+	if (ret) {
-+		dev_err(&client->dev, "Failed to get regulators: %pe",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
- 	v4l2_i2c_subdev_init(&ak7375_dev->sd, client, &ak7375_ops);
- 	ak7375_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
- 	ak7375_dev->sd.internal_ops = &ak7375_int_ops;
-@@ -210,6 +238,10 @@ static int __maybe_unused ak7375_vcm_suspend(struct device *dev)
- 	if (ret)
- 		dev_err(dev, "%s I2C failure: %d\n", __func__, ret);
- 
-+	ret = regulator_bulk_disable(AK7375_NUM_SUPPLIES, ak7375_dev->supplies);
-+	if (ret)
-+		return ret;
-+
- 	ak7375_dev->active = false;
- 
- 	return 0;
-@@ -230,6 +262,13 @@ static int __maybe_unused ak7375_vcm_resume(struct device *dev)
- 	if (ak7375_dev->active)
- 		return 0;
- 
-+	ret = regulator_bulk_enable(AK7375_NUM_SUPPLIES, ak7375_dev->supplies);
-+	if (ret)
-+		return ret;
-+
-+	/* Wait for vcm to become ready */
-+	usleep_range(AK7375_POWER_DELAY_US, AK7375_POWER_DELAY_US + 500);
-+
- 	ret = ak7375_i2c_write(ak7375_dev, AK7375_REG_CONT,
- 		AK7375_MODE_ACTIVE, 1);
- 	if (ret) {
--- 
-2.37.0
+>
+> Change the Kconfig entry from bool to tristate and stick to the naming
+> conventions to avoid style issues with future tests.
+>
+> Link: https://docs.kernel.org/dev-tools/kunit/style.html#test-kconfig-ent=
+ries  [1]
+> Link: https://www.kernel.org/doc/html/latest/dev-tools/kunit/style.html  =
+[2]
+> Signed-off-by: Jos=C3=A9 Exp=C3=B3sito <jose.exposito89@gmail.com>
 
+Everything else (renaming the suite and switching to tristate) sounds
+good to me though.
+
+Acked-by: Daniel Latypov <dlatypov@google.com>
