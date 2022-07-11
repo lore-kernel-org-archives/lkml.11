@@ -2,124 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFC9CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4CFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 06:41:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbiGKGkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 02:40:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40466 "EHLO
+        id S229715AbiGKGlY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 02:41:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiGKGkv (ORCPT
+        with ESMTP id S229594AbiGKGlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 02:40:51 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05311167DE;
-        Sun, 10 Jul 2022 23:40:49 -0700 (PDT)
-X-UUID: 12fc66ca1e504f8bb75f55c037a26369-20220711
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:39bb711e-7a7c-4051-9e8e-abb8e04bc19e,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:0f94e32,CLOUDID:c4ffef63-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 12fc66ca1e504f8bb75f55c037a26369-20220711
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2104970069; Mon, 11 Jul 2022 14:40:45 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Mon, 11 Jul 2022 14:40:45 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 11 Jul 2022 14:40:45 +0800
-Message-ID: <a5d9c16254b155180ef7e45af69de44257593284.camel@mediatek.com>
-Subject: Re: [PATCH] Revert "dt-bindings: usb: mtk-xhci: Make all clocks
- required"
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     "=?ISO-8859-1?Q?N=EDcolas?= F. R. A. Prado" <nfraprado@collabora.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     <kernel@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <linux-usb@vger.kernel.org>
-Date:   Mon, 11 Jul 2022 14:40:44 +0800
-In-Reply-To: <20220708192605.43351-1-nfraprado@collabora.com>
-References: <20220708192605.43351-1-nfraprado@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 11 Jul 2022 02:41:23 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACAB1705F
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:22 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id u11-20020a6be40b000000b0067b809d454fso1829460iog.7
+        for <linux-kernel@vger.kernel.org>; Sun, 10 Jul 2022 23:41:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=8TCRamruMaI/CfJ4bTy9rVFWSrh8dOazU8eFsn/rhDA=;
+        b=lfDPHBu3fjTIZpfIOzN9Ghj8hSIKiEsByWVC2tgKk7SwoCpBcRwindrjHnXxRhrO4S
+         1az/y0HxO52al2a62o+7nfcqM+FnjgYLGqRaY7OSFAPw37rcH/gev6vFOzNd7nIvmrDY
+         mv/MAziCuv3h+u5ovbFpwqA8MbvrQrRlq3UN1ykIsjau6cSdVGCciX9XPFIeuSEAu894
+         xSOvB6F8RkKwie3+qITddmmKe6SAwAl/qb0fIrNHoQAvGyrsZ7wErhSDPjOTIT48OnTC
+         xqBLwgx87E6Dnw3Mqp9OgRlRkiKRNhpBayVVvDL7u8/c1TZB5kBswUmwVVRkLSiVrzTA
+         9rig==
+X-Gm-Message-State: AJIora9twG7x5DYzGP/02oCAVhCsRFFIS2flY/toNfKDRKkBuJaB+dLB
+        ePEupXgiJRuuwgfmNzH+X90l62wf84qgUhvdTXbGYh/uRORr
+X-Google-Smtp-Source: AGRyM1tyL6O2RH5QdBSHw48sVyxjMRcSAaROQ+22cZd1xCYd39MAVs/uGx6VF9QT1hOwSmmommxI/sjBozbPlBkeefRPVN4348Ai
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MTK:  N
+X-Received: by 2002:a92:7f12:0:b0:2d9:1e05:6310 with SMTP id
+ a18-20020a927f12000000b002d91e056310mr8775909ild.317.1657521682166; Sun, 10
+ Jul 2022 23:41:22 -0700 (PDT)
+Date:   Sun, 10 Jul 2022 23:41:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000012bc1f05e381d7ce@google.com>
+Subject: [syzbot] WARNING: fbcon: Driver 'vkmsdrmfb' missed to adjust virtual
+ screen size (0x0 vs. 64x768)
+From:   syzbot <syzbot+20dcf81733d43ddff661@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 15:26 -0400, Nícolas F. R. A. Prado wrote:
-> This reverts commit ebc4969ae125e65fdb563f66f4bfa7aec95f7eb4. That
-> commit was supposed to make the binding better reflect the MediaTek
-> XHCI
-> hardware block by requiring all clocks to be present. But doing that
-> also causes too much noise in the devicetrees, since it requires
-> updating old MediaTek DTs to add clock handles for the fixed clocks,
-> and
-> going forward every new clock added to the binding would require even
-> more updates.
-> 
-> The commit also didn't update the example to match the changes,
-> causing
-> additional warnings.
-> 
-> Instead let's keep the clocks optional so that old devicetrees can
-> keep
-> omitting the fixed clocks, and we'll just add the clocks as required
-> on
-> new DTs.
-> 
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-> 
-> ---
-> 
->  Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml | 4
-> +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/usb/mediatek,mtk-
-> xhci.yaml b/Documentation/devicetree/bindings/usb/mediatek,mtk-
-> xhci.yaml
-> index 1444d18ef9bc..63cbc2b62d18 100644
-> --- a/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-> +++ b/Documentation/devicetree/bindings/usb/mediatek,mtk-xhci.yaml
-> @@ -67,6 +67,7 @@ properties:
->      maxItems: 1
->  
->    clocks:
-> +    minItems: 1
->      items:
->        - description: Controller clock used by normal mode
->        - description: Reference clock used by low power mode etc
-> @@ -75,8 +76,9 @@ properties:
->        - description: controller clock
->  
->    clock-names:
-> +    minItems: 1
->      items:
-> -      - const: sys_ck
-> +      - const: sys_ck  # required, the following ones are optional
->        - const: ref_ck
->        - const: mcu_ck
->        - const: dma_ck
+Hello,
 
-Reviewed-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+syzbot found the following issue on:
 
-Thanks a lot
+HEAD commit:    b1c428b6c368 Merge tag 'i2c-for-5.19-rc6' of git://git.ker..
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=140873b8080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fa95f12403a2e0d2
+dashboard link: https://syzkaller.appspot.com/bug?extid=20dcf81733d43ddff661
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=128f4bb8080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13d92ce8080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+20dcf81733d43ddff661@syzkaller.appspotmail.com
+
+WARNING: fbcon: Driver 'vkmsdrmfb' missed to adjust virtual screen size (0x0 vs. 64x768)
 
 
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
