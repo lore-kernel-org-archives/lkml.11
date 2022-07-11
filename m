@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ACACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A64A4CCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231661AbiGKJRU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        id S229815AbiGKJR0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbiGKJQb (ORCPT
+        with ESMTP id S231417AbiGKJQv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:16:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22015419AE;
-        Mon, 11 Jul 2022 02:11:08 -0700 (PDT)
+        Mon, 11 Jul 2022 05:16:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00BC419A5;
+        Mon, 11 Jul 2022 02:11:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A156111F;
-        Mon, 11 Jul 2022 09:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35116C34115;
-        Mon, 11 Jul 2022 09:11:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A9DB80E7D;
+        Mon, 11 Jul 2022 09:11:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FC60C34115;
+        Mon, 11 Jul 2022 09:11:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530666;
-        bh=ge0wnp6fSGz7SqrbQkCUtV3muHF6FHU9WwT/7CW4CLY=;
+        s=korg; t=1657530663;
+        bh=pnH5lEehIUM44wvMDE6bRQXu7DvPpP9hGwDhZSSbevE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hZnehRTMOH10fZf1Dh0RC1ecsg4ej3+KZskl16O3FoIhZXE9ClrISFYixo8VwCs6N
-         u9/Wg0+dh7JD48+y8K6ac8c1QsjareWpbaodeeTEaU5UZSzCCofyX2fTDg+C2Hk66O
-         avp1nhj+GP/V7U9x0Lji5s+/7FuQmaoL+UmGml5s=
+        b=juunUKx2n5OJvqAf1p5OKk8yukskIn44ogTOoRfHZcedjGjWX6JhhXsEJQZ8Vh082
+         I+8jJ+qtjDKlsawwJJ/e8LWwMe3fU/hPui9Rg45jkW9T97hvsHlk2ldh41KMfM6TCI
+         KefGzScCEX6CiaBMM29fmY2dBayBzFppf8JiDe9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.4 35/38] dmaengine: pl330: Fix lockdep warning about non-static key
-Date:   Mon, 11 Jul 2022 11:07:17 +0200
-Message-Id: <20220711090539.759915114@linuxfoundation.org>
+        stable@vger.kernel.org, Itay Iellin <ieitayie@gmail.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 34/38] ida: dont use BUG_ON() for debugging
+Date:   Mon, 11 Jul 2022 11:07:16 +0200
+Message-Id: <20220711090539.731118592@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -49,55 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit b64b3b2f1d81f83519582e1feee87d77f51f5f17 upstream.
+commit fc82bbf4dede758007763867d0282353c06d1121 upstream.
 
-The DEFINE_SPINLOCK() macro shouldn't be used for dynamically allocated
-spinlocks. The lockdep warns about this and disables locking validator.
-Fix the warning by making lock static.
+This is another old BUG_ON() that just shouldn't exist (see also commit
+a382f8fee42c: "signal handling: don't use BUG_ON() for debugging").
 
- INFO: trying to register non-static key.
- The code is fine but needs lockdep annotation, or maybe
- you didn't initialize this object before use?
- turning off the locking correctness validator.
- Hardware name: Radxa ROCK Pi 4C (DT)
- Call trace:
-  dump_backtrace.part.0+0xcc/0xe0
-  show_stack+0x18/0x6c
-  dump_stack_lvl+0x8c/0xb8
-  dump_stack+0x18/0x34
-  register_lock_class+0x4a8/0x4cc
-  __lock_acquire+0x78/0x20cc
-  lock_acquire.part.0+0xe0/0x230
-  lock_acquire+0x68/0x84
-  _raw_spin_lock_irqsave+0x84/0xc4
-  add_desc+0x44/0xc0
-  pl330_get_desc+0x15c/0x1d0
-  pl330_prep_dma_cyclic+0x100/0x270
-  snd_dmaengine_pcm_trigger+0xec/0x1c0
-  dmaengine_pcm_trigger+0x18/0x24
-  ...
+In fact, as Matthew Wilcox points out, this condition shouldn't really
+even result in a warning, since a negative id allocation result is just
+a normal allocation failure:
 
-Fixes: e588710311ee ("dmaengine: pl330: fix descriptor allocation fail")
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-Link: https://lore.kernel.org/r/20220520181432.149904-1-dmitry.osipenko@collabora.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  "I wonder if we should even warn here -- sure, the caller is trying to
+   free something that wasn't allocated, but we don't warn for
+   kfree(NULL)"
+
+and goes on to point out how that current error check is only causing
+people to unnecessarily do their own index range checking before freeing
+it.
+
+This was noted by Itay Iellin, because the bluetooth HCI socket cookie
+code does *not* do that range checking, and ends up just freeing the
+error case too, triggering the BUG_ON().
+
+The HCI code requires CAP_NET_RAW, and seems to just result in an ugly
+splat, but there really is no reason to BUG_ON() here, and we have
+generally striven for allocation models where it's always ok to just do
+
+    free(alloc());
+
+even if the allocation were to fail for some random reason (usually
+obviously that "random" reason being some resource limit).
+
+Fixes: 88eca0207cf1 ("ida: simplified functions for id allocation")
+Reported-by: Itay Iellin <ieitayie@gmail.com>
+Suggested-by: Matthew Wilcox <willy@infradead.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/pl330.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/idr.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/dma/pl330.c
-+++ b/drivers/dma/pl330.c
-@@ -2585,7 +2585,7 @@ static struct dma_pl330_desc *pl330_get_
+--- a/lib/idr.c
++++ b/lib/idr.c
+@@ -489,7 +489,8 @@ void ida_free(struct ida *ida, unsigned
+ 	struct ida_bitmap *bitmap;
+ 	unsigned long flags;
  
- 	/* If the DMAC pool is empty, alloc new */
- 	if (!desc) {
--		DEFINE_SPINLOCK(lock);
-+		static DEFINE_SPINLOCK(lock);
- 		LIST_HEAD(pool);
+-	BUG_ON((int)id < 0);
++	if ((int)id < 0)
++		return;
  
- 		if (!add_desc(&pool, &lock, GFP_ATOMIC, 1))
+ 	xas_lock_irqsave(&xas, flags);
+ 	bitmap = xas_load(&xas);
 
 
