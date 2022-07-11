@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C99B5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE98CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229933AbiGKJLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50632 "EHLO
+        id S231274AbiGKJLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231249AbiGKJK2 (ORCPT
+        with ESMTP id S230127AbiGKJKa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:10:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743D4AE45;
-        Mon, 11 Jul 2022 02:08:39 -0700 (PDT)
+        Mon, 11 Jul 2022 05:10:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7827B4B4;
+        Mon, 11 Jul 2022 02:08:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68C09B80D2C;
-        Mon, 11 Jul 2022 09:08:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4257C34115;
-        Mon, 11 Jul 2022 09:08:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57D0E611DF;
+        Mon, 11 Jul 2022 09:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A48C34115;
+        Mon, 11 Jul 2022 09:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530517;
-        bh=8ByYXWQzNMjeFdoOBr8COFdLU/JmjppBk3DjxuG6qrE=;
+        s=korg; t=1657530519;
+        bh=AOZzCYGpTcjFuNIF7fPsACXJ58sxB04TYtQtbnyTpWE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GybGeZylj8M6tOlCqAd7ZgoX5R6WOLNLDNZ2sOFhhZDasxAa5uvjcuba8OjO/Z46x
-         Sdn4vTKoufTOP9LDj0ABv0i0yykPe02CPDIY9U6HNMbNWV3X6FrgfUDLchEDDlGIUV
-         rwZsP5SgIhbxdkEN788Zk/fIVFl/9jhwWWXF6nEQ=
+        b=GJT5mkXTyH55+AncgeUdnRbdz3WhPmnNIbOzCpLljJcaU2WgKQ6tNHISLhIhuAhZ1
+         rNjsF7Tx0I3KvgxMq0O1y0HLTOHdhukBQ5LkYkTpxwfUyWZ8A8feE8hpjpS8AnYvtH
+         JPTbBs9IkH0CvOnmFGRVGkPXAUg71aPhUTQbZ14Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org,
-        "stable@vger.kernel.org, linux-can@vger.kernel.org, Marc Kleine-Budde" 
-        <mkl@pengutronix.de>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jimmy Assarsson <extja@kvaser.com>
-Subject: [PATCH 4.19 13/31] can: kvaser_usb: kvaser_usb_leaf: fix CAN clock frequency regression
-Date:   Mon, 11 Jul 2022 11:06:52 +0200
-Message-Id: <20220711090538.239132541@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Vlastimil Babka <vbabka@suse.cz>
+Subject: [PATCH 4.19 02/31] mm/slub: add missing TID updates on slab deactivation
+Date:   Mon, 11 Jul 2022 11:06:41 +0200
+Message-Id: <20220711090537.917739384@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090537.841305347@linuxfoundation.org>
 References: <20220711090537.841305347@linuxfoundation.org>
@@ -49,146 +52,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jimmy Assarsson <extja@kvaser.com>
+From: Jann Horn <jannh@google.com>
 
-commit e6c80e601053ffdac5709f11ff3ec1e19ed05f7b upstream.
+commit eeaa345e128515135ccb864c04482180c08e3259 upstream.
 
-The firmware of M32C based Leaf devices expects bittiming parameters
-calculated for 16MHz clock. Since we use the actual clock frequency of
-the device, the device may end up with wrong bittiming parameters,
-depending on user requested parameters.
+The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
+the TID stays the same. However, two places in __slab_alloc() currently
+don't update the TID when deactivating the CPU slab.
 
-This regression affects M32C based Leaf devices with non-16MHz clock.
+If multiple operations race the right way, this could lead to an object
+getting lost; or, in an even more unlikely situation, it could even lead to
+an object being freed onto the wrong slab's freelist, messing up the
+`inuse` counter and eventually causing a page to be freed to the page
+allocator while it still contains slab objects.
 
-Fixes: 7a09ebf00238 ("can: kvaser_usb: get CAN clock frequency from device")
-Link: https://lore.kernel.org/all/20220603083820.800246-3-extja@kvaser.com
+(I haven't actually tested these cases though, this is just based on
+looking at the code. Writing testcases for this stuff seems like it'd be
+a pain...)
+
+The race leading to state inconsistency is (all operations on the same CPU
+and kmem_cache):
+
+ - task A: begin do_slab_free():
+    - read TID
+    - read pcpu freelist (==NULL)
+    - check `slab == c->slab` (true)
+ - [PREEMPT A->B]
+ - task B: begin slab_alloc_node():
+    - fastpath fails (`c->freelist` is NULL)
+    - enter __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - take local_lock_irqsave()
+    - read c->freelist as NULL
+    - get_freelist() returns NULL
+    - write `c->slab = NULL`
+    - drop local_unlock_irqrestore()
+    - goto new_slab
+    - slub_percpu_partial() is NULL
+    - get_partial() returns NULL
+    - slub_put_cpu_ptr() (enables preemption)
+ - [PREEMPT B->A]
+ - task A: finish do_slab_free():
+    - this_cpu_cmpxchg_double() succeeds()
+    - [CORRUPT STATE: c->slab==NULL, c->freelist!=NULL]
+
+>From there, the object on c->freelist will get lost if task B is allowed to
+continue from here: It will proceed to the retry_load_slab label,
+set c->slab, then jump to load_freelist, which clobbers c->freelist.
+
+But if we instead continue as follows, we get worse corruption:
+
+ - task A: run __slab_free() on object from other struct slab:
+    - CPU_PARTIAL_FREE case (slab was on no list, is now on pcpu partial)
+ - task A: run slab_alloc_node() with NUMA node constraint:
+    - fastpath fails (c->slab is NULL)
+    - call __slab_alloc()
+    - slub_get_cpu_ptr() (disables preemption)
+    - enter ___slab_alloc()
+    - c->slab is NULL: goto new_slab
+    - slub_percpu_partial() is non-NULL
+    - set c->slab to slub_percpu_partial(c)
+    - [CORRUPT STATE: c->slab points to slab-1, c->freelist has objects
+      from slab-2]
+    - goto redo
+    - node_match() fails
+    - goto deactivate_slab
+    - existing c->freelist is passed into deactivate_slab()
+    - inuse count of slab-1 is decremented to account for object from
+      slab-2
+
+At this point, the inuse count of slab-1 is 1 lower than it should be.
+This means that if we free all allocated objects in slab-1 except for one,
+SLUB will think that slab-1 is completely unused, and may free its page,
+leading to use-after-free.
+
+Fixes: c17dda40a6a4e ("slub: Separate out kmem_cache_cpu processing from deactivate_slab")
+Fixes: 03e404af26dc2 ("slub: fast release on full slab")
 Cc: stable@vger.kernel.org
-Signed-off-by: Jimmy Assarsson <extja@kvaser.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Jann Horn <jannh@google.com>
+Acked-by: Christoph Lameter <cl@linux.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
+Link: https://lore.kernel.org/r/20220608182205.2945720-1-jannh@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h      |    1 
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c |   29 +++++++++++++++--------
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c |   25 ++++++++++++-------
- 3 files changed, 36 insertions(+), 19 deletions(-)
+ mm/slub.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb.h
-@@ -38,6 +38,7 @@
- /* Kvaser USB device quirks */
- #define KVASER_USB_QUIRK_HAS_SILENT_MODE	BIT(0)
- #define KVASER_USB_QUIRK_HAS_TXRX_ERRORS	BIT(1)
-+#define KVASER_USB_QUIRK_IGNORE_CLK_FREQ	BIT(2)
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2162,6 +2162,7 @@ redo:
  
- /* Device capabilities */
- #define KVASER_USB_CAP_BERR_CAP			0x01
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c
-@@ -92,26 +92,33 @@ static const struct kvaser_usb_driver_in
- };
- 
- static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf = {
--	.quirks = 0,
-+	.quirks = KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
- 	.family = KVASER_LEAF,
- 	.ops = &kvaser_usb_leaf_dev_ops,
- };
- 
- static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err = {
--	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS,
-+	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
-+		  KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
- 	.family = KVASER_LEAF,
- 	.ops = &kvaser_usb_leaf_dev_ops,
- };
- 
- static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leaf_err_listen = {
- 	.quirks = KVASER_USB_QUIRK_HAS_TXRX_ERRORS |
--		  KVASER_USB_QUIRK_HAS_SILENT_MODE,
-+		  KVASER_USB_QUIRK_HAS_SILENT_MODE |
-+		  KVASER_USB_QUIRK_IGNORE_CLK_FREQ,
- 	.family = KVASER_LEAF,
- 	.ops = &kvaser_usb_leaf_dev_ops,
- };
- 
-+static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leafimx = {
-+	.quirks = 0,
-+	.ops = &kvaser_usb_leaf_dev_ops,
-+};
-+
- static const struct usb_device_id kvaser_usb_table[] = {
--	/* Leaf USB product IDs */
-+	/* Leaf M32C USB product IDs */
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_DEVEL_PRODUCT_ID),
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_PRODUCT_ID),
-@@ -152,16 +159,18 @@ static const struct usb_device_id kvaser
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_CAN_R_PRODUCT_ID),
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
-+
-+	/* Leaf i.MX28 USB product IDs */
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_V2_PRODUCT_ID),
--		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_HS_PRODUCT_ID),
--		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM_PRODUCT_ID),
--		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_LIGHT_2HS_PRODUCT_ID),
--		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_2HS_PRODUCT_ID),
--		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
-+		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
- 
- 	/* USBCANII USB product IDs */
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN2_PRODUCT_ID),
-@@ -190,7 +199,7 @@ static const struct usb_device_id kvaser
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_2HS_V2_PRODUCT_ID),
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
--	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_2CANLIN_PRODUCT_ID),
-+	{ USB_DEVICE(KVASER_VENDOR_ID, USB_HYBRID_CANLIN_PRODUCT_ID),
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
- 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_ATI_USBCAN_PRO_2HS_V2_PRODUCT_ID),
- 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
---- a/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-+++ b/drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c
-@@ -525,16 +525,23 @@ static void kvaser_usb_leaf_get_software
- 	dev->fw_version = le32_to_cpu(softinfo->fw_version);
- 	dev->max_tx_urbs = le16_to_cpu(softinfo->max_outstanding_tx);
- 
--	switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
--	case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
-+	if (dev->driver_info->quirks & KVASER_USB_QUIRK_IGNORE_CLK_FREQ) {
-+		/* Firmware expects bittiming parameters calculated for 16MHz
-+		 * clock, regardless of the actual clock
-+		 */
- 		dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
--		break;
--	case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
--		dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
--		break;
--	case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
--		dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
--		break;
-+	} else {
-+		switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
-+		case KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK:
-+			dev->cfg = &kvaser_usb_leaf_dev_cfg_16mhz;
-+			break;
-+		case KVASER_USB_LEAF_SWOPTION_FREQ_24_MHZ_CLK:
-+			dev->cfg = &kvaser_usb_leaf_dev_cfg_24mhz;
-+			break;
-+		case KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK:
-+			dev->cfg = &kvaser_usb_leaf_dev_cfg_32mhz;
-+			break;
-+		}
- 	}
+ 	c->page = NULL;
+ 	c->freelist = NULL;
++	c->tid = next_tid(c->tid);
  }
  
+ /*
+@@ -2295,8 +2296,6 @@ static inline void flush_slab(struct kme
+ {
+ 	stat(s, CPUSLAB_FLUSH);
+ 	deactivate_slab(s, c->page, c->freelist, c);
+-
+-	c->tid = next_tid(c->tid);
+ }
+ 
+ /*
+@@ -2583,6 +2582,7 @@ redo:
+ 
+ 	if (!freelist) {
+ 		c->page = NULL;
++		c->tid = next_tid(c->tid);
+ 		stat(s, DEACTIVATE_BYPASS);
+ 		goto new_slab;
+ 	}
 
 
