@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D445C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16493C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiGKKAA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46346 "EHLO
+        id S234231AbiGKKAE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:00:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234211AbiGKJ7E (ORCPT
+        with ESMTP id S231986AbiGKJ7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:59:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EAA7B6290;
-        Mon, 11 Jul 2022 02:27:36 -0700 (PDT)
+        Mon, 11 Jul 2022 05:59:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A882BB62A2;
+        Mon, 11 Jul 2022 02:27:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B477ECE1268;
-        Mon, 11 Jul 2022 09:27:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E774C34115;
-        Mon, 11 Jul 2022 09:27:30 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 62F63CE126A;
+        Mon, 11 Jul 2022 09:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75798C34115;
+        Mon, 11 Jul 2022 09:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531650;
-        bh=73Uh7vu2OsPbWICEJYHjM7Eli153prRiBAG3rtQxm8g=;
+        s=korg; t=1657531639;
+        bh=m/KGAc9SXJsoFefchDyBa6ZxTDVjstgXbewAd/5Yeqc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r8svoC5bvpKyqWRQ47p0LXKJKTdNaA3PEnsjKhDpg7rdD+syy0T08eixgbRdBbE7v
-         Be9m8oIwukF5Y2jBQfvZT0l6076zy6oCzfDAkQAbLMWq77o269ras3bgBWEWvsGEqu
-         yBv5Z4c8oWXO6ITuP+Wtii4kjqqhC6CdYtwW9YY8=
+        b=1gkL5FJescV9DPqarMa0vQTQu4x/CC0fkcNntjh7xxqsXfuUuJilCm1+ssBJZHHPT
+         Ua86/5j4V2JrNkfmkkkGNa0pdLm+URX4xjulv8eLwUQ6r4rjcMTTVbvHfDJaP05JnQ
+         x43vS01rzgK/eDTqtZv+frw32P7djUKcSgY7ns9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 183/230] arm64: dts: qcom: sdm845: use dispcc AHB clock for mdss node
-Date:   Mon, 11 Jul 2022 11:07:19 +0200
-Message-Id: <20220711090609.301392757@linuxfoundation.org>
+Subject: [PATCH 5.15 138/230] drm/amdgpu: bind to any 0x1002 PCI diplay class device
+Date:   Mon, 11 Jul 2022 11:06:34 +0200
+Message-Id: <20220711090607.978575207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -50,37 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit 3ba500dee327e0261e728edec8a4f2f563d2760c ]
+[ Upstream commit eb4fd29afd4aa1c98d882800ceeee7d1f5262803 ]
 
-It was noticed that on sdm845 after an MDSS suspend/resume cycle the
-driver can not read HW_REV registers properly (they will return 0
-instead). Chaning the "iface" clock from <&gcc GCC_DISP_AHB_CLK> to
-<&dispcc DISP_CC_MDSS_AHB_CLK> fixes the issue.
+Bind to all 0x1002 GPU devices.
 
-Fixes: 08c2a076d18f ("arm64: dts: qcom: sdm845: Add dpu to sdm845 dts file")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20220531124735.1165582-1-dmitry.baryshkov@linaro.org
+For now we explicitly return -ENODEV for generic bindings.
+Remove this check once IP discovery based checking is in place.
+
+v2: rebase (Alex)
+
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index d20eacfc1017..ea7a272d267a 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -4147,7 +4147,7 @@
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+index f65b4b233ffb..c294081022bd 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1952,6 +1952,16 @@ static const struct pci_device_id pciidlist[] = {
+ 	{0x1002, 0x7424, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
+ 	{0x1002, 0x743F, PCI_ANY_ID, PCI_ANY_ID, 0, 0, CHIP_BEIGE_GOBY},
  
- 			power-domains = <&dispcc MDSS_GDSC>;
++	{ PCI_DEVICE(0x1002, PCI_ANY_ID),
++	  .class = PCI_CLASS_DISPLAY_VGA << 8,
++	  .class_mask = 0xffffff,
++	  .driver_data = 0 },
++
++	{ PCI_DEVICE(0x1002, PCI_ANY_ID),
++	  .class = PCI_CLASS_DISPLAY_OTHER << 8,
++	  .class_mask = 0xffffff,
++	  .driver_data = 0 },
++
+ 	{0, 0, 0}
+ };
  
--			clocks = <&gcc GCC_DISP_AHB_CLK>,
-+			clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
- 				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
- 			clock-names = "iface", "core";
+@@ -1999,6 +2009,11 @@ static int amdgpu_pci_probe(struct pci_dev *pdev,
+ 			return -ENODEV;
+ 	}
  
++	if (flags == 0) {
++		DRM_INFO("Unsupported asic.  Remove me when IP discovery init is in place.\n");
++		return -ENODEV;
++	}
++
+ 	if (amdgpu_virtual_display ||
+ 	    amdgpu_device_asic_has_dc_support(flags & AMD_ASIC_MASK))
+ 		supports_atomic = true;
 -- 
 2.35.1
 
