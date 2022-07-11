@@ -2,84 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41B3DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:42:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 678A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 13:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230273AbiGKNm1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 09:42:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
+        id S230300AbiGKNnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 09:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230292AbiGKNmW (ORCPT
+        with ESMTP id S229456AbiGKNnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 09:42:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574634D811
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 06:42:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B29CB80F1A
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 13:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1876C3411C;
-        Mon, 11 Jul 2022 13:42:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657546938;
-        bh=KqT9jXk7gPcHs0OREpA0JbWzkxkbkXw/FOHUWxufhRo=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=Yh4+12vnfz/2k7t73GAfVvazukytAqGwPao+x+u63zCaZL4Ed1Et6Pd6qTMkTuVhH
-         G62ZGbXc5ca1lpNJmS4AHKmiSO1cGZFv7A5Ez/skc2P/E4ib4x6Nm8F1GGYFGmlKUe
-         jdqg9f8RZ0m5m1jQQn4TwF4Dy/68gsc4RcbQg4J4Ic+yxz5Hx5J14pZeGgSnGZjxwe
-         YWwtmifKVmuztiw6SJzq4vmtONW1aXJE1mA2qZqstUuVhFqdX//Wv9UNXgKpHB0iNT
-         Q4se9Xx61BaiigNoUqPFsE09l9Lsp1fQQg3kM5pkv2xy829N7Qnf7uHPzWwq5j0K5t
-         wDC8Sbj6efthQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     shengjiu.wang@nxp.com, perex@perex.cz, festevam@gmail.com,
-        lgirdwood@gmail.com, shengjiu.wang@gmail.com, Xiubo.Lee@gmail.com,
-        nicoleotsuka@gmail.com, alsa-devel@alsa-project.org, tiwai@suse.com
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-In-Reply-To: <1657507190-14546-1-git-send-email-shengjiu.wang@nxp.com>
-References: <1657507190-14546-1-git-send-email-shengjiu.wang@nxp.com>
-Subject: Re: [PATCH] ASoC: fsl_utils: Drop usage of __clk_get_name()
-Message-Id: <165754693638.334539.15476852072708408930.b4-ty@kernel.org>
-Date:   Mon, 11 Jul 2022 14:42:16 +0100
+        Mon, 11 Jul 2022 09:43:21 -0400
+Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DB034D809;
+        Mon, 11 Jul 2022 06:43:19 -0700 (PDT)
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 29FC41C808C7;
+        Mon, 11 Jul 2022 21:43:18 +0800 (CST)
+Received: from NTHCML01A.nuvoton.com (10.1.8.177) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Mon, 11
+ Jul 2022 21:43:17 +0800
+Received: from NTHCCAS01.nuvoton.com (10.1.8.28) by NTHCML01A.nuvoton.com
+ (10.1.8.177) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 11 Jul
+ 2022 21:43:17 +0800
+Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS01.nuvoton.com
+ (10.1.12.25) with Microsoft SMTP Server id 15.1.2375.7 via Frontend
+ Transport; Mon, 11 Jul 2022 21:43:17 +0800
+Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
+        id B521E63A23; Mon, 11 Jul 2022 16:43:16 +0300 (IDT)
+From:   Tomer Maimon <tmaimon77@gmail.com>
+To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <jic23@kernel.org>, <lars@metafoo.de>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <j.neuschaefer@gmx.net>, <zhengbin13@huawei.com>
+CC:     <openbmc@lists.ozlabs.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v1 0/2] iio: adc: npcm: add Arbel NPCM8XX support
+Date:   Mon, 11 Jul 2022 16:43:09 +0300
+Message-ID: <20220711134312.234268-1-tmaimon77@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Jul 2022 10:39:50 +0800, Shengjiu Wang wrote:
-> Avoid build errors when CONFIG_COMMON_CLK is not set/enabled.
-> 
-> ERROR: modpost: "__clk_get_name" [sound/soc/fsl/snd-soc-fsl-utils.ko] undefined!
-> 
-> 
+This patch set adds Arbel NPCM8XX Analog-to-Digital Converter (ADC) support 
+to ADC NPCM driver.
 
-Applied to
+The NPCM8XX ADC is a 12-bit converter for eight channel inputs.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+The NPCM ADC driver tested on NPCM845 evaluation board.
+Tomer Maimon (2):
+  dt-bindings: iio: adc: npcm: Add npcm845 compatible string
+  iio: adc: npcm: Add NPCM8XX support
 
-Thanks!
+ .../bindings/iio/adc/nuvoton,npcm750-adc.yaml |  5 ++-
+ drivers/iio/adc/npcm_adc.c                    | 39 +++++++++++++++----
+ 2 files changed, 35 insertions(+), 9 deletions(-)
 
-[1/1] ASoC: fsl_utils: Drop usage of __clk_get_name()
-      commit: eaa27e7fe43f16fe587c3e93fd5c25ce86be3c43
+-- 
+2.33.0
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
