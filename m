@@ -2,88 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7C88C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:52:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A41C9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 21:52:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231442AbiGKVv7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 17:51:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
+        id S232063AbiGKVwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 17:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiGKVv5 (ORCPT
+        with ESMTP id S232109AbiGKVwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 17:51:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1401B357F7;
-        Mon, 11 Jul 2022 14:51:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE6060F21;
-        Mon, 11 Jul 2022 21:51:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BFBC34115;
-        Mon, 11 Jul 2022 21:51:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657576315;
-        bh=Upwhgkcc7yl3xKyU2Wru0TovC57odUplM8mjq7SZp3s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=BnpP72SYfDFZFhwN8B6BXB1L0ZSg7gruvjQpzCf15t4JyLiBhAzbPZ4kBoHkL5AiU
-         sqJQBAd1AinBeac9DsGmvd9LJmsC9xrrN6OslDBBdCbXwbah0Ns7l0kxaFH6cmiFeK
-         KWTiqkGdASYtd0B5Zh29VhjcPtLkqXKY7vCUkPYxoYY4yMaSHdI2BnsXpgURo6MbDp
-         vVTYtdyePRCyiuxJsftXpKMD29XNEui7a6IDs9dWAa/a5fMzdTZ0dHawJ1So9OkygA
-         f8prWm3V1fRG1ADNti3rHQKWKq0zG1Zp7W8XWaUwRzT94Ah/gP9WslXFSiASSnqwlO
-         on3mziOcG45LA==
-Date:   Mon, 11 Jul 2022 16:51:53 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Peng Wu <wupeng58@huawei.com>
-Cc:     kishon@ti.com, lpieralisi@kernel.org, kw@linux.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, liwei391@huawei.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Shunsuke Mie <mie@igel.co.jp>
-Subject: Re: [PATCH] PCI: endpoint: Fix a NULL vs IS_ERR() check in
- pci_epf_test_init_dma_chan()
-Message-ID: <20220711215153.GA691840@bhelgaas>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+        Mon, 11 Jul 2022 17:52:06 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1896764E0A
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 14:52:04 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26BLmgGA018033;
+        Mon, 11 Jul 2022 16:48:42 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26BLmeGc018032;
+        Mon, 11 Jul 2022 16:48:40 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 11 Jul 2022 16:48:40 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Michael Ellerman <michael@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
+Message-ID: <20220711214840.GJ25951@gate.crashing.org>
+References: <20220524093939.30927-1-pali@kernel.org> <20220702094405.tp7eo4df7fjvn2ng@pali> <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au> <20220704103951.nm4m4kpgnus3ucqo@pali> <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com> <20220708171227.74nbcgsk63y4bdna@pali> <CAK8P3a3YMqGEjRr+ZD4Enm4pnuNNZOaeXqpY=PDXAP7w3P7y4A@mail.gmail.com> <d9339bb9-2410-bea5-7502-1c7839707f4e@csgroup.eu> <20220711161442.GD25951@gate.crashing.org> <2552726a-cca4-ecd4-6fca-4f73bbf7942e@csgroup.eu>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220707131215.65075-1-wupeng58@huawei.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2552726a-cca4-ecd4-6fca-4f73bbf7942e@csgroup.eu>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[+cc Dan, Shunsuke]
+Hi!
 
-On Thu, Jul 07, 2022 at 01:12:15PM +0000, Peng Wu wrote:
-> On failure, dma_request_channel() returns NULL and not a
-> ERR_PTR() value. Fix return value checking by using is NULL.
+On Mon, Jul 11, 2022 at 05:32:09PM +0000, Christophe Leroy wrote:
+> Le 11/07/2022 à 18:14, Segher Boessenkool a écrit :
+> >>     CC      arch/powerpc/kernel/irq.o
+> >> {standard input}: Assembler messages:
+> >> {standard input}:3535: Error: unrecognized opcode: `wrteei'
+> >> {standard input}:5608: Error: unrecognized opcode: `wrteei'
+> > 
+> > What -mcpu= did it use here?
 > 
-> Signed-off-by: Peng Wu <wupeng58@huawei.com>
-
-Thanks for the patch.  Dan posted the same thing later [1].
-
-I'd be happy to do this, but Shunsuke suggested that the rx path
-should be changed similarly, so I'll look for a patch that does both.
-
-[1] https://lore.kernel.org/r/YsftwaVowtU9/pgn@kili
-[2] https://lore.kernel.org/r/CANXvt5rK98-cEMgpzopY9POOK8a5=VDib8uKPLgJakOG=hRfwQ@mail.gmail.com
-
-> ---
->  drivers/pci/endpoint/functions/pci-epf-test.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> -mcpu=powerpc64
 > 
-> diff --git a/drivers/pci/endpoint/functions/pci-epf-test.c b/drivers/pci/endpoint/functions/pci-epf-test.c
-> index 34aac220dd4c..eed6638ab71d 100644
-> --- a/drivers/pci/endpoint/functions/pci-epf-test.c
-> +++ b/drivers/pci/endpoint/functions/pci-epf-test.c
-> @@ -221,7 +221,7 @@ static int pci_epf_test_init_dma_chan(struct pci_epf_test *epf_test)
->  	filter.dma_mask = BIT(DMA_MEM_TO_DEV);
->  	dma_chan = dma_request_channel(mask, epf_dma_filter_fn, &filter);
->  
-> -	if (IS_ERR(dma_chan)) {
-> +	if (!dma_chan) {
->  		dev_info(dev, "Failed to get private DMA tx channel. Falling back to generic one\n");
->  		goto fail_back_rx;
->  	}
-> -- 
-> 2.17.1
+> > wrteei is not a PowerPC insn (it is BookE, instead), so it is not
+> > recognised without an appropriate -mcpu=.
+> > 
+> >> If I select the e5500 (without altivec) or e6500 I get:
+> >>
+> >>     CC      arch/powerpc/kernel/io.o
+> >> {standard input}: Assembler messages:
+> >> {standard input}:381: Error: unrecognized opcode: `eieio'
+> > 
+> > Same question.  eieio is a base PowerPC instruction, so this one is
+> > "interesting" :-)
 > 
+> -mcpu=e500mc64 (for e5500)
+> -mcpu=e6500 (for e6500)
+> 
+> I had to replace 'eieio' instruction by 'mbar' instruction.
+
+I saw some patches fly by...  you have it all fixed with that?
+
+> Seems like binutils added 'eieio' to e500 in 2010 via commit 
+> e01d869a3be, but it seems it is only for the 85xx, not for the others.
+
+I believe the eieio instruction is disabled on some e500 models, because
+it does not work correctly, so EIEIO_EN=1 cannot work, something like
+that?
+
+
+Segher
