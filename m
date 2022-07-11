@@ -2,114 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45BD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E47CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 20:27:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232077AbiGKU12 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:27:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44604 "EHLO
+        id S232082AbiGKU1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:27:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230374AbiGKUZc (ORCPT
+        with ESMTP id S229979AbiGKUZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 16:25:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0918E51A2E;
-        Mon, 11 Jul 2022 13:25:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65CA2B8123F;
-        Mon, 11 Jul 2022 20:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8912C341C0;
-        Mon, 11 Jul 2022 20:25:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657571125;
-        bh=68mGlwaA0EtgA4nJuAvhd7iYXVxtW3CSXJug597Q8rA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CBSTj4IN8j0qXmrjuDC6FgYUE8xR3y7Un/6+x7oa4EOA9god2bnLQgJKxUJPeY8Y+
-         IB17n0LDvBK20uIn65DOpGMlBIOn8RAPMpCNIoJdjTqb7RaPn7BqlQvp0uJh/k33wO
-         w4n8TlW2nUAl4WRnI41fuEifCDVPrVYQJmJU6VZU9vJhht8fid9zVxnL/ODiPdHasK
-         tAJn91z7P32HnXIwOpTI0HTIjHh5ml50ayvvcTvSUCd+hEwOOht9BMx1I3a8+uByYg
-         Rbsu6unLS2GpfhvkdgiQCpj/e6AfGtiQUdYa9sizfAe10VOUtQQD9uqsAS6mN9lX39
-         NVSx4TrPIY0Mg==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1oAzy3-004e96-T1;
-        Mon, 11 Jul 2022 21:25:19 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        "Jani Nikula" <jani.nikula@linux.intel.com>,
-        "Lucas De Marchi" <lucas.demarchi@intel.com>,
-        "Rodrigo Vivi" <rodrigo.vivi@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 28/32] docs: gpu: i915.rst: GuC: add more kernel-doc markups
-Date:   Mon, 11 Jul 2022 21:25:13 +0100
-Message-Id: <a22fbe2ea7ca57099f2aadf29fbce6b896fc53c5.1657565224.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657565224.git.mchehab@kernel.org>
-References: <cover.1657565224.git.mchehab@kernel.org>
+        Mon, 11 Jul 2022 16:25:40 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A974D812;
+        Mon, 11 Jul 2022 13:25:27 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0771B5C0130;
+        Mon, 11 Jul 2022 16:25:25 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 11 Jul 2022 16:25:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1657571125; x=1657657525; bh=kNzIp30Qm/
+        z7d269z2/7uprxKlfk1b3Xh9kIgnDKL3w=; b=jdSmgR3nMHSEZedXM5Yb9S/a66
+        VWyn4EdjuZc6tTPaLqq1KzPMJQt9mT7jXaIPKzyuDBHBY6lHP3385uKfUG3eRZsA
+        7qIELLk4Y5sJE87O8iuD9v1dTyPAuUSHkBvorFw63UzEYHCv7HAkvciUKq4c6tKa
+        6SfOVYVEHu9uCOAMmxkqjJcDMkSQqmnZ7qLMsH2Flrw1ssXzzjjG6tzm4wrBc4p8
+        PzlFxlxCztZjot7Qnv3Fpxyc6IizHrp7RX6GuBEl/nMvp63pJaby8lN6JAKITDYY
+        kPt7nhnjsOvdL9COeX9wqq08xW+JB1f9J3qfQxfj7EtsRMLJoblB8gCJ2e2A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657571125; x=1657657525; bh=kNzIp30Qm/z7d269z2/7uprxKlfk
+        1b3Xh9kIgnDKL3w=; b=k5rCBC2IsD779cvf/It1Nxc+98YUYsRPuKokoHQXcS+h
+        119XRyia2VNbLP+m6impbKEn7Y20/n52qOwE3vYr3ZEoA3kGJRH24QDNbV6Miylt
+        QTDKd9meOrUNyGchCPM4pZEBlJ6L7hS88+ou5zO0bH1AQEsbsQ9BpXE97WCddBpF
+        qu5tCMZWuyvQQxqrnUY/k8urkbZxdv/295w61YNmUTlA1n13JqIdxMUIlIrpVNHd
+        rnWYqBzWT9ZoJOSGaqnKCrn6OQuTlcbgskf9G0MXoumnpgIpwMozDdC3IoX+CWBN
+        dZXJ/o1Evg65WevBCatMrVtpgIMDfWCM415S+Lf3fw==
+X-ME-Sender: <xms:NIfMYsr3CJXdzuXI0q7WglfUM3zszE9cKM5ehjBkHNQ5xrGtoqSvkw>
+    <xme:NIfMYioZn2W1EMkm0PDjOPFb_SoFp1CSC4rzSfSn1Ptxj5YxI_Yxiivnf29tWaiEw
+    Y1au1oj16yyecHiGKU>
+X-ME-Received: <xmr:NIfMYhPLccsl49jduEzW5uowsbGtEU2rOQg5KC_KvIMH2lMLWjeBWPTW>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejfedgudeglecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigt
+    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
+    frrghtthgvrhhnpeeutedttefgjeefffehffffkeejueevieefudelgeejuddtfeffteek
+    lefhleelteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehthigthhhosehthigthhhordhpihiiiigr
+X-ME-Proxy: <xmx:NIfMYj71TdBzJ5iwFd9PaWaNtD3KVzbpVZUwnoPKHEmcY4EeDdCA7g>
+    <xmx:NIfMYr7j8tC0EctlhFIX00r8-x3VqnbqPt1d8UEGIZopCvnGILkG9A>
+    <xmx:NIfMYjhIFmj4HoQr7wWuP9-xQebg0SQQNekhGMvmuUmRXtxN4hgL0A>
+    <xmx:NYfMYu298dFgWEiyHHgz4RnXZlQqtVPNXhXdaY1Azc4fq4xTPvpdrg>
+Feedback-ID: i21f147d5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 11 Jul 2022 16:25:23 -0400 (EDT)
+Date:   Mon, 11 Jul 2022 14:25:21 -0600
+From:   Tycho Andersen <tycho@tycho.pizza>
+To:     Miklos Szeredi <miklos@szeredi.hu>,
+        Eric Biederman <ebiederm@xmission.com>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: strange interaction between fuse + pidns
+Message-ID: <YsyHMVLuT5U6mm+I@netflix>
+References: <YrShFXRLtRt6T/j+@risky>
+ <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
+ <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several documented GuC kAPI that aren't currently part
-of the docs. Add them, as this allows identifying issues with
-badly-formatted tags.
+Hi all,
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+On Mon, Jul 11, 2022 at 03:59:15PM +0200, Miklos Szeredi wrote:
+> On Mon, 11 Jul 2022 at 12:35, Miklos Szeredi <miklos@szeredi.hu> wrote:
+> >
+> > Can you try the attached untested patch?
+> 
+> Updated patch to avoid use after free on req->args.
+> 
+> Still mostly untested.
+
+Thanks, when I applied your patch, I still ended up with tasks stuck
+waiting with a SIGKILL pending. So I looked into that and came up with
+the patch below. With both your patch and mine, my testcase exits
+cleanly.
+
+Eric (or Christian, or anyone), can you comment on the patch below? I
+have no idea what this will break. Maybe instead a better approach is
+some additional special case in __send_signal_locked()?
+
+Tycho
+
+From b7ea26adcf3546be5745063cc86658acb5ed37e9 Mon Sep 17 00:00:00 2001
+From: Tycho Andersen <tycho@tycho.pizza>
+Date: Mon, 11 Jul 2022 11:26:58 -0600
+Subject: [PATCH] sched: __fatal_signal_pending() should also check shared
+ signals
+
+The wait_* code uses signal_pending_state() to test whether a thread has
+been interrupted, which ultimately uses __fatal_signal_pending() to detect
+if there is a fatal signal.
+
+When a pid ns dies, in zap_pid_ns_processes() it does:
+
+    group_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
+
+for all the tasks in the pid ns. That calls through:
+
+    group_send_sig_info() ->
+      do_send_sig_info() ->
+        send_signal_locked() ->
+          __send_signal_locked()
+
+which does:
+
+    pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
+
+which puts sigkill in the set of shared signals, but not the individual
+pending ones. If tasks are stuck in a killable wait (e.g. a fuse flush
+operation), they won't see this shared signal, and will hang forever, since
+TIF_SIGPENDING is set, but the fatal signal can't be detected.
+
+Signed-off-by: Tycho Andersen <tycho@tycho.pizza>
 ---
+ include/linux/sched/signal.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH 00/32] at: https://lore.kernel.org/all/cover.1657565224.git.mchehab@kernel.org/
+diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
+index cafbe03eed01..a033ccb0a729 100644
+--- a/include/linux/sched/signal.h
++++ b/include/linux/sched/signal.h
+@@ -402,7 +402,8 @@ static inline int signal_pending(struct task_struct *p)
+ 
+ static inline int __fatal_signal_pending(struct task_struct *p)
+ {
+-	return unlikely(sigismember(&p->pending.signal, SIGKILL));
++	return unlikely(sigismember(&p->pending.signal, SIGKILL) ||
++			sigismember(&p->signal->shared_pending.signal, SIGKILL));
+ }
+ 
+ static inline int fatal_signal_pending(struct task_struct *p)
 
- Documentation/gpu/i915.rst | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
-
-diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
-index afd8c0e3c689..70f2f4826eba 100644
---- a/Documentation/gpu/i915.rst
-+++ b/Documentation/gpu/i915.rst
-@@ -596,6 +596,28 @@ GuC
- 
- .. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc.h
- 
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/abi/guc_actions_slpc_abi.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_ads.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_ct.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_ct.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_log.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_guc_slpc.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_huc_fw.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_uc.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_uc_fw.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/uc/intel_uc_fw.c
-+
- GuC Firmware Layout
- ~~~~~~~~~~~~~~~~~~~
- 
+base-commit: 32346491ddf24599decca06190ebca03ff9de7f8
 -- 
-2.36.1
+2.34.1
 
