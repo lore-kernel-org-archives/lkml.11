@@ -2,84 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E15FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0749ACCA47B
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbiGKP4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49800 "EHLO
+        id S230522AbiGKP5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:57:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230358AbiGKP4W (ORCPT
+        with ESMTP id S230323AbiGKP5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:56:22 -0400
-X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 11 Jul 2022 08:56:21 PDT
-Received: from gauss.telenet-ops.be (gauss.telenet-ops.be [IPv6:2a02:1800:120:4::f00:11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 855D42B270
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:56:21 -0700 (PDT)
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by gauss.telenet-ops.be (Postfix) with ESMTPS id 4LhSyl2lCnz4x3QD
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:50:39 +0200 (CEST)
-Received: from ramsan.of.borg ([84.195.186.194])
-        by xavier.telenet-ops.be with bizsmtp
-        id trqf270054C55Sk01rqf58; Mon, 11 Jul 2022 17:50:39 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgE-0036x2-H5; Mon, 11 Jul 2022 17:50:38 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1oAvgC-006shk-Vj; Mon, 11 Jul 2022 17:50:36 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Helge Deller <deller@gmx.de>
-Cc:     Michael Schmitz <schmitzmic@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-fbdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH 06/10] video: fbdev: atari: Remove unneeded casts to void *
-Date:   Mon, 11 Jul 2022 17:50:30 +0200
-Message-Id: <d1da8bf1b21759bcda39c572bc102c5a6380b1a8.1657554353.git.geert@linux-m68k.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1657554353.git.geert@linux-m68k.org>
-References: <cover.1657554353.git.geert@linux-m68k.org>
+        Mon, 11 Jul 2022 11:57:40 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A6A33413;
+        Mon, 11 Jul 2022 08:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=S5eI42e6zt7NmkB9y9JfjDA8loQFmC6DlzCNO41e3LY=; b=0Rhdgwxibnfkm5r5i7jTEVBK19
+        imIyo9ZmAX7xikNkYe0icYcht/V3sLap/GbLNgDJAHCwfkQv3ZJYLRibFZl1VuCir5FdwHUlLC6I9
+        yEPK/yR2Kj/HfvPRXsIw7cIo9Y1ju6zCOcEIEMJ2miOaDQChtOKy0/66LTxGvsfbkL0fv/jUEoxwM
+        8dSnBSh60s7lkLKOYf5NR9hHEYHCOPoLV/i/QWNb0gT52afidT4Nb2hxISHO2R2ZMuod1PNHOXJea
+        cLVU6pRhwjgwNv+denF7LFANFKRsf/jMU8tP65kNbIiYqCHIhV8dyMDgM65Rm6nTu4URTOE4Kyq0M
+        iDTquLRw==;
+Received: from mcgrof by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oAvmn-0033fT-53; Mon, 11 Jul 2022 15:57:25 +0000
+Date:   Mon, 11 Jul 2022 08:57:25 -0700
+From:   Luis Chamberlain <mcgrof@kernel.org>
+To:     Aaron Tomlin <atomlin@atomlin.com>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Aaron Tomlin <atomlin@redhat.com>, rostedt@goodmis.org,
+        cl@linux.com, pmladek@suse.com, mbenes@suse.cz,
+        christophe.leroy@csgroup.eu, akpm@linux-foundation.org,
+        linux-kernel@vger.kernel.org, linux-modules@vger.kernel.org,
+        ghalat@redhat.com, oleksandr@natalenko.name, neelx@redhat.com,
+        daniel.thompson@linaro.org, hch@infradead.org, tglx@linutronix.de,
+        linux-rt-users@vger.kernel.org
+Subject: Re: [PATCH v2] module: kallsyms: Ensure preemption in add_kallsyms()
+ with PREEMPT_RT
+Message-ID: <YsxIZfhgdQnh2QsJ@bombadil.infradead.org>
+References: <20220704161753.4033684-1-atomlin@redhat.com>
+ <YsXNVSAtO+VDggcI@bombadil.infradead.org>
+ <20220707165750.tk4fadpv3d4zr2mb@ava.usersys.com>
+ <YscV7ujYs6Q60N+E@bombadil.infradead.org>
+ <20220707185619.sryhytlfkolmklnn@ava.usersys.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707185619.sryhytlfkolmklnn@ava.usersys.com>
+Sender: Luis Chamberlain <mcgrof@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arbitrary pointers can be passed to functions accepting "void *" without
-casting.
+On Thu, Jul 07, 2022 at 07:56:19PM +0100, Aaron Tomlin wrote:
+> On Thu 2022-07-07 10:20 -0700, Luis Chamberlain wrote:
+> > This is incredibly important information which should be added to the
+> > commit log, specialy as PREEMPT_RT=y becomes a first class citizen.
+> 
+> Understood.
+> 
+> > 
+> > > So, I would say this was a regression since earlier preemption was
+> > > not disabled and we would dereference RCU-protected pointers explicitly
+> > > i.e. without using the more appropriate rcu_dereference() family
+> > > of primitives. That being said, these pointers cannot change in this
+> > > context as explained previously.
+> > > 
+> > > Would the above be suitable - just to confirm before I send another
+> > > iteration?
+> > 
+> > Yes, I would send this to Linus for the rc series. Please adjust the
+> > commit log with all this information.
+> 
+> Will do.
+> 
+> > BTW I think there is just one more fix pending from you right?
+> 
+> Yes - I will send/or prepare it as a partial revert:
+> 's/strscpy/strlcpy/' with a brief explanation.
 
-Remove the casts, as they make it impossible to validate types.
+If that is just the kallsyms fix Adrian Hunter already sent a fix:
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
----
- drivers/video/fbdev/atafb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+https://lkml.kernel.org/r/20220701094403.3044-1-adrian.hunter@intel.com         
 
-diff --git a/drivers/video/fbdev/atafb.c b/drivers/video/fbdev/atafb.c
-index f20535ea3e549384..fbc333d5615df5d5 100644
---- a/drivers/video/fbdev/atafb.c
-+++ b/drivers/video/fbdev/atafb.c
-@@ -2599,14 +2599,14 @@ atafb_ioctl(struct fb_info *info, unsigned int cmd, unsigned long arg)
- 	switch (cmd) {
- #ifdef FBCMD_GET_CURRENTPAR
- 	case FBCMD_GET_CURRENTPAR:
--		if (copy_to_user((void *)arg, (void *)&current_par,
-+		if (copy_to_user((void *)arg, &current_par,
- 				 sizeof(struct atafb_par)))
- 			return -EFAULT;
- 		return 0;
- #endif
- #ifdef FBCMD_SET_CURRENTPAR
- 	case FBCMD_SET_CURRENTPAR:
--		if (copy_from_user((void *)&current_par, (void *)arg,
-+		if (copy_from_user(&current_par, (void *)arg,
- 				   sizeof(struct atafb_par)))
- 			return -EFAULT;
- 		ata_set_par(&current_par);
--- 
-2.25.1
-
+  Luis
