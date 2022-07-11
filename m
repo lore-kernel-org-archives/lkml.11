@@ -2,153 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E28DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB73CCA480
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 16:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230466AbiGKQZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 12:25:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S231680AbiGKQZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 12:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiGKQZP (ORCPT
+        with ESMTP id S229664AbiGKQZn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 12:25:15 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7695E300
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:25:14 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so8857746pjn.0
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 09:25:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=BPhJH0MLoINdfm+rNmFxczEpiCfv79Umthkksu8H/nE=;
-        b=4E1vSjWhn3rCJNEAcf8j8dtnRVVsX9kiNmn8NL7YezF4+w1raZiDkMAm2jb2M9uzLu
-         p8yCWXX0rnYf1L2J2WjAZqGa69ckfC+tOMRLcKZN+qyAKOKN42zqqGsisXopPj3qD6jN
-         Qt2BBHJyUAfVeJIK/KqhVFNFbmR9DABCsEYYDrYFnV4xYSIT8e5xiZfJGbhjDz4kW4aW
-         mWZCj+M0dGdFHL5xIMcKcz3RSapEyD+FddCo1p4IuykVlI660ixvQU0ZO+UiI/fX0In1
-         Tu1uO1YB3Hb0gRki8oVUYw3ldePac4hBI/ZDtAnp1mPpjc88dEKmCby6M2LWkRlq+ksV
-         8hsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=BPhJH0MLoINdfm+rNmFxczEpiCfv79Umthkksu8H/nE=;
-        b=Ue66s58zjrpr1PrwS4gs+/PwNPCrHbhNiC38LkjqTSVRc8/Z4YRYYkMtHMAoLY4Q96
-         zR4bRLjUj6eWJojukUV+Lc7rgaqznyJo3XSKJF+SfsHhfaitXGZWhVNzM704LdWCLsNS
-         xeXyYAZ3lN83ZnQkln77V/TgWt+o69XcT+2H6S/vPZhWp3Qef3C1n5NcLs29Vv63lpyQ
-         HRuZuBfucDBA+n14TBaJGdYvR6bjG2EmFhxLiXwDii1WX71NPXvsIN6Az7dZAN4VKJw8
-         yID2BkZJuTv7iuQPemD0QY/Wcb8YrlDxBdC5ObNCAV1D0HGxNgumip4VbwtsrKkj25vN
-         DiSQ==
-X-Gm-Message-State: AJIora8JrG0PYR1SidqqzT8DLTFBhF1BdmkA/u4IPSgIicAg9xAe4Ptd
-        e0JTFf0TT+eZWts/Li4zW5sIkw==
-X-Google-Smtp-Source: AGRyM1slVwI0IPIfQ0RoRe6poKikBoXu8NPgJZ9WmMXOqJuONkVoZsnCsPWKqFc+uMzf47XF7zJ4bA==
-X-Received: by 2002:a17:902:ef46:b0:168:bac3:2fd4 with SMTP id e6-20020a170902ef4600b00168bac32fd4mr19360903plx.132.1657556713303;
-        Mon, 11 Jul 2022 09:25:13 -0700 (PDT)
-Received: from [10.255.242.206] ([139.177.225.235])
-        by smtp.gmail.com with ESMTPSA id x9-20020aa79409000000b005284e98304csm4928155pfo.205.2022.07.11.09.25.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jul 2022 09:25:12 -0700 (PDT)
-From:   Chengming Zhou <zhouchengming@bytedance.com>
-X-Google-Original-From: Chengming Zhou <chengming.zhou@linux.dev>
-Message-ID: <e93b5c38-0291-d6e4-811a-9aed3d6e0f87@linux.dev>
-Date:   Tue, 12 Jul 2022 00:25:05 +0800
+        Mon, 11 Jul 2022 12:25:43 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB92B52E67;
+        Mon, 11 Jul 2022 09:25:40 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7FC34C0002;
+        Mon, 11 Jul 2022 16:25:35 +0000 (UTC)
+Date:   Mon, 11 Jul 2022 18:25:33 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] media: i2c: ak7375: Add regulator management
+Message-ID: <20220711162533.fycvqnaffk4tdfda@uno.localdomain>
+References: <20220711042838.213351-1-y.oudjana@protonmail.com>
+ <20220711042838.213351-4-y.oudjana@protonmail.com>
+ <20220711133423.w6yzbcfqwv2muu34@uno.localdomain>
+ <TM0VER.DLTH01AKOV622@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.1
-Subject: Re: [External] Re: [PATCH 3/8] sched/fair: remove redundant
- cpu_cgrp_subsys->fork()
-Content-Language: en-US
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     mingo@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-References: <20220709151353.32883-1-zhouchengming@bytedance.com>
- <20220709151353.32883-4-zhouchengming@bytedance.com>
- <YsvSpyrJxNv7jsQz@hirez.programming.kicks-ass.net>
- <a41b3436-6875-d3aa-a110-6c438c97126e@bytedance.com>
- <YswrSi46s+XLD18R@hirez.programming.kicks-ass.net>
-In-Reply-To: <YswrSi46s+XLD18R@hirez.programming.kicks-ass.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <TM0VER.DLTH01AKOV622@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/11 21:53, Peter Zijlstra wrote:
-> On Mon, Jul 11, 2022 at 09:02:07PM +0800, Chengming Zhou wrote:
->> On 2022/7/11 15:35, Peter Zijlstra wrote:
->>> On Sat, Jul 09, 2022 at 11:13:48PM +0800, Chengming Zhou wrote:
->>>> We use cpu_cgrp_subsys->fork() to set task group for the new fair task
->>>> in cgroup_post_fork().
->>>>
->>>> Since commit b1e8206582f9 ("sched: Fix yet more sched_fork() races")
->>>> has already set task group for the new fair task in sched_cgroup_fork(),
->>>> so cpu_cgrp_subsys->fork() can be removed.
->>>>
->>>>   cgroup_can_fork()	--> pin parent's sched_task_group
->>>>   sched_cgroup_fork()
->>>>     __set_task_cpu	--> set task group
->>>>   cgroup_post_fork()
->>>>     ss->fork() := cpu_cgroup_fork()	--> set again
->>>>
->>>> After this patch's change, task_change_group_fair() only need to
->>>> care about task cgroup migration, make the code much simplier.
->>>
->>> This:
->>>
->>>> This patch also move the task se depth setting to set_task_rq(), which
->>>> will set correct depth for the new task se in sched_cgroup_fork().
->>>>
->>>> The se depth setting in attach_entity_cfs_rq() is removed since
->>>> set_task_rq() is a better place to do this when task moves across
->>>> CPUs/groups.
->>>
->>> really should have been it's own patch. And this actually scares me. Did
->>> you test with priority inheritance bumping the task to FIFO while things
->>> change?
->>>
->>> This has nothing to do with fork().
->>
->> Ok, will put this in another patch, so this patch still need this line:
->>
->>   p->se.depth = tg->se[cpu] ? tg->se[cpu]->depth + 1 : 0;
->>
->> in set_task_rq() to set depth for new forked task.
-> 
-> That would suggest you ordered your patches wrong.
+Hi Yassine
 
-Yeah, I understand now, should put this se depth change before..
+On Mon, Jul 11, 2022 at 06:08:53PM +0400, Yassine Oudjana wrote:
+>
+> On Mon, Jul 11 2022 at 15:34:23 +0200, Jacopo Mondi <jacopo@jmondi.org>
+> wrote:
+> > Hello Yassine
+> >
+> > On Mon, Jul 11, 2022 at 08:28:39AM +0400, Yassine Oudjana wrote:
+> > >  From: Yassine Oudjana <y.oudjana@protonmail.com>
+> > >
+> > >  Make the driver get needed regulators on probe and enable/disable
+> > >  them on runtime PM callbacks.
+> > >
+> > >  Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> > >  ---
+> > >   drivers/media/i2c/ak7375.c | 39
+> > > ++++++++++++++++++++++++++++++++++++++
+> > >   1 file changed, 39 insertions(+)
+> > >
+> > >  diff --git a/drivers/media/i2c/ak7375.c b/drivers/media/i2c/ak7375.c
+> > >  index 40b1a4aa846c..59d5cb00e3ba 100644
+> > >  --- a/drivers/media/i2c/ak7375.c
+> > >  +++ b/drivers/media/i2c/ak7375.c
+> > >  @@ -6,6 +6,7 @@
+> > >   #include <linux/i2c.h>
+> > >   #include <linux/module.h>
+> > >   #include <linux/pm_runtime.h>
+> > >  +#include <linux/regulator/consumer.h>
+> > >   #include <media/v4l2-ctrls.h>
+> > >   #include <media/v4l2-device.h>
+> > >
+> > >  @@ -23,17 +24,32 @@
+> > >    */
+> > >   #define AK7375_CTRL_STEPS	64
+> > >   #define AK7375_CTRL_DELAY_US	1000
+> > >  +/*
+> > >  + * The vcm takes around 3 ms to power on and start taking
+> > >  + * I2C messages. This value was found experimentally due to
+> > >  + * lack of documentation. 2 ms is added as a safety margin.
+> > >  + */
+> > >  +#define AK7375_POWER_DELAY_US	5000
+> > >
+> > >   #define AK7375_REG_POSITION	0x0
+> > >   #define AK7375_REG_CONT		0x2
+> > >   #define AK7375_MODE_ACTIVE	0x0
+> > >   #define AK7375_MODE_STANDBY	0x40
+> > >
+> > >  +static const char * const ak7375_supply_names[] = {
+> > >  +	"vdd",
+> > >  +	"vio",
+> > >  +};
+> > >  +
+> > >  +#define AK7375_NUM_SUPPLIES ARRAY_SIZE(ak7375_supply_names)
+> > >  +
+> > >   /* ak7375 device structure */
+> > >   struct ak7375_device {
+> > >   	struct v4l2_ctrl_handler ctrls_vcm;
+> > >   	struct v4l2_subdev sd;
+> > >   	struct v4l2_ctrl *focus;
+> > >  +	struct regulator_bulk_data supplies[AK7375_NUM_SUPPLIES];
+> > >  +
+> > >   	/* active or standby mode */
+> > >   	bool active;
+> > >   };
+> > >  @@ -132,6 +148,7 @@ static int ak7375_init_controls(struct
+> > > ak7375_device *dev_vcm)
+> > >   static int ak7375_probe(struct i2c_client *client)
+> > >   {
+> > >   	struct ak7375_device *ak7375_dev;
+> > >  +	int i;
+> >
+> > I would have moved this one down to maintain variable declaration
+> > in the in-famous reverse-xmas-tree ordering. Up to you.
+>
+> I'm used to declaring variables in the order of first use,
+> but I don't really mind it either way. I'll move it down.
+>
+> >
+> > >   	int ret;
+> > >
+> > >   	ak7375_dev = devm_kzalloc(&client->dev, sizeof(*ak7375_dev),
+> > >  @@ -139,6 +156,17 @@ static int ak7375_probe(struct i2c_client
+> > > *client)
+> > >   	if (!ak7375_dev)
+> > >   		return -ENOMEM;
+> > >
+> > >  +	for (i = 0; i < AK7375_NUM_SUPPLIES; i++)
+> > >  +		ak7375_dev->supplies[i].supply = ak7375_supply_names[i];
+> > >  +
+> > >  +	ret = devm_regulator_bulk_get(&client->dev, AK7375_NUM_SUPPLIES,
+> > >  +				      ak7375_dev->supplies);
+> > >  +	if (ret) {
+> > >  +		dev_err(&client->dev, "Failed to get regulators: %pe",
+> > >  +			ERR_PTR(ret));
+> > >  +		return ret;
+> > >  +	}
+> > >  +
+> > >   	v4l2_i2c_subdev_init(&ak7375_dev->sd, client, &ak7375_ops);
+> > >   	ak7375_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
+> > >   	ak7375_dev->sd.internal_ops = &ak7375_int_ops;
+> > >  @@ -210,6 +238,10 @@ static int __maybe_unused
+> > > ak7375_vcm_suspend(struct device *dev)
+> > >   	if (ret)
+> > >   		dev_err(dev, "%s I2C failure: %d\n", __func__, ret);
+> > >
+> > >  +	ret = regulator_bulk_disable(AK7375_NUM_SUPPLIES,
+> > > ak7375_dev->supplies);
+> > >  +	if (ret)
+> > >  +		return ret;
+> > >  +
+> > >   	ak7375_dev->active = false;
+> > >
+> > >   	return 0;
+> > >  @@ -230,6 +262,13 @@ static int __maybe_unused
+> > > ak7375_vcm_resume(struct device *dev)
+> > >   	if (ak7375_dev->active)
+> > >   		return 0;
+> > >
+> > >  +	ret = regulator_bulk_enable(AK7375_NUM_SUPPLIES,
+> > > ak7375_dev->supplies);
+> > >  +	if (ret)
+> > >  +		return ret;
+> > >  +
+> > >  +	/* Wait for vcm to become ready */
+> > >  +	usleep_range(AK7375_POWER_DELAY_US, AK7375_POWER_DELAY_US + 10);
+> > >  +
+> >
+> > Isn't 10usec a very small delay to be given to usleep_range() for a
+> > delay of at least 3msec ? Also assuming 5msec just to be safe seems a
+> > little arbitrary. Adding 2 milliseconds in the wakeup path introduces
+> > a non-negligible delay.
+>
+> I must admit that I didn't give it too much thought. I just
+> did it similar to the other delay used in this driver
+> (AK7375_CTRL_DELAY_US). As for adding 2ms, I don't know what
+> the worst case wake-up time is since I don't have a datasheet
+> on hand, so I just wanted to stay safe. Also, this driver
 
-> 
->> I didn't test with "priority inheritance bumping the task to FIFO" case,
->> do you mean the rt_mutex_setprio() bump a fair task to FIFO?
->>
->> Sorry, I don't get how removing depth setting in attach_entity_cfs_rq()
->> affect that. Could you explain more so I can test it?
-> 
-> Well, if you look at the commit that introduced that code:
-> 
->   eb7a59b2c888 ("sched/fair: Reset se-depth when task switched to FAIR")
-> 
-> then it's clear that the original problem was the task temporarily not
-> being in the fair class. The most common way for that to be so is
-> through PI.
+Oh sorry, I missed in the comment the value was found experimentally
+an it's not documented..
 
-Thanks for the hint, I read that commit, should be no problem if we have
-se depth setting in set_task_rq().
+> doesn't really recover if it fails to resume (which is what
+> used to happen before adding a delay). Rounding up to 5ms
+> felt good enough.
+>
+> >
+> > It's likely a detail, but according to
+> > Documentation/timers/timers-howto.rst
+> >
+> >         Since usleep_range is built on top of hrtimers, the
+> >         wakeup will be very precise (ish), thus a simple
+> >         usleep function would likely introduce a large number
+> >         of undesired interrupts.
+> >
+> >         With the introduction of a range, the scheduler is
+> >         free to coalesce your wakeup with any other wakeup
+> >         that may have happened for other reasons, or at the
+> >         worst case, fire an interrupt for your upper bound.
+> >
+> >         The larger a range you supply, the greater a chance
+> >         that you will not trigger an interrupt; this should
+> >         be balanced with what is an acceptable upper bound on
+> >         delay / performance for your specific code path. Exact
+> >         tolerances here are very situation specific, thus it
+> >         is left to the caller to determine a reasonable range.
+> >
+> > If you have a min of 3msec I would try with a range of (3000, 3500).
+> > What do you think ?
+>
+> Seems good. I haven't yet had it fail to power on within 3ms of
+> turning on regulators so I guess there is no reason to worry about it.
+>
 
-That problem was we only maintain task se depth in task_move_group_fair(),
-if a !fair task move task group, its se depth will not be updated, so
-that commit fix the problem by update se depth in switched_to_fair().
+Ok then :) There's anyway a comment that says the value comes from
+practical experience, so if anything bad happens, it's easy to track
+it down to that
 
-In this patch we maintain se depth setting in set_task_rq(), which will be
-called when CPU/cgroup change, so its depth will always be correct. So it's
-ok to remove task se depth setting in attach_entity_cfs_rq().
+Thanks
+  j
 
-Thanks.
-
-
-> 
+> > >
+> > >   	ret = ak7375_i2c_write(ak7375_dev, AK7375_REG_CONT,
+> > >   		AK7375_MODE_ACTIVE, 1);
+> > >   	if (ret) {
+> > >  --
+> > >  2.37.0
+> >
+>
+> Thanks for the review,
+> Yassine
+>
+>
