@@ -2,140 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63602C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E017DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 11:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229749AbiGKLXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 07:23:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
+        id S229881AbiGKLX4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 07:23:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiGKLWv (ORCPT
+        with ESMTP id S230359AbiGKLXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 07:22:51 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD3533A27;
-        Mon, 11 Jul 2022 03:50:06 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id t3so5475049edd.0;
-        Mon, 11 Jul 2022 03:50:05 -0700 (PDT)
+        Mon, 11 Jul 2022 07:23:07 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914D237FA8;
+        Mon, 11 Jul 2022 03:51:28 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id w12so4988016edd.13;
+        Mon, 11 Jul 2022 03:51:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=zfyolTFID8xhViXE+u1/8e+Wzla73AuvDzsmwKE1sQ4=;
-        b=GXF1fwSaKTgvV8DBW/wKTIAjMbvQyia0ceCdUfz+jo+fA40QBzTk3GOxKUq2d4UXPp
-         Lki7csV6vSyLyT5HidpiSbOooGJR/VkF3W6Tc/bRvH2x9ijmeGfWM+cYgjQKbLZBdGvU
-         mBzTnWgZh9WCR6Xtjwzm4SagzynWkaOvdMr2eqnRcpZ+8coEmdpsT6MqS6R1V1bYytbn
-         +hmHJ3oUJDO04HFMiT40M1GesGL57FQzDqEVQ6IMqdlJFiEoVJrd5SKtvpATVBe8NHWp
-         Srt0kfuhPXBZbKU4OSHPEJ94HUWwSPrPQtHLKXxhHmJQxYADN1lt6nadP1f2ha3/41OL
-         R15g==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=VK08yQTJ99mufpNp27xubsdOIIjMExE65sg5hpJC6W8=;
+        b=iZzvVctewcKQocbxZXTD2xaYK71jGE8DBwGmiIb7/RjBQGsQAP2re8q9deGfdCBYPM
+         q45s+T/m6yLcGhYjLphHnlB1HcFU0reX2CLEqA4HLzFlklecDyYu9OiCkuyCLTWj+ELS
+         KkS73iukQ+5Bv8yXy3Uv2AkPoxkBKiKlgmFv8odpUX2hN0vIAj9IgGcN/fsPhVJtoOq6
+         zmn3kBYgbIFHg06ZWrQuOK1PhxmSDLzTpx21+9thhv0J0P457fwqlG8kiCGzgT5BEM9b
+         3lCtwNC3dL39cY9COM1weGQMOjVM0vNavUrUKe3MXRELxtirtC8QX+cbYc5RxXwCBguX
+         j+Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zfyolTFID8xhViXE+u1/8e+Wzla73AuvDzsmwKE1sQ4=;
-        b=EaNPbcdjwewbtpNBneUDdiVSeMOvuNuEXEtGZKdQ4tK/rtP4ke3t77pXpd0Rf2VL4y
-         casVNotEnkHYjdAjRF/j7XvcaxvPCWbMo+CVzZArfypM5nJg5srZCcWzQWdnHo1vwU8C
-         q2SalOtzKSw+u8Ta/0kahxsw608J3LiFW3LTpZvr78MP+2fsq0kxqiNfpkuM3fxDL8nE
-         J8Jr9aV5vjlw0ikqvtPzqvumxw9Ib5aMmnvDTE0EVWbN9TyTyJXE+29r5uqBSBYHyXU+
-         za30vt0XuUt9G7dDojV8zxZalTc0vDRf1ToQvy0lERW+Xs2lQLjYWJDr2usXg4qi3fOi
-         p6gg==
-X-Gm-Message-State: AJIora8kvoXrtxOpWgeT0Bl6hJS0DqEMeLS03dGP7QIegMwVWdfxPohj
-        K71HJhehkhculeeBo/Mm86U=
-X-Google-Smtp-Source: AGRyM1uImai7zOCOj1ESgSTujQz6aYcaSMlx0EZle9YmsPYF5MVaqsF03Ttpz6jXBOxKqNUtQuljpw==
-X-Received: by 2002:a05:6402:22b5:b0:43a:8e9f:f495 with SMTP id cx21-20020a05640222b500b0043a8e9ff495mr23119816edb.324.1657536604557;
-        Mon, 11 Jul 2022 03:50:04 -0700 (PDT)
-Received: from felia.fritz.box (200116b8266e42009c70ae84c5cabc2b.dip.versatel-1u1.de. [2001:16b8:266e:4200:9c70:ae84:c5ca:bc2b])
-        by smtp.gmail.com with ESMTPSA id q21-20020a17090676d500b006fe8a4ec62fsm2541775ejn.4.2022.07.11.03.50.02
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=VK08yQTJ99mufpNp27xubsdOIIjMExE65sg5hpJC6W8=;
+        b=QxoJJMhD1GwmkadlY49FXT1ROiNT+/hMTFDy6KHW0hRXq/tOxMKtGWeqYFqIrHj4B0
+         CDfkQuz+IuBw4VvziD+29qVfzS1Z9AJdJmqNVawm12mKbuWuO4NlF5QBeykkWtElVa3a
+         nl87ZaYGWhhhraCQWHLkQRmLoeXywHocnB9uhaAJyU9cRsrHKA5dYQckLmKeXcneC5tC
+         ivFdaL3RrIWVuxx/iRJRKT2uO4fzMV2lwG8ZiHCCnSTn1OodGjRz2p94D4RNcxdtfwIp
+         AwypqrIYpNQQkhjeH5JiflKkgKsZVC4UXx7gWKzQnwdCHvbRvf9Cfu6pFIw4GYZwikRp
+         kVrA==
+X-Gm-Message-State: AJIora9XRXcSM6QMcVfJQI33rhk0s19V6GVwM84+YYcs50Rz0E895CVB
+        RCSCnbldGFMT2y5LK+5kikc=
+X-Google-Smtp-Source: AGRyM1t03riDeHSSHc5gIxP5aK4wSoVRCftx91lEkKDrESYg55vCCJalA11JLAomTLJTSjy4CieWWg==
+X-Received: by 2002:a05:6402:d0a:b0:437:66ca:c211 with SMTP id eb10-20020a0564020d0a00b0043766cac211mr24216273edb.29.1657536687051;
+        Mon, 11 Jul 2022 03:51:27 -0700 (PDT)
+Received: from krava ([151.14.22.253])
+        by smtp.gmail.com with ESMTPSA id g12-20020aa7d1cc000000b00435726bd375sm4121080edp.57.2022.07.11.03.51.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 03:50:03 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH v2] mfd: ab8500: clean up definitions in header after debugfs removal
-Date:   Mon, 11 Jul 2022 12:48:29 +0200
-Message-Id: <20220711104829.17940-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 11 Jul 2022 03:51:26 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Mon, 11 Jul 2022 12:51:22 +0200
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Andrea Arcangeli <aarcange@redhat.com>, dvacek@redhat.com
+Subject: Re: [RFC PATCH bpf-next 0/4] bpf_panic() helper
+Message-ID: <YswAqrJrMKIZPpcz@krava>
+References: <20220711083220.2175036-1-asavkov@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711083220.2175036-1-asavkov@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit 3d4d1266597c ("mfd: ab8500: Drop debugfs module") removes the config
-AB8500_DEBUG in drivers/mfd/Kconfig, but missed a reference to this config
-in include/linux/mfd/abx500/ab8500.h.
+On Mon, Jul 11, 2022 at 10:32:16AM +0200, Artem Savkov wrote:
+> eBPF is often used for kernel debugging, and one of the widely used and
+> powerful debugging techniques is post-mortem debugging with a full memory dump.
+> Triggering a panic at exactly the right moment allows the user to get such a
+> dump and thus a better view at the system's state. This patchset adds
+> bpf_panic() helper to do exactly that.
 
-The functions ab8500_dump_all_banks() and ab8500_debug_register_interrupt()
-in the ab8500 header, previously with definitions conditioned on
-AB8500_DEBUG, are now completely needless to define and handle at all.
+FWIW I was asked for such helper some time ago from Daniel Vacek, cc-ed
 
-The function ab8500_debug_register_interrupt() is not used at all and can
-just be removed.
+jirka
 
-The function ab8500_dump_all_banks() is just registered in the abx500_ops
-struct in the dump_all_banks field, but this is then not further referenced
-anywhere else at all. So, safely drop the dump_all_banks field from
-abx500_ops and delete the ab8500_dump_all_banks() definition.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
----
-Lee, please pick this minor clean-up patch.
-
-v1:
-  https://lore.kernel.org/all/20220311145209.17346-1-lukas.bulwahn@gmail.com/
-
-v1 -> v2:
-  - leave "," in as requested in https://lore.kernel.org/all/Yi8BtWlhWjiUOADk@google.com/
-  - add Reviewed-by tag from Linus W. from 
-    https://lore.kernel.org/all/CACRpkdbjy2Cpzs7j6=iWw+wnJxBHkaxgcO2SOx6DeTLeF4ogPw@mail.gmail.com/ 
-
- drivers/mfd/ab8500-core.c         | 1 -
- include/linux/mfd/abx500.h        | 1 -
- include/linux/mfd/abx500/ab8500.h | 9 ---------
- 3 files changed, 11 deletions(-)
-
-diff --git a/drivers/mfd/ab8500-core.c b/drivers/mfd/ab8500-core.c
-index 9d9e9787d5e8..eb11caadb801 100644
---- a/drivers/mfd/ab8500-core.c
-+++ b/drivers/mfd/ab8500-core.c
-@@ -329,7 +329,6 @@ static struct abx500_ops ab8500_ops = {
- 	.mask_and_set_register = ab8500_mask_and_set_register,
- 	.event_registers_startup_state_get = NULL,
- 	.startup_irq_enabled = NULL,
--	.dump_all_banks = ab8500_dump_all_banks,
- };
- 
- static void ab8500_irq_lock(struct irq_data *data)
-diff --git a/include/linux/mfd/abx500.h b/include/linux/mfd/abx500.h
-index 7f07cfe44753..507e3d2f062f 100644
---- a/include/linux/mfd/abx500.h
-+++ b/include/linux/mfd/abx500.h
-@@ -63,7 +63,6 @@ struct abx500_ops {
- 	int (*mask_and_set_register) (struct device *, u8, u8, u8, u8);
- 	int (*event_registers_startup_state_get) (struct device *, u8 *);
- 	int (*startup_irq_enabled) (struct device *, unsigned int);
--	void (*dump_all_banks) (struct device *);
- };
- 
- int abx500_register_ops(struct device *core_dev, struct abx500_ops *ops);
-diff --git a/include/linux/mfd/abx500/ab8500.h b/include/linux/mfd/abx500/ab8500.h
-index 302a330c5c84..42fd5da7d8a7 100644
---- a/include/linux/mfd/abx500/ab8500.h
-+++ b/include/linux/mfd/abx500/ab8500.h
-@@ -503,13 +503,4 @@ static inline int is_ab9540_2p0_or_earlier(struct ab8500 *ab)
- 
- void ab8500_override_turn_on_stat(u8 mask, u8 set);
- 
--#ifdef CONFIG_AB8500_DEBUG
--extern int prcmu_abb_read(u8 slave, u8 reg, u8 *value, u8 size);
--void ab8500_dump_all_banks(struct device *dev);
--void ab8500_debug_register_interrupt(int line);
--#else
--static inline void ab8500_dump_all_banks(struct device *dev) {}
--static inline void ab8500_debug_register_interrupt(int line) {}
--#endif
--
- #endif /* MFD_AB8500_H */
--- 
-2.17.1
-
+> 
+> I realize that even though there are multiple guards present, a helper like
+> this is contrary to BPF being "safe", so this is sent as RFC to have a
+> discussion on whether adding destructive capabilities is deemed acceptable.
+> 
+> Artem Savkov (4):
+>   bpf: add a sysctl to enable destructive bpf helpers
+>   bpf: add BPF_F_DESTRUCTIVE flag for BPF_PROG_LOAD
+>   bpf: add bpf_panic() helper
+>   selftests/bpf: bpf_panic selftest
+> 
+>  include/linux/bpf.h                           |   8 +
+>  include/uapi/linux/bpf.h                      |  13 ++
+>  kernel/bpf/core.c                             |   1 +
+>  kernel/bpf/helpers.c                          |  13 ++
+>  kernel/bpf/syscall.c                          |  33 +++-
+>  kernel/bpf/verifier.c                         |   7 +
+>  kernel/trace/bpf_trace.c                      |   2 +
+>  tools/include/uapi/linux/bpf.h                |  13 ++
+>  .../selftests/bpf/prog_tests/bpf_panic.c      | 144 ++++++++++++++++++
+>  9 files changed, 233 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/bpf_panic.c
+> 
+> -- 
+> 2.35.3
+> 
