@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D653AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D763DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232702AbiGKJby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41574 "EHLO
+        id S232499AbiGKJcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbiGKJbW (ORCPT
+        with ESMTP id S232611AbiGKJb0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:31:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1D23ED70;
-        Mon, 11 Jul 2022 02:17:05 -0700 (PDT)
+        Mon, 11 Jul 2022 05:31:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1FF41980;
+        Mon, 11 Jul 2022 02:17:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F12D661257;
-        Mon, 11 Jul 2022 09:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07883C341C0;
-        Mon, 11 Jul 2022 09:16:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C65BB80E76;
+        Mon, 11 Jul 2022 09:17:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91284C34115;
+        Mon, 11 Jul 2022 09:17:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531019;
-        bh=Ydhnk3Ka6/gypkyrryB/mwM0eu6Jyl/rqSPH0WbVd+8=;
+        s=korg; t=1657531024;
+        bh=GNaanrgBvVvXf/zQk3uqVcuxRzwmpZVg9nibxRF44sc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P2ki8QpHCiq7zgfHkk77qya8yIlKB2JRmPydE6WG5yjFmsboAfrx2Wq5gH29DrbAO
-         PIdjdWjJZ+2A7g0JFVMOIBkxt5Cvxr5QiNdJJ9WgAPHTXmbhoRalHTvtHti/xiGD4d
-         JLx7riLEFcP0k0hz4qM6t1iMZkJyIN0iXG0bDV48=
+        b=O1ADv51xjlD9PV2UnLul48GI40E9k5WPEyph7msTZMGchWs0mjXGIF6CPnCQ221s4
+         4twOx0UXLPJbr9mIfq9yjXkw95AzKjYL7r1x/UE2UBWkLAuQ/K3JwMnIpz2nvIEu22
+         dRjL/QZlQBVAMR6BM7MCnnA5OIjYW+4uyGtobPTI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Andrei Lalaev <andrey.lalaev@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 066/112] arm64: dts: imx8mp-phyboard-pollux-rdk: correct eqos pad settings
-Date:   Mon, 11 Jul 2022 11:07:06 +0200
-Message-Id: <20220711090551.447345801@linuxfoundation.org>
+Subject: [PATCH 5.18 068/112] pinctrl: sunxi: sunxi_pconf_set: use correct offset
+Date:   Mon, 11 Jul 2022 11:07:08 +0200
+Message-Id: <20220711090551.504332178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -50,60 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peng Fan <peng.fan@nxp.com>
+From: Andrei Lalaev <andrey.lalaev@gmail.com>
 
-[ Upstream commit bae4de618efe1c41d34aa2e6cef8b08e46256667 ]
+[ Upstream commit cd4c1e65a32afd003b08ad4aafe1e4d3e4e8e61b ]
 
-BIT3 and BIT0 are reserved bits, should not touch.
+Some Allwinner SoCs have 2 pinctrls (PIO and R_PIO).
+Previous implementation used absolute pin numbering and it was incorrect
+for R_PIO pinctrl.
+It's necessary to take into account the base pin number.
 
-Fixes: 6f96852619d5 ("arm64: dts: freescale: Add support EQOS MAC on phyBOARD-Pollux-i.MX8MP")
-Signed-off-by: Peng Fan <peng.fan@nxp.com>
-Reviewed-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 90be64e27621 ("pinctrl: sunxi: implement pin_config_set")
+Signed-off-by: Andrei Lalaev <andrey.lalaev@gmail.com>
+Reviewed-by: Samuel Holland <samuel@sholland.org>
+Link: https://lore.kernel.org/r/20220525190423.410609-1-andrey.lalaev@gmail.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../freescale/imx8mp-phyboard-pollux-rdk.dts  | 28 +++++++++----------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/pinctrl/sunxi/pinctrl-sunxi.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-index e34076954897..cefd3d36f93f 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-phyboard-pollux-rdk.dts
-@@ -116,20 +116,20 @@
- &iomuxc {
- 	pinctrl_eqos: eqosgrp {
- 		fsl,pins = <
--			MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC			0x3
--			MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO			0x3
--			MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0		0x91
--			MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1		0x91
--			MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2		0x91
--			MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3		0x91
--			MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x91
--			MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL		0x91
--			MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0		0x1f
--			MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1		0x1f
--			MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2		0x1f
--			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3		0x1f
--			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL		0x1f
--			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
-+			MX8MP_IOMUXC_ENET_MDC__ENET_QOS_MDC			0x2
-+			MX8MP_IOMUXC_ENET_MDIO__ENET_QOS_MDIO			0x2
-+			MX8MP_IOMUXC_ENET_RD0__ENET_QOS_RGMII_RD0		0x90
-+			MX8MP_IOMUXC_ENET_RD1__ENET_QOS_RGMII_RD1		0x90
-+			MX8MP_IOMUXC_ENET_RD2__ENET_QOS_RGMII_RD2		0x90
-+			MX8MP_IOMUXC_ENET_RD3__ENET_QOS_RGMII_RD3		0x90
-+			MX8MP_IOMUXC_ENET_RXC__CCM_ENET_QOS_CLOCK_GENERATE_RX_CLK	0x90
-+			MX8MP_IOMUXC_ENET_RX_CTL__ENET_QOS_RGMII_RX_CTL		0x90
-+			MX8MP_IOMUXC_ENET_TD0__ENET_QOS_RGMII_TD0		0x16
-+			MX8MP_IOMUXC_ENET_TD1__ENET_QOS_RGMII_TD1		0x16
-+			MX8MP_IOMUXC_ENET_TD2__ENET_QOS_RGMII_TD2		0x16
-+			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3		0x16
-+			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL		0x16
-+			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x16
- 			MX8MP_IOMUXC_SAI1_MCLK__GPIO4_IO20			0x10
- 		>;
- 	};
+diff --git a/drivers/pinctrl/sunxi/pinctrl-sunxi.c b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+index d9327d7d56ee..dd928402af99 100644
+--- a/drivers/pinctrl/sunxi/pinctrl-sunxi.c
++++ b/drivers/pinctrl/sunxi/pinctrl-sunxi.c
+@@ -544,6 +544,8 @@ static int sunxi_pconf_set(struct pinctrl_dev *pctldev, unsigned pin,
+ 	struct sunxi_pinctrl *pctl = pinctrl_dev_get_drvdata(pctldev);
+ 	int i;
+ 
++	pin -= pctl->desc->pin_base;
++
+ 	for (i = 0; i < num_configs; i++) {
+ 		enum pin_config_param param;
+ 		unsigned long flags;
 -- 
 2.35.1
 
