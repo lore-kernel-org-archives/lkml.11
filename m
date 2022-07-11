@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95546CCA47B
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE75C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbiGKJ7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46360 "EHLO
+        id S231584AbiGKJ7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234228AbiGKJ6j (ORCPT
+        with ESMTP id S234217AbiGKJ6o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:58:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0815BB5D29;
-        Mon, 11 Jul 2022 02:27:30 -0700 (PDT)
+        Mon, 11 Jul 2022 05:58:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBD4BB5D16;
+        Mon, 11 Jul 2022 02:27:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A17E161383;
-        Mon, 11 Jul 2022 09:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAE1BC34115;
-        Mon, 11 Jul 2022 09:27:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A819B80D2C;
+        Mon, 11 Jul 2022 09:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F7AC34115;
+        Mon, 11 Jul 2022 09:27:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531637;
-        bh=yukl6GV3BRbGGtmdnfo95ezX+H3GVr/qNTWjY1Phkmk=;
+        s=korg; t=1657531648;
+        bh=n0hYW14P2MKpZwo1i5aFk7orNBSieQ8KYy2b4+bCFyM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CczWVxuyhWIh4CL3FxPASBHzJclnkjJUr48pLliffnahP1cz++FSQLAuhz8WQO9/n
-         +IO6MNS1roQ02vx7e1fj0YN5YSHcJlrUvhOl4obRYKa+rsDKfvulAlYIHR0Z/PMcOy
-         dsZ1Oh7IOaZyFgKpXkBRQ4PI8RwhEcRCXIojaLGg=
+        b=jm281VnOWQIOe18JArJwlJQZO0F/RsYuHa4UXtC2N0g9U6DjkNAC0V3qnBWwGb4n9
+         9zKXrLVEhSLOuxaxXy6p+cUqvszFeapNXLhGuonlXnh5ECnYQERoFr5qbEjI+wEa8P
+         xk5IJ/9H6yYycjjRfqXdCCAMq5VeS2eDkKabk7N0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Starke <daniel.starke@siemens.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 137/230] tty: n_gsm: fix invalid gsmtty_write_room() result
-Date:   Mon, 11 Jul 2022 11:06:33 +0200
-Message-Id: <20220711090607.950458131@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>
+Subject: [PATCH 5.15 174/230] virtio-blk: modify the value type of num in virtio_queue_rq()
+Date:   Mon, 11 Jul 2022 11:07:10 +0200
+Message-Id: <20220711090608.997252359@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090604.055883544@linuxfoundation.org>
 References: <20220711090604.055883544@linuxfoundation.org>
@@ -48,70 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Starke <daniel.starke@siemens.com>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 9361ebfbb79fd1bc8594a487c01ad52cdaa391ea ]
+commit 0466a39bd0b6c462338f10d18076703d14a552de upstream.
 
-gsmtty_write() does not prevent the user to use the full fifo size of 4096
-bytes as allocated in gsm_dlci_alloc(). However, gsmtty_write_room() tries
-to limit the return value by 'TX_SIZE' and returns a negative value if the
-fifo has more than 'TX_SIZE' bytes stored. This is obviously wrong as
-'TX_SIZE' is defined as 512.
-Define 'TX_SIZE' to the fifo size and use it accordingly for allocation to
-keep the current behavior. Return the correct remaining size of the fifo in
-gsmtty_write_room() via kfifo_avail().
+This was found by coccicheck:
+./drivers/block/virtio_blk.c, 334, 14-17, WARNING Unsigned expression
+compared with zero  num < 0
 
-Fixes: e1eaea46bb40 ("tty: n_gsm line discipline")
-Cc: stable@vger.kernel.org
-Signed-off-by: Daniel Starke <daniel.starke@siemens.com>
-Link: https://lore.kernel.org/r/20220504081733.3494-3-daniel.starke@siemens.com
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Link: https://lore.kernel.org/r/20211117063955.160777-1-ye.guojin@zte.com.cn
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fixes: 02746e26c39e ("virtio-blk: avoid preallocating big SGL for data")
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/n_gsm.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/block/virtio_blk.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/n_gsm.c b/drivers/tty/n_gsm.c
-index fd4a86111a6e..4a430f6ca170 100644
---- a/drivers/tty/n_gsm.c
-+++ b/drivers/tty/n_gsm.c
-@@ -137,6 +137,7 @@ struct gsm_dlci {
- 	int retries;
- 	/* Uplink tty if active */
- 	struct tty_port port;	/* The tty bound to this DLCI if there is one */
-+#define TX_SIZE		4096    /* Must be power of 2. */
- 	struct kfifo fifo;	/* Queue fifo for the DLCI */
- 	int adaption;		/* Adaption layer in use */
- 	int prev_adaption;
-@@ -1758,7 +1759,7 @@ static struct gsm_dlci *gsm_dlci_alloc(struct gsm_mux *gsm, int addr)
- 		return NULL;
- 	spin_lock_init(&dlci->lock);
- 	mutex_init(&dlci->mutex);
--	if (kfifo_alloc(&dlci->fifo, 4096, GFP_KERNEL) < 0) {
-+	if (kfifo_alloc(&dlci->fifo, TX_SIZE, GFP_KERNEL) < 0) {
- 		kfree(dlci);
- 		return NULL;
- 	}
-@@ -3035,8 +3036,6 @@ static struct tty_ldisc_ops tty_ldisc_packet = {
-  *	Virtual tty side
-  */
- 
--#define TX_SIZE		512
--
- /**
-  *	gsm_modem_upd_via_data	-	send modem bits via convergence layer
-  *	@dlci: channel
-@@ -3274,7 +3273,7 @@ static unsigned int gsmtty_write_room(struct tty_struct *tty)
- 	struct gsm_dlci *dlci = tty->driver_data;
- 	if (dlci->state == DLCI_CLOSED)
- 		return 0;
--	return TX_SIZE - kfifo_len(&dlci->fifo);
-+	return kfifo_avail(&dlci->fifo);
- }
- 
- static unsigned int gsmtty_chars_in_buffer(struct tty_struct *tty)
--- 
-2.35.1
-
+--- a/drivers/block/virtio_blk.c
++++ b/drivers/block/virtio_blk.c
+@@ -308,7 +308,7 @@ static blk_status_t virtio_queue_rq(stru
+ 	struct request *req = bd->rq;
+ 	struct virtblk_req *vbr = blk_mq_rq_to_pdu(req);
+ 	unsigned long flags;
+-	unsigned int num;
++	int num;
+ 	int qid = hctx->queue_num;
+ 	int err;
+ 	bool notify = false;
 
 
