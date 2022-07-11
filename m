@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FA9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:15:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20695C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231514AbiGKJPq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:15:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        id S231535AbiGKJPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231612AbiGKJO2 (ORCPT
+        with ESMTP id S231661AbiGKJOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:14:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CB433E3E;
-        Mon, 11 Jul 2022 02:10:23 -0700 (PDT)
+        Mon, 11 Jul 2022 05:14:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5D729CBB;
+        Mon, 11 Jul 2022 02:10:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 940046118F;
-        Mon, 11 Jul 2022 09:10:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CC3DC34115;
-        Mon, 11 Jul 2022 09:10:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE059B80D2C;
+        Mon, 11 Jul 2022 09:10:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528F4C34115;
+        Mon, 11 Jul 2022 09:10:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657530622;
-        bh=zp3JffDA6rZtfMFo04/+4E4M7pjTJoUkbaSDYbzk3MQ=;
+        s=korg; t=1657530624;
+        bh=SuR4s/jIkmb3L9Rd7RydHeU0F19C3tQ8whTRanpApLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vRR6PJeQxHP+Osvhi1eOsReGunngrK6Bug4YiP0/AfzUuf8S+dm6KIFhho3ujcGyi
-         WfTQxTTMgYcyt3dVFeVxAbD6gDnGstp+ohZtPBpLMm4PMAHxABaaQEL5YMCfzoAQ1s
-         YE3EkNH2KtykUEoQ4LfTxDXUpNZUMFTl4TzEDgPM=
+        b=f1kqlJTwKBg6gVqNgI0V4MUzXYfE9bBsmBpFvI5Z3PIE89lbhHOE8+kNHrv4hjRf/
+         hDmTjrw/qi3GdplQZcImV8ur00d9wCRv+h2pBBHFP6ZTNxXc7Zlowz9jGEilgQ3jrj
+         4jiJlsun1+iIvGYhZkk80JRQZrHMq314FrYAwMLs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Vlastimil Babka <vbabka@suse.cz>
-Subject: [PATCH 5.4 02/38] mm/slub: add missing TID updates on slab deactivation
-Date:   Mon, 11 Jul 2022 11:06:44 +0200
-Message-Id: <20220711090538.798574175@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Norbert Slusarek <nslusarek@gmx.net>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.4 03/38] can: bcm: use call_rcu() instead of costly synchronize_rcu()
+Date:   Mon, 11 Jul 2022 11:06:45 +0200
+Message-Id: <20220711090538.827305118@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090538.722676354@linuxfoundation.org>
 References: <20220711090538.722676354@linuxfoundation.org>
@@ -52,122 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Oliver Hartkopp <socketcan@hartkopp.net>
 
-commit eeaa345e128515135ccb864c04482180c08e3259 upstream.
+commit f1b4e32aca0811aa011c76e5d6cf2fa19224b386 upstream.
 
-The fastpath in slab_alloc_node() assumes that c->slab is stable as long as
-the TID stays the same. However, two places in __slab_alloc() currently
-don't update the TID when deactivating the CPU slab.
+In commit d5f9023fa61e ("can: bcm: delay release of struct bcm_op
+after synchronize_rcu()") Thadeu Lima de Souza Cascardo introduced two
+synchronize_rcu() calls in bcm_release() (only once at socket close)
+and in bcm_delete_rx_op() (called on removal of each single bcm_op).
 
-If multiple operations race the right way, this could lead to an object
-getting lost; or, in an even more unlikely situation, it could even lead to
-an object being freed onto the wrong slab's freelist, messing up the
-`inuse` counter and eventually causing a page to be freed to the page
-allocator while it still contains slab objects.
+Unfortunately this slow removal of the bcm_op's affects user space
+applications like cansniffer where the modification of a filter
+removes 2048 bcm_op's which blocks the cansniffer application for
+40(!) seconds.
 
-(I haven't actually tested these cases though, this is just based on
-looking at the code. Writing testcases for this stuff seems like it'd be
-a pain...)
+In commit 181d4447905d ("can: gw: use call_rcu() instead of costly
+synchronize_rcu()") Eric Dumazet replaced the synchronize_rcu() calls
+with several call_rcu()'s to safely remove the data structures after
+the removal of CAN ID subscriptions with can_rx_unregister() calls.
 
-The race leading to state inconsistency is (all operations on the same CPU
-and kmem_cache):
+This patch adopts Erics approach for the can-bcm which should be
+applicable since the removal of tasklet_kill() in bcm_remove_op() and
+the introduction of the HRTIMER_MODE_SOFT timer handling in Linux 5.4.
 
- - task A: begin do_slab_free():
-    - read TID
-    - read pcpu freelist (==NULL)
-    - check `slab == c->slab` (true)
- - [PREEMPT A->B]
- - task B: begin slab_alloc_node():
-    - fastpath fails (`c->freelist` is NULL)
-    - enter __slab_alloc()
-    - slub_get_cpu_ptr() (disables preemption)
-    - enter ___slab_alloc()
-    - take local_lock_irqsave()
-    - read c->freelist as NULL
-    - get_freelist() returns NULL
-    - write `c->slab = NULL`
-    - drop local_unlock_irqrestore()
-    - goto new_slab
-    - slub_percpu_partial() is NULL
-    - get_partial() returns NULL
-    - slub_put_cpu_ptr() (enables preemption)
- - [PREEMPT B->A]
- - task A: finish do_slab_free():
-    - this_cpu_cmpxchg_double() succeeds()
-    - [CORRUPT STATE: c->slab==NULL, c->freelist!=NULL]
-
->From there, the object on c->freelist will get lost if task B is allowed to
-continue from here: It will proceed to the retry_load_slab label,
-set c->slab, then jump to load_freelist, which clobbers c->freelist.
-
-But if we instead continue as follows, we get worse corruption:
-
- - task A: run __slab_free() on object from other struct slab:
-    - CPU_PARTIAL_FREE case (slab was on no list, is now on pcpu partial)
- - task A: run slab_alloc_node() with NUMA node constraint:
-    - fastpath fails (c->slab is NULL)
-    - call __slab_alloc()
-    - slub_get_cpu_ptr() (disables preemption)
-    - enter ___slab_alloc()
-    - c->slab is NULL: goto new_slab
-    - slub_percpu_partial() is non-NULL
-    - set c->slab to slub_percpu_partial(c)
-    - [CORRUPT STATE: c->slab points to slab-1, c->freelist has objects
-      from slab-2]
-    - goto redo
-    - node_match() fails
-    - goto deactivate_slab
-    - existing c->freelist is passed into deactivate_slab()
-    - inuse count of slab-1 is decremented to account for object from
-      slab-2
-
-At this point, the inuse count of slab-1 is 1 lower than it should be.
-This means that if we free all allocated objects in slab-1 except for one,
-SLUB will think that slab-1 is completely unused, and may free its page,
-leading to use-after-free.
-
-Fixes: c17dda40a6a4e ("slub: Separate out kmem_cache_cpu processing from deactivate_slab")
-Fixes: 03e404af26dc2 ("slub: fast release on full slab")
+Fixes: d5f9023fa61e ("can: bcm: delay release of struct bcm_op after synchronize_rcu()") # >= 5.4
+Link: https://lore.kernel.org/all/20220520183239.19111-1-socketcan@hartkopp.net
 Cc: stable@vger.kernel.org
-Signed-off-by: Jann Horn <jannh@google.com>
-Acked-by: Christoph Lameter <cl@linux.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Tested-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Signed-off-by: Vlastimil Babka <vbabka@suse.cz>
-Link: https://lore.kernel.org/r/20220608182205.2945720-1-jannh@google.com
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Norbert Slusarek <nslusarek@gmx.net>
+Cc: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/slub.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/can/bcm.c |   18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -2214,6 +2214,7 @@ redo:
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -102,6 +102,7 @@ static inline u64 get_u64(const struct c
  
- 	c->page = NULL;
- 	c->freelist = NULL;
-+	c->tid = next_tid(c->tid);
+ struct bcm_op {
+ 	struct list_head list;
++	struct rcu_head rcu;
+ 	int ifindex;
+ 	canid_t can_id;
+ 	u32 flags;
+@@ -720,10 +721,9 @@ static struct bcm_op *bcm_find_op(struct
+ 	return NULL;
  }
  
- /*
-@@ -2347,8 +2348,6 @@ static inline void flush_slab(struct kme
+-static void bcm_remove_op(struct bcm_op *op)
++static void bcm_free_op_rcu(struct rcu_head *rcu_head)
  {
- 	stat(s, CPUSLAB_FLUSH);
- 	deactivate_slab(s, c->page, c->freelist, c);
--
--	c->tid = next_tid(c->tid);
+-	hrtimer_cancel(&op->timer);
+-	hrtimer_cancel(&op->thrtimer);
++	struct bcm_op *op = container_of(rcu_head, struct bcm_op, rcu);
+ 
+ 	if ((op->frames) && (op->frames != &op->sframe))
+ 		kfree(op->frames);
+@@ -734,6 +734,14 @@ static void bcm_remove_op(struct bcm_op
+ 	kfree(op);
  }
  
- /*
-@@ -2632,6 +2631,7 @@ redo:
++static void bcm_remove_op(struct bcm_op *op)
++{
++	hrtimer_cancel(&op->timer);
++	hrtimer_cancel(&op->thrtimer);
++
++	call_rcu(&op->rcu, bcm_free_op_rcu);
++}
++
+ static void bcm_rx_unreg(struct net_device *dev, struct bcm_op *op)
+ {
+ 	if (op->rx_reg_dev == dev) {
+@@ -759,6 +767,9 @@ static int bcm_delete_rx_op(struct list_
+ 		if ((op->can_id == mh->can_id) && (op->ifindex == ifindex) &&
+ 		    (op->flags & CAN_FD_FRAME) == (mh->flags & CAN_FD_FRAME)) {
  
- 	if (!freelist) {
- 		c->page = NULL;
-+		c->tid = next_tid(c->tid);
- 		stat(s, DEACTIVATE_BYPASS);
- 		goto new_slab;
- 	}
++			/* disable automatic timer on frame reception */
++			op->flags |= RX_NO_AUTOTIMER;
++
+ 			/*
+ 			 * Don't care if we're bound or not (due to netdev
+ 			 * problems) can_rx_unregister() is always a save
+@@ -787,7 +798,6 @@ static int bcm_delete_rx_op(struct list_
+ 						  bcm_rx_handler, op);
+ 
+ 			list_del(&op->list);
+-			synchronize_rcu();
+ 			bcm_remove_op(op);
+ 			return 1; /* done */
+ 		}
 
 
