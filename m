@@ -2,103 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 176C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF0E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 12:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230242AbiGKMEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 08:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60608 "EHLO
+        id S230341AbiGKMHI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 08:07:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbiGKMEV (ORCPT
+        with ESMTP id S229602AbiGKMHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 08:04:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF66741D33;
-        Mon, 11 Jul 2022 05:04:20 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26BBJPKt014047;
-        Mon, 11 Jul 2022 12:04:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=dy5qnrY8PKyQYQC1yezcdT8KNhS4VxqtVLh8J5ex2n0=;
- b=kldtlybrL5SobUYT5Gx/8XXk5K2c3LFBfbnr25NJqOxoa2Ve+4PeBkpMFOGvYfaifTwR
- xdfVysUDoMrcEasglFMFDRXwyLEHnJuzLJBf388+HcEsUoDCek+GX2Qm2GEXtdqFq/e9
- iE1VOH0aXbuxFl1Vj+xHxHIyblZ0GEkj6Ej3XBgOwuFdLXwC4Xz7XDracfuHZC8zDNCz
- l1T4Ac+pc45iuUmsqZLfCtKFvKMxhlnY/fw4VVcN4rR8nGYHvxmCnhgoqi7fxnre+CKi
- 5vglCmgwIFBoxXTcq89TUDgVJgP62QFUw6s6CQSxSef9RBJciPDhDsWf1EuL6zQ1fNJv mA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h84sagfn4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 12:04:10 +0000
-Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26BAXTw3026877;
-        Mon, 11 Jul 2022 12:04:10 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h84sagfkj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 12:04:09 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26BBq16i027196;
-        Mon, 11 Jul 2022 12:04:07 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3h71a8tpgr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 12:04:07 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26BC45nA17629598
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Jul 2022 12:04:05 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 113D9A4060;
-        Mon, 11 Jul 2022 12:04:05 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 04CFBA405F;
-        Mon, 11 Jul 2022 12:04:03 +0000 (GMT)
-Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.211.107.19])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 11 Jul 2022 12:04:02 +0000 (GMT)
-Message-ID: <81ea189fd671947efc61000a745599a4b0573370.camel@linux.ibm.com>
-Subject: Re: [PATCH] ima/evm: Fix potential memory leak in ima_init_crypto()
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Jianglei Nie <niejianglei2021@163.com>, dmitry.kasatkin@gmail.com,
-        jmorris@namei.org, serge@hallyn.com
-Cc:     linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 11 Jul 2022 08:04:01 -0400
-In-Reply-To: <20220711072202.2319030-1-niejianglei2021@163.com>
-References: <20220711072202.2319030-1-niejianglei2021@163.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: kM73rs2Rr-dLTyIY3ri_t9sjkc7zXq29
-X-Proofpoint-ORIG-GUID: ESBp5WcxjtrgDeLcV_KlZiXzMkb1K52C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-11_17,2022-07-08_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- priorityscore=1501 impostorscore=0 spamscore=0 clxscore=1015
- malwarescore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 mlxscore=0
- mlxlogscore=797 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207110052
+        Mon, 11 Jul 2022 08:07:06 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDA841D3F
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:07:02 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id f73so8311853yba.10
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 05:07:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9/TaxiyiKvNrui4l1nPGDIlfQKIWpJeKr/oIv6jY5g4=;
+        b=m6femu7CnL6m4go3tibwbbC1inwqYvHVSSn22DT/h7RKq6qF9EKmRH3DETlWmCPGn8
+         cn8pTHEsfxoOux1OYkYOedJGN8RbiteXRNrSBBG+M0no/fvhcRpAOX58wy+DsFdp0PJ3
+         JydDc7JRF9HfWUbDLiW8hzd1rLx62+9EoAc/1HID8ALGmq4I0k80JqmR4SJN6A//riV2
+         cXpA5Wh8/gmdBvUyKxJREn3/+JXdRMo04HxZk5bwgviKC9Idq4k9jErskkxL1GFH07/G
+         SMDrJN44yYGbg/h9Cwlfy7XLvyphnV4VcgNuN76TrfAkch23whM48DXkepHeDk+DH7Ik
+         eVtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9/TaxiyiKvNrui4l1nPGDIlfQKIWpJeKr/oIv6jY5g4=;
+        b=n0SbRFov3hlW8hhrEYGhFvguy3XQroxFYy0XCJIAse7d+ttOy+VjVFzoyzOY4Mb7gY
+         0KlcgEvBxMH5hPZqXTZOBOwaW+ImZ6oX+wmBsq5Mw15rmenVWiDPhQWKpWQiJFg5NX9c
+         wDAPqDXE5qLnOiHxxKZgZ0j0EwSOv/B6igKNCUK+GnCQN4pXDvOIIBMx1koce9dKRiqT
+         bXP1hp9A3NB3UcGcuQrEA5HXnX3qC55kpIO9S1E4tbtwfLT/Y3hYP2whLiSnAA2eWPCf
+         A3PcCY/QP7WZ50aoqfBaYCeenco5+6Ezq6C65ms5A7ApBbmDystCswihZZ8D+4+ReOhg
+         LI8A==
+X-Gm-Message-State: AJIora/40zXWiLrePUG+jd72rXn6FEfGVNNQLuDZ23NlW4GG7JiUinS0
+        dDRpozrxTbfWUrKCX8nELMZ1w8mXPLZgWI/LC/3iLw==
+X-Google-Smtp-Source: AGRyM1vFfv0mkpgaMja8fO3kFoTANu+4p4L9HHgPFinmmZ3C9VB377ZbCYhbLGX3ZsNYWMPb0RclxQjeUvT/PRO6GXI=
+X-Received: by 2002:a25:fe04:0:b0:66e:1f8a:8e89 with SMTP id
+ k4-20020a25fe04000000b0066e1f8a8e89mr17240379ybe.514.1657541221456; Mon, 11
+ Jul 2022 05:07:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220706112828.27278-1-pali@kernel.org> <20220706162111.GA145516-robh@kernel.org>
+ <20220706162335.2eewgf7l3xghdjtr@pali>
+In-Reply-To: <20220706162335.2eewgf7l3xghdjtr@pali>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 11 Jul 2022 14:06:50 +0200
+Message-ID: <CACRpkdYncdsVW8LysQ3--rOF-KUF6dkkPyX4tg4e10vn2K+8FQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: leds: register-bit-led: Add value property
+To:     =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>, Pavel Machek <pavel@ucw.cz>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?B?TWFyZWsgQmVow7pu?= <kabel@kernel.org>,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-11 at 15:22 +0800, Jianglei Nie wrote:
-> This patch adds the missing kfree() for ima_algo_array allocated by
-> kcalloc() to avoid potential memory leak.
+On Wed, Jul 6, 2022 at 6:23 PM Pali Roh=C3=A1r <pali@kernel.org> wrote:
+> On Wednesday 06 July 2022 10:21:11 Rob Herring wrote:
+> > On Wed, Jul 06, 2022 at 01:28:27PM +0200, Pali Roh=C3=A1r wrote:
+> > > Allow to define inverted logic (0 - enable LED, 1 - disable LED) via =
+value
+> > > property. This property name is already used by other syscon drivers,=
+ e.g.
+> > > syscon-reboot.
+> >
+> > Yes, but those are potentially multi-bit values. This is a single bit
+> > value, and the only value that's ever needed is 0. Why not just use
+> > 'active-low' here?
+>
+> Just because to have uniform definitions across more syscon nodes.
 
-Missing is the reason that ima_algo_array is being freed.
+But what happens if he mask and value don't line up?
 
-Perhaps something like, 
-"On failure to allocate the SHA1 tfm, IMA fails to initialize and exits
-without freeing the ima_algo_array.   Add the missing kfree() for
-ima_algo_array to avoid the potential memory leak."
+mask =3D 0x10;
+value =3D 0x08;
 
-thanks,
+If you just state active-low; this kind of mistake is not possible to make.
 
-Mimi
+So I'd rather go for active-low;
 
+Yours,
+Linus Walleij
