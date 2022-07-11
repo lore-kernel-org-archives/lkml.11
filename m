@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F74C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 15:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230382AbiGKPzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 11:55:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
+        id S231156AbiGKP4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 11:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229868AbiGKPzg (ORCPT
+        with ESMTP id S230358AbiGKP4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 11:55:36 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9548527FCA
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:55:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657554935; x=1689090935;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=pr1rtMouHTlc0gc8hvqSAtyTe8IXxsnri8zSjUL00uQ=;
-  b=XOZOlNr1XRtiqgU33UWim2r5CKXn9xItnQaQY/38Q4f4OPTVke1x5ZgK
-   XpqFGl/xnQ1yIkPWCxBEWKU2XCRCt7Et6+3BLIobndThGFIlyUx5VCUmf
-   2sp0ilmpj2Rowre6a8ALWim6GwVqQwM26fNMnVs00MZ4vjLOiJRB4655E
-   XW1td2OCygus/TlpO/oQeDiM3/IEZFuP+5SZc3N1Qjgtkr97mXVK9GPxj
-   ujleFwQ4ePRFnrvRR/96GCrmG33mg/8TnMEujO0L7DCA+YS03EXva1cix
-   lBTSCAu2igaMCS6mnmIdpKBp60D7A059XhxOM1VAhhBrGGDyGbE3lM/vv
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="348675819"
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="348675819"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 08:55:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,263,1650956400"; 
-   d="scan'208";a="921833030"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 11 Jul 2022 08:55:33 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oAvky-0000wd-Np;
-        Mon, 11 Jul 2022 15:55:32 +0000
-Date:   Mon, 11 Jul 2022 23:54:49 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>
-Subject: drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:59:6: error: no
- previous prototype for 'intel_pxp_debugfs_register'
-Message-ID: <202207112334.aT2Wz3dC-lkp@intel.com>
+        Mon, 11 Jul 2022 11:56:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB502A263
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 08:56:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91B61B81031
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 15:56:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D788C34115;
+        Mon, 11 Jul 2022 15:55:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657554961;
+        bh=8HV9yZZGFBJidulDHDzfWS4Ajwr3bhBQMRksoe8XUHI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MDIxfWkN7FUIOBu2c4cTc5keVGVoKO2v+NQgGOoloxL6OwZ0VNankrbwYB3yBk7pk
+         TSFHe2oY+KK0YR7zfpizEhsXxn0wbAhNnNKmqyBCCaE8mncbW134UskBO4J8gmY/6L
+         2xHvfMTI7f3VV2PQM3arYmPQrV2zsKU2Y0LZd2umyPXMPPtdw2DsjmkMF6xU63sj8g
+         7djIbycrg4FC4RKZmUXtLnaeiOSHXpZh6p/Aoowqy+L41xsSyo1DNrwgEiWV/a52vO
+         5dekxUddpSXcHrEvl6jwjgYqJ4nWHmo8xjwF3GJVAyIenm0zM1heexVSuuykMWNGKk
+         AnxZ5mZxddM8A==
+Date:   Mon, 11 Jul 2022 16:55:56 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexandru Elisei <alexandru.elisei@arm.com>
+Cc:     lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        heiko@sntech.de, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org, judyhsiao@chromium.org
+Subject: Re: [PATCH] ASoC: rockchip: i2s: Fix NULL pointer dereference when
+ pinctrl is not found
+Message-ID: <YsxIDCaMf0Z0BnxH@sirena.org.uk>
+References: <20220711130522.401551-1-alexandru.elisei@arm.com>
+ <Yswkb6mvwUywOTLg@sirena.org.uk>
+ <YswoOE/sP088lius@monolith.localdoman>
+ <Ysw2mzhw4pyrxirc@sirena.org.uk>
+ <Ysw+3Hg+GbDjXuTn@monolith.localdoman>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tg1MdlMwJWKMRNAi"
 Content-Disposition: inline
+In-Reply-To: <Ysw+3Hg+GbDjXuTn@monolith.localdoman>
+X-Cookie: I am NOMAD!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniele,
 
-FYI, the error/warning still remains.
+--tg1MdlMwJWKMRNAi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   32346491ddf24599decca06190ebca03ff9de7f8
-commit: 390cf1b28b11190121cb05d4cec1f86787b47668 drm/i915/pxp: add pxp debugfs
-date:   9 months ago
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220711/202207112334.aT2Wz3dC-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=390cf1b28b11190121cb05d4cec1f86787b47668
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 390cf1b28b11190121cb05d4cec1f86787b47668
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Mon, Jul 11, 2022 at 04:17:37PM +0100, Alexandru Elisei wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Do you want me to respin the patch with an abbreviated splat?
 
-All errors (new ones prefixed by >>):
+It's fine, just leave this one.
 
->> drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c:59:6: error: no previous prototype for 'intel_pxp_debugfs_register' [-Werror=missing-prototypes]
-      59 | void intel_pxp_debugfs_register(struct intel_pxp *pxp, struct dentry *gt_root)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: all warnings being treated as errors
+--tg1MdlMwJWKMRNAi
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-vim +/intel_pxp_debugfs_register +59 drivers/gpu/drm/i915/pxp/intel_pxp_debugfs.c
+iQEyBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLMSAsACgkQJNaLcl1U
+h9DfVAf3fsWaAiN9qpjwm1k+G3+bQFU/BeOTROHaL2wDeSqy50zlg6PJy+C8/DWW
+FLEDtXUo/3Y+fuC9hjkEhpElWej3xK292MXE0d3gkc+pZe3FQzOYn6JTNvOeUS3u
+MQIZKwXplY4jbXBYnDzt9JKl7Hc8ZdVYfngtQkOj/bJiU5IrqRQIrQpivaNi6Jpz
+wRNdd01A/z5Rk09lWCQz6uTg8XxLpI8pxrL3BL6Q0TjA5J8rIp8ki5UMYhkcmi78
+8tMo/IOyLGRLJCJij+wAilMpUZPIoAgexZhuSJlZyWyuHf0qWEFZSSK+z0g7Ybfn
+KE6lm2sRo6syEO4ln0OneVdgv/9a
+=vq9L
+-----END PGP SIGNATURE-----
 
-    57	
-    58	DEFINE_SIMPLE_ATTRIBUTE(pxp_terminate_fops, pxp_terminate_get, pxp_terminate_set, "%llx\n");
-  > 59	void intel_pxp_debugfs_register(struct intel_pxp *pxp, struct dentry *gt_root)
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--tg1MdlMwJWKMRNAi--
