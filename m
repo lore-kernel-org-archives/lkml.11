@@ -2,86 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D6CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39410C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 10:39:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230011AbiGKKhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 06:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
+        id S229924AbiGKKjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 06:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229989AbiGKKgy (ORCPT
+        with ESMTP id S229897AbiGKKik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 06:36:54 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD524AAB10;
-        Mon, 11 Jul 2022 02:47:04 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 4FD5CE008C;
-        Mon, 11 Jul 2022 02:46:34 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WZ3W3IKfRroK; Mon, 11 Jul 2022 02:46:33 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1657532793; bh=SIVg2R/dN6S1hh+ase98JVSdxk9pJlViqrkTdBueOtI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buz6fZx3y+cLK55HEj14phepTYXyAj71aD+cyoybxAxfN7gRYhvT8ypeXwmDkriNh
-         bIqJ09oVJLi0BqNoIf/2pY0HBM4ABWN6YASayJISkCT7gg0k548ZWKlmhWxVD5Kp4o
-         J1QH4YL2r/Adxzl8mxoewup2TymDC7CAKCadBKLAqd/7f2SjwAW+LNj38FVs+S7xLd
-         tlNRuUC3EvdhaBKx6mpIFXIzfHvUO9n39QydkXGjfgRKDdzUSNk1sYC6K9fUVc3QQZ
-         N2Bp4PQjOw8qnA24GmKCy3rIzAeDscdhL877ElJij6Sw3xKAVTFVmcy+rz82zDlj4r
-         sON2J1NjvORHQ==
-To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
-        robh@kernel.org, krzysztof.kozlowski@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v1 3/3] arm64: dts: imx8mq-librem5: set pd power-supply-needs-irq when needed
-Date:   Mon, 11 Jul 2022 11:45:49 +0200
-Message-Id: <20220711094549.3445566-3-martin.kepplinger@puri.sm>
-In-Reply-To: <20220711094549.3445566-1-martin.kepplinger@puri.sm>
-References: <20220711094549.3445566-1-martin.kepplinger@puri.sm>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Mon, 11 Jul 2022 06:38:40 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7BA8E0F71;
+        Mon, 11 Jul 2022 02:48:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657532908; x=1689068908;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=0htVv4KZTE8nIfkHs54QWXHZC0r2fa942k4F0+nA+jQ=;
+  b=OOLvRyEotWCROE20EV6uXc2ox3+6DzKXShabPKHcmeCvwFaE/9NXHHYO
+   crfxcqwK7sj4Sb2mvOtnAz6hUv/fPKrGdmMFNfQC6YfpQbSGQ+BOdbJT4
+   5pqbYHn+N5xYtGON3NngrohbZ7XhP0NRzLOIxL9h/6c03cfcRegYhNGUh
+   8=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 11 Jul 2022 02:48:28 -0700
+X-QCInternal: smtphost
+Received: from ironmsg02-blr.qualcomm.com ([10.86.208.131])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 11 Jul 2022 02:48:26 -0700
+X-QCInternal: smtphost
+Received: from vpolimer-linux.qualcomm.com ([10.204.67.235])
+  by ironmsg02-blr.qualcomm.com with ESMTP; 11 Jul 2022 15:18:08 +0530
+Received: by vpolimer-linux.qualcomm.com (Postfix, from userid 463814)
+        id 9D3B23E4C; Mon, 11 Jul 2022 15:18:04 +0530 (IST)
+From:   Vinod Polimera <quic_vpolimer@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Vinod Polimera <quic_vpolimer@quicinc.com>,
+        linux-kernel@vger.kernel.org, robdclark@gmail.com,
+        dianders@chromium.org, swboyd@chromium.org,
+        quic_kalyant@quicinc.com, dmitry.baryshkov@linaro.org,
+        quic_khsieh@quicinc.com, quic_vproddut@quicinc.com,
+        bjorn.andersson@linaro.org, quic_aravindh@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_sbillaka@quicinc.com
+Subject: [PATCH v5 05/10] drm/msm/dp: use the eDP bridge ops to validate eDP modes
+Date:   Mon, 11 Jul 2022 15:17:55 +0530
+Message-Id: <1657532880-12897-7-git-send-email-quic_vpolimer@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
+References: <1657532880-12897-1-git-send-email-quic_vpolimer@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the pgc power-supply nodes on the librem5 board, interrupts are
-always needed for them to work as they are regulators controlled via
-i2c.
+The eDP and DP interfaces shared the bridge operations and
+the eDP specific changes were implemented under is_edp check.
+To add psr support for eDP, we started using a new set of eDP
+bridge ops. We are moving the eDP specific code in the
+dp_bridge_mode_valid function to a new eDP function,
+edp_bridge_mode_valid under the eDP bridge ops.
 
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
 ---
- arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/msm/dp/dp_display.c |  8 --------
+ drivers/gpu/drm/msm/dp/dp_drm.c     | 34 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 33 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-index 9eec8a7eecfc..1b445cbfdc78 100644
---- a/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mq-librem5.dtsi
-@@ -1159,14 +1159,17 @@ mipi_dsi_out: endpoint {
+diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
+index 64a6254..2b3ec6b 100644
+--- a/drivers/gpu/drm/msm/dp/dp_display.c
++++ b/drivers/gpu/drm/msm/dp/dp_display.c
+@@ -986,14 +986,6 @@ enum drm_mode_status dp_bridge_mode_valid(struct drm_bridge *bridge,
+ 		return -EINVAL;
+ 	}
  
- &pgc_gpu {
- 	power-supply = <&buck3_reg>;
-+	power-supply-needs-irq;
- };
+-	/*
+-	 * The eDP controller currently does not have a reliable way of
+-	 * enabling panel power to read sink capabilities. So, we rely
+-	 * on the panel driver to populate only supported modes for now.
+-	 */
+-	if (dp->is_edp)
+-		return MODE_OK;
+-
+ 	if (mode->clock > DP_MAX_PIXEL_CLK_KHZ)
+ 		return MODE_BAD;
  
- &pgc_mipi {
- 	power-supply = <&ldo5_reg>;
-+	power-supply-needs-irq;
- };
+diff --git a/drivers/gpu/drm/msm/dp/dp_drm.c b/drivers/gpu/drm/msm/dp/dp_drm.c
+index 8e2cb35..eb08ee8 100644
+--- a/drivers/gpu/drm/msm/dp/dp_drm.c
++++ b/drivers/gpu/drm/msm/dp/dp_drm.c
+@@ -183,12 +183,44 @@ static void edp_bridge_atomic_post_disable(struct drm_bridge *drm_bridge,
+ 	dp_bridge_atomic_post_disable(drm_bridge, old_bridge_state);
+ }
  
- &pgc_vpu {
- 	power-supply = <&buck4_reg>;
-+	power-supply-needs-irq;
- };
- 
- &pwm1 {
++/**
++ * edp_bridge_mode_valid - callback to determine if specified mode is valid
++ * @bridge: Pointer to drm bridge structure
++ * @info: display info
++ * @mode: Pointer to drm mode structure
++ * Returns: Validity status for specified mode
++ */
++static enum drm_mode_status edp_bridge_mode_valid(struct drm_bridge *bridge,
++					  const struct drm_display_info *info,
++					  const struct drm_display_mode *mode)
++{
++	struct msm_dp *dp;
++	int mode_pclk_khz = mode->clock;
++
++	dp = to_dp_bridge(bridge)->dp_display;
++
++	if (!dp || !mode_pclk_khz || !dp->connector) {
++		DRM_ERROR("invalid params\n");
++		return -EINVAL;
++	}
++
++	if (mode->clock > DP_MAX_PIXEL_CLK_KHZ)
++		return MODE_CLOCK_HIGH;
++
++	/*
++	 * The eDP controller currently does not have a reliable way of
++	 * enabling panel power to read sink capabilities. So, we rely
++	 * on the panel driver to populate only supported modes for now.
++	 */
++	return MODE_OK;
++}
++
+ static const struct drm_bridge_funcs edp_bridge_ops = {
+ 	.atomic_enable = edp_bridge_atomic_enable,
+ 	.atomic_disable = edp_bridge_atomic_disable,
+ 	.atomic_post_disable = edp_bridge_atomic_post_disable,
+ 	.mode_set = dp_bridge_mode_set,
+-	.mode_valid = dp_bridge_mode_valid,
++	.mode_valid = edp_bridge_mode_valid,
+ 	.atomic_reset = drm_atomic_helper_bridge_reset,
+ 	.atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
+ 	.atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
 -- 
-2.30.2
+2.7.4
 
