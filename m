@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23786C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D9EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 11 Jul 2022 09:32:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbiGKJch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 05:32:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
+        id S232518AbiGKJcq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 05:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbiGKJb7 (ORCPT
+        with ESMTP id S232465AbiGKJcD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 05:31:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECE34199E;
-        Mon, 11 Jul 2022 02:17:21 -0700 (PDT)
+        Mon, 11 Jul 2022 05:32:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FFA3419A8;
+        Mon, 11 Jul 2022 02:17:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF08CB80E76;
-        Mon, 11 Jul 2022 09:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 022F0C34115;
-        Mon, 11 Jul 2022 09:17:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1AD561257;
+        Mon, 11 Jul 2022 09:17:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63E2C341C0;
+        Mon, 11 Jul 2022 09:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657531038;
-        bh=8UAVguRCvTybjVhHmN58+ti9OdpcIkLeDFPb9kOGhRY=;
+        s=korg; t=1657531041;
+        bh=ettJJAGG6+QCxqGnRfN2A097HPuayip3gBx+rD7C5SU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9L/M1t3KwOeHvcVjeOcTS2raWA/unQnWr8sA8Wc28lmzzyDnoY9pD3/ml0o9bLvp
-         G1ngjWM+5Sj8EKGHaTbiHOWOmZLWvO5qLxqTyMpavQ8xTpWw6sPDSYoNeqqy7+mUSt
-         e8mmILAxBBVy5E3urprM9sWI1tsfLd18oo5i1UGs=
+        b=Kn1GrgSTPERNG/GiDxQ4ZKewRqgH+uXxXakpQmsy2oDb5oOr0FZFv+vQ7X4AtJ8xI
+         UbwA7nbtU7rzSvKXPhfY6EGHxIGO4pW3X4d9HxDVWL8rsqAVNG+4/H2crHO4Fk00Gd
+         0TeGf33T2lJ8y4uA5qLjxcv6T4GKrdLL+K9/Do/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Eugen Hristev <eugen.hristev@microchip.com>,
         Claudiu Beznea <claudiu.beznea@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 072/112] ARM: at91: pm: use proper compatibles for sama7g5s rtc and rtt
-Date:   Mon, 11 Jul 2022 11:07:12 +0200
-Message-Id: <20220711090551.616611516@linuxfoundation.org>
+Subject: [PATCH 5.18 073/112] ARM: dts: at91: sam9x60ek: fix eeprom compatible and size
+Date:   Mon, 11 Jul 2022 11:07:13 +0200
+Message-Id: <20220711090551.644673592@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 References: <20220711090549.543317027@linuxfoundation.org>
@@ -49,41 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit 1c40169b35ad58906814d53a517ac92db3d20d5f ]
+[ Upstream commit f2cbbc3f926316ccf8ef9363d8a60c1110afc1c7 ]
 
-Use proper compatible strings for SAMA7G5's RTC and RTT IPs. These are
-necessary for configuring wakeup sources for ULP1 PM mode.
+The board has a microchip 24aa025e48 eeprom, which is a 2 Kbits memory,
+so it's compatible with at24c02 not at24c32.
+Also the size property is wrong, it's not 128 bytes, but 256 bytes.
+Thus removing and leaving it to the default (256).
 
-Fixes: 6501330f9f5e ("ARM: at91: pm: add pm support for SAMA7G5")
+Fixes: 1e5f532c27371 ("ARM: dts: at91: sam9x60: add device tree for soc and board")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220523092421.317345-4-claudiu.beznea@microchip.com
+Link: https://lore.kernel.org/r/20220607090455.80433-1-eugen.hristev@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-at91/pm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/at91-sam9x60ek.dts | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm/mach-at91/pm.c b/arch/arm/mach-at91/pm.c
-index 464b7dea5bbe..32f224f723a5 100644
---- a/arch/arm/mach-at91/pm.c
-+++ b/arch/arm/mach-at91/pm.c
-@@ -168,13 +168,13 @@ static const struct of_device_id sam9x60_ws_ids[] = {
- };
+diff --git a/arch/arm/boot/dts/at91-sam9x60ek.dts b/arch/arm/boot/dts/at91-sam9x60ek.dts
+index 7719ea3d4933..81ccb0636a00 100644
+--- a/arch/arm/boot/dts/at91-sam9x60ek.dts
++++ b/arch/arm/boot/dts/at91-sam9x60ek.dts
+@@ -233,10 +233,9 @@
+ 		status = "okay";
  
- static const struct of_device_id sama7g5_ws_ids[] = {
--	{ .compatible = "atmel,at91sam9x5-rtc",		.data = &ws_info[1] },
-+	{ .compatible = "microchip,sama7g5-rtc",	.data = &ws_info[1] },
- 	{ .compatible = "microchip,sama7g5-ohci",	.data = &ws_info[2] },
- 	{ .compatible = "usb-ohci",			.data = &ws_info[2] },
- 	{ .compatible = "atmel,at91sam9g45-ehci",	.data = &ws_info[2] },
- 	{ .compatible = "usb-ehci",			.data = &ws_info[2] },
- 	{ .compatible = "microchip,sama7g5-sdhci",	.data = &ws_info[3] },
--	{ .compatible = "atmel,at91sam9260-rtt",	.data = &ws_info[4] },
-+	{ .compatible = "microchip,sama7g5-rtt",	.data = &ws_info[4] },
- 	{ /* sentinel */ }
- };
- 
+ 		eeprom@53 {
+-			compatible = "atmel,24c32";
++			compatible = "atmel,24c02";
+ 			reg = <0x53>;
+ 			pagesize = <16>;
+-			size = <128>;
+ 			status = "okay";
+ 		};
+ 	};
 -- 
 2.35.1
 
