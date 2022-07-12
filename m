@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28C7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:14:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234051AbiGLXOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 19:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41872 "EHLO
+        id S234221AbiGLXOK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 19:14:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233896AbiGLXNg (ORCPT
+        with ESMTP id S233911AbiGLXNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 19:13:36 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6E6CC78B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:13:30 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 910D9B0B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:13:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657667610; x=1689203610;
+  t=1657667611; x=1689203611;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=FNDoAfmeIi8uLbuI0UIqM3X0guL9pMr/mCnJr0E5bVU=;
-  b=nWngtr4y64mzfPSW7oXzu0Ybn/Sy0rkzdal/11RGVMeRZzIvt5FsCCQx
-   MXF1Wu1NOpPnwtDU8M+murk/0v0a0CT3VwJji5qoHThK1Pi01H7kOVjyF
-   YnzYn8aFQkGlZqrSl/inDnoyCQ8TZaQyGxOhdGNfNq5fFDbpBIOrYWtpQ
-   OcMfLIntXhIsGErsuFzXDc2ZZewzAhFLz0rlO1M/av3eW1FML8L3sqQy3
-   k+++1e9g9PEMeNWL3c+3jaGmp0mIJssO99YKrkYBIjqqVuYk9sydIpo0G
-   +hZ2xTTAf7cU3KBXapZNI3of/VwkFEhyGgGkJq/pM6/fjZkaxKdwUbsp1
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="283818842"
+  bh=ccx0RgNBfz7piuZWOrmJMdKV3R7Gsc2VojQmQ6vSEyk=;
+  b=ifL0xduc/fDMqiPNBhFClh9G4EwjNcFoQlebl7l5MhYE6iQUsTBgmgk9
+   UAqniLm9Sa1UqsLs2BatJb6rtuqDP9rxxEyRFPOB94Gq+6+zCWztIAmax
+   ZapTFsw0bL9i7cPkJ8YBEp6VkQAneDHuanlDOjTSHyph+qy6UWD7vjmF8
+   zXO1W/8n0KkXtn120Vl/LjDJ7ySeIG2l4R6ZKg+S8NE38dgESgi7vNH5C
+   d6ju6jfVuoem4RqedvC1IiDjf2d6fy9iUltcU53pQzdfTh5GDDVf+bW3e
+   8erim6MGybFleHelJlulHGawl7Xy5qi+mWWwf6+qkwJ3BhiSi6gQK1G/A
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285808447"
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="283818842"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 16:13:30 -0700
+   d="scan'208";a="285808447"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 16:13:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="628074991"
+   d="scan'208";a="592792970"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 12 Jul 2022 16:13:26 -0700
+  by orsmga007.jf.intel.com with ESMTP; 12 Jul 2022 16:13:26 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id E6AAB3ED; Wed, 13 Jul 2022 02:13:29 +0300 (EEST)
+        id 4ABDA6CE; Wed, 13 Jul 2022 02:13:30 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -54,10 +54,11 @@ Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
         Andi Kleen <ak@linux.intel.com>,
         Rick Edgecombe <rick.p.edgecombe@intel.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 05/13] x86/uaccess: Provide untagged_addr() and remove tags before address check
-Date:   Wed, 13 Jul 2022 02:13:20 +0300
-Message-Id: <20220712231328.5294-6-kirill.shutemov@linux.intel.com>
+        Weihong Zhang <weihong.zhang@intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 OPTIONAL 13/13] selftests/x86/lam: Add tests cases for LAM_U48
+Date:   Wed, 13 Jul 2022 02:13:28 +0300
+Message-Id: <20220712231328.5294-14-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
 References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
@@ -67,180 +68,217 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-untagged_addr() is a helper used by the core-mm to strip tag bits and
-get the address to the canonical shape. In only handles userspace
-addresses. The untagging mask is stored in mmu_context and will be set
-on enabling LAM for the process.
+From: Weihong Zhang <weihong.zhang@intel.com>
 
-The tags must not be included into check whether it's okay to access the
-userspace address.
+LAM supports configurations that differ regarding which pointer bits are masked.
+With LAM_U48, bits 62:48 in pointers can be masked as metadata bits, the width
+of LAM is 15.
 
-Strip tags in access_ok().
+Add test cases in existed test scenarios:
 
-get_user() and put_user() don't use access_ok(), but check access
-against TASK_SIZE directly in assembly. Strip tags, before calling into
-the assembly helper.
+MALLOC:
 
+ - Enable LAM_U48, masks bits 48:62 of user pointers as metadata, the
+   process can dereference these pointers.
+
+MMAP:
+
+ - Enable LAM_U48, mmaping with high address (above bits 47) have to be
+   failed, which lead to trigger SIGSEGV.
+
+ - LAM_U48 can't be enabled if there is a mmaping with high
+   address(above bits 47) before enable LAM_U48.
+
+SYSCALL:
+
+ - LAM supports set metadata in high bits 62:48 (LAM48) of user process,
+   pass these pointers to SYSCALL, SYSCALL can dereference pointers and
+   return correct result.
+
+IO_URING:
+
+ - Add LAM_U48 test on IO_URING, Enable LAM_U48, set metadata in bits
+   62:48 of buffers, IO_URING can handle these buffers well.
+
+FORK/EXEC:
+
+ - Add LAM_U48 test cases in inherit scenarios. these cases should same
+   as LAM_U57;
+
+Signed-off-by: Weihong Zhang <weihong.zhang@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/include/asm/mmu.h         |  3 +++
- arch/x86/include/asm/mmu_context.h | 11 ++++++++
- arch/x86/include/asm/uaccess.h     | 42 +++++++++++++++++++++++++++---
- arch/x86/kernel/process.c          |  3 +++
- 4 files changed, 56 insertions(+), 3 deletions(-)
+ tools/testing/selftests/x86/lam.c | 67 ++++++++++++++++++++++++++++++-
+ 1 file changed, 66 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index 002889ca8978..2fdb390040b5 100644
---- a/arch/x86/include/asm/mmu.h
-+++ b/arch/x86/include/asm/mmu.h
-@@ -43,6 +43,9 @@ typedef struct {
+diff --git a/tools/testing/selftests/x86/lam.c b/tools/testing/selftests/x86/lam.c
+index fcac5feb47d0..b354e57bf072 100644
+--- a/tools/testing/selftests/x86/lam.c
++++ b/tools/testing/selftests/x86/lam.c
+@@ -24,6 +24,7 @@
+ /* LAM modes, these definitions were copied from kernel code */
+ #define LAM_NONE                0
+ #define LAM_U57_BITS            6
++#define LAM_U48_BITS            15
+ /* arch prctl for LAM */
+ #define ARCH_GET_UNTAG_MASK     0x4001
+ #define ARCH_ENABLE_TAGGED_ADDR 0x4002
+@@ -126,7 +127,7 @@ static int set_lam(unsigned long lam)
+ 	int ret = 0;
+ 	uint64_t ptr = 0;
  
- 	/* Active LAM mode:  X86_CR3_LAM_U48 or X86_CR3_LAM_U57 or 0 (disabled) */
- 	unsigned long lam_cr3_mask;
-+
-+	/* Significant bits of the virtual address. Excludes tag bits. */
-+	u64 untag_mask;
- #endif
+-	if (lam != LAM_U57_BITS && lam != LAM_NONE)
++	if (lam != LAM_U48_BITS && lam != LAM_U57_BITS && lam != LAM_NONE)
+ 		return -1;
  
- 	struct mutex lock;
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index 69c943b2ae90..5bd3d46685dc 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -100,6 +100,12 @@ static inline unsigned long mm_lam_cr3_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- 	mm->context.lam_cr3_mask = oldmm->context.lam_cr3_mask;
-+	mm->context.untag_mask = oldmm->context.untag_mask;
-+}
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+	mm->context.untag_mask = -1UL;
- }
+ 	/* Skip check return */
+@@ -138,6 +139,8 @@ static int set_lam(unsigned long lam)
+ 	/* Check mask returned is expected */
+ 	if (lam == LAM_U57_BITS)
+ 		ret = (ptr != ~(0x3fULL << 57));
++	else if (lam == LAM_U48_BITS)
++		ret = (ptr != ~(0x7fffULL << 48));
+ 	else if (lam == LAM_NONE)
+ 		ret = (ptr != -1ULL);
  
- #else
-@@ -112,6 +118,10 @@ static inline unsigned long mm_lam_cr3_mask(struct mm_struct *mm)
- static inline void dup_lam(struct mm_struct *oldmm, struct mm_struct *mm)
- {
- }
-+
-+static inline void mm_reset_untag_mask(struct mm_struct *mm)
-+{
-+}
- #endif
+@@ -161,6 +164,8 @@ static int get_lam(void)
+ 		ret = LAM_U57_BITS;
+ 	else if (ptr == -1ULL)
+ 		ret = LAM_NONE;
++	else if (ptr == ~(0x7fffULL << 48))
++		ret = LAM_U48_BITS;
  
- #define enter_lazy_tlb enter_lazy_tlb
-@@ -138,6 +148,7 @@ static inline int init_new_context(struct task_struct *tsk,
- 		mm->context.execute_only_pkey = -1;
- 	}
- #endif
-+	mm_reset_untag_mask(mm);
- 	init_new_context_ldt(mm);
- 	return 0;
- }
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 913e593a3b45..803241dfc473 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -6,6 +6,7 @@
-  */
- #include <linux/compiler.h>
- #include <linux/kasan-checks.h>
-+#include <linux/mm_types.h>
- #include <linux/string.h>
- #include <asm/asm.h>
- #include <asm/page.h>
-@@ -20,6 +21,30 @@ static inline bool pagefault_disabled(void);
- # define WARN_ON_IN_IRQ()
- #endif
  
-+#ifdef CONFIG_X86_64
-+/*
-+ * Mask out tag bits from the address.
-+ *
-+ * Magic with the 'sign' allows to untag userspace pointer without any branches
-+ * while leaving kernel addresses intact.
-+ */
-+#define untagged_addr(mm, addr)	({					\
-+	u64 __addr = (__force u64)(addr);				\
-+	s64 sign = (s64)__addr >> 63;					\
-+	__addr &= (mm)->context.untag_mask | sign;			\
-+	(__force __typeof__(addr))__addr;				\
-+})
-+
-+#define untagged_ptr(mm, ptr)	({					\
-+	u64 __ptrval = (__force u64)(ptr);				\
-+	__ptrval = untagged_addr(mm, __ptrval);				\
-+	(__force __typeof__(*(ptr)) *)__ptrval;				\
-+})
-+#else
-+#define untagged_addr(mm, addr)	(addr)
-+#define untagged_ptr(mm, ptr)	(ptr)
-+#endif
-+
- /**
-  * access_ok - Checks if a user space pointer is valid
-  * @addr: User space pointer to start of block to check
-@@ -40,7 +65,7 @@ static inline bool pagefault_disabled(void);
- #define access_ok(addr, size)					\
- ({									\
- 	WARN_ON_IN_IRQ();						\
--	likely(__access_ok(addr, size));				\
-+	likely(__access_ok(untagged_addr(current->mm, addr), size));	\
- })
+ 	return ret;
+@@ -176,6 +181,9 @@ static uint64_t get_metadata(uint64_t src, unsigned long lam)
+ 	metadata = rand();
  
- #include <asm-generic/access_ok.h>
-@@ -125,7 +150,13 @@ extern int __get_user_bad(void);
-  * Return: zero on success, or -EFAULT on error.
-  * On error, the variable @x is set to zero.
-  */
--#define get_user(x,ptr) ({ might_fault(); do_get_user_call(get_user,x,ptr); })
-+#define get_user(x,ptr)							\
-+({									\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_get_user_call(get_user,x,__ptr_clean);			\
-+})
+ 	switch (lam) {
++	case LAM_U48_BITS: /* Set metadata in bits 62:48 */
++		metadata = (src & ~(0x7fffULL << 48)) | ((metadata & 0x7fff) << 48);
++		break;
+ 	case LAM_U57_BITS: /* Set metadata in bits 62:57 */
+ 		metadata = (src & ~(0x3fULL << 57)) | ((metadata & 0x3f) << 57);
+ 		break;
+@@ -552,6 +560,9 @@ int do_uring(unsigned long lam)
+ 			uint64_t addr = ((uint64_t)fi->iovecs[i].iov_base);
  
- /**
-  * __get_user - Get a simple variable from user space, with less checking.
-@@ -222,7 +253,12 @@ extern void __put_user_nocheck_8(void);
-  *
-  * Return: zero on success, or -EFAULT on error.
-  */
--#define put_user(x, ptr) ({ might_fault(); do_put_user_call(put_user,x,ptr); })
-+#define put_user(x, ptr) ({						\
-+	__typeof__(*(ptr)) __user *__ptr_clean;				\
-+	__ptr_clean = untagged_ptr(current->mm, ptr);			\
-+	might_fault();							\
-+	do_put_user_call(put_user,x,__ptr_clean);			\
-+})
+ 			switch (lam) {
++			case LAM_U48_BITS: /* Clear bits 62:48 */
++				addr = (addr & ~(0x7fffULL << 48));
++				break;
+ 			case LAM_U57_BITS: /* Clear bits 62:57 */
+ 				addr = (addr & ~(0x3fULL << 57));
+ 				break;
+@@ -696,6 +707,12 @@ static struct testcases uring_cases[] = {
+ 		.test_func = handle_uring,
+ 		.msg = "URING: LAM_U57. Dereferencing pointer with metadata\n",
+ 	},
++	{
++		.later = 0,
++		.lam = LAM_U48_BITS,
++		.test_func = handle_uring,
++		.msg = "URING: LAM_U48. Dereferencing pointer with metadata.\n",
++	},
+ 	{
+ 		.later = 1,
+ 		.expected = 1,
+@@ -712,6 +729,12 @@ static struct testcases malloc_cases[] = {
+ 		.test_func = handle_malloc,
+ 		.msg = "MALLOC: LAM_U57. Dereferencing pointer with metadata\n",
+ 	},
++	{
++		.later = 0,
++		.lam = LAM_U48_BITS,
++		.test_func = handle_malloc,
++		.msg = "MALLOC: LAM_U48. Dereferencing pointer with metadata.\n",
++	},
+ 	{
+ 		.later = 1,
+ 		.expected = 2,
+@@ -728,6 +751,12 @@ static struct testcases syscall_cases[] = {
+ 		.test_func = handle_syscall,
+ 		.msg = "SYSCALL: LAM_U57. syscall with metadata\n",
+ 	},
++	{
++		.later = 0,
++		.lam = LAM_U48_BITS,
++		.test_func = handle_syscall,
++		.msg = "SYSCALL: LAM_U48. syscall with metadata\n",
++	},
+ 	{
+ 		.later = 1,
+ 		.expected = 1,
+@@ -738,6 +767,14 @@ static struct testcases syscall_cases[] = {
+ };
  
- /**
-  * __put_user - Write a simple value into user space, with less checking.
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index 9b2772b7e1f3..18b2bfdf7b9b 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -47,6 +47,7 @@
- #include <asm/frame.h>
- #include <asm/unwind.h>
- #include <asm/tdx.h>
-+#include <asm/mmu_context.h>
+ static struct testcases mmap_cases[] = {
++	{
++		.later = 0,
++		.expected = 2,
++		.lam = LAM_U48_BITS,
++		.addr = HIGH_ADDR,
++		.test_func = handle_mmap,
++		.msg = "MMAP: [Negtive] First LAM_U48, then High address.\n",
++	},
+ 	{
+ 		.later = 1,
+ 		.expected = 0,
+@@ -746,6 +783,14 @@ static struct testcases mmap_cases[] = {
+ 		.test_func = handle_mmap,
+ 		.msg = "MMAP: First mmap high address, then set LAM_U57.\n",
+ 	},
++	{
++		.later = 1,
++		.expected = 1,
++		.lam = LAM_U48_BITS,
++		.addr = HIGH_ADDR,
++		.test_func = handle_mmap,
++		.msg = "MMAP: [Negtive] First mmap high address, then set LAM_U48.\n",
++	},
+ 	{
+ 		.later = 0,
+ 		.expected = 0,
+@@ -762,6 +807,14 @@ static struct testcases mmap_cases[] = {
+ 		.test_func = handle_mmap,
+ 		.msg = "MMAP: First LAM_U57, then Low address.\n",
+ 	},
++	{
++		.later = 0,
++		.expected = 0,
++		.lam = LAM_U48_BITS,
++		.addr = LOW_ADDR,
++		.test_func = handle_mmap,
++		.msg = "MMAP: First LAM_U48, then low address.\n",
++	},
+ };
  
- #include "process.h"
+ static struct testcases inheritance_cases[] = {
+@@ -771,12 +824,24 @@ static struct testcases inheritance_cases[] = {
+ 		.test_func = handle_inheritance,
+ 		.msg = "FORK: LAM_U57, child process should get LAM mode same as parent\n",
+ 	},
++	{
++		.expected = 0,
++		.lam = LAM_U48_BITS,
++		.test_func = handle_inheritance,
++		.msg = "FORK: LAM_U48, child process should get LAM mode same as parent\n",
++	},
+ 	{
+ 		.expected = 0,
+ 		.lam = LAM_U57_BITS,
+ 		.test_func = handle_execve,
+ 		.msg = "EXECVE: LAM_U57, child process should get disabled LAM mode\n",
+ 	},
++	{
++		.expected = 0,
++		.lam = LAM_U48_BITS,
++		.test_func = handle_execve,
++		.msg = "EXECVE: LAM_U48, child process should get disabled LAM mode\n",
++	},
+ };
  
-@@ -367,6 +368,8 @@ void arch_setup_new_exec(void)
- 		task_clear_spec_ssb_noexec(current);
- 		speculation_ctrl_update(read_thread_flags());
- 	}
-+
-+	mm_reset_untag_mask(current->mm);
- }
- 
- #ifdef CONFIG_X86_IOPL_IOPERM
+ static void cmd_help(void)
 -- 
 2.35.1
 
