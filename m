@@ -2,110 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEADCCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 252E4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234811AbiGLSyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:54:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34108 "EHLO
+        id S234821AbiGLSym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234747AbiGLSxt (ORCPT
+        with ESMTP id S234779AbiGLSxn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:53:49 -0400
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540CBDABBB;
-        Tue, 12 Jul 2022 11:45:38 -0700 (PDT)
-Received: by mail-yb1-f181.google.com with SMTP id 75so14193728ybf.4;
-        Tue, 12 Jul 2022 11:45:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OjvcswXUwB2Pb+ms5uvcJJXESqqNUnsytuAFqZsR5PY=;
-        b=NoqN1d/YxZlfDKChnAnq8d8NApqr7A4OewNwbHGZrtKTZO74v1PMF6Vx2SsY38kkxa
-         TdLR1vPKZmlMpx7lqFP5w1apMw8MKtWo5QTzrIGxfv5hZwEuDaCrKvtgQqPhgp4+MIdf
-         WUFhEQ1gNTHoBWPCjUKBjWvF/mZbd4cElbK3OHSmq6cgXXKVCLWA3wPs/kJt/RcKfAw7
-         i4LEJl4dCLViuKLNDvbZf77MN2xPh5PRUdh02uPkzV/AZpDD1k/tXfbOe8KQnM+iFQCx
-         A3pwxEnQzvZavJRD6NWICOiCpPWODYo7J1PAJQMedcYWwtO5wDDp+N4t7EQcojjtUbO/
-         Y96Q==
-X-Gm-Message-State: AJIora+tuvd0uYf6mmni1LjK0Ku2q/2bCohp6DpmplzaTwrZHIGlyr6q
-        rxJ0Qj1MOxAHOnbwZVTOzZIHTAgCzLlH00v6cSk=
-X-Google-Smtp-Source: AGRyM1tccpyquhG63LJBv3ExX2zg01BoYg2i4799MYW2qAlMgrgSmXwt0vB+DDtaTZhOd/qz2StJWxMWxld3lcwHUEc=
-X-Received: by 2002:a25:a2ca:0:b0:66e:719e:279 with SMTP id
- c10-20020a25a2ca000000b0066e719e0279mr22941849ybn.622.1657651529768; Tue, 12
- Jul 2022 11:45:29 -0700 (PDT)
+        Tue, 12 Jul 2022 14:53:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668DFE7AEB;
+        Tue, 12 Jul 2022 11:45:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1C7AB81B95;
+        Tue, 12 Jul 2022 18:45:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 384CBC341C0;
+        Tue, 12 Jul 2022 18:45:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657651533;
+        bh=e/qiPrngS/1Wu1+7y5cBa/qZBIs933QZx4qBbSZgxJs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1rfQA9eQBtC0uTpuI6kabZtXkCu2ryzoeVnyWN069xVdYOiFv09JbMjfo5sKQz5pf
+         Iopq9i3fGITbzur5o2M/t66hQa0QbV+vFxyhwI/EzusLX5RWHz/PaKWtKfBZi3Tti9
+         g47EPXyZrOKfFX+tpMuPe15J5xIIKHuvdjSes8XI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 104/130] x86/bugs: Report Intel retbleed vulnerability
+Date:   Tue, 12 Jul 2022 20:39:10 +0200
+Message-Id: <20220712183251.272929758@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
+References: <20220712183246.394947160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220629011146.299521-1-xiongxin@kylinos.cn> <20220629011146.299521-2-xiongxin@kylinos.cn>
-In-Reply-To: <20220629011146.299521-2-xiongxin@kylinos.cn>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 12 Jul 2022 20:45:18 +0200
-Message-ID: <CAJZ5v0hhdxnPRpmvB9SSs7X9bQ=zz7pZ-+KOE67WwMvEOwXCRA@mail.gmail.com>
-Subject: Re: [PATCH -next 1/2] PM: suspend: expand the assignment scope of the pm_suspend_target_state
-To:     xiongxin <xiongxin@kylinos.cn>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Riwen Lu <luriwen@kylinos.cn>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 29, 2022 at 5:35 AM xiongxin <xiongxin@kylinos.cn> wrote:
->
-> The pm_suspend_target_state variable can be used as a suspend state
-> identifier and given to the specific device driver as a code judgment;
->
-> Because the suspend_prepare() function is time-consuming for the
-> operation of freezing processes, and this stage is actually in the suspend
-> stage, it is necessary to expand the scope of the pm_suspend_target_state
-> variable to be assigned to the suspend state at enter_state() function;
+From: Peter Zijlstra <peterz@infradead.org>
 
-I don't see why it is necessary, sorry.
+commit 6ad0ad2bf8a67e27d1f9d006a1dabb0e1c360cc3 upstream.
 
-> Another reason is that the specific device driver can locate whether it is
-> in the suspend state based on this variable, so as to determine the
-> validity of its wake-up source.
+Skylake suffers from RSB underflow speculation issues; report this
+vulnerability and it's mitigation (spectre_v2=ibrs).
 
-I think you have a specific use case in mind, so please explain why
-and how this change helps in your specific use case.
+  [jpoimboe: cleanups, eibrs]
 
-So far I don't see a reason for applying this patch.
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/msr-index.h |    1 +
+ arch/x86/kernel/cpu/bugs.c       |   39 +++++++++++++++++++++++++++++++++------
+ arch/x86/kernel/cpu/common.c     |   24 ++++++++++++------------
+ 3 files changed, 46 insertions(+), 18 deletions(-)
 
-> Signed-off-by: xiongxin <xiongxin@kylinos.cn>
-> ---
->  kernel/power/suspend.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-> index 827075944d28..c754b084ec03 100644
-> --- a/kernel/power/suspend.c
-> +++ b/kernel/power/suspend.c
-> @@ -564,6 +564,12 @@ static int enter_state(suspend_state_t state)
->         if (state == PM_SUSPEND_TO_IDLE)
->                 s2idle_begin();
->
-> +       /*
-> +        * Expand the scope of suspend state for suspend operations
-> +        * performed from the /sys/power/state entry.
-> +        */
-> +       pm_suspend_target_state = state;
-> +
->         if (sync_on_suspend_enabled) {
->                 trace_suspend_resume(TPS("sync_filesystems"), 0, true);
->                 ksys_sync_helper();
-> @@ -590,6 +596,7 @@ static int enter_state(suspend_state_t state)
->         pm_pr_dbg("Finishing wakeup.\n");
->         suspend_finish();
->   Unlock:
-> +       pm_suspend_target_state = PM_SUSPEND_ON;
->         mutex_unlock(&system_transition_mutex);
->         return error;
->  }
-> --
-> 2.25.1
->
->
-> No virus found
->                 Checked by Hillstone Network AntiVirus
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -91,6 +91,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -746,12 +746,17 @@ static int __init nospectre_v1_cmdline(c
+ }
+ early_param("nospectre_v1", nospectre_v1_cmdline);
+ 
++static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
++	SPECTRE_V2_NONE;
++
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "RETBleed: " fmt
+ 
+ enum retbleed_mitigation {
+ 	RETBLEED_MITIGATION_NONE,
+ 	RETBLEED_MITIGATION_UNRET,
++	RETBLEED_MITIGATION_IBRS,
++	RETBLEED_MITIGATION_EIBRS,
+ };
+ 
+ enum retbleed_mitigation_cmd {
+@@ -763,6 +768,8 @@ enum retbleed_mitigation_cmd {
+ const char * const retbleed_strings[] = {
+ 	[RETBLEED_MITIGATION_NONE]	= "Vulnerable",
+ 	[RETBLEED_MITIGATION_UNRET]	= "Mitigation: untrained return thunk",
++	[RETBLEED_MITIGATION_IBRS]	= "Mitigation: IBRS",
++	[RETBLEED_MITIGATION_EIBRS]	= "Mitigation: Enhanced IBRS",
+ };
+ 
+ static enum retbleed_mitigation retbleed_mitigation __ro_after_init =
+@@ -805,6 +812,7 @@ early_param("retbleed", retbleed_parse_c
+ 
+ #define RETBLEED_UNTRAIN_MSG "WARNING: BTB untrained return thunk mitigation is only effective on AMD/Hygon!\n"
+ #define RETBLEED_COMPILER_MSG "WARNING: kernel not compiled with RETPOLINE or -mfunction-return capable compiler!\n"
++#define RETBLEED_INTEL_MSG "WARNING: Spectre v2 mitigation leaves CPU vulnerable to RETBleed attacks, data leaks possible!\n"
+ 
+ static void __init retbleed_select_mitigation(void)
+ {
+@@ -821,12 +829,15 @@ static void __init retbleed_select_mitig
+ 
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+-		if (!boot_cpu_has_bug(X86_BUG_RETBLEED))
+-			break;
+-
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
+ 			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
++
++		/*
++		 * The Intel mitigation (IBRS) was already selected in
++		 * spectre_v2_select_mitigation().
++		 */
++
+ 		break;
+ 	}
+ 
+@@ -856,15 +867,31 @@ static void __init retbleed_select_mitig
+ 		break;
+ 	}
+ 
++	/*
++	 * Let IBRS trump all on Intel without affecting the effects of the
++	 * retbleed= cmdline option.
++	 */
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
++		switch (spectre_v2_enabled) {
++		case SPECTRE_V2_IBRS:
++			retbleed_mitigation = RETBLEED_MITIGATION_IBRS;
++			break;
++		case SPECTRE_V2_EIBRS:
++		case SPECTRE_V2_EIBRS_RETPOLINE:
++		case SPECTRE_V2_EIBRS_LFENCE:
++			retbleed_mitigation = RETBLEED_MITIGATION_EIBRS;
++			break;
++		default:
++			pr_err(RETBLEED_INTEL_MSG);
++		}
++	}
++
+ 	pr_info("%s\n", retbleed_strings[retbleed_mitigation]);
+ }
+ 
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "Spectre V2 : " fmt
+ 
+-static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
+-	SPECTRE_V2_NONE;
+-
+ static enum spectre_v2_user_mitigation spectre_v2_user_stibp __ro_after_init =
+ 	SPECTRE_V2_USER_NONE;
+ static enum spectre_v2_user_mitigation spectre_v2_user_ibpb __ro_after_init =
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1124,24 +1124,24 @@ static const struct x86_cpu_id cpu_vuln_
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_G,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_X,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL,	X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	BIT(3) | BIT(4) | BIT(6) |
+-						BIT(7) | BIT(0xB),              MMIO),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++						BIT(7) | BIT(0xB),              MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
+@@ -1251,7 +1251,7 @@ static void __init cpu_set_bug_bits(stru
+ 	    !arch_cap_mmio_immune(ia32_cap))
+ 		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
+ 
+-	if (cpu_matches(cpu_vuln_blacklist, RETBLEED))
++	if ((cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA)))
+ 		setup_force_cpu_bug(X86_BUG_RETBLEED);
+ 
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+
+
