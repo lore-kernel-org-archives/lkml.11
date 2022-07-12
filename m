@@ -2,201 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59ACDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E09C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233273AbiGLMuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:50:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37698 "EHLO
+        id S233279AbiGLMvJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:51:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232118AbiGLMuG (ORCPT
+        with ESMTP id S233134AbiGLMvH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:50:06 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0235BAE61;
-        Tue, 12 Jul 2022 05:50:05 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2B5A61516;
-        Tue, 12 Jul 2022 05:50:05 -0700 (PDT)
-Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.30.157])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 255A63F70D;
-        Tue, 12 Jul 2022 05:50:03 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 13:49:55 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Brown <broonie@kernel.org>, Will Deacon <will@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Aishwarya TCV <Aishwarya.TCV@arm.com>
-Subject: Re: FVP: kernel BUG at arch/arm64/kernel/traps.c:497 - Internal
- error: Oops - BUG: 0
-Message-ID: <Ys1t8win0pVPPuig@FVFF77S0Q05N.cambridge.arm.com>
-References: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
+        Tue, 12 Jul 2022 08:51:07 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C549AE61
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:51:04 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id bf9so13724899lfb.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:51:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dar9xPCP0T8sKNILKIgEn4rxc26k/YVLrGayncNYO94=;
+        b=Ph/bTfm3Cmf9TYNEjTgKgZSFxWd4afIMXyQYaFjDG/kjR09YmvxRd9J/ilL6IFUeV8
+         0LQZ04PGCw/PtZOPeMA1tgqtAv6fJx+pZFkTrdBJ+rpBweZDx7ulW/LIJxVJy3Tb+y2u
+         WqALeL65b6b3TjgGkfpW4zpB4L33umf031d4hOyNEN1Nx/A+Oj/5Gb/Xlwqj2dNtePan
+         DnHsDKuLyCNv+HVE2sF1vVSBEOQ7CCM2jz8Wxw9PtkzEOjLm9pjy9LMhwQ5GinC4+H7k
+         kcbeHvXJOG3z7D0Pm5oBfhHOHrdpvJe4eI1YeBbpiVRbS3VZAK5kXzthvgHwQSn5meFu
+         fEsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dar9xPCP0T8sKNILKIgEn4rxc26k/YVLrGayncNYO94=;
+        b=jOFRoNX5vEpTxpEesFc2+bvUuPPBjpZb+m3wZ2npRA/nLgmjKcXcKzjAWVQYLtdaZa
+         gT3fhZHmO9kjwYdUH3UtIFTKI5wzQSdFrdFdrnFsJ/bi+U3V+rtZTaayYs3Q40iJ2B04
+         b0irzrWv9/WtQaNVx/xELdLMe5u/nVi8H6ocS9yOvzVXh5Q+yy8qaUOETNuwrmjpHmGD
+         kn6V9eWKwOnOZNj/oU27HaO/TJqvS9/bcEQYFO3efA6v6JoIguv+RE2U04mgDpPZVqiU
+         dJwW7O0zN5WmrFM01Xb3DfB5YDp69aHQpU7fiG/ueMNb49sElLJE16Vsz46p7PRWQdjW
+         wSYg==
+X-Gm-Message-State: AJIora8CGb2WRSI8F+X5OSTjyEQNHDGFjA/1TH+B092+hfFuAw2ekGKB
+        HpgV3Eb8ZnIz4P29vz3fyZwvJNCb4T+hTNRRjdfp1g==
+X-Google-Smtp-Source: AGRyM1vU+TK0XWzHEN4FlxEp1aK/EkHICV4PZe4YQ79JeHGfIso1GuEHiWsRJy6lGMbVk179ksnn1WaPet3TYvaXI/g=
+X-Received: by 2002:a05:6512:10c3:b0:47f:a97e:35c with SMTP id
+ k3-20020a05651210c300b0047fa97e035cmr14547822lfg.417.1657630262386; Tue, 12
+ Jul 2022 05:51:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
+References: <000000000000eb2d6c05e35a0d73@google.com> <20220711133808.d86400ce9960febcb0fd537b@linux-foundation.org>
+ <YsyMQ2jzOICVbCda@casper.infradead.org> <CACT4Y+bL3aM-cVeYSLU7az1x2Yj1vH7GaQSq=Z-BGc5Vk1Vi4w@mail.gmail.com>
+ <Ys1r06szkVi3QEai@casper.infradead.org>
+In-Reply-To: <Ys1r06szkVi3QEai@casper.infradead.org>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Tue, 12 Jul 2022 14:50:50 +0200
+Message-ID: <CACT4Y+Z44fS04StzMh+sfUWo-k5sjYf3VGhhK2ppkHP=9RZQEw@mail.gmail.com>
+Subject: Re: [syzbot] memory leak in xas_create
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        syzbot <syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com,
+        "Zach O'Keefe" <zokeefe@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Liam Howlett <liam.howlett@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 03:27:09PM +0530, Naresh Kamboju wrote:
-> FVP boot failed with linux next 20220712.
+On Tue, 12 Jul 2022 at 14:40, Matthew Wilcox <willy@infradead.org> wrote:
+>
+> On Tue, Jul 12, 2022 at 08:54:28AM +0200, Dmitry Vyukov wrote:
+> > On Mon, 11 Jul 2022 at 22:47, Matthew Wilcox <willy@infradead.org> wrote:
+> > >
+> > > On Mon, Jul 11, 2022 at 01:38:08PM -0700, Andrew Morton wrote:
+> > > > On Sat, 09 Jul 2022 00:13:23 -0700 syzbot <syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > > Hello,
+> > > > >
+> > > > > syzbot found the following issue on:
+> > > > >
+> > > > > HEAD commit:    c1084b6c5620 Merge tag 'soc-fixes-5.19-2' of git://git.ker..
+> > > > > git tree:       upstream
+> > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=14967ccc080000
+> > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=916233b7694a38ff
+> > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=a785d07959bc94837d51
+> > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=122ae834080000
+> > > > >
+> > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > > > > Reported-by: syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com
+> > > > >
+> > > > > 2022/07/05 05:22:17 executed programs: 828
+> > > > > 2022/07/05 05:22:23 executed programs: 846
+> > > > > 2022/07/05 05:22:30 executed programs: 866
+> > > > > 2022/07/05 05:22:37 executed programs: 875
+> > > > > BUG: memory leak
+> > > >
+> > > > Thanks.  Presumably due to khugepaged changes.
+> > >
+> > > Huh, I was expecting it to be something I'd messed up.  I've been
+> > > looking at it today, but no luck figuring it out so far.
+> > >
+> > > > Can we expect a bisection search?
+> > >
+> > > We only have a syz reproducer so far, and if I understand correctly,
+> > > it's probably because this is a flaky test (because it's trying to
+> > > find something that's a race condition).
+> > >
+> > > I expect a bisection search to go badly wrong if this is true.
+> >
+> > Is it possible that parts of xas are not freed on the error paths?
+> > I don't immediately see where anything is freed on these error paths:
+> >
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/xarray.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n681
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/xarray.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n721
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1675
+>
+> There's nothing to free; if a node is allocated, then it's stored in
+> the tree where it can later be found and reused.
 
-FWIW, I just grabbed your Image from:
+What I was thinking of is:
 
- https://builds.tuxbuild.com/2BnQMpJj3kDTJXoCwd2pY5gW9CN/
+The leaked memory is allocated with:
+xas_create_range(&xas);
+here:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1670
 
-...  and it boots perfectly fine under:
+So I assumed the nodes stored in the xas object, which is local to the
+collapse_file() function.
 
-* An FVP Base RevC model using the latest boot-wrapper
-* a QEMU KVM VM on a ThunderX2 host.
-* a QEMU TCG VM on a ThunderX2 host (with -cpu max).
+So if we do "goto out" here:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1676
 
-What firmware are you using in your FVP? How are you loading the kernel?
+There does not seem to be anything that frees anything stored in the xas:
 
-> Reported-by:  Linux Kernel Functional Testing <lkft@linaro.org>
-> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-> 
-> Boot log:
-> Starting kernel ...
-> 
-> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd0f0]
-> [    0.000000] Linux version 5.19.0-rc6-next-20220711
-> (tuxmake@tuxmake) (aarch64-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU
-> ld (GNU Binutils for Debian) 2.38) #1 SMP PREEMPT @1657539508
-> [    0.000000] Machine model: FVP Base RevC
-> [    0.000000] earlycon: pl11 at MMIO 0x000000001c090000 (options '')
-> [    0.000000] printk: bootconsole [pl11] enabled
-> [    0.000000] efi: UEFI not found.
-> [    0.000000] Reserved memory: created DMA memory pool at
-> 0x0000000018000000, size 8 MiB
-> [    0.000000] OF: reserved mem: initialized node vram@18000000,
-> compatible id shared-dma-pool
-> [    0.000000] NUMA: No NUMA configuration found
-> [    0.000000] NUMA: Faking a node at [mem
-> 0x0000000080000000-0x00000008ffffffff]
-> [    0.000000] NUMA: NODE_DATA [mem 0x8ff7f6b40-0x8ff7f8fff]
-> [    0.000000] Zone ranges:
-> [    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
-> [    0.000000]   DMA32    empty
-> [    0.000000]   Normal   [mem 0x0000000100000000-0x00000008ffffffff]
-> [    0.000000] Movable zone start for each node
-> [    0.000000] Early memory node ranges
-> [    0.000000]   node   0: [mem 0x0000000080000000-0x00000000feffffff]
-> [    0.000000]   node   0: [mem 0x0000000880000000-0x00000008ffffffff]
-> [    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x00000008ffffffff]
-> [    0.000000] On node 0, zone Normal: 4096 pages in unavailable ranges
-> [    0.000000] cma: Reserved 32 MiB at 0x00000000fd000000
-> [    0.000000] psci: probing for conduit method from DT.
-> [    0.000000] psci: PSCIv1.1 detected in firmware.
-> [    0.000000] psci: Using standard PSCI v0.2 function IDs
-> [    0.000000] psci: MIGRATE_INFO_TYPE not supported.
-> [    0.000000] psci: SMC Calling Convention v1.2
-> [    0.000000] percpu: Embedded 30 pages/cpu s82856 r8192 d31832 u122880
-> [    0.000000] pcpu-alloc: s82856 r8192 d31832 u122880 alloc=30*4096
-> [    0.000000] pcpu-alloc: [0] 0 [0] 1 [0] 2 [0] 3 [0] 4 [0] 5 [0] 6 [0] 7
-> [    0.000000] Detected PIPT I-cache on CPU0
-> [    0.000000] CPU features: detected: Branch Target Identification
-> [    0.000000] CPU features: detected: Address authentication (IMP DEF
-> algorithm)
-> [    0.000000] CPU features: detected: GIC system register CPU interface
-> [    0.000000] CPU features: detected: Virtualization Host Extensions
-> [    0.000000] CPU features: detected: Hardware dirty bit management
-> [    0.000000] CPU features: detected: Spectre-v4
-> [    0.000000] alternatives: patching kernel code
-> [    0.000000] Fallback order for Node 0: 0
-> [    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 1028096
-> [    0.000000] Policy zone: Normal
-> [    0.000000] Kernel command line: console=ttyAMA0
-> earlycon=pl011,0x1c090000 root=/dev/vda rw ip=dhcp debug user_debug=31
-> loglevel=9
-> [    0.000000] Unknown kernel command line parameters
-> \"user_debug=31\", will be passed to user space.
-> [    0.000000] Dentry cache hash table entries: 524288 (order: 10,
-> 4194304 bytes, linear)
-> [    0.000000] Inode-cache hash table entries: 262144 (order: 9,
-> 2097152 bytes, linear)
-> [    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
-> [    0.000000] software IO TLB: mapped [mem
-> 0x00000000f9000000-0x00000000fd000000] (64MB)
-> [    0.000000] Memory: 3947088K/4177920K available (20288K kernel
-> code, 4902K rwdata, 11308K rodata, 11136K init, 955K bss, 198064K
-> reserved, 32768K cma-reserved)
-> [    0.000000] SLUB: HWalign=128, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
-> [    0.000000] ftrace: allocating 65660 entries in 257 pages
-> [    0.000000] ------------[ ftrace bug ]------------
-> [    0.000000] ftrace failed to modify
-> [    0.000000] [<ffff800009f80030>] udpv6_init+0x8/0x74
-> [    0.000000]  actual:   00:00:00:00
-> [    0.000000] Initializing ftrace call sites
-> [    0.000000] ftrace record flags: 0
-> [    0.000000]  (0)
-> [    0.000000]  expected tramp: ffff80000802f3a8
-> [    0.000000] ------------[ cut here ]------------
-
-This looks bad. IIUC that "actual" line tells us that the instruction we wanted
-to modify consisted of zeroes, and was not a NOP as it should have been.
-
-So perhaps the kernel has not been fully loaded into memory, or has been
-corrupted somehow after loading. That could explain the subsequent failure, too.
-
-[...]
-
-> [    0.500613] ------------[ cut here ]------------
-> [    0.500709] kernel BUG at arch/arm64/kernel/traps.c:497!
-> [    0.500777] Internal error: Oops - BUG: 0 [#1] PREEMPT SMP
-> [    0.500860] Modules linked in:
-> [    0.500947] CPU: 0 PID: 1 Comm: swapper/0 Tainted: G        W
->    5.19.0-rc6-next-20220711 #1
-> [    0.501034] Hardware name: FVP Base RevC (DT)
-> [    0.501109] pstate: 00400009 (nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> [    0.501209] pc : do_undefinstr+0x284/0x2b4
-> [    0.501381] lr : do_undefinstr+0x150/0x2b4
-> [    0.501509] sp : ffff80000affbbc0
-> [    0.501509] x29: ffff80000affbbc0 x28: ffff000800330000 x27: ffff800009f00444
-> [    0.501759] x26: ffff800009fe6038 x25: 0000000000000001 x24: ffff80000a115968
-> [    0.501923] x23: 0000000040400009 x22: ffff800009f80de0 x21: ffff80000affbd90
-> [    0.502109] x20: 0000000001000000 x19: ffff80000affbc40 x18: ffffffffffffffff
-> [    0.502309] x17: 000000000000003f x16: 000000000000000a x15: ffff0008002b1a1c
-> [    0.502422] x14: ffffffffffffffff x13: ffff0008002b1268 x12: 20726f20746e6573
-> [    0.502683] x11: ffff80000aa12950 x10: 0000000000000073 x9 : ffff8000093bcd6c
-> [    0.502856] x8 : 000000003d4d554e x7 : ffff80000affbce0 x6 : 0000000000000001
-> [    0.503030] x5 : ffff80000a9ef000 x4 : ffff80000a9ef2e0 x3 : 0000000000000000
-> [    0.503234] x2 : ffff000800330000 x1 : ffff000800330000 x0 : 0000000040400009
-> [    0.503409] Call trace:
-> [    0.503480]  do_undefinstr+0x284/0x2b4
-> [    0.503562]  el1_undef+0x30/0x60
-> [    0.503709]  el1h_64_sync_handler+0x84/0xd0
-> [    0.503811]  el1h_64_sync+0x64/0x68
-> [    0.503909]  net_sysctl_init+0x8/0x7c
-> [    0.504053]  do_one_initcall+0x50/0x2b0
-> [    0.504158]  kernel_init_freeable+0x24c/0x2d4
-> [    0.504245]  kernel_init+0x30/0x140
-> [    0.504381]  ret_from_fork+0x10/0x20
-> [    0.504509] Code: 17ffff98 a9425bf5 17ffffbb a9025bf5 (d4210000)
-> [    0.504627] ---[ end trace 0000000000000000 ]---
-
-We should really improve this WARN to something that tells us about the actual
-failing instruction.
-
-Thanks.
-Mark.
-
-> Build:
-> https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20220711/testrun/10743317/suite/log-parser-test/tests/
-> 
-> https://builds.tuxbuild.com/2BnQMpJj3kDTJXoCwd2pY5gW9CN/
-> 
-> Best regards
-> Naresh Kamboju
-> 
-> 
-> --
-> Linaro LKFT
-> https://lkft.linaro.org
+out:
+    VM_BUG_ON(!list_empty(&pagelist));
+    if (!IS_ERR_OR_NULL(*hpage))
+        mem_cgroup_uncharge(page_folio(*hpage));
+    /* TODO: tracepoints */
+}
