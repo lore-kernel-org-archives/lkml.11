@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFCAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D19B1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234675AbiGLSwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
+        id S234628AbiGLSwU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234611AbiGLSvo (ORCPT
+        with ESMTP id S234368AbiGLSvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:51:44 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E026E5860;
-        Tue, 12 Jul 2022 11:44:49 -0700 (PDT)
+        Tue, 12 Jul 2022 14:51:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDD5E5872;
+        Tue, 12 Jul 2022 11:44:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9CA13CE1D62;
-        Tue, 12 Jul 2022 18:44:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9452EC3411E;
-        Tue, 12 Jul 2022 18:44:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE34760C8E;
+        Tue, 12 Jul 2022 18:44:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFE70C3411C;
+        Tue, 12 Jul 2022 18:44:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651463;
-        bh=GdgQnVw35ejBBdRQk4JC4U3Dhgfkk09O80TBVdJvkNY=;
+        s=korg; t=1657651489;
+        bh=ufygdNxYvRwqap/gxVvpqhpvRh4OFs5NCTipEhRPTSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O98wtt6ZWVzXzQHja/RZQVyTXK/p1l3OUIX/sRbf3hvsIn9bAkvROChHLebFGfsvd
-         WO0HB5MbTeaixBC8O1idUTMTMyuLTmJ+StyuZXdqJikeg1IEsWO0MMtnguW+CG4f91
-         Il9RejOTbocJgBnqP3OwPQ1byfGnwxergiprpcuo=
+        b=rStUrVlBc3ijqqF9VovYcCCkxlva4lemUKoiG2NqlvWIArQmd4JmKp1738HhPHdVJ
+         onNuFbBtB72+Iqe29kU1hTKwQtUYcUZ3Dq3kq9Pe8oiJhoQXhkW74poeIZLw5hHIu2
+         KzIoagKChIBF8U7qWyYCVKqrsCJ6kZbIAUkP1gKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 084/130] x86: Undo return-thunk damage
-Date:   Tue, 12 Jul 2022 20:38:50 +0200
-Message-Id: <20220712183250.334793713@linuxfoundation.org>
+Subject: [PATCH 5.10 092/130] x86/sev: Avoid using __x86_return_thunk
+Date:   Tue, 12 Jul 2022 20:38:58 +0200
+Message-Id: <20220712183250.703955200@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -52,195 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit 15e67227c49a57837108acfe1c80570e1bd9f962 upstream.
+commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
 
-Introduce X86_FEATURE_RETHUNK for those afflicted with needing this.
+Specifically, it's because __enc_copy() encrypts the kernel after
+being relocated outside the kernel in sme_encrypt_execute(), and the
+RET macro's jmp offset isn't amended prior to execution.
 
-  [ bp: Do only INT3 padding - simpler. ]
-
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: CONFIG_STACK_VALIDATION vs CONFIG_OBJTOOL]
-[cascardo: no IBT support]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/alternative.h       |    1 
- arch/x86/include/asm/cpufeatures.h       |    1 
- arch/x86/include/asm/disabled-features.h |    3 +
- arch/x86/kernel/alternative.c            |   60 +++++++++++++++++++++++++++++++
- arch/x86/kernel/module.c                 |    8 +++-
- arch/x86/kernel/vmlinux.lds.S            |    7 +++
- 6 files changed, 78 insertions(+), 2 deletions(-)
+ arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/alternative.h
-+++ b/arch/x86/include/asm/alternative.h
-@@ -76,6 +76,7 @@ extern int alternatives_patched;
- extern void alternative_instructions(void);
- extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
- extern void apply_retpolines(s32 *start, s32 *end);
-+extern void apply_returns(s32 *start, s32 *end);
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	movq	%rbp, %rsp		/* Restore original stack pointer */
+ 	pop	%rbp
  
- struct module;
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ SYM_FUNC_END(sme_encrypt_execute)
  
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -296,6 +296,7 @@
- /* FREE!				(11*32+11) */
- #define X86_FEATURE_RETPOLINE		(11*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
- #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
-+#define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
+ SYM_FUNC_START(__enc_copy)
+@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r12
+ 	pop	%r15
  
- /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -60,7 +60,8 @@
- # define DISABLE_RETPOLINE	0
- #else
- # define DISABLE_RETPOLINE	((1 << (X86_FEATURE_RETPOLINE & 31)) | \
--				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)))
-+				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)) | \
-+				 (1 << (X86_FEATURE_RETHUNK & 31)))
- #endif
- 
- /* Force disable because it's broken beyond repair */
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -270,6 +270,7 @@ static void __init_or_module add_nops(vo
- }
- 
- extern s32 __retpoline_sites[], __retpoline_sites_end[];
-+extern s32 __return_sites[], __return_sites_end[];
- extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
- extern s32 __smp_locks[], __smp_locks_end[];
- void text_poke_early(void *addr, const void *opcode, size_t len);
-@@ -661,9 +662,67 @@ void __init_or_module noinline apply_ret
- 	}
- }
- 
-+/*
-+ * Rewrite the compiler generated return thunk tail-calls.
-+ *
-+ * For example, convert:
-+ *
-+ *   JMP __x86_return_thunk
-+ *
-+ * into:
-+ *
-+ *   RET
-+ */
-+static int patch_return(void *addr, struct insn *insn, u8 *bytes)
-+{
-+	int i = 0;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_RETHUNK))
-+		return -1;
-+
-+	bytes[i++] = RET_INSN_OPCODE;
-+
-+	for (; i < insn->length;)
-+		bytes[i++] = INT3_INSN_OPCODE;
-+
-+	return i;
-+}
-+
-+void __init_or_module noinline apply_returns(s32 *start, s32 *end)
-+{
-+	s32 *s;
-+
-+	for (s = start; s < end; s++) {
-+		void *addr = (void *)s + *s;
-+		struct insn insn;
-+		int len, ret;
-+		u8 bytes[16];
-+		u8 op1;
-+
-+		ret = insn_decode_kernel(&insn, addr);
-+		if (WARN_ON_ONCE(ret < 0))
-+			continue;
-+
-+		op1 = insn.opcode.bytes[0];
-+		if (WARN_ON_ONCE(op1 != JMP32_INSN_OPCODE))
-+			continue;
-+
-+		DPRINTK("return thunk at: %pS (%px) len: %d to: %pS",
-+			addr, addr, insn.length,
-+			addr + insn.length + insn.immediate.value);
-+
-+		len = patch_return(addr, &insn, bytes);
-+		if (len == insn.length) {
-+			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
-+			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
-+			text_poke_early(addr, bytes, len);
-+		}
-+	}
-+}
- #else /* !RETPOLINES || !CONFIG_STACK_VALIDATION */
- 
- void __init_or_module noinline apply_retpolines(s32 *start, s32 *end) { }
-+void __init_or_module noinline apply_returns(s32 *start, s32 *end) { }
- 
- #endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
- 
-@@ -956,6 +1015,7 @@ void __init alternative_instructions(voi
- 	 * those can rewrite the retpoline thunks.
- 	 */
- 	apply_retpolines(__retpoline_sites, __retpoline_sites_end);
-+	apply_returns(__return_sites, __return_sites_end);
- 
- 	apply_alternatives(__alt_instructions, __alt_instructions_end);
- 
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -252,7 +252,7 @@ int module_finalize(const Elf_Ehdr *hdr,
- {
- 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
- 		*para = NULL, *orc = NULL, *orc_ip = NULL,
--		*retpolines = NULL;
-+		*retpolines = NULL, *returns = NULL;
- 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
- 
- 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
-@@ -270,12 +270,18 @@ int module_finalize(const Elf_Ehdr *hdr,
- 			orc_ip = s;
- 		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
- 			retpolines = s;
-+		if (!strcmp(".return_sites", secstrings + s->sh_name))
-+			returns = s;
- 	}
- 
- 	if (retpolines) {
- 		void *rseg = (void *)retpolines->sh_addr;
- 		apply_retpolines(rseg, rseg + retpolines->sh_size);
- 	}
-+	if (returns) {
-+		void *rseg = (void *)returns->sh_addr;
-+		apply_returns(rseg, rseg + returns->sh_size);
-+	}
- 	if (alt) {
- 		/* patch .altinstructions */
- 		void *aseg = (void *)alt->sh_addr;
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -284,6 +284,13 @@ SECTIONS
- 		*(.retpoline_sites)
- 		__retpoline_sites_end = .;
- 	}
-+
-+	. = ALIGN(8);
-+	.return_sites : AT(ADDR(.return_sites) - LOAD_OFFSET) {
-+		__return_sites = .;
-+		*(.return_sites)
-+		__return_sites_end = .;
-+	}
- #endif
- 
- 	/*
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ .L__enc_copy_end:
+ SYM_FUNC_END(__enc_copy)
 
 
