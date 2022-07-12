@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37843C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E92EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234726AbiGLS4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:56:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
+        id S234756AbiGLS5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234521AbiGLS4V (ORCPT
+        with ESMTP id S234748AbiGLS41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:56:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD94EB03B;
-        Tue, 12 Jul 2022 11:46:43 -0700 (PDT)
+        Tue, 12 Jul 2022 14:56:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FBFDC1AC;
+        Tue, 12 Jul 2022 11:46:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E748560A5A;
-        Tue, 12 Jul 2022 18:46:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D70F4C3411C;
-        Tue, 12 Jul 2022 18:46:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDC8B60765;
+        Tue, 12 Jul 2022 18:46:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2BDFC3411C;
+        Tue, 12 Jul 2022 18:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651602;
-        bh=MwuU+xseDp9KXWFIrzDY8KulQryfkv/g26Hg1/eETvA=;
+        s=korg; t=1657651605;
+        bh=6ZJiZorj7WVCzB1nyaRhoBZ6f67OnAAunAmOUTsjtKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tzctrIWzScPD9gGHbJWX0AlVLH+GYPGBRDQbsf22kJoobP1T7XYpLWKpm/lThR9fT
-         D1t3aLs5hDkLeEUMQuPOc2hp4K1n55pXpafonV1cT6CY/Q4hz5KONGcMY0O6FEvNTX
-         DYA1gSkLJ27jFT0+12t4CRlRQmceERt5ryjHMp5w=
+        b=GfyGhNJz8ojYyfCuvfHLshudpLk9OdTyrldGrh+NkOOUK2LJ8DtmLBKSG4SheOccH
+         9i8LCtMUpfWcvI041o6pJo8P+1a6QsMtBu4dN7PhR1jMDrom7nE8yFusH0kXRTDbCe
+         lZLFm0iNw7o1bAu227VQoHA6D+TY9Q3rpTsw3QI8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        stable@vger.kernel.org, Edward Tran <edward.tran@oracle.com>,
+        Awais Tanveer <awais.tanveer@oracle.com>,
+        Ankur Arora <ankur.a.arora@oracle.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
         Borislav Petkov <bp@suse.de>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 127/130] x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
-Date:   Tue, 12 Jul 2022 20:39:33 +0200
-Message-Id: <20220712183252.325226631@linuxfoundation.org>
+Subject: [PATCH 5.10 128/130] x86/kexec: Disable RET on kexec
+Date:   Tue, 12 Jul 2022 20:39:34 +0200
+Message-Id: <20220712183252.363784059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,48 +53,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 
-commit 2259da159fbe5dba8ac00b560cf00b6a6537fa18 upstream.
+commit 697977d8415d61f3acbc4ee6d564c9dcf0309507 upstream.
 
-There are some VM configurations which have Skylake model but do not
-support IBPB. In those cases, when using retbleed=ibpb, userspace is going
-to be killed and kernel is going to panic.
+All the invocations unroll to __x86_return_thunk and this file
+must be PIC independent.
 
-If the CPU does not support IBPB, warn and proceed with the auto option. Also,
-do not fallback to IBPB on AMD/Hygon systems if it is not supported.
+This fixes kexec on 64-bit AMD boxes.
 
-Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+  [ bp: Fix 32-bit build. ]
+
+Reported-by: Edward Tran <edward.tran@oracle.com>
+Reported-by: Awais Tanveer <awais.tanveer@oracle.com>
+Suggested-by: Ankur Arora <ankur.a.arora@oracle.com>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/kernel/relocate_kernel_32.S |   25 +++++++++++++++++++------
+ arch/x86/kernel/relocate_kernel_64.S |   23 +++++++++++++++++------
+ 2 files changed, 36 insertions(+), 12 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -821,7 +821,10 @@ static void __init retbleed_select_mitig
- 		break;
+--- a/arch/x86/kernel/relocate_kernel_32.S
++++ b/arch/x86/kernel/relocate_kernel_32.S
+@@ -7,10 +7,12 @@
+ #include <linux/linkage.h>
+ #include <asm/page_types.h>
+ #include <asm/kexec.h>
++#include <asm/nospec-branch.h>
+ #include <asm/processor-flags.h>
  
- 	case RETBLEED_CMD_IBPB:
--		if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
-+		if (!boot_cpu_has(X86_FEATURE_IBPB)) {
-+			pr_err("WARNING: CPU does not support IBPB.\n");
-+			goto do_cmd_auto;
-+		} else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
- 			retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
- 		} else {
- 			pr_err("WARNING: kernel not compiled with CPU_IBPB_ENTRY.\n");
-@@ -836,7 +839,7 @@ do_cmd_auto:
- 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
- 			if (IS_ENABLED(CONFIG_CPU_UNRET_ENTRY))
- 				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
--			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY))
-+			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY) && boot_cpu_has(X86_FEATURE_IBPB))
- 				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
- 		}
+ /*
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
+  */
  
+ #define PTR(x) (x << 2)
+@@ -91,7 +93,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	movl    %edi, %eax
+ 	addl    $(identity_mapped - relocate_kernel), %eax
+ 	pushl   %eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -159,12 +163,15 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl    %edx, %edx
+ 	xorl    %esi, %esi
+ 	xorl    %ebp, %ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ 1:
+ 	popl	%edx
+ 	movl	CP_PA_SWAP_PAGE(%edi), %esp
+ 	addl	$PAGE_SIZE, %esp
+ 2:
++	ANNOTATE_RETPOLINE_SAFE
+ 	call	*%edx
+ 
+ 	/* get the re-entry point of the peer system */
+@@ -190,7 +197,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	movl	%edi, %eax
+ 	addl	$(virtual_mapped - relocate_kernel), %eax
+ 	pushl	%eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -208,7 +217,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popl	%edi
+ 	popl	%esi
+ 	popl	%ebx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
+ 
+ 	/* Do the copies */
+@@ -271,7 +282,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	popl	%edi
+ 	popl	%ebx
+ 	popl	%ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
+ 
+ 	.globl kexec_control_code_size
+--- a/arch/x86/kernel/relocate_kernel_64.S
++++ b/arch/x86/kernel/relocate_kernel_64.S
+@@ -13,7 +13,8 @@
+ #include <asm/unwind_hints.h>
+ 
+ /*
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
+  */
+ 
+ #define PTR(x) (x << 3)
+@@ -104,7 +105,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	/* jump to identity mapped page */
+ 	addq	$(identity_mapped - relocate_kernel), %r8
+ 	pushq	%r8
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -191,7 +194,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl	%r14d, %r14d
+ 	xorl	%r15d, %r15d
+ 
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ 
+ 1:
+ 	popq	%rdx
+@@ -210,7 +215,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	call	swap_pages
+ 	movq	$virtual_mapped, %rax
+ 	pushq	%rax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
+ 
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -231,7 +238,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popq	%r12
+ 	popq	%rbp
+ 	popq	%rbx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
+ 
+ 	/* Do the copies */
+@@ -288,7 +297,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	lea	PAGE_SIZE(%rax), %rsi
+ 	jmp	0b
+ 3:
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
+ 
+ 	.globl kexec_control_code_size
 
 
