@@ -2,80 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F17C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:31:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 320FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:32:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230419AbiGLObg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:31:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S232474AbiGLOci (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:32:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231684AbiGLObe (ORCPT
+        with ESMTP id S231684AbiGLOcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:31:34 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB1FAE3A5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:31:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657636292; x=1689172292;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8VaZtscI5pp0hY+DtvP9CdNw3OvobWQDH5Z194rvsCM=;
-  b=VMaravAEmoSyncAQuh0+rQqmKjAMpz7UN1sPNLPY2uvhb7UcBgtf54a2
-   /aPR1l/EBCxWfnpgEYsn5pPK9mTStIQ4HomKXGFVmxg8fDwmSDP3DZIwi
-   AFUVMta2lkv1VCqVYS8uH3XIYxiwdIwgisHgH4hBNSJFTT4SGzYNUgre7
-   W4F4IbaI3mpNdS0ypITDJGznKfl5y+9sSV/ecZqCAc4bafVe7Pe1EQmv6
-   qrVWQB93zapfoUXIbwv+VQ7ZU38pV7p75frFb0DJ30ctt6E/mIQVVuR0k
-   TQDj0mjfL0qpCKuWQuYCxFoN48CniXoc1cP1IzfpA8/uGA5hAAtwCj+6d
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="371258235"
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="371258235"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 07:30:55 -0700
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="662970836"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 07:30:51 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oBGuW-001BXJ-2L;
-        Tue, 12 Jul 2022 17:30:48 +0300
-Date:   Tue, 12 Jul 2022 17:30:48 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     Yury Norov <yury.norov@gmail.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] lib/bitmap: fix off-by-one in bitmap_to_arr64()
-Message-ID: <Ys2FmN3hDKPAciKi@smile.fi.intel.com>
-References: <20220711180930.28271-1-alexandr.lobakin@intel.com>
+        Tue, 12 Jul 2022 10:32:36 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A56F2240AC;
+        Tue, 12 Jul 2022 07:32:35 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CDBugK007915;
+        Tue, 12 Jul 2022 14:32:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=0DhHvsxCxRfs8ONe0EUj23JBu5ERuQgHbLPOK7uZoz4=;
+ b=Kcql+c5vfVTWypeyQaPJEwNBwFhWg8xSeKuDQiQ0zOyv5VCLVhj2WPmnO9WjMFmsAi3E
+ vpZceXF81G0cm9k3pQy3KNPYRR3cpygpycF7MEOXeWg1OpS7g0B7SDHNBX6UkJmun0nI
+ Wv3jfak+WMfl9bCjASAoaBHZszV8/PpG8N6hC63xk/Z3RFPVrhw70+jHQqTIiQGJRAxy
+ z6Te9FR5jLXp/uWOdlg0nkVgShC7eLRJ93lIuEDvBK89Cr7iEsJSlttG1SAMrQ6zwrzJ
+ NbG7qvL2z1T3GcuBxcM+SEZf6wgyI9TUErFRKZlnH1wgeJcbtZgz03iZDeIJI2f1+xLf kA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h98jvm1fn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 14:32:08 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26CEUH2B029687;
+        Tue, 12 Jul 2022 14:32:08 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h98jvm1e2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 14:32:08 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CEKX4u024863;
+        Tue, 12 Jul 2022 14:32:06 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06ams.nl.ibm.com with ESMTP id 3h70xhvaut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 14:32:06 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CEW3tK16253304
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jul 2022 14:32:03 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B5417A405F;
+        Tue, 12 Jul 2022 14:32:03 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3C07FA405B;
+        Tue, 12 Jul 2022 14:32:03 +0000 (GMT)
+Received: from pomme.tlslab.ibm.com (unknown [9.101.4.33])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Jul 2022 14:32:03 +0000 (GMT)
+From:   Laurent Dufour <ldufour@linux.ibm.com>
+To:     mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
+        wim@linux-watchdog.org, linux@roeck-us.net, nathanl@linux.ibm.com
+Cc:     haren@linux.vnet.ibm.com, hch@infradead.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-watchdog@vger.kernel.org
+Subject: [PATCH v4 1/4] powerpc/mobility: wait for memory transfer to complete
+Date:   Tue, 12 Jul 2022 16:31:59 +0200
+Message-Id: <20220712143202.23144-2-ldufour@linux.ibm.com>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712143202.23144-1-ldufour@linux.ibm.com>
+References: <20220712143202.23144-1-ldufour@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711180930.28271-1-alexandr.lobakin@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tfBTM2f9QAUpjECIqqJp_2ByD9f3wySB
+X-Proofpoint-ORIG-GUID: a9YD_9VNreQoh8r922KXmEml-utvB6L6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 lowpriorityscore=0 mlxlogscore=999
+ impostorscore=0 clxscore=1015 spamscore=0 bulkscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207120055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 08:09:28PM +0200, Alexander Lobakin wrote:
-> Fix tail clearing in bitmap_to_arr64() for 32-bit BEs and expand
-> the tests to cover the bug being fixed.
+In pseries_migration_partition(), loop until the memory transfer is
+complete. This way the calling drmgr process will not exit earlier,
+allowing callbacks to be run only once the migration is fully completed.
 
-Thanks,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+If reading the VASI state is done after the hypervisor has completed the
+migration, the HCALL is returning H_PARAMETER. We can safely assume that
+the memory transfer is achieved if this happens.
 
-> Alexander Lobakin (2):
->   lib/bitmap: fix off-by-one in bitmap_to_arr64()
->   lib/test_bitmap: test the tail after bitmap_to_arr64()
-> 
->  lib/bitmap.c      | 2 +-
->  lib/test_bitmap.c | 6 ++++++
->  2 files changed, 7 insertions(+), 1 deletion(-)
+This will also allow to manage the NMI watchdog state in the next commits.
 
+Reviewed-by: Nathan Lynch <nathanl@linux.ibm.com>
+Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+---
+ arch/powerpc/platforms/pseries/mobility.c | 48 ++++++++++++++++++++++-
+ 1 file changed, 46 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/platforms/pseries/mobility.c
+index 78f3f74c7056..6297467072e6 100644
+--- a/arch/powerpc/platforms/pseries/mobility.c
++++ b/arch/powerpc/platforms/pseries/mobility.c
+@@ -427,6 +427,43 @@ static int wait_for_vasi_session_suspending(u64 handle)
+ 	return ret;
+ }
+ 
++static void wait_for_vasi_session_completed(u64 handle)
++{
++	unsigned long state = 0;
++	int ret;
++
++	pr_info("waiting for memory transfer to complete...\n");
++
++	/*
++	 * Wait for transition from H_VASI_RESUMED to H_VASI_COMPLETED.
++	 */
++	while (true) {
++		ret = poll_vasi_state(handle, &state);
++
++		/*
++		 * If the memory transfer is already complete and the migration
++		 * has been cleaned up by the hypervisor, H_PARAMETER is return,
++		 * which is translate in EINVAL by poll_vasi_state().
++		 */
++		if (ret == -EINVAL || (!ret && state == H_VASI_COMPLETED)) {
++			pr_info("memory transfer completed.\n");
++			break;
++		}
++
++		if (ret) {
++			pr_err("H_VASI_STATE return error (%d)\n", ret);
++			break;
++		}
++
++		if (state != H_VASI_RESUMED) {
++			pr_err("unexpected H_VASI_STATE result %lu\n", state);
++			break;
++		}
++
++		msleep(500);
++	}
++}
++
+ static void prod_single(unsigned int target_cpu)
+ {
+ 	long hvrc;
+@@ -673,9 +710,16 @@ static int pseries_migrate_partition(u64 handle)
+ 	vas_migration_handler(VAS_SUSPEND);
+ 
+ 	ret = pseries_suspend(handle);
+-	if (ret == 0)
++	if (ret == 0) {
+ 		post_mobility_fixup();
+-	else
++		/*
++		 * Wait until the memory transfer is complete, so that the user
++		 * space process returns from the syscall after the transfer is
++		 * complete. This allows the user hooks to be executed at the
++		 * right time.
++		 */
++		wait_for_vasi_session_completed(handle);
++	} else
+ 		pseries_cancel_migration(handle, ret);
+ 
+ 	vas_migration_handler(VAS_RESUME);
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.37.0
 
