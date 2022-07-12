@@ -2,96 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACDE8CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C72B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232342AbiGLI2K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58846 "EHLO
+        id S232377AbiGLI3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbiGLI2H (ORCPT
+        with ESMTP id S231308AbiGLI3A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:28:07 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F4D974B4;
-        Tue, 12 Jul 2022 01:28:05 -0700 (PDT)
-Received: from mail-yw1-f170.google.com ([209.85.128.170]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MEFnP-1oIZmQ3fEr-00AE1Q; Tue, 12 Jul 2022 10:28:04 +0200
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-31d85f82f0bso37513587b3.7;
-        Tue, 12 Jul 2022 01:28:03 -0700 (PDT)
-X-Gm-Message-State: AJIora9eodH2nmyg+yyjo3Z+gkYDPi4P3wVkR3YF+A68HYlLIUmA0zCq
-        jC3id/5XNgGFI7Tn7JFC41FkyFV209Dmiw1F3cs=
-X-Google-Smtp-Source: AGRyM1u9HrvdVLUYfcTjxl6JYK42QXCE/vx+bUc1E+DlIYc4j8YKWLUVVYfD/FHC1DMwxhEvHUxz2HArNEw2IL5mAk0=
-X-Received: by 2002:a81:d93:0:b0:31c:d32d:4d76 with SMTP id
- 141-20020a810d93000000b0031cd32d4d76mr25884738ywn.135.1657614482595; Tue, 12
- Jul 2022 01:28:02 -0700 (PDT)
+        Tue, 12 Jul 2022 04:29:00 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A83140E6;
+        Tue, 12 Jul 2022 01:28:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657614539; x=1689150539;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=+XeOqU0GsgbobhhFBODuKDEdesvFbYh9RlThqOP3A6o=;
+  b=KRhvto4DJINPx1F3yxgQTss1hydhsL0UTj6hxq+DFZ1wPqwADbJVa8wV
+   sOVcCdjN3uFmdbFa+LwAahwmwSZy6eAIsqHWHvJmNGRCezLAkjNdebDO2
+   5b6+UztS2n1cGjtNJvTrfIsi/8T1HJZH1l9Fv8nrxNBvhaUsfA6eyVq3e
+   oYvRE895NXBSkoy2jY7EDqBj+NUa2o1VtVZ/2D2QnJ8RF5TplCB1tgkGP
+   qwmiba36jyssog1PJJ61IuM9e6Cihn//qZIg6e06P5S0d8zU1SwyxLHKs
+   sZehcrltqmjhFvf0d8QQyIeepv30dKQsRP/6We7X/+OtlQOj8LE558C77
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="267912349"
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="267912349"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 01:28:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="737401342"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 12 Jul 2022 01:28:52 -0700
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 12 Jul 2022 11:28:51 +0300
+Date:   Tue, 12 Jul 2022 11:28:51 +0300
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Prashant Malani <pmalani@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        chrome-platform@lists.linux.dev, bleung@chromium.org,
+        Daisuke Nojiri <dnojiri@chromium.org>,
+        "Dustin L. Howett" <dustin@howett.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Tzung-Bi Shih <tzungbi@kernel.org>
+Subject: Re: [PATCH v4 2/9] usb: typec: Add retimer handle to port
+Message-ID: <Ys0ww4E7X7NjN4Lu@kuha.fi.intel.com>
+References: <20220711072333.2064341-1-pmalani@chromium.org>
+ <20220711072333.2064341-3-pmalani@chromium.org>
 MIME-Version: 1.0
-References: <20220704025632.235968-1-renzhijie2@huawei.com>
-In-Reply-To: <20220704025632.235968-1-renzhijie2@huawei.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Tue, 12 Jul 2022 10:27:45 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a07jGCuAVQAZgpENRP_xFLiogU9W1Uze+n21h7TdOZhog@mail.gmail.com>
-Message-ID: <CAK8P3a07jGCuAVQAZgpENRP_xFLiogU9W1Uze+n21h7TdOZhog@mail.gmail.com>
-Subject: Re: [PATCH -next] scsi: ufs: ufs-mediatek: Fix build error
-To:     Ren Zhijie <renzhijie2@huawei.com>
-Cc:     stanley.chu@mediatek.com,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:QdMVMsi+6aHmn8J8UEPhX4t+Uv/ZKhDQIrzYhy9SLwFVH7u6RXI
- lBZY9oBpwN6WznVGfIM5S+V3jXTGYE5YDq/mHG92u0zkoZo7RIINkRLmntZx2ksjIqxpCsH
- NkOf1B9+dhOFzCqaOCotC0GFsIoBHlIpZdCuiMzoL805o71BLpPUhBA5CgPBpz3PlsLnDAW
- wBlKc6Dwwz4OdTRpeSe2Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2RFsKK1FhIg=:EnSRMEo+1oOOgalCgJFfAy
- RKxRpWDqwP9PtHNZLjIFEUrXYLxlztensnEY8i+/NF3wohXijARCQr1yDP6TM+t8VGIIicvo7
- qlAFGc1eBm+m48Y1J8/Y+2puCEJJDpLypIwBjOENm2zVZsmY7WKqIxbc3azXwL/OslfFdhwya
- 08UUwakZvPysBUZBxCrUMQJcCIqYI7vuLIxYwU5+xQJQoAoFS8Qf1fuPfWQ86mt821snaDd+t
- OMw9O4yX7CCHBQp3zkI/AiYGsw5ZuizVVaE50FIEe9MXVMneIv7hb9ZqAqS3hAijecDItHxro
- aWRlJqHKj0Y/kQcXCRzlUM9qs5f7gEUNVEp4n1BNHuVKJJROArjWNFoAA4ZyoXk+9AbFCodHF
- wi2KRzOf2zdISHTAfHAFVa0odTeiLr7n6ax0PsSJA1kPfMSWKW4vL9pEUljL9HAuvHwDFCOZa
- a60ihbBvoSzKge5z4pXQX7oSPOqhYt+LeSh7lg2EAFxrDWxqN+hNfgIBvN3CqFdIgS+5IQPwB
- aBJdsmY1L8gRPOEvlCNfOYRNwKGJOBR7KvlHm03TZTSv4ATJkeaibGJ9r5/iiYX1MURIVB+Jx
- JShSqymQvd+V7Ld7GNh8dRbTtsy8AgV5UjicgmxvN2lgt7qHFQr1hHtQaKh9363oo2laPN2yZ
- XQje3/Vey/4uRPgbqcjTpg8KVcAdyTSSoNDEqGPVA1m3IWQ8mjgNS1T+2pr8+fakjhidSs254
- OPnZ802WXcvafSkKb0DY/+u2wl8nGPNlBFfWAUcwKlDnmWspwuSwHsIdECOGdN50kxwM1KvMP
- xIKPUMbQ6PqTlOQbv5bz6/LIUHJOn4W9H1bqjoJHc3BZq8ofwlqFXLu9t2zRm01z3F5BAKcy4
- //h14B5wc7W2dy7SHQ3g==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711072333.2064341-3-pmalani@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 4, 2022 at 4:56 AM Ren Zhijie <renzhijie2@huawei.com> wrote:
-> diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
-> index c958279bdd8f..e006c2528a3a 100644
-> --- a/drivers/ufs/host/ufs-mediatek.c
-> +++ b/drivers/ufs/host/ufs-mediatek.c
-> @@ -1427,6 +1427,7 @@ static int ufs_mtk_system_resume(struct device *dev)
->  }
->  #endif
->
-> +#ifdef CONFIG_PM
->  static int ufs_mtk_runtime_suspend(struct device *dev)
->  {
->         struct ufs_hba *hba = dev_get_drvdata(dev);
-> @@ -1449,6 +1450,7 @@ static int ufs_mtk_runtime_resume(struct device *dev)
->
->         return ufshcd_runtime_resume(dev);
->  }
-> +#endif
->
->  static const struct dev_pm_ops ufs_mtk_pm_ops = {
->         SET_SYSTEM_SLEEP_PM_OPS(ufs_mtk_system_suspend,
+Mon, Jul 11, 2022 at 07:22:56AM +0000, Prashant Malani kirjoitti:
+> Similar to mux and orientation switch, add a handle for registered
+> retimer to the port, so that it has handles to the various switches
+> connected to it.
+> 
+> Signed-off-by: Prashant Malani <pmalani@chromium.org>
 
-This change works, but it's not great. It's better to change the
-SET_SYSTEM_SLEEP_PM_OPS() to the new SYSTEM_SLEEP_PM_OPS()
-that works without the #ifdef.
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
 
-         Arnd
+> ---
+> 
+> Changes since v3:
+> - No changes.
+> 
+> Changes since v2:
+> - No changes.
+> 
+> Changes since v1:
+> - Relinquish retimer reference during typec_release.
+> 
+>  drivers/usb/typec/class.c | 9 +++++++++
+>  drivers/usb/typec/class.h | 1 +
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/usb/typec/class.c b/drivers/usb/typec/class.c
+> index 9062836bb638..f08e32d552b4 100644
+> --- a/drivers/usb/typec/class.c
+> +++ b/drivers/usb/typec/class.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/usb/pd_vdo.h>
+>  #include <linux/usb/typec_mux.h>
+> +#include <linux/usb/typec_retimer.h>
+>  
+>  #include "bus.h"
+>  #include "class.h"
+> @@ -1736,6 +1737,7 @@ static void typec_release(struct device *dev)
+>  	ida_destroy(&port->mode_ids);
+>  	typec_switch_put(port->sw);
+>  	typec_mux_put(port->mux);
+> +	typec_retimer_put(port->retimer);
+>  	kfree(port->cap);
+>  	kfree(port);
+>  }
+> @@ -2249,6 +2251,13 @@ struct typec_port *typec_register_port(struct device *parent,
+>  		return ERR_PTR(ret);
+>  	}
+>  
+> +	port->retimer = typec_retimer_get(&port->dev);
+> +	if (IS_ERR(port->retimer)) {
+> +		ret = PTR_ERR(port->retimer);
+> +		put_device(&port->dev);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+>  	ret = device_add(&port->dev);
+>  	if (ret) {
+>  		dev_err(parent, "failed to register port (%d)\n", ret);
+> diff --git a/drivers/usb/typec/class.h b/drivers/usb/typec/class.h
+> index 43fcf9e37a8c..673b2952b074 100644
+> --- a/drivers/usb/typec/class.h
+> +++ b/drivers/usb/typec/class.h
+> @@ -55,6 +55,7 @@ struct typec_port {
+>  	enum typec_orientation		orientation;
+>  	struct typec_switch		*sw;
+>  	struct typec_mux		*mux;
+> +	struct typec_retimer		*retimer;
+>  
+>  	const struct typec_capability	*cap;
+>  	const struct typec_operations   *ops;
+> -- 
+> 2.37.0.144.g8ac04bfd2-goog
+
+-- 
+heikki
