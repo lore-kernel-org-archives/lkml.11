@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C50CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EBBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:01:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbiGLKBe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
+        id S232825AbiGLKBg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232531AbiGLKBU (ORCPT
+        with ESMTP id S232477AbiGLKBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:01:20 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DF79AAB09
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:01:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id q9so10428338wrd.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:01:18 -0700 (PDT)
+        Tue, 12 Jul 2022 06:01:22 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F0FAAB18
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:01:20 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id z12so10426266wrq.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=sifive.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N/5YHVYkMP3FSk3QX5wWOUuw+qNa02mfKY0l3vaai+I=;
-        b=AySovvk3fqw+yPROzYVXmrN80AINP6EYyxGVLHxu5IbGL2S7n/MYulgDYMHTAf6Lmk
-         4XS+YiRUfoDvfQkR5N6zjxahWi28433Wkf1ff4S6gJ7uYKsgMI4oEED/JmnxTcLw3hfT
-         qEtW+4ZkUYDScQbLmIXpBYPpVmFhdsU48Qkpm6TYd8OdKj3VLU9WOvzE3tL8sjW2IdFk
-         Piqmeg1iNXgxibtP40ILhdo7zweUt8+43EDUMzJEA/3gqFgg717QrbBHl7cHCcHBkYce
-         Oz9zAjP+kpmw08P2dDEi74E+Mli8eFGQIx4SX8N8WDN4oerMzQWMXnaqBVobzRN4moTV
-         uRcw==
+        bh=yZyJv2zFUmg4QquL9UqGaB1TK6MGzGz+Frm2iCfAVgA=;
+        b=WziFWnCRBPfyZ/tqPo+m7FiZ9a47XCjVsrsEUrDNxz/yQvcVeCD05OvbPwZYfAJEVx
+         i60KaTPD5SOEhQ3J8wCAzMcJ3HiOW+nvpUhqkFyAOEYRfiF6MMymR/ZiwjJJvQlk7x+j
+         dFQQdA631rvmACdDJZysY0ElKhHfu+Dt6aCwayb9mCBBFy2tQjnIlhUtzlTciL7/6f6S
+         17i3nhbfswF5P4hZfCdYPoFQuLubQ6a0GP3viwsieVlbphmZ6cunXCzFOoaQZ8gfOilB
+         j+1SDtaaqtu/7vogKheRhu98kYcN/m+IUbZ9ANkhQRN+uKxn3iy+2U1vmyAVJEk95dON
+         MdJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N/5YHVYkMP3FSk3QX5wWOUuw+qNa02mfKY0l3vaai+I=;
-        b=h6miSq3g40f0ur7liwu1fLq7/dhI1Z15826z/CoZT/cYqWGK9I4kn3jg81crjbkywW
-         VK5Xy3+G0JZBmibg+MVhg3DxBJVJKVp4VRjxVfj5FvHIZ750W5oP9HERUwa/t//Lhzpo
-         UbyktFkkCZRcxOhF8qEF4HI8JQHsaiiXw84tCgIOvFgnxxWjFExoEya6YKCOVNOPjM6f
-         nc6ea0Jisr2zrWZSisOm6TX6owdBXiX/fS06NiY4A0StABc5QUxeLkWZ6ADNcT7WqO1N
-         0C1Y1xDbUU0yaVGjH7vj0ivZ2vhZlVfTBx1ceRWZuPJrnH76S8u2FTPpxnCTqRqZczw4
-         7Zfw==
-X-Gm-Message-State: AJIora/VbhK85+3FasnV0NLwLLXM0UmyAik9s26GTL9ti46O6lKy9/f0
-        LJHdLu/Athxp64p14uP3tXqQEg==
-X-Google-Smtp-Source: AGRyM1vh+pSJqS6dzB1374CSARYTt47OGk/7BuqqsIFSKPxyDvna+EC0kzyyC2wVgh0s2KBm5CtAgA==
-X-Received: by 2002:a5d:4e0f:0:b0:21d:8ca4:2563 with SMTP id p15-20020a5d4e0f000000b0021d8ca42563mr21549143wrt.272.1657620077096;
-        Tue, 12 Jul 2022 03:01:17 -0700 (PDT)
+        bh=yZyJv2zFUmg4QquL9UqGaB1TK6MGzGz+Frm2iCfAVgA=;
+        b=ErRW/Xh7MVmzxU+tNwjSEw9w2AkQWym2NnctysVCxq7glRm6MelJ/Wyti+Z4+4drMQ
+         wTg3RkT5Nx85rK7ChIks4hKmBqpGeHHXHlnxpQiQOeSM2N6TOugayHpso4Q+ZAaA0bl1
+         wyCZUMMWwhRfOZ1cw735lEXIylDRzIkoynU7dO6jTY0zlF3XV4Om+pLGIdAyFzjW/HMy
+         n+HAd9OQ9SJdJ4jvfPNh/WGOv0dlGLTunzZ1ztZNvZ594MTQ/FROJPEG0BqJn/I82zOf
+         EwR+Ko2LkJXNQ4oOdy/LAOsMOaeHOa2iCDMWo6rGhKAE7TwACO5PbOP2OfnKnxSZHFx2
+         i59g==
+X-Gm-Message-State: AJIora+7PaPmpm5rO860M4ztrzTHZ8RtW98A0xaAA6W70i8FIozB/nZm
+        YR+tg0FhrbhOuW5V5C99tRVmZg==
+X-Google-Smtp-Source: AGRyM1vb9XGZw20RRG3ffTCm0hF13Hml13jWLnufuFljUi+alp3nE82x3/d9CwYKg/qcVhy+KcNTcg==
+X-Received: by 2002:a5d:4fd1:0:b0:21d:64c6:8b0f with SMTP id h17-20020a5d4fd1000000b0021d64c68b0fmr21583322wrw.250.1657620080164;
+        Tue, 12 Jul 2022 03:01:20 -0700 (PDT)
 Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
-        by smtp.gmail.com with ESMTPSA id u9-20020a7bc049000000b0039747cf8354sm8895314wmc.39.2022.07.12.03.01.16
+        by smtp.gmail.com with ESMTPSA id u9-20020a7bc049000000b0039747cf8354sm8895314wmc.39.2022.07.12.03.01.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 03:01:16 -0700 (PDT)
+        Tue, 12 Jul 2022 03:01:19 -0700 (PDT)
 From:   Ben Dooks <ben.dooks@sifive.com>
 To:     linux-pwm@vger.kernel.org
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -61,9 +61,9 @@ Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         William Salmon <william.salmon@sifive.com>,
         Adnan Chowdhury <adnan.chowdhury@sifive.com>,
         Ben Dooks <ben.dooks@sifive.com>
-Subject: [PATCH 1/7] pwm: change &pci->dev to dev in probe
-Date:   Tue, 12 Jul 2022 11:01:07 +0100
-Message-Id: <20220712100113.569042-2-ben.dooks@sifive.com>
+Subject: [PATCH 5/7] pwm: dwc: add timer clock
+Date:   Tue, 12 Jul 2022 11:01:11 +0100
+Message-Id: <20220712100113.569042-6-ben.dooks@sifive.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220712100113.569042-1-ben.dooks@sifive.com>
 References: <20220712100113.569042-1-ben.dooks@sifive.com>
@@ -73,53 +73,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The dwc_pwm_probe() assignes dev to be &pci->dev but then uses
-&pci->dev throughout the function. Change these all to the be
-'dev' variable to make lines shorter.
+Add a configurable clock base rate for the pwm as when
+being built for non-PCI the block may be sourced from
+an internal clock.
 
 Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
- drivers/pwm/pwm-dwc.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/pwm/pwm-dwc.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
 diff --git a/drivers/pwm/pwm-dwc.c b/drivers/pwm/pwm-dwc.c
-index 7568300bb11e..c706ef9a7ba1 100644
+index 235cb730c888..aa0486b89bdd 100644
 --- a/drivers/pwm/pwm-dwc.c
 +++ b/drivers/pwm/pwm-dwc.c
-@@ -202,14 +202,13 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 	struct dwc_pwm *dwc;
- 	int ret;
+@@ -18,6 +18,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
++#include <linux/clk.h>
+ #include <linux/platform_device.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/pwm.h>
+@@ -35,7 +36,12 @@
+ #define DWC_TIMERS_COMP_VERSION	0xac
  
--	dwc = devm_kzalloc(&pci->dev, sizeof(*dwc), GFP_KERNEL);
-+	dwc = devm_kzalloc(dev, sizeof(*dwc), GFP_KERNEL);
- 	if (!dwc)
- 		return -ENOMEM;
+ #define DWC_TIMERS_TOTAL	8
++
++#ifndef CONFIG_OF
+ #define DWC_CLK_PERIOD_NS	10
++#else
++#define DWC_CLK_PERIOD_NS	dwc->clk_ns
++#endif
  
- 	ret = pcim_enable_device(pci);
- 	if (ret) {
--		dev_err(&pci->dev,
--			"Failed to enable device (%pe)\n", ERR_PTR(ret));
-+		dev_err(dev, "Failed to enable device (%pe)\n", ERR_PTR(ret));
+ /* Timer Control Register */
+ #define DWC_TIM_CTRL_EN		BIT(0)
+@@ -54,6 +60,8 @@ struct dwc_pwm_ctx {
+ struct dwc_pwm {
+ 	struct pwm_chip chip;
+ 	void __iomem *base;
++	struct clk *clk;
++	unsigned int clk_ns;
+ 	struct dwc_pwm_ctx ctx[DWC_TIMERS_TOTAL];
+ };
+ #define to_dwc_pwm(p)	(container_of((p), struct dwc_pwm, chip))
+@@ -336,6 +344,14 @@ static int dwc_pwm_plat_probe(struct platform_device *pdev)
+ 		return dev_err_probe(dev, PTR_ERR(dwc->base),
+ 				     "failed to map IO\n");
+ 
++	dwc->clk = devm_clk_get(dev, "timer");
++	if (IS_ERR(dwc->clk))
++		return dev_err_probe(dev, PTR_ERR(dwc->clk),
++				     "failed to get timer clock\n");
++
++	clk_prepare_enable(dwc->clk);
++	dwc->clk_ns = 1000000000 /clk_get_rate(dwc->clk);
++
+ 	ret = pwmchip_add(&dwc->chip);
+ 	if (ret)
  		return ret;
- 	}
+@@ -347,6 +363,7 @@ static int dwc_pwm_plat_remove(struct platform_device *pdev)
+ {
+ 	struct dwc_pwm *dwc = platform_get_drvdata(pdev);
  
-@@ -217,14 +216,13 @@ static int dwc_pwm_probe(struct pci_dev *pci, const struct pci_device_id *id)
- 
- 	ret = pcim_iomap_regions(pci, BIT(0), pci_name(pci));
- 	if (ret) {
--		dev_err(&pci->dev,
--			"Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
-+		dev_err(dev, "Failed to iomap PCI BAR (%pe)\n", ERR_PTR(ret));
- 		return ret;
- 	}
- 
- 	dwc->base = pcim_iomap_table(pci)[0];
- 	if (!dwc->base) {
--		dev_err(&pci->dev, "Base address missing\n");
-+		dev_err(dev, "Base address missing\n");
- 		return -ENOMEM;
- 	}
- 
++	clk_disable_unprepare(dwc->clk);
+ 	pwmchip_remove(&dwc->chip);
+ 	return 0;
+ }
 -- 
 2.35.1
 
