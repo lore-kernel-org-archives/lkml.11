@@ -2,101 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B76AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB36CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233659AbiGLOo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
+        id S233661AbiGLOpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233665AbiGLOom (ORCPT
+        with ESMTP id S233704AbiGLOnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:44:42 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0E821E35;
-        Tue, 12 Jul 2022 07:44:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TIMJuXXvaSY0EDiwuEYp7w+lzyifMk6auUfw6Pmy8H8=; b=f5VgE4wDv0lSQC5lTzqabKnVFB
-        2MGHWFSwP7P/40XxyUz26NovWdTh/lT2cUCI2TDwxXIOFpKmrZjyEk8viz7KfDHVlA8JUC0ZTuscZ
-        dumqPhR//ME/UnijW00DpOQvNb6P0vH/GMuMygkcYT5BPY+TK8t5suvl4SjK8Q7k26y0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oBH7h-00A3p2-Tq; Tue, 12 Jul 2022 16:44:25 +0200
-Date:   Tue, 12 Jul 2022 16:44:25 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] net: phy: Add driver for Motorcomm yt8521 gigabit
- ethernet
-Message-ID: <Ys2IyaI2u2iLL0g6@lunn.ch>
-References: <20220711103706.709-1-Frank.Sae@motor-comm.com>
+        Tue, 12 Jul 2022 10:43:45 -0400
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B11BDBB5;
+        Tue, 12 Jul 2022 07:43:23 -0700 (PDT)
+Received: by mail-yb1-xb2a.google.com with SMTP id 64so14265033ybt.12;
+        Tue, 12 Jul 2022 07:43:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=coKDGy3LG/pzJw/5Ba+mZia0etc8htd3qdA0mBwoUlo=;
+        b=Gku7tM75sCcOnsW5gmmQaJQqu/YdWVcLpDihH/AY2KffEl1m0BgyreMwVjQD6ZHHUE
+         UU/8W8HTbEveGbwg84Muss162f9qfB9Pf1dyKy/eNrm8mNGsboVeq5awDuPNvXW8nEYV
+         NfsShs5wR1nL2traL6zHc1HX9R6EKavv+TM2xOxZMSm+RmlYsDQUtgGYTi7uazhgRpHG
+         OHo/R5VOg1WJ2Z/k3jvlFdw2isQ6uYo+mRE/DgdGKyox0Hh+eCJwK6VjvjFMT/f+E7eM
+         1A/y4Vso219JXUkK3mREY2W0e4lnm0OgcY+OVPqSQbP5+GqDwEDL629/JP7t+/SVuygx
+         AO5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=coKDGy3LG/pzJw/5Ba+mZia0etc8htd3qdA0mBwoUlo=;
+        b=k6j44E5ILsLC1u5QpVvFH1MVsKpkSJAvf8WaPqz5+ZTCPwZWuzlVn0MIlx/Az+efVe
+         2JCH34lGah78wAntF6hujFTWUwjf9Imrb6kFmxN3nA7+dArvN/mEetdRHuQtJXD6GKkk
+         zbzlq+kMIdrAdO2lcWA+PWajIImAycC2WmEVcUItyq6S9Sz1sZFqxjpPClrxt36owBZe
+         CPqUOLs2pz12H7aX7CW7ZoAFvu3iieawAzF/woasqlVQ1ubgE4oE8wn4awNcr7iY/IDZ
+         TD6yY+MYsS5satpyfueyiyK52gQxvn3/cO1VwwYua2kQsCKhFlBca2VyJDHMsybIS9JY
+         YzxQ==
+X-Gm-Message-State: AJIora+aDbo67x3tTHtdgJZQ8oHI0Amcxqm4ad6slEJUIf7HizqX3myT
+        Lo+4FdCZyFL6rIlk2CO1gW7poTSDiXaEpV9F9Hw=
+X-Google-Smtp-Source: AGRyM1vFZMoDBRYL342rw6lRXJa26nXlAWhIwYlJBklTEiX5huDMwLdHT/sItLUcdmlpLdS3mr1eTrz+kwvtlxJtcic=
+X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
+ b198-20020a25cbcf000000b0066e8893a02cmr23385993ybg.460.1657637003075; Tue, 12
+ Jul 2022 07:43:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711103706.709-1-Frank.Sae@motor-comm.com>
+References: <20220712143237.13992-1-henning.schild@siemens.com>
+In-Reply-To: <20220712143237.13992-1-henning.schild@siemens.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 12 Jul 2022 16:42:46 +0200
+Message-ID: <CAHp75VeYHi8XTf3Y6HMmitVvuvF2uiWdSzpiKFji5SfV20HqpQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/1] add device driver for Nuvoton SIO gpio function
+To:     Henning Schild <henning.schild@siemens.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tasanakorn Phaipool <tasanakorn@gmail.com>,
+        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
+        Kuan-Wei Ho <cwho@nuvoton.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 06:37:06PM +0800, Frank wrote:
-> patch v3:
->  Hi Andrew
->  Thanks and based on your comments we modified the patch as below.
->  
-> > It is generally not that simple. Fibre, you probably want 1000BaseX,
-> > unless the fibre module is actually copper, and then you want
-> > SGMII. So you need something to talk to the fibre module and ask it
-> > what it is. That something is phylink. Phylink does not support both
-> > copper and fibre at the same time for one MAC.
-> 
->  yes, you said it and for MAC, it does not support copper and Fiber at same time.
->  but from Physical Layer, you know, sometimes both Copper and Fiber cables are
->  connected. in this case, Phy driver should do arbitration and report to MAC
->  which media should be used and Link-up.
->  This is the reason that the driver has a "polling mode", and by default, also
->  this driver takes fiber as first priority which matches phy chip default behavior.
+On Tue, Jul 12, 2022 at 4:32 PM Henning Schild
+<henning.schild@siemens.com> wrote:
+>
+> changes since v2:
+>  - move from subsys_initcall to module_init
+>  - add 2 more patches to show how it can be used later
+>  - v2 is based on [PATCH v6 00/12] platform/x86: introduce p2sb_bar() helper
+>
+> changes since v1:
+>  - implement get_direction function
+>  - style changes requested in review
 
-The Marvell 10G driver is another PHY which can be used for both
-Copper and Fibre. In order to do this, it has a few extra functions:
+JFYI: You have a strange subject. Had you used `git format-patch
+--cover-letter ...`?
 
-static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
-{
-        struct phy_device *phydev = upstream;
-        __ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
-        phy_interface_t iface;
+> This adds gpio support for several Super IO chips from Nuvoton. The
+> driver was originally developed by Nuvoton and i am just contributing it
+> on behalf, because other patches i will send later will require access
+> to the gpios. The driver is valid on its own.
+> In fact v2 of this series shows a future user, not to be merged right
+> away but to show what is planned.
+>
+> The driver supports several chips, of which i only managed to test one
+> but did not want to drop the others.
+>
+> I hope the original authors will help with the testing and addressing
+> review feedback. The changes i did so far mainly are inspired by similar
+> drivers and some just concern coding style. If more has to be done and
+> the original authors do not jump in, we might start off with just that
+> one chip i can test and add the others later on.
 
-        sfp_parse_support(phydev->sfp_bus, id, support);
-        iface = sfp_select_interface(phydev->sfp_bus, support);
 
-        if (iface != PHY_INTERFACE_MODE_10GBASER) {
-                dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
-                return -EINVAL;
-        }
-        return 0;
-}
-
-static const struct sfp_upstream_ops mv3310_sfp_ops = {
-        .attach = phy_sfp_attach,
-        .detach = phy_sfp_detach,
-        .module_insert = mv3310_sfp_insert,
-};
-
-Also see the at803x driver.
-
-This allows the PHY to report to phylink what it is doing, and to
-determine the host side interface mode. I would expect this driver to
-implement sfp_upstream_ops as well.
-
-	  Andrew
+-- 
+With Best Regards,
+Andy Shevchenko
