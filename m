@@ -2,96 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C8B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 03:14:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 133DEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 03:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231255AbiGLDOJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 23:14:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35504 "EHLO
+        id S230190AbiGLDP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 23:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229572AbiGLDOI (ORCPT
+        with ESMTP id S229806AbiGLDPy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 23:14:08 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94FBA1274B;
-        Mon, 11 Jul 2022 20:14:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657595632; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=bacQR/baKY0de56t2Uz3txqbdVyIoP6DWYZrIoy1Q4/jVg5bL3cv7JoHeubtWOLvzocZLqsS5bChMSJLJlROhcLSAqXxoydHeENDAXBg1u2decIfrBKQHyzOdwj+6Ql2l+IsOxa1tDYuKp97HUj+cUtrGNW3r2rOOlcRdSaIxYA=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1657595632; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=EA5z6YjBCuOgn0sSNEge40fBG5QIZgwF8W8bHwuDa5Q=; 
-        b=cl4PFB9eFqNSyqGTaqG6Ks2KzI3B1Jdc9XhReMcesusDSIB/KSHr1zI4cKZXPk0tghaONd3gT4NC8m6zPq/zEtHpGf2y7ApU/XOdMrzg98ribw5kox2WlRwLHyWbhhICmJh/QbeGLuIuJQY3tbuJqC4YhLHsCJUaKRx/hAO2d38=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=linux.beauty;
-        spf=pass  smtp.mailfrom=me@linux.beauty;
-        dmarc=pass header.from=<me@linux.beauty>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657595632;
-        s=zmail; d=linux.beauty; i=me@linux.beauty;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=EA5z6YjBCuOgn0sSNEge40fBG5QIZgwF8W8bHwuDa5Q=;
-        b=qGDdDUbYkpvCDN/2Mh3vrijp6vYPV5Tn/Op1KrK1gTiiKppw/KPJIq89Am5yUKvf
-        WVWAfBxiMqo69k1PbRnGiG8iiotI42QAfcmHjhLC4Lvw2HbASgQNnJfieP4jzsA4JEf
-        Bey9WPctTFb1vwtZYDeA8/D13wRDj2v7NqvihNYY=
-Received: from mail.zoho.com by mx.zohomail.com
-        with SMTP id 1657595631492858.3699768117431; Mon, 11 Jul 2022 20:13:51 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 11:13:51 +0800
-From:   Li Chen <me@linux.beauty>
-To:     "Arnd Bergmann" <arnd@arndb.de>
-Cc:     "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Will Deacon" <will@kernel.org>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        "Frank Rowand" <frowand.list@gmail.com>,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Li Chen" <lchen@ambarella.com>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        "DTML" <devicetree@vger.kernel.org>,
-        "Linux-MM" <linux-mm@kvack.org>
-Message-ID: <181f0661719.f70e29d3505822.5974565955538700441@linux.beauty>
-In-Reply-To: <CAK8P3a0Qo=xexUDs=XA2gRe4p-FPoXUpuxWrnqWrr43FTViA3w@mail.gmail.com>
-References: <20220711122459.13773-1-me@linux.beauty> <20220711122459.13773-2-me@linux.beauty>
- <CAK8P3a1WbJSWHsfegTtLhzSRwAoN8WfdezTTedRk9-FCiM8+GA@mail.gmail.com> <181edbe0f3d.e1336ef3387914.4730240512950880256@linux.beauty> <CAK8P3a0Qo=xexUDs=XA2gRe4p-FPoXUpuxWrnqWrr43FTViA3w@mail.gmail.com>
-Subject: Re: [PATCH 1/4] of: add struct page support to rmem
+        Mon, 11 Jul 2022 23:15:54 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C578629C94
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:15:53 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id f62-20020a9d03c4000000b0061c2c94ab8dso5296398otf.10
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 20:15:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UVDIcINsQJnKJYIRtkCuzxiTw7KBm8Z9B1RHvtk5i8c=;
+        b=i7xpI24WNCDADdLCeL/TvU5A44AH+8W00ReHGgyKsUoakbiBPqmYfEVurhRlWBhVHH
+         CTDFf7PPvZ7sJBtUDZwBM2is0s4AP+UtCYWbOLH3eUQqbe43YgwKCVn24JlxGqmtJ6La
+         Jz5HNuBiRRescpgLyMuYFKTT7r1Ywxt+9AMpyJoERwj33pBweFHd35280CecSzZ+QB5U
+         6I+qQlfZbm6yo7pWfzAiMwilT6TCx8wntuQy70gxD8ZfS8MiP1Vc0RZPnWAZzDxcO13d
+         I4RlklpWFKEXReO0mbOL+ul7cdu4pQOVbOFYwJxoP6Gka3pKphDbbyGBQjgRrhHJuCHa
+         MHFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UVDIcINsQJnKJYIRtkCuzxiTw7KBm8Z9B1RHvtk5i8c=;
+        b=5vWpjfAd8FTNAsS7CqPWD7qhoZTWFwSSnUSUXugENMrS/IqYXIXn+4x51iqZrez1d+
+         kQsqKf5+NS9iRCf5M7TEEEjzh5vt7RtiLVfwNoP4QJTJtYWOS7sZIS1OFiTYQUzKr8qX
+         BvMHqpoXo7JEtXsv/SSlq9Q2WScXK00O8a3tZKOKvqnmWUd5UV5RPw9D3FB8RoWNilzU
+         tM5BGzsHHAkxZoqFzrpDpaP8jIhgrNhhME3WXpyAy0QVnf9BpWHG3y5qsEVa4X4FUtoR
+         YEFu/mWJDcA8f57Q/9sEYmxDqXhhtz+xydqTHLLgEd3NnRlrrRZ3+1AtKjSRPP9FzqzL
+         TMSw==
+X-Gm-Message-State: AJIora8n6rWbl+XFIMqph69s7X2DbiM4IL/+un/VDIwSEAyG843JW/nl
+        RXrcAXw6NfU9zDUiewShf2ebkw==
+X-Google-Smtp-Source: AGRyM1vVstm/QF12x/kk9cleXO/AFfCPa0MpB3OnAy7UeKAAd2M9UY6MrETdiam/5aZrZsD7NivCDQ==
+X-Received: by 2002:a05:6830:9c9:b0:60b:b628:3ed2 with SMTP id y9-20020a05683009c900b0060bb6283ed2mr8405899ott.122.1657595753120;
+        Mon, 11 Jul 2022 20:15:53 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id k17-20020a056870149100b0010c60ec553esm3987539oab.44.2022.07.11.20.15.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 20:15:52 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH] arm64: defconfig: Demote Qualcomm USB PHYs to modules
+Date:   Mon, 11 Jul 2022 20:18:21 -0700
+Message-Id: <20220712031821.4134712-1-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Arnd,
- ---- On Mon, 11 Jul 2022 23:06:50 +0800  Arnd Bergmann <arnd@arndb.de> wrote --- 
- > On Mon, Jul 11, 2022 at 4:51 PM Li Chen <me@linux.beauty> wrote:
- > >  ---- On Mon, 11 Jul 2022 21:36:12 +0800  Arnd Bergmann <arnd@arndb.de> wrote ---
- > >  > On Mon, Jul 11, 2022 at 2:24 PM Li Chen <me@linux.beauty> wrote:
- > >  >
- > >  > > +config OF_RESERVED_MEM_DIO_SUPPORT
- > >  > > +       bool "add Direct I/O support to reserved_mem"
- > >  > > +       depends on ZONE_DEVICE && ARCH_KEEP_MEMBLOCK
- > >  > > +       help
- > >  > > +          By default, reserved memory don't get struct page support, which
- > >  > > +                means you cannot do Direct I/O from this region. This config takes
- > >  > > +                uses of ZONE_DEVICE and treats rmem as hotplug mem to get struct
- > >  > > +                page and DIO support.
- > >  >
- > >  > This probably does not need to be user visible, it's enough to select it from
- > >  > the drivers that need it.
- > >
- > > When you say "user visible", do you mean the config can be dropped or something else like Kconfig type other than bool?
- > 
- > I mean this can be a hidden option, which you can do by leaving out the
- > one-line description after the 'bool' keyword. The option will still
- > be selectable
- > in Kconfig files from other options, but not shown in 'make menuconfig'.
- > 
- >         Arnd
- > 
+The Qualcomm USB PHYs are not critical for reaching the ramdisk to load
+modules, so they can be demoted to be built as such instead of builtin.
 
-Roger that. I will do it in v2.
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ arch/arm64/configs/defconfig | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Regards,
-Li
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index d3ad1cb2f5eb..7424c19dd1c3 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1208,10 +1208,10 @@ CONFIG_PHY_MTK_TPHY=y
+ CONFIG_PHY_QCOM_PCIE2=m
+ CONFIG_PHY_QCOM_QMP=m
+ CONFIG_PHY_QCOM_QUSB2=m
+-CONFIG_PHY_QCOM_USB_HS=y
+-CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2=y
+-CONFIG_PHY_QCOM_USB_HS_28NM=y
+-CONFIG_PHY_QCOM_USB_SS=y
++CONFIG_PHY_QCOM_USB_HS=m
++CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2=m
++CONFIG_PHY_QCOM_USB_HS_28NM=m
++CONFIG_PHY_QCOM_USB_SS=m
+ CONFIG_PHY_RCAR_GEN3_PCIE=y
+ CONFIG_PHY_RCAR_GEN3_USB2=y
+ CONFIG_PHY_RCAR_GEN3_USB3=m
+-- 
+2.35.1
+
