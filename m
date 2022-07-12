@@ -2,95 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88895C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233393AbiGLUkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
+        id S233582AbiGLUkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232823AbiGLUj7 (ORCPT
+        with ESMTP id S232869AbiGLUj7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 16:39:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8C98CC782
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:39:58 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19368CC7B5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:39:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EC7361AAF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 20:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4258C341CE;
-        Tue, 12 Jul 2022 20:39:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEBF8B81658
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 20:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880B7C3411C;
+        Tue, 12 Jul 2022 20:39:56 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oBMfk-0049Qr-NY;
-        Tue, 12 Jul 2022 16:39:56 -0400
-Message-ID: <20220712203956.570631907@goodmis.org>
+        id 1oBMfj-0049NV-J3;
+        Tue, 12 Jul 2022 16:39:55 -0400
+Message-ID: <20220712203924.060569640@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Tue, 12 Jul 2022 16:39:30 -0400
+Date:   Tue, 12 Jul 2022 16:39:24 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tiezhu Yang <yangtiezhu@loongson.cn>,
-        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>
-Subject: [for-linus][PATCH 6/6] samples: Use KSYM_NAME_LEN for kprobes
-References: <20220712203924.060569640@goodmis.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [for-linus][PATCH 0/6] tracing: Fixes and minor clean ups for 5.19
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tiezhu Yang <yangtiezhu@loongson.cn>
 
-It is better and enough to use KSYM_NAME_LEN for kprobes
-in samples, no need to define and use the other values.
+Douglas Anderson (1):
+      tracing: Fix sleeping while atomic in kdb ftdump
 
-Link: https://lkml.kernel.org/r/1654651402-21552-1-git-send-email-yangtiezhu@loongson.cn
+Li kunyu (1):
+      blk-iocost: tracing: atomic64_read(&ioc->vtime_rate) is assigned an extra semicolon
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- samples/kprobes/kprobe_example.c    | 5 ++---
- samples/kprobes/kretprobe_example.c | 5 ++---
- 2 files changed, 4 insertions(+), 6 deletions(-)
+Steven Rostedt (Google) (1):
+      ftrace: Be more specific about arch impact when function tracer is enabled
 
-diff --git a/samples/kprobes/kprobe_example.c b/samples/kprobes/kprobe_example.c
-index f991a66b5b02..fd346f58ddba 100644
---- a/samples/kprobes/kprobe_example.c
-+++ b/samples/kprobes/kprobe_example.c
-@@ -16,9 +16,8 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- 
--#define MAX_SYMBOL_LEN	64
--static char symbol[MAX_SYMBOL_LEN] = "kernel_clone";
--module_param_string(symbol, symbol, sizeof(symbol), 0644);
-+static char symbol[KSYM_NAME_LEN] = "kernel_clone";
-+module_param_string(symbol, symbol, KSYM_NAME_LEN, 0644);
- 
- /* For each probe you need to allocate a kprobe structure */
- static struct kprobe kp = {
-diff --git a/samples/kprobes/kretprobe_example.c b/samples/kprobes/kretprobe_example.c
-index 228321ecb161..cbf16542d84e 100644
---- a/samples/kprobes/kretprobe_example.c
-+++ b/samples/kprobes/kretprobe_example.c
-@@ -23,11 +23,10 @@
- #include <linux/module.h>
- #include <linux/kprobes.h>
- #include <linux/ktime.h>
--#include <linux/limits.h>
- #include <linux/sched.h>
- 
--static char func_name[NAME_MAX] = "kernel_clone";
--module_param_string(func, func_name, NAME_MAX, S_IRUGO);
-+static char func_name[KSYM_NAME_LEN] = "kernel_clone";
-+module_param_string(func, func_name, KSYM_NAME_LEN, 0644);
- MODULE_PARM_DESC(func, "Function to kretprobe; this module will report the"
- 			" function's execution time");
- 
--- 
-2.35.1
+Tiezhu Yang (1):
+      samples: Use KSYM_NAME_LEN for kprobes
+
+Zheng Yejian (1):
+      tracing/histograms: Fix memory leak problem
+
+sunliming (1):
+      fprobe/samples: Make sample_probe static
+
+----
+ include/trace/events/iocost.h       |  2 +-
+ kernel/trace/Kconfig                |  3 ++-
+ kernel/trace/trace.c                | 11 ++++++-----
+ kernel/trace/trace_events_hist.c    |  2 ++
+ samples/fprobe/fprobe_example.c     |  2 +-
+ samples/kprobes/kprobe_example.c    |  5 ++---
+ samples/kprobes/kretprobe_example.c |  5 ++---
+ 7 files changed, 16 insertions(+), 14 deletions(-)
