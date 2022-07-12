@@ -2,254 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 728E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70F17C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:31:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233219AbiGLOaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
+        id S230419AbiGLObg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:31:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233175AbiGLOaB (ORCPT
+        with ESMTP id S231684AbiGLObe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:30:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EAEE2191;
-        Tue, 12 Jul 2022 07:30:00 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CDJ0E9006969;
-        Tue, 12 Jul 2022 14:28:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=OdfZSqJJ97Yxoj48Ckzbfof+fH1pBkaPsxXBN/SYXLE=;
- b=Z6qbMB5EQ1l9GEjAMFA0+VqVwNQeTeZOV4j5siWedAhE/e2Y2RsPEEOv5Fh3PvTNj8LE
- TeF0tdX3uOYk9Bz/aRuLGA/iGcUWqmhttyD+QVV+tupAa80MK5uxK0OjhHRfNuHxB6Kn
- ATZ5Hvs2I0YnXd855Vj0v+dmU2J2/3MALf4BsO+xyvX5kaBLmyK+nIixS5G4YQLuXTUk
- ilhEat3gC72UvqtbsLG/v2w2FQuW3ZUzlR+789ppxo+ocVhwBNY0KS6pXLLjgqx0PcZn
- +vzKNg4KKzga1J1eNPR+lREpgvx8vySKhroScgURLQ48TTojjEIwBDg8RDReCXPJkl7f zA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h99r01xrn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:28:53 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26CDKOsM014679;
-        Tue, 12 Jul 2022 14:28:53 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h99r01xq9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:28:52 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CEL4gs032549;
-        Tue, 12 Jul 2022 14:28:51 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma03wdc.us.ibm.com with ESMTP id 3h71a9e87y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:28:51 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CESo4225100754
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 14:28:50 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7FA8E28058;
-        Tue, 12 Jul 2022 14:28:50 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C8FBC28059;
-        Tue, 12 Jul 2022 14:28:48 +0000 (GMT)
-Received: from [9.65.200.23] (unknown [9.65.200.23])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Jul 2022 14:28:48 +0000 (GMT)
-Message-ID: <c1662fda-c87c-e204-dddd-e6159c8aa104@linux.ibm.com>
-Date:   Tue, 12 Jul 2022 10:28:48 -0400
+        Tue, 12 Jul 2022 10:31:34 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FB1FAE3A5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:31:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657636292; x=1689172292;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8VaZtscI5pp0hY+DtvP9CdNw3OvobWQDH5Z194rvsCM=;
+  b=VMaravAEmoSyncAQuh0+rQqmKjAMpz7UN1sPNLPY2uvhb7UcBgtf54a2
+   /aPR1l/EBCxWfnpgEYsn5pPK9mTStIQ4HomKXGFVmxg8fDwmSDP3DZIwi
+   AFUVMta2lkv1VCqVYS8uH3XIYxiwdIwgisHgH4hBNSJFTT4SGzYNUgre7
+   W4F4IbaI3mpNdS0ypITDJGznKfl5y+9sSV/ecZqCAc4bafVe7Pe1EQmv6
+   qrVWQB93zapfoUXIbwv+VQ7ZU38pV7p75frFb0DJ30ctt6E/mIQVVuR0k
+   TQDj0mjfL0qpCKuWQuYCxFoN48CniXoc1cP1IzfpA8/uGA5hAAtwCj+6d
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="371258235"
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="371258235"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 07:30:55 -0700
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="662970836"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 07:30:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oBGuW-001BXJ-2L;
+        Tue, 12 Jul 2022 17:30:48 +0300
+Date:   Tue, 12 Jul 2022 17:30:48 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Alexander Lobakin <alexandr.lobakin@intel.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] lib/bitmap: fix off-by-one in bitmap_to_arr64()
+Message-ID: <Ys2FmN3hDKPAciKi@smile.fi.intel.com>
+References: <20220711180930.28271-1-alexandr.lobakin@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v3 06/10] vfio/ap: Change saved_pfn to saved_iova
-Content-Language: en-US
-To:     Nicolin Chen <nicolinc@nvidia.com>, kwankhede@nvidia.com,
-        corbet@lwn.net, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, zhenyuw@linux.intel.com, zhi.a.wang@intel.com,
-        jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
-        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
-        airlied@linux.ie, daniel@ffwll.ch, farman@linux.ibm.com,
-        mjrosato@linux.ibm.com, pasic@linux.ibm.com, vneethv@linux.ibm.com,
-        oberpar@linux.ibm.com, freude@linux.ibm.com, jjherne@linux.ibm.com,
-        alex.williamson@redhat.com, cohuck@redhat.com, jgg@nvidia.com,
-        kevin.tian@intel.com, hch@infradead.org
-Cc:     jchrist@linux.ibm.com, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, intel-gvt-dev@lists.freedesktop.org,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        terrence.xu@intel.com
-References: <20220708224427.1245-1-nicolinc@nvidia.com>
- <20220708224427.1245-7-nicolinc@nvidia.com>
-From:   Anthony Krowiak <akrowiak@linux.ibm.com>
-In-Reply-To: <20220708224427.1245-7-nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: _j6ePaBx9pKp0DXjWFutlwf2W9WPoPd7
-X-Proofpoint-ORIG-GUID: Z2Erh4ovuh4-1QaA8MtuoCaVso489d7K
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- priorityscore=1501 phishscore=0 suspectscore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 clxscore=1015 spamscore=0 malwarescore=0
- lowpriorityscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207120055
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711180930.28271-1-alexandr.lobakin@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Tony Krowiak <akrowiak@linux.ibm.com>
+On Mon, Jul 11, 2022 at 08:09:28PM +0200, Alexander Lobakin wrote:
+> Fix tail clearing in bitmap_to_arr64() for 32-bit BEs and expand
+> the tests to cover the bug being fixed.
 
-On 7/8/22 6:44 PM, Nicolin Chen wrote:
-> The vfio_ap_ops code maintains both nib address and its PFN, which
-> is redundant, merely because vfio_pin/unpin_pages API wanted pfn.
-> Since vfio_pin/unpin_pages() now accept "iova", change "saved_pfn"
-> to "saved_iova" and remove pfn in the vfio_ap_validate_nib().
->
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Tested-by: Eric Farman <farman@linux.ibm.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->   drivers/s390/crypto/vfio_ap_ops.c     | 42 +++++++++++----------------
->   drivers/s390/crypto/vfio_ap_private.h |  4 +--
->   2 files changed, 19 insertions(+), 27 deletions(-)
->
-> diff --git a/drivers/s390/crypto/vfio_ap_ops.c b/drivers/s390/crypto/vfio_ap_ops.c
-> index 8a2018ab3cf0..e8856a7e151c 100644
-> --- a/drivers/s390/crypto/vfio_ap_ops.c
-> +++ b/drivers/s390/crypto/vfio_ap_ops.c
-> @@ -112,7 +112,7 @@ static void vfio_ap_wait_for_irqclear(int apqn)
->    *
->    * Unregisters the ISC in the GIB when the saved ISC not invalid.
->    * Unpins the guest's page holding the NIB when it exists.
-> - * Resets the saved_pfn and saved_isc to invalid values.
-> + * Resets the saved_iova and saved_isc to invalid values.
->    */
->   static void vfio_ap_free_aqic_resources(struct vfio_ap_queue *q)
->   {
-> @@ -123,9 +123,9 @@ static void vfio_ap_free_aqic_resources(struct vfio_ap_queue *q)
->   		kvm_s390_gisc_unregister(q->matrix_mdev->kvm, q->saved_isc);
->   		q->saved_isc = VFIO_AP_ISC_INVALID;
->   	}
-> -	if (q->saved_pfn && !WARN_ON(!q->matrix_mdev)) {
-> -		vfio_unpin_pages(&q->matrix_mdev->vdev, q->saved_pfn << PAGE_SHIFT, 1);
-> -		q->saved_pfn = 0;
-> +	if (q->saved_iova && !WARN_ON(!q->matrix_mdev)) {
-> +		vfio_unpin_pages(&q->matrix_mdev->vdev, q->saved_iova, 1);
-> +		q->saved_iova = 0;
->   	}
->   }
->   
-> @@ -189,27 +189,19 @@ static struct ap_queue_status vfio_ap_irq_disable(struct vfio_ap_queue *q)
->    *
->    * @vcpu: the object representing the vcpu executing the PQAP(AQIC) instruction.
->    * @nib: the location for storing the nib address.
-> - * @g_pfn: the location for storing the page frame number of the page containing
-> - *	   the nib.
->    *
->    * When the PQAP(AQIC) instruction is executed, general register 2 contains the
->    * address of the notification indicator byte (nib) used for IRQ notification.
-> - * This function parses the nib from gr2 and calculates the page frame
-> - * number for the guest of the page containing the nib. The values are
-> - * stored in @nib and @g_pfn respectively.
-> - *
-> - * The g_pfn of the nib is then validated to ensure the nib address is valid.
-> + * This function parses and validates the nib from gr2.
->    *
->    * Return: returns zero if the nib address is a valid; otherwise, returns
->    *	   -EINVAL.
->    */
-> -static int vfio_ap_validate_nib(struct kvm_vcpu *vcpu, unsigned long *nib,
-> -				unsigned long *g_pfn)
-> +static int vfio_ap_validate_nib(struct kvm_vcpu *vcpu, dma_addr_t *nib)
->   {
->   	*nib = vcpu->run->s.regs.gprs[2];
-> -	*g_pfn = *nib >> PAGE_SHIFT;
->   
-> -	if (kvm_is_error_hva(gfn_to_hva(vcpu->kvm, *g_pfn)))
-> +	if (kvm_is_error_hva(gfn_to_hva(vcpu->kvm, *nib >> PAGE_SHIFT)))
->   		return -EINVAL;
->   
->   	return 0;
-> @@ -239,34 +231,34 @@ static struct ap_queue_status vfio_ap_irq_enable(struct vfio_ap_queue *q,
->   						 int isc,
->   						 struct kvm_vcpu *vcpu)
->   {
-> -	unsigned long nib;
->   	struct ap_qirq_ctrl aqic_gisa = {};
->   	struct ap_queue_status status = {};
->   	struct kvm_s390_gisa *gisa;
->   	int nisc;
->   	struct kvm *kvm;
-> -	unsigned long g_pfn, h_pfn;
-> +	unsigned long h_pfn;
->   	phys_addr_t h_nib;
-> +	dma_addr_t nib;
->   	int ret;
->   
->   	/* Verify that the notification indicator byte address is valid */
-> -	if (vfio_ap_validate_nib(vcpu, &nib, &g_pfn)) {
-> -		VFIO_AP_DBF_WARN("%s: invalid NIB address: nib=%#lx, g_pfn=%#lx, apqn=%#04x\n",
-> -				 __func__, nib, g_pfn, q->apqn);
-> +	if (vfio_ap_validate_nib(vcpu, &nib)) {
-> +		VFIO_AP_DBF_WARN("%s: invalid NIB address: nib=%pad, apqn=%#04x\n",
-> +				 __func__, &nib, q->apqn);
->   
->   		status.response_code = AP_RESPONSE_INVALID_ADDRESS;
->   		return status;
->   	}
->   
-> -	ret = vfio_pin_pages(&q->matrix_mdev->vdev, g_pfn << PAGE_SHIFT, 1,
-> +	ret = vfio_pin_pages(&q->matrix_mdev->vdev, nib, 1,
->   			     IOMMU_READ | IOMMU_WRITE, &h_pfn);
->   	switch (ret) {
->   	case 1:
->   		break;
->   	default:
->   		VFIO_AP_DBF_WARN("%s: vfio_pin_pages failed: rc=%d,"
-> -				 "nib=%#lx, g_pfn=%#lx, apqn=%#04x\n",
-> -				 __func__, ret, nib, g_pfn, q->apqn);
-> +				 "nib=%pad, apqn=%#04x\n",
-> +				 __func__, ret, &nib, q->apqn);
->   
->   		status.response_code = AP_RESPONSE_INVALID_ADDRESS;
->   		return status;
-> @@ -296,12 +288,12 @@ static struct ap_queue_status vfio_ap_irq_enable(struct vfio_ap_queue *q,
->   	case AP_RESPONSE_NORMAL:
->   		/* See if we did clear older IRQ configuration */
->   		vfio_ap_free_aqic_resources(q);
-> -		q->saved_pfn = g_pfn;
-> +		q->saved_iova = nib;
->   		q->saved_isc = isc;
->   		break;
->   	case AP_RESPONSE_OTHERWISE_CHANGED:
->   		/* We could not modify IRQ setings: clear new configuration */
-> -		vfio_unpin_pages(&q->matrix_mdev->vdev, g_pfn << PAGE_SHIFT, 1);
-> +		vfio_unpin_pages(&q->matrix_mdev->vdev, nib, 1);
->   		kvm_s390_gisc_unregister(kvm, isc);
->   		break;
->   	default:
-> diff --git a/drivers/s390/crypto/vfio_ap_private.h b/drivers/s390/crypto/vfio_ap_private.h
-> index a26efd804d0d..479b205179bd 100644
-> --- a/drivers/s390/crypto/vfio_ap_private.h
-> +++ b/drivers/s390/crypto/vfio_ap_private.h
-> @@ -102,13 +102,13 @@ struct ap_matrix_mdev {
->    * struct vfio_ap_queue - contains the data associated with a queue bound to the
->    *			  vfio_ap device driver
->    * @matrix_mdev: the matrix mediated device
-> - * @saved_pfn: the guest PFN pinned for the guest
-> + * @saved_iova: the notification indicator byte (nib) address
->    * @apqn: the APQN of the AP queue device
->    * @saved_isc: the guest ISC registered with the GIB interface
->    */
->   struct vfio_ap_queue {
->   	struct ap_matrix_mdev *matrix_mdev;
-> -	unsigned long saved_pfn;
-> +	dma_addr_t saved_iova;
->   	int	apqn;
->   #define VFIO_AP_ISC_INVALID 0xff
->   	unsigned char saved_isc;
+Thanks,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Alexander Lobakin (2):
+>   lib/bitmap: fix off-by-one in bitmap_to_arr64()
+>   lib/test_bitmap: test the tail after bitmap_to_arr64()
+> 
+>  lib/bitmap.c      | 2 +-
+>  lib/test_bitmap.c | 6 ++++++
+>  2 files changed, 7 insertions(+), 1 deletion(-)
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
