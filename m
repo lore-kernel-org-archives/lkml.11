@@ -2,200 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44E4BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:01:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFA4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbiGLOBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
+        id S229629AbiGLOBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233473AbiGLN6z (ORCPT
+        with ESMTP id S233516AbiGLOAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:58:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2C951A1A7;
-        Tue, 12 Jul 2022 06:58:38 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 343D51A9A;
-        Tue, 12 Jul 2022 06:58:38 -0700 (PDT)
-Received: from e126387.arm.com (unknown [10.57.72.222])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 986B03F73D;
-        Tue, 12 Jul 2022 06:58:36 -0700 (PDT)
-From:   carsten.haitzler@foss.arm.com
-To:     linux-kernel@vger.kernel.org
-Cc:     coresight@lists.linaro.org, suzuki.poulose@arm.com,
-        mathieu.poirier@linaro.org, mike.leach@linaro.org,
-        leo.yan@linaro.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Subject: [PATCH 11/14] perf test: Add unroll thread test tool
-Date:   Tue, 12 Jul 2022 14:57:47 +0100
-Message-Id: <20220712135750.2212005-12-carsten.haitzler@foss.arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712135750.2212005-1-carsten.haitzler@foss.arm.com>
-References: <20220712135750.2212005-1-carsten.haitzler@foss.arm.com>
+        Tue, 12 Jul 2022 10:00:54 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEA3E02B;
+        Tue, 12 Jul 2022 07:00:17 -0700 (PDT)
+Received: from notapiano (pool-98-113-53-228.nycmny.fios.verizon.net [98.113.53.228])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: nfraprado)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 13E0B66016F8;
+        Tue, 12 Jul 2022 15:00:13 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657634415;
+        bh=mbcA91S5p6wcOQpchlxMqQs99CbpqYRQB8T7w4Nci6I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ZJoOAEjRo3DgflaYetEXXTahyQ9YbJxeMhcsLOru17+VQSWm9crnflya6zAuO169F
+         PNDsaEQuwqqiFB1VNtKUVJcj0YtMGihuCBjJI4vA9cMWj4XT94jEaQWzqUB3IiUidy
+         SIWEei97AJus7Ya3q2UC3HRAuFhK7iAImVhCf+C3+m9SHKJbiXTKuM5NvrXIc1bcTN
+         3jLhUWa6zb7yjqru4RzRLzkt1aWIhr3fE1cA/c5rjSpsF0tgwT/0cQYJFLL8m00bow
+         woUWTYKMRB/Ad+/KIX962tsD1G5jnbxDqG1VGF+E6g64HOPDRv4pLMimjAJlfdDAXT
+         VWZ/kAd0IUP2Q==
+Date:   Tue, 12 Jul 2022 10:00:10 -0400
+From:   =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado 
+        <nfraprado@collabora.com>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
+        kernel@collabora.com, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Ran Jianping <ran.jianping@zte.com.cn>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH] clk: mediatek: Don't check HW status for mt8192/5's
+ imp_iic_wrap clocks
+Message-ID: <20220712140010.nfxo42td3zzy3iqp@notapiano>
+References: <20220711205733.203963-1-nfraprado@collabora.com>
+ <CAGXv+5Enkz20o8BLXmnCUBmB930sH+20U=XvTWA82neaiqqc2A@mail.gmail.com>
+ <473aa749-fcfe-bd38-0d83-95375aeef8a3@collabora.com>
+ <CAGXv+5E+HVi2kxkRrwhWhq2XgbmfCxj+ZywPT4orBXTxtJ7X1Q@mail.gmail.com>
+ <9102680e-2c4c-6c62-0255-5f3f669dd16c@collabora.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <9102680e-2c4c-6c62-0255-5f3f669dd16c@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Carsten Haitzler (Rasterman)" <raster@rasterman.com>
+On Tue, Jul 12, 2022 at 12:57:47PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 12/07/22 12:56, Chen-Yu Tsai ha scritto:
+> > On Tue, Jul 12, 2022 at 6:55 PM AngeloGioacchino Del Regno
+> > <angelogioacchino.delregno@collabora.com> wrote:
+> > > 
+> > > Il 12/07/22 12:44, Chen-Yu Tsai ha scritto:
+> > > > Hi,
+> > > > 
+> > > > On Tue, Jul 12, 2022 at 4:57 AM Nícolas F. R. A. Prado
+> > > > <nfraprado@collabora.com> wrote:
+> > > > > 
+> > > > > The imp_iic_wrap clocks on mt8192/mt8195 require that the i2c_sel parent
+> > > > > clock be enabled before their hardware status can be checked. Since this
+> > > > > wasn't taken into account, reading from the clk_summary debugfs file
+> > > > > would cause the system to completely freeze.
+> > > > > 
+> > > > > Assuming that this clock is managed only by the kernel, and not by any
+> > > > > firmware, simply drop the is_enabled() optional callback and instead
+> > > > > rely on the enable count for the imp_iic_wrap clocks.
+> > > > 
+> > > > That's the wrong way to go about it.
+> > > > 
+> > > > The I2C clocks already have the CLK_OPS_PARENT_ENABLE flag set. So the
+> > > > issue is that somewhere in the clk core, a piece of code is not honoring
+> > > > that flag.
+> > > > 
+> > > > And it seems that's in more than one place.
+> > > > 
+> > > 
+> > > Uhm, you're right. I gave my Tested-by, but not a Reviewed-by because I
+> > > wasn't really convinced about this solution being the best.
+> > > 
+> > > Now that I think of it, the solution may be as simple as:
+> > > 
+> > > clk.c
+> > > 
+> > > static bool clk_core_is_enabled(struct clk_core *core)
+> > > {
+> > >          bool ret = false;
+> > > 
+> > >          /*
+> > >           * If this clock needs parent enabled, but its parent is
+> > >           * off, we directly return false for two reasons:
+> > >           * 1. This clock being enabled would be impossible
+> > >           * 2. The platform may crash for unclocked access while
+> > >           *    reading the status of this clock (where a .is_enabled
+> > >           *    callback is provided).
+> > >           */
+> > >          if (core->flags & CLK_OPS_PARENT_ENABLE &&
+> > >              !clk_core_is_enabled(core->parent))
+> > >                  return false;
+> > > 
+> > >          ... etc etc etc ...
+> > > }
+> > > 
+> > > Nícolas, did you try this approach?
 
-Add test tool to be driven by further test scripts. This is a simple C
-based test that is for arm64 with some inline ASM to manually unroll a
-lot of code to have a very long sequence of commands.
+From reading the core clock code, it's mentioned that CLK_OPS_PARENT_ENABLE is
+used "during gate/ungate, set rate and re-parent", there's no mention of
+"checking the gate state", so I assumed this operation was intentionally not
+handled by this flag. That's why I went for this solution.
 
-Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
----
- tools/perf/tests/shell/coresight/Makefile     |  3 +-
- .../coresight/unroll_loop_thread/.gitignore   |  1 +
- .../coresight/unroll_loop_thread/Makefile     | 33 +++++++++
- .../unroll_loop_thread/unroll_loop_thread.c   | 74 +++++++++++++++++++
- 4 files changed, 110 insertions(+), 1 deletion(-)
- create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/.gitignore
- create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/Makefile
- create mode 100644 tools/perf/tests/shell/coresight/unroll_loop_thread/unroll_loop_thread.c
+But from the discussion sounds like the flag should indeed be caring about the
+is_enabled() operation as well, so let's go with Chen-Yu's patch.
 
-diff --git a/tools/perf/tests/shell/coresight/Makefile b/tools/perf/tests/shell/coresight/Makefile
-index 004974a71fb8..3b2b876cd9e2 100644
---- a/tools/perf/tests/shell/coresight/Makefile
-+++ b/tools/perf/tests/shell/coresight/Makefile
-@@ -7,7 +7,8 @@ include ../../../../../tools/scripts/utilities.mak
- SUBDIRS = \
- 	asm_pure_loop \
- 	memcpy_thread \
--	thread_loop
-+	thread_loop \
-+	unroll_loop_thread
- 
- all: $(SUBDIRS)
- $(SUBDIRS):
-diff --git a/tools/perf/tests/shell/coresight/unroll_loop_thread/.gitignore b/tools/perf/tests/shell/coresight/unroll_loop_thread/.gitignore
-new file mode 100644
-index 000000000000..2cb4e996dbf3
---- /dev/null
-+++ b/tools/perf/tests/shell/coresight/unroll_loop_thread/.gitignore
-@@ -0,0 +1 @@
-+unroll_loop_thread
-diff --git a/tools/perf/tests/shell/coresight/unroll_loop_thread/Makefile b/tools/perf/tests/shell/coresight/unroll_loop_thread/Makefile
-new file mode 100644
-index 000000000000..6264c4e3abd1
---- /dev/null
-+++ b/tools/perf/tests/shell/coresight/unroll_loop_thread/Makefile
-@@ -0,0 +1,33 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Carsten Haitzler <carsten.haitzler@arm.com>, 2021
-+include ../Makefile.miniconfig
-+
-+# Binary to produce
-+BIN=unroll_loop_thread
-+# Any linking/libraries needed for the binary - empty if none needed
-+LIB=-pthread
-+
-+all: $(BIN)
-+
-+$(BIN): $(BIN).c
-+ifdef CORESIGHT
-+ifeq ($(ARCH),arm64)
-+# Build line
-+	$(Q)$(CC) $(BIN).c -o $(BIN) $(LIB)
-+endif
-+endif
-+
-+install-tests: all
-+ifdef CORESIGHT
-+ifeq ($(ARCH),arm64)
-+# Install the test tool in the right place
-+	$(call QUIET_INSTALL, tests) \
-+		$(INSTALL) -d -m 755 '$(DESTDIR_SQ)$(perfexec_instdir_SQ)/$(INSTDIR_SUB)/$(BIN)'; \
-+		$(INSTALL) $(BIN) '$(DESTDIR_SQ)$(perfexec_instdir_SQ)/$(INSTDIR_SUB)/$(BIN)/$(BIN)'
-+endif
-+endif
-+
-+clean:
-+	$(Q)$(RM) -f $(BIN)
-+
-+.PHONY: all clean install-tests
-diff --git a/tools/perf/tests/shell/coresight/unroll_loop_thread/unroll_loop_thread.c b/tools/perf/tests/shell/coresight/unroll_loop_thread/unroll_loop_thread.c
-new file mode 100644
-index 000000000000..cb9d22c7dfb9
---- /dev/null
-+++ b/tools/perf/tests/shell/coresight/unroll_loop_thread/unroll_loop_thread.c
-@@ -0,0 +1,74 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Carsten Haitzler <carsten.haitzler@arm.com>, 2021
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <string.h>
-+#include <pthread.h>
-+
-+struct args {
-+	pthread_t th;
-+	unsigned int in, out;
-+	void *ret;
-+};
-+
-+static void *thrfn(void *arg)
-+{
-+	struct args *a = arg;
-+	unsigned int i, in = a->in;
-+
-+	for (i = 0; i < 10000; i++) {
-+		asm volatile (
-+// force an unroll of thia add instruction so we can test long runs of code
-+#define SNIP1 "add %[in], %[in], #1\n"
-+// 10
-+#define SNIP2 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1 SNIP1
-+// 100
-+#define SNIP3 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2 SNIP2
-+// 1000
-+#define SNIP4 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3 SNIP3
-+// 10000
-+#define SNIP5 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4 SNIP4
-+// 100000
-+			SNIP5 SNIP5 SNIP5 SNIP5 SNIP5 SNIP5 SNIP5 SNIP5 SNIP5 SNIP5
-+			: /* out */
-+			: /* in */ [in] "r" (in)
-+			: /* clobber */
-+		);
-+	}
-+}
-+
-+static pthread_t new_thr(void *(*fn) (void *arg), void *arg)
-+{
-+	pthread_t t;
-+	pthread_attr_t attr;
-+
-+	pthread_attr_init(&attr);
-+	pthread_create(&t, &attr, fn, arg);
-+	return t;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	unsigned int i, thr;
-+	pthread_t threads[256];
-+	struct args args[256];
-+
-+	if (argc < 2) {
-+		printf("ERR: %s [numthreads]\n", argv[0]);
-+		exit(1);
-+	}
-+
-+	thr = atoi(argv[1]);
-+	if ((thr > 256) || (thr < 1)) {
-+		printf("ERR: threads 1-256\n");
-+		exit(1);
-+	}
-+	for (i = 0; i < thr; i++) {
-+		args[i].in = rand();
-+		args[i].th = new_thr(thrfn, &(args[i]));
-+	}
-+	for (i = 0; i < thr; i++)
-+		pthread_join(args[i].th, &(args[i].ret));
-+	return 0;
-+}
--- 
-2.32.0
+Thanks,
+Nícolas
 
+> > 
+> > I have a patch ready, but I got distracted by other stuff today.
+> > 
+> 
+> Let's just wait for your patch then, seems like being the most sensible option.
+> 
+> Cheers!
