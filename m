@@ -2,171 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:54:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF211C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232712AbiGLIx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
+        id S232582AbiGLI4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232599AbiGLIxs (ORCPT
+        with ESMTP id S229780AbiGLI4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:53:48 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEED462FE;
-        Tue, 12 Jul 2022 01:53:44 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id d187so7171890vsd.10;
-        Tue, 12 Jul 2022 01:53:44 -0700 (PDT)
+        Tue, 12 Jul 2022 04:56:08 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1CC2A79F9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:56:07 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id z25so12836483lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:56:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kpinsuut8uy/po5okYJBMsfKic8kB6vMadZAvETnKBk=;
-        b=dwJv1Pib8Q7+nvpJSurnA2xBBEzBrTNW5L3cdY1SvxMosGk6cx1B0idKPFxZEIioGY
-         AqcX5e4NBdjPBEq7A/CCssiZgQL3MJhWHJvRl6jFVmov/5NnQu8w8hIWhurofLTxLKSF
-         7hdX1g2K84bWUxhnsweKaXjgI2dYVRWiD0zYcTwM+QfWBgCRp+OAjV0bKtVfpAz5BFIc
-         ubqtALxkDCKIOKalZTp1RfBFi+fF80JGD634VfPEY5Z6Xt/6aUrezn2nuycjL2MOvrQo
-         LvFLPxdQ4RyM9UuJGv9NYBzeB4PszmM/TLyxcL7UBHI1/X9WR94/3HDXConzrUZwztQV
-         R1rQ==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=cPj9MTsK1QXN/Iovblt90lj8En5FjLfhaWRro/VdiFw=;
+        b=YCBAMTot/cYovGazfhpGKpUF5Ea9mggII3+fFTLnNxGYVXkCU4erD15c2AteOJVV/b
+         RLzvm6S8U6+orKFUNhrSe3lODa3/1FirokDfNzB1pEwmtvgDXv20UYDNh0FyMNLiFf4N
+         P2mF0jSgzao3vOWRq1kjDsNHWPIQBVPHLAgs+YxNqmhKY3UUP/UkQ4aU+0ktzTPi8GyP
+         Qh1ejTFkbGayT4LwIoJMzGQDem3M+jBKHFWnH2mJGHr4AKTKCGunBiV5nw+g0C8qxrEB
+         cn0iTVy3+l1ic9ghEJlNt107jevSSTTupTwTF3uO6WbzBcEuqrW/j+gepDW26KVVPrCa
+         3KkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kpinsuut8uy/po5okYJBMsfKic8kB6vMadZAvETnKBk=;
-        b=rjYK9yXX81DvID5ZmhNc1ZHvGbyxgcgYNdiVYa7uZlhWkUygRAihiaW74dcFkOVkP4
-         bEba8JFTangvrbph5gxle2tWNYDt5y5kz4+7eZKGMYjfMkbB2QEdrFpHCH+2SGa3J9Mw
-         bXEzPrgs+8pwQd2eIKcKBjY5sApBjD5uj6Qyqlcr6yE6PhkwKIPtuf/RHTj0O1RO4FzA
-         ms6FOU+aWb8F8bL4O9xkMsyOrAe8m8ELYTnsjELWrV4hyEni7cLB0JacewaynB9ceyF8
-         qJatuSyP2thXGzQN45NRaeKUcvGUbuK8/LdQtTdluxAVf+zZgqigvpDboNU5HckZdsF1
-         HpJg==
-X-Gm-Message-State: AJIora/HLL0bnQB9Ual/QgywyQ4lUppc+TRwJbs0eJdv73SZlRnENQhL
-        xqXCnbweVX7DoHn4PH9N56TwdWt2YRVJbIEe3yg=
-X-Google-Smtp-Source: AGRyM1vGuZr37QKxGZELIk3qMdL5HX6pFPV1LqHc7xDSaL+xY6Ja4/bjdrQ9Vps4TUIPmQDgFhEufFvyr1b+jLsacsM=
-X-Received: by 2002:a67:ec05:0:b0:357:7a48:cba8 with SMTP id
- d5-20020a67ec05000000b003577a48cba8mr637429vso.78.1657616024024; Tue, 12 Jul
- 2022 01:53:44 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cPj9MTsK1QXN/Iovblt90lj8En5FjLfhaWRro/VdiFw=;
+        b=BicR5D37NXWBhNWnWdKs76c0NJBkUi/DizsX3nVNcmpnhX9JfJ7pGwWCN3LC3R7fdT
+         VZ4vOvfvK5Rj0QXaD0rok8Wx7p7AC9iBGi5Tgw++8YXSSKLOLI6p3t03FsZteKVK6VJm
+         9Mtt1uwB2cHdV/nR0GPVvrIob6CpR/Ug9hOT9MwD0+FQapKuHun0xy7OIjXRwrghC3eu
+         xQQGkGwWgRmmLJuAA6EbDxrKdapTUSXYlNjrk092KhGsrRgrARtkbmHd1DJ9a2tBl017
+         mPJ5S4Nqtbyx048pMfnUDjijfwXax7zB+yAXWsL8Ek/rktlMGc4/78b1P2M99zM2LuC1
+         lggQ==
+X-Gm-Message-State: AJIora9+RNm3+lhA6QpgTCVO5duGZibhuQTIRjo9jdNSzX3974reA4dQ
+        zPz3YqyyxvdU1BXHUG7Yz1O0qw==
+X-Google-Smtp-Source: AGRyM1tU6nmMrgLNu9squdgDq1hdAkpsHdK3LDTR4p70bozyzAhc5eBWHuXLCEc9Fh6s/suOKxdrjw==
+X-Received: by 2002:ac2:568a:0:b0:489:dd50:bfc9 with SMTP id 10-20020ac2568a000000b00489dd50bfc9mr6257755lfr.487.1657616166108;
+        Tue, 12 Jul 2022 01:56:06 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5cab-55.bb.online.no. [88.92.171.55])
+        by smtp.gmail.com with ESMTPSA id 8-20020ac25f08000000b0047fac765f39sm2051069lfq.219.2022.07.12.01.56.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 01:56:05 -0700 (PDT)
+Message-ID: <94667ee2-3b5f-37f9-49f6-a28ecd69e709@linaro.org>
+Date:   Tue, 12 Jul 2022 10:56:03 +0200
 MIME-Version: 1.0
-References: <20220712075255.1345991-1-chenhuacai@loongson.cn>
- <20220712075255.1345991-3-chenhuacai@loongson.cn> <CAMuHMdUazqHLbc80vpZ+Msg9A3j5aPJ3fx+CdCG3kuWDSf8WSw@mail.gmail.com>
-In-Reply-To: <CAMuHMdUazqHLbc80vpZ+Msg9A3j5aPJ3fx+CdCG3kuWDSf8WSw@mail.gmail.com>
-From:   Huacai Chen <chenhuacai@gmail.com>
-Date:   Tue, 12 Jul 2022 16:53:32 +0800
-Message-ID: <CAAhV-H775jXMbcR9j=oLBuHo1PfFziZSUQWttJAEw20sUt+GAA@mail.gmail.com>
-Subject: Re: [PATCH 3/6] M68K: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Huacai Chen <chenhuacai@loongson.cn>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Michal Simek <monstr@monstr.eu>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        loongarch@lists.linux.dev, Linux-Arch <linux-arch@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        linux-um <linux-um@lists.infradead.org>,
-        stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v7 2/4] dt-bindings: mailbox: qcom: correct clocks for
+ IPQ6018 and IPQ8074
+Content-Language: en-US
+To:     Robert Marko <robimarko@gmail.com>, agross@kernel.org,
+        bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
+        jassisinghbrar@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220711105931.43164-1-robimarko@gmail.com>
+ <20220711105931.43164-2-robimarko@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220711105931.43164-2-robimarko@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Geert,
+On 11/07/2022 12:59, Robert Marko wrote:
+> IPQ6018 APSS driver is registered by APCS as they share the same register
+> space, and it uses "pll" and "xo" as inputs.
+> 
+> Correct the allowed clocks for IPQ6018 and IPQ8074 as they share the same
+> driver to allow "pll" and "xo" as clock-names.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> ---
+>  .../mailbox/qcom,apcs-kpss-global.yaml        | 44 ++++++++++++++-----
+>  1 file changed, 32 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml b/Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml
+> index 95ecb84e3278..939ce63fa824 100644
+> --- a/Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml
+> +++ b/Documentation/devicetree/bindings/mailbox/qcom,apcs-kpss-global.yaml
+> @@ -41,10 +41,6 @@ properties:
+>    clocks:
+>      description: phandles to the parent clocks of the clock driver
+>      minItems: 2
 
-On Tue, Jul 12, 2022 at 4:33 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Huacai,
->
-> Thanks for your patch!
->
-> On Tue, Jul 12, 2022 at 9:53 AM Huacai Chen <chenhuacai@loongson.cn> wrote:
-> > When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
->
-> DEBUG_PER_CPU_MAPS depends on SMP, which is not supported on m68k,
-> and thus cannot be enabled.
-This patch is derived from MIPS and LoongArch, I search all
-architectures and change those that look the same as MIPS and
-LoongArch.
-And the warning message below is also a copy-paste from LoongArch, sorry.
+You need maxItems (widest) as well.
 
-Since M68K doesn't support SMP, then this patch seems to make no
-difference, but does it make sense to keep consistency across all
-architectures?
+> -    items:
+> -      - description: primary pll parent of the clock driver
+> -      - description: auxiliary parent
+> -      - description: reference clock
+>  
+>    '#mbox-cells':
+>      const: 1
+> @@ -54,10 +50,6 @@ properties:
+>  
+>    clock-names:
+>      minItems: 2
 
-Huacai
->
-> > cpu_max_bits_warn() generates a runtime warning similar as below while
-> > we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
-> > instead of NR_CPUS to iterate CPUs.
-> >
-> > [    3.052463] ------------[ cut here ]------------
-> > [    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
-> > [    3.070072] Modules linked in: efivarfs autofs4
->
-> efivarfs on m68k?
->
-> EFIVAR_FS depends on EFI depends on !CPU_BIG_ENDIAN
->
-> > [    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
-> > [    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
-> > [    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
-> > [    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
-> > [    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
-> > [    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
-> > [    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
-> > [    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
-> > [    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
-> > [    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
-> > [    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
-> > [    3.195868]         ...
-> > [    3.199917] Call Trace:
-> > [    3.203941] [<90000000002086d8>] show_stack+0x38/0x14c
-> > [    3.210666] [<9000000000cf846c>] dump_stack_lvl+0x60/0x88
-> > [    3.217625] [<900000000023d268>] __warn+0xd0/0x100
-> > [    3.223958] [<9000000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
-> > [    3.231150] [<9000000000210220>] show_cpuinfo+0x5e8/0x5f0
-> > [    3.238080] [<90000000004f578c>] seq_read_iter+0x354/0x4b4
-> > [    3.245098] [<90000000004c2e90>] new_sync_read+0x17c/0x1c4
-> > [    3.252114] [<90000000004c5174>] vfs_read+0x138/0x1d0
-> > [    3.258694] [<90000000004c55f8>] ksys_read+0x70/0x100
-> > [    3.265265] [<9000000000cfde9c>] do_syscall+0x7c/0x94
-> > [    3.271820] [<9000000000202fe4>] handle_syscall+0xc4/0x160
-> > [    3.281824] ---[ end trace 8b484262b4b8c24c ]---
-> >
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
->
-> Does this need a Fixes tag, so we know when the problem was introduced?
->
-> > --- a/arch/m68k/kernel/setup_no.c
-> > +++ b/arch/m68k/kernel/setup_no.c
-> > @@ -201,7 +201,7 @@ static int show_cpuinfo(struct seq_file *m, void *v)
-> >
-> >  static void *c_start(struct seq_file *m, loff_t *pos)
-> >  {
-> > -       return *pos < NR_CPUS ? ((void *) 0x12345678) : NULL;
-> > +       return *pos < nr_cpu_ids ? ((void *) 0x12345678) : NULL;
-> >  }
->
-> include/linux/cpumask.h has:
->
->     #if NR_CPUS == 1
->     #define nr_cpu_ids              1U
->
-> so on m68k, both evaluate to the same value?
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
+You need maxItems as well.
+
+> -    items:
+> -      - const: pll
+> -      - const: aux
+> -      - const: ref
+
+Best regards,
+Krzysztof
