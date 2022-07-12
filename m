@@ -2,78 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A68C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiGLOSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:18:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
+        id S233560AbiGLOSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233237AbiGLORu (ORCPT
+        with ESMTP id S233282AbiGLORv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:17:50 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E681A2E74;
-        Tue, 12 Jul 2022 07:17:48 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lj2p76HlXz1L8sb;
-        Tue, 12 Jul 2022 22:15:11 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 22:17:45 +0800
-Received: from [10.174.177.243] (10.174.177.243) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 22:17:44 +0800
-Message-ID: <4b5f52c3-00ea-0aac-ff05-a25741f3f0e3@huawei.com>
-Date:   Tue, 12 Jul 2022 22:17:44 +0800
+        Tue, 12 Jul 2022 10:17:51 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9600AB1861
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:50 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3137316bb69so82209297b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rAqtnQvHicJEwVtFwBWlT2ImbHkxNKwCydMf49aDhZw=;
+        b=aiMgzeBmgUZ/65gwB7z3OTtsJK0m68bYi/4uF0m2lufr7mlmeVAZPQ0CgoETjNHwN9
+         OR5ql/M5renBykTr5vdYLobTW0XAP/UTlosdoJx2ANZqwzs8BK3tQGb/yRGemqhOPTB5
+         iK99Fjwli6AAsLPKMn8lRm5+/LpczLnXvRM5mdBg7X8PI1Rb0wb3vtXNmwxva/MoP8Y9
+         f0pMS7Ab2OR6Rz5JjkDq0qesIKRAysU1yuWv5n+e039Y8V30n/O9aqVLUMKQNiHTpAvR
+         iguPu8aE/PvAAvswibB+IxoRaR7YpLvASj0kcPA4lDVbjhZ/A8OlDVlXCq4Uy6Acnz0a
+         GKhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rAqtnQvHicJEwVtFwBWlT2ImbHkxNKwCydMf49aDhZw=;
+        b=Nt2rNEOcf8BGlao9bWCGJWa9OST/8Boc7sCMyxs0ZoNQRxLR+t5AY1kuy39ZU1vRx3
+         7+hxNWm+sOHdNUvq7J7gyut6ODEAeYPiNnPgu1bDyjzn1sR+i/PPoONA/2i3cw5ly0Kw
+         DElATl4vHN1vBoc6TPLsReFB+pneur7aPPW83LVvHMMdi2sRNGbmITzVMElib8qp8pug
+         Wklp47HcTg3zOnxqEbUFSFFgOrqu+eDbpYb4mHbdCzBmdsG7oyXyB4swGxxdzu+WRZL4
+         SS19I/EopHkhArENpAulFw5TIN2RuKbPKHqU8f6UE4HA86QmH382QAqT0e18noGIzSWM
+         ew+Q==
+X-Gm-Message-State: AJIora9WYeLvEZJGc/D1K2LttFTRaRYvgiWJnwfB8zYhQIgC4aHR+Qhh
+        d9OIO7OMrwQhhZmI0Z6ldZNBGpnmDLXCOwJAnvn2Lw==
+X-Google-Smtp-Source: AGRyM1tKjPPwFYnKg+0p6eGc1mlWK6G9zJMRPDOrTPORWMifQA9yBH9S1buboNSiyORVrmetN+LzTUSEuucVV4I4Qr8=
+X-Received: by 2002:a81:98d:0:b0:31c:921c:9783 with SMTP id
+ 135-20020a81098d000000b0031c921c9783mr25429483ywj.316.1657635469677; Tue, 12
+ Jul 2022 07:17:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] zram: fix unused 'zram_wb_devops' warning
-Content-Language: en-US
-To:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>,
-        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
-        Jens Axboe <axboe@kernel.dk>, <linux-kernel@vger.kernel.org>
-CC:     <linux-block@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>
-References: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-In-Reply-To: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.243]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-8-glider@google.com>
+In-Reply-To: <20220701142310.2188015-8-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 12 Jul 2022 16:17:14 +0200
+Message-ID: <CANpmjNPmp9J_2T8yw4oTBp_beywg_o=e-A3Y9nVvcHhTio4hDg@mail.gmail.com>
+Subject: Re: [PATCH v4 07/45] kmsan: introduce __no_sanitize_memory and __no_kmsan_checks
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+mm,  kindly ping...
+On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
+>
+> __no_sanitize_memory is a function attribute that instructs KMSAN to
+> skip a function during instrumentation. This is needed to e.g. implement
+> the noinstr functions.
+>
+> __no_kmsan_checks is a function attribute that makes KMSAN
+> ignore the uninitialized values coming from the function's
+> inputs, and initialize the function's outputs.
+>
+> Functions marked with this attribute can't be inlined into functions
+> not marked with it, and vice versa. This behavior is overridden by
+> __always_inline.
+>
+> __SANITIZE_MEMORY__ is a macro that's defined iff the file is
+> instrumented with KMSAN. This is not the same as CONFIG_KMSAN, which is
+> defined for every file.
+>
+> Signed-off-by: Alexander Potapenko <glider@google.com>
 
-On 2022/6/8 15:25, Kefeng Wang wrote:
-> drivers/block/zram/zram_drv.c:55:45: warning: 'zram_wb_devops' defined but not used [-Wunused-const-variable=]
->
-> Fix the above warning if CONFIG_ZRAM_WRITEBACK not enabled.
->
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+Reviewed-by: Marco Elver <elver@google.com>
+
+
+
 > ---
->   drivers/block/zram/zram_drv.c | 2 ++
->   1 file changed, 2 insertions(+)
+> Link: https://linux-review.googlesource.com/id/I004ff0360c918d3cd8b18767ddd1381c6d3281be
+> ---
+>  include/linux/compiler-clang.h | 23 +++++++++++++++++++++++
+>  include/linux/compiler-gcc.h   |  6 ++++++
+>  2 files changed, 29 insertions(+)
 >
-> diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
-> index 39cd1397ed3b..fff5eb4d3f20 100644
-> --- a/drivers/block/zram/zram_drv.c
-> +++ b/drivers/block/zram/zram_drv.c
-> @@ -52,7 +52,9 @@ static unsigned int num_devices = 1;
->   static size_t huge_class_size;
->   
->   static const struct block_device_operations zram_devops;
-> +#ifdef CONFIG_ZRAM_WRITEBACK
->   static const struct block_device_operations zram_wb_devops;
+> diff --git a/include/linux/compiler-clang.h b/include/linux/compiler-clang.h
+> index c84fec767445d..4fa0cc4cbd2c8 100644
+> --- a/include/linux/compiler-clang.h
+> +++ b/include/linux/compiler-clang.h
+> @@ -51,6 +51,29 @@
+>  #define __no_sanitize_undefined
+>  #endif
+>
+> +#if __has_feature(memory_sanitizer)
+> +#define __SANITIZE_MEMORY__
+> +/*
+> + * Unlike other sanitizers, KMSAN still inserts code into functions marked with
+> + * no_sanitize("kernel-memory"). Using disable_sanitizer_instrumentation
+> + * provides the behavior consistent with other __no_sanitize_ attributes,
+> + * guaranteeing that __no_sanitize_memory functions remain uninstrumented.
+> + */
+> +#define __no_sanitize_memory __disable_sanitizer_instrumentation
+> +
+> +/*
+> + * The __no_kmsan_checks attribute ensures that a function does not produce
+> + * false positive reports by:
+> + *  - initializing all local variables and memory stores in this function;
+> + *  - skipping all shadow checks;
+> + *  - passing initialized arguments to this function's callees.
+> + */
+> +#define __no_kmsan_checks __attribute__((no_sanitize("kernel-memory")))
+> +#else
+> +#define __no_sanitize_memory
+> +#define __no_kmsan_checks
 > +#endif
->   
->   static void zram_free_page(struct zram *zram, size_t index);
->   static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
+> +
+>  /*
+>   * Support for __has_feature(coverage_sanitizer) was added in Clang 13 together
+>   * with no_sanitize("coverage"). Prior versions of Clang support coverage
+> diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> index a0c55eeaeaf16..63eb90eddad77 100644
+> --- a/include/linux/compiler-gcc.h
+> +++ b/include/linux/compiler-gcc.h
+> @@ -125,6 +125,12 @@
+>  #define __SANITIZE_ADDRESS__
+>  #endif
+>
+> +/*
+> + * GCC does not support KMSAN.
+> + */
+> +#define __no_sanitize_memory
+> +#define __no_kmsan_checks
+> +
+>  /*
+>   * Turn individual warnings and errors on and off locally, depending
+>   * on version.
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
