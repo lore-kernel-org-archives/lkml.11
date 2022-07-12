@@ -2,175 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25047CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51995C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232601AbiGLLvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34720 "EHLO
+        id S229840AbiGLLvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230187AbiGLLvc (ORCPT
+        with ESMTP id S232632AbiGLLvj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:51:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FD0EB31FD
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:51:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657626689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VpMSN19JfZbDsQBGsM5q3hUeCYalwJXgpAY79QE0LRc=;
-        b=OlCRRMmzkOU5gfhOYUHNnXP4OxViXhlEIDbF6dVaGfiDlZgKMoCcQeujkgPBOy3w4XzHpL
-        lGW0OeEIzOY/kPmveBNvvKHmqrnIkHCdu2Y2niF2MI0wla3Ah3ecN+MJZIW5+fdDIzOJmj
-        SHijmRgw7CSNyfS00YkWyRXjFVReBgo=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-498-q4GHxn5pPcmtrXvaHUCCZg-1; Tue, 12 Jul 2022 07:51:28 -0400
-X-MC-Unique: q4GHxn5pPcmtrXvaHUCCZg-1
-Received: by mail-qk1-f198.google.com with SMTP id bl27-20020a05620a1a9b00b0069994eeb30cso7569894qkb.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:51:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=VpMSN19JfZbDsQBGsM5q3hUeCYalwJXgpAY79QE0LRc=;
-        b=5X1m6krQhBIUEqArppnN/XptKIsjU+3U83QpDEUudsAVHhKtoxjyig1F3Q1YOnUpXU
-         5L0UEYopuMOwVcZCeQor3BQVbKd7C96karZ0y7yndCi9zjFCKsDuYaBpFI4mUKlNqvxu
-         T5yuU0pppxpjczaxEd8flsDhycUGLdulFnb8Vxq3DcZHV4eqtKFR1r2FDyofvFamyN03
-         6dPjZ5CIt9s9Lse7/9obfDItATzSsIJ0jzQ7Hhd4pcD9taPdvgKeEPHdkAXjlM4RObqe
-         Y+Z+PwVNTuoZEw7OK+Lek/7zZ+MvRE0vdMMipkRooUQC0wxM4TNoHoXZMSrUcUNRmwRF
-         nBbA==
-X-Gm-Message-State: AJIora+y1G3AUAksaTD8esEF7LoQG6EjHJPzHMNBPDJNhAxwhQTBNcfU
-        djKpSDmh7ArnvM22+yUc2Gmo3MBtJvodHaZzz3GlSlV+k55SgkOOzmL+HYZiBG6Bx/bh0ILJ4lw
-        8GTkRcvHIgW1/O1wqmBiO9tsS
-X-Received: by 2002:ac8:5fc6:0:b0:31e:b87b:66b6 with SMTP id k6-20020ac85fc6000000b0031eb87b66b6mr5495070qta.113.1657626688046;
-        Tue, 12 Jul 2022 04:51:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uC1suIks7htniWcFZcv5Q71PyP6lVZTePxvkpmzxL3fu7tO6X4FXbrP8SjlWR0BwlnAvrSaA==
-X-Received: by 2002:ac8:5fc6:0:b0:31e:b87b:66b6 with SMTP id k6-20020ac85fc6000000b0031eb87b66b6mr5495059qta.113.1657626687829;
-        Tue, 12 Jul 2022 04:51:27 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id y20-20020a37f614000000b006b55036fd3fsm8441957qkj.70.2022.07.12.04.51.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:51:27 -0700 (PDT)
-Message-ID: <74dbbe45ff8208c7900228842dda289453e6970c.camel@redhat.com>
-Subject: Re: [PATCH v3 05/25] KVM: nVMX: Support several new fields in
- eVMCSv1
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Jul 2022 14:51:24 +0300
-In-Reply-To: <20220708144223.610080-6-vkuznets@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
-         <20220708144223.610080-6-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Tue, 12 Jul 2022 07:51:39 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04788B38CA;
+        Tue, 12 Jul 2022 04:51:35 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VJ7zTIJ_1657626692;
+Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJ7zTIJ_1657626692)
+          by smtp.aliyun-inc.com;
+          Tue, 12 Jul 2022 19:51:32 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/6] net/smc: remove redundant dma sync ops
+Date:   Tue, 12 Jul 2022 19:51:25 +0800
+Message-Id: <1657626690-60367-2-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1657626690-60367-1-git-send-email-guwen@linux.alibaba.com>
+References: <1657626690-60367-1-git-send-email-guwen@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
-> Enlightened VMCS v1 definition was updated with new fields, add
-> support for them for Hyper-V on KVM.
-> 
-> Note: SSP, CET and Guest LBR features are not supported by KVM yet
-> and 'struct vmcs12' has no corresponding fields.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/vmx/nested.c | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-> index 778f82015f03..4fc84f0f5875 100644
-> --- a/arch/x86/kvm/vmx/nested.c
-> +++ b/arch/x86/kvm/vmx/nested.c
-> @@ -1603,6 +1603,10 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
->  		vmcs12->guest_rflags = evmcs->guest_rflags;
->  		vmcs12->guest_interruptibility_info =
->  			evmcs->guest_interruptibility_info;
-> +		/*
-> +		 * Not present in struct vmcs12:
-> +		 * vmcs12->guest_ssp = evmcs->guest_ssp;
-> +		 */
->  	}
->  
->  	if (unlikely(!(hv_clean_fields &
-> @@ -1649,6 +1653,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
->  		vmcs12->host_fs_selector = evmcs->host_fs_selector;
->  		vmcs12->host_gs_selector = evmcs->host_gs_selector;
->  		vmcs12->host_tr_selector = evmcs->host_tr_selector;
-> +		vmcs12->host_ia32_perf_global_ctrl = evmcs->host_ia32_perf_global_ctrl;
-> +		/*
-> +		 * Not present in struct vmcs12:
-> +		 * vmcs12->host_ia32_s_cet = evmcs->host_ia32_s_cet;
-> +		 * vmcs12->host_ssp = evmcs->host_ssp;
-> +		 * vmcs12->host_ia32_int_ssp_table_addr = evmcs->host_ia32_int_ssp_table_addr;
-> +		 */
->  	}
->  
->  	if (unlikely(!(hv_clean_fields &
-> @@ -1716,6 +1727,8 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
->  		vmcs12->tsc_offset = evmcs->tsc_offset;
->  		vmcs12->virtual_apic_page_addr = evmcs->virtual_apic_page_addr;
->  		vmcs12->xss_exit_bitmap = evmcs->xss_exit_bitmap;
-> +		vmcs12->encls_exiting_bitmap = evmcs->encls_exiting_bitmap;
-> +		vmcs12->tsc_multiplier = evmcs->tsc_multiplier;
->  	}
->  
->  	if (unlikely(!(hv_clean_fields &
-> @@ -1763,6 +1776,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
->  		vmcs12->guest_bndcfgs = evmcs->guest_bndcfgs;
->  		vmcs12->guest_activity_state = evmcs->guest_activity_state;
->  		vmcs12->guest_sysenter_cs = evmcs->guest_sysenter_cs;
-> +		vmcs12->guest_ia32_perf_global_ctrl = evmcs->guest_ia32_perf_global_ctrl;
-> +		/*
-> +		 * Not present in struct vmcs12:
-> +		 * vmcs12->guest_ia32_s_cet = evmcs->guest_ia32_s_cet;
-> +		 * vmcs12->guest_ia32_lbr_ctl = evmcs->guest_ia32_lbr_ctl;
-> +		 * vmcs12->guest_ia32_int_ssp_table_addr = evmcs->guest_ia32_int_ssp_table_addr;
-> +		 */
->  	}
->  
->  	/*
-> @@ -1865,12 +1885,23 @@ static void copy_vmcs12_to_enlightened(struct vcpu_vmx *vmx)
->  	 * evmcs->vm_exit_msr_store_count = vmcs12->vm_exit_msr_store_count;
->  	 * evmcs->vm_exit_msr_load_count = vmcs12->vm_exit_msr_load_count;
->  	 * evmcs->vm_entry_msr_load_count = vmcs12->vm_entry_msr_load_count;
-> +	 * evmcs->guest_ia32_perf_global_ctrl = vmcs12->guest_ia32_perf_global_ctrl;
-> +	 * evmcs->host_ia32_perf_global_ctrl = vmcs12->host_ia32_perf_global_ctrl;
-> +	 * evmcs->encls_exiting_bitmap = vmcs12->encls_exiting_bitmap;
-> +	 * evmcs->tsc_multiplier = vmcs12->tsc_multiplier;
->  	 *
->  	 * Not present in struct vmcs12:
->  	 * evmcs->exit_io_instruction_ecx = vmcs12->exit_io_instruction_ecx;
->  	 * evmcs->exit_io_instruction_esi = vmcs12->exit_io_instruction_esi;
->  	 * evmcs->exit_io_instruction_edi = vmcs12->exit_io_instruction_edi;
->  	 * evmcs->exit_io_instruction_eip = vmcs12->exit_io_instruction_eip;
-> +	 * evmcs->host_ia32_s_cet = vmcs12->host_ia32_s_cet;
-> +	 * evmcs->host_ssp = vmcs12->host_ssp;
-> +	 * evmcs->host_ia32_int_ssp_table_addr = vmcs12->host_ia32_int_ssp_table_addr;
-> +	 * evmcs->guest_ia32_s_cet = vmcs12->guest_ia32_s_cet;
-> +	 * evmcs->guest_ia32_lbr_ctl = vmcs12->guest_ia32_lbr_ctl;
-> +	 * evmcs->guest_ia32_int_ssp_table_addr = vmcs12->guest_ia32_int_ssp_table_addr;
-> +	 * evmcs->guest_ssp = vmcs12->guest_ssp;
->  	 */
->  
->  	evmcs->guest_es_selector = vmcs12->guest_es_selector;
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-Looks good.
+smc_ib_sync_sg_for_cpu/device are the ops used for dma memory cache
+consistency. Smc sndbufs are dma buffers, where CPU writes data to
+it and PCIE device reads data from it. So for sndbufs,
+smc_ib_sync_sg_for_device is needed and smc_ib_sync_sg_for_cpu is
+redundant as PCIE device will not write the buffers. Smc rmbs
+are dma buffers, where PCIE device write data to it and CPU read
+data from it. So for rmbs, smc_ib_sync_sg_for_cpu is needed and
+smc_ib_sync_sg_for_device is redundant as CPU will not write the buffers.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+---
+ net/smc/af_smc.c   |  2 --
+ net/smc/smc_core.c | 22 ----------------------
+ net/smc/smc_core.h |  2 --
+ net/smc/smc_rx.c   |  2 --
+ net/smc/smc_tx.c   |  1 -
+ 5 files changed, 29 deletions(-)
 
-Best regards,
-	Maxim Levitsky
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 433bb5a7..9497a3b 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1226,7 +1226,6 @@ static int smc_connect_rdma(struct smc_sock *smc,
+ 			goto connect_abort;
+ 		}
+ 	}
+-	smc_rmb_sync_sg_for_device(&smc->conn);
+ 
+ 	if (aclc->hdr.version > SMC_V1) {
+ 		struct smc_clc_msg_accept_confirm_v2 *clc_v2 =
+@@ -2113,7 +2112,6 @@ static int smc_listen_rdma_reg(struct smc_sock *new_smc, bool local_first)
+ 		if (smcr_lgr_reg_rmbs(conn->lnk, conn->rmb_desc))
+ 			return SMC_CLC_DECL_ERR_REGRMB;
+ 	}
+-	smc_rmb_sync_sg_for_device(&new_smc->conn);
+ 
+ 	return 0;
+ }
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index f40f6ed..1faa0cb 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -2290,14 +2290,6 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 	return 0;
+ }
+ 
+-void smc_sndbuf_sync_sg_for_cpu(struct smc_connection *conn)
+-{
+-	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
+-	    !smc_link_active(conn->lnk))
+-		return;
+-	smc_ib_sync_sg_for_cpu(conn->lnk, conn->sndbuf_desc, DMA_TO_DEVICE);
+-}
+-
+ void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn)
+ {
+ 	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
+@@ -2320,20 +2312,6 @@ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn)
+ 	}
+ }
+ 
+-void smc_rmb_sync_sg_for_device(struct smc_connection *conn)
+-{
+-	int i;
+-
+-	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
+-		return;
+-	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+-		if (!smc_link_active(&conn->lgr->lnk[i]))
+-			continue;
+-		smc_ib_sync_sg_for_device(&conn->lgr->lnk[i], conn->rmb_desc,
+-					  DMA_FROM_DEVICE);
+-	}
+-}
+-
+ /* create the send and receive buffer for an SMC socket;
+  * receive buffers are called RMBs;
+  * (even though the SMC protocol allows more than one RMB-element per RMB,
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 4cb03e9..c441dfe 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -513,10 +513,8 @@ void smc_rtoken_set(struct smc_link_group *lgr, int link_idx, int link_idx_new,
+ 		    __be32 nw_rkey_known, __be64 nw_vaddr, __be32 nw_rkey);
+ void smc_rtoken_set2(struct smc_link_group *lgr, int rtok_idx, int link_id,
+ 		     __be64 nw_vaddr, __be32 nw_rkey);
+-void smc_sndbuf_sync_sg_for_cpu(struct smc_connection *conn);
+ void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn);
+ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn);
+-void smc_rmb_sync_sg_for_device(struct smc_connection *conn);
+ int smc_vlan_by_tcpsk(struct socket *clcsock, struct smc_init_info *ini);
+ 
+ void smc_conn_free(struct smc_connection *conn);
+diff --git a/net/smc/smc_rx.c b/net/smc/smc_rx.c
+index 338b9ef..00ad004 100644
+--- a/net/smc/smc_rx.c
++++ b/net/smc/smc_rx.c
+@@ -413,7 +413,6 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 				if (rc < 0) {
+ 					if (!read_done)
+ 						read_done = -EFAULT;
+-					smc_rmb_sync_sg_for_device(conn);
+ 					goto out;
+ 				}
+ 			}
+@@ -427,7 +426,6 @@ int smc_rx_recvmsg(struct smc_sock *smc, struct msghdr *msg,
+ 			chunk_len_sum += chunk_len;
+ 			chunk_off = 0; /* modulo offset in recv ring buffer */
+ 		}
+-		smc_rmb_sync_sg_for_device(conn);
+ 
+ 		/* update cursors */
+ 		if (!(flags & MSG_PEEK)) {
+diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
+index 805a546..ca0d5f5 100644
+--- a/net/smc/smc_tx.c
++++ b/net/smc/smc_tx.c
+@@ -246,7 +246,6 @@ int smc_tx_sendmsg(struct smc_sock *smc, struct msghdr *msg, size_t len)
+ 				  tx_cnt_prep);
+ 		chunk_len_sum = chunk_len;
+ 		chunk_off = tx_cnt_prep;
+-		smc_sndbuf_sync_sg_for_cpu(conn);
+ 		for (chunk = 0; chunk < 2; chunk++) {
+ 			rc = memcpy_from_msg(sndbuf_base + chunk_off,
+ 					     msg, chunk_len);
+-- 
+1.8.3.1
 
