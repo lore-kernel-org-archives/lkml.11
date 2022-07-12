@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4EA8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbiGLTNr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43048 "EHLO
+        id S235959AbiGLTPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235639AbiGLTNE (ORCPT
+        with ESMTP id S236001AbiGLTOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:13:04 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5666169;
-        Tue, 12 Jul 2022 11:53:32 -0700 (PDT)
+        Tue, 12 Jul 2022 15:14:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F85C765C;
+        Tue, 12 Jul 2022 11:53:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87D46CE1A8C;
-        Tue, 12 Jul 2022 18:53:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 762FEC341C0;
-        Tue, 12 Jul 2022 18:53:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABA2661491;
+        Tue, 12 Jul 2022 18:53:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB88C3411C;
+        Tue, 12 Jul 2022 18:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652008;
-        bh=24ob/7h00TzVVLTobzWQ1zjvJdDqDNMmJEr8a2tT7g4=;
+        s=korg; t=1657652034;
+        bh=f+uU6J9TFzo69g/2PpcA8Me0kRnOl5SAjGpZBeSmyRU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d5+5qoaJqUoVpO4MxYRFiwTdNs6JSb28nTTB6QnPQWCIpo5G3nKO9g6a/F908Yxgw
-         Ut7LlHZQZhcdT8TmLaH+2mFRFC/KBjcPqB811wAAiIvWVbKOK1YCDh0kH6cBg+l18C
-         U3L4ADKdbedd0NxedPDNe5W8O2rARFnDk5UYNst0=
+        b=FImkjRZZehV/g+Ad/s8jBpBkBKT34624kgdM6pv9EzHKs0cehQceM8S8QgZQNeBCv
+         evV20WQR/Log+3kVOKDFn3i07TyYbNY2G6OyzLCtavaEXesIkv0kbJfUzXN9lrqfyF
+         GSGl5d9wCpGx2+OFzEPdtbo1OIGVqP/RqzszEv+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Edward Tran <edward.tran@oracle.com>,
+        Awais Tanveer <awais.tanveer@oracle.com>,
+        Ankur Arora <ankur.a.arora@oracle.com>,
+        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+        Alexandre Chartre <alexandre.chartre@oracle.com>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 52/61] KVM: VMX: Prevent RSB underflow before vmenter
-Date:   Tue, 12 Jul 2022 20:39:49 +0200
-Message-Id: <20220712183238.990422350@linuxfoundation.org>
+Subject: [PATCH 5.18 59/61] x86/kexec: Disable RET on kexec
+Date:   Tue, 12 Jul 2022 20:39:56 +0200
+Message-Id: <20220712183239.220828759@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -50,175 +53,173 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 
-commit 07853adc29a058c5fd143c14e5ac528448a72ed9 upstream.
+commit 697977d8415d61f3acbc4ee6d564c9dcf0309507 upstream.
 
-On VMX, there are some balanced returns between the time the guest's
-SPEC_CTRL value is written, and the vmenter.
+All the invocations unroll to __x86_return_thunk and this file
+must be PIC independent.
 
-Balanced returns (matched by a preceding call) are usually ok, but it's
-at least theoretically possible an NMI with a deep call stack could
-empty the RSB before one of the returns.
-
-For maximum paranoia, don't allow *any* returns (balanced or otherwise)
-between the SPEC_CTRL write and the vmenter.
+This fixes kexec on 64-bit AMD boxes.
 
   [ bp: Fix 32-bit build. ]
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reported-by: Edward Tran <edward.tran@oracle.com>
+Reported-by: Awais Tanveer <awais.tanveer@oracle.com>
+Suggested-by: Ankur Arora <ankur.a.arora@oracle.com>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: header conflict fixup at arch/x86/kernel/asm-offsets.c]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/asm-offsets.c   |    6 ++++++
- arch/x86/kernel/cpu/bugs.c      |    4 ++--
- arch/x86/kvm/vmx/capabilities.h |    4 ++--
- arch/x86/kvm/vmx/vmenter.S      |   29 +++++++++++++++++++++++++++++
- arch/x86/kvm/vmx/vmx.c          |    8 --------
- arch/x86/kvm/vmx/vmx.h          |    4 ++--
- arch/x86/kvm/vmx/vmx_ops.h      |    2 +-
- 7 files changed, 42 insertions(+), 15 deletions(-)
+ arch/x86/kernel/relocate_kernel_32.S |   25 +++++++++++++++++++------
+ arch/x86/kernel/relocate_kernel_64.S |   23 +++++++++++++++++------
+ 2 files changed, 36 insertions(+), 12 deletions(-)
 
---- a/arch/x86/kernel/asm-offsets.c
-+++ b/arch/x86/kernel/asm-offsets.c
-@@ -18,6 +18,7 @@
- #include <asm/bootparam.h>
- #include <asm/suspend.h>
- #include <asm/tlbflush.h>
-+#include "../kvm/vmx/vmx.h"
- 
- #ifdef CONFIG_XEN
- #include <xen/interface/xen.h>
-@@ -90,4 +91,9 @@ static void __used common(void)
- 	OFFSET(TSS_sp0, tss_struct, x86_tss.sp0);
- 	OFFSET(TSS_sp1, tss_struct, x86_tss.sp1);
- 	OFFSET(TSS_sp2, tss_struct, x86_tss.sp2);
-+
-+	if (IS_ENABLED(CONFIG_KVM_INTEL)) {
-+		BLANK();
-+		OFFSET(VMX_spec_ctrl, vcpu_vmx, spec_ctrl);
-+	}
- }
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -196,8 +196,8 @@ void __init check_bugs(void)
- }
+--- a/arch/x86/kernel/relocate_kernel_32.S
++++ b/arch/x86/kernel/relocate_kernel_32.S
+@@ -7,10 +7,12 @@
+ #include <linux/linkage.h>
+ #include <asm/page_types.h>
+ #include <asm/kexec.h>
++#include <asm/nospec-branch.h>
+ #include <asm/processor-flags.h>
  
  /*
-- * NOTE: For VMX, this function is not called in the vmexit path.
-- * It uses vmx_spec_ctrl_restore_host() instead.
-+ * NOTE: This function is *only* called for SVM.  VMX spec_ctrl handling is
-+ * done in vmenter.S.
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
   */
- void
- x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
---- a/arch/x86/kvm/vmx/capabilities.h
-+++ b/arch/x86/kvm/vmx/capabilities.h
-@@ -4,8 +4,8 @@
  
- #include <asm/vmx.h>
+ #define PTR(x) (x << 2)
+@@ -91,7 +93,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	movl    %edi, %eax
+ 	addl    $(identity_mapped - relocate_kernel), %eax
+ 	pushl   %eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
  
--#include "lapic.h"
--#include "x86.h"
-+#include "../lapic.h"
-+#include "../x86.h"
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -159,12 +163,15 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl    %edx, %edx
+ 	xorl    %esi, %esi
+ 	xorl    %ebp, %ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ 1:
+ 	popl	%edx
+ 	movl	CP_PA_SWAP_PAGE(%edi), %esp
+ 	addl	$PAGE_SIZE, %esp
+ 2:
++	ANNOTATE_RETPOLINE_SAFE
+ 	call	*%edx
  
- extern bool __read_mostly enable_vpid;
- extern bool __read_mostly flexpriority_enabled;
---- a/arch/x86/kvm/vmx/vmenter.S
-+++ b/arch/x86/kvm/vmx/vmenter.S
-@@ -1,9 +1,11 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- #include <linux/linkage.h>
- #include <asm/asm.h>
-+#include <asm/asm-offsets.h>
- #include <asm/bitsperlong.h>
- #include <asm/kvm_vcpu_regs.h>
- #include <asm/nospec-branch.h>
-+#include <asm/percpu.h>
- #include <asm/segment.h>
- #include "run_flags.h"
+ 	/* get the re-entry point of the peer system */
+@@ -190,7 +197,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	movl	%edi, %eax
+ 	addl	$(virtual_mapped - relocate_kernel), %eax
+ 	pushl	%eax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
  
-@@ -73,6 +75,33 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	lea (%_ASM_SP), %_ASM_ARG2
- 	call vmx_update_host_rsp
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -208,7 +217,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popl	%edi
+ 	popl	%esi
+ 	popl	%ebx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
  
-+	ALTERNATIVE "jmp .Lspec_ctrl_done", "", X86_FEATURE_MSR_SPEC_CTRL
-+
-+	/*
-+	 * SPEC_CTRL handling: if the guest's SPEC_CTRL value differs from the
-+	 * host's, write the MSR.
-+	 *
-+	 * IMPORTANT: To avoid RSB underflow attacks and any other nastiness,
-+	 * there must not be any returns or indirect branches between this code
-+	 * and vmentry.
-+	 */
-+	mov 2*WORD_SIZE(%_ASM_SP), %_ASM_DI
-+	movl VMX_spec_ctrl(%_ASM_DI), %edi
-+	movl PER_CPU_VAR(x86_spec_ctrl_current), %esi
-+	cmp %edi, %esi
-+	je .Lspec_ctrl_done
-+	mov $MSR_IA32_SPEC_CTRL, %ecx
-+	xor %edx, %edx
-+	mov %edi, %eax
-+	wrmsr
-+
-+.Lspec_ctrl_done:
-+
-+	/*
-+	 * Since vmentry is serializing on affected CPUs, there's no need for
-+	 * an LFENCE to stop speculation from skipping the wrmsr.
-+	 */
-+
- 	/* Load @regs to RAX. */
- 	mov (%_ASM_SP), %_ASM_AX
+ 	/* Do the copies */
+@@ -271,7 +282,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	popl	%edi
+ 	popl	%ebx
+ 	popl	%ebp
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
  
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6989,14 +6989,6 @@ static fastpath_t vmx_vcpu_run(struct kv
+ 	.globl kexec_control_code_size
+--- a/arch/x86/kernel/relocate_kernel_64.S
++++ b/arch/x86/kernel/relocate_kernel_64.S
+@@ -13,7 +13,8 @@
+ #include <asm/unwind_hints.h>
  
- 	kvm_wait_lapic_expire(vcpu);
+ /*
+- * Must be relocatable PIC code callable as a C function
++ * Must be relocatable PIC code callable as a C function, in particular
++ * there must be a plain RET and not jump to return thunk.
+  */
  
--	/*
--	 * If this vCPU has touched SPEC_CTRL, restore the guest's value if
--	 * it's non-zero. Since vmentry is serialising on affected CPUs, there
--	 * is no need to worry about the conditional branch over the wrmsr
--	 * being speculatively taken.
--	 */
--	x86_spec_ctrl_set_guest(vmx->spec_ctrl, 0);
--
- 	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
- 	vmx_vcpu_enter_exit(vcpu, vmx, __vmx_vcpu_run_flags(vmx));
+ #define PTR(x) (x << 3)
+@@ -105,7 +106,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
+ 	/* jump to identity mapped page */
+ 	addq	$(identity_mapped - relocate_kernel), %r8
+ 	pushq	%r8
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(relocate_kernel)
  
---- a/arch/x86/kvm/vmx/vmx.h
-+++ b/arch/x86/kvm/vmx/vmx.h
-@@ -8,11 +8,11 @@
- #include <asm/intel_pt.h>
+ SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+@@ -200,7 +203,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	xorl	%r14d, %r14d
+ 	xorl	%r15d, %r15d
  
- #include "capabilities.h"
--#include "kvm_cache_regs.h"
-+#include "../kvm_cache_regs.h"
- #include "posted_intr.h"
- #include "vmcs.h"
- #include "vmx_ops.h"
--#include "cpuid.h"
-+#include "../cpuid.h"
- #include "run_flags.h"
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
  
- #define MSR_TYPE_R	1
---- a/arch/x86/kvm/vmx/vmx_ops.h
-+++ b/arch/x86/kvm/vmx/vmx_ops.h
-@@ -8,7 +8,7 @@
+ 1:
+ 	popq	%rdx
+@@ -219,7 +224,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
+ 	call	swap_pages
+ 	movq	$virtual_mapped, %rax
+ 	pushq	%rax
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(identity_mapped)
  
- #include "evmcs.h"
- #include "vmcs.h"
--#include "x86.h"
-+#include "../x86.h"
+ SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+@@ -241,7 +248,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
+ 	popq	%r12
+ 	popq	%rbp
+ 	popq	%rbx
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(virtual_mapped)
  
- asmlinkage void vmread_error(unsigned long field, bool fault);
- __attribute__((regparm(0))) void vmread_error_trampoline(unsigned long field,
+ 	/* Do the copies */
+@@ -298,7 +307,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+ 	lea	PAGE_SIZE(%rax), %rsi
+ 	jmp	0b
+ 3:
+-	RET
++	ANNOTATE_UNRET_SAFE
++	ret
++	int3
+ SYM_CODE_END(swap_pages)
+ 
+ 	.globl kexec_control_code_size
 
 
