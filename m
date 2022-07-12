@@ -2,203 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80271C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8086BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235738AbiGLTLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41922 "EHLO
+        id S235746AbiGLTLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235896AbiGLTJx (ORCPT
+        with ESMTP id S235926AbiGLTJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:09:53 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1D5E5DC5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:52:31 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 650B95C00EE;
-        Tue, 12 Jul 2022 14:52:29 -0400 (EDT)
-Received: from imap47 ([10.202.2.97])
-  by compute2.internal (MEProxy); Tue, 12 Jul 2022 14:52:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-         h=cc:cc:content-type:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1657651949; x=1657738349; bh=IY
-        KejSUZ3WZ+rhgYIP1qlUg5GTYFGUfBIb/+FJ5/tLw=; b=dYgW8IM1NBH0bfRVhT
-        O72vlCb4L5NtaRaxC3jyVY/1BAu49rbKXMdfsQdoKp0R+L2hl9IClGIu3bU9+OXD
-        i2MI5FKhpdt/vOA5FiRwL3FHa4/KaN0HwzBk/HtIoPg25zy3E8RZlf8ZG4wV0Unz
-        zoWNFPNxdDyvh1/RInvUL+ZTLU+34LI4XlEDh5gGDpJBtY8v+WIy+qbAG/th+v8c
-        QjWedpCLz/gi2VlqmbAMNaLXBzkqsqAuDf7f/HFxThMOybtxbBe7HcLv4DtbM80J
-        n9OOfzLSXQWupHMWqZUsVqkzxLpSnSaa6sdFwzgN82BSONP+UqIyLpCDRTAlSzc1
-        znuQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1657651949; x=1657738349; bh=IYKejSUZ3WZ+rhgYIP1qlUg5GTYF
-        GUfBIb/+FJ5/tLw=; b=L+wMMjooU8IqVZuddaMv9tP/7F9+gJbvaHnsKyKz20oo
-        1wS6CnNJDTbed8NIyRVo64sRWeetdUJaJTNcv8YZtk7z83FB4q7s0fkFCsDDV9SF
-        fMg3iKplzkIcEv/8KBBCVW3+qtfggZ37rYP0IfgHsaxRcYzEYlUcmmTjMxMD7l/O
-        Xqxc35BlY7I/fgucIerpwGoiR2UjMeXNToQMkNGgaa0ydfceSWHPDGiM08H+XJIU
-        /ouiWTm3Lc9Mb/hsPC9HrmOkdhWfoPKOrsqzeFuz0Ue1mZwWkA103FVukQM7+sTM
-        N6N991AEtJkVOo2x+f77Rqs23jRUUi+CaM1RKET75g==
-X-ME-Sender: <xms:7cLNYs97A26n4RopurtOpIHYO7-zGfCEewyx6Xa6Sok5v8_KS9fcTg>
-    <xme:7cLNYkvNgeUWVpSR9lmbyLuixaEsxPcGmVst9CbH9qeQ9812rSna15V8c6c76Z68y
-    CEBPx0VJwFYQ7liwe0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejhedgudefvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfu
-    vhgvnhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtf
-    frrghtthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefg
-    hfeiveeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:7cLNYiAjOpmUDItfFMPMQzF2v4b3FotlmQJ-IXd6hizgo_NNaQY3ZA>
-    <xmx:7cLNYscgs98_M0NoR9NyKJCgsKrndXRRe1XRsFZ0Mb8KDPOKDCz3ow>
-    <xmx:7cLNYhODbzQabRyswE0tHFIH67Bry9p95L0wBng5MTy62BEUw83xGQ>
-    <xmx:7cLNYkoB_skrQX5QgXXw4jPQfpdSKaOaMMBPv5ip4iJ2Rj-3QwAjeA>
-Feedback-ID: i51094778:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 09226A6007C; Tue, 12 Jul 2022 14:52:28 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-755-g3e1da8b93f-fm-20220708.002-g3e1da8b9
-Mime-Version: 1.0
-Message-Id: <0ad65aa0-862d-4b5b-aa35-0323a19ba17a@www.fastmail.com>
-In-Reply-To: <20220712160919.740878-2-konrad.dybcio@somainline.org>
-References: <20220712160919.740878-1-konrad.dybcio@somainline.org>
- <20220712160919.740878-2-konrad.dybcio@somainline.org>
-Date:   Tue, 12 Jul 2022 20:52:08 +0200
-From:   "Sven Peter" <sven@svenpeter.dev>
-To:     "Konrad Dybcio" <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        "Hector Martin" <marcan@marcan.st>,
-        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Marc Zyngier" <maz@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] irqchip/apple-aic: Add support for A7-A11 SoCs
-Content-Type: text/plain
+        Tue, 12 Jul 2022 15:09:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBBAFFE0B;
+        Tue, 12 Jul 2022 11:52:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE03061274;
+        Tue, 12 Jul 2022 18:52:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55F2C341C0;
+        Tue, 12 Jul 2022 18:52:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657651953;
+        bh=seRPMTj96YlQMAcbki8HQXrzTJgGhYbVsCfNyj/pMR4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fgvhJTPAyZ9r0HdvNDHcGHFnzBWv981vkL8WgYcnoDNfDR8qaie3I9KpOoR0GtEUd
+         D7l7aBPdiGFo/uJbfEeC+WBMxmPTgBHNxOyJQNLtbepPm1RYmWD32mopxglTOj65OK
+         rLlbowgYbcXVtDqsQJ0k77iw2CtqBRY/XvTcAjeQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.18 33/61] intel_idle: Disable IBRS during long idle
+Date:   Tue, 12 Jul 2022 20:39:30 +0200
+Message-Id: <20220712183238.294505642@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
+References: <20220712183236.931648980@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-marcan probably has to review this in detail but two comments from me:
+From: Peter Zijlstra <peterz@infradead.org>
 
-On Tue, Jul 12, 2022, at 18:09, Konrad Dybcio wrote:
-> Add support for A7-A11 SoCs by if-ing out some features only present on
-> A12 & newer (UNCORE2 registers) or M1 & newer (EL2 registers - the
-> older SoCs don't implement EL2).
->
-> Also, annotate IPI regs support (A11 and newer*) so that the driver can
-> tell whether the SoC supports these (they are written to even if fast
-> IPI is disabled, when the registers are there of course).
->
-> *A11 is supposed to use this feature, but it is currently not working.
-> That said, it is not yet necessary, especially with only one core up,
-> and it works a-ok using the same featureset as earlier SoCs.
->
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-> ---
->  drivers/irqchip/irq-apple-aic.c | 54 +++++++++++++++++++++++----------
->  1 file changed, 38 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
-> index 12dd48727a15..36f4b52addc2 100644
-> --- a/drivers/irqchip/irq-apple-aic.c
-> +++ b/drivers/irqchip/irq-apple-aic.c
-> @@ -245,7 +245,10 @@ struct aic_info {
->  	u32 die_stride;
-> 
->  	/* Features */
-> +	bool el2_regs;
->  	bool fast_ipi;
-> +	bool ipi_regs;
-> +	bool uncore2_regs;
+commit bf5835bcdb9635c97f85120dba9bfa21e111130f upstream.
 
-I don't quite understand the difference between fast_ipi and ipi_regs.
-Don't we always have fast_ipi suppport when those regs are available?
+Having IBRS enabled while the SMT sibling is idle unnecessarily slows
+down the running sibling. OTOH, disabling IBRS around idle takes two
+MSR writes, which will increase the idle latency.
 
->  };
-> 
->  static const struct aic_info aic1_info = {
-> @@ -261,7 +264,10 @@ static const struct aic_info aic1_fipi_info = {
->  	.event		= AIC_EVENT,
->  	.target_cpu	= AIC_TARGET_CPU,
-> 
-> +	.el2_regs	= true,
->  	.fast_ipi	= true,
-> +	.ipi_regs	= true,
-> +	.uncore2_regs	= true,
->  };
-> 
->  static const struct aic_info aic2_info = {
-> @@ -269,7 +275,10 @@ static const struct aic_info aic2_info = {
-> 
->  	.irq_cfg	= AIC2_IRQ_CFG,
-> 
-> +	.el2_regs	= true,
->  	.fast_ipi	= true,
-> +	.ipi_regs	= true,
-> +	.uncore2_regs	= true,
->  };
-> 
->  static const struct of_device_id aic_info_match[] = {
-> @@ -452,6 +461,9 @@ static unsigned long aic_fiq_get_idx(struct irq_data *d)
-> 
->  static void aic_fiq_set_mask(struct irq_data *d)
->  {
-> +	if (!aic_irqc->info.el2_regs)
-> +		return;
-> +
->  	/* Only the guest timers have real mask bits, unfortunately. */
->  	switch (aic_fiq_get_idx(d)) {
->  	case AIC_TMR_EL02_PHYS:
-> @@ -469,6 +481,9 @@ static void aic_fiq_set_mask(struct irq_data *d)
-> 
->  static void aic_fiq_clear_mask(struct irq_data *d)
->  {
-> +	if (!aic_irqc->info.el2_regs)
-> +		return;
-> +
->  	switch (aic_fiq_get_idx(d)) {
->  	case AIC_TMR_EL02_PHYS:
->  		sysreg_clear_set_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2, 0, 
-> VM_TMR_FIQ_ENABLE_P);
-> @@ -524,12 +539,14 @@ static void __exception_irq_entry 
-> aic_handle_fiq(struct pt_regs *regs)
->  	 * we check for everything here, even things we don't support yet.
->  	 */
-> 
-> -	if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
-> -		if (static_branch_likely(&use_fast_ipi)) {
-> -			aic_handle_ipi(regs);
-> -		} else {
-> -			pr_err_ratelimited("Fast IPI fired. Acking.\n");
-> -			write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-> +	if (aic_irqc->info.ipi_regs) {
-> +		if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
-> +			if (static_branch_likely(&use_fast_ipi)) {
-> +				aic_handle_ipi(regs);
-> +			} else {
-> +				pr_err_ratelimited("Fast IPI fired. Acking.\n");
-> +				write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-> +			}
->  		}
->  	}
+Therefore, only disable IBRS around deeper idle states. Shallow idle
+states are bounded by the tick in duration, since NOHZ is not allowed
+for them by virtue of their short target residency.
 
-This is a pretty hot path and the use_fast_ipi check uses the jump label support
-(static_branch_likely, static_branch_enable) to avoid dereferencing memory here.
-We'll probably want the same for the other features.
+Only do this for mwait-driven idle, since that keeps interrupts disabled
+across idle, which makes disabling IBRS vs IRQ-entry a non-issue.
 
-For this branch here the else can probably just be removed: I think that's
-a leftover from when this driver just didn't support fastipi at all even
-when the registers were available.
+Note: C6 is a random threshold, most importantly C1 probably shouldn't
+disable IBRS, benchmarking needed.
 
+Suggested-by: Tim Chen <tim.c.chen@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/nospec-branch.h |    1 
+ arch/x86/kernel/cpu/bugs.c           |    6 ++++
+ drivers/idle/intel_idle.c            |   44 ++++++++++++++++++++++++++++++-----
+ 3 files changed, 45 insertions(+), 6 deletions(-)
 
-
-Sven
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -255,6 +255,7 @@ static inline void indirect_branch_predi
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
+ extern void write_spec_ctrl_current(u64 val, bool force);
++extern u64 spec_ctrl_current(void);
  
+ /*
+  * With retpoline, we must use IBRS to restrict branch prediction
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -79,6 +79,12 @@ void write_spec_ctrl_current(u64 val, bo
+ 		wrmsrl(MSR_IA32_SPEC_CTRL, val);
+ }
+ 
++u64 spec_ctrl_current(void)
++{
++	return this_cpu_read(x86_spec_ctrl_current);
++}
++EXPORT_SYMBOL_GPL(spec_ctrl_current);
++
+ /*
+  * The vendor and possibly platform specific bits which can be modified in
+  * x86_spec_ctrl_base.
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -47,11 +47,13 @@
+ #include <linux/tick.h>
+ #include <trace/events/power.h>
+ #include <linux/sched.h>
++#include <linux/sched/smt.h>
+ #include <linux/notifier.h>
+ #include <linux/cpu.h>
+ #include <linux/moduleparam.h>
+ #include <asm/cpu_device_id.h>
+ #include <asm/intel-family.h>
++#include <asm/nospec-branch.h>
+ #include <asm/mwait.h>
+ #include <asm/msr.h>
+ 
+@@ -106,6 +108,12 @@ static unsigned int mwait_substates __in
+ #define CPUIDLE_FLAG_ALWAYS_ENABLE	BIT(15)
+ 
+ /*
++ * Disable IBRS across idle (when KERNEL_IBRS), is exclusive vs IRQ_ENABLE
++ * above.
++ */
++#define CPUIDLE_FLAG_IBRS		BIT(16)
++
++/*
+  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
+  * the C-state (top nibble) and sub-state (bottom nibble)
+  * 0x00 means "MWAIT(C1)", 0x10 means "MWAIT(C2)" etc.
+@@ -159,6 +167,24 @@ static __cpuidle int intel_idle_irq(stru
+ 	return ret;
+ }
+ 
++static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
++				     struct cpuidle_driver *drv, int index)
++{
++	bool smt_active = sched_smt_active();
++	u64 spec_ctrl = spec_ctrl_current();
++	int ret;
++
++	if (smt_active)
++		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++
++	ret = __intel_idle(dev, drv, index);
++
++	if (smt_active)
++		wrmsrl(MSR_IA32_SPEC_CTRL, spec_ctrl);
++
++	return ret;
++}
++
+ /**
+  * intel_idle_s2idle - Ask the processor to enter the given idle state.
+  * @dev: cpuidle device of the target CPU.
+@@ -680,7 +706,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C6",
+ 		.desc = "MWAIT 0x20",
+-		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 85,
+ 		.target_residency = 200,
+ 		.enter = &intel_idle,
+@@ -688,7 +714,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C7s",
+ 		.desc = "MWAIT 0x33",
+-		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 124,
+ 		.target_residency = 800,
+ 		.enter = &intel_idle,
+@@ -696,7 +722,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C8",
+ 		.desc = "MWAIT 0x40",
+-		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 200,
+ 		.target_residency = 800,
+ 		.enter = &intel_idle,
+@@ -704,7 +730,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C9",
+ 		.desc = "MWAIT 0x50",
+-		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 480,
+ 		.target_residency = 5000,
+ 		.enter = &intel_idle,
+@@ -712,7 +738,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C10",
+ 		.desc = "MWAIT 0x60",
+-		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 890,
+ 		.target_residency = 5000,
+ 		.enter = &intel_idle,
+@@ -741,7 +767,7 @@ static struct cpuidle_state skx_cstates[
+ 	{
+ 		.name = "C6",
+ 		.desc = "MWAIT 0x20",
+-		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 133,
+ 		.target_residency = 600,
+ 		.enter = &intel_idle,
+@@ -1686,6 +1712,12 @@ static void __init intel_idle_init_cstat
+ 		if (cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IRQ_ENABLE)
+ 			drv->states[drv->state_count].enter = intel_idle_irq;
+ 
++		if (cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS) &&
++		    cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IBRS) {
++			WARN_ON_ONCE(cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IRQ_ENABLE);
++			drv->states[drv->state_count].enter = intel_idle_ibrs;
++		}
++
+ 		if ((disabled_states_mask & BIT(drv->state_count)) ||
+ 		    ((icpu->use_acpi || force_use_acpi) &&
+ 		     intel_idle_off_by_default(mwait_hint) &&
+
+
