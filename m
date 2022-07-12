@@ -2,88 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D215CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:08:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2270BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232577AbiGLOIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53900 "EHLO
+        id S232317AbiGLOLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:11:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiGLOIL (ORCPT
+        with ESMTP id S229841AbiGLOLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:08:11 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0392ED47
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:08:10 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id bf9so14096696lfb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:08:10 -0700 (PDT)
+        Tue, 12 Jul 2022 10:11:36 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B914C33E3B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:11:34 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id b11so14505701eju.10
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:11:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=IUDupCeEXQ/0U2Mq+8j8TVT3HkTwF7WNPO4buPs4r6M=;
-        b=QYvKlU7dEHkaxWeAgxfsF7vxBdm/zDsF+uuntI0ZjZp2eHQW3sdICr52wnSvfAAqk/
-         xqPicfiGubAHcZxPV0vqcT7lcEqnZI8C7Q0mwu+pDS0gH9qj+XmkB8OxDjDi561+v38E
-         C+sElDXj830YwXWoYoAqURjSNfMYBVM2zw/QUM2x9489UNhtzbCZ5+a5BSVAZEQQbc8Z
-         ThNy5NFkPiYV+DIle2PSnvuqSlll+S8ql+SEjRPKQYzuqfXwduHzAYcpxcJRsqUCLqPI
-         Akbpi8mXiuBQYdtH/68IF5DKjpEfFw+oUXv8BB8hMaQv9Uk2cJ754oyLE645GWMGbij/
-         9Kdw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YBU84SRNLc6JB1Nu5oUhv+2JH/yb6vYKX7qMUKcEA/U=;
+        b=HVDAKTb8QU6+A5APYQt524idn27AtAFUkPxSl1zqDjminGIQq8VZ28WSHeIeH1cYmp
+         Zei6wL2/JJOlPrXH3YXdM3QmDxLvPhupy9vKx8veZjVLJp8/pHA6FccBbfFHGzMPlpWK
+         5LoNik9uVHiE432REpBpgVr3ox45JYIthlEMU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=IUDupCeEXQ/0U2Mq+8j8TVT3HkTwF7WNPO4buPs4r6M=;
-        b=mRopj+F+ZPYgt7AFn+QeYpcu1OOaQbt8jqCz+OlMjOlUoKDE8JHxUw2X/fiiXtMsWc
-         6B0q5Ed1szfpvQJZv7Xp/Nd7A5fLDcmh6AokEGDmjsYcIrHzHmiMpFnARFIMZ6THCdGG
-         rFA64pQWo6t7BgsMKGxR25mU/Zie5uDgLngQh6CLegqek1yPVnuMhianHKsP9SDl23GO
-         ym12i8cv/+rpyqNxU8fEnsk+lMZ3HzXIFCNbxOvu+kajv8iG4s0vIOupYOPuliaoU2DP
-         0rI6KvyyRwsSfH08L8ktIGEE7aDCSVnBCHrUyMgwrPnEkysFy4+jaU9l/GTD9ybCqPki
-         YtbA==
-X-Gm-Message-State: AJIora9XIq58uJ9JfTY1DGHyVoL536NrifuM5BrcnUhJVTQt1aTF1iQ1
-        dO9YpBBRe8q629oR0cdx+nm7bg==
-X-Google-Smtp-Source: AGRyM1tCEXL8eb8yUBVXFnt5nQBt+dmZ3X4wqpUocjCz9IgpH1o5xI4GOGU1U4fDZ6ZvjrzDPG72Mg==
-X-Received: by 2002:a05:6512:2394:b0:489:e432:bca5 with SMTP id c20-20020a056512239400b00489e432bca5mr5786126lfv.537.1657634888923;
-        Tue, 12 Jul 2022 07:08:08 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id y3-20020a056512044300b0047e789b9700sm2187900lfk.118.2022.07.12.07.08.06
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YBU84SRNLc6JB1Nu5oUhv+2JH/yb6vYKX7qMUKcEA/U=;
+        b=PhtcS+Ca0D+DZHCE+r0dnIag5kN9B17GyNoIGMQDYIJj3x/qaU7aMbDswIy9bb2TWM
+         Z7md46eK6ltfmSLl1T9LByYbBWxIzxNBC/bjiyCPkZeM4dNzDUh8wrDmROtiG35P6ie5
+         6HQyBsod3vOWAdexx4L1DLjj/ZBM7FnhVpDX7S4nAvxmucqqMQmeHIGiattzZ593YGht
+         L39iBxYYI6aJK3etevRG46HckVls2XSZ3mUY+eRAQkmpnqXRG+wY+IkTeS6hL26WRaiO
+         anwIBUHICpDKFtoU92foCDR6LqdC7tQTEaX/Y8KHpqZhEND5XKb9DVFKpa8UdzBMS3Sb
+         1emw==
+X-Gm-Message-State: AJIora/+V2y3AmS3HY0Q+d9rNzI6C9GLG9y3ALSbkwHk/tsP1pHWw1h4
+        TkkMdTXmZyZjPvb51dkYo7qKAo88rzooQJF6MNE=
+X-Google-Smtp-Source: AGRyM1tygBybpXygHRzL9/ozoBpdHX8pwpkmXTfbKyiRRCoXqk0YHyRSRvEbUTsY5XbD0sSSVn1PHg==
+X-Received: by 2002:a17:907:160f:b0:726:a7a4:c626 with SMTP id hb15-20020a170907160f00b00726a7a4c626mr24323138ejc.449.1657635093134;
+        Tue, 12 Jul 2022 07:11:33 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id g18-20020a170906539200b00722fc0779e3sm3833655ejo.85.2022.07.12.07.11.31
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 07:08:08 -0700 (PDT)
-Message-ID: <1c90df71-4db0-9d20-e41b-2dfdce8d6456@linaro.org>
-Date:   Tue, 12 Jul 2022 16:08:05 +0200
+        Tue, 12 Jul 2022 07:11:31 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id i128-20020a1c3b86000000b003a2ce31b4f8so6829949wma.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:11:31 -0700 (PDT)
+X-Received: by 2002:a05:600c:285:b0:3a2:e5fd:84eb with SMTP id
+ 5-20020a05600c028500b003a2e5fd84ebmr4162603wmk.151.1657635090577; Tue, 12 Jul
+ 2022 07:11:30 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/2] dt-bindings: display: panel: Add Novatek NT35596S
- panel bindings
-Content-Language: en-US
-To:     MollySophia <mollysophia379@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-References: <20220709141136.58298-1-mollysophia379@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220709141136.58298-1-mollysophia379@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
+In-Reply-To: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 12 Jul 2022 07:11:18 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=XGivNzu_e5nrgOYkkqpWdXGgyG2MjB9xRbXm_V3JyPsw@mail.gmail.com>
+Message-ID: <CAD=FV=XGivNzu_e5nrgOYkkqpWdXGgyG2MjB9xRbXm_V3JyPsw@mail.gmail.com>
+Subject: Re: [V5] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+To:     Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-serial@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 09/07/2022 16:11, MollySophia wrote:
-> Add documentation for "novatek,nt35596s" panel.
-> 
-> Signed-off-by: MollySophia <mollysophia379@gmail.com>
+Hi,
 
-I see now three different patchsets, twice v1 and once v2 (send shortly
-after v1). This is confusing.
+On Tue, Jul 12, 2022 at 5:45 AM Vijaya Krishna Nivarthi
+<quic_vnivarth@quicinc.com> wrote:
+>
+> In the logic around call to clk_round_rate(), for some corner conditions,
+> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+> exact clock rate was not found lowest clock was being returned.
+>
+> Search for suitable clock rate in 2 steps
+> a) exact match or within 2% tolerance
+> b) within 5% tolerance
+> This also takes care of corner conditions.
+>
+> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+> ---
+> v5: corrected format specifiers for logs
+> v4: replaced pr_dbg calls with dev_dbg
+> v3: simplified algorithm further, fixed robot compile warnings
+> v2: removed minor optimisations to make more readable
+> v1: intial patch contained slightly complicated logic
+> ---
+>  drivers/tty/serial/qcom_geni_serial.c | 89 +++++++++++++++++++++--------------
+>  1 file changed, 54 insertions(+), 35 deletions(-)
 
-Best regards,
-Krzysztof
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
