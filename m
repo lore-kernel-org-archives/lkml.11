@@ -2,239 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B882C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:09:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232587AbiGLIJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
+        id S232584AbiGLIJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:09:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232584AbiGLIJR (ORCPT
+        with ESMTP id S232573AbiGLIJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:09:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8FC252E46
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657613350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rJcskA/Zg+I54A7KxLAxiRGb8qrTlBqKeeRMZ0ymcfk=;
-        b=NF3TB8hXvcEVSErbhcA45YJ3KCRdcJ1zJl4uQgvg40NzZMrKwNVxZxWATPNXtUdgF6zKmE
-        2QTGTC56SraZollrrs3/AzVo5c2yUDfYyzOpTvE+ekbdzOozO3FOuqrrsmRUz2bUz/6c1I
-        B82n9j/DeF1ccBByYVfW+0nBY49q/Xs=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-515-kFXOKvSrO_uAbE0wFqjWRQ-1; Tue, 12 Jul 2022 04:09:09 -0400
-X-MC-Unique: kFXOKvSrO_uAbE0wFqjWRQ-1
-Received: by mail-lj1-f200.google.com with SMTP id m16-20020a2e8710000000b0025d46f0cfb1so892409lji.16
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:09 -0700 (PDT)
+        Tue, 12 Jul 2022 04:09:22 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8673E558E0;
+        Tue, 12 Jul 2022 01:09:17 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id f11so6032004pgj.7;
+        Tue, 12 Jul 2022 01:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=mf64p6IVaP9Hci3QPNE+Bn67PkfAD3xjmW63tzAmGCQ=;
+        b=BPXMUa/9LvoaABZiKfxwgew6ncC6tYy8HoIjGTUbJ+MZUKJmacs+lKcuehLWsZ3Fi4
+         EXnlf/ao8fcTonT0pTgNZrmfOnxyJS/C7FJGsRDIo/bVyEP0rGBGrat4k/6/V7+dyHvT
+         rEYMsztmYeO7uDri7lh3dynDi2xQRVs4CQbfkMutrOlUgXKsy/Su6NBvRKM5vnhXJexJ
+         rYHKLiZD4XdG7jJ2UGDCeZHQ0SiOyLNrLgPcXJRzPAXjfnXIp4C0Ifgon9tqe1NCQeX5
+         aG2mTv1zbmJFRyE0dr+nbzMFoxjxPTzHIDjZ1K0q3Rpw9L0QpYR+z+gKyk5bCvHXaNPu
+         smtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rJcskA/Zg+I54A7KxLAxiRGb8qrTlBqKeeRMZ0ymcfk=;
-        b=Vf6pzKYyOTH1/SJ5gL/UxgN6DMvopd63I6oBfWHIX+DcnPt2vlvcNrkH6qgJLoQvIy
-         WxxlpH0SD3dj0yR/qix1a39AZRadltULlHD9d0jmuYhmigRsgzVmDHxFVsXWoXYk+skH
-         MRI16OZldPozzbRftgebSfnGADJ60R1iDblzjDSVrPid6YgVDvEURDMq3QGMKWsUh1oH
-         WMzUkrC6f0cYDUSR2/NiUzth/ANNKFItN1zpTIfQk2f9vFvJKuXoi1e2JVq7uAkMe2Oe
-         6CnBb0xbqtQF1/xXxLddPWzRh4dlxthje3KyuOMIq2Ag2jyN6hxnKTKoCdO8vZWl+puW
-         ekjw==
-X-Gm-Message-State: AJIora/6+4J8QSNQp9EqQRJPupmucCUZYEpQhT2KeT6YH4aCab/Jeww1
-        khvGPMhLilcP7A3/+W49k3DH+NKI+ZziNiRSuxXrF90M8EBEpTgIT/SXwzjAJUbzqPUpUoPzutn
-        0wRxfhw2t+7RfA3TfnRBD+jeDjb79O4xvofg7x9BE
-X-Received: by 2002:ac2:50d1:0:b0:489:fb36:cde1 with SMTP id h17-20020ac250d1000000b00489fb36cde1mr264115lfm.411.1657613347826;
-        Tue, 12 Jul 2022 01:09:07 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vjIfYeHw/U8j+flo57s9r09p+WpV9Mywo429Jk8FiV/6lmU1F4kq5TwCDtQJDxdvwRs4LWoN08HBHaUIS+RT0=
-X-Received: by 2002:ac2:50d1:0:b0:489:fb36:cde1 with SMTP id
- h17-20020ac250d1000000b00489fb36cde1mr264103lfm.411.1657613347609; Tue, 12
- Jul 2022 01:09:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=mf64p6IVaP9Hci3QPNE+Bn67PkfAD3xjmW63tzAmGCQ=;
+        b=m5Qn9Z3ibaav5qHgW6dHgm7UMxArSU3zFy5fAPr3foDDFJIzH8hl67c7dWPYXAsnKZ
+         ra3PJgpdR8tURDPDwuu+rfhC6znLArqVxL4DOhphV18r/sVnSX4BSw66gG3Fll3p37WG
+         OeBMLksHIrtk9Qtd2rG2ONH84NIcF7aSX9lWFRhv1wxhhXRDYfSzFXQLfaDAtxqyNkAs
+         fLf/ntfyZAHGZ+wr3PXwvxHnA1TzR1TqnP2wL7gTTL5m3XaylSBDCnj3KYHJyzo3vohw
+         9TZNrG/VYQThHYfZ0SdE2MHDNr/+rGUWADRryjtyjOzaQm/18qQoyjGseR8JAedkM94c
+         HAeg==
+X-Gm-Message-State: AJIora9b6uavGQWAEpIXyyUIMYamXjYHIIdIwL3QlmkdTTcd2pSuxsGh
+        r3baGsUT2c4oZGoixuvG+So=
+X-Google-Smtp-Source: AGRyM1sWcHqPHK0pmVykvXon8fJB8LDcUlnnVllisCl+oHyWzkXZ4nzas5Mwu73MdNC1QssldxIc/g==
+X-Received: by 2002:a63:481a:0:b0:411:7951:cbcd with SMTP id v26-20020a63481a000000b004117951cbcdmr19424157pga.66.1657613356965;
+        Tue, 12 Jul 2022 01:09:16 -0700 (PDT)
+Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
+        by smtp.gmail.com with ESMTPSA id z16-20020aa79590000000b005289cade5b0sm6079093pfj.124.2022.07.12.01.09.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 01:09:16 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 16:09:11 +0800
+From:   Kent Gibson <warthog618@gmail.com>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH v2] gpio: sim: fix the chip_name configfs item
+Message-ID: <20220712080911.GA240577@sol>
+References: <20220712074055.10588-1-brgl@bgdev.pl>
 MIME-Version: 1.0
-References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-4-eperezma@redhat.com>
- <CACGkMEt6YQvtyYwkYVxmZ01pZJK9PMFM2oPTVttPZ_kZDY-9Jw@mail.gmail.com> <CAJaqyWfGXu8k7JN1gCPdUXS2_Dct73w4wS_SdB3aLqVCWJqJQg@mail.gmail.com>
-In-Reply-To: <CAJaqyWfGXu8k7JN1gCPdUXS2_Dct73w4wS_SdB3aLqVCWJqJQg@mail.gmail.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Tue, 12 Jul 2022 16:08:56 +0800
-Message-ID: <CACGkMEv0W=CYduTV44R71knWwyoEd9VAth0eHuwEFa9T4Njhhg@mail.gmail.com>
-Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
-To:     Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Cindy Lu <lulu@redhat.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712074055.10588-1-brgl@bgdev.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 7:53 PM Eugenio Perez Martin <eperezma@redhat.com> w=
-rote:
->
-> On Wed, Jun 29, 2022 at 6:16 AM Jason Wang <jasowang@redhat.com> wrote:
-> >
-> > On Fri, Jun 24, 2022 at 12:08 AM Eugenio P=C3=A9rez <eperezma@redhat.co=
-m> wrote:
-> > >
-> > > The ioctl adds support for suspending the device from userspace.
-> > >
-> > > This is a must before getting virtqueue indexes (base) for live migra=
-tion,
-> > > since the device could modify them after userland gets them. There ar=
-e
-> > > individual ways to perform that action for some devices
-> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was n=
-o
-> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
-a).
-> > >
-> > > After a successful return of the ioctl call the device must not proce=
-ss
-> > > more virtqueue descriptors. The device can answer to read or writes o=
-f
-> > > config fields as if it were not suspended. In particular, writing to
-> > > "queue_enable" with a value of 1 will not make the device start
-> > > processing buffers of the virtqueue.
-> > >
-> > > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> > > ---
-> > >  drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
-> > >  include/uapi/linux/vhost.h | 14 ++++++++++++++
-> > >  2 files changed, 33 insertions(+)
-> > >
-> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> > > index 3d636e192061..7fa671ac4bdf 100644
-> > > --- a/drivers/vhost/vdpa.c
-> > > +++ b/drivers/vhost/vdpa.c
-> > > @@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhos=
-t_vdpa *v, u32 __user *argp)
-> > >         return 0;
-> > >  }
-> > >
-> > > +/* After a successful return of ioctl the device must not process mo=
-re
-> > > + * virtqueue descriptors. The device can answer to read or writes of=
- config
-> > > + * fields as if it were not suspended. In particular, writing to "qu=
-eue_enable"
-> > > + * with a value of 1 will not make the device start processing buffe=
-rs.
-> > > + */
-> > > +static long vhost_vdpa_suspend(struct vhost_vdpa *v)
-> > > +{
-> > > +       struct vdpa_device *vdpa =3D v->vdpa;
-> > > +       const struct vdpa_config_ops *ops =3D vdpa->config;
-> > > +
-> > > +       if (!ops->suspend)
-> > > +               return -EOPNOTSUPP;
-> > > +
-> > > +       return ops->suspend(vdpa);
-> > > +}
-> > > +
-> > >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned in=
-t cmd,
-> > >                                    void __user *argp)
-> > >  {
-> > > @@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file=
- *filep,
-> > >         case VHOST_VDPA_GET_VQS_COUNT:
-> > >                 r =3D vhost_vdpa_get_vqs_count(v, argp);
-> > >                 break;
-> > > +       case VHOST_VDPA_SUSPEND:
-> > > +               r =3D vhost_vdpa_suspend(v);
-> > > +               break;
-> > >         default:
-> > >                 r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
-> > >                 if (r =3D=3D -ENOIOCTLCMD)
-> > > diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> > > index cab645d4a645..6d9f45163155 100644
-> > > --- a/include/uapi/linux/vhost.h
-> > > +++ b/include/uapi/linux/vhost.h
-> > > @@ -171,4 +171,18 @@
-> > >  #define VHOST_VDPA_SET_GROUP_ASID      _IOW(VHOST_VIRTIO, 0x7C, \
-> > >                                              struct vhost_vring_state=
-)
-> > >
-> > > +/* Suspend or resume a device so it does not process virtqueue reque=
-sts anymore
-> > > + *
-> > > + * After the return of ioctl with suspend !=3D 0, the device must fi=
-nish any
-> > > + * pending operations like in flight requests.
-> >
-> > I'm not sure we should mandate the flush here. This probably blocks us
-> > from adding inflight descriptor reporting in the future.
-> >
->
-> That's right. Maybe we should add a flags argument to allow not to
-> flush in flight descriptors in the future? Or maybe the right solution
-> is to discard that requirement and to mandate in_order to be
-> migratable at the moment?
+On Tue, Jul 12, 2022 at 09:40:55AM +0200, Bartosz Golaszewski wrote:
+> The chip_name configs attribute always displays the device name of the
+> first GPIO bank because the logic of the relevant function is simply
+> wrong.
+> 
+> Fix it by correctly comparing the bank's swnode against the GPIO
+> device's children.
+> 
+> Fixes: cb8c474e79be ("gpio: sim: new testing module")
+> Cc: stable@vger.kernel.org
+> Reported-by: Kent Gibson <warthog618@gmail.com>
+> Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+> ---
+> v1 -> v2:
+> - use device_match_fwnode for shorter code
+> 
 
-I think it's better not to limit the device behaviour like flush or
-in_order here. This may simplify the work for adding inflight
-descriptor support.
+Works for me.
 
-For the device that doesn't care about the inflight descriptor, this
-patch is sufficient for doing live migration.
-For the device that requires an inflight descriptor, this patch is
-insufficient, it requires future extension to get those descriptors.
-In this case, device has the flexibility to flush or not so:
+Reviewed-and-tested-by: Kent Gibson <warthog618@gmail.com>
 
-1) if we don't get any inflight descriptors, the device may do the flush be=
-fore
-2) if we get inflight descriptors, we need to restore them
-
-Thanks
-
->
-> Thanks!
->
-> > Thanks
-> >
-> > It must also preserve all the
-> > > + * necessary state (the virtqueue vring base plus the possible devic=
-e specific
-> > > + * states) that is required for restoring in the future. The device =
-must not
-> > > + * change its configuration after that point.
-> > > + *
-> > > + * After the return of ioctl with suspend =3D=3D 0, the device can c=
-ontinue
-> > > + * processing buffers as long as typical conditions are met (vq is e=
-nabled,
-> > > + * DRIVER_OK status bit is enabled, etc).
-> > > + */
-> > > +#define VHOST_VDPA_SUSPEND             _IOW(VHOST_VIRTIO, 0x7D, int)
-> > > +
-> > >  #endif
-> > > --
-> > > 2.31.1
-> > >
-> >
->
-
+Cheers,
+Kent.
