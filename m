@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6622C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE84C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234866AbiGLSzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
+        id S234873AbiGLSzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234897AbiGLSyS (ORCPT
+        with ESMTP id S234946AbiGLSyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:54:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B1DDE8DAB;
-        Tue, 12 Jul 2022 11:45:47 -0700 (PDT)
+        Tue, 12 Jul 2022 14:54:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E946FE95C8;
+        Tue, 12 Jul 2022 11:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0F3860A1C;
-        Tue, 12 Jul 2022 18:45:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D58C3411C;
-        Tue, 12 Jul 2022 18:45:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43D3EB81BBC;
+        Tue, 12 Jul 2022 18:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EB57C3411C;
+        Tue, 12 Jul 2022 18:45:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651537;
-        bh=M1JAbX+riJW6E/VEEoTjpyBBCJ7lGmUIn2OY4L/SFy8=;
+        s=korg; t=1657651547;
+        bh=ByLN6L1kQ5tDLJy2YF+90FMHIkenQB5ANQ1jfWxqXcU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWKuIrIqqVSe9xMALjEy1uIU3WnjZpgYPKGLQftzBrt9YMYHEMaCN92x06AoDfcB8
-         KxH3dZS/iN+kF6rTi25EdFQydCfOJBfqoQLvlcncZiAN7QjfAL51Q2Mn0Zl30LTQsU
-         pLf8fuIianOFs/0skyal0Og6cA33nEQBChse2zLk=
+        b=bDkYbpAhtqyxhI/+7YjleyoKa5J6jScPBjHs1jMevD8yE0JKUXycvvARVd4OcheA7
+         /Pe6bkQ3B0445nruYCWH4Gce9T8N9/gnwfDJczJmaJrZCZyjviFZSXZEH/G3CkJccr
+         sMNSbmIv8JUTWg4iXJmZ7xYL1tvUv0DiHKLvD8ro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 105/130] intel_idle: Disable IBRS during long idle
-Date:   Tue, 12 Jul 2022 20:39:11 +0200
-Message-Id: <20220712183251.322411689@linuxfoundation.org>
+Subject: [PATCH 5.10 079/130] x86/cpufeatures: Move RETPOLINE flags to word 11
+Date:   Tue, 12 Jul 2022 20:38:45 +0200
+Message-Id: <20220712183250.109497033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -54,181 +54,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit bf5835bcdb9635c97f85120dba9bfa21e111130f upstream.
+commit a883d624aed463c84c22596006e5a96f5b44db31 upstream.
 
-Having IBRS enabled while the SMT sibling is idle unnecessarily slows
-down the running sibling. OTOH, disabling IBRS around idle takes two
-MSR writes, which will increase the idle latency.
+In order to extend the RETPOLINE features to 4, move them to word 11
+where there is still room. This mostly keeps DISABLE_RETPOLINE
+simple.
 
-Therefore, only disable IBRS around deeper idle states. Shallow idle
-states are bounded by the tick in duration, since NOHZ is not allowed
-for them by virtue of their short target residency.
-
-Only do this for mwait-driven idle, since that keeps interrupts disabled
-across idle, which makes disabling IBRS vs IRQ-entry a non-issue.
-
-Note: C6 is a random threshold, most importantly C1 probably shouldn't
-disable IBRS, benchmarking needed.
-
-Suggested-by: Tim Chen <tim.c.chen@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: no CPUIDLE_FLAG_IRQ_ENABLE]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+[bwh: Backported to 5.10: bits 8 and 9 of word 11 are also free here,
+ so comment them accordingly]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    1 
- arch/x86/kernel/cpu/bugs.c           |    6 ++++
- drivers/idle/intel_idle.c            |   43 ++++++++++++++++++++++++++++++-----
- 3 files changed, 44 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/cpufeatures.h |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -256,6 +256,7 @@ static inline void indirect_branch_predi
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
- extern void write_spec_ctrl_current(u64 val, bool force);
-+extern u64 spec_ctrl_current(void);
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -203,8 +203,8 @@
+ #define X86_FEATURE_PROC_FEEDBACK	( 7*32+ 9) /* AMD ProcFeedbackInterface */
+ #define X86_FEATURE_SME			( 7*32+10) /* AMD Secure Memory Encryption */
+ #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
+-#define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+-#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
++/* FREE!				( 7*32+12) */
++/* FREE!				( 7*32+13) */
+ #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
+ #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
+ #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
+@@ -290,6 +290,12 @@
+ #define X86_FEATURE_FENCE_SWAPGS_KERNEL	(11*32+ 5) /* "" LFENCE in kernel entry SWAPGS path */
+ #define X86_FEATURE_SPLIT_LOCK_DETECT	(11*32+ 6) /* #AC for split lock */
+ #define X86_FEATURE_PER_THREAD_MBA	(11*32+ 7) /* "" Per-thread Memory Bandwidth Allocation */
++/* FREE!				(11*32+ 8) */
++/* FREE!				(11*32+ 9) */
++/* FREE!				(11*32+10) */
++/* FREE!				(11*32+11) */
++#define X86_FEATURE_RETPOLINE		(11*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
++#define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
  
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -78,6 +78,12 @@ void write_spec_ctrl_current(u64 val, bo
- 		wrmsrl(MSR_IA32_SPEC_CTRL, val);
- }
- 
-+u64 spec_ctrl_current(void)
-+{
-+	return this_cpu_read(x86_spec_ctrl_current);
-+}
-+EXPORT_SYMBOL_GPL(spec_ctrl_current);
-+
- /*
-  * The vendor and possibly platform specific bits which can be modified in
-  * x86_spec_ctrl_base.
---- a/drivers/idle/intel_idle.c
-+++ b/drivers/idle/intel_idle.c
-@@ -47,11 +47,13 @@
- #include <linux/tick.h>
- #include <trace/events/power.h>
- #include <linux/sched.h>
-+#include <linux/sched/smt.h>
- #include <linux/notifier.h>
- #include <linux/cpu.h>
- #include <linux/moduleparam.h>
- #include <asm/cpu_device_id.h>
- #include <asm/intel-family.h>
-+#include <asm/nospec-branch.h>
- #include <asm/mwait.h>
- #include <asm/msr.h>
- 
-@@ -94,6 +96,12 @@ static unsigned int mwait_substates __in
- #define CPUIDLE_FLAG_ALWAYS_ENABLE	BIT(15)
- 
- /*
-+ * Disable IBRS across idle (when KERNEL_IBRS), is exclusive vs IRQ_ENABLE
-+ * above.
-+ */
-+#define CPUIDLE_FLAG_IBRS		BIT(16)
-+
-+/*
-  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
-  * the C-state (top nibble) and sub-state (bottom nibble)
-  * 0x00 means "MWAIT(C1)", 0x10 means "MWAIT(C2)" etc.
-@@ -132,6 +140,24 @@ static __cpuidle int intel_idle(struct c
- 	return index;
- }
- 
-+static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
-+				     struct cpuidle_driver *drv, int index)
-+{
-+	bool smt_active = sched_smt_active();
-+	u64 spec_ctrl = spec_ctrl_current();
-+	int ret;
-+
-+	if (smt_active)
-+		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
-+
-+	ret = intel_idle(dev, drv, index);
-+
-+	if (smt_active)
-+		wrmsrl(MSR_IA32_SPEC_CTRL, spec_ctrl);
-+
-+	return ret;
-+}
-+
- /**
-  * intel_idle_s2idle - Ask the processor to enter the given idle state.
-  * @dev: cpuidle device of the target CPU.
-@@ -653,7 +679,7 @@ static struct cpuidle_state skl_cstates[
- 	{
- 		.name = "C6",
- 		.desc = "MWAIT 0x20",
--		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 85,
- 		.target_residency = 200,
- 		.enter = &intel_idle,
-@@ -661,7 +687,7 @@ static struct cpuidle_state skl_cstates[
- 	{
- 		.name = "C7s",
- 		.desc = "MWAIT 0x33",
--		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 124,
- 		.target_residency = 800,
- 		.enter = &intel_idle,
-@@ -669,7 +695,7 @@ static struct cpuidle_state skl_cstates[
- 	{
- 		.name = "C8",
- 		.desc = "MWAIT 0x40",
--		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 200,
- 		.target_residency = 800,
- 		.enter = &intel_idle,
-@@ -677,7 +703,7 @@ static struct cpuidle_state skl_cstates[
- 	{
- 		.name = "C9",
- 		.desc = "MWAIT 0x50",
--		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 480,
- 		.target_residency = 5000,
- 		.enter = &intel_idle,
-@@ -685,7 +711,7 @@ static struct cpuidle_state skl_cstates[
- 	{
- 		.name = "C10",
- 		.desc = "MWAIT 0x60",
--		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 890,
- 		.target_residency = 5000,
- 		.enter = &intel_idle,
-@@ -714,7 +740,7 @@ static struct cpuidle_state skx_cstates[
- 	{
- 		.name = "C6",
- 		.desc = "MWAIT 0x20",
--		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
-+		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
- 		.exit_latency = 133,
- 		.target_residency = 600,
- 		.enter = &intel_idle,
-@@ -1501,6 +1527,11 @@ static void __init intel_idle_init_cstat
- 		/* Structure copy. */
- 		drv->states[drv->state_count] = cpuidle_state_table[cstate];
- 
-+		if (cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS) &&
-+		    cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IBRS) {
-+			drv->states[drv->state_count].enter = intel_idle_ibrs;
-+		}
-+
- 		if ((disabled_states_mask & BIT(drv->state_count)) ||
- 		    ((icpu->use_acpi || force_use_acpi) &&
- 		     intel_idle_off_by_default(mwait_hint) &&
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
 
 
