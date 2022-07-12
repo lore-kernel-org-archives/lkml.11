@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB304C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B2A9CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:12:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235832AbiGLTL5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:11:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37548 "EHLO
+        id S235840AbiGLTMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236008AbiGLTKF (ORCPT
+        with ESMTP id S236045AbiGLTKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:10:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F97FFE0F;
-        Tue, 12 Jul 2022 11:52:43 -0700 (PDT)
+        Tue, 12 Jul 2022 15:10:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD9110149F;
+        Tue, 12 Jul 2022 11:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D324A61274;
-        Tue, 12 Jul 2022 18:52:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E03BFC3411C;
-        Tue, 12 Jul 2022 18:52:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B8A46157B;
+        Tue, 12 Jul 2022 18:52:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16D14C3411C;
+        Tue, 12 Jul 2022 18:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651962;
-        bh=H1oq4uVfA8R9mjZ/zPPVepCseKRffdac0+kAYkJLC2o=;
+        s=korg; t=1657651965;
+        bh=15TToz8XKhbmTcApF7Z9A6OBETY/DRBlolp+6qvTRso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fgSvlz2M72LsGJNkdMXaWI4ItTktsFuWBdIvgAq1pSTBJkvrGDDCSZ1ZS2MiGuwP9
-         WKMlG+TAcMWg/HiTqmIbEDTTdhG8Tu55kWGAj6J4Dfk9GrIRs7Ce5GE9+K8Mrhg1Qp
-         IycGPmYbhLNuh9R+TOh7cjFFdPA68ZbJ4lYOC4JA=
+        b=rN6OQmvNIwgUXs3eoEwAVPc6UK2w/VvKuDPovS6L5QAe/Mn7JqLcIIj63khu/teNm
+         suyG+HiVcSMaXc+fxT81N68jNHL0MOtLwtNoylaLklLVAyneTdGwoX2uaLamz37JmF
+         pkhnHy+cSLBMgZk8AY3BbMkfvqB7n2xORdyXpR9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 09/61] x86/retpoline: Swizzle retpoline thunk
-Date:   Tue, 12 Jul 2022 20:39:06 +0200
-Message-Id: <20220712183237.319446654@linuxfoundation.org>
+Subject: [PATCH 5.18 36/61] x86/xen: Add UNTRAIN_RET
+Date:   Tue, 12 Jul 2022 20:39:33 +0200
+Message-Id: <20220712183238.422111056@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -53,38 +53,43 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 00e1533325fd1fb5459229fe37f235462649f668 upstream.
+commit d147553b64bad34d2f92cb7d8ba454ae95c3baac upstream.
 
-Put the actual retpoline thunk as the original code so that it can
-become more complicated. Specifically, it allows RET to be a JMP,
-which can't be .altinstr_replacement since that doesn't do relocations
-(except for the very first instruction).
+Ensure the Xen entry also passes through UNTRAIN_RET.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/retpoline.S |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/entry/entry_64.S |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -33,9 +33,9 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
- 	UNWIND_HINT_EMPTY
- 	ANNOTATE_NOENDBR
- 
--	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
--		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE
-+	ALTERNATIVE_2 __stringify(RETPOLINE \reg), \
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE, \
-+		      __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), ALT_NOT(X86_FEATURE_RETPOLINE)
- 
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -323,6 +323,12 @@ SYM_CODE_END(ret_from_fork)
+ #endif
  .endm
  
++SYM_CODE_START_LOCAL(xen_error_entry)
++	UNWIND_HINT_FUNC
++	UNTRAIN_RET
++	RET
++SYM_CODE_END(xen_error_entry)
++
+ /**
+  * idtentry_body - Macro to emit code calling the C function
+  * @cfunc:		C function to be called
+@@ -342,7 +348,7 @@ SYM_CODE_END(ret_from_fork)
+ 	 * switch the CR3.  So it can skip invoking error_entry().
+ 	 */
+ 	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
+-		"", X86_FEATURE_XENPV
++		    "call xen_error_entry", X86_FEATURE_XENPV
+ 
+ 	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
 
 
