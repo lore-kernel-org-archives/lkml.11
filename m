@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 197D4CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCBBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230191AbiGLUzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58914 "EHLO
+        id S234334AbiGLUzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233301AbiGLUyQ (ORCPT
+        with ESMTP id S232585AbiGLUye (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:54:16 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290C3D1391;
-        Tue, 12 Jul 2022 13:53:30 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id v14so12825724wra.5;
-        Tue, 12 Jul 2022 13:53:30 -0700 (PDT)
+        Tue, 12 Jul 2022 16:54:34 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEBC71FD;
+        Tue, 12 Jul 2022 13:53:32 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id bk26so12796144wrb.11;
+        Tue, 12 Jul 2022 13:53:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Wp0kER+7OMasisCSsReAtX19cUc/NcYCt5wUZzImOuo=;
-        b=GYWGSGPS6YNm2dtj3iq60Pdz/K6WV2DG30z4HfrV/UTGVMjSYlgplWvh/RqSnMbXOS
-         U5Si8G2L9Mo2NtsZ2ANr3yK0HBYlIbIyC4y4bUxGXaXYK2eFZm2nfY0ejA+q6HDpsg5j
-         TjrIwr0+TwbKQCpankfmi9tp5nfca28udAIQQKuHhrRyy4V0zzKw0P6epsOrFv3hFa56
-         UuAYTOtvDhms2TtE9ojNESZtub7hPY+ShOOKessexm6ts3wfxa3wXohf6S8JXAXFyGLq
-         jGqXV18nDgCp1gGLDolwpG3+eNAIDKQ7GKnwf7sYnq5+JhBqzGm4zc80PijnDrAvnoJB
-         WJSQ==
+        bh=Pw3xCF+IE0zNhMTl93PD4uOC8iaBTkE5EoQbu6T6UBI=;
+        b=SJVWG8+ZpxKYt9//cbmEV1CwWTzVT6ePgkcZN6bT73VKRqsh7yfkwcjYi59+pLRbfV
+         hUQiTkI/FvxUMLpxO/rXKB72qsIQ4Ic9V3Q4cBfH/S7Bu3OAQj1ZbSlzZU06O8qEFMAI
+         wuTRp17yjQeNwVgZXpaJur8q7qRiaYa3n9xAZs8PZ2H8ikD1c5PFnGV4pbkGdVQ+ROfZ
+         NO42tFrcoppZXzQvHC5mDV7OiYQrAEUyF+E9/crFsrE381Fb/Va/Ysut6DKBpeM/UPer
+         8DI9F/1c7YxT4hMdp0vR8zHDS1bqR7Sa6IMtBuXzHQ4VNH0cmBzG5sgQpuof3eA8Bbp+
+         n6qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Wp0kER+7OMasisCSsReAtX19cUc/NcYCt5wUZzImOuo=;
-        b=D7kwf7hAivz/7snWLTW07RGHbP0xz8uRD7rMUek5wQh7xBdO7I9KX2BgKrHG38Gr9G
-         DRCET/fauj1AhKzba/OBT747i4Y1zqZLW6mSsJjT7Ytd4JR56LPPGpN5Wt9byxrNSEpH
-         JS/dob2bo08CVFTJzbtu6XYfDwCswhFafoQCfPNM5yLWmUpmoeoVGJZjqw81DYPVIouW
-         Vrv/8rYZiBPYOmSGmJg2TCxOECCNvQeFtnb3bGMOnFxQD0vguRmlD0E4PpVB9oIfCMTy
-         28Zo2ISYCQOmSUz4/2cd//qinWZU0ve5E1I/fkofel1kmikhHb+/Y63zrg71s/LjUwwZ
-         F/RA==
-X-Gm-Message-State: AJIora8CXZvdDaiPj6XTh+Dfmn1p/7GFCSLO6AYmWrB0YxXhCs/x8jdt
-        ZLENzQNJ5XExTSaab56h4BM2RekzecY=
-X-Google-Smtp-Source: AGRyM1ttbGVusCjYADvlkUtJn2zh+eLy5GFazEjAG/V1u9H3yHHa4fYjl+DtXfAqC8Nswe3Ec4q4Lw==
-X-Received: by 2002:a05:6000:16cb:b0:21d:7b9e:d0af with SMTP id h11-20020a05600016cb00b0021d7b9ed0afmr23944052wrf.139.1657659207969;
-        Tue, 12 Jul 2022 13:53:27 -0700 (PDT)
+        bh=Pw3xCF+IE0zNhMTl93PD4uOC8iaBTkE5EoQbu6T6UBI=;
+        b=p/e5vEvkTAdSjPJ9G7liWW2lV86kaiTxjWootG2uNLGI/dPLuVW+BWjdsXT8092FGv
+         15kMyKW0olUo43H1RFtDppRW+RPDkpThgD3LjXJpReSEcVqTAsU6e5nLso4Y2gBUuMQo
+         swNT7kNBVdv6gIoTXx9Ur1bXrdihObEunLzqbrVZ4SL4GUBBy7biKn8t/6vfKsB7tAsC
+         jUeWTtEyOMxtZONBhhWmscs10Q1UE1ksD53hcesxnTnfNlXsf62P8JwzHiLcQo4eHdDf
+         6OTOrynC2rKL0aEm09LdUHfqjP1wTOhsvbWUjDOykUtu8pVO5YqumpVkjxOb73YoBw8Y
+         I4eg==
+X-Gm-Message-State: AJIora/j9dMb+yvzJ8VVEHva9mKwY2py71eQXvKr0b98O++EqaWq5BEM
+        ct8UdtKsc24GQzlPA+AR51iQpomkffY=
+X-Google-Smtp-Source: AGRyM1sgaP0mGniZtsIizQQ/BZ406MWmZevgqCljJnKhPDUYmuViayCwwRPDuujhrswvmUBsp7DoVQ==
+X-Received: by 2002:a5d:5c05:0:b0:21d:83b4:d339 with SMTP id cc5-20020a5d5c05000000b0021d83b4d339mr23673286wrb.611.1657659210420;
+        Tue, 12 Jul 2022 13:53:30 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.26
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:27 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:30 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 17/27] io_uring: add rsrc referencing for notifiers
-Date:   Tue, 12 Jul 2022 21:52:41 +0100
-Message-Id: <3cd7a01d26837945b6982fa9cf15a63230f2ed4f.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 19/27] io_uring: wire send zc request type
+Date:   Tue, 12 Jul 2022 21:52:43 +0100
+Message-Id: <a80387c6a68ce9cf99b3b6ef6f71068468761fb7.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,94 +69,200 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation to zerocopy sends with fixed buffers make notifiers to
-reference the rsrc node to protect the used fixed buffers. We can't just
-grab it for a send request as notifiers can likely outlive requests that
-used it.
+Add a new io_uring opcode IORING_OP_SENDZC. The main distinction from
+IORING_OP_SEND is that the user should specify a notification slot
+index in sqe::notification_idx and the buffers are safe to reuse only
+when the used notification is flushed and completes.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- io_uring/notif.c |  5 +++++
- io_uring/notif.h |  1 +
- io_uring/rsrc.h  | 12 +++++++++---
- 3 files changed, 15 insertions(+), 3 deletions(-)
+ include/uapi/linux/io_uring.h |  5 ++
+ io_uring/net.c                | 94 +++++++++++++++++++++++++++++++++++
+ io_uring/net.h                |  4 ++
+ io_uring/opdef.c              | 15 ++++++
+ 4 files changed, 118 insertions(+)
 
-diff --git a/io_uring/notif.c b/io_uring/notif.c
-index aec74f88fc33..0a2e98bd74f6 100644
---- a/io_uring/notif.c
-+++ b/io_uring/notif.c
-@@ -7,10 +7,12 @@
+diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
+index f1ba8e934168..dcef9d6e7f78 100644
+--- a/include/uapi/linux/io_uring.h
++++ b/include/uapi/linux/io_uring.h
+@@ -63,6 +63,10 @@ struct io_uring_sqe {
+ 	union {
+ 		__s32	splice_fd_in;
+ 		__u32	file_index;
++		struct {
++			__u16	notification_idx;
++			__u16	__pad;
++		};
+ 	};
+ 	union {
+ 		struct {
+@@ -194,6 +198,7 @@ enum io_uring_op {
+ 	IORING_OP_GETXATTR,
+ 	IORING_OP_SOCKET,
+ 	IORING_OP_URING_CMD,
++	IORING_OP_SENDZC_NOTIF,
  
+ 	/* this goes last, obviously */
+ 	IORING_OP_LAST,
+diff --git a/io_uring/net.c b/io_uring/net.c
+index 2dd61fcf91d8..399267e8f1ef 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -13,6 +13,7 @@
  #include "io_uring.h"
- #include "notif.h"
-+#include "rsrc.h"
+ #include "kbuf.h"
+ #include "net.h"
++#include "notif.h"
  
- static void __io_notif_complete_tw(struct callback_head *cb)
- {
- 	struct io_notif *notif = container_of(cb, struct io_notif, task_work);
-+	struct io_rsrc_node *rsrc_node = notif->rsrc_node;
- 	struct io_ring_ctx *ctx = notif->ctx;
+ #if defined(CONFIG_NET)
+ struct io_shutdown {
+@@ -58,6 +59,15 @@ struct io_sr_msg {
+ 	unsigned int			flags;
+ };
  
- 	if (likely(notif->task)) {
-@@ -25,6 +27,7 @@ static void __io_notif_complete_tw(struct callback_head *cb)
- 	ctx->notif_locked_nr++;
- 	io_cq_unlock_post(ctx);
++struct io_sendzc {
++	struct file			*file;
++	void __user			*buf;
++	size_t				len;
++	u16				slot_idx;
++	unsigned			msg_flags;
++	unsigned			flags;
++};
++
+ #define IO_APOLL_MULTI_POLLED (REQ_F_APOLL_MULTISHOT | REQ_F_POLLED)
  
-+	io_rsrc_put_node(rsrc_node, 1);
- 	percpu_ref_put(&ctx->refs);
+ int io_shutdown_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+@@ -652,6 +662,90 @@ int io_recv(struct io_kiocb *req, unsigned int issue_flags)
+ 	return ret;
  }
  
-@@ -119,6 +122,8 @@ struct io_notif *io_alloc_notif(struct io_ring_ctx *ctx,
- 	/* master ref owned by io_notif_slot, will be dropped on flush */
- 	refcount_set(&notif->uarg.refcnt, 1);
- 	percpu_ref_get(&ctx->refs);
-+	notif->rsrc_node = ctx->rsrc_node;
-+	io_charge_rsrc_node(ctx);
- 	return notif;
- }
- 
-diff --git a/io_uring/notif.h b/io_uring/notif.h
-index 23ca7620fff9..1dd48efb7744 100644
---- a/io_uring/notif.h
-+++ b/io_uring/notif.h
-@@ -10,6 +10,7 @@
- struct io_notif {
- 	struct ubuf_info	uarg;
- 	struct io_ring_ctx	*ctx;
-+	struct io_rsrc_node	*rsrc_node;
- 
- 	/* complete via tw if ->task is non-NULL, fallback to wq otherwise */
- 	struct task_struct	*task;
-diff --git a/io_uring/rsrc.h b/io_uring/rsrc.h
-index 87f58315b247..af342fd239d0 100644
---- a/io_uring/rsrc.h
-+++ b/io_uring/rsrc.h
-@@ -135,6 +135,13 @@ static inline void io_req_put_rsrc_locked(struct io_kiocb *req,
- 	}
- }
- 
-+static inline void io_charge_rsrc_node(struct io_ring_ctx *ctx)
++int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
 +{
-+	ctx->rsrc_cached_refs--;
-+	if (unlikely(ctx->rsrc_cached_refs < 0))
-+		io_rsrc_refs_refill(ctx);
++	struct io_sendzc *zc = io_kiocb_to_cmd(req);
++
++	if (READ_ONCE(sqe->addr2) || READ_ONCE(sqe->__pad2[0]) ||
++	    READ_ONCE(sqe->addr3))
++		return -EINVAL;
++
++	zc->flags = READ_ONCE(sqe->ioprio);
++	if (zc->flags & ~IORING_RECVSEND_POLL_FIRST)
++		return -EINVAL;
++
++	zc->buf = u64_to_user_ptr(READ_ONCE(sqe->addr));
++	zc->len = READ_ONCE(sqe->len);
++	zc->msg_flags = READ_ONCE(sqe->msg_flags) | MSG_NOSIGNAL;
++	zc->slot_idx = READ_ONCE(sqe->notification_idx);
++	if (zc->msg_flags & MSG_DONTWAIT)
++		req->flags |= REQ_F_NOWAIT;
++#ifdef CONFIG_COMPAT
++	if (req->ctx->compat)
++		zc->msg_flags |= MSG_CMSG_COMPAT;
++#endif
++	return 0;
 +}
 +
- static inline void io_req_set_rsrc_node(struct io_kiocb *req,
- 					struct io_ring_ctx *ctx,
- 					unsigned int issue_flags)
-@@ -144,9 +151,8 @@ static inline void io_req_set_rsrc_node(struct io_kiocb *req,
- 
- 		if (!(issue_flags & IO_URING_F_UNLOCKED)) {
- 			lockdep_assert_held(&ctx->uring_lock);
--			ctx->rsrc_cached_refs--;
--			if (unlikely(ctx->rsrc_cached_refs < 0))
--				io_rsrc_refs_refill(ctx);
++int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
++{
++	struct io_ring_ctx *ctx = req->ctx;
++	struct io_sendzc *zc = io_kiocb_to_cmd(req);
++	struct io_notif_slot *notif_slot;
++	struct io_notif *notif;
++	struct msghdr msg;
++	struct iovec iov;
++	struct socket *sock;
++	unsigned msg_flags;
++	int ret, min_ret = 0;
 +
-+			io_charge_rsrc_node(ctx);
- 		} else {
- 			percpu_ref_get(&req->rsrc_node->refs);
- 		}
++	if (!(req->flags & REQ_F_POLLED) &&
++	    (zc->flags & IORING_RECVSEND_POLL_FIRST))
++		return -EAGAIN;
++
++	if (issue_flags & IO_URING_F_UNLOCKED)
++		return -EAGAIN;
++	sock = sock_from_file(req->file);
++	if (unlikely(!sock))
++		return -ENOTSOCK;
++
++	notif_slot = io_get_notif_slot(ctx, zc->slot_idx);
++	if (!notif_slot)
++		return -EINVAL;
++	notif = io_get_notif(ctx, notif_slot);
++	if (!notif)
++		return -ENOMEM;
++
++	msg.msg_name = NULL;
++	msg.msg_control = NULL;
++	msg.msg_controllen = 0;
++	msg.msg_namelen = 0;
++
++	ret = import_single_range(WRITE, zc->buf, zc->len, &iov, &msg.msg_iter);
++	if (unlikely(ret))
++		return ret;
++
++	msg_flags = zc->msg_flags | MSG_ZEROCOPY;
++	if (issue_flags & IO_URING_F_NONBLOCK)
++		msg_flags |= MSG_DONTWAIT;
++	if (msg_flags & MSG_WAITALL)
++		min_ret = iov_iter_count(&msg.msg_iter);
++
++	msg.msg_flags = msg_flags;
++	msg.msg_ubuf = &notif->uarg;
++	msg.sg_from_iter = NULL;
++	ret = sock_sendmsg(sock, &msg);
++
++	if (unlikely(ret < min_ret)) {
++		if (ret == -EAGAIN && (issue_flags & IO_URING_F_NONBLOCK))
++			return -EAGAIN;
++		return ret == -ERESTARTSYS ? -EINTR : ret;
++	}
++
++	io_req_set_res(req, ret, 0);
++	return IOU_OK;
++}
++
+ int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ {
+ 	struct io_accept *accept = io_kiocb_to_cmd(req);
+diff --git a/io_uring/net.h b/io_uring/net.h
+index 81d71d164770..1dba8befebb3 100644
+--- a/io_uring/net.h
++++ b/io_uring/net.h
+@@ -40,4 +40,8 @@ int io_socket(struct io_kiocb *req, unsigned int issue_flags);
+ int io_connect_prep_async(struct io_kiocb *req);
+ int io_connect_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
+ int io_connect(struct io_kiocb *req, unsigned int issue_flags);
++
++int io_sendzc(struct io_kiocb *req, unsigned int issue_flags);
++int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
++
+ #endif
+diff --git a/io_uring/opdef.c b/io_uring/opdef.c
+index a7b84b43e6c2..7ab19bbf3126 100644
+--- a/io_uring/opdef.c
++++ b/io_uring/opdef.c
+@@ -470,6 +470,21 @@ const struct io_op_def io_op_defs[] = {
+ 		.issue			= io_uring_cmd,
+ 		.prep_async		= io_uring_cmd_prep_async,
+ 	},
++	[IORING_OP_SENDZC_NOTIF] = {
++		.name			= "SENDZC_NOTIF",
++		.needs_file		= 1,
++		.unbound_nonreg_file	= 1,
++		.pollout		= 1,
++		.audit_skip		= 1,
++		.ioprio			= 1,
++#if defined(CONFIG_NET)
++		.prep			= io_sendzc_prep,
++		.issue			= io_sendzc,
++#else
++		.prep			= io_eopnotsupp_prep,
++#endif
++
++	},
+ };
+ 
+ const char *io_uring_get_opcode(u8 opcode)
 -- 
 2.37.0
 
