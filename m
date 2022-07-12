@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3093C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA708CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235087AbiGLTDE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42726 "EHLO
+        id S235317AbiGLTDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235140AbiGLTCF (ORCPT
+        with ESMTP id S235149AbiGLTCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:02:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE4660C6;
-        Tue, 12 Jul 2022 11:49:18 -0700 (PDT)
+        Tue, 12 Jul 2022 15:02:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD57C95A8;
+        Tue, 12 Jul 2022 11:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25DF361123;
-        Tue, 12 Jul 2022 18:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F353C3411C;
-        Tue, 12 Jul 2022 18:49:17 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3DAA8CE1A8C;
+        Tue, 12 Jul 2022 18:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29C77C3411E;
+        Tue, 12 Jul 2022 18:49:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651757;
-        bh=+24eNmj7JBW2Luyx+OMFPP6OZKm+EOiinyIhDs6ctw8=;
+        s=korg; t=1657651760;
+        bh=WK8DbHid5KLbLdiibt9WMsu16ETa4CTZT9zNegHjyDg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rdgOqtGQoEEVcL/eB/6JLQsv4BxQtX7ej1hqTogaM7ezqr8SJWjDRWesnbJzZujj4
-         n73ZqTkbPzZJUm6bGH1dytCPtGysOG1uoQPkFDK6m77VNSCfy0gX/uM7cTDimnJnBP
-         WacG3gRxeo/BHWZUYNDmQ7FBBHOBGnkXtpkVZaqw=
+        b=IYu452z0bmoKBpNkZA0RQo5SlokquzCTzjHDTowMtrSsOhbyIsflg1tAJ4B9zSv3V
+         Q3Syc4c2BrZ0fjBxbQdmIdKi6Vbck1EkJMACTG/l82OS7lbaQXo/tOUE15S0iN3hv3
+         iliu7y4NcL1yaAB3+vNl9hfploMxTAwjXe0V8K9g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 16/78] x86/alternative: Handle Jcc __x86_indirect_thunk_\reg
-Date:   Tue, 12 Jul 2022 20:38:46 +0200
-Message-Id: <20220712183239.505639145@linuxfoundation.org>
+Subject: [PATCH 5.15 07/78] objtool: Shrink struct instruction
+Date:   Tue, 12 Jul 2022 20:38:37 +0200
+Message-Id: <20220712183239.137331211@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -54,94 +54,64 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 2f0cbb2a8e5bbf101e9de118fc0eb168111a5e1e upstream.
+commit c509331b41b7365e17396c246e8c5797bccc8074 upstream.
 
-Handle the rare cases where the compiler (clang) does an indirect
-conditional tail-call using:
+Any one instruction can only ever call a single function, therefore
+insn->mcount_loc_node is superfluous and can use insn->call_node.
 
-  Jcc __x86_indirect_thunk_\reg
-
-For the !RETPOLINE case this can be rewritten to fit the original (6
-byte) instruction like:
-
-  Jncc.d8	1f
-  JMP		*%\reg
-  NOP
-1:
+This shrinks struct instruction, which is by far the most numerous
+structure objtool creates.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Borislav Petkov <bp@suse.de>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.296470217@infradead.org
+Link: https://lore.kernel.org/r/20211026120309.785456706@infradead.org
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/alternative.c |   40 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 36 insertions(+), 4 deletions(-)
+ tools/objtool/check.c                 |    6 +++---
+ tools/objtool/include/objtool/check.h |    1 -
+ 2 files changed, 3 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -393,7 +393,8 @@ static int emit_indirect(int op, int reg
- static int patch_retpoline(void *addr, struct insn *insn, u8 *bytes)
- {
- 	retpoline_thunk_t *target;
--	int reg, i = 0;
-+	int reg, ret, i = 0;
-+	u8 op, cc;
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -551,7 +551,7 @@ static int create_mcount_loc_sections(st
+ 		return 0;
  
- 	target = addr + insn->length + insn->immediate.value;
- 	reg = target - __x86_indirect_thunk_array;
-@@ -407,9 +408,36 @@ static int patch_retpoline(void *addr, s
- 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE))
+ 	idx = 0;
+-	list_for_each_entry(insn, &file->mcount_loc_list, mcount_loc_node)
++	list_for_each_entry(insn, &file->mcount_loc_list, call_node)
+ 		idx++;
+ 
+ 	sec = elf_create_section(file->elf, "__mcount_loc", 0, sizeof(unsigned long), idx);
+@@ -559,7 +559,7 @@ static int create_mcount_loc_sections(st
  		return -1;
  
--	i = emit_indirect(insn->opcode.bytes[0], reg, bytes);
--	if (i < 0)
--		return i;
-+	op = insn->opcode.bytes[0];
-+
-+	/*
-+	 * Convert:
-+	 *
-+	 *   Jcc.d32 __x86_indirect_thunk_\reg
-+	 *
-+	 * into:
-+	 *
-+	 *   Jncc.d8 1f
-+	 *   JMP *%\reg
-+	 *   NOP
-+	 * 1:
-+	 */
-+	/* Jcc.d32 second opcode byte is in the range: 0x80-0x8f */
-+	if (op == 0x0f && (insn->opcode.bytes[1] & 0xf0) == 0x80) {
-+		cc = insn->opcode.bytes[1] & 0xf;
-+		cc ^= 1; /* invert condition */
-+
-+		bytes[i++] = 0x70 + cc;        /* Jcc.d8 */
-+		bytes[i++] = insn->length - 2; /* sizeof(Jcc.d8) == 2 */
-+
-+		/* Continue as if: JMP.d32 __x86_indirect_thunk_\reg */
-+		op = JMP32_INSN_OPCODE;
-+	}
-+
-+	ret = emit_indirect(op, reg, bytes + i);
-+	if (ret < 0)
-+		return ret;
-+	i += ret;
+ 	idx = 0;
+-	list_for_each_entry(insn, &file->mcount_loc_list, mcount_loc_node) {
++	list_for_each_entry(insn, &file->mcount_loc_list, call_node) {
  
- 	for (; i < insn->length;)
- 		bytes[i++] = BYTES_NOP1;
-@@ -443,6 +471,10 @@ void __init_or_module noinline apply_ret
- 		case JMP32_INSN_OPCODE:
- 			break;
+ 		loc = (unsigned long *)sec->data->d_buf + idx;
+ 		memset(loc, 0, sizeof(unsigned long));
+@@ -909,7 +909,7 @@ static void annotate_call_site(struct ob
  
-+		case 0x0f: /* escape */
-+			if (op2 >= 0x80 && op2 <= 0x8f)
-+				break;
-+			fallthrough;
- 		default:
- 			WARN_ON_ONCE(1);
- 			continue;
+ 		insn->type = INSN_NOP;
+ 
+-		list_add_tail(&insn->mcount_loc_node, &file->mcount_loc_list);
++		list_add_tail(&insn->call_node, &file->mcount_loc_list);
+ 		return;
+ 	}
+ }
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -40,7 +40,6 @@ struct instruction {
+ 	struct list_head list;
+ 	struct hlist_node hash;
+ 	struct list_head call_node;
+-	struct list_head mcount_loc_node;
+ 	struct section *sec;
+ 	unsigned long offset;
+ 	unsigned int len;
 
 
