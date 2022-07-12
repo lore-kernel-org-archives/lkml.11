@@ -2,190 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22029CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0373C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233133AbiGLNiH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:38:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52968 "EHLO
+        id S232810AbiGLNjw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:39:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiGLNiF (ORCPT
+        with ESMTP id S229526AbiGLNjr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:38:05 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B735B6D8E;
-        Tue, 12 Jul 2022 06:38:03 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26C9Fa5x002441;
-        Tue, 12 Jul 2022 15:37:45 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=h4xD17V7DTR/YNErBVRjs3G7RJZlt2Jn4LyRZD6px+4=;
- b=FJAxMZeSr66ZY5WN87Yvn3qR9Bemn1VfFdpQ5//MFtocWtSe/WNGaytc90QqANxrAOmV
- sVNWVMUxdB0Qp3jJtUYNOaRtnzjlLv2XEsfQpqJi6ahJ5RcZmfLewH9GhOvz8Tvv4PDW
- FRXQQ9z/REk2wuTE60sKbb1YQrJ3t5YIXIg/Xvr3O1yFYbOCn9rCebilXSMTKT2yq909
- sCmudFgylUs+nXKUme55+ptXcb9LliRuGoTgNcp2IFT/BBwb3uBtdtwq6z8Izc0Vhk3E
- hvljL3gcXV617KkptqhybuOqqKw7eanAvWgvjJD0Y98xpTaF5Gr17xDtmFYnR1wZQXKB 5w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h9173k3qb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 15:37:45 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 30356100034;
-        Tue, 12 Jul 2022 15:37:44 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2179321FEBB;
-        Tue, 12 Jul 2022 15:37:44 +0200 (CEST)
-Received: from [10.211.14.207] (10.75.127.45) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 12 Jul
- 2022 15:37:42 +0200
-Message-ID: <e51bed47-b3fd-a328-a545-2810072e2bb8@foss.st.com>
-Date:   Tue, 12 Jul 2022 15:37:41 +0200
+        Tue, 12 Jul 2022 09:39:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92EA7B523D
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 06:39:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AACBB818CE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B06EC3411C;
+        Tue, 12 Jul 2022 13:39:42 +0000 (UTC)
+Date:   Tue, 12 Jul 2022 09:39:40 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Marco Elver <elver@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>
+Subject: Re: [PATCH -printk] printk, tracing: fix console tracepoint
+Message-ID: <20220712093940.45012e47@gandalf.local.home>
+In-Reply-To: <20220712114954.GA3870114@paulmck-ThinkPad-P17-Gen-1>
+References: <20220503073844.4148944-1-elver@google.com>
+        <20220711182918.338f000f@gandalf.local.home>
+        <20220712002128.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+        <20220711205319.1aa0d875@gandalf.local.home>
+        <20220712025701.GS1790663@paulmck-ThinkPad-P17-Gen-1>
+        <20220712114954.GA3870114@paulmck-ThinkPad-P17-Gen-1>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 1/4] docs: arm: stm32: introduce STM32 DMA-MDMA chaining
- feature
-Content-Language: en-US
-To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>
-References: <20220711084703.268481-1-amelie.delaunay@foss.st.com>
- <20220711084703.268481-2-amelie.delaunay@foss.st.com>
- <87a69ffzvk.fsf@meer.lwn.net>
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-In-Reply-To: <87a69ffzvk.fsf@meer.lwn.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 12 Jul 2022 04:49:54 -0700
+"Paul E. McKenney" <paulmck@kernel.org> wrote:
 
-
-On 7/11/22 17:11, Jonathan Corbet wrote:
-> Amelie Delaunay <amelie.delaunay@foss.st.com> writes:
+> > But a quick fix that stopped the bleeding and allowed printk() to
+> > progress would be useful in the short term, regardless of whether or
+> > not in the longer term it makes sense to make srcu_read_lock_trace()
+> > and srcu_read_unlock_trace() NMI-safe.  
 > 
->> STM32 DMA-MDMA chaining feature is available on STM32 SoCs which embed
->> STM32 DMAMUX, DMA and MDMA controllers. It is the case on STM32MP1 SoCs but
->> also on STM32H7 SoCs. But focus is on STM32MP1 SoCs, using DDR.
->> This documentation aims to explain how to use STM32 DMA-MDMA chaining
->> feature in drivers of STM32 peripheral having request lines on STM32 DMA.
->>
->> Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
->> ---
->>   .../arm/stm32/stm32-dma-mdma-chaining.rst     | 365 ++++++++++++++++++
->>   1 file changed, 365 insertions(+)
->>   create mode 100644 Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
+> Except that doesn't rcuidle && in_nmi() imply a misplaced trace event?
 > 
-> When you add a new RST file you also need to add it to index.rst
-> somewhere so that it becomes part of the docs build.
+> Isn't it still the case that you are not supposed to have trace events
+> in NMI handlers before RCU is watching or after it is no longer watching,
+> just as for entry/exit code in general?  Once in the body of the handler,
+> rcuidle should be false and all should be well.
 > 
+> Or am I missing something here?
 
-Thanks for you review.
+I guess the question is, can we have printk() in such a place? Because this
+tracepoint is attached to printk and where ever printk is done so is this
+tracepoint.
 
-I'll add it to index.rst, with other stm32 documentations.
-
->> diff --git a/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst b/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
->> new file mode 100644
->> index 000000000000..bfbbadc45aa7
->> --- /dev/null
->> +++ b/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
->> @@ -0,0 +1,365 @@
->> +.. SPDX-License-Identifier: GPL-2.0
->> +
->> +=======================
->> +STM32 DMA-MDMA chaining
->> +=======================
->> +
->> +
->> +Introduction
->> +------------
->> +
->> +  This document describes the STM32 DMA-MDMA chaining feature. But before going further, let's
->> +  introduce the peripherals involved.
-> 
-> Please keep to the 80-column limit for documentation, it makes it easier
-> to read.
-> 
-
-OK, I prepare a v2 with a 80-column limit for the documentation patch.
-
->> +  To offload data transfers from the CPU, STM32 microprocessors (MPUs) embed direct memory access
->> +  controllers (DMA).
->> +
->> +  STM32MP1 SoCs embed both STM32 DMA and STM32 MDMA controllers. STM32 DMA request routing
->> +  capabilities are enhanced by a DMA request multiplexer (STM32 DMAMUX).
->> +
->> +  **STM32 DMAMUX**
->> +
->> +  STM32 DMAMUX routes any DMA request from a given peripheral to any STM32 DMA controller (STM32MP1
->> +  counts two STM32 DMA controllers) channels.
->> +
->> +  **STM32 DMA**
->> +
->> +  STM32 DMA is mainly used to implement central data buffer storage (usually in the system SRAM) for
->> +  different peripheral. It can access external RAMs but without the ability to generate convenient
->> +  burst transfer ensuring the best load of the AXI.
->> +
->> +  **STM32 MDMA**
->> +
->> +  STM32 MDMA (Master DMA) is mainly used to manage direct data transfers between RAM data buffers
->> +  without CPU intervention. It can also be used in a hierarchical structure that uses STM32 DMA as
->> +  first level data buffer interfaces for AHB peripherals, while the STM32 MDMA acts as a second
->> +  level DMA with better performance. As a AXI/AHB master, STM32 MDMA can take control of the AXI/AHB
->> +  bus.
->> +
->> +
->> +Principles
->> +----------
->> +
->> +  STM32 DMA-MDMA chaining feature relies on the strengths of STM32 DMA and STM32 MDMA controllers.
->> +
->> +  STM32 DMA has a circular Double Buffer Mode (DBM). At each end of transaction (when DMA data
->> +  counter - DMA_SxNDTR - reaches 0), the memory pointers (configured with DMA_SxSM0AR and
->> +  DMA_SxM1AR) are swapped and the DMA data counter is automatically reloaded. This allows the SW or
->> +  the STM32 MDMA to process one memory area while the second memory area is being filled/used by the
->> +  STM32 DMA transfer.
->> +
->> +  With STM32 MDMA linked-list mode, a single request initiates the data array (collection of nodes)
->> +  to be transferred until the linked-list pointer for the channel is null. The channel transfer
->> +  complete of the last node is the end of transfer, unless first and last nodes are linked to each
->> +  other, in such a case, the linked-list loops on to create a circular MDMA transfer.
->> +
->> +  STM32 MDMA has direct connections with STM32 DMA. This enables autonomous communication and
->> +  synchronization between peripherals, thus saving CPU resources and bus congestion. Transfer
->> +  Complete signal of STM32 DMA channel can triggers STM32 MDMA transfer. STM32 MDMA can clear the
->> +  request generated by the STM32 DMA by writing to its Interrupt Clear register (whose address is
->> +  stored in MDMA_CxMAR, and bit mask in MDMA_CxMDR).
->> +
->> +  .. csv-table:: STM32 MDMA interconnect table with STM32 DMA
->> +        :header: "STM32 DMAMUX channels", "STM32 DMA controllers channels",
->> +                 "STM32 DMA Transfer Complete signal", "STM32 MDMA request"
-> 
-> If at all possible, please use simple tables; that makes the plain text
-> documentation much easier to read.
-> 
-
-It is possible, with some extra lines. I'll update it in v2 coming soon.
-
-> [...]
-> 
-> Thanks,
-> 
-> jon
-
-Regards,
-Amelie
+-- Steve
