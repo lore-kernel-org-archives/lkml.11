@@ -2,244 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 201C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:16:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27CCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235983AbiGLTQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42980 "EHLO
+        id S236031AbiGLTQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236182AbiGLTOe (ORCPT
+        with ESMTP id S235889AbiGLTQV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:14:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92C35D7BA1;
-        Tue, 12 Jul 2022 11:54:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C1E861123;
-        Tue, 12 Jul 2022 18:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAAFC3411C;
-        Tue, 12 Jul 2022 18:54:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652063;
-        bh=hKif5yS2hCZmOhkKLIEKst3fhfJEMePZImI+D7FABds=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QFjpanKKpXJIz+g2QrAJq3UGpMbTcZn/Us1aAoOChXQU8YucnqD1QvOE6hX/mdCK5
-         bp3kOmt0iyiSsSi5VGcfPLLBdzuUsfZRRhlsUo+112KJ6CvJMoqUn9aNp0nRbR4cN3
-         yM9w6Z7fTmUFWicyD5L0kIwll3ABHEDpWLUjH+WI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 47/61] KVM: VMX: Flatten __vmx_vcpu_run()
-Date:   Tue, 12 Jul 2022 20:39:44 +0200
-Message-Id: <20220712183238.826000320@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
-References: <20220712183236.931648980@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Jul 2022 15:16:21 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2101.outbound.protection.outlook.com [40.107.220.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE81C106969;
+        Tue, 12 Jul 2022 11:54:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PbUAC1GIO1WXIvCYqsWB+GjIlY+Isib/dIy1KSiN1FIrXRXwF+fJUSwS7CVrffTz0y1Bbsup0JvbZAzFVN1kn1YFVLbfRchVHzxP7F1CDXnjs6ky5GOMt9An35oqosuV/L2nhdTFFwjl27TvO849g1e9viX08N75D65l3VlLcDkufb6gRlbxZvj2s77cjUTlB5JoAjyrfimfyK5wRHBEJJ2SmdBxxZN6jZ9yUU3L5pxI+iGTavyqLqSggysWjDVTHvuhVHBzGDeemgmUNmu07ZluKP49U8BplKtq1fiJLio1XN6UDfWei+7pZStz5WJn6lUhKkHd1+2wjXW5NpgZAQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kER0im7m780k84WYx9qYS54Tc3/AYmbjrYXdZUgmA5w=;
+ b=Yvrcsz8cBfISMDUeleJN7HM6+i971gJ/jn4ZbPOKcQ/LgQKVYP4r6Vysv4qQdGfDTNBDPAmyRuoWiZD0PbG6d5Xj93cPCYsKw4Vxp6VMLwCZb7IY1Y4Mgbex+eRxuZpiC7ZeUq2Z1YurLRayMVQJkqfw4rLMdnFc3SEicOutNugSh9d8th2ImZ0PjFrb1Z/EwpExeH4GHb5C3T4m1aLoKZ4o1bJyWrUOCMNAWRHOpTNROw9VRx20r4DnsyCep4cz7pEAsHvP1x7bEzcnlBwjnaTY5zdOEn+FUMF4R6vFGOqjk3gcYEKdp7SWLCaDkutz1TBiiJGrxxLgBI4EB46O7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kER0im7m780k84WYx9qYS54Tc3/AYmbjrYXdZUgmA5w=;
+ b=V/d9hhX43j+QZg7xUOC4u2hJGb7tAAc2phzFBSHm9inng1XxEcX7tsWtdI5Y3UKcwk/C2C5I1Os/zg68C90dmOr6ErulyFfpHV2Kb4poIUNGo+CQyAhuU1UxUPSMOqN70ceEs/and9YHsp+xAUVXvGcRxYr8JjT4xhPEsu4yAWY=
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
+ by DS7PR21MB3572.namprd21.prod.outlook.com (2603:10b6:8:93::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.3; Tue, 12 Jul
+ 2022 18:54:47 +0000
+Received: from PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::88cc:9591:8584:8aa9]) by PH7PR21MB3263.namprd21.prod.outlook.com
+ ([fe80::88cc:9591:8584:8aa9%6]) with mapi id 15.20.5458.004; Tue, 12 Jul 2022
+ 18:54:47 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Dexuan Cui <decui@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: RE: [Patch v4 07/12] net: mana: Export Work Queue functions for use
+ by RDMA driver
+Thread-Topic: [Patch v4 07/12] net: mana: Export Work Queue functions for use
+ by RDMA driver
+Thread-Index: AQHYgSXaUwnRtTr0nEGROPSux9XDFa14iZ6AgAK1plA=
+Date:   Tue, 12 Jul 2022 18:54:47 +0000
+Message-ID: <PH7PR21MB3263AA690CF2D713ACD7CC9ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
+References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
+ <1655345240-26411-8-git-send-email-longli@linuxonhyperv.com>
+ <SN6PR2101MB1327F4D818A94D4D1C588F09BF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+In-Reply-To: <SN6PR2101MB1327F4D818A94D4D1C588F09BF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=93e21afa-271d-4db5-9c72-e1e55af0e033;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-10T01:39:46Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 70d89a38-c5a5-4f3a-a663-08da6437fe06
+x-ms-traffictypediagnostic: DS7PR21MB3572:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kt66NPApAoj9DaYncQyPossBLdHD2+116e9Q6aF3ektZAr9b6/6SFvJz3zQg3wydw+mInpvUl8P/IADDMgB/M98ryYjpaDhScXhwiGrbWTc3W88vzSyviqeV3WWrcRhDNOLhKny4T6OEP6GxiTxx0h4A3xz7YIvUyeifY9ibQ9MP77iIYaoGf/ayUwqr3hPue8/DaGGEJPrSb+2bhlakWsfhJKtN+z2W4ooKF8axwvSBAV/ZQ+hqNszmzj8O8ggvhQ8n4ZqtptlZw9v7iT7KzQCRsL5CG0Lo7HvbcdVx6jIMnGZeApoIGESy1VLzn06RpBhipylUY391Tl3mw2HPGK80Cc4GqIl1zejwfHNTCV+ApZajGnc55ymBaQ4PRLbemBqELGtcBMQEL+ExmrK/EaoZIT8F4oH5UfKmOFPH1ptKzvjvXtsJOa/6r6Ff10IxpR5YfIL4GsyYrL2rKeXd8Z2MfcR7ndi/Y1bMATwTps+ewGDJ6thT0aqp5qtj6lizjVcF23RU4T0l6xhU1PhyFussiFWaox8xLmGzLPaMbOXMWLGjs23xSM1GacDXKwctM5p3Mi8nqW69ANTtbAHg5swd1YA5AgqpB7bQ62J643OE19ulS5j9iFiUiIBqbTNd291DPsK1+f/xp1IPNCW8YZU5AEy8/rgXSWNOx+sqSbY8AptXMfTf8ewG6GFJmU3xBYopevXWrEa3YkuxVAypNoanPnGljje4yQJEqnpFbjGcJYTM3TFmDJtRU/XTbJSF1L34zZzNDYQ+x94IZoh/nXeyP2okIqZXMlPAc/5pSn3mVkc73VOvCIo6Qb5PcYN2KW68UbXzt+IkWPkswhbUHo4lMquuEQ078x5SB+IbVTgtj9Dyucg4A00IfoHyOb5W
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(366004)(376002)(136003)(451199009)(38070700005)(66946007)(2906002)(921005)(6506007)(38100700002)(82960400001)(41300700001)(478600001)(76116006)(122000001)(82950400001)(316002)(7696005)(86362001)(71200400001)(110136005)(8990500004)(8676002)(55016003)(7416002)(4326008)(5660300002)(4744005)(83380400001)(9686003)(66446008)(66556008)(26005)(66476007)(33656002)(6636002)(10290500003)(64756008)(186003)(52536014)(8936002)(54906003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JoIFDn3LAo9NnGhXGjTMluRHc6T9qBnYTjpds1Y+CQe+FwGVYP4PxubOJce3?=
+ =?us-ascii?Q?UU4j1sDlIKvrGanyQIn3/q4a9RAy1g4QI7QZEsFMQiA8YZmE9DRmiXQXG2f+?=
+ =?us-ascii?Q?trvRHvNcaGZZJPTYM/8+7zeJFbqMBgvRumg9y8sU89pB34kK9BWZ8p0WvEUg?=
+ =?us-ascii?Q?kmYQpMv0w9TbYbe/tgRRIKLLLp+2sjjBVvmR6osTiXWAjvRFb1z4cSRe6gCD?=
+ =?us-ascii?Q?cmzm7/Mpcan0BqR6VArLmK5QSQ8wYdhV55yWju5U6DfMBruaEHHeyI722PxR?=
+ =?us-ascii?Q?cgKa4+FLBWSlsLloB+QVgq1n0fcl+iNZXADOBId8wfiX4RYZKhy8x3KRJ9Q3?=
+ =?us-ascii?Q?5jn8iksKw9SqWxsJvQxSpcemX70xJMPnr6fpLW0/5rRQMYZ7A7e/zRl7C3RJ?=
+ =?us-ascii?Q?YVHuM9cr4sIUYAdiFU4qDlwz/55XPZ8bGF/S+06F7jD4LvVl9QhmdwXRFKEP?=
+ =?us-ascii?Q?IHVtO/v+Fv6AUl7frEG/4/ezWmOWXQZcvHBuIVosnIztK6xdC89CPCf2VREx?=
+ =?us-ascii?Q?reSq9LcUO6b/jW1JYGNcXIH64a87kQ0otNnqJIeydBl98zvneqY5DputfHS/?=
+ =?us-ascii?Q?xruyI/RXk6g0PKIGRCrQP/D/KInl5MaBHlVmiq3Ic+XktYIj5RGKevXaLdsH?=
+ =?us-ascii?Q?ki7rjntbhtONT/E+g6dtjMPB21hfaj7YTy+WT/oPT5C+k0r9EfjoCr2y88O2?=
+ =?us-ascii?Q?07OprTCtwsQtQl+g4pWcyz5Wa+HW04Gug36Z8YUK0uzyLKVZEX/559830x8H?=
+ =?us-ascii?Q?x1QTygRE8o/+CajPvXKFMsAkR7qu0zxoDhx/f+n0NxTsGqIwNHZuj/2vzUHx?=
+ =?us-ascii?Q?gQDr43Hfuzd+qcb/iKGTqLJU3JcVAS5SAO+LDUT7fKS4401AVbV9K1I/RqXP?=
+ =?us-ascii?Q?kGXWlXkatKQ8bC9rpGPME1m4lvAABWwYQUG4MaStBXCpVC80kwkx/npugBvM?=
+ =?us-ascii?Q?HTQsLYx0OksDKzOA8gcTlb1hseTknl8yRrMfIEm4JPQ1LFLhrxrIvlZTVEhY?=
+ =?us-ascii?Q?WOgsEKPSr1xHydGtJkf8XJR0Jx0CNpPtZb0LGcYggiC4Ln5SO1PjhxFGCU/8?=
+ =?us-ascii?Q?cgmWFARfvayWKV5qTfHwLku4JMnUf3ixVK+Y/NvCZbmyd09lfw69nI7eDXlq?=
+ =?us-ascii?Q?hG1VZTmLlA7AJOa1OXEp/H7AjJZdRSKTRkxIaF2jNlS1kId63TtDdngAj2EZ?=
+ =?us-ascii?Q?FL1z9yKi0AOnL3txgzADNtPCHGO21KZQsSqjGlnDHijrL0he4osk1WOggsry?=
+ =?us-ascii?Q?OZV4q48eFbKmdLPWz44iVx4Enpqj8hdE8+68jYBjXa7eS9EVnZTOTbIHDFo0?=
+ =?us-ascii?Q?g+NbAEZqFLpU4oFEGhzdHcuRjPEUzjdQ0L81ANcn9NGrYnzbn8w02EbP2Kvq?=
+ =?us-ascii?Q?RxfqG+Leb5KRHmi4E5xLtP4y0Obr03AyKK+9IfmVyU9NaXNJj32UtwbpYaCY?=
+ =?us-ascii?Q?xRLNdffD839x/hp00TQVxf5Fru3iM4V/AW6AkoVKGB7BBdw+do9YsEVIgsz9?=
+ =?us-ascii?Q?3ix7PutyVF9DBLkEiuuOFw9irL6gjmcKXGdU/ealKrqqg2UAI6KrSxbeRHYw?=
+ =?us-ascii?Q?e/RRw/7nEM2qhOd0lSZYukac+lHpThKvvpM5NpJQ?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 70d89a38-c5a5-4f3a-a663-08da6437fe06
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jul 2022 18:54:47.3549
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: B7lhiKpoSNvDRvNxhgUSLcpQYLb+0zsuJRdAfab7JAqRT5h3iyOuIszCpY4sBjfuCT0wanDgOVrFsJkYPUAiqA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR21MB3572
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+> Subject: RE: [Patch v4 07/12] net: mana: Export Work Queue functions for =
+use
+> by RDMA driver
+>=20
+> > From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
+> > Sent: Wednesday, June 15, 2022 7:07 PM @@ -125,6 +125,7 @@ int
+> > mana_gd_send_request(struct gdma_context *gc,
+> > u32 req_len, const void *req,
+> >
+> >  	return mana_hwc_send_request(hwc, req_len, req, resp_len, resp);  }
+> > +EXPORT_SYMBOL(mana_gd_send_request);
+> Can we use EXPORT_SYMBOL_GPL?
+>=20
+> > @@ -715,9 +715,10 @@ static int mana_create_wq_obj(struct
+> > mana_port_context *apc,
+> >  out:
+> >  	return err;
+> >  }
+> > +EXPORT_SYMBOL_GPL(mana_create_wq_obj);
+>=20
 
-commit 8bd200d23ec42d66ccd517a72dd0b9cc6132d2fd upstream.
+Will fix this in v5.
 
-Move the vmx_vm{enter,exit}() functionality into __vmx_vcpu_run().  This
-will make it easier to do the spec_ctrl handling before the first RET.
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kvm/vmx/vmenter.S |  119 +++++++++++++++++----------------------------
- 1 file changed, 46 insertions(+), 73 deletions(-)
-
---- a/arch/x86/kvm/vmx/vmenter.S
-+++ b/arch/x86/kvm/vmx/vmenter.S
-@@ -31,68 +31,6 @@
- .section .noinstr.text, "ax"
- 
- /**
-- * vmx_vmenter - VM-Enter the current loaded VMCS
-- *
-- * %RFLAGS.ZF:	!VMCS.LAUNCHED, i.e. controls VMLAUNCH vs. VMRESUME
-- *
-- * Returns:
-- *	%RFLAGS.CF is set on VM-Fail Invalid
-- *	%RFLAGS.ZF is set on VM-Fail Valid
-- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
-- *
-- * Note that VMRESUME/VMLAUNCH fall-through and return directly if
-- * they VM-Fail, whereas a successful VM-Enter + VM-Exit will jump
-- * to vmx_vmexit.
-- */
--SYM_FUNC_START_LOCAL(vmx_vmenter)
--	/* EFLAGS.ZF is set if VMCS.LAUNCHED == 0 */
--	je 2f
--
--1:	vmresume
--	RET
--
--2:	vmlaunch
--	RET
--
--3:	cmpb $0, kvm_rebooting
--	je 4f
--	RET
--4:	ud2
--
--	_ASM_EXTABLE(1b, 3b)
--	_ASM_EXTABLE(2b, 3b)
--
--SYM_FUNC_END(vmx_vmenter)
--
--/**
-- * vmx_vmexit - Handle a VMX VM-Exit
-- *
-- * Returns:
-- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
-- *
-- * This is vmx_vmenter's partner in crime.  On a VM-Exit, control will jump
-- * here after hardware loads the host's state, i.e. this is the destination
-- * referred to by VMCS.HOST_RIP.
-- */
--SYM_FUNC_START(vmx_vmexit)
--#ifdef CONFIG_RETPOLINE
--	ALTERNATIVE "jmp .Lvmexit_skip_rsb", "", X86_FEATURE_RETPOLINE
--	/* Preserve guest's RAX, it's used to stuff the RSB. */
--	push %_ASM_AX
--
--	/* IMPORTANT: Stuff the RSB immediately after VM-Exit, before RET! */
--	FILL_RETURN_BUFFER %_ASM_AX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
--
--	/* Clear RFLAGS.CF and RFLAGS.ZF to preserve VM-Exit, i.e. !VM-Fail. */
--	or $1, %_ASM_AX
--
--	pop %_ASM_AX
--.Lvmexit_skip_rsb:
--#endif
--	RET
--SYM_FUNC_END(vmx_vmexit)
--
--/**
-  * __vmx_vcpu_run - Run a vCPU via a transition to VMX guest mode
-  * @vmx:	struct vcpu_vmx * (forwarded to vmx_update_host_rsp)
-  * @regs:	unsigned long * (to guest registers)
-@@ -124,8 +62,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	/* Copy @launched to BL, _ASM_ARG3 is volatile. */
- 	mov %_ASM_ARG3B, %bl
- 
--	/* Adjust RSP to account for the CALL to vmx_vmenter(). */
--	lea -WORD_SIZE(%_ASM_SP), %_ASM_ARG2
-+	lea (%_ASM_SP), %_ASM_ARG2
- 	call vmx_update_host_rsp
- 
- 	/* Load @regs to RAX. */
-@@ -154,11 +91,37 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	/* Load guest RAX.  This kills the @regs pointer! */
- 	mov VCPU_RAX(%_ASM_AX), %_ASM_AX
- 
--	/* Enter guest mode */
--	call vmx_vmenter
-+	/* Check EFLAGS.ZF from 'testb' above */
-+	je .Lvmlaunch
- 
--	/* Jump on VM-Fail. */
--	jbe 2f
-+	/*
-+	 * After a successful VMRESUME/VMLAUNCH, control flow "magically"
-+	 * resumes below at 'vmx_vmexit' due to the VMCS HOST_RIP setting.
-+	 * So this isn't a typical function and objtool needs to be told to
-+	 * save the unwind state here and restore it below.
-+	 */
-+	UNWIND_HINT_SAVE
-+
-+/*
-+ * If VMRESUME/VMLAUNCH and corresponding vmexit succeed, execution resumes at
-+ * the 'vmx_vmexit' label below.
-+ */
-+.Lvmresume:
-+	vmresume
-+	jmp .Lvmfail
-+
-+.Lvmlaunch:
-+	vmlaunch
-+	jmp .Lvmfail
-+
-+	_ASM_EXTABLE(.Lvmresume, .Lfixup)
-+	_ASM_EXTABLE(.Lvmlaunch, .Lfixup)
-+
-+SYM_INNER_LABEL(vmx_vmexit, SYM_L_GLOBAL)
-+
-+	/* Restore unwind state from before the VMRESUME/VMLAUNCH. */
-+	UNWIND_HINT_RESTORE
-+	ENDBR
- 
- 	/* Temporarily save guest's RAX. */
- 	push %_ASM_AX
-@@ -185,9 +148,13 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	mov %r15, VCPU_R15(%_ASM_AX)
- #endif
- 
-+	/* IMPORTANT: RSB must be stuffed before the first return. */
-+	FILL_RETURN_BUFFER %_ASM_BX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
-+
- 	/* Clear RAX to indicate VM-Exit (as opposed to VM-Fail). */
- 	xor %eax, %eax
- 
-+.Lclear_regs:
- 	/*
- 	 * Clear all general purpose registers except RSP and RAX to prevent
- 	 * speculative use of the guest's values, even those that are reloaded
-@@ -197,7 +164,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	 * free.  RSP and RAX are exempt as RSP is restored by hardware during
- 	 * VM-Exit and RAX is explicitly loaded with 0 or 1 to return VM-Fail.
- 	 */
--1:	xor %ecx, %ecx
-+	xor %ecx, %ecx
- 	xor %edx, %edx
- 	xor %ebx, %ebx
- 	xor %ebp, %ebp
-@@ -216,8 +183,8 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 
- 	/* "POP" @regs. */
- 	add $WORD_SIZE, %_ASM_SP
--	pop %_ASM_BX
- 
-+	pop %_ASM_BX
- #ifdef CONFIG_X86_64
- 	pop %r12
- 	pop %r13
-@@ -230,9 +197,15 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	pop %_ASM_BP
- 	RET
- 
--	/* VM-Fail.  Out-of-line to avoid a taken Jcc after VM-Exit. */
--2:	mov $1, %eax
--	jmp 1b
-+.Lfixup:
-+	cmpb $0, kvm_rebooting
-+	jne .Lvmfail
-+	ud2
-+.Lvmfail:
-+	/* VM-Fail: set return value to 1 */
-+	mov $1, %eax
-+	jmp .Lclear_regs
-+
- SYM_FUNC_END(__vmx_vcpu_run)
- 
- 
-
-
+> Well, here we use EXPORT_SYMBOL_GPL. If there is a rule to decide which o=
+ne
+> should be used, please add a comment.
+>=20
+> In general, the patch looks good to me.
+>=20
+> Reviewed-by: Dexuan Cui <decui@microsoft.com>
