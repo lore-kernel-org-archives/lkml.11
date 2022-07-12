@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 260F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C515C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233799AbiGLSlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        id S233940AbiGLSlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233826AbiGLSk6 (ORCPT
+        with ESMTP id S233741AbiGLSk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:40:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B177FD31E4;
-        Tue, 12 Jul 2022 11:40:41 -0700 (PDT)
+        Tue, 12 Jul 2022 14:40:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFFCD31F0;
+        Tue, 12 Jul 2022 11:40:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24771B81BB4;
-        Tue, 12 Jul 2022 18:40:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5636CC341C8;
-        Tue, 12 Jul 2022 18:40:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0B1E61AC9;
+        Tue, 12 Jul 2022 18:40:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B30BEC341C0;
+        Tue, 12 Jul 2022 18:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651238;
-        bh=+THqdilnftkwgLT3AbiDopT9tOjoWmndlCmioZBsvV0=;
+        s=korg; t=1657651242;
+        bh=d/Fe/oadpda4DuQ7wRcCWPnk9oSwr0PlrqLD2dd/tC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o+kuOzmQ8eCRWyLh6exsTvS24zO4DlJyb6Xxbig9d+H99bKa8qWQjXR980bXaoRfP
-         3amRe/00BIspujpc2jB2KwFIfE3L+2cy+mDaa2KJdN+Thvi6UwO2kDUv5fMsceUx3c
-         b0B1ckYlhSCHFx4n7gtZ6H5ymsUx9o2zwNkzMlgU=
+        b=Lo3EAMLwHK7jUzqKnM/nztYTCHAA6z9VqQlPILkd2smO75eYqOAOnY9+zGh3xGz1p
+         DVWKAh4Jn70Rxv9CNuQREYyFKuT4uXBO6gVcXIbindR6mS7ixJBriDPdQYJ/xxo4t1
+         wkA9v8CHgmE9n+c/5Vv5VAAGi/5NKntpqUMb5J9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 008/130] objtool: Combine UNWIND_HINT_RET_OFFSET and UNWIND_HINT_FUNC
-Date:   Tue, 12 Jul 2022 20:37:34 +0200
-Message-Id: <20220712183246.779137011@linuxfoundation.org>
+Subject: [PATCH 5.10 017/130] x86/insn: Add an insn_decode() API
+Date:   Tue, 12 Jul 2022 20:37:43 +0200
+Message-Id: <20220712183247.196840353@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -48,239 +49,965 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Borislav Petkov <bp@suse.de>
 
-commit b735bd3e68824316655252a931a3353a6ebc036f upstream.
+commit 93281c4a96572a34504244969b938e035204778d upstream.
 
-The ORC metadata generated for UNWIND_HINT_FUNC isn't actually very
-func-like.  With certain usages it can cause stack state mismatches
-because it doesn't set the return address (CFI_RA).
+Users of the instruction decoder should use this to decode instruction
+bytes. For that, have insn*() helpers return an int value to denote
+success/failure. When there's an error fetching the next insn byte and
+the insn falls short, return -ENODATA to denote that.
 
-Also, users of UNWIND_HINT_RET_OFFSET no longer need to set a custom
-return stack offset.  Instead they just need to specify a func-like
-situation, so the current ret_offset code is hacky for no good reason.
+While at it, make insn_get_opcode() more stricter as to whether what has
+seen so far is a valid insn and if not.
 
-Solve both problems by simplifying the RET_OFFSET handling and
-converting it into a more useful UNWIND_HINT_FUNC.
+Copy linux/kconfig.h for the tools-version of the decoder so that it can
+use IS_ENABLED().
 
-If we end up needing the old 'ret_offset' functionality again in the
-future, we should be able to support it pretty easily with the addition
-of a custom 'sp_offset' in UNWIND_HINT_FUNC.
+Also, cast the INSN_MODE_KERN dummy define value to (enum insn_mode)
+for tools use of the decoder because perf tool builds with -Werror and
+errors out with -Werror=sign-compare otherwise.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/db9d1f5d79dddfbb3725ef6d8ec3477ad199948d.1611263462.git.jpoimboe@redhat.com
-[bwh: Backported to 5.10:
- - Don't use bswap_if_needed() since we don't have any of the other fixes
-   for mixed-endian cross-compilation
- - Adjust context]
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Link: https://lkml.kernel.org/r/20210304174237.31945-5-bp@alien8.de
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/unwind_hints.h |   13 +-----------
- arch/x86/kernel/ftrace_64.S         |    2 -
- arch/x86/lib/retpoline.S            |    2 -
- include/linux/objtool.h             |    5 +++-
- tools/include/linux/objtool.h       |    5 +++-
- tools/objtool/arch/x86/decode.c     |    4 +--
- tools/objtool/check.c               |   37 ++++++++++++++----------------------
- tools/objtool/check.h               |    1 
- 8 files changed, 29 insertions(+), 40 deletions(-)
+ arch/x86/include/asm/insn.h       |   24 ++--
+ arch/x86/lib/insn.c               |  216 +++++++++++++++++++++++++++++-------
+ tools/arch/x86/include/asm/insn.h |   24 ++--
+ tools/arch/x86/lib/insn.c         |  222 +++++++++++++++++++++++++++++---------
+ tools/include/linux/kconfig.h     |   73 ++++++++++++
+ 5 files changed, 452 insertions(+), 107 deletions(-)
+ create mode 100644 tools/include/linux/kconfig.h
 
---- a/arch/x86/include/asm/unwind_hints.h
-+++ b/arch/x86/include/asm/unwind_hints.h
-@@ -48,17 +48,8 @@
- 	UNWIND_HINT_REGS base=\base offset=\offset partial=1
- .endm
+--- a/arch/x86/include/asm/insn.h
++++ b/arch/x86/include/asm/insn.h
+@@ -87,13 +87,23 @@ struct insn {
+ #define X86_VEX_M_MAX	0x1f			/* VEX3.M Maximum value */
  
--.macro UNWIND_HINT_FUNC sp_offset=8
--	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=\sp_offset type=UNWIND_HINT_TYPE_CALL
--.endm
--
--/*
-- * RET_OFFSET: Used on instructions that terminate a function; mostly RETURN
-- * and sibling calls. On these, sp_offset denotes the expected offset from
-- * initial_func_cfi.
+ extern void insn_init(struct insn *insn, const void *kaddr, int buf_len, int x86_64);
+-extern void insn_get_prefixes(struct insn *insn);
+-extern void insn_get_opcode(struct insn *insn);
+-extern void insn_get_modrm(struct insn *insn);
+-extern void insn_get_sib(struct insn *insn);
+-extern void insn_get_displacement(struct insn *insn);
+-extern void insn_get_immediate(struct insn *insn);
+-extern void insn_get_length(struct insn *insn);
++extern int insn_get_prefixes(struct insn *insn);
++extern int insn_get_opcode(struct insn *insn);
++extern int insn_get_modrm(struct insn *insn);
++extern int insn_get_sib(struct insn *insn);
++extern int insn_get_displacement(struct insn *insn);
++extern int insn_get_immediate(struct insn *insn);
++extern int insn_get_length(struct insn *insn);
++
++enum insn_mode {
++	INSN_MODE_32,
++	INSN_MODE_64,
++	/* Mode is determined by the current kernel build. */
++	INSN_MODE_KERN,
++	INSN_NUM_MODES,
++};
++
++extern int insn_decode(struct insn *insn, const void *kaddr, int buf_len, enum insn_mode m);
+ 
+ /* Attribute will be determined after getting ModRM (for opcode groups) */
+ static inline void insn_get_attribute(struct insn *insn)
+--- a/arch/x86/lib/insn.c
++++ b/arch/x86/lib/insn.c
+@@ -13,6 +13,9 @@
+ #include <asm/inat.h> /*__ignore_sync_check__ */
+ #include <asm/insn.h> /* __ignore_sync_check__ */
+ 
++#include <linux/errno.h>
++#include <linux/kconfig.h>
++
+ #include <asm/emulate_prefix.h> /* __ignore_sync_check__ */
+ 
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+@@ -97,8 +100,12 @@ static void insn_get_emulate_prefix(stru
+  * Populates the @insn->prefixes bitmap, and updates @insn->next_byte
+  * to point to the (first) opcode.  No effect if @insn->prefixes.got
+  * is already set.
++ *
++ * * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_prefixes(struct insn *insn)
++int insn_get_prefixes(struct insn *insn)
+ {
+ 	struct insn_field *prefixes = &insn->prefixes;
+ 	insn_attr_t attr;
+@@ -106,7 +113,7 @@ void insn_get_prefixes(struct insn *insn
+ 	int i, nb;
+ 
+ 	if (prefixes->got)
+-		return;
++		return 0;
+ 
+ 	insn_get_emulate_prefix(insn);
+ 
+@@ -217,8 +224,10 @@ vex_end:
+ 
+ 	prefixes->got = 1;
+ 
++	return 0;
++
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /**
+@@ -230,16 +239,25 @@ err_out:
+  * If necessary, first collects any preceding (prefix) bytes.
+  * Sets @insn->opcode.value = opcode1.  No effect if @insn->opcode.got
+  * is already 1.
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_opcode(struct insn *insn)
++int insn_get_opcode(struct insn *insn)
+ {
+ 	struct insn_field *opcode = &insn->opcode;
++	int pfx_id, ret;
+ 	insn_byte_t op;
+-	int pfx_id;
++
+ 	if (opcode->got)
+-		return;
+-	if (!insn->prefixes.got)
+-		insn_get_prefixes(insn);
++		return 0;
++
++	if (!insn->prefixes.got) {
++		ret = insn_get_prefixes(insn);
++		if (ret)
++			return ret;
++	}
+ 
+ 	/* Get first opcode */
+ 	op = get_next(insn_byte_t, insn);
+@@ -254,9 +272,13 @@ void insn_get_opcode(struct insn *insn)
+ 		insn->attr = inat_get_avx_attribute(op, m, p);
+ 		if ((inat_must_evex(insn->attr) && !insn_is_evex(insn)) ||
+ 		    (!inat_accept_vex(insn->attr) &&
+-		     !inat_is_group(insn->attr)))
+-			insn->attr = 0;	/* This instruction is bad */
+-		goto end;	/* VEX has only 1 byte for opcode */
++		     !inat_is_group(insn->attr))) {
++			/* This instruction is bad */
++			insn->attr = 0;
++			return -EINVAL;
++		}
++		/* VEX has only 1 byte for opcode */
++		goto end;
+ 	}
+ 
+ 	insn->attr = inat_get_opcode_attribute(op);
+@@ -267,13 +289,18 @@ void insn_get_opcode(struct insn *insn)
+ 		pfx_id = insn_last_prefix_id(insn);
+ 		insn->attr = inat_get_escape_attribute(op, pfx_id, insn->attr);
+ 	}
+-	if (inat_must_vex(insn->attr))
+-		insn->attr = 0;	/* This instruction is bad */
++
++	if (inat_must_vex(insn->attr)) {
++		/* This instruction is bad */
++		insn->attr = 0;
++		return -EINVAL;
++	}
+ end:
+ 	opcode->got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /**
+@@ -283,15 +310,25 @@ err_out:
+  * Populates @insn->modrm and updates @insn->next_byte to point past the
+  * ModRM byte, if any.  If necessary, first collects the preceding bytes
+  * (prefixes and opcode(s)).  No effect if @insn->modrm.got is already 1.
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_modrm(struct insn *insn)
++int insn_get_modrm(struct insn *insn)
+ {
+ 	struct insn_field *modrm = &insn->modrm;
+ 	insn_byte_t pfx_id, mod;
++	int ret;
++
+ 	if (modrm->got)
+-		return;
+-	if (!insn->opcode.got)
+-		insn_get_opcode(insn);
++		return 0;
++
++	if (!insn->opcode.got) {
++		ret = insn_get_opcode(insn);
++		if (ret)
++			return ret;
++	}
+ 
+ 	if (inat_has_modrm(insn->attr)) {
+ 		mod = get_next(insn_byte_t, insn);
+@@ -301,17 +338,22 @@ void insn_get_modrm(struct insn *insn)
+ 			pfx_id = insn_last_prefix_id(insn);
+ 			insn->attr = inat_get_group_attribute(mod, pfx_id,
+ 							      insn->attr);
+-			if (insn_is_avx(insn) && !inat_accept_vex(insn->attr))
+-				insn->attr = 0;	/* This is bad */
++			if (insn_is_avx(insn) && !inat_accept_vex(insn->attr)) {
++				/* Bad insn */
++				insn->attr = 0;
++				return -EINVAL;
++			}
+ 		}
+ 	}
+ 
+ 	if (insn->x86_64 && inat_is_force64(insn->attr))
+ 		insn->opnd_bytes = 8;
++
+ 	modrm->got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ 
+@@ -325,11 +367,16 @@ err_out:
+ int insn_rip_relative(struct insn *insn)
+ {
+ 	struct insn_field *modrm = &insn->modrm;
++	int ret;
+ 
+ 	if (!insn->x86_64)
+ 		return 0;
+-	if (!modrm->got)
+-		insn_get_modrm(insn);
++
++	if (!modrm->got) {
++		ret = insn_get_modrm(insn);
++		if (ret)
++			return 0;
++	}
+ 	/*
+ 	 * For rip-relative instructions, the mod field (top 2 bits)
+ 	 * is zero and the r/m field (bottom 3 bits) is 0x5.
+@@ -343,15 +390,25 @@ int insn_rip_relative(struct insn *insn)
+  *
+  * If necessary, first collects the instruction up to and including the
+  * ModRM byte.
++ *
++ * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
+  */
+-void insn_get_sib(struct insn *insn)
++int insn_get_sib(struct insn *insn)
+ {
+ 	insn_byte_t modrm;
++	int ret;
+ 
+ 	if (insn->sib.got)
+-		return;
+-	if (!insn->modrm.got)
+-		insn_get_modrm(insn);
++		return 0;
++
++	if (!insn->modrm.got) {
++		ret = insn_get_modrm(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	if (insn->modrm.nbytes) {
+ 		modrm = (insn_byte_t)insn->modrm.value;
+ 		if (insn->addr_bytes != 2 &&
+@@ -362,8 +419,10 @@ void insn_get_sib(struct insn *insn)
+ 	}
+ 	insn->sib.got = 1;
+ 
++	return 0;
++
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ 
+@@ -374,15 +433,25 @@ err_out:
+  * If necessary, first collects the instruction up to and including the
+  * SIB byte.
+  * Displacement value is sign-expanded.
++ *
++ * * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
+  */
+-void insn_get_displacement(struct insn *insn)
++int insn_get_displacement(struct insn *insn)
+ {
+ 	insn_byte_t mod, rm, base;
++	int ret;
+ 
+ 	if (insn->displacement.got)
+-		return;
+-	if (!insn->sib.got)
+-		insn_get_sib(insn);
++		return 0;
++
++	if (!insn->sib.got) {
++		ret = insn_get_sib(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	if (insn->modrm.nbytes) {
+ 		/*
+ 		 * Interpreting the modrm byte:
+@@ -425,9 +494,10 @@ void insn_get_displacement(struct insn *
+ 	}
+ out:
+ 	insn->displacement.got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /* Decode moffset16/32/64. Return 0 if failed */
+@@ -538,20 +608,30 @@ err_out:
+ }
+ 
+ /**
+- * insn_get_immediate() - Get the immediates of instruction
++ * insn_get_immediate() - Get the immediate in an instruction
+  * @insn:	&struct insn containing instruction
+  *
+  * If necessary, first collects the instruction up to and including the
+  * displacement bytes.
+  * Basically, most of immediates are sign-expanded. Unsigned-value can be
+- * get by bit masking with ((1 << (nbytes * 8)) - 1)
++ * computed by bit masking with ((1 << (nbytes * 8)) - 1)
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_immediate(struct insn *insn)
++int insn_get_immediate(struct insn *insn)
+ {
++	int ret;
++
+ 	if (insn->immediate.got)
+-		return;
+-	if (!insn->displacement.got)
+-		insn_get_displacement(insn);
++		return 0;
++
++	if (!insn->displacement.got) {
++		ret = insn_get_displacement(insn);
++		if (ret)
++			return ret;
++	}
+ 
+ 	if (inat_has_moffset(insn->attr)) {
+ 		if (!__get_moffset(insn))
+@@ -604,9 +684,10 @@ void insn_get_immediate(struct insn *ins
+ 	}
+ done:
+ 	insn->immediate.got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /**
+@@ -615,13 +696,58 @@ err_out:
+  *
+  * If necessary, first collects the instruction up to and including the
+  * immediates bytes.
 - */
--.macro UNWIND_HINT_RET_OFFSET sp_offset=8
--	UNWIND_HINT sp_reg=ORC_REG_SP type=UNWIND_HINT_TYPE_RET_OFFSET sp_offset=\sp_offset
-+.macro UNWIND_HINT_FUNC
-+	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=8 type=UNWIND_HINT_TYPE_FUNC
- .endm
- 
- #endif /* __ASSEMBLY__ */
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -265,7 +265,7 @@ SYM_INNER_LABEL(ftrace_regs_caller_end,
- 	restore_mcount_regs 8
- 	/* Restore flags */
- 	popfq
--	UNWIND_HINT_RET_OFFSET
-+	UNWIND_HINT_FUNC
- 	jmp	ftrace_epilogue
- 
- SYM_FUNC_END(ftrace_regs_caller)
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -28,7 +28,7 @@ SYM_FUNC_START_NOALIGN(__x86_retpoline_\
- 	jmp	.Lspec_trap_\@
- .Ldo_rop_\@:
- 	mov	%\reg, (%_ASM_SP)
--	UNWIND_HINT_RET_OFFSET
-+	UNWIND_HINT_FUNC
- 	ret
- SYM_FUNC_END(__x86_retpoline_\reg)
- 
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -29,11 +29,14 @@ struct unwind_hint {
-  *
-  * UNWIND_HINT_TYPE_REGS_PARTIAL: Used in entry code to indicate that
-  * sp_reg+sp_offset points to the iret return frame.
+-void insn_get_length(struct insn *insn)
 + *
-+ * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-+ * Useful for code which doesn't have an ELF function annotation.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
--#define UNWIND_HINT_TYPE_RET_OFFSET	3
-+#define UNWIND_HINT_TYPE_FUNC		3
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -29,11 +29,14 @@ struct unwind_hint {
-  *
-  * UNWIND_HINT_TYPE_REGS_PARTIAL: Used in entry code to indicate that
-  * sp_reg+sp_offset points to the iret return frame.
-+ *
-+ * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-+ * Useful for code which doesn't have an ELF function annotation.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
--#define UNWIND_HINT_TYPE_RET_OFFSET	3
-+#define UNWIND_HINT_TYPE_FUNC		3
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -563,8 +563,8 @@ void arch_initial_func_cfi_state(struct
- 	state->cfa.offset = 8;
- 
- 	/* initial RA (return address) */
--	state->regs[16].base = CFI_CFA;
--	state->regs[16].offset = -8;
-+	state->regs[CFI_RA].base = CFI_CFA;
-+	state->regs[CFI_RA].offset = -8;
- }
- 
- const char *arch_nop_insn(int len)
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1423,13 +1423,20 @@ static int add_jump_table_alts(struct ob
- 	return 0;
- }
- 
-+static void set_func_state(struct cfi_state *state)
-+{
-+	state->cfa = initial_func_cfi.cfa;
-+	memcpy(&state->regs, &initial_func_cfi.regs,
-+	       CFI_NUM_REGS * sizeof(struct cfi_reg));
-+	state->stack_size = initial_func_cfi.cfa.offset;
++ * Returns:
++ *  - 0 on success
++ *  - < 0 on error
++*/
++int insn_get_length(struct insn *insn)
+ {
++	int ret;
++
+ 	if (insn->length)
+-		return;
+-	if (!insn->immediate.got)
+-		insn_get_immediate(insn);
++		return 0;
++
++	if (!insn->immediate.got) {
++		ret = insn_get_immediate(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	insn->length = (unsigned char)((unsigned long)insn->next_byte
+ 				     - (unsigned long)insn->kaddr);
++
++	return 0;
 +}
 +
- static int read_unwind_hints(struct objtool_file *file)
++/**
++ * insn_decode() - Decode an x86 instruction
++ * @insn:	&struct insn to be initialized
++ * @kaddr:	address (in kernel memory) of instruction (or copy thereof)
++ * @buf_len:	length of the insn buffer at @kaddr
++ * @m:		insn mode, see enum insn_mode
++ *
++ * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
++ */
++int insn_decode(struct insn *insn, const void *kaddr, int buf_len, enum insn_mode m)
++{
++	int ret;
++
++/* #define INSN_MODE_KERN	-1 __ignore_sync_check__ mode is only valid in the kernel */
++
++	if (m == INSN_MODE_KERN)
++		insn_init(insn, kaddr, buf_len, IS_ENABLED(CONFIG_X86_64));
++	else
++		insn_init(insn, kaddr, buf_len, m == INSN_MODE_64);
++
++	ret = insn_get_length(insn);
++	if (ret)
++		return ret;
++
++	if (insn_complete(insn))
++		return 0;
++
++	return -EINVAL;
+ }
+--- a/tools/arch/x86/include/asm/insn.h
++++ b/tools/arch/x86/include/asm/insn.h
+@@ -87,13 +87,23 @@ struct insn {
+ #define X86_VEX_M_MAX	0x1f			/* VEX3.M Maximum value */
+ 
+ extern void insn_init(struct insn *insn, const void *kaddr, int buf_len, int x86_64);
+-extern void insn_get_prefixes(struct insn *insn);
+-extern void insn_get_opcode(struct insn *insn);
+-extern void insn_get_modrm(struct insn *insn);
+-extern void insn_get_sib(struct insn *insn);
+-extern void insn_get_displacement(struct insn *insn);
+-extern void insn_get_immediate(struct insn *insn);
+-extern void insn_get_length(struct insn *insn);
++extern int insn_get_prefixes(struct insn *insn);
++extern int insn_get_opcode(struct insn *insn);
++extern int insn_get_modrm(struct insn *insn);
++extern int insn_get_sib(struct insn *insn);
++extern int insn_get_displacement(struct insn *insn);
++extern int insn_get_immediate(struct insn *insn);
++extern int insn_get_length(struct insn *insn);
++
++enum insn_mode {
++	INSN_MODE_32,
++	INSN_MODE_64,
++	/* Mode is determined by the current kernel build. */
++	INSN_MODE_KERN,
++	INSN_NUM_MODES,
++};
++
++extern int insn_decode(struct insn *insn, const void *kaddr, int buf_len, enum insn_mode m);
+ 
+ /* Attribute will be determined after getting ModRM (for opcode groups) */
+ static inline void insn_get_attribute(struct insn *insn)
+--- a/tools/arch/x86/lib/insn.c
++++ b/tools/arch/x86/lib/insn.c
+@@ -10,10 +10,13 @@
+ #else
+ #include <string.h>
+ #endif
+-#include "../include/asm/inat.h" /* __ignore_sync_check__ */
+-#include "../include/asm/insn.h" /* __ignore_sync_check__ */
++#include <asm/inat.h> /* __ignore_sync_check__ */
++#include <asm/insn.h> /* __ignore_sync_check__ */
+ 
+-#include "../include/asm/emulate_prefix.h" /* __ignore_sync_check__ */
++#include <linux/errno.h>
++#include <linux/kconfig.h>
++
++#include <asm/emulate_prefix.h> /* __ignore_sync_check__ */
+ 
+ /* Verify next sizeof(t) bytes can be on the same instruction */
+ #define validate_next(t, insn, n)	\
+@@ -97,8 +100,12 @@ static void insn_get_emulate_prefix(stru
+  * Populates the @insn->prefixes bitmap, and updates @insn->next_byte
+  * to point to the (first) opcode.  No effect if @insn->prefixes.got
+  * is already set.
++ *
++ * * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_prefixes(struct insn *insn)
++int insn_get_prefixes(struct insn *insn)
  {
- 	struct section *sec, *relocsec;
- 	struct reloc *reloc;
- 	struct unwind_hint *hint;
- 	struct instruction *insn;
--	struct cfi_reg *cfa;
- 	int i;
+ 	struct insn_field *prefixes = &insn->prefixes;
+ 	insn_attr_t attr;
+@@ -106,7 +113,7 @@ void insn_get_prefixes(struct insn *insn
+ 	int i, nb;
  
- 	sec = find_section_by_name(file->elf, ".discard.unwind_hints");
-@@ -1464,22 +1471,20 @@ static int read_unwind_hints(struct objt
- 			return -1;
- 		}
+ 	if (prefixes->got)
+-		return;
++		return 0;
  
--		cfa = &insn->cfi.cfa;
-+		insn->hint = true;
+ 	insn_get_emulate_prefix(insn);
  
--		if (hint->type == UNWIND_HINT_TYPE_RET_OFFSET) {
--			insn->ret_offset = hint->sp_offset;
-+		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
-+			set_func_state(&insn->cfi);
- 			continue;
- 		}
+@@ -217,8 +224,10 @@ vex_end:
  
--		insn->hint = true;
--
- 		if (arch_decode_hint_reg(insn, hint->sp_reg)) {
- 			WARN_FUNC("unsupported unwind_hint sp base reg %d",
- 				  insn->sec, insn->offset, hint->sp_reg);
- 			return -1;
- 		}
+ 	prefixes->got = 1;
  
--		cfa->offset = hint->sp_offset;
-+		insn->cfi.cfa.offset = hint->sp_offset;
- 		insn->cfi.type = hint->type;
- 		insn->cfi.end = hint->end;
- 	}
-@@ -1742,27 +1747,18 @@ static bool is_fentry_call(struct instru
++	return 0;
++
+ err_out:
+-	return;
++	return -ENODATA;
+ }
  
- static bool has_modified_stack_frame(struct instruction *insn, struct insn_state *state)
+ /**
+@@ -230,16 +239,25 @@ err_out:
+  * If necessary, first collects any preceding (prefix) bytes.
+  * Sets @insn->opcode.value = opcode1.  No effect if @insn->opcode.got
+  * is already 1.
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_opcode(struct insn *insn)
++int insn_get_opcode(struct insn *insn)
  {
--	u8 ret_offset = insn->ret_offset;
- 	struct cfi_state *cfi = &state->cfi;
- 	int i;
+ 	struct insn_field *opcode = &insn->opcode;
++	int pfx_id, ret;
+ 	insn_byte_t op;
+-	int pfx_id;
++
+ 	if (opcode->got)
+-		return;
+-	if (!insn->prefixes.got)
+-		insn_get_prefixes(insn);
++		return 0;
++
++	if (!insn->prefixes.got) {
++		ret = insn_get_prefixes(insn);
++		if (ret)
++			return ret;
++	}
  
- 	if (cfi->cfa.base != initial_func_cfi.cfa.base || cfi->drap)
- 		return true;
- 
--	if (cfi->cfa.offset != initial_func_cfi.cfa.offset + ret_offset)
-+	if (cfi->cfa.offset != initial_func_cfi.cfa.offset)
- 		return true;
- 
--	if (cfi->stack_size != initial_func_cfi.cfa.offset + ret_offset)
-+	if (cfi->stack_size != initial_func_cfi.cfa.offset)
- 		return true;
- 
--	/*
--	 * If there is a ret offset hint then don't check registers
--	 * because a callee-saved register might have been pushed on
--	 * the stack.
--	 */
--	if (ret_offset)
--		return false;
--
- 	for (i = 0; i < CFI_NUM_REGS; i++) {
- 		if (cfi->regs[i].base != initial_func_cfi.regs[i].base ||
- 		    cfi->regs[i].offset != initial_func_cfi.regs[i].offset)
-@@ -2863,10 +2859,7 @@ static int validate_section(struct objto
- 			continue;
- 
- 		init_insn_state(&state, sec);
--		state.cfi.cfa = initial_func_cfi.cfa;
--		memcpy(&state.cfi.regs, &initial_func_cfi.regs,
--		       CFI_NUM_REGS * sizeof(struct cfi_reg));
--		state.cfi.stack_size = initial_func_cfi.cfa.offset;
-+		set_func_state(&state.cfi);
- 
- 		warnings += validate_symbol(file, sec, func, &state);
+ 	/* Get first opcode */
+ 	op = get_next(insn_byte_t, insn);
+@@ -254,9 +272,13 @@ void insn_get_opcode(struct insn *insn)
+ 		insn->attr = inat_get_avx_attribute(op, m, p);
+ 		if ((inat_must_evex(insn->attr) && !insn_is_evex(insn)) ||
+ 		    (!inat_accept_vex(insn->attr) &&
+-		     !inat_is_group(insn->attr)))
+-			insn->attr = 0;	/* This instruction is bad */
+-		goto end;	/* VEX has only 1 byte for opcode */
++		     !inat_is_group(insn->attr))) {
++			/* This instruction is bad */
++			insn->attr = 0;
++			return -EINVAL;
++		}
++		/* VEX has only 1 byte for opcode */
++		goto end;
  	}
---- a/tools/objtool/check.h
-+++ b/tools/objtool/check.h
-@@ -50,7 +50,6 @@ struct instruction {
- 	bool retpoline_safe;
- 	s8 instr;
- 	u8 visited;
--	u8 ret_offset;
- 	struct alt_group *alt_group;
- 	struct symbol *call_dest;
- 	struct instruction *jump_dest;
+ 
+ 	insn->attr = inat_get_opcode_attribute(op);
+@@ -267,13 +289,18 @@ void insn_get_opcode(struct insn *insn)
+ 		pfx_id = insn_last_prefix_id(insn);
+ 		insn->attr = inat_get_escape_attribute(op, pfx_id, insn->attr);
+ 	}
+-	if (inat_must_vex(insn->attr))
+-		insn->attr = 0;	/* This instruction is bad */
++
++	if (inat_must_vex(insn->attr)) {
++		/* This instruction is bad */
++		insn->attr = 0;
++		return -EINVAL;
++	}
+ end:
+ 	opcode->got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /**
+@@ -283,15 +310,25 @@ err_out:
+  * Populates @insn->modrm and updates @insn->next_byte to point past the
+  * ModRM byte, if any.  If necessary, first collects the preceding bytes
+  * (prefixes and opcode(s)).  No effect if @insn->modrm.got is already 1.
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_modrm(struct insn *insn)
++int insn_get_modrm(struct insn *insn)
+ {
+ 	struct insn_field *modrm = &insn->modrm;
+ 	insn_byte_t pfx_id, mod;
++	int ret;
++
+ 	if (modrm->got)
+-		return;
+-	if (!insn->opcode.got)
+-		insn_get_opcode(insn);
++		return 0;
++
++	if (!insn->opcode.got) {
++		ret = insn_get_opcode(insn);
++		if (ret)
++			return ret;
++	}
+ 
+ 	if (inat_has_modrm(insn->attr)) {
+ 		mod = get_next(insn_byte_t, insn);
+@@ -301,17 +338,22 @@ void insn_get_modrm(struct insn *insn)
+ 			pfx_id = insn_last_prefix_id(insn);
+ 			insn->attr = inat_get_group_attribute(mod, pfx_id,
+ 							      insn->attr);
+-			if (insn_is_avx(insn) && !inat_accept_vex(insn->attr))
+-				insn->attr = 0;	/* This is bad */
++			if (insn_is_avx(insn) && !inat_accept_vex(insn->attr)) {
++				/* Bad insn */
++				insn->attr = 0;
++				return -EINVAL;
++			}
+ 		}
+ 	}
+ 
+ 	if (insn->x86_64 && inat_is_force64(insn->attr))
+ 		insn->opnd_bytes = 8;
++
+ 	modrm->got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ 
+@@ -325,11 +367,16 @@ err_out:
+ int insn_rip_relative(struct insn *insn)
+ {
+ 	struct insn_field *modrm = &insn->modrm;
++	int ret;
+ 
+ 	if (!insn->x86_64)
+ 		return 0;
+-	if (!modrm->got)
+-		insn_get_modrm(insn);
++
++	if (!modrm->got) {
++		ret = insn_get_modrm(insn);
++		if (ret)
++			return 0;
++	}
+ 	/*
+ 	 * For rip-relative instructions, the mod field (top 2 bits)
+ 	 * is zero and the r/m field (bottom 3 bits) is 0x5.
+@@ -343,15 +390,25 @@ int insn_rip_relative(struct insn *insn)
+  *
+  * If necessary, first collects the instruction up to and including the
+  * ModRM byte.
++ *
++ * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
+  */
+-void insn_get_sib(struct insn *insn)
++int insn_get_sib(struct insn *insn)
+ {
+ 	insn_byte_t modrm;
++	int ret;
+ 
+ 	if (insn->sib.got)
+-		return;
+-	if (!insn->modrm.got)
+-		insn_get_modrm(insn);
++		return 0;
++
++	if (!insn->modrm.got) {
++		ret = insn_get_modrm(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	if (insn->modrm.nbytes) {
+ 		modrm = (insn_byte_t)insn->modrm.value;
+ 		if (insn->addr_bytes != 2 &&
+@@ -362,8 +419,10 @@ void insn_get_sib(struct insn *insn)
+ 	}
+ 	insn->sib.got = 1;
+ 
++	return 0;
++
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ 
+@@ -374,15 +433,25 @@ err_out:
+  * If necessary, first collects the instruction up to and including the
+  * SIB byte.
+  * Displacement value is sign-expanded.
++ *
++ * * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
+  */
+-void insn_get_displacement(struct insn *insn)
++int insn_get_displacement(struct insn *insn)
+ {
+ 	insn_byte_t mod, rm, base;
++	int ret;
+ 
+ 	if (insn->displacement.got)
+-		return;
+-	if (!insn->sib.got)
+-		insn_get_sib(insn);
++		return 0;
++
++	if (!insn->sib.got) {
++		ret = insn_get_sib(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	if (insn->modrm.nbytes) {
+ 		/*
+ 		 * Interpreting the modrm byte:
+@@ -425,9 +494,10 @@ void insn_get_displacement(struct insn *
+ 	}
+ out:
+ 	insn->displacement.got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /* Decode moffset16/32/64. Return 0 if failed */
+@@ -538,20 +608,30 @@ err_out:
+ }
+ 
+ /**
+- * insn_get_immediate() - Get the immediates of instruction
++ * insn_get_immediate() - Get the immediate in an instruction
+  * @insn:	&struct insn containing instruction
+  *
+  * If necessary, first collects the instruction up to and including the
+  * displacement bytes.
+  * Basically, most of immediates are sign-expanded. Unsigned-value can be
+- * get by bit masking with ((1 << (nbytes * 8)) - 1)
++ * computed by bit masking with ((1 << (nbytes * 8)) - 1)
++ *
++ * Returns:
++ * 0:  on success
++ * < 0: on error
+  */
+-void insn_get_immediate(struct insn *insn)
++int insn_get_immediate(struct insn *insn)
+ {
++	int ret;
++
+ 	if (insn->immediate.got)
+-		return;
+-	if (!insn->displacement.got)
+-		insn_get_displacement(insn);
++		return 0;
++
++	if (!insn->displacement.got) {
++		ret = insn_get_displacement(insn);
++		if (ret)
++			return ret;
++	}
+ 
+ 	if (inat_has_moffset(insn->attr)) {
+ 		if (!__get_moffset(insn))
+@@ -604,9 +684,10 @@ void insn_get_immediate(struct insn *ins
+ 	}
+ done:
+ 	insn->immediate.got = 1;
++	return 0;
+ 
+ err_out:
+-	return;
++	return -ENODATA;
+ }
+ 
+ /**
+@@ -615,13 +696,58 @@ err_out:
+  *
+  * If necessary, first collects the instruction up to and including the
+  * immediates bytes.
+- */
+-void insn_get_length(struct insn *insn)
++ *
++ * Returns:
++ *  - 0 on success
++ *  - < 0 on error
++*/
++int insn_get_length(struct insn *insn)
+ {
++	int ret;
++
+ 	if (insn->length)
+-		return;
+-	if (!insn->immediate.got)
+-		insn_get_immediate(insn);
++		return 0;
++
++	if (!insn->immediate.got) {
++		ret = insn_get_immediate(insn);
++		if (ret)
++			return ret;
++	}
++
+ 	insn->length = (unsigned char)((unsigned long)insn->next_byte
+ 				     - (unsigned long)insn->kaddr);
++
++	return 0;
++}
++
++/**
++ * insn_decode() - Decode an x86 instruction
++ * @insn:	&struct insn to be initialized
++ * @kaddr:	address (in kernel memory) of instruction (or copy thereof)
++ * @buf_len:	length of the insn buffer at @kaddr
++ * @m:		insn mode, see enum insn_mode
++ *
++ * Returns:
++ * 0: if decoding succeeded
++ * < 0: otherwise.
++ */
++int insn_decode(struct insn *insn, const void *kaddr, int buf_len, enum insn_mode m)
++{
++	int ret;
++
++#define INSN_MODE_KERN (enum insn_mode)-1 /* __ignore_sync_check__ mode is only valid in the kernel */
++
++	if (m == INSN_MODE_KERN)
++		insn_init(insn, kaddr, buf_len, IS_ENABLED(CONFIG_X86_64));
++	else
++		insn_init(insn, kaddr, buf_len, m == INSN_MODE_64);
++
++	ret = insn_get_length(insn);
++	if (ret)
++		return ret;
++
++	if (insn_complete(insn))
++		return 0;
++
++	return -EINVAL;
+ }
+--- /dev/null
++++ b/tools/include/linux/kconfig.h
+@@ -0,0 +1,73 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _TOOLS_LINUX_KCONFIG_H
++#define _TOOLS_LINUX_KCONFIG_H
++
++/* CONFIG_CC_VERSION_TEXT (Do not delete this comment. See help in Kconfig) */
++
++#ifdef CONFIG_CPU_BIG_ENDIAN
++#define __BIG_ENDIAN 4321
++#else
++#define __LITTLE_ENDIAN 1234
++#endif
++
++#define __ARG_PLACEHOLDER_1 0,
++#define __take_second_arg(__ignored, val, ...) val
++
++/*
++ * The use of "&&" / "||" is limited in certain expressions.
++ * The following enable to calculate "and" / "or" with macro expansion only.
++ */
++#define __and(x, y)			___and(x, y)
++#define ___and(x, y)			____and(__ARG_PLACEHOLDER_##x, y)
++#define ____and(arg1_or_junk, y)	__take_second_arg(arg1_or_junk y, 0)
++
++#define __or(x, y)			___or(x, y)
++#define ___or(x, y)			____or(__ARG_PLACEHOLDER_##x, y)
++#define ____or(arg1_or_junk, y)		__take_second_arg(arg1_or_junk 1, y)
++
++/*
++ * Helper macros to use CONFIG_ options in C/CPP expressions. Note that
++ * these only work with boolean and tristate options.
++ */
++
++/*
++ * Getting something that works in C and CPP for an arg that may or may
++ * not be defined is tricky.  Here, if we have "#define CONFIG_BOOGER 1"
++ * we match on the placeholder define, insert the "0," for arg1 and generate
++ * the triplet (0, 1, 0).  Then the last step cherry picks the 2nd arg (a one).
++ * When CONFIG_BOOGER is not defined, we generate a (... 1, 0) pair, and when
++ * the last step cherry picks the 2nd arg, we get a zero.
++ */
++#define __is_defined(x)			___is_defined(x)
++#define ___is_defined(val)		____is_defined(__ARG_PLACEHOLDER_##val)
++#define ____is_defined(arg1_or_junk)	__take_second_arg(arg1_or_junk 1, 0)
++
++/*
++ * IS_BUILTIN(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'y', 0
++ * otherwise. For boolean options, this is equivalent to
++ * IS_ENABLED(CONFIG_FOO).
++ */
++#define IS_BUILTIN(option) __is_defined(option)
++
++/*
++ * IS_MODULE(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'm', 0
++ * otherwise.
++ */
++#define IS_MODULE(option) __is_defined(option##_MODULE)
++
++/*
++ * IS_REACHABLE(CONFIG_FOO) evaluates to 1 if the currently compiled
++ * code can call a function defined in code compiled based on CONFIG_FOO.
++ * This is similar to IS_ENABLED(), but returns false when invoked from
++ * built-in code when CONFIG_FOO is set to 'm'.
++ */
++#define IS_REACHABLE(option) __or(IS_BUILTIN(option), \
++				__and(IS_MODULE(option), __is_defined(MODULE)))
++
++/*
++ * IS_ENABLED(CONFIG_FOO) evaluates to 1 if CONFIG_FOO is set to 'y' or 'm',
++ * 0 otherwise.
++ */
++#define IS_ENABLED(option) __or(IS_BUILTIN(option), IS_MODULE(option))
++
++#endif /* _TOOLS_LINUX_KCONFIG_H */
 
 
