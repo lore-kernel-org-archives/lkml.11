@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD997C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA7F2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:56:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiGLU4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57206 "EHLO
+        id S234425AbiGLU4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:56:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234178AbiGLUyz (ORCPT
+        with ESMTP id S233838AbiGLUzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:54:55 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89B31172;
-        Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id bk26so12796473wrb.11;
-        Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
+        Tue, 12 Jul 2022 16:55:00 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A489C39B84;
+        Tue, 12 Jul 2022 13:53:44 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bk26so12796608wrb.11;
+        Tue, 12 Jul 2022 13:53:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lTEKopEUAeQr5d74gqsIxK77ORJixv2HTggIm0W0E6c=;
-        b=XmSKQIQuCqY/uVsXhKKb1J3A1zYatMru/4pa7BBb8xXRz90QUz5IbSZV1pCxmrtKJs
-         3dPfzpdPc5wMlbGojMzs7TPgv//zAsgnRmhhe6vwENqPw8UjPzVmKYt7iEjLvZ1M1vwa
-         xp0NIwC9T+pStJ7k+xRugEWK83w5YkaR4BZ3VipYK8wY+i4p466HRKwPHAYvz8I5gM2Q
-         Co9/PmV+z8HB0KMcQ6APltCLYzrkZZ6+KszBZ24q/4kyBVKoJKDew2xCkKHPIgdl/vT/
-         dQQXu1XclWFXVcWF/elfOybBkbK05Vsg7g3QQQiRCmiHInnLdBYtkOZYaIhWg9l1CZ/T
-         +P4g==
+        bh=EpZbzDMfnj4/WxgjQevjPP/4PRPQ5t7+5MEbvKcF/LQ=;
+        b=bX0T13JkqUjQSfcUs3uEfYCCzdbRt85O31pfbJjAZ5ubTR6KlRiGVtCxiXtX//I6Cb
+         ql7ZRpyLM+JSKR6Oo6ZvRPOmY0XWycuRcyvSG5jj/vX9R/SoxUH+0II6gBFxMS7+4JAJ
+         tCjo89efrKuKJ6wxr+6j3YjPtnPqm9enBde2qmRAu3kADUonXuvUuj7GXBxkiPKkao97
+         WQqjJ5ggXZbn6FGiS40BE2Fco/YcNfjvh6tDoCECt240JtAGSkJUhGe3DK2UY7JaHCpL
+         q5bY8Tw0hyLuHuztl29VoGkoBsKu1ntAYKfLU+N2KBLRaVB9ryUtWXAhcS3mifKpZ2P0
+         5ewQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lTEKopEUAeQr5d74gqsIxK77ORJixv2HTggIm0W0E6c=;
-        b=iTog5NjvB12UFidFA2nmltdGKbzPYhhpZTNJ5n3VdnlQGSdVRf3gfP0peis39eRB6Z
-         /LoOBi7LgGDmriQ1bY5sSsVgRLNM/G9V7ZraYR+EBLOcZ8Q3HIJIvaHw+/wfp4OPaBtf
-         k4F83A88+m/El+9vjZr6JzGaQwv8+Bl90X02XsZyCuxfxhGqG0lUnUevXTeS/G/pb/mk
-         77AtQi3z4oMfsjs3DlzS+U7/JZ4d+vJQ/7SItzyq8OCXSSIJoh1TarjQ/Pqkmwnl+EcK
-         6wOm0sVFxmxDZTPhP7xQlPR1MOvcEcTaB9bD7M1Kmzs7bCQEoLUJp7y+6O57KaGUfMsZ
-         DZtQ==
-X-Gm-Message-State: AJIora8HGU9WsQppGJJSX5j4JfXnR6x66I5JDNn5ARraTwKpA+HsukUj
-        fYEcFXtVetAEqSZdwe20tgar4eM/6ZU=
-X-Google-Smtp-Source: AGRyM1vvX0Sob/YNDt7bpKNdszodUoKWSI0yDRqYSfbrj0q9XwxNkvJ9nhdwp5iFWM46ebnCNOobuQ==
-X-Received: by 2002:a05:6000:1ac8:b0:21d:b7d9:3c03 with SMTP id i8-20020a0560001ac800b0021db7d93c03mr2006827wry.149.1657659218010;
-        Tue, 12 Jul 2022 13:53:38 -0700 (PDT)
+        bh=EpZbzDMfnj4/WxgjQevjPP/4PRPQ5t7+5MEbvKcF/LQ=;
+        b=L2GONhy/3uJ3G3/p+SaGyxWW7HctZukUyQugZdfRAeQQtATeEh8pXHQPm4lq1rsSYD
+         qfMmOiQ0uUq9TjWmlCRj2IxtkpIwRYkVA80NQRG4wcjoULOjhnaJJqU66+t/TIK47VQ2
+         0we+gLcnvsCRZh47Mx4gf7dtNpPAOshs7whwnmZkxWxwPeWciJSzhmRM9ci6vtuzTRST
+         8+KtxQLZdmxe+dvvNujtyVSm09rLdsgRTcthC2XZDRjHssP235ACp/HsaPEL8jETWQLh
+         wOgEPY3+if8aQt/NZoWeYa2OwlXJpf1IgqyxEOA+0HD2MbskWgiXkFR2KzaLyjhkHy/b
+         SIfw==
+X-Gm-Message-State: AJIora97jam6gExEVTB1htzhEYg5zaxnSQ1a1q5162uga+K3fJdn3f3W
+        qS2q6ff0vNnRRX0RCY0aw6006F6ys4I=
+X-Google-Smtp-Source: AGRyM1vS9ttYPSEp203gx+lvxsFO3cqL7g3Cr/WOl+KcGA9iw/LtsP528H4rVtNGiajAIPwx3lK6Pw==
+X-Received: by 2002:a5d:595d:0:b0:21b:84af:552a with SMTP id e29-20020a5d595d000000b0021b84af552amr23845802wri.656.1657659220527;
+        Tue, 12 Jul 2022 13:53:40 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.36
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:37 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:40 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 25/27] io_uring: add zc notification flush requests
-Date:   Tue, 12 Jul 2022 21:52:49 +0100
-Message-Id: <df13e2363400682a73dd9e71c3b990b8d1ff0333.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 27/27] selftests/io_uring: test zerocopy send
+Date:   Tue, 12 Jul 2022 21:52:51 +0100
+Message-Id: <03d5ec78061cf52db420f88ed0b48eb8f47ce9f7.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,96 +69,779 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Overlay notification control onto IORING_OP_RSRC_UPDATE (former
-IORING_OP_FILES_UPDATE). It allows to flush a range of zc notifications
-from slots with indexes [sqe->off, sqe->off+sqe->len). If sqe->arg is
-not zero, it also copies sqe->arg as a new tag for all flushed
-notifications.
-
-Note, it doesn't flush a notification of a slot if there was no requests
-attached to it (since last flush or registration).
+Add selftests for io_uring zerocopy sends and io_uring's notification
+infrastructure. It's largely influenced by msg_zerocopy and uses it on
+the receive side.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/uapi/linux/io_uring.h |  1 +
- io_uring/rsrc.c               | 38 +++++++++++++++++++++++++++++++++++
- 2 files changed, 39 insertions(+)
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/io_uring_zerocopy_tx.c      | 605 ++++++++++++++++++
+ .../selftests/net/io_uring_zerocopy_tx.sh     | 131 ++++
+ 3 files changed, 737 insertions(+)
+ create mode 100644 tools/testing/selftests/net/io_uring_zerocopy_tx.c
+ create mode 100755 tools/testing/selftests/net/io_uring_zerocopy_tx.sh
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 37e8c104d31f..9a7aa25d09a1 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -294,6 +294,7 @@ enum io_uring_op {
-  */
- enum {
- 	IORING_RSRC_UPDATE_FILES,
-+	IORING_RSRC_UPDATE_NOTIF,
- };
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index 7ea54af55490..51261483744e 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -59,6 +59,7 @@ TEST_GEN_FILES += toeplitz
+ TEST_GEN_FILES += cmsg_sender
+ TEST_GEN_FILES += stress_reuseport_listen
+ TEST_PROGS += test_vxlan_vnifiltering.sh
++TEST_GEN_FILES += io_uring_zerocopy_tx
  
- /*
-diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
-index 98ce8a93a816..088a2dc32e2c 100644
---- a/io_uring/rsrc.c
-+++ b/io_uring/rsrc.c
-@@ -15,6 +15,7 @@
- #include "io_uring.h"
- #include "openclose.h"
- #include "rsrc.h"
-+#include "notif.h"
+ TEST_FILES := settings
  
- struct io_rsrc_update {
- 	struct file			*file;
-@@ -742,6 +743,41 @@ static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- 	return IOU_OK;
- }
- 
-+static int io_notif_update(struct io_kiocb *req, unsigned int issue_flags)
+diff --git a/tools/testing/selftests/net/io_uring_zerocopy_tx.c b/tools/testing/selftests/net/io_uring_zerocopy_tx.c
+new file mode 100644
+index 000000000000..9d64c560a2d6
+--- /dev/null
++++ b/tools/testing/selftests/net/io_uring_zerocopy_tx.c
+@@ -0,0 +1,605 @@
++/* SPDX-License-Identifier: MIT */
++/* based on linux-kernel/tools/testing/selftests/net/msg_zerocopy.c */
++#include <assert.h>
++#include <errno.h>
++#include <error.h>
++#include <fcntl.h>
++#include <limits.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++
++#include <arpa/inet.h>
++#include <linux/errqueue.h>
++#include <linux/if_packet.h>
++#include <linux/io_uring.h>
++#include <linux/ipv6.h>
++#include <linux/socket.h>
++#include <linux/sockios.h>
++#include <net/ethernet.h>
++#include <net/if.h>
++#include <netinet/in.h>
++#include <netinet/ip.h>
++#include <netinet/ip6.h>
++#include <netinet/tcp.h>
++#include <netinet/udp.h>
++#include <sys/ioctl.h>
++#include <sys/mman.h>
++#include <sys/resource.h>
++#include <sys/socket.h>
++#include <sys/stat.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <sys/un.h>
++#include <sys/wait.h>
++
++#define NOTIF_TAG 0xfffffffULL
++#define NONZC_TAG 0
++#define ZC_TAG 1
++
++enum {
++	MODE_NONZC	= 0,
++	MODE_ZC		= 1,
++	MODE_ZC_FIXED	= 2,
++	MODE_MIXED	= 3,
++};
++
++static bool cfg_flush		= false;
++static bool cfg_cork		= false;
++static int  cfg_mode		= MODE_ZC_FIXED;
++static int  cfg_nr_reqs		= 8;
++static int  cfg_family		= PF_UNSPEC;
++static int  cfg_payload_len;
++static int  cfg_port		= 8000;
++static int  cfg_runtime_ms	= 4200;
++
++static socklen_t cfg_alen;
++static struct sockaddr_storage cfg_dst_addr;
++
++static char payload[IP_MAXPACKET] __attribute__((aligned(4096)));
++
++struct io_sq_ring {
++	unsigned *head;
++	unsigned *tail;
++	unsigned *ring_mask;
++	unsigned *ring_entries;
++	unsigned *flags;
++	unsigned *array;
++};
++
++struct io_cq_ring {
++	unsigned *head;
++	unsigned *tail;
++	unsigned *ring_mask;
++	unsigned *ring_entries;
++	struct io_uring_cqe *cqes;
++};
++
++struct io_uring_sq {
++	unsigned *khead;
++	unsigned *ktail;
++	unsigned *kring_mask;
++	unsigned *kring_entries;
++	unsigned *kflags;
++	unsigned *kdropped;
++	unsigned *array;
++	struct io_uring_sqe *sqes;
++
++	unsigned sqe_head;
++	unsigned sqe_tail;
++
++	size_t ring_sz;
++};
++
++struct io_uring_cq {
++	unsigned *khead;
++	unsigned *ktail;
++	unsigned *kring_mask;
++	unsigned *kring_entries;
++	unsigned *koverflow;
++	struct io_uring_cqe *cqes;
++
++	size_t ring_sz;
++};
++
++struct io_uring {
++	struct io_uring_sq sq;
++	struct io_uring_cq cq;
++	int ring_fd;
++};
++
++#ifdef __alpha__
++# ifndef __NR_io_uring_setup
++#  define __NR_io_uring_setup		535
++# endif
++# ifndef __NR_io_uring_enter
++#  define __NR_io_uring_enter		536
++# endif
++# ifndef __NR_io_uring_register
++#  define __NR_io_uring_register	537
++# endif
++#else /* !__alpha__ */
++# ifndef __NR_io_uring_setup
++#  define __NR_io_uring_setup		425
++# endif
++# ifndef __NR_io_uring_enter
++#  define __NR_io_uring_enter		426
++# endif
++# ifndef __NR_io_uring_register
++#  define __NR_io_uring_register	427
++# endif
++#endif
++
++#if defined(__x86_64) || defined(__i386__)
++#define read_barrier()	__asm__ __volatile__("":::"memory")
++#define write_barrier()	__asm__ __volatile__("":::"memory")
++#else
++
++#define read_barrier()	__sync_synchronize()
++#define write_barrier()	__sync_synchronize()
++#endif
++
++static int io_uring_setup(unsigned int entries, struct io_uring_params *p)
 +{
-+	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
-+	struct io_ring_ctx *ctx = req->ctx;
-+	unsigned len = up->nr_args;
-+	unsigned idx_end, idx = up->offset;
-+	int ret = 0;
-+
-+	io_ring_submit_lock(ctx, issue_flags);
-+	if (unlikely(check_add_overflow(idx, len, &idx_end))) {
-+		ret = -EOVERFLOW;
-+		goto out;
-+	}
-+	if (unlikely(idx_end > ctx->nr_notif_slots)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	for (; idx < idx_end; idx++) {
-+		struct io_notif_slot *slot = &ctx->notif_slots[idx];
-+
-+		if (!slot->notif)
-+			continue;
-+		if (up->arg)
-+			slot->tag = up->arg;
-+		io_notif_slot_flush_submit(slot, issue_flags);
-+	}
-+out:
-+	io_ring_submit_unlock(ctx, issue_flags);
-+	if (ret < 0)
-+		req_set_fail(req);
-+	io_req_set_res(req, ret, 0);
-+	return IOU_OK;
++	return syscall(__NR_io_uring_setup, entries, p);
 +}
 +
- int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
-@@ -749,6 +785,8 @@ int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
- 	switch (up->type) {
- 	case IORING_RSRC_UPDATE_FILES:
- 		return io_files_update(req, issue_flags);
-+	case IORING_RSRC_UPDATE_NOTIF:
-+		return io_notif_update(req, issue_flags);
- 	}
- 	return -EINVAL;
- }
++static int io_uring_enter(int fd, unsigned int to_submit,
++			  unsigned int min_complete,
++			  unsigned int flags, sigset_t *sig)
++{
++	return syscall(__NR_io_uring_enter, fd, to_submit, min_complete,
++			flags, sig, _NSIG / 8);
++}
++
++static int io_uring_register_buffers(struct io_uring *ring,
++				     const struct iovec *iovecs,
++				     unsigned nr_iovecs)
++{
++	int ret;
++
++	ret = syscall(__NR_io_uring_register, ring->ring_fd,
++		      IORING_REGISTER_BUFFERS, iovecs, nr_iovecs);
++	return (ret < 0) ? -errno : ret;
++}
++
++static int io_uring_register_notifications(struct io_uring *ring,
++					   unsigned nr,
++					   struct io_uring_notification_slot *slots)
++{
++	int ret;
++	struct io_uring_notification_register r = {
++		.nr_slots = nr,
++		.data = (unsigned long)slots,
++	};
++
++	ret = syscall(__NR_io_uring_register, ring->ring_fd,
++		      IORING_REGISTER_NOTIFIERS, &r, sizeof(r));
++	return (ret < 0) ? -errno : ret;
++}
++
++static int io_uring_mmap(int fd, struct io_uring_params *p,
++			 struct io_uring_sq *sq, struct io_uring_cq *cq)
++{
++	size_t size;
++	void *ptr;
++	int ret;
++
++	sq->ring_sz = p->sq_off.array + p->sq_entries * sizeof(unsigned);
++	ptr = mmap(0, sq->ring_sz, PROT_READ | PROT_WRITE,
++		   MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_SQ_RING);
++	if (ptr == MAP_FAILED)
++		return -errno;
++	sq->khead = ptr + p->sq_off.head;
++	sq->ktail = ptr + p->sq_off.tail;
++	sq->kring_mask = ptr + p->sq_off.ring_mask;
++	sq->kring_entries = ptr + p->sq_off.ring_entries;
++	sq->kflags = ptr + p->sq_off.flags;
++	sq->kdropped = ptr + p->sq_off.dropped;
++	sq->array = ptr + p->sq_off.array;
++
++	size = p->sq_entries * sizeof(struct io_uring_sqe);
++	sq->sqes = mmap(0, size, PROT_READ | PROT_WRITE,
++			MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_SQES);
++	if (sq->sqes == MAP_FAILED) {
++		ret = -errno;
++err:
++		munmap(sq->khead, sq->ring_sz);
++		return ret;
++	}
++
++	cq->ring_sz = p->cq_off.cqes + p->cq_entries * sizeof(struct io_uring_cqe);
++	ptr = mmap(0, cq->ring_sz, PROT_READ | PROT_WRITE,
++			MAP_SHARED | MAP_POPULATE, fd, IORING_OFF_CQ_RING);
++	if (ptr == MAP_FAILED) {
++		ret = -errno;
++		munmap(sq->sqes, p->sq_entries * sizeof(struct io_uring_sqe));
++		goto err;
++	}
++	cq->khead = ptr + p->cq_off.head;
++	cq->ktail = ptr + p->cq_off.tail;
++	cq->kring_mask = ptr + p->cq_off.ring_mask;
++	cq->kring_entries = ptr + p->cq_off.ring_entries;
++	cq->koverflow = ptr + p->cq_off.overflow;
++	cq->cqes = ptr + p->cq_off.cqes;
++	return 0;
++}
++
++static int io_uring_queue_init(unsigned entries, struct io_uring *ring,
++			       unsigned flags)
++{
++	struct io_uring_params p;
++	int fd, ret;
++
++	memset(ring, 0, sizeof(*ring));
++	memset(&p, 0, sizeof(p));
++	p.flags = flags;
++
++	fd = io_uring_setup(entries, &p);
++	if (fd < 0)
++		return fd;
++	ret = io_uring_mmap(fd, &p, &ring->sq, &ring->cq);
++	if (!ret)
++		ring->ring_fd = fd;
++	else
++		close(fd);
++	return ret;
++}
++
++static int io_uring_submit(struct io_uring *ring)
++{
++	struct io_uring_sq *sq = &ring->sq;
++	const unsigned mask = *sq->kring_mask;
++	unsigned ktail, submitted, to_submit;
++	int ret;
++
++	read_barrier();
++	if (*sq->khead != *sq->ktail) {
++		submitted = *sq->kring_entries;
++		goto submit;
++	}
++	if (sq->sqe_head == sq->sqe_tail)
++		return 0;
++
++	ktail = *sq->ktail;
++	to_submit = sq->sqe_tail - sq->sqe_head;
++	for (submitted = 0; submitted < to_submit; submitted++) {
++		read_barrier();
++		sq->array[ktail++ & mask] = sq->sqe_head++ & mask;
++	}
++	if (!submitted)
++		return 0;
++
++	if (*sq->ktail != ktail) {
++		write_barrier();
++		*sq->ktail = ktail;
++		write_barrier();
++	}
++submit:
++	ret = io_uring_enter(ring->ring_fd, submitted, 0,
++				IORING_ENTER_GETEVENTS, NULL);
++	return ret < 0 ? -errno : ret;
++}
++
++static inline void io_uring_prep_send(struct io_uring_sqe *sqe, int sockfd,
++				      const void *buf, size_t len, int flags)
++{
++	memset(sqe, 0, sizeof(*sqe));
++	sqe->opcode = (__u8) IORING_OP_SEND;
++	sqe->fd = sockfd;
++	sqe->addr = (unsigned long) buf;
++	sqe->len = len;
++	sqe->msg_flags = (__u32) flags;
++}
++
++static inline void io_uring_prep_sendzc(struct io_uring_sqe *sqe, int sockfd,
++				        const void *buf, size_t len, int flags,
++				        unsigned slot_idx, unsigned zc_flags)
++{
++	io_uring_prep_send(sqe, sockfd, buf, len, flags);
++	sqe->opcode = (__u8) IORING_OP_SENDZC_NOTIF;
++	sqe->notification_idx = slot_idx;
++	sqe->ioprio = zc_flags;
++}
++
++static struct io_uring_sqe *io_uring_get_sqe(struct io_uring *ring)
++{
++	struct io_uring_sq *sq = &ring->sq;
++
++	if (sq->sqe_tail + 1 - sq->sqe_head > *sq->kring_entries)
++		return NULL;
++	return &sq->sqes[sq->sqe_tail++ & *sq->kring_mask];
++}
++
++static int io_uring_wait_cqe(struct io_uring *ring, struct io_uring_cqe **cqe_ptr)
++{
++	struct io_uring_cq *cq = &ring->cq;
++	const unsigned mask = *cq->kring_mask;
++	unsigned head = *cq->khead;
++	int ret;
++
++	*cqe_ptr = NULL;
++	do {
++		read_barrier();
++		if (head != *cq->ktail) {
++			*cqe_ptr = &cq->cqes[head & mask];
++			break;
++		}
++		ret = io_uring_enter(ring->ring_fd, 0, 1,
++					IORING_ENTER_GETEVENTS, NULL);
++		if (ret < 0)
++			return -errno;
++	} while (1);
++
++	return 0;
++}
++
++static inline void io_uring_cqe_seen(struct io_uring *ring)
++{
++	*(&ring->cq)->khead += 1;
++	write_barrier();
++}
++
++static unsigned long gettimeofday_ms(void)
++{
++	struct timeval tv;
++
++	gettimeofday(&tv, NULL);
++	return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
++}
++
++static void do_setsockopt(int fd, int level, int optname, int val)
++{
++	if (setsockopt(fd, level, optname, &val, sizeof(val)))
++		error(1, errno, "setsockopt %d.%d: %d", level, optname, val);
++}
++
++static int do_setup_tx(int domain, int type, int protocol)
++{
++	int fd;
++
++	fd = socket(domain, type, protocol);
++	if (fd == -1)
++		error(1, errno, "socket t");
++
++	do_setsockopt(fd, SOL_SOCKET, SO_SNDBUF, 1 << 21);
++
++	if (connect(fd, (void *) &cfg_dst_addr, cfg_alen))
++		error(1, errno, "connect");
++	return fd;
++}
++
++static void do_tx(int domain, int type, int protocol)
++{
++	struct io_uring_notification_slot b[1] = {{.tag = NOTIF_TAG}};
++	struct io_uring_sqe *sqe;
++	struct io_uring_cqe *cqe;
++	unsigned long packets = 0, bytes = 0;
++	struct io_uring ring;
++	struct iovec iov;
++	uint64_t tstop;
++	int i, fd, ret;
++	int compl_cqes = 0;
++
++	fd = do_setup_tx(domain, type, protocol);
++
++	ret = io_uring_queue_init(512, &ring, 0);
++	if (ret)
++		error(1, ret, "io_uring: queue init");
++
++	ret = io_uring_register_notifications(&ring, 1, b);
++	if (ret)
++		error(1, ret, "io_uring: tx ctx registration");
++
++	iov.iov_base = payload;
++	iov.iov_len = cfg_payload_len;
++
++	ret = io_uring_register_buffers(&ring, &iov, 1);
++	if (ret)
++		error(1, ret, "io_uring: buffer registration");
++
++	tstop = gettimeofday_ms() + cfg_runtime_ms;
++	do {
++		if (cfg_cork)
++			do_setsockopt(fd, IPPROTO_UDP, UDP_CORK, 1);
++
++		for (i = 0; i < cfg_nr_reqs; i++) {
++			unsigned zc_flags = 0;
++			unsigned buf_idx = 0;
++			unsigned slot_idx = 0;
++			unsigned mode = cfg_mode;
++			unsigned msg_flags = 0;
++
++			if (cfg_mode == MODE_MIXED)
++				mode = rand() % 3;
++
++			sqe = io_uring_get_sqe(&ring);
++
++			if (mode == MODE_NONZC) {
++				io_uring_prep_send(sqe, fd, payload,
++						   cfg_payload_len, msg_flags);
++				sqe->user_data = NONZC_TAG;
++			} else {
++				if (cfg_flush) {
++					zc_flags |= IORING_RECVSEND_NOTIF_FLUSH;
++					compl_cqes++;
++				}
++				io_uring_prep_sendzc(sqe, fd, payload,
++						     cfg_payload_len,
++						     msg_flags, slot_idx, zc_flags);
++				if (mode == MODE_ZC_FIXED) {
++					sqe->ioprio |= IORING_RECVSEND_FIXED_BUF;
++					sqe->buf_index = buf_idx;
++				}
++				sqe->user_data = ZC_TAG;
++			}
++		}
++
++		ret = io_uring_submit(&ring);
++		if (ret != cfg_nr_reqs)
++			error(1, ret, "submit");
++
++		for (i = 0; i < cfg_nr_reqs; i++) {
++			ret = io_uring_wait_cqe(&ring, &cqe);
++			if (ret)
++				error(1, ret, "wait cqe");
++
++			if (cqe->user_data == NOTIF_TAG) {
++				compl_cqes--;
++				i--;
++			} else if (cqe->user_data != NONZC_TAG &&
++				   cqe->user_data != ZC_TAG) {
++				error(1, cqe->res, "invalid user_data");
++			} else if (cqe->res <= 0 && cqe->res != -EAGAIN) {
++				error(1, cqe->res, "send failed");
++			} else {
++				if (cqe->res > 0) {
++					packets++;
++					bytes += cqe->res;
++				}
++				/* failed requests don't flush */
++				if (cfg_flush &&
++				    cqe->res <= 0 &&
++				    cqe->user_data == ZC_TAG)
++					compl_cqes--;
++			}
++			io_uring_cqe_seen(&ring);
++		}
++		if (cfg_cork)
++			do_setsockopt(fd, IPPROTO_UDP, UDP_CORK, 0);
++	} while (gettimeofday_ms() < tstop);
++
++	if (close(fd))
++		error(1, errno, "close");
++
++	fprintf(stderr, "tx=%lu (MB=%lu), tx/s=%lu (MB/s=%lu)\n",
++			packets, bytes >> 20,
++			packets / (cfg_runtime_ms / 1000),
++			(bytes >> 20) / (cfg_runtime_ms / 1000));
++
++	while (compl_cqes) {
++		ret = io_uring_wait_cqe(&ring, &cqe);
++		if (ret)
++			error(1, ret, "wait cqe");
++		io_uring_cqe_seen(&ring);
++		compl_cqes--;
++	}
++}
++
++static void do_test(int domain, int type, int protocol)
++{
++	int i;
++
++	for (i = 0; i < IP_MAXPACKET; i++)
++		payload[i] = 'a' + (i % 26);
++	do_tx(domain, type, protocol);
++}
++
++static void usage(const char *filepath)
++{
++	error(1, 0, "Usage: %s [-f] [-n<N>] [-z0] [-s<payload size>] "
++		    "(-4|-6) [-t<time s>] -D<dst_ip> udp", filepath);
++}
++
++static void parse_opts(int argc, char **argv)
++{
++	const int max_payload_len = sizeof(payload) -
++				    sizeof(struct ipv6hdr) -
++				    sizeof(struct tcphdr) -
++				    40 /* max tcp options */;
++	struct sockaddr_in6 *addr6 = (void *) &cfg_dst_addr;
++	struct sockaddr_in *addr4 = (void *) &cfg_dst_addr;
++	char *daddr = NULL;
++	int c;
++
++	if (argc <= 1)
++		usage(argv[0]);
++	cfg_payload_len = max_payload_len;
++
++	while ((c = getopt(argc, argv, "46D:p:s:t:n:fc:m:")) != -1) {
++		switch (c) {
++		case '4':
++			if (cfg_family != PF_UNSPEC)
++				error(1, 0, "Pass one of -4 or -6");
++			cfg_family = PF_INET;
++			cfg_alen = sizeof(struct sockaddr_in);
++			break;
++		case '6':
++			if (cfg_family != PF_UNSPEC)
++				error(1, 0, "Pass one of -4 or -6");
++			cfg_family = PF_INET6;
++			cfg_alen = sizeof(struct sockaddr_in6);
++			break;
++		case 'D':
++			daddr = optarg;
++			break;
++		case 'p':
++			cfg_port = strtoul(optarg, NULL, 0);
++			break;
++		case 's':
++			cfg_payload_len = strtoul(optarg, NULL, 0);
++			break;
++		case 't':
++			cfg_runtime_ms = 200 + strtoul(optarg, NULL, 10) * 1000;
++			break;
++		case 'n':
++			cfg_nr_reqs = strtoul(optarg, NULL, 0);
++			break;
++		case 'f':
++			cfg_flush = 1;
++			break;
++		case 'c':
++			cfg_cork = strtol(optarg, NULL, 0);
++			break;
++		case 'm':
++			cfg_mode = strtol(optarg, NULL, 0);
++			break;
++		}
++	}
++
++	switch (cfg_family) {
++	case PF_INET:
++		memset(addr4, 0, sizeof(*addr4));
++		addr4->sin_family = AF_INET;
++		addr4->sin_port = htons(cfg_port);
++		if (daddr &&
++		    inet_pton(AF_INET, daddr, &(addr4->sin_addr)) != 1)
++			error(1, 0, "ipv4 parse error: %s", daddr);
++		break;
++	case PF_INET6:
++		memset(addr6, 0, sizeof(*addr6));
++		addr6->sin6_family = AF_INET6;
++		addr6->sin6_port = htons(cfg_port);
++		if (daddr &&
++		    inet_pton(AF_INET6, daddr, &(addr6->sin6_addr)) != 1)
++			error(1, 0, "ipv6 parse error: %s", daddr);
++		break;
++	default:
++		error(1, 0, "illegal domain");
++	}
++
++	if (cfg_payload_len > max_payload_len)
++		error(1, 0, "-s: payload exceeds max (%d)", max_payload_len);
++	if (cfg_mode == MODE_NONZC && cfg_flush)
++		error(1, 0, "-f: only zerocopy modes support notifications");
++	if (optind != argc - 1)
++		usage(argv[0]);
++}
++
++int main(int argc, char **argv)
++{
++	const char *cfg_test = argv[argc - 1];
++
++	parse_opts(argc, argv);
++
++	if (!strcmp(cfg_test, "tcp"))
++		do_test(cfg_family, SOCK_STREAM, 0);
++	else if (!strcmp(cfg_test, "udp"))
++		do_test(cfg_family, SOCK_DGRAM, 0);
++	else
++		error(1, 0, "unknown cfg_test %s", cfg_test);
++	return 0;
++}
+diff --git a/tools/testing/selftests/net/io_uring_zerocopy_tx.sh b/tools/testing/selftests/net/io_uring_zerocopy_tx.sh
+new file mode 100755
+index 000000000000..6a65e4437640
+--- /dev/null
++++ b/tools/testing/selftests/net/io_uring_zerocopy_tx.sh
+@@ -0,0 +1,131 @@
++#!/bin/bash
++#
++# Send data between two processes across namespaces
++# Run twice: once without and once with zerocopy
++
++set -e
++
++readonly DEV="veth0"
++readonly DEV_MTU=65535
++readonly BIN_TX="./io_uring_zerocopy_tx"
++readonly BIN_RX="./msg_zerocopy"
++
++readonly RAND="$(mktemp -u XXXXXX)"
++readonly NSPREFIX="ns-${RAND}"
++readonly NS1="${NSPREFIX}1"
++readonly NS2="${NSPREFIX}2"
++
++readonly SADDR4='192.168.1.1'
++readonly DADDR4='192.168.1.2'
++readonly SADDR6='fd::1'
++readonly DADDR6='fd::2'
++
++readonly path_sysctl_mem="net.core.optmem_max"
++
++# No arguments: automated test
++if [[ "$#" -eq "0" ]]; then
++	IPs=( "4" "6" )
++	protocols=( "tcp" "udp" )
++
++	for IP in "${IPs[@]}"; do
++		for proto in "${protocols[@]}"; do
++			for mode in $(seq 1 3); do
++				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32
++				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32 -f
++				$0 "$IP" "$proto" -m "$mode" -t 1 -n 32 -c -f
++			done
++		done
++	done
++
++	echo "OK. All tests passed"
++	exit 0
++fi
++
++# Argument parsing
++if [[ "$#" -lt "2" ]]; then
++	echo "Usage: $0 [4|6] [tcp|udp|raw|raw_hdrincl|packet|packet_dgram] <args>"
++	exit 1
++fi
++
++readonly IP="$1"
++shift
++readonly TXMODE="$1"
++shift
++readonly EXTRA_ARGS="$@"
++
++# Argument parsing: configure addresses
++if [[ "${IP}" == "4" ]]; then
++	readonly SADDR="${SADDR4}"
++	readonly DADDR="${DADDR4}"
++elif [[ "${IP}" == "6" ]]; then
++	readonly SADDR="${SADDR6}"
++	readonly DADDR="${DADDR6}"
++else
++	echo "Invalid IP version ${IP}"
++	exit 1
++fi
++
++# Argument parsing: select receive mode
++#
++# This differs from send mode for
++# - packet:	use raw recv, because packet receives skb clones
++# - raw_hdrinc: use raw recv, because hdrincl is a tx-only option
++case "${TXMODE}" in
++'packet' | 'packet_dgram' | 'raw_hdrincl')
++	RXMODE='raw'
++	;;
++*)
++	RXMODE="${TXMODE}"
++	;;
++esac
++
++# Start of state changes: install cleanup handler
++save_sysctl_mem="$(sysctl -n ${path_sysctl_mem})"
++
++cleanup() {
++	ip netns del "${NS2}"
++	ip netns del "${NS1}"
++	sysctl -w -q "${path_sysctl_mem}=${save_sysctl_mem}"
++}
++
++trap cleanup EXIT
++
++# Configure system settings
++sysctl -w -q "${path_sysctl_mem}=1000000"
++
++# Create virtual ethernet pair between network namespaces
++ip netns add "${NS1}"
++ip netns add "${NS2}"
++
++ip link add "${DEV}" mtu "${DEV_MTU}" netns "${NS1}" type veth \
++  peer name "${DEV}" mtu "${DEV_MTU}" netns "${NS2}"
++
++# Bring the devices up
++ip -netns "${NS1}" link set "${DEV}" up
++ip -netns "${NS2}" link set "${DEV}" up
++
++# Set fixed MAC addresses on the devices
++ip -netns "${NS1}" link set dev "${DEV}" address 02:02:02:02:02:02
++ip -netns "${NS2}" link set dev "${DEV}" address 06:06:06:06:06:06
++
++# Add fixed IP addresses to the devices
++ip -netns "${NS1}" addr add 192.168.1.1/24 dev "${DEV}"
++ip -netns "${NS2}" addr add 192.168.1.2/24 dev "${DEV}"
++ip -netns "${NS1}" addr add       fd::1/64 dev "${DEV}" nodad
++ip -netns "${NS2}" addr add       fd::2/64 dev "${DEV}" nodad
++
++# Optionally disable sg or csum offload to test edge cases
++# ip netns exec "${NS1}" ethtool -K "${DEV}" sg off
++
++do_test() {
++	local readonly ARGS="$1"
++
++	echo "ipv${IP} ${TXMODE} ${ARGS}"
++	ip netns exec "${NS2}" "${BIN_RX}" "-${IP}" -t 2 -C 2 -S "${SADDR}" -D "${DADDR}" -r "${RXMODE}" &
++	sleep 0.2
++	ip netns exec "${NS1}" "${BIN_TX}" "-${IP}" -t 1 -D "${DADDR}" ${ARGS} "${TXMODE}"
++	wait
++}
++
++do_test "${EXTRA_ARGS}"
++echo ok
 -- 
 2.37.0
 
