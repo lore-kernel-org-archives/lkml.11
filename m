@@ -2,128 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA9D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1046C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234393AbiGLQ0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
+        id S234444AbiGLQ1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiGLQ0S (ORCPT
+        with ESMTP id S234306AbiGLQ0e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:26:18 -0400
-X-Greylist: delayed 1817 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:26:07 PDT
-Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45409CD3E2;
-        Tue, 12 Jul 2022 09:26:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=JMpUBU0faqNlIU1d4S3Q7wytCNCfKZ32SXUnAyXuU0s=; b=l5jMp
-        ahtD82dcoJIxOpadC+7Ya05P5Y6jrL3x9n2/0e5x/mJMHr3LXQZYJrrSTRS9QZi2LMVR3n83jBXa+
-        UgAGM5H1snVgtfqbTycQK9AzR0z/2le+ktS8UZYrvkIXqaq2RXX1UkiciUM/i+1Um1XvKzyPoGjht
-        Yt00ON/MNJmgRiTQ0YYLUbO+FyFeqeA7zV4IHttRmr6fcvH3IKOvrt5EfgQ7Xn3ra4SezWh3chPtw
-        bd0NO3sSX1H7YTkM3vhzezsCd03KneFG3dimkAtVVqNDYz1WJnDcNhCeYOP+7ST+WiF39sZ1wwSg/
-        Xpv6NIA7JAUvFSjJq7mVjLqKuhqbQ==;
-Message-Id: <13a7181ea6264264923effcbc8eb5691892731b8.1657636554.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
-References: <cover.1657636554.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:28 +0200
-Subject: [PATCH v5 08/11] net/9p: split message size argument into 't_size'
- and 'r_size' pair
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
+        Tue, 12 Jul 2022 12:26:34 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF708CC019
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:26:22 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id i186so8306088vsc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yc6YXnNVL61q+QUGaIhVOre8jSccirUVb8sqMkVrX9c=;
+        b=LsNq0warVVX+8zijyaGLKwZxd85OPS4s3YIqFk6/bKfHtq2L8GpADGvZXQbEzXVLFa
+         8GQrzzldl95+RP0pUe3GMAovzJDZJ1JzMbO1Hm0y0xg5fA8pLddlxuCSG8V7p0oLBdmo
+         xXydF2rMyI86OJOOE18GDMBH/EksdlSu81br8Kz7TmsseXRnbyHcwADSKxpQHD6Ag8GM
+         I3M4AWtZwHPxOQLRzVK4Lj7Te+Ay62avCHlyU1BQqGqVEzTxUB1cQLWVffjzrMIptqc3
+         chmh/AkHlD95aE893qAKY13CpXWGVCkL9tQrI0nmVX88nfC9vMPCb6mIEqsKMs9BnCBo
+         AgGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yc6YXnNVL61q+QUGaIhVOre8jSccirUVb8sqMkVrX9c=;
+        b=X+1TXWILo4rmL5uDIyQFTSv2oEQenFF3yaSER0d0516lBFzIxRdO0RudnEDMBFL72M
+         e+BHwzW20CnenX9LNOqJWEkPC8eSvcDn8QE2N1ikmo1Co/dVXgKDDjjDB+Ro1HcgfdFw
+         uqXbZU2E/3mUgImS/3ItvL/UDUug5yYx3tD3Qaw2C9xyR7KsB32rSYNZ77SJy7p4HJXS
+         z11JJvb7sQxNG2j/JwCMuu6fe8YD02EofMhpScIg2CsQJm48l9itQnYHq4iO4ZiDRfQD
+         1oie2DeFfv7+R+kgiYJlaT1Z/fv0DECOR/CnH5fxbcltxieeXynEQLendbtV3zxJODaV
+         9R1w==
+X-Gm-Message-State: AJIora/0FDFkCdpy9F+DX2y51ZTQ1oXjP1zdT2C18RR+eg95zv/vlBYQ
+        9xk0D89G3ZdFCM+sAmdHOHbFmhmqK8sMS5KSv6M=
+X-Google-Smtp-Source: AGRyM1sn55QtslIMX6fUep3gArNIJ8Ftpa4qLDEde2Q9HFgL1X88NxObWCITye/Xgr3rtG6yRvbKqXfvoSY46bxHceY=
+X-Received: by 2002:a67:df04:0:b0:356:f32d:148d with SMTP id
+ s4-20020a67df04000000b00356f32d148dmr9226267vsk.60.1657643181852; Tue, 12 Jul
+ 2022 09:26:21 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220711044711.466822-1-yury.norov@gmail.com> <CAHp75Vf8EhRYWdQN6Oc79GzWCvo-sRJDvy7_Aek_Z63GCu2dMQ@mail.gmail.com>
+In-Reply-To: <CAHp75Vf8EhRYWdQN6Oc79GzWCvo-sRJDvy7_Aek_Z63GCu2dMQ@mail.gmail.com>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Tue, 12 Jul 2022 09:26:10 -0700
+Message-ID: <CAAH8bW_RYG_Tbpip=BkSFAymDm2y3jJBqTi0PJWA=H-a-L_3tg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/5] lib/find: add find_nth_bit()
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Isabella Basso <isabbasso@riseup.net>,
+        Kees Cook <keescook@chromium.org>,
+        Keith Busch <kbusch@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor 'max_size' argument of p9_tag_alloc() and 'req_size' argument
-of p9_client_prepare_req() both into a pair of arguments 't_size' and
-'r_size' respectively to allow handling the buffer size for request and
-reply separately from each other.
+On Mon, Jul 11, 2022 at 1:55 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Jul 11, 2022 at 6:51 AM Yury Norov <yury.norov@gmail.com> wrote:
+> >
+> > Kernel lacks for a function that searches for Nth bit in a bitmap.
+> > Usually people do it like this:
+> >         for_each_set_bit(bit, mask, size)
+> >                 if (--n == 0)
+> >                         return bit;
+> >
+> > Which is not so elegant, and very slow.
+> >
+> > This series adds fast routines for this task, and applies them where
+> > appropriate.
+> >
+> > While here, move thin wrappers around find_bit() in nodemask.c to a
+> > corresponding header, and because nodemask.c is empty after that,
+> > remove it.
+> >
+> > v1: https://lore.kernel.org/lkml/20220706182300.70862-4-yury.norov@gmail.com/T/
+> > v2: - count Nth bit from 0 (was 1);
+> >     - use 'invert' trick in _find_nth_bit(), as in _find_next_bit();
+> >     - cleanup comments;
+> >     - fns() is kept inline - looking at __ffs() generic implementation,
+> >       I decided to keep it untouched.
+>
+> Two observations:
+> 1) your patches are not versioned (hint: use `git format-patch
+> --thread -vX --cover-letter ...`, where X is a version you want to
+> give);
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
- net/9p/client.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+OK
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index fab939541c81..56be1658870d 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -255,24 +255,26 @@ static struct kmem_cache *p9_req_cache;
-  * p9_tag_alloc - Allocate a new request.
-  * @c: Client session.
-  * @type: Transaction type.
-- * @max_size: Maximum packet size for this request.
-+ * @t_size: Buffer size for holding this request.
-+ * @r_size: Buffer size for holding server's reply on this request.
-  *
-  * Context: Process context.
-  * Return: Pointer to new request.
-  */
- static struct p9_req_t *
--p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
-+p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
- {
- 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
--	int alloc_msize = min(c->msize, max_size);
-+	int alloc_tsize = min(c->msize, t_size);
-+	int alloc_rsize = min(c->msize, r_size);
- 	int tag;
- 
- 	if (!req)
- 		return ERR_PTR(-ENOMEM);
- 
--	if (p9_fcall_init(c, &req->tc, alloc_msize))
-+	if (p9_fcall_init(c, &req->tc, alloc_tsize))
- 		goto free_req;
--	if (p9_fcall_init(c, &req->rc, alloc_msize))
-+	if (p9_fcall_init(c, &req->rc, alloc_rsize))
- 		goto free;
- 
- 	p9pdu_reset(&req->tc);
-@@ -678,7 +680,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
- }
- 
- static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
--					      int8_t type, int req_size,
-+					      int8_t type, uint t_size, uint r_size,
- 					      const char *fmt, va_list ap)
- {
- 	int err;
-@@ -694,7 +696,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
- 		return ERR_PTR(-EIO);
- 
--	req = p9_tag_alloc(c, type, req_size);
-+	req = p9_tag_alloc(c, type, t_size, r_size);
- 	if (IS_ERR(req))
- 		return req;
- 
-@@ -731,7 +733,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	struct p9_req_t *req;
- 
- 	va_start(ap, fmt);
--	req = p9_client_prepare_req(c, type, c->msize, fmt, ap);
-+	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
-@@ -829,7 +831,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 	/* We allocate a inline protocol data of only 4k bytes.
- 	 * The actual content is passed in zero-copy fashion.
- 	 */
--	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, fmt, ap);
-+	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, P9_ZC_HDR_SZ, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
--- 
-2.30.2
+> 2) fns() is not good abbreviation, because among ffs (First) and fls
+> (Last), fns would be read as Next, which is misleading, I'm not sure
+> fnths(), which is correct, is good for readers.
 
+I agree that fns() may be confusing, but fnths() is even worse to me.
+I expect that it will be mostly used indirectly via find_nth_bit(), and
+will not create a lot of confusion for users.
+
+Thanks,
+Yury
