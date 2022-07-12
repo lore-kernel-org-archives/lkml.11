@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD5CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:44:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0208C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:44:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230122AbiGLSoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33242 "EHLO
+        id S234282AbiGLSoO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:44:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233993AbiGLSmy (ORCPT
+        with ESMTP id S229954AbiGLSnF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:42:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE10FD9165;
-        Tue, 12 Jul 2022 11:41:51 -0700 (PDT)
+        Tue, 12 Jul 2022 14:43:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFE5D9179;
+        Tue, 12 Jul 2022 11:41:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C18161AD2;
-        Tue, 12 Jul 2022 18:41:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5343EC3411C;
-        Tue, 12 Jul 2022 18:41:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36199B81BBD;
+        Tue, 12 Jul 2022 18:41:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 658BEC3411E;
+        Tue, 12 Jul 2022 18:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651310;
-        bh=iodpCEhKE7vLB7Qn5wLtvrYYWXkmr5UUF3gKEJUzpEg=;
+        s=korg; t=1657651313;
+        bh=OPAVYdq/Nb9TUWPRrzva7ewq9dIjGGbmoWDHPMaNNOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zT85FhDJeSfN3+us7ZPtnUc/t/q6Wb1OjMUmwqjChKjcjA9vd945rEWCUvLAEvFfo
-         31ScGbExBydIdVLbNhz+xEbRtLdrBCWf0FTvEsQl3ybiTD1U21Uz3sxl/XK7L/cPqs
-         4rGSjwtqHn1YSGsJiKSc+4RKnsHXT8h0Aslc1p78=
+        b=t6C3Qk0pNGV2O0OZQu5hBCQBqthr1kPfng/WddiN7WuTodvVF9OVC1IvH8HQhwdhM
+         4Fv/W2mCeZg8GFsiXRYLTYSv/QXxsLdzboY3rguZ6mFX+Utv2352dAp4hxdFCM06Sb
+         WgcdoQ+Y4I26U9vkZ3rnYbRbAPhUFOxQFRQ0DKIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Fangrui Song <maskray@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 010/130] x86/xen: Support objtool vmlinux.o validation in xen-head.S
-Date:   Tue, 12 Jul 2022 20:37:36 +0200
-Message-Id: <20220712183246.867460072@linuxfoundation.org>
+Subject: [PATCH 5.10 037/130] objtool: Fix .symtab_shndx handling for elf_create_undef_symbol()
+Date:   Tue, 12 Jul 2022 20:38:03 +0200
+Message-Id: <20220712183248.114403669@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,42 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit f4b4bc10b0b85ec66f1a9bf5dddf475e6695b6d2 upstream.
+commit 584fd3b31889852d0d6f3dd1e3d8e9619b660d2c upstream.
 
-The Xen hypercall page is filled with zeros, causing objtool to fall
-through all the empty hypercall functions until it reaches a real
-function, resulting in a stack state mismatch.
+When an ELF object uses extended symbol section indexes (IOW it has a
+.symtab_shndx section), these must be kept in sync with the regular
+symbol table (.symtab).
 
-The build-time contents of the hypercall page don't matter because the
-page gets rewritten by the hypervisor.  Make it more palatable to
-objtool by making each hypervisor function a true empty function, with
-nops and a return.
+So for every new symbol we emit, make sure to also emit a
+.symtab_shndx value to keep the arrays of equal size.
 
-Cc: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/0883bde1d7a1fb3b6a4c952bc0200e873752f609.1611263462.git.jpoimboe@redhat.com
+Note: since we're writing an UNDEF symbol, most GElf_Sym fields will
+be 0 and we can repurpose one (st_size) to host the 0 for the xshndx
+value.
+
+Fixes: 2f2f7e47f052 ("objtool: Add elf_create_undef_symbol()")
+Reported-by: Nick Desaulniers <ndesaulniers@google.com>
+Suggested-by: Fangrui Song <maskray@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+Link: https://lkml.kernel.org/r/YL3q1qFO9QIRL/BA@hirez.programming.kicks-ass.net
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/xen-head.S |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/objtool/elf.c |   25 ++++++++++++++++++++++++-
+ 1 file changed, 24 insertions(+), 1 deletion(-)
 
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -68,8 +68,9 @@ SYM_CODE_END(asm_cpu_bringup_and_idle)
- 	.balign PAGE_SIZE
- SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
--		UNWIND_HINT_EMPTY
--		.skip 32
-+		UNWIND_HINT_FUNC
-+		.skip 31, 0x90
-+		ret
- 	.endr
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -768,7 +768,7 @@ static int elf_add_string(struct elf *el
  
- #define HYPERCALL(n) \
+ struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name)
+ {
+-	struct section *symtab;
++	struct section *symtab, *symtab_shndx;
+ 	struct symbol *sym;
+ 	Elf_Data *data;
+ 	Elf_Scn *s;
+@@ -819,6 +819,29 @@ struct symbol *elf_create_undef_symbol(s
+ 	symtab->len += data->d_size;
+ 	symtab->changed = true;
+ 
++	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
++	if (symtab_shndx) {
++		s = elf_getscn(elf->elf, symtab_shndx->idx);
++		if (!s) {
++			WARN_ELF("elf_getscn");
++			return NULL;
++		}
++
++		data = elf_newdata(s);
++		if (!data) {
++			WARN_ELF("elf_newdata");
++			return NULL;
++		}
++
++		data->d_buf = &sym->sym.st_size; /* conveniently 0 */
++		data->d_size = sizeof(Elf32_Word);
++		data->d_align = 4;
++		data->d_type = ELF_T_WORD;
++
++		symtab_shndx->len += 4;
++		symtab_shndx->changed = true;
++	}
++
+ 	sym->sec = find_section_by_index(elf, 0);
+ 
+ 	elf_add_symbol(elf, sym);
 
 
