@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DD8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:49:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCE2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiGLStj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:49:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S234477AbiGLSto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:49:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234366AbiGLStC (ORCPT
+        with ESMTP id S234179AbiGLStC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 14:49:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB22A453;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A864863B3;
         Tue, 12 Jul 2022 11:43:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A977B61B03;
-        Tue, 12 Jul 2022 18:43:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67FA0C3411C;
-        Tue, 12 Jul 2022 18:43:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9F60B81BBE;
+        Tue, 12 Jul 2022 18:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BCA6C3411E;
+        Tue, 12 Jul 2022 18:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651404;
-        bh=eFvAyJVDibAY2Sr7A/p+MgTJbLpaK5JM6AIuZ6Yji2E=;
+        s=korg; t=1657651410;
+        bh=eyipu8EB/64Q0rbW76zZlxYKVV59IRLRSGQ+HpDrRTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1OZU75DHi8i5AMgpjB979SktKUpsz3+jt3pfXuA4a7hjiNYH2dfhuNeb0syB0PR1p
-         UjRmCslFGtMX1opL/q4v2DtrssdvgtnLmubCkvkj+M0t/nxhX4p0S376E8EhE6Htdh
-         lrjlCvmocJcrlqlOY2aEJQ2Q40CwpCRFfWNpA7w4=
+        b=VUTPsinWYqtI4qgd6ehWlQaZANfpXBAXK3gVLXFSirEvrqSwoDaLPuRM3x++Gv8RA
+         6nkvJsAsCvN+P9wxF+f/hORj9CPJt3K4+DlCHbhgUgfr6GlSOF5x6bb9WcpIZV++Qu
+         EE5TD1JtTzkrr/UCAOFrH9A1flCMBWRbDEJaU3IA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 065/130] objtool: Add straight-line-speculation validation
-Date:   Tue, 12 Jul 2022 20:38:31 +0200
-Message-Id: <20220712183249.463792571@linuxfoundation.org>
+Subject: [PATCH 5.10 067/130] tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in perf bench mem memcpy
+Date:   Tue, 12 Jul 2022 20:38:33 +0200
+Message-Id: <20220712183249.558038729@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,135 +51,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 1cc1e4c8aab4213bd4e6353dec2620476a233d6d upstream.
+commit 35cb8c713a496e8c114eed5e2a5a30b359876df2 upstream.
 
-Teach objtool to validate the straight-line-speculation constraints:
+To bring in the change made in this cset:
 
- - speculation trap after indirect calls
- - speculation trap after RET
+  f94909ceb1ed4bfd ("x86: Prepare asm files for straight-line-speculation")
 
-Notable: when an instruction is annotated RETPOLINE_SAFE, indicating
-  speculation isn't a problem, also don't care about sls for that
-  instruction.
+It silences these perf tools build warnings, no change in the tools:
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211204134908.023037659@infradead.org
+  Warning: Kernel ABI header at 'tools/arch/x86/lib/memcpy_64.S' differs from latest version at 'arch/x86/lib/memcpy_64.S'
+  diff -u tools/arch/x86/lib/memcpy_64.S arch/x86/lib/memcpy_64.S
+  Warning: Kernel ABI header at 'tools/arch/x86/lib/memset_64.S' differs from latest version at 'arch/x86/lib/memset_64.S'
+  diff -u tools/arch/x86/lib/memset_64.S arch/x86/lib/memset_64.S
+
+The code generated was checked before and after using 'objdump -d /tmp/build/perf/bench/mem-memcpy-x86-64-asm.o',
+no changes.
+
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[bwh: Backported to 5.10: adjust filenames, context]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/arch.h            |    1 +
- tools/objtool/arch/x86/decode.c |   13 +++++++++----
- tools/objtool/builtin-check.c   |    4 +++-
- tools/objtool/builtin.h         |    3 ++-
- tools/objtool/check.c           |   14 ++++++++++++++
- 5 files changed, 29 insertions(+), 6 deletions(-)
+ tools/arch/x86/lib/memcpy_64.S |   12 ++++++------
+ tools/arch/x86/lib/memset_64.S |    6 +++---
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
---- a/tools/objtool/arch.h
-+++ b/tools/objtool/arch.h
-@@ -26,6 +26,7 @@ enum insn_type {
- 	INSN_CLAC,
- 	INSN_STD,
- 	INSN_CLD,
-+	INSN_TRAP,
- 	INSN_OTHER,
- };
+--- a/tools/arch/x86/lib/memcpy_64.S
++++ b/tools/arch/x86/lib/memcpy_64.S
+@@ -39,7 +39,7 @@ SYM_FUNC_START_WEAK(memcpy)
+ 	rep movsq
+ 	movl %edx, %ecx
+ 	rep movsb
+-	ret
++	RET
+ SYM_FUNC_END(memcpy)
+ SYM_FUNC_END_ALIAS(__memcpy)
+ EXPORT_SYMBOL(memcpy)
+@@ -53,7 +53,7 @@ SYM_FUNC_START_LOCAL(memcpy_erms)
+ 	movq %rdi, %rax
+ 	movq %rdx, %rcx
+ 	rep movsb
+-	ret
++	RET
+ SYM_FUNC_END(memcpy_erms)
  
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -456,6 +456,11 @@ int arch_decode_instruction(const struct
+ SYM_FUNC_START_LOCAL(memcpy_orig)
+@@ -137,7 +137,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movq %r9,	1*8(%rdi)
+ 	movq %r10,	-2*8(%rdi, %rdx)
+ 	movq %r11,	-1*8(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_16bytes:
+ 	cmpl $8,	%edx
+@@ -149,7 +149,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movq -1*8(%rsi, %rdx),	%r9
+ 	movq %r8,	0*8(%rdi)
+ 	movq %r9,	-1*8(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_8bytes:
+ 	cmpl $4,	%edx
+@@ -162,7 +162,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movl -4(%rsi, %rdx), %r8d
+ 	movl %ecx, (%rdi)
+ 	movl %r8d, -4(%rdi, %rdx)
+-	retq
++	RET
+ 	.p2align 4
+ .Lless_3bytes:
+ 	subl $1, %edx
+@@ -180,7 +180,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
+ 	movb %cl, (%rdi)
  
- 		break;
+ .Lend:
+-	retq
++	RET
+ SYM_FUNC_END(memcpy_orig)
  
-+	case 0xcc:
-+		/* int3 */
-+		*type = INSN_TRAP;
-+		break;
-+
- 	case 0xe3:
- 		/* jecxz/jrcxz */
- 		*type = INSN_JUMP_CONDITIONAL;
-@@ -592,10 +597,10 @@ const char *arch_ret_insn(int len)
- {
- 	static const char ret[5][5] = {
- 		{ BYTE_RET },
--		{ BYTE_RET, 0x90 },
--		{ BYTE_RET, 0x66, 0x90 },
--		{ BYTE_RET, 0x0f, 0x1f, 0x00 },
--		{ BYTE_RET, 0x0f, 0x1f, 0x40, 0x00 },
-+		{ BYTE_RET, 0xcc },
-+		{ BYTE_RET, 0xcc, 0x90 },
-+		{ BYTE_RET, 0xcc, 0x66, 0x90 },
-+		{ BYTE_RET, 0xcc, 0x0f, 0x1f, 0x00 },
- 	};
+ .popsection
+--- a/tools/arch/x86/lib/memset_64.S
++++ b/tools/arch/x86/lib/memset_64.S
+@@ -40,7 +40,7 @@ SYM_FUNC_START(__memset)
+ 	movl %edx,%ecx
+ 	rep stosb
+ 	movq %r9,%rax
+-	ret
++	RET
+ SYM_FUNC_END(__memset)
+ SYM_FUNC_END_ALIAS(memset)
+ EXPORT_SYMBOL(memset)
+@@ -63,7 +63,7 @@ SYM_FUNC_START_LOCAL(memset_erms)
+ 	movq %rdx,%rcx
+ 	rep stosb
+ 	movq %r9,%rax
+-	ret
++	RET
+ SYM_FUNC_END(memset_erms)
  
- 	if (len < 1 || len > 5) {
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -18,7 +18,8 @@
- #include "builtin.h"
- #include "objtool.h"
+ SYM_FUNC_START_LOCAL(memset_orig)
+@@ -125,7 +125,7 @@ SYM_FUNC_START_LOCAL(memset_orig)
  
--bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats, validate_dup, vmlinux;
-+bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
-+     validate_dup, vmlinux, sls;
+ .Lende:
+ 	movq	%r10,%rax
+-	ret
++	RET
  
- static const char * const check_usage[] = {
- 	"objtool check [<options>] file.o",
-@@ -35,6 +36,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('s', "stats", &stats, "print statistics"),
- 	OPT_BOOLEAN('d', "duplicate", &validate_dup, "duplicate validation for vmlinux.o"),
- 	OPT_BOOLEAN('l', "vmlinux", &vmlinux, "vmlinux.o validation"),
-+	OPT_BOOLEAN('S', "sls", &sls, "validate straight-line-speculation"),
- 	OPT_END(),
- };
- 
---- a/tools/objtool/builtin.h
-+++ b/tools/objtool/builtin.h
-@@ -8,7 +8,8 @@
- #include <subcmd/parse-options.h>
- 
- extern const struct option check_options[];
--extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats, validate_dup, vmlinux;
-+extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
-+            validate_dup, vmlinux, sls;
- 
- extern int cmd_check(int argc, const char **argv);
- extern int cmd_orc(int argc, const char **argv);
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2775,6 +2775,12 @@ static int validate_branch(struct objtoo
- 		switch (insn->type) {
- 
- 		case INSN_RETURN:
-+			if (next_insn && next_insn->type == INSN_TRAP) {
-+				next_insn->ignore = true;
-+			} else if (sls && !insn->retpoline_safe) {
-+				WARN_FUNC("missing int3 after ret",
-+					  insn->sec, insn->offset);
-+			}
- 			return validate_return(func, insn, &state);
- 
- 		case INSN_CALL:
-@@ -2818,6 +2824,14 @@ static int validate_branch(struct objtoo
- 			break;
- 
- 		case INSN_JUMP_DYNAMIC:
-+			if (next_insn && next_insn->type == INSN_TRAP) {
-+				next_insn->ignore = true;
-+			} else if (sls && !insn->retpoline_safe) {
-+				WARN_FUNC("missing int3 after indirect jump",
-+					  insn->sec, insn->offset);
-+			}
-+
-+			/* fallthrough */
- 		case INSN_JUMP_DYNAMIC_CONDITIONAL:
- 			if (is_sibling_call(insn)) {
- 				ret = validate_sibling_call(insn, &state);
+ .Lbad_alignment:
+ 	cmpq $7,%rdx
 
 
