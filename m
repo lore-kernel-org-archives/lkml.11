@@ -2,218 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C20F5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:19:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229560AbiGLHTi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57530 "EHLO
+        id S232338AbiGLHTx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiGLHTf (ORCPT
+        with ESMTP id S232295AbiGLHTv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:19:35 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74360DF97
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:19:30 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id h17so9928129wrx.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:19:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BTSjElMcZ1FnjyHKNp79hGsGakGilcTyUvUzTPCmLNc=;
-        b=JMCYGurBI4WmVl8HqnUnKYcyh9DFs7oZS0JXpm5MaqnrvaFGK3DDbHZzoHfpZmpKqp
-         8C2A83XRQSLbGTU1WVtEmsWpU0v5kZZ5U+wpeQ8z4ZnZ6hOaFqD8gDFEO40boQc9tleC
-         /QgU9WItfdFD/Q/UYoXJ1dQFcsV8/7EB2TiSIzrezZ04RAtC6t8PWpQUSYbjws7jxfYY
-         znOZ8P2HQqBl5CMEaNNS4OZuro+ZNQ/15DXqC+vrsm2v8MJgLYAqoz7EOeEVTpqhF7cO
-         aLabVohIs90ldlxnRlB7mHJaKyYV9Y+8JR8CRdfjOYsb2ZKkI9dYYqJxgrqUYyCo6tvS
-         i0qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BTSjElMcZ1FnjyHKNp79hGsGakGilcTyUvUzTPCmLNc=;
-        b=dg2Ikm+KEzpUQ7hGUwaMpOUrNkx6LYJHysEaOeQvOP79qgL3hsu2JNVR+Gwz39R0eM
-         rywIhoJbByKhg5uN9SUODUOKintbdM+RDvI2FMmvkVFfLayFPcRYzfygDzi9mSH0TGtN
-         cvi0Du1KOCbT94KFM6H7a77vSLyJGRur6FkzlnVPJLI/0dyU9xiX1dn/qvQUbv0i5Bpq
-         aHMglEH0r+KpA/yO+wjU+4FmvGtUsmRpklH/QJk7k94MJuvjFzxoF5gkbvVh3E68ooHF
-         pmwvQyGrN/SrpVTLNRlQz8OGEk9ZghvEj0l3A/faxH2C4PbT8njJasVkRwIQHTu0vHKj
-         MxQg==
-X-Gm-Message-State: AJIora//7nFJ4dzOXc84vELnum1WbVI741UQEj7eO3M+BecbL2IfQUvQ
-        JJiJyQIS20ojtnlyQLpZMuQsm26jsAwBB5+QV0cIgw==
-X-Google-Smtp-Source: AGRyM1tu7uvjAakm2E5phW8PHa+BxBSNdykerlRB9Bw0zuH+Gb/3l4pHyhL8kYh6W29eQGpqM6MYIVXtgUVwc1ZNz6k=
-X-Received: by 2002:adf:fd4a:0:b0:21d:8b59:dcb1 with SMTP id
- h10-20020adffd4a000000b0021d8b59dcb1mr20181622wrs.622.1657610368960; Tue, 12
- Jul 2022 00:19:28 -0700 (PDT)
+        Tue, 12 Jul 2022 03:19:51 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85370DF97
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:19:48 -0700 (PDT)
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220712071943epoutp03bd9b9a5ced5f48b1e3fd7fa467133557~BA9x69gKh0170801708epoutp03Q
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:19:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220712071943epoutp03bd9b9a5ced5f48b1e3fd7fa467133557~BA9x69gKh0170801708epoutp03Q
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657610383;
+        bh=EHjvu6y7/2YojqWSmEKVMsufu+19zzgWWK0dq1IW5LE=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=ja3CjxJ9JpsKbrfqaHyasOYntapJahQW4LTPX4UEn/YrPmFwV+RvigONK2rL/OeUC
+         Dwjb5OW++BugoharaxywisJfjooWuygeqyPOfSVhfEZmdoxa3Cwfy52o6lFQLxCOLZ
+         ZBl2Ug0nA4oCVcZVXNZyAYApeY4dyI39W9fG9BIE=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220712071942epcas2p12cb4281c50858e5106d589095a5d116b~BA9xh3cgF1152111521epcas2p1k;
+        Tue, 12 Jul 2022 07:19:42 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.100]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4LhsZk299rz4x9QL; Tue, 12 Jul
+        2022 07:19:42 +0000 (GMT)
+Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F0.6F.09650.E802DC26; Tue, 12 Jul 2022 16:19:42 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209~BA9wbs-n_2622626226epcas2p2Z;
+        Tue, 12 Jul 2022 07:19:41 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220712071941epsmtrp158a6dd6acde05b08d9b4fe0e63491588~BA9wapZ6I1405214052epsmtrp1-;
+        Tue, 12 Jul 2022 07:19:41 +0000 (GMT)
+X-AuditID: b6c32a46-8bff9a80000025b2-84-62cd208e6ce9
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D2.E4.08802.D802DC26; Tue, 12 Jul 2022 16:19:41 +0900 (KST)
+Received: from perf.dsn.sec.samsung.com (unknown [10.229.95.91]) by
+        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220712071941epsmtip226883a377075c6cd507195e56d0c0a26~BA9wMwcuA1227712277epsmtip2F;
+        Tue, 12 Jul 2022 07:19:41 +0000 (GMT)
+From:   Youngmin Nam <youngmin.nam@samsung.com>
+To:     arnd@arndb.de, jstultz@google.com, tglx@linutronix.de
+Cc:     sboyd@kernel.org, linux-kernel@vger.kernel.org,
+        youngmin.nam@samsung.com, chanho61.park@samsung.com,
+        hajun.sung@samsung.com, hosung0.kim@samsung.com,
+        d7271.choe@samsung.com
+Subject: [PATCH] time: remove useless "const" keyword in
+ ns_to_kernel_old_timeval() and ns_to_timespec64()
+Date:   Tue, 12 Jul 2022 16:47:05 +0900
+Message-Id: <20220712074705.420399-1-youngmin.nam@samsung.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-References: <20220711162713.2467476-1-dlatypov@google.com>
-In-Reply-To: <20220711162713.2467476-1-dlatypov@google.com>
-From:   David Gow <davidgow@google.com>
-Date:   Tue, 12 Jul 2022 15:19:17 +0800
-Message-ID: <CABVgOS=FzA5oKkTEJLMp6=funMiLqp5SzcwOcoqdfVeuxMQLqA@mail.gmail.com>
-Subject: Re: [PATCH] clk: explicitly disable CONFIG_UML_PCI_OVER_VIRTIO in .kunitconfig
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     Brendan Higgins <brendanhiggins@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-clk@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003bd51805e3967db2"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAJsWRmVeSWpSXmKPExsWy7bCmmW6fwtkkg73/uC3+TjrGbnF5v7bF
+        tb0T2S2a9l9itvh6/RG7xZ8TG9ksLu+aw2bx79pGFovNm6YyWyw+8Indgcvj969JjB4LNpV6
+        bFrVyebx7tw5do++LasYPT5vkgtgi8q2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0
+        MFdSyEvMTbVVcvEJ0HXLzAE6TEmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6g
+        V5yYW1yal66Xl1piZWhgYGQKVJiQnbFx0R3Wgoe8FbNvvmdvYLzC3cXIwSEhYCLR3hnUxcjF
+        ISSwg1Fi27UFbBDOJ0aJWTuOMUM4nxklNk58BuRwgnX8Wd7HApHYxSgxqWkyK4TzlVHi6NFd
+        TCBVbAK6EttO/GME2SEiYClxq98HpIZZYAujROukE2CThAVyJJq3HWMFsVkEVCXOvj4E1ssr
+        YCfxaN95Noj75CX+vBKACAtKnJz5hAXEZgYKN2+dDXadhMBHdonnF16xQ1znInG97QzUpcIS
+        r45vgYpLSbzsb4OyiyWenF3KCNHcwCixe/FrFoiEscSsZ+1gRzMLaEqs36UPcYOyxJFbUHv5
+        JDoO/2WHCPNKdLQJQTSqSfyasoERwpYBGrgC6gIPiW0NN9hAbCGBWIm5/Q/ZJzDKz0LyzSwk
+        38xC2LuAkXkVo1hqQXFuemqxUYERPE6T83M3MYKTppbbDsYpbz/oHWJk4mA8xCjBwawkwvvn
+        7KkkId6UxMqq1KL8+KLSnNTiQ4ymwOCdyCwlmpwPTNt5JfGGJpYGJmZmhuZGpgbmSuK8Xikb
+        EoUE0hNLUrNTUwtSi2D6mDg4pRqYdI2msq8VL+UreiPrJHB/v8JKLlVd+8tLzk/+Wjo5YkHy
+        p8c7gi1+nJteLqwn1CvzN1Nz3dG9eVo+X3t/zniga716b8mR/keW0yO+Pzr1Xn9/k42yzFJp
+        r3d9Omc3zd3UZfj1yImv0k82mB09Utp421vNebLsvteHkuYnfszfVrtPeMXiHTG9Wyfu2Hto
+        beymSXeYjiVXKxuvm+1u+/bg3E3ip2cfz00/cdDrZtktloV9Oy7G7mqa8fJ04u6XzI03VxTt
+        7zSY/oLXiH/7v78pe/IW/AqRy7x3+qnn8SnfjnxKaAtLb72QJ/5D9qvprgTeWDOr2AvpC1sP
+        XN672fpt3uG61v+XIxTXBv3R37xMP1pRiaU4I9FQi7moOBEAvDcAHSMEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrILMWRmVeSWpSXmKPExsWy7bCSvG6vwtkkg5mfVCz+TjrGbnF5v7bF
+        tb0T2S2a9l9itvh6/RG7xZ8TG9ksLu+aw2bx79pGFovNm6YyWyw+8Indgcvj969JjB4LNpV6
+        bFrVyebx7tw5do++LasYPT5vkgtgi+KySUnNySxLLdK3S+DK2LjoDmvBQ96K2TffszcwXuHu
+        YuTkkBAwkfizvI+li5GLQ0hgB6PEr0NL2CESMhK3V15mhbCFJe63HGGFKPrMKHHv1AewIjYB
+        XYltJ/4xgtgiArYSH5bNYwcpYhbYwyjxbe48sG5hgSyJOysOghWxCKhKnH19iAnE5hWwk3i0
+        7zxbFyMH0AZ5iT+vBCDCghInZz5hAbGZgcLNW2czT2Dkm4UkNQtJagEj0ypGydSC4tz03GLD
+        AqO81HK94sTc4tK8dL3k/NxNjOBQ1tLawbhn1Qe9Q4xMHIyHGCU4mJVEeP+cPZUkxJuSWFmV
+        WpQfX1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA1M3+8TYn7WBZ8XPzzoR
+        mWLSsStmvov+JJNOnqy7N+/EPz12dMtkqfMiR5KPvO9Nu7nj2cGNBvaGoeFXTqx0Npl6O3Pp
+        yv1TGoKl//xZdv1X6dkFG140PQ8y4LqsEZGaGnrO7VDfpX9yiWlGImXphWd3TZe6YrtoSaX8
+        dGnJj2ffS5w5rOVw08Fxcffu+oh8u+Mz+t/EbZlxwbvESXnSxVkOfB3zTH6vDBHI/28wQ/61
+        q/JzdtvpsRwVGe1q/Eka65oWqRe84f/+rf/ipvIJdbxN3Evddbdz1Ipf8c8NO3Uj+vnDMzZ8
+        KvulHI5GX83+cmzhvbmTWDea+iVe//mxWK4ix4aF41Lb57KquQKRceVKLMUZiYZazEXFiQBR
+        kd6L1AIAAA==
+X-CMS-MailID: 20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209
+References: <CGME20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209@epcas2p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---0000000000003bd51805e3967db2
-Content-Type: text/plain; charset="UTF-8"
+As mentioned below,
+https://lore.kernel.org/lkml/CAK8P3a3nknJgEDESGdJH91jMj6R_xydFqWASd8r5BbesdvMBgA@mail.gmail.com/
 
-On Tue, Jul 12, 2022 at 12:27 AM 'Daniel Latypov' via KUnit
-Development <kunit-dev@googlegroups.com> wrote:
->
-> CONFIG_UML_PCI_OVER_VIRTIO=y is needed to enable CONFIG_PCI=y on UML.
-> However, this causes test failures when running the clk tests, i.e.
-> $ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/clk
->
-> A snippet of the particular error is:
-> >     ok 1 - clk_gate_test_parent_rate
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 45 at lib/logic_iomem.c:141 __raw_readl+0x9f/0xd0
->
-> This is triggered by this cast in the test:
->    143          ctx->fake_mem = (void __force __iomem *)&ctx->fake_reg;
-> this seems to work except when logic iomem is enabled, i.e.
-> CONFIG_INDIRECT_IOMEM=y.
->
-> As a short-term fix, explicitly disable CONFIG_UML_PCI_OVER_VIRTIO in
-> drivers/clk/.kunitconfig so we can enable it for everyone else by
-> default in kunit.py.
->
-> The long-term fix probably requires something more complicated, like
->   #ifdef CONFIG_INDIRECT_IOMEM
->     logic_iomem_add_region(...);
->   #endif
->
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
-> Reported-by: Maxime Ripard <maxime@cerno.tech>
-> Tested-by: Maxime Ripard <maxime@cerno.tech>
-> ---
-> Note: this targeting the -kselftest kunit branch.
-> There's a commit that triggers this by enabling logic iomem by default
-> [1] and there's also a commit that lets disable it via kunitconfig file
-> [2], which this fix relies on.
->
-> [1] https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/commit/?h=kunit&id=6fc3a8636a7b0f7dbd6d0a4e450e765dc17518d4
-> [2] https://git.kernel.org/pub/scm/linux/kernel/git/shuah/linux-kselftest.git/commit/?h=kunit&id=8a7c6f859a20ca36a9e3ce71662de697898c9ef5
-> ---
+The "const" keyword is useless, so we drop it from the function definition and declaration.
 
-Looks good, works for me (and doesn't break either i386 or arm64,
-which I also tested on).
+Change-Id: If35bba78aa7757476e22be42afc719c27fb0f527
+Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
+---
+ include/linux/time64.h | 2 +-
+ kernel/time/time.c     | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Reviewed-by: David Gow <davidgow@google.com>
+diff --git a/include/linux/time64.h b/include/linux/time64.h
+index 81b9686a2079..ee021da0966e 100644
+--- a/include/linux/time64.h
++++ b/include/linux/time64.h
+@@ -142,7 +142,7 @@ static inline s64 timespec64_to_ns(const struct timespec64 *ts)
+  *
+  * Returns the timespec64 representation of the nsec parameter.
+  */
+-extern struct timespec64 ns_to_timespec64(const s64 nsec);
++extern struct timespec64 ns_to_timespec64(s64 nsec);
+ 
+ /**
+  * timespec64_add_ns - Adds nanoseconds to a timespec64
+diff --git a/kernel/time/time.c b/kernel/time/time.c
+index 29923b20e0e4..526257b3727c 100644
+--- a/kernel/time/time.c
++++ b/kernel/time/time.c
+@@ -449,7 +449,7 @@ time64_t mktime64(const unsigned int year0, const unsigned int mon0,
+ }
+ EXPORT_SYMBOL(mktime64);
+ 
+-struct __kernel_old_timeval ns_to_kernel_old_timeval(const s64 nsec)
++struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec)
+ {
+ 	struct timespec64 ts = ns_to_timespec64(nsec);
+ 	struct __kernel_old_timeval tv;
+@@ -503,7 +503,7 @@ EXPORT_SYMBOL(set_normalized_timespec64);
+  *
+  * Returns the timespec64 representation of the nsec parameter.
+  */
+-struct timespec64 ns_to_timespec64(const s64 nsec)
++struct timespec64 ns_to_timespec64(s64 nsec)
+ {
+ 	struct timespec64 ts = { 0, 0 };
+ 	s32 rem;
+-- 
+2.34.0
 
-Cheers,
--- David
-
->  drivers/clk/.kunitconfig | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/clk/.kunitconfig b/drivers/clk/.kunitconfig
-> index cdbc7d7deba9..2fbeb71316f8 100644
-> --- a/drivers/clk/.kunitconfig
-> +++ b/drivers/clk/.kunitconfig
-> @@ -2,3 +2,4 @@ CONFIG_KUNIT=y
->  CONFIG_COMMON_CLK=y
->  CONFIG_CLK_KUNIT_TEST=y
->  CONFIG_CLK_GATE_KUNIT_TEST=y
-> +CONFIG_UML_PCI_OVER_VIRTIO=n
->
-> base-commit: 7635778bac7e46458392c1261e3916e8e9e86860
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
-> --
-> You received this message because you are subscribed to the Google Groups "KUnit Development" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to kunit-dev+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/kunit-dev/20220711162713.2467476-1-dlatypov%40google.com.
-
---0000000000003bd51805e3967db2
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
-ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
-VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
-AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
-AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
-IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
-dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
-6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
-c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
-I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
-AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
-BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
-CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
-AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
-MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
-My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
-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
-z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
-dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
-AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
-c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
-LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
-LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
-Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
-VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
-ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
-OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
-3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
-lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
-R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
-MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBc
-UHKisVTKbyvY4pnUEfVA4bNRBUr8jO+EzGm/HED/FjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-MBwGCSqGSIb3DQEJBTEPFw0yMjA3MTIwNzE5MjlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
-BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
-CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAEtpVOtBnifipDV4Tl2IO
-UUE8RCR5Xl3U6rwhDmxKRz6iEN1INU/p+xGZWCoWjNYaaQv05HPzHQPjgq7+bcT+8FZZ6YsJfQee
-+m2pJESFb59f5JnAD4I/MG2TcJpbSNPvt0BX+7AWm3QS97iyI8laJypURXy35okOrqM2cSG8NLF4
-klNfv8BmbCkAk1hJ/Hd1sSrk0X+8zPK1ES4r6AH7dnlQaRdiVeoIrDjl0DuhanSomNJw2ASLhfLR
-3BLIz/BdZPv3yeUgjBIIU30VFbqU+e8ypAOgZ0zySHNcDfupu4iDt3m030Y3cAZ6oDy2sK+eX2Nl
-Kw5frsT8CLAAbcR57A==
---0000000000003bd51805e3967db2--
