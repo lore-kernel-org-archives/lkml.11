@@ -2,81 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00105C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:14:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbiGLJN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41212 "EHLO
+        id S232452AbiGLJOb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 05:14:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229591AbiGLJNx (ORCPT
+        with ESMTP id S232295AbiGLJO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:13:53 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E7533354;
-        Tue, 12 Jul 2022 02:13:52 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id n18so11179508lfq.1;
-        Tue, 12 Jul 2022 02:13:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XE4JnhtsX+9bRSJhafx+QlBOIlHNZ8nXGn9GMY6ZGvU=;
-        b=fgzBI7tmy8Cb6oUEPpfkpvoea/PU5XC7pGYQSEbWgr04jQoGrZbCjCZax6kpCp75md
-         ZaoBwmfWoCuCFOXaR4k/QHlsLstZm7qflsq+Ca9y+Jgb0vr/3R3utOpkquNp+D2Y3cBh
-         rZB5SpBNJrXLGm/NYqcEOUyJGcFjbE45vYYkIEeI0AFRtsy4M6gTMHAmyYVdEGWAhW6M
-         4NccffhC7JgEq7l99JCVoU9LOcOOaeqlXF0KDR6jOOKv++79o1bKCM8LQHHouAD3ELRp
-         rqfeU0oiICFHyG2tiVP0UnUPo8FMmL1Oe7g1JRsHxWrL0aaVEv2wqM+KmgQ3PWm/tbHK
-         OtfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XE4JnhtsX+9bRSJhafx+QlBOIlHNZ8nXGn9GMY6ZGvU=;
-        b=ast8euF8uy/aYclWKyZV3/jR8JVuepN6WX9UsF+gbzQjawP7FfnfsOgum/wVzKkhrT
-         f4t+g9BTfUIYGk7tRFt6BUgMNga12jYI2ka0/TukcI/IyAowmehjDpJgalUw2WEf/OUO
-         cO9HZHxJxoJG9fxI2lrGcGl+dT4gkFTffBrTII5JSyHNerixNhT2eSpmBvRJZallvzVw
-         h3kHsoLlHYE9IJnPp2jowZ8GmahFOtDXmbL8HPaOimO2QG8smdVdMUfey/+vmK4bajZ/
-         e7nBQMyWbpNCbDtoXQQswmd/+bCKyFplliGdcNXz1Ej1l5+yrlaATCFsl08mwAdCmEzC
-         iuMg==
-X-Gm-Message-State: AJIora9+UMBXFKK/pc9vXJtsIF4nPlDG+fTS9zS7savyg2lqwukxDv3a
-        ckFO0OoMpqpouAvvCVynLc3MuAcxdHFDN6pM2pE=
-X-Google-Smtp-Source: AGRyM1ujIrpTXlHRVeL1sEk9M68DIgjXlavfWyRNERd8qdnleE1cNRbRkOgVk8bBzRogNd0Knv27++LNA8MziaZ1FU8=
-X-Received: by 2002:a05:6512:3183:b0:47f:79f3:af9a with SMTP id
- i3-20020a056512318300b0047f79f3af9amr13953057lfe.182.1657617230889; Tue, 12
- Jul 2022 02:13:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220711173418.91709-1-brgl@bgdev.pl> <20220712023714.GA9406@sol>
-In-Reply-To: <20220712023714.GA9406@sol>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 11:13:14 +0200
-Message-ID: <CAHp75VcPaDq-3iL+3NpnYrOoLEX06HKX+tAhbP=P35jZ5NUuGQ@mail.gmail.com>
-Subject: Re: [PATCH] gpio: sim: fix the chip_name configfs item
-To:     Kent Gibson <warthog618@gmail.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stable <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 12 Jul 2022 05:14:27 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F09137F82
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:14:26 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 6E6341FF19;
+        Tue, 12 Jul 2022 09:14:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657617263; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mxZxsRSWrLAheE7Fy+VL6QdtGzcQfzL4w4xdj1/VloU=;
+        b=rawdED50s0ZQW1PZ7fHnPoLLItjoK2Bl+fhnEZ7Y34LpdqaRsVwozmtgVsverY5HhwA7rO
+        JbJRxgOaSqxxAeFyRJMFDvGB8Pif7YcXWmFSLAbJCKmKbcVX3PcgF/M6Tm58nxGvviHMsq
+        k9dZX4bbDG2nRcf4JG5V4KBK1zTPSmg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657617263;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mxZxsRSWrLAheE7Fy+VL6QdtGzcQfzL4w4xdj1/VloU=;
+        b=2/H57H17h6T0CtOU6cGdnRmAttr+Z1A7AKEZ0mpWC7ZG+LCvRCFt1pqQSwzfVesDrCEWyr
+        kEHqrSbt6IVZSlDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id ED7B613A94;
+        Tue, 12 Jul 2022 09:14:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qV5ZOW47zWJESQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 12 Jul 2022 09:14:22 +0000
+Date:   Tue, 12 Jul 2022 11:14:22 +0200
+Message-ID: <87lesyr8up.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Meng Tang <tangmeng@uniontech.com>
+Cc:     perex@perex.cz, tiwai@suse.com, tcrawford@system76.com,
+        kai.heng.feng@canonical.com, tanureal@opensource.cirrus.com,
+        cam@neo-zeon.de, kailang@realtek.com,
+        sbinding@opensource.cirrus.com, andy.chi@canonical.com,
+        yong.wu@mediatek.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ALSA: hda - Add fixup for Dell Latitidue E5430
+In-Reply-To: <20220712060005.20176-1-tangmeng@uniontech.com>
+References: <20220712060005.20176-1-tangmeng@uniontech.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 4:40 AM Kent Gibson <warthog618@gmail.com> wrote:
-> On Mon, Jul 11, 2022 at 07:34:18PM +0200, Bartosz Golaszewski wrote:
+On Tue, 12 Jul 2022 08:00:05 +0200,
+Meng Tang wrote:
+> 
+> Another Dell model, another fixup entry: Latitude E5430 needs the same
+> fixup as other Latitude E series as workaround for noise problems.
+> 
+> Signed-off-by: Meng Tang <tangmeng@uniontech.com>
 
-...
+Thanks, applied now.
 
-> Not totally convinced by Andy's suggestion to rename swnode to fwnode.
-> Variables should be named for what they represent, not their type, and
-> you use swnode extensively elsewhere in the module, so either change it
-> everywhere or not at all, and such a sweeping change is beyond the scope
-> this patch.
 
-Ah, I agree that consistency has higher priority here.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Takashi
