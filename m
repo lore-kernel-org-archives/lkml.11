@@ -2,111 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68402C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 715A4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:53:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232919AbiGLLwr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:52:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36928 "EHLO
+        id S232904AbiGLLxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232876AbiGLLwV (ORCPT
+        with ESMTP id S232840AbiGLLxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:52:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A9FB521C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:51:55 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CAhGsZ002251;
-        Tue, 12 Jul 2022 11:51:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=PM8YxtnQW4urLNhu7YRwUGznmdD080iWzOsO7fJQHx4=;
- b=AwFFlIDLG06YNqJp7wQ4A/biembLFgabyhDTH18bNh2Hc0h+tzI+8k8fN4dMVU4rs5Wv
- JtiSAa94xI8e4X1Ah9TPaE9S/l5VkFqZVjpmEFFoIq5lpWBJh69ioBta0lU+6dxCjbUG
- Z/AekU5yFoj1+x7dgj1rjLnlxWFZ8QtCbNCM5CZHl4p31weJ9459kGnw/s1pjuteeFqM
- vhttkqCGpN+gxvs6+Z1ApEhOqKsEaPkMU42ZaYqQioUFUNX0tpxCbvpbjilsYI8KBIgu
- OPxaRUysjesn81iKxyE8MRP4GWMEmC5TJFUJCqSANlFSpKMJjxE+kYRoZkakmvOMJ1ZW BA== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h97erhsg4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 11:51:46 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CBpINw000510;
-        Tue, 12 Jul 2022 11:51:45 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma02fra.de.ibm.com with ESMTP id 3h71a8kcyg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 11:51:44 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CBpgi925297248
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 11:51:42 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 569AFA405C;
-        Tue, 12 Jul 2022 11:51:42 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 38C56A4054;
-        Tue, 12 Jul 2022 11:51:40 +0000 (GMT)
-Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.47.210])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 12 Jul 2022 11:51:40 +0000 (GMT)
-Date:   Tue, 12 Jul 2022 13:51:37 +0200
-From:   Alexander Gordeev <agordeev@linux.ibm.com>
-To:     Liam Howlett <liam.howlett@oracle.com>
-Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH] maple_tree: Fix mas_empty_area_rev() search exhaustion
- at root node
-Message-ID: <Ys1gSRC3kTQQZ0Fr@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
-References: <20220712014957.4064879-1-Liam.Howlett@oracle.com>
+        Tue, 12 Jul 2022 07:53:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0B6AB6542
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:52:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657626723;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X6w0674s9ili7eArWVuDLnAMEL/ug8bcR3ZZcjz90CE=;
+        b=ftkTFSd6uoqAKsuawDclIPJwy8GUChX4PVBnPPm7A9sUKEjd9OfdRUO88LrAImUG6NnDe2
+        EDEoIKxDwDQjU/OstYTiSMuRPVzBhSJSk5G5gk1IqtAqXa22+x1CG3DJ+BXGMjA1rqfku+
+        LrhzZ70UdtEubXUL6XT9rdemfUndB3I=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-26-qC90wFv4NqiAKiGsSZJWtw-1; Tue, 12 Jul 2022 07:52:02 -0400
+X-MC-Unique: qC90wFv4NqiAKiGsSZJWtw-1
+Received: by mail-qt1-f198.google.com with SMTP id x10-20020ac8120a000000b0031ea260a047so6691412qti.6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:52:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=X6w0674s9ili7eArWVuDLnAMEL/ug8bcR3ZZcjz90CE=;
+        b=r9lMDiXvGvqmFmhm8q38YAKDmFkRFUxwqbNRO5K7h1EGz0IKgWTWbFRSb1oRKIK4EG
+         ZHbCnpXC0VT7qYOsl5Jle8HGatL45jBfM1fwmY3mK56blBzqufEkx9dTZs1DzH62B004
+         nfPFtMjupjFj1L7Trxy91c8z1GXT30hFJtwDE3BAiTaewmtFVAnqzQuYCvYao+4jZdSJ
+         LlP5sNgRi4eiQ1eyTIk4EHd8UzeV1CLpJLgC9MNtma2/2dx/9qQ6b5Mki9sA4a5G0mAA
+         N1xCoCQO0LJdmUV5I6e3I0xeNZT41Q3DCG4m7vqos8bsXP8SOglEkwtbLQY/NPLfIglr
+         Vgmw==
+X-Gm-Message-State: AJIora9L5Qj50g9Hgh9q2wO0asiHhkM3AmPXm7jOczRB2m/mlJCMbUGy
+        JiF+NGY9uzYTMQsQOVITgUUtSrMCpBJRb8fFfWuDsBVdrg6XJiQMYKoP/Hjrf62qdY2YX7Y/BYc
+        I+EOf/LzYFmk6Rb4aVUou93uu
+X-Received: by 2002:a05:620a:460d:b0:6b5:91f7:62e with SMTP id br13-20020a05620a460d00b006b591f7062emr4923484qkb.487.1657626722506;
+        Tue, 12 Jul 2022 04:52:02 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tOyzMnWtzjI+gxSVBLeO+oFjE5N8UcGZXyfPv0gM8p73Issnk6xlKMnd/qXHM9ma7lLPObww==
+X-Received: by 2002:a05:620a:460d:b0:6b5:91f7:62e with SMTP id br13-20020a05620a460d00b006b591f7062emr4923471qkb.487.1657626722298;
+        Tue, 12 Jul 2022 04:52:02 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id j9-20020ac85c49000000b0031eac31e630sm7443948qtj.49.2022.07.12.04.51.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 04:52:01 -0700 (PDT)
+Message-ID: <86803b99df343926b9dd4f4089fccd7efb04eb00.camel@redhat.com>
+Subject: Re: [PATCH v3 07/25] KVM: selftests: Add
+ ENCLS_EXITING_BITMAP{,HIGH} VMCS fields
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 14:51:58 +0300
+In-Reply-To: <20220708144223.610080-8-vkuznets@redhat.com>
+References: <20220708144223.610080-1-vkuznets@redhat.com>
+         <20220708144223.610080-8-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712014957.4064879-1-Liam.Howlett@oracle.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Vi4hISKwgqvCy_ExUULpejYe0BtN_1R2
-X-Proofpoint-ORIG-GUID: Vi4hISKwgqvCy_ExUULpejYe0BtN_1R2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- impostorscore=0 mlxlogscore=999 mlxscore=0 adultscore=0 lowpriorityscore=0
- spamscore=0 suspectscore=0 phishscore=0 clxscore=1015 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207120044
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 01:50:36AM +0000, Liam Howlett wrote:
-> When the possibilities of finding a gap are exhausted at the root node,
-> the error code was not returned which results in returning a range that
-> is currently occupied.  Add the necessary check for the error code and
-> return to the caller.
+On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
+> The updated Enlightened VMCS definition has 'encls_exiting_bitmap'
+> field which needs mapping to VMCS, add the missing encoding.
 > 
-> Reported-by: Alexander Gordeev <agordeev@linux.ibm.com>
-> Fixes: d0aac5e48048 (Maple Tree: add new data structure)
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@oracle.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  lib/maple_tree.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  tools/testing/selftests/kvm/include/x86_64/vmx.h | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> diff --git a/lib/maple_tree.c b/lib/maple_tree.c
-> index 9dc4ffff18d0..14e9ab14c1da 100644
-> --- a/lib/maple_tree.c
-> +++ b/lib/maple_tree.c
-> @@ -5287,6 +5287,9 @@ int mas_empty_area_rev(struct ma_state *mas, unsigned long min,
->  		}
->  	}
->  
-> +	if (mas_is_err(mas))
-> +		return xa_err(mas->node);
-> +
->  	if (unlikely(mas->offset == MAPLE_NODE_SLOTS))
->  		return -EBUSY;
+> diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+> index cc3604f8f1d3..5292d30fb7f2 100644
+> --- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
+> +++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+> @@ -208,6 +208,8 @@ enum vmcs_field {
+>  	VMWRITE_BITMAP_HIGH		= 0x00002029,
+>  	XSS_EXIT_BITMAP			= 0x0000202C,
+>  	XSS_EXIT_BITMAP_HIGH		= 0x0000202D,
+> +	ENCLS_EXITING_BITMAP		= 0x0000202E,
+> +	ENCLS_EXITING_BITMAP_HIGH	= 0x0000202F,
+>  	TSC_MULTIPLIER			= 0x00002032,
+>  	TSC_MULTIPLIER_HIGH		= 0x00002033,
+>  	GUEST_PHYSICAL_ADDRESS		= 0x00002400,
 
-Tested-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 
-Thanks!
+Best regards,
+	Maxim Levitsky
+
