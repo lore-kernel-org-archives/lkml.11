@@ -2,403 +2,543 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D45BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234368AbiGLS7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42058 "EHLO
+        id S235452AbiGLS7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234743AbiGLS6I (ORCPT
+        with ESMTP id S235047AbiGLS6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:58:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3807DE1A7;
-        Tue, 12 Jul 2022 11:47:38 -0700 (PDT)
+        Tue, 12 Jul 2022 14:58:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2C0EEAAF;
+        Tue, 12 Jul 2022 11:47:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D91D61257;
-        Tue, 12 Jul 2022 18:47:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4329C3411C;
-        Tue, 12 Jul 2022 18:47:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 7842ECE1D64;
+        Tue, 12 Jul 2022 18:47:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 557AAC3411C;
+        Tue, 12 Jul 2022 18:47:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651657;
-        bh=kOumfv4cnrb7mL+TRjkeoGH3L+rmrFx/2MxHhDuBKwQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=L8cahueLNcPI+Q2JFu/ygOsHelEz+cuWG16rcy8Td362oCRZwhuQFeBqBM6oUHS6o
-         oHQ/EpbLVS7Bh33Q01egWa50Rfy07ek2je1L0GQqKE9hmanjVWk8JLmPRnL1WWv3LF
-         u03dzb+wFfrLFGA2xQMcWd+kmmRNfCKymRx8EZFQ=
+        s=korg; t=1657651660;
+        bh=Hfq5JVWZFJFdYcdb6JNfttuai2OJpVRJehn57pDf2JQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uN8jj7YQ5Vj+OIrHbk1j0Adsg7lToj75H5D5MJDXkLyvAau9G9NhUQlXF1C18eTQl
+         iJt/JnltwW3ae2u1HM+3UhAmHzcg4KuRVH+MHAE2zSSZjHVw7+bx7XSwxcePai0xP0
+         AZ8rfiiqd4z1CMhDIzkfyIGRtBJxyr2pfirTX1pQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 5.15 00/78] 5.15.55-rc1 review
-Date:   Tue, 12 Jul 2022 20:38:30 +0200
-Message-Id: <20220712183238.844813653@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 08/78] objtool,x86: Replace alternatives with .retpoline_sites
+Date:   Tue, 12 Jul 2022 20:38:38 +0200
+Message-Id: <20220712183239.185468554@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-MIME-Version: 1.0
+In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
+References: <20220712183238.844813653@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.55-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-5.15.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 5.15.55-rc1
-X-KernelTest-Deadline: 2022-07-14T18:32+00:00
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 5.15.55 release.
-There are 78 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
-
-Responses should be made by Thu, 14 Jul 2022 18:32:19 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.55-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 5.15.55-rc1
-
-Thomas Gleixner <tglx@linutronix.de>
-    x86/static_call: Serialize __static_call_fixup() properly
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Disable RRSBA behavior
-
-Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-    x86/kexec: Disable RET on kexec
-
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-    x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/bugs: Add Cannon lake to RETBleed affected CPU list
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retbleed: Add fine grained Kconfig knobs
-
-Andrew Cooper <andrew.cooper3@citrix.com>
-    x86/cpu/amd: Enumerate BTC_NO
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/common: Stamp out the stepping madness
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Fill RSB on vmexit for IBRS
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    KVM: VMX: Fix IBRS handling after vmexit
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    KVM: VMX: Convert launched argument to flags
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    KVM: VMX: Flatten __vmx_vcpu_run()
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Remove x86_spec_ctrl_mask
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Fix SPEC_CTRL write on SMT state change
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Fix firmware entry SPEC_CTRL handling
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/cpu/amd: Add Spectral Chicken
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Add entry UNRET validation
-
-Josh Poimboeuf <jpoimboe@kernel.org>
-    x86/bugs: Do IBPB fallback check only once
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bugs: Add retbleed=ibpb
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/xen: Add UNTRAIN_RET
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/xen: Rename SYS* entry points
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Update Retpoline validation
-
-Peter Zijlstra <peterz@infradead.org>
-    intel_idle: Disable IBRS during long idle
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bugs: Report Intel retbleed vulnerability
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
-
-Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-    x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bugs: Optimize SPEC_CTRL MSR writes
-
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-    x86/entry: Add kernel IBRS implementation
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value
-
-Kim Phillips <kim.phillips@amd.com>
-    x86/bugs: Enable STIBP for JMP2RET
-
-Alexandre Chartre <alexandre.chartre@oracle.com>
-    x86/bugs: Add AMD retbleed= boot parameter
-
-Alexandre Chartre <alexandre.chartre@oracle.com>
-    x86/bugs: Report AMD retbleed vulnerability
-
-Peter Zijlstra <peterz@infradead.org>
-    x86: Add magic AMD return-thunk
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Treat .text.__x86.* as noinstr
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/entry: Avoid very early RET
-
-Peter Zijlstra <peterz@infradead.org>
-    x86: Use return-thunk in asm code
-
-Kim Phillips <kim.phillips@amd.com>
-    x86/sev: Avoid using __x86_return_thunk
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/vsyscall_emu/64: Don't use RET in vsyscall emulation
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/kvm: Fix SETcc emulation for return thunks
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/bpf: Use alternative RET encoding
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/ftrace: Use alternative RET encoding
-
-Peter Zijlstra <peterz@infradead.org>
-    x86,static_call: Use alternative RET encoding
-
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-    objtool: skip non-text sections when adding return-thunk sites
-
-Peter Zijlstra <peterz@infradead.org>
-    x86,objtool: Create .return_sites
-
-Peter Zijlstra <peterz@infradead.org>
-    x86: Undo return-thunk damage
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Use -mfunction-return
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Swizzle retpoline thunk
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Cleanup some #ifdefery
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/cpufeatures: Move RETPOLINE flags to word 11
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/kvm/vmx: Make noinstr clean
-
-Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-    x86/realmode: build with -D__DISABLE_EXPORTS
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/entry: Remove skip_r11rcx
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Default ignore INT3 for unreachable
-
-Peter Zijlstra <peterz@infradead.org>
-    bpf,x86: Respect X86_FEATURE_RETPOLINE*
-
-Peter Zijlstra <peterz@infradead.org>
-    bpf,x86: Simplify computing label offsets
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/alternative: Add debug prints to apply_retpolines()
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/alternative: Try inline spectre_v2=retpoline,amd
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/alternative: Handle Jcc __x86_indirect_thunk_\reg
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/alternative: Implement .retpoline_sites support
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Create a retpoline thunk array
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Move the retpoline thunk declarations to nospec-branch.h
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/asm: Fixup odd GEN-for-each-reg.h usage
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/asm: Fix register order
-
-Peter Zijlstra <peterz@infradead.org>
-    x86/retpoline: Remove unused replacement symbols
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Introduce CFI hash
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool,x86: Replace alternatives with .retpoline_sites
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Shrink struct instruction
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Explicitly avoid self modifying code in .altinstr_replacement
-
-Peter Zijlstra <peterz@infradead.org>
-    objtool: Classify symbols
-
-Lai Jiangshan <jiangshan.ljs@antgroup.com>
-    x86/entry: Don't call error_entry() for XENPV
-
-Lai Jiangshan <jiangshan.ljs@antgroup.com>
-    x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-
-Lai Jiangshan <jiangshan.ljs@antgroup.com>
-    x86/entry: Switch the stack after error_entry() returns
-
-Lai Jiangshan <jiangshan.ljs@antgroup.com>
-    x86/traps: Use pt_regs directly in fixup_bad_iret()
-
-
--------------
-
-Diffstat:
-
- Documentation/admin-guide/kernel-parameters.txt |  25 +
- Makefile                                        |  10 +-
- arch/um/kernel/um_arch.c                        |   4 +
- arch/x86/Kconfig                                | 103 +++-
- arch/x86/Makefile                               |   2 +-
- arch/x86/entry/Makefile                         |   2 +-
- arch/x86/entry/calling.h                        |  72 ++-
- arch/x86/entry/entry.S                          |  22 +
- arch/x86/entry/entry_32.S                       |   2 -
- arch/x86/entry/entry_64.S                       |  88 ++-
- arch/x86/entry/entry_64_compat.S                |  21 +-
- arch/x86/entry/vdso/Makefile                    |   1 +
- arch/x86/entry/vsyscall/vsyscall_emu_64.S       |   9 +-
- arch/x86/include/asm/GEN-for-each-reg.h         |  14 +-
- arch/x86/include/asm/alternative.h              |   2 +
- arch/x86/include/asm/asm-prototypes.h           |  18 -
- arch/x86/include/asm/cpufeatures.h              |  12 +-
- arch/x86/include/asm/disabled-features.h        |  21 +-
- arch/x86/include/asm/linkage.h                  |   8 +
- arch/x86/include/asm/msr-index.h                |  13 +
- arch/x86/include/asm/nospec-branch.h            | 133 ++---
- arch/x86/include/asm/static_call.h              |  17 +
- arch/x86/include/asm/traps.h                    |   2 +-
- arch/x86/include/asm/unwind_hints.h             |  14 +-
- arch/x86/kernel/alternative.c                   | 260 ++++++++-
- arch/x86/kernel/cpu/amd.c                       |  46 +-
- arch/x86/kernel/cpu/bugs.c                      | 475 +++++++++++++---
- arch/x86/kernel/cpu/common.c                    |  61 ++-
- arch/x86/kernel/cpu/cpu.h                       |   2 +
- arch/x86/kernel/cpu/hygon.c                     |   6 +
- arch/x86/kernel/cpu/scattered.c                 |   1 +
- arch/x86/kernel/ftrace.c                        |   7 +-
- arch/x86/kernel/head_64.S                       |   5 +
- arch/x86/kernel/module.c                        |  15 +-
- arch/x86/kernel/process.c                       |   2 +-
- arch/x86/kernel/relocate_kernel_32.S            |  25 +-
- arch/x86/kernel/relocate_kernel_64.S            |  23 +-
- arch/x86/kernel/static_call.c                   |  49 +-
- arch/x86/kernel/traps.c                         |  19 +-
- arch/x86/kernel/vmlinux.lds.S                   |  23 +-
- arch/x86/kvm/emulate.c                          |  26 +-
- arch/x86/kvm/svm/vmenter.S                      |  18 +
- arch/x86/kvm/vmx/nested.c                       |   2 +-
- arch/x86/kvm/vmx/run_flags.h                    |   8 +
- arch/x86/kvm/vmx/vmenter.S                      | 164 +++---
- arch/x86/kvm/vmx/vmx.c                          |  76 ++-
- arch/x86/kvm/vmx/vmx.h                          |   6 +-
- arch/x86/kvm/x86.c                              |   4 +-
- arch/x86/lib/memmove_64.S                       |   7 +-
- arch/x86/lib/retpoline.S                        | 133 +++--
- arch/x86/mm/mem_encrypt_boot.S                  |  10 +-
- arch/x86/net/bpf_jit_comp.c                     | 179 +++---
- arch/x86/net/bpf_jit_comp32.c                   |  22 +-
- arch/x86/xen/setup.c                            |   6 +-
- arch/x86/xen/xen-asm.S                          |  30 +-
- arch/x86/xen/xen-head.S                         |   1 +
- arch/x86/xen/xen-ops.h                          |   6 +-
- drivers/base/cpu.c                              |   8 +
- drivers/idle/intel_idle.c                       |  43 +-
- include/linux/cpu.h                             |   2 +
- include/linux/kvm_host.h                        |   2 +-
- include/linux/objtool.h                         |   9 +-
- scripts/Makefile.build                          |   1 +
- scripts/link-vmlinux.sh                         |   3 +
- security/Kconfig                                |  11 -
- tools/arch/x86/include/asm/msr-index.h          |   9 +
- tools/include/linux/objtool.h                   |   9 +-
- tools/objtool/arch/x86/decode.c                 | 145 +----
- tools/objtool/builtin-check.c                   |   4 +-
- tools/objtool/check.c                           | 701 ++++++++++++++++++++----
- tools/objtool/elf.c                             |  84 ---
- tools/objtool/include/objtool/arch.h            |   3 +-
- tools/objtool/include/objtool/builtin.h         |   2 +-
- tools/objtool/include/objtool/cfi.h             |   2 +
- tools/objtool/include/objtool/check.h           |  10 +-
- tools/objtool/include/objtool/elf.h             |   9 +-
- tools/objtool/include/objtool/objtool.h         |   1 +
- tools/objtool/objtool.c                         |   1 +
- tools/objtool/orc_gen.c                         |  15 +-
- tools/objtool/special.c                         |   8 -
- 80 files changed, 2470 insertions(+), 944 deletions(-)
+From: Peter Zijlstra <peterz@infradead.org>
+
+commit 134ab5bd1883312d7a4b3033b05c6b5a1bb8889b upstream.
+
+Instead of writing complete alternatives, simply provide a list of all
+the retpoline thunk calls. Then the kernel is free to do with them as
+it pleases. Simpler code all-round.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120309.850007165@infradead.org
+[cascardo: fixed conflict because of missing
+ 8b946cc38e063f0f7bb67789478c38f6d7d457c9]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/vmlinux.lds.S       |   14 +++
+ tools/objtool/arch/x86/decode.c     |  120 --------------------------------
+ tools/objtool/check.c               |  132 +++++++++++++++++++++++++-----------
+ tools/objtool/elf.c                 |   84 ----------------------
+ tools/objtool/include/objtool/elf.h |    1 
+ tools/objtool/special.c             |    8 --
+ 6 files changed, 107 insertions(+), 252 deletions(-)
+
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -272,6 +272,20 @@ SECTIONS
+ 		__parainstructions_end = .;
+ 	}
+ 
++#ifdef CONFIG_RETPOLINE
++	/*
++	 * List of instructions that call/jmp/jcc to retpoline thunks
++	 * __x86_indirect_thunk_*(). These instructions can be patched along
++	 * with alternatives, after which the section can be freed.
++	 */
++	. = ALIGN(8);
++	.retpoline_sites : AT(ADDR(.retpoline_sites) - LOAD_OFFSET) {
++		__retpoline_sites = .;
++		*(.retpoline_sites)
++		__retpoline_sites_end = .;
++	}
++#endif
++
+ 	/*
+ 	 * struct alt_inst entries. From the header (alternative.h):
+ 	 * "Alternative instructions for different CPU types or capabilities"
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -684,126 +684,6 @@ const char *arch_ret_insn(int len)
+ 	return ret[len-1];
+ }
+ 
+-/* asm/alternative.h ? */
+-
+-#define ALTINSTR_FLAG_INV	(1 << 15)
+-#define ALT_NOT(feat)		((feat) | ALTINSTR_FLAG_INV)
+-
+-struct alt_instr {
+-	s32 instr_offset;	/* original instruction */
+-	s32 repl_offset;	/* offset to replacement instruction */
+-	u16 cpuid;		/* cpuid bit set for replacement */
+-	u8  instrlen;		/* length of original instruction */
+-	u8  replacementlen;	/* length of new instruction */
+-} __packed;
+-
+-static int elf_add_alternative(struct elf *elf,
+-			       struct instruction *orig, struct symbol *sym,
+-			       int cpuid, u8 orig_len, u8 repl_len)
+-{
+-	const int size = sizeof(struct alt_instr);
+-	struct alt_instr *alt;
+-	struct section *sec;
+-	Elf_Scn *s;
+-
+-	sec = find_section_by_name(elf, ".altinstructions");
+-	if (!sec) {
+-		sec = elf_create_section(elf, ".altinstructions",
+-					 SHF_ALLOC, 0, 0);
+-
+-		if (!sec) {
+-			WARN_ELF("elf_create_section");
+-			return -1;
+-		}
+-	}
+-
+-	s = elf_getscn(elf->elf, sec->idx);
+-	if (!s) {
+-		WARN_ELF("elf_getscn");
+-		return -1;
+-	}
+-
+-	sec->data = elf_newdata(s);
+-	if (!sec->data) {
+-		WARN_ELF("elf_newdata");
+-		return -1;
+-	}
+-
+-	sec->data->d_size = size;
+-	sec->data->d_align = 1;
+-
+-	alt = sec->data->d_buf = malloc(size);
+-	if (!sec->data->d_buf) {
+-		perror("malloc");
+-		return -1;
+-	}
+-	memset(sec->data->d_buf, 0, size);
+-
+-	if (elf_add_reloc_to_insn(elf, sec, sec->sh.sh_size,
+-				  R_X86_64_PC32, orig->sec, orig->offset)) {
+-		WARN("elf_create_reloc: alt_instr::instr_offset");
+-		return -1;
+-	}
+-
+-	if (elf_add_reloc(elf, sec, sec->sh.sh_size + 4,
+-			  R_X86_64_PC32, sym, 0)) {
+-		WARN("elf_create_reloc: alt_instr::repl_offset");
+-		return -1;
+-	}
+-
+-	alt->cpuid = bswap_if_needed(cpuid);
+-	alt->instrlen = orig_len;
+-	alt->replacementlen = repl_len;
+-
+-	sec->sh.sh_size += size;
+-	sec->changed = true;
+-
+-	return 0;
+-}
+-
+-#define X86_FEATURE_RETPOLINE                ( 7*32+12)
+-
+-int arch_rewrite_retpolines(struct objtool_file *file)
+-{
+-	struct instruction *insn;
+-	struct reloc *reloc;
+-	struct symbol *sym;
+-	char name[32] = "";
+-
+-	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
+-
+-		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC)
+-			continue;
+-
+-		if (!strcmp(insn->sec->name, ".text.__x86.indirect_thunk"))
+-			continue;
+-
+-		reloc = insn->reloc;
+-
+-		sprintf(name, "__x86_indirect_alt_%s_%s",
+-			insn->type == INSN_JUMP_DYNAMIC ? "jmp" : "call",
+-			reloc->sym->name + 21);
+-
+-		sym = find_symbol_by_name(file->elf, name);
+-		if (!sym) {
+-			sym = elf_create_undef_symbol(file->elf, name);
+-			if (!sym) {
+-				WARN("elf_create_undef_symbol");
+-				return -1;
+-			}
+-		}
+-
+-		if (elf_add_alternative(file->elf, insn, sym,
+-					ALT_NOT(X86_FEATURE_RETPOLINE), 5, 5)) {
+-			WARN("elf_add_alternative");
+-			return -1;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+ int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg)
+ {
+ 	struct cfi_reg *cfa = &insn->cfi.cfa;
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -533,6 +533,52 @@ static int create_static_call_sections(s
+ 	return 0;
+ }
+ 
++static int create_retpoline_sites_sections(struct objtool_file *file)
++{
++	struct instruction *insn;
++	struct section *sec;
++	int idx;
++
++	sec = find_section_by_name(file->elf, ".retpoline_sites");
++	if (sec) {
++		WARN("file already has .retpoline_sites, skipping");
++		return 0;
++	}
++
++	idx = 0;
++	list_for_each_entry(insn, &file->retpoline_call_list, call_node)
++		idx++;
++
++	if (!idx)
++		return 0;
++
++	sec = elf_create_section(file->elf, ".retpoline_sites", 0,
++				 sizeof(int), idx);
++	if (!sec) {
++		WARN("elf_create_section: .retpoline_sites");
++		return -1;
++	}
++
++	idx = 0;
++	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
++
++		int *site = (int *)sec->data->d_buf + idx;
++		*site = 0;
++
++		if (elf_add_reloc_to_insn(file->elf, sec,
++					  idx * sizeof(int),
++					  R_X86_64_PC32,
++					  insn->sec, insn->offset)) {
++			WARN("elf_add_reloc_to_insn: .retpoline_sites");
++			return -1;
++		}
++
++		idx++;
++	}
++
++	return 0;
++}
++
+ static int create_mcount_loc_sections(struct objtool_file *file)
+ {
+ 	struct section *sec;
+@@ -863,6 +909,11 @@ static void annotate_call_site(struct ob
+ 		return;
+ 	}
+ 
++	if (sym->retpoline_thunk) {
++		list_add_tail(&insn->call_node, &file->retpoline_call_list);
++		return;
++	}
++
+ 	/*
+ 	 * Many compilers cannot disable KCOV with a function attribute
+ 	 * so they need a little help, NOP out any KCOV calls from noinstr
+@@ -933,6 +984,39 @@ static void add_call_dest(struct objtool
+ 	annotate_call_site(file, insn, sibling);
+ }
+ 
++static void add_retpoline_call(struct objtool_file *file, struct instruction *insn)
++{
++	/*
++	 * Retpoline calls/jumps are really dynamic calls/jumps in disguise,
++	 * so convert them accordingly.
++	 */
++	switch (insn->type) {
++	case INSN_CALL:
++		insn->type = INSN_CALL_DYNAMIC;
++		break;
++	case INSN_JUMP_UNCONDITIONAL:
++		insn->type = INSN_JUMP_DYNAMIC;
++		break;
++	case INSN_JUMP_CONDITIONAL:
++		insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
++		break;
++	default:
++		return;
++	}
++
++	insn->retpoline_safe = true;
++
++	/*
++	 * Whatever stack impact regular CALLs have, should be undone
++	 * by the RETURN of the called function.
++	 *
++	 * Annotated intra-function calls retain the stack_ops but
++	 * are converted to JUMP, see read_intra_function_calls().
++	 */
++	remove_insn_ops(insn);
++
++	annotate_call_site(file, insn, false);
++}
+ /*
+  * Find the destination instructions for all jumps.
+  */
+@@ -955,19 +1039,7 @@ static int add_jump_destinations(struct
+ 			dest_sec = reloc->sym->sec;
+ 			dest_off = arch_dest_reloc_offset(reloc->addend);
+ 		} else if (reloc->sym->retpoline_thunk) {
+-			/*
+-			 * Retpoline jumps are really dynamic jumps in
+-			 * disguise, so convert them accordingly.
+-			 */
+-			if (insn->type == INSN_JUMP_UNCONDITIONAL)
+-				insn->type = INSN_JUMP_DYNAMIC;
+-			else
+-				insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
+-
+-			list_add_tail(&insn->call_node,
+-				      &file->retpoline_call_list);
+-
+-			insn->retpoline_safe = true;
++			add_retpoline_call(file, insn);
+ 			continue;
+ 		} else if (insn->func) {
+ 			/* internal or external sibling call (with reloc) */
+@@ -1096,18 +1168,7 @@ static int add_call_destinations(struct
+ 			add_call_dest(file, insn, dest, false);
+ 
+ 		} else if (reloc->sym->retpoline_thunk) {
+-			/*
+-			 * Retpoline calls are really dynamic calls in
+-			 * disguise, so convert them accordingly.
+-			 */
+-			insn->type = INSN_CALL_DYNAMIC;
+-			insn->retpoline_safe = true;
+-
+-			list_add_tail(&insn->call_node,
+-				      &file->retpoline_call_list);
+-
+-			remove_insn_ops(insn);
+-			continue;
++			add_retpoline_call(file, insn);
+ 
+ 		} else
+ 			add_call_dest(file, insn, reloc->sym, false);
+@@ -1833,11 +1894,6 @@ static void mark_rodata(struct objtool_f
+ 	file->rodata = found;
+ }
+ 
+-__weak int arch_rewrite_retpolines(struct objtool_file *file)
+-{
+-	return 0;
+-}
+-
+ static int decode_sections(struct objtool_file *file)
+ {
+ 	int ret;
+@@ -1906,15 +1962,6 @@ static int decode_sections(struct objtoo
+ 	if (ret)
+ 		return ret;
+ 
+-	/*
+-	 * Must be after add_special_section_alts(), since this will emit
+-	 * alternatives. Must be after add_{jump,call}_destination(), since
+-	 * those create the call insn lists.
+-	 */
+-	ret = arch_rewrite_retpolines(file);
+-	if (ret)
+-		return ret;
+-
+ 	return 0;
+ }
+ 
+@@ -3252,6 +3299,13 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	warnings += ret;
+ 
++	if (retpoline) {
++		ret = create_retpoline_sites_sections(file);
++		if (ret < 0)
++			goto out;
++		warnings += ret;
++	}
++
+ 	if (mcount) {
+ 		ret = create_mcount_loc_sections(file);
+ 		if (ret < 0)
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -944,90 +944,6 @@ static int elf_add_string(struct elf *el
+ 	return len;
+ }
+ 
+-struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name)
+-{
+-	struct section *symtab, *symtab_shndx;
+-	struct symbol *sym;
+-	Elf_Data *data;
+-	Elf_Scn *s;
+-
+-	sym = malloc(sizeof(*sym));
+-	if (!sym) {
+-		perror("malloc");
+-		return NULL;
+-	}
+-	memset(sym, 0, sizeof(*sym));
+-
+-	sym->name = strdup(name);
+-
+-	sym->sym.st_name = elf_add_string(elf, NULL, sym->name);
+-	if (sym->sym.st_name == -1)
+-		return NULL;
+-
+-	sym->sym.st_info = GELF_ST_INFO(STB_GLOBAL, STT_NOTYPE);
+-	// st_other 0
+-	// st_shndx 0
+-	// st_value 0
+-	// st_size 0
+-
+-	symtab = find_section_by_name(elf, ".symtab");
+-	if (!symtab) {
+-		WARN("can't find .symtab");
+-		return NULL;
+-	}
+-
+-	s = elf_getscn(elf->elf, symtab->idx);
+-	if (!s) {
+-		WARN_ELF("elf_getscn");
+-		return NULL;
+-	}
+-
+-	data = elf_newdata(s);
+-	if (!data) {
+-		WARN_ELF("elf_newdata");
+-		return NULL;
+-	}
+-
+-	data->d_buf = &sym->sym;
+-	data->d_size = sizeof(sym->sym);
+-	data->d_align = 1;
+-	data->d_type = ELF_T_SYM;
+-
+-	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
+-
+-	symtab->sh.sh_size += data->d_size;
+-	symtab->changed = true;
+-
+-	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
+-	if (symtab_shndx) {
+-		s = elf_getscn(elf->elf, symtab_shndx->idx);
+-		if (!s) {
+-			WARN_ELF("elf_getscn");
+-			return NULL;
+-		}
+-
+-		data = elf_newdata(s);
+-		if (!data) {
+-			WARN_ELF("elf_newdata");
+-			return NULL;
+-		}
+-
+-		data->d_buf = &sym->sym.st_size; /* conveniently 0 */
+-		data->d_size = sizeof(Elf32_Word);
+-		data->d_align = 4;
+-		data->d_type = ELF_T_WORD;
+-
+-		symtab_shndx->sh.sh_size += 4;
+-		symtab_shndx->changed = true;
+-	}
+-
+-	sym->sec = find_section_by_index(elf, 0);
+-
+-	elf_add_symbol(elf, sym);
+-
+-	return sym;
+-}
+-
+ struct section *elf_create_section(struct elf *elf, const char *name,
+ 				   unsigned int sh_flags, size_t entsize, int nr)
+ {
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -143,7 +143,6 @@ int elf_write_insn(struct elf *elf, stru
+ 		   unsigned long offset, unsigned int len,
+ 		   const char *insn);
+ int elf_write_reloc(struct elf *elf, struct reloc *reloc);
+-struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name);
+ int elf_write(struct elf *elf);
+ void elf_close(struct elf *elf);
+ 
+--- a/tools/objtool/special.c
++++ b/tools/objtool/special.c
+@@ -109,14 +109,6 @@ static int get_alt_entry(struct elf *elf
+ 			return -1;
+ 		}
+ 
+-		/*
+-		 * Skip retpoline .altinstr_replacement... we already rewrite the
+-		 * instructions for retpolines anyway, see arch_is_retpoline()
+-		 * usage in add_{call,jump}_destinations().
+-		 */
+-		if (arch_is_retpoline(new_reloc->sym))
+-			return 1;
+-
+ 		reloc_to_sec_off(new_reloc, &alt->new_sec, &alt->new_off);
+ 
+ 		/* _ASM_EXTABLE_EX hack */
 
 
