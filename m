@@ -2,91 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3D6CCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233235AbiGLW3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 18:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44088 "EHLO
+        id S233512AbiGLW3p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 18:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229729AbiGLW3i (ORCPT
+        with ESMTP id S231600AbiGLW3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 18:29:38 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2756B851C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657664977; x=1689200977;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hIf7JOETL3U4PW1pZpGI4ivM/hW8aQW0YEe0B/6Lg6w=;
-  b=cma37gSPgIbq/+x9Wp8TAG3Y9izmGWVlD1EMx+R7euc/xhvQxkIItwgw
-   uujpUYGPLO9az1LyWY4vwOczSdEwrCfvbaxuafu2Tb0FvwGMDqizC4tXq
-   7fCpSxVoyX54bFUXbxdR4uAZvU+0a+RyXttLZ+GshsQMdjxfWZITYJ/e9
-   Ip8OAHl3ZJNjy1ZcTsX5lgPlbxALUmaJ3Ged4PfpUf2S49BC01lKNgLWl
-   0J9nRc0t7N3AR65oz4hJYK8HlLw7Z9aCZpha/JFnhBlAjtqmoqNriqQy2
-   mmhlASNYdHsc73SteNwbmEDqYUUSTG9fZTs/ZYMt+zsUkNuv1zJ2JnlRF
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="268094713"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="268094713"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 15:29:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="737646505"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 12 Jul 2022 15:29:35 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBONq-0002kR-Sm;
-        Tue, 12 Jul 2022 22:29:34 +0000
-Date:   Wed, 13 Jul 2022 06:29:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>
-Cc:     Paul Gazzillo <paul@pgazz.com>,
-        Necip Fazil Yildiran <fazilyildiran@gmail.com>,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Hector Martin <marcan@marcan.st>
-Subject: [asahilinux:bits/070-audio 3/20] kismet: WARNING: unmet direct
- dependencies detected for APPLE_ADMAC when selected by SND_SOC_APPLE_MCA
-Message-ID: <202207130614.AspjDmES-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Tue, 12 Jul 2022 18:29:40 -0400
+Received: from mail-il1-f177.google.com (mail-il1-f177.google.com [209.85.166.177])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C905CBB7C5;
+        Tue, 12 Jul 2022 15:29:38 -0700 (PDT)
+Received: by mail-il1-f177.google.com with SMTP id a12so5702141ilp.13;
+        Tue, 12 Jul 2022 15:29:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=U+O3UQuvrvrntFqlfRAKrW204ra9jF/x0VyVbWf6pwM=;
+        b=yAimlVxHZaeqM/dbODsnvK2a6RH3oEYVyu+ZwQqNUPn0FMz9WLvX1vhV5ODgUlSA8A
+         uyJdX5MXlk8E+m1TlOLjoqBJzFwR0htJ3CtW4tD2uFOLr52NIc1fhCupMQbGk7X0zU9v
+         R5gZPQnrswl0NhzlqxaoilKrNnJwGP0Vp76il+0p9tN4WbprSC86i+I1wpT8vxsx17W9
+         jEGKUCq1Iub0s3L8/eKv15IXG1gqhUqSVf9UP9JakQM3epMRgNz6/3Ktc91TSaC9D4xZ
+         sH90Rzq11/Fzn8mS5AE85Hh1UefDJpmeMxP7JRxCyeUKC0q+q9tn+rFCupKeuFFOWT95
+         8+8Q==
+X-Gm-Message-State: AJIora8UtsyYX8SBv/kL0urzikwVvaw72EkjmCLru3CSySmWkxquniM/
+        dr3wncNXguv6V3ZE1Hcgzw==
+X-Google-Smtp-Source: AGRyM1vzqJULwIdhRWBsK+4KRBHFMl1w3TlwQ3/TXmQ1gQ8Clp03fp2vjiMRSHmdvjYLtdm5y+Gj/w==
+X-Received: by 2002:a05:6e02:1291:b0:2dc:2936:8da0 with SMTP id y17-20020a056e02129100b002dc29368da0mr223462ilq.283.1657664978022;
+        Tue, 12 Jul 2022 15:29:38 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m15-20020a924b0f000000b002dc7bfe144dsm2767995ilg.84.2022.07.12.15.29.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 15:29:37 -0700 (PDT)
+Received: (nullmailer pid 2476653 invoked by uid 1000);
+        Tue, 12 Jul 2022 22:29:35 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Sergiu Moga <sergiu.moga@microchip.com>
+Cc:     krzysztof.kozlowski+dt@linaro.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, tudor.ambarus@microchip.com,
+        devicetree@vger.kernel.org, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, linux-spi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        UNGLinuxDriver@microchip.com, Kavyasree.Kotagiri@microchip.com,
+        alexandre.belloni@bootlin.com, broonie@kernel.org
+In-Reply-To: <20220712162554.148741-1-sergiu.moga@microchip.com>
+References: <20220712162554.148741-1-sergiu.moga@microchip.com>
+Subject: Re: [PATCH v3] spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema
+Date:   Tue, 12 Jul 2022 16:29:35 -0600
+Message-Id: <1657664975.846030.2476652.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/AsahiLinux/linux bits/070-audio
-head:   55bc86786332628db127357b98246a6731108679
-commit: 50833b1f649b754c7dc6af363080f758ffb76329 [3/20] ASoC: apple-mca: Add platform driver for Apple SoCs
-config: (https://download.01.org/0day-ci/archive/20220713/202207130614.AspjDmES-lkp@intel.com/config)
-reproduce:
-        # https://github.com/AsahiLinux/linux/commit/50833b1f649b754c7dc6af363080f758ffb76329
-        git remote add asahilinux https://github.com/AsahiLinux/linux
-        git fetch --no-tags asahilinux bits/070-audio
-        git checkout 50833b1f649b754c7dc6af363080f758ffb76329
-        # 1. reproduce by kismet
-           # install kmax per https://github.com/paulgazz/kmax/blob/master/README.md
-           kismet --linux-ksrc=linux --selectees CONFIG_APPLE_ADMAC --selectors CONFIG_SND_SOC_APPLE_MCA -a=arm64
-        # 2. reproduce by make
-           # save the config file to linux source tree
-           cd linux
-           make ARCH=arm64 olddefconfig
+On Tue, 12 Jul 2022 19:25:55 +0300, Sergiu Moga wrote:
+> Convert SPI DT binding for Atmel/Microchip SoCs to json-schema.
+> 
+> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+> 
+> v1 -> v2:
+> - change subject headline prefix from "dt-bindings: spi" to "spi: atmel"
+> - change maintainer
+> - kept the compatbile as items (instead of switching to enums) and at91rm9200
+> as fallback for sam9x60, since the evolution of IP's is incremental.
+> - removed unnecessay "cs-gpios" property and descriptions
+> - added min/max for fifo-size property.
+> 
+> 
+> v2 -> v3:
+> - change subject headline prefix from "spi: atmel" to
+> "spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema"
+> - use enum instead of a range for "atmel,fifo-size"
+> 
+> 
+>  .../bindings/spi/atmel,at91rm9200-spi.yaml    | 76 +++++++++++++++++++
+>  .../devicetree/bindings/spi/spi_atmel.txt     | 36 ---------
+>  2 files changed, 76 insertions(+), 36 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
+> 
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
+yamllint warnings/errors:
 
-kismet warnings: (new ones prefixed by >>)
->> kismet: WARNING: unmet direct dependencies detected for APPLE_ADMAC when selected by SND_SOC_APPLE_MCA
-   
-   WARNING: unmet direct dependencies detected for APPLE_ADMAC
-     Depends on [n]: DMADEVICES [=n] && (ARCH_APPLE [=y] || COMPILE_TEST [=n])
-     Selected by [y]:
-     - SND_SOC_APPLE_MCA [=y] && SOUND [=y] && !UML && SND [=y] && SND_SOC [=y] && (ARCH_APPLE [=y] || COMPILE_TEST [=n])
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml: properties:enum: [16, 32] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+./Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/spi/atmel,at91rm9200-spi.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml: ignoring, error in schema: properties: enum
+Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.example.dtb:0:0: /example-0/spi@fffcc000: failed to match any schema with compatible: ['atmel,at91rm9200-spi']
+Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.example.dtb:0:0: /example-0/spi@fffcc000/mmc@0: failed to match any schema with compatible: ['mmc-spi-slot']
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
