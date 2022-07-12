@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B697C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37843C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234641AbiGLS4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
+        id S234726AbiGLS4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234313AbiGLS4U (ORCPT
+        with ESMTP id S234521AbiGLS4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:56:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFB0EB012;
-        Tue, 12 Jul 2022 11:46:41 -0700 (PDT)
+        Tue, 12 Jul 2022 14:56:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD94EB03B;
+        Tue, 12 Jul 2022 11:46:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E044B81BAB;
-        Tue, 12 Jul 2022 18:46:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7F68C3411C;
-        Tue, 12 Jul 2022 18:46:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E748560A5A;
+        Tue, 12 Jul 2022 18:46:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D70F4C3411C;
+        Tue, 12 Jul 2022 18:46:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651599;
-        bh=o4/srVdodmfnh4pywnFMEK+V/2gNOqg0RGT2S3PRrWE=;
+        s=korg; t=1657651602;
+        bh=MwuU+xseDp9KXWFIrzDY8KulQryfkv/g26Hg1/eETvA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RjJHVxIYeCo2HNvtzcE5Tlt+IOpdlWF0Uo1+JNxC+o/XEohiYCrPapL2LDA+L1rD0
-         RSoCGwhE6ErMAHJ7RoAyyfWLY6utB7n4w7HPQ7oseBPM1USJQD/KlFP34+Toko9wOS
-         Ej8zVg1Vy0xeVTptHG+u20WD21e7flpuWzDyXH2E=
+        b=tzctrIWzScPD9gGHbJWX0AlVLH+GYPGBRDQbsf22kJoobP1T7XYpLWKpm/lThR9fT
+         D1t3aLs5hDkLeEUMQuPOc2hp4K1n55pXpafonV1cT6CY/Q4hz5KONGcMY0O6FEvNTX
+         DYA1gSkLJ27jFT0+12t4CRlRQmceERt5ryjHMp5w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Borislav Petkov <bp@suse.de>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 126/130] x86/bugs: Add Cannon lake to RETBleed affected CPU list
-Date:   Tue, 12 Jul 2022 20:39:32 +0200
-Message-Id: <20220712183252.279724350@linuxfoundation.org>
+Subject: [PATCH 5.10 127/130] x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
+Date:   Tue, 12 Jul 2022 20:39:33 +0200
+Message-Id: <20220712183252.325226631@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,30 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit f54d45372c6ac9c993451de5e51312485f7d10bc upstream.
+commit 2259da159fbe5dba8ac00b560cf00b6a6537fa18 upstream.
 
-Cannon lake is also affected by RETBleed, add it to the list.
+There are some VM configurations which have Skylake model but do not
+support IBPB. In those cases, when using retbleed=ibpb, userspace is going
+to be killed and kernel is going to panic.
 
-Fixes: 6ad0ad2bf8a6 ("x86/bugs: Report Intel retbleed vulnerability")
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+If the CPU does not support IBPB, warn and proceed with the auto option. Also,
+do not fallback to IBPB on AMD/Hygon systems if it is not supported.
+
+Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/common.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/kernel/cpu/bugs.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1129,6 +1129,7 @@ static const struct x86_cpu_id cpu_vuln_
- 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
-+	VULNBL_INTEL_STEPPINGS(CANNONLAKE_L,	X86_STEPPING_ANY,		RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPING_ANY,		MMIO),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPING_ANY,		MMIO),
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -821,7 +821,10 @@ static void __init retbleed_select_mitig
+ 		break;
+ 
+ 	case RETBLEED_CMD_IBPB:
+-		if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
++		if (!boot_cpu_has(X86_FEATURE_IBPB)) {
++			pr_err("WARNING: CPU does not support IBPB.\n");
++			goto do_cmd_auto;
++		} else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
+ 			retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		} else {
+ 			pr_err("WARNING: kernel not compiled with CPU_IBPB_ENTRY.\n");
+@@ -836,7 +839,7 @@ do_cmd_auto:
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+ 			if (IS_ENABLED(CONFIG_CPU_UNRET_ENTRY))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY))
++			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY) && boot_cpu_has(X86_FEATURE_IBPB))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		}
+ 
 
 
