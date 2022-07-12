@@ -2,196 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CAEAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232561AbiGLJjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60486 "EHLO
+        id S232319AbiGLJis (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 05:38:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232467AbiGLJiy (ORCPT
+        with ESMTP id S229628AbiGLJiF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:38:54 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13EC2644
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:38:52 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id p6so6408184ljc.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:38:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DPmmhi+2J1rxKC4UbiQ/cFtEMBdLVlyhY+s/IdsukL0=;
-        b=Gh3DmoyEfQ/kog6KzHV6sC/jLz88DNk+G8JpIZFTDJfrqZu2ZFpy8kJhfvW5pZDwNp
-         6pgPlBNjjCn/Tk+L35mpODgdbYUXDBm4W2UpqNRhfMuVXdEfHOQap2hyqnvgnPl9Rv59
-         xrcieOWOfa+DPq76bL5fE5+gX6dREG7jjJY/fwgl3yHr+G+/peSzHtXN7MJgAKaY1qv7
-         pXuHWua24lARqSOa6xuzXuPxPfeltvG6ji7abBeocfrdnkntNAa5Wdec1Bg08HFnm25K
-         3qfXsBfmQ+k/VJTcnbEtLrZRk8YGeZEqTDY3EY9UXLFnCdv82/gc2xxRS5IHLz/kN+Wu
-         DBrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DPmmhi+2J1rxKC4UbiQ/cFtEMBdLVlyhY+s/IdsukL0=;
-        b=OTTEzoIJe/Q/nrjbaO4yIa5Ud1FzH/eZRkbflku7AD9ML4HuFOr3yUAhOT907EvJTQ
-         MCQ67mUNlGMN27UwJBNhg8pqEZvxGhOuAAP/SsCrBMUduvJO2bR+C3m8x6kKYc5e1973
-         7aZ9zzgMxMMHoF0CqgEb08jaz1JRQIP/EANKEVOIkxf4AuY+f8fbXynZy9ve5KKgzFXH
-         OP2fTz7NhiiKNwU6g9sgJotZbD4ku/pWipyLx2JB6HrOYxAy9AdIz4Pz3zjWi3Rj78JQ
-         yDfTsgR3pUL9863ZHX+KF9C8pgt4x2oDpMim8ZezR0jIA24dXVfdeQDGtlP/0rSoY352
-         J46g==
-X-Gm-Message-State: AJIora/O3mkmdfAgaT2nV9W50o9kLcRmEwdAS26/ZN6LvudSpt8EskcE
-        moVl9Sh+y4JBV2rzNSdPsA7q1w==
-X-Google-Smtp-Source: AGRyM1tchxD7VKZTXRAYOEvY2VFhTArisZH6aNEblZI+hYGxn8HJ7tYZDZ9eGchgeZadyJEiJhI9HA==
-X-Received: by 2002:a2e:131a:0:b0:25d:68eb:cf6 with SMTP id 26-20020a2e131a000000b0025d68eb0cf6mr6071967ljt.267.1657618731025;
-        Tue, 12 Jul 2022 02:38:51 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id q18-20020a056512211200b00489db87cb7csm1362314lfr.280.2022.07.12.02.38.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 02:38:50 -0700 (PDT)
-Message-ID: <a281de26-0900-94b1-c139-f7af27a57d42@linaro.org>
-Date:   Tue, 12 Jul 2022 11:38:47 +0200
+        Tue, 12 Jul 2022 05:38:05 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D543666ACE;
+        Tue, 12 Jul 2022 02:37:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1657618653; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=XOK5i+BNpDgcX1BYMZe2LaCKoK0yyKdgVeb0O1DjcKKiddv3nOBUXD6X8d2jH/haPjYm+zOFbgFTa8gSlybnnE3jsvf7w4zMNGPwMJ9EUB45DEnfa4y5NNQalHlhbNacI5/9hbZ2T2nyzZcB4vaP+iPNZb3ZUvjmeEhkWhKd92c=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1657618653; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=+8NaXtyVZremBRcm+Cxpd7Fd0peEWVZxSFKa1EJngXk=; 
+        b=mHbW9OMt/4UEU28Cd4c9GOK9Asqyy1CyAcuJW42NCvKXWSTLXwdZejIGSHhBDImLNwheR10dC55pq69xeRVhrUwZ6vxNPbWoD8mJGatqDFVf4zwqSj6RjX40RD1ft56FTQdfR7+ZW76ltuqUEEI3Qp2mUc4iNcSkv3+U720/Pso=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657618653;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=+8NaXtyVZremBRcm+Cxpd7Fd0peEWVZxSFKa1EJngXk=;
+        b=H5IGUqO4IVFVuUCjLMknbc3MO6YG+adVYmsFVqcDTH0JMmZ7OyXW14ekFNhJLhVh
+        BMUA0g+QzWyPoCJQ2KtjdBA8YOLwZDgiQBZEM8MPJzYMlz7qr7ahAElKSdq11iCOMp3
+        2dmkFOe7wvRbLO9DCYXlP0Cr+Nmr4fybEsATpjmw=
+Received: from edelgard.icenowy.me (59.41.160.3 [59.41.160.3]) by mx.zohomail.com
+        with SMTPS id 1657618651670659.3452916221531; Tue, 12 Jul 2022 02:37:31 -0700 (PDT)
+Message-ID: <7a947683de71e68a0925cfd4cab80238c3a03205.camel@icenowy.me>
+Subject: Re: [PATCH v2 2/3] pinctrl: sunxi: add support for R329 CPUX pin
+ controller
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        linux-sunxi@lists.linux.dev,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Date:   Tue, 12 Jul 2022 17:37:14 +0800
+In-Reply-To: <CAHp75Vdso_PGUomjmKaF1ytdUe4qLeAbpwkNmcRng9aNHs7g8w@mail.gmail.com>
+References: <20220710081853.1699028-1-uwu@icenowy.me>
+         <20220710081853.1699028-3-uwu@icenowy.me>
+         <CAHp75Vdso_PGUomjmKaF1ytdUe4qLeAbpwkNmcRng9aNHs7g8w@mail.gmail.com>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v16 2/3] dt-bindings: usb: Add analogix anx7411 PD binding
-Content-Language: en-US
-To:     Xin Ji <xji@analogixsemi.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, Rob Herring <robh@kernel.org>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220712090534.2783494-1-xji@analogixsemi.com>
- <20220712090534.2783494-2-xji@analogixsemi.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220712090534.2783494-2-xji@analogixsemi.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 11:05, Xin Ji wrote:
-> Add analogix PD chip anx7411 device binding
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> 
-> ---
-> v13 -> v14 :
->     1. Fix Robot compile error. Fix node name not correct.
+=E5=9C=A8 2022-07-10=E6=98=9F=E6=9C=9F=E6=97=A5=E7=9A=84 21:06 +0200=EF=BC=
+=8CAndy Shevchenko=E5=86=99=E9=81=93=EF=BC=9A
+> On Sun, Jul 10, 2022 at 10:22 AM Icenowy Zheng <uwu@icenowy.me>
+> wrote:
+> >=20
+> > Allwinner R329 SoC has two pin controllers similar to ones on
+> > previous
+> > SoCs, one in CPUX power domain and another in CPUS.
+> >=20
+> > This patch adds support for the CPUX domain pin controller.
+>=20
+> ...
+>=20
+> > +#include <linux/module.h>
+> > +#include <linux/platform_device.h>
+>=20
+> > +#include <linux/of.h>
+> > +#include <linux/of_device.h>
+>=20
+> No use of these.
+>=20
+> > +#include <linux/pinctrl/pinctrl.h>
+>=20
+> Missed headers:
+> mod_devicetable.h
 
-Node name is still not correct.
+Thanks for these.
 
->     2. Change HEX to lowercase.
->     3. Use "ports" property.
-> v12 -> v13 :
->     1. Drop the quotes for "$id" and "$schema"
->     2. Remove "allOf" label
->     3. Change node name from "i2c1" to "i2c"
->     4. Change node name from "typec" to "usb-typec"
-> 
-> Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> ---
->  .../bindings/usb/analogix,anx7411.yaml        | 81 +++++++++++++++++++
->  1 file changed, 81 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-> new file mode 100644
-> index 000000000000..bbd071ba338f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-> @@ -0,0 +1,81 @@
-> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/usb/analogix,anx7411.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analogix ANX7411 Type-C controller bindings
-> +
-> +maintainers:
-> +  - Xin Ji <xji@analogixsemi.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - analogix,anx7411
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  connector:
-> +    type: object
-> +    $ref: ../connector/usb-connector.yaml
-> +    description:
-> +      Properties for usb c connector.
-> +
-> +    properties:
-> +      compatible:
-> +        const: usb-c-connector
-> +
-> +      power-role: true
-> +
-> +      data-role: true
-> +
-> +      try-power-role: true
-> +
-> +    required:
-> +      - compatible
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - connector
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        anx7411@2c {
+In addition, how to decide what header should be included? The code
+works properly because of_device.h includes mod_devicetable.h.
 
-Use generic node name:
-https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
-
-> +            compatible = "analogix,anx7411";
-> +            reg = <0x2c>;
-> +            interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
-> +            interrupt-parent = <&gpio0>;
-> +
-> +            typec_con: connector {
-> +                compatible = "usb-c-connector";
-> +                power-role = "dual";
-> +                data-role = "dual";
-> +                try-power-role = "source";
-> +
-> +                ports {
-> +                    #address-cells = <1>;
-> +                    #size-cells = <0>;
-> +                    port@0 {
-> +                        reg = <0>;
-> +                        typec_con_ep: endpoint {
-> +                            remote-endpoint = <&usbotg_hs_ep>;
-> +                        };
-> +                    };
-> +                };
-> +            };
-> +        };
-> +    };
-> +...
+>=20
+> > +#include "pinctrl-sunxi.h"
+>=20
 
 
-Best regards,
-Krzysztof
