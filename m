@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84FDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 415BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233287AbiGLPDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
+        id S233929AbiGLPDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233877AbiGLPCn (ORCPT
+        with ESMTP id S233891AbiGLPDA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:02:43 -0400
+        Tue, 12 Jul 2022 11:03:00 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C201C08EF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:59:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6989EC1645
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:59:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1657637982;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ADxek73ShDBJ+eTKrRQlmTsuIvUuVWEOpUtdVj+yOnQ=;
-        b=ihu1bGP2MQDzPNpwpYXzxamMVvv0xFp4TYpLRqxcT+bvf3MaZGqVFrR850oznt6F5IWbiB
-        HKhAukATzM6pR87efNZvgzJjyFbpXhiPwDpx9+xs7RGco2SKcjLIPNkTwBbZrQ0dNWQhpj
-        OOU4yAHXv3icNVVXl/koX61wm3rxdJw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=igo8dC1xC3DXlcpimn8xHU/p9nb0gu+criSaajfjMaY=;
+        b=QMHQ9qBvyvyvlVWdmpcNnWOhE1q115yBKbuvnDNmDmo2ibPubV9S5jjQafakKKwidFIX+R
+        rgNTk2LgUMG6+YGeXu7rayu9bpsDWcjR/Fgi9C0jxydHWv9BsWA7oC24vji2baFfWDLahs
+        c71h8GMB5FsYCSJPnwtZkdDgYty7G9M=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-502-xN97oc9BPeaRnOOKq0WxpQ-1; Tue, 12 Jul 2022 10:59:38 -0400
-X-MC-Unique: xN97oc9BPeaRnOOKq0WxpQ-1
+ us-mta-102-Psl1Js4BOnKK_Sv0I2ObuQ-1; Tue, 12 Jul 2022 10:59:31 -0400
+X-MC-Unique: Psl1Js4BOnKK_Sv0I2ObuQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0E622382C965;
-        Tue, 12 Jul 2022 14:59:37 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2D4D718A6523;
+        Tue, 12 Jul 2022 14:59:30 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.195.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6BD72166B26;
-        Tue, 12 Jul 2022 14:59:33 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A544E2166B26;
+        Tue, 12 Jul 2022 14:59:26 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v6 09/23] HID: core: store the unique system identifier in hid_device
-Date:   Tue, 12 Jul 2022 16:58:36 +0200
-Message-Id: <20220712145850.599666-10-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v6 07/23] bpf: prepare for more bpf syscall to be used from kernel and user space.
+Date:   Tue, 12 Jul 2022 16:58:34 +0200
+Message-Id: <20220712145850.599666-8-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -67,56 +67,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This unique identifier is currently used only for ensuring uniqueness in
-sysfs. However, this could be handful for userspace to refer to a specific
-hid_device by this id.
+Add BPF_MAP_GET_FD_BY_ID and BPF_MAP_DELETE_PROG.
 
-2 use cases are in my mind: LEDs (and their naming convention), and
-HID-BPF.
+Only BPF_MAP_GET_FD_BY_ID needs to be amended to be able
+to access the bpf pointer either from the userspace or the kernel.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 ---
 
-no changes in v6
+changes in v6:
+- commit description change
 
 new in v5
 ---
- drivers/hid/hid-core.c | 4 +++-
- include/linux/hid.h    | 2 ++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 00154a1cd2d8..11874d264728 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -2739,10 +2739,12 @@ int hid_add_device(struct hid_device *hdev)
- 			hid_warn(hdev, "bad device descriptor (%d)\n", ret);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index ab688d85b2c6..637765390c30 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -1417,9 +1417,9 @@ static int map_update_elem(union bpf_attr *attr, bpfptr_t uattr)
+ 
+ #define BPF_MAP_DELETE_ELEM_LAST_FIELD key
+ 
+-static int map_delete_elem(union bpf_attr *attr)
++static int map_delete_elem(union bpf_attr *attr, bpfptr_t uattr)
+ {
+-	void __user *ukey = u64_to_user_ptr(attr->key);
++	bpfptr_t ukey = make_bpfptr(attr->key, uattr.is_kernel);
+ 	int ufd = attr->map_fd;
+ 	struct bpf_map *map;
+ 	struct fd f;
+@@ -1439,7 +1439,7 @@ static int map_delete_elem(union bpf_attr *attr)
+ 		goto err_put;
  	}
  
-+	hdev->id = atomic_inc_return(&id);
-+
- 	/* XXX hack, any other cleaner solution after the driver core
- 	 * is converted to allow more than 20 bytes as the device name? */
- 	dev_set_name(&hdev->dev, "%04X:%04X:%04X.%04X", hdev->bus,
--		     hdev->vendor, hdev->product, atomic_inc_return(&id));
-+		     hdev->vendor, hdev->product, hdev->id);
+-	key = __bpf_copy_key(ukey, map->key_size);
++	key = ___bpf_copy_key(ukey, map->key_size);
+ 	if (IS_ERR(key)) {
+ 		err = PTR_ERR(key);
+ 		goto err_put;
+@@ -4922,7 +4922,7 @@ static int __sys_bpf(int cmd, bpfptr_t uattr, unsigned int size)
+ 		err = map_update_elem(&attr, uattr);
+ 		break;
+ 	case BPF_MAP_DELETE_ELEM:
+-		err = map_delete_elem(&attr);
++		err = map_delete_elem(&attr, uattr);
+ 		break;
+ 	case BPF_MAP_GET_NEXT_KEY:
+ 		err = map_get_next_key(&attr);
+@@ -5057,8 +5057,10 @@ BPF_CALL_3(bpf_sys_bpf, int, cmd, union bpf_attr *, attr, u32, attr_size)
  
- 	hid_debug_register(hdev, dev_name(&hdev->dev));
- 	ret = device_add(&hdev->dev);
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 4363a63b9775..a43dd17bc78f 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -658,6 +658,8 @@ struct hid_device {							/* device report descriptor */
- 	struct list_head debug_list;
- 	spinlock_t  debug_list_lock;
- 	wait_queue_head_t debug_wait;
-+
-+	unsigned int id;						/* system unique id */
- };
- 
- #define to_hid_device(pdev) \
+ 	switch (cmd) {
+ 	case BPF_MAP_CREATE:
++	case BPF_MAP_DELETE_ELEM:
+ 	case BPF_MAP_UPDATE_ELEM:
+ 	case BPF_MAP_FREEZE:
++	case BPF_MAP_GET_FD_BY_ID:
+ 	case BPF_PROG_LOAD:
+ 	case BPF_BTF_LOAD:
+ 	case BPF_LINK_CREATE:
 -- 
 2.36.1
 
