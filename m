@@ -2,141 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDBECCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 05:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0278AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 05:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231431AbiGLFYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 01:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44710 "EHLO
+        id S230167AbiGLF3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 01:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiGLFYX (ORCPT
+        with ESMTP id S229451AbiGLF3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 01:24:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DF5101DE
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657603462; x=1689139462;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=IKMxtPSIRnCmNZR9bULecM4pIW9bVVxojRNmONEGgc4=;
-  b=F8VfWKOtMNR5gcorcEVf5biWVdBB/j3v036sz+jq2JXxWT0kHbEQZaTt
-   coxPQxfSDDoIhsoqPeuhaG6tXlWe1gUW+bnZB4RAJo3NubxEr8nTLezVD
-   GKgphizLEB/TKVUrH5zyzVGK6ZVIPu26RN+tK6e3/eOExnE2jJMl6dyRw
-   uk1YlzXeqgkx0xSHtTTTt1XKTcJvQ/OZBr26aSmVvteIucmScm+ph4pWL
-   rqmF5x77iGM0h34kAAArxmrQtYVSL90pG69dXfEPOKb+llEmrtScYJ5Zf
-   ZonCze/VH3iQ4NznflSPe/TdZKpCZmL2emjARtZHgq7a4+wIqubbNAOSe
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="265253912"
-X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="asc'?scan'208";a="265253912"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 22:24:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="asc'?scan'208";a="599267727"
-Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
-  by fmsmga007.fm.intel.com with ESMTP; 11 Jul 2022 22:24:18 -0700
-Date:   Tue, 12 Jul 2022 13:00:51 +0800
-From:   Zhenyu Wang <zhenyuw@linux.intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 04/32] drm/i915: gvt: fix kernel-doc trivial warnings
-Message-ID: <20220712050051.GW1089@zhen-hp.sh.intel.com>
-Reply-To: Zhenyu Wang <zhenyuw@linux.intel.com>
-References: <cover.1657565224.git.mchehab@kernel.org>
- <15fc6317ef5eb4ad7123d627c58c4aa04a4eae87.1657565224.git.mchehab@kernel.org>
+        Tue, 12 Jul 2022 01:29:17 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC265C362
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:29:16 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 9-20020a1c0209000000b003a2dfdebe47so3300886wmc.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 22:29:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Io6RTZE60SvPtzfl8Dwm+AesX4Q9CRLNrTuqz3l+qg0=;
+        b=Qy2pxTIDUhMcsrUj9m9+hKPul6UxVB+rIB5xK1BX53iPqa4Kj/PE67MjJsTMNkepFs
+         C3Hg07/0BMsdINcb+ODlseHtuCnrkWEnUAIzVa5/vjLkhOgjvcqTJcbNiaBNNVnBifB3
+         70dBirHYnACWQ/iJuTGwU9BSTP9l+HheELEyKL8skCvIx5OGrsqQjCBZYTVVAz96SI6g
+         KCE1eqBa2i4GLSOStPR80aBR1Rwkwtej10rTgAf05wH3i6g7z5rIM99Uzu4AXZ3ByqHT
+         KwvUC99jMfOJOYSJGhpl4IQjG/tXUKoZ+tDn9D+fCBV5ngFDEpttivrImYgsYTU6JdiU
+         0GuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Io6RTZE60SvPtzfl8Dwm+AesX4Q9CRLNrTuqz3l+qg0=;
+        b=HdCyFBrTXtNoPH4PueDHHZcLmNXG2Mw0yNaU+tKeDBF1BUCv7KeHZmij8hArQCHK6+
+         9EweTVZzbAq+jSDrd0z4DBb5z2JSvO/CZs4JDWciaS/VHTok+PqX6UhhA+kP9jci0m0e
+         T2ukAUTLJClR00KNBWU/t2SEy/tJb0xU/ON1RbtTQ1if3Xz0O48r3Zc4OuOHd02bUFqh
+         kaZf/WS+GdJ1mbCJwKnuEClc2veN6cpJ5FqrnmdAp3b8kr8aODLOgPD4bnOcshHNrNw2
+         5QmeSJpBWU2v5Ot61ppCuYDuu1k17qVbioB4C4KhdnkFm8KUm0QmvcD/kHmubQ1cD4IX
+         v6UQ==
+X-Gm-Message-State: AJIora8hWovfQRUyDXaM9rnbqFohFhXIH+MfQ39GhLTAeArbIgV65VIS
+        ROrqb8y4AP7DR22t7dxSJv3gwlRtnqqv+dfef79dbFsm3IpJ
+X-Google-Smtp-Source: AGRyM1uoa3h801J1LOR4UOkbUc3ab3I4GoLHFV24M189awXOGbaMINiGcQqFZ7RZGX/UyNDGs84MIhCLAx3C16hS9VU=
+X-Received: by 2002:a7b:cb8e:0:b0:3a2:da0f:d8ae with SMTP id
+ m14-20020a7bcb8e000000b003a2da0fd8aemr1847538wmi.23.1657603754324; Mon, 11
+ Jul 2022 22:29:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="BYl/BInBdgsQr4gH"
-Content-Disposition: inline
-In-Reply-To: <15fc6317ef5eb4ad7123d627c58c4aa04a4eae87.1657565224.git.mchehab@kernel.org>
+References: <20220712042258.293010-1-jstultz@google.com>
+In-Reply-To: <20220712042258.293010-1-jstultz@google.com>
+From:   John Stultz <jstultz@google.com>
+Date:   Mon, 11 Jul 2022 22:29:02 -0700
+Message-ID: <CANDhNCrq16wedmvZbvyRzwVaLmc1STmAzv0nBLOcVnz-SRf4Bg@mail.gmail.com>
+Subject: Re: [RFC][PATCH 1/3] drm: drm_syncobj: Add note in DOC about absolute
+ timeout values
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Lionel Landwerlin <lionel.g.landwerlin@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
---BYl/BInBdgsQr4gH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On 2022.07.11 21:24:49 +0100, Mauro Carvalho Chehab wrote:
-> Some functions seem to have been renamed without updating the kernel-doc
-> markup causing warnings. Also, struct intel_vgpu_dmabuf_obj is not
-> properly documented, but has a kerneld-doc markup.
->=20
-> Fix those warnings:
-> 	drivers/gpu/drm/i915/gvt/aperture_gm.c:308: warning: expecting prototype=
- for inte_gvt_free_vgpu_resource(). Prototype was for intel_vgpu_free_resou=
-rce() instead
-> 	drivers/gpu/drm/i915/gvt/aperture_gm.c:344: warning: expecting prototype=
- for intel_alloc_vgpu_resource(). Prototype was for intel_vgpu_alloc_resour=
-ce() instead
-> 	drivers/gpu/drm/i915/gvt/cfg_space.c:257: warning: expecting prototype f=
-or intel_vgpu_emulate_cfg_read(). Prototype was for intel_vgpu_emulate_cfg_=
-write() instead
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'vgpu' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'info' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'dmabuf_id' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'kref' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'initref' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
-ber 'list' not described in 'intel_vgpu_dmabuf_obj'
-> 	drivers/gpu/drm/i915/gvt/handlers.c:3066: warning: expecting prototype f=
-or intel_t_default_mmio_write(). Prototype was for intel_vgpu_default_mmio_=
-write() instead
-> 	drivers/gpu/drm/i915/gvt/mmio_context.c:560: warning: expecting prototyp=
-e for intel_gvt_switch_render_mmio(). Prototype was for intel_gvt_switch_mm=
-io() instead
-> 	drivers/gpu/drm/i915/gvt/page_track.c:131: warning: expecting prototype =
-for intel_vgpu_enable_page_track(). Prototype was for intel_vgpu_disable_pa=
-ge_track() instead
-> 	drivers/gpu/drm/i915/gvt/vgpu.c:215: warning: expecting prototype for in=
-tel_gvt_active_vgpu(). Prototype was for intel_gvt_activate_vgpu() instead
-> 	drivers/gpu/drm/i915/gvt/vgpu.c:230: warning: expecting prototype for in=
-tel_gvt_deactive_vgpu(). Prototype was for intel_gvt_deactivate_vgpu() inst=
-ead
-> 	drivers/gpu/drm/i915/gvt/vgpu.c:358: warning: expecting prototype for in=
-tel_gvt_destroy_vgpu(). Prototype was for intel_gvt_destroy_idle_vgpu() ins=
-tead
->=20
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+On Mon, Jul 11, 2022 at 9:23 PM John Stultz <jstultz@google.com> wrote:
+>
+> After having to debug down through the kernel to figure out
+> why my _WAIT calls were always timing out, I realized its
+> an absolute timeout value instead of the more common relative
+> timeouts.
+>
+> This detail should be called out in the documentation, as while
+> the absolute value makes sense here, its not as common for timeout
+> values.
+>
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: Jason Ekstrand <jason@jlekstrand.net>
+> Cc: Christian K=C3=B6nig <christian.koenig@amd.com>
+> Cc: Lionel Landwerlin <lionel.g.landwerlin@intel.com>
+> Cc: Chunming Zhou <david1.zhou@amd.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: John Stultz <jstultz@google.com>
 > ---
+>  drivers/gpu/drm/drm_syncobj.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/drm_syncobj.c b/drivers/gpu/drm/drm_syncobj.=
+c
+> index 7e48dcd1bee4..b84d842a1c21 100644
+> --- a/drivers/gpu/drm/drm_syncobj.c
+> +++ b/drivers/gpu/drm/drm_syncobj.c
+> @@ -136,6 +136,10 @@
+>   * requirement is inherited from the wait-before-signal behavior require=
+d by
+>   * the Vulkan timeline semaphore API.
+>   *
+> + * It should be noted, that both &DRM_IOCTL_SYNCOBJ_WAIT and
+> + * &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT takes an *absolute* CLOCK_MON=
+OTONIC
 
-Hi, thanks for this, but there're already several fixes in queue right now,=
- e.g
-https://patchwork.freedesktop.org/series/104302/ and
-https://patchwork.freedesktop.org/series/104640/, but looks there're other =
-uncaught issues.
-I'd like to submit current in queue first, then maybe you could update for =
-others?
+Gah. That should be &DRM_IOCTL_SYNCOBJ_TIMELINE_WAIT. I must have
+pasted in the wrong symbol.
 
+Fixed in my tree and I'll share v2 in a few days so I can get
+additional feedback.
 
---BYl/BInBdgsQr4gH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYsz/+gAKCRCxBBozTXgY
-J4vQAKCMH46gTKH1fklSj9leE4TwPisR4QCeO3K7++guiaV79LrJuEyXo9VDYGI=
-=vaK2
------END PGP SIGNATURE-----
-
---BYl/BInBdgsQr4gH--
+thanks
+-john
