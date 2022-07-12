@@ -2,108 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79047CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6B5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbiGLNoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
+        id S233340AbiGLNpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233195AbiGLNoI (ORCPT
+        with ESMTP id S230301AbiGLNnt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:44:08 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167311EEC9;
-        Tue, 12 Jul 2022 06:43:57 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.nyi.internal (Postfix) with ESMTP id CBEEC5C00E9;
-        Tue, 12 Jul 2022 09:43:53 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Tue, 12 Jul 2022 09:43:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1657633433; x=1657719833; bh=U63C9vKYqb
-        yyQVXMseKFJL5UTTd7BOn74sOr5EP6CUM=; b=MbNJjCTtD2flfZ2hTQGRAS++5o
-        zqXTGq+UznE4x4bwhzAXZjGutckkgY/Ocyyp12HgJvDlzFepqFGYZmF17v/jSOl3
-        3y6O8G434Indwh4khZQygy/2vkyJC07tnXSyd/Vx5krsh36o6cvkjEw5bsnkBSjQ
-        +WwdrimTWSyVnlolxA8fK+LFP3TG2nJrFLuxZlTf5Ay1i9H9jvAnTsyslut8AEJf
-        paKgHwkmqbT722AYzHjvJxOrb06siNqlGBSGtp2XH7q5ga3x7Ar4nqYMksQGs/+z
-        utefzIMLPII2JDzvxZMRhyJjy2bRNcpCfdRDzshYGcUcJayFY0QlRHZEzR+w==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1657633433; x=1657719833; bh=U63C9vKYqbyyQVXMseKFJL5UTTd7
-        BOn74sOr5EP6CUM=; b=Fcd2Oxczk3F178MxWy3slksKMXCjtS3pStt7VwHyJlh9
-        oeOqT1jZd/vDQlkkKX3kAhe83Gg9aYxBjG/axX8utz7bV0TJSeEErpVHQUFi+yap
-        XvvBkBDp68N4OL3TJzF3Gyw2gs2fp2o7SfjmPrSp6bUYnvcOuiZYDDqMzkSOOyfV
-        YaEj6PzgQsNzziK8LroD4MwD8kyH578cBQt8EnaiL3iXu84fX+uh/LEnd3bYOsw/
-        WsN6sXdYKOjiAU4Jz25nXYuzyetSiWNofU0Qa5KNMOJZjCidMwwyMKu9CwyDAdBP
-        daNvSTap4BiXnTwOixZpK66RbYhDlHuxmjJt/Nq54A==
-X-ME-Sender: <xms:mXrNYnawa89djn2Npoqukaipkba9TJpnh5_1DObFIOwxlNgP2R4W_Q>
-    <xme:mXrNYmZCIlp4zfhQVE2_F1ACQgGXjolI1gZGgE9_s-aE0HO9uqWsNqThZreYa5GON
-    T5POOwJrJZ966PslIg>
-X-ME-Received: <xmr:mXrNYp9BpsmO-T4taMATWNCnFkgmwW1RGIK29VuWHLVAYCa-W4j_Yd92ZpN5jrrFgfuUVfYo7_EhhknZWlTc0_DQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejhedgieelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihtghh
-    ohcutehnuggvrhhsvghnuceothihtghhohesthihtghhohdrphhiiiiirgeqnecuggftrf
-    grthhtvghrnhepueettdetgfejfeffheffffekjeeuveeifeduleegjedutdefffetkeel
-    hfelleetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epthihtghhohesthihtghhohdrphhiiiiirg
-X-ME-Proxy: <xmx:mXrNYto2NuAWKLukp4n8J847sCqguZI03M9T3nS4jd6uV8Zcf6he8w>
-    <xmx:mXrNYir7mAXxN_dPy51uvn9g8MrP6YxZnF2MFHC8hEehvgh59CdxWw>
-    <xmx:mXrNYjRJaUv2FswiBsWi51t9h2PmjTujwJSge4EpZYzK59wWp8WfKg>
-    <xmx:mXrNYrku7qinzzomh975e7jnSRpwSH0frA_WiwjU7RHDFpJmgPEQgQ>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Jul 2022 09:43:52 -0400 (EDT)
-Date:   Tue, 12 Jul 2022 07:43:51 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Miklos Szeredi <miklos@szeredi.hu>,
-        Christian Brauner <brauner@kernel.org>,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: strange interaction between fuse + pidns
-Message-ID: <Ys16l6+iotX2JE33@netflix>
-References: <YrShFXRLtRt6T/j+@risky>
- <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
- <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
- <YsyHMVLuT5U6mm+I@netflix>
- <877d4jbabb.fsf@email.froward.int.ebiederm.org>
- <Ysyp8Kbl8FzhApUb@netflix>
- <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
+        Tue, 12 Jul 2022 09:43:49 -0400
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86686FD36;
+        Tue, 12 Jul 2022 06:43:47 -0700 (PDT)
+Received: by mail-qk1-f172.google.com with SMTP id q13so1048720qkc.9;
+        Tue, 12 Jul 2022 06:43:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pQS00Ive5J+ba8NcW5/XxGDFCx4+KWgGjETq4y82+f0=;
+        b=odb5lFam3DekNalLnxiaeA2OGR2+fBi9DWuRDhOLPzZXPMmmlTrTqq5429m+uiobhP
+         J/2oO4K9vfqreYn93guZ+nReonPB/URa8rspetk8PbW3pjJcVuuWNWSbgyoIsI2IrcLk
+         0WJclN8vH1I9VPHqvqp9I9HwDexk9d4tmnWkyWWqgTahobYM0QuRwGE7YjSJzPDHTJlR
+         kwnv3lHi8yEij1AanIVh/kXJ8bVUvaNz/bwC+pbeKGBRjGtJO9ftr+X9eeiuZdsn/+Ea
+         aufzkiwe0OSQDLhoQmKzwQsOjNA/8iF7RLGWf18PYujClbO9lvaD7m8+3bHZNm3UMAEn
+         H0XQ==
+X-Gm-Message-State: AJIora+bIsg6Vxl77dt/eB5hkCK0SMsamE4Y3f5YNnVNWXvMqpFkhGLg
+        pOKCPWNvB+KcmebilPVkXM5mBIZeaBiesw==
+X-Google-Smtp-Source: AGRyM1u50Dwt7Tw6SefDRP3zBqQ8BSLz2Mwsafiw8LbM09IH5X1GzhPMnjI58ORUj23pp9yfZPSNzQ==
+X-Received: by 2002:a05:620a:4446:b0:6af:1d31:c257 with SMTP id w6-20020a05620a444600b006af1d31c257mr15122009qkp.399.1657633426566;
+        Tue, 12 Jul 2022 06:43:46 -0700 (PDT)
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
+        by smtp.gmail.com with ESMTPSA id u14-20020a05620a430e00b006a6a6f148e6sm9522371qko.17.2022.07.12.06.43.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 06:43:46 -0700 (PDT)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-31c8bb90d09so81250437b3.8;
+        Tue, 12 Jul 2022 06:43:44 -0700 (PDT)
+X-Received: by 2002:a0d:dd09:0:b0:31c:e3b9:7442 with SMTP id
+ g9-20020a0ddd09000000b0031ce3b97442mr25172382ywe.47.1657633423854; Tue, 12
+ Jul 2022 06:43:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
+References: <20220611035551.1823303-1-patrick.wang.shcn@gmail.com>
+In-Reply-To: <20220611035551.1823303-1-patrick.wang.shcn@gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 Jul 2022 15:43:32 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXRwVVYXK+SrVMt_FQe4KPQfozERQzYqweEYUvy4BuWRA@mail.gmail.com>
+Message-ID: <CAMuHMdXRwVVYXK+SrVMt_FQe4KPQfozERQzYqweEYUvy4BuWRA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] mm: kmemleak: store objects allocated with
+ physical address separately and check when scan
+To:     Patrick Wang <patrick.wang.shcn@gmail.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        yee.lee@mediatek.com,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 06:06:21PM -0500, Eric W. Biederman wrote:
-> Tycho Andersen <tycho@tycho.pizza> writes:
-> It is not different enough to change the semantics.  What I am aiming
-> for is having a dedicated flag indicating a task will exit, that
-> fatal_signal_pending can check.  And I intend to make that flag one way
-> so that once it is set it will never be cleared.
+Hi Patrick,
 
-Ok - how far out is that? I'd like to try to convince Miklos to land
-the fuse part of this fix now, but without the "look at shared signals
-too" patch, that fix is useless. I'm not married to my patch, but I
-would like to get this fixed somehow soon.
+On Sat, Jun 11, 2022 at 8:50 AM Patrick Wang
+<patrick.wang.shcn@gmail.com> wrote:
+> The kmemleak_*_phys() interface uses "min_low_pfn" and
+> "max_low_pfn" to check address. But on some architectures,
+> kmemleak_*_phys() is called before those two variables
+> initialized. The following steps will be taken:
+>
+> 1) Add OBJECT_PHYS flag and rbtree for the objects allocated
+>    with physical address
+> 2) Store physical address in objects if allocated with OBJECT_PHYS
+> 3) Check the boundary when scan instead of in kmemleak_*_phys()
 
-> The other thing I have played with that might be relevant was removing
-> the explicit wait in zap_pid_ns_processes and simply not allowing wait
-> to reap the pid namespace init until all it's children had been reaped.
-> Essentially how we deal with the thread group leader for ordinary
-> processes.  Does that sound like it might help in the fuse case?
+Thanks for your series!
 
-No, the problem is that the wait code doesn't know to look in the
-right place, so waiting later still won't help.
+> This patch set will solve:
+> https://lore.kernel.org/r/20220527032504.30341-1-yee.lee@mediatek.com
+> https://lore.kernel.org/r/9dd08bb5-f39e-53d8-f88d-bec598a08c93@gmail.com
 
-Tycho
+Thanks, this finally gets rid of the thousands of suspected memory
+leaks reported since commit 23c2d497de21f258 ("mm: kmemleak: take
+a full lowmem check in kmemleak_*_phys()") in v5.18-rc3 on my arm64
+boards.
+
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
