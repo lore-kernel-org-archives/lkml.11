@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA3BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:53:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 970F2C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234637AbiGLSxC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:53:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54754 "EHLO
+        id S234740AbiGLSxN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:53:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbiGLSwS (ORCPT
+        with ESMTP id S234646AbiGLSwc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:52:18 -0400
+        Tue, 12 Jul 2022 14:52:32 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3DBE5870;
-        Tue, 12 Jul 2022 11:45:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA51DA0E4;
+        Tue, 12 Jul 2022 11:45:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74EF4B81BAB;
-        Tue, 12 Jul 2022 18:44:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA3A0C3411C;
-        Tue, 12 Jul 2022 18:44:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69763B81BBB;
+        Tue, 12 Jul 2022 18:44:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A49C3411C;
+        Tue, 12 Jul 2022 18:44:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651492;
-        bh=LqAXempH+uBg7nKHHZs2ygdeOzpx6l017Z5ZBhQO7y4=;
+        s=korg; t=1657651495;
+        bh=BFyioED30kwJD9PGGxY9ZF6TW0CFgre5ZqlPuYrWpL8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p/8z8T/E08W5LQeQI0Aut76rz35mcslhqQVF8d7eIeKLB6nALQnqh3E9y4Wj/UCpA
-         XtRVuHkP6Guww4XwyGNQDE07HBQ+anNDsDiBjMwgQLZAqe+NJnoGFbXZe1j7K69+2m
-         oP7Mfa0p90oYoVKV3caJ1sdpXfjV8+EJsUyspOhE=
+        b=vllPcmRsJzbogyCvHz6x0VkXzTnRaggOi/NPTI+jWrYZuongHs7g82kMm44pl9d1T
+         iL2X19+KZQrZjugnA/rsNiCFjzVew004SKvqZ0x3TbbDO1dPqJSjVe2GO6YFrJjcLE
+         Xr1MZ+0pjnzIxIOiy2CSgv0s/xxbVlCu+cB7kNCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 075/130] x86/entry: Remove skip_r11rcx
-Date:   Tue, 12 Jul 2022 20:38:41 +0200
-Message-Id: <20220712183249.925893382@linuxfoundation.org>
+Subject: [PATCH 5.10 093/130] x86: Use return-thunk in asm code
+Date:   Tue, 12 Jul 2022 20:38:59 +0200
+Message-Id: <20220712183250.755673482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -52,67 +54,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 1b331eeea7b8676fc5dbdf80d0a07e41be226177 upstream.
+commit aa3d480315ba6c3025a60958e1981072ea37c3df upstream.
 
-Yes, r11 and rcx have been restored previously, but since they're being
-popped anyway (into rsi) might as well pop them into their own regs --
-setting them to the value they already are.
+Use the return thunk in asm code. If the thunk isn't needed, it will
+get patched into a RET instruction during boot by apply_returns().
 
-Less magical code.
+Since alternatives can't handle relocations outside of the first
+instruction, putting a 'jmp __x86_return_thunk' in one is not valid,
+therefore carve out the memmove ERMS path into a separate label and jump
+to it.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: no RANDSTRUCT_CFLAGS]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 [bwh: Backported to 5.10: adjust context]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/calling.h  |   10 +---------
- arch/x86/entry/entry_64.S |    3 +--
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ arch/x86/entry/vdso/Makefile   |    1 +
+ arch/x86/include/asm/linkage.h |    8 ++++++++
+ arch/x86/lib/memmove_64.S      |    7 ++++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
---- a/arch/x86/entry/calling.h
-+++ b/arch/x86/entry/calling.h
-@@ -146,27 +146,19 @@ For 32-bit we have the following convent
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -91,6 +91,7 @@ endif
+ endif
  
- .endm
+ $(vobjs): KBUILD_CFLAGS := $(filter-out $(GCC_PLUGINS_CFLAGS) $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
++$(vobjs): KBUILD_AFLAGS += -DBUILD_VDSO
  
--.macro POP_REGS pop_rdi=1 skip_r11rcx=0
-+.macro POP_REGS pop_rdi=1
- 	popq %r15
- 	popq %r14
- 	popq %r13
- 	popq %r12
- 	popq %rbp
- 	popq %rbx
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %r11
--	.endif
- 	popq %r10
- 	popq %r9
- 	popq %r8
- 	popq %rax
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %rcx
--	.endif
- 	popq %rdx
- 	popq %rsi
- 	.if \pop_rdi
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_h
- 	 * perf profiles. Nothing jumps here.
- 	 */
- syscall_return_via_sysret:
--	/* rcx and r11 are already restored (see code above) */
--	POP_REGS pop_rdi=0 skip_r11rcx=1
-+	POP_REGS pop_rdi=0
+ #
+ # vDSO code runs in userspace and -pg doesn't help with profiling anyway.
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -18,19 +18,27 @@
+ #define __ALIGN_STR	__stringify(__ALIGN)
+ #endif
+ 
++#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
++#define RET	jmp __x86_return_thunk
++#else /* CONFIG_RETPOLINE */
+ #ifdef CONFIG_SLS
+ #define RET	ret; int3
+ #else
+ #define RET	ret
+ #endif
++#endif /* CONFIG_RETPOLINE */
+ 
+ #else /* __ASSEMBLY__ */
+ 
++#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
++#define ASM_RET	"jmp __x86_return_thunk\n\t"
++#else /* CONFIG_RETPOLINE */
+ #ifdef CONFIG_SLS
+ #define ASM_RET	"ret; int3\n\t"
+ #else
+ #define ASM_RET	"ret\n\t"
+ #endif
++#endif /* CONFIG_RETPOLINE */
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+--- a/arch/x86/lib/memmove_64.S
++++ b/arch/x86/lib/memmove_64.S
+@@ -40,7 +40,7 @@ SYM_FUNC_START(__memmove)
+ 	/* FSRM implies ERMS => no length checks, do the copy directly */
+ .Lmemmove_begin_forward:
+ 	ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
+-	ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), X86_FEATURE_ERMS
++	ALTERNATIVE "", "jmp .Lmemmove_erms", X86_FEATURE_ERMS
  
  	/*
- 	 * Now all regs are restored except RSP and RDI.
+ 	 * movsq instruction have many startup latency
+@@ -206,6 +206,11 @@ SYM_FUNC_START(__memmove)
+ 	movb %r11b, (%rdi)
+ 13:
+ 	RET
++
++.Lmemmove_erms:
++	movq %rdx, %rcx
++	rep movsb
++	RET
+ SYM_FUNC_END(__memmove)
+ SYM_FUNC_END_ALIAS(memmove)
+ EXPORT_SYMBOL(__memmove)
 
 
