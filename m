@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB36CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BCACCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233661AbiGLOpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37180 "EHLO
+        id S233693AbiGLOpP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbiGLOnp (ORCPT
+        with ESMTP id S233660AbiGLOpE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:43:45 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B11BDBB5;
-        Tue, 12 Jul 2022 07:43:23 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id 64so14265033ybt.12;
-        Tue, 12 Jul 2022 07:43:23 -0700 (PDT)
+        Tue, 12 Jul 2022 10:45:04 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CF325C7F;
+        Tue, 12 Jul 2022 07:45:02 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id v14so11497840wra.5;
+        Tue, 12 Jul 2022 07:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=coKDGy3LG/pzJw/5Ba+mZia0etc8htd3qdA0mBwoUlo=;
-        b=Gku7tM75sCcOnsW5gmmQaJQqu/YdWVcLpDihH/AY2KffEl1m0BgyreMwVjQD6ZHHUE
-         UU/8W8HTbEveGbwg84Muss162f9qfB9Pf1dyKy/eNrm8mNGsboVeq5awDuPNvXW8nEYV
-         NfsShs5wR1nL2traL6zHc1HX9R6EKavv+TM2xOxZMSm+RmlYsDQUtgGYTi7uazhgRpHG
-         OHo/R5VOg1WJ2Z/k3jvlFdw2isQ6uYo+mRE/DgdGKyox0Hh+eCJwK6VjvjFMT/f+E7eM
-         1A/y4Vso219JXUkK3mREY2W0e4lnm0OgcY+OVPqSQbP5+GqDwEDL629/JP7t+/SVuygx
-         AO5w==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Sa6iY3pzwir6onyo2+3SEdO5IslImquHb/B2ephjWNA=;
+        b=LEESkbTjEcOU7bUoY8h448YndDqAvOl5l7XJabm8Ky5wETpujsDs2To2eLk/OT56a8
+         bhuKg+K4NgHXhY8ZEf3EDlkZ1WWgwMle85E6unzgzKAyqYOwB3v+FD5w9CMywRY2PZv7
+         PW5YkKBbuMNMSHpdc/SztIQHLluvga2JuHXZFyrFD3+gZ8jnC9wZjxnF1PGukc2KJodo
+         1HgZFMSgqjgBqrDdYAD1Nc6t3Pyb8mmCm8db40asy3ZlnWWz673zGAhBoWThCZjf0afl
+         NsXvdoq+uK91mgSGYizB5Yb5ZXoVhN0BiJshuK3jdcN0P0TRHRhODGTnGwJupXNDuNoi
+         xZQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=coKDGy3LG/pzJw/5Ba+mZia0etc8htd3qdA0mBwoUlo=;
-        b=k6j44E5ILsLC1u5QpVvFH1MVsKpkSJAvf8WaPqz5+ZTCPwZWuzlVn0MIlx/Az+efVe
-         2JCH34lGah78wAntF6hujFTWUwjf9Imrb6kFmxN3nA7+dArvN/mEetdRHuQtJXD6GKkk
-         zbzlq+kMIdrAdO2lcWA+PWajIImAycC2WmEVcUItyq6S9Sz1sZFqxjpPClrxt36owBZe
-         CPqUOLs2pz12H7aX7CW7ZoAFvu3iieawAzF/woasqlVQ1ubgE4oE8wn4awNcr7iY/IDZ
-         TD6yY+MYsS5satpyfueyiyK52gQxvn3/cO1VwwYua2kQsCKhFlBca2VyJDHMsybIS9JY
-         YzxQ==
-X-Gm-Message-State: AJIora+aDbo67x3tTHtdgJZQ8oHI0Amcxqm4ad6slEJUIf7HizqX3myT
-        Lo+4FdCZyFL6rIlk2CO1gW7poTSDiXaEpV9F9Hw=
-X-Google-Smtp-Source: AGRyM1vFZMoDBRYL342rw6lRXJa26nXlAWhIwYlJBklTEiX5huDMwLdHT/sItLUcdmlpLdS3mr1eTrz+kwvtlxJtcic=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr23385993ybg.460.1657637003075; Tue, 12
- Jul 2022 07:43:23 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Sa6iY3pzwir6onyo2+3SEdO5IslImquHb/B2ephjWNA=;
+        b=v0MNUL/On6JuX0pOTQYN+ef/0h02lzYKPug2Ppkd3Y59Si3udWdYI8XdY8M0/jMohI
+         tqlezLz9xTI2gTfacnsfzznUSkir93o9Z3vmu23mTSLHiUjZl3wiDC/8u3JL/wsD/vfF
+         t+ig/2va3zRAs4CP68P7OLwG8EP4G7dHNLgHj73lIDWQLndKw5xibU+yq9RmUP6R7ltA
+         QEmCnCrpg6QzCCVnkpoGUUOcKK1KQ/BkN955LiUdqsEhsUmnhzYzs4cIRM3hZHNEZpHN
+         n086ZW3wpOLFzuQNlEBzc4f7p7AtCd5xzBJX9UWa78GWa9yUY2PLBzMhXSdyNWmtv/9S
+         yDbw==
+X-Gm-Message-State: AJIora9+KIh0vX50b5jWChVXgBosBLDOQc6mmL2e3+Kyhm9Vpu2QYp99
+        mPbMWLfX8LznUh35sU1OyRw=
+X-Google-Smtp-Source: AGRyM1u9IqTISr1wyRgga0Wj5eYmfortujWr+8ZL/NhFS8z4Uf+MK9ThLDEiwzSF6wcgo4Oq15bSmw==
+X-Received: by 2002:a5d:58cc:0:b0:21d:6919:7daf with SMTP id o12-20020a5d58cc000000b0021d69197dafmr22544454wrf.434.1657637101303;
+        Tue, 12 Jul 2022 07:45:01 -0700 (PDT)
+Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
+        by smtp.gmail.com with ESMTPSA id m4-20020a5d6244000000b0021d6e917442sm10180708wrv.72.2022.07.12.07.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 07:45:00 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 15:44:59 +0100
+From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, slade@sladewatkins.com
+Subject: Re: [PATCH 5.10 00/55] 5.10.130-rc1 review
+Message-ID: <Ys2I6x4PlN6APY54@debian>
+References: <20220711090541.764895984@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220712143237.13992-1-henning.schild@siemens.com>
-In-Reply-To: <20220712143237.13992-1-henning.schild@siemens.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 16:42:46 +0200
-Message-ID: <CAHp75VeYHi8XTf3Y6HMmitVvuvF2uiWdSzpiKFji5SfV20HqpQ@mail.gmail.com>
-Subject: Re: [PATCH v3 0/1] add device driver for Nuvoton SIO gpio function
-To:     Henning Schild <henning.schild@siemens.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Tasanakorn Phaipool <tasanakorn@gmail.com>,
-        Sheng-Yuan Huang <syhuang3@nuvoton.com>,
-        Kuan-Wei Ho <cwho@nuvoton.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711090541.764895984@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 4:32 PM Henning Schild
-<henning.schild@siemens.com> wrote:
->
-> changes since v2:
->  - move from subsys_initcall to module_init
->  - add 2 more patches to show how it can be used later
->  - v2 is based on [PATCH v6 00/12] platform/x86: introduce p2sb_bar() helper
->
-> changes since v1:
->  - implement get_direction function
->  - style changes requested in review
+Hi Greg,
 
-JFYI: You have a strange subject. Had you used `git format-patch
---cover-letter ...`?
+On Mon, Jul 11, 2022 at 11:06:48AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.130 release.
+> There are 55 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 13 Jul 2022 09:05:28 +0000.
+> Anything received after that time might be too late.
 
-> This adds gpio support for several Super IO chips from Nuvoton. The
-> driver was originally developed by Nuvoton and i am just contributing it
-> on behalf, because other patches i will send later will require access
-> to the gpios. The driver is valid on its own.
-> In fact v2 of this series shows a future user, not to be merged right
-> away but to show what is planned.
->
-> The driver supports several chips, of which i only managed to test one
-> but did not want to drop the others.
->
-> I hope the original authors will help with the testing and addressing
-> review feedback. The changes i did so far mainly are inspired by similar
-> drivers and some just concern coding style. If more has to be done and
-> the original authors do not jump in, we might start off with just that
-> one chip i can test and add the others later on.
+Build test (gcc version 11.3.1 20220706):
+mips: 63 configs -> no failure
+arm: 104 configs -> no failure
+arm64: 3 configs -> no failure
+x86_64: 4 configs -> no failure
+alpha allmodconfig -> no failure
+powerpc allmodconfig -> no failure
+riscv allmodconfig -> no failure
+s390 allmodconfig -> no failure
+xtensa allmodconfig -> no failure
+
+Boot test:
+x86_64: Booted on my test laptop. No regression.
+x86_64: Booted on qemu. No regression. [1]
+arm64: Booted on rpi4b (4GB model). No regression. [2]
+
+[1]. https://openqa.qa.codethink.co.uk/tests/1486
+[2]. https://openqa.qa.codethink.co.uk/tests/1496
 
 
--- 
-With Best Regards,
-Andy Shevchenko
+Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+
+--
+Regards
+Sudip
