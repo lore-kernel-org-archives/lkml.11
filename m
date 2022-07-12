@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A717BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234579AbiGLSvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        id S234635AbiGLSvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:51:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234607AbiGLSvS (ORCPT
+        with ESMTP id S234329AbiGLSv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:51:18 -0400
+        Tue, 12 Jul 2022 14:51:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CA3E52B4;
-        Tue, 12 Jul 2022 11:44:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C587AD31CA;
+        Tue, 12 Jul 2022 11:44:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B324DB81B95;
-        Tue, 12 Jul 2022 18:44:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C735EC3411E;
-        Tue, 12 Jul 2022 18:44:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18290B81BAB;
+        Tue, 12 Jul 2022 18:44:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 405FBC3411C;
+        Tue, 12 Jul 2022 18:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651450;
-        bh=YK9+XOi9SbioXxUkEVO0zL8ub18V/83umVoV5u7euKI=;
+        s=korg; t=1657651456;
+        bh=yvRta9CPHVpUzVxgqMCZSu+Lo934yTJmq1xlRyl5HUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XxM6d+tDtQ/iFXxdDQFy2Ia6nfXZYj7oBnvCoUusfJzuraJExzqzPJc3BMAZFsYOm
-         P0/0RMkk3NDfeBGZDH0YgGSfEhc+oB36h+AO+xv3tG65sChmCqr/8flozLfLLZ4wko
-         g2GHFAD2qE0xcjsPlo0/dbfU8EE7Ut+sy6iHVI58=
+        b=kvjFyYw3qEkx/d+jMAhBY+kKiRoBxoNN12CpKJhzeBW4Ho48+lplTGckgWAddMEJR
+         1386fsgnS3E4gdSoOhNAHmpla+x4ypeM0EEJJsHVqfwYkk+6BmIIACIaGNFDYRz5z4
+         YCZVL5LEZSpggICRsn00riMbrlOlseF9vQAMdeRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 049/130] objtool,x86: Replace alternatives with .retpoline_sites
-Date:   Tue, 12 Jul 2022 20:38:15 +0200
-Message-Id: <20220712183248.695039022@linuxfoundation.org>
+Subject: [PATCH 5.10 074/130] objtool: Fix symbol creation
+Date:   Tue, 12 Jul 2022 20:38:40 +0200
+Message-Id: <20220712183249.886871601@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -55,492 +53,348 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 134ab5bd1883312d7a4b3033b05c6b5a1bb8889b upstream.
+commit ead165fa1042247b033afad7be4be9b815d04ade upstream.
 
-Instead of writing complete alternatives, simply provide a list of all
-the retpoline thunk calls. Then the kernel is free to do with them as
-it pleases. Simpler code all-round.
+Nathan reported objtool failing with the following messages:
 
+  warning: objtool: no non-local symbols !?
+  warning: objtool: gelf_update_symshndx: invalid section index
+
+The problem is due to commit 4abff6d48dbc ("objtool: Fix code relocs
+vs weak symbols") failing to consider the case where an object would
+have no non-local symbols.
+
+The problem that commit tries to address is adding a STB_LOCAL symbol
+to the symbol table in light of the ELF spec's requirement that:
+
+  In each symbol table, all symbols with STB_LOCAL binding preced the
+  weak and global symbols.  As ``Sections'' above describes, a symbol
+  table section's sh_info section header member holds the symbol table
+  index for the first non-local symbol.
+
+The approach taken is to find this first non-local symbol, move that
+to the end and then re-use the freed spot to insert a new local symbol
+and increment sh_info.
+
+Except it never considered the case of object files without global
+symbols and got a whole bunch of details wrong -- so many in fact that
+it is a wonder it ever worked :/
+
+Specifically:
+
+ - It failed to re-hash the symbol on the new index, so a subsequent
+   find_symbol_by_index() would not find it at the new location and a
+   query for the old location would now return a non-deterministic
+   choice between the old and new symbol.
+
+ - It failed to appreciate that the GElf wrappers are not a valid disk
+   format (it works because GElf is basically Elf64 and we only
+   support x86_64 atm.)
+
+ - It failed to fully appreciate how horrible the libelf API really is
+   and got the gelf_update_symshndx() call pretty much completely
+   wrong; with the direct consequence that if inserting a second
+   STB_LOCAL symbol would require moving the same STB_GLOBAL symbol
+   again it would completely come unstuck.
+
+Write a new elf_update_symbol() function that wraps all the magic
+required to update or create a new symbol at a given index.
+
+Specifically, gelf_update_sym*() require an @ndx argument that is
+relative to the @data argument; this means you have to manually
+iterate the section data descriptor list and update @ndx.
+
+Fixes: 4abff6d48dbc ("objtool: Fix code relocs vs weak symbols")
+Reported-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120309.850007165@infradead.org
-[cascardo: fixed conflict because of missing
- 8b946cc38e063f0f7bb67789478c38f6d7d457c9]
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-[bwh: Backported to 5.10: deleted functions had slightly different code]
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lkml.kernel.org/r/YoPCTEYjoPqE4ZxB@hirez.programming.kicks-ass.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[bwh: Backported to 5.10: elf_hash_add() takes a hash table pointer,
+ not just a name]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/vmlinux.lds.S   |   14 ++++
- tools/objtool/arch/x86/decode.c |  120 ------------------------------------
- tools/objtool/check.c           |  132 ++++++++++++++++++++++++++++------------
- tools/objtool/elf.c             |   83 -------------------------
- tools/objtool/elf.h             |    1 
- tools/objtool/special.c         |    8 --
- 6 files changed, 107 insertions(+), 251 deletions(-)
+ tools/objtool/elf.c |  196 +++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 128 insertions(+), 68 deletions(-)
 
---- a/arch/x86/kernel/vmlinux.lds.S
-+++ b/arch/x86/kernel/vmlinux.lds.S
-@@ -272,6 +272,20 @@ SECTIONS
- 		__parainstructions_end = .;
- 	}
- 
-+#ifdef CONFIG_RETPOLINE
-+	/*
-+	 * List of instructions that call/jmp/jcc to retpoline thunks
-+	 * __x86_indirect_thunk_*(). These instructions can be patched along
-+	 * with alternatives, after which the section can be freed.
-+	 */
-+	. = ALIGN(8);
-+	.retpoline_sites : AT(ADDR(.retpoline_sites) - LOAD_OFFSET) {
-+		__retpoline_sites = .;
-+		*(.retpoline_sites)
-+		__retpoline_sites_end = .;
-+	}
-+#endif
-+
- 	/*
- 	 * struct alt_inst entries. From the header (alternative.h):
- 	 * "Alternative instructions for different CPU types or capabilities"
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -606,126 +606,6 @@ const char *arch_ret_insn(int len)
- 	return ret[len-1];
- }
- 
--/* asm/alternative.h ? */
--
--#define ALTINSTR_FLAG_INV	(1 << 15)
--#define ALT_NOT(feat)		((feat) | ALTINSTR_FLAG_INV)
--
--struct alt_instr {
--	s32 instr_offset;	/* original instruction */
--	s32 repl_offset;	/* offset to replacement instruction */
--	u16 cpuid;		/* cpuid bit set for replacement */
--	u8  instrlen;		/* length of original instruction */
--	u8  replacementlen;	/* length of new instruction */
--} __packed;
--
--static int elf_add_alternative(struct elf *elf,
--			       struct instruction *orig, struct symbol *sym,
--			       int cpuid, u8 orig_len, u8 repl_len)
--{
--	const int size = sizeof(struct alt_instr);
--	struct alt_instr *alt;
--	struct section *sec;
--	Elf_Scn *s;
--
--	sec = find_section_by_name(elf, ".altinstructions");
--	if (!sec) {
--		sec = elf_create_section(elf, ".altinstructions",
--					 SHF_ALLOC, 0, 0);
--
--		if (!sec) {
--			WARN_ELF("elf_create_section");
--			return -1;
--		}
--	}
--
--	s = elf_getscn(elf->elf, sec->idx);
--	if (!s) {
--		WARN_ELF("elf_getscn");
--		return -1;
--	}
--
--	sec->data = elf_newdata(s);
--	if (!sec->data) {
--		WARN_ELF("elf_newdata");
--		return -1;
--	}
--
--	sec->data->d_size = size;
--	sec->data->d_align = 1;
--
--	alt = sec->data->d_buf = malloc(size);
--	if (!sec->data->d_buf) {
--		perror("malloc");
--		return -1;
--	}
--	memset(sec->data->d_buf, 0, size);
--
--	if (elf_add_reloc_to_insn(elf, sec, sec->sh.sh_size,
--				  R_X86_64_PC32, orig->sec, orig->offset)) {
--		WARN("elf_create_reloc: alt_instr::instr_offset");
--		return -1;
--	}
--
--	if (elf_add_reloc(elf, sec, sec->sh.sh_size + 4,
--			  R_X86_64_PC32, sym, 0)) {
--		WARN("elf_create_reloc: alt_instr::repl_offset");
--		return -1;
--	}
--
--	alt->cpuid = cpuid;
--	alt->instrlen = orig_len;
--	alt->replacementlen = repl_len;
--
--	sec->sh.sh_size += size;
--	sec->changed = true;
--
--	return 0;
--}
--
--#define X86_FEATURE_RETPOLINE                ( 7*32+12)
--
--int arch_rewrite_retpolines(struct objtool_file *file)
--{
--	struct instruction *insn;
--	struct reloc *reloc;
--	struct symbol *sym;
--	char name[32] = "";
--
--	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
--
--		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC)
--			continue;
--
--		if (!strcmp(insn->sec->name, ".text.__x86.indirect_thunk"))
--			continue;
--
--		reloc = insn->reloc;
--
--		sprintf(name, "__x86_indirect_alt_%s_%s",
--			insn->type == INSN_JUMP_DYNAMIC ? "jmp" : "call",
--			reloc->sym->name + 21);
--
--		sym = find_symbol_by_name(file->elf, name);
--		if (!sym) {
--			sym = elf_create_undef_symbol(file->elf, name);
--			if (!sym) {
--				WARN("elf_create_undef_symbol");
--				return -1;
--			}
--		}
--
--		if (elf_add_alternative(file->elf, insn, sym,
--					ALT_NOT(X86_FEATURE_RETPOLINE), 5, 5)) {
--			WARN("elf_add_alternative");
--			return -1;
--		}
--	}
--
--	return 0;
--}
--
- int arch_decode_hint_reg(u8 sp_reg, int *base)
- {
- 	switch (sp_reg) {
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -606,6 +606,52 @@ static int create_static_call_sections(s
- 	return 0;
- }
- 
-+static int create_retpoline_sites_sections(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	struct section *sec;
-+	int idx;
-+
-+	sec = find_section_by_name(file->elf, ".retpoline_sites");
-+	if (sec) {
-+		WARN("file already has .retpoline_sites, skipping");
-+		return 0;
-+	}
-+
-+	idx = 0;
-+	list_for_each_entry(insn, &file->retpoline_call_list, call_node)
-+		idx++;
-+
-+	if (!idx)
-+		return 0;
-+
-+	sec = elf_create_section(file->elf, ".retpoline_sites", 0,
-+				 sizeof(int), idx);
-+	if (!sec) {
-+		WARN("elf_create_section: .retpoline_sites");
-+		return -1;
-+	}
-+
-+	idx = 0;
-+	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
-+
-+		int *site = (int *)sec->data->d_buf + idx;
-+		*site = 0;
-+
-+		if (elf_add_reloc_to_insn(file->elf, sec,
-+					  idx * sizeof(int),
-+					  R_X86_64_PC32,
-+					  insn->sec, insn->offset)) {
-+			WARN("elf_add_reloc_to_insn: .retpoline_sites");
-+			return -1;
-+		}
-+
-+		idx++;
-+	}
-+
-+	return 0;
-+}
-+
- /*
-  * Warnings shouldn't be reported for ignored functions.
-  */
-@@ -893,6 +939,11 @@ static void annotate_call_site(struct ob
- 		return;
- 	}
- 
-+	if (sym->retpoline_thunk) {
-+		list_add_tail(&insn->call_node, &file->retpoline_call_list);
-+		return;
-+	}
-+
- 	/*
- 	 * Many compilers cannot disable KCOV with a function attribute
- 	 * so they need a little help, NOP out any KCOV calls from noinstr
-@@ -933,6 +984,39 @@ static void add_call_dest(struct objtool
- 	annotate_call_site(file, insn, sibling);
- }
- 
-+static void add_retpoline_call(struct objtool_file *file, struct instruction *insn)
-+{
-+	/*
-+	 * Retpoline calls/jumps are really dynamic calls/jumps in disguise,
-+	 * so convert them accordingly.
-+	 */
-+	switch (insn->type) {
-+	case INSN_CALL:
-+		insn->type = INSN_CALL_DYNAMIC;
-+		break;
-+	case INSN_JUMP_UNCONDITIONAL:
-+		insn->type = INSN_JUMP_DYNAMIC;
-+		break;
-+	case INSN_JUMP_CONDITIONAL:
-+		insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	insn->retpoline_safe = true;
-+
-+	/*
-+	 * Whatever stack impact regular CALLs have, should be undone
-+	 * by the RETURN of the called function.
-+	 *
-+	 * Annotated intra-function calls retain the stack_ops but
-+	 * are converted to JUMP, see read_intra_function_calls().
-+	 */
-+	remove_insn_ops(insn);
-+
-+	annotate_call_site(file, insn, false);
-+}
- /*
-  * Find the destination instructions for all jumps.
-  */
-@@ -955,19 +1039,7 @@ static int add_jump_destinations(struct
- 			dest_sec = reloc->sym->sec;
- 			dest_off = arch_dest_reloc_offset(reloc->addend);
- 		} else if (reloc->sym->retpoline_thunk) {
--			/*
--			 * Retpoline jumps are really dynamic jumps in
--			 * disguise, so convert them accordingly.
--			 */
--			if (insn->type == INSN_JUMP_UNCONDITIONAL)
--				insn->type = INSN_JUMP_DYNAMIC;
--			else
--				insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
--
--			list_add_tail(&insn->call_node,
--				      &file->retpoline_call_list);
--
--			insn->retpoline_safe = true;
-+			add_retpoline_call(file, insn);
- 			continue;
- 		} else if (insn->func) {
- 			/* internal or external sibling call (with reloc) */
-@@ -1096,18 +1168,7 @@ static int add_call_destinations(struct
- 			add_call_dest(file, insn, dest, false);
- 
- 		} else if (reloc->sym->retpoline_thunk) {
--			/*
--			 * Retpoline calls are really dynamic calls in
--			 * disguise, so convert them accordingly.
--			 */
--			insn->type = INSN_CALL_DYNAMIC;
--			insn->retpoline_safe = true;
--
--			list_add_tail(&insn->call_node,
--				      &file->retpoline_call_list);
--
--			remove_insn_ops(insn);
--			continue;
-+			add_retpoline_call(file, insn);
- 
- 		} else
- 			add_call_dest(file, insn, reloc->sym, false);
-@@ -1806,11 +1867,6 @@ static void mark_rodata(struct objtool_f
- 	file->rodata = found;
- }
- 
--__weak int arch_rewrite_retpolines(struct objtool_file *file)
--{
--	return 0;
--}
--
- static int decode_sections(struct objtool_file *file)
- {
- 	int ret;
-@@ -1879,15 +1935,6 @@ static int decode_sections(struct objtoo
- 	if (ret)
- 		return ret;
- 
--	/*
--	 * Must be after add_special_section_alts(), since this will emit
--	 * alternatives. Must be after add_{jump,call}_destination(), since
--	 * those create the call insn lists.
--	 */
--	ret = arch_rewrite_retpolines(file);
--	if (ret)
--		return ret;
--
- 	return 0;
- }
- 
-@@ -3159,6 +3206,13 @@ int check(struct objtool_file *file)
- 		goto out;
- 	warnings += ret;
- 
-+	if (retpoline) {
-+		ret = create_retpoline_sites_sections(file);
-+		if (ret < 0)
-+			goto out;
-+		warnings += ret;
-+	}
-+
- 	if (stats) {
- 		printf("nr_insns_visited: %ld\n", nr_insns_visited);
- 		printf("nr_cfi: %ld\n", nr_cfi);
 --- a/tools/objtool/elf.c
 +++ b/tools/objtool/elf.c
-@@ -766,89 +766,6 @@ static int elf_add_string(struct elf *el
- 	return len;
+@@ -346,6 +346,8 @@ static void elf_add_symbol(struct elf *e
+ 	struct list_head *entry;
+ 	struct rb_node *pnode;
+ 
++	sym->alias = sym;
++
+ 	sym->type = GELF_ST_TYPE(sym->sym.st_info);
+ 	sym->bind = GELF_ST_BIND(sym->sym.st_info);
+ 
+@@ -401,7 +403,6 @@ static int read_symbols(struct elf *elf)
+ 			return -1;
+ 		}
+ 		memset(sym, 0, sizeof(*sym));
+-		sym->alias = sym;
+ 
+ 		sym->idx = i;
+ 
+@@ -562,24 +563,21 @@ static void elf_dirty_reloc_sym(struct e
  }
  
--struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name)
--{
--	struct section *symtab, *symtab_shndx;
+ /*
+- * Move the first global symbol, as per sh_info, into a new, higher symbol
+- * index. This fees up the shndx for a new local symbol.
++ * The libelf API is terrible; gelf_update_sym*() takes a data block relative
++ * index value, *NOT* the symbol index. As such, iterate the data blocks and
++ * adjust index until it fits.
++ *
++ * If no data block is found, allow adding a new data block provided the index
++ * is only one past the end.
+  */
+-static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
+-				  struct section *symtab_shndx)
++static int elf_update_symbol(struct elf *elf, struct section *symtab,
++			     struct section *symtab_shndx, struct symbol *sym)
+ {
+-	Elf_Data *data, *shndx_data = NULL;
+-	Elf32_Word first_non_local;
 -	struct symbol *sym;
--	Elf_Data *data;
 -	Elf_Scn *s;
 -
--	sym = malloc(sizeof(*sym));
+-	first_non_local = symtab->sh.sh_info;
+-
+-	sym = find_symbol_by_index(elf, first_non_local);
 -	if (!sym) {
--		perror("malloc");
--		return NULL;
+-		WARN("no non-local symbols !?");
+-		return first_non_local;
 -	}
--	memset(sym, 0, sizeof(*sym));
--
--	sym->name = strdup(name);
--
--	sym->sym.st_name = elf_add_string(elf, NULL, sym->name);
--	if (sym->sym.st_name == -1)
--		return NULL;
--
--	sym->sym.st_info = GELF_ST_INFO(STB_GLOBAL, STT_NOTYPE);
--	// st_other 0
--	// st_shndx 0
--	// st_value 0
--	// st_size 0
--
--	symtab = find_section_by_name(elf, ".symtab");
--	if (!symtab) {
--		WARN("can't find .symtab");
--		return NULL;
--	}
--
--	s = elf_getscn(elf->elf, symtab->idx);
--	if (!s) {
--		WARN_ELF("elf_getscn");
--		return NULL;
--	}
--
++	Elf32_Word shndx = sym->sec ? sym->sec->idx : SHN_UNDEF;
++	Elf_Data *symtab_data = NULL, *shndx_data = NULL;
++	Elf64_Xword entsize = symtab->sh.sh_entsize;
++	int max_idx, idx = sym->idx;
++	Elf_Scn *s, *t = NULL;
+ 
+ 	s = elf_getscn(elf->elf, symtab->idx);
+ 	if (!s) {
+@@ -587,79 +585,124 @@ static int elf_move_global_symbol(struct
+ 		return -1;
+ 	}
+ 
 -	data = elf_newdata(s);
 -	if (!data) {
 -		WARN_ELF("elf_newdata");
--		return NULL;
--	}
--
+-		return -1;
++	if (symtab_shndx) {
++		t = elf_getscn(elf->elf, symtab_shndx->idx);
++		if (!t) {
++			WARN_ELF("elf_getscn");
++			return -1;
++		}
+ 	}
+ 
 -	data->d_buf = &sym->sym;
 -	data->d_size = sizeof(sym->sym);
 -	data->d_align = 1;
--
--	sym->idx = symtab->len / sizeof(sym->sym);
--
--	symtab->len += data->d_size;
+-	data->d_type = ELF_T_SYM;
++	for (;;) {
++		/* get next data descriptor for the relevant sections */
++		symtab_data = elf_getdata(s, symtab_data);
++		if (t)
++			shndx_data = elf_getdata(t, shndx_data);
++
++		/* end-of-list */
++		if (!symtab_data) {
++			void *buf;
++
++			if (idx) {
++				/* we don't do holes in symbol tables */
++				WARN("index out of range");
++				return -1;
++			}
+ 
+-	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
+-	elf_dirty_reloc_sym(elf, sym);
++			/* if @idx == 0, it's the next contiguous entry, create it */
++			symtab_data = elf_newdata(s);
++			if (t)
++				shndx_data = elf_newdata(t);
++
++			buf = calloc(1, entsize);
++			if (!buf) {
++				WARN("malloc");
++				return -1;
++			}
+ 
+-	symtab->sh.sh_info += 1;
+-	symtab->sh.sh_size += data->d_size;
 -	symtab->changed = true;
--
--	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
++			symtab_data->d_buf = buf;
++			symtab_data->d_size = entsize;
++			symtab_data->d_align = 1;
++			symtab_data->d_type = ELF_T_SYM;
++
++			symtab->sh.sh_size += entsize;
++			symtab->changed = true;
++
++			if (t) {
++				shndx_data->d_buf = &sym->sec->idx;
++				shndx_data->d_size = sizeof(Elf32_Word);
++				shndx_data->d_align = sizeof(Elf32_Word);
++				shndx_data->d_type = ELF_T_WORD;
+ 
 -	if (symtab_shndx) {
 -		s = elf_getscn(elf->elf, symtab_shndx->idx);
 -		if (!s) {
 -			WARN_ELF("elf_getscn");
--			return NULL;
--		}
--
--		data = elf_newdata(s);
--		if (!data) {
--			WARN_ELF("elf_newdata");
--			return NULL;
--		}
--
--		data->d_buf = &sym->sym.st_size; /* conveniently 0 */
--		data->d_size = sizeof(Elf32_Word);
--		data->d_align = 4;
--		data->d_type = ELF_T_WORD;
--
--		symtab_shndx->len += 4;
--		symtab_shndx->changed = true;
--	}
--
--	sym->sec = find_section_by_index(elf, 0);
--
--	elf_add_symbol(elf, sym);
--
--	return sym;
--}
--
- struct section *elf_create_section(struct elf *elf, const char *name,
- 				   unsigned int sh_flags, size_t entsize, int nr)
- {
---- a/tools/objtool/elf.h
-+++ b/tools/objtool/elf.h
-@@ -136,7 +136,6 @@ int elf_write_insn(struct elf *elf, stru
- 		   unsigned long offset, unsigned int len,
- 		   const char *insn);
- int elf_write_reloc(struct elf *elf, struct reloc *reloc);
--struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name);
- int elf_write(struct elf *elf);
- void elf_close(struct elf *elf);
- 
---- a/tools/objtool/special.c
-+++ b/tools/objtool/special.c
-@@ -105,14 +105,6 @@ static int get_alt_entry(struct elf *elf
++				symtab_shndx->sh.sh_size += sizeof(Elf32_Word);
++				symtab_shndx->changed = true;
++			}
++
++			break;
++		}
++
++		/* empty blocks should not happen */
++		if (!symtab_data->d_size) {
++			WARN("zero size data");
  			return -1;
  		}
  
--		/*
--		 * Skip retpoline .altinstr_replacement... we already rewrite the
--		 * instructions for retpolines anyway, see arch_is_retpoline()
--		 * usage in add_{call,jump}_destinations().
--		 */
--		if (arch_is_retpoline(new_reloc->sym))
--			return 1;
--
- 		reloc_to_sec_off(new_reloc, &alt->new_sec, &alt->new_off);
+-		shndx_data = elf_newdata(s);
++		/* is this the right block? */
++		max_idx = symtab_data->d_size / entsize;
++		if (idx < max_idx)
++			break;
++
++		/* adjust index and try again */
++		idx -= max_idx;
++	}
++
++	/* something went side-ways */
++	if (idx < 0) {
++		WARN("negative index");
++		return -1;
++	}
++
++	/* setup extended section index magic and write the symbol */
++	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
++		sym->sym.st_shndx = shndx;
++		if (!shndx_data)
++			shndx = 0;
++	} else {
++		sym->sym.st_shndx = SHN_XINDEX;
+ 		if (!shndx_data) {
+-			WARN_ELF("elf_newshndx_data");
++			WARN("no .symtab_shndx");
+ 			return -1;
+ 		}
++	}
  
- 		/* _ASM_EXTABLE_EX hack */
+-		shndx_data->d_buf = &sym->sec->idx;
+-		shndx_data->d_size = sizeof(Elf32_Word);
+-		shndx_data->d_align = 4;
+-		shndx_data->d_type = ELF_T_WORD;
+-
+-		symtab_shndx->sh.sh_size += 4;
+-		symtab_shndx->changed = true;
++	if (!gelf_update_symshndx(symtab_data, shndx_data, idx, &sym->sym, shndx)) {
++		WARN_ELF("gelf_update_symshndx");
++		return -1;
+ 	}
+ 
+-	return first_non_local;
++	return 0;
+ }
+ 
+ static struct symbol *
+ elf_create_section_symbol(struct elf *elf, struct section *sec)
+ {
+ 	struct section *symtab, *symtab_shndx;
+-	Elf_Data *shndx_data = NULL;
+-	struct symbol *sym;
+-	Elf32_Word shndx;
++	Elf32_Word first_non_local, new_idx;
++	struct symbol *sym, *old;
+ 
+ 	symtab = find_section_by_name(elf, ".symtab");
+ 	if (symtab) {
+ 		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
+-		if (symtab_shndx)
+-			shndx_data = symtab_shndx->data;
+ 	} else {
+ 		WARN("no .symtab");
+ 		return NULL;
+ 	}
+ 
+-	sym = malloc(sizeof(*sym));
++	sym = calloc(1, sizeof(*sym));
+ 	if (!sym) {
+ 		perror("malloc");
+ 		return NULL;
+ 	}
+-	memset(sym, 0, sizeof(*sym));
+-
+-	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
+-	if (sym->idx < 0) {
+-		WARN("elf_move_global_symbol");
+-		return NULL;
+-	}
+ 
+ 	sym->name = sec->name;
+ 	sym->sec = sec;
+@@ -669,24 +712,41 @@ elf_create_section_symbol(struct elf *el
+ 	// st_other 0
+ 	// st_value 0
+ 	// st_size 0
+-	shndx = sec->idx;
+-	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
+-		sym->sym.st_shndx = shndx;
+-		if (!shndx_data)
+-			shndx = 0;
+-	} else {
+-		sym->sym.st_shndx = SHN_XINDEX;
+-		if (!shndx_data) {
+-			WARN("no .symtab_shndx");
++
++	/*
++	 * Move the first global symbol, as per sh_info, into a new, higher
++	 * symbol index. This fees up a spot for a new local symbol.
++	 */
++	first_non_local = symtab->sh.sh_info;
++	new_idx = symtab->sh.sh_size / symtab->sh.sh_entsize;
++	old = find_symbol_by_index(elf, first_non_local);
++	if (old) {
++		old->idx = new_idx;
++
++		hlist_del(&old->hash);
++		elf_hash_add(elf->symbol_hash, &old->hash, old->idx);
++
++		elf_dirty_reloc_sym(elf, old);
++
++		if (elf_update_symbol(elf, symtab, symtab_shndx, old)) {
++			WARN("elf_update_symbol move");
+ 			return NULL;
+ 		}
++
++		new_idx = first_non_local;
+ 	}
+ 
+-	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
+-		WARN_ELF("gelf_update_symshndx");
++	sym->idx = new_idx;
++	if (elf_update_symbol(elf, symtab, symtab_shndx, sym)) {
++		WARN("elf_update_symbol");
+ 		return NULL;
+ 	}
+ 
++	/*
++	 * Either way, we added a LOCAL symbol.
++	 */
++	symtab->sh.sh_info += 1;
++
+ 	elf_add_symbol(elf, sym);
+ 
+ 	return sym;
 
 
