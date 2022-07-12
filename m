@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D093FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F32DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231971AbiGLAQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50808 "EHLO
+        id S231868AbiGLAQ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231445AbiGLAPg (ORCPT
+        with ESMTP id S231806AbiGLAPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:15:36 -0400
+        Mon, 11 Jul 2022 20:15:49 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBEA38AB3D
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:14:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0252AC59
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:14:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657584886; x=1689120886;
+  t=1657584893; x=1689120893;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=C8Uzw/OFgKD9tbEvzPbFnAX3iv82DoXowylUk3SZ2PY=;
-  b=hhvXF/CUXHCocdnQxbJ2Ch7b1Os+WcEuMmuoMfpDqFg5CgWVzXFs8o+L
-   Z/fnjc6tF/6KMFdty7/hFX1nRzemmzrnlcs5EOrUUZp7wOkm8xFqcMcEK
-   6YqAqzFt2jxwzvwg/jNVq0vJUqvomaBgnstMbMCpegpIn0OFziHNrUd3b
-   5QiDio70YdykkusbwKjPmsAgeVc4igC71lNwQDEInZIzxpTbu+/jpmYrX
-   cqOkXmfhPXEUVLCDq9Qwn1H7k8LNMJZpNFdT+SMyUuuHxrDr2PkrEiiNE
-   PMtIY2dY6gBaNnhiib8/+dtDmLdfZFuXJBBUM6wN4nwJlaQTl6MnHclRp
+  bh=n8OUlNT9qDkBFdgYmQfEEoxusEpBSjX1aHY1EnVMf08=;
+  b=Dh/3m8B9c6CvBhqVZeweqyLpkBCn77S1vmcWI7TUzPs3DYI3kno2973s
+   zko/Z5EPAxXcU7530ldV2EtjsVpKUEUnOruQjfQlyUXJZaHXE6IyopXcH
+   nQ/mNQeKqAgEQ3mofC3WOFa1HkhTv+VlSQq/TlmmeJVDhqGbI35+hmOjn
+   yH2bSASC26eDswWilCT+MKZZt/SAijyxghf5FcP+avGW+Kau085xeKTvk
+   iXBWdpXD6pRo3X5eX4+5pS8VYtIaH626ko8etZ01/bJfv6LwkpUac4jF5
+   Chhl5DV5hIpfBjFqHA63hJxia1G9MWH6cWJTHb6eqMHsIT5ZtlsNfsOA5
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="285929325"
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="285929339"
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="285929325"
+   d="scan'208";a="285929339"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:14:26 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:14:27 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="592445847"
+   d="scan'208";a="592445867"
 Received: from allen-box.sh.intel.com ([10.239.159.48])
-  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:14:07 -0700
+  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:14:15 -0700
 From:   Lu Baolu <baolu.lu@linux.intel.com>
 To:     Joerg Roedel <joro@8bytes.org>
 Cc:     iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH 18/25] iommu/vt-d: Use device_domain_lock accurately
-Date:   Tue, 12 Jul 2022 08:09:01 +0800
-Message-Id: <20220712000908.3431936-19-baolu.lu@linux.intel.com>
+Subject: [PATCH 24/25] iommu/vt-d: Remove global g_iommus array
+Date:   Tue, 12 Jul 2022 08:09:07 +0800
+Message-Id: <20220712000908.3431936-25-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
 References: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
@@ -53,196 +53,114 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The device_domain_lock is used to protect the device tracking list of
-a domain. Remove unnecessary spin_lock/unlock()'s and move the necessary
-ones around the list access.
+The g_iommus and g_num_of_iommus is not used anywhere. Remove them to
+avoid dead code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20220706025524.2904370-11-baolu.lu@linux.intel.com
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+Link: https://lore.kernel.org/r/20220702015610.2849494-6-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 57 +++++++++++++------------------------
- 1 file changed, 19 insertions(+), 38 deletions(-)
+ drivers/iommu/intel/iommu.c | 44 -------------------------------------
+ 1 file changed, 44 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ccddf634fae9..ae42a9e43997 100644
+index 2f64ff6e6e75..3ba0d7e76efd 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -535,15 +535,8 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	int nid = NUMA_NO_NODE;
+@@ -126,9 +126,6 @@ static inline unsigned long virt_to_dma_pfn(void *p)
+ 	return page_to_dma_pfn(virt_to_page(p));
+ }
  
--	assert_spin_locked(&device_domain_lock);
+-/* global iommu list, set NULL for ignored DMAR units */
+-static struct intel_iommu **g_iommus;
 -
--	if (list_empty(&domain->devices))
--		return NUMA_NO_NODE;
+ static void __init check_tylersburg_isoch(void);
+ static int rwbf_quirk;
+ 
+@@ -287,9 +284,6 @@ static LIST_HEAD(dmar_satc_units);
+ #define for_each_rmrr_units(rmrr) \
+ 	list_for_each_entry(rmrr, &dmar_rmrr_units, list)
+ 
+-/* bitmap for indexing intel_iommus */
+-static int g_num_of_iommus;
 -
-+	spin_lock(&device_domain_lock);
- 	list_for_each_entry(info, &domain->devices, link) {
--		if (!info->dev)
--			continue;
--
- 		/*
- 		 * There could possibly be multiple device numa nodes as devices
- 		 * within the same domain may sit behind different IOMMUs. There
-@@ -554,6 +547,7 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 		if (nid != NUMA_NO_NODE)
- 			break;
+ static void dmar_remove_one_dev_info(struct device *dev);
+ 
+ int dmar_disabled = !IS_ENABLED(CONFIG_INTEL_IOMMU_DEFAULT_ON);
+@@ -1694,8 +1688,6 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+ 		iommu->domain_ids = NULL;
  	}
-+	spin_unlock(&device_domain_lock);
  
- 	return nid;
- }
-@@ -1376,23 +1370,23 @@ static void __iommu_flush_iotlb(struct intel_iommu *iommu, u16 did,
- }
- 
- static struct device_domain_info *
--iommu_support_dev_iotlb (struct dmar_domain *domain, struct intel_iommu *iommu,
--			 u8 bus, u8 devfn)
-+iommu_support_dev_iotlb(struct dmar_domain *domain, struct intel_iommu *iommu,
-+			u8 bus, u8 devfn)
- {
- 	struct device_domain_info *info;
- 
--	assert_spin_locked(&device_domain_lock);
+-	g_iommus[iommu->seq_id] = NULL;
 -
- 	if (!iommu->qi)
- 		return NULL;
+ 	/* free context mapping */
+ 	free_context_table(iommu);
  
--	list_for_each_entry(info, &domain->devices, link)
-+	spin_lock(&device_domain_lock);
-+	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->iommu == iommu && info->bus == bus &&
- 		    info->devfn == devfn) {
--			if (info->ats_supported && info->dev)
--				return info;
--			break;
-+			spin_unlock(&device_domain_lock);
-+			return info->ats_supported ? info : NULL;
- 		}
-+	}
-+	spin_unlock(&device_domain_lock);
- 
- 	return NULL;
- }
-@@ -1402,23 +1396,21 @@ static void domain_update_iotlb(struct dmar_domain *domain)
- 	struct device_domain_info *info;
- 	bool has_iotlb_device = false;
- 
--	assert_spin_locked(&device_domain_lock);
--
--	list_for_each_entry(info, &domain->devices, link)
-+	spin_lock(&device_domain_lock);
-+	list_for_each_entry(info, &domain->devices, link) {
- 		if (info->ats_enabled) {
- 			has_iotlb_device = true;
- 			break;
- 		}
--
-+	}
- 	domain->has_iotlb_device = has_iotlb_device;
-+	spin_unlock(&device_domain_lock);
- }
- 
- static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
--	assert_spin_locked(&device_domain_lock);
--
- 	if (!info || !dev_is_pci(info->dev))
- 		return;
- 
-@@ -1464,8 +1456,6 @@ static void iommu_disable_dev_iotlb(struct device_domain_info *info)
- {
- 	struct pci_dev *pdev;
- 
--	assert_spin_locked(&device_domain_lock);
--
- 	if (!dev_is_pci(info->dev))
- 		return;
- 
-@@ -1906,9 +1896,10 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 				      struct pasid_table *table,
- 				      u8 bus, u8 devfn)
- {
-+	struct device_domain_info *info =
-+			iommu_support_dev_iotlb(domain, iommu, bus, devfn);
- 	u16 did = domain->iommu_did[iommu->seq_id];
- 	int translation = CONTEXT_TT_MULTI_LEVEL;
--	struct device_domain_info *info = NULL;
- 	struct context_entry *context;
+@@ -2898,36 +2890,6 @@ static int __init init_dmars(void)
+ 	struct intel_iommu *iommu;
  	int ret;
  
-@@ -1922,9 +1913,7 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 
- 	BUG_ON(!domain->pgd);
- 
--	spin_lock(&device_domain_lock);
- 	spin_lock(&iommu->lock);
--
- 	ret = -ENOMEM;
- 	context = iommu_context_addr(iommu, bus, devfn, 1);
- 	if (!context)
-@@ -1975,7 +1964,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 		 * Setup the Device-TLB enable bit and Page request
- 		 * Enable bit:
- 		 */
--		info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
- 		if (info && info->ats_supported)
- 			context_set_sm_dte(context);
- 		if (info && info->pri_supported)
-@@ -1998,7 +1986,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 					goto out_unlock;
- 			}
- 
--			info = iommu_support_dev_iotlb(domain, iommu, bus, devfn);
- 			if (info && info->ats_supported)
- 				translation = CONTEXT_TT_DEV_IOTLB;
- 			else
-@@ -2044,7 +2031,6 @@ static int domain_context_mapping_one(struct dmar_domain *domain,
- 
- out_unlock:
- 	spin_unlock(&iommu->lock);
--	spin_unlock(&device_domain_lock);
- 
- 	return ret;
- }
-@@ -2456,13 +2442,11 @@ static int domain_add_dev_info(struct dmar_domain *domain, struct device *dev)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	spin_lock(&device_domain_lock);
--	info->domain = domain;
- 	ret = domain_attach_iommu(domain, iommu);
--	if (ret) {
--		spin_unlock(&device_domain_lock);
-+	if (ret)
- 		return ret;
+-	/*
+-	 * for each drhd
+-	 *    allocate root
+-	 *    initialize and program root entry to not present
+-	 * endfor
+-	 */
+-	for_each_drhd_unit(drhd) {
+-		/*
+-		 * lock not needed as this is only incremented in the single
+-		 * threaded kernel __init code path all other access are read
+-		 * only
+-		 */
+-		if (g_num_of_iommus < DMAR_UNITS_SUPPORTED) {
+-			g_num_of_iommus++;
+-			continue;
+-		}
+-		pr_err_once("Exceeded %d IOMMUs\n", DMAR_UNITS_SUPPORTED);
 -	}
-+	info->domain = domain;
-+	spin_lock(&device_domain_lock);
- 	list_add(&info->link, &domain->devices);
- 	spin_unlock(&device_domain_lock);
- 
-@@ -4638,9 +4622,7 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
- 	if (!domain)
- 		return -EINVAL;
- 
--	spin_lock(&device_domain_lock);
- 	spin_lock(&iommu->lock);
 -
- 	ret = -EINVAL;
- 	if (!info->pasid_supported)
- 		goto out;
-@@ -4670,7 +4652,6 @@ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+-	/* Preallocate enough resources for IOMMU hot-addition */
+-	if (g_num_of_iommus < DMAR_UNITS_SUPPORTED)
+-		g_num_of_iommus = DMAR_UNITS_SUPPORTED;
+-
+-	g_iommus = kcalloc(g_num_of_iommus, sizeof(struct intel_iommu *),
+-			GFP_KERNEL);
+-	if (!g_iommus) {
+-		ret = -ENOMEM;
+-		goto error;
+-	}
+-
+ 	ret = intel_cap_audit(CAP_AUDIT_STATIC_DMAR, NULL);
+ 	if (ret)
+ 		goto free_iommu;
+@@ -2950,8 +2912,6 @@ static int __init init_dmars(void)
+ 						   intel_pasid_max_id);
+ 		}
  
-  out:
- 	spin_unlock(&iommu->lock);
--	spin_unlock(&device_domain_lock);
+-		g_iommus[iommu->seq_id] = iommu;
+-
+ 		intel_iommu_init_qi(iommu);
  
+ 		ret = iommu_init_domains(iommu);
+@@ -3077,9 +3037,6 @@ static int __init init_dmars(void)
+ 		free_dmar_iommu(iommu);
+ 	}
+ 
+-	kfree(g_iommus);
+-
+-error:
  	return ret;
  }
+ 
+@@ -3483,7 +3440,6 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+ 	if (iommu->gcmd & DMA_GCMD_TE)
+ 		iommu_disable_translation(iommu);
+ 
+-	g_iommus[iommu->seq_id] = iommu;
+ 	ret = iommu_init_domains(iommu);
+ 	if (ret == 0)
+ 		ret = iommu_alloc_root_entry(iommu);
 -- 
 2.25.1
 
