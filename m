@@ -2,102 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81C1BCCA481
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390F1C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:51:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232467AbiGLLvU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
+        id S232318AbiGLLvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229634AbiGLLvQ (ORCPT
+        with ESMTP id S230010AbiGLLvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:51:16 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907E3B31F6;
-        Tue, 12 Jul 2022 04:51:14 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LhzZ95CjvzlVxf;
-        Tue, 12 Jul 2022 19:49:37 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 19:51:11 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.66) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 19:51:11 +0800
-From:   Zheng Yejian <zhengyejian1@huawei.com>
-To:     <rostedt@goodmis.org>
-CC:     <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
-        <stable@vger.kernel.org>, <tom.zanussi@linux.intel.com>,
-        <trix@redhat.com>, <zhangjinhao2@huawei.com>,
-        <zhengyejian1@huawei.com>
-Subject: Re: [PATCH v2] tracing/histograms: Fix memory leak problem
-Date:   Tue, 12 Jul 2022 19:48:44 +0800
-Message-ID: <20220712114844.158722-1-zhengyejian1@huawei.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220711115211.4f613cbe@gandalf.local.home>
-References: <20220711115211.4f613cbe@gandalf.local.home>
+        Tue, 12 Jul 2022 07:51:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F0ABB31DF
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:51:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657626675;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Pu5HpFtltIVsBRjVtOQ6HAzFmE6im22Ds+SLjPOebFg=;
+        b=LC8R1HDbk0ydycbycjKEK4rn04scffDQoWoDki0OokvvA/RAoSRHDUWr2T64wViA8Ru3Le
+        c/F1Mbd7M+puLExkNNrZaGeOO6+C22u7LbxWeF7dDYsDYEjVECbp4OxZNBZagNdtmgfoZi
+        qDKM5nmFLJGI9+G3UuhhLJSYPTc+joA=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-465-BWzC655_OHaAynVFDUDfPQ-1; Tue, 12 Jul 2022 07:51:14 -0400
+X-MC-Unique: BWzC655_OHaAynVFDUDfPQ-1
+Received: by mail-qk1-f198.google.com with SMTP id i15-20020a05620a404f00b006b55998179bso7587825qko.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:51:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=Pu5HpFtltIVsBRjVtOQ6HAzFmE6im22Ds+SLjPOebFg=;
+        b=F5ZkFm9czy3ZR2FaRnN+c83wAM3ir02M4XnXcVZAepDSQGnRwMnLvwvddI1OmVdW/F
+         uX10vp7J3K+xDYsTMaH/OZdw4dAHPhs0d4afnzEBwSJji5s4qAS587pHKgcmY/GySbOl
+         S/cD0DGdbFtERykVxSPnY4Pm0lfMg3RsbLxqgNA1lP7nhErkihMuuWDm9S6rIrQ93yxR
+         7d5EutuIt0NqWrQJn6epY5HeAvdc62NG5jFjZ/GLhz4pVMgpBwUgttRaDW/edGBRqbCe
+         r5hxVOw6H7pSDqd/15Ar1JGS/Kayydwcg+5/JLTW9NZArW1XuA1CKo+bm/QgtPJC0Ddo
+         4aHQ==
+X-Gm-Message-State: AJIora/vNi09GyYMBuGatQix5HsbPKlWQS2A7D9ahplSMvHEi8xuD6R2
+        vmqgNbLrNIDqjv/W9t20Xf0KpFhYVjPAUpSZKuAT5CcVheyLXCb0Y2s0fwsaySFkGwI8PKEhPcK
+        1Vv5j96cgwb0LrhPx4kgDNxv2
+X-Received: by 2002:a0c:eb4a:0:b0:472:f936:3ea0 with SMTP id c10-20020a0ceb4a000000b00472f9363ea0mr17624102qvq.43.1657626673826;
+        Tue, 12 Jul 2022 04:51:13 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sAmCrQDiM3HG8ckaM1gZI3DAX4ar7jMdogSWlMsC7V8zRIrmKQ62wg7e71rBtKTus/ToKSKQ==
+X-Received: by 2002:a0c:eb4a:0:b0:472:f936:3ea0 with SMTP id c10-20020a0ceb4a000000b00472f9363ea0mr17624080qvq.43.1657626673615;
+        Tue, 12 Jul 2022 04:51:13 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id n7-20020ae9c307000000b006a34a22bc60sm8389923qkg.9.2022.07.12.04.51.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 04:51:13 -0700 (PDT)
+Message-ID: <6cf5812083ebfa18ba52563527298cb8b91f7fab.camel@redhat.com>
+Subject: Re: [PATCH v3 03/25] x86/hyperv: Update 'struct
+ hv_enlightened_vmcs' definition
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 14:51:09 +0300
+In-Reply-To: <20220708144223.610080-4-vkuznets@redhat.com>
+References: <20220708144223.610080-1-vkuznets@redhat.com>
+         <20220708144223.610080-4-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.66]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Jul 2022 11:52:11 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
-> On Mon, 11 Jul 2022 09:27:44 -0500
-> "Zanussi, Tom" <tom.zanussi@linux.intel.com> wrote:
+On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
+> Updated Hyper-V Enlightened VMCS specification lists several new
+> fields for the following features:
 > 
-> > So I'm wondering if this means that that the original unnecessary bugfix
-> > was based on a bug in the clang static analyzer or if that would just be
-> > considered a false positive...
+> - PerfGlobalCtrl
+> - EnclsExitingBitmap
+> - Tsc Scaling
+> - GuestLbrCtl
+> - CET
+> - SSP
 > 
-> Good question. I'd like to know this, as if it is the case, I want to
-> report that in my pull request to Linus.
+> Update the definition. The updated definition is available only when
+> CPUID.0x4000000A.EBX BIT(0) is '1'. Add a define for it as well.
 > 
-> -- Steve
+> Note: The latest TLFS is available at
+> https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/include/asm/hyperv-tlfs.h | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+> index 6f0acc45e67a..6f2c3cdacdf4 100644
+> --- a/arch/x86/include/asm/hyperv-tlfs.h
+> +++ b/arch/x86/include/asm/hyperv-tlfs.h
+> @@ -138,6 +138,9 @@
+>  #define HV_X64_NESTED_GUEST_MAPPING_FLUSH		BIT(18)
+>  #define HV_X64_NESTED_MSR_BITMAP			BIT(19)
+>  
 
-I didn't use clang static analyzer before, but from its home page,
-'False Positives' seems to exist, see https://clang-analyzer.llvm.org/:
-    > Static analysis is not perfect. It can falsely flag bugs in a program
-    > where the code behaves correctly. Because some code checks require more
-    > analysis precision than others, the frequency of false positives can
-    > vary widely between different checks. Our long-term goal is to have the
-    > analyzer have a low false positive rate for most code on all checks.
+Maybe add a comment that this is undocumented + what that cpuid bit does?
 
-So I try the clang-14 which comes from
-https://github.com/llvm/llvm-project/releases/tag/llvmorg-14.0.0,
-then execute like:
-  $ scan-build make -j16
+> +/* Nested quirks. These are HYPERV_CPUID_NESTED_FEATURES.EBX bits. */
+> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE		BIT(0)
+> +
+>  /*
+>   * This is specific to AMD and specifies that enlightened TLB flush is
+>   * supported. If guest opts in to this feature, ASID invalidations only
+> @@ -559,9 +562,20 @@ struct hv_enlightened_vmcs {
+>  	u64 partition_assist_page;
+>  	u64 padding64_4[4];
+>  	u64 guest_bndcfgs;
+> -	u64 padding64_5[7];
+> +	u64 guest_ia32_perf_global_ctrl;
+> +	u64 guest_ia32_s_cet;
+> +	u64 guest_ssp;
+> +	u64 guest_ia32_int_ssp_table_addr;
+> +	u64 guest_ia32_lbr_ctl;
+> +	u64 padding64_5[2];
 
-Then I take a rough look at following warnings related to 'trace_events_hist.c'
-(serial number is manually added, no double free warning, maybe due to clang version):
-  1. kernel/trace/trace_events_hist.c:1540:6: warning: Branch condition evaluates to a garbage value [core.uninitialized.Branch]
-          if (!attrs->keys_str) {
-              ^~~~~~~~~~~~~~~~
-  2. kernel/trace/trace_events_hist.c:1580:9: warning: Array access (via field 'field_var_str') results in a null pointer dereference [core.NullDereference]
-                  kfree(elt_data->field_var_str[i]);
-                        ^~~~~~~~~~~~~~~~~~~~~~~~~~
-  3. kernel/trace/trace_events_hist.c:1898:3: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
-                  destroy_hist_field(hist_field->operands[i], level + 1);
-                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  4. kernel/trace/trace_events_hist.c:2095:2: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
-          kfree(ref_field->system);
-          ^~~~~~~~~~~~~~~~~~~~~~~~
-  5. kernel/trace/trace_events_hist.c:2099:2: warning: 1st function call argument is an uninitialized value [core.CallAndMessage]
-          kfree(ref_field->name);
-          ^~~~~~~~~~~~~~~~~~~~~~
-  6. kernel/trace/trace_events_hist.c:2158:4: warning: Potential leak of memory pointed to by 'ref_field' [unix.Malloc]
-                          return NULL;
+This change looks OK
 
-Since I'm not very familiar with trace_events_hist.c, I roughly conclude that:
-  1. warning 1/3/6 are plausible but false-positive;
-  2. warning 2/4/5 seems positive although they don't cause practical problems because
-elt_data->field_var_str[i] / ref_field->system / ref_field->name can be 'NULL'
-on 'kfree'. Do we need to explicitly check 'NULL' there?
+>  	u64 xss_exit_bitmap;
+> -	u64 padding64_6[7];
+> +	u64 host_ia32_perf_global_ctrl;
+> +	u64 encls_exiting_bitmap;
+> +	u64 tsc_multiplier;
+> +	u64 host_ia32_s_cet;
+> +	u64 host_ssp;
+> +	u64 host_ia32_int_ssp_table_addr;
+> +	u64 padding64_6;
+
+I think we have a mistake here:
+
+UINT64 XssExitingBitmap;
+UINT64 EnclsExitingBitmap;
+UINT64 HostPerfGlobalCtrl;
+UINT64 TscMultiplier;
+UINT64 HostSCet;
+UINT64 HostSsp;
+UINT64 HostInterruptSspTableAddr;
+UINT64 Rsvd8;
+
+
+I think you need to swap encls_exiting_bitmap and host_ia32_perf_global_ctrl
+
+I used https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/datatypes/hv_vmx_enlightened_vmcs
+as the reference. 
+
+
+Best regards,
+	Maxim Levitsky
+
+
+>  } __packed;
+>  
+>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE			0
+
+
