@@ -2,279 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CF6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234353AbiGLXO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 19:14:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
+        id S233172AbiGLXQM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 19:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233928AbiGLXNi (ORCPT
+        with ESMTP id S234247AbiGLXPx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 19:13:38 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7F0F47
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:13:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657667614; x=1689203614;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MGBbR/k1AssmUS4ywd/fm01GaItlo8jGpggyRDWPYcs=;
-  b=L9uV19MvuJ5sfhn9qCFEPqAbv6PuhKKQqMlPGBoG0aNUCs9kDg80XCPd
-   ROIh0zZWEo/cUPxDaZkwHbKugXmQPvKGvyI2cwJ05CsH1tmQq6ZwKx2mG
-   QoFhBBsigP1BP36CpVch1hfsX/HR6qWcmMVlPJ3lz1pMimCWX2npR3DZG
-   AQNUVDjVHIchbmon0052EeIbs59CbQkd8sTIRugCelf5x0kj2yOfPwuxi
-   Uz8frz3lKSLUqhXttYbj4oDLaDH/fNVhoqNfekHO7VdwC5XAWKu2oOCRo
-   v8dLjhM03u+h7VRtK8J5VuFAnx/Ofam9CezlVbnWPTUCOBp1J+hJg+Ws7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285808446"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="285808446"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 16:13:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="841547745"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Jul 2022 16:13:26 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 39A185F6; Wed, 13 Jul 2022 02:13:30 +0300 (EEST)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Taras Madan <tarasmadan@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "H . J . Lu" <hjl.tools@gmail.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Rick Edgecombe <rick.p.edgecombe@intel.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Weihong Zhang <weihong.zhang@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 11/13] selftests/x86/lam: Add inherit test cases for linear-address masking
-Date:   Wed, 13 Jul 2022 02:13:26 +0300
-Message-Id: <20220712231328.5294-12-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
-References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
+        Tue, 12 Jul 2022 19:15:53 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45974CDA12;
+        Tue, 12 Jul 2022 16:15:11 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id a15so9565970pjs.0;
+        Tue, 12 Jul 2022 16:15:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ztXFYPGh7YY5+DNJJYJue/095116F+yh2f6Belg/x8M=;
+        b=lyR6YxCanKNt3stonvx11gA1slmL5idfCyo7V7/ipFJ1Ra3sJJA2r9R8awakuM/zOg
+         vXO2akT5kebEUsutJYFFe0SethNangUeJuBMKs/kDrYebJekopZigTl/TeRFAxAYl4IB
+         VQPhSlA7ZCtEfKQJISydicltNOOYR/dJLfgG5RuF9IfU4J2rUsIK2UkXIJhLbJJeedO+
+         qNR++LTPx3B+zsjs8ArIeUAZjDvh2gxGR5xDLxlXErZO89XNxORcGCOG+Wvj77phje6F
+         63Za+ShVamdR7oddsh0fDdvb5DDD2ZrIsrmY7290lqsatBNSpbg2m9MGP1Wvqi5+HlMa
+         65RA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ztXFYPGh7YY5+DNJJYJue/095116F+yh2f6Belg/x8M=;
+        b=r9zlbX+MLWZYXDVYXgnt5bb9skx0GvveKx5DVeBqX7yS7LxiqaEkTyD0qJ48nk808o
+         JbRIcVCmHZPPWuPlEpm7nyzVle59FbTXx0qMoirGtJsXOS56oYMJdJftPf4jyvnD0iv5
+         C12u4rONz/b1u80LZUojXngGGeY8otncfk8EK9co+31aZqq2QZnyuwkR+r+QrYu5IM7Z
+         hwp9TDb1S6CPCU5ARVVrlYRu5O+58Y6AJxl4essu2uE2dU7+xQIzgY5TxX36guSKP0iy
+         VvBwLmD6GJdEYrU3hkDhj3NAVxDe+ZI41IqLqTdZrM6fxFp3dyYF10J0MjqJ0Z+l10YX
+         cY9Q==
+X-Gm-Message-State: AJIora9RszkOCslvTJS8x+J8/1IU/jdZtEaPa7GY+JDJNGq1XBNW76rb
+        ac0gkBssXRhC1/9sfacfXBMNo5Ms0Oo=
+X-Google-Smtp-Source: AGRyM1umdpHXd0PaZwzJ8rvDg1loDmEke8Bfq1zThwNNsKOjWdCEfg+iccVyaSRpL8uxTvD17LipwQ==
+X-Received: by 2002:a17:902:e888:b0:16c:33f7:89cb with SMTP id w8-20020a170902e88800b0016c33f789cbmr392816plg.2.1657667711388;
+        Tue, 12 Jul 2022 16:15:11 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id pi4-20020a17090b1e4400b001df264610c4sm4509075pjb.0.2022.07.12.16.15.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 16:15:10 -0700 (PDT)
+Message-ID: <6acd1cd0-25aa-eb9c-4176-49f623f79301@gmail.com>
+Date:   Tue, 12 Jul 2022 16:15:08 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 5.10 000/130] 5.10.131-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220712183246.394947160@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weihong Zhang <weihong.zhang@intel.com>
+On 7/12/22 11:37, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.131 release.
+> There are 130 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Thu, 14 Jul 2022 18:32:19 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.131-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-LAM is enabled per-thread and gets inherited on fork(2)/clone(2). exec()
-reverts LAM status to the default disabled state.
+perf fails to build with:
 
-There are two test scenarios:
+   CC 
+/local/users/fainelli/buildroot/output/arm64/build/linux-custom/tools/perf/util/intel-pt-decoder/intel-pt-insn-decoder.o
+In file included from util/intel-pt-decoder/intel-pt-insn-decoder.c:15:
+util/intel-pt-decoder/../../../arch/x86/lib/insn.c:13:10: fatal error: 
+asm/inat.h: No such file or directory
+  #include <asm/inat.h> /* __ignore_sync_check__ */
+           ^~~~~~~~~~~~
+compilation terminated.
+make[7]: *** [util/intel-pt-decoder/Build:14: 
+/local/users/fainelli/buildroot/output/arm64/build/linux-custom/tools/perf/util/intel-pt-decoder/intel-pt-insn-decoder.o] 
+Error 1
+make[6]: *** 
+[/local/users/fainelli/buildroot/output/arm64/build/linux-custom/tools/build/Makefile.build:139: 
+intel-pt-decoder] Error 2
+make[5]: *** 
+[/local/users/fainelli/buildroot/output/arm64/build/linux-custom/tools/build/Makefile.build:139: 
+util] Error 2
+make[4]: *** [Makefile.perf:643: 
+/local/users/fainelli/buildroot/output/arm64/build/linux-custom/tools/perf/perf-in.o] 
+Error 2
+make[3]: *** [Makefile.perf:229: sub-make] Error 2
+make[2]: *** [Makefile:70: all] Error 2
+make[1]: *** [package/pkg-generic.mk:294: 
+/local/users/fainelli/buildroot/output/arm64/build/linux-tools/.stamp_built] 
+Error 2
+make: *** [Makefile:27: _all] Error 2
 
- - Fork test cases:
+you will need to pick this patch as well:
 
-   These cases were used to test the inheritance of LAM for per-thread,
-   Child process generated by fork() should inherit LAM feature from
-   parent process, Child process can get the LAM mode same as parent
-   process.
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0705ef64d1ff52b817e278ca6e28095585ff31e1
 
- - Execve test cases:
+With that one applied:
 
-   Processes generated by execve() are different from processes
-   generated by fork(), these processes revert LAM status to disabled
-   status.
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
 
-Signed-off-by: Weihong Zhang <weihong.zhang@intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- tools/testing/selftests/x86/lam.c | 124 +++++++++++++++++++++++++++++-
- 1 file changed, 121 insertions(+), 3 deletions(-)
-
-diff --git a/tools/testing/selftests/x86/lam.c b/tools/testing/selftests/x86/lam.c
-index d2ae75b3bdc0..fcac5feb47d0 100644
---- a/tools/testing/selftests/x86/lam.c
-+++ b/tools/testing/selftests/x86/lam.c
-@@ -34,7 +34,9 @@
- #define FUNC_SYSCALL            0x4
- #define FUNC_URING              0x8
- 
--#define TEST_MASK               0xf
-+#define FUNC_INHERITE           0x10
-+
-+#define TEST_MASK               0x1f
- 
- #define LOW_ADDR                (0x1UL << 30)
- #define HIGH_ADDR               (0x3UL << 48)
-@@ -142,6 +144,28 @@ static int set_lam(unsigned long lam)
- 	return ret;
- }
- 
-+/*
-+ * Set tagged address and read back untag mask.
-+ * check if the untag mask is expected.
-+ */
-+static int get_lam(void)
-+{
-+	uint64_t ptr = 0;
-+	int ret = -1;
-+	/* Get untagged mask */
-+	if (syscall(SYS_arch_prctl, ARCH_GET_UNTAG_MASK, &ptr) == -1)
-+		return -1;
-+
-+	/* Check mask returned is expected */
-+	if (ptr == ~(0x3fULL << 57))
-+		ret = LAM_U57_BITS;
-+	else if (ptr == -1ULL)
-+		ret = LAM_NONE;
-+
-+
-+	return ret;
-+}
-+
- /* According to LAM mode, set metadata in high bits */
- static uint64_t get_metadata(uint64_t src, unsigned long lam)
- {
-@@ -580,6 +604,72 @@ static int fork_test(struct testcases *test)
- 	return ret;
- }
- 
-+static int handle_execve(struct testcases *test)
-+{
-+	int ret, child_ret;
-+	int lam = test->lam;
-+	pid_t pid;
-+
-+	pid = fork();
-+	if (pid < 0) {
-+		perror("Fork failed.");
-+		ret = 1;
-+	} else if (pid == 0) {
-+		char path[PATH_MAX];
-+
-+		/* Set LAM mode in parent process */
-+		if (set_lam(lam) != 0)
-+			return 1;
-+
-+		/* Get current binary's path and the binary was run by execve */
-+		if (readlink("/proc/self/exe", path, PATH_MAX) <= 0)
-+			exit(-1);
-+
-+		/* run binary to get LAM mode and return to parent process */
-+		if (execlp(path, path, "-t 0x0", NULL) < 0) {
-+			perror("error on exec");
-+			exit(-1);
-+		}
-+	} else {
-+		wait(&child_ret);
-+		ret = WEXITSTATUS(child_ret);
-+		if (ret != LAM_NONE)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+static int handle_inheritance(struct testcases *test)
-+{
-+	int ret, child_ret;
-+	int lam = test->lam;
-+	pid_t pid;
-+
-+	/* Set LAM mode in parent process */
-+	if (set_lam(lam) != 0)
-+		return 1;
-+
-+	pid = fork();
-+	if (pid < 0) {
-+		perror("Fork failed.");
-+		return 1;
-+	} else if (pid == 0) {
-+		/* Set LAM mode in parent process */
-+		int child_lam = get_lam();
-+
-+		exit(child_lam);
-+	} else {
-+		wait(&child_ret);
-+		ret = WEXITSTATUS(child_ret);
-+
-+		if (lam != ret)
-+			return 1;
-+	}
-+
-+	return 0;
-+}
-+
- static void run_test(struct testcases *test, int count)
- {
- 	int i, ret = 0;
-@@ -674,11 +764,26 @@ static struct testcases mmap_cases[] = {
- 	},
- };
- 
-+static struct testcases inheritance_cases[] = {
-+	{
-+		.expected = 0,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_inheritance,
-+		.msg = "FORK: LAM_U57, child process should get LAM mode same as parent\n",
-+	},
-+	{
-+		.expected = 0,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_execve,
-+		.msg = "EXECVE: LAM_U57, child process should get disabled LAM mode\n",
-+	},
-+};
-+
- static void cmd_help(void)
- {
- 	printf("usage: lam [-h] [-t test list]\n");
- 	printf("\t-t test list: run tests specified in the test list, default:0x%x\n", TEST_MASK);
--	printf("\t\t0x1:malloc; 0x2:mmap; 0x4:syscall; 0x8:io_uring.\n");
-+	printf("\t\t0x1:malloc; 0x2:mmap; 0x4:syscall; 0x8:io_uring; 0x10:inherit;\n");
- 	printf("\t-h: help\n");
- }
- 
-@@ -698,7 +803,7 @@ int main(int argc, char **argv)
- 		switch (c) {
- 		case 't':
- 			tests = strtoul(optarg, NULL, 16);
--			if (!(tests & TEST_MASK)) {
-+			if (tests && !(tests & TEST_MASK)) {
- 				ksft_print_msg("Invalid argument!\n");
- 				return -1;
- 			}
-@@ -712,6 +817,16 @@ int main(int argc, char **argv)
- 		}
- 	}
- 
-+	/*
-+	 * When tests is 0, it is not a real test case;
-+	 * the option used by test case(execve) to check the lam mode in
-+	 * process generated by execve, the process read back lam mode and
-+	 * check with lam mode in parent process.
-+	 */
-+	if (!tests)
-+		return (get_lam());
-+
-+	/* Run test cases */
- 	if (tests & FUNC_MALLOC)
- 		run_test(malloc_cases, ARRAY_SIZE(malloc_cases));
- 
-@@ -724,6 +839,9 @@ int main(int argc, char **argv)
- 	if (tests & FUNC_URING)
- 		run_test(uring_cases, ARRAY_SIZE(uring_cases));
- 
-+	if (tests & FUNC_INHERITE)
-+		run_test(inheritance_cases, ARRAY_SIZE(inheritance_cases));
-+
- 	ksft_set_plan(tests_cnt);
- 
- 	return ksft_exit_pass();
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.35.1
-
+Florian
