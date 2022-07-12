@@ -2,132 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C57CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E91EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232417AbiGLL5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:57:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43532 "EHLO
+        id S233079AbiGLL5u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:57:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233035AbiGLL5X (ORCPT
+        with ESMTP id S232970AbiGLL50 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:57:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2221BB38CE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:57:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657627039;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=olaRyc5m79LX2YhKauQNe+T3doYLi+ybnhrejxK98CE=;
-        b=TJ1AxfvxO6K1rnNK4A9c/Bv0dApp/g7D/rfJtq4bEGomcrNMuPGKJtbhJYPgON5WNInuFC
-        InREvzyXccyp9IHk1rx5sKo3WilEaTHoiLNaJ7/SBA90RfPEaREWYvp8E68fTrv8TPdd7U
-        CtRFa7t8qAO8xXxM2UsaXiRMF8OfJyA=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-98-WY-tafRiOEG3M7QfY6TYdA-1; Tue, 12 Jul 2022 07:57:17 -0400
-X-MC-Unique: WY-tafRiOEG3M7QfY6TYdA-1
-Received: by mail-qk1-f198.google.com with SMTP id bm2-20020a05620a198200b006a5dac37fa2so7620848qkb.16
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:57:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=olaRyc5m79LX2YhKauQNe+T3doYLi+ybnhrejxK98CE=;
-        b=liqYUcZcO3QG3Ur8J7+hmIWzcg/gt8lti7eP05ikdo9od0yuWG15bhAawdk3czpCam
-         8PdPiSqloC80gJo3+oNUC/yFby85inWeucsofeHElvkIqYWQ6n6+wUI/fnLwRNwcj+L+
-         Ri3q8p0eSMtj8adOqo/yjg2XW8bCpIWAiJx3T6oqlT85rh+Mbnc5UjkAd04V3oZdTX4j
-         tphCeWIjKZ3vy5LdUJq577JViqA6ksWVRStmCNZEivhlvFK5Jrzo1qDnEOTNR1JOdx8i
-         IDZvrK7A6OAcg+YO0iPRBi4DAtbRAog5IXa+d9etB2CnZEcoEhTg0YYS2HnEKPfZq5sx
-         iR2g==
-X-Gm-Message-State: AJIora+ONk24PTvsNIgdYiQ1oDst2W5G9IzkOADbOxDs/fHzCmYHjMzr
-        KFElv4iVBl5IqhXbJBe7Eksz4C1F6picqD5S+fBgbbfYl6a4vDFtUBLNKr0iGVYXhmgnSpadczM
-        m3pnxQllcvhstLyzldqj+n3UM
-X-Received: by 2002:ac8:5a4a:0:b0:31e:c15f:c1f9 with SMTP id o10-20020ac85a4a000000b0031ec15fc1f9mr1802434qta.12.1657627037539;
-        Tue, 12 Jul 2022 04:57:17 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1urHh4ODy0b6XiDk4WThbx6/yS3IFDPugQq8wMUsZi0/m+3IrBehtXOQ128Owji6o19BTZj8A==
-X-Received: by 2002:ac8:5a4a:0:b0:31e:c15f:c1f9 with SMTP id o10-20020ac85a4a000000b0031ec15fc1f9mr1802350qta.12.1657627036023;
-        Tue, 12 Jul 2022 04:57:16 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id n7-20020ae9c307000000b006a34a22bc60sm8400241qkg.9.2022.07.12.04.57.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:57:15 -0700 (PDT)
-Message-ID: <031867fe65f26f7e2d37cc41ec071b3aea98ee90.camel@redhat.com>
-Subject: Re: [PATCH v3 17/25] KVM: VMX: Add missing VMEXIT controls to
- vmcs_config
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Jul 2022 14:57:11 +0300
-In-Reply-To: <20220708144223.610080-18-vkuznets@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
-         <20220708144223.610080-18-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Tue, 12 Jul 2022 07:57:26 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF79FB4BC9;
+        Tue, 12 Jul 2022 04:57:23 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lhzh83yMkzhYcw;
+        Tue, 12 Jul 2022 19:54:48 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Jul
+ 2022 19:57:21 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hawk@kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH bpf-next] bpf: Don't redirect packets with invalid pkt_len
+Date:   Tue, 12 Jul 2022 20:01:58 +0800
+Message-ID: <20220712120158.56325-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
-> As a preparation to reusing the result of setup_vmcs_config() in
-> nested VMX MSR setup, add the VMEXIT controls which KVM doesn't
-> use but supports for nVMX to KVM_OPT_VMX_VM_EXIT_CONTROLS and
-> filter them out in vmx_vmexit_ctrl().
-> 
-> No functional change intended.
-> 
-> Reviewed-by: Jim Mattson <jmattson@google.com>
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/vmx/vmx.c | 4 ++++
->  arch/x86/kvm/vmx/vmx.h | 3 +++
->  2 files changed, 7 insertions(+)
-> 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index d7170990f469..2fb89bdcbbd8 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -4196,6 +4196,10 @@ static u32 vmx_vmexit_ctrl(void)
->  {
->         u32 vmexit_ctrl = vmcs_config.vmexit_ctrl;
->  
-> +       /* Not used by KVM but supported for nesting. */
-> +       vmexit_ctrl &= ~(VM_EXIT_SAVE_IA32_PAT | VM_EXIT_SAVE_IA32_EFER |
-> +                        VM_EXIT_SAVE_VMX_PREEMPTION_TIMER);
-> +
->         if (vmx_pt_mode_is_system())
->                 vmexit_ctrl &= ~(VM_EXIT_PT_CONCEAL_PIP |
->                                  VM_EXIT_CLEAR_IA32_RTIT_CTL);
-> diff --git a/arch/x86/kvm/vmx/vmx.h b/arch/x86/kvm/vmx/vmx.h
-> index 89eaab3495a6..e9c392398f1b 100644
-> --- a/arch/x86/kvm/vmx/vmx.h
-> +++ b/arch/x86/kvm/vmx/vmx.h
-> @@ -498,8 +498,11 @@ static inline u8 vmx_get_rvi(void)
->  #endif
->  #define KVM_OPT_VMX_VM_EXIT_CONTROLS                           \
->               (VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |             \
-> +             VM_EXIT_SAVE_IA32_PAT |                           \
->               VM_EXIT_LOAD_IA32_PAT |                           \
-> +             VM_EXIT_SAVE_IA32_EFER |                          \
->               VM_EXIT_LOAD_IA32_EFER |                          \
-> +             VM_EXIT_SAVE_VMX_PREEMPTION_TIMER |               \
->               VM_EXIT_CLEAR_BNDCFGS |                           \
->               VM_EXIT_PT_CONCEAL_PIP |                          \
->               VM_EXIT_CLEAR_IA32_RTIT_CTL)
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/core/filter.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Best regards,
-	Maxim Levitsky
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 4ef77ec5255e..27801b314960 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2122,6 +2122,11 @@ static int __bpf_redirect_no_mac(struct sk_buff *skb, struct net_device *dev,
+ {
+ 	unsigned int mlen = skb_network_offset(skb);
+ 
++	if (unlikely(skb->len == 0)) {
++		kfree_skb(skb);
++		return -EINVAL;
++	}
++
+ 	if (mlen) {
+ 		__skb_pull(skb, mlen);
+ 
+@@ -2143,7 +2148,9 @@ static int __bpf_redirect_common(struct sk_buff *skb, struct net_device *dev,
+ 				 u32 flags)
+ {
+ 	/* Verify that a link layer header is carried */
+-	if (unlikely(skb->mac_header >= skb->network_header)) {
++	if (unlikely(skb->mac_header >= skb->network_header) ||
++	    (min_t(u32, skb_mac_header_len(skb), skb->len) <
++	     (u32)dev->min_header_len)) {
+ 		kfree_skb(skb);
+ 		return -ERANGE;
+ 	}
+-- 
+2.17.1
 
