@@ -2,127 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF021C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E60E3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233070AbiGLRJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 13:09:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        id S233152AbiGLRJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 13:09:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232488AbiGLRJ0 (ORCPT
+        with ESMTP id S230015AbiGLRJk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 13:09:26 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C03622525
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:09:26 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id 72so8198813pge.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:09:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=2A19SFZc712Zr90/HxHXBLZXts62Gst8gLFaGLjAnSo=;
-        b=VYS1kepNgU6dnPULTf1c3ax9LyR/C7eQbkjFEvadxbv9o9m6kfbFvC1BoeZS1b0LAV
-         mbcpKkIgA2JX4BuPkUV/0ROYsqBHa8doX4iC3k2YuHrsA+o/DrJSDdlwBAYhQ8CYbLvf
-         LftumPHX/MpRJsVLKHdPZhJchYT4iAmy3tC6e8vwK1eHycnlA01r2IloCJdoZSz3+taY
-         Ek6jSpMuENPgYFC8OJpUsFH5a2HDPxxtP7qTXIVQEocYAbEPyVEP+TNsiP+lyBUdwWmk
-         U44ZhQCRlc1LP8T6ZY6zPmIfp3BxaGEU6S449HEib+qJwAP57Cq9gtS4GcyWZlQLdjT+
-         ZcCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=2A19SFZc712Zr90/HxHXBLZXts62Gst8gLFaGLjAnSo=;
-        b=r+7c+u0stOirwZFAJBKV7tav6PL5qGSBLPHYDd7tCWhG+r4lRrLIBPjxr3B5wKTUQt
-         /jmRVIATrG8PUbS90Xj4T5Ws98vQlDES9RPEVobNv8P99TIcX9cx9Reci/7fFz01o7fl
-         bun3zWU3nFVMJH/SV6bei03egHdHCr9o3g3aswDB2Ly9SG0fIkYs1gaxx26Rm52C1lB9
-         qJhb/60ogH9zTrki3D9b0TC4nFnrP1r+srcVvKeIObOOMSd028+3DbtsmwyiFrddryLu
-         Y5Vc6agoWfi0FQbplLNlSXXbtDm+oKhVTGs0bMVImnI/Ib8XiC5IRrLIwYIxfh4nDdJ8
-         dcxQ==
-X-Gm-Message-State: AJIora+n2OGUU+7z7AD8SgceeHLk6/9eHMoCwnpt5vwEZPRs2ff3nn+N
-        5qVvN6ygsMJB113UkYPgNqcsHg==
-X-Google-Smtp-Source: AGRyM1uDTwQhRA0wYlzqevNp90NEff4OOswH9hUdtXRdhhORyeGNTBKDWZ2uoQOrknjumvz4R5sSXA==
-X-Received: by 2002:a05:6a00:f85:b0:52a:c718:ff9 with SMTP id ct5-20020a056a000f8500b0052ac7180ff9mr14298591pfb.85.1657645765469;
-        Tue, 12 Jul 2022 10:09:25 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id b13-20020a170903228d00b0016c35b21901sm6745429plh.195.2022.07.12.10.09.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 10:09:24 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 17:09:21 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM: x86: Add dedicated helper to get CPUID entry
- with significant index
-Message-ID: <Ys2qwUmEJaJnsj6r@google.com>
-References: <20220712000645.1144186-1-seanjc@google.com>
- <8a1ff7338f1252d75ff96c3518f16742919f92d7.camel@redhat.com>
- <Ys2i2B/jt5yDsAKj@google.com>
+        Tue, 12 Jul 2022 13:09:40 -0400
+X-Greylist: delayed 158 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 10:09:38 PDT
+Received: from pb-smtp2.pobox.com (pb-smtp2.pobox.com [64.147.108.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A310A26AF9;
+        Tue, 12 Jul 2022 10:09:38 -0700 (PDT)
+Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
+        by pb-smtp2.pobox.com (Postfix) with ESMTP id 5B8DC13C9FE;
+        Tue, 12 Jul 2022 13:06:59 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-type
+        :content-transfer-encoding; s=sasl; bh=w0UKyYdQ1A+V1udZfVAXLlWWc
+        FkkGbvbz51v1rTX1/k=; b=RE3OnpXVoYq5NOlkZEVfSBiZlV93QbcG1Apn9xzvs
+        CchKu5jUf5S2JHPNLp7MJpIdjTA7sPyZcDm/dXcOp9RiEtQevy6cx1iHkfZnHBFS
+        z1Ba6MRhCkh9eVZfh/OX0a4b8FeywLSBfY7qqLqkFY5q63nYGRIbtZRfjgnyF9Dp
+        uY=
+Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
+        by pb-smtp2.pobox.com (Postfix) with ESMTP id 521B313C9FD;
+        Tue, 12 Jul 2022 13:06:59 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+Received: from pobox.com (unknown [34.83.92.57])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pb-smtp2.pobox.com (Postfix) with ESMTPSA id AED7B13C9FC;
+        Tue, 12 Jul 2022 13:06:58 -0400 (EDT)
+        (envelope-from junio@pobox.com)
+From:   Junio C Hamano <gitster@pobox.com>
+To:     git@vger.kernel.org
+Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
+        git-packagers@googlegroups.com
+Subject: [ANNOUNCE] Git v2.37.1 and others
+Date:   Tue, 12 Jul 2022 10:06:57 -0700
+Message-ID: <xmqqv8s2fefi.fsf@gitster.g>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <Ys2i2B/jt5yDsAKj@google.com>
+Content-Type: text/plain; charset=utf-8
+X-Pobox-Relay-ID: 0A2F8064-0205-11ED-AA91-CB998F0A682E-77302942!pb-smtp2.pobox.com
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022, Sean Christopherson wrote:
-> On Tue, Jul 12, 2022, Maxim Levitsky wrote:
-> > On Tue, 2022-07-12 at 00:06 +0000, Sean Christopherson wrote:
-> > > +               /*
-> > > +                * Function matches and index is significant; not specifying an
-> > > +                * exact index in this case is a KVM bug.
-> > > +                */
-> > Nitpick: Why KVM bug? Bad userspace can also provide a index-significant entry for cpuid
-> > leaf for which index is not significant in the x86 spec.
-> 
-> Ugh, you're right.
-> 
-> > We could arrange a table of all known leaves and for each leaf if it has an index
-> > in the x86 spec, and warn/reject the userspace CPUID info if it doesn't match.
-> 
-> We have such a table, cpuid_function_is_indexed().  The alternative would be to
-> do:
-> 
-> 		WARN_ON_ONCE(index == KVM_CPUID_INDEX_NOT_SIGNIFICANT &&
-> 			     cpuid_function_is_indexed(function));
-> 
-> The problem with rejecting userspace CPUID on mismatch is that it could break
-> userspace :-/  Of course, this entire patch would also break userspace to some
-> extent, e.g. if userspace is relying on an exact match on index==0.  The only
-> difference being the guest lookups with an exact index would still work.
-> 
-> I think the restriction we could put in place would be that userspace can make
-> a leaf more relaxed, e.g. to play nice if userspace forgets to set the SIGNFICANT
-> flag, but rejects attempts to make guest CPUID more restrictive, i.e. disallow
-> setting the SIGNFICANT flag on leafs that KVM doesn't enumerate as significant.
-> 
-> > > +               WARN_ON_ONCE(index == KVM_CPUID_INDEX_NOT_SIGNIFICANT);
+Git v2.37.1, together with v2.30.5, v2.31.4, v2.32.3, v2.33.4,
+v2.34.4, v2.35.4, and v2.36.2 for older maintenance tracks, are now
+available at the usual places.
 
-Actually, better idea.  Let userspace do whatever, and have direct KVM lookups
-for functions that architecturally don't have a significant index use the first
-entry even if userspace set the SIGNIFICANT flag.  That will mostly maintain
-backwards compatibility, the only thing that would break is if userspace set the
-SIGNIFICANT flag _and_ provided a non-zero index _and_ relied on KVM to not match
-the entry.
+These are to address CVE-2022-29187, where the fixes in v2.36.1 and
+below to address CVE-2022-24765 released earlier may not have been
+complete.
 
-We could still enforce matching in the future, but it wouldn't be a prerequisite
-for this cleanup.
+The tarballs are found at:
 
-		/*
-		 * Similarly, use the first matching entry if KVM is doing a
-		 * lookup (as opposed to emulating CPUID) for a function that's
-		 * architecturally defined as not having a significant index.
-		 */
-		if (index == KVM_CPUID_INDEX_NOT_SIGNIFICANT) {
-			/*
-			 * Direct lookups from KVM should not diverge from what
-			 * KVM defines internally (the architectural behavior).
-			 */
-			WARN_ON_ONCE(cpuid_function_is_indexed(function));
-			return e;
-		}
+    https://www.kernel.org/pub/software/scm/git/
+
+The following public repositories all have a copy of the 'v2.37.1'
+tag and other tags for older maintenance tracks.
+
+  url =3D https://git.kernel.org/pub/scm/git/git
+  url =3D https://kernel.googlesource.com/pub/scm/git/git
+  url =3D git://repo.or.cz/alt-git.git
+  url =3D https://github.com/gitster/git
+
+----------------------------------------------------------------
+
+Git 2.37.1 Release Notes
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+This release merges up the fixes that appear in v2.30.5, v2.31.4,
+v2.32.3, v2.33.4, v2.34.4, v2.35.4, and v2.36.2 to address the
+security issue CVE-2022-29187; see the release notes for these
+versions for details.
+
+Fixes since Git 2.37
+--------------------
+
+ * Rewrite of "git add -i" in C that appeared in Git 2.25 didn't
+   correctly record a removed file to the index, which is an old
+   regression but has become widely known because the C version has
+   become the default in the latest release.
+
+ * Fix for CVE-2022-29187.
+
+----------------------------------------------------------------
+
+Git v2.30.5 Release Notes
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+
+This release contains minor fix-ups for the changes that went into
+Git 2.30.3 and 2.30.4, addressing CVE-2022-29187.
+
+ * The safety check that verifies a safe ownership of the Git
+   worktree is now extended to also cover the ownership of the Git
+   directory (and the `.git` file, if there is any).
+
+Carlo Marcelo Arenas Bel=C3=B3n (1):
+      setup: tighten ownership checks post CVE-2022-24765
