@@ -2,254 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB20C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C50C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234121AbiGLSnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:43:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60540 "EHLO
+        id S234129AbiGLSnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234120AbiGLSms (ORCPT
+        with ESMTP id S234132AbiGLSmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:42:48 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD142D9159;
-        Tue, 12 Jul 2022 11:41:49 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lj8h84PJZz67jhH;
-        Wed, 13 Jul 2022 02:40:24 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 20:41:46 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <dhowells@redhat.com>, <jarkko@kernel.org>,
-        <shuah@kernel.org>
-CC:     <bpf@vger.kernel.org>, <keyrings@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v7 4/7] bpf: Add bpf_verify_pkcs7_signature() helper
-Date:   Tue, 12 Jul 2022 20:41:25 +0200
-Message-ID: <20220712184128.999301-5-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712184128.999301-1-roberto.sassu@huawei.com>
-References: <20220712184128.999301-1-roberto.sassu@huawei.com>
+        Tue, 12 Jul 2022 14:42:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9814CD915D;
+        Tue, 12 Jul 2022 11:41:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C004AB81BAC;
+        Tue, 12 Jul 2022 18:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12576C3411C;
+        Tue, 12 Jul 2022 18:41:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657651307;
+        bh=J1SCdMjT+p5aK9/SabHy6rOQb3kdXulj/Hyw//Dih+4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=EHD4K8cknqjQj+JN6lHQqJMtUrAyvL2EHMI36VPh78xP14keq56hOm6wbFjbqrtAx
+         DTExiY5FAjuLbwFusyyFxlrTkkijpAzfA6+FQWuwIXWTVqIwnxYDFzSpDKiq6KRWTV
+         o6H12xY24D+Vlh6Qxj59PbU2SyxOr63XB2JW8d0c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Richard Narron <richard@aaazen.com>,
+        Borislav Petkov <bp@suse.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 036/130] x86/alternative: Optimize single-byte NOPs at an arbitrary position
+Date:   Tue, 12 Jul 2022 20:38:02 +0200
+Message-Id: <20220712183248.066028724@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
+References: <20220712183246.394947160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the bpf_verify_pkcs7_signature() helper, to give eBPF security modules
-the ability to check the validity of a signature against supplied data, by
-using user-provided or system-provided keys as trust anchor.
+From: Borislav Petkov <bp@suse.de>
 
-The new helper makes it possible to enforce mandatory policies, as eBPF
-programs might be allowed to make security decisions only based on data
-sources the system administrator approves.
+commit 2b31e8ed96b260ce2c22bd62ecbb9458399e3b62 upstream.
 
-The caller should provide both the data to be verified and the signature as
-eBPF dynamic pointers (to minimize the number of parameters) and,
-alternatively, a keyring obtained from bpf_lookup_user_key(), or a
-pre-determined keyring ID with values defined in
-include/linux/verification.h.
+Up until now the assumption was that an alternative patching site would
+have some instructions at the beginning and trailing single-byte NOPs
+(0x90) padding. Therefore, the patching machinery would go and optimize
+those single-byte NOPs into longer ones.
 
-The two keyring parameters have to be provided separately: the
-pre-determined IDs exist only in the context of verify_pkcs7_signature().
-They should not be passed to the bpf_lookup_user_key() helper, or to a new
-helper doing type casting to a struct key (like: ((struct key *)2UL) in
-include/linux/verification.h), as otherwise, each helper accepting a struct
-key would have to check if it is a valid pointer or not.
+However, this assumption is broken on 32-bit when code like
+hv_do_hypercall() in hyperv_init() would use the ratpoline speculation
+killer CALL_NOSPEC. The 32-bit version of that macro would align certain
+insns to 16 bytes, leading to the compiler issuing a one or more
+single-byte NOPs, depending on the holes it needs to fill for alignment.
 
-Finally, bpf_verify_pkcs7_signature() completes the permission check
-deferred by bpf_lookup_user_key(), by calling key_validate().
-key_task_permission() is already called by the PKCS#7 code.
+That would lead to the warning in optimize_nops() to fire:
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+  ------------[ cut here ]------------
+  Not a NOP at 0xc27fb598
+   WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c:211 optimize_nops.isra.13
+
+due to that function verifying whether all of the following bytes really
+are single-byte NOPs.
+
+Therefore, carve out the NOP padding into a separate function and call
+it for each NOP range beginning with a single-byte NOP.
+
+Fixes: 23c1ad538f4f ("x86/alternatives: Optimize optimize_nops()")
+Reported-by: Richard Narron <richard@aaazen.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213301
+Link: https://lkml.kernel.org/r/20210601212125.17145-1-bp@alien8.de
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/uapi/linux/bpf.h       | 22 ++++++++++++
- kernel/bpf/bpf_lsm.c           | 63 ++++++++++++++++++++++++++++++++++
- tools/include/uapi/linux/bpf.h | 22 ++++++++++++
- 3 files changed, 107 insertions(+)
+ arch/x86/kernel/alternative.c |   64 ++++++++++++++++++++++++++++++------------
+ 1 file changed, 46 insertions(+), 18 deletions(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index a3f6506ddeba..9037ff1414c2 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -5350,6 +5350,27 @@ union bpf_attr {
-  *		bpf_lookup_user_key() helper.
-  *	Return
-  *		0
-+ *
-+ * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *user_keyring, u64 system_keyring)
-+ *	Description
-+ *		Verify the PKCS#7 signature *sig_ptr* against the supplied
-+ *		*data_ptr* alternatively with keys in *user_keyring* or
-+ *		*system_keyring*. Either one of the two must be provided.
-+ *		Respectively, NULL or UINT64_MAX must be passed to signal to the
-+ *		helper that the parameter is not used.
-+ *
-+ *		*user_keyring* is a key pointer obtained from
-+ *		bpf_lookup_user_key(), while *system_keyring* is a
-+ *		pre-determined ID with values defined in
-+ *		include/linux/verification.h: 0 for the primary keyring
-+ *		(immutable keyring of system keys); 1 for both the primary and
-+ *		secondary keyring (where keys can be added only if they are
-+ *		vouched for by existing keys in those keyrings); 2 for the
-+ *		platform keyring (primarily used by the integrity subsystem to
-+ *		verify a kexec'ed kerned image and, possibly, the initramfs
-+ *		signature).
-+ *	Return
-+ *		0 on success, a negative value on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5562,6 +5583,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv6),	\
- 	FN(lookup_user_key),		\
- 	FN(key_put),			\
-+	FN(verify_pkcs7_signature),	\
- 	/* */
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -338,41 +338,69 @@ done:
+ }
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-index 0a95e2137d65..6d8a40b8b1e0 100644
---- a/kernel/bpf/bpf_lsm.c
-+++ b/kernel/bpf/bpf_lsm.c
-@@ -17,6 +17,7 @@
- #include <linux/btf_ids.h>
- #include <linux/ima.h>
- #include <linux/bpf-cgroup.h>
-+#include <linux/verification.h>
- 
- /* For every LSM hook that allows attachment of BPF programs, declare a nop
-  * function where a BPF program can be attached.
-@@ -227,6 +228,63 @@ static const struct bpf_func_proto bpf_key_put_proto = {
- 	.arg1_btf_id	= &btf_key_ids[0],
- 	.allowed	= bpf_ima_inode_hash_allowed,
- };
-+
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+BPF_CALL_4(bpf_verify_pkcs7_signature, struct bpf_dynptr_kern *, data_ptr,
-+	   struct bpf_dynptr_kern *, sig_ptr, struct key *, user_keyring,
-+	   u64, system_keyring)
+ /*
++ * optimize_nops_range() - Optimize a sequence of single byte NOPs (0x90)
++ *
++ * @instr: instruction byte stream
++ * @instrlen: length of the above
++ * @off: offset within @instr where the first NOP has been detected
++ *
++ * Return: number of NOPs found (and replaced).
++ */
++static __always_inline int optimize_nops_range(u8 *instr, u8 instrlen, int off)
 +{
-+	struct key *trusted_keyring;
-+	int ret;
++	unsigned long flags;
++	int i = off, nnops;
 +
-+	/* Either user_keyring or system_keyring must be specified. */
-+	if ((user_keyring && system_keyring != U64_MAX) ||
-+	    (!user_keyring && system_keyring == U64_MAX))
-+		return -EINVAL;
++	while (i < instrlen) {
++		if (instr[i] != 0x90)
++			break;
 +
-+	if (user_keyring) {
-+		/*
-+		 * Do the permission check deferred in bpf_lookup_user_key().
-+		 *
-+		 * A call to key_task_permission() here would be redundant, as
-+		 * it is already done by keyring_search() called by
-+		 * find_asymmetric_key().
-+		 */
-+		ret = key_validate(user_keyring);
-+		if (ret < 0)
-+			return ret;
-+
-+		trusted_keyring = user_keyring;
-+		goto verify;
++		i++;
 +	}
 +
-+	/* Keep in sync with defs in include/linux/verification.h. */
-+	if (system_keyring > (unsigned long)VERIFY_USE_PLATFORM_KEYRING)
-+		return -EINVAL;
++	nnops = i - off;
 +
-+	trusted_keyring = (struct key *)(unsigned long)system_keyring;
-+verify:
-+	return verify_pkcs7_signature(data_ptr->data,
-+				      bpf_dynptr_get_size(data_ptr),
-+				      sig_ptr->data,
-+				      bpf_dynptr_get_size(sig_ptr),
-+				      trusted_keyring,
-+				      VERIFYING_UNSPECIFIED_SIGNATURE, NULL,
-+				      NULL);
++	if (nnops <= 1)
++		return nnops;
++
++	local_irq_save(flags);
++	add_nops(instr + off, nnops);
++	local_irq_restore(flags);
++
++	DUMP_BYTES(instr, instrlen, "%px: [%d:%d) optimized NOPs: ", instr, off, i);
++
++	return nnops;
 +}
 +
-+static const struct bpf_func_proto bpf_verify_pkcs7_signature_proto = {
-+	.func		= bpf_verify_pkcs7_signature,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-+	.arg2_type	= ARG_PTR_TO_DYNPTR | DYNPTR_TYPE_LOCAL,
-+	.arg3_type	= ARG_PTR_TO_BTF_ID_OR_NULL,
-+	.arg3_btf_id	= &btf_key_ids[0],
-+	.arg4_type	= ARG_ANYTHING,
-+	.allowed	= bpf_ima_inode_hash_allowed,
-+};
-+#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
- #endif /* CONFIG_KEYS */
- 
- static const struct bpf_func_proto *
-@@ -291,6 +349,11 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	case BPF_FUNC_key_put:
- 		return prog->aux->sleepable ?
- 		       &bpf_key_put_proto : NULL;
-+#ifdef CONFIG_SYSTEM_DATA_VERIFICATION
-+	case BPF_FUNC_verify_pkcs7_signature:
-+		return prog->aux->sleepable ?
-+		       &bpf_verify_pkcs7_signature_proto : NULL;
-+#endif /* CONFIG_SYSTEM_DATA_VERIFICATION */
- #endif /* CONFIG_KEYS */
- 	default:
- 		return tracing_prog_func_proto(func_id, prog);
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index a3f6506ddeba..9037ff1414c2 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -5350,6 +5350,27 @@ union bpf_attr {
-  *		bpf_lookup_user_key() helper.
-  *	Return
-  *		0
-+ *
-+ * long bpf_verify_pkcs7_signature(struct bpf_dynptr *data_ptr, struct bpf_dynptr *sig_ptr, struct key *user_keyring, u64 system_keyring)
-+ *	Description
-+ *		Verify the PKCS#7 signature *sig_ptr* against the supplied
-+ *		*data_ptr* alternatively with keys in *user_keyring* or
-+ *		*system_keyring*. Either one of the two must be provided.
-+ *		Respectively, NULL or UINT64_MAX must be passed to signal to the
-+ *		helper that the parameter is not used.
-+ *
-+ *		*user_keyring* is a key pointer obtained from
-+ *		bpf_lookup_user_key(), while *system_keyring* is a
-+ *		pre-determined ID with values defined in
-+ *		include/linux/verification.h: 0 for the primary keyring
-+ *		(immutable keyring of system keys); 1 for both the primary and
-+ *		secondary keyring (where keys can be added only if they are
-+ *		vouched for by existing keys in those keyrings); 2 for the
-+ *		platform keyring (primarily used by the integrity subsystem to
-+ *		verify a kexec'ed kerned image and, possibly, the initramfs
-+ *		signature).
-+ *	Return
-+ *		0 on success, a negative value on error.
++/*
+  * "noinline" to cause control flow change and thus invalidate I$ and
+  * cause refetch after modification.
   */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -5562,6 +5583,7 @@ union bpf_attr {
- 	FN(tcp_raw_check_syncookie_ipv6),	\
- 	FN(lookup_user_key),		\
- 	FN(key_put),			\
-+	FN(verify_pkcs7_signature),	\
- 	/* */
+ static void __init_or_module noinline optimize_nops(struct alt_instr *a, u8 *instr)
+ {
+-	unsigned long flags;
+ 	struct insn insn;
+-	int nop, i = 0;
++	int i = 0;
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
--- 
-2.25.1
+ 	/*
+-	 * Jump over the non-NOP insns, the remaining bytes must be single-byte
+-	 * NOPs, optimize them.
++	 * Jump over the non-NOP insns and optimize single-byte NOPs into bigger
++	 * ones.
+ 	 */
+ 	for (;;) {
+ 		if (insn_decode_kernel(&insn, &instr[i]))
+ 			return;
+ 
++		/*
++		 * See if this and any potentially following NOPs can be
++		 * optimized.
++		 */
+ 		if (insn.length == 1 && insn.opcode.bytes[0] == 0x90)
+-			break;
++			i += optimize_nops_range(instr, a->instrlen, i);
++		else
++			i += insn.length;
+ 
+-		if ((i += insn.length) >= a->instrlen)
++		if (i >= a->instrlen)
+ 			return;
+ 	}
+-
+-	for (nop = i; i < a->instrlen; i++) {
+-		if (WARN_ONCE(instr[i] != 0x90, "Not a NOP at 0x%px\n", &instr[i]))
+-			return;
+-	}
+-
+-	local_irq_save(flags);
+-	add_nops(instr + nop, i - nop);
+-	local_irq_restore(flags);
+-
+-	DUMP_BYTES(instr, a->instrlen, "%px: [%d:%d) optimized NOPs: ",
+-		   instr, nop, a->instrlen);
+ }
+ 
+ /*
+
 
