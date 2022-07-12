@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D88C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A58BCCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234500AbiGLSts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46200 "EHLO
+        id S234543AbiGLStx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234511AbiGLStG (ORCPT
+        with ESMTP id S234624AbiGLStX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:49:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 956F014D00;
-        Tue, 12 Jul 2022 11:43:45 -0700 (PDT)
+        Tue, 12 Jul 2022 14:49:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D70BBF5C;
+        Tue, 12 Jul 2022 11:43:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90339B81BB9;
-        Tue, 12 Jul 2022 18:43:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF36C341C8;
-        Tue, 12 Jul 2022 18:43:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EF9961AC7;
+        Tue, 12 Jul 2022 18:43:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A53C341C8;
+        Tue, 12 Jul 2022 18:43:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651407;
-        bh=k9IrByeFv4ANj8rXmHXEEaxduV+WzzfaR+gGXS2EnL4=;
+        s=korg; t=1657651414;
+        bh=NTrzfJvQ19VyAP61TafzQNav55FmjRegdN7rwksTswA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TtVzi21yc/omcoCFGIQjPbWQOZBsrvd/8EBBsOJ39IVY+yp36W3tVA+nG2vMsvzSk
-         5yGyvZjQ3fLUysP5ZVulDKx4Hg9m0qP5esG0SBT98f9FTQBItwFwtfNvLmnxp6RCvi
-         lXx1C/s4HhC2KLt6/FChGCroP6SZ/Zfn8h5l/ZQ8=
+        b=YvfDheeqFX2G24cd0mlr/ijF0rd6b1r0SZf1Zmn85Dhgr8stCzAS+MMDIEXZExGXQ
+         kJVzk1LegN9jJNvbN7wH8VOhbXgSweFXLJAooVpJ51mMnbD2J4Eym8Tmwj+yJtn72L
+         1JtJUWr+lTsepFmXlfkOAC9+z+zFwLOs0rlS0QhQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Jamie Heilman <jamie@audible.transient.net>,
+        Borislav Petkov <bp@suse.de>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 066/130] x86: Add straight-line-speculation mitigation
-Date:   Tue, 12 Jul 2022 20:38:32 +0200
-Message-Id: <20220712183249.512243054@linuxfoundation.org>
+Subject: [PATCH 5.10 068/130] kvm/emulate: Fix SETcc emulation function offsets with SLS
+Date:   Tue, 12 Jul 2022 20:38:34 +0200
+Message-Id: <20220712183249.603144005@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,200 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Borislav Petkov <bp@suse.de>
 
-commit e463a09af2f0677b9485a7e8e4e70b396b2ffb6f upstream.
+commit fe83f5eae432ccc8e90082d6ed506d5233547473 upstream.
 
-Make use of an upcoming GCC feature to mitigate
-straight-line-speculation for x86:
+The commit in Fixes started adding INT3 after RETs as a mitigation
+against straight-line speculation.
 
-  https://gcc.gnu.org/g:53a643f8568067d7700a9f2facc8ba39974973d3
-  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102952
-  https://bugs.llvm.org/show_bug.cgi?id=52323
+The fastop SETcc implementation in kvm's insn emulator uses macro magic
+to generate all possible SETcc functions and to jump to them when
+emulating the respective instruction.
 
-It's built tested on x86_64-allyesconfig using GCC-12 and GCC-11.
+However, it hardcodes the size and alignment of those functions to 4: a
+three-byte SETcc insn and a single-byte RET. BUT, with SLS, there's an
+INT3 that gets slapped after the RET, which brings the whole scheme out
+of alignment:
 
-Maintenance overhead of this should be fairly low due to objtool
-validation.
+  15:   0f 90 c0                seto   %al
+  18:   c3                      ret
+  19:   cc                      int3
+  1a:   0f 1f 00                nopl   (%rax)
+  1d:   0f 91 c0                setno  %al
+  20:   c3                      ret
+  21:   cc                      int3
+  22:   0f 1f 00                nopl   (%rax)
+  25:   0f 92 c0                setb   %al
+  28:   c3                      ret
+  29:   cc                      int3
 
-Size overhead of all these additional int3 instructions comes to:
+and this explodes like this:
 
-     text	   data	    bss	    dec	    hex	filename
-  22267751	6933356	2011368	31212475	1dc43bb	defconfig-build/vmlinux
-  22804126	6933356	1470696	31208178	1dc32f2	defconfig-build/vmlinux.sls
+  int3: 0000 [#1] PREEMPT SMP PTI
+  CPU: 0 PID: 2435 Comm: qemu-system-x86 Not tainted 5.17.0-rc8-sls #1
+  Hardware name: Dell Inc. Precision WorkStation T3400  /0TP412, BIOS A14 04/30/2012
+  RIP: 0010:setc+0x5/0x8 [kvm]
+  Code: 00 00 0f 1f 00 0f b6 05 43 24 06 00 c3 cc 0f 1f 80 00 00 00 00 0f 90 c0 c3 cc 0f \
+	  1f 00 0f 91 c0 c3 cc 0f 1f 00 0f 92 c0 c3 cc <0f> 1f 00 0f 93 c0 c3 cc 0f 1f 00 \
+	  0f 94 c0 c3 cc 0f 1f 00 0f 95 c0
+  Call Trace:
+   <TASK>
+   ? x86_emulate_insn [kvm]
+   ? x86_emulate_instruction [kvm]
+   ? vmx_handle_exit [kvm_intel]
+   ? kvm_arch_vcpu_ioctl_run [kvm]
+   ? kvm_vcpu_ioctl [kvm]
+   ? __x64_sys_ioctl
+   ? do_syscall_64
+   ? entry_SYSCALL_64_after_hwframe
+   </TASK>
 
-Or roughly 2.4% additional text.
+Raise the alignment value when SLS is enabled and use a macro for that
+instead of hard-coding naked numbers.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Fixes: e463a09af2f0 ("x86: Add straight-line-speculation mitigation")
+Reported-by: Jamie Heilman <jamie@audible.transient.net>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211204134908.140103474@infradead.org
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Jamie Heilman <jamie@audible.transient.net>
+Link: https://lore.kernel.org/r/YjGzJwjrvxg5YZ0Z@audible.transient.net
+[Add a comment and a bit of safety checking, since this is going to be changed
+ again for IBT support. - Paolo]
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[bwh: Backported to 5.10:
- - In scripts/Makefile.build, add the objtool option with an ifdef
-   block, same as for other options
- - Adjust context]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/Kconfig                   |   12 ++++++++++++
- arch/x86/Makefile                  |    6 +++++-
- arch/x86/include/asm/linkage.h     |   10 ++++++++++
- arch/x86/include/asm/static_call.h |    2 +-
- arch/x86/kernel/ftrace.c           |    2 +-
- arch/x86/kernel/static_call.c      |    5 +++--
- arch/x86/lib/memmove_64.S          |    2 +-
- arch/x86/lib/retpoline.S           |    2 +-
- scripts/Makefile.build             |    3 +++
- scripts/link-vmlinux.sh            |    3 +++
- 10 files changed, 40 insertions(+), 7 deletions(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -462,6 +462,18 @@ config RETPOLINE
- 	  branches. Requires a compiler with -mindirect-branch=thunk-extern
- 	  support for full protection. The kernel may run slower.
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -428,8 +428,23 @@ static int fastop(struct x86_emulate_ctx
+ 	FOP_END
  
-+config CC_HAS_SLS
-+	def_bool $(cc-option,-mharden-sls=all)
+ /* Special case for SETcc - 1 instruction per cc */
 +
-+config SLS
-+	bool "Mitigate Straight-Line-Speculation"
-+	depends on CC_HAS_SLS && X86_64
-+	default n
-+	help
-+	  Compile the kernel with straight-line-speculation options to guard
-+	  against straight line speculation. The kernel image might be slightly
-+	  larger.
++/*
++ * Depending on .config the SETcc functions look like:
++ *
++ * SETcc %al   [3 bytes]
++ * RET         [1 byte]
++ * INT3        [1 byte; CONFIG_SLS]
++ *
++ * Which gives possible sizes 4 or 5.  When rounded up to the
++ * next power-of-two alignment they become 4 or 8.
++ */
++#define SETCC_LENGTH	(4 + IS_ENABLED(CONFIG_SLS))
++#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS))
++static_assert(SETCC_LENGTH <= SETCC_ALIGN);
 +
- config X86_CPU_RESCTRL
- 	bool "x86 CPU resource control support"
- 	depends on X86 && (CPU_SUP_INTEL || CPU_SUP_AMD)
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@ -196,7 +196,11 @@ ifdef CONFIG_RETPOLINE
-   endif
- endif
- 
--KBUILD_LDFLAGS := -m elf_$(UTS_MACHINE)
-+ifdef CONFIG_SLS
-+  KBUILD_CFLAGS += -mharden-sls=all
-+endif
-+
-+KBUILD_LDFLAGS += -m elf_$(UTS_MACHINE)
- 
- ifdef CONFIG_X86_NEED_RELOCS
- LDFLAGS_vmlinux := --emit-relocs --discard-none
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -18,9 +18,19 @@
- #define __ALIGN_STR	__stringify(__ALIGN)
- #endif
- 
-+#ifdef CONFIG_SLS
-+#define RET	ret; int3
-+#else
-+#define RET	ret
-+#endif
-+
- #else /* __ASSEMBLY__ */
- 
-+#ifdef CONFIG_SLS
-+#define ASM_RET	"ret; int3\n\t"
-+#else
- #define ASM_RET	"ret\n\t"
-+#endif
- 
- #endif /* __ASSEMBLY__ */
- 
---- a/arch/x86/include/asm/static_call.h
-+++ b/arch/x86/include/asm/static_call.h
-@@ -35,7 +35,7 @@
- 	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, ".byte 0xe9; .long " #func " - (. + 4)")
- 
- #define ARCH_DEFINE_STATIC_CALL_NULL_TRAMP(name)			\
--	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, "ret; nop; nop; nop; nop")
-+	__ARCH_DEFINE_STATIC_CALL_TRAMP(name, "ret; int3; nop; nop; nop")
- 
- 
- #define ARCH_ADD_TRAMP_KEY(name)					\
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -308,7 +308,7 @@ union ftrace_op_code_union {
- 	} __attribute__((packed));
- };
- 
--#define RET_SIZE		1
-+#define RET_SIZE		1 + IS_ENABLED(CONFIG_SLS)
- 
- static unsigned long
- create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -11,6 +11,8 @@ enum insn_type {
- 	RET = 3,  /* tramp / site cond-tail-call */
- };
- 
-+static const u8 retinsn[] = { RET_INSN_OPCODE, 0xcc, 0xcc, 0xcc, 0xcc };
-+
- static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
+ #define FOP_SETCC(op) \
+-	".align 4 \n\t" \
++	".align " __stringify(SETCC_ALIGN) " \n\t" \
+ 	".type " #op ", @function \n\t" \
+ 	#op ": \n\t" \
+ 	#op " %al \n\t" \
+@@ -1055,7 +1070,7 @@ static int em_bsr_c(struct x86_emulate_c
+ static __always_inline u8 test_cc(unsigned int condition, unsigned long flags)
  {
- 	int size = CALL_INSN_SIZE;
-@@ -30,8 +32,7 @@ static void __ref __static_call_transfor
- 		break;
+ 	u8 rc;
+-	void (*fop)(void) = (void *)em_setcc + 4 * (condition & 0xf);
++	void (*fop)(void) = (void *)em_setcc + SETCC_ALIGN * (condition & 0xf);
  
- 	case RET:
--		code = text_gen_insn(RET_INSN_OPCODE, insn, func);
--		size = RET_INSN_SIZE;
-+		code = &retinsn;
- 		break;
- 	}
- 
---- a/arch/x86/lib/memmove_64.S
-+++ b/arch/x86/lib/memmove_64.S
-@@ -40,7 +40,7 @@ SYM_FUNC_START(__memmove)
- 	/* FSRM implies ERMS => no length checks, do the copy directly */
- .Lmemmove_begin_forward:
- 	ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
--	ALTERNATIVE "", "movq %rdx, %rcx; rep movsb; RET", X86_FEATURE_ERMS
-+	ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), X86_FEATURE_ERMS
- 
- 	/*
- 	 * movsq instruction have many startup latency
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -34,7 +34,7 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
- 
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
- 		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), X86_FEATURE_RETPOLINE_LFENCE
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE
- 
- .endm
- 
---- a/scripts/Makefile.build
-+++ b/scripts/Makefile.build
-@@ -230,6 +230,9 @@ endif
- ifdef CONFIG_X86_SMAP
-   objtool_args += --uaccess
- endif
-+ifdef CONFIG_SLS
-+  objtool_args += --sls
-+endif
- 
- # 'OBJECT_FILES_NON_STANDARD := y': skip objtool checking for a directory
- # 'OBJECT_FILES_NON_STANDARD_foo.o := 'y': skip objtool checking for a file
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -77,6 +77,9 @@ objtool_link()
- 		if [ -n "${CONFIG_X86_SMAP}" ]; then
- 			objtoolopt="${objtoolopt} --uaccess"
- 		fi
-+		if [ -n "${CONFIG_SLS}" ]; then
-+			objtoolopt="${objtoolopt} --sls"
-+		fi
- 		info OBJTOOL ${1}
- 		tools/objtool/objtool ${objtoolopt} ${1}
- 	fi
+ 	flags = (flags & EFLAGS_MASK) | X86_EFLAGS_IF;
+ 	asm("push %[flags]; popf; " CALL_NOSPEC
 
 
