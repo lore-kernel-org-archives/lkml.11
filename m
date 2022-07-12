@@ -2,194 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B53C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A04B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:11:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231288AbiGLQJr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        id S234238AbiGLQLh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234281AbiGLQJp (ORCPT
+        with ESMTP id S233796AbiGLQLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:09:45 -0400
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [IPv6:2001:4b7a:2000:18::165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A11EBA176
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:09:41 -0700 (PDT)
-Received: from localhost.localdomain (abxj14.neoplus.adsl.tpnet.pl [83.9.3.14])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id EB5681F65E;
-        Tue, 12 Jul 2022 18:09:33 +0200 (CEST)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] irqchip/apple-aic: Add support for A7-A11 SoCs
-Date:   Tue, 12 Jul 2022 18:09:19 +0200
-Message-Id: <20220712160919.740878-2-konrad.dybcio@somainline.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712160919.740878-1-konrad.dybcio@somainline.org>
-References: <20220712160919.740878-1-konrad.dybcio@somainline.org>
+        Tue, 12 Jul 2022 12:11:35 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78DFBBE687
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:11:33 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id os14so15197484ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:11:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=21nZyc3bYwF/2+gU25HHeO3ZzKasf2bJUi7S16b1eWU=;
+        b=pI3NbHHjeGT8cStUjzd57ZsN322xV+C9lha7C8b1wE3VuJJs/n+b0oyXQ7K8ezo7l3
+         XHaUVDbZP4V7OpXayTOBsSAyezSRgijjY5vbjgL2n7O4wTaSJxOhTkpQ0DyBbuxCUsO4
+         61TINg1OkvcpA+vrgA7tmlxbzRN0INNy8TVY8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=21nZyc3bYwF/2+gU25HHeO3ZzKasf2bJUi7S16b1eWU=;
+        b=T2QZ73JIaEiNo5mvsVhuW7Xee09wpBEGL+X64Z/d3eCMyfdCu3/wL9Hdy2HvnZurK0
+         QSCGK5Bt8/rXm8DyvIbt0mqHmLBQaMa5CNNObLol+YdFbN+CJ5pFYwKivxhWKuI7/dB6
+         dH1T3uQksBMVFNU9sZBMiCeuNrnr1rFnynyIFzz91eZnAclZamFhnh1o+D4O2nBMfON1
+         SUfUd7EQTDgohA0K2tOnytRHzcO5i0DpI9IPWjkAvdU4cOi9EGJO5JlmYe2ua3TLuJAp
+         311hypgWcHZBn9SjR0ODKf80/+bMsJZiLuINkMkTxL7Ij3pIoYbMPc41UMtKF0rmmFcX
+         pbhQ==
+X-Gm-Message-State: AJIora/F51Fh59YOQ7edkeSWhDvGRPgcH+MJgZ0G7QKq6+r+l/rJZti6
+        aeXObo/W3OPu7QL4eYEqTXxxf23J4T0jiQ==
+X-Google-Smtp-Source: AGRyM1ucFy54oRu/i+plCJT5SdHJrkvWY0f3+6DSn6RQToEjw/79AD1rdgrVryHUeqQjlsWOnkyOuA==
+X-Received: by 2002:a17:906:938a:b0:726:942a:54e8 with SMTP id l10-20020a170906938a00b00726942a54e8mr24075139ejx.225.1657642291745;
+        Tue, 12 Jul 2022 09:11:31 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-116-90-174.retail.telecomitalia.it. [80.116.90.174])
+        by smtp.gmail.com with ESMTPSA id h4-20020a1709066d8400b00722ea7a7febsm3911498ejt.194.2022.07.12.09.11.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 09:11:31 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-amarula@amarulasolutions.com,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        dmaengine@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v5 1/2] dmaengine: mxs: use platform_driver_register
+Date:   Tue, 12 Jul 2022 18:09:07 +0200
+Message-Id: <20220712160909.2054141-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for A7-A11 SoCs by if-ing out some features only present on
-A12 & newer (UNCORE2 registers) or M1 & newer (EL2 registers - the
-older SoCs don't implement EL2).
+Driver registration fails on SOC imx8mn as its supplier, the clock
+control module, is probed later than subsys initcall level. This driver
+uses platform_driver_probe which is not compatible with deferred probing
+and won't be probed again later if probe function fails due to clock not
+being available at that time.
 
-Also, annotate IPI regs support (A11 and newer*) so that the driver can
-tell whether the SoC supports these (they are written to even if fast
-IPI is disabled, when the registers are there of course).
+This patch replaces the use of platform_driver_probe with
+platform_driver_register which will allow probing the driver later again
+when the clock control module will be available.
 
-*A11 is supposed to use this feature, but it is currently not working.
-That said, it is not yet necessary, especially with only one core up,
-and it works a-ok using the same featureset as earlier SoCs.
+Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc: stable@vger.kernel.org
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 ---
- drivers/irqchip/irq-apple-aic.c | 54 +++++++++++++++++++++++----------
- 1 file changed, 38 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
-index 12dd48727a15..36f4b52addc2 100644
---- a/drivers/irqchip/irq-apple-aic.c
-+++ b/drivers/irqchip/irq-apple-aic.c
-@@ -245,7 +245,10 @@ struct aic_info {
- 	u32 die_stride;
- 
- 	/* Features */
-+	bool el2_regs;
- 	bool fast_ipi;
-+	bool ipi_regs;
-+	bool uncore2_regs;
+Changes in v5:
+- Update the commit message.
+- Create a new patch to remove the warning generated by this patch.
+
+Changes in v4:
+- Restore __init in front of mxs_dma_probe() definition.
+- Rename the mxs_dma_driver variable to mxs_dma_driver_probe.
+- Update the commit message.
+- Use builtin_platform_driver() instead of module_platform_driver().
+
+Changes in v3:
+- Restore __init in front of mxs_dma_init() definition.
+
+Changes in v2:
+- Add the tag "Cc: stable@vger.kernel.org" in the sign-off area.
+
+ drivers/dma/mxs-dma.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
+index 994fc4d2aca4..18f8154b859b 100644
+--- a/drivers/dma/mxs-dma.c
++++ b/drivers/dma/mxs-dma.c
+@@ -839,10 +839,6 @@ static struct platform_driver mxs_dma_driver = {
+ 		.name	= "mxs-dma",
+ 		.of_match_table = mxs_dma_dt_ids,
+ 	},
++	.probe = mxs_dma_probe,
  };
- 
- static const struct aic_info aic1_info = {
-@@ -261,7 +264,10 @@ static const struct aic_info aic1_fipi_info = {
- 	.event		= AIC_EVENT,
- 	.target_cpu	= AIC_TARGET_CPU,
- 
-+	.el2_regs	= true,
- 	.fast_ipi	= true,
-+	.ipi_regs	= true,
-+	.uncore2_regs	= true,
- };
- 
- static const struct aic_info aic2_info = {
-@@ -269,7 +275,10 @@ static const struct aic_info aic2_info = {
- 
- 	.irq_cfg	= AIC2_IRQ_CFG,
- 
-+	.el2_regs	= true,
- 	.fast_ipi	= true,
-+	.ipi_regs	= true,
-+	.uncore2_regs	= true,
- };
- 
- static const struct of_device_id aic_info_match[] = {
-@@ -452,6 +461,9 @@ static unsigned long aic_fiq_get_idx(struct irq_data *d)
- 
- static void aic_fiq_set_mask(struct irq_data *d)
- {
-+	if (!aic_irqc->info.el2_regs)
-+		return;
-+
- 	/* Only the guest timers have real mask bits, unfortunately. */
- 	switch (aic_fiq_get_idx(d)) {
- 	case AIC_TMR_EL02_PHYS:
-@@ -469,6 +481,9 @@ static void aic_fiq_set_mask(struct irq_data *d)
- 
- static void aic_fiq_clear_mask(struct irq_data *d)
- {
-+	if (!aic_irqc->info.el2_regs)
-+		return;
-+
- 	switch (aic_fiq_get_idx(d)) {
- 	case AIC_TMR_EL02_PHYS:
- 		sysreg_clear_set_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2, 0, VM_TMR_FIQ_ENABLE_P);
-@@ -524,12 +539,14 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
- 	 * we check for everything here, even things we don't support yet.
- 	 */
- 
--	if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
--		if (static_branch_likely(&use_fast_ipi)) {
--			aic_handle_ipi(regs);
--		} else {
--			pr_err_ratelimited("Fast IPI fired. Acking.\n");
--			write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+	if (aic_irqc->info.ipi_regs) {
-+		if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
-+			if (static_branch_likely(&use_fast_ipi)) {
-+				aic_handle_ipi(regs);
-+			} else {
-+				pr_err_ratelimited("Fast IPI fired. Acking.\n");
-+				write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+			}
- 		}
- 	}
- 
-@@ -566,12 +583,14 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
- 					  AIC_FIQ_HWIRQ(irq));
- 	}
- 
--	if (FIELD_GET(UPMCR0_IMODE, read_sysreg_s(SYS_IMP_APL_UPMCR0_EL1)) == UPMCR0_IMODE_FIQ &&
--			(read_sysreg_s(SYS_IMP_APL_UPMSR_EL1) & UPMSR_IACT)) {
--		/* Same story with uncore PMCs */
--		pr_err_ratelimited("Uncore PMC FIQ fired. Masking.\n");
--		sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
--				   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
-+	if (aic_irqc->info.uncore2_regs) {
-+		if (FIELD_GET(UPMCR0_IMODE, read_sysreg_s(SYS_IMP_APL_UPMCR0_EL1)) == UPMCR0_IMODE_FIQ &&
-+				(read_sysreg_s(SYS_IMP_APL_UPMSR_EL1) & UPMSR_IACT)) {
-+			/* Same story with uncore PMCs */
-+			pr_err_ratelimited("Uncore PMC FIQ fired. Masking.\n");
-+			sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
-+					FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
-+		}
- 	}
- }
- 
-@@ -676,7 +695,8 @@ static int aic_irq_domain_translate(struct irq_domain *id,
- 				break;
- 			case AIC_TMR_HV_PHYS:
- 			case AIC_TMR_HV_VIRT:
--				return -ENOENT;
-+				if (aic_irqc->info.el2_regs)
-+					return -ENOENT;
- 			default:
- 				break;
- 			}
-@@ -944,7 +964,8 @@ static int aic_init_cpu(unsigned int cpu)
- 	/* Mask all hard-wired per-CPU IRQ/FIQ sources */
- 
- 	/* Pending Fast IPI FIQs */
--	write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
-+	if (aic_irqc->info.ipi_regs)
-+		write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
- 
- 	/* Timer FIQs */
- 	sysreg_clear_set(cntp_ctl_el0, 0, ARCH_TIMER_CTRL_IT_MASK);
-@@ -965,8 +986,9 @@ static int aic_init_cpu(unsigned int cpu)
- 			   FIELD_PREP(PMCR0_IMODE, PMCR0_IMODE_OFF));
- 
- 	/* Uncore PMC FIQ */
--	sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
--			   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
-+	if (aic_irqc->info.uncore2_regs)
-+		sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
-+				   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
- 
- 	/* Commit all of the above */
- 	isb();
+-
+-static int __init mxs_dma_module_init(void)
+-{
+-	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
+-}
+-subsys_initcall(mxs_dma_module_init);
++builtin_platform_driver(mxs_dma_driver);
 -- 
-2.37.0
+2.32.0
 
