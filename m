@@ -2,126 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE153C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26406C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232629AbiGLIRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:17:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47918 "EHLO
+        id S232236AbiGLIRt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:17:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbiGLIRX (ORCPT
+        with ESMTP id S232641AbiGLIRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:17:23 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F9F3A1244;
-        Tue, 12 Jul 2022 01:17:22 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26C6FC1w017805;
-        Tue, 12 Jul 2022 10:17:05 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=V6sjMB7RYrAmyXGWjhUGVzI5Qe/pzRzlrpCoknQyqNs=;
- b=hR8WRcgff5vb8gEEHH7cKung5pd0Mn+XE0gch4XVWOT7VRjf9d0uO4gUkC89ue5wloJK
- xPNI6YH2vSVQsayiBpmH9ng7JhhV4gOE3GXKkoYkQBMjDpl0LhoNN64yHx4+BZRtGiNd
- PDwYv14fQ8Kq+8JCZP6Clbt5eGY+Cl3OHhMe6tn+yLOyoVEEDsPW0CGLs+NU3b8Astau
- LUeDgz4aAFEhapyxWI8oULgU/87iTBFZ8tVjNlMYwt2o47M+AvcSkldQmwVW/aY8chsm
- ct4maonrWSvFa4PWyt8/uxKSMG4b7qK8N8Q5nMHe6tN582sIHpc7gSgI05Q/2hgELMRN JA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h71127u5r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 10:17:05 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B258D10002A;
-        Tue, 12 Jul 2022 10:17:03 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id A59A1212FA9;
-        Tue, 12 Jul 2022 10:17:03 +0200 (CEST)
-Received: from [10.201.20.246] (10.75.127.45) by SHFDAG1NODE2.st.com
- (10.75.129.70) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 12 Jul
- 2022 10:17:02 +0200
-Message-ID: <18ffb30b-692d-4a67-896d-7b9485734336@foss.st.com>
-Date:   Tue, 12 Jul 2022 10:17:02 +0200
+        Tue, 12 Jul 2022 04:17:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13FB2A2395;
+        Tue, 12 Jul 2022 01:17:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABBFDB8162F;
+        Tue, 12 Jul 2022 08:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDEFCC3411E;
+        Tue, 12 Jul 2022 08:17:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657613857;
+        bh=/4FpR0s9G33GoZT2vsR7l1yUnYnNtqmg8K7NSFJYFEM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NJZpkIgZZm+Bq+pUoO4WkeuCZjQ1yVrcXTLoal5Gm7tEX7CyjIWajSdLj9FUx2JWj
+         nECsmKLOBwUwOOVXYFycPIZtJXjKcc3MQbwVVgWicegxWMJ/E8OrDO8FQms63NxXCG
+         5eS8bpOMZqhK/wL7L5Ab2BaLvem/AaNRgm+6/oDcfF/e87DBtGcmAoPmj4wVK1exfV
+         42z9p6ci0Qcp1WD4B50J/1U3dWAIqNAEigpRvb8r3oBnVL/+Km4rIVjwN2IiHH3cd4
+         cXo6/WxK+5dlLGnoAn1qAUOzZ7CtUVHw1awDk+n7gZiUhfant513F2OH9fPqNMTwoJ
+         oIHUQ+Y9VUvmw==
+Message-ID: <90c225d3-ed49-8399-770e-352c8f88001f@kernel.org>
+Date:   Tue, 12 Jul 2022 10:17:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v3] arm64: defconfig: Config that had RPMSG_CHAR now gets
- RPMSG_CTRL
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/3] media: dt-bindings: ak7375: Convert to DT schema
 Content-Language: en-US
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>
-CC:     Will Deacon <will@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-remoteproc@vger.kernel.org>
-References: <20220405161114.1107745-1-arnaud.pouliquen@foss.st.com>
- <c497e1ef-5a62-d956-4516-87e7b53a6001@foss.st.com> <YpdutV3/jOsfPb5c@arm.com>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-In-Reply-To: <YpdutV3/jOsfPb5c@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>
+Cc:     Yassine Oudjana <y.oudjana@protonmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220711144039.232196-1-y.oudjana@protonmail.com>
+ <20220711144039.232196-2-y.oudjana@protonmail.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220711144039.232196-2-y.oudjana@protonmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_05,2022-07-08_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
-
-On 6/1/22 15:50, Catalin Marinas wrote:
-> On Wed, Jun 01, 2022 at 03:25:42PM +0200, Arnaud POULIQUEN wrote:
->> Gentle reminder.
->> Please notice that Mathieu replied with a "Reviewed-by".
+On 11/07/2022 16:40, Yassine Oudjana wrote:
+> From: Yassine Oudjana <y.oudjana@protonmail.com>
 > 
-> We usually leave the defconfig updates to the SoC team. Cc'ing Arnd.
-
-This patch seems still be stalled, should I resent it?
-
-Thanks,
-Arnaud
-
+> Convert DT bindings document for AKM AK7375 VCM to DT schema
+> format and add an example.
 > 
-> Catalin
-> 
->> Thanks,
->> Arnaud
->>
->> On 4/5/22 18:11, Arnaud Pouliquen wrote:
->>> In the commit 617d32938d1b ("rpmsg: Move the rpmsg control device
->>> from rpmsg_char to rpmsg_ctrl"), we split the rpmsg_char driver in two.
->>> By default give everyone who had the old driver enabled the rpmsg_ctrl
->>> driver too.
->>>
->>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
->>> ---
->>>
->>> This patch is extracted from the series [1] that has been partially
->>> integrated in the Linux Kernel 5.18-rc1.
->>>
->>> Update vs previous version:
->>> - Add missing "---" separation marker after "Signed-off-by".
->>>
->>> [1]https://lore.kernel.org/lkml/15be2f08-ba03-2b80-6f53-2056359d5c41@gmail.com/T/
->>> [2]https://lore.kernel.org/linux-arm-kernel/CANLsYky1_b80qPbgOaLGVYD-GEr21V6C653iGEB7VCU=GbGvAQ@mail.gmail.com/T/
->>> ---
->>>  arch/arm64/configs/defconfig | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
->>> index 50aa3d75ab4f..3f8906b8a2ca 100644
->>> --- a/arch/arm64/configs/defconfig
->>> +++ b/arch/arm64/configs/defconfig
->>> @@ -1053,6 +1053,7 @@ CONFIG_QCOM_Q6V5_PAS=m
->>>  CONFIG_QCOM_SYSMON=m
->>>  CONFIG_QCOM_WCNSS_PIL=m
->>>  CONFIG_RPMSG_CHAR=m
->>> +CONFIG_RPMSG_CTRL=m
->>>  CONFIG_RPMSG_QCOM_GLINK_RPM=y
->>>  CONFIG_RPMSG_QCOM_GLINK_SMEM=m
->>>  CONFIG_RPMSG_QCOM_SMD=y
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
