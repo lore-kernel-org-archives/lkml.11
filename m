@@ -2,169 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31354C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C06CAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:35:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230217AbiGLBdW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 21:33:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        id S230061AbiGLBfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 21:35:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiGLBdQ (ORCPT
+        with ESMTP id S229515AbiGLBfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 21:33:16 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156238E1E2;
-        Mon, 11 Jul 2022 18:33:14 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id v21so3441845plo.0;
-        Mon, 11 Jul 2022 18:33:14 -0700 (PDT)
+        Mon, 11 Jul 2022 21:35:22 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7162AE1C
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 18:35:20 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id l124so6218217pfl.8
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 18:35:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:references:in-reply-to:mime-version
-         :message-id:content-transfer-encoding;
-        bh=A7qUftFMsHtAgHz7tg5ybnJxuA39QPif4EqnUQa2+ls=;
-        b=ilWwUWRBr2jcKjIgdGL97r01HtkS3jZpsabezxx1tUPUQ7nwzkvbBQbHRnZjyQHG4a
-         MTQaJauz2iosj/AQx2pFgDEGzCjs6RZtqEpfF4gFACV0PkzxpUgLKQV0r7SkoOS8p+M6
-         dkt68QM01GF7GmRIGvuVT1L4E6RCx066fAv8uES+/UuTbIGmK31aN4iXmUm6tF5eQPB7
-         5cr+316tp2G1/YM/tLLU7xm2kSvI7d4CRF8fGbsy8L1SfQhezD8s3MKooY5XZQOW0peI
-         yfloIeERrassAa9MWw/8ENoGPGt/oQ0X2g97fHelcTTOEjUWFON4xU58FfyK6IAAdjiL
-         f9WA==
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=jXRrOtHMmDMb2DadCR02O1dtCn+wTACMEkhobAkdpNE=;
+        b=JLcc59y5fh09ywEyDKJ7x4gepL4JF4hxb2zvX9UVYa87uaRp9ul73Fj6NQr4FUV4h8
+         ylxqMYidlIO7XauV86NBKmMiz717kZzmlSORkNNtyyTfEyt6uzmci1umye3/3SZaTm7g
+         0XsYCwHYeVkfHhAXqlt++Fx1GUqWmh7NxrX2pO1PPKNBsc40yGTPTqX8EbwDZY0OhPHj
+         8f/72F7Qa5qy0N/Ah1wK2rGP96luC6koyDdw22W8h+RQjX4vpqe94mz/9TbtpBy/eD7m
+         xKHl6i++amGJhCMYk8HVP7s8suCQUiKnzDd1gRkO5kF/jklTq14OJKRmQmC+d2efY+Y1
+         ttuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
-         :mime-version:message-id:content-transfer-encoding;
-        bh=A7qUftFMsHtAgHz7tg5ybnJxuA39QPif4EqnUQa2+ls=;
-        b=72Nna69Q1F9i9Y+pLDgwAgiBigMG/O9ZX/rMwDjwftA5LlmWdfG4wtrmivOCHlJoYr
-         hPGJdj857P0yc3GbaAf/t2+TiX3q+YK3VlslBr80PsSnZljK5Wbz7WNcFM6wpv9iFcKH
-         6eYlLq9ibcsNHc1dKK2AUbhuF/wVn7BaQM4GgB+A8u6kzEJXSWCiwyAObe6kEX7vGba/
-         50M5uEX9l2rxOHFQWPzJlQkwBauRFLASEYIDARSuG6xTfymauM9ufpcuBLB/KNJ9kw1c
-         91CY6HM3LXh2Quy4UC5a+GDw3CCZMASgAnNPA8pQfQdCNaBhR9s7cSlCERpwadZjLPWc
-         YbnQ==
-X-Gm-Message-State: AJIora8xUXzFpHxD3GUhKlduPltZopHqa6QdVf5hppuZeoVesBugSOuD
-        eco87cROGZGRStT/lAabfdo=
-X-Google-Smtp-Source: AGRyM1vCis+SHHXbUUZKdGWzSbZvOUw5k1uVmPkRtryAVoujeVtXJWzlAcnGlKYgxE8ZNZyVCCoiVA==
-X-Received: by 2002:a17:902:ea09:b0:16c:3f7a:adf7 with SMTP id s9-20020a170902ea0900b0016c3f7aadf7mr11199465plg.103.1657589593546;
-        Mon, 11 Jul 2022 18:33:13 -0700 (PDT)
-Received: from localhost (193-116-203-247.tpgi.com.au. [193.116.203.247])
-        by smtp.gmail.com with ESMTPSA id f8-20020a17090ab94800b001ef42b3c5besm5450818pjw.23.2022.07.11.18.33.12
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=jXRrOtHMmDMb2DadCR02O1dtCn+wTACMEkhobAkdpNE=;
+        b=OAXuE8kyCuk/F8wygOMktnjXV7T54CuSkYoDfXplYdEgGPmQmyeqJEZoIHIv2iKy8J
+         F+KGqbm2Iwbm4ESZnc0c6XpETBJC+wt3qdzKhvH/FAGzUjNJngvQbM7sJMKLh4kksGcR
+         18bqNpS9sgurz7calffOJMu7XGS4vEQVHYe5SRpUduRyrWOxONNpZBd63RSARrRfw7xJ
+         owTeZ/FRdbd+Q0ecORAbzrVsZVbeUfcSkHka6Pzjudd9syJhk3uWH3/gG3VSwtYJ9jPX
+         ZWCkigNSFcGVw1MwhV15koJC7h6qgo3s7KelXhnb0W6lWr9ktihjOjJqrW2EsdF89H8t
+         R7ZQ==
+X-Gm-Message-State: AJIora/Ex7ppyHVDkTNbGRul/QAPoJom5/POld2FNCnVnnb5J8dsE2I/
+        LPRMRP8BjoE2nwW4YJgD6U9sSO40J0EUww==
+X-Google-Smtp-Source: AGRyM1uY4XxNFwUuqiwYISuIg8rYGVvu8Y2ALlr00SQqXAJZbRJH72e+bqt0pfXV8c5r62x5nbMFfQ==
+X-Received: by 2002:a05:6a00:c92:b0:528:a24f:60f9 with SMTP id a18-20020a056a000c9200b00528a24f60f9mr20853725pfv.47.1657589719888;
+        Mon, 11 Jul 2022 18:35:19 -0700 (PDT)
+Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id a200-20020a621ad1000000b0052ab37ef3absm5392606pfa.116.2022.07.11.18.35.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 18:33:12 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 11:33:07 +1000
-From:   Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH v3 1/4] powerpc/mobility: wait for memory transfer to
- complete
-To:     benh@kernel.crashing.org, haren@linux.vnet.ibm.com,
-        Laurent Dufour <ldufour@linux.ibm.com>, linux@roeck-us.net,
-        mpe@ellerman.id.au, nathanl@linux.ibm.com, paulus@samba.org,
-        wim@linux-watchdog.org
-Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-watchdog@vger.kernel.org
-References: <20220627135347.32624-1-ldufour@linux.ibm.com>
-        <20220627135347.32624-2-ldufour@linux.ibm.com>
-In-Reply-To: <20220627135347.32624-2-ldufour@linux.ibm.com>
+        Mon, 11 Jul 2022 18:35:19 -0700 (PDT)
+References: <20220708211755.73637-1-schspa@gmail.com>
+ <20220708172614.14191089@gandalf.local.home> <m2v8s7mg78.fsf@gmail.com>
+ <20220711161037.06b8c1ea@gandalf.local.home> <m2edyrnny9.fsf@gmail.com>
+ <20220711211639.6c714635@gandalf.local.home>
+User-agent: mu4e 1.7.5; emacs 28.1
+From:   Schspa Shi <schspa@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
+        vschneid@redhat.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] sched/rt: fix bad task migration for rt tasks
+Date:   Tue, 12 Jul 2022 09:33:58 +0800
+In-reply-to: <20220711211639.6c714635@gandalf.local.home>
+Message-ID: <m2sfn7glkk.fsf@gmail.com>
 MIME-Version: 1.0
-Message-Id: <1657588908.mis26ebam4.astroid@bobo.none>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Excerpts from Laurent Dufour's message of June 27, 2022 11:53 pm:
-> In pseries_migration_partition(), loop until the memory transfer is
-> complete. This way the calling drmgr process will not exit earlier,
-> allowing callbacks to be run only once the migration is fully completed.
->=20
-> If reading the VASI state is done after the hypervisor has completed the
-> migration, the HCALL is returning H_PARAMETER. We can safely assume that
-> the memory transfer is achieved if this happens.
->=20
-> This will also allow to manage the NMI watchdog state in the next commits=
-.
->=20
-> Reviewed-by: Nathan Lynch <nathanl@linux.ibm.com>
-> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-> ---
->  arch/powerpc/platforms/pseries/mobility.c | 42 +++++++++++++++++++++--
->  1 file changed, 40 insertions(+), 2 deletions(-)
->=20
-> diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/pla=
-tforms/pseries/mobility.c
-> index 78f3f74c7056..907a779074d6 100644
-> --- a/arch/powerpc/platforms/pseries/mobility.c
-> +++ b/arch/powerpc/platforms/pseries/mobility.c
-> @@ -427,6 +427,43 @@ static int wait_for_vasi_session_suspending(u64 hand=
-le)
->  	return ret;
->  }
-> =20
-> +static void wait_for_vasi_session_completed(u64 handle)
-> +{
-> +	unsigned long state =3D 0;
-> +	int ret;
-> +
-> +	pr_info("waiting for memory transfert to complete...\n");
 
-                                            ^ extra t (also below)
-> +
-> +	/*
-> +	 * Wait for transition from H_VASI_RESUMED to H_VASI_COMPLETED.
-> +	 */
-> +	while (true) {
-> +		ret =3D poll_vasi_state(handle, &state);
-> +
-> +		/*
-> +		 * If the memory transfer is already complete and the migration
-> +		 * has been cleaned up by the hypervisor, H_PARAMETER is return,
-> +		 * which is translate in EINVAL by poll_vasi_state().
-> +		 */
-> +		if (ret =3D=3D -EINVAL || (!ret && state =3D=3D H_VASI_COMPLETED)) {
-> +			pr_info("memory transfert completed.\n");
-> +			break;
-> +		}
-> +
-> +		if (ret) {
-> +			pr_err("H_VASI_STATE return error (%d)\n", ret);
-> +			break;
-> +		}
-> +
-> +		if (state !=3D H_VASI_RESUMED) {
-> +			pr_err("unexpected H_VASI_STATE result %lu\n", state);
-> +			break;
-> +		}
-> +
-> +		msleep(500);
+Steven Rostedt <rostedt@goodmis.org> writes:
 
-Is 500 specified anywhere? Another caller uses 1000, and the other one=20
-uses some backoff interval starting at 1ms...
+> On Tue, 12 Jul 2022 08:53:56 +0800
+> Schspa Shi <schspa@gmail.com> wrote:
+>
+>> How about to change this to 
+>> 
+>> 			/*
+>> 			 * We had to unlock the run queue. In
+>> 			 * the mean time, task could have
+>> 			 * migrated already or had its affinity changed.
+>> 			 * Also make sure that it wasn't scheduled on its rq.
+>> 			 * It is possible the task was scheduled, set
+>>              * "migrate_disabled" and then got preempted, And we
+>>              * check task migration disable flag here too.
+>> 			 */
+>
+> That's better. But of course it needs better formatting ;-)
+>
+> -- Steve
 
-> +	}
-> +}
-> +
->  static void prod_single(unsigned int target_cpu)
->  {
->  	long hvrc;
-> @@ -673,9 +710,10 @@ static int pseries_migrate_partition(u64 handle)
->  	vas_migration_handler(VAS_SUSPEND);
-> =20
->  	ret =3D pseries_suspend(handle);
-> -	if (ret =3D=3D 0)
-> +	if (ret =3D=3D 0) {
->  		post_mobility_fixup();
-> -	else
-> +		wait_for_vasi_session_completed(handle);
+I have upload a v5 patch for this comment change, please review it. ;-)
+Link: https://lore.kernel.org/all/20220712013125.623338-1-schspa@gmail.com/T/#t
 
-If this wasn't required until later patches, maybe a comment about why=20
-it's here? Could call it wait_for_migration() or similar too.
-
-Looks okay though from my basic reading of PAPR.
-
-Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-
-> +	} else
->  		pseries_cancel_migration(handle, ret);
-> =20
->  	vas_migration_handler(VAS_RESUME);
-> --=20
-> 2.36.1
->=20
->=20
+-- 
+BRs
+Schspa Shi
