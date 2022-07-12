@@ -2,73 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D68AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:11:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B46E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232085AbiGLBLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 21:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36628 "EHLO
+        id S231987AbiGLBLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 21:11:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231867AbiGLBLP (ORCPT
+        with ESMTP id S232088AbiGLBLf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 21:11:15 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E79D2E685;
-        Mon, 11 Jul 2022 18:11:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KSCsx
-        S2NdmSWWyRj4KxVCEpGTrIOLyeLRya+rvx2MKY=; b=ODEGnA0fZHxJX9fD3rh2i
-        AZHpqjEcXbpFvxIvoebZR96iMenRDPOg9mbGPp/zl1AfsxIDxFcu0MoM4QtaW8L+
-        Jtmhzm4+dynmWF8Geom2M0qg8Q7W+Hnnppgq//jG2Emc2ijSdFfnfMYlZvRCeraw
-        6nhuhC0fO+kWT7tZMwQ5kU=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp4 (Coremail) with SMTP id HNxpCgCnkdkQysxil69dOA--.12930S4;
-        Tue, 12 Jul 2022 09:10:55 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     zohar@linux.ibm.com, dmitry.kasatkin@gmail.com, jmorris@namei.org,
-        serge@hallyn.com
-Cc:     linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v2] ima/evm: Fix potential memory leak in ima_init_crypto()
-Date:   Tue, 12 Jul 2022 09:10:37 +0800
-Message-Id: <20220712011037.2328591-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 21:11:35 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBFE3ED5A;
+        Mon, 11 Jul 2022 18:11:34 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id e16so6176013pfm.11;
+        Mon, 11 Jul 2022 18:11:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cUG7EpIXhx0wnuQNzXMv2sJvGVph3F6oE2vl69PXnZg=;
+        b=XrTmhdav6KjxRpfSt+R+LgfONHrU71yyge8HG4aL717gn8TQv8nEbrQYeLzcenp9cm
+         yIcFCmfrDHyPCrQDGId5ZgoiHVSf80L8GmEG3RObSYb8SNqmQw6i8JX1yGhm7qQNU9Cd
+         4SsB6QlkerYHYTC8vxjF7WdRtnLAEov54NPmWr+6boX04rOV3jNvAnh/2s4MBRpXvFo7
+         pL8XNqETkAZGYtk/sbcv+ee2TbwsmcBhWk/qocTfnCG2vAa5vD4+x+GHKMXf0iFN5BLp
+         pi+CN3/FS6nek/mAf64B6Ne8gMOwOeoy5LPQLWlMV05hm/3ZMujsw4UY/AgV1PH0/kN4
+         zngg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=cUG7EpIXhx0wnuQNzXMv2sJvGVph3F6oE2vl69PXnZg=;
+        b=hn6uqvGI1Tl4T7JDY4KKw31mXFZLXEPUeq1JRTvPXOPOHJydRkJQnV9KbfCZ67B3zy
+         gzN5ZzrhMu2poR6L1RorbzttUr9dS/+ZLkqijllgPtKE+nSRZ4mmxvdA4rHzhBHww1CG
+         40slsSDnmAdezNVS2UzQeErPlsriY1AkLjQjs4rhDm51kQ6evL4qIaWdDDOugBBsHt3Q
+         K24AwcB9zqjHS27+8rKhQLrSXCl6YnEvy3HmTDaBDo2bVx/UcG/iCCqsEmk3Z7csRM8o
+         gs2CUFdp5kjqw7X71DRgYZEq8qBRXrP7T9F/iSfgVRenwa9B0cGP2aJllAti02eLgF0j
+         5v5g==
+X-Gm-Message-State: AJIora8FldLT6/o5yXgGllTDW+HHkgIUFC1fjDxxt3smcAC8CUaXJS1Y
+        +PpB1pqjd7ZJXimONxpIjrk=
+X-Google-Smtp-Source: AGRyM1s9RSwFLYgm25df7Hvi5/YEZ8VstOfcPJw+O0qXIIkV99C3JYh7bBl79NFHpkjHo0opxdtcyg==
+X-Received: by 2002:a65:4d47:0:b0:415:d875:328d with SMTP id j7-20020a654d47000000b00415d875328dmr12206288pgt.80.1657588293636;
+        Mon, 11 Jul 2022 18:11:33 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id rj9-20020a17090b3e8900b001ef8ea89a33sm7720355pjb.2.2022.07.11.18.11.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 18:11:33 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Mon, 11 Jul 2022 18:11:32 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 4.14 00/17] 4.14.288-rc1 review
+Message-ID: <20220712011132.GB2305683@roeck-us.net>
+References: <20220711090536.245939953@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgCnkdkQysxil69dOA--.12930S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Jry8WF4UtF18ur15GFyfJFb_yoW3WwcE9a
-        s0934xXw17Zan5XayjvFZ7ZF4vgrZ5XFyFgryaywnrua43Cr45XFy7Xrs3JFy8uryUtF4q
-        gws8JFW2kwnF9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xREF1vPUUUUU==
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiQxA8jFc7ajzTIAAAsq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711090536.245939953@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On failure to allocate the SHA1 tfm, IMA fails to initialize and exits
-without freeing the ima_algo_array. Add the missing kfree() for
-ima_algo_array to avoid the potential memory leak.
+On Mon, Jul 11, 2022 at 11:06:25AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.14.288 release.
+> There are 17 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 13 Jul 2022 09:05:28 +0000.
+> Anything received after that time might be too late.
+> 
 
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- security/integrity/ima/ima_crypto.c | 1 +
- 1 file changed, 1 insertion(+)
+Build results:
+	total: 170 pass: 170 fail: 0
+Qemu test results:
+	total: 424 pass: 424 fail: 0
 
-diff --git a/security/integrity/ima/ima_crypto.c b/security/integrity/ima/ima_crypto.c
-index a7206cc1d7d1..64499056648a 100644
---- a/security/integrity/ima/ima_crypto.c
-+++ b/security/integrity/ima/ima_crypto.c
-@@ -205,6 +205,7 @@ int __init ima_init_crypto(void)
- 
- 		crypto_free_shash(ima_algo_array[i].tfm);
- 	}
-+	kfree(ima_algo_array);
- out:
- 	crypto_free_shash(ima_shash_tfm);
- 	return rc;
--- 
-2.25.1
+Tested-by: Guenter Roeck <linux@roeck-us.net>
 
+Guenter
