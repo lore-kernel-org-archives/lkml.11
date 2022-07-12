@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9828C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60126C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229930AbiGLUyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56764 "EHLO
+        id S233822AbiGLUyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233719AbiGLUxo (ORCPT
+        with ESMTP id S234077AbiGLUxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:53:44 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64243CEB94;
-        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so112606wme.0;
-        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
+        Tue, 12 Jul 2022 16:53:46 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC2DD0398;
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id y22-20020a7bcd96000000b003a2e2725e89so108869wmj.0;
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GKMfDsz3ncRIFfRnqejiNLX2DyehkKru80XLdiaCkUE=;
-        b=RgCPTWd4uK4sLGJmlktxUWB5eHkAaMwBuqAi5yAP0tRVSE0e49D9eFXJ7lXjvhUz0V
-         OfgVvRaimWYIIzVXCPXDFmxm+9Xq+vxgVOxYT0a5BHmlTCCDZe+sj7V2VEGhLey6xF/I
-         EK1pfcsmt2XaxDymzzu2DjGUlle6MQNB7jy2tw9N7fkJRqrjkxgCKizy73xdRd+d7Bdi
-         5gfb1huCMwnQ3Co3r2DQcQiKdNOQZn5adr+wSd/UEaFn/OLk4hvhHr/LOzmqk04hyIp7
-         dn2EuoKgcb0aM5HzQr5YeGdNMNMgcXqIkbSzZ2lNdwa4VkGCbCn73vLtuT3seuk1uqfn
-         e+ag==
+        bh=s8Z4UCQCwXUXw8ymrA0AVRoggqHC6f/FDd/tj/tGO10=;
+        b=YI+zuSHqDwgBSxMQDbNdfCXJYnhCEzG4jPJonm/OmJPXWYtolgG2mlqxIhZ+njdofI
+         knhC01VD3yq1AxzXVlRRvfZDTpIXxbDi/ljvOl7fu+97hDXxyo71aDpQ/4sSrPq0TF9E
+         XATyfL9AWsmPeUok7LUGrB07G9QDvlfELB/rFcvym7OGBrM8CkFiIBcfhuc065c5k8wR
+         q6Ew2qcY8s8CYrsonVSA3c5pqRnuSqM81RKk37QqsOX7kIb5jiE0vZyd+WG0IjIQtpSK
+         /rEQ/xNxv3xz34QhrecjpSmSBFeY93Z3IBGhsiWLjDOe3t0+weJ6+OknbAuXMCNh3Ijx
+         /aTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GKMfDsz3ncRIFfRnqejiNLX2DyehkKru80XLdiaCkUE=;
-        b=GPpoijbSPgFbSin9mtd921f0so2nSwVr0kjPD5IrkuI7LssAXav9GiZQwkyf+rrTOD
-         WcFbNWc9Q3ejqqpuVGLAsZe2q+t3Asp0plehI3wPz8K1g6LKdtkmwOKaocSkSyYr5D/Q
-         2YjJPaKLttObkptB25rtI0kn6yuEys76Sk7gcS0C/1h9Z15cuH0QVnc0NyiSgT22lDWA
-         p4feXcDL7VhUr0A8FnIc44Aiy367a8T2FmctXJCnhKuG/0ua/sPJE7YS/vs3Pmc9l3JP
-         DciSu4N0JmGes8QSXSJl0KddFsSDgWPVZHOqDEqPj1pCoWfSs7/3fnfh17V5c7rZK2rD
-         niWg==
-X-Gm-Message-State: AJIora+uYJDOTUzhdg1pFuKjEmHYLkz1UivRhdTmMMRsKJJCfrJJYTTO
-        EzdvPFH73lr9WAyIXCVeYmGrChkfk5Y=
-X-Google-Smtp-Source: AGRyM1sVlcAUo5UVbD3xERHem11AAK2I0GUI2uEzBIl6tcuBLMrFWIBt8sGwjutEfjhv1lH8oyBp5Q==
-X-Received: by 2002:a05:600c:4e16:b0:3a2:ef34:dbe3 with SMTP id b22-20020a05600c4e1600b003a2ef34dbe3mr4824648wmq.71.1657659196932;
-        Tue, 12 Jul 2022 13:53:16 -0700 (PDT)
+        bh=s8Z4UCQCwXUXw8ymrA0AVRoggqHC6f/FDd/tj/tGO10=;
+        b=klN8gSfmOwhEh0IZ9z5dSOLCHDhvq0MuigvPFbws094qw4Cr2zYM1TDqIqJ+8300Bv
+         f+JUDsh3QJQr7e9dxvb551Ubd/vrELKrJP/h23IxYd0dRFLknGEsxDVNnSUne8P1BpU3
+         9UfIlJt1iDFhe+tubuo6uBbpuTMiC8ovsiX+CcObIWpRNWYS0kCn2IO3Wo+PUNIGQqrD
+         ZPPSB3sYHNhv0QWakp6O6eXdL7S0iZX/P2JoA6L20pVC8srQSXlH3ivJlB4elnm63sFE
+         ugNhxNx4w8iScVVbOcuKU8DcWGR49l8Cg/IAnZa+zE5kUJ4lKwoQjjwWqVeK2UIAT/KD
+         tfsg==
+X-Gm-Message-State: AJIora9nZCWUKAakRIS/myNXSuhASu0RRLzYSapPmtnnpP7CCxPPRcrg
+        B7jWMAszkn3MB3gttsGZSOjLTH/IjqA=
+X-Google-Smtp-Source: AGRyM1tHCITSPTZ0F1HAPZl2f3/b1zgi2kTBLFOzml+urwPzYJHZiZ4OEm8WKUydwn4dPFhWDsbuWw==
+X-Received: by 2002:a05:600c:3512:b0:3a0:5005:86b5 with SMTP id h18-20020a05600c351200b003a0500586b5mr6132266wmq.191.1657659199486;
+        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.15
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:16 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 08/27] net: introduce __skb_fill_page_desc_noacc
-Date:   Tue, 12 Jul 2022 21:52:32 +0100
-Message-Id: <99bdf93fa51edfbef709ad41f9985d855998fe38.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 10/27] ipv6/udp: support externally provided ubufs
+Date:   Tue, 12 Jul 2022 21:52:34 +0100
+Message-Id: <d35ed18eb47cf8c2778f48703ee75bced37878ad.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,62 +69,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Managed pages contain pinned userspace pages and controlled by upper
-layers, there is no need in tracking skb->pfmemalloc for them. Introduce
-a helper for filling frags but ignoring page tracking, it'll be needed
-later.
+Teach ipv6/udp how to use external ubuf_info provided in msghdr and
+also prepare it for managed frags by sprinkling
+skb_zcopy_downgrade_managed() when it could mix managed and not managed
+frags.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/linux/skbuff.h | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+ net/ipv6/ip6_output.c | 44 ++++++++++++++++++++++++++++++-------------
+ 1 file changed, 31 insertions(+), 13 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 07004593d7ca..1111adefd906 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2550,6 +2550,22 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
- 	return skb_headlen(skb) + __skb_pagelen(skb);
- }
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index fc74ce3ed8cc..897ca4f9b791 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -1542,18 +1542,35 @@ static int __ip6_append_data(struct sock *sk,
+ 	    rt->dst.dev->features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
+ 		csummode = CHECKSUM_PARTIAL;
  
-+static inline void __skb_fill_page_desc_noacc(struct skb_shared_info *shinfo,
-+					      int i, struct page *page,
-+					      int off, int size)
-+{
-+	skb_frag_t *frag = &shinfo->frags[i];
+-	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
+-		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
+-		if (!uarg)
+-			return -ENOBUFS;
+-		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
+-		if (rt->dst.dev->features & NETIF_F_SG &&
+-		    csummode == CHECKSUM_PARTIAL) {
+-			paged = true;
+-			zc = true;
+-		} else {
+-			uarg->zerocopy = 0;
+-			skb_zcopy_set(skb, uarg, &extra_uref);
++	if ((flags & MSG_ZEROCOPY) && length) {
++		struct msghdr *msg = from;
 +
-+	/*
-+	 * Propagate page pfmemalloc to the skb if we can. The problem is
-+	 * that not all callers have unique ownership of the page but rely
-+	 * on page_is_pfmemalloc doing the right thing(tm).
-+	 */
-+	frag->bv_page		  = page;
-+	frag->bv_offset		  = off;
-+	skb_frag_size_set(frag, size);
-+}
++		if (getfrag == ip_generic_getfrag && msg->msg_ubuf) {
++			if (skb_zcopy(skb) && msg->msg_ubuf != skb_zcopy(skb))
++				return -EINVAL;
 +
- /**
-  * __skb_fill_page_desc - initialise a paged fragment in an skb
-  * @skb: buffer containing fragment to be initialised
-@@ -2566,17 +2582,7 @@ static inline unsigned int skb_pagelen(const struct sk_buff *skb)
- static inline void __skb_fill_page_desc(struct sk_buff *skb, int i,
- 					struct page *page, int off, int size)
- {
--	skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
--
--	/*
--	 * Propagate page pfmemalloc to the skb if we can. The problem is
--	 * that not all callers have unique ownership of the page but rely
--	 * on page_is_pfmemalloc doing the right thing(tm).
--	 */
--	frag->bv_page		  = page;
--	frag->bv_offset		  = off;
--	skb_frag_size_set(frag, size);
--
-+	__skb_fill_page_desc_noacc(skb_shinfo(skb), i, page, off, size);
- 	page = compound_head(page);
- 	if (page_is_pfmemalloc(page))
- 		skb->pfmemalloc	= true;
++			/* Leave uarg NULL if can't zerocopy, callers should
++			 * be able to handle it.
++			 */
++			if ((rt->dst.dev->features & NETIF_F_SG) &&
++			    csummode == CHECKSUM_PARTIAL) {
++				paged = true;
++				zc = true;
++				uarg = msg->msg_ubuf;
++			}
++		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
++			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
++			if (!uarg)
++				return -ENOBUFS;
++			extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
++			if (rt->dst.dev->features & NETIF_F_SG &&
++			    csummode == CHECKSUM_PARTIAL) {
++				paged = true;
++				zc = true;
++			} else {
++				uarg->zerocopy = 0;
++				skb_zcopy_set(skb, uarg, &extra_uref);
++			}
+ 		}
+ 	}
+ 
+@@ -1747,13 +1764,14 @@ static int __ip6_append_data(struct sock *sk,
+ 				err = -EFAULT;
+ 				goto error;
+ 			}
+-		} else if (!uarg || !uarg->zerocopy) {
++		} else if (!zc) {
+ 			int i = skb_shinfo(skb)->nr_frags;
+ 
+ 			err = -ENOMEM;
+ 			if (!sk_page_frag_refill(sk, pfrag))
+ 				goto error;
+ 
++			skb_zcopy_downgrade_managed(skb);
+ 			if (!skb_can_coalesce(skb, i, pfrag->page,
+ 					      pfrag->offset)) {
+ 				err = -EMSGSIZE;
 -- 
 2.37.0
 
