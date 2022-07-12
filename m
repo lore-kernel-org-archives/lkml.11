@@ -2,215 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A14C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E42C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:26:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229796AbiGLCTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 22:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57390 "EHLO
+        id S229754AbiGLC0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 22:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiGLCS7 (ORCPT
+        with ESMTP id S229476AbiGLC0B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 22:18:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD9C4A5;
-        Mon, 11 Jul 2022 19:18:57 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LhkqR10WyzVffN;
-        Tue, 12 Jul 2022 10:15:15 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 10:17:58 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.174) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 10:17:57 +0800
-From:   Li Huafei <lihuafei1@huawei.com>
-To:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
-        <ardb@kernel.org>, <will@kernel.org>
-CC:     <mark.rutland@arm.com>, <broonie@kernel.org>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
-        <namhyung@kernel.org>, <arnd@arndb.de>, <linus.walleij@linaro.org>,
-        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
-        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <lihuafei1@huawei.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-Subject: [PATCH 5/5] ARM: stacktrace: Convert stacktrace to generic ARCH_STACKWALK
-Date:   Tue, 12 Jul 2022 10:15:27 +0800
-Message-ID: <20220712021527.109921-6-lihuafei1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220712021527.109921-1-lihuafei1@huawei.com>
-References: <20220712021527.109921-1-lihuafei1@huawei.com>
+        Mon, 11 Jul 2022 22:26:01 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B58632BAE
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:26:00 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id w184so2668615oie.3
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=I0de4wabST6gWpJe4bl9FhiTG19f2KboMVUf/03W2w0=;
+        b=mraQedEo53DaR20MLo/XD9DrgTYhhYat0NLG5gsVAVCUelBl4IzXidM28mWJ6N3mPn
+         sO8nhuF2eGMkgaaK+eAvoUn5mu9cAUSbrlfLsRFYkqyw4lRIWdGKX7Y0MI3NnSQ452za
+         hHJ3EEau+/9Do9yM7LbY7ohz0luiZTGJnAhjntkwo0Zbnoa+ghNx63duZ7UdSf9w7quB
+         Z7QeBSLTdVS8nRj+dnnAwchZAvVoEXkUQ1QMF0sGz7hT1ReozJkpqRfdx4E+K0y5gURj
+         9i4XToAngTm4uExrYuFg3P+67OuIw54aPas74adFfnz+SbqjGPl1nsV1Gcu10ZBRrYDs
+         lewA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I0de4wabST6gWpJe4bl9FhiTG19f2KboMVUf/03W2w0=;
+        b=F2XShdTfMu5HEd3tre3h9GamfYycTtV0Hns5Rk7IpGNhjFroQpiKdjkKgXt8nd+cui
+         Y06B8h8vtOff3/qNaekJNRB722bJwNskt4w7jPAaU2Yip+AtsWbFkiZ+qOs1C7ksvCZn
+         coYYqvkjA7YA26r4Ryiojm/sJyy9KkmjljgZbfV3+7/fwXGJbhTSZPGqBFYYU2NJicdU
+         sVWjT0JVXG/MSkV+8mD0nnd0Bl7ZSMzq4IWMjU49574SJ8enAzz2Randqekbvsx+wIjg
+         DR1HYKCie8RHVwYILxgaV8VojOOvEsHipEFS5ZOVxhwj9FwhXNTbybsX+iSYvrxy67kX
+         lTOg==
+X-Gm-Message-State: AJIora8REMH6UdkkC0uvqceiBXOkT7JMKqaUuop4tVROPBy0kiDpsDDW
+        xMP5E042hng8ukzXA4HIKaQyYQ==
+X-Google-Smtp-Source: AGRyM1sUnWyKKpqKOCAUzmjP+LImn3c2NF8v1If++//vIw8Dp+7FY1nDpxC+6kiS9NJrt0tL8qi0ug==
+X-Received: by 2002:a05:6808:1184:b0:322:4c18:2f7e with SMTP id j4-20020a056808118400b003224c182f7emr795922oil.109.1657592759573;
+        Mon, 11 Jul 2022 19:25:59 -0700 (PDT)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id p2-20020a056870830200b0010be09dc797sm3985546oae.18.2022.07.11.19.25.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 19:25:58 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 19:28:26 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
+Message-ID: <YszcSgnSrbsncw0J@ripper>
+References: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
+ <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch converts ARM stacktrace to the generic ARCH_STACKWALK
-implemented by commit 214d8ca6ee85 ("stacktrace: Provide common
-infrastructure").
+On Mon 11 Jul 01:56 PDT 2022, Johan Hovold wrote:
 
-Signed-off-by: Li Huafei <lihuafei1@huawei.com>
----
- arch/arm/Kconfig             |   1 +
- arch/arm/kernel/stacktrace.c | 114 ++++++++++-------------------------
- 2 files changed, 33 insertions(+), 82 deletions(-)
+> On Thu, Jul 07, 2022 at 09:08:58AM -0700, Bjorn Andersson wrote:
+> > The timer node needs ranges specified to map the 1-cell children to the
+> > 2-cell address range used in /soc. This addition never made it into the
+> > patch that was posted and merged, so add it now.
+> > 
+> > Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> > index 2bdb42c88311..37a4cd6f85b6 100644
+> > --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> > +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> > @@ -1667,6 +1667,7 @@ timer@17c20000 {
+> >  			reg = <0x0 0x17c20000 0x0 0x1000>;
+> >  			#address-cells = <1>;
+> >  			#size-cells = <1>;
+> > +			ranges = <0 0 0 0x20000000>;
+> 
+> While addressing the current issue, this looks odd to me. Why not use a
+> non-zero parent bus address here instead?
+> 
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7630ba9cb6cc..8da192853562 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -18,6 +18,7 @@ config ARM
- 	select ARCH_HAS_PHYS_TO_DMA
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SET_MEMORY
-+	select ARCH_STACKWALK
- 	select ARCH_HAS_STRICT_KERNEL_RWX if MMU && !XIP_KERNEL
- 	select ARCH_HAS_STRICT_MODULE_RWX if MMU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if SWIOTLB || !MMU
-diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
-index ec0ca3192775..1b9c91e14d2e 100644
---- a/arch/arm/kernel/stacktrace.c
-+++ b/arch/arm/kernel/stacktrace.c
-@@ -136,98 +136,48 @@ void notrace walk_stackframe(struct stackframe *frame,
- EXPORT_SYMBOL(walk_stackframe);
- 
- #ifdef CONFIG_STACKTRACE
--struct stack_trace_data {
--	struct stack_trace *trace;
--	unsigned int no_sched_functions;
--	unsigned int skip;
--};
--
--static bool save_trace(void *d, unsigned long addr)
--{
--	struct stack_trace_data *data = d;
--	struct stack_trace *trace = data->trace;
--
--	if (data->no_sched_functions && in_sched_functions(addr))
--		return true;
--	if (data->skip) {
--		data->skip--;
--		return true;
--	}
--
--	trace->entries[trace->nr_entries++] = addr;
--	return trace->nr_entries < trace->max_entries;
--}
--
--/* This must be noinline to so that our skip calculation works correctly */
--static noinline void __save_stack_trace(struct task_struct *tsk,
--	struct stack_trace *trace, unsigned int nosched)
-+static void start_stack_trace(struct stackframe *frame, struct task_struct *task,
-+			      unsigned long fp, unsigned long sp,
-+			      unsigned long lr, unsigned long pc)
- {
--	struct stack_trace_data data;
--	struct stackframe frame;
--
--	data.trace = trace;
--	data.skip = trace->skip;
--	data.no_sched_functions = nosched;
--
--	if (tsk != current) {
--		/* task blocked in __switch_to */
--		frame.fp = thread_saved_fp(tsk);
--		frame.sp = thread_saved_sp(tsk);
--		frame.lr = 0;		/* recovered from the stack */
--		frame.pc = thread_saved_pc(tsk);
--	} else {
--		/* We don't want this function nor the caller */
--		data.skip += 2;
--		frame.fp = (unsigned long)__builtin_frame_address(0);
--		frame.sp = current_stack_pointer;
--		frame.lr = (unsigned long)__builtin_return_address(0);
--here:
--		frame.pc = (unsigned long)&&here;
--	}
-+	frame->fp = fp;
-+	frame->sp = sp;
-+	frame->lr = lr;
-+	frame->pc = pc;
- #ifdef CONFIG_KRETPROBES
--	frame.kr_cur = NULL;
--	frame.tsk = tsk;
-+	frame->kr_cur = NULL;
-+	frame->tsk = task;
- #endif
- #ifdef CONFIG_UNWINDER_FRAME_POINTER
--	frame.ex_frame = false;
-+	frame->ex_frame = in_entry_text(frame->pc) ? true : false;
- #endif
--
--	walk_stackframe(&frame, save_trace, &data);
- }
- 
--void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
-+void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
-+		     struct task_struct *task, struct pt_regs *regs)
- {
--	struct stack_trace_data data;
- 	struct stackframe frame;
- 
--	data.trace = trace;
--	data.skip = trace->skip;
--	data.no_sched_functions = 0;
--
--	frame.fp = regs->ARM_fp;
--	frame.sp = regs->ARM_sp;
--	frame.lr = regs->ARM_lr;
--	frame.pc = regs->ARM_pc;
--#ifdef CONFIG_KRETPROBES
--	frame.kr_cur = NULL;
--	frame.tsk = current;
--#endif
--#ifdef CONFIG_UNWINDER_FRAME_POINTER
--	frame.ex_frame = in_entry_text(frame.pc) ? true : false;
--#endif
--
--	walk_stackframe(&frame, save_trace, &data);
--}
--
--void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
--{
--	__save_stack_trace(tsk, trace, 1);
--}
--EXPORT_SYMBOL(save_stack_trace_tsk);
-+	if (regs) {
-+		start_stack_trace(&frame, NULL, regs->ARM_fp, regs->ARM_sp,
-+				  regs->ARM_lr, regs->ARM_pc);
-+	} else if (task != current) {
-+		/* task blocked in __switch_to */
-+		start_stack_trace(&frame, task, thread_saved_fp(task),
-+				  thread_saved_sp(task), 0,
-+				  thread_saved_pc(task));
-+	} else {
-+here:
-+		start_stack_trace(&frame, task,
-+				  (unsigned long)__builtin_frame_address(0),
-+				  current_stack_pointer,
-+				  (unsigned long)__builtin_return_address(0),
-+				  (unsigned long)&&here);
-+		/* skip this function */
-+		if (unwind_frame(&frame))
-+			return;
-+	}
- 
--void save_stack_trace(struct stack_trace *trace)
--{
--	__save_stack_trace(current, trace, 0);
-+	walk_stackframe(&frame, consume_entry, cookie);
- }
--EXPORT_SYMBOL_GPL(save_stack_trace);
- #endif
--- 
-2.17.1
+I guess we could express the frames relative the timer range, but that
+would imply that anyone porting downstream dts snippets would have to
+translate these addresses - or more likely would end up just copying the
+existing cases.
 
+> And please use hex notation consistently for the addresses.
+
+That seems like a reasonable ask, I can fix that up. But on both
+accounts this matches what I merged for all the other platforms in:
+
+458ebdbb8e5d ("arm64: dts: qcom: timer should use only 32-bit size")
+
+
+So I guess we'll also need to go back and fix up the style of all the
+other platforms - just because we're not allowed to express the frames
+in 64-bits according to the binding...
+
+Regards,
+Bjorn
+
+> 
+> >  
+> >  			frame@17c21000 {
+> >  				frame-number = <0>;
+> 
+> Johan
