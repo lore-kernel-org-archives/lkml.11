@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E972CCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31048CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234732AbiGLSyd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:54:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55248 "EHLO
+        id S234782AbiGLSyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234678AbiGLSxo (ORCPT
+        with ESMTP id S234745AbiGLSyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:53:44 -0400
+        Tue, 12 Jul 2022 14:54:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBE93E7AFA;
-        Tue, 12 Jul 2022 11:45:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B01FD514E;
+        Tue, 12 Jul 2022 11:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35C7460A5A;
-        Tue, 12 Jul 2022 18:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 381DBC3411C;
-        Tue, 12 Jul 2022 18:45:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30C6860AC3;
+        Tue, 12 Jul 2022 18:45:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C1DCC3411C;
+        Tue, 12 Jul 2022 18:45:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651527;
-        bh=djZlPbfcpfDt9G8q/aQbamH/xyggUYAi64L1vsv26VY=;
+        s=korg; t=1657651530;
+        bh=aLjl1sz+9TKvEHYRGFyleZovb2+KqWCsBPr2RrNcDeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uqsWIhEbIr3Y3p0NuoY+CfocaLMRErUZ0dxe66oHJImaRPjCgXd5R1MT+IXmWBBlL
-         hwLqhNLnzJQXwaFktxNL+yRdZuz/RGTX8x/apNJEiFz8qDa6+1eEqRDKdJDBpw73QZ
-         R04SfGNlUtPKfm3ixSDq+DUHTNvyHiI9x3XzRTt4=
+        b=LDU5hcgNvLDJY1dIRP6U/jZbWbI8LP8CpajyLOxXovtUJEZlh4ytuFOD3KlQWg/3y
+         1zB7ctLEI9xoBeveKoPxrydaQZeXyynA7NJvX3IzxtB+MYmFVYKMPEfrSmkeMl2BmX
+         dkKOoiewAXm/Hk6dRWj7jqLqLw9hNXRTHa40JpJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 076/130] objtool: Fix objtool regression on x32 systems
-Date:   Tue, 12 Jul 2022 20:38:42 +0200
-Message-Id: <20220712183249.966947589@linuxfoundation.org>
+Subject: [PATCH 5.10 103/130] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
+Date:   Tue, 12 Jul 2022 20:39:09 +0200
+Message-Id: <20220712183251.225898476@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,103 +52,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikulas Patocka <mpatocka@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 22682a07acc308ef78681572e19502ce8893c4d4 upstream.
+commit 166115c08a9b0b846b783088808a27d739be6e8d upstream.
 
-Commit c087c6e7b551 ("objtool: Fix type of reloc::addend") failed to
-appreciate cross building from ILP32 hosts, where 'int' == 'long' and
-the issue persists.
+retbleed will depend on spectre_v2, while spectre_v2_user depends on
+retbleed. Break this cycle.
 
-As such, use s64/int64_t/Elf64_Sxword for this field and suffer the
-pain that is ISO C99 printf formats for it.
-
-Fixes: c087c6e7b551 ("objtool: Fix type of reloc::addend")
-Signed-off-by: Mikulas Patocka <mpatocka@redhat.com>
-[peterz: reword changelog, s/long long/s64/]
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Cc: <stable@vger.kernel.org>
-Link: https://lkml.kernel.org/r/alpine.LRH.2.02.2205161041260.11556@file01.intranet.prod.int.rdu2.redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c |    9 +++++----
- tools/objtool/elf.c   |    2 +-
- tools/objtool/elf.h   |    4 ++--
- 3 files changed, 8 insertions(+), 7 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -5,6 +5,7 @@
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -37,8 +37,9 @@
+ #include "cpu.h"
  
- #include <string.h>
- #include <stdlib.h>
-+#include <inttypes.h>
- #include <sys/mman.h>
+ static void __init spectre_v1_select_mitigation(void);
+-static void __init retbleed_select_mitigation(void);
+ static void __init spectre_v2_select_mitigation(void);
++static void __init retbleed_select_mitigation(void);
++static void __init spectre_v2_user_select_mitigation(void);
+ static void __init ssb_select_mitigation(void);
+ static void __init l1tf_select_mitigation(void);
+ static void __init mds_select_mitigation(void);
+@@ -137,13 +138,19 @@ void __init check_bugs(void)
  
- #include "builtin.h"
-@@ -467,12 +468,12 @@ static int add_dead_ends(struct objtool_
- 		else if (reloc->addend == reloc->sym->sec->len) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find unreachable insn at %s+0x%lx",
-+				WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find unreachable insn at %s+0x%lx",
-+			WARN("can't find unreachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
-@@ -502,12 +503,12 @@ reachable:
- 		else if (reloc->addend == reloc->sym->sec->len) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find reachable insn at %s+0x%lx",
-+				WARN("can't find reachable insn at %s+0x%" PRIx64,
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find reachable insn at %s+0x%lx",
-+			WARN("can't find reachable insn at %s+0x%" PRIx64,
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -510,7 +510,7 @@ static struct section *elf_create_reloc_
- 						int reltype);
+ 	/* Select the proper CPU mitigations before patching alternatives: */
+ 	spectre_v1_select_mitigation();
++	spectre_v2_select_mitigation();
++	/*
++	 * retbleed_select_mitigation() relies on the state set by
++	 * spectre_v2_select_mitigation(); specifically it wants to know about
++	 * spectre_v2=ibrs.
++	 */
+ 	retbleed_select_mitigation();
+ 	/*
+-	 * spectre_v2_select_mitigation() relies on the state set by
++	 * spectre_v2_user_select_mitigation() relies on the state set by
+ 	 * retbleed_select_mitigation(); specifically the STIBP selection is
+ 	 * forced for UNRET.
+ 	 */
+-	spectre_v2_select_mitigation();
++	spectre_v2_user_select_mitigation();
+ 	ssb_select_mitigation();
+ 	l1tf_select_mitigation();
+ 	md_clear_select_mitigation();
+@@ -969,13 +976,15 @@ static void __init spec_v2_user_print_co
+ 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
+ }
  
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend)
-+		  unsigned int type, struct symbol *sym, s64 addend)
++static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
++
+ static enum spectre_v2_user_cmd __init
+-spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_parse_user_cmdline(void)
  {
- 	struct reloc *reloc;
+ 	char arg[20];
+ 	int ret, i;
  
---- a/tools/objtool/elf.h
-+++ b/tools/objtool/elf.h
-@@ -73,7 +73,7 @@ struct reloc {
- 	struct symbol *sym;
- 	unsigned long offset;
- 	unsigned int type;
--	long addend;
-+	s64 addend;
- 	int idx;
- 	bool jump_table_start;
- };
-@@ -127,7 +127,7 @@ struct elf *elf_open_read(const char *na
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+-	switch (v2_cmd) {
++	switch (spectre_v2_cmd) {
+ 	case SPECTRE_V2_CMD_NONE:
+ 		return SPECTRE_V2_USER_CMD_NONE;
+ 	case SPECTRE_V2_CMD_FORCE:
+@@ -1010,7 +1019,7 @@ static inline bool spectre_v2_in_ibrs_mo
+ }
  
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, long addend);
-+		  unsigned int type, struct symbol *sym, s64 addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off);
+ static void __init
+-spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_user_select_mitigation(void)
+ {
+ 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
+ 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
+@@ -1023,7 +1032,7 @@ spectre_v2_user_select_mitigation(enum s
+ 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
+ 		smt_possible = false;
+ 
+-	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
++	cmd = spectre_v2_parse_user_cmdline();
+ 	switch (cmd) {
+ 	case SPECTRE_V2_USER_CMD_NONE:
+ 		goto set_mode;
+@@ -1347,7 +1356,7 @@ static void __init spectre_v2_select_mit
+ 	}
+ 
+ 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
+-	spectre_v2_user_select_mitigation(cmd);
++	spectre_v2_cmd = cmd;
+ }
+ 
+ static void update_stibp_msr(void * __unused)
 
 
