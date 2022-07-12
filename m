@@ -2,155 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF05CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2E97C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:49:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233130AbiGLQsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:48:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        id S233806AbiGLQtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231547AbiGLQsU (ORCPT
+        with ESMTP id S231547AbiGLQtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:48:20 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E984826550;
-        Tue, 12 Jul 2022 09:48:18 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id oy13so10491568ejb.1;
-        Tue, 12 Jul 2022 09:48:18 -0700 (PDT)
+        Tue, 12 Jul 2022 12:49:04 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123AF1B7;
+        Tue, 12 Jul 2022 09:49:01 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id u14so10565244ljh.2;
+        Tue, 12 Jul 2022 09:49:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mbcmmT+pMIMYMSXXNjbFWB+IQNvMXD49nlszvCumBmU=;
-        b=C1vtv/hzFoN+4KUlqwUzTpCbKy6osNIrSgaVsPH2ISYa96ePHQDacSsKJieasMjDbW
-         xQI+2uqQcp+HXJH4Jnpi+G1ApZQOCEsLycWTM3DqBia6powR7ttUJSwGGXT5y9tFxrsL
-         mA/fbxw9AoAeeGMXWPdEeVKS60RwLdjij3kub586mW+2jlmcVpPAReibwGwnBBcqaCrZ
-         +0fsFwlHPyxePGt3TUDYuWU/JZwniI+wJJA1Sh1OpGwWmuypq4MXTDkbA/UtNV2NGWpP
-         zXWx4GuVCBZXpX7HmrZUtEYp+HVNYN9YyERwAX29yTRiQTiTyTlZQtc56VrhsipDOsBE
-         ssPg==
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=jZlp/3l+ClSidDbuE2aiwRaFz4EhPjWqcH0ZCOW33tY=;
+        b=Ql8GHV5qptFiQDmuuqTIhkG9ZbmZEI+cRVmmDzcq1zTyZeia/sePy7CDkp5EEU/nyb
+         urN6qwz4w7ZLPZJs7qm0l532VbExbvJ/Hkh4X+BDvbC9ld4Mn8FkVTE1YIGl+LNw2i/f
+         vQHv5t/9ojj/325Bek7FBwIR3X7wXUpjoEZpUGaBzg73L5unJaefPC4QZrkFGUnmztiE
+         izRJAdktU9cuiYSBStyqhVroaK9HEIdteb6F9MWO/9Eg/HoAb/QGaR2LW1zjgXgbniTS
+         L0UhgPOagfE4fVjwxN8sp1pVO7RuMuqEcLmgxCT8Ok60XNA+IVQf3ox8qvlqkCGPNgNC
+         qfFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mbcmmT+pMIMYMSXXNjbFWB+IQNvMXD49nlszvCumBmU=;
-        b=xD83WuZJ0cTThlE6u9DgwfEF33dlKtMJio3+/zqEAggZnaxFM64jI7SPOw042SJOm9
-         DHFVIMO5tLpPUuH/GkE0FM09LwYzouJq5ZCHAlY5rmh/xlEViWjvF8+cFWYp3lIDvgUB
-         RpegtPdEj2WIGG9Gnsi18pK6kj9kzchWDQuqkGHcoUhK9UW5y44mXrW45jFGAPpPMvjs
-         c6eFOuf6KAgLZCiskhfE2DW+xcv3q/59mQijPkaPTE+C55fEkfI7PV2TV3g0sqQ/MNnH
-         qul7ephaAY7Op/KFM3snMu8ycLJtMINYoGINCH+YCWpr1Ix1XX64601Zo9DCuQ5aqAu1
-         iXzg==
-X-Gm-Message-State: AJIora+jnlt9HKATF0sQu5yeUyaM+omLXwgTVNtRRuyPybRBv7qD3jyp
-        c6BwSBYVMSfCVpUpGt8B4pcgxdPyeyH+ToL2KvE=
-X-Google-Smtp-Source: AGRyM1ult/9veqdiVtMu6Yt+QfiYXMYM/CbHEUmsdXJfyLCmDL4cncCV1h1TX4KkfDkaeoJZksDdv+HaMlACJA7Ni9E=
-X-Received: by 2002:a17:907:6e03:b0:726:a6a3:7515 with SMTP id
- sd3-20020a1709076e0300b00726a6a37515mr25271067ejc.676.1657644497455; Tue, 12
- Jul 2022 09:48:17 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=jZlp/3l+ClSidDbuE2aiwRaFz4EhPjWqcH0ZCOW33tY=;
+        b=zXDchwZ1UJ2vkdiDR9t7L70M4y6z7kOCjSRJ8zAGZ/uhjJ4zp+m7pd/m+R/ZejI+Jf
+         uR5mpQ/P1jNje5NUK0UXhFm5fxBxH0gyaUCYdpRGTD0VHZPsu6T6UoKQXmbDyDrO77Uo
+         OjkGwDaajpqHNGcSE0I42EmpzyVEHvpPd+LhLSb9oLgoB5qhBpNNfU6ljxK0FeeTfi5O
+         hJONOGOFu++ANZ0Kq+bGpnN4C6kDTmstxx6B30+s0Yk9B/R/yddSFbxpVFZZY/j06wU+
+         M5gxDL5pREmsLkpuCz5LV5jpgIg0CEStYG2bmDVl9xlVbKndqeDY+Vkds8KyyOlwV5gy
+         bWKQ==
+X-Gm-Message-State: AJIora84s9fWs/yhbbNWes26PgxmKVR79RwF/FIEEvlNcBuPYSgGTvrw
+        VmURZYZppsRY5aZjt34SKf6ghuJVPf0KSJsA
+X-Google-Smtp-Source: AGRyM1t/eAVsmwXrlU9D0jDmyjH9uPoyXGxynUs2xkhaN9zMxD7t9hVdEMrpAeauaYZ4tRD9DVNJrw==
+X-Received: by 2002:a2e:2419:0:b0:25d:794f:3fa3 with SMTP id k25-20020a2e2419000000b0025d794f3fa3mr2662845ljk.233.1657644538971;
+        Tue, 12 Jul 2022 09:48:58 -0700 (PDT)
+Received: from razdolb (95-31-189-152.broadband.corbina.ru. [95.31.189.152])
+        by smtp.gmail.com with ESMTPSA id b8-20020ac25628000000b0048329aa6c92sm2266064lff.139.2022.07.12.09.48.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 09:48:58 -0700 (PDT)
+References: <20220712141925.678595-1-mike.rudenko@gmail.com>
+ <20220712141925.678595-2-mike.rudenko@gmail.com>
+ <82d4507a-d092-8cb0-2e88-4290661d114d@linaro.org>
+User-agent: mu4e 1.7.27; emacs 28.1
+From:   Mikhail Rudenko <mike.rudenko@gmail.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] media: dt-bindings: media: i2c: document OV4689 DT
+ bindings
+Date:   Tue, 12 Jul 2022 19:40:17 +0300
+In-reply-to: <82d4507a-d092-8cb0-2e88-4290661d114d@linaro.org>
+Message-ID: <874jzmgtty.fsf@gmail.com>
 MIME-Version: 1.0
-References: <20220706172814.169274-1-james.hilliard1@gmail.com>
- <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com> <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
- <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com> <87v8s260j1.fsf@oracle.com>
-In-Reply-To: <87v8s260j1.fsf@oracle.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 12 Jul 2022 09:48:05 -0700
-Message-ID: <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-To:     "Jose E. Marchesi" <jose.marchesi@oracle.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        James Hilliard <james.hilliard1@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
-<jose.marchesi@oracle.com> wrote:
->
->
-> > CC Quentin as well
-> >
-> > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
-> > <james.hilliard1@gmail.com> wrote:
-> >>
-> >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
-> >> >
-> >> >
-> >> >
-> >> > On 7/6/22 10:28 AM, James Hilliard wrote:
-> >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> >> > > correctly with gcc.
-> >> > >
-> >> > > GCC appears to required kernel helper funcs to have the following
-> >> > > attribute set: __attribute__((kernel_helper(NUM)))
-> >> > >
-> >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> >> > >
-> >> > > This adds conditional blocks for GCC while leaving clang codepaths
-> >> > > unchanged, for example:
-> >> > >       #if __GNUC__ && !__clang__
-> >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
-> >> > > __attribute__((kernel_helper(1)));
-> >> > >       #else
-> >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> >> > >       #endif
-> >> >
-> >> > It does look like that gcc kernel_helper attribute is better than
-> >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
-> >> > just for simplicity.
-> >>
-> >> Isn't the original style going to be needed for backwards compatibility with
-> >> older clang versions for a while?
-> >
-> > I'm curious, is there any added benefit to having this special
-> > kernel_helper attribute vs what we did in Clang for a long time?
-> > Did GCC do it just to be different and require workarounds like this
-> > or there was some technical benefit to this?
->
-> We did it that way so we could make trouble and piss you off.
->
-> Nah :)
->
-> We did it that way because technically speaking the clang construction
-> works relying on particular optimizations to happen to get correct
-> compiled programs, which is not guaranteed to happen and _may_ break in
-> the future.
->
-> In fact, if you compile a call to such a function prototype with clang
-> with -O0 the compiler will try to load the function's address in a
-> register and then emit an invalid BPF instruction:
->
->   28:   8d 00 00 00 03 00 00 00         *unknown*
->
-> On the other hand the kernel_helper attribute is bullet-proof: will work
-> with any optimization level, with any version of the compiler, and in
-> our opinion it is also more readable, more tidy and more correct.
->
-> Note I'm not saying what you do in clang is not reasonable; it may be,
-> obviously it works well enough for you in practice.  Only that we have
-> good reasons for doing it differently in GCC.
 
-Not questioning the validity of the reasons, but they created
-the unnecessary difference between compilers.
-We have to avoid forking.
-Meaning we're not going to work around that by ifdefs in
-bpf_helper_defs.h
-Because gcc community will not learn the lesson and will keep
-the bad practice of unnecessary forks.
-The best path forward here is to support both (void *) 1 style
-and kernel_helper attribute in both gcc and llvm.
-Moving forward the bpf_helper_defs.h will stay with (void *)1 style
-and when both compilers support both options we will start
-transitioning to the new kernel_helpers style.
+Hi Krzysztof,
+
+On 2022-07-12 at 17:12 +02, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+> On 12/07/2022 16:19, Mikhail Rudenko wrote:
+>> Add device-tree binding documentation for OV4689 image sensor driver,
+>> and the relevant MAINTAINERS entries.
+>>
+>> Signed-off-by: Mikhail Rudenko <mike.rudenko@gmail.com>
+>> ---
+>>  .../bindings/media/i2c/ovti,ov4689.yaml       | 122 ++++++++++++++++++
+>>  MAINTAINERS                                   |   7 +
+>>  2 files changed, 129 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml
+>> new file mode 100644
+>> index 000000000000..6bdebe5862b4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml
+>> @@ -0,0 +1,122 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/media/i2c/ovti,ov4689.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Omnivision OV4689 CMOS Sensor Device Tree Bindings
+>
+> s/Device Tree Bindings//
+
+Ack, will fix in v2.
+
+>> +
+>> +maintainers:
+>> +  - Mikhail Rudenko <mike.rudenko@gmail.com>
+>> +
+>> +description: |-
+>
+> No need for -
+>
+
+Ack
+
+>> +  The Omnivision OV4689 is a high performance, 1/3-inch, 4 megapixel
+>> +  image sensor. Ihis chip supports high frame rate speeds up to 90 fps
+>> +  at 2688x1520 resolution. It is programmable through an I2C
+>> +  interface, and sensor output is sent via 1/2/4 lane MIPI CSI-2
+>> +  connection.
+>> +
+>> +allOf:
+>> +  - $ref: /schemas/media/video-interface-devices.yaml#
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: ovti,ov4689
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  clock-names:
+>> +    description:
+>> +      External clock for the sensor.
+>
+> This goes to clocks instead.
+>
+
+Ack
+
+>> +    items:
+>> +      - const: xclk
+>
+> No need for clock-names for such case.
+>
+
+Ack
+
+>> +
+>> +  dovdd-supply:
+>> +    description:
+>> +      Definition of the regulator used as Digital I/O voltage supply.
+>
+> s/Definition of the regulator used as //
+>
+> It's redundant...
+>
+
+Ack
+
+>> +
+>> +  avdd-supply:
+>> +    description:
+>> +      Definition of the regulator used as Analog voltage supply.
+>
+> Ditto
+>
+
+Ack
+
+>> +
+>> +  dvdd-supply:
+>> +    description:
+>> +      Definition of the regulator used as Digital core voltage supply.
+>
+> Ditto
+>
+
+Ack
+
+>> +
+>> +  powerdown-gpios:
+>> +    maxItems: 1
+>> +    description:
+>> +      Reference to the GPIO connected to the powerdown pin (active low).
+>
+> s/Reference to the//
+>
+
+Ack
+
+>> +
+>> +  reset-gpios:
+>> +    maxItems: 1
+>> +    description:
+>> +      Reference to the GPIO connected to the reset pin (active low).
+>
+> The same.
+>
+
+Ack
+
+>> +
+>> +  orientation: true
+>> +
+>> +  rotation: true
+>> +
+>> +  port:
+>> +    $ref: /schemas/graph.yaml#/$defs/port-base
+>> +    additionalProperties: false
+>> +    description:
+>> +      Output port node, single endpoint describing the CSI-2 transmitter.
+>> +
+>> +    properties:
+>> +      endpoint:
+>> +        $ref: /schemas/media/video-interfaces.yaml#
+>> +        unevaluatedProperties: false
+>> +
+>
+> Best regards,
+> Krzysztof
+
+Thanks for review! By the way, I used an existing schema for a similar
+sensor ("ovti,ov02a10.yaml", specifically) as an example, and your notes
+apply to it too. Looks like it should also be fixed...
+
+
+--
+Best regards,
+Mikhail Rudenko
