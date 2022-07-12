@@ -2,35 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84491C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA9D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:26:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233186AbiGLQ0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42000 "EHLO
+        id S234393AbiGLQ0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234300AbiGLQ0J (ORCPT
+        with ESMTP id S229954AbiGLQ0S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:26:09 -0400
-X-Greylist: delayed 1814 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:26:03 PDT
+        Tue, 12 Jul 2022 12:26:18 -0400
+X-Greylist: delayed 1817 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:26:07 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D31ACB473;
-        Tue, 12 Jul 2022 09:26:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45409CD3E2;
+        Tue, 12 Jul 2022 09:26:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=evr+Tviy1M3/uGNzt9x08PaZ+uzk9AbYvF3GmjxPwr4=; b=lRwRw
-        z0Oicu0VoFaNFvb3Gu8Dk9zELAdioLOkYVIlDupnVPKBUF+t+X3UzR3HJ4J889cA8pfKVvE+C0hjl
-        MVLV2XZt4Blr6w6cH2tT9bESULdr6oNERJloUB0Z6ofSC+AVEFkuY/01h+AAUcqyIWM94Kv0jrkTi
-        PeAWsTkehyOFF6/VADaZPV6tFUaUaUKvGe/z96REWkblKM6MqNhToBN79bER3Wrd4xNh0aFEbyXQ2
-        NmRHmvDEUkOVSZ0egwD4Qq09HeA6tOIEdE6vsHJ5sCiRegKYg3V+/cxDwL2MDkyINePJSoAlqmkDF
-        NPBzOPNeRRmQUVBUlbh6twuDiHaIQ==;
-Message-Id: <2ade510b2e67a30c1064bcd7a8b6c73e6777b9ed.1657636554.git.linux_oss@crudebyte.com>
+        Content-Description; bh=JMpUBU0faqNlIU1d4S3Q7wytCNCfKZ32SXUnAyXuU0s=; b=l5jMp
+        ahtD82dcoJIxOpadC+7Ya05P5Y6jrL3x9n2/0e5x/mJMHr3LXQZYJrrSTRS9QZi2LMVR3n83jBXa+
+        UgAGM5H1snVgtfqbTycQK9AzR0z/2le+ktS8UZYrvkIXqaq2RXX1UkiciUM/i+1Um1XvKzyPoGjht
+        Yt00ON/MNJmgRiTQ0YYLUbO+FyFeqeA7zV4IHttRmr6fcvH3IKOvrt5EfgQ7Xn3ra4SezWh3chPtw
+        bd0NO3sSX1H7YTkM3vhzezsCd03KneFG3dimkAtVVqNDYz1WJnDcNhCeYOP+7ST+WiF39sZ1wwSg/
+        Xpv6NIA7JAUvFSjJq7mVjLqKuhqbQ==;
+Message-Id: <13a7181ea6264264923effcbc8eb5691892731b8.1657636554.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
 References: <cover.1657636554.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:33 +0200
-Subject: [PATCH v5 10/11] net/9p: add p9_msg_buf_size()
+Date:   Tue, 12 Jul 2022 16:31:28 +0200
+Subject: [PATCH v5 08/11] net/9p: split message size argument into 't_size'
+ and 'r_size' pair
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -41,197 +42,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new function calculates a buffer size suitable for holding the
-intended 9p request or response. For rather small message types (which
-applies to almost all 9p message types actually) simply use hard coded
-values. For some variable-length and potentially large message types
-calculate a more precise value according to what data is actually
-transmitted to avoid unnecessarily huge buffers.
+Refactor 'max_size' argument of p9_tag_alloc() and 'req_size' argument
+of p9_client_prepare_req() both into a pair of arguments 't_size' and
+'r_size' respectively to allow handling the buffer size for request and
+reply separately from each other.
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- net/9p/protocol.c | 154 ++++++++++++++++++++++++++++++++++++++++++++++
- net/9p/protocol.h |   2 +
- 2 files changed, 156 insertions(+)
+ net/9p/client.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/net/9p/protocol.c b/net/9p/protocol.c
-index 3754c33e2974..49939e8cde2a 100644
---- a/net/9p/protocol.c
-+++ b/net/9p/protocol.c
-@@ -23,6 +23,160 @@
- 
- #include <trace/events/9p.h>
- 
-+/* len[2] text[len] */
-+#define P9_STRLEN(s) \
-+	(2 + min_t(size_t, s ? strlen(s) : 0, USHRT_MAX))
-+
-+/**
-+ * p9_msg_buf_size - Returns a buffer size sufficiently large to hold the
-+ * intended 9p message.
-+ * @c: client
-+ * @type: message type
-+ * @fmt: format template for assembling request message
-+ * (see p9pdu_vwritef)
-+ * @ap: variable arguments to be fed to passed format template
-+ * (see p9pdu_vwritef)
-+ *
-+ * Note: Even for response types (P9_R*) the format template and variable
-+ * arguments must always be for the originating request type (P9_T*).
-+ */
-+size_t p9_msg_buf_size(struct p9_client *c, enum p9_msg_t type,
-+			const char *fmt, va_list ap)
-+{
-+	/* size[4] type[1] tag[2] */
-+	const int hdr = 4 + 1 + 2;
-+	/* ename[s] errno[4] */
-+	const int rerror_size = hdr + P9_ERRMAX + 4;
-+	/* ecode[4] */
-+	const int rlerror_size = hdr + 4;
-+	const int err_size =
-+		c->proto_version == p9_proto_2000L ? rlerror_size : rerror_size;
-+
-+	switch (type) {
-+
-+	/* message types not used at all */
-+	case P9_TERROR:
-+	case P9_TLERROR:
-+	case P9_TAUTH:
-+	case P9_RAUTH:
-+		BUG();
-+
-+	/* variable length & potentially large message types */
-+	case P9_TATTACH:
-+		BUG_ON(strcmp("ddss?u", fmt));
-+		va_arg(ap, int32_t);
-+		va_arg(ap, int32_t);
-+		{
-+			const char *uname = va_arg(ap, const char *);
-+			const char *aname = va_arg(ap, const char *);
-+			/* fid[4] afid[4] uname[s] aname[s] n_uname[4] */
-+			return hdr + 4 + 4 + P9_STRLEN(uname) + P9_STRLEN(aname) + 4;
-+		}
-+	case P9_TWALK:
-+		BUG_ON(strcmp("ddT", fmt));
-+		va_arg(ap, int32_t);
-+		va_arg(ap, int32_t);
-+		{
-+			uint i, nwname = max(va_arg(ap, int), 0);
-+			size_t wname_all;
-+			const char **wnames = va_arg(ap, const char **);
-+			for (i = 0, wname_all = 0; i < nwname; ++i) {
-+				wname_all += P9_STRLEN(wnames[i]);
-+			}
-+			/* fid[4] newfid[4] nwname[2] nwname*(wname[s]) */
-+			return hdr + 4 + 4 + 2 + wname_all;
-+		}
-+	case P9_RWALK:
-+		BUG_ON(strcmp("ddT", fmt));
-+		va_arg(ap, int32_t);
-+		va_arg(ap, int32_t);
-+		{
-+			uint nwname = va_arg(ap, int);
-+			/* nwqid[2] nwqid*(wqid[13]) */
-+			return max_t(size_t, hdr + 2 + nwname * 13, err_size);
-+		}
-+	case P9_TCREATE:
-+		BUG_ON(strcmp("dsdb?s", fmt));
-+		va_arg(ap, int32_t);
-+		{
-+			const char *name = va_arg(ap, const char *);
-+			if ((c->proto_version != p9_proto_2000u) &&
-+			    (c->proto_version != p9_proto_2000L))
-+				/* fid[4] name[s] perm[4] mode[1] */
-+				return hdr + 4 + P9_STRLEN(name) + 4 + 1;
-+			{
-+				va_arg(ap, int32_t);
-+				va_arg(ap, int);
-+				{
-+					const char *ext = va_arg(ap, const char *);
-+					/* fid[4] name[s] perm[4] mode[1] extension[s] */
-+					return hdr + 4 + P9_STRLEN(name) + 4 + 1 + P9_STRLEN(ext);
-+				}
-+			}
-+		}
-+	case P9_TLCREATE:
-+		BUG_ON(strcmp("dsddg", fmt));
-+		va_arg(ap, int32_t);
-+		{
-+			const char *name = va_arg(ap, const char *);
-+			/* fid[4] name[s] flags[4] mode[4] gid[4] */
-+			return hdr + 4 + P9_STRLEN(name) + 4 + 4 + 4;
-+		}
-+	case P9_RREAD:
-+	case P9_RREADDIR:
-+		BUG_ON(strcmp("dqd", fmt));
-+		va_arg(ap, int32_t);
-+		va_arg(ap, int64_t);
-+		{
-+			const int32_t count = va_arg(ap, int32_t);
-+			/* count[4] data[count] */
-+			return max_t(size_t, hdr + 4 + count, err_size);
-+		}
-+	case P9_TWRITE:
-+		BUG_ON(strcmp("dqV", fmt));
-+		va_arg(ap, int32_t);
-+		va_arg(ap, int64_t);
-+		{
-+			const int32_t count = va_arg(ap, int32_t);
-+			/* fid[4] offset[8] count[4] data[count] */
-+			return hdr + 4 + 8 + 4 + count;
-+		}
-+	case P9_TRENAMEAT:
-+		BUG_ON(strcmp("dsds", fmt));
-+		va_arg(ap, int32_t);
-+		{
-+			const char *oldname = va_arg(ap, const char *);
-+			va_arg(ap, int32_t);
-+			{
-+				const char *newname = va_arg(ap, const char *);
-+				/* olddirfid[4] oldname[s] newdirfid[4] newname[s] */
-+				return hdr + 4 + P9_STRLEN(oldname) + 4 + P9_STRLEN(newname);
-+			}
-+		}
-+	case P9_RERROR:
-+		return rerror_size;
-+	case P9_RLERROR:
-+		return rlerror_size;
-+
-+	/* small message types */
-+	case P9_TSTAT:
-+	case P9_RSTAT:
-+	case P9_TSYMLINK:
-+	case P9_RREADLINK:
-+	case P9_TXATTRWALK:
-+	case P9_TXATTRCREATE:
-+	case P9_TLINK:
-+	case P9_TMKDIR:
-+	case P9_TUNLINKAT:
-+		return 8 * 1024;
-+
-+	/* tiny message types */
-+	default:
-+		return 4 * 1024;
-+
-+	}
-+}
-+
- static int
- p9pdu_writef(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);
- 
-diff --git a/net/9p/protocol.h b/net/9p/protocol.h
-index 6d719c30331a..ad2283d1f96b 100644
---- a/net/9p/protocol.h
-+++ b/net/9p/protocol.h
-@@ -8,6 +8,8 @@
-  *  Copyright (C) 2008 by IBM, Corp.
+diff --git a/net/9p/client.c b/net/9p/client.c
+index fab939541c81..56be1658870d 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -255,24 +255,26 @@ static struct kmem_cache *p9_req_cache;
+  * p9_tag_alloc - Allocate a new request.
+  * @c: Client session.
+  * @type: Transaction type.
+- * @max_size: Maximum packet size for this request.
++ * @t_size: Buffer size for holding this request.
++ * @r_size: Buffer size for holding server's reply on this request.
+  *
+  * Context: Process context.
+  * Return: Pointer to new request.
   */
+ static struct p9_req_t *
+-p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
++p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
+ {
+ 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
+-	int alloc_msize = min(c->msize, max_size);
++	int alloc_tsize = min(c->msize, t_size);
++	int alloc_rsize = min(c->msize, r_size);
+ 	int tag;
  
-+size_t p9_msg_buf_size(struct p9_client *c, enum p9_msg_t type,
-+			const char *fmt, va_list ap);
- int p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
- 		  va_list ap);
- int p9pdu_readf(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);
+ 	if (!req)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	if (p9_fcall_init(c, &req->tc, alloc_msize))
++	if (p9_fcall_init(c, &req->tc, alloc_tsize))
+ 		goto free_req;
+-	if (p9_fcall_init(c, &req->rc, alloc_msize))
++	if (p9_fcall_init(c, &req->rc, alloc_rsize))
+ 		goto free;
+ 
+ 	p9pdu_reset(&req->tc);
+@@ -678,7 +680,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
+ }
+ 
+ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+-					      int8_t type, int req_size,
++					      int8_t type, uint t_size, uint r_size,
+ 					      const char *fmt, va_list ap)
+ {
+ 	int err;
+@@ -694,7 +696,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
+ 		return ERR_PTR(-EIO);
+ 
+-	req = p9_tag_alloc(c, type, req_size);
++	req = p9_tag_alloc(c, type, t_size, r_size);
+ 	if (IS_ERR(req))
+ 		return req;
+ 
+@@ -731,7 +733,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	struct p9_req_t *req;
+ 
+ 	va_start(ap, fmt);
+-	req = p9_client_prepare_req(c, type, c->msize, fmt, ap);
++	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
+ 	va_end(ap);
+ 	if (IS_ERR(req))
+ 		return req;
+@@ -829,7 +831,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
+ 	/* We allocate a inline protocol data of only 4k bytes.
+ 	 * The actual content is passed in zero-copy fashion.
+ 	 */
+-	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, fmt, ap);
++	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, P9_ZC_HDR_SZ, fmt, ap);
+ 	va_end(ap);
+ 	if (IS_ERR(req))
+ 		return req;
 -- 
 2.30.2
 
