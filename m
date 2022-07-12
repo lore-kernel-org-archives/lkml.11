@@ -2,103 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E3BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F71EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:45:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbiGLNpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35210 "EHLO
+        id S233266AbiGLNp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232579AbiGLNpm (ORCPT
+        with ESMTP id S229746AbiGLNpn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:45:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7709D2B271;
+        Tue, 12 Jul 2022 09:45:43 -0400
+Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1320C2ED4C
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 06:45:43 -0700 (PDT)
+Received: by mail-oo1-xc34.google.com with SMTP id s6-20020a4aa546000000b00432fb4f59deso1515765oom.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 06:45:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dlui1MM85qPWou0rQy0Hs7CHorUMH/STDx1YOYBhbKk=;
+        b=i3ZzFDMrgqoYrvc4Jwpi18P/Hww70sLUcodotac7+Wej5kO+JV5JsTEVvQF3jcO+Y+
+         hD0Pi9dz5NYKpR2DQIdu2/BTVKr8wQhzu0fJNuULeIZddsD5dAtSvAO4DZvsNzh5pckt
+         c4AWIQuw4M+kZ6UZZrMPxS2A177bp77ynPe5eRQXLQa6aj4FACXHxTk8RVLQhjf04dJL
+         Mrs8PGxiPeK6TFua+OhtLTMfPnRJ7dJ9bB2Uq6GPq6HmngpQaUblYVI8T5kGsEvsuNji
+         2yugGs+7JELJQEmOxoePXvjFE4sZ9fkFkOczQ9CSub7mAdZSDVYKdtRzhTXRXU8NSfUx
+         R54g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=dlui1MM85qPWou0rQy0Hs7CHorUMH/STDx1YOYBhbKk=;
+        b=oQG2nJ180Hx8EzMaeWkHL+7HHcHr1F8jo/va9hbX9a91Cqymv2R7dqsDeZ0uGSXilZ
+         ggg9EBzUqeFapDn1dfzygn193hi4RqQ5asmREFOaAx10hdupCENKjQDFoeJ2R7siM87e
+         uxpjVgU5Nb3e+NBva5cQEJNHIyVqW3VYdq57/DMZbhUwEj/5aA4QQq23FuuMlPRqC1mc
+         2bMGOCdUgqnvyswYihFaRRDIPL8UWnVJEaZmwt6gWfbB3MnGb4Um2N9eflDPwd0eN/zr
+         aVZA4mRxSPi/L5NHYPUMxM9kySmfwGzROEwBACvxCtmVUM9jwaG7Kv+B+UZuj0mJQEH+
+         U/rw==
+X-Gm-Message-State: AJIora8lNAPNJvKYUHgocsSZk+GfRqQudPx6R1FiAJ+Og5KjylSsmm0g
+        OTwaBa7NNGSCtN2tBL5Mg5A=
+X-Google-Smtp-Source: AGRyM1vkBg6CxYfgap5cCiBm1aQDmkILGJmL0vfocytDayk26xsoFmmFUOe72VnqpzDQlhai+8rXzQ==
+X-Received: by 2002:a4a:e797:0:b0:435:5d08:f813 with SMTP id x23-20020a4ae797000000b004355d08f813mr174426oov.94.1657633542410;
+        Tue, 12 Jul 2022 06:45:42 -0700 (PDT)
+Received: from [192.168.1.108] ([216.130.59.33])
+        by smtp.gmail.com with ESMTPSA id 7-20020a9d0687000000b0061c5233ae54sm1615398otx.60.2022.07.12.06.45.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
         Tue, 12 Jul 2022 06:45:41 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lj26F3fklzlVqb;
-        Tue, 12 Jul 2022 21:44:05 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 21:45:39 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Jul
- 2022 21:45:38 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>
-CC:     <broonie@kernel.org>
-Subject: [PATCH] Revert "spi: simplify devm_spi_register_controller"
-Date:   Tue, 12 Jul 2022 21:55:04 +0800
-Message-ID: <20220712135504.1055688-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <28adfbda-4820-d6e4-cacd-8e1ef89a841d@lwfinger.net>
+Date:   Tue, 12 Jul 2022 08:45:40 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 05/14] staging: r8188eu: use a local buffer for efuse data
+Content-Language: en-US
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Martin Kaiser <martin@kaiser.cx>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220709171000.180481-1-martin@kaiser.cx>
+ <20220709171000.180481-6-martin@kaiser.cx> <20220712122507.GN2338@kadam>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220712122507.GN2338@kadam>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 59ebbe40fb51e307032ae7f63b2749fad2d4635a.
+On 7/12/22 07:25, Dan Carpenter wrote:
+> On Sat, Jul 09, 2022 at 07:09:51PM +0200, Martin Kaiser wrote:
+>> The efuse_eeprom_data array in struct eeprom_priv is used only by
+>> ReadAdapterInfo8188EU. We can remove efuse_eeprom_data and use a local
+>> buffer instead.
+>>
+>> Use EFUSE_MAP_LEN_88E as buffer size. Its value is the same as
+>> HWSET_MAX_SIZE_512. The functions that access the buffer use
+>> EFUSE_MAP_LEN_88E for its size.
+>>
+>> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+>> ---
+>>   drivers/staging/r8188eu/hal/usb_halinit.c    | 23 ++++++++++----------
+>>   drivers/staging/r8188eu/include/rtw_eeprom.h |  3 ---
+>>   2 files changed, 12 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+>> index 18c2817bf1e3..807d8ce8cbfc 100644
+>> --- a/drivers/staging/r8188eu/hal/usb_halinit.c
+>> +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+>> @@ -929,6 +929,7 @@ void ReadAdapterInfo8188EU(struct adapter *Adapter)
+>>   {
+>>   	struct eeprom_priv *eeprom = &Adapter->eeprompriv;
+>>   	struct led_priv *ledpriv = &Adapter->ledpriv;
+>> +	u8 efuse_buf[EFUSE_MAP_LEN_88E] __aligned(4);
+> 
+> This is 512 bytes.  We used to be slightly worried about declaring 512
+> bytes on the stack, but I'm not sure the situation now.
+> 
 
-If devm_add_action() fails in devm_add_action_or_reset(),
-devm_spi_unregister() will be called, it decreases the
-refcount of 'ctlr->dev' to 0, then it will cause uaf in
-the drivers that calling spi_put_controller() in error path.
+I think we should still avoid using an on-stack buffer of that size. It is 
+better to use a local pointer, and kmalloc() the buffer and free it before exit.
 
-Fixes: 59ebbe40fb51 ("spi: simplify devm_spi_register_controller")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/spi/spi.c | 19 ++++++++++++++-----
- 1 file changed, 14 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index dc1a324e3271..ef751ccd65be 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -3130,9 +3130,9 @@ int spi_register_controller(struct spi_controller *ctlr)
- }
- EXPORT_SYMBOL_GPL(spi_register_controller);
- 
--static void devm_spi_unregister(void *ctlr)
-+static void devm_spi_unregister(struct device *dev, void *res)
- {
--	spi_unregister_controller(ctlr);
-+	spi_unregister_controller(*(struct spi_controller **)res);
- }
- 
- /**
-@@ -3151,13 +3151,22 @@ static void devm_spi_unregister(void *ctlr)
- int devm_spi_register_controller(struct device *dev,
- 				 struct spi_controller *ctlr)
- {
-+	struct spi_controller **ptr;
- 	int ret;
- 
-+	ptr = devres_alloc(devm_spi_unregister, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return -ENOMEM;
-+
- 	ret = spi_register_controller(ctlr);
--	if (ret)
--		return ret;
-+	if (!ret) {
-+		*ptr = ctlr;
-+		devres_add(dev, ptr);
-+	} else {
-+		devres_free(ptr);
-+	}
- 
--	return devm_add_action_or_reset(dev, devm_spi_unregister, ctlr);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(devm_spi_register_controller);
- 
--- 
-2.25.1
+Larry
 
