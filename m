@@ -2,90 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC74C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B14C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232478AbiGLHz3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:55:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57282 "EHLO
+        id S232526AbiGLH4W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232519AbiGLHzY (ORCPT
+        with ESMTP id S231804AbiGLH4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:55:24 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95BC9D502;
-        Tue, 12 Jul 2022 00:55:23 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id a15so6800500pfv.13;
-        Tue, 12 Jul 2022 00:55:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jB0/sBewzpAG176RgBmVCEhPfPoNVC+csgcU/c7Q6og=;
-        b=IRoSMJWbprULskG7mdeaOOmkltqpld0mdJe52BBdf4hD/lxcPWweBCqOpxoRSj3Ye1
-         QEkZXSnZLxNnwjWz1F1scbwAMHncxgphl3kngkzvsNIoYOz43RAEfRnB1ajveSdLYi9Y
-         n0Eft1Nm3zNWZyYSqieS/NqwmgWvuPmpd1fMnNEXeBj6yQKxz1ksKZdOZ7hWHF2f+c5X
-         PrQ2VP/MfufZzl0bThMhX0HuRLgYMGgYASqSPG0g3hDbDzLg/7sLV4KhOagh7JcqmsNR
-         sZOtrnTID3W/cL07uzXsUtQ1zwjlTOcs3a6+/Fo/juf7CMA2QdNnUQB1a81FIgI7F4EJ
-         VcIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jB0/sBewzpAG176RgBmVCEhPfPoNVC+csgcU/c7Q6og=;
-        b=QTva4428mzBOx6gSyZbO3MMkrZK9IcyXevGlrLotfQ8vnjz9m7u22d0boskHT64EQx
-         2TS+PIbDwa7Uycn3IC3ABnKiABykSNjJLDxHyg8x8LLkMxUeqQg4ij3wMQO+Su4eh6+P
-         /veYQpUwNSZq/kvHkRztXj+8kbyVPrC2+4ZIuMgZqMwyzwPkloCEUiUClfMqCNX/Joa/
-         bUCCuxyymce4ZuWatHcs2GyF74yGqUanE2IqyvtjqGZojB6jZNlueFP1G/Ytvcl0/boF
-         6HdWcZyRZpsxVtNYp5VJmluE8oHR5X0j1jn8ozRtVBw+DAdr5UeiVb8TVrQlMhtzQ0lH
-         NTqQ==
-X-Gm-Message-State: AJIora9StDcfj1minMyEmW73D6SnsssHMleWCtdvXZQUrAd1hphkV5AK
-        idAYjuM6T/mfzqrPcvVf5hE=
-X-Google-Smtp-Source: AGRyM1uRJjALwfLCu9+aM4GVOdCC5GDtgrbVABOzNKHa+qPSzzLz0XhgMVRBRkQKUCGnPbRqadoZcA==
-X-Received: by 2002:a05:6a00:2410:b0:528:be6e:8c2e with SMTP id z16-20020a056a00241000b00528be6e8c2emr22496038pfh.31.1657612523274;
-        Tue, 12 Jul 2022 00:55:23 -0700 (PDT)
-Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
-        by smtp.gmail.com with ESMTPSA id q5-20020a170902a3c500b00163f8eb7eb3sm6069166plb.196.2022.07.12.00.55.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 00:55:22 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 00:55:21 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Kai Huang <kai.huang@intel.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 029/102] KVM: TDX: allocate/free TDX vcpu structure
-Message-ID: <20220712075521.GI1379820@ls.amr.corp.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <dad0333516bcdb0fdeccc9d1483299aeae8d80fd.1656366338.git.isaku.yamahata@intel.com>
- <2ecd255ac85fac7ffa1b90975c9e08f11ddee149.camel@intel.com>
+        Tue, 12 Jul 2022 03:56:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686289D502;
+        Tue, 12 Jul 2022 00:56:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17CD5B81614;
+        Tue, 12 Jul 2022 07:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D570C341C0;
+        Tue, 12 Jul 2022 07:56:05 +0000 (UTC)
+From:   Huacai Chen <chenhuacai@loongson.cn>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michal Simek <monstr@monstr.eu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@gmail.com>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-mips@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-sh@vger.kernel.org, linux-um@lists.infradead.org,
+        Huacai Chen <chenhuacai@loongson.cn>, stable@vger.kernel.org
+Subject: [PATCH 6/6] UM: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
+Date:   Tue, 12 Jul 2022 15:52:55 +0800
+Message-Id: <20220712075255.1345991-6-chenhuacai@loongson.cn>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220712075255.1345991-1-chenhuacai@loongson.cn>
+References: <20220712075255.1345991-1-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <2ecd255ac85fac7ffa1b90975c9e08f11ddee149.camel@intel.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 28, 2022 at 11:34:55PM +1200,
-Kai Huang <kai.huang@intel.com> wrote:
+When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
+cpu_max_bits_warn() generates a runtime warning similar as below while
+we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
+instead of NR_CPUS to iterate CPUs.
 
-> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
-> > From: Isaku Yamahata <isaku.yamahata@intel.com>
-> > 
-> > The next step of TDX guest creation is to create vcpu.  Allocate TDX vcpu
-> > structures, initialize it.  Allocate pages of TDX vcpu for the TDX module.
-> > 
-> > In the case of the conventional case, cpuid is empty at the initialization.
-> > and cpuid is configured after the vcpu initialization.  Because TDX
-> > supports only X2APIC mode, cpuid is forcibly initialized to support X2APIC
-> > on the vcpu initialization.
-> 
-> The patch title and commit message of this patch are identical to the previous
-> patch.
-> 
-> What happened? Did you forget to squash two patches together?
+[    3.052463] ------------[ cut here ]------------
+[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
+[    3.070072] Modules linked in: efivarfs autofs4
+[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
+[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
+[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
+[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
+[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
+[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
+[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
+[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
+[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
+[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
+[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
+[    3.195868]         ...
+[    3.199917] Call Trace:
+[    3.203941] [<90000000002086d8>] show_stack+0x38/0x14c
+[    3.210666] [<9000000000cf846c>] dump_stack_lvl+0x60/0x88
+[    3.217625] [<900000000023d268>] __warn+0xd0/0x100
+[    3.223958] [<9000000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
+[    3.231150] [<9000000000210220>] show_cpuinfo+0x5e8/0x5f0
+[    3.238080] [<90000000004f578c>] seq_read_iter+0x354/0x4b4
+[    3.245098] [<90000000004c2e90>] new_sync_read+0x17c/0x1c4
+[    3.252114] [<90000000004c5174>] vfs_read+0x138/0x1d0
+[    3.258694] [<90000000004c55f8>] ksys_read+0x70/0x100
+[    3.265265] [<9000000000cfde9c>] do_syscall+0x7c/0x94
+[    3.271820] [<9000000000202fe4>] handle_syscall+0xc4/0x160
+[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
 
-Forgot to squash this patch into the previous patch. Will fix it.
+Cc: stable@vger.kernel.org
+Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+---
+ arch/um/kernel/um_arch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/um/kernel/um_arch.c b/arch/um/kernel/um_arch.c
+index a149a5e9a16a..03177c9907d5 100644
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -93,7 +93,7 @@ static int show_cpuinfo(struct seq_file *m, void *v)
+ 
+ static void *c_start(struct seq_file *m, loff_t *pos)
+ {
+-	return *pos < NR_CPUS ? cpu_data + *pos : NULL;
++	return *pos < nr_cpu_ids ? cpu_data + *pos : NULL;
+ }
+ 
+ static void *c_next(struct seq_file *m, void *v, loff_t *pos)
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+2.31.1
+
