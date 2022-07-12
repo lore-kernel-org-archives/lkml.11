@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA4E4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C26CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235434AbiGLTFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59992 "EHLO
+        id S235454AbiGLTFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235521AbiGLTE2 (ORCPT
+        with ESMTP id S235556AbiGLTEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:04:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAE0F681B;
-        Tue, 12 Jul 2022 11:50:25 -0700 (PDT)
+        Tue, 12 Jul 2022 15:04:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F461F789E;
+        Tue, 12 Jul 2022 11:50:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FF9661123;
-        Tue, 12 Jul 2022 18:50:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C21AC3411C;
-        Tue, 12 Jul 2022 18:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E19360765;
+        Tue, 12 Jul 2022 18:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44799C3411C;
+        Tue, 12 Jul 2022 18:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651823;
-        bh=xr0u1b0JOWIKrvRqEsb9uz5rZYFjqM4c52uVEULjUsk=;
+        s=korg; t=1657651814;
+        bh=fr6WaKMUN49l3yy57p6GnrV9Nd/epQhWTMbex4M7KIE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cfr+U+nfiWyAUHfSlotOoZeiEstrx3aCZd47fgn7gkC2uhoKbrRyYqvhYGuMgfChg
-         FTodoDxzwl4s8yQXC6/tH9keWXaCiqmZxK0WzL3EXm8Fhk5lx4oHH+h77tpuT1Jehl
-         B+6zGqX8FmwUMVqRxMJCqflPbrExyzhQm4+GT9Xs=
+        b=0HAaKbHxy/h9wxv1hNastdDNjuUbOGdPuo30rK+deNRh494FaFqoqgzl0f8lOTEQc
+         8CsYf4DA1ieX1yhIrFj5w9O75XdDcddoAA0vUYdr0JuuB4hGqq/I/VM5f4buK+D8m8
+         LFvz6hkznjZirbltGPNEJIX6z7wGSt6U2c6LoKgo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 69/78] x86/speculation: Fill RSB on vmexit for IBRS
-Date:   Tue, 12 Jul 2022 20:39:39 +0200
-Message-Id: <20220712183241.651618299@linuxfoundation.org>
+Subject: [PATCH 5.15 66/78] KVM: VMX: Convert launched argument to flags
+Date:   Tue, 12 Jul 2022 20:39:36 +0200
+Message-Id: <20220712183241.530925757@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -52,11 +52,19 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit 9756bba28470722dacb79ffce554336dd1f6a6cd upstream.
+commit bb06650634d3552c0f8557e9d16aa1a408040e28 upstream.
 
-Prevent RSB underflow/poisoning attacks with RSB.  While at it, add a
-bunch of comments to attempt to document the current state of tribal
-knowledge about RSB attacks and what exactly is being mitigated.
+Convert __vmx_vcpu_run()'s 'launched' argument to 'flags', in
+preparation for doing SPEC_CTRL handling immediately after vmexit, which
+will need another flag.
+
+This is much easier than adding a fourth argument, because this code
+supports both 32-bit and 64-bit, and the fourth argument on 32-bit would
+have to be pushed on the stack.
+
+Note that __vmx_vcpu_run_flags() is called outside of the noinstr
+critical section because it will soon start calling potentially
+traceable functions.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
@@ -64,120 +72,148 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/cpufeatures.h |    2 -
- arch/x86/kernel/cpu/bugs.c         |   63 ++++++++++++++++++++++++++++++++++---
- arch/x86/kvm/vmx/vmenter.S         |    6 +--
- 3 files changed, 62 insertions(+), 9 deletions(-)
+ arch/x86/kvm/vmx/nested.c    |    2 +-
+ arch/x86/kvm/vmx/run_flags.h |    7 +++++++
+ arch/x86/kvm/vmx/vmenter.S   |    9 +++++----
+ arch/x86/kvm/vmx/vmx.c       |   17 ++++++++++++++---
+ arch/x86/kvm/vmx/vmx.h       |    5 ++++-
+ 5 files changed, 31 insertions(+), 9 deletions(-)
+ create mode 100644 arch/x86/kvm/vmx/run_flags.h
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -204,7 +204,7 @@
- /* FREE!                                ( 7*32+10) */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
- #define X86_FEATURE_KERNEL_IBRS		( 7*32+12) /* "" Set/clear IBRS on kernel entry/exit */
--/* FREE!				( 7*32+13) */
-+#define X86_FEATURE_RSB_VMEXIT		( 7*32+13) /* "" Fill RSB on VM-Exit */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1394,17 +1394,70 @@ static void __init spectre_v2_select_mit
- 	pr_info("%s\n", spectre_v2_strings[mode]);
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3077,7 +3077,7 @@ static int nested_vmx_check_vmentry_hw(s
+ 	}
  
- 	/*
--	 * If spectre v2 protection has been enabled, unconditionally fill
--	 * RSB during a context switch; this protects against two independent
--	 * issues:
-+	 * If Spectre v2 protection has been enabled, fill the RSB during a
-+	 * context switch.  In general there are two types of RSB attacks
-+	 * across context switches, for which the CALLs/RETs may be unbalanced.
- 	 *
--	 *	- RSB underflow (and switch to BTB) on Skylake+
--	 *	- SpectreRSB variant of spectre v2 on X86_BUG_SPECTRE_V2 CPUs
-+	 * 1) RSB underflow
-+	 *
-+	 *    Some Intel parts have "bottomless RSB".  When the RSB is empty,
-+	 *    speculated return targets may come from the branch predictor,
-+	 *    which could have a user-poisoned BTB or BHB entry.
-+	 *
-+	 *    AMD has it even worse: *all* returns are speculated from the BTB,
-+	 *    regardless of the state of the RSB.
-+	 *
-+	 *    When IBRS or eIBRS is enabled, the "user -> kernel" attack
-+	 *    scenario is mitigated by the IBRS branch prediction isolation
-+	 *    properties, so the RSB buffer filling wouldn't be necessary to
-+	 *    protect against this type of attack.
-+	 *
-+	 *    The "user -> user" attack scenario is mitigated by RSB filling.
-+	 *
-+	 * 2) Poisoned RSB entry
-+	 *
-+	 *    If the 'next' in-kernel return stack is shorter than 'prev',
-+	 *    'next' could be tricked into speculating with a user-poisoned RSB
-+	 *    entry.
-+	 *
-+	 *    The "user -> kernel" attack scenario is mitigated by SMEP and
-+	 *    eIBRS.
-+	 *
-+	 *    The "user -> user" scenario, also known as SpectreBHB, requires
-+	 *    RSB clearing.
-+	 *
-+	 * So to mitigate all cases, unconditionally fill RSB on context
-+	 * switches.
-+	 *
-+	 * FIXME: Is this pointless for retbleed-affected AMD?
- 	 */
- 	setup_force_cpu_cap(X86_FEATURE_RSB_CTXSW);
- 	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
+ 	vm_fail = __vmx_vcpu_run(vmx, (unsigned long *)&vcpu->arch.regs,
+-				 vmx->loaded_vmcs->launched);
++				 __vmx_vcpu_run_flags(vmx));
  
- 	/*
-+	 * Similar to context switches, there are two types of RSB attacks
-+	 * after vmexit:
-+	 *
-+	 * 1) RSB underflow
-+	 *
-+	 * 2) Poisoned RSB entry
-+	 *
-+	 * When retpoline is enabled, both are mitigated by filling/clearing
-+	 * the RSB.
-+	 *
-+	 * When IBRS is enabled, while #1 would be mitigated by the IBRS branch
-+	 * prediction isolation protections, RSB still needs to be cleared
-+	 * because of #2.  Note that SMEP provides no protection here, unlike
-+	 * user-space-poisoned RSB entries.
-+	 *
-+	 * eIBRS, on the other hand, has RSB-poisoning protections, so it
-+	 * doesn't need RSB clearing after vmexit.
-+	 */
-+	if (boot_cpu_has(X86_FEATURE_RETPOLINE) ||
-+	    boot_cpu_has(X86_FEATURE_KERNEL_IBRS))
-+		setup_force_cpu_cap(X86_FEATURE_RSB_VMEXIT);
+ 	if (vmx->msr_autoload.host.nr)
+ 		vmcs_write32(VM_EXIT_MSR_LOAD_COUNT, vmx->msr_autoload.host.nr);
+--- /dev/null
++++ b/arch/x86/kvm/vmx/run_flags.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __KVM_X86_VMX_RUN_FLAGS_H
++#define __KVM_X86_VMX_RUN_FLAGS_H
 +
-+	/*
- 	 * Retpoline protects the kernel, but doesn't protect firmware.  IBRS
- 	 * and Enhanced IBRS protect firmware too, so enable IBRS around
- 	 * firmware calls only when IBRS / Enhanced IBRS aren't otherwise
++#define VMX_RUN_VMRESUME	(1 << 0)
++
++#endif /* __KVM_X86_VMX_RUN_FLAGS_H */
 --- a/arch/x86/kvm/vmx/vmenter.S
 +++ b/arch/x86/kvm/vmx/vmenter.S
-@@ -193,15 +193,15 @@ SYM_INNER_LABEL(vmx_vmexit, SYM_L_GLOBAL
- 	 * IMPORTANT: RSB filling and SPEC_CTRL handling must be done before
- 	 * the first unbalanced RET after vmexit!
- 	 *
--	 * For retpoline, RSB filling is needed to prevent poisoned RSB entries
--	 * and (in some cases) RSB underflow.
-+	 * For retpoline or IBRS, RSB filling is needed to prevent poisoned RSB
-+	 * entries and (in some cases) RSB underflow.
- 	 *
- 	 * eIBRS has its own protection against poisoned RSB, so it doesn't
- 	 * need the RSB filling sequence.  But it does need to be enabled
- 	 * before the first unbalanced RET.
-          */
+@@ -5,6 +5,7 @@
+ #include <asm/kvm_vcpu_regs.h>
+ #include <asm/nospec-branch.h>
+ #include <asm/segment.h>
++#include "run_flags.h"
  
--	FILL_RETURN_BUFFER %_ASM_CX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
-+	FILL_RETURN_BUFFER %_ASM_CX, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_VMEXIT
+ #define WORD_SIZE (BITS_PER_LONG / 8)
  
- 	pop %_ASM_ARG2	/* @flags */
- 	pop %_ASM_ARG1	/* @vmx */
+@@ -34,7 +35,7 @@
+  * __vmx_vcpu_run - Run a vCPU via a transition to VMX guest mode
+  * @vmx:	struct vcpu_vmx * (forwarded to vmx_update_host_rsp)
+  * @regs:	unsigned long * (to guest registers)
+- * @launched:	%true if the VMCS has been launched
++ * @flags:	VMX_RUN_VMRESUME: use VMRESUME instead of VMLAUNCH
+  *
+  * Returns:
+  *	0 on VM-Exit, 1 on VM-Fail
+@@ -59,7 +60,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	 */
+ 	push %_ASM_ARG2
+ 
+-	/* Copy @launched to BL, _ASM_ARG3 is volatile. */
++	/* Copy @flags to BL, _ASM_ARG3 is volatile. */
+ 	mov %_ASM_ARG3B, %bl
+ 
+ 	lea (%_ASM_SP), %_ASM_ARG2
+@@ -69,7 +70,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	mov (%_ASM_SP), %_ASM_AX
+ 
+ 	/* Check if vmlaunch or vmresume is needed */
+-	testb %bl, %bl
++	testb $VMX_RUN_VMRESUME, %bl
+ 
+ 	/* Load guest registers.  Don't clobber flags. */
+ 	mov VCPU_RCX(%_ASM_AX), %_ASM_CX
+@@ -92,7 +93,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	mov VCPU_RAX(%_ASM_AX), %_ASM_AX
+ 
+ 	/* Check EFLAGS.ZF from 'testb' above */
+-	je .Lvmlaunch
++	jz .Lvmlaunch
+ 
+ 	/*
+ 	 * After a successful VMRESUME/VMLAUNCH, control flow "magically"
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -835,6 +835,16 @@ static bool msr_write_intercepted(struct
+ 					 MSR_IA32_SPEC_CTRL);
+ }
+ 
++unsigned int __vmx_vcpu_run_flags(struct vcpu_vmx *vmx)
++{
++	unsigned int flags = 0;
++
++	if (vmx->loaded_vmcs->launched)
++		flags |= VMX_RUN_VMRESUME;
++
++	return flags;
++}
++
+ static void clear_atomic_switch_msr_special(struct vcpu_vmx *vmx,
+ 		unsigned long entry, unsigned long exit)
+ {
+@@ -6667,7 +6677,8 @@ static fastpath_t vmx_exit_handlers_fast
+ }
+ 
+ static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+-					struct vcpu_vmx *vmx)
++					struct vcpu_vmx *vmx,
++					unsigned long flags)
+ {
+ 	kvm_guest_enter_irqoff();
+ 
+@@ -6686,7 +6697,7 @@ static noinstr void vmx_vcpu_enter_exit(
+ 		native_write_cr2(vcpu->arch.cr2);
+ 
+ 	vmx->fail = __vmx_vcpu_run(vmx, (unsigned long *)&vcpu->arch.regs,
+-				   vmx->loaded_vmcs->launched);
++				   flags);
+ 
+ 	vcpu->arch.cr2 = native_read_cr2();
+ 
+@@ -6786,7 +6797,7 @@ static fastpath_t vmx_vcpu_run(struct kv
+ 	x86_spec_ctrl_set_guest(vmx->spec_ctrl, 0);
+ 
+ 	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
+-	vmx_vcpu_enter_exit(vcpu, vmx);
++	vmx_vcpu_enter_exit(vcpu, vmx, __vmx_vcpu_run_flags(vmx));
+ 
+ 	/*
+ 	 * We do not use IBRS in the kernel. If this vCPU has used the
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -13,6 +13,7 @@
+ #include "vmcs.h"
+ #include "vmx_ops.h"
+ #include "cpuid.h"
++#include "run_flags.h"
+ 
+ #define MSR_TYPE_R	1
+ #define MSR_TYPE_W	2
+@@ -382,7 +383,9 @@ void vmx_set_virtual_apic_mode(struct kv
+ struct vmx_uret_msr *vmx_find_uret_msr(struct vcpu_vmx *vmx, u32 msr);
+ void pt_update_intercept_for_msr(struct kvm_vcpu *vcpu);
+ void vmx_update_host_rsp(struct vcpu_vmx *vmx, unsigned long host_rsp);
+-bool __vmx_vcpu_run(struct vcpu_vmx *vmx, unsigned long *regs, bool launched);
++unsigned int __vmx_vcpu_run_flags(struct vcpu_vmx *vmx);
++bool __vmx_vcpu_run(struct vcpu_vmx *vmx, unsigned long *regs,
++		    unsigned int flags);
+ int vmx_find_loadstore_msr_slot(struct vmx_msrs *m, u32 msr);
+ void vmx_ept_load_pdptrs(struct kvm_vcpu *vcpu);
+ 
 
 
