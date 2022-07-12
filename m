@@ -2,104 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4054AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49CDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:01:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbiGLIBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:01:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
+        id S232388AbiGLIBh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231259AbiGLIBT (ORCPT
+        with ESMTP id S232377AbiGLIBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:01:19 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27EAC24958;
-        Tue, 12 Jul 2022 01:01:18 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oBApZ-0000Vp-00; Tue, 12 Jul 2022 10:01:17 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 41528C035A; Tue, 12 Jul 2022 09:30:01 +0200 (CEST)
-Date:   Tue, 12 Jul 2022 09:30:01 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Serge Semin <fancer.lancer@gmail.com>, linux-mips@vger.kernel.org,
-        gerg@kernel.org, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MIPS: Fixed __debug_virt_addr_valid()
-Message-ID: <20220712073001.GA6980@alpha.franken.de>
-References: <20220707215237.1730283-1-f.fainelli@gmail.com>
- <20220711083848.GE6084@alpha.franken.de>
- <20220711104052.ddefbgd34xbbjykg@mobilestation>
- <20220711112740.GA12918@alpha.franken.de>
- <20220711112953.j4dwany3i77df4xe@mobilestation>
- <7fb06e9c-6405-9bee-5eda-7dbd56511e2c@gmail.com>
+        Tue, 12 Jul 2022 04:01:32 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D6C62DD;
+        Tue, 12 Jul 2022 01:01:31 -0700 (PDT)
+Received: by mail-qt1-f173.google.com with SMTP id a21so7628389qtw.10;
+        Tue, 12 Jul 2022 01:01:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f7/DBlyXRCka68EapZqh3ZBdGq51MlTs0yoakAMo94s=;
+        b=PGm8fNJo3XtgaEMNP300/ijMkrEvjnsRQy14vRfGlA3Nnhg9UmK2rx4KikSqHspCbF
+         0TD00RSrOgxLk/Gg0aiIgzcZXqaLyfeltSP7Ebcn4aNn5y0+4mst56H1OxDEjQoM2g2I
+         iPtqT/wpXPk71lWCLc4ogyts7SxijMPqEC+uXlCfJNVi0M/C2+FkRqmSAsJLV1meowAA
+         frWB238bHyAIIQO/TRkqbuXAxqBuHcss1Qvz8y3VHhiW3OxuHEdm00ZPksgbOswnJ4og
+         7aKb9Jz4xoMFRKkKs6koFbS0DOiqQYHJmcY8ryne1IfJZZCcrBhgKERK1R2VOJQGdUyA
+         QECg==
+X-Gm-Message-State: AJIora88GhutZ08sv3nbrDb9rWvO+bE9HFMC5GzFG6otRQ5BXkKLPs6Z
+        382Nla8mfXIbunGYviP493sF9VM+N07VBw==
+X-Google-Smtp-Source: AGRyM1ueYjjouP6n1nnDB0LfiEp88nSoCrqxG3205qJF35qK4o27OabeDMDS13FY0NMRxP7jI0d9AQ==
+X-Received: by 2002:a05:622a:14d0:b0:318:9744:842b with SMTP id u16-20020a05622a14d000b003189744842bmr16974943qtx.147.1657612890539;
+        Tue, 12 Jul 2022 01:01:30 -0700 (PDT)
+Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com. [209.85.219.174])
+        by smtp.gmail.com with ESMTPSA id i4-20020a05620a404400b006b1eb3a8364sm9165125qko.5.2022.07.12.01.01.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 01:01:29 -0700 (PDT)
+Received: by mail-yb1-f174.google.com with SMTP id 136so12656733ybl.5;
+        Tue, 12 Jul 2022 01:01:27 -0700 (PDT)
+X-Received: by 2002:a05:6902:701:b0:66e:a06d:53d7 with SMTP id
+ k1-20020a056902070100b0066ea06d53d7mr20423916ybt.604.1657612887543; Tue, 12
+ Jul 2022 01:01:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7fb06e9c-6405-9bee-5eda-7dbd56511e2c@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <cover.1657300532.git.geert@linux-m68k.org> <0744671ac096a12f0d538906bd324efa71b11400.1657300532.git.geert@linux-m68k.org>
+ <96a87833-d878-dde9-e335-9ea51a4ba406@mailbox.org> <CAMuHMdUgdbZeoFLFL8+Hm-6fG9cg5Wzq++JED3KR5P9YZtRQ4A@mail.gmail.com>
+ <20220712074715.kopstlvz4q6npaye@sirius.home.kraxel.org>
+In-Reply-To: <20220712074715.kopstlvz4q6npaye@sirius.home.kraxel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 Jul 2022 10:01:15 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVrf7fgzumcSnZJ3OMGqA34YExXcF3O15YXYpA1ykgKyQ@mail.gmail.com>
+Message-ID: <CAMuHMdVrf7fgzumcSnZJ3OMGqA34YExXcF3O15YXYpA1ykgKyQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] drm/fourcc: Add missing big-endian XRGB1555 and
+ RGB565 formats
+To:     Gerd Hoffmann <kraxel@redhat.com>
+Cc:     =?UTF-8?Q?Michel_D=C3=A4nzer?= <michel.daenzer@mailbox.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?Q?Noralf_Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        "Linux/m68k" <linux-m68k@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 05:02:51PM -0700, Florian Fainelli wrote:
-> On 7/11/2022 4:29 AM, Serge Semin wrote:
-> > On Mon, Jul 11, 2022 at 01:27:40PM +0200, Thomas Bogendoerfer wrote:
-> > > On Mon, Jul 11, 2022 at 01:40:52PM +0300, Serge Semin wrote:
-> > > > On Mon, Jul 11, 2022 at 10:38:48AM +0200, Thomas Bogendoerfer wrote:
-> > > > > On Thu, Jul 07, 2022 at 02:52:36PM -0700, Florian Fainelli wrote:
-> > > > > > It is permissible for kernel code to call virt_to_phys() against virtual
-> > > > > > addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
-> > > > > > types. Add a final condition that ensures that the virtual address is
-> > > > > > below KSEG2.
-> > > > > > 
-> > > > > > Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-> > > > > > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> > > > > > ---
-> > > > > >   arch/mips/mm/physaddr.c | 3 ++-
-> > > > > >   1 file changed, 2 insertions(+), 1 deletion(-)
-> > > > > > 
-> > > > > > diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
-> > > > > > index a1ced5e44951..a82f8f57a652 100644
-> > > > > > --- a/arch/mips/mm/physaddr.c
-> > > > > > +++ b/arch/mips/mm/physaddr.c
-> > > > > > @@ -5,6 +5,7 @@
-> > > > > >   #include <linux/mmdebug.h>
-> > > > > >   #include <linux/mm.h>
-> > > > > > +#include <asm/addrspace.h>
-> > > > > >   #include <asm/sections.h>
-> > > > > >   #include <asm/io.h>
-> > > > > >   #include <asm/page.h>
-> > > > > > @@ -30,7 +31,7 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
-> > > > > >   	if (x == MAX_DMA_ADDRESS)
-> > > > > >   		return true;
-> > > > > > -	return false;
-> > > > > > +	return KSEGX(x) < KSEG2;
-> > > > > >   }
-> > > > > >   phys_addr_t __virt_to_phys(volatile const void *x)
-> > > > > > -- 
-> > > > > > 2.25.1
-> > > > > 
-> > > > 
-> > > > > applied to mips-next.
-> > > > 
-> > > > Are you sure it was ready to be applied?
-> > > > Link: https://lore.kernel.org/linux-mips/20220708115851.ejsooiilxcopkoei@mobilestation/
-> > > 
-> > 
-> > > your comment sounded like optimizing, which can be done later on, so
-> > > I assumed it ready.
-> > 
-> > What about Malta and EVA?
-> 
-> Sergey's comment definitively need to be addressed, and I would not see the
-> point in making an incremental change to a wrong fix. Can you drop that
-> patch for now? Thanks!
+Hi Gerd,
 
-dropped.
+On Tue, Jul 12, 2022 at 9:47 AM Gerd Hoffmann <kraxel@redhat.com> wrote:
+> On Mon, Jul 11, 2022 at 05:30:30PM +0200, Geert Uytterhoeven wrote:
+> > > > Cirrus is the only driver setting quirk_addfb_prefer_host_byte_order
+> > > > and supporting RGB565 or XRGB1555, but no one tried that on big-endian?
+> > > > Cirrus does not support DRM_FORMAT_RGB565 | DRM_FORMAT_BIG_ENDIAN
+> > > > in cirrus_fb_create, so you cannot get a graphical text console.
+> > > >
+> > > > Do we need these definitions on little-endian platforms, too?
+> > > > Would it be better to use "DRM_FORMAT_{XRGB1555,RGB565} |
+> > > > DRM_FORMAT_BIG_ENDIAN" instead of "DRM_FORMAT_HOST_{XRGB1555,RGB565}" in
+> > > > formats[]?
+> > >
+> > > The intention of DRM_FORMAT_HOST_* is that they are macros in
+> > > include/drm/drm_fourcc.h which just map to little endian formats
+> > > defined in drivers/gpu/drm/drm_fourcc.c. Since this is not possible
+> > > for big endian hosts for XRGB1555 or RGB565 (or any other format
+> > > with non-8-bit components), this isn't applicable here.
+>
+> It IMHO is not applicable to any physical hardware.  It's used by
+> virtio-gpu where the supported format depends on the byte order
+> (it is argb8888 in native byte order).  Only virtual hardware can
+> have that kind of behavior.
+>
+> And we can probably drop the DRM_FORMAT_HOST_* variants for 1555 and
+> 565, they are not used anywhere.
 
-Thomas.
+Atari DRM supports (big-endian) RGB565, so it uses
+DRM_FORMAT_HOST_RGB565.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+The alternative is to drop the quirk_addfb_prefer_host_byte_order
+requirement on big-endian, and always use a little-endian RGB565
+shadow frame buffer, at the expense of never being able to get rid
+of the copying and byteswapping.
+
+[Cirrus discussion removed]
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
