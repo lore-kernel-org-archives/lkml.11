@@ -2,93 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F37C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEC3CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:41:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiGLQjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56384 "EHLO
+        id S231273AbiGLQlT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:41:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232036AbiGLQjI (ORCPT
+        with ESMTP id S229491AbiGLQlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:39:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEB62E680
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:38:48 -0700 (PDT)
+        Tue, 12 Jul 2022 12:41:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD0A4B31ED;
+        Tue, 12 Jul 2022 09:41:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44CF961946
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 002E6C3411C;
-        Tue, 12 Jul 2022 16:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657643927;
-        bh=4BDfSSRpMaIphCs/51FX5hBMkKL+h2V39A32PoeENKE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=VszbvoOQ32Y5tUUOu1X5m/qZVrA8i8HEwF6OfAI3/1iEY8WzgXQYawQzWhkcEHNI1
-         zb7w8lqauDh19oVhcNZgsh2p101mFkKJXH45mNi5sZfjBIZjIfjXX0qJk2ixP1XNaA
-         1zzD/p9+2gIbYSLAfE5mJBzY40yFlUhhIcHqvp4k=
-Date:   Tue, 12 Jul 2022 18:38:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-Subject: Build warnings in Xen 5.15.y and 5.10.y with retbleed backports
-Message-ID: <Ys2jlGMqAe6+h1SX@kroah.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9EB1EB817B7;
+        Tue, 12 Jul 2022 16:41:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DB63C3411C;
+        Tue, 12 Jul 2022 16:41:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657644073;
+        bh=+b/1grUJCSsyjFjJCmNeot/mVBQ8tWbodPZ1hw/Xajk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kCaLjL3oZZ1xJvU+6VYFFQowoautaX1XwiRc9vWzUY+4+B7K9wKu31QkxqGisnbcT
+         tAN5nu35aVCAjbvgoHwhoBRAbS9psVz/e4wxAd2LzpXkUxnzhVRhSo8qw8L3CAbBNM
+         otoxB4D/29bLmiaslhlPHq7bR+3JxNTi6cQkujo1D2vMa6Llt8Hb5vYFgSJju3HXl+
+         phfwOKaZg6IVeE8PXRHAQh+3TqNH3FfbyK/iZdN9zhKTdOLC67Va6fD3A4so7H7oz6
+         7hKrcmJMArcOq0XNusfbSa1SGPglPrNmd/SFma7BHIHTXZHdFjKCDdlYY99fWfo4Pg
+         Y2JwTg4AZ1z2A==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH v2 00/10] ARM: dts: mvebu: Add definitions for PCIe legacy INTx interrupts
+Date:   Tue, 12 Jul 2022 18:40:58 +0200
+Message-Id: <20220712164108.30262-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+As suggested by Gregory [1] (although he suggested it only for armada
+380), add definitions for PCIe legacy INTx interrupts into every DTS
+file used by the pci-mvebu.c controller driver.
 
-I'm seeing the following build warning:
-	arch/x86/kernel/head_64.o: warning: objtool: xen_hypercall_mmu_update(): can't find starting instruction
-in the 5.15.y and 5.10.y retbleed backports.
+It was tested on 88F6820 (A385) and 88F6281 (Kirkwood) SoCs.
 
-I don't know why just this one hypercall is being called out by objtool,
-and this warning isn't in 5.18 and Linus's tree due to I think commit
-5b2fc51576ef ("x86/ibt,xen: Sprinkle the ENDBR") being there.
+[1] https://lore.kernel.org/linux-arm-kernel/87wnhxjxlq.fsf@BL-laptop/
 
-But, is this a ret call that we "forgot" here?  It's a "real" ret in
-Linus's branch:
+Changes since v1:
+- dropped armada-385 patch, which was already applied
+- added commit messages
 
-.pushsection .noinstr.text, "ax"
-	.balign PAGE_SIZE
-SYM_CODE_START(hypercall_page)
-	.rept (PAGE_SIZE / 32)
-		UNWIND_HINT_FUNC
-		ANNOTATE_NOENDBR
-		ANNOTATE_UNRET_SAFE
-		ret
-		/*
-		 * Xen will write the hypercall page, and sort out ENDBR.
-		 */
-		.skip 31, 0xcc
-	.endr
+Pali Rohár (10):
+  ARM: dts: kirkwood: Add definitions for PCIe legacy INTx interrupts
+  ARM: dts: dove: Add definitions for PCIe legacy INTx interrupts
+  ARM: dts: armada-370.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-98dx3236.dtsi: Add definitions for PCIe legacy
+    INTx interrupts
+  ARM: dts: armada-xp-mv78230.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-mv78260.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-xp-mv78460.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-375.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-380.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
+  ARM: dts: armada-39x.dtsi: Add definitions for PCIe legacy INTx
+    interrupts
 
-while 5.15.y and older has:
-.pushsection .text
-	.balign PAGE_SIZE
-SYM_CODE_START(hypercall_page)
-	.rept (PAGE_SIZE / 32)
-		UNWIND_HINT_FUNC
-		.skip 31, 0x90
-		ANNOTATE_UNRET_SAFE
-		RET
-	.endr
+ arch/arm/boot/dts/armada-370.dtsi         |  28 ++++-
+ arch/arm/boot/dts/armada-375.dtsi         |  28 ++++-
+ arch/arm/boot/dts/armada-380.dtsi         |  42 ++++++-
+ arch/arm/boot/dts/armada-39x.dtsi         |  56 +++++++--
+ arch/arm/boot/dts/armada-xp-98dx3236.dtsi |  14 ++-
+ arch/arm/boot/dts/armada-xp-mv78230.dtsi  |  70 +++++++++--
+ arch/arm/boot/dts/armada-xp-mv78260.dtsi  | 126 ++++++++++++++++---
+ arch/arm/boot/dts/armada-xp-mv78460.dtsi  | 140 ++++++++++++++++++----
+ arch/arm/boot/dts/dove.dtsi               |  28 ++++-
+ arch/arm/boot/dts/kirkwood-6192.dtsi      |  14 ++-
+ arch/arm/boot/dts/kirkwood-6281.dtsi      |  14 ++-
+ arch/arm/boot/dts/kirkwood-6282.dtsi      |  28 ++++-
+ arch/arm/boot/dts/kirkwood-98dx4122.dtsi  |  14 ++-
+ 13 files changed, 516 insertions(+), 86 deletions(-)
 
-So should the "ret" remain or be turned into "RET" in mainline right
-now?
+-- 
+2.35.1
 
-thanks,
-
-greg k-h
