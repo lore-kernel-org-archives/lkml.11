@@ -2,110 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F21CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:46:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D87C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234106AbiGLSqI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:46:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33328 "EHLO
+        id S234341AbiGLSqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234263AbiGLSpY (ORCPT
+        with ESMTP id S233797AbiGLSpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:45:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3ABBDB2E2;
-        Tue, 12 Jul 2022 11:42:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 395EFB81BBB;
-        Tue, 12 Jul 2022 18:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C67C3411C;
-        Tue, 12 Jul 2022 18:42:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651352;
-        bh=l0kO0QEUe8EFVtCdORKJzuiIYU1+sCDa53haTUQKWpE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lJg3Al14bssennG7Fm5cCOMiBT4+hONK/mv+P7u94Xy/5XY67Tn6ouLwUX6woViaC
-         ewD6x+PGzyBMs+k7bf9by3K2aDcVvRuuv2yT5kDlsD0XFwd+6tmi6QyVof6VmCZngI
-         134D4lZjPXolbwtpOnCwm3cFvvBxXxR9hWd8zZMQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Tue, 12 Jul 2022 14:45:38 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AA9B1DB2EF;
+        Tue, 12 Jul 2022 11:42:37 -0700 (PDT)
+Received: from pwmachine.numericable.fr (240.119.92.79.rev.sfr.net [79.92.119.240])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 6F4EA204DE80;
+        Tue, 12 Jul 2022 11:42:34 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6F4EA204DE80
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657651357;
+        bh=yODtK+pWFU5tp6GF0WS8ShyocW5RT9w0VzszRl7ckAE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eWWRt/mhYU89qS8WtfgxLuxkSJX85zY/lrwIuPFEguOdBjjTUTf2WT6BpKUfWweNR
+         zU0XKO6K4vndpeqRboYyF54XgCnAJuSD0ABUrOgmxyR0J5Y64vl4Ussb314BGkZwHE
+         43Tto3Dj3u4mKL3f2lwyqqeNxmeBMY01GARWG8DE=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     bpf@vger.kernel.org
+Cc:     Francis Laniel <flaniel@linux.microsoft.com>,
+        Quentin Monnet <quentin@isovalent.com>,
         Alexei Starovoitov <ast@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 051/130] x86/asm: Fix register order
-Date:   Tue, 12 Jul 2022 20:38:17 +0200
-Message-Id: <20220712183248.791781759@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
-References: <20220712183246.394947160@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [RFC PATCH v1 0/1] bpftool: Add generating command to C dumped file.
+Date:   Tue, 12 Jul 2022 20:42:24 +0200
+Message-Id: <20220712184225.52429-1-flaniel@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+Hi.
 
-commit a92ede2d584a2e070def59c7e47e6b6f6341c55c upstream.
 
-Ensure the register order is correct; this allows for easy translation
-between register number and trampoline and vice-versa.
+First, I hope you are fine and the same for your relatives.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120309.978573921@infradead.org
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+In this patch, I added the command used to generate a BTF dump at the top of the
+dump when outputting to C:
+/*
+ * File generated by bpftool using:
+ * bpftool btf dump file /sys/kernel/btf/vmlinux format c
+ * DO NOT EDIT.
+ */
+
+The goal of this is to first warn users this file must not be edited and also
+to document the command used to get it.
+The idea was gathered from a message posted on iovisor/bcc repository and from
+message written by bpf2go when it generates a file [1, 2].
+
+This patch is clearly not a big change which impacts the future of bpftool but
+I think it could be welcomed.
+If you see any way to improve it or have any question, feel free to ask.
+
+Francis Laniel (1):
+  bpftool: Add generating command to dumped file.
+
+ tools/bpf/bpftool/btf.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+
+Best regards and thank you in advance.
 ---
- arch/x86/include/asm/GEN-for-each-reg.h |   14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
-
---- a/arch/x86/include/asm/GEN-for-each-reg.h
-+++ b/arch/x86/include/asm/GEN-for-each-reg.h
-@@ -1,11 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * These are in machine order; things rely on that.
-+ */
- #ifdef CONFIG_64BIT
- GEN(rax)
--GEN(rbx)
- GEN(rcx)
- GEN(rdx)
-+GEN(rbx)
-+GEN(rsp)
-+GEN(rbp)
- GEN(rsi)
- GEN(rdi)
--GEN(rbp)
- GEN(r8)
- GEN(r9)
- GEN(r10)
-@@ -16,10 +21,11 @@ GEN(r14)
- GEN(r15)
- #else
- GEN(eax)
--GEN(ebx)
- GEN(ecx)
- GEN(edx)
-+GEN(ebx)
-+GEN(esp)
-+GEN(ebp)
- GEN(esi)
- GEN(edi)
--GEN(ebp)
- #endif
-
+[1] https://github.com/iovisor/bcc/pull/4088#pullrequestreview-1032543916
+[2] https://github.com/cilium/ebpf/blob/951bb28908d23e50fca063a2d51098ca028352bf/cmd/bpf2go/output.go#L21
+-- 
+2.25.1
 
