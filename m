@@ -2,157 +2,316 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA97BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232469AbiGLJs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40058 "EHLO
+        id S232845AbiGLJtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 05:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiGLJsu (ORCPT
+        with ESMTP id S230418AbiGLJs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:48:50 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DE21CB3C;
-        Tue, 12 Jul 2022 02:48:48 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26C84b48030511;
-        Tue, 12 Jul 2022 09:48:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=tdaHExUSjJudctnnNbnOV6jcCaLpVYdyFQx13qUZHx8=;
- b=HwbHrZlQ03w/es/nIeIVZzbkOivbzSUk3kD3U18kn772larF5VoyQMTIiSQhaar5Teyy
- DUlNQ9J9T1spd5D8PZLxvbNZyexk/B8PpurqOtgNFTMM3edxIBl0UOQf+d2759hL6f89
- +No2aHfcVySTX+Z3kIUsg+ldQz0mndLOcg0xyvubgDa/PryYQXCJGJ5uxhwI7yTsuACZ
- qUWlexAg/JXsGYSKNGib8HU+SpwcHzKMNNu1wB6pxfQBx724MkDFrnptpYzz5K7O9N9m
- pht1q0eiEZ6RYmV0NitmcVUXhvzE/L0HLJ7YUUCLp91jiiFoi7cVrbpO0RTu3yQsPVhD sw== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71sgp073-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 09:48:08 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26C9fO9L008457;
-        Tue, 12 Jul 2022 09:48:06 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2175.outbound.protection.outlook.com [104.47.73.175])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7043g33e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 09:48:06 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CBUTk6YgMvPcqpTxm7odMZiX2TR/+oc+dmVdpZJREE5lBz+2sIeaLL4q0GWEwfVU5dJWsZScVQvOozwCCltUGzgh7qtb/XmcsGJ6q3AU6h3dhCTGOrvPQT52Jkp5fFuwBHh+p3tJ3ukpWcU9nPFK7IA6HLU44EL/s89DEeUJhcY79z/79lcDqMrBeOWbZNYNmqfdZ6EW9u0MBBRTn9p7/QBMb9qsRCUKrWCuZJSsH7xz6jCo00KVcYUL6y5KxH+I/mZ3PYp2cnZH77n7UPib9u5eCM6gDStahWiBkVHWqh5CdK51sVsdChSlRuN4x86m47kHt1+imjcVTlLwtouM2g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tdaHExUSjJudctnnNbnOV6jcCaLpVYdyFQx13qUZHx8=;
- b=FPaVj/Xsl7JaIHdci0aCVtI+jD1wMdqcno2Xy2Vfvn+zTBn0MHgt1yC7FevsEbGNuwn4DB/FtiQM4RbS7CNH4reCk/AYurj6Yyg2/LoMUgGK7jrrmiEn1L05w2Ah7mWkd07/ePLtfWYXnkVa1RUr8yRUtSCTJVW5s9NspI4MCPY1dampTI3IX2RvbVqXo0zvNw0jBo7n1JUzL6CUJu7dt/7cT9EzVVKnluwXHsrJ7Bsm2ai8LcUsNwvPwNJLjVeIj688EmK7Hw5BRO3GGMYOFeYpcN+xAmCe/OBpxM+UGX1si/rYFVcFofYzTNy6m2MA2jK4rKnrkq5i8ysHdaw9EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 12 Jul 2022 05:48:57 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9EAA2EE6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:48:55 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id z25so13045080lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:48:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tdaHExUSjJudctnnNbnOV6jcCaLpVYdyFQx13qUZHx8=;
- b=D7BphNjoUSqO9IrvvscU0UyxhYZiVt2yMIVlCYbhw4Lfj+M+LJSfA64Gm7rCSdHKuNdZ/Dp+ndy7CwkoyONeSnjV6IPct1lbui+BC+CEF5ErQgbJ0iSXqhHZUx3H9AnRMDDu0idsBoZvcVfJ9LhiT1q3RejAgk7101AnNEfVdQI=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CY4PR10MB1525.namprd10.prod.outlook.com
- (2603:10b6:903:27::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Tue, 12 Jul
- 2022 09:48:02 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 09:48:02 +0000
-Date:   Tue, 12 Jul 2022 12:47:45 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Hawkins Jiawei <yin31149@gmail.com>
-Cc:     syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
-        andrii@kernel.org, ast@kernel.org, borisp@nvidia.com,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, guwen@linux.alibaba.com,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kgraul@linux.ibm.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        skhan@linuxfoundation.org, 18801353760@163.com,
-        paskripkin@gmail.com,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] smc: fix refcount bug in sk_psock_get (2)
-Message-ID: <20220712094745.GM2338@kadam>
-References: <00000000000026328205e08cdbeb@google.com>
- <20220709024659.6671-1-yin31149@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220709024659.6671-1-yin31149@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MR2P264CA0178.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501::17)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/uH8F4Kby+JXg7Mpe1L96lV/BObBUJ58/FjGSd2zwrI=;
+        b=GHOwDC5960hhrGAi98lxdFsoVxYhQ2I/DQd5NEQZVKWyX92WrTsf8t2uM3S5O5Pasz
+         EaPxmoLo+up67H/T1lw9SK2ICPtDIXbpnFpjwJEtiMkaxLplr6Ne1TOqGXTgTi8dkiJA
+         Y+POzrid5V/l1fFk3bQz7NlKDjxL0IasYJ/SW4GtFYSRTmqGaVUb5ssUlJPMjQEp0dX2
+         QuR/+sJhEfI6EpUkJFI81oMNUs+Zf4ivdtf7J/KU5ISvA1qtBbwfx5fjRbkU6DYVeBma
+         +Chaapuv217t3WUW1yU+2nFRqqg5WTThyOJWMsUVHxYikwNKEpGEhL7fhgjQVQCcgH6f
+         yB1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/uH8F4Kby+JXg7Mpe1L96lV/BObBUJ58/FjGSd2zwrI=;
+        b=p62sR6cvyJ8JSR1EbKrvHxExCzUlycQZ+xvtC5BLLaqeGKtZsjtd8QUxdkEti75Nbw
+         Z3+WchTc9SE9ly8lDM3DL6Zog3Isjh/GefQ5Tu4coWmSqU1C1utKOFkoGZvniSkjTvzK
+         2PEBrj5r4jC1+2ECFtrM6xsYEDYt4SZloqFwuRN6IC53rW4Cor6Mdjyl4if0ybYeEXd9
+         hVvlvKT4of/6sw2VaSPJn6ars/GpUbTxKOPA/gi7lHw74MYIorI47h4VqDvGQfiZksKx
+         SLOcqjuxsoV4U+k/fnJhQ3H843goGIga5UYErsFjom4uOlIqjsxPtm0nyMAYpgILy+AC
+         2bZQ==
+X-Gm-Message-State: AJIora+G2Nyz/CFEM0Gg8zeGioTW2sgDVKhNuGvKgpI5kpyQjJgASa3P
+        7QGn96YmgJzeN1Juad3A4sCChg==
+X-Google-Smtp-Source: AGRyM1uRD8Jy2As78zbcShpLvk3bPyap8hDx7k+p73eBuiJheG1Djr3s1kq+1523oqqWLjtGEhb0lQ==
+X-Received: by 2002:a05:6512:3b91:b0:489:e63f:47b1 with SMTP id g17-20020a0565123b9100b00489e63f47b1mr4117169lfv.410.1657619333888;
+        Tue, 12 Jul 2022 02:48:53 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id s3-20020ac24643000000b0047255d2111csm2073378lfo.75.2022.07.12.02.48.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 02:48:53 -0700 (PDT)
+Message-ID: <8b1393e4-275b-6791-ad71-2edfeacd0a63@linaro.org>
+Date:   Tue, 12 Jul 2022 11:48:50 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8e8f86f4-0b44-4989-911a-08da63eb9ca4
-X-MS-TrafficTypeDiagnostic: CY4PR10MB1525:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NmmRMrdpwP9mq70U5XEJo5qx/PDvgMDpE4/qTIaZrgs7rOb2JrTXbnndXO6D3Sv0Bl7syWKrS/iUNJwYaYBv6y+EyPelBjWCV/vPXqT8hEirPPdjKKA1PsFGmqQrIuQ/vv1KYjYPNJMIR5HlNjrkR0RIscu/7CuainT8rKbYL8kf9l+nstnYVx7rGXQEYMuRN0WVIpGVBCXSKMGSoEJP6khCfwgWoxZz8TH6tDLcjZHHrAks0m12Xrng2CTobJtKZMNGw7FLSqd+AuQfYy+ZFLS43VA3lYfbWCM+cnA47yfrRj3Pun34gLMsYffcIZF9Sedm8qM7z6tsaTPE24vmgFje7ooWa9J92xS1s99BTqIfk96uIh4SKkJWCl1MrnQji9XA4dLBy6kLSklrAIo7KhJpN2aIH5XVci9NP3H7PvLgrGGtjwKVopIrxoxyqRRRtCsvqSu14WXZU44lUGYuOJwHCnRhAr1B5bEbQbn38u3aQMn90iRXt/e/5SqNqVFRTCQIybODoifpWy6phAzoPI/LspJrI5sGn5gItXJreUFAmlq9gQVT74nT1EZ12h9NUChIMxVpEJFY6+In334wVsJASZ4kttgJfvx+rzgAS6RxR1AWjTxm30b0oNyBGyTOndRK7OVDKsiS9a6eG1h4j2Ca1Thsj5ApCiceVdmHRFgF9rrW0uXiV6AmhbbP+GuNgPXfLQEbCFbJusApVaxTX/Orp+dQgzMrwfhP4nHoA6DH2hTzJubltyN5mwG9Ej2xKGdkNEdJneRihTEtwNgsZ4AONtJyrc/JMnhyUC47VQduLl2taKzDkDcCVC0PmYj+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(396003)(366004)(39860400002)(346002)(376002)(83380400001)(86362001)(38100700002)(38350700002)(186003)(44832011)(6916009)(66946007)(6486002)(4326008)(33716001)(316002)(8676002)(66556008)(8936002)(7416002)(66476007)(26005)(6512007)(52116002)(9686003)(558084003)(478600001)(6506007)(6666004)(41300700001)(1076003)(33656002)(2906002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aQyg3juU1P8GRzfUtCv0Gf2HglbinCPrHzIgfY/m+Wx2qB+q9o6AeiG5lvSc?=
- =?us-ascii?Q?LK26IY8a8ELLoyNTlESWi33Wx/ZA0uH59ae//EC98KJ3g26A7tx3R5mbem6e?=
- =?us-ascii?Q?FQjIzdc/+6dTHIUcEWEBkvhyliwW2FOojpXHthRBFEr6SQ6zpkjqqHR4gZmU?=
- =?us-ascii?Q?afWtCPMPSa/gGwxYSNA5ck4yb6gT5IPOb6wPUjbhpsRLKfGSz6eqKyCcx2+C?=
- =?us-ascii?Q?Nz0GIxmo7kWdhzSX9VlGuO80ST3yTg6rcrLDplPTOiOUnmFWnEDzRHBRkH7H?=
- =?us-ascii?Q?ak4qcAXdFewmZI0MC0rJitHQ9OmKQqYijn+sJnN8Dq7waIVkP9uNH9lW0w5U?=
- =?us-ascii?Q?fsSv78kUmOXgwGTcasCQMMdxHk7BO9ycmQzeWOBP+1be27ga2EqKM08zKXYh?=
- =?us-ascii?Q?0kzvPQx+fwmxbXkq5qk4BY2L8oWwQYq/QZL5oilZyn2lB5QgYy17FQ1r4yTP?=
- =?us-ascii?Q?LCN35KT+m/gD9yGvUvzBxAL12uhvN/kl2yXg/iWRiXtnPS76Kj30n1f7hNkO?=
- =?us-ascii?Q?PLpNXoDNDpUrMcDxjHUUmQ5tSNtf6NFcdDwyXDX0zc35h/HNEFzcqKfrrB5N?=
- =?us-ascii?Q?vPrxRDp5aXb4VwfbLLlOhmmj6gV52VFWGFgvF6vct74sQV7URYnKBUh8vFlU?=
- =?us-ascii?Q?+nA4PgioCE1UxKTXhLj3+FKwYLMoMpLKDIH2LUqsSynFhvBXT/R0gCVeocc4?=
- =?us-ascii?Q?KhFE5cvPt6USrivIb1bFA7iRIYTQmqJxjAfv/iFZZRanK33DHhCgzmX7M6y6?=
- =?us-ascii?Q?dlImy6ex1hXpdXekktTADfiQF1FUGQ3kblQH3jZZp5FIL7oYP6LKqgDuvJ09?=
- =?us-ascii?Q?YQ4syWQoDfCrJynQiFSbzgYrOmr3IsAQZuCEOJyPNBL5+82lxJ6DX0qtbFnO?=
- =?us-ascii?Q?gBcDJEQSj6Z0u7GoRa9lO5o2S90Uv7ESWA+v29RxgkC2x3wX8k0zHSqn2c4S?=
- =?us-ascii?Q?bKKvsAmVihrsSjVocBw6eohYS/donnOVpgRkGOcDExPKvRhm5xwUkeyYTZtr?=
- =?us-ascii?Q?UyIra0utaDuJCu+exzk+Tgfylz4bwrGQEg+ZF+/qRup0ybhey/6aJqhRV6ZR?=
- =?us-ascii?Q?fUeZKrDoaILNCfJxfcQvv1t2MekPUTjzgyBeJN2vJ2RkwL+2BGUL16cVk4c3?=
- =?us-ascii?Q?YY3/jZ8v2IBIxiHlQokPCeapXlzvAG8zqjOWH3QbNjyhmXnDqTJDpBn5ooUR?=
- =?us-ascii?Q?FZ2iVsknKLKu4oZ+A2p6zZNEb4zDo6uLF5JH5bXLnfDKTon1DVSsJ/YeF39X?=
- =?us-ascii?Q?ZMGdoXKIZwdMTLRvs+O/HoVmFryP70k0o+m8erJJV0LGjGESsa2WiG6gvcVm?=
- =?us-ascii?Q?BGpgTDDdb9fUEFF6f+pukC6MzweS9SIiCR99q0225c6D637WGf+8bQQVgjOL?=
- =?us-ascii?Q?S4QSz5s4oMTAKFQ/2lgHKF1B3i6kzevPvd7nQUJ2BxW6KsVpUn5hzbVCVd7K?=
- =?us-ascii?Q?q+7jScFxucN84DBSr0sHBfOlnlrWrWO5DVIZmPgDm5NXZPVx1pdsWO/zf8eQ?=
- =?us-ascii?Q?wdTEAbHTa6LGePX9+XgL9vaueFZlIzJhFCfaNeRyOoDJ1FlFX/5dfaLnJHAT?=
- =?us-ascii?Q?xYQuqpKFCdyZx7zk9S5EecpA71+tJaXYqo2pi7z9Fd5PTT1ZrT+smxa9KE1V?=
- =?us-ascii?Q?Xg=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e8f86f4-0b44-4989-911a-08da63eb9ca4
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 09:48:02.5810
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MzTU/YZEanP5XpcguOXFWo+NzNvfjvgSnyx4UHwM+ic/nvEXJcZwaFHr3FsRlxCeeclarbCInhqlnzJJoFPgokGRdbXEfpPSLojalNQmF+k=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR10MB1525
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-12_05:2022-07-08,2022-07-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0 mlxscore=0
- suspectscore=0 adultscore=0 spamscore=0 mlxlogscore=973 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207120036
-X-Proofpoint-GUID: weWgy6M75EszfCx-IcGwbd2mpgckcYsf
-X-Proofpoint-ORIG-GUID: weWgy6M75EszfCx-IcGwbd2mpgckcYsf
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/2] dt-binding: pinctrl: Add NPCM8XX pinctrl and GPIO
+ documentation
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
+        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
+        yuenn@google.com, benjaminfair@google.com,
+        linus.walleij@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, j.neuschaefer@gmx.net,
+        zhengbin13@huawei.com
+Cc:     openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220710102110.39748-1-tmaimon77@gmail.com>
+ <20220710102110.39748-2-tmaimon77@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220710102110.39748-2-tmaimon77@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 10:46:59AM +0800, Hawkins Jiawei wrote:
-> From: hawk <18801353760@163.com>
+On 10/07/2022 12:21, Tomer Maimon wrote:
+> Added device tree binding documentation for Nuvoton Arbel BMC NPCM8XX
+> pinmux and GPIO controller.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> ---
+>  .../pinctrl/nuvoton,npcm845-pinctrl.yaml      | 205 ++++++++++++++++++
+>  1 file changed, 205 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> new file mode 100644
+> index 000000000000..6395ef2bf5b3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> @@ -0,0 +1,205 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pinctrl/nuvoton,npcm845-pinctrl.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Nuvoton NPCM845 Pin Controller and GPIO
+> +
+> +maintainers:
+> +  - Tomer Maimon <tmaimon77@gmail.com>
+> +
+> +description:
+> +  The Nuvoton BMC NPCM8XX Pin Controller multi-function routed through
+> +  the multiplexing block, Each pin supports GPIO functionality (GPIOx)
+> +  and multiple functions that directly connect the pin to different
+> +  hardware blocks.
+> +
+> +properties:
+> +  compatible:
+> +    const: nuvoton,npcm845-pinctrl
+> +
+> +  ranges:
+> +    maxItems: 1
 
-Please use your legal name like you would for signing a legal document.
+ranges without reg? Does it even work? Did you test the bindings?
 
-regards,
-dan carpenter
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 1
+> +
+> +patternProperties:
+> +  "^gpio@":
+> +    type: object
+> +
+> +    description:
+> +      Eight GPIO banks that each contain between 32 GPIOs.
+> +
+> +    properties:
+> +
 
+No blank line.
+
+> +      gpio-controller: true
+> +
+> +      '#gpio-cells':
+> +        const: 2
+> +
+> +      reg:
+> +        maxItems: 1
+> +
+> +      interrupts:
+> +        maxItems: 1
+> +
+> +      gpio-ranges:
+> +        maxItems: 1
+> +
+> +    required:
+> +      - gpio-controller
+> +      - '#gpio-cells'
+> +      - reg
+> +      - interrupts
+> +      - gpio-ranges
+> +
+> +  "-pin":
+> +    $ref: pinmux-node.yaml#
+
+Shouldn't this be under bank?
+
+> +
+> +    properties:
+> +      groups:
+> +        description:
+> +          One or more groups of pins to mux to a certain function
+> +        items:
+> +          enum: [ iox1, iox2, smb1d, smb2d, lkgpo1, lkgpo2, ioxh, gspi,
+> +                  smb5b, smb5c, lkgpo0, pspi2, jm1, jm2, smb4den, smb4b,
+> +                  smb4c, smb15, smb16, smb17, smb18, smb19, smb20, smb21,
+> +                  smb22, smb23, smb4d, smb14, smb5, smb4, smb3, spi0cs1,
+> +                  spi0cs2, spi0cs3, smb3c, smb3b, bmcuart0a, uart1, jtag2,
+> +                  bmcuart1, uart2, bmcuart0b, r1err, r1md, r1oen, r2oen,
+> +                  rmii3, r3oen, smb3d, fanin0, fanin1, fanin2, fanin3, fanin4,
+> +                  fanin5, fanin6, fanin7, fanin8, fanin9, fanin10, fanin11,
+> +                  fanin12, fanin13, fanin14, fanin15, pwm0, pwm1, pwm2, pwm3,
+> +                  r2, r2err, r2md, r3rxer, ga20kbc, smb5d, lpc, espi, rg1,
+> +                  rg1mdio, rg2, ddr, i3c0, i3c1, i3c2, i3c3, i3c4, i3c5,
+> +                  smb0, smb1, smb2, smb2c, smb2b, smb1c, smb1b, smb8, smb9,
+> +                  smb10, smb11, sd1, sd1pwr, pwm4, pwm5, pwm6, pwm7, pwm8,
+> +                  pwm9, pwm10, pwm11, mmc8, mmc, mmcwp, mmccd, mmcrst, clkout,
+> +                  serirq, lpcclk, scipme, sci, smb6, smb7, spi1, faninx, r1,
+> +                  spi3, spi3cs1, spi3quad, spi3cs2, spi3cs3, nprd_smi, smb0b,
+> +                  smb0c, smb0den, smb0d, ddc, rg2mdio, wdog1, wdog2, smb12,
+> +                  smb13, spix, spixcs1, clkreq, hgpio0, hgpio1, hgpio2, hgpio3,
+> +                  hgpio4, hgpio5, hgpio6, hgpio7 ]
+> +
+> +      function:
+> +        description:
+> +          The function that a group of pins is muxed to
+> +        enum: [ iox1, iox2, smb1d, smb2d, lkgpo1, lkgpo2, ioxh, gspi,
+> +                smb5b, smb5c, lkgpo0, pspi2, jm1, jm2, smb4den, smb4b,
+> +                smb4c, smb15, smb16, smb17, smb18, smb19, smb20, smb21,
+> +                smb22, smb23, smb4d, smb14, smb5, smb4, smb3, spi0cs1,
+> +                spi0cs2, spi0cs3, smb3c, smb3b, bmcuart0a, uart1, jtag2,
+> +                bmcuart1, uart2, bmcuart0b, r1err, r1md, r1oen, r2oen,
+> +                rmii3, r3oen, smb3d, fanin0, fanin1, fanin2, fanin3, fanin4,
+> +                fanin5, fanin6, fanin7, fanin8, fanin9, fanin10, fanin11,
+> +                fanin12, fanin13, fanin14, fanin15, pwm0, pwm1, pwm2, pwm3,
+> +                r2, r2err, r2md, r3rxer, ga20kbc, smb5d, lpc, espi, rg1,
+> +                rg1mdio, rg2, ddr, i3c0, i3c1, i3c2, i3c3, i3c4, i3c5,
+> +                smb0, smb1, smb2, smb2c, smb2b, smb1c, smb1b, smb8, smb9,
+> +                smb10, smb11, sd1, sd1pwr, pwm4, pwm5, pwm6, pwm7, pwm8,
+> +                pwm9, pwm10, pwm11, mmc8, mmc, mmcwp, mmccd, mmcrst, clkout,
+> +                serirq, lpcclk, scipme, sci, smb6, smb7, spi1, faninx, r1,
+> +                spi3, spi3cs1, spi3quad, spi3cs2, spi3cs3, nprd_smi, smb0b,
+> +                smb0c, smb0den, smb0d, ddc, rg2mdio, wdog1, wdog2, smb12,
+> +                smb13, spix, spixcs1, clkreq, hgpio0, hgpio1, hgpio2, hgpio3,
+> +                hgpio4, hgpio5, hgpio6, hgpio7 ]
+> +
+> +    dependencies:
+> +      groups: [ function ]
+> +      function: [ groups ]
+> +
+> +    additionalProperties: false
+> +
+> +  "^pin":
+
+This is almost the same as previous property. Confusing and I think it
+does not work.
+
+> +    $ref: pincfg-node.yaml#
+> +
+> +    properties:
+> +      pins:
+> +        description:
+> +          A list of pins to configure in certain ways, such as enabling
+> +          debouncing
+> +
+> +      bias-disable: true
+> +
+> +      bias-pull-up: true
+> +
+> +      bias-pull-down: true
+> +
+> +      input-enable: true
+> +
+> +      output-low: true
+> +
+> +      output-high: true
+> +
+> +      drive-push-pull: true
+> +
+> +      drive-open-drain: true
+> +
+> +      input-debounce:
+> +        description:
+> +          Debouncing periods in microseconds, one period per interrupt
+> +          bank found in the controller
+> +        $ref: /schemas/types.yaml#/definitions/uint32-array
+> +        minItems: 1
+> +        maxItems: 4
+> +
+> +      slew-rate:
+> +        description: |
+> +          0: Low rate
+> +          1: High rate
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        enum: [0, 1]
+> +
+> +      drive-strength:
+> +        enum: [ 0, 1, 2, 4, 8, 12 ]
+> +
+> +    additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - ranges
+> +  - '#address-cells'
+> +  - '#size-cells'
+
+Missing allOf with ref to pinctrl.yaml.
+
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +
+> +    soc {
+> +      #address-cells = <2>;
+> +      #size-cells = <2>;
+> +
+> +      pinctrl: pinctrl@f0800000 {
+> +        compatible = "nuvoton,npcm845-pinctrl";
+> +        ranges = <0x0 0x0 0xf0010000 0x8000>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +
+> +        gpio0: gpio@f0010000 {
+> +          gpio-controller;
+> +          #gpio-cells = <2>;
+> +          reg = <0x0 0xB0>;
+> +          interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+> +          gpio-ranges = <&pinctrl 0 0 32>;
+> +        };
+> +
+> +        fanin0_pin: fanin0-pin {
+> +          groups = "fanin0";
+> +          function = "fanin0";
+> +        };
+> +
+> +        pin34_slew: pin34-slew {
+
+and how does it pass your checks?
+
+Did you test the bindings?
+
+
+
+Best regards,
+Krzysztof
