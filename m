@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53FC6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234975AbiGLS5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
+        id S234842AbiGLS5a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:57:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234950AbiGLS4m (ORCPT
+        with ESMTP id S234954AbiGLS4y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:56:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09599ED15E;
-        Tue, 12 Jul 2022 11:46:54 -0700 (PDT)
+        Tue, 12 Jul 2022 14:56:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC8ACD31E3;
+        Tue, 12 Jul 2022 11:46:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56DC9B81B95;
-        Tue, 12 Jul 2022 18:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEB99C3411C;
-        Tue, 12 Jul 2022 18:46:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F622B81BBB;
+        Tue, 12 Jul 2022 18:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79D30C3411C;
+        Tue, 12 Jul 2022 18:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651611;
-        bh=UJnJ0k+B5Cwy8yaML0Wp60Wf0/bRoEx/BajCYGRGqcU=;
+        s=korg; t=1657651615;
+        bh=E1G/sj44DQ1PBjU34Ar46hxoaFI0v+72xBumAP9AX4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQXYEA82zDb4sf0Llr1WxIVFZGPnw/hKJ7PJzpYjM4clYRDJ+C2qolRbGCZUwRAsv
-         xM+rLGQVvLz88+AW5wNUS8FzxbbDCkr9I5p3mteClTNgNR4RG+piGsJWMMuYLS5la7
-         NpIrzZX36GUszB+oy2fi8bax42tfOvT20iFR9l6c=
+        b=z+UmkDn/GTPDFyyXGogJU8S+/AYJwK/w56EnAmDDv2dYW8OBkk3pllDJOIoK7DAdZ
+         IULUHHc+iQ3OrAJ/ubJBN69a8ovSeIHeb8cQfKjECdxX6gyrNe86RtEWAuRCo4R00h
+         Hs3mHiD88NvHLXWf5KPBBBHY3wGZ6/DfsbfSDEs0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 130/130] x86/static_call: Serialize __static_call_fixup() properly
-Date:   Tue, 12 Jul 2022 20:39:36 +0200
-Message-Id: <20220712183252.461272960@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 109/130] x86/bugs: Do IBPB fallback check only once
+Date:   Tue, 12 Jul 2022 20:39:15 +0200
+Message-Id: <20220712183251.505316520@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -48,73 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit c27c753ea6fd1237f4f96abf8b623d7bab505513 upstream.
+commit 0fe4aeea9c01baabecc8c3afc7889c809d939bc2 upstream.
 
-__static_call_fixup() invokes __static_call_transform() without holding
-text_mutex, which causes lockdep to complain in text_poke_bp().
+When booting with retbleed=auto, if the kernel wasn't built with
+CONFIG_CC_HAS_RETURN_THUNK, the mitigation falls back to IBPB.  Make
+sure a warning is printed in that case.  The IBPB fallback check is done
+twice, but it really only needs to be done once.
 
-Adding the proper locking cures that, but as this is either used during
-early boot or during module finalizing, it's not required to use
-text_poke_bp(). Add an argument to __static_call_transform() which tells
-it to use text_poke_early() for it.
-
-Fixes: ee88d363d156 ("x86,static_call: Use alternative RET encoding")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/static_call.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -20,7 +20,8 @@ static const u8 tramp_ud[] = { 0x0f, 0xb
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -847,18 +847,13 @@ static void __init retbleed_select_mitig
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+-		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-
+-			if (IS_ENABLED(CONFIG_RETPOLINE) &&
+-			    IS_ENABLED(CONFIG_CC_HAS_RETURN_THUNK))
+-				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else
+-				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+-		}
++		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
++			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
  
- static const u8 retinsn[] = { RET_INSN_OPCODE, 0xcc, 0xcc, 0xcc, 0xcc };
+ 		/*
+-		 * The Intel mitigation (IBRS) was already selected in
+-		 * spectre_v2_select_mitigation().
++		 * The Intel mitigation (IBRS or eIBRS) was already selected in
++		 * spectre_v2_select_mitigation().  'retbleed_mitigation' will
++		 * be set accordingly below.
+ 		 */
  
--static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
-+static void __ref __static_call_transform(void *insn, enum insn_type type,
-+					  void *func, bool modinit)
- {
- 	int size = CALL_INSN_SIZE;
- 	const void *code;
-@@ -49,7 +50,7 @@ static void __ref __static_call_transfor
- 	if (memcmp(insn, code, size) == 0)
- 		return;
- 
--	if (unlikely(system_state == SYSTEM_BOOTING))
-+	if (system_state == SYSTEM_BOOTING || modinit)
- 		return text_poke_early(insn, code, size);
- 
- 	text_poke_bp(insn, code, size, NULL);
-@@ -96,12 +97,12 @@ void arch_static_call_transform(void *si
- 
- 	if (tramp) {
- 		__static_call_validate(tramp, true);
--		__static_call_transform(tramp, __sc_insn(!func, true), func);
-+		__static_call_transform(tramp, __sc_insn(!func, true), func, false);
- 	}
- 
- 	if (IS_ENABLED(CONFIG_HAVE_STATIC_CALL_INLINE) && site) {
- 		__static_call_validate(site, tail);
--		__static_call_transform(site, __sc_insn(!func, tail), func);
-+		__static_call_transform(site, __sc_insn(!func, tail), func, false);
- 	}
- 
- 	mutex_unlock(&text_mutex);
-@@ -127,8 +128,10 @@ bool __static_call_fixup(void *tramp, u8
- 		return false;
- 	}
- 
-+	mutex_lock(&text_mutex);
- 	if (op == RET_INSN_OPCODE || dest == &__x86_return_thunk)
--		__static_call_transform(tramp, RET, NULL);
-+		__static_call_transform(tramp, RET, NULL, true);
-+	mutex_unlock(&text_mutex);
- 
- 	return true;
- }
+ 		break;
 
 
