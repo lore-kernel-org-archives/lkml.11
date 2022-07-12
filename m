@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D199BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FE4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233128AbiGLO7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S233619AbiGLO7H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233165AbiGLO6x (ORCPT
+        with ESMTP id S233294AbiGLO65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34307E092;
-        Tue, 12 Jul 2022 07:58:50 -0700 (PDT)
+        Tue, 12 Jul 2022 10:58:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0823112765;
+        Tue, 12 Jul 2022 07:58:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E706100A;
-        Tue, 12 Jul 2022 14:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D56D3C3411C;
-        Tue, 12 Jul 2022 14:58:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B20F61248;
+        Tue, 12 Jul 2022 14:58:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC0AEC341C8;
+        Tue, 12 Jul 2022 14:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657637929;
-        bh=T0tKComMbX5ECWCCcnfOq3fZQAEjvBU25fKkAPPSfLQ=;
+        s=korg; t=1657637932;
+        bh=pREIybagFU5vuoR/8VPcNZRX12LstCLDLZ/EgXAKTvI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHP4hP8J23ZTW/FBaQm9CsJFHGuNhhzznbSIwzD+ty0GTs2ryhw3qgzQyMfLfdgU1
-         FNVyOydLwP3U/4S/YCMDM2szCVp0FjGg5GL/e2o8Znz8zahm50vosixoXadiupihxB
-         aNzUZ5lwgsahRdgf4Egh9YjgSdNIerSxp1QGOnTo=
+        b=tMaEFRetD6tnBwt6GXWa4IqsYuFgqZS1imiNnU+X1Ik0GoCdMV+skCJqT9qwCP/5w
+         lLteY1iPFz79vUzcEYW4B1mVzOKc1OGv5nIwec6GNQiT29YozPSPrc1oD+ljF5M2kU
+         ySy/XyJL0aNnAm3iZm5UYiZF2cQsYjYiP7uHKZeA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 4.9.323
-Date:   Tue, 12 Jul 2022 16:58:41 +0200
-Message-Id: <165763792156223@kroah.com>
+Subject: Re: Linux 4.14.288
+Date:   Tue, 12 Jul 2022 16:58:46 +0200
+Message-Id: <165763792642226@kroah.com>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <16576379211965@kroah.com>
-References: <16576379211965@kroah.com>
+In-Reply-To: <1657637926225123@kroah.com>
+References: <1657637926225123@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,22 +47,61 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index bd4c898a9940..44c3b223062a 100644
+index 1ae54266908b..de73407a1bc3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -1,6 +1,6 @@
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
  VERSION = 4
- PATCHLEVEL = 9
--SUBLEVEL = 322
-+SUBLEVEL = 323
+ PATCHLEVEL = 14
+-SUBLEVEL = 287
++SUBLEVEL = 288
  EXTRAVERSION =
- NAME = Roaring Lionus
+ NAME = Petit Gorille
  
+diff --git a/arch/powerpc/platforms/powernv/rng.c b/arch/powerpc/platforms/powernv/rng.c
+index 60ed30306da5..8a09e654e905 100644
+--- a/arch/powerpc/platforms/powernv/rng.c
++++ b/arch/powerpc/platforms/powernv/rng.c
+@@ -176,12 +176,8 @@ static int __init pnv_get_random_long_early(unsigned long *v)
+ 		    NULL) != pnv_get_random_long_early)
+ 		return 0;
+ 
+-	for_each_compatible_node(dn, NULL, "ibm,power-rng") {
+-		if (rng_create(dn))
+-			continue;
+-		/* Create devices for hwrng driver */
+-		of_platform_device_create(dn, NULL, NULL);
+-	}
++	for_each_compatible_node(dn, NULL, "ibm,power-rng")
++		rng_create(dn);
+ 
+ 	if (!ppc_md.get_random_seed)
+ 		return 0;
+@@ -205,10 +201,18 @@ void __init pnv_rng_init(void)
+ 
+ static int __init pnv_rng_late_init(void)
+ {
++	struct device_node *dn;
+ 	unsigned long v;
++
+ 	/* In case it wasn't called during init for some other reason. */
+ 	if (ppc_md.get_random_seed == pnv_get_random_long_early)
+ 		pnv_get_random_long_early(&v);
++
++	if (ppc_md.get_random_seed == powernv_get_random_long) {
++		for_each_compatible_node(dn, NULL, "ibm,power-rng")
++			of_platform_device_create(dn, NULL, NULL);
++	}
++
+ 	return 0;
+ }
+ machine_subsys_initcall(powernv, pnv_rng_late_init);
 diff --git a/drivers/dma/at_xdmac.c b/drivers/dma/at_xdmac.c
-index ca266fcca186..f191057065f7 100644
+index 2af0e151b31b..c8dd0eef0b67 100644
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -1806,6 +1806,11 @@ static int at_xdmac_alloc_chan_resources(struct dma_chan *chan)
+@@ -1804,6 +1804,11 @@ static int at_xdmac_alloc_chan_resources(struct dma_chan *chan)
  	for (i = 0; i < init_nr_desc_per_channel; i++) {
  		desc = at_xdmac_alloc_desc(chan, GFP_ATOMIC);
  		if (!desc) {
@@ -75,7 +114,7 @@ index ca266fcca186..f191057065f7 100644
  				"only %d descriptors have been allocated\n", i);
  			break;
 diff --git a/drivers/dma/ti-dma-crossbar.c b/drivers/dma/ti-dma-crossbar.c
-index a7e1f6e17e3d..8ea8d04e1ae0 100644
+index 6574cb5a12fe..932c638ef4a0 100644
 --- a/drivers/dma/ti-dma-crossbar.c
 +++ b/drivers/dma/ti-dma-crossbar.c
 @@ -251,6 +251,7 @@ static void *ti_dra7_xbar_route_allocate(struct of_phandle_args *dma_spec,
@@ -111,10 +150,10 @@ index a7e1f6e17e3d..8ea8d04e1ae0 100644
  	}
  	set_bit(map->xbar_out, xbar->dma_inuse);
 diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index a29ac9bae6d5..9ab056bb834d 100644
+index 2150afdcc083..273f57e277b3 100644
 --- a/drivers/i2c/busses/i2c-cadence.c
 +++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -992,6 +992,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
+@@ -990,6 +990,7 @@ static int cdns_i2c_probe(struct platform_device *pdev)
  	return 0;
  
  err_clk_dis:
@@ -123,10 +162,10 @@ index a29ac9bae6d5..9ab056bb834d 100644
  	pm_runtime_set_suspended(&pdev->dev);
  	pm_runtime_disable(&pdev->dev);
 diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 9ad5a7019abf..d8b8cf36de31 100644
+index 804570b619f4..6ed96cb02239 100644
 --- a/drivers/iommu/dmar.c
 +++ b/drivers/iommu/dmar.c
-@@ -373,7 +373,7 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
+@@ -374,7 +374,7 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
  
  static struct notifier_block dmar_pci_bus_nb = {
  	.notifier_call = dmar_pci_bus_notifier,
@@ -136,7 +175,7 @@ index 9ad5a7019abf..d8b8cf36de31 100644
  
  static struct dmar_drhd_unit *
 diff --git a/drivers/net/can/grcan.c b/drivers/net/can/grcan.c
-index c6a176d8681c..4e3432182092 100644
+index 4eb196d7f4a6..5ba3da9e1d39 100644
 --- a/drivers/net/can/grcan.c
 +++ b/drivers/net/can/grcan.c
 @@ -1669,7 +1669,6 @@ static int grcan_probe(struct platform_device *ofdev)
@@ -148,7 +187,7 @@ index c6a176d8681c..4e3432182092 100644
  		if (!err && ((sysid & GRLIB_VERSION_MASK) >=
  			     GRCAN_TXBUG_SAFE_GRLIB_VERSION))
 diff --git a/drivers/net/can/usb/gs_usb.c b/drivers/net/can/usb/gs_usb.c
-index 6771c51f72c3..e3dc59fffdb7 100644
+index ab2e019c841f..31c1dc0aa5cf 100644
 --- a/drivers/net/can/usb/gs_usb.c
 +++ b/drivers/net/can/usb/gs_usb.c
 @@ -192,6 +192,8 @@ struct gs_can {
@@ -160,7 +199,7 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  };
  
  /* usb interface struct */
-@@ -601,6 +603,7 @@ static int gs_can_open(struct net_device *netdev)
+@@ -600,6 +602,7 @@ static int gs_can_open(struct net_device *netdev)
  		for (i = 0; i < GS_MAX_RX_URBS; i++) {
  			struct urb *urb;
  			u8 *buf;
@@ -168,7 +207,7 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  
  			/* alloc rx urb */
  			urb = usb_alloc_urb(0, GFP_KERNEL);
-@@ -611,7 +614,7 @@ static int gs_can_open(struct net_device *netdev)
+@@ -610,7 +613,7 @@ static int gs_can_open(struct net_device *netdev)
  			buf = usb_alloc_coherent(dev->udev,
  						 sizeof(struct gs_host_frame),
  						 GFP_KERNEL,
@@ -177,7 +216,7 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  			if (!buf) {
  				netdev_err(netdev,
  					   "No memory left for USB buffer\n");
-@@ -619,6 +622,8 @@ static int gs_can_open(struct net_device *netdev)
+@@ -618,6 +621,8 @@ static int gs_can_open(struct net_device *netdev)
  				return -ENOMEM;
  			}
  
@@ -186,7 +225,7 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  			/* fill, anchor, and submit rx urb */
  			usb_fill_bulk_urb(urb,
  					  dev->udev,
-@@ -642,10 +647,17 @@ static int gs_can_open(struct net_device *netdev)
+@@ -641,10 +646,17 @@ static int gs_can_open(struct net_device *netdev)
  					   rc);
  
  				usb_unanchor_urb(urb);
@@ -204,7 +243,7 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  			/* Drop reference,
  			 * USB core will take care of freeing it
  			 */
-@@ -710,13 +722,20 @@ static int gs_can_close(struct net_device *netdev)
+@@ -709,13 +721,20 @@ static int gs_can_close(struct net_device *netdev)
  	int rc;
  	struct gs_can *dev = netdev_priv(netdev);
  	struct gs_usb *parent = dev->parent;
@@ -227,10 +266,10 @@ index 6771c51f72c3..e3dc59fffdb7 100644
  	/* Stop sending URBs */
  	usb_kill_anchored_urbs(&dev->tx_submitted);
 diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 4b7a9672d92b..d8253c6ac2b0 100644
+index 43f14f64be00..24d40d6c78eb 100644
 --- a/drivers/net/usb/usbnet.c
 +++ b/drivers/net/usb/usbnet.c
-@@ -2085,7 +2085,7 @@ static void usbnet_async_cmd_cb(struct urb *urb)
+@@ -2135,7 +2135,7 @@ static void usbnet_async_cmd_cb(struct urb *urb)
  int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
  			   u16 value, u16 index, const void *data, u16 size)
  {
@@ -239,7 +278,7 @@ index 4b7a9672d92b..d8253c6ac2b0 100644
  	struct urb *urb;
  	int err = -ENOMEM;
  	void *buf = NULL;
-@@ -2103,7 +2103,7 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
+@@ -2153,7 +2153,7 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
  		if (!buf) {
  			netdev_err(dev->net, "Error allocating buffer"
  				   " in %s!\n", __func__);
@@ -248,7 +287,7 @@ index 4b7a9672d92b..d8253c6ac2b0 100644
  		}
  	}
  
-@@ -2127,14 +2127,21 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
+@@ -2177,14 +2177,21 @@ int usbnet_write_cmd_async(struct usbnet *dev, u8 cmd, u8 reqtype,
  	if (err < 0) {
  		netdev_err(dev->net, "Error submitting the control"
  			   " message: status=%d\n", err);
@@ -274,7 +313,7 @@ index 4b7a9672d92b..d8253c6ac2b0 100644
  fail:
  	return err;
 diff --git a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
-index 383977ea3a3c..0b5aba4bf338 100644
+index 4ada80317a3b..b5c1a8f363f3 100644
 --- a/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
 +++ b/drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c
 @@ -158,26 +158,26 @@ static const struct sunxi_desc_pin sun8i_a83t_pins[] = {
@@ -309,11 +348,27 @@ index 383977ea3a3c..0b5aba4bf338 100644
  	/* Hole */
  	SUNXI_PIN(SUNXI_PINCTRL_PIN(D, 2),
  		  SUNXI_FUNCTION(0x0, "gpio_in"),
+diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
+index e9b6f053f5bd..a97e94b1c84f 100644
+--- a/drivers/video/fbdev/core/fbcon.c
++++ b/drivers/video/fbdev/core/fbcon.c
+@@ -2445,6 +2445,11 @@ static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigne
+ 	if (charcount != 256 && charcount != 512)
+ 		return -EINVAL;
+ 
++	/* font bigger than screen resolution ? */
++	if (w > FBCON_SWAP(info->var.rotate, info->var.xres, info->var.yres) ||
++	    h > FBCON_SWAP(info->var.rotate, info->var.yres, info->var.xres))
++		return -EINVAL;
++
+ 	/* Make sure drawing engine can handle the font */
+ 	if (!(info->pixmap.blit_x & (1 << (font->width - 1))) ||
+ 	    !(info->pixmap.blit_y & (1 << (font->height - 1))))
 diff --git a/fs/xfs/xfs_inode.c b/fs/xfs/xfs_inode.c
-index c5f2f1e3cc4b..48d62da62226 100644
+index 7cfbe2b0f886..cfc7d6e01158 100644
 --- a/fs/xfs/xfs_inode.c
 +++ b/fs/xfs/xfs_inode.c
-@@ -2973,7 +2973,6 @@ xfs_rename(
+@@ -2964,7 +2964,6 @@ xfs_rename(
  	 * appropriately.
  	 */
  	if (flags & RENAME_WHITEOUT) {
@@ -321,8 +376,21 @@ index c5f2f1e3cc4b..48d62da62226 100644
  		error = xfs_rename_alloc_whiteout(target_dp, &wip);
  		if (error)
  			return error;
+diff --git a/include/net/esp.h b/include/net/esp.h
+index 465e38890ee9..117652eb6ea3 100644
+--- a/include/net/esp.h
++++ b/include/net/esp.h
+@@ -4,8 +4,6 @@
+ 
+ #include <linux/skbuff.h>
+ 
+-#define ESP_SKB_FRAG_MAXSIZE (PAGE_SIZE << SKB_FRAG_PAGE_ORDER)
+-
+ struct ip_esp_hdr;
+ 
+ static inline struct ip_esp_hdr *ip_esp_hdr(const struct sk_buff *skb)
 diff --git a/include/video/of_display_timing.h b/include/video/of_display_timing.h
-index ea755b5616d8..cb3f3b2e7ccf 100644
+index 956455fc9f9a..c10574089e56 100644
 --- a/include/video/of_display_timing.h
 +++ b/include/video/of_display_timing.h
 @@ -9,6 +9,8 @@
@@ -335,10 +403,10 @@ index ea755b5616d8..cb3f3b2e7ccf 100644
  struct display_timing;
  struct display_timings;
 diff --git a/lib/idr.c b/lib/idr.c
-index 6098336df267..c657e35433e6 100644
+index 8c1a98d03164..f1a5f32fe207 100644
 --- a/lib/idr.c
 +++ b/lib/idr.c
-@@ -1124,7 +1124,9 @@ void ida_simple_remove(struct ida *ida, unsigned int id)
+@@ -498,7 +498,9 @@ void ida_simple_remove(struct ida *ida, unsigned int id)
  {
  	unsigned long flags;
  
@@ -350,26 +418,27 @@ index 6098336df267..c657e35433e6 100644
  	ida_remove(ida, id);
  	spin_unlock_irqrestore(&simple_ida_lock, flags);
 diff --git a/mm/slub.c b/mm/slub.c
-index 0b13135fd571..c07c5fa6adcd 100644
+index 484a75296a12..0120ce3867b7 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -2556,6 +2556,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 			deactivate_slab(s, page, c->freelist);
- 			c->page = NULL;
- 			c->freelist = NULL;
-+			c->tid = next_tid(c->tid);
- 			goto new_slab;
- 		}
- 	}
-@@ -2569,6 +2570,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 		deactivate_slab(s, page, c->freelist);
- 		c->page = NULL;
- 		c->freelist = NULL;
-+		c->tid = next_tid(c->tid);
- 		goto new_slab;
- 	}
+@@ -2171,6 +2171,7 @@ static void deactivate_slab(struct kmem_cache *s, struct page *page,
  
-@@ -2581,6 +2583,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
+ 	c->page = NULL;
+ 	c->freelist = NULL;
++	c->tid = next_tid(c->tid);
+ }
+ 
+ /*
+@@ -2306,8 +2307,6 @@ static inline void flush_slab(struct kmem_cache *s, struct kmem_cache_cpu *c)
+ {
+ 	stat(s, CPUSLAB_FLUSH);
+ 	deactivate_slab(s, c->page, c->freelist, c);
+-
+-	c->tid = next_tid(c->tid);
+ }
+ 
+ /*
+@@ -2592,6 +2591,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
  
  	if (!freelist) {
  		c->page = NULL;
@@ -377,24 +446,48 @@ index 0b13135fd571..c07c5fa6adcd 100644
  		stat(s, DEACTIVATE_BYPASS);
  		goto new_slab;
  	}
-@@ -2605,6 +2608,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 		c->partial = page->next;
- 		stat(s, CPU_PARTIAL_ALLOC);
- 		c->freelist = NULL;
-+		c->tid = next_tid(c->tid);
- 		goto redo;
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index 38e2aa2b2a31..d5e860573ecd 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -257,7 +257,6 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+ 	/* this is non-NULL only with UDP Encapsulation */
+ 	if (x->encap) {
+@@ -267,8 +266,8 @@ int esp_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info *
+ 			return err;
  	}
  
-@@ -2627,6 +2631,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
- 	deactivate_slab(s, page, get_freepointer(s, freelist));
- 	c->page = NULL;
- 	c->freelist = NULL;
-+	c->tid = next_tid(c->tid);
- 	return freelist;
- }
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
  
+ 	if (!skb_cloned(skb)) {
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index a9baf562bb9b..e19624245e16 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -223,10 +223,9 @@ int esp6_output_head(struct xfrm_state *x, struct sk_buff *skb, struct esp_info
+ 	struct page *page;
+ 	struct sk_buff *trailer;
+ 	int tailen = esp->tailen;
+-	unsigned int allocsz;
+ 
+-	allocsz = ALIGN(skb->data_len + tailen, L1_CACHE_BYTES);
+-	if (allocsz > ESP_SKB_FRAG_MAXSIZE)
++	if (ALIGN(tailen, L1_CACHE_BYTES) > PAGE_SIZE ||
++	    ALIGN(skb->data_len, L1_CACHE_BYTES) > PAGE_SIZE)
+ 		goto cow;
+ 
+ 	if (!skb_cloned(skb)) {
 diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index 9f704a7f2a28..34e7e2ab78fe 100644
+index d94d6110bb1c..1027f52a45ab 100644
 --- a/net/rose/rose_route.c
 +++ b/net/rose/rose_route.c
 @@ -230,8 +230,8 @@ static void rose_remove_neigh(struct rose_neigh *rose_neigh)
