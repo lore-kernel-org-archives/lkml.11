@@ -2,115 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCD9CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0F4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233468AbiGLP0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:26:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
+        id S233331AbiGLP05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233605AbiGLP0L (ORCPT
+        with ESMTP id S232182AbiGLP0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:26:11 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC2C2714F;
-        Tue, 12 Jul 2022 08:26:09 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 12 Jul 2022 11:26:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 336F8CE3F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:26:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 6FEC822239;
-        Tue, 12 Jul 2022 17:26:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657639567;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=gftElsBm8J9qrT2o/GCtvW399nDzpiAV9w2nv9s38GI=;
-        b=XMEYTzH3F3lGOsK1XmdL/baZvICiN7qlvTH14zCuNdjLI2h8orV8Uytnfd7P/KboHEjhmc
-        ionFbA5bECLCbrVeK6v4gPoRKIKgCy4wM3N0YVWw8xe6LSe/7Mh3hjtvdy+I2zlR/2XpP7
-        HDe41RUjCRxqHhXZfjwHOOVOGiGKc40=
-From:   Michael Walle <michael@walle.cc>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH] NFC: nxp-nci: fix deadlock during firmware update
-Date:   Tue, 12 Jul 2022 17:25:54 +0200
-Message-Id: <20220712152554.2909224-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3592B819CD
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:26:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B5C8C3411C;
+        Tue, 12 Jul 2022 15:26:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657639611;
+        bh=47AE1yhhBTrAxEd2qCdPE3/6spXztbOG8ZtTMXmH9FY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dOjZ3+ralCttvgDSBN9svWCIhPUiwYEf92ook7K+/VCDdDqVlccOuxGrNBLK4wbWY
+         E36W10FplCKhJX33rn0Pd1RGoa1Hyup6UpXZOyI6C3BNz42go+ypcUt+wnskBIsKcX
+         NPR7duHOvitSk4Fqbigkfshf0wa0V3hsr9alMGvSTXWhBVEptqddkNK3bXI2z1MXHd
+         lEig/gTbjXIcjzMv17tsQtkbaMZWRaRh7IyB+bWJ5xy/x+/oFM4ytiPc6Ikefs3Jql
+         0H/11ar8R2MILvTUVvzVkJZEfoVH2LVcTHPSSQn9mr3HtHnT/7zLK/VQmou+Wxsy2z
+         37TW1KvkVOi4A==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Chao Yu <chao.yu@oppo.com>
+Subject: [PATCH] f2fs: invalidate meta pages only for post_read required inode
+Date:   Tue, 12 Jul 2022 23:26:43 +0800
+Message-Id: <20220712152643.4018-1-chao@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During firmware update, both nxp_nci_i2c_irq_thread_fn() and
-nxp_nci_fw_work() will hold the info_lock mutex and one will wait
-for the other via a completion:
+After commit e3b49ea36802 ("f2fs: invalidate META_MAPPING before
+IPU/DIO write"), invalidate_mapping_pages() will be called to
+avoid race condition in between IPU/DIO and readahead for GC.
 
-nxp_nci_fw_work()
-  mutex_lock(info_lock)
-  nxp_nci_fw_send()
-    wait_for_completion(cmd_completion)
-  mutex_unlock(info_lock)
+However, readahead flow is only used for post_read required inode,
+so this patch adds check condition to avoids unnecessary page cache
+invalidating for non-post_read inode.
 
-nxp_nci_i2c_irq_thread_fn()
-  mutex_lock(info_lock)
-    nxp_nci_fw_recv_frame()
-      complete(cmd_completion)
-  mutex_unlock(info_lock)
-
-This will result in a -ETIMEDOUT error during firmware update (note
-that the wait_for_completion() above is a variant with a timeout).
-
-Drop the lock in nxp_nci_fw_work() and instead take it after the
-work is done in nxp_nci_fw_work_complete() when the NFC controller mode
-is switched and the info structure is updated.
-
-Fixes: dece45855a8b ("NFC: nxp-nci: Add support for NXP NCI chips")
-Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
 ---
- drivers/nfc/nxp-nci/firmware.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ fs/f2fs/data.c    | 8 ++------
+ fs/f2fs/f2fs.h    | 1 +
+ fs/f2fs/segment.c | 9 ++++++++-
+ 3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/nfc/nxp-nci/firmware.c b/drivers/nfc/nxp-nci/firmware.c
-index 119bf305c642..6a4d4aa7239f 100644
---- a/drivers/nfc/nxp-nci/firmware.c
-+++ b/drivers/nfc/nxp-nci/firmware.c
-@@ -54,6 +54,7 @@ void nxp_nci_fw_work_complete(struct nxp_nci_info *info, int result)
- 	struct nxp_nci_fw_info *fw_info = &info->fw_info;
- 	int r;
+diff --git a/fs/f2fs/data.c b/fs/f2fs/data.c
+index 2d027505d5f6..a54b91b3a8d4 100644
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -1479,12 +1479,9 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
+ 			*map->m_next_extent = pgofs + map->m_len;
  
-+	mutex_lock(&info->info_lock);
- 	if (info->phy_ops->set_mode) {
- 		r = info->phy_ops->set_mode(info->phy_id, NXP_NCI_MODE_COLD);
- 		if (r < 0 && result == 0)
-@@ -66,6 +67,7 @@ void nxp_nci_fw_work_complete(struct nxp_nci_info *info, int result)
- 		release_firmware(fw_info->fw);
- 		fw_info->fw = NULL;
+ 		/* for hardware encryption, but to avoid potential issue in future */
+-		if (flag == F2FS_GET_BLOCK_DIO) {
++		if (flag == F2FS_GET_BLOCK_DIO)
+ 			f2fs_wait_on_block_writeback_range(inode,
+ 						map->m_pblk, map->m_len);
+-			invalidate_mapping_pages(META_MAPPING(sbi),
+-				map->m_pblk, map->m_pblk + map->m_len - 1);
+-		}
+ 
+ 		if (map->m_multidev_dio) {
+ 			block_t blk_addr = map->m_pblk;
+@@ -1700,8 +1697,6 @@ int f2fs_map_blocks(struct inode *inode, struct f2fs_map_blocks *map,
+ 		 */
+ 		f2fs_wait_on_block_writeback_range(inode,
+ 						map->m_pblk, map->m_len);
+-		invalidate_mapping_pages(META_MAPPING(sbi),
+-				map->m_pblk, map->m_pblk + map->m_len - 1);
+ 
+ 		if (map->m_multidev_dio) {
+ 			block_t blk_addr = map->m_pblk;
+@@ -2749,6 +2744,7 @@ int f2fs_write_single_data_page(struct page *page, int *submitted,
+ 		.submitted = false,
+ 		.compr_blocks = compr_blocks,
+ 		.need_lock = LOCK_RETRY,
++		.post_read = f2fs_post_read_required(inode),
+ 		.io_type = io_type,
+ 		.io_wbc = wbc,
+ 		.bio = bio,
+diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+index 1d97d06e0d87..87e96f612582 100644
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1199,6 +1199,7 @@ struct f2fs_io_info {
+ 	bool retry;		/* need to reallocate block address */
+ 	int compr_blocks;	/* # of compressed block addresses */
+ 	bool encrypted;		/* indicate file is encrypted */
++	bool post_read;		/* require post read */
+ 	enum iostat_type io_type;	/* io type */
+ 	struct writeback_control *io_wbc; /* writeback control */
+ 	struct bio **bio;		/* bio for ipu */
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index ce571c0d7126..12b0edc48f7b 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -3433,7 +3433,8 @@ int f2fs_inplace_write_data(struct f2fs_io_info *fio)
+ 		goto drop_bio;
  	}
-+	mutex_unlock(&info->info_lock);
  
- 	nfc_fw_download_done(info->ndev->nfc_dev, fw_info->name, (u32) -result);
+-	invalidate_mapping_pages(META_MAPPING(sbi),
++	if (fio->post_read)
++		invalidate_mapping_pages(META_MAPPING(sbi),
+ 				fio->new_blkaddr, fio->new_blkaddr);
+ 
+ 	stat_inc_inplace_blocks(fio->sbi);
+@@ -3616,10 +3617,16 @@ void f2fs_wait_on_block_writeback(struct inode *inode, block_t blkaddr)
+ void f2fs_wait_on_block_writeback_range(struct inode *inode, block_t blkaddr,
+ 								block_t len)
+ {
++	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+ 	block_t i;
+ 
++	if (!f2fs_post_read_required(inode))
++		return;
++
+ 	for (i = 0; i < len; i++)
+ 		f2fs_wait_on_block_writeback(inode, blkaddr + i);
++
++	invalidate_mapping_pages(META_MAPPING(sbi), blkaddr, blkaddr + len - 1);
  }
-@@ -172,8 +174,6 @@ void nxp_nci_fw_work(struct work_struct *work)
- 	fw_info = container_of(work, struct nxp_nci_fw_info, work);
- 	info = container_of(fw_info, struct nxp_nci_info, fw_info);
  
--	mutex_lock(&info->info_lock);
--
- 	r = fw_info->cmd_result;
- 	if (r < 0)
- 		goto exit_work;
-@@ -190,7 +190,6 @@ void nxp_nci_fw_work(struct work_struct *work)
- exit_work:
- 	if (r < 0 || fw_info->size == 0)
- 		nxp_nci_fw_work_complete(info, r);
--	mutex_unlock(&info->info_lock);
- }
- 
- int nxp_nci_fw_download(struct nci_dev *ndev, const char *firmware_name)
+ static int read_compacted_summaries(struct f2fs_sb_info *sbi)
 -- 
-2.30.2
+2.36.1
 
