@@ -2,284 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4143DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C39BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:13:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbiGLAMy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:12:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47972 "EHLO
+        id S231451AbiGLANq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiGLAMw (ORCPT
+        with ESMTP id S229657AbiGLANm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:12:52 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93BA34BD3F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:12:51 -0700 (PDT)
+        Mon, 11 Jul 2022 20:13:42 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958A3CFB
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:13:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657584771; x=1689120771;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=YuH8/YBGwIq8IpsqFu1LOMl4GhE0Yy4f4oxCQEBiApo=;
-  b=hynR/5M5i/rpMRUXZykj6J3GcxclwB02gOc6NY2k4LbNrawn+uyujDLJ
-   IObFJROqzGGd6i5djKwIiDdKWI5GkB66uiW8L+twUfgnk44L/4Blq+wTH
-   aa74Hp0/1Se2I12liMnfJ2Z/swosyr+k46DHSO/tgvm1U+Etd9OQ1hHD4
-   FKKrTa18s8BFw/eV9K8W7YczVUl6/s59zWlvb81fQ65ZnHoa2UzyKgi+C
-   iiRc2xFnHN0G7r7etbMZVlQDKHqBHW3cmVrlSK9t1p5Y5w53wqym2XrZc
-   8XgBHOjP2fBAUj9nmYBCWMMv8dsCsHqwQurAsNCJITQAGHFjG5fZGVA7f
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="282352738"
+  t=1657584821; x=1689120821;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=zL0sNIu0hR/7q129LGe91BkLQRpbxXeLJ8hwcGWo304=;
+  b=FCrueAwGcPKHA9KuJhnC53wTe46ybQJTsZkOS1ugVJ345WZoKLnNre5f
+   DouevFp6MatJA9cXHFKbP142w1JXBOH27hweeERNIlIqelqhXAcLwp6ye
+   xTd+voMUVwBMmDhw+Tz25MTkpcDK6WRmWQhgbu95rRxSJVNZJSLYTFxmS
+   L5FvXa0oXBy9GkjDmZpALfElHite12eCNTNPhjtDbCr61aiRg4c/LuCBt
+   x+sIkxqF5mQQDrmvFPVb2u2qS0w4YffnXU+PgDnEkWoy2pqvLVhrKAS4E
+   cYHuiNk9nkuEnG7X5k9mx3oi6g+0WBZSEDA2w4pUxVAI0Fpj9GOojPQGl
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="284827864"
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="282352738"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:12:51 -0700
+   d="scan'208";a="284827864"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:13:41 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
-   d="scan'208";a="599205589"
-Received: from slang2-mobl.gar.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.98.19])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 17:12:48 -0700
-Message-ID: <ba321fad38d5f96a240f1e88a11943cea16bb4dd.camel@intel.com>
-Subject: Re: [PATCH v2] x86/cpuinfo: Clear X86_FEATURE_TME if TME/MKTME is
- disabled by BIOS
-From:   Kai Huang <kai.huang@intel.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Martin Fernandez <martin.fernandez@eclypsium.com>
-Cc:     linux-kernel@vger.kernel.org, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, mingo@redhat.com,
-        tglx@linutronix.de, kirill.shutemov@linux.intel.com,
-        daniel.gutson@eclypsium.com, hughsient@gmail.com,
-        alex.bazhaniuk@eclypsium.com
-Date:   Tue, 12 Jul 2022 12:12:46 +1200
-In-Reply-To: <YsxZKGxVUY61zPEt@google.com>
-References: <20220704142250.1512726-1-martin.fernandez@eclypsium.com>
-         <8d2a3175be8a3aff1d3fc535dd9ab6217cfe1e66.camel@intel.com>
-         <CAKgze5azQG1mnOASbpcrs9jTejdXGkXYmezz9bTKuWQoZp5EFg@mail.gmail.com>
-         <YsxZKGxVUY61zPEt@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.2 (3.44.2-1.fc36) 
+   d="scan'208";a="592445683"
+Received: from allen-box.sh.intel.com ([10.239.159.48])
+  by orsmga007.jf.intel.com with ESMTP; 11 Jul 2022 17:13:40 -0700
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>
+Cc:     iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH 01/25] iommu/vt-d: Move trace/events/intel_iommu.h under iommu
+Date:   Tue, 12 Jul 2022 08:08:44 +0800
+Message-Id: <20220712000908.3431936-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
+References: <20220712000908.3431936-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-11 at 17:08 +0000, Sean Christopherson wrote:
-> On Tue, Jul 05, 2022, Martin Fernandez wrote:
-> > On 7/5/22, Kai Huang <kai.huang@intel.com> wrote:
-> > > On Mon, 2022-07-04 at 11:22 -0300, Martin Fernandez wrote:
-> > > > Changelog since v1
-> > > >=20
-> > > > Clear the flag not only for BSP but for every cpu in the system.
->=20
-> ...
->=20
-> > > > ---
-> > > >  arch/x86/kernel/cpu/intel.c | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > >=20
-> > > > diff --git a/arch/x86/kernel/cpu/intel.c b/arch/x86/kernel/cpu/inte=
-l.c
-> > > > index fd5dead8371c..17f23e23f911 100644
-> > > > --- a/arch/x86/kernel/cpu/intel.c
-> > > > +++ b/arch/x86/kernel/cpu/intel.c
-> > > > @@ -570,6 +570,7 @@ static void detect_tme(struct cpuinfo_x86 *c)
-> > > >=20
-> > > >  	if (!TME_ACTIVATE_LOCKED(tme_activate) ||
-> > > > !TME_ACTIVATE_ENABLED(tme_activate)) {
-> > > >  		pr_info_once("x86/tme: not enabled by BIOS\n");
-> > > > +		clear_cpu_cap(c, X86_FEATURE_TME);
->=20
-> This misses the case where the TME_ACTIVATE_KEYID_BITS() is zero.  AFAICT=
-, that's
-> allowed, i.e. won't #GP on WRMSR.  TME_ACTIVATE_KEYID_BITS() can't be non=
--zero if
-> TME_ACTIVATE_ENABLED() is false, but the reverse is allowed.
+This header file is private to the Intel IOMMU driver. Move it to the
+driver folder.
 
-But this logic applies to "whether MKTME is enabled",  but not "TME is enab=
-led",
-right?
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Steve Wahl <steve.wahl@hpe.com>
+Link: https://lore.kernel.org/r/20220514014322.2927339-2-baolu.lu@linux.intel.com
+---
+ .../trace/events/intel_iommu.h => drivers/iommu/intel/trace.h | 4 ++++
+ drivers/iommu/intel/dmar.c                                    | 2 +-
+ drivers/iommu/intel/svm.c                                     | 2 +-
+ drivers/iommu/intel/trace.c                                   | 2 +-
+ 4 files changed, 7 insertions(+), 3 deletions(-)
+ rename include/trace/events/intel_iommu.h => drivers/iommu/intel/trace.h (94%)
 
-If either LOCKED or ENABLED bit isn't set, then TME is not enabled.  My
-understanding is this particular patch is trying to fix the issue that TME =
-flag
-isn't cleared when TME is disabled by BIOS.
-
->=20
-> > > >  		mktme_status =3D MKTME_DISABLED;
-> > > >  		return;
-> > >=20
-> > > This code change itself looks good to me.
-> > >=20
-> > > But, TME actually supports bypassing TME encryption/decryption by set=
-ting 1
-> > > to bit 31 to IA32_TME_ACTIVATE MSR.  See 'Table 4-2 IA32_TME_ACTIVATE=
- MSR'
-> > > in MKTME spec below:
-> > >=20
-> > > https://edc.intel.com/content/www/us/en/design/ipla/software-developm=
-ent-platforms/client/platforms/alder-lake-desktop/12th-generation-intel-cor=
-e-processors-datasheet-volume-1-of-2/002/intel-multi-key-total-memory-encry=
-ption/
-> > >=20
-> > > When bit 31 is set, the TME is bypassed (no encryption/decryption for=
- KeyID 0).
-> > >=20
-> > > So looks userspace also needs to check this if it wants to truly chec=
-k
-> > > whether "TME memory encryption" is active.
-> > >=20
-> > > But perhaps it's arguable whether we can also clear TME flag in this =
-case.
-> >=20
-> > Yep, that's what I thought.
->=20
-> IMO, this entire function needs to be reworked to have a cohesive strateg=
-y for
-> enumerting TME; not just enumerating to userspace, but internal to the ke=
-rnel as
-> well.
->=20
-> E.g. forcing "mktme_status =3D MKTME_DISABLED" on an AP is nonsensical.  =
-If an AP's
-> basic MKTME enabling doesn't align with the BSP (activate, algorithm, and=
- keyid0
-> bypass settings match), then there's no way an AP is going to reach detec=
-t_tme().
-> Any discrepancy in encryption for keyid0 will cause the AP will read garb=
-age on
-> wakeup, and barring a miracle, will triple fault and never call in.
->=20
-> Conversely, if basic enabling matches but something else mismatches, e.g.=
- an AP
-> was configured with fewer keys, then forcing "mktme_status =3D MKTME_DISA=
-BLED" may
-> be misleading as MKTME may be fully enabled and in use for keyid0, it jus=
-t won't
-> be used for keyid!=3D0.  But that's a moot point because as is, the kerne=
-l _never_
-> uses keyid!=3D0.
->=20
-> And this code is also bogus.  Just because the kernel doesn't know the en=
-cryption
-> algorithm doesn't magically turn off encryption for keyid0.  Again, mktme=
-_status
-> confuses "memory is encrypted" with "MKTME is theoretically usable for ke=
-yid!=3D0".
->=20
-> 	tme_crypto_algs =3D TME_ACTIVATE_CRYPTO_ALGS(tme_activate);
-> 	if (!(tme_crypto_algs & TME_ACTIVATE_CRYPTO_AES_XTS_128)) {
-> 		pr_err("x86/mktme: No known encryption algorithm is supported: %#llx\n"=
-,
-> 				tme_crypto_algs);
-> 		mktme_status =3D MKTME_DISABLED;
-> 	}
->=20
-> The mktme_status variable seems completely pointless.  It's not used anyw=
-here
-> except to detect that CPU0 vs. APs.
-
-I think your above saying makes sense, but this is a different topic and sh=
-ould
-be in a separate patch IMHO.
-
-This patch basically tries to fix the issue that TME flag isn't cleared whe=
-n TME
-is disabled by BIOS.  And fir this purpose, the code change in this patch l=
-ooks
-reasonable to me.  Unless I am mistaken, detect_tme() will be called for al=
-l
-cpus if TME is supported in CPUID but isn't enabled by BIOS (either LOCKED =
-or
-ENABLED bit isn't set).
-
->=20
->=20
-> Something like this seems like a sane approach.
->=20
-> ---
->=20
-> #define MSR_IA32_TME_ACTIVATE		0x982
->=20
-> /* Helpers to access TME_ACTIVATE MSR */
-> #define TME_ACTIVATE_LOCKED(x)		(x & 0x1)
-> #define TME_ACTIVATE_ENABLED(x)		(x & 0x2)
->=20
-> #define TME_ACTIVATE_KEYID0_BYPASS(x)	(x & BIT(31))
->=20
-> #define TME_ACTIVATE_POLICY(x)		((x >> 4) & 0xf)	/* Bits 7:4 */
-> #define TME_ACTIVATE_POLICY_AES_XTS_128	0
->=20
-> #define TME_ACTIVATE_KEYID_BITS(x)	((x >> 32) & 0xf)	/* Bits 35:32 */
->=20
-> #define TME_ACTIVATE_CRYPTO_ALGS(x)	((x >> 48) & 0xffff)	/* Bits 63:48 */
-> #define TME_ACTIVATE_CRYPTO_AES_XTS_128	1
->=20
-> static int tme_keyid_bits_cpu0 =3D -1;
-> static u64 tme_activate_cpu0;
->=20
-> static void detect_tme(struct cpuinfo_x86 *c)
-> {
-> 	u64 tme_activate, tme_policy, tme_crypto_algs;
->=20
-> 	rdmsrl(MSR_IA32_TME_ACTIVATE, tme_activate);
->=20
-> 	if (tme_keyid_bits_cpu0 >=3D 0) {
-> 		/* Broken BIOS? */
-> 		if (tme_activate !=3D tme_activate_cpu0)
-> 			pr_err_once("x86/tme: configuration is inconsistent between CPUs\n");
->=20
-> 		/*
-> 		 * Proceed, stolen keyid bits still needed to be excluded from
-> 		 * x86_phys_bits.  The divergence is all but guaranteed to be
-> 		 * benign, else this CPU would have died during bringup.
-> 		 */
-> 		goto adjust_phys_bits;
-> 	}
->=20
-> 	tme_activate_cpu0 =3D tme_activate;
->=20
-> 	if (!TME_ACTIVATE_LOCKED(tme_activate) ||
-> 	    !TME_ACTIVATE_ENABLED(tme_activate))
-> 		tme_keyid_bits_cpu0 =3D 0;
-> 	else
-> 		tme_keyid_bits_cpu0 =3D TME_ACTIVATE_KEYID_BITS(tme_activate);
->=20
-> 	if (!tme_keyid_bits_cpu0) {
-> 		pr_info("x86/tme: not enabled by BIOS\n");
-> 		setup_clear_cpu_cap(X86_FEATURE_TME);
-> 		return;
-> 	}
->=20
-> 	pr_info("x86/tme: enabled by BIOS\n");
->=20
-> 	if (TME_ACTIVATE_KEYID0_BYPASS(tme_activate)) {
-> 		pr_info("x86/tme: KeyID=3D0 encryption bypass enabled\n");
->=20
-> 		/*
-> 		 * Clear the feature flag, memory for keyid0 isn't encrypted so
-> 		 * for all intents and purposes MKTME is unused.
-> 		 */
-> 		setup_clear_cpu_cap(X86_FEATURE_TME);
-> 		goto adjust_phys_bits;
-> 	}
->=20
-> 	tme_policy =3D TME_ACTIVATE_POLICY(tme_activate);
-> 	if (tme_policy !=3D TME_ACTIVATE_POLICY_AES_XTS_128)
-> 		pr_warn("x86/tme: Unknown policy is active: %#llx\n", tme_policy);
->=20
-> 	tme_crypto_algs =3D TME_ACTIVATE_CRYPTO_ALGS(tme_activate);
-> 	if (!(tme_crypto_algs & TME_ACTIVATE_CRYPTO_AES_XTS_128))
-> 		pr_warn("x86/mktme: Unknown encryption algorithm is active: %#llx\n",
-> 			tme_crypto_algs);
->=20
-> adjust_phys_bits:
-> 	/*
-> 	 * KeyID bits effectively lower the number of physical address bits.
-> 	 * Update cpuinfo_x86::x86_phys_bits accordingly.  Always use CPU0's
-> 	 * info for the adjustment.  If CPU0 steals more bits, then aligning
-> 	 * with CPU0 gives the highest chance of survival.  If CPU0 steals
-> 	 * fewer bits, adjusting this CPU's x86_phys_bits won't retroactively
-> 	 * fix all the calculations done using CPU0's information
-> 	 */
-> 	c->x86_phys_bits -=3D tme_keyid_bits_cpu0;
-> }
+diff --git a/include/trace/events/intel_iommu.h b/drivers/iommu/intel/trace.h
+similarity index 94%
+rename from include/trace/events/intel_iommu.h
+rename to drivers/iommu/intel/trace.h
+index e5c1ca6d16ee..25cb7f88e1a2 100644
+--- a/include/trace/events/intel_iommu.h
++++ b/drivers/iommu/intel/trace.h
+@@ -91,4 +91,8 @@ TRACE_EVENT(prq_report,
+ #endif /* _TRACE_INTEL_IOMMU_H */
+ 
+ /* This part must be outside protection */
++#undef TRACE_INCLUDE_PATH
++#undef TRACE_INCLUDE_FILE
++#define TRACE_INCLUDE_PATH ../../drivers/iommu/intel/
++#define TRACE_INCLUDE_FILE trace
+ #include <trace/define_trace.h>
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 9699ca101c62..f91b45be1d92 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -30,10 +30,10 @@
+ #include <linux/numa.h>
+ #include <linux/limits.h>
+ #include <asm/irq_remapping.h>
+-#include <trace/events/intel_iommu.h>
+ 
+ #include "../irq_remapping.h"
+ #include "perf.h"
++#include "trace.h"
+ 
+ typedef int (*dmar_res_handler_t)(struct acpi_dmar_header *, void *);
+ struct dmar_res_callback {
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 7ee37d996e15..70b40d007a52 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -21,11 +21,11 @@
+ #include <linux/ioasid.h>
+ #include <asm/page.h>
+ #include <asm/fpu/api.h>
+-#include <trace/events/intel_iommu.h>
+ 
+ #include "pasid.h"
+ #include "perf.h"
+ #include "../iommu-sva-lib.h"
++#include "trace.h"
+ 
+ static irqreturn_t prq_event_thread(int irq, void *d);
+ static void intel_svm_drain_prq(struct device *dev, u32 pasid);
+diff --git a/drivers/iommu/intel/trace.c b/drivers/iommu/intel/trace.c
+index bfb6a6e37a88..117e626e3ea9 100644
+--- a/drivers/iommu/intel/trace.c
++++ b/drivers/iommu/intel/trace.c
+@@ -11,4 +11,4 @@
+ #include <linux/types.h>
+ 
+ #define CREATE_TRACE_POINTS
+-#include <trace/events/intel_iommu.h>
++#include "trace.h"
+-- 
+2.25.1
 
