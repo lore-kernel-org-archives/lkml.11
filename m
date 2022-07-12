@@ -2,160 +2,262 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D4CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57129C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:04:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233969AbiGLQEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:04:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
+        id S234028AbiGLQEk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:04:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234229AbiGLQEW (ORCPT
+        with ESMTP id S234213AbiGLQES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:04:22 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011A32A404
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:04:20 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id z25so14737196lfr.2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:04:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=c0RcQSLjeYCnLvxH8el7ACbuvLKqs4ymAPhMSssf3fo=;
-        b=rgy8GpGjigNewPkDfawGIyJhs5SthypU/zUHIYssEnhqMMiqNAKc4ezJ19mpUkfSMy
-         nHlnPMccqvaAAhX/ySaXKSzNEJ+RUL0TBhSHaW0HqHGvmgX2wxKuTd+jA0VHIQPZ9QFF
-         a6LEAvMbeWy1+vmRd8d6u+JJ7f13B0rTgQTdohwT7+APFsOdcZJnmvacai86xywgvwxZ
-         kEZYabnYpVeCuAKxSwQRmTLVQyoTaFQAZoagdzVEMYGEcN4G14TusnppOWvHU3N4UMpc
-         t6xNmt5QTEm/TElgI+kc11twOzYFn1L/5P2tE2Iy6Q0EvlpQEc4560MbpDvwkPfROLHC
-         yEdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=c0RcQSLjeYCnLvxH8el7ACbuvLKqs4ymAPhMSssf3fo=;
-        b=Y3Qayz6UvNv2CIvoP7DC6rHtq0c6djUo6OEo0L1/CLVJz9fDRzZ3xPmfmSST4SWKuG
-         HlaYzn80sbnHFvMvx81Crjf0yLx8X30293d08AQgFQkmVagfxsdc/WzqVBnRv1q/vpd5
-         PnIMNauIV/2uq+gSPYm9ASfHf5DajHMqyXSgipwoCjEtQ7aP1hxkjZIlNGSdFIiFnebT
-         B6QI7XNKgIjGj+xxjOAjbs9y3QV+VJrHLpN+1IlWvLLO0GDo6GJZznSyo6dNZGD5J3i8
-         Jgp0NPrd7jvSfHjjZZJK8WZq4JZHngPe8wNy43oTdxdhMLICSN2b6IRSkhyTEh4lHI1j
-         xWzA==
-X-Gm-Message-State: AJIora+AGlDgBlsC5MXBvd7mCtr8gegEKbPnCdpWuLewVDLvydlSLgNp
-        zN6/Z/ehdDdUX9UgRC8D2DVW0eeBQjACt3SYNhgHXQ==
-X-Google-Smtp-Source: AGRyM1ve5bKkRgY91JODr6G0KYNj14IUXmUe2XTmEOY9UMxbgvLVrQb6DVioXtQ4vfZSOB7V9pobKh55jgw4lPONCfA=
-X-Received: by 2002:a05:6512:32c5:b0:481:1822:c41f with SMTP id
- f5-20020a05651232c500b004811822c41fmr16158485lfg.373.1657641857910; Tue, 12
- Jul 2022 09:04:17 -0700 (PDT)
+        Tue, 12 Jul 2022 12:04:18 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DE2E2DAA2;
+        Tue, 12 Jul 2022 09:04:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657641857; x=1689177857;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Tw3vuaWFvkhWlzTBnv9vhPxKEU2+UfaZIGjbVhEFYiA=;
+  b=vSiMafjI9til8bixgkrG2aBh87QKVqVj/YvWz9w1nEpqtf8YS31FKeLx
+   UMkw898extYD+F1jwzcnDY5zy4xgUN2obuAVDY3RGWdooAdN46BzoCf1u
+   tThdvdaz9hQ8Ogu2H/lh0KrPznMsXO1BdzvovkmiyWMgC6oOjf4kF1s6i
+   x1saGfJ4eSZAEzLlfxPUCUBEgwSDH9QHTRC9yEu+d2/DHbv+3yYHKWsfW
+   Y63fAHKUPszZrS8NixeuDbBC44rj4m26QZAq5VhttvikD2jOmc9VDBN+e
+   RDDmqM6JAcb7OL/TVNh1nXMtRtH4hUu3jGx/DdsRfat4QG9b/bhFkqKyr
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="172070206"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 09:04:16 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 12 Jul 2022 09:04:14 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 12 Jul 2022 09:04:05 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [RFC Patch net-next 03/10] net: dsa: microchip: add common 100/10Mbps selection function
+Date:   Tue, 12 Jul 2022 21:33:01 +0530
+Message-ID: <20220712160308.13253-4-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220712160308.13253-1-arun.ramadoss@microchip.com>
+References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-References: <cover.1655761627.git.ashish.kalra@amd.com> <6a513cf79bf71c479dbd72165faf1d804d77b3af.1655761627.git.ashish.kalra@amd.com>
- <CAMkAt6obGwyiJh7J34Vt8tC+XXMNm8YPrv4gV=TVoF2Xga5GjQ@mail.gmail.com>
- <SN6PR12MB27672AA31E96179256235C338E879@SN6PR12MB2767.namprd12.prod.outlook.com>
- <CAMkAt6ryLr6a5iQnwZQT3hqwEpZpb7bn-T8SDY6=5zYs_5NBow@mail.gmail.com> <SN6PR12MB2767D8C552388D438D9F88268E869@SN6PR12MB2767.namprd12.prod.outlook.com>
-In-Reply-To: <SN6PR12MB2767D8C552388D438D9F88268E869@SN6PR12MB2767.namprd12.prod.outlook.com>
-From:   Peter Gonda <pgonda@google.com>
-Date:   Tue, 12 Jul 2022 10:04:05 -0600
-Message-ID: <CAMkAt6pO3knGsvctewCC1z0K0c5jfgpTzGhB3Ujvc-xCYcEojQ@mail.gmail.com>
-Subject: Re: [PATCH Part2 v6 28/49] KVM: SVM: Add KVM_SEV_SNP_LAUNCH_FINISH command
-To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
-Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jim Mattson <jmattson@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Sergio Lopez <slp@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Dov Murik <dovmurik@linux.ibm.com>,
-        Tobin Feldman-Fitzthum <tobin@ibm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        "Kirill A . Shutemov" <kirill@shutemov.name>,
-        Andi Kleen <ak@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
-        Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        Alper Gun <alpergun@google.com>,
-        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 9:22 AM Kalra, Ashish <Ashish.Kalra@amd.com> wrote:
->
-> [AMD Official Use Only - General]
->
-> Hello Peter,
->
-> >> >Given the guest uses the SNP NAE AP boot protocol we were expecting t=
-hat there would be some option to add vCPUs to the VM but mark them as "pen=
-ding AP boot creation protocol" state. This would allow the LaunchDigest of=
- a VM doesn't change >just because its vCPU count changes. Would it be poss=
-ible to add a new add an argument to KVM_SNP_LAUNCH_FINISH to tell it which=
- vCPUs to LAUNCH_UPDATE VMSA pages for or similarly a new argument for KVM_=
-CREATE_VCPU?
-> >>
-> >> But don't we want/need to measure all vCPUs using LAUNCH_UPDATE_VMSA b=
-efore we issue SNP_LAUNCH_FINISH command ?
-> >>
-> >> If we are going to add vCPUs and mark them as "pending AP boot creatio=
-n" state then how are we going to do LAUNCH_UPDATE_VMSAs for them after SNP=
-_LAUNCH_FINISH ?
->
-> >If I understand correctly we don't need or even want the APs to be LAUNC=
-H_UPDATE_VMSA'd. LAUNCH_UPDATEing all the VMSAs causes VMs with different n=
-umbers of vCPUs to have different launch digests. Its my understanding the =
-SNP AP >Creation protocol was to solve this so that VMs with different vcpu=
- counts have the same launch digest.
->
-> >Looking at patch "[Part2,v6,44/49] KVM: SVM: Support SEV-SNP AP Creation=
- NAE event" and section "4.1.9 SNP AP Creation" of the GHCB spec. There is =
-no need to mark the LAUNCH_UPDATE the AP's VMSA or mark the vCPUs runnable.=
- Instead we >can do that only for the BSP. Then in the guest UEFI the BSP c=
-an: create new VMSAs from guest pages, RMPADJUST them into the RMP state VM=
-SA, then use the SNP AP Creation NAE to get the hypervisor to mark them run=
-nable. I believe this is all >setup in the UEFI patch:
-> >https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.=
-mail-archive.com%2Fdevel%40edk2.groups.io%2Fmsg38460.html&amp;data=3D05%7C0=
-1%7CAshish.Kalra%40amd.com%7Ca40178ac6f284a9e33aa08da64152baa%>7C3dd8961fe4=
-884e608e11a82d994e183d%7C0%7C0%7C637932339382401133%7CUnknown%7CTWFpbGZsb3d=
-8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%=
-7C%7C%7C&amp;sdata=3DZaiHHo9S24f9BB6E%>2FjexOt5TdKJQXxQDJI5QoYdDDHc%3D&amp;=
-reserved=3D0.
->
-> Yes, I discussed the same with Tom, and this will be supported going forw=
-ard, only the BSP will need to go through the LAUNCH_UPDATE_VMSA and at run=
-time the guest can dynamically create more APs using the SNP AP Creation NA=
-E event.
->
-> Now, coming back to the original question, why do we need a separate vCPU=
- count argument for SNP_LAUNCH_FINISH, won't the statically created vCPUs i=
-n kvm->created_vcpus/online_vcpus be sufficient for that, any dynamically c=
-reated
-> vCPU's won't be part of the initial measurement or LaunchDigest of the VM=
-, right ?
+This patch adds the function for configuring the 100/10Mbps speed
+selection for the ksz switches. KSZ8795 switch uses Global control 4
+register 0x06 bit 4 for choosing 100/10Mpbs. Other switches uses xMII
+control 1 0xN300 for it.
+For KSZ8795, if the bit is set then 10Mbps is chosen and if bit is
+clear then 100Mbps chosen. For all other switches it is other way
+around, if the bit is set then 100Mbps is chosen.
+So, this patch add the generic function for ksz switch to select the
+100/10Mbps speed selection. While configuring, first it disables the
+gigabit functionality and then configure the respective speed.
 
-Are you suggesting that QEMU will KVM_CREATE_VCPU the BSP, then
-LAUNCH_FINISH, then KVM_CREATE_VCPU all the APs to their VMSAs were
-not LAUNCH_UPDATED? If so, it seems annoying to have to create vCPUs
-at different times to get their VMSAs into different states. That's
-why I was suggesting some other mechanism so we can continue to
-KVM_CREATE_VCPU all the vCPUs at the same time.
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz9477_reg.h  |  1 -
+ drivers/net/dsa/microchip/ksz_common.c   | 29 ++++++++++++++++++++++++
+ drivers/net/dsa/microchip/ksz_common.h   |  6 +++++
+ drivers/net/dsa/microchip/lan937x_main.c | 14 ++++--------
+ drivers/net/dsa/microchip/lan937x_reg.h  |  1 -
+ 5 files changed, 40 insertions(+), 11 deletions(-)
 
->
-> Thanks,
-> Ashish
+diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
+index f23ed4809e47..2649fdf0bae1 100644
+--- a/drivers/net/dsa/microchip/ksz9477_reg.h
++++ b/drivers/net/dsa/microchip/ksz9477_reg.h
+@@ -1179,7 +1179,6 @@
+ 
+ #define PORT_SGMII_SEL			BIT(7)
+ #define PORT_MII_FULL_DUPLEX		BIT(6)
+-#define PORT_MII_100MBIT		BIT(4)
+ #define PORT_GRXC_ENABLE		BIT(0)
+ 
+ #define REG_PORT_XMII_CTRL_1		0x0301
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 5ebcd87fc531..f41cd2801210 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -256,6 +256,7 @@ static const u16 ksz8795_regs[] = {
+ 	[S_START_CTRL]			= 0x01,
+ 	[S_BROADCAST_CTRL]		= 0x06,
+ 	[S_MULTICAST_CTRL]		= 0x04,
++	[P_XMII_CTRL_0]			= 0x06,
+ 	[P_XMII_CTRL_1]			= 0x56,
+ };
+ 
+@@ -284,6 +285,8 @@ static const u32 ksz8795_masks[] = {
+ static const u8 ksz8795_values[] = {
+ 	[P_MII_1GBIT]			= 1,
+ 	[P_MII_NOT_1GBIT]		= 0,
++	[P_MII_100MBIT]			= 0,
++	[P_MII_10MBIT]			= 1,
+ };
+ 
+ static const u8 ksz8795_shifts[] = {
+@@ -356,6 +359,7 @@ static const u16 ksz9477_regs[] = {
+ 	[S_START_CTRL]			= 0x0300,
+ 	[S_BROADCAST_CTRL]		= 0x0332,
+ 	[S_MULTICAST_CTRL]		= 0x0331,
++	[P_XMII_CTRL_0]			= 0x0300,
+ 	[P_XMII_CTRL_1]			= 0x0301,
+ };
+ 
+@@ -371,11 +375,15 @@ static const u8 ksz9477_shifts[] = {
+ static const u8 ksz9477_values[] = {
+ 	[P_MII_1GBIT]			= 0,
+ 	[P_MII_NOT_1GBIT]		= 1,
++	[P_MII_100MBIT]			= 1,
++	[P_MII_10MBIT]			= 0,
+ };
+ 
+ static const u8 ksz9893_values[] = {
+ 	[P_MII_1GBIT]			= 1,
+ 	[P_MII_NOT_1GBIT]		= 0,
++	[P_MII_100MBIT]			= 1,
++	[P_MII_10MBIT]			= 0,
+ };
+ 
+ static const u32 lan937x_masks[] = {
+@@ -1418,6 +1426,27 @@ void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
+ 	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
+ }
+ 
++void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed)
++{
++	const u8 *bitval = dev->info->bitval;
++	const u16 *regs = dev->info->regs;
++	u8 data8;
++
++	ksz_pread8(dev, port, regs[P_XMII_CTRL_0], &data8);
++
++	data8 &= ~P_MII_100MBIT_M;
++
++	ksz_set_gbit(dev, port, false);
++
++	if (speed == SPEED_100)
++		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_100MBIT]);
++	else
++		data8 |= FIELD_PREP(P_MII_100MBIT_M, bitval[P_MII_10MBIT]);
++
++	/* Write the updated value */
++	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_0], data8);
++}
++
+ static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 				    unsigned int mode,
+ 				    phy_interface_t interface,
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index a76dfef6309c..f1fa6feca559 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -172,6 +172,7 @@ enum ksz_regs {
+ 	S_START_CTRL,
+ 	S_BROADCAST_CTRL,
+ 	S_MULTICAST_CTRL,
++	P_XMII_CTRL_0,
+ 	P_XMII_CTRL_1,
+ };
+ 
+@@ -215,6 +216,8 @@ enum ksz_shifts {
+ enum ksz_values {
+ 	P_MII_1GBIT,
+ 	P_MII_NOT_1GBIT,
++	P_MII_100MBIT,
++	P_MII_10MBIT,
+ };
+ 
+ struct alu_struct {
+@@ -304,6 +307,7 @@ void ksz_r_mib_stats64(struct ksz_device *dev, int port);
+ void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
+ bool ksz_get_gbit(struct ksz_device *dev, int port);
+ void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
++void ksz_set_100_10mbit(struct ksz_device *dev, int port, int speed);
+ extern const struct ksz_chip_data ksz_switch_chips[];
+ 
+ /* Common register access functions */
+@@ -468,6 +472,8 @@ static inline int is_lan937x(struct ksz_device *dev)
+ #define SW_START			0x01
+ 
+ /* xMII configuration */
++#define P_MII_100MBIT_M			BIT(4)
++
+ #define P_MII_1GBIT_M			BIT(6)
+ 
+ /* Regmap tables generation */
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index efca96b02e15..37f63110e5bb 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -346,21 +346,18 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
+ 				     int speed, int duplex,
+ 				     bool tx_pause, bool rx_pause)
+ {
+-	u8 xmii_ctrl0, xmii_ctrl1;
++	u8 xmii_ctrl0;
+ 
+ 	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_0, &xmii_ctrl0);
+-	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &xmii_ctrl1);
+ 
+-	xmii_ctrl0 &= ~(PORT_MII_100MBIT | PORT_MII_FULL_DUPLEX |
+-			PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL);
++	xmii_ctrl0 &= ~(PORT_MII_FULL_DUPLEX | PORT_MII_TX_FLOW_CTRL |
++			PORT_MII_RX_FLOW_CTRL);
+ 
+ 	if (speed == SPEED_1000)
+ 		ksz_set_gbit(dev, port, true);
+-	else
+-		ksz_set_gbit(dev, port, false);
+ 
+-	if (speed == SPEED_100)
+-		xmii_ctrl0 |= PORT_MII_100MBIT;
++	if (speed == SPEED_100 || speed == SPEED_10)
++		ksz_set_100_10mbit(dev, port, speed);
+ 
+ 	if (duplex)
+ 		xmii_ctrl0 |= PORT_MII_FULL_DUPLEX;
+@@ -372,7 +369,6 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
+ 		xmii_ctrl0 |= PORT_MII_RX_FLOW_CTRL;
+ 
+ 	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_0, xmii_ctrl0);
+-	ksz_pwrite8(dev, port, REG_PORT_XMII_CTRL_1, xmii_ctrl1);
+ }
+ 
+ void lan937x_phylink_get_caps(struct ksz_device *dev, int port,
+diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
+index 747295d34411..b9364f6a4f8f 100644
+--- a/drivers/net/dsa/microchip/lan937x_reg.h
++++ b/drivers/net/dsa/microchip/lan937x_reg.h
+@@ -135,7 +135,6 @@
+ #define PORT_SGMII_SEL			BIT(7)
+ #define PORT_MII_FULL_DUPLEX		BIT(6)
+ #define PORT_MII_TX_FLOW_CTRL		BIT(5)
+-#define PORT_MII_100MBIT		BIT(4)
+ #define PORT_MII_RX_FLOW_CTRL		BIT(3)
+ #define PORT_GRXC_ENABLE		BIT(0)
+ 
+-- 
+2.36.1
+
