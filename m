@@ -2,260 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A48C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:19:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F02C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:19:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232347AbiGLUTj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
+        id S229789AbiGLUTm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229675AbiGLUTh (ORCPT
+        with ESMTP id S232442AbiGLUTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:19:37 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 992A4C920E;
-        Tue, 12 Jul 2022 13:19:36 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 742FB1F8C4;
-        Tue, 12 Jul 2022 20:19:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1657657172;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g8Up8zoFgwsaz54kdPGna8GaNO42glSGkL73QZZzE8E=;
-        b=ardXdV44a/EvtyPZ4ppx4vCUj/6hg8INpfuK+ogYx/sxAFHNPsqTo8hD/lfzhTUVlitrzb
-        Am2sWWP8WvYHP6vYCSSOu4uqDDMZHAPvwHlXZZFdasoAvtxxTNTMQu3bATp6VyhN/90VCM
-        yBOjalLaqsXnAKGPTx7c2MtXJ6mYauE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1657657172;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=g8Up8zoFgwsaz54kdPGna8GaNO42glSGkL73QZZzE8E=;
-        b=r11aLmqP1drE81h23AanP76XVIJ6mWaF8XSkjAgAAXAi0UrNcCeWNorxXHIerHuApWTQth
-        s1qk91TW6PtFwUDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2430213A94;
-        Tue, 12 Jul 2022 20:19:32 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id /q7JB1TXzWIfWQAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 12 Jul 2022 20:19:32 +0000
-Date:   Tue, 12 Jul 2022 22:14:42 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     bingjingc <bingjingc@synology.com>
-Cc:     josef@toxicpanda.com, dsterba@suse.com, clm@fb.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        fdmanana@kernel.org, robbieko@synology.com, bxxxjxxg@gmail.com
-Subject: Re: [PATCH v2 2/2] btrfs: send: fix sending link commands for
- existing file paths
-Message-ID: <20220712201442.GC15169@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, bingjingc <bingjingc@synology.com>,
-        josef@toxicpanda.com, dsterba@suse.com, clm@fb.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        fdmanana@kernel.org, robbieko@synology.com, bxxxjxxg@gmail.com
-References: <20220712013632.7042-1-bingjingc@synology.com>
- <20220712013632.7042-3-bingjingc@synology.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712013632.7042-3-bingjingc@synology.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+        Tue, 12 Jul 2022 16:19:39 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 383FEC9126
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:19:38 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 0ECB15C0118;
+        Tue, 12 Jul 2022 16:19:35 -0400 (EDT)
+Received: from imap47 ([10.202.2.97])
+  by compute2.internal (MEProxy); Tue, 12 Jul 2022 16:19:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+         h=cc:cc:content-type:date:date:from:from:in-reply-to
+        :in-reply-to:message-id:mime-version:references:reply-to:sender
+        :subject:subject:to:to; s=fm3; t=1657657175; x=1657743575; bh=F3
+        AZUElnNArrOZWRKy/0kdLhWMZvnNlZGE5enm+lgFE=; b=ESjT7O4AcP1QjP25il
+        gFzmSEM+CtgysIiyxOieZvN5KY88kwFTZQLEivlU+r1NnBZ9HvAmetA9wqvxVp4t
+        D6eiPISyyYv02IoyBfm3Y3FAXl1AqTvGfRdBLYh8kKB6vCLr0XI/BxA3zai1igWF
+        BScvxEtRWLOQAohBpwLGOKm9qMKn3vSkAtXVXE1KlahBDT3EptpD5QiFdLci9FZn
+        gLOIYxlXNHMQYkJyaRmhlxVkTYu4SpTxjWRGSjbUI4gzPcEnInclrUbeJ7EbC2O0
+        UebP/H38YsMTulrI6CP6cUZfY01xQ+8Tzrek2jUUpO+Z0FH8o/thVsn/DZJoH6EF
+        gTnA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657657175; x=1657743575; bh=F3AZUElnNArrOZWRKy/0kdLhWMZv
+        nNlZGE5enm+lgFE=; b=zvkWu3Z8KV5srTErsbmqjKtN8VCvk0RhZR+l/28O8aMT
+        L8RrR3Db/VgP+XtC69askvm5G0L8dnxRjF+AHw+duDuY1jhELcdvWmeYcACPL0Fk
+        k74guSjpQa+C5FFocOLYaZ3CQrQ4LEHcy1+YkIeh1/ap7UKyZCdB5jv9QgCHx1lY
+        O3Jf6n7j8jRbw/wmWytqV92S3o4w5FA6frXKdCKNfGy7yaTGR53BZx9xdy1COKT7
+        UYaeHmRPOPZkJvE4t82rXuUkPjoohvqOFJ1U+xS3liBM6V4qbIfkeM8V2aBYQtJY
+        TYSUeXQ1M+R1YIPonp3vRt9zJUhui/kl84l9GInqvg==
+X-ME-Sender: <xms:VtfNYu3oE6bU_m6HFkNXpafhG671_kaE6aOpHg66OIoVvhUWucbJrg>
+    <xme:VtfNYhE3MSKGPhY_kEALC3t8ggq1Gz0qsmIVSDUBaqeTrnW9SYlXHl04ljHXMYniw
+    6j1WLXCIW17cj1xl6k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejhedgudehtdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdfu
+    vhgvnhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtf
+    frrghtthgvrhhnpeelvefggeffheevtdeivefhkeehfeettdejteduveeiheevveeilefg
+    hfeiveeiueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:VtfNYm4Qej-XsnL0K_fsog_09fhWaiSUw9HK6jBSj4-AwRHa0kWadA>
+    <xmx:VtfNYv0-B4AEOnRqzwDTGp4bQ3XsoSdtC-nkrJlRowfXX_h1kr601w>
+    <xmx:VtfNYhHkLLlcCu_-4IQCfiLeFpdOHaPOZDy3CMQGXYOgBTPMMk7VzQ>
+    <xmx:V9fNYgAZDhi9pHtvgCG7xolP491xCPKBvILQ8FY-n4w8broFMhGoJg>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 74332A6007C; Tue, 12 Jul 2022 16:19:34 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-755-g3e1da8b93f-fm-20220708.002-g3e1da8b9
+Mime-Version: 1.0
+Message-Id: <17ea4f4d-a926-404d-8b78-3708d7df71a9@www.fastmail.com>
+In-Reply-To: <acd89b38-89e1-f6d6-2f98-01d94d9984bb@somainline.org>
+References: <20220712160919.740878-1-konrad.dybcio@somainline.org>
+ <20220712160919.740878-2-konrad.dybcio@somainline.org>
+ <87a69e16x1.wl-maz@kernel.org>
+ <acd89b38-89e1-f6d6-2f98-01d94d9984bb@somainline.org>
+Date:   Tue, 12 Jul 2022 22:17:48 +0200
+From:   "Sven Peter" <sven@svenpeter.dev>
+To:     "Konrad Dybcio" <konrad.dybcio@somainline.org>,
+        "Marc Zyngier" <maz@kernel.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        "Hector Martin" <marcan@marcan.st>,
+        "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] irqchip/apple-aic: Add support for A7-A11 SoCs
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:36:32AM +0800, bingjingc wrote:
-> From: BingJing Chang <bingjingc@synology.com>
-> 
-> There is a bug sending link commands for existing file paths. When we're
-> processing an inode, we go over all references. All the new file paths are
-> added to the "new_refs" list. And all the deleted file paths are added to
-> the "deleted_refs" list. In the end, when we finish processing the inode,
-> we iterate over all the items in the "new_refs" list and send link commands
-> for those file paths. After that, we go over all the items in the
-> "deleted_refs" list and send unlink commands for them. If there are
-> duplicated file paths in both lists, we will try to create them before we
-> remove them. Then the receiver gets an -EEXIST error when trying the link
-> operations.
-> 
-> Example for having duplicated file paths in both list:
-> 
->   $ btrfs subvolume create vol
-> 
->   # create a file and 2000 hard links to the same inode
->   $ touch vol/foo
->   $ for i in {1..2000}; do link vol/foo vol/$i ; done
-> 
->   # take a snapshot for a parent snapshot
->   $ btrfs subvolume snapshot -r vol snap1
-> 
->   # remove 2000 hard links and re-create the last 1000 links
->   $ for i in {1..2000}; do rm vol/$i; done;
->   $ for i in {1001..2000}; do link vol/foo vol/$i; done
-> 
->   # take another one for a send snapshot
->   $ btrfs subvolume snapshot -r vol snap2
-> 
->   $ mkdir receive_dir
->   $ btrfs send snap2 -p snap1 | btrfs receive receive_dir/
->   At subvol snap2
->   link 1238 -> foo
->   ERROR: link 1238 -> foo failed: File exists
-> 
-> In this case, we will have the same file paths added to both lists. In the
-> parent snapshot, reference paths {1..1237} are stored in inode references,
-> but reference paths {1238..2000} are stored in inode extended references.
-> In the send snapshot, all reference paths {1001..2000} are stored in inode
-> references. During the incremental send, we process their inode references
-> first. In record_changed_ref(), we iterate all its inode references in the
-> send/parent snapshot. For every inode reference, we also use find_iref() to
-> check whether the same file path also appears in the parent/send snapshot
-> or not. Inode references {1238..2000} which appear in the send snapshot but
-> not in the parent snapshot are added to the "new_refs" list. On the other
-> hand, Inode references {1..1000} which appear in the parent snapshot but
-> not in the send snapshot are added to the "deleted_refs" list. Next, when
-> we process their inode extended references, reference paths {1238..2000}
-> are added to the "deleted_refs" list because all of them only appear in the
-> parent snapshot. Now two lists contain items as below:
-> "new_refs" list: {1238..2000}
-> "deleted_refs" list: {1..1000}, {1238..2000}
-> 
-> Reference paths {1238..2000} appear in both lists. And as the processing
-> order talked about before, the receiver gets an -EEXIST error when trying
-> the link operations.
-> 
-> To fix the bug, the intuition is to process the "deleted_refs" list before
-> the "new_refs" list. However, it's not easy to reshuffle the processing
-> order. For one reason, if we do so, we may unlink all the existing paths
-> first, there's no valid path anymore for links. And it's inefficient
-> because we do a bunch of unlinks followed by links for the same paths.
-> Moreover, it makes less sense to have duplications in both lists. A
-> reference path cannot not only be regarded as new but also has been seen in
-> the past, or we won't call it a new path. However, it's also not a good
-> idea to make find_iref() to check a reference against all inode references
-> and all inode extended references because it may result in large disk
-> reads. So we introduce two rbtrees to make the references easier for
-> lookups. And we also introduce __record_new_ref_if_needed() and
-> __record_deleted_ref_if_needed() for changed_ref() to check and remove
-> duplicated references early.
-> 
-> Reviewed-by: Robbie Ko <robbieko@synology.com>
-> Signed-off-by: BingJing Chang <bingjingc@synology.com>
 
-Added to misc-next with some fixups, thanks.
 
-> +static int rbtree_ref_comp(const void *k, const struct rb_node *node)
-> +{
-> +	const struct recorded_ref *data = k;
-> +	const struct recorded_ref *ref = rb_entry(node, struct recorded_ref, node);
-> +	int result;
-> +
-> +	if (data->dir > ref->dir)
-> +		return 1;
-> +	if (data->dir < ref->dir)
-> +		return -1;
-> +	if (data->dir_gen > ref->dir_gen)
-> +		return 1;
-> +	if (data->dir_gen < ref->dir_gen)
-> +		return -1;
-> +	if (data->name_len > ref->name_len)
-> +		return 1;
-> +	if (data->name_len < ref->name_len)
-> +		return -1;
-> +	result = strcmp(data->name, ref->name);
+On Tue, Jul 12, 2022, at 21:23, Konrad Dybcio wrote:
+> On 12.07.2022 21:12, Marc Zyngier wrote:
+>> Hi Konrad,
+>> 
+>> Please add a cover letter when sending more than a single patch.
+>> 
+>> On Tue, 12 Jul 2022 17:09:19 +0100,
+>> Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
+>>>
+>>> Add support for A7-A11 SoCs by if-ing out some features only present on
+>>> A12 & newer (UNCORE2 registers) or M1 & newer (EL2 registers - the
+>>> older SoCs don't implement EL2).
+>>>
+>>> Also, annotate IPI regs support (A11 and newer*) so that the driver can
+>>> tell whether the SoC supports these (they are written to even if fast
+>>> IPI is disabled, when the registers are there of course).
+>>>
+>>> *A11 is supposed to use this feature, but it is currently not working.
+>>> That said, it is not yet necessary, especially with only one core up,
+>>> and it works a-ok using the same featureset as earlier SoCs.
+>>>
+>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+>>> ---
+>>>  drivers/irqchip/irq-apple-aic.c | 54 +++++++++++++++++++++++----------
+>>>  1 file changed, 38 insertions(+), 16 deletions(-)
+>>>
+>>> diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+>>> index 12dd48727a15..36f4b52addc2 100644
+>>> --- a/drivers/irqchip/irq-apple-aic.c
+>>> +++ b/drivers/irqchip/irq-apple-aic.c
+>>> @@ -245,7 +245,10 @@ struct aic_info {
+>>>  	u32 die_stride;
+>>>  
+>>>  	/* Features */
+>>> +	bool el2_regs;
+>>>  	bool fast_ipi;
+>>> +	bool ipi_regs;
+>>> +	bool uncore2_regs;
+>>>  };
+>>>  
+>>>  static const struct aic_info aic1_info = {
+>>> @@ -261,7 +264,10 @@ static const struct aic_info aic1_fipi_info = {
+>>>  	.event		= AIC_EVENT,
+>>>  	.target_cpu	= AIC_TARGET_CPU,
+>>>  
+>>> +	.el2_regs	= true,
+>>>  	.fast_ipi	= true,
+>>> +	.ipi_regs	= true,
+>>> +	.uncore2_regs	= true,
+>>>  };
+>>>  
+>>>  static const struct aic_info aic2_info = {
+>>> @@ -269,7 +275,10 @@ static const struct aic_info aic2_info = {
+>>>  
+>>>  	.irq_cfg	= AIC2_IRQ_CFG,
+>>>  
+>>> +	.el2_regs	= true,
+>>>  	.fast_ipi	= true,
+>>> +	.ipi_regs	= true,
+>>> +	.uncore2_regs	= true,
+>> 
+>> So to sum it up, all recent cores have all the cool features, and the
+>> older ones have none of them. Surely we can do better than adding 3
+>> fields that have the same value. Turn 'fast_ipi' into something that
+>> means 'full_fat', and key everything on that.
+>> 
+>> And if this is meant to evolve into a more differentiated set of
+>> features, the usual idiom is to have a set of flags as part of an
+>> unsigned long instead of a set of booleans.
+> The latter would be true if a bootrom exploit or any equivalent means
+> of booting Linux would be found for A12 (M1 is family with A14 for context).
+>
+> We can think of 4 feature levels, I think:
+>
+> A7-A10: 'nothing fancy'
+> A11: fast_ipi (broken currently, need to investigate)
+> A12: A11 + UNCORE2 regs
+> M1+: A12 + EL2
+>
+> We *could* squash the A12-A14 case into M1, but then if a means of booting
+> Linux appears, this would have to be untangled again..
+>
+>> 
+>>>  };
+>>>  
+>>>  static const struct of_device_id aic_info_match[] = {
+>>> @@ -452,6 +461,9 @@ static unsigned long aic_fiq_get_idx(struct irq_data *d)
+>>>  
+>>>  static void aic_fiq_set_mask(struct irq_data *d)
+>>>  {
+>>> +	if (!aic_irqc->info.el2_regs)
+>>> +		return;
+>> 
+>> Why? AIC_TMR_EL02_PHYS is defined as the interrupt that fires in the
+>> context of a guest. There is no guest here (no EL2 either), so what
+>> you should have as interrupt number is AIC_TMR_EL0_{PHYS,VIRT}, and
+>> this change becomes irrelevant (nothing to mask). Which is also what
+>> happens when running an M1 under the m1n1 hypervisor.
+> This func accesses impl-defined regs that are not present on earlier SoCs.
+>
+>> 
+>>> +
+>>>  	/* Only the guest timers have real mask bits, unfortunately. */
+>>>  	switch (aic_fiq_get_idx(d)) {
+>>>  	case AIC_TMR_EL02_PHYS:
+>>> @@ -469,6 +481,9 @@ static void aic_fiq_set_mask(struct irq_data *d)
+>>>  
+>>>  static void aic_fiq_clear_mask(struct irq_data *d)
+>>>  {
+>>> +	if (!aic_irqc->info.el2_regs)
+>>> +		return;
+>>> +
+>>>  	switch (aic_fiq_get_idx(d)) {
+>>>  	case AIC_TMR_EL02_PHYS:
+>>>  		sysreg_clear_set_s(SYS_IMP_APL_VM_TMR_FIQ_ENA_EL2, 0, VM_TMR_FIQ_ENABLE_P);
+>>> @@ -524,12 +539,14 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
+>>>  	 * we check for everything here, even things we don't support yet.
+>>>  	 */
+>>>  
+>>> -	if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
+>>> -		if (static_branch_likely(&use_fast_ipi)) {
+>>> -			aic_handle_ipi(regs);
+>>> -		} else {
+>>> -			pr_err_ratelimited("Fast IPI fired. Acking.\n");
+>>> -			write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
+>>> +	if (aic_irqc->info.ipi_regs) {
+>> 
+>> This is probably the hottest path in the whole kernel. Do we want an
+>> extra read here? Absolutely not. At the very least, this should be a
+>> static key.
+> Yeah, makes sense..
+>
+>
+>> 
+>>> +		if (read_sysreg_s(SYS_IMP_APL_IPI_SR_EL1) & IPI_SR_PENDING) {
+>>> +			if (static_branch_likely(&use_fast_ipi)) {
+>>> +				aic_handle_ipi(regs);
+>>> +			} else {
+>>> +				pr_err_ratelimited("Fast IPI fired. Acking.\n");
+>>> +				write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
+>>> +			}
+>>>  		}
+>>>  	}
+>>>  
+>>> @@ -566,12 +583,14 @@ static void __exception_irq_entry aic_handle_fiq(struct pt_regs *regs)
+>>>  					  AIC_FIQ_HWIRQ(irq));
+>>>  	}
+>>>  
+>>> -	if (FIELD_GET(UPMCR0_IMODE, read_sysreg_s(SYS_IMP_APL_UPMCR0_EL1)) == UPMCR0_IMODE_FIQ &&
+>>> -			(read_sysreg_s(SYS_IMP_APL_UPMSR_EL1) & UPMSR_IACT)) {
+>>> -		/* Same story with uncore PMCs */
+>>> -		pr_err_ratelimited("Uncore PMC FIQ fired. Masking.\n");
+>>> -		sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
+>>> -				   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
+>>> +	if (aic_irqc->info.uncore2_regs) {
+>> 
+>> Same thing.
+>> 
+>>> +		if (FIELD_GET(UPMCR0_IMODE, read_sysreg_s(SYS_IMP_APL_UPMCR0_EL1)) == UPMCR0_IMODE_FIQ &&
+>>> +				(read_sysreg_s(SYS_IMP_APL_UPMSR_EL1) & UPMSR_IACT)) {
+>>> +			/* Same story with uncore PMCs */
+>>> +			pr_err_ratelimited("Uncore PMC FIQ fired. Masking.\n");
+>>> +			sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
+>>> +					FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
+>>> +		}
+>>>  	}
+>>>  }
+>>>  
+>>> @@ -676,7 +695,8 @@ static int aic_irq_domain_translate(struct irq_domain *id,
+>>>  				break;
+>>>  			case AIC_TMR_HV_PHYS:
+>>>  			case AIC_TMR_HV_VIRT:
+>>> -				return -ENOENT;
+>>> +				if (aic_irqc->info.el2_regs)
+>>> +					return -ENOENT;
+>> 
+>> See my comment above about the use of these interrupt numbers.
+> `if (!is_kernel_in_hyp_mode()) {` always evaluates to true, since there's
+> no EL2. Hence, accessing AIC_TMR_HV_{VIRT,PHYS} makes this return ENOENT,
+> which means timer can't probe and that's no bueno.
 
-I think this is the same as
+Sounds like an issue with your device tree. There should be no reference to
+AIC_TMR_HV_{VIRT,PHYS} in there.
 
-	return strcmp(...);
 
-but I have kept it as is for now.
-
-> +	if (result > 0)
-> +		return 1;
-> +	if (result < 0)
-> +		return -1;
-> +	return 0;
-> +}
-> +
-> +static int __record_new_ref_if_needed(int num, u64 dir, int index,
-
-I've dropped the __ and updated all callers, it's not appropriate to be
-used here.
-
-> +				      struct fs_path *name, void *ctx)
-> +{
-> +	int ret = 0;
-> +	struct send_ctx *sctx = ctx;
-> +	struct rb_node *node = NULL;
-> +	struct recorded_ref data;
-> +	struct recorded_ref *ref;
-> +	u64 dir_gen;
-> +
-> +	ret = get_inode_info(sctx->send_root, dir, NULL, &dir_gen, NULL,
-> +			     NULL, NULL, NULL);
-
-This function got a new parameter in "btrfs: send: add new command
-FILEATTR for file attributes", so added NULL in all new instances.
-
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	data.dir = dir;
-> +	data.dir_gen = dir_gen;
-> +	set_ref_path(&data, name);
-> +	node = rb_find(&data, &sctx->rbtree_deleted_refs, rbtree_ref_comp);
-> +	if (node) {
-> +		ref = rb_entry(node, struct recorded_ref, node);
-> +		recorded_ref_free(ref);
-> +	} else {
-> +		ret = record_ref_in_tree(&sctx->rbtree_new_refs,
-> +					 &sctx->new_refs, name, dir, dir_gen,
-> +					 sctx);
-> +	}
-> +out:
-> +	return ret;
-> +}
-> +
-> +static int __record_deleted_ref_if_needed(int num, u64 dir, int index,
-
-Same, dropped __
-
-> +			    struct fs_path *name,
-> +			    void *ctx)
-> +{
-> +	int ret = 0;
-> +	struct send_ctx *sctx = ctx;
-> +	struct rb_node *node = NULL;
-> +	struct recorded_ref data;
-> +	struct recorded_ref *ref;
-> +	u64 dir_gen;
-> +
-> +	ret = get_inode_info(sctx->parent_root, dir, NULL, &dir_gen, NULL,
-> +			     NULL, NULL, NULL);
-> +	if (ret < 0)
-> +		goto out;
-> +
-> +	data.dir = dir;
-> +	data.dir_gen = dir_gen;
-> +	set_ref_path(&data, name);
-> +	node = rb_find(&data, &sctx->rbtree_new_refs, rbtree_ref_comp);
-> +	if (node) {
-> +		ref = rb_entry(node, struct recorded_ref, node);
-> +		recorded_ref_free(ref);
-> +	} else {
-> +		ret = record_ref_in_tree(&sctx->rbtree_deleted_refs,
-> +					 &sctx->deleted_refs, name, dir,
-> +					 dir_gen, sctx);
-> +	}
-> +out:
-> +	return ret;
-> +}
+Sven
