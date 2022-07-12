@@ -2,34 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6076C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3401C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232738AbiGLP4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:56:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35936 "EHLO
+        id S233876AbiGLP4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231157AbiGLPzp (ORCPT
+        with ESMTP id S234028AbiGLP4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:55:45 -0400
+        Tue, 12 Jul 2022 11:56:03 -0400
+X-Greylist: delayed 2326 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 08:55:52 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F2DCBA39F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:55:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111A7C6348
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=H+YFkN5zYmDJB9nb0gMFBm80RECXkAIY9geDJBmYEKU=; b=DbZR6
-        6mJVSSQo4/g7zVqMaYjlTGpl1wkQbuLWnGu5dQ1AUY02znx2Q3nB0G48axQ8Wlw8Iyk4jAmS0mted
-        cGN77eCvebPdm2P4yjm3sg2qpjvsw2zPdfG/x41MX1a1fO+tCX0SN+KpkJ14ebxXKhGx/TOHAsrz7
-        Pp9VNjBXX1XVIDm8XdVAFW1GKYPbIjLyowx0h6pTeA1Wg8OnxgN1kPmwSayhpbEf6FFlj2APT9rwm
-        1CJX/tuCZGPJscwAVjC3Ktt+vppMSiivzms7KYa2DQg8IsHkxyyEIfG8rpqSoPLe36S6zkkgoDA2r
-        kp1zJzTLD1cID6P+7XEfZqZ03UdUg==;
-Message-Id: <5fb0bcc402e032cbc0779f428be5797cddfd291c.1657636554.git.linux_oss@crudebyte.com>
+        Content-Description; bh=HRgmsvyQc5R1HqZKiatrCeJDIA/6CkbTdpYiY2zKJhY=; b=ISm0U
+        6toqo+pRL+qZTAPrXM7f+INHAl5w800kZIlSnKC/6fnQX1+utojn0cKjLfCv++fVYNn5doiJ9cVYN
+        rWz6Xz9RT9tSmphWW271a8D3cWlbC+5DD9hVl73LdyxarRabFmpVnSYSTGM7E09Pt4hu3/xEooNX7
+        t6sPy1fCftAPAGfbrr6BiA7iKYoWw5roCRJoaAvQfU2TEA/921OdXio4L1TziTlB54kiHkPdcK7EX
+        nLGNYsPgQdLY1YQgtFcC25EGwcCHOVkbIDVEP0cxMYFUfByJGNF3aJuW3/tlJjkSaoyH4HX5nid3Y
+        uq6Dx1aryTr2GQxTKN0tvXpaI5eTg==;
+Message-Id: <3f9c6da94f466743feffdba407ae2be313c47c93.1657636554.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
 References: <cover.1657636554.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:36 +0200
-Subject: [PATCH v5 11/11] net/9p: allocate appropriate reduced message buffers
+Date:   Tue, 12 Jul 2022 16:31:19 +0200
+Subject: [PATCH v5 04/11] net/9p: add trans_maxsize to struct p9_client
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -40,108 +41,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So far 'msize' was simply used for all 9p message types, which is far
-too much and slowed down performance tremendously with large values
-for user configurable 'msize' option.
+This new field 'trans_maxsize' optionally allows transport to
+update it to reflect the actual maximum msize supported by
+allocated transport channel.
 
-Let's stop this waste by using the new p9_msg_buf_size() function for
-allocating more appropriate, smaller buffers according to what is
-actually sent over the wire.
-
-Only exception: RDMA transport is currently excluded from this, as
-it would not cope with it. [1]
-
-Link: https://lore.kernel.org/all/YkmVI6pqTuMD8dVi@codewreck.org/ [1]
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
+ include/net/9p/client.h |  2 ++
+ net/9p/client.c         | 12 ++++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-Is the !strcmp(c->trans_mod->name, "rdma") check in this patch maybe a bit
-too hack-ish? Should there rather be transport API extension instead?
-
- net/9p/client.c | 39 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 32 insertions(+), 7 deletions(-)
-
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index ec1d1706f43c..f5718057fca4 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -87,6 +87,7 @@ struct p9_req_t {
+  * struct p9_client - per client instance state
+  * @lock: protect @fids and @reqs
+  * @msize: maximum data size negotiated by protocol
++ * @trans_maxsize: actual maximum msize supported by transport channel
+  * @proto_version: 9P protocol version to use
+  * @trans_mod: module API instantiated with this client
+  * @status: connection state
+@@ -101,6 +102,7 @@ struct p9_req_t {
+ struct p9_client {
+ 	spinlock_t lock;
+ 	unsigned int msize;
++	unsigned int trans_maxsize;
+ 	unsigned char proto_version;
+ 	struct p9_trans_module *trans_mod;
+ 	enum p9_trans_status status;
 diff --git a/net/9p/client.c b/net/9p/client.c
-index 56be1658870d..dc1a7b26fab4 100644
+index 8bba0d9cf975..20054addd81b 100644
 --- a/net/9p/client.c
 +++ b/net/9p/client.c
-@@ -255,19 +255,35 @@ static struct kmem_cache *p9_req_cache;
-  * p9_tag_alloc - Allocate a new request.
-  * @c: Client session.
-  * @type: Transaction type.
-- * @t_size: Buffer size for holding this request.
-- * @r_size: Buffer size for holding server's reply on this request.
-+ * @t_size: Buffer size for holding this request
-+ * (automatic calculation by format template if 0).
-+ * @r_size: Buffer size for holding server's reply on this request
-+ * (automatic calculation by format template if 0).
-+ * @fmt: Format template for assembling 9p request message
-+ * (see p9pdu_vwritef).
-+ * @ap: Variable arguments to be fed to passed format template
-+ * (see p9pdu_vwritef).
-  *
-  * Context: Process context.
-  * Return: Pointer to new request.
-  */
- static struct p9_req_t *
--p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
-+p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size,
-+	      const char *fmt, va_list ap)
- {
- 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
--	int alloc_tsize = min(c->msize, t_size);
--	int alloc_rsize = min(c->msize, r_size);
-+	int alloc_tsize;
-+	int alloc_rsize;
- 	int tag;
-+	va_list apc;
-+
-+	va_copy(apc, ap);
-+	alloc_tsize = min_t(size_t, c->msize,
-+			    t_size ?: p9_msg_buf_size(c, type, fmt, apc));
-+	va_end(apc);
-+
-+	alloc_rsize = min_t(size_t, c->msize,
-+			    r_size ?: p9_msg_buf_size(c, type + 1, fmt, ap));
+@@ -1031,6 +1031,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 		goto free_client;
+ 	}
  
- 	if (!req)
- 		return ERR_PTR(-ENOMEM);
-@@ -685,6 +701,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- {
- 	int err;
- 	struct p9_req_t *req;
-+	va_list apc;
- 
- 	p9_debug(P9_DEBUG_MUX, "client %p op %d\n", c, type);
- 
-@@ -696,7 +713,9 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
- 		return ERR_PTR(-EIO);
- 
--	req = p9_tag_alloc(c, type, t_size, r_size);
-+	va_copy(apc, ap);
-+	req = p9_tag_alloc(c, type, t_size, r_size, fmt, apc);
-+	va_end(apc);
- 	if (IS_ERR(req))
- 		return req;
- 
-@@ -731,9 +750,15 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	int sigpending, err;
- 	unsigned long flags;
- 	struct p9_req_t *req;
-+	/* Passing zero to p9_client_prepare_req() tells it to auto determine an
-+	 * appropriate (small) request/response size according to actual message
-+	 * data being sent. Currently RDMA transport is excluded from this message
-+	 * size optimization, as it would not be able to cope with it.
++	/*
++	 * transport will get a chance to increase trans_maxsize (if
++	 * necessary) and it may update trans_maxsize in create() function
++	 * below accordingly to reflect the actual maximum size supported by
++	 * the allocated transport channel
 +	 */
-+	const uint max_size = !strcmp(c->trans_mod->name, "rdma") ? c->msize : 0;
++	clnt->trans_maxsize = clnt->trans_mod->maxsize;
++
+ 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
+ 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
  
- 	va_start(ap, fmt);
--	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
-+	req = p9_client_prepare_req(c, type, max_size, max_size, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
+@@ -1038,8 +1046,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	if (err)
+ 		goto put_trans;
+ 
+-	if (clnt->msize > clnt->trans_mod->maxsize) {
+-		clnt->msize = clnt->trans_mod->maxsize;
++	if (clnt->msize > clnt->trans_maxsize) {
++		clnt->msize = clnt->trans_maxsize;
+ 		pr_info("Limiting 'msize' to %d as this is the maximum "
+ 			"supported by transport %s\n",
+ 			clnt->msize, clnt->trans_mod->name
 -- 
 2.30.2
 
