@@ -2,242 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:32:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B38C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232685AbiGLIcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:32:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34834 "EHLO
+        id S232654AbiGLIcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbiGLIb4 (ORCPT
+        with ESMTP id S232724AbiGLIc3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:31:56 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62750A43BB;
-        Tue, 12 Jul 2022 01:31:55 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id y141so6895855pfb.7;
-        Tue, 12 Jul 2022 01:31:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+ihihgGZUmY2/0a390+NibBsCD73DBtUh+DsJP+XRRo=;
-        b=mKKKcvcQqUipPu54C0OosbvkxjyBPI2HgOtfEtbeG8slxpHUF8od8fQ2iZsY8ZLxHI
-         ++9GISY25O/wK+QWLDCLgyaztpX8ylXn6d482xCtD2oMrqbi5Tmmrf/ISqrw5d2Nc4Se
-         1AfpeW4cC/a+CZfGUzw9Fci+Rj6fNI8jAX8exDsMr8tdowV1D+968Uc4Fk130zG4M/K5
-         KTylvJJUAi/K75fBB4612BGe/G+2hp8ct7/UT6ZEYfx7upbgZnlpoKoRpzUYjOUcSh+C
-         84qP0ZLiruE+2exe8/Mnw1dCZwjGXoh5/RA6wOFdU47vwwAFrj6G7nF6MFEb6fw6nkyp
-         lDUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+ihihgGZUmY2/0a390+NibBsCD73DBtUh+DsJP+XRRo=;
-        b=e54GR4abbe15+k43bgyUZ0qzyGYwc4/wqxC4mj5gZvB5koggsnm/eLN0GzikPf26el
-         hUPi1cdXETP5EcXZsTcNaJW4h7FVhJHhfBvsWTf6BMwNbO/juHr8pY6fMf/egjlImcE6
-         zYEIQ/XRsOqXiO/6dzzEmEHxgx43JLSEz3+URcNCUVn3KBuIEI6TRyK63YJVSHF+a6zk
-         a6Bi8YZ++3cZUi8JhEkxP7kx9tgKgqcu6dSYisDPQ6qdEjuJYPFz0R0gEklXosgl7sGF
-         ehPAXfTRKnzH/PmOR2vhtD6TBiEk3pxFvaOszbShTsavpz2ygwMCLM9JNCncKoEGHzer
-         dauA==
-X-Gm-Message-State: AJIora/Tht0Z03awrG1EmCQ7Zr+2/fpPra7WfV97ws+ozu0upQFGL4AR
-        rR9121gYAbCifW9G0fIzOgPEExKQrh56fzkCsW8=
-X-Google-Smtp-Source: AGRyM1uqacAKT5j+jPbReGRauD1rjYv6gDcFXZyHW4LIDJSOWF/Vx7qbRWE+HLfP2QWQe3cjgidYPX/lkKAKCOjxVFE=
-X-Received: by 2002:a05:6a00:3006:b0:52a:ca34:7e43 with SMTP id
- ay6-20020a056a00300600b0052aca347e43mr11603050pfb.10.1657614714676; Tue, 12
- Jul 2022 01:31:54 -0700 (PDT)
+        Tue, 12 Jul 2022 04:32:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94CF7A5E55
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:32:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657614729;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tQxIBj6PcKC66/v1neohOf1D/KG+opt9mK5QyhmwE5w=;
+        b=Z6cwDODOb4PxM9FKaLNotLpBIjTfuxVxCwKqpW/jrVTZO7y531yK+TO1XZHgKPsb+w4JIo
+        8uFc6Nf4cDwlErMbJHVnCch1yjm5G/o/XUfTabyZQiYWepxqZIMfOZG+tNJBZLJ4gqpAjy
+        ksILufxKoJKqeQ0Qq5LGAM1loU3xDZA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-16-97XA7a_IMQmseuEGgQzkuw-1; Tue, 12 Jul 2022 04:32:00 -0400
+X-MC-Unique: 97XA7a_IMQmseuEGgQzkuw-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 087E1185A7B2;
+        Tue, 12 Jul 2022 08:32:00 +0000 (UTC)
+Received: from sirius.home.kraxel.org (unknown [10.39.192.39])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C06E8492C3B;
+        Tue, 12 Jul 2022 08:31:59 +0000 (UTC)
+Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
+        id EF3FC18000A9; Tue, 12 Jul 2022 10:31:57 +0200 (CEST)
+Date:   Tue, 12 Jul 2022 10:31:57 +0200
+From:   Gerd Hoffmann <kraxel@redhat.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Michel =?utf-8?Q?D=C3=A4nzer?= <michel.daenzer@mailbox.org>,
+        David Airlie <airlied@linux.ie>,
+        Linux/m68k <linux-m68k@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>
+Subject: Re: [PATCH 1/3] drm/fourcc: Add missing big-endian XRGB1555 and
+ RGB565 formats
+Message-ID: <20220712083157.wtujadjcyboerxcl@sirius.home.kraxel.org>
+References: <cover.1657300532.git.geert@linux-m68k.org>
+ <0744671ac096a12f0d538906bd324efa71b11400.1657300532.git.geert@linux-m68k.org>
+ <96a87833-d878-dde9-e335-9ea51a4ba406@mailbox.org>
+ <CAMuHMdUgdbZeoFLFL8+Hm-6fG9cg5Wzq++JED3KR5P9YZtRQ4A@mail.gmail.com>
+ <20220712074715.kopstlvz4q6npaye@sirius.home.kraxel.org>
 MIME-Version: 1.0
-References: <20220711065907.23105-1-hbh25y@gmail.com> <YsvTvalrwd4bxO75@codewreck.org>
- <f68df7cf-4b72-4c01-9492-103fa67c5e99@gmail.com> <Ys0PYaD7x7InUpc+@codewreck.org>
-In-Reply-To: <Ys0PYaD7x7InUpc+@codewreck.org>
-From:   Hangyu Hua <hbh25y@gmail.com>
-Date:   Tue, 12 Jul 2022 16:31:43 +0800
-Message-ID: <CAOo-nL+B1RkQ8PKeH+bs9gjX+Fq72PnyB9No+HiMoJ8azDBbag@mail.gmail.com>
-Subject: Re: [PATCH] net: 9p: fix possible refcount leak in p9_read_work() and recv_done()
-To:     asmadeus@codewreck.org
-Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, tomasbortoli@gmail.com,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712074715.kopstlvz4q6npaye@sirius.home.kraxel.org>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/12 14:06, asmadeus@codewreck.org wrote:
-> Hangyu Hua wrote on Tue, Jul 12, 2022 at 11:24:36AM +0800:
->> That's a little weird. If you are right, the three return paths of this
->> function are inconsistent with the handling of refcount.
->>
->> static void p9_read_work(struct work_struct *work)
->> {
->> ...
->>      if ((m->rreq) && (m->rc.offset == m->rc.capacity)) {
->>              p9_debug(P9_DEBUG_TRANS, "got new packet\n");
->>              m->rreq->rc.size = m->rc.offset;
->>              spin_lock(&m->client->lock);
->>              if (m->rreq->status == REQ_STATUS_SENT) {
->>                      list_del(&m->rreq->req_list);
->>                      p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);      <---- [1]
->>              } else if (m->rreq->status == REQ_STATUS_FLSHD) {
->>                      /* Ignore replies associated with a cancelled request. */
->>                      p9_debug(P9_DEBUG_TRANS,
->>                               "Ignore replies associated with a cancelled request\n");       <---- [2]
->>              } else {
->>                      spin_unlock(&m->client->lock);
->>                      p9_debug(P9_DEBUG_ERROR,
->>                               "Request tag %d errored out while we were reading the reply\n",
->>                               m->rc.tag);
->>                      err = -EIO;
->>                      goto error;     <---- [3]
->>              }
->>              spin_unlock(&m->client->lock);
->>              m->rc.sdata = NULL;
->>              m->rc.offset = 0;
->>              m->rc.capacity = 0;
->>              p9_req_put(m->rreq);    <---- [4]
->>              m->rreq = NULL;
->>      }
->> ...
->> error:
->>      p9_conn_cancel(m, err);         <---- [5]
->>      clear_bit(Rworksched, &m->wsched);
->> }
->>
->> There are three return paths here, [1] and [2] and [3].
->> [1]: m->rreq will be put twice in [1] and [4]. And m->rreq will be deleted
->> from the m->req_list in [1].
->>
->> [2]: m->rreq will be put in [4]. And m->rreq will not be deleted from
->> m->req_list.
->
-> when req status got put to FLUSHD the req was dropped from the list
-> already and put in p9_fd_cancel, so we shouldn't put it here.
->
->> [3]: m->rreq will be put in [5]. And m->rreq will be deleted from the
->> m->req_list in [5].
->
-> On this error case I really can't say anything: it depends on how the
-> req got in this state in the first place -- more precisely is it still
-> in req_list or not?
->
-> But even if it is and we leak it here, we return an error here, so the
-> connection will be marked as disconnected and won't be usable anymore.
-> The memory will be freed when the user umounts after that.
->
-> If we took the time to re-init the rreq->req_list everytime we could
-> check if it's empty (don't think we can rely on it being poisoned), but
-> I just don't think it's worth it: it's better to consume a bit more
-> memory until umount than to risk a UAF.
->
-> (note: while writing this I noticed p9_tag_cleanup() in
-> p9_client_destroy() only tracks requests still in the idr, so doesn't
-> work for requests that went through p9_tag_remove().
-> We don't need p9_tag_remove() anymore so I've just gotten rid of it and
-> we will catch these now)
->
->
->> If p9_tag_lookup keep the refcount of req which is in m->req_list. There
->> will be a double put in return path [1] and a potential UAF in return path
->> [2]. And this also means a req in m->req_list without getting refcount
->> before p9_tag_lookup.
->
-> That is the nominal path, we'd notice immediately if there are too many
-> puts there.
-> A request is initialized with two refs so that we can have one for the
-> transport ((a), for fd, "is the request tracked in a list?") and one for
-> the main thread ((b), p9_client_rpc which will put it at the end)
-> Then you get a third ref from p9_tag_lookup that I was forgetting about,
-> (c).
->
-> Going through [1] removes it from the list, and removes the associated
-> ref (a), then through p9_client_cb which removes ref (c) and wakes up
-> p9_client_rpc which takes the last ref (b), freeing the request.
->
+  Hi,
 
-I think the normal path is right beacuase p9_tag_lookup and [4] keep the
-balance of refcount. This just proves that error path may have refcount
-leak. Beacause error path only put refcount once. In general, either [4]
-of the normal path is redundant(like you said, this is easy to catch),
-or the error path may have a refcount leak.
+> So adding support for bigendian formats to the driver shouldn't be
+> much of a problem.  The vram will continue to run in little endian
+> RGB565, the shadow will be big endian RGB565, and the driver must
+> byteswap when copying.
 
-But you are right, it'll be caught on umount.
+For completeness: The other obvious option (for fbcon) would be to
+handle the byteswapping in the generic drm fbdev emulation, which
+would have the advantage that it would be more generic and would
+not depend on the drm driver supporting the bigendian rgb565
+formats ...
 
->
-> Now you were correct on one of these error paths not described in your
-> last mail: we -are- missing a p9_req_ut in the "No recv fcall for tag
-> %d" error path shortly after p9_tag_lookup, for the ref obtained from
-> p9_tag_lookup itself -- feel free to resend a patch with just that one.
-> But once again the connection is now unusable and it'll be caught on
-> umount so it's not the end of the world...
->
-> (I'd appreciate if you base the new patch on top of
-> https://github.com/martinetd/linux/commits/9p-next )
->
+take care,
+  Gerd
 
-I see. I will make a new patch later.
-
->>
->> static void p9_write_work(struct work_struct *work)
->> {
->> ...
->>              list_move_tail(&req->req_list, &m->req_list);
->>
->>              m->wbuf = req->tc.sdata;
->>              m->wsize = req->tc.size;
->>              m->wpos = 0;
->>              p9_req_get(req);
->> ...
->> }
->>
->> But if you check out p9_write_work, a refcount already get after
->> list_move_tail. We don't need to rely on p9_tag_lookup to keep a list's
->> refcount.
->
-> This refcount is because we are keeping a ref in m->wreq, and is freed
-> when m->wreq is set back to null when the packet is done writing a few
-> lines below (but possibly in another call of the function).
->
-> refs don't have to come from p9_tag_lookup, they're managing pointers
-> lifecycle: we're making a copy of the pointer, so we should increment
-> the refcount so another thread can't free the req under us. In this case
-> the p9_req_get() is under the trans fd m->client->lock where we got the
-> req from the list, so req can't be freed between its obtention from the
-> list and then; once the lock is dropped the req is protected by the ref.
->
->
-
-My fault. I misunderstood here.
-
-Thanks,
-Hangyu
-
-
-
->> Whatsmore, code comments in p9_tag_alloc also proves that the
->> refcount get by p9_tag_lookup is a temporary refcount.
->
-> comments don't prove anything, but yes I forgot p9_tag_alloc takes a ref
-> when I commented earlier, sorry.
->
->>> This one isn't as clear cut, I see that they put the client in a
->>> FLUSHING state but nothing seems to acton on it... But if this happens
->>> we're already in the use after free realm -- it means rc.sdata was
->>> already set so the other thread could be calling p9_client_cb anytime if
->>> it already hasn't, and yet another thread will then do the final ref put
->>> and free this.
->>> We shouldn't free this here as that would also be an overflow. The best
->>> possible thing to do at this point is just to stop using that pointer.
->>>
->>
->> But p9_tag_lookup have a lock inside. Doesn't this mean p9_tag_lookup won't
->> return a freed req? Otherwise we should fix the lock to avoid falling into
->> the use after free realm.
->
-> Right, that falls into the p9_tag_lookup ref, I had implemented this
-> better than I thought I did...
->
-> I agree that one is also more correct to add, although I'd really want
-> to make some rdma setup and trigger a few errors to test.
->  > --
-> Dominique
