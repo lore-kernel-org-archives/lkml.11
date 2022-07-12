@@ -2,121 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 345A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:26:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63EF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:26:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbiGLN0h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:26:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39850 "EHLO
+        id S229669AbiGLN0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiGLN0g (ORCPT
+        with ESMTP id S230272AbiGLN0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:26:36 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C354388F34;
-        Tue, 12 Jul 2022 06:26:35 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id l11so13855410ybu.13;
-        Tue, 12 Jul 2022 06:26:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tPT19Kfs8LeMRuQNUNS/QgGrqQ3NwvwMCFw4PNMdSIs=;
-        b=X8Px23L+V3za0BnD3cakHrQ4J6Ya3vYywEENBbezm987pke851PTKV3avyjDFjRkw7
-         ZsMydqcBLJv1w8HwUidrwp60ZfwEAubhw+4j8iw97cXOtLbJKICSf6edAkIhIVxrVO8o
-         8djHIoBs1X07CJJYqcfCtAaUFJOpJSP5MRkA6zs3DqGDRHrldH/RErwdGp23qryQlRIC
-         YFIuOdj4zngBXTJUgkZUvsODCNIVAFLxd1LCmFfFpbQHujNoDKsY9Ic5Oa/8tqjIhNmQ
-         r5zdPSWjKg0hnVDxffWc1k8rwNa6q5NtVYRXJ9mF76y0MxTeb43IL3FXKFltVity347i
-         QukA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tPT19Kfs8LeMRuQNUNS/QgGrqQ3NwvwMCFw4PNMdSIs=;
-        b=fi/WLCIfkY86Q5dZdxjf4GtoX0+JU8Qi1TCrVkVoWQJM+SB+jz4MAVvDlw+SPrl6UE
-         JyGH3D2stV6Xfy51ADkyoK1Mt3uB63ZqxLJ7cDuriixnFpAkEe8Au+YPpuMnH14uyfwC
-         LBXXGAQ2VZB2cBf2yfaShHTBhIpwikWBHwFaBoht4fIx4v7TRqf1grrnm0thOXGuqoS9
-         o2NPN0KlVAY57RKnMQK5fqW1zwdZmDu0zZStwIg8enLPMfDEPtvBlKL+mfMizrz2+aHy
-         kKdR5/GfcEyhwaNWdc2BtcxabZULZwK8FkpgNkAjFl40sT9l7LY2tch78FYLAP8163jU
-         btVQ==
-X-Gm-Message-State: AJIora+MYg3cHC8d1tws4msHb4Z97Y0JnXAFlNkkUS8o2MIBUMCkAZt3
-        +sCivBVls0gJIh5c+wLN6m8gNDWzZAG1uHNYcnA=
-X-Google-Smtp-Source: AGRyM1tydpkTIh2IgBmDJrpBmhXorykjG2XeC1Otp/8Wl7SPN46xnfSPreo3g9mX+Tw/YQ1D+Phgw5v+6rJXfVUMlhk=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr23004457ybg.460.1657632394963; Tue, 12
- Jul 2022 06:26:34 -0700 (PDT)
+        Tue, 12 Jul 2022 09:26:47 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBF6AB6B2;
+        Tue, 12 Jul 2022 06:26:45 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lj1gh3gm4zkWtf;
+        Tue, 12 Jul 2022 21:24:32 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Jul 2022 21:26:43 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Jul 2022 21:26:42 +0800
+Subject: Re: [PATCH RFC v3 2/3] sbitmap: fix invalid wakeup on the wrong
+ waitqueue
+To:     Jan Kara <jack@suse.cz>, Yu Kuai <yukuai1@huaweicloud.com>
+CC:     <axboe@kernel.dk>, <asml.silence@gmail.com>, <osandov@fb.com>,
+        <kbusch@kernel.org>, <linux-block@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <yi.zhang@huawei.com>
+References: <20220710042200.20936-1-yukuai1@huaweicloud.com>
+ <20220710042200.20936-3-yukuai1@huaweicloud.com>
+ <20220711142623.haam2wks36xa5nde@quack3.lan>
+From:   Yu Kuai <yukuai3@huawei.com>
+Message-ID: <f755a9ad-6f0c-b675-c3ff-e4da930a8af8@huawei.com>
+Date:   Tue, 12 Jul 2022 21:26:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20220712131523.1874428-1-vamshigajjela@google.com>
-In-Reply-To: <20220712131523.1874428-1-vamshigajjela@google.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 15:25:57 +0200
-Message-ID: <CAHp75VecnJSv9P4ZXf5g4Yi7rYySRN=73KwZ_OBFUyFtaSq00w@mail.gmail.com>
-Subject: Re: [PATCH] serial: 8250_dw: Avoid pslverr on reading empty receiver fifo
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220711142623.haam2wks36xa5nde@quack3.lan>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 3:16 PM Vamshi Gajjela <vamshigajjela@google.com> wrote:
->
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
->
-> With PSLVERR_RESP_EN parameter set to 1, device generates an error
+Hi!
 
-the device
+ÔÚ 2022/07/11 22:26, Jan Kara Ð´µÀ:
+> On Sun 10-07-22 12:21:59, Yu Kuai wrote:
+>> From: Yu Kuai <yukuai3@huawei.com>
+>>
+>> For example, 2 * wake_batch tags are put, while only wake_batch threads
+>> are woken:
+>>
+>> __sbq_wake_up
+>>   atomic_cmpxchg -> reset wait_cnt
+>> 			__sbq_wake_up -> decrease wait_cnt
+>> 			...
+>> 			__sbq_wake_up -> wait_cnt is decreased to 0 again
+>> 			 atomic_cmpxchg
+>> 			 sbq_index_atomic_inc -> increase wake_index
+>> 			 wake_up_nr -> wake up and waitqueue might be empty
+>>   sbq_index_atomic_inc -> increase again, one waitqueue is skipped
+>>   wake_up_nr -> invalid wake up because old wakequeue might be empty
+>>
+>> To fix the problem, increasing 'wake_index' before resetting 'wait_cnt'.
+>>
+>> Fixes: 88459642cba4 ("blk-mq: abstract tag allocation out into sbitmap library")
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+> 
+> This patch and the following one look sane to me but please merge them to a
+> single patch. They fix the same race of two concurrent wakers just with a
+> slightly different timing so there isn't a point in having two patches for
+> this (in particular changes in this patch are difficult to reason about
+> when we know the result is still buggy).
 
-> response when an attempt to read empty RBR with FIFO enabled.
+Ok, I'll merge them.
 
-an empty
-
-> This happens when LCR writes are ignored when UART is busy.
-> dw8250_check_lcr() in retries to updateLCR, invokes dw8250_force_idle()
-> to clear and reset fifo and eventually reads UART_RX causing pslverr.
-
-fifo --> FIFO
-pslverr --> the error
-
-> Avoid this by not reading RBR/UART_RX when no data is available.
-
-...
-
-> +       unsigned int lsr;
->         struct uart_8250_port *up = up_to_u8250p(p);
-
-Can we keep it ordered according to the reversed xmas tree?
-
-...
-
-> +       /*
-> +        * With PSLVERR_RESP_EN parameter set to 1, device generates pslverr
-
-the device
-pslverr --> an
-
-> +        * error response when an attempt to read empty RBR with FIFO enabled
-
-Missed period.
-
-> +        */
-> +       lsr = p->serial_in(p, UART_LSR);
-
-The only caller of this function already has the lsr value, why you
-can't (re)use it?
-
-> +       if ((up->fcr & UART_FCR_ENABLE_FIFO) && !(lsr & UART_LSR_DR))
-> +               return;
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Kuai
+> 
+> 								Honza
+> 
+>> ---
+>>   lib/sbitmap.c | 45 +++++++++++++++++++++++----------------------
+>>   1 file changed, 23 insertions(+), 22 deletions(-)
+>>
+>> diff --git a/lib/sbitmap.c b/lib/sbitmap.c
+>> index b46fce1beb3a..57095dd88a33 100644
+>> --- a/lib/sbitmap.c
+>> +++ b/lib/sbitmap.c
+>> @@ -616,32 +616,33 @@ static bool __sbq_wake_up(struct sbitmap_queue *sbq)
+>>   		return false;
+>>   
+>>   	wait_cnt = atomic_dec_return(&ws->wait_cnt);
+>> -	if (wait_cnt <= 0) {
+>> -		int ret;
+>> +	if (wait_cnt > 0)
+>> +		return false;
+>>   
+>> -		wake_batch = READ_ONCE(sbq->wake_batch);
+>> +	/*
+>> +	 * For concurrent callers of this, callers should call this function
+>> +	 * again to wakeup a new batch on a different 'ws'.
+>> +	 */
+>> +	if (wait_cnt < 0)
+>> +		return true;
+>>   
+>> -		/*
+>> -		 * Pairs with the memory barrier in sbitmap_queue_resize() to
+>> -		 * ensure that we see the batch size update before the wait
+>> -		 * count is reset.
+>> -		 */
+>> -		smp_mb__before_atomic();
+>> +	wake_batch = READ_ONCE(sbq->wake_batch);
+>>   
+>> -		/*
+>> -		 * For concurrent callers of this, the one that failed the
+>> -		 * atomic_cmpxhcg() race should call this function again
+>> -		 * to wakeup a new batch on a different 'ws'.
+>> -		 */
+>> -		ret = atomic_cmpxchg(&ws->wait_cnt, wait_cnt, wake_batch);
+>> -		if (ret == wait_cnt) {
+>> -			sbq_index_atomic_inc(&sbq->wake_index);
+>> -			wake_up_nr(&ws->wait, wake_batch);
+>> -			return false;
+>> -		}
+>> +	/*
+>> +	 * Pairs with the memory barrier in sbitmap_queue_resize() to
+>> +	 * ensure that we see the batch size update before the wait
+>> +	 * count is reset.
+>> +	 */
+>> +	smp_mb__before_atomic();
+>>   
+>> -		return true;
+>> -	}
+>> +	/*
+>> +	 * Increase wake_index before updating wait_cnt, otherwise concurrent
+>> +	 * callers can see valid wait_cnt in old waitqueue, which can cause
+>> +	 * invalid wakeup on the old waitqueue.
+>> +	 */
+>> +	sbq_index_atomic_inc(&sbq->wake_index);
+>> +	atomic_set(&ws->wait_cnt, wake_batch);
+>> +	wake_up_nr(&ws->wait, wake_batch);
+>>   
+>>   	return false;
+>>   }
+>> -- 
+>> 2.31.1
+>>
