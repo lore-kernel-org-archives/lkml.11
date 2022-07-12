@@ -2,162 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B80C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E61CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:55:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233003AbiGLLzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:55:18 -0400
+        id S232991AbiGLLzl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:55:41 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232954AbiGLLyo (ORCPT
+        with ESMTP id S230482AbiGLLzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:54:44 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 062652DD6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:54:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657626880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dBB+ggTvG8bgWymIqeqLY8MHAoWQRWK8mCj36wPOc5Q=;
-        b=S5IzjSrZK2rweLo0Jb/MaoS7zhR6Bk5YfAvmFnzcil0a+0Q4dafIxWtnkdHSfr3h4jGCST
-        PMRNK/M8OKMtgq8pVRC3VOBZZQtJfIcCbRhVdPbKBGpJw9UwWJg5ZVO7eeCDAX/lGZrxgk
-        /cLVe5ypD+m/8+BPWo2YVE//6I7UHus=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-548-Hb9fNfZMNL6rnY-I58gUQQ-1; Tue, 12 Jul 2022 07:54:39 -0400
-X-MC-Unique: Hb9fNfZMNL6rnY-I58gUQQ-1
-Received: by mail-qk1-f198.google.com with SMTP id ay8-20020a05620a178800b006b57a178418so6274550qkb.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:54:38 -0700 (PDT)
+        Tue, 12 Jul 2022 07:55:11 -0400
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0E4B520A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:55:00 -0700 (PDT)
+Received: by mail-yb1-xb36.google.com with SMTP id 6so13514693ybc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:55:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OUm36JXbn2cFfASaBApIenl9AkY8jJt+kU3h2jjV/Do=;
+        b=mlIxG6kQ1nJjyT6pnefCQ3hYABDyxXfo8vj7QqVR4W0A7RKYEtOLZa9MbrvvnIeMWR
+         dfsXALkc0WEOD7PXmqQLiwLJ9xEBAysuby6yJKxj6646dvxPucmvvsZeyGqyiHsjL/GL
+         /wqk0M7810Tm+4Nl/pBaBDlgMG3r6FU/a8y7b8hFbCrk8MOi8ARKr2IZ+H4FK9kdgidm
+         o1sBcXYQMiH7/P2fq0YEUeWiPFgmGDtd/4ONHw7keEK/SPKD6yLtwB38/r44hQur7j9n
+         zibhzt/o3QqDmHI8n+D5RAyIxVzPcB2S7X6hhOZi6r94M7FaOv56m0+LfqlZv8xH8OQO
+         bNJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=dBB+ggTvG8bgWymIqeqLY8MHAoWQRWK8mCj36wPOc5Q=;
-        b=fNsv+uYQ2RMrSDVS/MqhOZkjTaDArkuyYIyncK1rnoyx23eFqMGe+rncYFEph74twk
-         ZClnd8EgEBRrdNw6FxAm6qqWHdETJfmdVJbUpAm0I727DCAVaaNHG+OkQBLXWJazqw9i
-         7QWjSs3r6nFf9ikIgHTyK/YpzC/rHL+iyuxdHPMFGlUZgwwu7xEuG9GnNsL6UZ3cxXXs
-         VH2K99X0UtCHFhQdS8hp9QVr89z4pQT6s/kDRvcEfpNK7CEV2XekilSMXIE9FcMhDWjY
-         wJueH7HWWTZ01fHFbRwasij/54QuB/PklCgnOs/Dgic++b3Jnmqd6xPzDPe3oOCMiiAG
-         pp6Q==
-X-Gm-Message-State: AJIora/dSrPzbi6HYgYh4NP6qiauaNYFYWWP8d6Vs+m4Bh+5fbb8YgLT
-        QE6KBotY9/PARTmuSjZURSKfnK9zCSg/XiPTs3yx1h2N2I5zVFUFojT3G5dXHEk/Z+KRa++uNo2
-        j6/ZxE1/hgjg3Az+bvOVZ317O
-X-Received: by 2002:ac8:5d49:0:b0:31e:b4ca:d7a1 with SMTP id g9-20020ac85d49000000b0031eb4cad7a1mr7963201qtx.183.1657626878495;
-        Tue, 12 Jul 2022 04:54:38 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uy+F/s1E/ZaMXoJvWX9h7t+5AW9zAkUqz0BI9C066QS/bt2M1+1+lYEM8i39vLh6pXsFtAtA==
-X-Received: by 2002:ac8:5d49:0:b0:31e:b4ca:d7a1 with SMTP id g9-20020ac85d49000000b0031eb4cad7a1mr7963188qtx.183.1657626878309;
-        Tue, 12 Jul 2022 04:54:38 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id dt8-20020a05620a478800b006a91da2fc8dsm6242414qkb.0.2022.07.12.04.54.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:54:37 -0700 (PDT)
-Message-ID: <f1d030d7db4aaf3075fe625799b99ae335fc9f60.camel@redhat.com>
-Subject: Re: [PATCH v3 11/25] KVM: VMX: Get rid of eVMCS specific VMX
- controls sanitization
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Jul 2022 14:54:34 +0300
-In-Reply-To: <20220708144223.610080-12-vkuznets@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
-         <20220708144223.610080-12-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OUm36JXbn2cFfASaBApIenl9AkY8jJt+kU3h2jjV/Do=;
+        b=D0IFP1KiJiROdD1jb4qRH91Gim4IjvbWgCAkDeEdxcFgV3QYA/b3wBaOe/XBw5Qv0G
+         P0wSRU91jzoZCnU6ewwmzAwpz0UEt4CzbXwx0HtlpHkPoBUQNY2fNF942NgK5c2SONcR
+         zP3iRZIyFsj8A7jAt2lY12OOQkyzY2FKp8oB1v9gEDcstEY2x7T9Nq2FyTTDBnRaNDjF
+         sPn0UE/698jvWKStHR/xnW28HTcD4bcaFjKyCFKl+J46cQaaP4ReLMv4gZqNy9390qJT
+         ZoLa3Jfj+ovtUmU4mfTHNPjWiQOSRx00Nr1wVXQ/Z0QFeE6fZmU6M6DprHZX04ma+lit
+         /erA==
+X-Gm-Message-State: AJIora9qgVOalVKO5u9poTjrOHYkSaz+tgJ7haDvHn7dBsgB+iv6qoSc
+        nIe6yboDgcHZtwqFw0vLpx0fIAAxOzH/4JhQr4zv8A==
+X-Google-Smtp-Source: AGRyM1ubexV4ZZio45G9VEs9ZwCCiwvszuvc+5DyA79Fo6d49h5TUMvqOxyRyX7e7kpx2hjZfwJJQpUJOqnmCD99wfo=
+X-Received: by 2002:a25:2d59:0:b0:66e:32d3:7653 with SMTP id
+ s25-20020a252d59000000b0066e32d37653mr21902834ybe.625.1657626899153; Tue, 12
+ Jul 2022 04:54:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-13-glider@google.com>
+In-Reply-To: <20220701142310.2188015-13-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 12 Jul 2022 13:54:23 +0200
+Message-ID: <CANpmjNMjAzYtTOkc7m2j1qypjU6zYigKHwAcrHOJpRu0HCbKQA@mail.gmail.com>
+Subject: Re: [PATCH v4 12/45] kmsan: disable instrumentation of unsupported
+ common kernel code
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
-> With the updated eVMCSv1 definition, there's no known 'problematic'
-> controls which are exposed in VMX control MSRs but are not present in
-> eVMCSv1. Get rid of VMX control MSRs filtering for KVM on Hyper-V.
+On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
+>
+> EFI stub cannot be linked with KMSAN runtime, so we disable
+> instrumentation for it.
+>
+> Instrumenting kcov, stackdepot or lockdep leads to infinite recursion
+> caused by instrumentation hooks calling instrumented code again.
+>
+> This patch was previously part of "kmsan: disable KMSAN instrumentation
+> for certain kernel parts", but was split away per Mark Rutland's
+> request.
 
-If I understand correctly we are taking about running KVM as a nested guest of Hyper-V here:
+The "This patch..." paragraph feels out of place, and feels like it
+should be part of a v4 changelog below ---.
 
-Don't we need to check the new CPUID bit and only then use the new fields of eVMCS,
-aka check that the 'cpu' supports the updated eVMCS version?
+> Signed-off-by: Alexander Potapenko <glider@google.com>
 
-Best regards,
-	Maxim Levitsky
+Otherwise,
 
+Reviewed-by: Marco Elver <elver@google.com>
 
-
-> 
-> Note: VMX control MSRs filtering for Hyper-V on KVM
-> (nested_evmcs_filter_control_msr()) stays as even the updated eVMCSv1
-> definition doesn't have all the features implemented by KVM and some
-> fields are still missing. Moreover, nested_evmcs_filter_control_msr()
-> has to support the original eVMCSv1 version when VMM wishes so.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  arch/x86/kvm/vmx/evmcs.c | 13 -------------
->  arch/x86/kvm/vmx/evmcs.h |  1 -
->  arch/x86/kvm/vmx/vmx.c   |  5 -----
->  3 files changed, 19 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index 52a53debd806..b5cfbf7d487b 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -320,19 +320,6 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
->  };
->  const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
->  
-> -#if IS_ENABLED(CONFIG_HYPERV)
-> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
-> -{
-> -       vmcs_conf->cpu_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
-> -       vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
-> -       vmcs_conf->cpu_based_2nd_exec_ctrl &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
-> -       vmcs_conf->cpu_based_3rd_exec_ctrl = 0;
-> -
-> -       vmcs_conf->vmexit_ctrl &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-> -       vmcs_conf->vmentry_ctrl &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-> -}
-> -#endif
-> -
->  bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa)
->  {
->         struct hv_vp_assist_page assist_page;
-> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-> index 4b809c79ae63..0feac101cce4 100644
-> --- a/arch/x86/kvm/vmx/evmcs.h
-> +++ b/arch/x86/kvm/vmx/evmcs.h
-> @@ -203,7 +203,6 @@ static inline void evmcs_load(u64 phys_addr)
->         vp_ap->enlighten_vmentry = 1;
->  }
->  
-> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
->  #else /* !IS_ENABLED(CONFIG_HYPERV) */
->  static __always_inline void evmcs_write64(unsigned long field, u64 value) {}
->  static inline void evmcs_write32(unsigned long field, u32 value) {}
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index b4915d841357..dd905ad72637 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -2689,11 +2689,6 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->         vmcs_conf->vmexit_ctrl         = _vmexit_control;
->         vmcs_conf->vmentry_ctrl        = _vmentry_control;
->  
-> -#if IS_ENABLED(CONFIG_HYPERV)
-> -       if (enlightened_vmcs)
-> -               evmcs_sanitize_exec_ctrls(vmcs_conf);
-> -#endif
-> -
->         return 0;
->  }
->  
-
-
+> Link: https://linux-review.googlesource.com/id/I41ae706bd3474f074f6a870bfc3f0f90e9c720f7
+> ---
+>  drivers/firmware/efi/libstub/Makefile | 1 +
+>  kernel/Makefile                       | 1 +
+>  kernel/locking/Makefile               | 3 ++-
+>  lib/Makefile                          | 1 +
+>  4 files changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/firmware/efi/libstub/Makefile b/drivers/firmware/efi/libstub/Makefile
+> index d0537573501e9..81432d0c904b1 100644
+> --- a/drivers/firmware/efi/libstub/Makefile
+> +++ b/drivers/firmware/efi/libstub/Makefile
+> @@ -46,6 +46,7 @@ GCOV_PROFILE                  := n
+>  # Sanitizer runtimes are unavailable and cannot be linked here.
+>  KASAN_SANITIZE                 := n
+>  KCSAN_SANITIZE                 := n
+> +KMSAN_SANITIZE                 := n
+>  UBSAN_SANITIZE                 := n
+>  OBJECT_FILES_NON_STANDARD      := y
+>
+> diff --git a/kernel/Makefile b/kernel/Makefile
+> index a7e1f49ab2b3b..e47f0526c987f 100644
+> --- a/kernel/Makefile
+> +++ b/kernel/Makefile
+> @@ -38,6 +38,7 @@ KCOV_INSTRUMENT_kcov.o := n
+>  KASAN_SANITIZE_kcov.o := n
+>  KCSAN_SANITIZE_kcov.o := n
+>  UBSAN_SANITIZE_kcov.o := n
+> +KMSAN_SANITIZE_kcov.o := n
+>  CFLAGS_kcov.o := $(call cc-option, -fno-conserve-stack) -fno-stack-protector
+>
+>  # Don't instrument error handlers
+> diff --git a/kernel/locking/Makefile b/kernel/locking/Makefile
+> index d51cabf28f382..ea925731fa40f 100644
+> --- a/kernel/locking/Makefile
+> +++ b/kernel/locking/Makefile
+> @@ -5,8 +5,9 @@ KCOV_INSTRUMENT         := n
+>
+>  obj-y += mutex.o semaphore.o rwsem.o percpu-rwsem.o
+>
+> -# Avoid recursion lockdep -> KCSAN -> ... -> lockdep.
+> +# Avoid recursion lockdep -> sanitizer -> ... -> lockdep.
+>  KCSAN_SANITIZE_lockdep.o := n
+> +KMSAN_SANITIZE_lockdep.o := n
+>
+>  ifdef CONFIG_FUNCTION_TRACER
+>  CFLAGS_REMOVE_lockdep.o = $(CC_FLAGS_FTRACE)
+> diff --git a/lib/Makefile b/lib/Makefile
+> index f99bf61f8bbc6..5056769d00bb6 100644
+> --- a/lib/Makefile
+> +++ b/lib/Makefile
+> @@ -272,6 +272,7 @@ obj-$(CONFIG_POLYNOMIAL) += polynomial.o
+>  CFLAGS_stackdepot.o += -fno-builtin
+>  obj-$(CONFIG_STACKDEPOT) += stackdepot.o
+>  KASAN_SANITIZE_stackdepot.o := n
+> +KMSAN_SANITIZE_stackdepot.o := n
+>  KCOV_INSTRUMENT_stackdepot.o := n
+>
+>  obj-$(CONFIG_REF_TRACKER) += ref_tracker.o
+> --
+> 2.37.0.rc0.161.g10f37bed90-goog
+>
