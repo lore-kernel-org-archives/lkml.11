@@ -2,529 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE57CCCA483
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:07:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E8CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234093AbiGLPHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34280 "EHLO
+        id S233982AbiGLPIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233971AbiGLPGh (ORCPT
+        with ESMTP id S234078AbiGLPGw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:06:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 56A4FBE6A4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657638040;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wOlWhIV+XudVrWBL1T1J9aTKgqmOIUwoY2JjAr1+xlU=;
-        b=Kz73A+IBmFEp8hKkqhLS/fhADCAxXMGTT9gDALdqdOp0oBYR+rfvYjwwzYf+6hhdwAQtv0
-        cFPTOsviapL8mzubOUqmz4sG47CkLtbPIx5PM3h/Cs7xflTUnuYRRJzBuJjALVFDbZ/OJ3
-        rVOwHSvjyC6UA8ycgFylM+pB/P5CdN0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-84-LzZXomZJMP2mco42OnRMGQ-1; Tue, 12 Jul 2022 11:00:35 -0400
-X-MC-Unique: LzZXomZJMP2mco42OnRMGQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 250F0802D2C;
-        Tue, 12 Jul 2022 15:00:34 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.195.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C27502166B26;
-        Tue, 12 Jul 2022 15:00:30 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v6 22/23] HID: bpf: add Surface Dial example
-Date:   Tue, 12 Jul 2022 16:58:49 +0200
-Message-Id: <20220712145850.599666-23-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
-References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+        Tue, 12 Jul 2022 11:06:52 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97A4AC54A4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:01:16 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id o12so7691247pfp.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:01:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=C6szfa/YFuVli7Zl8D3g07FtZCaBqKl0sr0C3s801fw=;
+        b=wvGh1LaGBDR/G4joma/N0cvbJnBEIUQnqZL1xqzrAx2II/seQanvVrR3VC/+z7Zjld
+         zVpL3S1Sbap6Qr3EziCQwuz57jjlFSyqAIG//PrF57ckKsOjYnNA74IslrVRV8nnnvRN
+         3wVRUsNjq8E8LfWdZImw+6t4uy2qdxEczsZkafnLIRX6/tVcYH4YdvtrreW/yTwotczk
+         0N6jnX5GZaEEOxdbD89BmI2kjEa6YY8NeG+QQlMPkGzOPlGhGFtT53OgEj7W2CYR3byM
+         LQOFNKZQ1nRsJMbeAYgWlG0zgQMstkobCqEuCJ2MiVopQxFfrxJf8bduX6B6jN534ryq
+         abmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=C6szfa/YFuVli7Zl8D3g07FtZCaBqKl0sr0C3s801fw=;
+        b=OTwjFh+MOPcyOmGSvoHs/OWoEeIqfwNe3KhI9XfAkjcvvdtzDxKncvvWDgZxccPp8y
+         nCw9tqSMkVYXWk2zlxNu+JpOnqXlGVHq7XK/IWQavmS/eH0MdztvWc66YRK/KSxe/dEV
+         6BM68FhVMk2pcjrPIzxiXXTY7/IWBcEArLUhakR1RrvGDKB5lIv5DBlnZFyL7pICKJ+7
+         ZVd5uooUd2YG2LIpkDelX0DLLD08GSp0MnLdSFPfAwKdCci+L710vbV4pbvw31U6f+/S
+         MwwGNzIxDwLWcDrTl6YSLz3P0GyVsTVL6RlVFAYPdTil2cfOsXdWVRD//LVma/o3cISM
+         +krA==
+X-Gm-Message-State: AJIora9RdQTMAGb54aMstEJcQMFw8WNGlqlN1jUmzqC2LBRmWgCNw5Kp
+        dyK6mbK27EQ1cEVo24b9rk82Og==
+X-Google-Smtp-Source: AGRyM1uF2yZ0fhTWiRIzaCuJhrMoYd2YKnjhN3avJPfSwtQ8ASEEXv5DvqmJeYAEZYa99COktBhysA==
+X-Received: by 2002:a63:9752:0:b0:3c6:5a7a:5bd6 with SMTP id d18-20020a639752000000b003c65a7a5bd6mr21070507pgo.390.1657638073175;
+        Tue, 12 Jul 2022 08:01:13 -0700 (PDT)
+Received: from [10.4.113.6] ([139.177.225.234])
+        by smtp.gmail.com with ESMTPSA id l1-20020a170902f68100b0016bfbd99f64sm6892899plg.118.2022.07.12.08.00.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 08:01:12 -0700 (PDT)
+Message-ID: <6f6a2257-3b60-e312-3ee3-fb08b972dbf2@bytedance.com>
+Date:   Tue, 12 Jul 2022 23:00:55 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 0/5] mm, oom: Introduce per numa node oom for
+ CONSTRAINT_{MEMORY_POLICY,CPUSET}
+Content-Language: en-US
+To:     Michal Hocko <mhocko@suse.com>
+Cc:     Gang Li <ligang.bdlg@bytedance.com>, akpm@linux-foundation.org,
+        surenb@google.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
+        svens@linux.ibm.com, viro@zeniv.linux.org.uk,
+        ebiederm@xmission.com, keescook@chromium.org, rostedt@goodmis.org,
+        mingo@redhat.com, peterz@infradead.org, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org, david@redhat.com,
+        imbrenda@linux.ibm.com, adobriyan@gmail.com,
+        yang.yang29@zte.com.cn, brauner@kernel.org,
+        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
+        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
+        Liam.Howlett@oracle.com, ohoono.kwon@samsung.com,
+        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
+        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
+        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
+        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
+        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
+        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
+        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-mm@kvack.org, linux-perf-users@vger.kernel.org,
+        hezhongkun.hzk@bytedance.com
+References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
+ <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
+ <41ae31a7-6998-be88-858c-744e31a76b2a@bytedance.com>
+ <Ys14oIHL85d/T7s+@dhcp22.suse.cz>
+From:   Abel Wu <wuyun.abel@bytedance.com>
+In-Reply-To: <Ys14oIHL85d/T7s+@dhcp22.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a more complete HID-BPF example.
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+On 7/12/22 9:35 PM, Michal Hocko Wrote:
+> On Tue 12-07-22 19:12:18, Abel Wu wrote:
+> [...]
+>> I was just going through the mail list and happen to see this. There
+>> is another usecase for us about per-numa memory usage.
+>>
+>> Say we have several important latency-critical services sitting inside
+>> different NUMA nodes without intersection. The need for memory of these
+>> LC services varies, so the free memory of each node is also different.
+>> Then we launch several background containers without cpuset constrains
+>> to eat the left resources. Now the problem is that there doesn't seem
+>> like a proper memory policy available to balance the usage between the
+>> nodes, which could lead to memory-heavy LC services suffer from high
+>> memory pressure and fails to meet the SLOs.
+> 
+> I do agree that cpusets would be rather clumsy if usable at all in a
+> scenario when you are trying to mix NUMA bound workloads with those
+> that do not have any NUMA proferences. Could you be more specific about
+> requirements here though?
 
----
+Yes, these LC services are highly sensitive to memory access latency
+and bandwidth, so they are provisioned by NUMA node granule to meet
+their performance requirements. While on the other hand, they usually
+do not make full use of cpu/mem resources which increases the TCO of
+our IDCs, so we have to co-locate them with background tasks.
 
-new in v6
----
- samples/bpf/.gitignore             |   1 +
- samples/bpf/Makefile               |   6 +-
- samples/bpf/hid_surface_dial.bpf.c | 161 +++++++++++++++++++++
- samples/bpf/hid_surface_dial.c     | 216 +++++++++++++++++++++++++++++
- 4 files changed, 383 insertions(+), 1 deletion(-)
- create mode 100644 samples/bpf/hid_surface_dial.bpf.c
- create mode 100644 samples/bpf/hid_surface_dial.c
+Some of these LC services are memory-bound but leave much of cpu's
+capacity unused. In this case we hope the co-located background tasks
+to consume some leftover without introducing obvious mm overhead to
+the LC services.
 
-diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
-index 65440bd618b2..6a1079d3d064 100644
---- a/samples/bpf/.gitignore
-+++ b/samples/bpf/.gitignore
-@@ -3,6 +3,7 @@ cpustat
- fds_example
- hbm
- hid_mouse
-+hid_surface_dial
- ibumad
- lathist
- lwt_len_hist
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index e67c1a0fed1c..d1e40aff0e55 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -58,6 +58,7 @@ tprogs-y += xdp_redirect
- tprogs-y += xdp_monitor
- 
- tprogs-y += hid_mouse
-+tprogs-y += hid_surface_dial
- 
- # Libbpf dependencies
- LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
-@@ -122,6 +123,7 @@ xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
- xdp_router_ipv4-objs := xdp_router_ipv4_user.o $(XDP_SAMPLE)
- 
- hid_mouse-objs := hid_mouse.o
-+hid_surface_dial-objs := hid_surface_dial.o
- 
- # Tell kbuild to always build the programs
- always-y := $(tprogs-y)
-@@ -345,6 +347,7 @@ $(obj)/hbm.o: $(src)/hbm.h
- $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- 
- $(obj)/hid_mouse.o: $(obj)/hid_mouse.skel.h
-+$(obj)/hid_surface_dial.o: $(obj)/hid_surface_dial.skel.h
- 
- # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
- # TPROGS_CFLAGS causes conflicts
-@@ -431,9 +434,10 @@ $(BPF_SKELS_LINKED): $(BPF_OBJS_LINKED) $(BPFTOOL)
- 	$(Q)$(BPFTOOL) gen skeleton $(@:.skel.h=.lbpf.o) name $(notdir $(@:.skel.h=)) > $@
- 
- # Generate BPF skeletons for non XDP progs
--OTHER_BPF_SKELS := hid_mouse.skel.h
-+OTHER_BPF_SKELS := hid_mouse.skel.h hid_surface_dial.skel.h
- 
- hid_mouse.skel.h-deps := hid_mouse.bpf.o
-+hid_surface_dial.skel.h-deps := hid_surface_dial.bpf.o
- 
- OTHER_BPF_SRCS_LINKED := $(patsubst %.skel.h,%.bpf.c, $(OTHER_BPF_SKELS))
- OTHER_BPF_OBJS_LINKED := $(patsubst %.bpf.c,$(obj)/%.bpf.o, $(OTHER_BPF_SRCS_LINKED))
-diff --git a/samples/bpf/hid_surface_dial.bpf.c b/samples/bpf/hid_surface_dial.bpf.c
-new file mode 100644
-index 000000000000..16c821d3decf
---- /dev/null
-+++ b/samples/bpf/hid_surface_dial.bpf.c
-@@ -0,0 +1,161 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
-+ */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+#define HID_UP_BUTTON		0x0009
-+#define HID_GD_WHEEL		0x0038
-+
-+/* following are kfuncs exported by HID for HID-BPF */
-+extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
-+			      unsigned int offset,
-+			      const size_t __sz) __ksym;
-+extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
-+extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
-+extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
-+extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
-+			      __u8 *data,
-+			      size_t buf__sz,
-+			      enum hid_report_type type,
-+			      enum hid_class_request reqtype) __ksym;
-+
-+struct attach_prog_args {
-+	int prog_fd;
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+SEC("syscall")
-+int attach_prog(struct attach_prog_args *ctx)
-+{
-+	ctx->retval = hid_bpf_attach_prog(ctx->hid,
-+					  ctx->prog_fd,
-+					  0);
-+	return 0;
-+}
-+
-+SEC("fmod_ret/hid_bpf_device_event")
-+int BPF_PROG(hid_event, struct hid_bpf_ctx *hctx)
-+{
-+	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* Touch */
-+	data[1] &= 0xfd;
-+
-+	/* X */
-+	data[4] = 0;
-+	data[5] = 0;
-+
-+	/* Y */
-+	data[6] = 0;
-+	data[7] = 0;
-+
-+	return 0;
-+}
-+
-+/* 72 == 360 / 5 -> 1 report every 5 degrees */
-+int resolution = 72;
-+int physical = 5;
-+
-+struct haptic_syscall_args {
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+static __u8 haptic_data[8];
-+
-+SEC("syscall")
-+int set_haptic(struct haptic_syscall_args *args)
-+{
-+	struct hid_bpf_ctx *ctx;
-+	const size_t size = sizeof(haptic_data);
-+	u16 *res;
-+	int ret;
-+
-+	if (size > sizeof(haptic_data))
-+		return -7; /* -E2BIG */
-+
-+	ctx = hid_bpf_allocate_context(args->hid);
-+	if (!ctx)
-+		return -1; /* EPERM check */
-+
-+	haptic_data[0] = 1;  /* report ID */
-+
-+	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
-+
-+	bpf_printk("probed/remove event ret value: %d", ret);
-+	bpf_printk("buf: %02x %02x %02x",
-+		   haptic_data[0],
-+		   haptic_data[1],
-+		   haptic_data[2]);
-+	bpf_printk("     %02x %02x %02x",
-+		   haptic_data[3],
-+		   haptic_data[4],
-+		   haptic_data[5]);
-+	bpf_printk("     %02x %02x",
-+		   haptic_data[6],
-+		   haptic_data[7]);
-+
-+	/* whenever resolution multiplier is not 3600, we have the fixed report descriptor */
-+	res = (u16 *)&haptic_data[1];
-+	if (*res != 3600) {
-+//		haptic_data[1] = 72; /* resolution multiplier */
-+//		haptic_data[2] = 0;  /* resolution multiplier */
-+//		haptic_data[3] = 0;  /* Repeat Count */
-+		haptic_data[4] = 3;  /* haptic Auto Trigger */
-+//		haptic_data[5] = 5;  /* Waveform Cutoff Time */
-+//		haptic_data[6] = 80; /* Retrigger Period */
-+//		haptic_data[7] = 0;  /* Retrigger Period */
-+	} else {
-+		haptic_data[4] = 0;
-+	}
-+
-+	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
-+
-+	bpf_printk("set haptic ret value: %d -> %d", ret, haptic_data[4]);
-+
-+	args->retval = ret;
-+
-+	hid_bpf_release_context(ctx);
-+
-+	return 0;
-+}
-+
-+/* Convert REL_DIAL into REL_WHEEL */
-+SEC("fmod_ret/hid_bpf_rdesc_fixup")
-+int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
-+{
-+	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
-+	__u16 *res, *phys;
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	/* Convert TOUCH into a button */
-+	data[31] = HID_UP_BUTTON;
-+	data[33] = 2;
-+
-+	/* Convert REL_DIAL into REL_WHEEL */
-+	data[45] = HID_GD_WHEEL;
-+
-+	/* Change Resolution Multiplier */
-+	phys = (__u16 *)&data[61];
-+	*phys = physical;
-+	res = (__u16 *)&data[66];
-+	*res = resolution;
-+
-+	/* Convert X,Y from Abs to Rel */
-+	data[88] = 0x06;
-+	data[98] = 0x06;
-+
-+	return 0;
-+}
-+
-+char _license[] SEC("license") = "GPL";
-+u32 _version SEC("version") = 1;
-diff --git a/samples/bpf/hid_surface_dial.c b/samples/bpf/hid_surface_dial.c
-new file mode 100644
-index 000000000000..b901c578afac
---- /dev/null
-+++ b/samples/bpf/hid_surface_dial.c
-@@ -0,0 +1,216 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (c) 2022 Benjamin Tissoires
-+ */
-+
-+
-+/* not sure why but this doesn't get preoperly imported */
-+#define __must_check
-+
-+#include <assert.h>
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <libgen.h>
-+#include <signal.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <sys/resource.h>
-+#include <unistd.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/errno.h>
-+
-+#include "bpf_util.h"
-+#include <bpf/bpf.h>
-+#include <bpf/libbpf.h>
-+
-+#include "hid_surface_dial.skel.h"
-+
-+static bool running = true;
-+
-+struct attach_prog_args {
-+	int prog_fd;
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+struct haptic_syscall_args {
-+	unsigned int hid;
-+	int retval;
-+};
-+
-+static void int_exit(int sig)
-+{
-+	running = false;
-+	exit(0);
-+}
-+
-+static void usage(const char *prog)
-+{
-+	fprintf(stderr,
-+		"%s: %s [OPTIONS] /sys/bus/hid/devices/0BUS:0VID:0PID:00ID\n\n"
-+		"  OPTIONS:\n"
-+		"    -r N\t set the given resolution to the device (number of ticks per 360°)\n\n",
-+		__func__, prog);
-+}
-+
-+static int get_hid_id(const char *path)
-+{
-+	const char *str_id, *dir;
-+	char uevent[1024];
-+	int fd;
-+
-+	memset(uevent, 0, sizeof(uevent));
-+	snprintf(uevent, sizeof(uevent) - 1, "%s/uevent", path);
-+
-+	fd = open(uevent, O_RDONLY | O_NONBLOCK);
-+	if (fd < 0)
-+		return -ENOENT;
-+
-+	close(fd);
-+
-+	dir = basename((char *)path);
-+
-+	str_id = dir + sizeof("0003:0001:0A37.");
-+	return (int)strtol(str_id, NULL, 16);
-+}
-+
-+static int attach_prog(struct hid_surface_dial_lskel *skel, struct bpf_program *prog, int hid_id)
-+{
-+	struct attach_prog_args args = {
-+		.hid = hid_id,
-+		.retval = -1,
-+	};
-+	int attach_fd, err;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
-+			    .ctx_in = &args,
-+			    .ctx_size_in = sizeof(args),
-+	);
-+
-+	attach_fd = bpf_program__fd(skel->progs.attach_prog);
-+	if (attach_fd < 0) {
-+		fprintf(stderr, "can't locate attach prog: %m\n");
-+		return 1;
-+	}
-+
-+	args.prog_fd = bpf_program__fd(prog);
-+	err = bpf_prog_test_run_opts(attach_fd, &tattr);
-+	if (err) {
-+		fprintf(stderr, "can't attach prog to hid device %d: %m (err: %d)\n",
-+			hid_id, err);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+static int set_haptic(struct hid_surface_dial_lskel *skel, int hid_id)
-+{
-+	struct haptic_syscall_args args = {
-+		.hid = hid_id,
-+		.retval = -1,
-+	};
-+	int haptic_fd, err;
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
-+			    .ctx_in = &args,
-+			    .ctx_size_in = sizeof(args),
-+	);
-+
-+	haptic_fd = bpf_program__fd(skel->progs.set_haptic);
-+	if (haptic_fd < 0) {
-+		fprintf(stderr, "can't locate haptic prog: %m\n");
-+		return 1;
-+	}
-+
-+	err = bpf_prog_test_run_opts(haptic_fd, &tattr);
-+	if (err) {
-+		fprintf(stderr, "can't set haptic configuration to hid device %d: %m (err: %d)\n",
-+			hid_id, err);
-+		return 1;
-+	}
-+	return 0;
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	struct hid_surface_dial_lskel *skel;
-+	struct bpf_program *prog;
-+	const char *optstr = "r:";
-+	const char *sysfs_path;
-+	int opt, hid_id, resolution = 72;
-+
-+	while ((opt = getopt(argc, argv, optstr)) != -1) {
-+		switch (opt) {
-+		case 'r':
-+			{
-+				char *endp = NULL;
-+				long l = -1;
-+
-+				if (optarg) {
-+					l = strtol(optarg, &endp, 10);
-+					if (endp && *endp)
-+						l = -1;
-+				}
-+
-+				if (l < 0) {
-+					fprintf(stderr,
-+						"invalid r option %s - expecting a number\n",
-+						optarg ? optarg : "");
-+					exit(EXIT_FAILURE);
-+				};
-+
-+				resolution = (int) l;
-+				break;
-+			}
-+		default:
-+			usage(basename(argv[0]));
-+			return 1;
-+		}
-+	}
-+
-+	if (optind == argc) {
-+		usage(basename(argv[0]));
-+		return 1;
-+	}
-+
-+	sysfs_path = argv[optind];
-+	if (!sysfs_path) {
-+		perror("sysfs");
-+		return 1;
-+	}
-+
-+	skel = hid_surface_dial_lskel__open_and_load();
-+	if (!skel) {
-+		fprintf(stderr, "%s  %s:%d", __func__, __FILE__, __LINE__);
-+		return -1;
-+	}
-+
-+	hid_id = get_hid_id(sysfs_path);
-+	if (hid_id < 0) {
-+		fprintf(stderr, "can not open HID device: %m\n");
-+		return 1;
-+	}
-+
-+	skel->data->resolution = resolution;
-+	skel->data->physical = (int)(resolution / 72);
-+
-+	bpf_object__for_each_program(prog, *skel->skeleton->obj) {
-+		/* ignore syscalls */
-+		if (bpf_program__get_type(prog) != BPF_PROG_TYPE_TRACING)
-+			continue;
-+
-+		attach_prog(skel, prog, hid_id);
-+	}
-+
-+	signal(SIGINT, int_exit);
-+	signal(SIGTERM, int_exit);
-+
-+	set_haptic(skel, hid_id);
-+
-+	while (running)
-+		;
-+
-+	hid_surface_dial_lskel__destroy(skel);
-+
-+	return 0;
-+}
--- 
-2.36.1
+> 
+> Let's say you run those latency critical services with "simple" memory
+> policies and mix them with the other workload without any policies in
+> place so they compete over memory. It is not really clear to me how can
+> you achieve any reasonable QoS in such an environment. Your latency
+> critical servises will be more constrained than the non-critical ones
+> yet they are more demanding AFAIU.
 
+Yes, the QoS over memory is the biggest block in the way (the other
+resources are relatively easier). For now, we hacked a new mpol to
+achieve weighted-interleave behavior to balance the memory usage across
+NUMA nodes, and only set memcg protections to the LC services. If the
+memory pressure is still high, the background tasks will be killed.
+Ideas? Thanks!
+
+Abel
