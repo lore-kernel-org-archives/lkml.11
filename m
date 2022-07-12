@@ -2,151 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42046C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7BE3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:22:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232589AbiGLKVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        id S232645AbiGLKWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:22:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232632AbiGLKVu (ORCPT
+        with ESMTP id S232625AbiGLKWW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:21:50 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10C47ADD58;
-        Tue, 12 Jul 2022 03:21:48 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id z11so4401280qkz.13;
-        Tue, 12 Jul 2022 03:21:48 -0700 (PDT)
+        Tue, 12 Jul 2022 06:22:22 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D6AACF6A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:22:21 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id os14so13493692ejb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:22:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ju3dMMy387I8KJ90v34qgF9dDa8M7KnfAZaqnz942SY=;
-        b=XN0y2hOzC002RPOTy41oFPJkCfNO6fWg62USwJfIPzZYl/lzL1XMgE/9NZmstcGLhR
-         gZ0O3WQSBuR9zIRMmof9b1kdFijxT19nqJS3b9ObYN28vNsL3vjjalQQvC0PYS48TwJ7
-         dDko83C8P3siwbP3wfuN0LovSujneRqfMlAuiPqYVmbFS4HI8AKbJGqzvyTOjwLXtyx6
-         5NhrKFw6yl7eL3GnaWZW2okxjnpINRC9xjICM1EnhKKW9syeHYkzPlViDOmW1YYKCa6d
-         3BN66mqH6rmE9Y1jm/X9jJbbKd0LXc2wXBP7hkw01zQQUwQam1o4QRG7rRwfoElbnnIY
-         FOCg==
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PjUTXd6Ka6EafYLyFo8kWAbBISE3yM/FgOqSMXCb4Ck=;
+        b=yMmRBuKMcX7EAI6IdgrUOclHBEexv4UwEeETQGtxCqNwF4GYaXH+f9jOorD1uG4OWG
+         rkqs5dmY+Xqy06R0JiDpYJ3ujheVfPw+CMEMEo0/QRgE6eiku3QV/n0wBr2wZEq10+kg
+         VBtvjsB/dDdw5VvH1qL5PlLlGnMyvsLZXdbfn/nfSvEiC6+0SF9jG6un3UzQAdNz9zYp
+         Ot+fhcPXlSlfWd5icXUZsv2DKL5pkAto3c2PssvHIluwoPUJJOewXc8N49ggJIBZwNra
+         O05vJd8EWuuosQxG4tzhG6QKBQQJRvEPa1GTnm1weHxS3ekvEu5l1ShEJ7cEouPEx3Bp
+         Gfuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ju3dMMy387I8KJ90v34qgF9dDa8M7KnfAZaqnz942SY=;
-        b=haA66Ev/8r+wURQEruT+skE0OC3IwXNoMvNs+ooHpHR6ZyYUoA2k2yAUCFQPHf9Try
-         2fZUSGwcrThgZdKOMXrd2FdUqlbhh//5I607rzbNuli6LaWy3JMSgANL1e9ANTQm8fPI
-         Iy9biC264eFhYwPPg3dp2fyqQ+CPpMUE5ONrEFOV6Z1B6xrMPB+5nlA/cGrABpcSmiCz
-         cKDROUiN2wS8u+0TIHZS5wTD1ZE2a4PGIxf33U7DrU3eYjKSadiCKO+H+cLCWbQTwSqA
-         DpZGncenxZ7qZysGtoSj8uvat4NabFV2r7EaISblkmQGl4e98dpryrjtzf3wyP8tPt8R
-         sa9g==
-X-Gm-Message-State: AJIora+VZdu9C4kHNIp8L/91Qe+K6cBOshGLZ5m3YrqU8roBMyB6ZK5R
-        h1meg+7q5E7Jb0x33gW8lis=
-X-Google-Smtp-Source: AGRyM1sX7oW1+ZN3W1I/IZvVuZA53av5CErnYWuQpB+gETPBaBwBaSKvWgwrrw26KVMtTdcd+tIcRQ==
-X-Received: by 2002:a05:620a:bc9:b0:6a6:5d5a:4306 with SMTP id s9-20020a05620a0bc900b006a65d5a4306mr14649676qki.391.1657621308102;
-        Tue, 12 Jul 2022 03:21:48 -0700 (PDT)
-Received: from localhost.localdomain ([136.56.17.68])
-        by smtp.gmail.com with ESMTPSA id m3-20020a05620a24c300b006b53fe19c41sm9195177qkn.14.2022.07.12.03.21.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 03:21:47 -0700 (PDT)
-From:   Josh Hant <joshuahant@gmail.com>
-To:     jbaron@akamai.com
-Cc:     joshuahant@gmail.com, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] EDAC/ie31200: Add Skylake-S support
-Date:   Tue, 12 Jul 2022 06:21:21 -0400
-Message-Id: <20220712102121.20812-1-joshuahant@gmail.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <8e44d499-ad55-d90a-d4e6-2a97aa6d0c41@akamai.com>
-References: <8e44d499-ad55-d90a-d4e6-2a97aa6d0c41@akamai.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PjUTXd6Ka6EafYLyFo8kWAbBISE3yM/FgOqSMXCb4Ck=;
+        b=bqJvDDgiE0WjcLty7ek100IDOKMndWDWRZYjd5bxJGxIX1ry1uIEAC4vDncRs+pEAK
+         nCq6XVbHNubI7HS6Eo34MVQpj3oRTpjkLSdTGwzbwAlM7k090A1/I7qtBVLylG/zg6C2
+         UPO+uOmuYaugVdNYmnng3h7SKnLnVNyBIcFI+xdkJTEd7FgsGzC+1EsOKuZi5JBKRdyk
+         WNuqZtP+e2clxWFKfM0WSmZ0Zi5ZuiZ8jWICyqz+CIdoFBunzpuIv7jSPLSY37DrVElt
+         tnlSe5Q7GxuWwH8UnhPs0/N2VjZRVEUWbhcFHF47lEtkV20vwe2RzdB8EiNiFfO4+Oc0
+         ZO4A==
+X-Gm-Message-State: AJIora+PvXILVvqapOiEVpuPZwMFOcFH1Tqgzksot2SjX5vXGhXq3+ue
+        jF4nkS4ufgCngoxBY5hruBLO1CkmPrESuphehwNGzg==
+X-Google-Smtp-Source: AGRyM1usxGX2KX0vaJRhLffTri3NjkskE7Nv66mhSACHacWR3cYW4Kt1NswdxsyRhDtnvrQjbcmYb2B9fO57Hz3eNbM=
+X-Received: by 2002:a17:907:2c4a:b0:72b:5b9b:9c50 with SMTP id
+ hf10-20020a1709072c4a00b0072b5b9b9c50mr8247047ejc.636.1657621340255; Tue, 12
+ Jul 2022 03:22:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220711081257.132901-1-maz@kernel.org>
+In-Reply-To: <20220711081257.132901-1-maz@kernel.org>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 12 Jul 2022 12:22:09 +0200
+Message-ID: <CAMRc=Mf-FEKu_HrZvsL7+H2NTnME6mVV4AjMmZkEOn0Ch+4yMQ@mail.gmail.com>
+Subject: Re: [PATCH] gpio: thunderx: Don't directly include asm-generic/msi.h
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        kernel-team@android.com, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linus Walleij <linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device IDs for Skylake-S CPUs according to datasheet.
+On Mon, Jul 11, 2022 at 10:13 AM Marc Zyngier <maz@kernel.org> wrote:
+>
+> On architectures that require it, asm-generic/msi.h is already
+> dragged in by the higher level include files, and is commonly
+> refered to as 'asm/msi.h'.
+>
+> It is also architecture specific, and breaks compilation in
+> a pretty bad way now that linux/gpio/driver.h includes asm/msi.h
+> (which drags a conflicting but nonetheless correct version
+> of msi_alloc_info_t on x86).
+>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Marc Zyngier <maz@kernel.org>
+> Link: https://lore.kernel.org/r/20220711154252.4b88a601@canb.auug.org.au
+> Fixes: 91a29af413de ("gpio: Remove dynamic allocation from populate_parent_alloc_arg()")
+> Cc: Bartosz Golaszewski <brgl@bgdev.pl>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/gpio/gpio-thunderx.c | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/drivers/gpio/gpio-thunderx.c b/drivers/gpio/gpio-thunderx.c
+> index e1dedbca0c85..cc62c6e64103 100644
+> --- a/drivers/gpio/gpio-thunderx.c
+> +++ b/drivers/gpio/gpio-thunderx.c
+> @@ -15,8 +15,6 @@
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+>  #include <linux/spinlock.h>
+> -#include <asm-generic/msi.h>
+> -
+>
+>  #define GPIO_RX_DAT    0x0
+>  #define GPIO_TX_SET    0x8
+> --
+> 2.34.1
+>
 
-Signed-off-by: Josh Hant <joshuahant@gmail.com>
----
-Hi Jason,
+Applied for fixes, thanks!
 
-Sorry for the late response. I added the missing check you asked for. I
-kept the documentation the same for now. I found the register in table 3
-of the original document I linked. If you would rather I provide the one
-you linked, I'll do that in the next patch.
-
-I confirmed that the name and size in /proc/meminfo is consistent with
-what is in /sys/devices/system/edac/mc/mc0.
-
-Thanks
--Josh
- drivers/edac/ie31200_edac.c | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/edac/ie31200_edac.c b/drivers/edac/ie31200_edac.c
-index 9a9ff5ad611a..3d322603bce8 100644
---- a/drivers/edac/ie31200_edac.c
-+++ b/drivers/edac/ie31200_edac.c
-@@ -20,11 +20,14 @@
-  * 0c08: Xeon E3-1200 v3 Processor DRAM Controller
-  * 1918: Xeon E3-1200 v5 Skylake Host Bridge/DRAM Registers
-  * 5918: Xeon E3-1200 Xeon E3-1200 v6/7th Gen Core Processor Host Bridge/DRAM Registers
-+ * 190f: 6th Gen Core Dual-Core Processor Host Bridge/DRAM Registers
-+ * 191f: 6th Gen Core Quad-Core Processor Host Bridge/DRAM Registers
-  * 3e..: 8th/9th Gen Core Processor Host Bridge/DRAM Registers
-  *
-  * Based on Intel specification:
-  * https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e3-1200v3-vol-2-datasheet.pdf
-  * http://www.intel.com/content/www/us/en/processors/xeon/xeon-e3-1200-family-vol-2-datasheet.html
-+ * https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/desktop-6th-gen-core-family-datasheet-vol-2.pdf
-  * https://www.intel.com/content/www/us/en/processors/core/7th-gen-core-family-mobile-h-processor-lines-datasheet-vol-2.html
-  * https://www.intel.com/content/www/us/en/products/docs/processors/core/8th-gen-core-family-datasheet-vol-2.html
-  *
-@@ -53,15 +56,17 @@
- #define ie31200_printk(level, fmt, arg...) \
- 	edac_printk(level, "ie31200", fmt, ##arg)
-
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_1 0x0108
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_2 0x010c
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_3 0x0150
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_4 0x0158
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_5 0x015c
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_6 0x0c04
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_7 0x0c08
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_8 0x1918
--#define PCI_DEVICE_ID_INTEL_IE31200_HB_9 0x5918
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_1  0x0108
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_2  0x010c
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_3  0x0150
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_4  0x0158
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_5  0x015c
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_6  0x0c04
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_7  0x0c08
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_8  0x190F
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_9  0x1918
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_10 0x191F
-+#define PCI_DEVICE_ID_INTEL_IE31200_HB_11 0x5918
-
- /* Coffee Lake-S */
- #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK 0x3e00
-@@ -80,6 +85,8 @@
- #define DEVICE_ID_SKYLAKE_OR_LATER(did)                                        \
- 	(((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_8) ||                        \
- 	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_9) ||                        \
-+	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_10) ||                       \
-+	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_11) ||                       \
- 	 (((did) & PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK) ==                 \
- 	  PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK))
-
-@@ -577,6 +584,8 @@ static const struct pci_device_id ie31200_pci_tbl[] = {
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_7),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_8),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_9),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
-+	{ PCI_VEND_DEV(INTEL, IE31200_HB_10),     PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
-+	{ PCI_VEND_DEV(INTEL, IE31200_HB_11),     PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_1),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_2),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
- 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_3),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
---
-2.34.3
-
+Bart
