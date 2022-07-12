@@ -2,117 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6A5BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4A4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:58:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232744AbiGLK6D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:58:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
+        id S232802AbiGLK6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232802AbiGLK5k (ORCPT
+        with ESMTP id S232864AbiGLK57 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:57:40 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA64AEF48;
-        Tue, 12 Jul 2022 03:57:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657623459; x=1689159459;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=owzfM9nmoJGk0jCIdaocCpnOUllHnhVFqerbRCX6fdo=;
-  b=FMbQiu7WgTGsvM0n/SlV7z6lXvjq0YahDAAGmISLG8WpE6FtMkv4iXCx
-   Vi61ArVm7e0UaY/Xad5xrTq2GUAqGTqFf7Tp5GLlM5eOsYvv6WaXMwdSI
-   40uWr3gmwZjubLcokwuAlHhDQPB6R/hZ/z5ZxReRQSrVZTQjsh+zuNrXu
-   XQJwjvbI2V2mLjln+ZWdoY+GYn2RNR4pzVkVNQ7RZ2STq7GZCJ7tCp9f2
-   gcM6RejMQs8xszEdo2hM55p9pJOyp5miQxy1INR7rubvK444UXcpPi+zD
-   JnsS7TR3323KLvb6AEMzhAQ29X1nl7eG8+1v+eQTqXxEMol5qObvx9MP3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="267938972"
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="267938972"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 03:57:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="592589842"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jul 2022 03:57:36 -0700
-Date:   Tue, 12 Jul 2022 18:54:19 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Chao Gao <chao.gao@intel.com>
-Cc:     Isaku Yamahata <isaku.yamahata@gmail.com>,
-        isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        chao.p.peng@intel.com
-Subject: Re: [PATCH v7 000/102] KVM TDX basic feature support
-Message-ID: <20220712105419.GB2805143@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <20220711151701.GA1375147@ls.amr.corp.intel.com>
- <20220712050714.GA26573@gao-cwp>
+        Tue, 12 Jul 2022 06:57:59 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2130FAF755;
+        Tue, 12 Jul 2022 03:57:52 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3006466018EA;
+        Tue, 12 Jul 2022 11:57:50 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657623470;
+        bh=zNavgn7eqp0AZ8YWzxsjeIyE+kpCiuIr7vB2/QMskHA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NoVfHOzb7wbgqSNF8TfU3MKhpSjp7SYxbjN5LvVc7V6o94SAgp8XgNDf5rH3bALLn
+         cWmVCsK3A8WlH4wjg4TXj9TYwMy++nBR91YevrkvdOocLO4uw53p5hspkCZzD53U7+
+         0ICR8b08Y/dDHDT+2sUQh6Lo9hJ35XaOgz+ozcixv/VPPEnVqYCyINTDgIM1pKGtqf
+         xV6BAcQN3KJYNOWNd7ZBguGDL+48p/mN0CQ5Bwj1Sy1rPkPB+wbNju4PFzDYPdfQT8
+         6d13aJ9MebqiRUNwt2NBYSLjcHjFQDuOiDG8GkFoK3F/rFf3kMSYdYiZ8EFEAuLcYI
+         T1YXJb117NF0A==
+Message-ID: <9102680e-2c4c-6c62-0255-5f3f669dd16c@collabora.com>
+Date:   Tue, 12 Jul 2022 12:57:47 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712050714.GA26573@gao-cwp>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] clk: mediatek: Don't check HW status for mt8192/5's
+ imp_iic_wrap clocks
+Content-Language: en-US
+To:     Chen-Yu Tsai <wenst@chromium.org>
+Cc:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>, Stephen Boyd <sboyd@kernel.org>,
+        kernel@collabora.com, Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Ikjoon Jang <ikjn@chromium.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Miles Chen <miles.chen@mediatek.com>,
+        Ran Jianping <ran.jianping@zte.com.cn>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <20220711205733.203963-1-nfraprado@collabora.com>
+ <CAGXv+5Enkz20o8BLXmnCUBmB930sH+20U=XvTWA82neaiqqc2A@mail.gmail.com>
+ <473aa749-fcfe-bd38-0d83-95375aeef8a3@collabora.com>
+ <CAGXv+5E+HVi2kxkRrwhWhq2XgbmfCxj+ZywPT4orBXTxtJ7X1Q@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAGXv+5E+HVi2kxkRrwhWhq2XgbmfCxj+ZywPT4orBXTxtJ7X1Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 01:07:20PM +0800, Chao Gao wrote:
-> On Mon, Jul 11, 2022 at 08:17:01AM -0700, Isaku Yamahata wrote:
-> >Hi. Because my description on large page support was terse, I wrote up more
-> >detailed one.  Any feedback/thoughts on large page support?
-> >
-> >TDP MMU large page support design
-> >
-> >Two main discussion points
-> >* how to track page status. private vs shared, no-largepage vs can-be-largepage
+Il 12/07/22 12:56, Chen-Yu Tsai ha scritto:
+> On Tue, Jul 12, 2022 at 6:55 PM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+>>
+>> Il 12/07/22 12:44, Chen-Yu Tsai ha scritto:
+>>> Hi,
+>>>
+>>> On Tue, Jul 12, 2022 at 4:57 AM Nícolas F. R. A. Prado
+>>> <nfraprado@collabora.com> wrote:
+>>>>
+>>>> The imp_iic_wrap clocks on mt8192/mt8195 require that the i2c_sel parent
+>>>> clock be enabled before their hardware status can be checked. Since this
+>>>> wasn't taken into account, reading from the clk_summary debugfs file
+>>>> would cause the system to completely freeze.
+>>>>
+>>>> Assuming that this clock is managed only by the kernel, and not by any
+>>>> firmware, simply drop the is_enabled() optional callback and instead
+>>>> rely on the enable count for the imp_iic_wrap clocks.
+>>>
+>>> That's the wrong way to go about it.
+>>>
+>>> The I2C clocks already have the CLK_OPS_PARENT_ENABLE flag set. So the
+>>> issue is that somewhere in the clk core, a piece of code is not honoring
+>>> that flag.
+>>>
+>>> And it seems that's in more than one place.
+>>>
+>>
+>> Uhm, you're right. I gave my Tested-by, but not a Reviewed-by because I
+>> wasn't really convinced about this solution being the best.
+>>
+>> Now that I think of it, the solution may be as simple as:
+>>
+>> clk.c
+>>
+>> static bool clk_core_is_enabled(struct clk_core *core)
+>> {
+>>          bool ret = false;
+>>
+>>          /*
+>>           * If this clock needs parent enabled, but its parent is
+>>           * off, we directly return false for two reasons:
+>>           * 1. This clock being enabled would be impossible
+>>           * 2. The platform may crash for unclocked access while
+>>           *    reading the status of this clock (where a .is_enabled
+>>           *    callback is provided).
+>>           */
+>>          if (core->flags & CLK_OPS_PARENT_ENABLE &&
+>>              !clk_core_is_enabled(core->parent))
+>>                  return false;
+>>
+>>          ... etc etc etc ...
+>> }
+>>
+>> Nícolas, did you try this approach?
 > 
-> ...
+> I have a patch ready, but I got distracted by other stuff today.
 > 
-> >
-> >Tracking private/shared and large page mappable
-> >-----------------------------------------------
-> >VMM needs to track that page is mapped as private or shared at 4KB granularity.
-> >For efficiency of EPT violation path (****), at 2MB and 1GB level, VMM should
-> >track the page can be mapped as a large page (regarding private/shared).  VMM
-> >updates it on MapGPA and references it on the EPT violation path. (****)
+
+Let's just wait for your patch then, seems like being the most sensible option.
+
+Cheers!
+
+> ChenYu
 > 
-> Isaku,
-> 
-> + Peng Chao
-> 
-> Doesn't UPM guarantee that 2MB/1GB large page in CR3 should be either all
-> private or all shared?
-> 
-> KVM always retrieves the mapping level in CR3 and enforces that EPT's
-> page level is not greater than that in CR3. My point is if UPM already enforces
-> no mixed pages in a large page, then KVM needn't do that again (UPM can
-> be trusted).
+>>> Regards
+>>> ChenYu
+>>>
+>>>> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+>>>>
+>>>> ---
+>>>>
+>>>>    drivers/clk/mediatek/clk-gate.c                | 6 ++++++
+>>>>    drivers/clk/mediatek/clk-gate.h                | 1 +
+>>>>    drivers/clk/mediatek/clk-mt8192-imp_iic_wrap.c | 2 +-
+>>>>    drivers/clk/mediatek/clk-mt8195-imp_iic_wrap.c | 2 +-
+>>>>    4 files changed, 9 insertions(+), 2 deletions(-)
+>>>>
+>>>> diff --git a/drivers/clk/mediatek/clk-gate.c b/drivers/clk/mediatek/clk-gate.c
+>>>> index 421806236228..8e7c719a69b3 100644
+>>>> --- a/drivers/clk/mediatek/clk-gate.c
+>>>> +++ b/drivers/clk/mediatek/clk-gate.c
+>>>> @@ -124,6 +124,12 @@ static void mtk_cg_disable_inv_no_setclr(struct clk_hw *hw)
+>>>>           mtk_cg_clr_bit_no_setclr(hw);
+>>>>    }
+>>>>
+>>>> +const struct clk_ops mtk_clk_gate_ops_setclr_counted = {
+>>>> +       .enable         = mtk_cg_enable,
+>>>> +       .disable        = mtk_cg_disable,
+>>>> +};
+>>>> +EXPORT_SYMBOL_GPL(mtk_clk_gate_ops_setclr_counted);
+>>>> +
+>>>>    const struct clk_ops mtk_clk_gate_ops_setclr = {
+>>>>           .is_enabled     = mtk_cg_bit_is_cleared,
+>>>>           .enable         = mtk_cg_enable,
+>>>> diff --git a/drivers/clk/mediatek/clk-gate.h b/drivers/clk/mediatek/clk-gate.h
+>>>> index d9897ef53528..b5502b2911f5 100644
+>>>> --- a/drivers/clk/mediatek/clk-gate.h
+>>>> +++ b/drivers/clk/mediatek/clk-gate.h
+>>>> @@ -19,6 +19,7 @@ extern const struct clk_ops mtk_clk_gate_ops_setclr;
+>>>>    extern const struct clk_ops mtk_clk_gate_ops_setclr_inv;
+>>>>    extern const struct clk_ops mtk_clk_gate_ops_no_setclr;
+>>>>    extern const struct clk_ops mtk_clk_gate_ops_no_setclr_inv;
+>>>> +extern const struct clk_ops mtk_clk_gate_ops_setclr_counted;
+>>>>
+>>>>    struct mtk_gate_regs {
+>>>>           u32 sta_ofs;
+>>>> diff --git a/drivers/clk/mediatek/clk-mt8192-imp_iic_wrap.c b/drivers/clk/mediatek/clk-mt8192-imp_iic_wrap.c
+>>>> index 700356ac6a58..900ee601169c 100644
+>>>> --- a/drivers/clk/mediatek/clk-mt8192-imp_iic_wrap.c
+>>>> +++ b/drivers/clk/mediatek/clk-mt8192-imp_iic_wrap.c
+>>>> @@ -20,7 +20,7 @@ static const struct mtk_gate_regs imp_iic_wrap_cg_regs = {
+>>>>
+>>>>    #define GATE_IMP_IIC_WRAP(_id, _name, _parent, _shift)                 \
+>>>>           GATE_MTK_FLAGS(_id, _name, _parent, &imp_iic_wrap_cg_regs, _shift,      \
+>>>> -               &mtk_clk_gate_ops_setclr, CLK_OPS_PARENT_ENABLE)
+>>>> +               &mtk_clk_gate_ops_setclr_counted, CLK_OPS_PARENT_ENABLE)
+>>>>
+>>>>    static const struct mtk_gate imp_iic_wrap_c_clks[] = {
+>>>>           GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_C_I2C10, "imp_iic_wrap_c_i2c10", "infra_i2c0", 0),
+>>>> diff --git a/drivers/clk/mediatek/clk-mt8195-imp_iic_wrap.c b/drivers/clk/mediatek/clk-mt8195-imp_iic_wrap.c
+>>>> index fbc809d05072..e50a77b844f4 100644
+>>>> --- a/drivers/clk/mediatek/clk-mt8195-imp_iic_wrap.c
+>>>> +++ b/drivers/clk/mediatek/clk-mt8195-imp_iic_wrap.c
+>>>> @@ -18,7 +18,7 @@ static const struct mtk_gate_regs imp_iic_wrap_cg_regs = {
+>>>>
+>>>>    #define GATE_IMP_IIC_WRAP(_id, _name, _parent, _shift)                         \
+>>>>           GATE_MTK_FLAGS(_id, _name, _parent, &imp_iic_wrap_cg_regs, _shift,      \
+>>>> -               &mtk_clk_gate_ops_setclr, CLK_OPS_PARENT_ENABLE)
+>>>> +               &mtk_clk_gate_ops_setclr_counted, CLK_OPS_PARENT_ENABLE)
+>>>>
+>>>>    static const struct mtk_gate imp_iic_wrap_s_clks[] = {
+>>>>           GATE_IMP_IIC_WRAP(CLK_IMP_IIC_WRAP_S_I2C5, "imp_iic_wrap_s_i2c5", "top_i2c", 0),
+>>>> --
+>>>> 2.37.0
+>>>>
+>>
+>>
 
-The backing store in the UMP can tell KVM which page level it can
-support for a given private gpa, similar to host_pfn_mapping_level() for
-shared address.
 
-However, this solely represents the backing store's capability, KVM
-still needs additional info to decide whether that can be safely mapped
-as 2M/1G, e.g. all the following pages in the 2M/1G range should be all
-private, currently this is not something backing store can tell.
+-- 
+AngeloGioacchino Del Regno
+Software Engineer
 
-Actually, in UPM v7 we let KVM record this info so one possible solution
-is making use of it.
-
-  https://lkml.org/lkml/2022/7/6/259
-
-Then to map a page as 2M, KVM needs to check:
-  - Memory backing store support that level
-  - All pages in 2M range are private as we recorded through
-    KVM_MEMORY_ENCRYPT_{UN,}REG_REGION
-  - No existing partial 4K map(s) in 2M range
-
-Chao
-> 
-> Maybe I am misunderstanding something?
-
-
+Collabora Ltd.
+Platinum Building, St John's Innovation Park, Cambridge CB4 0DS, UK
+Registered in England & Wales, no. 5513718
