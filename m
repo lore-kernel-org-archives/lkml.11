@@ -2,171 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E56A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9923C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233794AbiGLPyt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:54:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34914 "EHLO
+        id S233406AbiGLPzS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233756AbiGLPyj (ORCPT
+        with ESMTP id S233803AbiGLPzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:54:39 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2052.outbound.protection.outlook.com [40.107.102.52])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F0EABA169
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:54:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mD+ak/Cr+jyqTL20PAmBRGbLtsKkXe+PEosJwEb8Azlon463MYcO/6vY61kHrX9uNdKBBrcRROvseU89RVVCxgerDEAH9RNB+3cy5cVyM0Wub3ef+yxcDWBtam7FWXiOcvd4hbxYe9pdZLtPU8Hm0zV7D1SOTpC9R7zvFuQYkAtjZbHf1Yu9hd3J7LkLBuoC4m6ioULcy34SJEr/s8JTWqj9yTAkgJ3f/+TqQrTbdLlozmb+B70lyJGjKTxZAWtkINtQP0/yqU2I/eTs1/ySJakInwUVTF611jAyJYUFEe0n1edShXUK03uFQAMtftMwYyJfsh4Z6l/QuEY7tzjCBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZzHLjV0UwjyG5/lpLydS3Lor6b5Y8KIyywS1BIDW3D4=;
- b=fQIhHRQBRlnwxN/ftdh3Wx2B5ANhXjPzs1R1fwK75n6DrA8r+DQ0k70ONYyCvge+d2ewuoPSsZ731jpcWAHOaiH7q91p/D80j9zgchtgouW0qNKEqdNW77mPxNsvmpOyvKl02b2tQckQWhsXVL2/UJXyFDegFhxZLWY1x+vhnoPY9qTrn1OMmhK1zZqRcQJfMBkIaTGjDQWVU0FQ+V73yTgcPoSgplCgQLMjz913wnAXE3sbx7vuDTMrabric7B6VKAFUf8N3UWH0UmPGvkZIzq5yWFwchmXg06/REgybuKPRBU8xlwkUnh6id9YMTDQazSnnuFXZW6UEic7+JUOVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZzHLjV0UwjyG5/lpLydS3Lor6b5Y8KIyywS1BIDW3D4=;
- b=ZAOh2BwthDAS+YiIPtxSI2WpF7kuaycdy21v/RNyRTIZwLpZFDm9O1gHl/AIzphI7p3Ea3LC+5ofp1PGau8twvfoTzuQrH/UrUol1P9GG3dC8EjcKKiJ3B66RhQDwPthGB+KXno+3GKb/rloyswlwKO0tqJD2Tayy2ItNqIGsyk=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by DM5PR12MB1244.namprd12.prod.outlook.com (2603:10b6:3:73::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Tue, 12 Jul
- 2022 15:54:30 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 15:54:30 +0000
-Message-ID: <66110ee1-9358-b337-9481-d9fcdb5a4c00@amd.com>
-Date:   Tue, 12 Jul 2022 17:54:23 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC][PATCH 1/3] drm: drm_syncobj: Add note in DOC about absolute
- timeout values
-Content-Language: en-US
-To:     John Stultz <jstultz@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Lionel Landwerlin <lionel.g.landwerlin@intel.com>,
-        Chunming Zhou <david1.zhou@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org
-References: <20220712042258.293010-1-jstultz@google.com>
- <13c5ca05-a366-2751-4f26-d978d074f748@amd.com>
- <CANDhNCp_d2M+n90T1ziP5rHF85ZsxyN6qg4iE84ucPO-XK_HUg@mail.gmail.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <CANDhNCp_d2M+n90T1ziP5rHF85ZsxyN6qg4iE84ucPO-XK_HUg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR3P281CA0110.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::7) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Tue, 12 Jul 2022 11:55:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283F1B8EAA;
+        Tue, 12 Jul 2022 08:55:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D72D6B819AC;
+        Tue, 12 Jul 2022 15:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E875C3411C;
+        Tue, 12 Jul 2022 15:55:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657641300;
+        bh=8tOgJxPDTATRCSBvm6zjfU2BJpjyIA7W/clNTO70iqc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UqtUWrYcGEt3nT6wv8aAHmLUeR9RH/RuZJKpdUTTNZrwRUyf+Zrk8rbfUV2yv51Dc
+         4Ff4yqIYcb0iPi1whl2XwD9bS9VT+P6NmZjg42xCtlpuJl3tqUt3vGe6r7cmWGzkU6
+         s7VHxLFrOQtrAQfavCuVStaZNKDmTaw4QQee4UBAbPD0fIhy77URhFT++/CJ4ISvQH
+         n5ELoM4Mz1AN7B7YTMoBgBXQ3klFhQrKBOJeO+tC+r9boJq5EOFmBR1+EvgcHCrQpN
+         HhPPdEewFEGtR002rK40owGK5if/46AncBLHga7vQcb8y1U/E/Y5+1Y1TmLZ4I+4Qw
+         HCJQGDkivRriw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oBIE1-0003ol-SG; Tue, 12 Jul 2022 17:55:02 +0200
+Date:   Tue, 12 Jul 2022 17:55:01 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Viresh Kumar <vireshk@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V2 00/13] OPP: Add support for multiple clocks*
+Message-ID: <Ys2ZVeBHyhrUBC4m@hovoldconsulting.com>
+References: <cover.1657003420.git.viresh.kumar@linaro.org>
+ <YsxSkswzsqgMOc0l@hovoldconsulting.com>
+ <20220712075240.lsjd42yhcskqlzrh@vireshk-i7>
+ <Ys2FZa6YDwt7d/Zc@hovoldconsulting.com>
+ <20220712151045.vn4tpat4c4cplndo@vireshk-i7>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 903cff3c-f5ba-4097-8acb-08da641ece47
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1244:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SdXEPGUfOuJHbGwfwB440BJu8wjvrj+Tzz8FlT36f1GMnJuSCsEpiI1x2ZnnIE41aHCOMt81/OcHiTIf/mBbgKPTvqelmIKgtszvmgiXJQKgbMTLMSIT1cKHMvD92wTRKslocbUpDdgEqTjHgmJYsgFSL+ZOj0K8zbkYg6bL5MQWYsFaTxzjHRWBHefKCcvTZUewetD9QavndRkPWKkJPnG7kfarXxONb2PkCbdUIWtxNh3F4sevgqWeOYXw3YYB8tgJPw18gJg1ncB7oftjIUKCWS9dJza/yUzTH9ms6sdClJHLIOU54yJGL9qrOly4U9L1OmYZiwvvaHY8XmpObrt/n8P1HLz2leiHmTWvWFow+8mgNH0iJPE8S7Wcj/+nBmVuu1mcbUz8fR9LYhFkHmFxBzT3Nu9g6FARVUYbYkA6iKKxQkPZhSFSDedt9yDWfoOxt4+Ut50BdG+MTaL5Fgd3Tzlv7J4aZaaC9UFVOiIYy0ehBZ0c/CBIHYPJmR5eIFov3qH9Wkm0fd3OF8MZTOiZ6GrORh/QKnNtO0ocTfAS8iee5Nrw2KUFpPtEQ0anV0kAqF7kcjO9PYvIbKm0i6SH6LQuzmFI2Fz3wYiaTyePQp/f4uWN4O0DGCx40V+nbBDV4j56D0I1qj3hd8GwinAN2ylfR08ejqP/64oOF4+E/K/eFHl2inyyprR5E00RND95HRr/C50jqerTB7NQb6qfcxrl1G49cU01vIiNv2frZ3cu77leiZYBRDFEfRU2O2wH5eZify9hCVeT5VhWEwoPrer+fp9RWSocDO14Dg3KgmqR66a8Ac/eK8PGTUPzVdjltyce4KtxyUEELYxeqeEQLEQJFHf+AD1wkv24xYOhTscPtkVFwM2iH8W8151u
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(39860400002)(396003)(346002)(376002)(66476007)(2906002)(6506007)(6512007)(53546011)(66556008)(966005)(66574015)(66946007)(6916009)(4326008)(8676002)(2616005)(41300700001)(186003)(86362001)(31696002)(6666004)(83380400001)(31686004)(8936002)(316002)(45080400002)(7416002)(478600001)(36756003)(5660300002)(38100700002)(54906003)(6486002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T2dEeWlCL0FRMjhjcS8vOGF3MEZ3TlRTOUNlSlBGaGs0YUxjWjhDQnBUUDBB?=
- =?utf-8?B?WFQzMzNrMTJhK29NRFFMTU1nWjA4TVB2bnJ1R0xZYXVQTi95Znh4YjA2R1Jz?=
- =?utf-8?B?TUpuYlEreWpMTjlEYUxLR0RiSzBaNlRWUHlUd1NqMjRnQ3ZRVlhzMnBGN3FN?=
- =?utf-8?B?cGx0ck9RTFZLS2l6aUppZW5sTUw1LzA1QURydlo5dVJ1OHlpV0ZxL3l2UGR1?=
- =?utf-8?B?QldwTlRKOU9Gd3FZNm5OL0grRXRFZ3lxQSs4ZTdVYjFUeDl1NnlRK0JNNDcv?=
- =?utf-8?B?alduOEVHVHdEMmgxSUtSd3hRL1ZVUmI5N3pqOVNkODFVU2RKWHUyVlpCUUpL?=
- =?utf-8?B?TUJpQlN1YVFPcERoajkyZHptc2NzNVlkYXRNazlSVmJpY3ZZejNjQkxCVHhm?=
- =?utf-8?B?RkY2czBKYS9LUmloQzdaV0RHajlrZ3V5QzllTThZbXhybDlFc1BWU1pIVXJM?=
- =?utf-8?B?V2ZxY3QyWS9wMjlDcGR1OHFxKzBYN0FFVEI3Z2hLemp6YlNZMTdadTJrUVY4?=
- =?utf-8?B?ZlJJRWNERlFRTTFPcmxTRnplL3B2ZjlDc3lFMG1lKzY2TkhTMWNuNDNkZlVm?=
- =?utf-8?B?TTRUWlNKcG5JdWR4bHR2WmlCUXVyenpBVllXNjRVTkg4N2FyVWsyKzhuOEow?=
- =?utf-8?B?WXpXMU5ZK0NtRk9GUE5GN1VmWmtxQk5nS2dIMFRjMHFzdENqaXYwSTlpTzVU?=
- =?utf-8?B?c0tFcmpDZlZ2ck5jUnRaQnd0czRpMmtteW0rK2FYU2tJZ3lCeDRveHh2WVZ6?=
- =?utf-8?B?NzRQTEVwUktRMzB2Y2hQWkhvYVkvSFoxSjJaeGNyUlFKMjJhakVYRFY0ZlJZ?=
- =?utf-8?B?V09sOERyVithNnFsMUdPNThHZUFEbEV0WWYwM3lhRm1OWThwTzdiNnVyNGpT?=
- =?utf-8?B?czNNSSsrMC9WblBmM3YwdEU4K1RUSmtUcEE2TkNXREdWS1hpbWJRT3RKd3dh?=
- =?utf-8?B?S2thTTZFTlVLUHpNQVgwNlRaU1V1VnhQQmNsbFI1eHNDcDU0N1ppVUtqVEVs?=
- =?utf-8?B?VGIrRmIvbVhpMEd1dTlYRHIvZXhOcGx2OXRRbWx1R3RpeGhxSEF3RFB5QjBp?=
- =?utf-8?B?bkpHV1pBZUV2L3kxTlRSTTdhVUJFU0dxNXZjWWxqbExhOXN3NmZEak96cTBB?=
- =?utf-8?B?c1dURFpGcGhnRUNvY2lTYklZa0RNV2hQRU9jQTZnUloyZEMxK1EwSWhrSk15?=
- =?utf-8?B?RFAvN2QrWjVxdXRmZEFob2tocWxNQjUzNEJ4UHl6Y1VRMGQ4V2JQQWRrbFI1?=
- =?utf-8?B?UmtuNTJ2OWNTdHdxa2QrcktpSVVrZ29JTDZTSGhRMlE4RnFRSTVJRHl5MjVk?=
- =?utf-8?B?Qk8vQjhSU2dVU244WEpOa05sbUdzRzZlRXNDRlFoOFBrbFdCb0tZNEh5R2ZK?=
- =?utf-8?B?eHQ5RG9vaVdXcWVIbzE5dklpU2tEVCtPZENBbXZxNmhMT3VUazIrUWJOdG9a?=
- =?utf-8?B?RjJuLzRHU0VFS0JnRzNSSFdWVnZpeEFvUTJtVVQxNkp6UVg4L29HZzJOR2xO?=
- =?utf-8?B?SjRORlJ4REZDRWxqQm9uNnFWTGRIZXJDZlhydmlvQUhnS25PbUZTbzJBQ2hX?=
- =?utf-8?B?NDYvQWRFOWIyc3RRd2I2TDA5ZWtLNlVnd0l6c1BjdWtCaW9GWmpJSmNscFN2?=
- =?utf-8?B?NGVlNnFDZUR6S0RrMmFKNWI2SnhuZStGVERGNThmc2VGSmpBSm9UQjVMb21T?=
- =?utf-8?B?MWcvb1QxanlWVHFXOUFaejhCYUVUNDVBbDMwaURVUCswM0pUbzhNNlhGSGFG?=
- =?utf-8?B?cWZpeHVnNStVTkdBeWxqTkJDMnRScGZ2SjNiMUVSSFRWQVdMeFYyRlFwMjVn?=
- =?utf-8?B?aE1ES3o3QUpjRmxwSU9BcHdDTUN0MFhIeEhBT0dJQzBpSENGWGRGbjFyd3ZX?=
- =?utf-8?B?dkJER1BjRFgvSExVR0RJSCtjRXlrVU5VYm5xQnEwY05ZZFNzNHU2RTUwak5h?=
- =?utf-8?B?VEQwMENoeklXVlN3VVRzamZGWVJRUDJyV0JEOE12ZUcvMEEzYUNqRkhTSWZO?=
- =?utf-8?B?N1E2TVlSYTREYkhjSWM5U0lGcDdHang0QUc2TG5vR3kyNzhoSC9vOTRXcDNv?=
- =?utf-8?B?RFFETGF5SHhoamdzOTNJSlNDVzZ0My9OZk1Kd2c0NkVEMmYrdFZpWmM2d0pM?=
- =?utf-8?B?RGhuU01OZDJqNmFORVhJdkVXb1pmMXZFMG9Ka1dLdmlTRTJ2amQ2RTZRQ2Fa?=
- =?utf-8?Q?BIhwHm/liqaR1TaRKzOr8p1i6zJPZVC0VEqek7danJBJ?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 903cff3c-f5ba-4097-8acb-08da641ece47
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 15:54:29.9875
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ggibJ/y79JM7d7GPBehTrvGGW4nLC7P7RO6jSMhdCOHQiLqHgVX5gnLJbIEzi1tf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1244
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712151045.vn4tpat4c4cplndo@vireshk-i7>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 12.07.22 um 17:48 schrieb John Stultz:
-> On Tue, Jul 12, 2022 at 12:40 AM Christian König
-> <christian.koenig@amd.com> wrote:
->> Am 12.07.22 um 06:22 schrieb John Stultz:
->>> After having to debug down through the kernel to figure out
->>> why my _WAIT calls were always timing out, I realized its
->>> an absolute timeout value instead of the more common relative
->>> timeouts.
->>>
->>> This detail should be called out in the documentation, as while
->>> the absolute value makes sense here, its not as common for timeout
->>> values.
->> Well absolute timeout values are mandatory for making -ERESTARTSYS work
->> without any additional handling.
-> Yes! I'm not saying it's wrong to use absolute values, just that
-> relative values are common enough to create some confusion here.
->
->> So using them is recommended for ~20 years now and IIRC even documented
->> somewhere.
-> So in addition to "somewhere", why not in the interface documentation as well?
+On Tue, Jul 12, 2022 at 08:40:45PM +0530, Viresh Kumar wrote:
+> On 12-07-22, 16:29, Johan Hovold wrote:
+> > On Tue, Jul 12, 2022 at 01:22:40PM +0530, Viresh Kumar wrote:
+> > > diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+> > > index 666e1ebf91d1..4f4a285886fa 100644
+> > > --- a/drivers/opp/core.c
+> > > +++ b/drivers/opp/core.c
+> > > @@ -1384,6 +1384,20 @@ static struct opp_table *_update_opp_table_clk(struct device *dev,
+> > >         }
+> > > 
+> > >         if (ret == -ENOENT) {
+> > > +               /*
+> > > +                * There are few platforms which don't want the OPP core to
+> > > +                * manage device's clock settings. In such cases neither the
+> > > +                * platform provides the clks explicitly to us, nor the DT
+> > > +                * contains a valid clk entry. The OPP nodes in DT may still
+> > > +                * contain "opp-hz" property though, which we need to parse and
+> > > +                * allow the platform to find an OPP based on freq later on.
+> > > +                *
+> > > +                * This is a simple solution to take care of such corner cases,
+> > > +                * i.e. make the clk_count 1, which lets us allocate space for
+> > > +                * frequency in opp->rates and also parse the entries in DT.
+> > > +                */
+> > > +               opp_table->clk_count = 1;
+> > > +
+> > >                 dev_dbg(dev, "%s: Couldn't find clock: %d\n", __func__, ret);
+> > >                 return opp_table;
+> > >         }
+> > 
+> > This looks like a hack.
+> 
+> Yeah, a bit. Initially I wanted to solve it in a cleaner way, like it
+> is done for Tegra, where you will pass the right clock name to the OPP
+> core, so it can verify that the clk is there and parse the table. And
+> then tell the OPP core not to configure the clk from
+> dev_pm_opp_set_opp(), which is possible now. This would have done the
+> things in the right way.
+> 
+> The problem with Qcom's DT is that the CPU node have the OPP table but
+> doesn't contain the clocks, which are available with the
+> qcom,cpufreq-hw node instead. Because of this, I couldn't pass the
+> real clocks name to the OPP core, "xo", for the CPU device.
+> 
+> I really tried to avoid adding the above code for Tegra and found a
+> better and cleaner way out. But I couldn't do the same here and
+> figured it may be more generic of a problem, which is fine as well.
+> 
+> The OPP core does two things currently:
+> 
+> 1) Parse the DT and provide helpers to find the right OPP, etc.
+> 
+> 2) Provide generic helper to configure all resources related to the
+>    OPP.
+> 
+> It is fine if some platforms only want to have the first and not the
+> second. To have the second though, you need to have the first as well.
+> 
+> The clk is required only for the second case, and the OPP core should
+> parse the DT anyways, irrespective of the availability of the clock.
+> Because of this reason, making the above change looked reasonable
+> (this is what was happening before my new patches came in anyway). The
+> clock isn't there, but there is "opp-hz" present in the DT, which
+> needs to be parsed.
 
-Because it's the desired default behavior and we shouldn't have to 
-document that on every instance it is used.
+Ok, thanks for the details. I'd still look into if there's some way to
+avoid setting clk_count when there are no clocks as it sounds like an
+anti-pattern that will just make the code harder to understand and
+maintain.
 
-IIRC it's documented centralized (but I need to dig that up as well).
+> > And it also triggers a bunch of new warning when
+> > opp is trying to create debugfs entries for an entirely different table
+> > which now gets clk_count set to 1:
+> > 
+> > [  +0.000979]  cx: _update_opp_table_clk: Couldn't find clock: -2
+> > [  +0.000022] debugfs: Directory 'opp:0' with parent 'cx' already present!
 
-What we should do instead is to have a warning on every relative timeout 
-that this probably shouldn't be used as example.
+> > This is for the rpmhpd whose opp table does not have either opp-hz or
+> > clocks (just opp-level).
+> 
+> Ahh, I missed switching back to the earlier code here. i.e. not use
+> the frequency for OPP directory's name, when it is 0.
+> 
+> This will fix it.
+> 
+> diff --git a/drivers/opp/debugfs.c b/drivers/opp/debugfs.c
+> index 402c507edac7..96a30a032c5f 100644
+> --- a/drivers/opp/debugfs.c
+> +++ b/drivers/opp/debugfs.c
+> @@ -138,7 +138,7 @@ void opp_debug_create_one(struct dev_pm_opp *opp, struct opp_table *opp_table)
+>          * - For some devices rate isn't available or there are multiple, use
+>          *   index instead for them.
+>          */
+> -       if (likely(opp_table->clk_count == 1))
+> +       if (likely(opp_table->clk_count == 1 && opp->rates[0]))
+>                 id = opp->rates[0];
+>         else
+>                 id = _get_opp_count(opp_table);
 
-Regards,+
-Christian.
+Indeed it does, thanks.
 
->
->> See here as well https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Flwn.net%2FArticles%2F17744%2F&amp;data=05%7C01%7Cchristian.koenig%40amd.com%7C68a13ac3906d4ac4cc4308da641df25c%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637932377042931797%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=dM4BkqnO0LrsdKBwKKMvx4zMabWrM%2FY7pPGDsdFO%2BnI%3D&amp;reserved=0 how much trouble system
->> calls with relative timeouts are.
-> Yep. Well aware. :)
->
-> thanks
-> -john
+> I have merged this into:
+> 
+> commit 341df9889277 ("OPP: Allow multiple clocks for a device")
+> 
+> and pushed out for linux-next.
 
+Thanks for addressing this quickly. With the two patches above applied,
+the issues I noticed are gone.
+
+Johan
