@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6026C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BCACCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234606AbiGLSup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:50:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
+        id S234384AbiGLSuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234568AbiGLSuW (ORCPT
+        with ESMTP id S234615AbiGLSuZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:50:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BCBE2A1A;
-        Tue, 12 Jul 2022 11:44:10 -0700 (PDT)
+        Tue, 12 Jul 2022 14:50:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7F8E3C06;
+        Tue, 12 Jul 2022 11:44:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54F75B81B96;
-        Tue, 12 Jul 2022 18:44:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9732AC3411C;
-        Tue, 12 Jul 2022 18:44:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2600C6090C;
+        Tue, 12 Jul 2022 18:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AF7C3411E;
+        Tue, 12 Jul 2022 18:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651447;
-        bh=b4lPAu6TIYBuJvohHsBAYnRu4yFmScVttnEgCBbUYFc=;
+        s=korg; t=1657651453;
+        bh=Cc2FMcbo41U7/t4HCIrRJ9iCyx8ihS/uOqE18E+9374=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IYTJQ6WfDeWm9ZrPyRb9VInTsplCGUifyd/hj5nftXG86xMfADhq5ohPYOmmpjYx/
-         ODfikNlli0H/fvPBAxMleLzLr2mVUfy9M6doJdB67qtTs08v85S+ikCobtjcmKxY8b
-         FLlI5FVCOGwTO04lQ0IqTAqwHOOJOiV98I9vt9hU=
+        b=jPkssVVBhkuKndtOLTev+48BowUX8u2KS8pacTUPDUh/Xbj3UjPPe4Fhnf5/aZ6N7
+         6uH6jY+Zw1L4lXz0D0naj6O2HGAdZmTXdNYDlzw9YfVTi17idExIq60d/HfA8IhTJh
+         PiJ+Jrlwef8GQkuJcKKg0MmbHusJ2jU7H1IyF8Mk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Joe Lawrence <joe.lawrence@redhat.com>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ingo Molnar <mingo@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 048/130] objtool: Explicitly avoid self modifying code in .altinstr_replacement
-Date:   Tue, 12 Jul 2022 20:38:14 +0200
-Message-Id: <20220712183248.643758185@linuxfoundation.org>
+Subject: [PATCH 5.10 040/130] objtool: Dont make .altinstructions writable
+Date:   Tue, 12 Jul 2022 20:38:06 +0200
+Message-Id: <20220712183248.256129632@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -53,98 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit dd003edeffa3cb87bc9862582004f405d77d7670 upstream.
+commit e31694e0a7a709293319475d8001e05e31f2178c upstream.
 
-Assume ALTERNATIVE()s know what they're doing and do not change, or
-cause to change, instructions in .altinstr_replacement sections.
+When objtool creates the .altinstructions section, it sets the SHF_WRITE
+flag to make the section writable -- unless the section had already been
+previously created by the kernel.  The mismatch between kernel-created
+and objtool-created section flags can cause failures with external
+tooling (kpatch-build).  And the section doesn't need to be writable
+anyway.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120309.722511775@infradead.org
-[cascardo: context adjustment]
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-[bwh: Backported to 5.10: objtool doesn't have any mcount handling]
+Make the section flags consistent with the kernel's.
+
+Fixes: 9bc0bb50727c ("objtool/x86: Rewrite retpoline thunk calls")
+Reported-by: Joe Lawrence <joe.lawrence@redhat.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/6c284ae89717889ea136f9f0064d914cd8329d31.1624462939.git.jpoimboe@redhat.com
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c |   36 ++++++++++++++++++++++++++++--------
- 1 file changed, 28 insertions(+), 8 deletions(-)
+ tools/objtool/arch/x86/decode.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -870,18 +870,27 @@ static void remove_insn_ops(struct instr
- 	}
- }
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -611,7 +611,7 @@ static int elf_add_alternative(struct el
+ 	sec = find_section_by_name(elf, ".altinstructions");
+ 	if (!sec) {
+ 		sec = elf_create_section(elf, ".altinstructions",
+-					 SHF_WRITE, size, 0);
++					 SHF_ALLOC, size, 0);
  
--static void add_call_dest(struct objtool_file *file, struct instruction *insn,
--			  struct symbol *dest, bool sibling)
-+static void annotate_call_site(struct objtool_file *file,
-+			       struct instruction *insn, bool sibling)
- {
- 	struct reloc *reloc = insn_reloc(file, insn);
-+	struct symbol *sym = insn->call_dest;
- 
--	insn->call_dest = dest;
--	if (!dest)
-+	if (!sym)
-+		sym = reloc->sym;
-+
-+	/*
-+	 * Alternative replacement code is just template code which is
-+	 * sometimes copied to the original instruction. For now, don't
-+	 * annotate it. (In the future we might consider annotating the
-+	 * original instruction if/when it ever makes sense to do so.)
-+	 */
-+	if (!strcmp(insn->sec->name, ".altinstr_replacement"))
- 		return;
- 
--	if (insn->call_dest->static_call_tramp) {
--		list_add_tail(&insn->call_node,
--			      &file->static_call_list);
-+	if (sym->static_call_tramp) {
-+		list_add_tail(&insn->call_node, &file->static_call_list);
-+		return;
- 	}
- 
- 	/*
-@@ -889,7 +898,7 @@ static void add_call_dest(struct objtool
- 	 * so they need a little help, NOP out any KCOV calls from noinstr
- 	 * text.
- 	 */
--	if (insn->sec->noinstr && insn->call_dest->kcov) {
-+	if (insn->sec->noinstr && sym->kcov) {
- 		if (reloc) {
- 			reloc->type = R_NONE;
- 			elf_write_reloc(file->elf, reloc);
-@@ -901,7 +910,16 @@ static void add_call_dest(struct objtool
- 			               : arch_nop_insn(insn->len));
- 
- 		insn->type = sibling ? INSN_RETURN : INSN_NOP;
-+		return;
- 	}
-+}
-+
-+static void add_call_dest(struct objtool_file *file, struct instruction *insn,
-+			  struct symbol *dest, bool sibling)
-+{
-+	insn->call_dest = dest;
-+	if (!dest)
-+		return;
- 
- 	/*
- 	 * Whatever stack impact regular CALLs have, should be undone
-@@ -911,6 +929,8 @@ static void add_call_dest(struct objtool
- 	 * are converted to JUMP, see read_intra_function_calls().
- 	 */
- 	remove_insn_ops(insn);
-+
-+	annotate_call_site(file, insn, sibling);
- }
- 
- /*
+ 		if (!sec) {
+ 			WARN_ELF("elf_create_section");
 
 
