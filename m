@@ -2,247 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCF7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B76AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233417AbiGLOnq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:43:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35056 "EHLO
+        id S233659AbiGLOo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233687AbiGLOnZ (ORCPT
+        with ESMTP id S233665AbiGLOom (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:43:25 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC3DBB7FE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:43:08 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id m16so10119230ljh.10
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:43:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=YVKB8oza+pHwVJpfJERd/ocrZdEYSbFt0JiW8e03wFo=;
-        b=Py/m/Q0zqh8ksDMCwh5rx27A2VTeaqCIorRD7EIZERXunOXL6uGPvEGGnIqOocjMr6
-         3oUn7zNQff+l5X1FK5i4MSzn0i0iE7ars0iIr1LJ2fP3tQDdeU8DCvTDiZHVf8KG828R
-         IAqrB37zRU7fo/3RCg3NuR7HPUxT/glVgf+73rc+KkYUpo4MZwYrUCG0BEClgiHHWapN
-         q03a0zLE1UySQ5JpFiQSWYIOScuOL5tz271zP24C9LBvAiUOefcN745wiNORPdcgCV5S
-         P8ByBHNtbbjk8i3oo4u9le/+d6jz31oL6ED75wZ2N8oP8iV/nCtKlMaJEzOqb0dQl9Fw
-         FXRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=YVKB8oza+pHwVJpfJERd/ocrZdEYSbFt0JiW8e03wFo=;
-        b=S4+0qOMm+WUi9z4pfkkEo+dMTKNn1FspwTawll2yzz4yBoZ4/UfFVjL/g1sI/oJXTW
-         TOiO1lfULvRDTnzbzBbsY2o9mGEgM50r1SW4WRfU+MPNImcvuB5EBBZE5/Nvk9rR7+A3
-         Jr5KLBz04NDb6BHBImVZuxFF0i9rCln4fDdicU6r7Xe1LdKCRJwZXdnIBARL9bIv9M24
-         s8kNU9YkfpQ7v66gS3EprPTOVY8iJgRhEXCSqbIMP7NAWIJ/RiVmoes89lLpAAGj5ETR
-         kpCWEEP+NcxYyQ4ss84mQAbOy3fA7cNbErjBeKIuGWV7io+Q9RhbfjruoQ101hIkaG5m
-         UZ1A==
-X-Gm-Message-State: AJIora8Ll7OemX/UrT+nIqs7SJcykf/OhBwmtlCSIcz62LX3s2vFor/7
-        PrJdJ2VqybdxF5A2gR4REm8U6Q==
-X-Google-Smtp-Source: AGRyM1v5zFPkdWzIbOsCi+3TA1y5SMk9Ql8tnv6uNj2KM5iRgqylxg7ctsf++r7t9XfyESE1OyDA4w==
-X-Received: by 2002:a05:651c:b14:b0:25a:a19a:b1c4 with SMTP id b20-20020a05651c0b1400b0025aa19ab1c4mr12599352ljr.25.1657636986497;
-        Tue, 12 Jul 2022 07:43:06 -0700 (PDT)
-Received: from krzk-bin.. (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id w15-20020a05651234cf00b00489e88d6a72sm737577lfr.198.2022.07.12.07.43.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:43:06 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH v3 5/5] ARM: dts: qcom: align SDHCI clocks with DT schema
-Date:   Tue, 12 Jul 2022 16:42:45 +0200
-Message-Id: <20220712144245.17417-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220712144245.17417-1-krzysztof.kozlowski@linaro.org>
-References: <20220712144245.17417-1-krzysztof.kozlowski@linaro.org>
+        Tue, 12 Jul 2022 10:44:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0E821E35;
+        Tue, 12 Jul 2022 07:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=TIMJuXXvaSY0EDiwuEYp7w+lzyifMk6auUfw6Pmy8H8=; b=f5VgE4wDv0lSQC5lTzqabKnVFB
+        2MGHWFSwP7P/40XxyUz26NovWdTh/lT2cUCI2TDwxXIOFpKmrZjyEk8viz7KfDHVlA8JUC0ZTuscZ
+        dumqPhR//ME/UnijW00DpOQvNb6P0vH/GMuMygkcYT5BPY+TK8t5suvl4SjK8Q7k26y0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oBH7h-00A3p2-Tq; Tue, 12 Jul 2022 16:44:25 +0200
+Date:   Tue, 12 Jul 2022 16:44:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Frank <Frank.Sae@motor-comm.com>
+Cc:     Peter Geis <pgwipeout@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
+        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] net: phy: Add driver for Motorcomm yt8521 gigabit
+ ethernet
+Message-ID: <Ys2IyaI2u2iLL0g6@lunn.ch>
+References: <20220711103706.709-1-Frank.Sae@motor-comm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711103706.709-1-Frank.Sae@motor-comm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DT schema expects clocks iface-core order.  No functional change.
+On Mon, Jul 11, 2022 at 06:37:06PM +0800, Frank wrote:
+> patch v3:
+>  Hi Andrew
+>  Thanks and based on your comments we modified the patch as below.
+>  
+> > It is generally not that simple. Fibre, you probably want 1000BaseX,
+> > unless the fibre module is actually copper, and then you want
+> > SGMII. So you need something to talk to the fibre module and ask it
+> > what it is. That something is phylink. Phylink does not support both
+> > copper and fibre at the same time for one MAC.
+> 
+>  yes, you said it and for MAC, it does not support copper and Fiber at same time.
+>  but from Physical Layer, you know, sometimes both Copper and Fiber cables are
+>  connected. in this case, Phy driver should do arbitration and report to MAC
+>  which media should be used and Link-up.
+>  This is the reason that the driver has a "polling mode", and by default, also
+>  this driver takes fiber as first priority which matches phy chip default behavior.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
----
- arch/arm/boot/dts/qcom-apq8084.dtsi    | 12 ++++++------
- arch/arm/boot/dts/qcom-ipq4019.dtsi    |  4 ++--
- arch/arm/boot/dts/qcom-msm8226.dtsi    | 18 +++++++++---------
- arch/arm/boot/dts/qcom-msm8974.dtsi    | 18 +++++++++---------
- arch/arm/boot/dts/qcom-msm8974pro.dtsi |  6 +++---
- 5 files changed, 29 insertions(+), 29 deletions(-)
+The Marvell 10G driver is another PHY which can be used for both
+Copper and Fibre. In order to do this, it has a few extra functions:
 
-diff --git a/arch/arm/boot/dts/qcom-apq8084.dtsi b/arch/arm/boot/dts/qcom-apq8084.dtsi
-index 45f3cbcf6238..c887ac5cdd7d 100644
---- a/arch/arm/boot/dts/qcom-apq8084.dtsi
-+++ b/arch/arm/boot/dts/qcom-apq8084.dtsi
-@@ -425,10 +425,10 @@ mmc@f9824900 {
- 			reg-names = "hc", "core";
- 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
--				 <&gcc GCC_SDCC1_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-+				 <&gcc GCC_SDCC1_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			status = "disabled";
- 		};
- 
-@@ -438,10 +438,10 @@ mmc@f98a4900 {
- 			reg-names = "hc", "core";
- 			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
--				 <&gcc GCC_SDCC2_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-+				 <&gcc GCC_SDCC2_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			status = "disabled";
- 		};
- 
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index 1b98764bab7a..a8a32a5e7e5d 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -228,9 +228,9 @@ sdhci: mmc@7824900 {
- 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>, <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
- 			bus-width = <8>;
--			clocks = <&gcc GCC_SDCC1_APPS_CLK>, <&gcc GCC_SDCC1_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC1_AHB_CLK>, <&gcc GCC_SDCC1_APPS_CLK>,
- 				 <&gcc GCC_DCD_XO_CLK>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			status = "disabled";
- 		};
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8226.dtsi b/arch/arm/boot/dts/qcom-msm8226.dtsi
-index f711463d22dc..9d4223bf8fc1 100644
---- a/arch/arm/boot/dts/qcom-msm8226.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8226.dtsi
-@@ -141,10 +141,10 @@ sdhc_1: mmc@f9824900 {
- 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
--				 <&gcc GCC_SDCC1_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-+				 <&gcc GCC_SDCC1_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&sdhc1_default_state>;
- 			status = "disabled";
-@@ -157,10 +157,10 @@ sdhc_2: mmc@f98a4900 {
- 			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
--				 <&gcc GCC_SDCC2_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-+				 <&gcc GCC_SDCC2_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&sdhc2_default_state>;
- 			status = "disabled";
-@@ -173,10 +173,10 @@ sdhc_3: mmc@f9864900 {
- 			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC3_APPS_CLK>,
--				 <&gcc GCC_SDCC3_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC3_AHB_CLK>,
-+				 <&gcc GCC_SDCC3_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&sdhc3_default_state>;
- 			status = "disabled";
-diff --git a/arch/arm/boot/dts/qcom-msm8974.dtsi b/arch/arm/boot/dts/qcom-msm8974.dtsi
-index 971eceaef3d1..1f4baa6ac64d 100644
---- a/arch/arm/boot/dts/qcom-msm8974.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974.dtsi
-@@ -443,10 +443,10 @@ sdhc_1: mmc@f9824900 {
- 			interrupts = <GIC_SPI 123 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 138 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC1_APPS_CLK>,
--				 <&gcc GCC_SDCC1_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-+				 <&gcc GCC_SDCC1_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			bus-width = <8>;
- 			non-removable;
- 
-@@ -460,10 +460,10 @@ sdhc_3: mmc@f9864900 {
- 			interrupts = <GIC_SPI 127 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 224 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC3_APPS_CLK>,
--				 <&gcc GCC_SDCC3_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC3_AHB_CLK>,
-+				 <&gcc GCC_SDCC3_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			bus-width = <4>;
- 
- 			#address-cells = <1>;
-@@ -479,10 +479,10 @@ sdhc_2: mmc@f98a4900 {
- 			interrupts = <GIC_SPI 125 IRQ_TYPE_LEVEL_HIGH>,
- 				     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
- 			interrupt-names = "hc_irq", "pwr_irq";
--			clocks = <&gcc GCC_SDCC2_APPS_CLK>,
--				 <&gcc GCC_SDCC2_AHB_CLK>,
-+			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-+				 <&gcc GCC_SDCC2_APPS_CLK>,
- 				 <&xo_board>;
--			clock-names = "core", "iface", "xo";
-+			clock-names = "iface", "core", "xo";
- 			bus-width = <4>;
- 
- 			#address-cells = <1>;
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro.dtsi b/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-index 1e882e16a221..58df6e75ab6d 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974pro.dtsi
-@@ -10,10 +10,10 @@ &gpu {
- };
- 
- &sdhc_1 {
--	clocks = <&gcc GCC_SDCC1_APPS_CLK>,
--		 <&gcc GCC_SDCC1_AHB_CLK>,
-+	clocks = <&gcc GCC_SDCC1_AHB_CLK>,
-+		 <&gcc GCC_SDCC1_APPS_CLK>,
- 		 <&xo_board>,
- 		 <&gcc GCC_SDCC1_CDCCAL_FF_CLK>,
- 		 <&gcc GCC_SDCC1_CDCCAL_SLEEP_CLK>;
--	clock-names = "core", "iface", "xo", "cal", "sleep";
-+	clock-names = "iface", "core", "xo", "cal", "sleep";
- };
--- 
-2.34.1
+static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
+{
+        struct phy_device *phydev = upstream;
+        __ETHTOOL_DECLARE_LINK_MODE_MASK(support) = { 0, };
+        phy_interface_t iface;
 
+        sfp_parse_support(phydev->sfp_bus, id, support);
+        iface = sfp_select_interface(phydev->sfp_bus, support);
+
+        if (iface != PHY_INTERFACE_MODE_10GBASER) {
+                dev_err(&phydev->mdio.dev, "incompatible SFP module inserted\n");
+                return -EINVAL;
+        }
+        return 0;
+}
+
+static const struct sfp_upstream_ops mv3310_sfp_ops = {
+        .attach = phy_sfp_attach,
+        .detach = phy_sfp_detach,
+        .module_insert = mv3310_sfp_insert,
+};
+
+Also see the at803x driver.
+
+This allows the PHY to report to phylink what it is doing, and to
+determine the host side interface mode. I would expect this driver to
+implement sfp_upstream_ops as well.
+
+	  Andrew
