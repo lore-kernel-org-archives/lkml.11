@@ -2,106 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5DFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:42:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844ADC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:43:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233476AbiGLOm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34786 "EHLO
+        id S233626AbiGLOnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiGLOmy (ORCPT
+        with ESMTP id S233550AbiGLOnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:42:54 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425DEBAA9C;
-        Tue, 12 Jul 2022 07:42:53 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id a5so11477219wrx.12;
-        Tue, 12 Jul 2022 07:42:53 -0700 (PDT)
+        Tue, 12 Jul 2022 10:43:00 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38077BB7CE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:42:58 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id t1so10777421lft.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2H9DivqJLvrQc/Vixo10g3xXaIE/JPWgO6BlsyYn8Bc=;
-        b=FAfmUpYnEv5NjejHbuirte4lcA7WJcDWeHwF5wCQjXGs88kOODNEAuAPWTOZQ8id6h
-         W2hDu5HJk0KugrXO8B/rY1VYW7cUw5QpWQihWCJIQFiN5bIDgiDTMC6c/ep5G4131BZ2
-         BwpcdUsPdNA63VOclHu+MVzwlYZLnzuFySKC26ADfUbA0xdJ8qOsl7p95OyqFvv5xuTQ
-         tjo2T9nvYalLm17HvA0kgY7Grn7G5lSZY0G8g+dkbFyS19qo4xfAMH0S7tI/5oz2RndP
-         DIh6Y1MyHrGQpdWGscb8iWJ9j3o8xY1RL0EbaX0GgzMVUfVJbGs918baElQWM+AIscuH
-         Mnug==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=duo15aJQ11HVOFnF0u0+cfPbWBklkXMRH+jQvhcfDM0=;
+        b=W2+TJoZL15WjMJkW5SsQPLZXpaZePymWoty4EwF3TZbktoOiu1oZPeMbtFEtHe19QJ
+         e9b8dgtWv4fGxppHggk3KEa3VLczIcJdIad99jGM3y6R7LPWIuB4yEM5Dp/TC+SpncmY
+         U4VnwLoo2Mujm3raxn3ml075Af48QYckFEKp/Vr2X/HCRlugUG2MaFLWt6P7FQY3449R
+         Hne4eQXbM0YXnsx4uTZsM7HL4TzOS+1WP9UHxuVm8kS5NBd+95f8RxFoalgBUtWBmev3
+         egRzYdsGON2qSd7LKkNVLWvBepKpeJTV7EOPX0GKaIQOT4TX0wNuCDFrQAhi6gTMBLx4
+         asFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2H9DivqJLvrQc/Vixo10g3xXaIE/JPWgO6BlsyYn8Bc=;
-        b=zzlcuO8XwjQ5b0yv+NmhuR/ZWzfrsSlDDPUfK0vsysgqYmcFFqunMYdk5zJRLI0vH3
-         GQa+44WjToqrDO5hUOq41mUvqBvBmL+lCRTh9ITej7gIKPnN5n4o7xjMusw0lk5GQnG2
-         yBuaFocj989wAt8ewdvIDVP7FKIM55j/uTyY1RTZ0GmWgsjsWiKV0A78Xe9uskV2yy/1
-         Vb5/PY6edBLzRo764M6w2I9zdnb/h9WUBQI3QUir3fNR/qAIc2CEg4KDg329Trsqm9zC
-         fsWCnRWzTyKuFlL3M5gli1yLcjptKlrxq+/6xL67ZVLqjVu2mcVlds+XiNcsRQuz4JMe
-         834w==
-X-Gm-Message-State: AJIora8tSoVuQja6uXpuj7UgHRu7+3ModQTefV/iL8Lt06OHycSAvA97
-        gKoho65jxxdWWD9yBIhi6Bw=
-X-Google-Smtp-Source: AGRyM1vi1a/FwoBoyr6FuOFKgN3jAFYLVzWA00DUX4+9YLqsZDx2D6yj8oHehlwwYFMWUd+pFrc/uQ==
-X-Received: by 2002:adf:d1ef:0:b0:21d:983f:4b8e with SMTP id g15-20020adfd1ef000000b0021d983f4b8emr16950352wrd.334.1657636971819;
-        Tue, 12 Jul 2022 07:42:51 -0700 (PDT)
-Received: from debian (host-78-150-47-22.as13285.net. [78.150.47.22])
-        by smtp.gmail.com with ESMTPSA id b17-20020adff911000000b0021d819c8f6dsm8381899wrr.39.2022.07.12.07.42.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=duo15aJQ11HVOFnF0u0+cfPbWBklkXMRH+jQvhcfDM0=;
+        b=VNrQAdmnRyRIlYxNkgGAUruB/Os2xxCccF+pbOoC8qkl86/QMkhtl6xLOHCtWxrMzf
+         gH/TUHefbaU3BgEX4MrMBW6BpC7Q8bLsUP8YcIaNNTjBGHJ2Gje8gNhKBZDMZp1YKYso
+         i1e1+kgMHgOgEhiSI3iBWLvN9QTPG+Zqzl3McJ8/KRff3HHBFeRXuZTiK1AO2YKDoQAD
+         XBG1iIu2uxlS0ZBb0M1PinLBZkOzUkvrmQWUfsYxNebiemN5a0pgp33h7RKu1o8H92Cw
+         CECFdiaxyj0TjSqbmee2tsAxlh2BN8WtGtFBOSJXKBWmrPI4R//FDM4kBeKSgmwBLNlN
+         oUmA==
+X-Gm-Message-State: AJIora/mRse/8AJTVJbzlT9m4RQBUYm/nnKBxsAZsC7KNHKQxW0rGvfS
+        0y+HZfbdEVn3gHK81RKN/RhCwg==
+X-Google-Smtp-Source: AGRyM1uv/sWosfiNGc4Z3vNfnR7RVSVKABYb7xResLOIpsGi9cEr3Rl8/H2Bx7x3+kYsHUZGoHcOJw==
+X-Received: by 2002:a05:6512:3342:b0:489:e36b:60e4 with SMTP id y2-20020a056512334200b00489e36b60e4mr5896293lfd.674.1657636976614;
+        Tue, 12 Jul 2022 07:42:56 -0700 (PDT)
+Received: from krzk-bin.. (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id w15-20020a05651234cf00b00489e88d6a72sm737577lfr.198.2022.07.12.07.42.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:42:51 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 15:42:49 +0100
-From:   "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/226] 5.15.54-rc3 review
-Message-ID: <Ys2Iacik+57Vgysx@debian>
-References: <20220712071513.420542604@linuxfoundation.org>
+        Tue, 12 Jul 2022 07:42:56 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 0/5] dt-bindings: mmc: / ARM: qcom: correct reg-names and clock entries
+Date:   Tue, 12 Jul 2022 16:42:40 +0200
+Message-Id: <20220712144245.17417-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712071513.420542604@linuxfoundation.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+Hi,
 
-On Tue, Jul 12, 2022 at 09:16:20AM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.54 release.
-> There are 226 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 14 Jul 2022 07:13:20 +0000.
-> Anything received after that time might be too late.
+No dependencies.  DT bindings patches are independent from DTS, so they can go
+via separate tree.
 
-Build test (gcc version 11.3.1 20220706):
-mips: 62 configs -> no failure
-arm: 99 configs -> no failure
-arm64: 3 configs -> no failure
-x86_64: 4 configs -> no failure
-alpha allmodconfig -> no failure
-csky allmodconfig -> no failure
-powerpc allmodconfig -> no failure
-riscv allmodconfig -> no failure
-s390 allmodconfig -> no failure
-xtensa allmodconfig -> no failure
+Changes since v2
+================
+1. Add Rb tags.
+2. Correct typo in subject of patch 2.
 
-Boot test:
-x86_64: Booted on my test laptop. No regression.
-x86_64: Booted on qemu. No regression. [1]
-arm64: Booted on rpi4b (4GB model). No regression. [2]
-mips: Booted on ci20 board. No regression. [3]
+Changes since v1
+================
+1. Add Rb tags.
+2. Rework reg-names constraints according to Doug's feedback.
 
-[1]. https://openqa.qa.codethink.co.uk/tests/1494
-[2]. https://openqa.qa.codethink.co.uk/tests/1497
-[3]. https://openqa.qa.codethink.co.uk/tests/1500
+Best regards,
+Krzysztof
 
-Tested-by: Sudip Mukherjee <sudip.mukherjee@codethink.co.uk>
+Krzysztof Kozlowski (5):
+  dt-bindings: mmc: sdhci-msm: fix reg-names entries
+  dt-bindings: mmc: sdhci-msm: constrain reg-names per variants
+  arm64: dts: qcom: align SDHCI reg-names with DT schema
+  ARM: dts: qcom: align SDHCI reg-names with DT schema
+  ARM: dts: qcom: align SDHCI clocks with DT schema
 
---
-Regards
-Sudip
+ .../devicetree/bindings/mmc/sdhci-msm.yaml    | 61 ++++++++++++-------
+ arch/arm/boot/dts/qcom-apq8084.dtsi           | 16 ++---
+ arch/arm/boot/dts/qcom-ipq4019.dtsi           |  5 +-
+ arch/arm/boot/dts/qcom-msm8226.dtsi           | 24 ++++----
+ arch/arm/boot/dts/qcom-msm8974.dtsi           | 24 ++++----
+ arch/arm/boot/dts/qcom-msm8974pro.dtsi        |  6 +-
+ arch/arm/boot/dts/qcom-sdx65.dtsi             |  2 +-
+ arch/arm64/boot/dts/qcom/ipq8074.dtsi         |  2 +-
+ arch/arm64/boot/dts/qcom/msm8916.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8953.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8994.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8996.dtsi         |  4 +-
+ arch/arm64/boot/dts/qcom/msm8998.dtsi         |  2 +-
+ 13 files changed, 87 insertions(+), 71 deletions(-)
+
+-- 
+2.34.1
+
