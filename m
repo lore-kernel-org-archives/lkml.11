@@ -2,67 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88895C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC27C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233582AbiGLUkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:40:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S233477AbiGLUkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232869AbiGLUj7 (ORCPT
+        with ESMTP id S232771AbiGLUkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:39:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19368CC7B5
+        Tue, 12 Jul 2022 16:40:00 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF5E8CD3CB
         for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:39:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEBF8B81658
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 20:39:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880B7C3411C;
-        Tue, 12 Jul 2022 20:39:56 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oBMfj-0049NV-J3;
-        Tue, 12 Jul 2022 16:39:55 -0400
-Message-ID: <20220712203924.060569640@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Tue, 12 Jul 2022 16:39:24 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [for-linus][PATCH 0/6] tracing: Fixes and minor clean ups for 5.19
+Received: by mail-pf1-x436.google.com with SMTP id v7so6400212pfb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:39:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:in-reply-to:references:subject:message-id:date:mime-version
+         :content-transfer-encoding;
+        bh=OLmzDzmTPzMJ38g54k0QU/ejd1TogD/xDNa2/MNxm8Y=;
+        b=4S57N1Dp6yzh3XLZSy5FPy2xCSspLu5nsV+/x1gMHo5unctBf5APbeNGoJ5CcQz5ce
+         E4fgelVwI1LfT1apnNBWVrNjNMZXlrmcMvRyGey8lRtfHq1D5GYFNUsVSgIs3S9DY4Ry
+         pjuZwC3sCNTwShONX2njsmi3sHcscnWgwtThDMIqhoUTaqwzOVuKTXD3lZTfC1jI1X+u
+         rY+YAEiTfSgMsGBp86XkeAhww2EJpo++SXHolzsQ3a10q7B9+mU50SUKKeU5G3TZx/6X
+         R81Brwd4eNlVhJnLsYuv2oO8T0NkyGHwPsup+TM5i/svdTGU8AcnxSbVTXHj1yaAbODG
+         5OBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=OLmzDzmTPzMJ38g54k0QU/ejd1TogD/xDNa2/MNxm8Y=;
+        b=sj4asZHw7mwI5Zu8Swc1lhkzDwu9v/1un+c47wrOyOZpUvAyLl30w34gi3yWABdn8p
+         MDx37gVT3asYGQjbaUX4kOfgu7ol9X/3nMz9mPvzProKZupAyqSw/AAvVWJHtkkmEe9w
+         hXx5yU3fM5OknKNGnJ2ccx/ILrRNlEoqFGDwgSyfZ2vdKvh/OMCXB9pz4UjdkKlXBb7U
+         bPU3Qt7seD+ooiC59VNz8cNaMZ/Eh3jMj6UhDhuRh4LDNkU7OUeZAEKdmjbt+Mcawku4
+         YI5qPD+2L++51rzO/ewFTorsOHKpxH6x5etiLLIg7YZIBA8ZEKFtBIuofWAAURepgzAm
+         aNZA==
+X-Gm-Message-State: AJIora+FdriEfP93I2jOjXPCuAArV/jZKDPY3CDz9ZTqFWAxGmGZZYwW
+        J9WdiaTERgbeFft+BmYyMDObDw6YhUnH6A==
+X-Google-Smtp-Source: AGRyM1tS4ymO9bj84U+iUu64WK1ti9Ajgly7NrpGjGA4RcoUW3UQW4BCmTK6GYR7i6vj6V5Dv2Vi8Q==
+X-Received: by 2002:a63:540d:0:b0:412:9fb2:4d4 with SMTP id i13-20020a63540d000000b004129fb204d4mr41273pgb.475.1657658399182;
+        Tue, 12 Jul 2022 13:39:59 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id p8-20020a17090a930800b001e292e30129sm19266pjo.22.2022.07.12.13.39.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 13:39:58 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     ubizjak@gmail.com, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org
+In-Reply-To: <20220712150547.5786-1-ubizjak@gmail.com>
+References: <20220712150547.5786-1-ubizjak@gmail.com>
+Subject: Re: [PATCH v2] block/rq_qos: Use atomic_try_cmpxchg in atomic_inc_below
+Message-Id: <165765839842.44219.4233753152017615209.b4-ty@kernel.dk>
+Date:   Tue, 12 Jul 2022 14:39:58 -0600
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 12 Jul 2022 17:05:47 +0200, Uros Bizjak wrote:
+> Use atomic_try_cmpxchg instead of atomic_cmpxchg (*ptr, old, new) == old in
+> atomic_inc_below. x86 CMPXCHG instruction returns success in ZF flag,
+> so this change saves a compare after cmpxchg (and related move instruction
+> in front of cmpxchg).
+> 
+> Also, atomic_try_cmpxchg implicitly assigns old *ptr value to "old" when
+> cmpxchg fails, enabling further code simplifications.
+> 
+> [...]
 
-Douglas Anderson (1):
-      tracing: Fix sleeping while atomic in kdb ftdump
+Applied, thanks!
 
-Li kunyu (1):
-      blk-iocost: tracing: atomic64_read(&ioc->vtime_rate) is assigned an extra semicolon
+[1/1] block/rq_qos: Use atomic_try_cmpxchg in atomic_inc_below
+      commit: f4b1e27db49c8b985b116aa99481b4c6a4342ed4
 
-Steven Rostedt (Google) (1):
-      ftrace: Be more specific about arch impact when function tracer is enabled
+Best regards,
+-- 
+Jens Axboe
 
-Tiezhu Yang (1):
-      samples: Use KSYM_NAME_LEN for kprobes
 
-Zheng Yejian (1):
-      tracing/histograms: Fix memory leak problem
-
-sunliming (1):
-      fprobe/samples: Make sample_probe static
-
-----
- include/trace/events/iocost.h       |  2 +-
- kernel/trace/Kconfig                |  3 ++-
- kernel/trace/trace.c                | 11 ++++++-----
- kernel/trace/trace_events_hist.c    |  2 ++
- samples/fprobe/fprobe_example.c     |  2 +-
- samples/kprobes/kprobe_example.c    |  5 ++---
- samples/kprobes/kretprobe_example.c |  5 ++---
- 7 files changed, 16 insertions(+), 14 deletions(-)
