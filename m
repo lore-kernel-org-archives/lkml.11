@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6731C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 884E9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235248AbiGLTDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:03:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
+        id S235382AbiGLTDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:03:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbiGLTCI (ORCPT
+        with ESMTP id S235166AbiGLTCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 15:02:08 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F48513D21;
-        Tue, 12 Jul 2022 11:49:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3601C193FB;
+        Tue, 12 Jul 2022 11:49:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F13D4B81B95;
-        Tue, 12 Jul 2022 18:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 655CFC3411C;
-        Tue, 12 Jul 2022 18:49:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8770B81BB9;
+        Tue, 12 Jul 2022 18:49:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502B6C3411E;
+        Tue, 12 Jul 2022 18:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651769;
-        bh=VCjIuSIJxECg9rUnAc+oypPNmhASe1jtnxWPtmqwl1k=;
+        s=korg; t=1657651772;
+        bh=u+BhN/gg3dg1PEa2+ENCjYpRMt1S2L7NIfbqX1tzYLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p8o70MkTGW0W25fw9A7lb4Tm8srtqwPtvT5Nrbfs2bLhMsIHr31yZvAd/OKtJKtWy
-         E/5ufKh/zfIEONI2ceCYoEkuPzjH487HOMvTW36ThM1s/pbkLvlhYg8tNfaeNXJE/L
-         KSeJ33feup0D5Tx1JAy3cEqYf61lY0SmfdeDvJXE=
+        b=ULGBRUvthY53Svc7xFwx8fyRKS8ThIupNg/j/A5gwvEtiVJ20H9X5zplxJXjk8bRJ
+         SP1cGxb9h4jCGdlY/7rKvEWfT+Ham/NJ/O5HE4stqDu3Z5cPpGoarpL/Fg4z+cVOT9
+         L6QAsjp5TY4SnFIsWE4A6LVGR17I7kOP5ghxAQaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 52/78] objtool: Update Retpoline validation
-Date:   Tue, 12 Jul 2022 20:39:22 +0200
-Message-Id: <20220712183240.986838708@linuxfoundation.org>
+Subject: [PATCH 5.15 53/78] x86/xen: Rename SYS* entry points
+Date:   Tue, 12 Jul 2022 20:39:23 +0200
+Message-Id: <20220712183241.025598382@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -53,109 +53,131 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
+commit b75b7f8ef1148be1b9321ffc2f6c19238904b438 upstream.
 
-Update retpoline validation with the new CONFIG_RETPOLINE requirement of
-not having bare naked RET instructions.
+Native SYS{CALL,ENTER} entry points are called
+entry_SYS{CALL,ENTER}_{64,compat}, make sure the Xen versions are
+named consistently.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: conflict fixup at arch/x86/xen/xen-head.S]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    6 ++++++
- arch/x86/mm/mem_encrypt_boot.S       |    2 ++
- arch/x86/xen/xen-head.S              |    1 +
- tools/objtool/check.c                |   19 +++++++++++++------
- 4 files changed, 22 insertions(+), 6 deletions(-)
+ arch/x86/xen/setup.c   |    6 +++---
+ arch/x86/xen/xen-asm.S |   20 ++++++++++----------
+ arch/x86/xen/xen-ops.h |    6 +++---
+ 3 files changed, 16 insertions(+), 16 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -76,6 +76,12 @@
- .endm
+--- a/arch/x86/xen/setup.c
++++ b/arch/x86/xen/setup.c
+@@ -922,7 +922,7 @@ void xen_enable_sysenter(void)
+ 	if (!boot_cpu_has(sysenter_feature))
+ 		return;
  
- /*
-+ * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
-+ * vs RETBleed validation.
-+ */
-+#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
-+
-+/*
-  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
-  * indirect jmp/call which may be susceptible to the Spectre variant 2
-  * attack.
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	pop	%rbp
+-	ret = register_callback(CALLBACKTYPE_sysenter, xen_sysenter_target);
++	ret = register_callback(CALLBACKTYPE_sysenter, xen_entry_SYSENTER_compat);
+ 	if(ret != 0)
+ 		setup_clear_cpu_cap(sysenter_feature);
+ }
+@@ -931,7 +931,7 @@ void xen_enable_syscall(void)
+ {
+ 	int ret;
  
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- SYM_FUNC_END(sme_encrypt_execute)
-@@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r15
+-	ret = register_callback(CALLBACKTYPE_syscall, xen_syscall_target);
++	ret = register_callback(CALLBACKTYPE_syscall, xen_entry_SYSCALL_64);
+ 	if (ret != 0) {
+ 		printk(KERN_ERR "Failed to set syscall callback: %d\n", ret);
+ 		/* Pretty fatal; 64-bit userspace has no other
+@@ -940,7 +940,7 @@ void xen_enable_syscall(void)
  
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- .L__enc_copy_end:
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -70,6 +70,7 @@ SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
- 		.skip 31, 0x90
-+		ANNOTATE_UNRET_SAFE
- 		RET
- 	.endr
- 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1894,8 +1894,9 @@ static int read_retpoline_hints(struct o
- 		}
- 
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC) {
--			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN) {
-+			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
- 				  insn->sec, insn->offset);
- 			return -1;
- 		}
-@@ -3229,7 +3230,8 @@ static int validate_retpoline(struct obj
- 
- 	for_each_insn(file, insn) {
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC)
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN)
- 			continue;
- 
- 		if (insn->retpoline_safe)
-@@ -3244,9 +3246,14 @@ static int validate_retpoline(struct obj
- 		if (!strcmp(insn->sec->name, ".init.text") && !module)
- 			continue;
- 
--		WARN_FUNC("indirect %s found in RETPOLINE build",
--			  insn->sec, insn->offset,
--			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
-+		if (insn->type == INSN_RETURN) {
-+			WARN_FUNC("'naked' return found in RETPOLINE build",
-+				  insn->sec, insn->offset);
-+		} else {
-+			WARN_FUNC("indirect %s found in RETPOLINE build",
-+				  insn->sec, insn->offset,
-+				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
-+		}
- 
- 		warnings++;
+ 	if (boot_cpu_has(X86_FEATURE_SYSCALL32)) {
+ 		ret = register_callback(CALLBACKTYPE_syscall32,
+-					xen_syscall32_target);
++					xen_entry_SYSCALL_compat);
+ 		if (ret != 0)
+ 			setup_clear_cpu_cap(X86_FEATURE_SYSCALL32);
  	}
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -227,7 +227,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
+  */
+ 
+ /* Normal 64-bit system call target */
+-SYM_CODE_START(xen_syscall_target)
++SYM_CODE_START(xen_entry_SYSCALL_64)
+ 	UNWIND_HINT_EMPTY
+ 	popq %rcx
+ 	popq %r11
+@@ -241,12 +241,12 @@ SYM_CODE_START(xen_syscall_target)
+ 	movq $__USER_CS, 1*8(%rsp)
+ 
+ 	jmp entry_SYSCALL_64_after_hwframe
+-SYM_CODE_END(xen_syscall_target)
++SYM_CODE_END(xen_entry_SYSCALL_64)
+ 
+ #ifdef CONFIG_IA32_EMULATION
+ 
+ /* 32-bit compat syscall target */
+-SYM_CODE_START(xen_syscall32_target)
++SYM_CODE_START(xen_entry_SYSCALL_compat)
+ 	UNWIND_HINT_EMPTY
+ 	popq %rcx
+ 	popq %r11
+@@ -260,10 +260,10 @@ SYM_CODE_START(xen_syscall32_target)
+ 	movq $__USER32_CS, 1*8(%rsp)
+ 
+ 	jmp entry_SYSCALL_compat_after_hwframe
+-SYM_CODE_END(xen_syscall32_target)
++SYM_CODE_END(xen_entry_SYSCALL_compat)
+ 
+ /* 32-bit compat sysenter target */
+-SYM_CODE_START(xen_sysenter_target)
++SYM_CODE_START(xen_entry_SYSENTER_compat)
+ 	UNWIND_HINT_EMPTY
+ 	/*
+ 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
+@@ -281,18 +281,18 @@ SYM_CODE_START(xen_sysenter_target)
+ 	movq $__USER32_CS, 1*8(%rsp)
+ 
+ 	jmp entry_SYSENTER_compat_after_hwframe
+-SYM_CODE_END(xen_sysenter_target)
++SYM_CODE_END(xen_entry_SYSENTER_compat)
+ 
+ #else /* !CONFIG_IA32_EMULATION */
+ 
+-SYM_CODE_START(xen_syscall32_target)
+-SYM_CODE_START(xen_sysenter_target)
++SYM_CODE_START(xen_entry_SYSCALL_compat)
++SYM_CODE_START(xen_entry_SYSENTER_compat)
+ 	UNWIND_HINT_EMPTY
+ 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
+ 	mov $-ENOSYS, %rax
+ 	pushq $0
+ 	jmp hypercall_iret
+-SYM_CODE_END(xen_sysenter_target)
+-SYM_CODE_END(xen_syscall32_target)
++SYM_CODE_END(xen_entry_SYSENTER_compat)
++SYM_CODE_END(xen_entry_SYSCALL_compat)
+ 
+ #endif	/* CONFIG_IA32_EMULATION */
+--- a/arch/x86/xen/xen-ops.h
++++ b/arch/x86/xen/xen-ops.h
+@@ -10,10 +10,10 @@
+ /* These are code, but not functions.  Defined in entry.S */
+ extern const char xen_failsafe_callback[];
+ 
+-void xen_sysenter_target(void);
++void xen_entry_SYSENTER_compat(void);
+ #ifdef CONFIG_X86_64
+-void xen_syscall_target(void);
+-void xen_syscall32_target(void);
++void xen_entry_SYSCALL_64(void);
++void xen_entry_SYSCALL_compat(void);
+ #endif
+ 
+ extern void *xen_initial_gdt;
 
 
