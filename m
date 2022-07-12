@@ -2,103 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6469C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233257AbiGLOiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:38:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
+        id S233259AbiGLOim (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233040AbiGLOh7 (ORCPT
+        with ESMTP id S232851AbiGLOik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:37:59 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 07:37:58 PDT
-Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BE9237CB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:37:58 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 7242241207;
-        Tue, 12 Jul 2022 14:21:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received:received; s=mta-01; t=1657635687; x=
-        1659450088; bh=AaOui02YEi9Ip9b2cycfHTnE1G+dZu4PYyIF31Vbb5A=; b=R
-        KFSZXqXSZEsbdWU2b8VjtMUNQWoisI4jpNNIdVUKssbvgYuSs80ZJHrYpE7UxvME
-        lV0hbge3sDEa48iO/ZbFVRsu9qivQpSwN9ZWsn488lwiYQNYvyRvHe+sOoSwxlH3
-        XPWJGLyNkI9tvFaK/g9bdZ+b9s+//NrZqFG5v2hZAQ=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Hjv7YybZuw8Q; Tue, 12 Jul 2022 17:21:27 +0300 (MSK)
-Received: from T-EXCH-01.corp.yadro.com (t-exch-01.corp.yadro.com [172.17.10.101])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 6317941209;
-        Tue, 12 Jul 2022 17:21:24 +0300 (MSK)
-Received: from T-EXCH-06.corp.yadro.com (172.17.10.110) by
- T-EXCH-01.corp.yadro.com (172.17.10.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Tue, 12 Jul 2022 17:21:24 +0300
-Received: from v.yadro.com (10.178.114.10) by T-EXCH-06.corp.yadro.com
- (172.17.10.110) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Tue, 12 Jul
- 2022 17:21:23 +0300
-From:   Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
-CC:     <linux@yadro.com>,
-        Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Stephen Boyd" <sboyd@kernel.org>, Zong Li <zong.li@sifive.com>,
-        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] riscv: dts: fu740: Add PDMA node
-Date:   Tue, 12 Jul 2022 17:20:38 +0300
-Message-ID: <20220712142040.12021-1-v.v.mitrofanov@yadro.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Jul 2022 10:38:40 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE149EE39
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:38:38 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w12so9642386edd.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:38:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gw1mMD/flbBthjeePLv0Y0kXpV5IbTidTrLktbLyhI0=;
+        b=RqvbrWCcIXdea2f/Qj13QYE1BRKwtksUEdIM42qx/PVQpw3a3azwxxJP9qPZC08xRf
+         8s8pqVZRBvGcJtI5eq/5QlsY7R7XvK1pHPqhBYFAIu5Y7yejJep+Q935ranUohVWDtmx
+         HyMEocB1O/uNpk9Ng1ucXJybonOk76kz0yEBk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gw1mMD/flbBthjeePLv0Y0kXpV5IbTidTrLktbLyhI0=;
+        b=ApDdVyb0O+3xoCSMcvaOwPNPGii/S/0G0XV2U5IW/hf70eEfpXKQCtKB5sPi9/oaLU
+         HbWhPPwMjW4KVdGVjBf3PZWgjW4pzUXeC5v4HpCeO3tMAMKiYWhjaUtXg1KbWy4/O326
+         7tW1DKJG/ypoKauLPkaK33py/Pr83ZYnKWOIQDCxYI3eIVpP8Ss3VPiBj3nJHLD0Oupl
+         jxXRiez4XF74maGvT4ZQBDzBJv4wznJfdgUx5AE5Ub6RVeDMW9obirQKz9NBqqqrW+TD
+         YZFeXDXXOsSnIyiPrNiMHFq2HpHBo3Qh10ONNbeYDuF3Y7TmPLfHmT8dqd+U/ie6lXZb
+         F8xA==
+X-Gm-Message-State: AJIora+g9rMgmi04AU5TQ03FT5XLGHYGJ8a2tNX2G59TSHvfUuZIhVMd
+        TB3f50CrgphNbDexT/Mn6AYLr/FIj2HdPZIo3ts=
+X-Google-Smtp-Source: AGRyM1sBKt8gBNG7VDkwZNrg0yi6Hurer5/bnM7Y0Xh8wqfNHTT+2iEBlxT6W/KlS++6mHp7eGU1rA==
+X-Received: by 2002:aa7:cc0b:0:b0:437:9c60:127b with SMTP id q11-20020aa7cc0b000000b004379c60127bmr31837522edt.320.1657636717223;
+        Tue, 12 Jul 2022 07:38:37 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id s10-20020a170906960a00b006fec4ee28d0sm3829296ejx.189.2022.07.12.07.38.36
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 07:38:36 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id y22-20020a7bcd96000000b003a2e2725e89so4627315wmj.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:38:36 -0700 (PDT)
+X-Received: by 2002:a05:600c:511c:b0:3a2:d480:9390 with SMTP id
+ o28-20020a05600c511c00b003a2d4809390mr4146899wms.93.1657636715865; Tue, 12
+ Jul 2022 07:38:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.178.114.10]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-06.corp.yadro.com (172.17.10.110)
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220711082709.39102-1-krzysztof.kozlowski@linaro.org>
+ <20220711082709.39102-2-krzysztof.kozlowski@linaro.org> <CAD=FV=W7BCMTByC9xn2iRsxoB9RzRENz5zuTy1Sgmhjbw3aQMw@mail.gmail.com>
+ <6ebdb95a-6458-b77e-e14c-e89539c51b3f@linaro.org>
+In-Reply-To: <6ebdb95a-6458-b77e-e14c-e89539c51b3f@linaro.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Tue, 12 Jul 2022 07:38:23 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WGxQF4vPuRi7kWKoqTpe0RFsgH+J82C=sQbmncK_AFpw@mail.gmail.com>
+Message-ID: <CAD=FV=WGxQF4vPuRi7kWKoqTpe0RFsgH+J82C=sQbmncK_AFpw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mmc: sdhci-msm: add MSM8998 SDCC specific compatible
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-HiFive unmatched supports PDMA but is not implemented in DT.
+Hi,
 
-Add the PDMA node in SiFive FU740 soc-specific DT file.
+On Mon, Jul 11, 2022 at 11:47 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 11/07/2022 17:08, Doug Anderson wrote:
+> > Hi,
+> >
+> > On Mon, Jul 11, 2022 at 1:27 AM Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> Add a MSM8998-specific SDCC compatible, because using only a generic
+> >> qcom,sdhci-msm-v4 fallback is deprecated.
+> >>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >> ---
+> >>  drivers/mmc/host/sdhci-msm.c | 1 +
+> >>  1 file changed, 1 insertion(+)
+> >>
+> >> diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
+> >> index e395411fb6fd..bb169c1c2b5e 100644
+> >> --- a/drivers/mmc/host/sdhci-msm.c
+> >> +++ b/drivers/mmc/host/sdhci-msm.c
+> >> @@ -2447,6 +2447,7 @@ static const struct of_device_id sdhci_msm_dt_match[] = {
+> >>         {.compatible = "qcom,msm8992-sdhci", .data = &sdhci_msm_mci_var},
+> >>         {.compatible = "qcom,msm8994-sdhci", .data = &sdhci_msm_mci_var},
+> >>         {.compatible = "qcom,msm8996-sdhci", .data = &sdhci_msm_mci_var},
+> >> +       {.compatible = "qcom,msm8998-sdhci", .data = &sdhci_msm_mci_var},
+> >
+> > FWIW I'm _against_ this change.
+> >
+> > In my mind while it is correct to specify both the specific and
+> > generic compatible string in the device tree, the driver itself should
+> > rely on just the generic compatible string until there is a reason to
+> > use the specific one (like we needed to for sdm845 and sc7180).
+> >
+> > I think I pointed that out before, but somehow all of the specific
+> > device tree strings have snuck their way into the driver without me
+> > paying attention. :(
+>
+> I thought it's existing practice for some time, but it's a fresh commit
+> 466614a9765c ("mmc: sdhci-msm: Add SoC specific compatibles"). I agree
+> that it does not make much sense to add each compatible to the driver,
+> so how about reverting 466614a9765c?
 
-Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
----
- arch/riscv/boot/dts/sifive/fu740-c000.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+That would be my vote.
 
-diff --git a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
-index 7b77c13496d8..4bd670d8632f 100644
---- a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
-+++ b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
-@@ -161,6 +161,14 @@ prci: clock-controller@10000000 {
- 			#clock-cells = <1>;
- 			#reset-cells = <1>;
- 		};
-+		dma: dma-controller@3000000 {
-+			compatible = "sifive,pdma0";
-+			reg = <0x0 0x3000000 0x0 0x8000>;
-+			interrupt-parent = <&plic0>;
-+			interrupts = <11 12 13 14 15 16 17 18>;
-+			dma-channels = <4>;
-+			#dma-cells = <1>;
-+		};
- 		uart0: serial@10010000 {
- 			compatible = "sifive,fu740-c000-uart", "sifive,uart0";
- 			reg = <0x0 0x10010000 0x0 0x1000>;
--- 
-2.25.1
-
+-Doug
