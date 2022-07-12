@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B00C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01BB5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235912AbiGLTO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:14:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
+        id S235927AbiGLTPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:15:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235831AbiGLTNo (ORCPT
+        with ESMTP id S235959AbiGLTNs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:13:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB69C33343;
-        Tue, 12 Jul 2022 11:53:47 -0700 (PDT)
+        Tue, 12 Jul 2022 15:13:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F4545068;
+        Tue, 12 Jul 2022 11:53:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B333FB81B95;
-        Tue, 12 Jul 2022 18:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD5AC3411C;
-        Tue, 12 Jul 2022 18:53:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0730CB81BAC;
+        Tue, 12 Jul 2022 18:53:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 245E4C3411C;
+        Tue, 12 Jul 2022 18:53:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652024;
-        bh=Db31GERbbkoPzIxNMiIP982nUk5vWgFinkKHad116yg=;
+        s=korg; t=1657652027;
+        bh=2MIJbf8TXQQVuRBlejKSL9UpaG5j6tBin2fze29fTlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jC1SLTwi+yCn0zXaYEItOSlZ3z9OErjw47jI+3svfsVIsxwwAjYfbKntfpKbw758r
-         xBNWqFYybMedpo0owAh0T8FBPB+yOU1TzLu7EB7jcQwCL0JFk3QaHXsYe9HG1P2xp1
-         EM8ZgLEpl3FfSOX2oerBvnSvlApvDntZ+7C/1Gog=
+        b=IGzsXYx0GI/vR4S2jz6Mb8+z63oc4M0TyKoZ26pME74rganWhNjeFdmSq0Mvkg2W5
+         8eYXjo/1Mi5hhVJinG7p+LR9x8ZlbUkilWG2Mr2PODwiRIwGehb2AkaZE4rGokgjpp
+         uTyhpFg8r5ox4AvxxjXDxHpbcllW7ul5ILx3UO6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Andrew Cooper <Andrew.Cooper3@citrix.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 57/61] x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
-Date:   Tue, 12 Jul 2022 20:39:54 +0200
-Message-Id: <20220712183239.144401501@linuxfoundation.org>
+Subject: [PATCH 5.18 40/61] x86/cpu/amd: Add Spectral Chicken
+Date:   Tue, 12 Jul 2022 20:39:37 +0200
+Message-Id: <20220712183238.578903841@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -52,70 +53,105 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 2c08b9b38f5b0f4a6c2d29be22b695e4ec4a556b upstream.
+commit d7caac991feeef1b871ee6988fd2c9725df09039 upstream.
 
-Commit
+Zen2 uarchs have an undocumented, unnamed, MSR that contains a chicken
+bit for some speculation behaviour. It needs setting.
 
-  ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
+Note: very belatedly AMD released naming; it's now officially called
+      MSR_AMD64_DE_CFG2 and MSR_AMD64_DE_CFG2_SUPPRESS_NOBR_PRED_BIT
+      but shall remain the SPECTRAL CHICKEN.
 
-moved PUSH_AND_CLEAR_REGS out of error_entry, into its own function, in
-part to avoid calling error_entry() for XenPV.
-
-However, commit
-
-  7c81c0c9210c ("x86/entry: Avoid very early RET")
-
-had to change that because the 'ret' was too early and moved it into
-idtentry, bloating the text size, since idtentry is expanded for every
-exception vector.
-
-However, with the advent of xen_error_entry() in commit
-
-  d147553b64bad ("x86/xen: Add UNTRAIN_RET")
-
-it became possible to remove PUSH_AND_CLEAR_REGS from idtentry, back
-into *error_entry().
-
+Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: error_entry still does cld]
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/x86/include/asm/msr-index.h |    3 +++
+ arch/x86/kernel/cpu/amd.c        |   23 ++++++++++++++++++++++-
+ arch/x86/kernel/cpu/cpu.h        |    2 ++
+ arch/x86/kernel/cpu/hygon.c      |    6 ++++++
+ 4 files changed, 33 insertions(+), 1 deletion(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -323,6 +323,8 @@ SYM_CODE_END(ret_from_fork)
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -553,6 +553,9 @@
+ /* Fam 17h MSRs */
+ #define MSR_F17H_IRPERF			0xc00000e9
  
- SYM_CODE_START_LOCAL(xen_error_entry)
- 	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
- 	UNTRAIN_RET
- 	RET
- SYM_CODE_END(xen_error_entry)
-@@ -334,9 +336,6 @@ SYM_CODE_END(xen_error_entry)
-  */
- .macro idtentry_body cfunc has_error_code:req
++#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
++#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
++
+ /* Fam 16h MSRs */
+ #define MSR_F16H_L2I_PERF_CTL		0xc0010230
+ #define MSR_F16H_L2I_PERF_CTR		0xc0010231
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -862,6 +862,26 @@ static void init_amd_bd(struct cpuinfo_x
+ 	clear_rdrand_cpuid_bit(c);
+ }
  
--	PUSH_AND_CLEAR_REGS
--	ENCODE_FRAME_POINTER
--
- 	/*
- 	 * Call error_entry() and switch to the task stack if from userspace.
- 	 *
-@@ -1035,6 +1034,10 @@ SYM_CODE_END(paranoid_exit)
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
++void init_spectral_chicken(struct cpuinfo_x86 *c)
++{
++	u64 value;
 +
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
++	/*
++	 * On Zen2 we offer this chicken (bit) on the altar of Speculation.
++	 *
++	 * This suppresses speculation from the middle of a basic block, i.e. it
++	 * suppresses non-branch predictions.
++	 *
++	 * We use STIBP as a heuristic to filter out Zen2 from the rest of F17H
++	 */
++	if (!cpu_has(c, X86_FEATURE_HYPERVISOR) && cpu_has(c, X86_FEATURE_AMD_STIBP)) {
++		if (!rdmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, &value)) {
++			value |= MSR_ZEN2_SPECTRAL_CHICKEN_BIT;
++			wrmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, value);
++		}
++	}
++}
 +
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
+ static void init_amd_zn(struct cpuinfo_x86 *c)
+ {
+ 	set_cpu_cap(c, X86_FEATURE_ZEN);
+@@ -907,7 +927,8 @@ static void init_amd(struct cpuinfo_x86
+ 	case 0x12: init_amd_ln(c); break;
+ 	case 0x15: init_amd_bd(c); break;
+ 	case 0x16: init_amd_jg(c); break;
+-	case 0x17: fallthrough;
++	case 0x17: init_spectral_chicken(c);
++		   fallthrough;
+ 	case 0x19: init_amd_zn(c); break;
+ 	}
+ 
+--- a/arch/x86/kernel/cpu/cpu.h
++++ b/arch/x86/kernel/cpu/cpu.h
+@@ -61,6 +61,8 @@ static inline void tsx_init(void) { }
+ static inline void tsx_ap_init(void) { }
+ #endif /* CONFIG_CPU_SUP_INTEL */
+ 
++extern void init_spectral_chicken(struct cpuinfo_x86 *c);
++
+ extern void get_cpu_cap(struct cpuinfo_x86 *c);
+ extern void get_cpu_address_sizes(struct cpuinfo_x86 *c);
+ extern void cpu_detect_cache_sizes(struct cpuinfo_x86 *c);
+--- a/arch/x86/kernel/cpu/hygon.c
++++ b/arch/x86/kernel/cpu/hygon.c
+@@ -302,6 +302,12 @@ static void init_hygon(struct cpuinfo_x8
+ 	/* get apicid instead of initial apic id from cpuid */
+ 	c->apicid = hard_smp_processor_id();
+ 
++	/*
++	 * XXX someone from Hygon needs to confirm this DTRT
++	 *
++	init_spectral_chicken(c);
++	 */
++
+ 	set_cpu_cap(c, X86_FEATURE_ZEN);
+ 	set_cpu_cap(c, X86_FEATURE_CPB);
  
 
 
