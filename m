@@ -2,77 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B68AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232484AbiGLLK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54472 "EHLO
+        id S232974AbiGLLKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:10:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232972AbiGLLKM (ORCPT
+        with ESMTP id S230232AbiGLLKQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:10:12 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D04CBB186E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:10:10 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id y11so6812798lfs.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:10:10 -0700 (PDT)
+        Tue, 12 Jul 2022 07:10:16 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C967B0F99
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:10:16 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id e28so9756884lfj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:10:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uwaWTlB9XyYSCbsGwzEE8BVlrGpHkrwxw1TbvJ4Org4=;
-        b=DZx1pmciZROwc48L94adQPdjnNrHIsmIDfTxOKjK16+njO+4fyxaxlfXdN3waf3a0b
-         iM5mPh1KW6XDNtqJ5QAy5OO0FvJxeAr8GKZ6B10T7DxKG8mzOirP0a/YeYev9YrUP8Go
-         EM+SizTVel+y1raK1kbUZEwmfSD12pnlfo5JjYYQO6uzVckxQqgfpa0i5Am1uxsmX4xN
-         iBX32lKu6C3qjvzBGmJG7BNnfMG3ZTa9XelXo5bv/y+hJv2m28qCCC0SUYvJ5OENLuHE
-         O/7banmuGTWx6F4R2jJhe3T5FbLDe9eZdTERHLTzM798W8RBUvKoY7oUZwazBiMlgvS+
-         9llg==
+        bh=SIxn205KIvmS9VSb5lDf2UBPI0iYaOAaJ1A1MJqqVxk=;
+        b=FNUE2acQhszuFh5gwSVw+Rwn9vCbiz5eeW9tj0ulcEp5CB+CXfZNt8End8wSLExYwg
+         4MO0Xl4cRWRKs5XBHGbmhjPB/i1vtyPNV90bz1iw4x++t5iu24KV5R6FJi7W09ebLp9x
+         S7wFe2tgt8oEN1HIukddBfHCiZO3jZmcu5z3d3BrD2zxyY2u0qHd++sqPDQ+kzN2tovj
+         3q8HBg3/FmHKaEXwYT4Dfqb+TnqK4st+QY5oGz7HEfCyVhDwcVT+XW8TO0xoa0lPVoEs
+         iojT44I21fzo9Uf3MJBs0yP9F1SVii8xWazC9xjcbn2X5a0LWztVRBgtuz01spJQs9uV
+         WKQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uwaWTlB9XyYSCbsGwzEE8BVlrGpHkrwxw1TbvJ4Org4=;
-        b=4/nsVoTbkynQdnb4aS1Uf+d8U1i35NTuEgWxy/cqc/2a6fL2TjmM/zqKz/OH0YZ+WB
-         M8fndOWyYWfbD+dn8K5bt0NLYpl0xnyySKo4MAiz4UQxvWrvZJ8jI9i7ObhWTLm+Z6KD
-         ZY26FcFtTLz5g8oAgj/DvGo1hqrUPSW926fpsyB85J9EhBtdA6rCHxQzAhocKRefVNbQ
-         IPnT7mi40KJv9YcTPgeCTqClhE+3n12fIQKqToyZsSz7f2cf0coiCt7lz2NnKv2sJCSG
-         d+5nWXBFuZrXykwx3r0Qq5p3Ex32eI5L2X6fBEcngODXSTcWy9jF8m8tMdQgfrYcHKlp
-         W0AQ==
-X-Gm-Message-State: AJIora/GJcRRe+vfxlgV9TbSL/NJ9e7BvptRO3Jo1OVCDkL7ivkfksTj
-        isXS1/yVw4dsNngFJXzwo2+ltpdGhJ9zA2psqmrTqw==
-X-Google-Smtp-Source: AGRyM1ve5l8iOOqjKIRpIrGFxxBTNnh3DERnaKcFR3f0PFlcws/EjMxWxw8lvTV7HgWGqRd6EEPzTV4VMLjMOFwbt28=
-X-Received: by 2002:a05:6512:15a8:b0:489:ed48:24 with SMTP id
- bp40-20020a05651215a800b00489ed480024mr2187021lfb.184.1657624210224; Tue, 12
- Jul 2022 04:10:10 -0700 (PDT)
+        bh=SIxn205KIvmS9VSb5lDf2UBPI0iYaOAaJ1A1MJqqVxk=;
+        b=uvtsSvCkwB0L8DgBy0h96EDVAT49ppHchFk9/YRHowtvLUPXHXc0oxaCOa8P0LhDMs
+         IGZ4h/jbN+5ZVqorhC+MJJxz2TzGL4SqqHAz21GfVSrnygsAK/VDSoZ/g9QNOt1rGPGm
+         BHA8VvR9tIFtCOORTINL6qUX1IHbTIf1HJqPVGkXCJS6bkemBoFfAA0G+/0D5eh+rFI7
+         BU9yXSK4BfRKlK1d+TjhyOmPBgRdEQy0cTpPD3/2sreVdM6YkD3NuMkvb6Phy9EG1boX
+         1Vgx+ncs4lO8jHwFgn5fCwzObdf0FPRWqhLQbBJx0NthirhqLGbNK6tRO8hj6Tkc4nBE
+         Id1w==
+X-Gm-Message-State: AJIora8065yrbgd+8ylX80MHS+UEMcfUx6IceCtaVnesQ8X2wThBY22x
+        q3qUHWS3veA0m709yC+e2VV6pPvN5GN2sAdB8Xj76w==
+X-Google-Smtp-Source: AGRyM1tW9I2SNwUkOEFsvNntEhlOoXvMH17jCpZPzFWoPNjDoKFFg72huJu8nMkwl68VqtR7rGwljMo7GbdaofhPCqM=
+X-Received: by 2002:a05:6512:3d03:b0:47f:7023:2c57 with SMTP id
+ d3-20020a0565123d0300b0047f70232c57mr14045143lfv.254.1657624215580; Tue, 12
+ Jul 2022 04:10:15 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220704143554.1180927-1-robimarko@gmail.com>
-In-Reply-To: <20220704143554.1180927-1-robimarko@gmail.com>
+References: <20220708114747.13878-1-johnson.wang@mediatek.com>
+In-Reply-To: <20220708114747.13878-1-johnson.wang@mediatek.com>
 From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 12 Jul 2022 13:09:33 +0200
-Message-ID: <CAPDyKFro0BkQdRJ1q44ED95CqQHbujBshAtFJm_PVPUD+rKE=w@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: mmc: sdhci-msm: document resets
-To:     Robert Marko <robimarko@gmail.com>
+Date:   Tue, 12 Jul 2022 13:09:39 +0200
+Message-ID: <CAPDyKFqcP69cBEKDx1Uu0BKGOA6s1U+Suiz1KXDXtwn8Qj8kBA@mail.gmail.com>
+Subject: Re: [PATCH v2] dt-bindings: mmc: Add compatible for MediaTek MT8188
+To:     Johnson Wang <johnson.wang@mediatek.com>
 Cc:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, bhupesh.sharma@linaro.org,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022 at 16:35, Robert Marko <robimarko@gmail.com> wrote:
+On Fri, 8 Jul 2022 at 13:47, Johnson Wang <johnson.wang@mediatek.com> wrote:
 >
-> Commit "mmc: sdhci-msm: Reset GCC_SDCC_BCR register for SDHC" added
-> support for utilizing a hardware reset and parsing it from DT, however
-> the bindings were not updated along with it.
+> This commit adds dt-binding documentation of mmc for MediaTek MT8188 SoC
+> platform.
 >
-> So, document the usage of "resets" property with the limit of only one
-> item.
->
-> Signed-off-by: Robert Marko <robimarko@gmail.com>
+> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
 
 Applied for next, thanks!
 
@@ -81,23 +77,32 @@ Uffe
 
 
 > ---
->  Documentation/devicetree/bindings/mmc/sdhci-msm.yaml | 3 +++
->  1 file changed, 3 insertions(+)
+>  Documentation/devicetree/bindings/mmc/mtk-sd.yaml | 12 +++++-------
+>  1 file changed, 5 insertions(+), 7 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> index 31a3ce208e1a..ca8814a80443 100644
-> --- a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> @@ -116,6 +116,9 @@ properties:
->      description:
->        Should specify pin control groups used for this controller.
+> diff --git a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> index 2a2e9fa8c188..be366cefffc2 100644
+> --- a/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/mtk-sd.yaml
+> @@ -30,13 +30,11 @@ properties:
+>            - const: mediatek,mt7623-mmc
+>            - const: mediatek,mt2701-mmc
+>        - items:
+> -          - const: mediatek,mt8186-mmc
+> -          - const: mediatek,mt8183-mmc
+> -      - items:
+> -          - const: mediatek,mt8192-mmc
+> -          - const: mediatek,mt8183-mmc
+> -      - items:
+> -          - const: mediatek,mt8195-mmc
+> +          - enum:
+> +              - mediatek,mt8186-mmc
+> +              - mediatek,mt8188-mmc
+> +              - mediatek,mt8192-mmc
+> +              - mediatek,mt8195-mmc
+>            - const: mediatek,mt8183-mmc
 >
-> +  resets:
-> +    maxItems: 1
-> +
->    qcom,ddr-config:
->      $ref: /schemas/types.yaml#/definitions/uint32
->      description: platform specific settings for DDR_CONFIG reg.
+>    reg:
 > --
-> 2.36.1
+> 2.18.0
 >
