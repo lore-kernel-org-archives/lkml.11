@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD91C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7B9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235031AbiGLS6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S235044AbiGLS6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:58:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234917AbiGLS5Q (ORCPT
+        with ESMTP id S235041AbiGLS5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:57:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCA9DC8B2;
-        Tue, 12 Jul 2022 11:47:10 -0700 (PDT)
+        Tue, 12 Jul 2022 14:57:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017A6DD219;
+        Tue, 12 Jul 2022 11:47:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E54A6CE1D85;
-        Tue, 12 Jul 2022 18:47:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA6CFC3411E;
-        Tue, 12 Jul 2022 18:47:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 583C8B81B96;
+        Tue, 12 Jul 2022 18:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6C95C3411C;
+        Tue, 12 Jul 2022 18:47:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651627;
-        bh=wNMpLzoGPFxhjiSNYi0HVZ8hNKaw3idO+yUyf00eJdQ=;
+        s=korg; t=1657651645;
+        bh=YvCCv6eVb0NnonWUapO+9jBOvrlJBiS1ajCBCiUvIjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CV6fHvihicE8d4UEjX7edyv4o63oEGKrd2VU1XYTriEl3B6J4o6GdCBI8MeqsVlOf
-         o7N2yp4i2dssaTdHB+mE6/I0nMmPLtl7NXxXKZTwQp5L9Qu/HBUMS+Wj6Jz5DS2Fb1
-         bojqad9TByc5d7YKl+WPkX2134NrQ83HwDb7YfDQ=
+        b=xQqhKm3+/hvEuBFSfvB/N8XmM4D54N4v9AsVqKqJBiyuyq9VK3ulRFUMWgk3Uwoy9
+         8jFqV127BSQ55Dw2TytU+yxGtgLo6Qh2ypUtfzpKDNtYETBRPsR+RxrsNhzMygf/X2
+         wTfXSUtsGoydZcULaqbPpc6Q9+xZwvsNGFh48CVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 113/130] x86/speculation: Fix firmware entry SPEC_CTRL handling
-Date:   Tue, 12 Jul 2022 20:39:19 +0200
-Message-Id: <20220712183251.679699228@linuxfoundation.org>
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 03/78] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
+Date:   Tue, 12 Jul 2022 20:38:33 +0200
+Message-Id: <20220712183238.970721477@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
-References: <20220712183246.394947160@linuxfoundation.org>
+In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
+References: <20220712183238.844813653@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit e6aa13622ea8283cc699cac5d018cc40a2ba2010 upstream.
+commit ee774dac0da1543376a69fd90840af6aa86879b3 upstream.
 
-The firmware entry code may accidentally clear STIBP or SSBD. Fix that.
+The macro idtentry() (through idtentry_body()) calls error_entry()
+unconditionally even on XENPV. But XENPV needs to only push and clear
+regs.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+PUSH_AND_CLEAR_REGS in error_entry() makes the stack not return to its
+original place when the function returns, which means it is not possible
+to convert it to a C function.
+
+Carve out PUSH_AND_CLEAR_REGS out of error_entry() and into a separate
+function and call it before error_entry() in order to avoid calling
+error_entry() on XENPV.
+
+It will also allow for error_entry() to be converted to C code that can
+use inlined sync_regs() and save a function call.
+
+  [ bp: Massage commit message. ]
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220503032107.680190-4-jiangshanlai@gmail.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |   10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ arch/x86/entry/entry_64.S |   15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -286,18 +286,16 @@ extern u64 spec_ctrl_current(void);
-  */
- #define firmware_restrict_branch_speculation_start()			\
- do {									\
--	u64 val = x86_spec_ctrl_base | SPEC_CTRL_IBRS;			\
--									\
- 	preempt_disable();						\
--	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
-+	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
-+			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
- 			      X86_FEATURE_USE_IBRS_FW);			\
- } while (0)
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -315,6 +315,14 @@ SYM_CODE_END(ret_from_fork)
+ #endif
+ .endm
  
- #define firmware_restrict_branch_speculation_end()			\
- do {									\
--	u64 val = x86_spec_ctrl_base;					\
--									\
--	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
-+	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
-+			      spec_ctrl_current(),			\
- 			      X86_FEATURE_USE_IBRS_FW);			\
- 	preempt_enable();						\
- } while (0)
++/* Save all registers in pt_regs */
++SYM_CODE_START_LOCAL(push_and_clear_regs)
++	UNWIND_HINT_FUNC
++	PUSH_AND_CLEAR_REGS save_ret=1
++	ENCODE_FRAME_POINTER 8
++	RET
++SYM_CODE_END(push_and_clear_regs)
++
+ /**
+  * idtentry_body - Macro to emit code calling the C function
+  * @cfunc:		C function to be called
+@@ -322,6 +330,9 @@ SYM_CODE_END(ret_from_fork)
+  */
+ .macro idtentry_body cfunc has_error_code:req
+ 
++	call push_and_clear_regs
++	UNWIND_HINT_REGS
++
+ 	call	error_entry
+ 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
+ 	ENCODE_FRAME_POINTER
+@@ -965,13 +976,11 @@ SYM_CODE_START_LOCAL(paranoid_exit)
+ SYM_CODE_END(paranoid_exit)
+ 
+ /*
+- * Save all registers in pt_regs, and switch GS if needed.
++ * Switch GS and CR3 if needed.
+  */
+ SYM_CODE_START_LOCAL(error_entry)
+ 	UNWIND_HINT_FUNC
+ 	cld
+-	PUSH_AND_CLEAR_REGS save_ret=1
+-	ENCODE_FRAME_POINTER 8
+ 	testb	$3, CS+8(%rsp)
+ 	jz	.Lerror_kernelspace
+ 
 
 
