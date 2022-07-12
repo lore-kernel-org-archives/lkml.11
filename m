@@ -2,191 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C20BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A78BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232456AbiGLL3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        id S231906AbiGLL3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:29:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbiGLL3R (ORCPT
+        with ESMTP id S229872AbiGLL3g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:29:17 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A57FC1BEB8;
-        Tue, 12 Jul 2022 04:29:15 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D8D901515;
-        Tue, 12 Jul 2022 04:29:15 -0700 (PDT)
-Received: from [10.57.13.42] (unknown [10.57.13.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 251BD3F70D;
-        Tue, 12 Jul 2022 04:29:13 -0700 (PDT)
-Message-ID: <6ce87fbb-1460-503b-f1f1-8cf53e702cdf@arm.com>
-Date:   Tue, 12 Jul 2022 12:29:12 +0100
+        Tue, 12 Jul 2022 07:29:36 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 13B27193DF;
+        Tue, 12 Jul 2022 04:29:35 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1oBE58-00025x-00; Tue, 12 Jul 2022 13:29:34 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id E75EEC036A; Tue, 12 Jul 2022 13:19:17 +0200 (CEST)
+Date:   Tue, 12 Jul 2022 13:19:17 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Hongchen Zhang <zhanghongchen@loongson.cn>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MIPS: fix pmd_mkinvalid
+Message-ID: <20220712111917.GA10936@alpha.franken.de>
+References: <1657181495-33004-1-git-send-email-zhanghongchen@loongson.cn>
+ <20220707092206.GA9894@alpha.franken.de>
+ <bfb97f6b-7a39-8253-bc14-08f2f54ed312@loongson.cn>
+ <0fd4e823-493f-07f0-08d5-f4a22491b602@loongson.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 3/3] thermal/core: Fix thermal trip cross point
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     quic_manafm@quicinc.com, rui.zhang@intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amit Kucheria <amitk@kernel.org>, rafael@kernel.org
-References: <20220708183210.1334839-1-daniel.lezcano@linaro.org>
- <20220708183210.1334839-3-daniel.lezcano@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <20220708183210.1334839-3-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0fd4e823-493f-07f0-08d5-f4a22491b602@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jul 12, 2022 at 06:01:08PM +0800, Hongchen Zhang wrote:
+> On 2022/7/7 下午7:12, Hongchen Zhang wrote:
+> > On 2022/7/7 下午5:22, Thomas Bogendoerfer wrote:
+> > > On Thu, Jul 07, 2022 at 04:11:35PM +0800, Hongchen Zhang wrote:
+> > > > When a pmd entry is invalidated by pmd_mkinvalid,pmd_present should
+> > > > return true.
+> > > > So introduce a _PMD_PRESENT_INVALID_SHIFT bit to check if a pmd is
+> > > > present but invalidated by pmd_mkinvalid.
+> > > 
+> > > What problem are you trying to fix ? What are the symptoms ?
+> > > 
+> > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > 
+> > > the test robot showed problems with your last version of the patch,
+> > > which hasn't been integrated into at least the MIPS tree, so no
+> > > need to that.
+> > > 
+> > > Thomas.
+> > > 
+> > 
+> > Hi Thomas,
+> >    The idea come from the commit:
+> >    b65399f6111b(arm64/mm: Change THP helpers to comply with generic MM
+> >  semantics).
+> >    There is an problem now:
+> >          CPU 0        CPU 1
+> >      pmdp_invalidate        do_page_fault
+> >      ...              __handle_mm_fault
+> >                      is_swap_pmd == true
+> >                      trigger VM_BUG_ON() ?
+> >      set_pmd_at
+> >    the reason is that pmd_present return true,after this commit
+> >    pmd_present will return false,and the VM_BUG_ON will not be triggered.
+> >    Like arm64 does,we can introduce a new bit to fix this.
+> > 
+> > Thanks.
+> Hi Thomas,
+>  Is there problem of this patch? What's your opinion of this patch?
 
+I haven't dig deeper into it, but needing more page bits is a pain
+for 32bit kernel and would make it nearly impossible to get huge
+page support there. And the description you gave me, needs to be
+in the commit description.
 
-On 7/8/22 19:32, Daniel Lezcano wrote:
-> The routine doing trip point crossing the way up or down is actually
-> wrong.
-> 
-> A trip point is composed with a trip temperature and a hysteresis.
-> 
-> The trip temperature is used to detect when the trip point is crossed
-> the way up.
-> 
-> The trip temperature minus the hysteresis is used to detect when the
-> trip point is crossed the way down.
-> 
-> |-----------low--------high------------|
->               |<--------->|
->               |    hyst   |
->               |           |
->               |          -|--> crossed the way up
->               |
->           <---|-- crossed the way down
-> 
-> For that, there is a two point comparison: the current temperature and
-> the previous temperature.
-> 
-> The actual code assumes if the current temperature is greater than the
-> trip temperature and the previous temperature was lesser, then the
-> trip point is crossed the way up. That is true only if we crossed the
-> way down the low temperature boundary from the previous temperature or
-> if the hysteresis is zero. The temperature can decrease between the
-> low and high, so the trip point is not crossed the way down and then
-> increase again and cross the high temperature raising a new trip point
-> crossed detection which is incorrect. The same scenario happens when
-> crossing the way down.
-> 
-> The trip point crossing the way up and down must act as parenthesis, a
-> trip point down must close a trip point up. Today we have multiple
-> trip point up without the corresponding trip point down.
-> 
-> In order to fix that, we store the previous trip point which gives the
-> information about the previous trip and we change the trip point
-> browsing order depending on the temperature trend: in the ascending
-> order when the temperature trend is raising, otherwise in the
-> descending order.
-> 
-> As a sidenote, the thermal_zone_device structure has already the
-> prev_trip_low and prev_trip_high information which are used by the
-> thermal_zone_set_trips() function. This one can be changed to be
-> triggered by the trip temperature crossing function, which makes more
-> sense, and the two fields will disappear.
-> 
-> Tested on a rk3399-rock960 with thermal stress and 4 trip points. Also
-> tested with temperature emulation to create a temperature jump
-> directly to the second trip point.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> ---
-> V2:
->     - As spotted by Zhang Rui, the trip cross notification does not
->    work if the temperature drops and crosses two trip points in the
->    same update interval. In order to fix that, we browse the trip point
->    in the ascending order when the temperature trend is raising,
->    otherwise in the descending order.
-> ---
->   drivers/thermal/thermal_core.c | 46 +++++++++++++++++++++++++---------
->   include/linux/thermal.h        |  2 ++
->   2 files changed, 36 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
-> index f66036b3daae..89926e029378 100644
-> --- a/drivers/thermal/thermal_core.c
-> +++ b/drivers/thermal/thermal_core.c
-> @@ -357,19 +357,35 @@ static void handle_critical_trips(struct thermal_zone_device *tz,
->   static void handle_thermal_trip_crossed(struct thermal_zone_device *tz, int trip,
->   					int trip_temp, int trip_hyst, enum thermal_trip_type trip_type)
->   {
-> +	int trip_low_temp = trip_temp - trip_hyst;
-> +
->   	if (tz->last_temperature == THERMAL_TEMP_INVALID)
->   		return;
->   
-> -	if (tz->last_temperature < trip_temp &&
-> -	    tz->temperature >= trip_temp) {
-> -		thermal_notify_tz_trip_up(tz->id, trip,
-> -					  tz->temperature);
-> -	}
-> -
-> -	if (tz->last_temperature >= trip_temp &&
-> -	    tz->temperature < (trip_temp - trip_hyst)) {
-> -		thermal_notify_tz_trip_down(tz->id, trip,
-> -					    tz->temperature);
-> +	/*
-> +	 * Due to the hysteresis, a third information is needed to
-> +	 * detect when the temperature is wavering between the
-> +	 * trip_low_temp and the trip_temp. A trip point is crossed
-> +	 * the way up only if the temperature is above it while the
-> +	 * previous temperature was below *and* we crossed the
-> +	 * trip_temp_low before. The previous trip point give us the
-> +	 * previous trip point transition. The similar problem exists
-> +	 * when crossing the way down.
-> +	 *
-> +	 * Note the mechanism works only if the caller of the function
-> +	 * invoke the function with the trip point ascending or
-> +	 * descending regarding the temperature trend. A temperature
-> +	 * drop trend will browse the trip point in the descending
-> +	 * order
-> +	 */
-> +	if (tz->last_temperature < trip_temp && tz->temperature >= trip_temp &&
-> +	    trip != tz->prev_trip) {
-> +		thermal_notify_tz_trip_up(tz->id, trip, tz->temperature);
-> +		tz->prev_trip = trip;
-> +	} else if (tz->last_temperature >= trip_low_temp && tz->temperature < trip_low_temp &&
-> +		   trip == tz->prev_trip) {
-> +		thermal_notify_tz_trip_down(tz->id, trip, tz->temperature);
-> +		tz->prev_trip = trip - 1;
->   	}
->   }
->   
-> @@ -427,6 +443,7 @@ static void thermal_zone_device_init(struct thermal_zone_device *tz)
->   {
->   	struct thermal_instance *pos;
->   	tz->temperature = THERMAL_TEMP_INVALID;
-> +	tz->prev_trip = -1;
->   	tz->prev_low_trip = -INT_MAX;
->   	tz->prev_high_trip = INT_MAX;
->   	list_for_each_entry(pos, &tz->thermal_instances, tz_node)
-> @@ -511,8 +528,13 @@ void thermal_zone_device_update(struct thermal_zone_device *tz,
->   
->   	tz->notify_event = event;
->   
-> -	for (count = 0; count < tz->trips; count++)
-> -		handle_thermal_trip(tz, count);
-> +	if (tz->last_temperature <= tz->temperature) {
-> +		for (count = 0; count < tz->trips; count++)
-> +			handle_thermal_trip(tz, count);
-> +	} else {
-> +		for (count = tz->prev_trip; count >= 0; count--)
-> +			handle_thermal_trip(tz, count);
-> +	}
+Thomas.
 
-In general the code look good. I have one question, though:
-Is it always true that these trip points coming from the DT
-and parsed in thermal_of_build_thermal_zone() populated by
-     for_each_child_of_node(child, gchild) {
-          thermal_of_populate_trip(gchild, &tz->trips[i++]);
-
-are always defined in right order in DT?
-
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
