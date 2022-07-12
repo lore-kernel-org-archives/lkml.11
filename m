@@ -2,165 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EF3DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:56:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BCBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:58:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232621AbiGLP4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        id S232649AbiGLP6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:58:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234071AbiGLP4I (ORCPT
+        with ESMTP id S229862AbiGLP6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:56:08 -0400
-X-Greylist: delayed 2343 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 08:55:56 PDT
-Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFBC7C5978
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:55:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=Hw21+wotN9D+Z0hozfXdxMixZLaL8X+liJ1Yr85K26w=; b=EI1Pe
-        wTgvrPexh1OdWt9EE3Rv2uPRLxgxbBqasVKnA5y51Gq9cLwprFlRmPj6ajW1jcTrN7Irsi9xGDaqZ
-        LnV5LVKaGspZcmpLTewm+1WxCZfv4V28M6PVbkagbOPxjjYpp+JUdn/gxforUGW7iBBP8N81ptluh
-        2ScyWqVJrwyzP/774Tp4JXsuKzVHXUpgN+uhhlLWS3jR/55bbUCrL5I6ewYN6/fCjrLAvXtRYmLwc
-        hBVnQkzzjLA6UeBPlYP3QtselfkLthWK1Cu2dQFFNOBjSbzYffmp/9krfVTwT1pwWz+4pTFok2gMi
-        rLqRx8cX1uxnE6mL03Tv0wxF4IDXQ==;
-Message-Id: <e47be55bf4538c43c8bcdafe85c7c8bb9a0d0ab6.1657636554.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
-References: <cover.1657636554.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:14 +0200
-Subject: [PATCH v5 02/11] 9p/trans_virtio: turn amount of sg lists into
- runtime info
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
+        Tue, 12 Jul 2022 11:58:46 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0C2A448
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:58:43 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id v7so5771144pfb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:58:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3NuNGzPX7l2+4H4FqXMF3G2Iv4qIhgXKrczFI5RGpVE=;
+        b=KobxG4F8v+qthtwpu7gbH2IQkDOCkXPPXTqHgHWNsvq6z38hgkKWUYINThYxJYBVjw
+         evvB8xnHRoaczS8dHVfibY8iwBGTIYBP/5sj2W++9tP+LqoVuRSit+KlkFTWZYE14FGm
+         C2r93ude/BoVRbzYL2mrDbdViI5aPXPl/pmDUdQgLowPuNBHh3cifa+dXlE4ddNA82J2
+         86z3wVU4x3sIlHFaUNkJCa7sM6UBMTldfXCp+PiGW1t/5M9Ym9LVF+k125IPnqHOZ3JQ
+         eDJcyXznBLiNyIh6oVr53sd8I9Xh+dcoAN5clFw3PfNtUQAifbjMnu39wUAYk+FqbPb6
+         J8WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3NuNGzPX7l2+4H4FqXMF3G2Iv4qIhgXKrczFI5RGpVE=;
+        b=VK9q2ztaMihXwYI+B8gzxgwi8bFlBrEG8tyDe/aOYvTs0aYFNLWfhaHhwdMP55iC24
+         aezKPi8jZEk3lsVCPRHaPv09hyWxCj9JRZf+FCsVVNwgpqdzdaizPKzvBp3CzlLnIPz4
+         YGziH9IaeIKfQp0OcRLP1gl5STmnByGcCBCC+sgey9eLkyqiZ7TBzOTCg1lFZxZxLcf1
+         QPYlEDAoHbLpT3GesURg+tBJC/ZjqWL1rL15qgfohHQCBjR5m8GnXbbvjggMMb74a7bH
+         aGRakKpHSB7IZzMebHeJEpusoKq3jF23U/ZCxMeHjCfF5dBo5IQKGAS3uzGerFGL8Jqc
+         Pb4A==
+X-Gm-Message-State: AJIora/uzbx7fAIlbG18O7copcnU63ujl3as4enM0DysmVkfZYFKX7en
+        rkrKWQfdcolSL7/N47AjLBxgUw==
+X-Google-Smtp-Source: AGRyM1sxLANce1xqGhsht71y51IJWGaCzyWUoPHm08yJixijPHX2pu2nnl4Pm3GBexyPjWUZpfXJNg==
+X-Received: by 2002:a05:6a00:22d6:b0:52a:b9fc:4c88 with SMTP id f22-20020a056a0022d600b0052ab9fc4c88mr18633914pfj.3.1657641522504;
+        Tue, 12 Jul 2022 08:58:42 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id w1-20020a1709026f0100b0016b953872a7sm6963581plk.201.2022.07.12.08.58.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 08:58:41 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 15:58:37 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Wang Guangju <wangguangju@baidu.com>, pbonzini@redhat.com,
+        vkuznets@redhat.com, jmattson@google.com, wanpengli@tencent.com,
+        bp@alien8.de, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+        hpa@zytor.com, tglx@linutronix.de, mingo@redhat.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, lirongqing@baidu.com
+Subject: Re: [PATCH v3] KVM: x86: Send EOI to SynIC vectors on accelerated
+ EOI-induced VM-Exits
+Message-ID: <Ys2aLfYFfyQO0R86@google.com>
+References: <20220712123210.89-1-wangguangju@baidu.com>
+ <6dcd11aefcd817ee0f8603328886df3023a98fa5.camel@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6dcd11aefcd817ee0f8603328886df3023a98fa5.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The size of scatter/gather lists used by the virtio transport is
-currently hard coded. Refactor this to using a runtime variable.
+On Tue, Jul 12, 2022, Maxim Levitsky wrote:
+> On Tue, 2022-07-12 at 20:32 +0800, Wang Guangju wrote:
+> > When EOI virtualization is performed on VMX, kvm_apic_set_eoi_accelerated()
+> > is called upon EXIT_REASON_EOI_INDUCED but unlike its non-accelerated
+> > apic_set_eoi() sibling, Hyper-V SINT vectors are left unhandled.
+> > 
+> > Send EOI to Hyper-V SINT vectors when handling acclerated EOI-induced
+> > VM-Exits. KVM Hyper-V needs to handle the SINT EOI irrespective of whether
+> > the EOI is acclerated or not.
+> 
+> How does this relate to the AutoEOI feature, and the fact that on AVIC,
+> it can't intercept EOI at all (*)?
+> 
+> Best regards,
+> 	Maxim Levitsky
+> 
+> 
+> (*) AVIC does intercept EOI write but only for level triggered interrupts.
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
- net/9p/trans_virtio.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+If there are one or more AutoEOI vectors, KVM disables AVIC.  Which begs the question
+of why SVM doesn't disable the AVIC if there's an edge-triggered I/O APIC interrupt
+that has a notifier, which is where kvm_hv_notify_acked_sint() eventually ends up.
+vmx_load_eoi_exitmap() sets the EOI intercept for all such vectors, and for _all_
+SynIC vectors (see vcpu_load_eoi_exitmap()), but AFAICT SVM relies purely on the
+level-triggered behavior.
 
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 2693e618080c..18bdfa64b934 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -36,7 +36,7 @@
- #include <linux/virtio_9p.h>
- #include "trans_common.h"
- 
--#define VIRTQUEUE_NUM	128
-+#define VIRTQUEUE_DEFAULT_NUM	128
- 
- /* a single mutex to manage channel initialization and attachment */
- static DEFINE_MUTEX(virtio_9p_lock);
-@@ -54,6 +54,7 @@ static atomic_t vp_pinned = ATOMIC_INIT(0);
-  * @vc_wq: wait queue for waiting for thing to be added to ring buf
-  * @p9_max_pages: maximum number of pinned pages
-  * @sg: scatter gather list which is used to pack a request (protected?)
-+ * @sg_n: amount of elements in sg array
-  * @chan_list: linked list of channels
-  *
-  * We keep all per-channel information in a structure.
-@@ -78,6 +79,7 @@ struct virtio_chan {
- 	unsigned long p9_max_pages;
- 	/* Scatterlist: can be too big for stack. */
- 	struct scatterlist *sg;
-+	size_t sg_n;
- 	/**
- 	 * @tag: name to identify a mount null terminated
- 	 */
-@@ -270,12 +272,12 @@ p9_virtio_request(struct p9_client *client, struct p9_req_t *req)
- 	out_sgs = in_sgs = 0;
- 	/* Handle out VirtIO ring buffers */
- 	out = pack_sg_list(chan->sg, 0,
--			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
-+			   chan->sg_n, req->tc.sdata, req->tc.size);
- 	if (out)
- 		sgs[out_sgs++] = chan->sg;
- 
- 	in = pack_sg_list(chan->sg, out,
--			  VIRTQUEUE_NUM, req->rc.sdata, req->rc.capacity);
-+			  chan->sg_n, req->rc.sdata, req->rc.capacity);
- 	if (in)
- 		sgs[out_sgs + in_sgs++] = chan->sg + out;
- 
-@@ -447,14 +449,14 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 
- 	/* out data */
- 	out = pack_sg_list(chan->sg, 0,
--			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
-+			   chan->sg_n, req->tc.sdata, req->tc.size);
- 
- 	if (out)
- 		sgs[out_sgs++] = chan->sg;
- 
- 	if (out_pages) {
- 		sgs[out_sgs++] = chan->sg + out;
--		out += pack_sg_list_p(chan->sg, out, VIRTQUEUE_NUM,
-+		out += pack_sg_list_p(chan->sg, out, chan->sg_n,
- 				      out_pages, out_nr_pages, offs, outlen);
- 	}
- 
-@@ -466,13 +468,13 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 	 * allocated memory and payload onto the user buffer.
- 	 */
- 	in = pack_sg_list(chan->sg, out,
--			  VIRTQUEUE_NUM, req->rc.sdata, in_hdr_len);
-+			  chan->sg_n, req->rc.sdata, in_hdr_len);
- 	if (in)
- 		sgs[out_sgs + in_sgs++] = chan->sg + out;
- 
- 	if (in_pages) {
- 		sgs[out_sgs + in_sgs++] = chan->sg + out + in;
--		in += pack_sg_list_p(chan->sg, out + in, VIRTQUEUE_NUM,
-+		in += pack_sg_list_p(chan->sg, out + in, chan->sg_n,
- 				     in_pages, in_nr_pages, offs, inlen);
- 	}
- 
-@@ -574,13 +576,14 @@ static int p9_virtio_probe(struct virtio_device *vdev)
- 		goto fail;
- 	}
- 
--	chan->sg = kmalloc_array(VIRTQUEUE_NUM,
-+	chan->sg = kmalloc_array(VIRTQUEUE_DEFAULT_NUM,
- 				 sizeof(struct scatterlist), GFP_KERNEL);
- 	if (!chan->sg) {
- 		pr_err("Failed to allocate virtio 9P channel\n");
- 		err = -ENOMEM;
- 		goto out_free_chan_shallow;
- 	}
-+	chan->sg_n = VIRTQUEUE_DEFAULT_NUM;
- 
- 	chan->vdev = vdev;
- 
-@@ -593,7 +596,7 @@ static int p9_virtio_probe(struct virtio_device *vdev)
- 	chan->vq->vdev->priv = chan;
- 	spin_lock_init(&chan->lock);
- 
--	sg_init_table(chan->sg, VIRTQUEUE_NUM);
-+	sg_init_table(chan->sg, chan->sg_n);
- 
- 	chan->inuse = false;
- 	if (virtio_has_feature(vdev, VIRTIO_9P_MOUNT_TAG)) {
-@@ -777,7 +780,7 @@ static struct p9_trans_module p9_virtio_trans = {
- 	 * that are not at page boundary, that can result in an extra
- 	 * page in zero copy.
- 	 */
--	.maxsize = PAGE_SIZE * (VIRTQUEUE_NUM - 3),
-+	.maxsize = PAGE_SIZE * (VIRTQUEUE_DEFAULT_NUM - 3),
- 	.def = 1,
- 	.owner = THIS_MODULE,
- };
--- 
-2.30.2
+KVM manually disables AVIC for PIT reinjection, which uses an ack notifier;
+AFAICT that's a one-off hack to workaround AVIC not playing nice with notifiers.
 
+So yeah, it seems like the proper fix would be to add svm_load_eoi_exitmap() and
+replace the PIT inhibit with a generic ACK inhibit that is set if there is at least
+one edge-triggered vector present in the eoi_exit_bitmap.
+
+Tangentially related to all of this, it's bizarre/confusing the KVM_CREATE_PIT{2}
+is allowed regardless of whether or not the I/O APIC is in-kernel.  I don't see
+how it can possibly work since create_pit_timer() silently does nothing if the I/O
+APIC isn't in-kernel.
