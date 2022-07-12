@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 800C7CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BCBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:26:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229605AbiGLO0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:26:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42640 "EHLO
+        id S232957AbiGLO03 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233185AbiGLO0M (ORCPT
+        with ESMTP id S233567AbiGLO0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:26:12 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29CF3B8E82;
-        Tue, 12 Jul 2022 07:26:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657635973; x=1689171973;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=E7lc4EnKiZ1cJys8i7k2b1wZuaqqZKmkVBwqdNfKks0=;
-  b=fBXEJbj6BGsqVQCuqb7+PXHfoaAsi78QRz9+h/tLIG7bG5EwRVVU+weU
-   FR56kax1X1/juBSQaXOWsVdDn+yg0x9ls6GhuwUn375VWMoaBOhDf/Bwm
-   YKAU7ZH/cYZiLf8zgcEE5Dn9y1gQXE54aBVgOZGvUBAJhEDQFmfptOsz2
-   ITbkJ7bTmQq0izHOEaWWI/xzZE6Ygfjzj3r1UPETn5uaxb5vIL1ivXz7i
-   Az+kEb3ppavlUnJ5QPW0Rq4+aoGwFUqFIbHeWcB6DY9iyfbQPkpNq848F
-   oTgUYrS3L/ZvsEr1qZdz6E/VPoK0vOJe9l4OsRmUoDyarQ8Bb2QcA4KLy
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="164369598"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 07:26:12 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Jul 2022 07:26:11 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 12 Jul 2022 07:26:08 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v6 2/4] riscv: dts: fix the icicle's #pwm-cells
-Date:   Tue, 12 Jul 2022 15:25:55 +0100
-Message-ID: <20220712142557.1773075-3-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220712142557.1773075-1-conor.dooley@microchip.com>
-References: <20220712142557.1773075-1-conor.dooley@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Tue, 12 Jul 2022 10:26:15 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9386B8EA1;
+        Tue, 12 Jul 2022 07:26:14 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id h200so7947510iof.9;
+        Tue, 12 Jul 2022 07:26:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=Mwfd/m3zpk78sJK7nn2vE1VYk2hb35cFLS9pd42jCiI=;
+        b=sOLx8NOPqcbkhqqTQtOXlwj3BU4MfcAKBFdVlUpiB/pR09UKmkx+uY7hxCdgcAB3sS
+         SAn+vAEq0Jxlqh9mjdYSKLRa3Tkry2Ewo82T/KL0Rb9C+IhsXJdZzdWb0ZH1kV8tZQfU
+         nL0o6wcKGVQpqMRtWPKd2TmtpbYJ7ZVuWD5wQ10VhnNgMPrfWDgPT20Ha0GG8Ld34sx6
+         tkmfXkVUI5QP3CRxRur/a626v/GwqO94mz565Qyr9Hp/MX3vSOXAPsIbIgYOYk/vJujd
+         0EtkqR9MiC4vZH8iFiRoytHGbXpdjkBwCj0RCfZyOO2EhZncFyk7sjvWJICy1ugku/Wa
+         z/TQ==
+X-Gm-Message-State: AJIora+Nk4Vq7WICIZQIOlFgCbcNTfth8qK7/OMKbVrDcKcVFACeGdmU
+        GjQRzce8yVS0IJn/f3aLIg==
+X-Google-Smtp-Source: AGRyM1uQLAcirqFEfLkDKLsk9TU4a8owrMVfxUjgaeO2hrKaXbUywPSmFTal17hen3JlJmxPkXBYqQ==
+X-Received: by 2002:a05:6638:218c:b0:33c:9cae:166d with SMTP id s12-20020a056638218c00b0033c9cae166dmr13409432jaj.223.1657635973941;
+        Tue, 12 Jul 2022 07:26:13 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id w8-20020a92d608000000b002dc0e7027edsm3799668ilm.32.2022.07.12.07.26.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 07:26:13 -0700 (PDT)
+Received: (nullmailer pid 1805847 invoked by uid 1000);
+        Tue, 12 Jul 2022 14:26:12 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Jiucheng Xu <jiucheng.xu@amlogic.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Chris Healy <cphealy@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Mark Rutland <mark.rutland@arm.com>
+In-Reply-To: <20220712063641.2790997-4-jiucheng.xu@amlogic.com>
+References: <20220712063641.2790997-1-jiucheng.xu@amlogic.com> <20220712063641.2790997-4-jiucheng.xu@amlogic.com>
+Subject: Re: [PATCH 4/4] dt-binding:perf: Add Amlogic DDR PMU
+Date:   Tue, 12 Jul 2022 08:26:12 -0600
+Message-Id: <1657635972.094089.1805846.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-\#pwm-cells for the Icicle kit's fabric PWM was incorrectly set to 2 &
-blindly overridden by the (out of tree) driver anyway. The core can
-support inverted operation, so update the entry to correctly report its
-capabilities.
+On Tue, 12 Jul 2022 14:36:41 +0800, Jiucheng Xu wrote:
+> Add binding documentation for the Amlogic G12 series DDR
+> performance monitor unit.
+> 
+> Signed-off-by: Jiucheng Xu <jiucheng.xu@amlogic.com>
+> ---
+>  .../devicetree/bindings/perf/aml-ddr-pmu.yaml | 51 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml
+> 
 
-Fixes: 72560c6559b8 ("riscv: dts: microchip: add fpga fabric section to icicle kit")
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-index 0d28858b83f2..e09a13aef268 100644
---- a/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-+++ b/arch/riscv/boot/dts/microchip/mpfs-icicle-kit-fabric.dtsi
-@@ -8,7 +8,7 @@ core_pwm0: pwm@41000000 {
- 		compatible = "microchip,corepwm-rtl-v4";
- 		reg = <0x0 0x41000000 0x0 0xF0>;
- 		microchip,sync-update-mask = /bits/ 32 <0>;
--		#pwm-cells = <2>;
-+		#pwm-cells = <3>;
- 		clocks = <&fabric_clk3>;
- 		status = "disabled";
- 	};
--- 
-2.36.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/perf/aml-ddr-pmu.example.dts'
+Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml:51:5: did not find expected '-' indicator
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/perf/aml-ddr-pmu.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+Traceback (most recent call last):
+  File "/usr/bin/yamllint", line 33, in <module>
+    sys.exit(load_entry_point('yamllint==1.26.3', 'console_scripts', 'yamllint')())
+  File "/usr/lib/python3/dist-packages/yamllint/cli.py", line 210, in run
+    prob_level = show_problems(problems, file, args_format=args.format,
+  File "/usr/lib/python3/dist-packages/yamllint/cli.py", line 106, in show_problems
+    for problem in problems:
+  File "/usr/lib/python3/dist-packages/yamllint/linter.py", line 203, in _run
+    for problem in get_cosmetic_problems(buffer, conf, filepath):
+  File "/usr/lib/python3/dist-packages/yamllint/linter.py", line 140, in get_cosmetic_problems
+    for problem in rule.check(rule_conf,
+  File "/usr/lib/python3/dist-packages/yamllint/rules/indentation.py", line 580, in check
+    for problem in _check(conf, token, prev, next, nextnext, context):
+  File "/usr/lib/python3/dist-packages/yamllint/rules/indentation.py", line 346, in _check
+    'wrong indentation: expected %d but found %d' %
+TypeError: %d format: a real number is required, not NoneType
+./Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml:51:5: did not find expected '-' indicator
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml: ignoring, error parsing file
+make: *** [Makefile:1404: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
