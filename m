@@ -2,137 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC634C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03104CCA482
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232186AbiGLQc3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
+        id S233097AbiGLQeA convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230475AbiGLQc1 (ORCPT
+        with ESMTP id S229746AbiGLQdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:32:27 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD7CCB47C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:32:25 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id a9so14828000lfk.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:32:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=bGU0yXesemRThSvHGP4URgc+lQcVUG1tVloK/aCPF+s=;
-        b=LdcYHBSVEo9pFeFsLsb9svxhl3ksXrKn+bSRtdCJl93S3DP0k0R8a0GFyUqvmz5AGT
-         uqG+zDUzzlNas8knMHcjbFRnOaV6boVSZlpgcaJln37yQDV6KM8iDejLaQ4OaiTRCy+g
-         mz3Ck76y1aNFzPlFFAqNQNP+RdudRMK5noFDSC93yPsckPhCD/+PEJvwahdxSOn9N6pn
-         CtKYt3u6x7gbkw6+mwHGkUrqPOQNRD/N+FwL62oMLQ3sAuh1JkGudJWWY11wzyvntHSP
-         F18sz9j3dRL0rY90cfHXt5n0wqQE2qxKi8MbEdsY2lyglIObO1B65sn0f1OlOxVqDa5K
-         UC3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bGU0yXesemRThSvHGP4URgc+lQcVUG1tVloK/aCPF+s=;
-        b=cngfxBOOGhAgWRbI6pEYw3mSS+n+75twB7IqiGISaWBLyYEHrrIeZILNGmkj/NC/y6
-         wTz7W9lhmx2I6omrUcM84UcZGfQfPZkrPUpHzbWhkiRoWaEjBDOSz2Uh3lS8SpOQIkFF
-         2gPK8SgXhSFuxEKbkyK28LcHQhcrq9uLCRzv8TKcwTFAUhQ6XkkEf7lLJ627X29Z4Qxv
-         9DkL6jexB4luO/9ADkIV0LWweIBI7Cwi18T02Z9er7/RofgxKt2aLYzXFzqE0VO6aj+P
-         kRr4udyFEJ/LDd8oDpUyBoIN5Nu+I2sPS9T1Kw8Gf54xXSBfvKGUJpjeydpndzICROMO
-         9+Yg==
-X-Gm-Message-State: AJIora+ZZ3EXxxz+mYwfm/LzBD47DRFc53wY9fOj8F4yMtv2V5eZiYfT
-        lzSBDEB9924uVFcl6qf8j5Pzzg==
-X-Google-Smtp-Source: AGRyM1tRmrglXSwIf2mjhymrTfdr0BxGH2TkYY7cXGNmj1tK75CzEIgDKoisOCiHoVLqaoQr58IZdg==
-X-Received: by 2002:a05:6512:2254:b0:489:d168:20cf with SMTP id i20-20020a056512225400b00489d16820cfmr9867374lfu.97.1657643543577;
-        Tue, 12 Jul 2022 09:32:23 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id p21-20020a056512235500b0047255d210easm2273054lfu.25.2022.07.12.09.32.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 09:32:22 -0700 (PDT)
-Message-ID: <dc26dd92-c107-bb8d-b40d-71b3568c52e5@linaro.org>
-Date:   Tue, 12 Jul 2022 18:32:14 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3] spi: dt-bindings: atmel,at91rm9200-spi: convert to
- json-schema
-Content-Language: en-US
-To:     Sergiu Moga <sergiu.moga@microchip.com>, broonie@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com
-Cc:     linux-spi@vger.kernel.org, devicetree@vger.kernel.org,
+        Tue, 12 Jul 2022 12:33:54 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7358E20BC0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:33:53 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2047.outbound.protection.outlook.com [104.47.22.47]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-22-RMZy1JirNn-sjAT-K7IYzg-2; Tue, 12 Jul 2022 18:33:49 +0200
+X-MC-Unique: RMZy1JirNn-sjAT-K7IYzg-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ ZRAP278MB0173.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2c::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.15; Tue, 12 Jul 2022 16:33:47 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95%7]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
+ 16:33:47 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Kavyasree.Kotagiri@microchip.com, UNGLinuxDriver@microchip.com,
-        tudor.ambarus@microchip.com
-References: <20220712162554.148741-1-sergiu.moga@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220712162554.148741-1-sergiu.moga@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        devicetree@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: [PATCH v2 2/5] mfd: stmpe: Probe sub-function by compatible
+Date:   Tue, 12 Jul 2022 18:33:42 +0200
+Message-ID: <20220712163345.445811-3-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220712163345.445811-1-francesco.dolcini@toradex.com>
+References: <20220712163345.445811-1-francesco.dolcini@toradex.com>
+X-ClientProxiedBy: MR2P264CA0144.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:30::36) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 615b4774-40a9-4985-a9b2-08da64244b77
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0173:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: wULL2Qvbwqj3+4wWPDq7bm0L7TPQxKzRgJkrW03HWJ9s+TgYVYszoZ7LQaUrUfcbY1jEc0KexmwB21ubewwi/lcWddMS6upsvjf/tycQTCzO97l/tWkZKkNjRYyGZAp1jMlIIfipCqEBHmlcCzVWfPUIlHAcl1Bmi1S4KQmW07Vkv6QYnQobQJfR3Ot2cbKiECuCZmHeQKED7QCxEqmaPSSxWHnFw5oMvBfkxE4f45No4ZJ5U7+aE7ljxnDq/M7TzN4kCWM2z9gTZprkD3TfQYLev85nz5ukA6OxTbhCsjkExxmitXkwxEJqSCjF5fhe4wtEakcmCj1m7jUMn9yqb9S0eNhN2n+pk1XiDRzkrqoevWpkaZoeSLFd444mXquhBqi+/VpIwGBiVpAqsR0o2Mgxu36sXxObKTaVeiNUuGqZOwFuFL6Fk5D1s12raHyXGKwOXokQUeia57CfnbQt/cfsuY0BUL8hDS/jNxsv1JvLcFOBAEj/DQAiRhH9yginEMsBo8HER4Zcn4pUea2X83H3uatMRnJTnZFfDvnw4ySeMjNJV0cI9BUW+xjezLYmjbDEXqlk1WVTaJ7FrF1XyQWiLm3WjPbI6HQxqBq8xMUPbtPuMG7Ipm2imqDY8kEJYZPeqT5TUqkBQzW9ODh7jj/OPnyUyHE2V7JV4diqV4M5bjk9YYVM6zRtwRO7IC7qIBEs4ghXLEB5OyK2LT8odGxZhRs0YkMoLdAeqcnXZIlpr7gIGr9+QZ67KCekjnl3xl7Ia3wVD+DRaRxx6Pb78bld5WH+DDopi9MHzbs2k5rQR9Ed+0CLhfisK/cOvJja
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(376002)(346002)(366004)(396003)(136003)(478600001)(44832011)(6666004)(36756003)(6486002)(8936002)(41300700001)(83380400001)(54906003)(7416002)(110136005)(316002)(5660300002)(2616005)(66946007)(26005)(1076003)(66556008)(8676002)(6512007)(186003)(52116002)(4326008)(66476007)(2906002)(38350700002)(6506007)(38100700002)(86362001);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vwNnOiMo8cbLnNWHFmHH4YgoTBl46eCwFG8K7gPnzlC8S466HauzwF35u8Rl?=
+ =?us-ascii?Q?fQZPNTZ2sZbT+rKKqzKkP9IMAOZpEtcWrHLwd7BmJ1f7td4WXKTgvhOGxVej?=
+ =?us-ascii?Q?mq1ibQPoWxCUkY6alv6whNOTFvY/rJWUSH1PM/PdDHKnB6rgKTea3++rYWAy?=
+ =?us-ascii?Q?E9CLI9QVoV0dZCzzG8MPwIg9xvT7dghZ27c+1pGfMXDgkS1GLEHzDoJKUqWf?=
+ =?us-ascii?Q?eMFlQgCO7n7H+PzHQ4fV/Nt0BxsTWJwOLew41iPxgQyizhFNAbID3T9JWdNA?=
+ =?us-ascii?Q?S01NGXoQSR7ggB1PO7e6XnqMukPGwMvc66Menll0ulXZ3P/HWHJDiu2AMdXc?=
+ =?us-ascii?Q?fP1LLLUvDhnb2SnKQp6Db6GquaQ57VQdxKmdFYFd5BekrKJUPORat8peCrmj?=
+ =?us-ascii?Q?jjuzehjoKthB5vT8YvRt09HoYNHH1TEWqzHYQ7p3GzVn++gHGJoJ3ar0QKya?=
+ =?us-ascii?Q?6GPjf/8OwXuDRNg7C04i2ktFI2QYDHVkdM4bKK8fQ2J6kyX6JVhbc3eW4CHj?=
+ =?us-ascii?Q?vc2Gd84yqXq9bEB0t9R8/vhOLdtuGkZEW6rSuwn4jZGJW0KxYGCSN12P096O?=
+ =?us-ascii?Q?J8Ilq/tKE8qpF/sXDKCntx1QM5k4UdCelGvRQLkozBSl/EPwnWoOBlKPQPdy?=
+ =?us-ascii?Q?5OTO2aeA00XwnwIY77UCcU5epAkD6Vvzgra7unITTI9PPUd6v1XWovu9FTcK?=
+ =?us-ascii?Q?Vi8XornaSmLQIf/oagJDzan8MQ1vSxonl2s9+cBP7FK0qYQVTuOXlJxziRDl?=
+ =?us-ascii?Q?9yra3J4cRIM+PpXcaG78L891FzNrNGh4ok8NR+s2aH4ce3lJ5vfXKyNfiIgM?=
+ =?us-ascii?Q?3NOGZ15cS02iby/z7T3mGirNVRie9AyovXCel6AYSxZoTHoXv2LFaCw2HZHF?=
+ =?us-ascii?Q?+GDbZmxaBnHJVaO1cvE+659889pfuu5AZo10dOXNb0ftYWH9ARRLl9MKIGOJ?=
+ =?us-ascii?Q?sdrKvlz7m/88WoUbOF173Gtm3j8Z0lQ6GgNkY0a/lb5r5R7TuxfDhj2kTjPF?=
+ =?us-ascii?Q?aIg1MVazWBfuQ5l5zroqSeUdMfMZIYwh9IGa/J2lqWZoQsrSamBDuu/ldZTL?=
+ =?us-ascii?Q?Wvpcf/C0O3txRYaq292bQlmFwwkQBI4YtUvvpVChOVu2u/rmpfV1TthpGQnr?=
+ =?us-ascii?Q?EbRVB97SJwUMKY+aO2Nz9IAKwNFncoQ/SVN16Jw4OLGZHRMWUtCB/4jN11Z+?=
+ =?us-ascii?Q?+HRK2kTH+ql/z0ULb2w/O9jjvo15/L1TrpxrHzhAdHq5mf9R9BSY05Z+/9A4?=
+ =?us-ascii?Q?RliPK2ubTrVMsTz6emSwofg0JJLvMqYivVvB1cu28pKu+8FUWFN5RRNc/Qta?=
+ =?us-ascii?Q?seG/ConGOBHkbkjLl30ae7sy/DSy9aBtWINKYQJ6vTezpCLdZCOQ6YeXh1BU?=
+ =?us-ascii?Q?qABlhw3cEFRCSdf4Yon9gl5L+GXT0U8HrVXu8RwJ6VImUh0tcnU5W+BeIhFa?=
+ =?us-ascii?Q?HNeQ0Am3h1jPVWc/mhL/+YAmqkhVLrHQ+xfp0IHjgSwIC0phFtgMNESe/Q3A?=
+ =?us-ascii?Q?skbKk96kj0tze3zYHzQgiGapxwSczysr1S2M8ZLcvuHfsJlmuBgejqmDkSh7?=
+ =?us-ascii?Q?urFCV8OMu2TqiKTxnm+tRyh/wP5vhWeSjJK4K/BtQxhcfMI+cTWd3Z5ug7aR?=
+ =?us-ascii?Q?JA=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 615b4774-40a9-4985-a9b2-08da64244b77
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 16:33:47.5341
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Tqk+vkjL3WHilQ/VpbFnWQcRwEOs1ejq8NOo19ltGFtkzjkrfLg0GM4fDbvW1g3z9JV8Je8fS0Yhq3mGZEAtV6H21i9BCiUv1DFN/MskGII=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0173
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 18:25, Sergiu Moga wrote:
-> Convert SPI DT binding for Atmel/Microchip SoCs to json-schema.
-> 
-> Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
-> 
-> v1 -> v2:
-> - change subject headline prefix from "dt-bindings: spi" to "spi: atmel"
-> - change maintainer
-> - kept the compatbile as items (instead of switching to enums) and at91rm9200
-> as fallback for sam9x60, since the evolution of IP's is incremental.
-> - removed unnecessay "cs-gpios" property and descriptions
-> - added min/max for fifo-size property.
-> 
-> 
-> v2 -> v3:
-> - change subject headline prefix from "spi: atmel" to
-> "spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema"
-> - use enum instead of a range for "atmel,fifo-size"
-> 
-> 
->  .../bindings/spi/atmel,at91rm9200-spi.yaml    | 76 +++++++++++++++++++
->  .../devicetree/bindings/spi/spi_atmel.txt     | 36 ---------
->  2 files changed, 76 insertions(+), 36 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
->  delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml b/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
-> new file mode 100644
-> index 000000000000..084897cc8f66
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
-> @@ -0,0 +1,76 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/spi/atmel,spi.yaml#
+Use sub-function of_compatible during probe, instead of using the node
+name. The code should not rely on the node names during probe, in
+addition to that the previously hard-coded node names are not compliant
+to the latest naming convention (they are not generic and they use
+underscores), and it was broken by mistake already once [1].
 
-You need to test the bindings.
+[1] commit 56086b5e804f ("ARM: dts: imx6qdl-apalis: Avoid underscore in node name")
 
+Suggested-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+v2:
+ - remove define usage for compatible strings
+ - moved rotator removal from probe to a separate patch
+---
+ drivers/mfd/stmpe.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Atmel SPI device
-> +
-> +maintainers:
-> +  - Tudor Ambarus <tudor.ambarus@microchip.com>
-> +
-> +allOf:
-> +  - $ref: spi-controller.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
+diff --git a/drivers/mfd/stmpe.c b/drivers/mfd/stmpe.c
+index 4aa4ac2ff406..987e251d90ae 100644
+--- a/drivers/mfd/stmpe.c
++++ b/drivers/mfd/stmpe.c
+@@ -1362,17 +1362,16 @@ static void stmpe_of_probe(struct stmpe_platform_data *pdata,
+ 	pdata->autosleep = (pdata->autosleep_timeout) ? true : false;
+ 
+ 	for_each_available_child_of_node(np, child) {
+-		if (of_node_name_eq(child, "stmpe_gpio")) {
++		if (of_device_is_compatible(child, stmpe_gpio_cell.of_compatible))
+ 			pdata->blocks |= STMPE_BLOCK_GPIO;
+-		} else if (of_node_name_eq(child, "stmpe_keypad")) {
++		else if (of_device_is_compatible(child, stmpe_keypad_cell.of_compatible))
+ 			pdata->blocks |= STMPE_BLOCK_KEYPAD;
+-		} else if (of_node_name_eq(child, "stmpe_touchscreen")) {
++		else if (of_device_is_compatible(child, stmpe_ts_cell.of_compatible))
+ 			pdata->blocks |= STMPE_BLOCK_TOUCHSCREEN;
+-		} else if (of_node_name_eq(child, "stmpe_adc")) {
++		else if (of_device_is_compatible(child, stmpe_adc_cell.of_compatible))
+ 			pdata->blocks |= STMPE_BLOCK_ADC;
+-		} else if (of_node_name_eq(child, "stmpe_pwm")) {
++		else if (of_device_is_compatible(child, stmpe_pwm_cell.of_compatible))
+ 			pdata->blocks |= STMPE_BLOCK_PWM;
+-		}
+ 	}
+ }
+ 
+-- 
+2.25.1
 
-I missed that part - this is one item, so no "items".
-
-Best regards,
-Krzysztof
