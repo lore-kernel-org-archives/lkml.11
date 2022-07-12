@@ -2,160 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4FC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AC8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233802AbiGLO7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:59:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
+        id S233234AbiGLO7Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230462AbiGLO6y (ORCPT
+        with ESMTP id S233449AbiGLO7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:58:54 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88AEE0B7;
-        Tue, 12 Jul 2022 07:58:50 -0700 (PDT)
-Received: from [192.168.42.12] (92.40.179.87.threembb.co.uk [92.40.179.87])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 12 Jul 2022 10:59:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F316C11453;
+        Tue, 12 Jul 2022 07:58:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: gtucker)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id E86546601A32;
-        Tue, 12 Jul 2022 15:58:46 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657637929;
-        bh=HBR+7cjhP4fVVEqyGTg8INVtO0X5hd7bY9eUZpzH2nM=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Q7rZKrTNV+Bxgj3CTfgaTU+5x3dUl1sIVHGaLeRM0FJ23MoSv7LZI4RysqlU85Omi
-         /AYgxbWhuVFZ/EHfnstKlP2dZPF8Cpl4GFrapkGJckAIBVLX7qhd5W1iGG+NH/+jzs
-         3ESowFMqxOhwglqVaSvjj/nojOdX4yoDnr2umIYoGSj9/pZnGclyf15YiLEi5lDXLY
-         63lXYjZYOhLLKVTmbs6AP/reucI43smThber+Dof80LW/780hL8YqcMNr/wi3F73yV
-         LpIUM0soaHTjOZ8Pki5FPJ5lEknM75nJlQsBFyBvnYT//4bqD6eS0yV/ratirl4t93
-         1H4uaMKsNh+cg==
-Message-ID: <950e172d-b45b-af70-972b-146c10b69714@collabora.com>
-Date:   Tue, 12 Jul 2022 15:57:56 +0100
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D711B819AD;
+        Tue, 12 Jul 2022 14:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0DA7C341C8;
+        Tue, 12 Jul 2022 14:58:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657637935;
+        bh=cXNjsVX+8XdC+OgT+ly+ALQHhJP/zbUWZiF9/y+3SPk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Mz/Xa/B4JZWCU6h91Sx+uWQ+ZCnVPYwSoRxEajVnVYASxogMSsadajOG+OPRSF7EN
+         vlAaqiaD+e/5Dn/d0mgq+5dZT+vZz7/aUgKB3htQMOTmJQo/eORreY6cK/rEVbd3Jc
+         DZ8eqagX/Xzhn/f2TqGSZFvpWmN4GwTb07VZpVyk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.14.288
+Date:   Tue, 12 Jul 2022 16:58:45 +0200
+Message-Id: <1657637926225123@kroah.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 3/4] selftests: drop KSFT_KHDR_INSTALL make target
-Content-Language: en-US
-To:     Anders Roxell <anders.roxell@linaro.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>, Tim.Bird@sony.com,
-        kernel@collabora.com, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <cover.1657614127.git.guillaume.tucker@collabora.com>
- <4a66bf3227825bbf9007ffc9c10e52fad9ae453f.1657614127.git.guillaume.tucker@collabora.com>
- <CADYN=9L6-ESg=mxAwXCPwcO1RTE1S5DvigpvL13+tLMWs0wB-g@mail.gmail.com>
-From:   Guillaume Tucker <guillaume.tucker@collabora.com>
-In-Reply-To: <CADYN=9L6-ESg=mxAwXCPwcO1RTE1S5DvigpvL13+tLMWs0wB-g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 10:59, Anders Roxell wrote:
-> On Tue, 12 Jul 2022 at 10:29, Guillaume Tucker
-> <guillaume.tucker@collabora.com> wrote:
->>
->> Drop the KSFT_KHDR_INSTALL make target now that all use-cases have
->> been removed from the other kselftest Makefiles.
->>
->> Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
->> ---
->>  tools/testing/selftests/Makefile |  1 -
->>  tools/testing/selftests/lib.mk   | 38 --------------------------------
->>  2 files changed, 39 deletions(-)
->>
->> diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
->> index 619451e82863..e060777239a4 100644
->> --- a/tools/testing/selftests/Makefile
->> +++ b/tools/testing/selftests/Makefile
->> @@ -143,7 +143,6 @@ endif
->>  # Prepare for headers install
->>  include $(top_srcdir)/scripts/subarch.include
->>  ARCH           ?= $(SUBARCH)
->> -export KSFT_KHDR_INSTALL_DONE := 1
->>  export BUILD
->>  export KHDR_INCLUDES
->>
->> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
->> index 2a2d240cdc1b..df5f853951f2 100644
->> --- a/tools/testing/selftests/lib.mk
->> +++ b/tools/testing/selftests/lib.mk
->> @@ -30,45 +30,7 @@ TEST_GEN_PROGS := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS))
->>  TEST_GEN_PROGS_EXTENDED := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS_EXTENDED))
->>  TEST_GEN_FILES := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_FILES))
->>
->> -ifdef KSFT_KHDR_INSTALL
->> -top_srcdir ?= ../../../..
->> -include $(top_srcdir)/scripts/subarch.include
->> -ARCH           ?= $(SUBARCH)
->> -
->> -# set default goal to all, so make without a target runs all, even when
->> -# all isn't the first target in the file.
->> -.DEFAULT_GOAL := all
->> -
->> -# Invoke headers install with --no-builtin-rules to avoid circular
->> -# dependency in "make kselftest" case. In this case, second level
->> -# make inherits builtin-rules which will use the rule generate
->> -# Makefile.o and runs into
->> -# "Circular Makefile.o <- prepare dependency dropped."
->> -# and headers_install fails and test compile fails.
->> -# O= KBUILD_OUTPUT cases don't run into this error, since main Makefile
->> -# invokes them as sub-makes and --no-builtin-rules is not necessary,
->> -# but doesn't cause any failures. Keep it simple and use the same
->> -# flags in both cases.
->> -# Note that the support to install headers from lib.mk is necessary
->> -# when test Makefile is run directly with "make -C".
->> -# When local build is done, headers are installed in the default
->> -# INSTALL_HDR_PATH usr/include.
->> -.PHONY: khdr
->> -.NOTPARALLEL:
->> -khdr:
->> -ifndef KSFT_KHDR_INSTALL_DONE
->> -ifeq (1,$(DEFAULT_INSTALL_HDR_PATH))
->> -       $(MAKE) --no-builtin-rules ARCH=$(ARCH) -C $(top_srcdir) headers_install
->> -else
->> -       $(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$$OUTPUT/usr \
->> -               ARCH=$(ARCH) -C $(top_srcdir) headers_install
->> -endif
->> -endif
->> -
->> -all: khdr $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)
->> -else
->>  all: $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)
->> -endif
->>
->>  define RUN_TESTS
->>         BASE_DIR="$(selfdir)";                  \
-> 
-> Should this be removed as well, since 'khdr' gets droped from file the lib.mk ?
-> 
-> diff --git a/tools/testing/selftests/landlock/Makefile
-> b/tools/testing/selftests/landlock/Makefile
-> index 1313e44e8fb9..99f88c52d61a 100644
-> --- a/tools/testing/selftests/landlock/Makefile
-> +++ b/tools/testing/selftests/landlock/Makefile
-> @@ -13,9 +13,6 @@ include ../lib.mk
-> 
->  khdr_dir = $(top_srcdir)/usr/include
-> 
-> -$(khdr_dir)/linux/landlock.h: khdr
-> -        @:
-> -
->  $(OUTPUT)/true: true.c
->   $(LINK.c) $< $(LDLIBS) -o $@ -static
+I'm announcing the release of the 4.14.288 kernel.
 
+All users of the 4.14 kernel series must upgrade.
 
-Good point, however I think I'll drop it in PATCH 1/4 "selftests:
-drop khdr make target" as it's already dropped there.  Ideally,
-the khdr dependency mentioned in this PATCH 3/4 should probably
-also be removed in PATCH 1/4.  I'll send a v3 with this.
+The updated 4.14.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-Thanks,
-Guillaume
+thanks,
+
+greg k-h
+
+------------
+
+ Makefile                                   |    2 +-
+ arch/powerpc/platforms/powernv/rng.c       |   16 ++++++++++------
+ drivers/dma/at_xdmac.c                     |    5 +++++
+ drivers/dma/ti-dma-crossbar.c              |    5 +++++
+ drivers/i2c/busses/i2c-cadence.c           |    1 +
+ drivers/iommu/dmar.c                       |    2 +-
+ drivers/net/can/grcan.c                    |    1 -
+ drivers/net/can/usb/gs_usb.c               |   23 +++++++++++++++++++++--
+ drivers/net/usb/usbnet.c                   |   17 ++++++++++++-----
+ drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c |   10 +++++-----
+ drivers/video/fbdev/core/fbcon.c           |    5 +++++
+ fs/xfs/xfs_inode.c                         |    1 -
+ include/net/esp.h                          |    2 --
+ include/video/of_display_timing.h          |    2 ++
+ lib/idr.c                                  |    4 +++-
+ mm/slub.c                                  |    4 ++--
+ net/ipv4/esp4.c                            |    5 ++---
+ net/ipv6/esp6.c                            |    5 ++---
+ net/rose/rose_route.c                      |    4 ++--
+ 19 files changed, 79 insertions(+), 35 deletions(-)
+
+Duoming Zhou (1):
+      net: rose: fix UAF bug caused by rose_t0timer_expiry
+
+Eric Sandeen (1):
+      xfs: remove incorrect ASSERT in xfs_rename
+
+Greg Kroah-Hartman (1):
+      Linux 4.14.288
+
+Helge Deller (1):
+      fbcon: Disallow setting font bigger than screen size
+
+Hsin-Yi Wang (1):
+      video: of_display_timing.h: include errno.h
+
+Jann Horn (1):
+      mm/slub: add missing TID updates on slab deactivation
+
+Jason A. Donenfeld (1):
+      powerpc/powernv: delay rng platform device creation until later in boot
+
+Liang He (1):
+      can: grcan: grcan_probe(): remove extra of_node_get()
+
+Linus Torvalds (1):
+      ida: don't use BUG_ON() for debugging
+
+Miaoqian Lin (2):
+      dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
+      dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
+
+Michael Walle (1):
+      dmaengine: at_xdma: handle errors of at_xdmac_alloc_desc() correctly
+
+Oliver Neukum (1):
+      usbnet: fix memory leak in error case
+
+Rhett Aultman (1):
+      can: gs_usb: gs_usb_open/close(): fix memory leak
+
+Sabrina Dubroca (1):
+      esp: limit skb_page_frag_refill use to a single page
+
+Samuel Holland (1):
+      pinctrl: sunxi: a83t: Fix NAND function name for some pins
+
+Satish Nagireddy (1):
+      i2c: cadence: Unregister the clk notifier in error path
+
+Yian Chen (1):
+      iommu/vt-d: Fix PCI bus rescan device hot add
+
