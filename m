@@ -2,91 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B109CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232818AbiGLKIe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
+        id S232798AbiGLKIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232416AbiGLKI2 (ORCPT
+        with ESMTP id S232734AbiGLKId (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:08:28 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C036FAB6AB
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:08:26 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id y11so6572493lfs.6
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:08:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9tmI5itLo+az2NBT8yzH/XgEsrNR0rdSvtFYImf7rvM=;
-        b=jGL3yWUVHDyLo2mditJsLo9eZwQRwOlRMs1BOzwXgQgMl9VZKiWusZB3OL6+6pe1T3
-         1/kprO7Bg7O0JkhTVP7syWIF3fjkfFipAOfKIwsyREqj+gEs++uY4I0EC3riNWSg7M6+
-         wJpFMibQKKtpc2ChIZY33TAZyZekuEStAadNkqP0WmUB9+8kFaHVZnWgkhH3deTvqAnL
-         +LgiC3Fo2/ThdhQrS7xXtyUVhEFsjxNqdx0oAfDe+QL/gmUNMtTrINMQ6jSep5gtwNNx
-         S39Kw2Dp3bBW9Q8PGyofZ4rtXUpXOWvys+Ylgd6faJUOluLru5+mTt8DhZD9NlgbdtTj
-         bvug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9tmI5itLo+az2NBT8yzH/XgEsrNR0rdSvtFYImf7rvM=;
-        b=g6abZyYZvfdFXkSIKd9sf35jz812ZxZkobBKZcdUAzXgHymDDAv+DTeDh1XEexO5WK
-         weJ1+vJy/l0MCaNavTbsc0xYvYt8Ia9XtFRsqYbAomjSfq/9x9loFap6NkyAui/gEeQ0
-         MvTCGihFCMjQDIFUL7l4kgzG4id+iXL9Wn+EI6Se6UcJSRvBi7vgR6YteXqof9d820L4
-         /e4WjSD3DbdmmjUYOYimonB6fcad+7QurrOHJvir4HQCEHmGEnNcMhrVzlH6dUnTEXJB
-         LQdM0XLNhcLQjQaMHZ0/VC1HOkSCfmblERwJPRthcGwiYWpv4nEkFGMJPofxLgxZK5gO
-         2m+A==
-X-Gm-Message-State: AJIora8Xyic8YJMMVZtdG9KHkjIUUnni6vuOa/QfJjOXggXNHGwRrpQz
-        7LJ/EtCEmoZUDhau4nHjW9lSoA==
-X-Google-Smtp-Source: AGRyM1v7YtW6PNha688Ly/qRMtHWf8J90QekegU41aq4ftRdp8UQi3tEPZqQDVm+oefoOtinVjYqVg==
-X-Received: by 2002:a05:6512:33d2:b0:489:ce1a:fb2a with SMTP id d18-20020a05651233d200b00489ce1afb2amr11046939lfg.558.1657620505091;
-        Tue, 12 Jul 2022 03:08:25 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id u2-20020a2e9f02000000b0025a67779931sm2339204ljk.57.2022.07.12.03.08.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 03:08:24 -0700 (PDT)
-Message-ID: <fdef31b4-9c27-ddda-f1e5-ee881812aa4e@linaro.org>
-Date:   Tue, 12 Jul 2022 12:08:21 +0200
+        Tue, 12 Jul 2022 06:08:33 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6CBFAB6A5;
+        Tue, 12 Jul 2022 03:08:30 -0700 (PDT)
+Received: from mail-yw1-f171.google.com ([209.85.128.171]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1N95Rn-1nWubb3jkt-016BfD; Tue, 12 Jul 2022 12:08:29 +0200
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-31cf1adbf92so75818957b3.4;
+        Tue, 12 Jul 2022 03:08:28 -0700 (PDT)
+X-Gm-Message-State: AJIora9+AI63I3LjNh7KOVK/ZJk/GkVX8OLiQHJ85sJek45pCnLlxBEx
+        rgwm6yipqrSCLBX79OASXUHEDLaNibLkF/s4tc4=
+X-Google-Smtp-Source: AGRyM1ui9OD5Yq2i+fMABdKkpuy4vEqlHosTHEJwDtBO6zr/PICh/tVPzUKIAjwAJEvX5GVRaRGjEc5xOSy7/jhlaqc=
+X-Received: by 2002:a81:1914:0:b0:31c:e12a:f33a with SMTP id
+ 20-20020a811914000000b0031ce12af33amr24610715ywz.209.1657620507572; Tue, 12
+ Jul 2022 03:08:27 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 3/7] pwm: dwc: add of/platform support
-Content-Language: en-US
-To:     Ben Dooks <ben.dooks@sifive.com>, linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        William Salmon <william.salmon@sifive.com>,
-        Adnan Chowdhury <adnan.chowdhury@sifive.com>
-References: <20220712100113.569042-1-ben.dooks@sifive.com>
- <20220712100113.569042-4-ben.dooks@sifive.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220712100113.569042-4-ben.dooks@sifive.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220711122459.13773-1-me@linux.beauty> <20220711122459.13773-5-me@linux.beauty>
+ <CAK8P3a2Mr0ZMXGDx6htYEbBBtm4mubk-meSASJjPRK1j1O-hEA@mail.gmail.com>
+ <181efcca6ae.de84203d522625.7740936811073442334@linux.beauty>
+ <CAK8P3a30o1RLifV1TMqDJ26vLhVdOzz3wP6yPrayLV2GPxUtwQ@mail.gmail.com> <181f1d88b64.e2eb2601586551.453778983551010212@linux.beauty>
+In-Reply-To: <181f1d88b64.e2eb2601586551.453778983551010212@linux.beauty>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 12 Jul 2022 12:08:10 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a3gX-JMh6E2X3rH+U37zhkA6b0+AJDtXCJfdZiMocxLjg@mail.gmail.com>
+Message-ID: <CAK8P3a3gX-JMh6E2X3rH+U37zhkA6b0+AJDtXCJfdZiMocxLjg@mail.gmail.com>
+Subject: Re: [PATCH 4/4] sample/reserved_mem: Introduce a sample of struct
+ page and dio support to no-map rmem
+To:     Li Chen <me@linux.beauty>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Li Chen <lchen@ambarella.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DTML <devicetree@vger.kernel.org>, Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Pnojn1jCOJfUaOK/YyrDsJCc2p4gM9GmSs9xBtBbrAKJfsYznNF
+ DrvfNt9PKvSA9vZCtHG20w1N7bLQV01zQdNEYmr6a0WO8/adPZtUlmx+WBgyWBdkVxczuAD
+ 13xvlxQUfyssiiOXH4KgqwjYAGwyGmXXWWy8rDPPaGaOyfYAwVaSUaiaOK0r8ed724uqhhT
+ Os0jG00RotVlGVAhL2fiQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:nbUa4DFy3kc=:2M8dSRt9xoxJ5LTzynVMzU
+ gDj1R7IM0E3AA8ub/eJpmAoi9uKOBfb3kSgGp2TBaTUDkyEY0CFCq5azAmLztgy2HU+2n3vx7
+ XZlsxFiEAZL91dNtpcWZze0Zkgowd7PFFKf5UAag8Aj2uc1xlHnixdKlHx7oJdrCLUy7Wfv7W
+ sIV1xsVzi98HXsG6NsgJcZjf5wzsmQcSL1FxxsRNl3C/jEpmDw4KBDSd0EqJ50Jlw/1cyQOHX
+ XqHYdtg6BJ2aNoBBdqKE8pz2jsoKWtBdcLIweQk+wNYr6FmWKbPmcIXbWPBeeKIoAFJAk9S26
+ bvMa+ntaMhutUoqTpiVA0SFkkamfu62sg7nDKL/XS/zRueHJvFi11sSGLIWcGRZp5eCfPBD2d
+ CeWsgnznUBp30bwww/+PV9aeJd1XSGD8i51MxqRM1tkcjF/lih2/oD1PmCLAf1Alz7jh2Vr1n
+ lCuF+Bv+kdkbZ9W5aTFoSxYIVWlRt/ZfMnq/A2lBiODFSKtMsMBhheZ8QXWUK1PSf2zUOpZrd
+ CevwmKU5HYczhjoZmrycRh/WdpMVg8KcFhnGPLSrKdY1siASTu4Br94o+H4ykkZRZqJTXldUv
+ SRuRhcpdImygwXJ1Vj5AH1NAdfiOUS24+QMbAimdu3cU5/Ray0vjRMvLzxz5L5bB0kb5RG/VN
+ LnMYUaXyN7prw0AB3ASw+HU4it36F7TxUuTb5/sI7wbfinFwmypy/89h/bqDhdVg286zWCrLO
+ uU+53NynfW8U01hyngURKIDqWSu6PN2ZbQQAbSSjGovPx2ZOIACRYqILs3dcbZPLoBYcI8i7J
+ s7pVk1IHjcpHe4wQKCe8QP1QxDK3nNJfytQlsFkrPDdfwrdxgXWy/Fh59p0mW77ARF0IYRVdZ
+ Q3ZWIydaWZzkbk36iBJyrsSXxlFw3bv0ViShZFdxM=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 12:01, Ben Dooks wrote:
-> The dwc pwm controller can be used in non-PCI systems, so allow
-> either platform or OF based probing.
-> 
-> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
-> ---
->  .../devicetree/bindings/pwm/pwm-synposys.yaml | 40 ++++++++++++++
+On Tue, Jul 12, 2022 at 11:58 AM Li Chen <me@linux.beauty> wrote:
+>  > On Tue, Jul 12, 2022 at 2:26 AM Li Chen <me@linux.beauty> wrote:
+>  > >  ---- On Mon, 11 Jul 2022 21:28:10 +0800  Arnd Bergmann <arnd@arndb.de> wrote ---
+>  > >  > On Mon, Jul 11, 2022 at 2:24 PM Li Chen <me@linux.beauty> wrote:
+>  > >  > The problem here is that the DT is meant to describe the platform in an OS
+>  > >  > independent way, so having a binding that just corresponds to a user space
+>  > >  > interface is not a good abstraction.
+>  > >
+>  > > Gotcha, but IMO dts + rmem is the only choice for our use case. In our real
+>  > > case, we use reg instead of size to specify the physical address, so
+>  > > memremap cannot be used.
+>  >
+>  > Does your hardware require a fixed address for the buffer? If it can be
+>  > anywhere in memory (or at least within a certain range) but just has to
+>  > be physically contiguous, the normal way would be to use a CMA area
+>  > to allocate from, which gives you 'struct page' backed pages.
+>
+> The limitation is our DSP can only access 32bit memory, but total dram is > 4G, so I cannot use
+> "size = <...>" in our real case (it might get memory above 4G). I'm not sure if other vendors' DSP also has
+> this limitation, if so, how do they deal with it if throughput matters.
 
-Bindings must be a separate patch. Preferably first in the series. Use
-proper subject prefix matching the subsystem.
+This is a common limitation that gets handled automatically by setting
+the dma_mask of the device through the dma-ranges property in DT.
+When the driver does dma_alloc_coherent() or similar to gets its buffer,
+it will then allocate pages below this boundary.
 
-Best regards,
-Krzysztof
+If you need a large contiguous memory area, then using CMA allows
+you to specify a region of memory that is kept reserved for DMA
+allocations, so a call to dma_alloc_coherent() on your device will
+get contiguous pages from that area, and move other data in those
+pages elsewhere if necessary. non-movable data is allocated from
+pages outside of the CMA reserved area in this case.
+
+          Arnd
