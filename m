@@ -2,94 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF6B4CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B882C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232564AbiGLIJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
+        id S232587AbiGLIJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231608AbiGLIJF (ORCPT
+        with ESMTP id S232584AbiGLIJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:09:05 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4716467
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:04 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id t1so9101105lft.8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=7hymDGoXZOvT4wo4b8VCjcpQ+XRX3pT8aXtW5HqYY0g=;
-        b=OPdG2eSd1GwsQvVoZ0jTUrpcOgCQXXF6v27JsagiYHeJ6mvzzR+Vl2f5DWGBjL0oor
-         BzmxvVaVbkSaFHK7xobBT1bo0BsaPnUpw5Qgn0tPbnXqtVtmsvOgknBB1MpPys+RS4Bn
-         rfEtTi4GTZNaV/RnyYY+aaIRpyNRrYFu1veoiDQrMvRBmHvqwHy4ilNMbxKtX4JPW9Xk
-         A9skPZvL0WP/Ki5yau8/+5P9EUCltbpgLBVm3keFVQxCZ59e121jQM2wCideCjMCucWZ
-         spTAHTc6jEIGjfZ1HBwMvzH0MSplaC8m0ZRUeFXmQ7DEecAWRrQRPh7oxT3T1L2dE4mU
-         LF6g==
+        Tue, 12 Jul 2022 04:09:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8FC252E46
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657613350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rJcskA/Zg+I54A7KxLAxiRGb8qrTlBqKeeRMZ0ymcfk=;
+        b=NF3TB8hXvcEVSErbhcA45YJ3KCRdcJ1zJl4uQgvg40NzZMrKwNVxZxWATPNXtUdgF6zKmE
+        2QTGTC56SraZollrrs3/AzVo5c2yUDfYyzOpTvE+ekbdzOozO3FOuqrrsmRUz2bUz/6c1I
+        B82n9j/DeF1ccBByYVfW+0nBY49q/Xs=
+Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
+ [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-515-kFXOKvSrO_uAbE0wFqjWRQ-1; Tue, 12 Jul 2022 04:09:09 -0400
+X-MC-Unique: kFXOKvSrO_uAbE0wFqjWRQ-1
+Received: by mail-lj1-f200.google.com with SMTP id m16-20020a2e8710000000b0025d46f0cfb1so892409lji.16
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:09:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7hymDGoXZOvT4wo4b8VCjcpQ+XRX3pT8aXtW5HqYY0g=;
-        b=g9wy0fvKU1DO43ADOeFKH/PSE/u2x9vN6BWynf7my5Pq4BOBWxk6gO92JfvRf043M5
-         JK2fxJPr3Yc+jRrWBY9PiPCkSeln4S614/2h+9vQE95X/b5iKJfek0Tfbf7WaMlw7O3y
-         JRtCbTwKAQPVFr+uohsfq/SreiXsGTVkZsdwJNtb9GiwRnOyE212QqV6T/iWQ0SArPEE
-         lR/zJmh5sMftoHtrniY+6XJiXc7eSK0p7pmazEmvW0CoH7h8iMcyeQEa4eW/5etvskmx
-         B35TFQgC9oxWsyPVcCMGrK6MXD0F/soUFdjuaoWfFznG096x1vcaFgwxTdrBrESxYZBC
-         wrAQ==
-X-Gm-Message-State: AJIora9D+evD8jb5S44i4mQocvjtRYmqSKoRx9WklroVyZ58L1ndCeTV
-        qrJAROy78B/PnOcvp40js0KIjA==
-X-Google-Smtp-Source: AGRyM1usYq9Y2eMuGje+OHvls6QftNfcJPk9nwgSJbif9bEWrfHigs4mRwSaVpCHRiznM4HZVPSYkg==
-X-Received: by 2002:a05:6512:34cd:b0:488:aa53:c104 with SMTP id w13-20020a05651234cd00b00488aa53c104mr15231306lfr.517.1657613343057;
-        Tue, 12 Jul 2022 01:09:03 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5cab-55.bb.online.no. [88.92.171.55])
-        by smtp.gmail.com with ESMTPSA id a12-20020a19ca0c000000b00488e50527e0sm2026877lfg.112.2022.07.12.01.09.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 01:09:02 -0700 (PDT)
-Message-ID: <b2934014-8048-6c17-e655-bd1be09794bc@linaro.org>
-Date:   Tue, 12 Jul 2022 10:09:00 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rJcskA/Zg+I54A7KxLAxiRGb8qrTlBqKeeRMZ0ymcfk=;
+        b=Vf6pzKYyOTH1/SJ5gL/UxgN6DMvopd63I6oBfWHIX+DcnPt2vlvcNrkH6qgJLoQvIy
+         WxxlpH0SD3dj0yR/qix1a39AZRadltULlHD9d0jmuYhmigRsgzVmDHxFVsXWoXYk+skH
+         MRI16OZldPozzbRftgebSfnGADJ60R1iDblzjDSVrPid6YgVDvEURDMq3QGMKWsUh1oH
+         WMzUkrC6f0cYDUSR2/NiUzth/ANNKFItN1zpTIfQk2f9vFvJKuXoi1e2JVq7uAkMe2Oe
+         6CnBb0xbqtQF1/xXxLddPWzRh4dlxthje3KyuOMIq2Ag2jyN6hxnKTKoCdO8vZWl+puW
+         ekjw==
+X-Gm-Message-State: AJIora/6+4J8QSNQp9EqQRJPupmucCUZYEpQhT2KeT6YH4aCab/Jeww1
+        khvGPMhLilcP7A3/+W49k3DH+NKI+ZziNiRSuxXrF90M8EBEpTgIT/SXwzjAJUbzqPUpUoPzutn
+        0wRxfhw2t+7RfA3TfnRBD+jeDjb79O4xvofg7x9BE
+X-Received: by 2002:ac2:50d1:0:b0:489:fb36:cde1 with SMTP id h17-20020ac250d1000000b00489fb36cde1mr264115lfm.411.1657613347826;
+        Tue, 12 Jul 2022 01:09:07 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vjIfYeHw/U8j+flo57s9r09p+WpV9Mywo429Jk8FiV/6lmU1F4kq5TwCDtQJDxdvwRs4LWoN08HBHaUIS+RT0=
+X-Received: by 2002:ac2:50d1:0:b0:489:fb36:cde1 with SMTP id
+ h17-20020ac250d1000000b00489fb36cde1mr264103lfm.411.1657613347609; Tue, 12
+ Jul 2022 01:09:07 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 0/2] dt-bindings: sound: Convert to json-schema
-Content-Language: en-US
-To:     Ryan.Wanner@microchip.com, lgirdwood@gmail.com, broonie@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        nicolas.ferre@microchip.com, alexandre.belloni@bootlin.com,
-        claudiu.beznea@microchip.com
-Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220711183010.39123-1-Ryan.Wanner@microchip.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220711183010.39123-1-Ryan.Wanner@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220623160738.632852-1-eperezma@redhat.com> <20220623160738.632852-4-eperezma@redhat.com>
+ <CACGkMEt6YQvtyYwkYVxmZ01pZJK9PMFM2oPTVttPZ_kZDY-9Jw@mail.gmail.com> <CAJaqyWfGXu8k7JN1gCPdUXS2_Dct73w4wS_SdB3aLqVCWJqJQg@mail.gmail.com>
+In-Reply-To: <CAJaqyWfGXu8k7JN1gCPdUXS2_Dct73w4wS_SdB3aLqVCWJqJQg@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Tue, 12 Jul 2022 16:08:56 +0800
+Message-ID: <CACGkMEv0W=CYduTV44R71knWwyoEd9VAth0eHuwEFa9T4Njhhg@mail.gmail.com>
+Subject: Re: [PATCH v6 3/4] vhost-vdpa: uAPI to suspend the device
+To:     Eugenio Perez Martin <eperezma@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Cindy Lu <lulu@redhat.com>,
+        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
+        habetsm.xilinx@gmail.com, "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Laurent Vivier <lvivier@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Martin Porter <martinpo@xilinx.com>,
+        Eli Cohen <elic@nvidia.com>, ecree.xilinx@gmail.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/07/2022 20:30, Ryan.Wanner@microchip.com wrote:
-> From: Ryan Wanner <Ryan.Wanner@microchip.com>
-> 
-> This patch series converts atmel-classd and atmel-pdmic device tree
-> bindings to json-schema.
-> 
-> v1 -> v2:
-> - Fix commit formatting.
-> - Fix titles in yaml file
-> - Removed trivial descriptions
-> - Correct formatting errors 
-> 
-> Ryan Wanner (2):
->   dt-bindings: sound: atmel,classd: Convert to json-schema
->   dt-binding: sound: atmel,pdmic: Convert to json-schema
+On Fri, Jul 8, 2022 at 7:53 PM Eugenio Perez Martin <eperezma@redhat.com> w=
+rote:
+>
+> On Wed, Jun 29, 2022 at 6:16 AM Jason Wang <jasowang@redhat.com> wrote:
+> >
+> > On Fri, Jun 24, 2022 at 12:08 AM Eugenio P=C3=A9rez <eperezma@redhat.co=
+m> wrote:
+> > >
+> > > The ioctl adds support for suspending the device from userspace.
+> > >
+> > > This is a must before getting virtqueue indexes (base) for live migra=
+tion,
+> > > since the device could modify them after userland gets them. There ar=
+e
+> > > individual ways to perform that action for some devices
+> > > (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was n=
+o
+> > > way to perform it for any vhost device (and, in particular, vhost-vdp=
+a).
+> > >
+> > > After a successful return of the ioctl call the device must not proce=
+ss
+> > > more virtqueue descriptors. The device can answer to read or writes o=
+f
+> > > config fields as if it were not suspended. In particular, writing to
+> > > "queue_enable" with a value of 1 will not make the device start
+> > > processing buffers of the virtqueue.
+> > >
+> > > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > > ---
+> > >  drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
+> > >  include/uapi/linux/vhost.h | 14 ++++++++++++++
+> > >  2 files changed, 33 insertions(+)
+> > >
+> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > > index 3d636e192061..7fa671ac4bdf 100644
+> > > --- a/drivers/vhost/vdpa.c
+> > > +++ b/drivers/vhost/vdpa.c
+> > > @@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhos=
+t_vdpa *v, u32 __user *argp)
+> > >         return 0;
+> > >  }
+> > >
+> > > +/* After a successful return of ioctl the device must not process mo=
+re
+> > > + * virtqueue descriptors. The device can answer to read or writes of=
+ config
+> > > + * fields as if it were not suspended. In particular, writing to "qu=
+eue_enable"
+> > > + * with a value of 1 will not make the device start processing buffe=
+rs.
+> > > + */
+> > > +static long vhost_vdpa_suspend(struct vhost_vdpa *v)
+> > > +{
+> > > +       struct vdpa_device *vdpa =3D v->vdpa;
+> > > +       const struct vdpa_config_ops *ops =3D vdpa->config;
+> > > +
+> > > +       if (!ops->suspend)
+> > > +               return -EOPNOTSUPP;
+> > > +
+> > > +       return ops->suspend(vdpa);
+> > > +}
+> > > +
+> > >  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned in=
+t cmd,
+> > >                                    void __user *argp)
+> > >  {
+> > > @@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file=
+ *filep,
+> > >         case VHOST_VDPA_GET_VQS_COUNT:
+> > >                 r =3D vhost_vdpa_get_vqs_count(v, argp);
+> > >                 break;
+> > > +       case VHOST_VDPA_SUSPEND:
+> > > +               r =3D vhost_vdpa_suspend(v);
+> > > +               break;
+> > >         default:
+> > >                 r =3D vhost_dev_ioctl(&v->vdev, cmd, argp);
+> > >                 if (r =3D=3D -ENOIOCTLCMD)
+> > > diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> > > index cab645d4a645..6d9f45163155 100644
+> > > --- a/include/uapi/linux/vhost.h
+> > > +++ b/include/uapi/linux/vhost.h
+> > > @@ -171,4 +171,18 @@
+> > >  #define VHOST_VDPA_SET_GROUP_ASID      _IOW(VHOST_VIRTIO, 0x7C, \
+> > >                                              struct vhost_vring_state=
+)
+> > >
+> > > +/* Suspend or resume a device so it does not process virtqueue reque=
+sts anymore
+> > > + *
+> > > + * After the return of ioctl with suspend !=3D 0, the device must fi=
+nish any
+> > > + * pending operations like in flight requests.
+> >
+> > I'm not sure we should mandate the flush here. This probably blocks us
+> > from adding inflight descriptor reporting in the future.
+> >
+>
+> That's right. Maybe we should add a flags argument to allow not to
+> flush in flight descriptors in the future? Or maybe the right solution
+> is to discard that requirement and to mandate in_order to be
+> migratable at the moment?
 
-Use consistent and proper prefix. I think you got such comment before,
-right?
+I think it's better not to limit the device behaviour like flush or
+in_order here. This may simplify the work for adding inflight
+descriptor support.
 
+For the device that doesn't care about the inflight descriptor, this
+patch is sufficient for doing live migration.
+For the device that requires an inflight descriptor, this patch is
+insufficient, it requires future extension to get those descriptors.
+In this case, device has the flexibility to flush or not so:
 
-Best regards,
-Krzysztof
+1) if we don't get any inflight descriptors, the device may do the flush be=
+fore
+2) if we get inflight descriptors, we need to restore them
+
+Thanks
+
+>
+> Thanks!
+>
+> > Thanks
+> >
+> > It must also preserve all the
+> > > + * necessary state (the virtqueue vring base plus the possible devic=
+e specific
+> > > + * states) that is required for restoring in the future. The device =
+must not
+> > > + * change its configuration after that point.
+> > > + *
+> > > + * After the return of ioctl with suspend =3D=3D 0, the device can c=
+ontinue
+> > > + * processing buffers as long as typical conditions are met (vq is e=
+nabled,
+> > > + * DRIVER_OK status bit is enabled, etc).
+> > > + */
+> > > +#define VHOST_VDPA_SUSPEND             _IOW(VHOST_VIRTIO, 0x7D, int)
+> > > +
+> > >  #endif
+> > > --
+> > > 2.31.1
+> > >
+> >
+>
+
