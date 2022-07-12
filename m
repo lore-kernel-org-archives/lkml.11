@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B32E7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4297BCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235530AbiGLTHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:07:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54182 "EHLO
+        id S235570AbiGLTHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235510AbiGLTGj (ORCPT
+        with ESMTP id S235553AbiGLTGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:06:39 -0400
+        Tue, 12 Jul 2022 15:06:44 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C19DFAC86;
-        Tue, 12 Jul 2022 11:51:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D52E43DD;
+        Tue, 12 Jul 2022 11:51:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BD61BB81BBC;
-        Tue, 12 Jul 2022 18:50:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E833C3411C;
-        Tue, 12 Jul 2022 18:50:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 625AAB81BAC;
+        Tue, 12 Jul 2022 18:51:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0657C3411C;
+        Tue, 12 Jul 2022 18:51:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651850;
-        bh=X/4QCstTlTlNBBmAg+VN5BgPZKZQwVUj0R+jS+Vvhlk=;
+        s=korg; t=1657651877;
+        bh=jDpMnYgcH7UnQztEqT8kiAI+E3ewRMxCZVGmCwMRwB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uAH+EygTjCy0bZXU/LCZOw+Jvei3/xDm1r2XaiXUx/qtNIXXPbMSoegWUKQdG6pQF
-         wrpM+5iv1X0RigPDE38W6+wwHHbf7zk2h/cebHCCAXEuvy4wP9L+M93cLvG3PKc/ZG
-         c2kn+qz0h8kj/Z+8qyifOjpt43J5kdMM6e3+32xM=
+        b=oD+hXsPAfWMTNndmWPagZl0ksDJncdCz6WQjPDZAycBaV681XS6xKWKPPcZCTM2nw
+         5pbOvupJqxwgZtOpmkdGx495yu2D5+vevR4zQ/1HbHoxML19vzQ4vYLyFEp4DngZML
+         m0ScwAFT4ES8HokAuGkK8qOMJta3dOVvxjGQSmjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 48/78] x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS
-Date:   Tue, 12 Jul 2022 20:39:18 +0200
-Message-Id: <20220712183240.817140593@linuxfoundation.org>
+Subject: [PATCH 5.18 01/61] x86/traps: Use pt_regs directly in fixup_bad_iret()
+Date:   Tue, 12 Jul 2022 20:38:58 +0200
+Message-Id: <20220712183236.995062581@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
-References: <20220712183238.844813653@linuxfoundation.org>
+In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
+References: <20220712183236.931648980@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,208 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit 7c693f54c873691a4b7da05c7e0f74e67745d144 upstream.
+commit 0aca53c6b522f8d6e2681ca875acbbe105f5fdcf upstream.
 
-Extend spectre_v2= boot option with Kernel IBRS.
+Always stash the address error_entry() is going to return to, in %r12
+and get rid of the void *error_entry_ret; slot in struct bad_iret_stack
+which was supposed to account for it and pt_regs pushed on the stack.
 
-  [jpoimboe: no STIBP with IBRS]
+After this, both fixup_bad_iret() and sync_regs() can work on a struct
+pt_regs pointer directly.
 
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+  [ bp: Rewrite commit message, touch ups. ]
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220503032107.680190-2-jiangshanlai@gmail.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |    1 
- arch/x86/include/asm/nospec-branch.h            |    1 
- arch/x86/kernel/cpu/bugs.c                      |   66 ++++++++++++++++++------
- 3 files changed, 54 insertions(+), 14 deletions(-)
+ arch/x86/entry/entry_64.S    |    5 ++++-
+ arch/x86/include/asm/traps.h |    2 +-
+ arch/x86/kernel/traps.c      |   19 +++++++------------
+ 3 files changed, 12 insertions(+), 14 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -5335,6 +5335,7 @@
- 			eibrs		  - enhanced IBRS
- 			eibrs,retpoline   - enhanced IBRS + Retpolines
- 			eibrs,lfence      - enhanced IBRS + LFENCE
-+			ibrs		  - use IBRS to protect kernel
- 
- 			Not specifying this option is equivalent to
- 			spectre_v2=auto.
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -212,6 +212,7 @@ enum spectre_v2_mitigation {
- 	SPECTRE_V2_EIBRS,
- 	SPECTRE_V2_EIBRS_RETPOLINE,
- 	SPECTRE_V2_EIBRS_LFENCE,
-+	SPECTRE_V2_IBRS,
- };
- 
- /* The indirect branch speculation control variants */
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -965,6 +965,7 @@ enum spectre_v2_mitigation_cmd {
- 	SPECTRE_V2_CMD_EIBRS,
- 	SPECTRE_V2_CMD_EIBRS_RETPOLINE,
- 	SPECTRE_V2_CMD_EIBRS_LFENCE,
-+	SPECTRE_V2_CMD_IBRS,
- };
- 
- enum spectre_v2_user_cmd {
-@@ -1037,11 +1038,12 @@ spectre_v2_parse_user_cmdline(enum spect
- 	return SPECTRE_V2_USER_CMD_AUTO;
- }
- 
--static inline bool spectre_v2_in_eibrs_mode(enum spectre_v2_mitigation mode)
-+static inline bool spectre_v2_in_ibrs_mode(enum spectre_v2_mitigation mode)
- {
--	return (mode == SPECTRE_V2_EIBRS ||
--		mode == SPECTRE_V2_EIBRS_RETPOLINE ||
--		mode == SPECTRE_V2_EIBRS_LFENCE);
-+	return mode == SPECTRE_V2_IBRS ||
-+	       mode == SPECTRE_V2_EIBRS ||
-+	       mode == SPECTRE_V2_EIBRS_RETPOLINE ||
-+	       mode == SPECTRE_V2_EIBRS_LFENCE;
- }
- 
- static void __init
-@@ -1106,12 +1108,12 @@ spectre_v2_user_select_mitigation(enum s
- 	}
- 
- 	/*
--	 * If no STIBP, enhanced IBRS is enabled or SMT impossible, STIBP is not
--	 * required.
-+	 * If no STIBP, IBRS or enhanced IBRS is enabled, or SMT impossible,
-+	 * STIBP is not required.
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -1062,9 +1062,12 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
  	 */
- 	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
- 	    !smt_possible ||
--	    spectre_v2_in_eibrs_mode(spectre_v2_enabled))
-+	    spectre_v2_in_ibrs_mode(spectre_v2_enabled))
- 		return;
+-	mov	%rsp, %rdi
++	popq	%r12				/* save return addr in %12 */
++	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+ 	mov	%rax, %rsp
++	ENCODE_FRAME_POINTER
++	pushq	%r12
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
  
- 	/*
-@@ -1143,6 +1145,7 @@ static const char * const spectre_v2_str
- 	[SPECTRE_V2_EIBRS]			= "Mitigation: Enhanced IBRS",
- 	[SPECTRE_V2_EIBRS_LFENCE]		= "Mitigation: Enhanced IBRS + LFENCE",
- 	[SPECTRE_V2_EIBRS_RETPOLINE]		= "Mitigation: Enhanced IBRS + Retpolines",
-+	[SPECTRE_V2_IBRS]			= "Mitigation: IBRS",
- };
+--- a/arch/x86/include/asm/traps.h
++++ b/arch/x86/include/asm/traps.h
+@@ -13,7 +13,7 @@
+ #ifdef CONFIG_X86_64
+ asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
+ asmlinkage __visible notrace
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s);
++struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
+ void __init trap_init(void);
+ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
+ #endif
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -892,14 +892,10 @@ sync:
+ }
+ #endif
  
- static const struct {
-@@ -1160,6 +1163,7 @@ static const struct {
- 	{ "eibrs,lfence",	SPECTRE_V2_CMD_EIBRS_LFENCE,	  false },
- 	{ "eibrs,retpoline",	SPECTRE_V2_CMD_EIBRS_RETPOLINE,	  false },
- 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
-+	{ "ibrs",		SPECTRE_V2_CMD_IBRS,              false },
- };
- 
- static void __init spec_v2_print_cond(const char *reason, bool secure)
-@@ -1222,6 +1226,24 @@ static enum spectre_v2_mitigation_cmd __
- 		return SPECTRE_V2_CMD_AUTO;
- 	}
- 
-+	if (cmd == SPECTRE_V2_CMD_IBRS && boot_cpu_data.x86_vendor != X86_VENDOR_INTEL) {
-+		pr_err("%s selected but not Intel CPU. Switching to AUTO select\n",
-+		       mitigation_options[i].option);
-+		return SPECTRE_V2_CMD_AUTO;
-+	}
-+
-+	if (cmd == SPECTRE_V2_CMD_IBRS && !boot_cpu_has(X86_FEATURE_IBRS)) {
-+		pr_err("%s selected but CPU doesn't have IBRS. Switching to AUTO select\n",
-+		       mitigation_options[i].option);
-+		return SPECTRE_V2_CMD_AUTO;
-+	}
-+
-+	if (cmd == SPECTRE_V2_CMD_IBRS && boot_cpu_has(X86_FEATURE_XENPV)) {
-+		pr_err("%s selected but running as XenPV guest. Switching to AUTO select\n",
-+		       mitigation_options[i].option);
-+		return SPECTRE_V2_CMD_AUTO;
-+	}
-+
- 	spec_v2_print_cond(mitigation_options[i].option,
- 			   mitigation_options[i].secure);
- 	return cmd;
-@@ -1261,6 +1283,14 @@ static void __init spectre_v2_select_mit
- 			break;
- 		}
- 
-+		if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
-+		    retbleed_cmd != RETBLEED_CMD_OFF &&
-+		    boot_cpu_has(X86_FEATURE_IBRS) &&
-+		    boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
-+			mode = SPECTRE_V2_IBRS;
-+			break;
-+		}
-+
- 		mode = spectre_v2_select_retpoline();
- 		break;
- 
-@@ -1277,6 +1307,10 @@ static void __init spectre_v2_select_mit
- 		mode = spectre_v2_select_retpoline();
- 		break;
- 
-+	case SPECTRE_V2_CMD_IBRS:
-+		mode = SPECTRE_V2_IBRS;
-+		break;
-+
- 	case SPECTRE_V2_CMD_EIBRS:
- 		mode = SPECTRE_V2_EIBRS;
- 		break;
-@@ -1293,7 +1327,7 @@ static void __init spectre_v2_select_mit
- 	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
- 
--	if (spectre_v2_in_eibrs_mode(mode)) {
-+	if (spectre_v2_in_ibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
- 		write_spec_ctrl_current(x86_spec_ctrl_base, true);
-@@ -1304,6 +1338,10 @@ static void __init spectre_v2_select_mit
- 	case SPECTRE_V2_EIBRS:
- 		break;
- 
-+	case SPECTRE_V2_IBRS:
-+		setup_force_cpu_cap(X86_FEATURE_KERNEL_IBRS);
-+		break;
-+
- 	case SPECTRE_V2_LFENCE:
- 	case SPECTRE_V2_EIBRS_LFENCE:
- 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
-@@ -1330,17 +1368,17 @@ static void __init spectre_v2_select_mit
- 	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
- 
- 	/*
--	 * Retpoline means the kernel is safe because it has no indirect
--	 * branches. Enhanced IBRS protects firmware too, so, enable restricted
--	 * speculation around firmware calls only when Enhanced IBRS isn't
--	 * supported.
-+	 * Retpoline protects the kernel, but doesn't protect firmware.  IBRS
-+	 * and Enhanced IBRS protect firmware too, so enable IBRS around
-+	 * firmware calls only when IBRS / Enhanced IBRS aren't otherwise
-+	 * enabled.
- 	 *
- 	 * Use "mode" to check Enhanced IBRS instead of boot_cpu_has(), because
- 	 * the user might select retpoline on the kernel command line and if
- 	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
- 	 * enable IBRS around firmware calls.
- 	 */
--	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_eibrs_mode(mode)) {
-+	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
- 		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
- 		pr_info("Enabling Restricted Speculation for firmware calls\n");
- 	}
-@@ -2082,7 +2120,7 @@ static ssize_t mmio_stale_data_show_stat
- 
- static char *stibp_state(void)
+-struct bad_iret_stack {
+-	void *error_entry_ret;
+-	struct pt_regs regs;
+-};
+-
+-asmlinkage __visible noinstr
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
++asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
  {
--	if (spectre_v2_in_eibrs_mode(spectre_v2_enabled))
-+	if (spectre_v2_in_ibrs_mode(spectre_v2_enabled))
- 		return "";
++	struct pt_regs tmp, *new_stack;
++
+ 	/*
+ 	 * This is called from entry_64.S early in handling a fault
+ 	 * caused by a bad iret to user mode.  To handle the fault
+@@ -908,19 +904,18 @@ struct bad_iret_stack *fixup_bad_iret(st
+ 	 * just below the IRET frame) and we want to pretend that the
+ 	 * exception came from the IRET target.
+ 	 */
+-	struct bad_iret_stack tmp, *new_stack =
+-		(struct bad_iret_stack *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
++	new_stack = (struct pt_regs *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
  
- 	switch (spectre_v2_user_stibp) {
+ 	/* Copy the IRET target to the temporary storage. */
+-	__memcpy(&tmp.regs.ip, (void *)s->regs.sp, 5*8);
++	__memcpy(&tmp.ip, (void *)bad_regs->sp, 5*8);
+ 
+ 	/* Copy the remainder of the stack from the current stack. */
+-	__memcpy(&tmp, s, offsetof(struct bad_iret_stack, regs.ip));
++	__memcpy(&tmp, bad_regs, offsetof(struct pt_regs, ip));
+ 
+ 	/* Update the entry stack */
+ 	__memcpy(new_stack, &tmp, sizeof(tmp));
+ 
+-	BUG_ON(!user_mode(&new_stack->regs));
++	BUG_ON(!user_mode(new_stack));
+ 	return new_stack;
+ }
+ #endif
 
 
