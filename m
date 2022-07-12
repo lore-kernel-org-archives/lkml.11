@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0516ACCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:01:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC56BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:01:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235265AbiGLTBr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
+        id S235272AbiGLTBt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235111AbiGLTAg (ORCPT
+        with ESMTP id S235112AbiGLTAg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 15:00:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3680A6541;
-        Tue, 12 Jul 2022 11:48:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B6A65F9;
+        Tue, 12 Jul 2022 11:48:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 699DF6090C;
-        Tue, 12 Jul 2022 18:48:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B848C3411C;
-        Tue, 12 Jul 2022 18:48:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B66C6149A;
+        Tue, 12 Jul 2022 18:48:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BEDC341C0;
+        Tue, 12 Jul 2022 18:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651717;
-        bh=mF/NTo3jFPn5PYFhpdCOvlbKcfW1wEd+E7B0WinnZkY=;
+        s=korg; t=1657651721;
+        bh=5RuloE8Cs02J8LXghnnFBDDHsz8LkONNlijG0Dd4Fvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KaVon9nsQfpeyytMGhE0yJN4mLNFa53hv6GcGCq9qYC2MXqwvhHPEDlBFCYQXiJpW
-         tcq8wFalmQiy6P/HHLDmYDQ1s4a4KFJFeSOwuOJPPv+/yzcFZtH6npmkWhiMu++IW3
-         yg1zVecGdmsb9u/IuOZyueM42laAfsBMBzk3MhAQ=
+        b=Cd4ThvTGG4JxVlO6oiVL4rekiU6XKLmgF6g5hXgNCrbkWwfmepCKgpE2WrUFAhnOU
+         oVgbGsYwiT6yKACMXT40YGzJNAiJfcjpVyJcoVtnM6tDWtHPBs+Yua/a5Oy/Uc3DjD
+         GSuNEP+FvJJeIfHANGcbkDglGHheK0ApXjqxWHKE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 34/78] x86/bpf: Use alternative RET encoding
-Date:   Tue, 12 Jul 2022 20:39:04 +0200
-Message-Id: <20220712183240.191489224@linuxfoundation.org>
+Subject: [PATCH 5.15 35/78] x86/kvm: Fix SETcc emulation for return thunks
+Date:   Tue, 12 Jul 2022 20:39:05 +0200
+Message-Id: <20220712183240.230694551@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -53,61 +53,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit d77cfe594ad50e0bf95d457e02ccd578791b2a15 upstream.
+commit af2e140f34208a5dfb6b7a8ad2d56bda88f0524d upstream.
 
-Use the return thunk in eBPF generated code, if needed.
+Prepare the SETcc fastop stuff for when RET can be larger still.
+
+The tricky bit here is that the expressions should not only be
+constant C expressions, but also absolute GAS expressions. This means
+no ?: and 'true' is ~0.
+
+Also ensure em_setcc() has the same alignment as the actual FOP_SETCC()
+ops, this ensures there cannot be an alignment hole between em_setcc()
+and the first op.
+
+Additionally, add a .skip directive to the FOP_SETCC() macro to fill
+any remaining space with INT3 traps; however the primary purpose of
+this directive is to generate AS warnings when the remaining space
+goes negative. Which is a very good indication the alignment magic
+went side-ways.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: ignore ENDBR when computing SETCC_LENGTH]
+[cascardo: conflict fixup]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/net/bpf_jit_comp.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c |   26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -406,6 +406,21 @@ static void emit_indirect_jump(u8 **ppro
- 	*pprog = prog;
- }
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -321,13 +321,15 @@ static int fastop(struct x86_emulate_ctx
+ #define FOP_RET(name) \
+ 	__FOP_RET(#name)
  
-+static void emit_return(u8 **pprog, u8 *ip)
-+{
-+	u8 *prog = *pprog;
+-#define FOP_START(op) \
++#define __FOP_START(op, align) \
+ 	extern void em_##op(struct fastop *fake); \
+ 	asm(".pushsection .text, \"ax\" \n\t" \
+ 	    ".global em_" #op " \n\t" \
+-	    ".align " __stringify(FASTOP_SIZE) " \n\t" \
++	    ".align " __stringify(align) " \n\t" \
+ 	    "em_" #op ":\n\t"
+ 
++#define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
 +
-+	if (cpu_feature_enabled(X86_FEATURE_RETHUNK)) {
-+		emit_jump(&prog, &__x86_return_thunk, ip);
-+	} else {
-+		EMIT1(0xC3);		/* ret */
-+		if (IS_ENABLED(CONFIG_SLS))
-+			EMIT1(0xCC);	/* int3 */
-+	}
-+
-+	*pprog = prog;
-+}
-+
+ #define FOP_END \
+ 	    ".popsection")
+ 
+@@ -431,15 +433,14 @@ static int fastop(struct x86_emulate_ctx
  /*
-  * Generate the following code:
+  * Depending on .config the SETcc functions look like:
   *
-@@ -1681,7 +1696,7 @@ emit_jmp:
- 			ctx->cleanup_addr = proglen;
- 			pop_callee_regs(&prog, callee_regs_used);
- 			EMIT1(0xC9);         /* leave */
--			EMIT1(0xC3);         /* ret */
-+			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
- 			break;
+- * SETcc %al   [3 bytes]
+- * RET         [1 byte]
+- * INT3        [1 byte; CONFIG_SLS]
+- *
+- * Which gives possible sizes 4 or 5.  When rounded up to the
+- * next power-of-two alignment they become 4 or 8.
++ * SETcc %al			[3 bytes]
++ * RET | JMP __x86_return_thunk	[1,5 bytes; CONFIG_RETPOLINE]
++ * INT3				[1 byte; CONFIG_SLS]
+  */
+-#define SETCC_LENGTH	(4 + IS_ENABLED(CONFIG_SLS))
+-#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS))
++#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETPOLINE)) + \
++			 IS_ENABLED(CONFIG_SLS))
++#define SETCC_LENGTH	(3 + RET_LENGTH)
++#define SETCC_ALIGN	(4 << ((SETCC_LENGTH > 4) & 1) << ((SETCC_LENGTH > 8) & 1))
+ static_assert(SETCC_LENGTH <= SETCC_ALIGN);
  
- 		default:
-@@ -2127,7 +2142,7 @@ int arch_prepare_bpf_trampoline(struct b
- 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
- 		/* skip our return address and return to parent */
- 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
--	EMIT1(0xC3); /* ret */
-+	emit_return(&prog, prog);
- 	/* Make sure the trampoline generation logic doesn't overflow */
- 	if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
- 		ret = -EFAULT;
+ #define FOP_SETCC(op) \
+@@ -447,13 +448,14 @@ static_assert(SETCC_LENGTH <= SETCC_ALIG
+ 	".type " #op ", @function \n\t" \
+ 	#op ": \n\t" \
+ 	#op " %al \n\t" \
+-	__FOP_RET(#op)
++	__FOP_RET(#op) \
++	".skip " __stringify(SETCC_ALIGN) " - (.-" #op "), 0xcc \n\t"
+ 
+ asm(".pushsection .fixup, \"ax\"\n"
+     "kvm_fastop_exception: xor %esi, %esi; " ASM_RET
+     ".popsection");
+ 
+-FOP_START(setcc)
++__FOP_START(setcc, SETCC_ALIGN)
+ FOP_SETCC(seto)
+ FOP_SETCC(setno)
+ FOP_SETCC(setc)
 
 
