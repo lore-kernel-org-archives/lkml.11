@@ -2,114 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2856C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233551AbiGLW3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 18:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44146 "EHLO
+        id S233471AbiGLWfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 18:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233459AbiGLW3m (ORCPT
+        with ESMTP id S229693AbiGLWfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 18:29:42 -0400
-Received: from mail-il1-f176.google.com (mail-il1-f176.google.com [209.85.166.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD98BD683;
-        Tue, 12 Jul 2022 15:29:41 -0700 (PDT)
-Received: by mail-il1-f176.google.com with SMTP id b12so5718205ilh.4;
-        Tue, 12 Jul 2022 15:29:41 -0700 (PDT)
+        Tue, 12 Jul 2022 18:35:06 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC79CC3AEE;
+        Tue, 12 Jul 2022 15:35:04 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so608382pjl.5;
+        Tue, 12 Jul 2022 15:35:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=72J7TCt8+zxMrSHffLMPTA0BXv+7mgfFyxy0hmazDXY=;
+        b=OyB8mtybFPMIy1/hqXY+UCkeFlzb4YKwlbOnHk3mDQB0jlMi2c6KP+wFF+s7LmXEww
+         HvZKytNi6U4alFk7wNpUEpm9hw3WwEhp3ek6vGqV4WM7+2IhLcpQvwivZCoM7MUegEYl
+         bEpvzzKOm+QhLdZXOxeHIIm5rkEgBwjd4NN1fzpLP784OY/Z+q9GrGB7/gONuq0z7glc
+         meYawaEJOqbpQoZrd5glcknlBN7GaYkXtd2RAVT3scemww49v9M1VPxx08MbiUoG4vfm
+         cQVjga6tKrXaAxFcKmA1QcWTpi1jkQot7qTvUxpbyMl6HBmr0tB13nbCNUqlKZLBp9o5
+         yXBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=6TlAEBKdUnbeLY0JBRbgAGQSjQ3GM7mg+m6GgP7m7Xs=;
-        b=1EeQs9Th7Caj3+WhOdmDmGBYC9EK3uSZHBsj4BwWYSRWBAnMmDStVA+MDDDc9LoEVW
-         isbM2aKdgKwqpE0wsnJ4B5Je0a0tBJfyXibHGOuk75wNv+DBouanWP8dGSAwo5JgYMgg
-         xLaH1fnuflK9amyz+CZL2GWsstqOqajASKVFi11f8bpkVWWy5qaDh6MuKAQ0Icph4f5k
-         xZjpL4XeBivolsxaFSUiPCEVJDoKG6kMCs2Jnvl5AhjFG0BKsXCfCEi2gUb2YhGk7ZRj
-         6I0hF9ofU7uF069AsnCcYNmEbJZT+mC3bib0qvrF/fas/RAKsTlZd59469Sijfrg4qdD
-         wZ8Q==
-X-Gm-Message-State: AJIora9/nI0uT18tNR8cwhvn6i0+efVHRyx4MA1jLr+ixKEXbkqDcFli
-        fkti9iXLxOGG34geCUYzng==
-X-Google-Smtp-Source: AGRyM1tQ6vLyVx8CeViibTv6d2c/M4uPa1qXqvqlwqIN7YowfkhSvUSPNEKqgcjgixJw+JJK1jc3Yg==
-X-Received: by 2002:a92:8748:0:b0:2d9:3f81:d0b7 with SMTP id d8-20020a928748000000b002d93f81d0b7mr236312ilm.310.1657664980547;
-        Tue, 12 Jul 2022 15:29:40 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id d78-20020a6bb451000000b00669ceb1d521sm5470544iof.10.2022.07.12.15.29.39
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=72J7TCt8+zxMrSHffLMPTA0BXv+7mgfFyxy0hmazDXY=;
+        b=zv2kMf+lMyGihirYvgHJaD1pFpii9M7Xp4z1QPiJf49rrmiVRsJ8+AJEjSWj9B2L06
+         ZkQ73XhhGXIyT0TkGz7ypbKNbIA/BkfgAXloWWOIf50ok/Y4g+iClr2YLovYLU1/9FuG
+         AR+GuXtreJDx2W1XGF9FNIypUrjg58SvrIz1Jac9lB7Jtmr9scqTZf60jOdAWIxWYCkl
+         Eavv8OHFaDXcQjVrOObuvnKCArQKs6bhmXvtSf76PLn+h1K+qb0dHrFCF/pvwj9WFHKo
+         FJQhWcH8g8TK7ed8Og/RBSBMRT+Ci/GZ62wx9/YCkgmEZxfMy9kNoWulwQ7AmxM/hhNt
+         f/cg==
+X-Gm-Message-State: AJIora9ZJJ7w+MjU3qligUcChoS+tDgUBlBsUswQ+1Tt8LmtdiDB+hT5
+        DdpVvi9Hm4nzeP1HAA3u1IHotqWlxyU=
+X-Google-Smtp-Source: AGRyM1tCBhP5yfWPibLu4jTYbnGFOi1qxc7mhwNzjwP3PADQBoc/nKuga9RFb3fiVUz6MHiDHeBnBA==
+X-Received: by 2002:a17:90b:3a84:b0:1f0:56d5:4600 with SMTP id om4-20020a17090b3a8400b001f056d54600mr6892308pjb.162.1657665304119;
+        Tue, 12 Jul 2022 15:35:04 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:a31e:fcfb:1279:f5f8])
+        by smtp.gmail.com with ESMTPSA id z1-20020aa79901000000b0050dc7628171sm7306772pff.75.2022.07.12.15.35.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 15:29:40 -0700 (PDT)
-Received: (nullmailer pid 2476656 invoked by uid 1000);
-        Tue, 12 Jul 2022 22:29:35 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     linux-media@vger.kernel.org, quentin.schulz@theobroma-systems.com,
-        Daniel Scally <djrscally@gmail.com>,
-        linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20220712163349.1308540-6-tommaso.merciai@amarulasolutions.com>
-References: <20220712163349.1308540-1-tommaso.merciai@amarulasolutions.com> <20220712163349.1308540-6-tommaso.merciai@amarulasolutions.com>
-Subject: Re: [PATCH v6 5/6] media: dt-bindings: ov5693: document YAML binding
-Date:   Tue, 12 Jul 2022 16:29:35 -0600
-Message-Id: <1657664975.862137.2476655.nullmailer@robh.at.kernel.org>
+        Tue, 12 Jul 2022 15:35:03 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 15:35:00 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nergi Rahardi <nergi@google.com>,
+        "Daniel J . Ogorchock" <djogorchock@gmail.com>
+Subject: Re: [PATCH] HID: nintendo: Add missing array termination
+Message-ID: <Ys33FIuNEsyZw8EF@google.com>
+References: <20220712221705.1847793-1-linux@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712221705.1847793-1-linux@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 18:33:48 +0200, Tommaso Merciai wrote:
-> Add documentation of device tree in YAML schema for the OV5693
-> CMOS image sensor from Omnivision
+On Tue, Jul 12, 2022 at 03:17:05PM -0700, Guenter Roeck wrote:
+> joycon_dpad_inputs_jc[] is unterminated. This may result in odd warnings
+> such as
 > 
-> Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> input: input_set_capability: invalid code 3077588140 for type 1
+> 
+> or in kernel crashes in nintendo_hid_probe(). Terminate the array to fix
+> the problem.
+> 
+> Fixes: 2af16c1f846bd ("HID: nintendo: add nintendo switch controller driver")
+> Cc: Daniel J. Ogorchock <djogorchock@gmail.com>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+
+Reviewed-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+
+I'd recommend tagging stable on this one.
+
 > ---
-> Changes since v1:
->  - Fix allOf position as suggested by Krzysztof
->  - Remove port description as suggested by Krzysztof
->  - Fix EOF as suggested by Krzysztof
+>  drivers/hid/hid-nintendo.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Changes since v2:
->  - Fix commit body as suggested by Krzysztof
-> 
-> Changes since v3:
->  - Add reviewed-by tags, suggested by Jacopo, Krzysztof
-> 
-> Changes since v4:
->  - Remove wrong Sakari reviewed-by tag, suggested by Krzysztof, Sakari
-> 
-> Changes since v5:
->  - Remove dovdd-supply, avdd-supply, dvdd-supply from required properties
-> as suggested by Jacopo
-> 
->  .../bindings/media/i2c/ovti,ov5693.yaml       | 103 ++++++++++++++++++
->  MAINTAINERS                                   |   1 +
->  2 files changed, 104 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+> diff --git a/drivers/hid/hid-nintendo.c b/drivers/hid/hid-nintendo.c
+> index 2204de889739..4b1173957c17 100644
+> --- a/drivers/hid/hid-nintendo.c
+> +++ b/drivers/hid/hid-nintendo.c
+> @@ -1586,6 +1586,7 @@ static const unsigned int joycon_button_inputs_r[] = {
+>  /* We report joy-con d-pad inputs as buttons and pro controller as a hat. */
+>  static const unsigned int joycon_dpad_inputs_jc[] = {
+>  	BTN_DPAD_UP, BTN_DPAD_DOWN, BTN_DPAD_LEFT, BTN_DPAD_RIGHT,
+> +	0 /* 0 signals end of array */
+>  };
+>  
+>  static int joycon_input_create(struct joycon_ctlr *ctlr)
+> -- 
+> 2.35.1
 > 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Thanks.
 
-yamllint warnings/errors:
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.example.dtb: camera@36: Unevaluated properties are not allowed ('port' was unexpected)
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+-- 
+Dmitry
