@@ -2,97 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3C7CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 21:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 840DBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 21:55:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231705AbiGLVzC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 17:55:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50644 "EHLO
+        id S233008AbiGLVzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 17:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231283AbiGLVyz (ORCPT
+        with ESMTP id S231626AbiGLVzO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 17:54:55 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A60045F63;
-        Tue, 12 Jul 2022 14:54:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657662894; x=1689198894;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HhwEjN2ERwxDUrhvzVEgnEFaPTQUKvOj+QMZ2916s+s=;
-  b=T2DAap0fgbVM9AmNpyc+PPHIy4YWOT1Y45FgeOJ9LnwwF55eQUWXkVkE
-   0KJAAONOg3JXgj7FpCJiuCgwGh8J94ZyO2DgcPjRskeXXLuZlblpwlpeC
-   Ze00uALAhaSXNIuZLVMx8hUvEgjwIqT2W1jW3Y9QKCP/dLQ0rdmtAokMA
-   KWzG96sY8JO4+JT9mL7biWi5ngyCRb8QaKv5OHR2qE826v7NxkKAlfp6A
-   rFaEEZTF3PLmr9aE8v2XjThs0GbukP2CeczHfHNOb8aQtVNn1rP8CDJ7O
-   6Noh1yOfSBysE/Aj8wSaoCKNluhDSPbeapxXi5ydepzu2httBaBpuHsEJ
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="371363578"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="371363578"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 14:54:53 -0700
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="772026699"
-Received: from silpixa00400314.ir.intel.com (HELO silpixa00400314) ([10.237.222.76])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 14:54:51 -0700
-Date:   Tue, 12 Jul 2022 22:54:44 +0100
-From:   Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org, Adam Guerin <adam.guerin@intel.com>,
-        Tomasz Kowallik <tomaszx.kowalik@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Fiona Trahe <fiona.trahe@intel.com>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH next 2/3] Documentation: qat: rewrite description
-Message-ID: <Ys3tpPBUS+ujnaoy@silpixa00400314>
-References: <20220712092954.142027-1-bagasdotme@gmail.com>
- <20220712092954.142027-3-bagasdotme@gmail.com>
+        Tue, 12 Jul 2022 17:55:14 -0400
+Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A69550709
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 14:55:12 -0700 (PDT)
+Received: from spock.localnet (unknown [83.148.33.151])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by vulcan.natalenko.name (Postfix) with ESMTPSA id 02324F92620;
+        Tue, 12 Jul 2022 23:55:06 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
+        s=dkim-20170712; t=1657662907;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aPbSpp/ipo3YS/Xfdmee6X2Ppr9vPQwAusfYqW6orH0=;
+        b=XgYe4cf5/Gr/94EthsKyiSMm2wJUNbiqaTErGeVBrcqrRkMkLw6ahb9oj4lIbvkjMIAH3/
+        WSDyYFOXFd0kviH4zCkHxvfro2EYXM5SdkRSAtpV0N05MzecuJAV5NwTjYXa80JcVkZ1fu
+        6pyT/gCgg+xy3s741UMT75/EVc4Xogs=
+From:   Oleksandr Natalenko <oleksandr@natalenko.name>
+To:     "Yuan, Perry" <Perry.Yuan@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Huang, Ray" <Ray.Huang@amd.com>,
+        "Limonciello, Mario" <mario.limonciello@amd.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [REGRESSION] amd-pstate doesn't work since v5.18.11
+Date:   Tue, 12 Jul 2022 23:55:05 +0200
+Message-ID: <6967031.z0QvQKZeIK@natalenko.name>
+In-Reply-To: <4c9e3a4c-40b2-3ce9-da88-ad507769658b@amd.com>
+References: <3559249.JlDtxWtqDm@natalenko.name> <2414945.NDPYyZybsh@natalenko.name> <4c9e3a4c-40b2-3ce9-da88-ad507769658b@amd.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712092954.142027-3-bagasdotme@gmail.com>
-Organization: Intel Research and Development Ireland Ltd - Co. Reg. #308263 -
- Collinstown Industrial Park, Leixlip, County Kildare - Ireland
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 04:29:53PM +0700, Bagas Sanjaya wrote:
-> The sysfs description contains redundancy on returned and allowed values
-> list, due to the described sysfs is read-write. Rewrite.
-> 
-> Cc: Adam Guerin <adam.guerin@intel.com>
-> Cc: Tomasz Kowallik <tomaszx.kowalik@intel.com>
-> Cc: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-> Cc: Wojciech Ziemba <wojciech.ziemba@intel.com>
-> Cc: Fiona Trahe <fiona.trahe@intel.com>
-> Cc: linux-crypto@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
-> ---
->  Documentation/ABI/testing/sysfs-driver-qat | 34 +++++++---------------
->  1 file changed, 11 insertions(+), 23 deletions(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-driver-qat b/Documentation/ABI/testing/sysfs-driver-qat
-> index 43e081ec22cc4a..be6c200abd783c 100644
-> --- a/Documentation/ABI/testing/sysfs-driver-qat
-> +++ b/Documentation/ABI/testing/sysfs-driver-qat
-> @@ -2,18 +2,14 @@ What:		/sys/bus/pci/devices/<BDF>/qat/state
->  Date:		June 2022
->  KernelVersion:	5.20
->  Contact:	qat-linux@intel.com
-> -Description:	Reports the current state of the QAT device and allows to
-> -		change it.
-> +Description:	(RW) Reports the current state of the QAT device. Write to
-> +		the file to initalize and start the device or to stop it.
-                            ^^^^^^^^^
-Typo: initalize.
-It is possible just to say: "Write to the file to start or stop the
-device".
+Hello.
 
-Regards,
+On =C3=BAter=C3=BD 12. =C4=8Dervence 2022 22:07:15 CEST Limonciello, Mario =
+wrote:
+> See if this helps out:
+>=20
+> diff --git a/arch/x86/kernel/acpi/cppc.c b/arch/x86/kernel/acpi/cppc.c
+> index 734b96454896..88a81e6b9228 100644
+> --- a/arch/x86/kernel/acpi/cppc.c
+> +++ b/arch/x86/kernel/acpi/cppc.c
+> @@ -16,6 +16,13 @@ bool cpc_supported_by_cpu(void)
+>          switch (boot_cpu_data.x86_vendor) {
+>          case X86_VENDOR_AMD:
+>          case X86_VENDOR_HYGON:
+> +               if (boot_cpu_data.x86 =3D=3D 0x19 &&
+> +                   ((boot_cpu_data.x86_model >=3D 0x00 &&=20
+> boot_cpu_data.x86_model <=3D 0x0f) ||
+> +                   (boot_cpu_data.x86_model >=3D 0x20 &&=20
+> boot_cpu_data.x86_model <=3D 0x2f)))
+> +                       return true;
+> +               else if (boot_cpu_data.x86 =3D=3D 0x17 &&
+> +                        boot_cpu_data.x86_model >=3D 0x70 &&=20
+> boot_cpu_data.x86_model <=3D 0x7f)
+> +                       return true;
+>                  return boot_cpu_has(X86_FEATURE_CPPC);
+>          }
+>          return false;
+>=20
+> If that works and no one has a better idea how to do it for these=20
+> systems I'll send out a proper proper patch tomorrow.
 
--- 
-Giovanni
+This patch (also mirrored here [1]) works for me, thanks.
+
+[1] https://codeberg.org/pf-kernel/linux/commit/cc5c57b8c349c85b81b44cf5fe2=
+d2577b947a7de
+
+=2D-=20
+Oleksandr Natalenko (post-factum)
+
+
