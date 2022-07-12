@@ -2,207 +2,505 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22252C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:00:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB78C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235156AbiGLTA4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:00:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46616 "EHLO
+        id S235169AbiGLTBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235299AbiGLS7a (ORCPT
+        with ESMTP id S235327AbiGLS7d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:59:30 -0400
-Received: from na01-obe.outbound.protection.outlook.com (mail-cusazon11020017.outbound.protection.outlook.com [52.101.61.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1C10F420B;
-        Tue, 12 Jul 2022 11:48:13 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eK1TOx/KrKDS7mgznhpbYmzBSGl6OVSZ7OOjsSsjwoJs/IH53XmQLYb2m5KXpuO8SuMkAZlZ/yihokyO3Ftg0K5ErXnujSlMA28wi8YPAaEhumfQyZZIzncjiW2I2IV+N4EdjSxLq6XyHv52X0fQMLOx3uSBwx4as9adfjq+RT4M15ZGERTrG21VyZONjJIBCsAv53/iXqv1AIc0AT337kKk0GIId2bAztFs3/h5iVts3NQ8FHTlb0SRH6vVthPPBPSQmpNxbapMLJ2g7RCAT4R+/jNfKWvXBCCWarwN7Mh1/8sxBINNapeQl8WnwVUEt7NK29AK2DTrD1ou2VcrWA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3NX1Cb+DeW9sFu/jfI3LOvtrY2pauxW8qWe716MTOL0=;
- b=mDxAM1V1bcTcjoP29qcvEDj+vyKaLfArApdXsDqjI0xXO/wdjJwoRARM97EjFfiWTvsLA43hS1dnsjY/TZSE1H/fp6XXrdZ8QT0wtxMYQwG0JesLdO83Gzh3zQq+H0/bJW/7sYFpRtxZ1YLozH3v9WST7GbXKRJU2Wz830YFwq4ybwB8ne2vPX4zKaLIVT0bEvYzY7Dv8Sn7zFeeSdTpaDIOlWsNlJcNASAb1WcyQP7Ww1xKItwWKvmCDA0d63ZBaMRVZy3sJm6t627xseUDOqdGJvZn8tWFQjt0olRTQHcihJxo3bapdPltGNeOQebM8Uuq8W3cfCUEQm2pYzD5rg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3NX1Cb+DeW9sFu/jfI3LOvtrY2pauxW8qWe716MTOL0=;
- b=EGJO/bXdpqGpqrAm2YdbVCjRbsuundMCatl0SH2nE/pb8WamtIIWdyxz0ZSEEW1C8ewr7M7GIZjspOEVEz419oyde/sn887c4S5QmtWwUZXUTFpfAGYEnclxzmV08YUpBD+flHO6NIPxMVN5H2hM9V9F7tC42zwSLKas4SHBfqg=
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com (2603:10b6:510:1db::16)
- by PH7PR21MB3260.namprd21.prod.outlook.com (2603:10b6:510:1d8::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.4; Tue, 12 Jul
- 2022 18:48:09 +0000
-Received: from PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::88cc:9591:8584:8aa9]) by PH7PR21MB3263.namprd21.prod.outlook.com
- ([fe80::88cc:9591:8584:8aa9%6]) with mapi id 15.20.5458.004; Tue, 12 Jul 2022
- 18:48:09 +0000
-From:   Long Li <longli@microsoft.com>
-To:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>
-CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: RE: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Thread-Topic: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Thread-Index: AQHYgSXY1SrlgLfyyEyOddi806gORa14hJeAgAK137A=
-Date:   Tue, 12 Jul 2022 18:48:09 +0000
-Message-ID: <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-4-git-send-email-longli@linuxonhyperv.com>
- <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
-In-Reply-To: <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=faf0d1ed-5957-4b81-9b99-444f4042ea6f;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-07-09T22:46:20Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a1ca1013-8738-4906-79f2-08da643710d5
-x-ms-traffictypediagnostic: PH7PR21MB3260:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MlxXk4rOAkfDvS/RJoag4wTFpn1l66k+IryenvpYrC+Vp9UZJj8vmghjtnveMuTJ6US3qcAwNRsO3P9s+Fvh5dcQk3p2ul4jRMFBa4Eyfl4Owa+NJOz7tyGgbb0LVnJZCAhe4m3GTQCwnzwbc/atXeK7NAZtBMvJVX2f7LC80ypOB+FEYgNnSliom5ml9T8p8DyvDaZvwilYmo9UISyTb5x5nwRuh9Qxf8ZjhAGc8jnTDwMcfiZklB04sTZlu4MMYfEYIf4uGXboD2fV8NIegsBfmou8ySMaGU0WxKM1o6ePUfXPVMYiWFXHTE1i2xTKDD0ZL6kogakNI2ACmpo25bm4Uufzqxy2hmVOtdLCqHHebwiOlVHtc6+t5XNcR7ITUY80n8lRoqvTABM2sRcFSstjuNxPy0VmvW5VVJO7t0quHCpgAxRS+7pE22tM4ZzHMlOlb0tmCKSJvmP9FZynZUxX+PPADnFmNxlfY+VWKZ27J7NfAjeZ6Msaj5pWf4bbzrO0CCnpF1BsSe4pK/A1FFuDe4Uay7TXdRLjzNFfdNSjMnGHs9iz1Ox77j+YE9Ae5Qw5ib6cY5Ah6F6lvXHi7eHUEBhWagfz+fFbSXWCUKBaUTfSoFWyS7Zv7/vim+VwRIzgZ3CpTjbICPJXStYREKAKtchmxpVRcBF/0ZgvgI8ofBY/yT1JophzKSfCV3WuzYe3cb0Pld5dPzr35xsHAMdZTWC2IJMXPt06kzAjONcev0uCjtPBocWUs1T5yY6cA7P/kx79FQP43hLBLTmLH9icidnsBJzUOLgAWTuQy102G1ZbZDrytA6RAks0PIpz+BpqGxMmJ9aYLOUbjm+eHGiKIBeLPvqeoNv4T0RjNn7OSkCUekuzD0zQHfco8mBq
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR21MB3263.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(346002)(376002)(396003)(366004)(451199009)(38100700002)(64756008)(66556008)(186003)(6636002)(33656002)(83380400001)(82950400001)(82960400001)(66446008)(110136005)(54906003)(122000001)(66946007)(10290500003)(71200400001)(4326008)(8676002)(921005)(86362001)(7696005)(26005)(41300700001)(478600001)(55016003)(8990500004)(52536014)(9686003)(6506007)(2906002)(38070700005)(76116006)(7416002)(5660300002)(66476007)(8936002)(316002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?eJV7XMRrvET/7naDGjAl020wMv2/IrUvqUBwhziVZ8f7IjsQAPzY7l2xFTfX?=
- =?us-ascii?Q?iG3FuJImgyGJ/jNwMHJ8GiPyCy4szGWZibnwtcgkELQFt4VAnHAXbG0hYwZn?=
- =?us-ascii?Q?xicVFj40293GAmoRTP5LStwxBLkcz+uR8iyjIY3Jip+2AV2UjvLRThTQ6B9n?=
- =?us-ascii?Q?D7TaiNWsRzWpLk+tyLNjMpFy5Heoz1WW7sM/qxHv9x7cOMyad7InDE1aTqiv?=
- =?us-ascii?Q?OBDGJRpNH1WFOyLN3JWKdSIf4AW8tCyryz81R0/xEkw20f7m/0W/pVlTfdPv?=
- =?us-ascii?Q?Yrd/c4iCw0NmwRf9mVq77YfFXSarbPy2DfIIp2mK/1KKwYFY32CAer7n72k6?=
- =?us-ascii?Q?85bvvcIoguOiftiISdV9VYdWs7L/w/OwetXO6PAhaROROXq2q9YbaHeRyWCY?=
- =?us-ascii?Q?vIXneu1Mc76GNqbrjvUhBhAHnvTP7dUta0Cd20Q4BHUCuefW06I+T41BMN0l?=
- =?us-ascii?Q?ogSLnQIFyKtpI4PcNglCeqW8gE8qGtBuBv6Hs7vYKvQx1rQ+kxTA0wf1MbCz?=
- =?us-ascii?Q?en8hOQ4cxpI/Sn55OjckOB20TwAImhPp6QijsV+f0EO7SuJbY9MC3j/m5X53?=
- =?us-ascii?Q?F/6ZGi42QozWhMYwQqgDmfKxKiX3EFA3uMZEyQyCFqN6zbKtbVK+/1l+BKso?=
- =?us-ascii?Q?ptN/VbrYY1l9+MPhKD+q8YNHE+PshMs8w17iTPDrz370LjkYtBJNRvs2FV73?=
- =?us-ascii?Q?O/y7yXNeTu7jYwk6+C/SguelF7mi44jRIeiqh9HAFZDH1N51aWwle8WM5AnQ?=
- =?us-ascii?Q?dDGn48sP2vMc2C6VLY6jZUAMFbRGeoM3w/HGbIiHYP4VgUPuT5bsLcBJCM6M?=
- =?us-ascii?Q?gc5zg6f7Fk2biunkgCpVIL3GJ4vnPrZj6Bv9HtSlA4LBCHGKMk4un3dHq4sg?=
- =?us-ascii?Q?AgGJ06lnr9mSt/GeR9T6AWwyMzW5D34PAgZJalslYADPUQ3iJ8V7S+uADPGE?=
- =?us-ascii?Q?/6mMnyW7kYV+6We5oIRvPNSJB1E6G9qyewK919errimOpC02+gObl0VQVNny?=
- =?us-ascii?Q?Lsqgp9lZRLf1nbikOR9KkKcCyeQT2nvrJjV2dPuFB0OCzE5QgQGTYK5BCMIf?=
- =?us-ascii?Q?gCJZYzBC9hgLFj9ZtHqyFJ3grgirwYS0kkzMkp4k8ANeIiRhlbrFDHeqRmoQ?=
- =?us-ascii?Q?HpYIPL7f50HjEWqv8/vLf+qIahQC0WG8HcZSV/52twU5C5l7TbtphAVPYQk6?=
- =?us-ascii?Q?MtufdqmVK7SamasY3sZKiLyEXAbLCZ9hdKLBFcrqW0WeCW5jq+DGnEwXFI6p?=
- =?us-ascii?Q?gdfH7k6QYKNOP2qayn98PlEJyslwTNyl+EQHV4GNiBVhB//rHJkU/l93LBH+?=
- =?us-ascii?Q?aixbXRHVNBDwQghC1viqYfAH/iS/UlzJYkYuUOZZxTJjhvt1BVEGTu0k3Neh?=
- =?us-ascii?Q?se4BoSB9H0uT0pElheqTyWPMZtBQ/ulazCvToEtcKaleP1uJ5RwKyqoAKTYl?=
- =?us-ascii?Q?hBadONAoh8tAQo+uQvn2eNXLtTG9r0tOhJQtWprqmYuRQHUJ5bP2hzZcAlkb?=
- =?us-ascii?Q?oprTTG6YjwqHnCJJarp20J/DtESsBEHrdKSb7p0cMwaVYlBIZlBkaidbc9o/?=
- =?us-ascii?Q?fv8ZAr9ZqfXNN/fSIL/rWldLFl4+9Zdx+Z32qQjE?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 12 Jul 2022 14:59:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05548F4223;
+        Tue, 12 Jul 2022 11:48:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F17E3B81BAB;
+        Tue, 12 Jul 2022 18:48:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65D20C341C8;
+        Tue, 12 Jul 2022 18:48:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657651693;
+        bh=QmO7M50m10bTkfgb27hLURl8adAuWwBCd3Rqa0fMExs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dfYNreqQH9aJR9UqlSgPOgmMFFt3V735lU+WBOH0fzeLLqTgpc4LZt7NAy6Iat1nj
+         awNC/rizLXYuoBOqWGZJOeOXP6+OwoyKURyjfj6HHGOhx1wd98JSkl9u5iH7US29tF
+         RoUYRNDpmgt6LBGbRYVdnG5ay9xTc9QKqSNXzCXg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andi Kleen <andi@firstfloor.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 09/78] objtool: Introduce CFI hash
+Date:   Tue, 12 Jul 2022 20:38:39 +0200
+Message-Id: <20220712183239.227821072@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
+References: <20220712183238.844813653@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR21MB3263.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1ca1013-8738-4906-79f2-08da643710d5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jul 2022 18:48:09.4126
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pgMaTkWCHqQ0D/mUOjfOsXvMVTPPjVnTEAf929tiVFz2dOCrRQFbVHa+nkqPJ5oI9Qi/LGWpoyWS0ZsTphGSZQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3260
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: RE: [Patch v4 03/12] net: mana: Handle vport sharing between dev=
-ices
->=20
-> > From: longli@linuxonhyperv.com <longli@linuxonhyperv.com>
-> > Sent: Wednesday, June 15, 2022 7:07 PM
-> > +void mana_uncfg_vport(struct mana_port_context *apc) {
-> > +	mutex_lock(&apc->vport_mutex);
-> > +	apc->vport_use_count--;
-> > +	WARN_ON(apc->vport_use_count < 0);
-> > +	mutex_unlock(&apc->vport_mutex);
-> > +}
-> > +EXPORT_SYMBOL_GPL(mana_uncfg_vport);
-> > +
-> > +int mana_cfg_vport(struct mana_port_context *apc, u32 protection_dom_i=
-d,
-> > +		   u32 doorbell_pg_id)
-> >  {
-> >  	struct mana_config_vport_resp resp =3D {};
-> >  	struct mana_config_vport_req req =3D {};
-> >  	int err;
-> >
-> > +	/* Ethernet driver and IB driver can't take the port at the same time=
- */
-> > +	mutex_lock(&apc->vport_mutex);
-> > +	if (apc->vport_use_count > 0) {
-> > +		mutex_unlock(&apc->vport_mutex);
-> > +		return -ENODEV;
-> Maybe -EBUSY is better?
+From: Peter Zijlstra <peterz@infradead.org>
 
-I agree with you, EBUSY is a better value. Will change this in v5.
+commit 8b946cc38e063f0f7bb67789478c38f6d7d457c9 upstream.
 
->=20
-> > @@ -563,9 +581,19 @@ static int mana_cfg_vport(struct
-> > mana_port_context *apc, u32 protection_dom_id,
-> >
-> >  	apc->tx_shortform_allowed =3D resp.short_form_allowed;
-> >  	apc->tx_vp_offset =3D resp.tx_vport_offset;
-> > +
-> > +	netdev_info(apc->ndev, "Configured vPort %llu PD %u DB %u\n",
-> > +		    apc->port_handle, protection_dom_id, doorbell_pg_id);
-> Should this be netdev_dbg()?
-> The log buffer can be flooded if there are many vPorts per VF PCI device =
-and
-> there are a lot of VFs.
+Andi reported that objtool on vmlinux.o consumes more memory than his
+system has, leading to horrific performance.
 
-The reason netdev_info () is used is that this message is important for tro=
-ubleshooting initial setup issues with Ethernet driver. We rely on user to =
-get this configured right to share the same hardware port between Ethernet =
-and RDMA driver. As far as I know, there is no easy way for a driver to "ta=
-ke over" an exclusive hardware resource from another driver.=20
+This is in part because we keep a struct instruction for every
+instruction in the file in-memory. Shrink struct instruction by
+removing the CFI state (which includes full register state) from it
+and demand allocating it.
 
-If it is acceptable that we have one such message for each opened Ethernet =
-port on the system, I suggest we keep it this way.
+Given most instructions don't actually change CFI state, there's lots
+of repetition there, so add a hash table to find previous CFI
+instances.
 
->=20
-> >  out:
-> > +	if (err) {
-> > +		mutex_lock(&apc->vport_mutex);
-> > +		apc->vport_use_count--;
-> > +		mutex_unlock(&apc->vport_mutex);
-> > +	}
->=20
-> Change this to the blelow?
->     if (err)
->         mana_uncfg_vport(apc);
->=20
-> > @@ -626,6 +654,9 @@ static int mana_cfg_vport_steering(struct
-> > mana_port_context *apc,
-> >  			   resp.hdr.status);
-> >  		err =3D -EPROTO;
-> >  	}
-> > +
-> > +	netdev_info(ndev, "Configured steering vPort %llu entries %u\n",
-> > +		    apc->port_handle, num_entries);
->=20
-> netdev_dbg()?
->=20
-> In general, the patch looks good to me.
-> Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Reduces memory consumption (and runtime) for processing an
+x86_64-allyesconfig:
+
+  pre:  4:40.84 real,   143.99 user,    44.18 sys,      30624988 mem
+  post: 2:14.61 real,   108.58 user,    25.04 sys,      16396184 mem
+
+Suggested-by: Andi Kleen <andi@firstfloor.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/r/20210624095147.756759107@infradead.org
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ tools/objtool/arch/x86/decode.c       |   20 +---
+ tools/objtool/check.c                 |  154 ++++++++++++++++++++++++++++++----
+ tools/objtool/include/objtool/arch.h  |    2 
+ tools/objtool/include/objtool/cfi.h   |    2 
+ tools/objtool/include/objtool/check.h |    2 
+ tools/objtool/orc_gen.c               |   15 ++-
+ 6 files changed, 160 insertions(+), 35 deletions(-)
+
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -684,34 +684,32 @@ const char *arch_ret_insn(int len)
+ 	return ret[len-1];
+ }
+ 
+-int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg)
++int arch_decode_hint_reg(u8 sp_reg, int *base)
+ {
+-	struct cfi_reg *cfa = &insn->cfi.cfa;
+-
+ 	switch (sp_reg) {
+ 	case ORC_REG_UNDEFINED:
+-		cfa->base = CFI_UNDEFINED;
++		*base = CFI_UNDEFINED;
+ 		break;
+ 	case ORC_REG_SP:
+-		cfa->base = CFI_SP;
++		*base = CFI_SP;
+ 		break;
+ 	case ORC_REG_BP:
+-		cfa->base = CFI_BP;
++		*base = CFI_BP;
+ 		break;
+ 	case ORC_REG_SP_INDIRECT:
+-		cfa->base = CFI_SP_INDIRECT;
++		*base = CFI_SP_INDIRECT;
+ 		break;
+ 	case ORC_REG_R10:
+-		cfa->base = CFI_R10;
++		*base = CFI_R10;
+ 		break;
+ 	case ORC_REG_R13:
+-		cfa->base = CFI_R13;
++		*base = CFI_R13;
+ 		break;
+ 	case ORC_REG_DI:
+-		cfa->base = CFI_DI;
++		*base = CFI_DI;
+ 		break;
+ 	case ORC_REG_DX:
+-		cfa->base = CFI_DX;
++		*base = CFI_DX;
+ 		break;
+ 	default:
+ 		return -1;
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -6,6 +6,7 @@
+ #include <string.h>
+ #include <stdlib.h>
+ #include <inttypes.h>
++#include <sys/mman.h>
+ 
+ #include <arch/elf.h>
+ #include <objtool/builtin.h>
+@@ -27,7 +28,11 @@ struct alternative {
+ 	bool skip_orig;
+ };
+ 
+-struct cfi_init_state initial_func_cfi;
++static unsigned long nr_cfi, nr_cfi_reused, nr_cfi_cache;
++
++static struct cfi_init_state initial_func_cfi;
++static struct cfi_state init_cfi;
++static struct cfi_state func_cfi;
+ 
+ struct instruction *find_insn(struct objtool_file *file,
+ 			      struct section *sec, unsigned long offset)
+@@ -267,6 +272,78 @@ static void init_insn_state(struct insn_
+ 		state->noinstr = sec->noinstr;
+ }
+ 
++static struct cfi_state *cfi_alloc(void)
++{
++	struct cfi_state *cfi = calloc(sizeof(struct cfi_state), 1);
++	if (!cfi) {
++		WARN("calloc failed");
++		exit(1);
++	}
++	nr_cfi++;
++	return cfi;
++}
++
++static int cfi_bits;
++static struct hlist_head *cfi_hash;
++
++static inline bool cficmp(struct cfi_state *cfi1, struct cfi_state *cfi2)
++{
++	return memcmp((void *)cfi1 + sizeof(cfi1->hash),
++		      (void *)cfi2 + sizeof(cfi2->hash),
++		      sizeof(struct cfi_state) - sizeof(struct hlist_node));
++}
++
++static inline u32 cfi_key(struct cfi_state *cfi)
++{
++	return jhash((void *)cfi + sizeof(cfi->hash),
++		     sizeof(*cfi) - sizeof(cfi->hash), 0);
++}
++
++static struct cfi_state *cfi_hash_find_or_add(struct cfi_state *cfi)
++{
++	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
++	struct cfi_state *obj;
++
++	hlist_for_each_entry(obj, head, hash) {
++		if (!cficmp(cfi, obj)) {
++			nr_cfi_cache++;
++			return obj;
++		}
++	}
++
++	obj = cfi_alloc();
++	*obj = *cfi;
++	hlist_add_head(&obj->hash, head);
++
++	return obj;
++}
++
++static void cfi_hash_add(struct cfi_state *cfi)
++{
++	struct hlist_head *head = &cfi_hash[hash_min(cfi_key(cfi), cfi_bits)];
++
++	hlist_add_head(&cfi->hash, head);
++}
++
++static void *cfi_hash_alloc(unsigned long size)
++{
++	cfi_bits = max(10, ilog2(size));
++	cfi_hash = mmap(NULL, sizeof(struct hlist_head) << cfi_bits,
++			PROT_READ|PROT_WRITE,
++			MAP_PRIVATE|MAP_ANON, -1, 0);
++	if (cfi_hash == (void *)-1L) {
++		WARN("mmap fail cfi_hash");
++		cfi_hash = NULL;
++	}  else if (stats) {
++		printf("cfi_bits: %d\n", cfi_bits);
++	}
++
++	return cfi_hash;
++}
++
++static unsigned long nr_insns;
++static unsigned long nr_insns_visited;
++
+ /*
+  * Call the arch-specific instruction decoder for all the instructions and add
+  * them to the global instruction list.
+@@ -277,7 +354,6 @@ static int decode_instructions(struct ob
+ 	struct symbol *func;
+ 	unsigned long offset;
+ 	struct instruction *insn;
+-	unsigned long nr_insns = 0;
+ 	int ret;
+ 
+ 	for_each_sec(file, sec) {
+@@ -303,7 +379,6 @@ static int decode_instructions(struct ob
+ 			memset(insn, 0, sizeof(*insn));
+ 			INIT_LIST_HEAD(&insn->alts);
+ 			INIT_LIST_HEAD(&insn->stack_ops);
+-			init_cfi_state(&insn->cfi);
+ 
+ 			insn->sec = sec;
+ 			insn->offset = offset;
+@@ -1239,7 +1314,6 @@ static int handle_group_alt(struct objto
+ 		memset(nop, 0, sizeof(*nop));
+ 		INIT_LIST_HEAD(&nop->alts);
+ 		INIT_LIST_HEAD(&nop->stack_ops);
+-		init_cfi_state(&nop->cfi);
+ 
+ 		nop->sec = special_alt->new_sec;
+ 		nop->offset = special_alt->new_off + special_alt->new_len;
+@@ -1648,10 +1722,11 @@ static void set_func_state(struct cfi_st
+ 
+ static int read_unwind_hints(struct objtool_file *file)
+ {
++	struct cfi_state cfi = init_cfi;
+ 	struct section *sec, *relocsec;
+-	struct reloc *reloc;
+ 	struct unwind_hint *hint;
+ 	struct instruction *insn;
++	struct reloc *reloc;
+ 	int i;
+ 
+ 	sec = find_section_by_name(file->elf, ".discard.unwind_hints");
+@@ -1689,19 +1764,24 @@ static int read_unwind_hints(struct objt
+ 		insn->hint = true;
+ 
+ 		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
+-			set_func_state(&insn->cfi);
++			insn->cfi = &func_cfi;
+ 			continue;
+ 		}
+ 
+-		if (arch_decode_hint_reg(insn, hint->sp_reg)) {
++		if (insn->cfi)
++			cfi = *(insn->cfi);
++
++		if (arch_decode_hint_reg(hint->sp_reg, &cfi.cfa.base)) {
+ 			WARN_FUNC("unsupported unwind_hint sp base reg %d",
+ 				  insn->sec, insn->offset, hint->sp_reg);
+ 			return -1;
+ 		}
+ 
+-		insn->cfi.cfa.offset = bswap_if_needed(hint->sp_offset);
+-		insn->cfi.type = hint->type;
+-		insn->cfi.end = hint->end;
++		cfi.cfa.offset = bswap_if_needed(hint->sp_offset);
++		cfi.type = hint->type;
++		cfi.end = hint->end;
++
++		insn->cfi = cfi_hash_find_or_add(&cfi);
+ 	}
+ 
+ 	return 0;
+@@ -2552,13 +2632,18 @@ static int propagate_alt_cfi(struct objt
+ 	if (!insn->alt_group)
+ 		return 0;
+ 
++	if (!insn->cfi) {
++		WARN("CFI missing");
++		return -1;
++	}
++
+ 	alt_cfi = insn->alt_group->cfi;
+ 	group_off = insn->offset - insn->alt_group->first_insn->offset;
+ 
+ 	if (!alt_cfi[group_off]) {
+-		alt_cfi[group_off] = &insn->cfi;
++		alt_cfi[group_off] = insn->cfi;
+ 	} else {
+-		if (memcmp(alt_cfi[group_off], &insn->cfi, sizeof(struct cfi_state))) {
++		if (cficmp(alt_cfi[group_off], insn->cfi)) {
+ 			WARN_FUNC("stack layout conflict in alternatives",
+ 				  insn->sec, insn->offset);
+ 			return -1;
+@@ -2609,9 +2694,14 @@ static int handle_insn_ops(struct instru
+ 
+ static bool insn_cfi_match(struct instruction *insn, struct cfi_state *cfi2)
+ {
+-	struct cfi_state *cfi1 = &insn->cfi;
++	struct cfi_state *cfi1 = insn->cfi;
+ 	int i;
+ 
++	if (!cfi1) {
++		WARN("CFI missing");
++		return false;
++	}
++
+ 	if (memcmp(&cfi1->cfa, &cfi2->cfa, sizeof(cfi1->cfa))) {
+ 
+ 		WARN_FUNC("stack state mismatch: cfa1=%d%+d cfa2=%d%+d",
+@@ -2796,7 +2886,7 @@ static int validate_branch(struct objtoo
+ 			   struct instruction *insn, struct insn_state state)
+ {
+ 	struct alternative *alt;
+-	struct instruction *next_insn;
++	struct instruction *next_insn, *prev_insn = NULL;
+ 	struct section *sec;
+ 	u8 visited;
+ 	int ret;
+@@ -2825,15 +2915,25 @@ static int validate_branch(struct objtoo
+ 
+ 			if (insn->visited & visited)
+ 				return 0;
++		} else {
++			nr_insns_visited++;
+ 		}
+ 
+ 		if (state.noinstr)
+ 			state.instr += insn->instr;
+ 
+-		if (insn->hint)
+-			state.cfi = insn->cfi;
+-		else
+-			insn->cfi = state.cfi;
++		if (insn->hint) {
++			state.cfi = *insn->cfi;
++		} else {
++			/* XXX track if we actually changed state.cfi */
++
++			if (prev_insn && !cficmp(prev_insn->cfi, &state.cfi)) {
++				insn->cfi = prev_insn->cfi;
++				nr_cfi_reused++;
++			} else {
++				insn->cfi = cfi_hash_find_or_add(&state.cfi);
++			}
++		}
+ 
+ 		insn->visited |= visited;
+ 
+@@ -2997,6 +3097,7 @@ static int validate_branch(struct objtoo
+ 			return 1;
+ 		}
+ 
++		prev_insn = insn;
+ 		insn = next_insn;
+ 	}
+ 
+@@ -3252,10 +3353,20 @@ int check(struct objtool_file *file)
+ 	int ret, warnings = 0;
+ 
+ 	arch_initial_func_cfi_state(&initial_func_cfi);
++	init_cfi_state(&init_cfi);
++	init_cfi_state(&func_cfi);
++	set_func_state(&func_cfi);
++
++	if (!cfi_hash_alloc(1UL << (file->elf->symbol_bits - 3)))
++		goto out;
++
++	cfi_hash_add(&init_cfi);
++	cfi_hash_add(&func_cfi);
+ 
+ 	ret = decode_sections(file);
+ 	if (ret < 0)
+ 		goto out;
++
+ 	warnings += ret;
+ 
+ 	if (list_empty(&file->insn_list))
+@@ -3313,6 +3424,13 @@ int check(struct objtool_file *file)
+ 		warnings += ret;
+ 	}
+ 
++	if (stats) {
++		printf("nr_insns_visited: %ld\n", nr_insns_visited);
++		printf("nr_cfi: %ld\n", nr_cfi);
++		printf("nr_cfi_reused: %ld\n", nr_cfi_reused);
++		printf("nr_cfi_cache: %ld\n", nr_cfi_cache);
++	}
++
+ out:
+ 	/*
+ 	 *  For now, don't fail the kernel build on fatal warnings.  These
+--- a/tools/objtool/include/objtool/arch.h
++++ b/tools/objtool/include/objtool/arch.h
+@@ -85,7 +85,7 @@ unsigned long arch_dest_reloc_offset(int
+ const char *arch_nop_insn(int len);
+ const char *arch_ret_insn(int len);
+ 
+-int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg);
++int arch_decode_hint_reg(u8 sp_reg, int *base);
+ 
+ bool arch_is_retpoline(struct symbol *sym);
+ 
+--- a/tools/objtool/include/objtool/cfi.h
++++ b/tools/objtool/include/objtool/cfi.h
+@@ -7,6 +7,7 @@
+ #define _OBJTOOL_CFI_H
+ 
+ #include <arch/cfi_regs.h>
++#include <linux/list.h>
+ 
+ #define CFI_UNDEFINED		-1
+ #define CFI_CFA			-2
+@@ -24,6 +25,7 @@ struct cfi_init_state {
+ };
+ 
+ struct cfi_state {
++	struct hlist_node hash; /* must be first, cficmp() */
+ 	struct cfi_reg regs[CFI_NUM_REGS];
+ 	struct cfi_reg vals[CFI_NUM_REGS];
+ 	struct cfi_reg cfa;
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -59,7 +59,7 @@ struct instruction {
+ 	struct list_head alts;
+ 	struct symbol *func;
+ 	struct list_head stack_ops;
+-	struct cfi_state cfi;
++	struct cfi_state *cfi;
+ };
+ 
+ static inline bool is_static_jump(struct instruction *insn)
+--- a/tools/objtool/orc_gen.c
++++ b/tools/objtool/orc_gen.c
+@@ -13,13 +13,19 @@
+ #include <objtool/warn.h>
+ #include <objtool/endianness.h>
+ 
+-static int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi)
++static int init_orc_entry(struct orc_entry *orc, struct cfi_state *cfi,
++			  struct instruction *insn)
+ {
+-	struct instruction *insn = container_of(cfi, struct instruction, cfi);
+ 	struct cfi_reg *bp = &cfi->regs[CFI_BP];
+ 
+ 	memset(orc, 0, sizeof(*orc));
+ 
++	if (!cfi) {
++		orc->end = 0;
++		orc->sp_reg = ORC_REG_UNDEFINED;
++		return 0;
++	}
++
+ 	orc->end = cfi->end;
+ 
+ 	if (cfi->cfa.base == CFI_UNDEFINED) {
+@@ -162,7 +168,7 @@ int orc_create(struct objtool_file *file
+ 			int i;
+ 
+ 			if (!alt_group) {
+-				if (init_orc_entry(&orc, &insn->cfi))
++				if (init_orc_entry(&orc, insn->cfi, insn))
+ 					return -1;
+ 				if (!memcmp(&prev_orc, &orc, sizeof(orc)))
+ 					continue;
+@@ -186,7 +192,8 @@ int orc_create(struct objtool_file *file
+ 				struct cfi_state *cfi = alt_group->cfi[i];
+ 				if (!cfi)
+ 					continue;
+-				if (init_orc_entry(&orc, cfi))
++				/* errors are reported on the original insn */
++				if (init_orc_entry(&orc, cfi, insn))
+ 					return -1;
+ 				if (!memcmp(&prev_orc, &orc, sizeof(orc)))
+ 					continue;
+
+
