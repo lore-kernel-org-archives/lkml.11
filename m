@@ -2,174 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A50C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C064C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232960AbiGLLzB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
+        id S231332AbiGLLzH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:55:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232916AbiGLLyl (ORCPT
+        with ESMTP id S230482AbiGLLyn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:54:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EF4B5B521D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:54:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657626857;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=K/Y45MWLvtRZQAQMme1NWCA15wADRq0pOspGW9SWYbc=;
-        b=JvlkMhTpI6Qo8JKmSPvk/lfydowUSFpIrCwzd9TglBkMAf9Myr0G3h+Cq4uCEACrB1pIC3
-        ewRra4sOz9aKfVECOtsy/oC+ZQbE85fMSMCr4r6IgM1bfCRIxtr1qOhDkpwrHB5t9k7wyC
-        Lk351XqcClr59F/OLx/Ac9OGHaBtHBY=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-39-YpJng0QZM9KNts20wq2Svg-1; Tue, 12 Jul 2022 07:54:16 -0400
-X-MC-Unique: YpJng0QZM9KNts20wq2Svg-1
-Received: by mail-qk1-f199.google.com with SMTP id t203-20020a3746d4000000b006af1d3e8068so7611363qka.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:54:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=K/Y45MWLvtRZQAQMme1NWCA15wADRq0pOspGW9SWYbc=;
-        b=vI3TpfySB1JZ0Q88ITytnpmmcxEv/gd4IzdvVOFj/J0XxYQU7kUckheND3SFH/ei6g
-         kI3eGsrrnh0gPyrtcbawV4Y1Z/n55pkVICUI0aucszlMil1Ep/T6chrmkxcR1zFiDsri
-         j9GbVivjPcS7w0B2jGlNkqg7sz8rdbrCD5ZvsFzqn1l21iEoEATsT/b/uqvPCu4V9SOy
-         lcOnmLOOtWdphKXkZP0uVQEFM9tWY85PPYMBG6s3ZrSIhTsXxdv1CxRJTXfffOnqUxiC
-         Lhlh5XiHBblIqDheLDWkqyR3JvHr/WRQ2cIAN6ZYbHCf231/LLZxnj6vC5ouhuSS/4dw
-         ir+g==
-X-Gm-Message-State: AJIora+wNbvUwTke5Eto6vc7tDHtA9nw3FepBQWEbzs+FlfVZnIHUr77
-        8SpMQ8syQ7zyVyuf26JhGcTVRzxsddw2ON0wUfFPfB5XedmEuOQF/BjT+HrqwyTH2paLpP2sqa2
-        WQUBgf35iKCbtrmNirzdgYdwJ
-X-Received: by 2002:a05:620a:2991:b0:6b5:9921:6bb6 with SMTP id r17-20020a05620a299100b006b599216bb6mr3861379qkp.553.1657626856318;
-        Tue, 12 Jul 2022 04:54:16 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uttgtgZ9z3Hy3T6ZIJ02RXN1KbaDIKXQ51OXBaCi+NRy80KGVyzDnRNPyv/kz+rtPXo5jpVw==
-X-Received: by 2002:a05:620a:2991:b0:6b5:9921:6bb6 with SMTP id r17-20020a05620a299100b006b599216bb6mr3861367qkp.553.1657626856113;
-        Tue, 12 Jul 2022 04:54:16 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id v24-20020a05622a189800b0031e99798d70sm7529905qtc.29.2022.07.12.04.54.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 04:54:15 -0700 (PDT)
-Message-ID: <c3cf37f3dd115286db53df6fa175d7ee729610d4.camel@redhat.com>
-Subject: Re: [PATCH v3 10/25] KVM: selftests: Enable TSC scaling in evmcs
- selftest
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Jul 2022 14:54:11 +0300
-In-Reply-To: <20220708144223.610080-11-vkuznets@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
-         <20220708144223.610080-11-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Tue, 12 Jul 2022 07:54:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEDBB5D18;
+        Tue, 12 Jul 2022 04:54:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 970D0B817D2;
+        Tue, 12 Jul 2022 11:54:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB074C3411C;
+        Tue, 12 Jul 2022 11:54:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657626870;
+        bh=mk7BOWgJ4VH6FbDt+8GjApCsRZME6QDb/DCvbxMCmwo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=geVNNb8SiNl6yby+AGrDRCjyNKcAxb1vEly3F4x6k8b1XjNvyszk995dC1oegUkEO
+         5Gm3hN0Zi0LiL3K3Uc+PbIn/prQqMZw9rE9b9iAc5QRS4zowQiaQJz+CnDdJUR0TL1
+         qtLQ/CiRCGnHUkmFBfi4MchtxkcMaC37xwjRoKmefJ5MKfAzv5hS7xXw9VljvA0T9a
+         gsMJnWbk9HP5UaDpzOWYx03FhAw8N18EO8L0vcAX0sB60Ch2AbbvRdvo7y92gPjeRc
+         fhPbs8WMu+sG/HTqdgbrSZkQGp4oktVcc28r3kLcELb9qAHfUuSswhHg+1ZeP9p4ar
+         TD31Y6jhV8fAg==
+Date:   Tue, 12 Jul 2022 12:54:24 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Aishwarya TCV <Aishwarya.TCV@arm.com>
+Subject: Re: FVP: kernel BUG at arch/arm64/kernel/traps.c:497 - Internal
+ error: Oops - BUG: 0
+Message-ID: <Ys1g8PH4M2W7Z50U@sirena.org.uk>
+References: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Svukf3kgPdM45YjX"
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
+X-Cookie: I like your SNOOPY POSTER!!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
-> The updated Enlightened VMCS v1 definition enables TSC scaling, test
-> that SECONDARY_EXEC_TSC_SCALING can now be enabled.
-> 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  .../testing/selftests/kvm/x86_64/evmcs_test.c | 31 +++++++++++++++++--
->  1 file changed, 29 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-> index 8dda527cc080..80135b98dc3b 100644
-> --- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-> +++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-> @@ -18,6 +18,9 @@
->  
->  #include "vmx.h"
->  
-> +/* Test flags */
-> +#define HOST_HAS_TSC_SCALING BIT(0)
-> +
->  static int ud_count;
->  
->  static void guest_ud_handler(struct ex_regs *regs)
-> @@ -64,11 +67,14 @@ void l2_guest_code(void)
->         vmcall();
->         rdmsr_gs_base(); /* intercepted */
->  
-> +       /* TSC scaling */
-> +       vmcall();
-> +
->         /* Done, exit to L1 and never come back.  */
->         vmcall();
->  }
->  
-> -void guest_code(struct vmx_pages *vmx_pages)
-> +void guest_code(struct vmx_pages *vmx_pages, u64 test_flags)
->  {
->  #define L2_GUEST_STACK_SIZE 64
->         unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-> @@ -150,6 +156,18 @@ void guest_code(struct vmx_pages *vmx_pages)
->         GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
->         GUEST_SYNC(11);
->  
-> +       if (test_flags & HOST_HAS_TSC_SCALING) {
-> +               GUEST_ASSERT((rdmsr(MSR_IA32_VMX_PROCBASED_CTLS2) >> 32) &
-> +                            SECONDARY_EXEC_TSC_SCALING);
-> +               /* Try enabling TSC scaling */
-> +               vmwrite(SECONDARY_VM_EXEC_CONTROL, vmreadz(SECONDARY_VM_EXEC_CONTROL) |
-> +                       SECONDARY_EXEC_TSC_SCALING);
-> +               vmwrite(TSC_MULTIPLIER, 1);
-> +       }
-> +       GUEST_ASSERT(!vmresume());
-> +       GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
-> +       GUEST_SYNC(12);
-> +
->         /* Try enlightened vmptrld with an incorrect GPA */
->         evmcs_vmptrld(0xdeadbeef, vmx_pages->enlightened_vmcs);
->         GUEST_ASSERT(vmlaunch());
-> @@ -204,6 +222,7 @@ int main(int argc, char *argv[])
->         struct kvm_vm *vm;
->         struct kvm_run *run;
->         struct ucall uc;
-> +       u64 test_flags = 0;
->         int stage;
->  
->         vm = vm_create_with_one_vcpu(&vcpu, guest_code);
-> @@ -212,11 +231,19 @@ int main(int argc, char *argv[])
->         TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
->         TEST_REQUIRE(kvm_has_cap(KVM_CAP_HYPERV_ENLIGHTENED_VMCS));
->  
-> +       if ((kvm_get_feature_msr(MSR_IA32_VMX_PROCBASED_CTLS2) >> 32) &
-> +           SECONDARY_EXEC_TSC_SCALING) {
-> +               test_flags |= HOST_HAS_TSC_SCALING;
-> +               pr_info("TSC scaling is supported, adding to test\n");
-> +       } else {
-> +               pr_info("TSC scaling is not supported\n");
-> +       }
-> +
->         vcpu_set_hv_cpuid(vcpu);
->         vcpu_enable_evmcs(vcpu);
->  
->         vcpu_alloc_vmx(vm, &vmx_pages_gva);
-> -       vcpu_args_set(vcpu, 1, vmx_pages_gva);
-> +       vcpu_args_set(vcpu, 2, vmx_pages_gva, test_flags);
->  
->         vm_init_descriptor_tables(vm);
->         vcpu_init_descriptor_tables(vcpu);
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+--Svukf3kgPdM45YjX
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-	Maxim Levitsky
+On Tue, Jul 12, 2022 at 03:27:09PM +0530, Naresh Kamboju wrote:
 
+> FVP boot failed with linux next 20220712.
 
+I can't reproduce this, including with your kernel binary, which
+suggests that this an issue with your FVP usage and firmware.
 
+> Boot log:
+> Starting kernel ...
+>=20
+> [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd0f0]
+> [    0.000000] Linux version 5.19.0-rc6-next-20220711
+
+How are you invoking the FVP, what firmware are you using and how is it
+configured?
+
+> [    0.500709] kernel BUG at arch/arm64/kernel/traps.c:497!
+
+This is an undefined instruction, my first thought there would be that
+you have some feature enabled for the kernel which requires enablement
+at EL3 but your EL3 firmware is not configured to enable it.
+
+> [    0.503562]  el1_undef+0x30/0x60
+> [    0.503709]  el1h_64_sync_handler+0x84/0xd0
+> [    0.503811]  el1h_64_sync+0x64/0x68
+> [    0.503909]  net_sysctl_init+0x8/0x7c
+
+This is where the undef came from.
+
+--Svukf3kgPdM45YjX
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLNYO8ACgkQJNaLcl1U
+h9A6fAf/QTcF4jp1qJO2RoVPJc4OP7G1PJumqwmdm6mricWR87xdE7cbOZyK6pc7
+G35LXMALDibQRhBd+tGJUQjAtka3IMIe0STZGVpbNp4H+1PyZASk3vLfgwtWVTMP
+WQZt3HXC4ryTH/91yWSjDvJjoJkGRZlEStyqEgMUueBDUa6Cq5YuVlaKzFZW9VZ/
+xbrs8tDLaFeI2uc6b1WkjldvDY8D3cahLxlkQ9myBuR2iDnr2ZvCmBiGzcpAAKAd
++/HYI0Z9mlXz/dlcwxeoSkYqB8Cny7EevAQSCNMzhl3rUKVJ29RsqmChXLiIWtWd
+xOxOo0Nf1KT9hsIwn2GdAr3G/VSCGQ==
+=/ii2
+-----END PGP SIGNATURE-----
+
+--Svukf3kgPdM45YjX--
