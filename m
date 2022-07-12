@@ -2,73 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A03CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79047CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233278AbiGLNoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33562 "EHLO
+        id S233224AbiGLNoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:44:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232827AbiGLNof (ORCPT
+        with ESMTP id S233195AbiGLNoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:44:35 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B658388E;
-        Tue, 12 Jul 2022 06:44:34 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lj23n2KJXz1L8nk;
-        Tue, 12 Jul 2022 21:41:57 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 21:44:30 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Jul
- 2022 21:44:30 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-CC:     <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
-        <broonie@kernel.org>
-Subject: [PATCH -next 1/2] spi: microchip-core: fix UAF in mchp_corespi_remove()
-Date:   Tue, 12 Jul 2022 21:53:56 +0800
-Message-ID: <20220712135357.918997-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Jul 2022 09:44:08 -0400
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167311EEC9;
+        Tue, 12 Jul 2022 06:43:57 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id CBEEC5C00E9;
+        Tue, 12 Jul 2022 09:43:53 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Tue, 12 Jul 2022 09:43:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1657633433; x=1657719833; bh=U63C9vKYqb
+        yyQVXMseKFJL5UTTd7BOn74sOr5EP6CUM=; b=MbNJjCTtD2flfZ2hTQGRAS++5o
+        zqXTGq+UznE4x4bwhzAXZjGutckkgY/Ocyyp12HgJvDlzFepqFGYZmF17v/jSOl3
+        3y6O8G434Indwh4khZQygy/2vkyJC07tnXSyd/Vx5krsh36o6cvkjEw5bsnkBSjQ
+        +WwdrimTWSyVnlolxA8fK+LFP3TG2nJrFLuxZlTf5Ay1i9H9jvAnTsyslut8AEJf
+        paKgHwkmqbT722AYzHjvJxOrb06siNqlGBSGtp2XH7q5ga3x7Ar4nqYMksQGs/+z
+        utefzIMLPII2JDzvxZMRhyJjy2bRNcpCfdRDzshYGcUcJayFY0QlRHZEzR+w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657633433; x=1657719833; bh=U63C9vKYqbyyQVXMseKFJL5UTTd7
+        BOn74sOr5EP6CUM=; b=Fcd2Oxczk3F178MxWy3slksKMXCjtS3pStt7VwHyJlh9
+        oeOqT1jZd/vDQlkkKX3kAhe83Gg9aYxBjG/axX8utz7bV0TJSeEErpVHQUFi+yap
+        XvvBkBDp68N4OL3TJzF3Gyw2gs2fp2o7SfjmPrSp6bUYnvcOuiZYDDqMzkSOOyfV
+        YaEj6PzgQsNzziK8LroD4MwD8kyH578cBQt8EnaiL3iXu84fX+uh/LEnd3bYOsw/
+        WsN6sXdYKOjiAU4Jz25nXYuzyetSiWNofU0Qa5KNMOJZjCidMwwyMKu9CwyDAdBP
+        daNvSTap4BiXnTwOixZpK66RbYhDlHuxmjJt/Nq54A==
+X-ME-Sender: <xms:mXrNYnawa89djn2Npoqukaipkba9TJpnh5_1DObFIOwxlNgP2R4W_Q>
+    <xme:mXrNYmZCIlp4zfhQVE2_F1ACQgGXjolI1gZGgE9_s-aE0HO9uqWsNqThZreYa5GON
+    T5POOwJrJZ966PslIg>
+X-ME-Received: <xmr:mXrNYp9BpsmO-T4taMATWNCnFkgmwW1RGIK29VuWHLVAYCa-W4j_Yd92ZpN5jrrFgfuUVfYo7_EhhknZWlTc0_DQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejhedgieelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihtghh
+    ohcutehnuggvrhhsvghnuceothihtghhohesthihtghhohdrphhiiiiirgeqnecuggftrf
+    grthhtvghrnhepueettdetgfejfeffheffffekjeeuveeifeduleegjedutdefffetkeel
+    hfelleetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epthihtghhohesthihtghhohdrphhiiiiirg
+X-ME-Proxy: <xmx:mXrNYto2NuAWKLukp4n8J847sCqguZI03M9T3nS4jd6uV8Zcf6he8w>
+    <xmx:mXrNYir7mAXxN_dPy51uvn9g8MrP6YxZnF2MFHC8hEehvgh59CdxWw>
+    <xmx:mXrNYjRJaUv2FswiBsWi51t9h2PmjTujwJSge4EpZYzK59wWp8WfKg>
+    <xmx:mXrNYrku7qinzzomh975e7jnSRpwSH0frA_WiwjU7RHDFpJmgPEQgQ>
+Feedback-ID: i21f147d5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 12 Jul 2022 09:43:52 -0400 (EDT)
+Date:   Tue, 12 Jul 2022 07:43:51 -0600
+From:   Tycho Andersen <tycho@tycho.pizza>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        Christian Brauner <brauner@kernel.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: strange interaction between fuse + pidns
+Message-ID: <Ys16l6+iotX2JE33@netflix>
+References: <YrShFXRLtRt6T/j+@risky>
+ <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
+ <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
+ <YsyHMVLuT5U6mm+I@netflix>
+ <877d4jbabb.fsf@email.froward.int.ebiederm.org>
+ <Ysyp8Kbl8FzhApUb@netflix>
+ <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When using devm_spi_register_master(), the unregister function will
-be called in devres_release_all() which is called after ->remove(),
-so remove spi_unregister_master() andspi_master_put().
+On Mon, Jul 11, 2022 at 06:06:21PM -0500, Eric W. Biederman wrote:
+> Tycho Andersen <tycho@tycho.pizza> writes:
+> It is not different enough to change the semantics.  What I am aiming
+> for is having a dedicated flag indicating a task will exit, that
+> fatal_signal_pending can check.  And I intend to make that flag one way
+> so that once it is set it will never be cleared.
 
-Fixes: 9ac8d17694b6 ("spi: add support for microchip fpga spi controllers")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/spi/spi-microchip-core.c | 2 --
- 1 file changed, 2 deletions(-)
+Ok - how far out is that? I'd like to try to convince Miklos to land
+the fuse part of this fix now, but without the "look at shared signals
+too" patch, that fix is useless. I'm not married to my patch, but I
+would like to get this fixed somehow soon.
 
-diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
-index b3083075cd36..c26767343176 100644
---- a/drivers/spi/spi-microchip-core.c
-+++ b/drivers/spi/spi-microchip-core.c
-@@ -595,8 +595,6 @@ static int mchp_corespi_remove(struct platform_device *pdev)
- 	struct mchp_corespi *spi = spi_master_get_devdata(master);
- 
- 	mchp_corespi_disable_ints(spi);
--	spi_unregister_master(master);
--	spi_master_put(master);
- 	clk_disable_unprepare(spi->clk);
- 	mchp_corespi_disable(spi);
- 
--- 
-2.25.1
+> The other thing I have played with that might be relevant was removing
+> the explicit wait in zap_pid_ns_processes and simply not allowing wait
+> to reap the pid namespace init until all it's children had been reaped.
+> Essentially how we deal with the thread group leader for ordinary
+> processes.  Does that sound like it might help in the fuse case?
 
+No, the problem is that the wait code doesn't know to look in the
+right place, so waiting later still won't help.
+
+Tycho
