@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F371CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E53C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234185AbiGLSpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
+        id S233852AbiGLSpt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:45:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234291AbiGLSpK (ORCPT
+        with ESMTP id S233412AbiGLSpO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:45:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68A9DB2C2;
-        Tue, 12 Jul 2022 11:42:28 -0700 (PDT)
+        Tue, 12 Jul 2022 14:45:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A94ED7B9D;
+        Tue, 12 Jul 2022 11:42:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73EFDB81B96;
-        Tue, 12 Jul 2022 18:42:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF5DC3411C;
-        Tue, 12 Jul 2022 18:42:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DBE861ACC;
+        Tue, 12 Jul 2022 18:42:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF888C3411C;
+        Tue, 12 Jul 2022 18:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651346;
-        bh=XZe6mZDywRYuCTJTB4/Kt7NN12giWZC5dpHCMsUZakg=;
+        s=korg; t=1657651349;
+        bh=nHVd6Mwvbhq8aggXi24Iyi/JP3pj3Tu3p2pzPUSotaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fpsp3vEoFY6p3C7/Bx/o3sZVMacTkxc/99brFav3Kx62Z4eKfDPuqs249b6FAwHZa
-         vUzAL1sRII2Bm9OwY78mEDDIYTEZoaZoxXkH/x2NXNNf0eExjte1yXCIHAguJ146wO
-         LPeEvKSsEo6AWP0Rkyf1GOUVyjkOExD7gJqOv/jo=
+        b=2F21fH6VFkkEBO5yFhKFnd2Y3PWSiDBowHD0BZJMZs/E+TtsEJgyPLu5muJeN0loJ
+         DxalhcLGILOKNVJOv4ioZYHbOdBo6WW2pmxuqNMFEO69JF3bQbKCeSPrEqXen8OTPo
+         CKC18RQAc5XGCke6LF6vfs5h35XnTUCkBXPEuUaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Borislav Petkov <bp@alien8.de>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 041/130] objtool: Teach get_alt_entry() about more relocation types
-Date:   Tue, 12 Jul 2022 20:38:07 +0200
-Message-Id: <20220712183248.303544818@linuxfoundation.org>
+Subject: [PATCH 5.10 050/130] x86/retpoline: Remove unused replacement symbols
+Date:   Tue, 12 Jul 2022 20:38:16 +0200
+Message-Id: <20220712183248.743655363@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -54,92 +55,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 24ff652573754fe4c03213ebd26b17e86842feb3 upstream.
+commit 4fe79e710d9574a14993f8b4e16b7252da72d5e8 upstream.
 
-Occasionally objtool encounters symbol (as opposed to section)
-relocations in .altinstructions. Typically they are the alternatives
-written by elf_add_alternative() as encountered on a noinstr
-validation run on vmlinux after having already ran objtool on the
-individual .o files.
+Now that objtool no longer creates alternatives, these replacement
+symbols are no longer needed, remove them.
 
-Basically this is the counterpart of commit 44f6a7c0755d ("objtool:
-Fix seg fault with Clang non-section symbols"), because when these new
-assemblers (binutils now also does this) strip the section symbols,
-elf_add_reloc_to_insn() is forced to emit symbol based relocations.
-
-As such, teach get_alt_entry() about different relocation types.
-
-Fixes: 9bc0bb50727c ("objtool/x86: Rewrite retpoline thunk calls")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Reported-by: Borislav Petkov <bp@alien8.de>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/YVWUvknIEVNkPvnP@hirez.programming.kicks-ass.net
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120309.915051744@infradead.org
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/special.c |   32 +++++++++++++++++++++++++-------
- 1 file changed, 25 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/asm-prototypes.h |   10 --------
+ arch/x86/lib/retpoline.S              |   42 ----------------------------------
+ 2 files changed, 52 deletions(-)
 
---- a/tools/objtool/special.c
-+++ b/tools/objtool/special.c
-@@ -55,6 +55,24 @@ void __weak arch_handle_alternative(unsi
- {
- }
+--- a/arch/x86/include/asm/asm-prototypes.h
++++ b/arch/x86/include/asm/asm-prototypes.h
+@@ -24,14 +24,4 @@ extern void cmpxchg8b_emu(void);
+ 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
+ #include <asm/GEN-for-each-reg.h>
  
-+static bool reloc2sec_off(struct reloc *reloc, struct section **sec, unsigned long *off)
-+{
-+	switch (reloc->sym->type) {
-+	case STT_FUNC:
-+		*sec = reloc->sym->sec;
-+		*off = reloc->sym->offset + reloc->addend;
-+		return true;
-+
-+	case STT_SECTION:
-+		*sec = reloc->sym->sec;
-+		*off = reloc->addend;
-+		return true;
-+
-+	default:
-+		return false;
-+	}
-+}
-+
- static int get_alt_entry(struct elf *elf, struct special_entry *entry,
- 			 struct section *sec, int idx,
- 			 struct special_alt *alt)
-@@ -87,15 +105,12 @@ static int get_alt_entry(struct elf *elf
- 		WARN_FUNC("can't find orig reloc", sec, offset + entry->orig);
- 		return -1;
- 	}
--	if (orig_reloc->sym->type != STT_SECTION) {
--		WARN_FUNC("don't know how to handle non-section reloc symbol %s",
-+	if (!reloc2sec_off(orig_reloc, &alt->orig_sec, &alt->orig_off)) {
-+		WARN_FUNC("don't know how to handle reloc symbol type: %s",
- 			   sec, offset + entry->orig, orig_reloc->sym->name);
- 		return -1;
- 	}
- 
--	alt->orig_sec = orig_reloc->sym->sec;
--	alt->orig_off = orig_reloc->addend;
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_call_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
 -
- 	if (!entry->group || alt->new_len) {
- 		new_reloc = find_reloc_by_dest(elf, sec, offset + entry->new);
- 		if (!new_reloc) {
-@@ -112,8 +127,11 @@ static int get_alt_entry(struct elf *elf
- 		if (arch_is_retpoline(new_reloc->sym))
- 			return 1;
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_jmp_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
+-
+ #endif /* CONFIG_RETPOLINE */
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -41,36 +41,6 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
+ .endm
  
--		alt->new_sec = new_reloc->sym->sec;
--		alt->new_off = (unsigned int)new_reloc->addend;
-+		if (!reloc2sec_off(new_reloc, &alt->new_sec, &alt->new_off)) {
-+			WARN_FUNC("don't know how to handle reloc symbol type: %s",
-+				  sec, offset + entry->new, new_reloc->sym->name);
-+			return -1;
-+		}
- 
- 		/* _ASM_EXTABLE_EX hack */
- 		if (alt->new_off >= 0x7ffffff0)
+ /*
+- * This generates .altinstr_replacement symbols for use by objtool. They,
+- * however, must not actually live in .altinstr_replacement since that will be
+- * discarded after init, but module alternatives will also reference these
+- * symbols.
+- *
+- * Their names matches the "__x86_indirect_" prefix to mark them as retpolines.
+- */
+-.macro ALT_THUNK reg
+-
+-	.align 1
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_call_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	call	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_call_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_call_\reg)
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_jmp_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	jmp	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_jmp_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_jmp_\reg)
+-
+-.endm
+-
+-/*
+  * Despite being an assembler file we can't just use .irp here
+  * because __KSYM_DEPS__ only uses the C preprocessor and would
+  * only see one instance of "__x86_indirect_thunk_\reg" rather
+@@ -92,15 +62,3 @@ STACK_FRAME_NON_STANDARD(__x86_indirect_
+ #undef GEN
+ #define GEN(reg) EXPORT_THUNK(reg)
+ #include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) ALT_THUNK reg
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_call_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_jmp_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
 
 
