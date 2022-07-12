@@ -2,119 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC5CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:32:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8820AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:32:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231951AbiGLLcK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45704 "EHLO
+        id S232351AbiGLLcU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:32:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiGLLcE (ORCPT
+        with ESMTP id S232186AbiGLLcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:32:04 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F8620F61;
-        Tue, 12 Jul 2022 04:32:03 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lhz8p39RLzFpxp;
-        Tue, 12 Jul 2022 19:31:06 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 19:32:00 +0800
-Received: from [10.67.109.184] (10.67.109.184) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 19:32:00 +0800
-Subject: Re: [PATCH bpf-next 1/3] samples: bpf: Fix cross-compiling error by
- using bootstrap bpftool
-To:     Quentin Monnet <quentin@isovalent.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20220712030813.865410-1-pulehui@huawei.com>
- <20220712030813.865410-2-pulehui@huawei.com>
- <e1dd40cd-647c-10b4-53f9-a313e509474e@isovalent.com>
-From:   Pu Lehui <pulehui@huawei.com>
-Message-ID: <0c8f6067-0d5b-c1f7-2048-0ed4add76e73@huawei.com>
-Date:   Tue, 12 Jul 2022 19:32:00 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Tue, 12 Jul 2022 07:32:11 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB9B4F641
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:32:09 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id bh13so7303576pgb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:32:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oyv6ls5n5LtXZ+eFrLN0Kgir8c8eeeHctyKmi21xDfU=;
+        b=ImsYx5Ku+Ab8MqVb/ZzRH9XFV9El4m+WUWrW9VTtX2efmRpl6j584D6ilTaioM7GuY
+         3VWIEvaYsJqJnJa8kNtQyoKP3nRUjATbmmw20kX0OzdXf2ckm2LhB7D57Z1bD50XZDfH
+         PlJK0/nVT2+QXEt8i3DxTxerhl831H78bmZxc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Oyv6ls5n5LtXZ+eFrLN0Kgir8c8eeeHctyKmi21xDfU=;
+        b=3bQiKDHSnJsyoZU0oVCSv0vT+EOBQCF5Fjg5BxsDrlskvaOWH0NEnLa1DNn0pGJWzM
+         jGTc7ULpd+/EtUS1IVf2RKF86Kpe9wJLp0T1y9SDaFE5W2pleYRzKwBvmfd6WdzZ2NFt
+         8vxrsu+6asW88Xw4aLyZ1E75+n7y3jHTgzv2SpCeNuQHT27FO1qP967LZTbxJbkD/1Ju
+         DHsxPA1RpcZQ5PV5RjYImmP20jh0pqOK1LnWEVUSRGAvmlK2cFPBxkbMf5UJL6biJNQ4
+         zrxfx4p3Gq6f8F3PmYKjKc1BBgZk6qdNLP3VXtXqKzuW147KmDXA62w1Fc2qGCCE2Bx4
+         Hzww==
+X-Gm-Message-State: AJIora+Qwa1AwFlFTHL0HY6A8reu5bWAdW2aQ+srNOd6OtnRzIFosO+L
+        QURpjTBGfl4EQHNlZVgZ3FnfNw==
+X-Google-Smtp-Source: AGRyM1vNTI7P5FFRL8K9PK2KWyhjO0NXooJUOhB6blvPca1HMAd1tLyTL0bTIb9nIiSlIRA9J2QFCg==
+X-Received: by 2002:a63:2c89:0:b0:411:66bf:9efc with SMTP id s131-20020a632c89000000b0041166bf9efcmr19639098pgs.589.1657625528922;
+        Tue, 12 Jul 2022 04:32:08 -0700 (PDT)
+Received: from wenstp920.tpe.corp.google.com ([2401:fa00:1:10:d1a9:ca7d:e86f:cf6f])
+        by smtp.gmail.com with ESMTPSA id m12-20020a170902f64c00b0016bf9437766sm6527972plg.261.2022.07.12.04.32.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 04:32:02 -0700 (PDT)
+From:   Chen-Yu Tsai <wenst@chromium.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Cc:     Chen-Yu Tsai <wenst@chromium.org>, linux-clk@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
+        <nfraprado@collabora.com>
+Subject: [PATCH 0/2] clk: Fix CLK_OPS_PARENT_ENABLE and runtime PM
+Date:   Tue, 12 Jul 2022 19:31:05 +0800
+Message-Id: <20220712113107.871623-1-wenst@chromium.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
 MIME-Version: 1.0
-In-Reply-To: <e1dd40cd-647c-10b4-53f9-a313e509474e@isovalent.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.109.184]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Mike, Stephen,
+
+Here are a couple fixes for the clk core. They are unrelated but overlap
+in diff context, so I'm sending them together.
+
+Patch 1 makes the clk core honor CLK_OPS_PARENT_ENABLE for clk gate ops.
+Without this, dumping clk_summary on the MT8192 would cause the system
+to hang.
+
+Patch 2 reorders the runtime PM call in clk_core_unprepare() to match
+the order described in its original commit, and the opposite of that
+in clk_core_prepare().
 
 
-On 2022/7/12 18:11, Quentin Monnet wrote:
-> On 12/07/2022 04:08, Pu Lehui wrote:
->> Currently, when cross compiling bpf samples, the host side cannot
->> use arch-specific bpftool to generate vmlinux.h or skeleton. Since
->> samples/bpf use bpftool for vmlinux.h, skeleton, and static linking
->> only, we can use lightweight bootstrap version of bpftool to handle
->> these, and it's always host-native.
->>
->> Signed-off-by: Pu Lehui <pulehui@huawei.com>
->> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
->> ---
->>   samples/bpf/Makefile | 16 +++++++++++-----
->>   1 file changed, 11 insertions(+), 5 deletions(-)
->>
->> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->> index 5002a5b9a7da..57012b8259d2 100644
->> --- a/samples/bpf/Makefile
->> +++ b/samples/bpf/Makefile
->> @@ -282,12 +282,18 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
->>   
->>   BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
->>   BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
->> -BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
->> +BPFTOOL := $(BPFTOOL_OUTPUT)/bootstrap/bpftool
->> +ifeq ($(CROSS_COMPILE),)
->>   $(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
->> -	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
->> -		OUTPUT=$(BPFTOOL_OUTPUT)/ \
->> -		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
->> -		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
->> +	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../		\
->> +		OUTPUT=$(BPFTOOL_OUTPUT)/ 					\
->> +		LIBBPF_BOOTSTRAP_OUTPUT=$(LIBBPF_OUTPUT)/ 			\
->> +		LIBBPF_BOOTSTRAP_DESTDIR=$(LIBBPF_DESTDIR)/ bootstrap
->> +else
->> +$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
-> 
-> Thanks for this! Just trying to fully understand the details here. When
-> cross-compiling, you leave aside the dependency on target-arch-libbpf,
-> so that "make -C <bpftool-dir> bootstrap" rebuilds its own host-arch
-> libbpf, is this correct?
-> 
+Regards
+ChenYu
 
-You're right. libbpf may does get out-of-sync. So the best way is to 
-compile both arch-specific libbpf simultaneously, and then attach to 
-bpftool. But it will make this job more complicated. Could we just add 
-back $(LIBBPF) to handle this?
+Chen-Yu Tsai (2):
+  clk: core: Honor CLK_OPS_PARENT_ENABLE for clk gate ops
+  clk: core: Fix runtime PM sequence in clk_core_unprepare()
 
->> +	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ 		\
->> +		OUTPUT=$(BPFTOOL_OUTPUT)/ bootstrap
->> +endif
->>   
->>   $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
->>   	$(call msg,MKDIR,$@)
-> 
-> .
-> 
+ drivers/clk/clk.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+-- 
+2.37.0.144.g8ac04bfd2-goog
+
