@@ -2,161 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C274ACCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:59:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2751C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232062AbiGLJ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        id S232440AbiGLKBP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:01:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232378AbiGLJ7S (ORCPT
+        with ESMTP id S229962AbiGLKBL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:59:18 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B962DABD
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:59:16 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id v7so4999596pfb.0
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:59:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E3bJNjTQ0sljopXALlhyXxa+mX72VOlGEbg1L7QIj1E=;
-        b=sWuqwMsZhRcRkPdenKadW7Dk/P/7ur4EL9j6sqVJ1bhlRfAY/oc7xmZVG1CiFGk0Ns
-         ljYuR0X/umNI2OYd0XO6XR9zETL1IGaw/Zn/J8+VPfgcB/6atpffIZRhjsK0TILzHjdB
-         B+LnH2U5prvK022gJ9+wZ32aGjsm2fIaVJPaEjCzDWclbcDTZUzvWp7uEisBBdtPYbLT
-         KiWyfu1ocqksvCW4CGzQ2GRXXpi1xWdyRd55/JdRNg/PnoekbukxOj011f5a24tooUea
-         Hm2ftl0+N3xge9PtB31Rps2eG7q9Mmp7SWAdl3fPRVZJSN0h+gtJarWOCsKDlCZzqqoN
-         Az7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E3bJNjTQ0sljopXALlhyXxa+mX72VOlGEbg1L7QIj1E=;
-        b=QWc/DK7KaKiKFddRSBabtu+j2rGWadr0PI0G4EFyPjj3zERvv7W11aRXHQMcHdQVgh
-         Q9jQE7BTnlysdTCqHKrSo9KvIz7i7LruYx1VimpeJjWscktVQerIEoSG+3r+h69Fa/fo
-         KrxX9okOswOjDdWpxBqPFCVOFNWRyitr8QFcY8ZfADRnTfIx8Lss4E5SAkAKi9AFactz
-         g/3T/NhIQIvlezgi92d6jDDZ3jNSoQDA0NoAlwc6KddLdbYws/V0moQH+ncSaX3cC0r6
-         vwYWj30M1/fWLBZYNq/4bKUGk2PUjInJ+NUiJY1GBB2qdG5ZOIEuaR20ix2BiLfJiVXI
-         bM9A==
-X-Gm-Message-State: AJIora+hoh0GvB9e+uqMK5eNqdbwmjMLqgEiyhhqdqQLDZYikrDEKYtW
-        HRGG1utLaNkAN0AkR24fxFvzloL361B8E2/QGm35xw==
-X-Google-Smtp-Source: AGRyM1vSzjtgajGp71G/0ie+k3dbRm2QwTG+7RmZ7o5xoHl2yAHh8E/V3nqMqiFQf9cqXYtzhvIWXeuxZ2AenxkhL2U=
-X-Received: by 2002:a65:6a4a:0:b0:40d:dd27:80fd with SMTP id
- o10-20020a656a4a000000b0040ddd2780fdmr20580395pgu.54.1657619956363; Tue, 12
- Jul 2022 02:59:16 -0700 (PDT)
+        Tue, 12 Jul 2022 06:01:11 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BD672B63D;
+        Tue, 12 Jul 2022 03:01:09 -0700 (PDT)
+Received: from [10.180.13.185] (unknown [10.180.13.185])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxCeFkRs1iBggZAA--.55841S3;
+        Tue, 12 Jul 2022 18:01:08 +0800 (CST)
+Subject: Re: [PATCH] MIPS: fix pmd_mkinvalid
+From:   Hongchen Zhang <zhanghongchen@loongson.cn>
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1657181495-33004-1-git-send-email-zhanghongchen@loongson.cn>
+ <20220707092206.GA9894@alpha.franken.de>
+ <bfb97f6b-7a39-8253-bc14-08f2f54ed312@loongson.cn>
+Message-ID: <0fd4e823-493f-07f0-08d5-f4a22491b602@loongson.cn>
+Date:   Tue, 12 Jul 2022 18:01:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <cover.1657614127.git.guillaume.tucker@collabora.com> <4a66bf3227825bbf9007ffc9c10e52fad9ae453f.1657614127.git.guillaume.tucker@collabora.com>
-In-Reply-To: <4a66bf3227825bbf9007ffc9c10e52fad9ae453f.1657614127.git.guillaume.tucker@collabora.com>
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 12 Jul 2022 11:59:05 +0200
-Message-ID: <CADYN=9L6-ESg=mxAwXCPwcO1RTE1S5DvigpvL13+tLMWs0wB-g@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] selftests: drop KSFT_KHDR_INSTALL make target
-To:     Guillaume Tucker <guillaume.tucker@collabora.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>, Tim.Bird@sony.com,
-        kernel@collabora.com, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <bfb97f6b-7a39-8253-bc14-08f2f54ed312@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9AxCeFkRs1iBggZAA--.55841S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7Ary8Zw4xZrW7JrW7Gw48WFg_yoW8Xr4xpF
+        y0yF48JrWDtFn7Gr4xtr1DJFyYyw15tw15Grn8JFyUAay8Xr92qr4UX3yq93y7JF48Wr15
+        JF4aqFW7Zw1UJaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvFb7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
+        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l
+        c2xSY4AK6svPMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
+        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUXVWU
+        AwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
+        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AK
+        xVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvj
+        xUgg_TUUUUU
+X-CM-SenderInfo: x2kd0w5krqwupkhqwqxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 at 10:29, Guillaume Tucker
-<guillaume.tucker@collabora.com> wrote:
->
-> Drop the KSFT_KHDR_INSTALL make target now that all use-cases have
-> been removed from the other kselftest Makefiles.
->
-> Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
-> ---
->  tools/testing/selftests/Makefile |  1 -
->  tools/testing/selftests/lib.mk   | 38 --------------------------------
->  2 files changed, 39 deletions(-)
->
-> diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-> index 619451e82863..e060777239a4 100644
-> --- a/tools/testing/selftests/Makefile
-> +++ b/tools/testing/selftests/Makefile
-> @@ -143,7 +143,6 @@ endif
->  # Prepare for headers install
->  include $(top_srcdir)/scripts/subarch.include
->  ARCH           ?= $(SUBARCH)
-> -export KSFT_KHDR_INSTALL_DONE := 1
->  export BUILD
->  export KHDR_INCLUDES
->
-> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
-> index 2a2d240cdc1b..df5f853951f2 100644
-> --- a/tools/testing/selftests/lib.mk
-> +++ b/tools/testing/selftests/lib.mk
-> @@ -30,45 +30,7 @@ TEST_GEN_PROGS := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS))
->  TEST_GEN_PROGS_EXTENDED := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_PROGS_EXTENDED))
->  TEST_GEN_FILES := $(patsubst %,$(OUTPUT)/%,$(TEST_GEN_FILES))
->
-> -ifdef KSFT_KHDR_INSTALL
-> -top_srcdir ?= ../../../..
-> -include $(top_srcdir)/scripts/subarch.include
-> -ARCH           ?= $(SUBARCH)
-> -
-> -# set default goal to all, so make without a target runs all, even when
-> -# all isn't the first target in the file.
-> -.DEFAULT_GOAL := all
-> -
-> -# Invoke headers install with --no-builtin-rules to avoid circular
-> -# dependency in "make kselftest" case. In this case, second level
-> -# make inherits builtin-rules which will use the rule generate
-> -# Makefile.o and runs into
-> -# "Circular Makefile.o <- prepare dependency dropped."
-> -# and headers_install fails and test compile fails.
-> -# O= KBUILD_OUTPUT cases don't run into this error, since main Makefile
-> -# invokes them as sub-makes and --no-builtin-rules is not necessary,
-> -# but doesn't cause any failures. Keep it simple and use the same
-> -# flags in both cases.
-> -# Note that the support to install headers from lib.mk is necessary
-> -# when test Makefile is run directly with "make -C".
-> -# When local build is done, headers are installed in the default
-> -# INSTALL_HDR_PATH usr/include.
-> -.PHONY: khdr
-> -.NOTPARALLEL:
-> -khdr:
-> -ifndef KSFT_KHDR_INSTALL_DONE
-> -ifeq (1,$(DEFAULT_INSTALL_HDR_PATH))
-> -       $(MAKE) --no-builtin-rules ARCH=$(ARCH) -C $(top_srcdir) headers_install
-> -else
-> -       $(MAKE) --no-builtin-rules INSTALL_HDR_PATH=$$OUTPUT/usr \
-> -               ARCH=$(ARCH) -C $(top_srcdir) headers_install
-> -endif
-> -endif
-> -
-> -all: khdr $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)
-> -else
->  all: $(TEST_GEN_PROGS) $(TEST_GEN_PROGS_EXTENDED) $(TEST_GEN_FILES)
-> -endif
->
->  define RUN_TESTS
->         BASE_DIR="$(selfdir)";                  \
+On 2022/7/7 下午7:12, Hongchen Zhang wrote:
+> On 2022/7/7 下午5:22, Thomas Bogendoerfer wrote:
+>> On Thu, Jul 07, 2022 at 04:11:35PM +0800, Hongchen Zhang wrote:
+>>> When a pmd entry is invalidated by pmd_mkinvalid,pmd_present should
+>>> return true.
+>>> So introduce a _PMD_PRESENT_INVALID_SHIFT bit to check if a pmd is
+>>> present but invalidated by pmd_mkinvalid.
+>>
+>> What problem are you trying to fix ? What are the symptoms ?
+>>
+>>> Reported-by: kernel test robot <lkp@intel.com>
+>>
+>> the test robot showed problems with your last version of the patch,
+>> which hasn't been integrated into at least the MIPS tree, so no
+>> need to that.
+>>
+>> Thomas.
+>>
+> 
+> Hi Thomas,
+>    The idea come from the commit:
+>    b65399f6111b(arm64/mm: Change THP helpers to comply with generic MM 
+>   semantics).
+>    There is an problem now:
+>          CPU 0        CPU 1
+>      pmdp_invalidate        do_page_fault
+>      ...              __handle_mm_fault
+>                      is_swap_pmd == true
+>                      trigger VM_BUG_ON() ?
+>      set_pmd_at
+>    the reason is that pmd_present return true,after this commit
+>    pmd_present will return false,and the VM_BUG_ON will not be triggered.
+>    Like arm64 does,we can introduce a new bit to fix this.
+> 
+> Thanks.
+Hi Thomas,
+  Is there problem of this patch? What's your opinion of this patch?
 
-Should this be removed as well, since 'khdr' gets droped from file the lib.mk ?
+Thanks
 
-diff --git a/tools/testing/selftests/landlock/Makefile
-b/tools/testing/selftests/landlock/Makefile
-index 1313e44e8fb9..99f88c52d61a 100644
---- a/tools/testing/selftests/landlock/Makefile
-+++ b/tools/testing/selftests/landlock/Makefile
-@@ -13,9 +13,6 @@ include ../lib.mk
-
- khdr_dir = $(top_srcdir)/usr/include
-
--$(khdr_dir)/linux/landlock.h: khdr
--        @:
--
- $(OUTPUT)/true: true.c
-  $(LINK.c) $< $(LDLIBS) -o $@ -static
-
-
-Cheers,
-Anders
