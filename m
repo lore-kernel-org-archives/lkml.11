@@ -2,83 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A74FAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 04:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3138C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 04:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230307AbiGLEaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 00:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48196 "EHLO
+        id S231304AbiGLEjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 00:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiGLEaR (ORCPT
+        with ESMTP id S229451AbiGLEi7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 00:30:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0635B201AE;
-        Mon, 11 Jul 2022 21:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33DD9B81655;
-        Tue, 12 Jul 2022 04:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D0173C341C0;
-        Tue, 12 Jul 2022 04:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657600213;
-        bh=2O9oCOtLhZK7N0Ps3fdnTGG2yPfJtsX/AEI7XcdxC9g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Bt7E8IgW1ycvTXur177rFtbrkEzjJap9n2YfadD6YnyKLYLjc7LyfzThYwbmaQbqW
-         oj2vRAsogQ6uSNijiW1uB2v8BM2of4BwLEq8qp8PFUB2t9Gs8bgGaSB+alLvdXGhlN
-         pQHLBtGmji8vXvKJmZ28Q9rz5T1xxIUPK/7YQ2IUl1STC588A1ZBPHY8CDd2DHamGg
-         xaTxj+Zsgr0m7gGtq+NaN9xjSw+QIWvWVHYkKbND529ivGfsQWrlSrHvyxtGSIbzJ8
-         jyXrwPT8FZ777ef5IML8kpMvppPZYP1AxND410xhyA0gGxIdrmvtaUKFfz93ZQxX4S
-         sBveeyrE2vMWQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B403EE45221;
-        Tue, 12 Jul 2022 04:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Tue, 12 Jul 2022 00:38:59 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0892725C64
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 21:38:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657600739; x=1689136739;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=BFAI3Vex6qOybZjRwyHygNl+Ppab/iQX6BXwqhB29YM=;
+  b=VpK9UWmt32wbsbXxGUOKWn0ODwO3v1aAV0OGUewTwoq/5rf7RHtKQjqj
+   hROSQ5fAHI8wlbF8SSEWn8YIU3f2MlC98Oclzt0Rv0agFAlNtzssrCBu5
+   oXAR/HJSIrvZSDgqn6ZoyqP2rZOW7nHvep4tEG5/wUrlICn5LzlWWbqWt
+   mG1KrWyShOKBMJfcOVrrz6dyvnuHZW7+yB0cMXjR8slGAxNxvwQTmWEoU
+   oQhFBvo65CRbbKhpnb2aMBjaTdoKg4ZPkd81W+zX+Eg0Sct8JyzYMXU6e
+   Aw4cPowBLmkFoCF7sbjHixK2PK+QGbbuOo3BK6bt7Deo+bbCkA+FbH1P4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="267874415"
+X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
+   d="scan'208";a="267874415"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jul 2022 21:38:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,264,1650956400"; 
+   d="scan'208";a="652750800"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by fmsmga008.fm.intel.com with ESMTP; 11 Jul 2022 21:38:57 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oB7fk-0001gh-Kr;
+        Tue, 12 Jul 2022 04:38:56 +0000
+Date:   Tue, 12 Jul 2022 12:38:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Bristot de Oliveira <bristot@redhat.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Subject: kernel/trace/trace_osnoise.c:131:1: sparse: sparse: symbol
+ '__pcpu_scope_per_cpu_timerlat_var' was not declared. Should it be static?
+Message-ID: <202207121205.3WDa90OI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2] bpf: Fix 'dubious one-bit signed bitfield'
- warnings
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165760021373.564.7413956884709981206.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Jul 2022 04:30:13 +0000
-References: <20220711081200.2081262-1-matthieu.baerts@tessares.net>
-In-Reply-To: <20220711081200.2081262-1-matthieu.baerts@tessares.net>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        martin.lau@linux.dev, song@kernel.org, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, eddyz87@gmail.com,
-        mptcp@lists.linux.dev, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   5a29232d870d9e63fe5ff30b081be6ea7cc2465d
+commit: a955d7eac1779b437ceb24fc352026a2cbcec140 trace: Add timerlat tracer
+date:   1 year, 1 month ago
+config: s390-randconfig-s032-20220712 (https://download.01.org/0day-ci/archive/20220712/202207121205.3WDa90OI-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=a955d7eac1779b437ceb24fc352026a2cbcec140
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout a955d7eac1779b437ceb24fc352026a2cbcec140
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=s390 SHELL=/bin/bash
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-On Mon, 11 Jul 2022 10:12:00 +0200 you wrote:
-> Our CI[1] reported these warnings when using Sparse:
-> 
->   $ touch net/mptcp/bpf.c
->   $ make C=1 net/mptcp/bpf.o
->   net/mptcp/bpf.c: note: in included file:
->   include/linux/bpf_verifier.h:348:26: error: dubious one-bit signed bitfield
->   include/linux/bpf_verifier.h:349:29: error: dubious one-bit signed bitfield
-> 
-> [...]
 
-Here is the summary with links:
-  - [bpf-next,v2] bpf: Fix 'dubious one-bit signed bitfield' warnings
-    https://git.kernel.org/bpf/bpf-next/c/f16214c102f0
+sparse warnings: (new ones prefixed by >>)
+   kernel/trace/trace_osnoise.c:108:1: sparse: sparse: symbol '__pcpu_scope_per_cpu_osnoise_var' was not declared. Should it be static?
+>> kernel/trace/trace_osnoise.c:131:1: sparse: sparse: symbol '__pcpu_scope_per_cpu_timerlat_var' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:223:14: sparse: sparse: symbol 'interface_lock' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:657:6: sparse: sparse: symbol 'osnoise_trace_irq_entry' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:680:6: sparse: sparse: symbol 'osnoise_trace_irq_exit' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:739:5: sparse: sparse: symbol 'hook_irq_events' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:771:6: sparse: sparse: symbol 'unhook_irq_events' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:788:6: sparse: sparse: symbol 'trace_softirq_entry_callback' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:811:6: sparse: sparse: symbol 'trace_softirq_exit_callback' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:953:1: sparse: sparse: symbol 'trace_sched_switch_callback' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:971:5: sparse: sparse: symbol 'hook_thread_events' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:988:6: sparse: sparse: symbol 'unhook_thread_events' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:1000:6: sparse: sparse: symbol 'save_osn_sample_stats' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:1015:6: sparse: sparse: symbol 'diff_osn_sample_stats' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:1657:5: sparse: sparse: symbol 'timerlat_min_period' was not declared. Should it be static?
+   kernel/trace/trace_osnoise.c:1658:5: sparse: sparse: symbol 'timerlat_max_period' was not declared. Should it be static?
 
-You are awesome, thank you!
+vim +/__pcpu_scope_per_cpu_timerlat_var +131 kernel/trace/trace_osnoise.c
+
+   112	
+   113	/*
+   114	 *  osnoise_unregister_instance - unregister a registered trace instance
+   115	 *
+   116	 * Remove the trace_array *tr from the list of instances running
+   117	 * osnoise/timerlat tracers.
+   118	 */
+   119	static void osnoise_unregister_instance(struct trace_array *tr)
+   120	{
+   121		struct osnoise_instance *inst;
+   122		int found = 0;
+   123	
+   124		/*
+   125		 * register/unregister serialization is provided by trace's
+   126		 * trace_types_lock.
+   127		 */
+   128		lockdep_assert_held(&trace_types_lock);
+   129	
+   130		list_for_each_entry_rcu(inst, &osnoise_instances, list) {
+ > 131			if (inst->tr == tr) {
+   132				list_del_rcu(&inst->list);
+   133				found = 1;
+   134				break;
+   135			}
+   136		}
+   137	
+   138		if (!found)
+   139			return;
+   140	
+   141		kvfree_rcu(inst);
+   142	}
+   143	
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
