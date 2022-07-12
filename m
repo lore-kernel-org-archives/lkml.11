@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CEB1C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E23C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235034AbiGLS5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33460 "EHLO
+        id S234958AbiGLS6I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:58:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234845AbiGLS5N (ORCPT
+        with ESMTP id S234462AbiGLS5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:57:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB884DC89A;
-        Tue, 12 Jul 2022 11:47:06 -0700 (PDT)
+        Tue, 12 Jul 2022 14:57:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D56DC8B8;
+        Tue, 12 Jul 2022 11:47:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 465E1B81B95;
-        Tue, 12 Jul 2022 18:47:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B2A6C3411C;
-        Tue, 12 Jul 2022 18:47:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0FE9B81B96;
+        Tue, 12 Jul 2022 18:47:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C79B2C341C0;
+        Tue, 12 Jul 2022 18:47:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651624;
-        bh=k0LU1Ux28pkftl2hmnXLNBpozpwfdBZccM5xFqr0Ccw=;
+        s=korg; t=1657651630;
+        bh=p/gFMJFw+0KXPwGqJWjVQcM1S+G3M3UFlYzAwYKkkCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZtbS7MFIuxif5TtZknW46LiqF9G4MxTr7VsIqxblozSKt6af1Rs05uzFG66tBycI9
-         PnlvEltPyW11LOhoZxzl9xAdCZruqt7P9Bu/z2Qc7IkUXoXxsMLlniSnbp6ZaIZQEE
-         LjLyjpiv64RSo8RPvqLbM9lyYMZFYiKy4DDf7nGQ=
+        b=Ryvi51HhLRM8fCIEfjMdGf/DCKgkhTjry/XQo67UN7ItFq5QSTyrUS9J79j/TgPi/
+         T2eJuxOGTqHzcxZDmIFOnV1M1DA/rC2LCAMBO/OOEGYF9sy9qQU6xhlQQ8R6DVQtxr
+         7CdZYobke40dtZOZ0Wl7voCB4XeZSAtZ3/KDWqmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 112/130] x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n
-Date:   Tue, 12 Jul 2022 20:39:18 +0200
-Message-Id: <20220712183251.633022862@linuxfoundation.org>
+Subject: [PATCH 5.10 114/130] x86/speculation: Fix SPEC_CTRL write on SMT state change
+Date:   Tue, 12 Jul 2022 20:39:20 +0200
+Message-Id: <20220712183251.726523641@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -53,14 +53,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit b2620facef4889fefcbf2e87284f34dcd4189bce upstream.
+commit 56aa4d221f1ee2c3a49b45b800778ec6e0ab73c5 upstream.
 
-If a kernel is built with CONFIG_RETPOLINE=n, but the user still wants
-to mitigate Spectre v2 using IBRS or eIBRS, the RSB filling will be
-silently disabled.
-
-There's nothing retpoline-specific about RSB buffer filling.  Remove the
-CONFIG_RETPOLINE guards around it.
+If the SMT state changes, SSBD might get accidentally disabled.  Fix
+that.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
@@ -69,60 +65,20 @@ Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_32.S            |    2 --
- arch/x86/entry/entry_64.S            |    2 --
- arch/x86/include/asm/nospec-branch.h |    2 --
- 3 files changed, 6 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/entry/entry_32.S
-+++ b/arch/x86/entry/entry_32.S
-@@ -782,7 +782,6 @@ SYM_CODE_START(__switch_to_asm)
- 	movl	%ebx, PER_CPU_VAR(stack_canary)+stack_canary_offset
- #endif
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -1414,7 +1414,8 @@ static void __init spectre_v2_select_mit
  
--#ifdef CONFIG_RETPOLINE
- 	/*
- 	 * When switching from a shallower to a deeper call stack
- 	 * the RSB may either underflow or use entries populated
-@@ -791,7 +790,6 @@ SYM_CODE_START(__switch_to_asm)
- 	 * speculative execution to prevent attack.
- 	 */
- 	FILL_RETURN_BUFFER %ebx, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
--#endif
+ static void update_stibp_msr(void * __unused)
+ {
+-	write_spec_ctrl_current(x86_spec_ctrl_base, true);
++	u64 val = spec_ctrl_current() | (x86_spec_ctrl_base & SPEC_CTRL_STIBP);
++	write_spec_ctrl_current(val, true);
+ }
  
- 	/* Restore flags or the incoming task to restore AC state. */
- 	popfl
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -249,7 +249,6 @@ SYM_FUNC_START(__switch_to_asm)
- 	movq	%rbx, PER_CPU_VAR(fixed_percpu_data) + stack_canary_offset
- #endif
- 
--#ifdef CONFIG_RETPOLINE
- 	/*
- 	 * When switching from a shallower to a deeper call stack
- 	 * the RSB may either underflow or use entries populated
-@@ -258,7 +257,6 @@ SYM_FUNC_START(__switch_to_asm)
- 	 * speculative execution to prevent attack.
- 	 */
- 	FILL_RETURN_BUFFER %r12, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
--#endif
- 
- 	/* restore callee-saved registers */
- 	popq	%r15
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -122,11 +122,9 @@
-   * monstrosity above, manually.
-   */
- .macro FILL_RETURN_BUFFER reg:req nr:req ftr:req
--#ifdef CONFIG_RETPOLINE
- 	ALTERNATIVE "jmp .Lskip_rsb_\@", "", \ftr
- 	__FILL_RETURN_BUFFER(\reg,\nr,%_ASM_SP)
- .Lskip_rsb_\@:
--#endif
- .endm
- 
- /*
+ /* Update x86_spec_ctrl_base in case SMT state changed. */
 
 
