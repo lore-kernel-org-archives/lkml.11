@@ -2,134 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B44F8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A93C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232320AbiGLHNL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52582 "EHLO
+        id S232265AbiGLHOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:14:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232178AbiGLHNI (ORCPT
+        with ESMTP id S229529AbiGLHON (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:13:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADB21974A6;
-        Tue, 12 Jul 2022 00:13:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58B17B8121C;
-        Tue, 12 Jul 2022 07:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB3CC3411E;
-        Tue, 12 Jul 2022 07:13:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657609985;
-        bh=q2L4dbPk0338Ca9+RyDAS0dRcVivRtQV2s6baz1iriA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UW3Fg3LL3L5IHHFYxsA4SA1fuILkoLvPCTJEJj6j/Z6iLCAwSg5XXgJEKZoPs1/wg
-         FemWDUce1MM5jmuu2JTW+hNCKbGVds5wbBQLcQa7BoVIlhFe0vAP+MRAMm9qy3SNBb
-         d9hxHpobh/HWeLPLqQyKe5ksGuL0uA3xnv69paec=
-Date:   Tue, 12 Jul 2022 09:12:59 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/229] 5.15.54-rc2 review
-Message-ID: <Ys0e+4B+IFUDroFX@kroah.com>
-References: <20220711145306.494277196@linuxfoundation.org>
- <CA+G9fYsvtJu832j-1NmJ00ZOvGLAxAHUkNWo8PDztT--oO0_Ng@mail.gmail.com>
+        Tue, 12 Jul 2022 03:14:13 -0400
+Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E13E52E7E
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:14:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=bSYm9
+        C5OeuYbDhENBAdXq4HRvNSPczwQvj64WhMLeyk=; b=KB5xRyB0ILL9VqILcLd4a
+        S83vIxTAf0E3sDLh+IaFKKo9mFY/+zguQaYmpGa8ukqNu1zJ6iBn0SZUzUWirtFI
+        YOPnaQnz31qw+8WWU4+DTiL5vZ1KRhfduBZ7fTcYXBcj04mzReko0ehU+D5Ejw7G
+        XSo8sbf8UrMi8lwLxqseb8=
+Received: from localhost.localdomain (unknown [111.48.58.12])
+        by smtp11 (Coremail) with SMTP id D8CowAAHffomH81i5anSMQ--.64515S2;
+        Tue, 12 Jul 2022 15:13:44 +0800 (CST)
+From:   Jiangshan Yi <13667453960@163.com>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jiangshan Yi <yijiangshan@kylinos.cn>
+Subject: [PATCH] component: replace ternary operator with min()
+Date:   Tue, 12 Jul 2022 15:12:23 +0800
+Message-Id: <20220712071223.301160-1-13667453960@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+G9fYsvtJu832j-1NmJ00ZOvGLAxAHUkNWo8PDztT--oO0_Ng@mail.gmail.com>
+X-CM-TRANSID: D8CowAAHffomH81i5anSMQ--.64515S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKw4kXF4DJw4UAry8WFWrAFb_yoWkCFc_Cr
+        nruas7Cr1fCrWrZr12vwsIyryvqayj9F1jqFnagr1fG34UZan2gFykZryrt348Cr1Yg3Zr
+        Gr1qyry2yr4IkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnc_-DUUUUU==
+X-Originating-IP: [111.48.58.12]
+X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbizQg8+1c7NeZ7AgAAsE
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:14:21AM +0530, Naresh Kamboju wrote:
-> On Mon, 11 Jul 2022 at 20:24, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.15.54 release.
-> > There are 229 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Wed, 13 Jul 2022 14:51:35 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.54-rc2.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> Results from Linaro’s test farm.
-> Regressions found while building for powerpc.
-> 
-> Following powerpc builds failed.
-> 
-> * powerpc, build
->   - clang-13-defconfig
->   - clang-13-ppc64e_defconfig
->   - clang-14-defconfig
->   - clang-14-ppc64e_defconfig
->   - gcc-10-cell_defconfig
->   - gcc-10-defconfig
->   - gcc-10-maple_defconfig
->   - gcc-10-ppc64e_defconfig
->   - gcc-11-cell_defconfig
->   - gcc-11-defconfig
->   - gcc-11-maple_defconfig
->   - gcc-11-ppc64e_defconfig
->   - gcc-8-cell_defconfig
->   - gcc-8-defconfig
->   - gcc-8-maple_defconfig
->   - gcc-8-ppc64e_defconfig
->   - gcc-9-cell_defconfig
->   - gcc-9-defconfig
->   - gcc-9-maple_defconfig
->   - gcc-9-ppc64e_defconfig
->   - gcc-11-allmodconfig
->   - gcc-10-allmodconfig
->   - clang-13-allmodconfig
->   - clang-14-allmodconfig
-> 
-> make --silent --keep-going --jobs=8
-> O=/home/tuxbuild/.cache/tuxmake/builds/1/build LLVM=1 LLVM_IAS=0
-> LD=powerpc64le-linux-gnu-ld ARCH=powerpc
-> CROSS_COMPILE=powerpc64le-linux-gnu- 'HOSTCC=sccache clang'
-> 'CC=sccache clang'
-> arch/powerpc/kernel/vdso64/gettimeofday.S: Assembler messages:
-> arch/powerpc/kernel/vdso64/gettimeofday.S:25: Error: unrecognized
-> opcode: `cvdso_call'
-> arch/powerpc/kernel/vdso64/gettimeofday.S:36: Error: unrecognized
-> opcode: `cvdso_call'
-> arch/powerpc/kernel/vdso64/gettimeofday.S:47: Error: unrecognized
-> opcode: `cvdso_call'
-> arch/powerpc/kernel/vdso64/gettimeofday.S:57: Error: unrecognized
-> opcode: `cvdso_call_time'
-> clang: error: assembler command failed with exit code 1 (use -v to see
-> invocation)
-> make[2]: *** [scripts/Makefile.build:390:
-> arch/powerpc/kernel/vdso64/gettimeofday.o] Error 1
-> make[2]: Target 'include/generated/vdso64-offsets.h' not remade
-> because of errors.
-> make[1]: *** [arch/powerpc/Makefile:427: vdso_prepare] Error 2
-> 
-> Build : https://builds.tuxbuild.com/2BnsQzulG0EbhdbiIORptHZwacG/
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
 
-Thanks, let me push out a -rc3 with the powerpc vdso patches removed.
+Fix the following coccicheck warning:
 
-greg k-h
+drivers/base/component.c:544: WARNING opportunity for min().
+drivers/base/component.c:740: WARNING opportunity for min().
+
+min() macro is defined in include/linux/minmax.h. It avoids
+multiple evaluations of the arguments when non-constant and performs
+strict type-checking.
+
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+---
+ drivers/base/component.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/base/component.c b/drivers/base/component.c
+index 5eadeac6c532..349c54694481 100644
+--- a/drivers/base/component.c
++++ b/drivers/base/component.c
+@@ -541,7 +541,7 @@ int component_master_add_with_match(struct device *parent,
+ 
+ 	mutex_unlock(&component_mutex);
+ 
+-	return ret < 0 ? ret : 0;
++	return min(ret, 0);
+ }
+ EXPORT_SYMBOL_GPL(component_master_add_with_match);
+ 
+@@ -737,7 +737,7 @@ static int __component_add(struct device *dev, const struct component_ops *ops,
+ 	}
+ 	mutex_unlock(&component_mutex);
+ 
+-	return ret < 0 ? ret : 0;
++	return min(ret, 0);
+ }
+ 
+ /**
+-- 
+2.25.1
+
