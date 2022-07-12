@@ -2,195 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB57CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:45:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3177C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbiGLMpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S233223AbiGLMq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233143AbiGLMpe (ORCPT
+        with ESMTP id S233221AbiGLMqZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:45:34 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA304AC071;
-        Tue, 12 Jul 2022 05:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657629930; x=1689165930;
-  h=from:to:cc:subject:date:message-id;
-  bh=XCK/6S5RyHxCjXntW/hENDl8YgUipte7us+y1QdZPDw=;
-  b=CHBqynBQw2wr5wCKQZ8/pJGijE9NtsGrpW/kpvsxYZhMqDH/pUejPGOF
-   ZzmchKRyej7zAG05mtbS070Z2qQEh/zLWAVP82I2u16feaI2i6WOCeKai
-   BGhn8OqIlempj6TCtxlkOLdjIWeGcuIA8IR73cNf19TPk+kgzUH685uRJ
-   U=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 12 Jul 2022 05:45:29 -0700
-X-QCInternal: smtphost
-Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 12 Jul 2022 05:45:27 -0700
-X-QCInternal: smtphost
-Received: from hu-vnivarth-hyd.qualcomm.com (HELO hu-sgudaval-hyd.qualcomm.com) ([10.213.111.166])
-  by ironmsg01-blr.qualcomm.com with ESMTP; 12 Jul 2022 18:15:11 +0530
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 2F0F840DC; Tue, 12 Jul 2022 18:15:10 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V5] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
-Date:   Tue, 12 Jul 2022 18:15:05 +0530
-Message-Id: <1657629905-24685-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Tue, 12 Jul 2022 08:46:25 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32F18B0FA6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:46:24 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CCica7016881;
+        Tue, 12 Jul 2022 12:46:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=dCYZ6oZv3oAaDnQdJDGZWm3Bna5te/b8gdwDmZiCOis=;
+ b=Ky/JM6Bv4QXuSZbDCp9YsXAMNmhhzPOOBD26w6k3012N4E5vQcnkykRw/RyoAfZYhVbg
+ eVoCJLzkz18G6iVE0oFIkKj4NJDfWhFXBn3SnauZAIEZoizdlbik5ptY/fgWAsYv/3SN
+ S3Tp4T+O6rs6fCE2EOfT3M0/M2HWB2xx0brtTUFgUkN1wWIVfHOEjVydDwyYIFuNR760
+ eYto8BZbeU0BdCnV0mnrSjXyI0gfShzoJMoFtWtayojO2cUGTjCLjU3sJHDZo50lqU5u
+ Tg7yWXEha/V/XcuHQ3q4Y6Y+XIqZUVVjGpDHDYiLIeoquhvaQq+yXCBRPfdKK9V/Hui2 1w== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h997u00ut-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 12:46:13 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CCLhp2028372;
+        Tue, 12 Jul 2022 12:46:11 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma05fra.de.ibm.com with ESMTP id 3h71a8u4bq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 12:46:11 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CCir5X24052120
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jul 2022 12:44:53 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AA229A4040;
+        Tue, 12 Jul 2022 12:44:53 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 739F3A4053;
+        Tue, 12 Jul 2022 12:44:53 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Jul 2022 12:44:53 +0000 (GMT)
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>
+Cc:     Stefan Roese <sr@denx.de>, Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] nvme-pci: fix hang during error recovery when the PCI device is isolated
+Date:   Tue, 12 Jul 2022 14:44:53 +0200
+Message-Id: <20220712124453.2227362-2-schnelle@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220712124453.2227362-1-schnelle@linux.ibm.com>
+References: <20220712124453.2227362-1-schnelle@linux.ibm.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: zZ-Xx_TiTN8lrVlPKMNjzoJc2qKZJUxO
+X-Proofpoint-ORIG-GUID: zZ-Xx_TiTN8lrVlPKMNjzoJc2qKZJUxO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ adultscore=0 lowpriorityscore=0 spamscore=0 clxscore=1015 bulkscore=0
+ mlxscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207120048
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the logic around call to clk_round_rate(), for some corner conditions,
-get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
-exact clock rate was not found lowest clock was being returned.
+On s390 and powerpc PCI devices are isolated when an error is detected
+and driver->err_handler->error_detected is called with an inaccessible
+PCI device and PCI channel state set to pci_channel_io_frozen
+(see Step 1 in Documentation/PCI/pci-error-recovery.rst).
 
-Search for suitable clock rate in 2 steps
-a) exact match or within 2% tolerance
-b) within 5% tolerance
-This also takes care of corner conditions.
+In the case of NVMe devices nvme_error_detected() then calls
+nvme_dev_disable(dev, false) and requests a reset. After a successful
+reset the device is accessible again and nvme_slot_reset() resets the
+controller and queues nvme_reset_work() which then recovers the
+controller.
 
-Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+Since commit b98235d3a471 ("nvme-pci: harden drive presence detect in
+nvme_dev_disable()") however nvme_dev_disable() no longer freezes the
+queues if pci_device_is_present() returns false. This is the case for an
+isolated PCI device. In principle this makes sense as there are no
+accessible hardware queues to run. The problem though is that for
+a previously live reset controller with online queues nvme_reset_work()
+calls nvme_wait_freeze() which, without the freeze having been
+initiated, then hangs forever. Fix this by starting the freeze in
+nvme_slot_reset() which is the earliest point where we know the device
+should be accessible again.
+
+Fixes: b98235d3a471 ("nvme-pci: harden drive presence detect in nvme_dev_disable()")
+Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
 ---
-v5: corrected format specifiers for logs
-v4: replaced pr_dbg calls with dev_dbg
-v3: simplified algorithm further, fixed robot compile warnings
-v2: removed minor optimisations to make more readable
-v1: intial patch contained slightly complicated logic
----
- drivers/tty/serial/qcom_geni_serial.c | 89 +++++++++++++++++++++--------------
- 1 file changed, 54 insertions(+), 35 deletions(-)
+ drivers/nvme/host/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 2e23b65..f5b9b8e 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
- 	return 0;
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 193b44755662..7c0c61b74c30 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3399,6 +3399,7 @@ static pci_ers_result_t nvme_slot_reset(struct pci_dev *pdev)
+ 	dev_info(dev->ctrl.device, "restart after slot reset\n");
+ 	pci_restore_state(pdev);
+ 	nvme_reset_ctrl(&dev->ctrl);
++	nvme_start_freeze(&dev->ctrl);
+ 	return PCI_ERS_RESULT_RECOVERED;
  }
- 
--static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
--			unsigned int sampling_rate, unsigned int *clk_div)
-+static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
-+			unsigned int *clk_div, unsigned int percent_tol)
- {
--	unsigned long ser_clk;
--	unsigned long desired_clk;
--	unsigned long freq, prev;
-+	unsigned long freq;
- 	unsigned long div, maxdiv;
--	int64_t mult;
--
--	desired_clk = baud * sampling_rate;
--	if (!desired_clk) {
--		pr_err("%s: Invalid frequency\n", __func__);
--		return 0;
--	}
-+	u64 mult;
-+	unsigned long offset, abs_tol, achieved;
- 
-+	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
- 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
--	prev = 0;
--
--	for (div = 1; div <= maxdiv; div++) {
--		mult = div * desired_clk;
--		if (mult > ULONG_MAX)
-+	div = 1;
-+	while (div <= maxdiv) {
-+		mult = (u64)div * desired_clk;
-+		if (mult != (unsigned long)mult)
- 			break;
- 
--		freq = clk_round_rate(clk, (unsigned long)mult);
--		if (!(freq % desired_clk)) {
--			ser_clk = freq;
--			break;
--		}
-+		offset = div * abs_tol;
-+		freq = clk_round_rate(clk, mult - offset);
- 
--		if (!prev)
--			ser_clk = freq;
--		else if (prev == freq)
-+		/* Can only get lower if we're done */
-+		if (freq < mult - offset)
- 			break;
- 
--		prev = freq;
-+		/*
-+		 * Re-calculate div in case rounding skipped rates but we
-+		 * ended up at a good one, then check for a match.
-+		 */
-+		div = DIV_ROUND_CLOSEST(freq, desired_clk);
-+		achieved = DIV_ROUND_CLOSEST(freq, div);
-+		if (achieved <= desired_clk + abs_tol &&
-+		    achieved >= desired_clk - abs_tol) {
-+			*clk_div = div;
-+			return freq;
-+		}
-+
-+		div = DIV_ROUND_UP(freq, desired_clk);
- 	}
- 
--	if (!ser_clk) {
--		pr_err("%s: Can't find matching DFS entry for baud %d\n",
--								__func__, baud);
--		return ser_clk;
-+	return 0;
-+}
-+
-+static unsigned long get_clk_div_rate(struct clk *clk, struct device *dev,
-+		unsigned int baud, unsigned int sampling_rate, unsigned int *clk_div)
-+{
-+	unsigned long ser_clk;
-+	unsigned long desired_clk;
-+
-+	desired_clk = baud * sampling_rate;
-+	if (!desired_clk) {
-+		dev_dbg(dev, "Invalid frequency\n");
-+		return 0;
- 	}
- 
--	*clk_div = ser_clk / desired_clk;
--	if (!(*clk_div))
--		*clk_div = 1;
-+	/*
-+	 * try to find a clock rate within 2% tolerance, then within
-+	 */
-+	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
-+	if (!ser_clk)
-+		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
-+
-+	if (!ser_clk)
-+		dev_err(dev, "Couldn't find suitable clock rate for %lu\n", desired_clk);
-+	else
-+		dev_dbg(dev, "desired_clk-%lu, ser_clk-%lu, clk_div-%u\n",
-+				desired_clk, ser_clk, *clk_div);
- 
- 	return ser_clk;
- }
-@@ -1021,8 +1040,8 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 	if (ver >= QUP_SE_VERSION_2_5)
- 		sampling_rate /= 2;
- 
--	clk_rate = get_clk_div_rate(port->se.clk, baud,
--		sampling_rate, &clk_div);
-+	clk_rate = get_clk_div_rate(port->se.clk, port->se.dev, baud,
-+					sampling_rate, &clk_div);
- 	if (!clk_rate)
- 		goto out_restart_rx;
  
 -- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+2.34.1
 
