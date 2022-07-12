@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E304C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAB8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233581AbiGLPfR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:35:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        id S234104AbiGLPfU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiGLPfQ (ORCPT
+        with ESMTP id S233186AbiGLPfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 11:35:16 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6473C5F5C
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13F86459
         for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:35:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657640115; x=1689176115;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=o0xWXv2hPnaq6dui+hkXkWYBLtudgtqDyCMY+iqKa4I=;
-  b=OPe/DscDw7k+xQJFGacJA6C5kgex+gwRKfBBy1G7IlRILa6z+d8nkuRI
-   VWnT6WzurXFeAMzHsukczzjqG9zgfiLXQN1plAC0UiJPj4wmGi84LRPC+
-   OUlh0HGcCVSe/mPfc8FanBUlF10V3UVLLNYVklNiV3NUB+fYksfMRZLC+
-   GklAoB4hEPUH2/iuYlYVz0YBHeqx2jo+eNoevTDxZuBjg21vvU58n9tym
-   udqIsV9Oq/4grf91PtftZBbGbq5FgXYcHXnEUUz9HfRtNGyc39/PqhSaY
-   9+Z9Nyjj7YDtS2LJuRUOk/GMSD9gqBXc9m6hseiiNmrKYUZLz4rKBX+hp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265380204"
+  bh=S2GftDn+xorE6UM3YzlFwuDAbmRpEb7074YgFP8dxNY=;
+  b=eHDCPA9PIH2T+gCNf7q5W6kdFunWVoRsrVfkn0opvQHlmK5Em20LOqsW
+   ZtRSvHHPCn8T0PDHFkw+eFdmpya5GocIVWNBJDpq6sVjUAmr8SWXNALtX
+   3Tv5oQNVy/prMr2kCnBfevse446UwwSXmwbK2ZkowyUk9VUGLZbTNTB4L
+   a2wt4rl1PwsAHs0a4OZO35Yaif0gr3oV1tkGkVbFxt5kaofVB6ti+RdXq
+   SViMJbwD2m6EyUIuY7qglG1Gzl+7Huhr0Kd6AqPP38OrgYRdGrU0NaQJf
+   wyKv38jf6XhNPCkM3nj4XjdvowdTNk8GvYiU8op8h4WjWYW7lYlbv1myG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="268005805"
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="265380204"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 08:35:15 -0700
+   d="scan'208";a="268005805"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 08:35:15 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="662994045"
+   d="scan'208";a="771922134"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 12 Jul 2022 08:35:12 -0700
+  by orsmga005.jf.intel.com with ESMTP; 12 Jul 2022 08:35:12 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3808916D; Tue, 12 Jul 2022 18:35:20 +0300 (EEST)
+        id 3234E18E; Tue, 12 Jul 2022 18:35:20 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Takashi Iwai <tiwai@suse.de>,
         Lucas Tanure <tanureal@opensource.cirrus.com>,
@@ -50,9 +50,9 @@ Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         James Schulman <james.schulman@cirrus.com>,
         David Rhodes <david.rhodes@cirrus.com>,
         Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH v2 4/4] ALSA: hda: cs35l41: Consolidate selections under SND_HDA_SCODEC_CS35L41
-Date:   Tue, 12 Jul 2022 18:35:19 +0300
-Message-Id: <20220712153519.35692-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 3/4] ALSA: hda: cs35l41: Drop wrong use of ACPI_PTR()
+Date:   Tue, 12 Jul 2022 18:35:18 +0300
+Message-Id: <20220712153519.35692-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220712153519.35692-1-andriy.shevchenko@linux.intel.com>
 References: <20220712153519.35692-1-andriy.shevchenko@linux.intel.com>
@@ -62,49 +62,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Selections can be propagated via selections, while dependencies are not.
-Hence, consolidate selections under the SND_HDA_SCODEC_CS35L41 option.
+ACPI_PTR() is more harmful than helpful. For example, in this case
+if CONFIG_ACPI=n, the ID table left unused which is not what we want.
+
+Instead of adding ifdeffery or attribute here and there, drop ACPI_PTR().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 v2: no changes
- sound/pci/hda/Kconfig | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ sound/pci/hda/cs35l41_hda_i2c.c | 8 +++-----
+ sound/pci/hda/cs35l41_hda_spi.c | 8 +++-----
+ 2 files changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/sound/pci/hda/Kconfig b/sound/pci/hda/Kconfig
-index e86cf80bdf96..8b73a12d356f 100644
---- a/sound/pci/hda/Kconfig
-+++ b/sound/pci/hda/Kconfig
-@@ -93,16 +93,16 @@ config SND_HDA_PATCH_LOADER
+diff --git a/sound/pci/hda/cs35l41_hda_i2c.c b/sound/pci/hda/cs35l41_hda_i2c.c
+index ec626e0fbedc..df39fc76e6be 100644
+--- a/sound/pci/hda/cs35l41_hda_i2c.c
++++ b/sound/pci/hda/cs35l41_hda_i2c.c
+@@ -6,9 +6,9 @@
+ //
+ // Author: Lucas Tanure <tanureal@opensource.cirrus.com>
  
- config SND_HDA_SCODEC_CS35L41
- 	tristate
-+	select SND_HDA_GENERIC
-+	select REGMAP_IRQ
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+-#include <linux/acpi.h>
  
- config SND_HDA_SCODEC_CS35L41_I2C
- 	tristate "Build CS35L41 HD-audio side codec support for I2C Bus"
- 	depends on I2C
- 	depends on ACPI || COMPILE_TEST
- 	depends on SND_SOC
--	select SND_HDA_GENERIC
- 	select SND_SOC_CS35L41_LIB
- 	select SND_HDA_SCODEC_CS35L41
--	select REGMAP_IRQ
- 	help
- 	  Say Y or M here to include CS35L41 I2C HD-audio side codec support
- 	  in snd-hda-intel driver, such as ALC287.
-@@ -115,10 +115,8 @@ config SND_HDA_SCODEC_CS35L41_SPI
- 	depends on SPI_MASTER
- 	depends on ACPI || COMPILE_TEST
- 	depends on SND_SOC
--	select SND_HDA_GENERIC
- 	select SND_SOC_CS35L41_LIB
- 	select SND_HDA_SCODEC_CS35L41
--	select REGMAP_IRQ
- 	help
- 	  Say Y or M here to include CS35L41 SPI HD-audio side codec support
- 	  in snd-hda-intel driver, such as ALC287.
+ #include "cs35l41_hda.h"
+ 
+@@ -43,19 +43,17 @@ static const struct i2c_device_id cs35l41_hda_i2c_id[] = {
+ 	{}
+ };
+ 
+-#ifdef CONFIG_ACPI
+ static const struct acpi_device_id cs35l41_acpi_hda_match[] = {
+ 	{"CLSA0100", 0 },
+ 	{"CSC3551", 0 },
+-	{ },
++	{}
+ };
+ MODULE_DEVICE_TABLE(acpi, cs35l41_acpi_hda_match);
+-#endif
+ 
+ static struct i2c_driver cs35l41_i2c_driver = {
+ 	.driver = {
+ 		.name		= "cs35l41-hda",
+-		.acpi_match_table = ACPI_PTR(cs35l41_acpi_hda_match),
++		.acpi_match_table = cs35l41_acpi_hda_match,
+ 	},
+ 	.id_table	= cs35l41_hda_i2c_id,
+ 	.probe		= cs35l41_hda_i2c_probe,
+diff --git a/sound/pci/hda/cs35l41_hda_spi.c b/sound/pci/hda/cs35l41_hda_spi.c
+index 3a1472e1bc24..2f5afad3719e 100644
+--- a/sound/pci/hda/cs35l41_hda_spi.c
++++ b/sound/pci/hda/cs35l41_hda_spi.c
+@@ -6,7 +6,7 @@
+ //
+ // Author: Lucas Tanure <tanureal@opensource.cirrus.com>
+ 
+-#include <linux/acpi.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/spi/spi.h>
+ 
+@@ -39,18 +39,16 @@ static const struct spi_device_id cs35l41_hda_spi_id[] = {
+ 	{}
+ };
+ 
+-#ifdef CONFIG_ACPI
+ static const struct acpi_device_id cs35l41_acpi_hda_match[] = {
+ 	{ "CSC3551", 0 },
+-	{},
++	{}
+ };
+ MODULE_DEVICE_TABLE(acpi, cs35l41_acpi_hda_match);
+-#endif
+ 
+ static struct spi_driver cs35l41_spi_driver = {
+ 	.driver = {
+ 		.name		= "cs35l41-hda",
+-		.acpi_match_table = ACPI_PTR(cs35l41_acpi_hda_match),
++		.acpi_match_table = cs35l41_acpi_hda_match,
+ 	},
+ 	.id_table	= cs35l41_hda_spi_id,
+ 	.probe		= cs35l41_hda_spi_probe,
 -- 
 2.35.1
 
