@@ -2,198 +2,248 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F4EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96990C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:52:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233284AbiGLMvt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:51:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
+        id S233296AbiGLMwL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:52:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233317AbiGLMvd (ORCPT
+        with ESMTP id S233286AbiGLMwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:51:33 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEF15B6D80
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:51:32 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CCDkSl010416;
-        Tue, 12 Jul 2022 12:51:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=4foI6YCk2Bd7T4O4j4B9KrFeFeL/pFwLTlN/yUcuRZ4=;
- b=S7kwrfmF+oXmmkXHoVx+6WexPoRMDEyNBQJnszQAahOsIpXRIfp/O48zyic/BE2L4eU8
- p1BxMmGUs/OKlDXk28FI3dmarP43kQsJO0BDlDHy72X8q08DaciIW0XdVSTE7Jzrw2Rj
- iLrfS7xgf+9Ce0RnsewOXR9FSD0bdndBfrDiWYTN8ajOGUznNJ9jWrtsCfbdeGUlhpYj
- iNS+1fBpI5KXBh3rhvdcylsqNwiMHht+1mgQSQfVIMG4+mRPe8Z6D/Xeij33J9mqlHwb
- uEgyRoN90JcFjFlBty+9lSSQsHH4Scm/jjNKkfpONlXOiYtBcS4k/9y+nEHe0D2WZqSE YA== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h727seswj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 12:51:10 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26CCfOOU007698;
-        Tue, 12 Jul 2022 12:51:09 GMT
-Received: from nam02-dm3-obe.outbound.protection.outlook.com (mail-dm3nam02lp2049.outbound.protection.outlook.com [104.47.56.49])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7043ppd6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 12:51:08 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RBOEYkadUhzpXyBWjJsCtzJ5sm5B8j+drDPewf7UDmuPKXR0qE9VA+SiFbv17DGujlm5+uGIyqhgCDt5h7rqtYs9pTnD8ghkbvd2L1xFMde2EUVy8oaa54aJFRIHO+ZxL/Yp2xR+J07dRoYWsdwOttQu7n+gNQOwNbhfjUgbemCBwzYuCObWS/iDHG5BOSWbELGjY6UyZ+IkPrGzAQqGRWlqxA2K3t/MBWkzBiUOYl1GFMO0oWu92RHNo5OE9wflChpfhuj83mnCLxulSDSiplqt1VnEO78j19SLt375SNta5jfxIWBiqk+Fyo3bSX2NZ2YKX2Gzg0oXIEzSSZX4ag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4foI6YCk2Bd7T4O4j4B9KrFeFeL/pFwLTlN/yUcuRZ4=;
- b=c6IyvT0NzSIjNHVEAU8m8gb81xPxwmOGvA6K+3Duv4JBx0N0mhzbkvvqohDGm2m5CaXwCQ8SisP3xssl7Pcir8J7tTW8x0qnQ1NzmMwqgkpqu91MqbxoQZO/wqY+0MIEcmWG5WyyIPDKELJI/LHRiBEVZ0Oli8kJGdciN25VmMBsGCB+Mp5JBgDwKEfyVu1yvmZsNJSOK+/vnaO3R4oKKHUjVKgM0xwmvi2fAjtRBf6yKQC4pLrUaeJPwZ1VFMJYh/cvYJBCVrfXGFVjzqoTjSjpqIegPG2biaRz/Ilg5v84eTsUx4jdnVUO5WMIVocj5OHikVtuilpjepr8tN0YOA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 12 Jul 2022 08:52:09 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE5F32EF0;
+        Tue, 12 Jul 2022 05:52:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4foI6YCk2Bd7T4O4j4B9KrFeFeL/pFwLTlN/yUcuRZ4=;
- b=AFeWaK3CubutXw87eaEvSkAaVyOkySBN+eBKEQ8Ie6CKnOfLyuJ7Q1P8hGxMY1LYZxvQbVVJC3nP+ZTLTqLmUDsMoFHyDy/NkWrA7ZAvsdG9duAH3PFwg7Tas5knsizmfL/+YcUoo+TB6A/NHQAyAADrGrUDAt64NL2Y+WQlkCk=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CH2PR10MB4197.namprd10.prod.outlook.com
- (2603:10b6:610:7d::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Tue, 12 Jul
- 2022 12:51:02 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 12:51:02 +0000
-Date:   Tue, 12 Jul 2022 15:50:49 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kbuild@lists.01.org, Daniel Latypov <dlatypov@google.com>
-Cc:     lkp@intel.com, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>
-Subject: [ammarfaizi2-block:shuah/linux-kselftest/kunit 4/16]
- lib/kunit/executor.c:78 kunit_filter_tests() warn: possible memory leak of
- 'copy'
-Message-ID: <202207101328.ASjx88yj-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MRXP264CA0048.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:14::36) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657630328; x=1689166328;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=U2Un04XVTmq4xkp4/4A5znANGKPLAF6CfLJmOF8T2vQ=;
+  b=WUh62GntfmIVriD0qG3ScSCnQmITP8wbNooeI9m0WWvX5RQ4vWPelNDP
+   fjPAHPCC+oahxRlU68MefjN2073MOcWYwP78zF5n+X2+rb9fOiefW8ImI
+   mFiJxFRPVDT4uMR1HdY9Bty6FXa65Ufoi1JIFePhUtLBuTOPqc32DuPe8
+   U=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 12 Jul 2022 05:52:07 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 05:52:07 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 12 Jul 2022 05:52:07 -0700
+Received: from [10.216.22.118] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Jul
+ 2022 05:52:03 -0700
+Message-ID: <78aeec99-60d4-c495-0623-c9450621d23b@quicinc.com>
+Date:   Tue, 12 Jul 2022 18:21:59 +0530
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9dde7561-ca54-4622-6b6d-08da64052cf9
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4197:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eStE2BymIbWBI8E2xU7OQM0r2l0cuYNCrypYpsjI0ECvzRA+BIgLi4kgsSX6wkLQQbQlcDSnU7GZnrWx5KehevmZc8IAAVnWlIc2Y5C8HUyUSHNRnEWq8a6tX5JZnXERT9+Ye7f6A3r3UYkqCbyKfz7wnii9nIq34P6S4x45JsUDQbP5srGAuC+gOcZrcvVfalXsRJLhioJKW7TMqreIdRPTI4ziMEsDJqpHrsUT3Wa5wwSe9nIXpPOcOxGTBgNAlE2Euc+FNYKrUcsM0g+3iG83+3Y+pp/3WpGmnhL43tYUlF4H4PFfz29WTc9cgzk4QQ14d3NcyRY9oiYaBotx1aAdtKxyfQahf7SC93mNdO+j10CH0IpCf8I+3VhY/6TQ1qol4W2zG9vSa5B+pO2gh+lOQ1xi7qO6NQLdWXvkjpZuHd8Qe2Wxuh5DDeXoMI+1ydw/jPVr2XRgQ75tlTjNgwZVwM8ctUHC876dPsNxcPW11egNxXmByA1L5v9nRvDqV/tRGzUhTaJ1SN2Mbx1iNkq8RQmsjh0bU8Fu+kdWWheDmjYDzevVNCTlQl0KdSZWuTCRmAOheWVlNekhdumyyGTBBDCsYrsMpstQgM0HlG/P0UlZBcFZGosP3zlSOh7TVmGIE5IA74Kh5KcUH6OHmEhXBQzyjqh88ylA3hZs4fjGTv4NnXzNV3J32ZIPEe/PLb7Pr3mzCEVA1+sHv7vnOdXMcz0xI5qaUnPpmCMZKpqrnfwCIspfKSEoWpT/XXdvgV2gHB8NxBEV9opVoPoWn9ROsc8MgDwlGez6Iq7GNEFOoy9qmKAn+CtiqyceCMXPl8aPjlR+can8qxQSvFXBSmaNOilC2sQg7eBJt1MnQN2pn5msfseVSoz6zcgfFqpF
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(366004)(136003)(346002)(376002)(396003)(8936002)(38350700002)(66476007)(4326008)(8676002)(6506007)(66946007)(66556008)(38100700002)(186003)(26005)(83380400001)(52116002)(6512007)(6666004)(41300700001)(9686003)(6486002)(1076003)(44832011)(966005)(478600001)(2906002)(316002)(86362001)(36756003)(54906003)(6916009)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?P8ZIYDujd/QEDl3+qicMh57CznrtQ8o11LFuJuD4jA9lwF7fdLW1bFfTE7EO?=
- =?us-ascii?Q?qsUX3RKaUMQgh7d9zGFw8ag38LZsdtbo4fHdyPE0vLmkhxKsIKTyYQacTTgb?=
- =?us-ascii?Q?ptXu3+xZtkh2qssw9ZMiyibB2HjHBDOHr/XMfDVZP/bQVQ27CavVslnqYYT4?=
- =?us-ascii?Q?XA4V03+MIouGjbIbi/d9HCC9xJ9vSBAt2GQGjwv2GNc74CtAP3E4580Hzwr8?=
- =?us-ascii?Q?+3Xfy0ILUp34iVUm7QHrAslLpiUQk2og2s7hM3O0VwuHHmPrwz5digg/OP23?=
- =?us-ascii?Q?kZEa6ZhwvA1Iyo+mq4ON7TeeyCxLMjmyQCWzRNYzgtIFzw+7cS9WRZ8iMjyB?=
- =?us-ascii?Q?J1hz4o/r+39lsHDm1UwrEd4zqVC2vnnVO/pvg6n+A5QhNpPJ6hUqkUmt3GhJ?=
- =?us-ascii?Q?Sra/s5NjvA/pLvZ8LgFtjT3ATHq2NN9k9kKGw0aIoX88qlUJC0EVmIPsDL8i?=
- =?us-ascii?Q?dYUFlveVPDzEMZ8ycf4zXswdi4ce9h8dLXNCzZBS95SEnuiBJ+a9FnJShEnn?=
- =?us-ascii?Q?o5oYfgtGZ09mO2u25ocwf16B5UHLTdxSvil3+4x5HXiQpxI2p889BcimuU5r?=
- =?us-ascii?Q?lZTkHwvdMnOe1UrV3WMgr1p/OvWyuyrN++twt4VhpOkv9KbGxQ7e4MsLJdWP?=
- =?us-ascii?Q?of2dLjEirr8jR9JlkAbdhHU6L/SjRQRWNbRYcOa2Z5DK9WgqBPhYJYDPVAWI?=
- =?us-ascii?Q?UpdM4f/3O+nU4r4cdwfrFE7v5+5O28VNr9+IWTiAq4e9YzkZvX5dcIdHzjmW?=
- =?us-ascii?Q?1X8MTrfKJ1mSXoQiX8h2nJNLkMLJ5wp0inoUuQkM19KTZ7+a9bn1s5eK3T/a?=
- =?us-ascii?Q?HhJCySOD7A1nafJ0BCkjurIrfERz5gOjrXVzhUmUO8HpYkbuPJ/nLMTGquy7?=
- =?us-ascii?Q?k5mOKGYRlIkgXmCYRMJZAwmjY3PoGaNrC6R/OX++p7QjA1OBu8Fi523iuvkr?=
- =?us-ascii?Q?UHisSFi2M2coxcs16otsHoxRBNyOh6N2Y+Chw/tVT/wMXggeywZ8vuW20EZA?=
- =?us-ascii?Q?fBKhhOXbrkCZuSGjFq9sulNeJhQZtOU8ThS/rTt7lAB0eigDsQ/IaGDUcr2P?=
- =?us-ascii?Q?dTZySD7IxFI1dvm82bQNANj5h1VxelyRhHMWuhQ3bOwUigM2aDGi7JxN8UQs?=
- =?us-ascii?Q?ug4Yy9UiAzXKTG0keyh1qaiefd8By2F3XQfO+Yn5zg4uI9L23WFY5aKSgeA+?=
- =?us-ascii?Q?o40M931b/OvTe6+7O92ACJl6cB17IcLVvT51wqToRRnXga5M+YXJkIXADylU?=
- =?us-ascii?Q?NIRqB2T3NyiV6s3IAwcBVzluVaT7gnTxi2aCqMlm0ad9Jg8475FJEas5RR09?=
- =?us-ascii?Q?r1uvo+GtcFs7y/4yRUUF9CbFG6Lkqbcr0M30FSgy8RsQQRkyBCwx4qZl1WC2?=
- =?us-ascii?Q?gEyB0obVUz1ocAEW4zB5iao5fNOcDL7lHFiMYZaZjKNh4s0tLNf9Xo8c0Unt?=
- =?us-ascii?Q?m3O6J0wXVtMGbJpJwetRdPBhyA1fFEVOiMeiu4nXbj80n7rUUgFBPnhcUIu8?=
- =?us-ascii?Q?by1BpPPw5Hye0SLeJ1ry24af0Zz7PFUukKsNQbg/0MEQsAkXkgh3eLhSh5gq?=
- =?us-ascii?Q?kn3EgTV1yK1+s0J4dMK/FcwGp7rm1MNg6ViDcG1rexFU87llf/PHMCowjP7l?=
- =?us-ascii?Q?ig=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dde7561-ca54-4622-6b6d-08da64052cf9
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 12:51:02.0222
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m2tIIFxWw/v7vrC2hLZ5qJBT+89DavFE/LTVocGUMOxaVOWlMleRPo3coFGQix0SqzRtD4TnlBE7QACujvGXPlwbS0z+AtmviSyy4HV41u0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4197
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-12_08:2022-07-12,2022-07-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0 mlxscore=0
- suspectscore=0 adultscore=0 spamscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207120049
-X-Proofpoint-ORIG-GUID: IA5duPaD8L8HaRhczHcHbqUjKAyhh6mo
-X-Proofpoint-GUID: IA5duPaD8L8HaRhczHcHbqUjKAyhh6mo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [V4] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which
+ otherwise could return a sub-optimal clock rate.
+Content-Language: en-CA
+To:     Doug Anderson <dianders@chromium.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        <linux-serial@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Mukesh Savaliya (QUIC)" <quic_msavaliy@quicinc.com>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>
+References: <1657560808-9795-1-git-send-email-quic_vnivarth@quicinc.com>
+ <CAD=FV=U20bzea7qzuMCgrAApFqBZ_sc9QsRdUZ_xX4ptRas-0w@mail.gmail.com>
+From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+In-Reply-To: <CAD=FV=U20bzea7qzuMCgrAApFqBZ_sc9QsRdUZ_xX4ptRas-0w@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block shuah/linux-kselftest/kunit
-head:   7635778bac7e46458392c1261e3916e8e9e86860
-commit: d2fbdde838f270377de4fc20e919aac3941ea55f [4/16] kunit: use kmemdup in kunit_filter_tests(), take suite as const
-config: arc-randconfig-m031-20220707 (https://download.01.org/0day-ci/archive/20220710/202207101328.ASjx88yj-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+On 7/11/2022 11:35 PM, Doug Anderson wrote:
+> Hi,
+>
+> On Mon, Jul 11, 2022 at 10:33 AM Vijaya Krishna Nivarthi
+> <quic_vnivarth@quicinc.com> wrote:
+>> In the logic around call to clk_round_rate(), for some corner conditions,
+>> get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
+>> exact clock rate was not found lowest clock was being returned.
+>>
+>> Search for suitable clock rate in 2 steps
+>> a) exact match or within 2% tolerance
+>> b) within 5% tolerance
+>> This also takes care of corner conditions.
+>>
+>> Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
+>> Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
+>> ---
+>> v4: replaced pr_dbg calls with dev_dbg
+>> v3: simplified algorithm further, fixed robot compile warnings
+>> v2: removed minor optimisations to make more readable
+>> v1: intial patch contained slightly complicated logic
+>> ---
+>>   drivers/tty/serial/qcom_geni_serial.c | 89 +++++++++++++++++++++--------------
+>>   1 file changed, 54 insertions(+), 35 deletions(-)
+>>
+>> diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
+>> index 2e23b65..f88b042 100644
+>> --- a/drivers/tty/serial/qcom_geni_serial.c
+>> +++ b/drivers/tty/serial/qcom_geni_serial.c
+>> @@ -943,52 +943,71 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
+>>          return 0;
+>>   }
+>>
+>> -static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
+>> -                       unsigned int sampling_rate, unsigned int *clk_div)
+>> +static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
+>> +                       unsigned int *clk_div, unsigned int percent_tol)
+>>   {
+>> -       unsigned long ser_clk;
+>> -       unsigned long desired_clk;
+>> -       unsigned long freq, prev;
+>> +       unsigned long freq;
+>>          unsigned long div, maxdiv;
+>> -       int64_t mult;
+>> -
+>> -       desired_clk = baud * sampling_rate;
+>> -       if (!desired_clk) {
+>> -               pr_err("%s: Invalid frequency\n", __func__);
+>> -               return 0;
+>> -       }
+>> +       u64 mult;
+>> +       unsigned long offset, abs_tol, achieved;
+>>
+>> +       abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
+>>          maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
+>> -       prev = 0;
+>> -
+>> -       for (div = 1; div <= maxdiv; div++) {
+>> -               mult = div * desired_clk;
+>> -               if (mult > ULONG_MAX)
+>> +       div = 1;
+>> +       while (div <= maxdiv) {
+>> +               mult = (u64)div * desired_clk;
+>> +               if (mult != (unsigned long)mult)
+>>                          break;
+>>
+>> -               freq = clk_round_rate(clk, (unsigned long)mult);
+>> -               if (!(freq % desired_clk)) {
+>> -                       ser_clk = freq;
+>> -                       break;
+>> -               }
+>> +               offset = div * abs_tol;
+>> +               freq = clk_round_rate(clk, mult - offset);
+>>
+>> -               if (!prev)
+>> -                       ser_clk = freq;
+>> -               else if (prev == freq)
+>> +               /* Can only get lower if we're done */
+>> +               if (freq < mult - offset)
+>>                          break;
+>>
+>> -               prev = freq;
+>> +               /*
+>> +                * Re-calculate div in case rounding skipped rates but we
+>> +                * ended up at a good one, then check for a match.
+>> +                */
+>> +               div = DIV_ROUND_CLOSEST(freq, desired_clk);
+>> +               achieved = DIV_ROUND_CLOSEST(freq, div);
+>> +               if (achieved <= desired_clk + abs_tol &&
+>> +                   achieved >= desired_clk - abs_tol) {
+>> +                       *clk_div = div;
+>> +                       return freq;
+>> +               }
+>> +
+>> +               div = DIV_ROUND_UP(freq, desired_clk);
+>>          }
+>>
+>> -       if (!ser_clk) {
+>> -               pr_err("%s: Can't find matching DFS entry for baud %d\n",
+>> -                                                               __func__, baud);
+>> -               return ser_clk;
+>> +       return 0;
+>> +}
+>> +
+>> +static unsigned long get_clk_div_rate(struct clk *clk, struct device *dev,
+>> +               unsigned int baud, unsigned int sampling_rate, unsigned int *clk_div)
+>> +{
+>> +       unsigned long ser_clk;
+>> +       unsigned long desired_clk;
+>> +
+>> +       desired_clk = baud * sampling_rate;
+>> +       if (!desired_clk) {
+>> +               dev_dbg(dev, "Invalid frequency\n");
+>> +               return 0;
+>>          }
+>>
+>> -       *clk_div = ser_clk / desired_clk;
+>> -       if (!(*clk_div))
+>> -               *clk_div = 1;
+>> +       /*
+>> +        * try to find a clock rate within 2% tolerance, then within
+>> +        */
+>> +       ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
+>> +       if (!ser_clk)
+>> +               ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
+>> +
+>> +       if (!ser_clk)
+>> +               dev_err(dev, "Couldn't find suitable clock rate for %d\n", desired_clk);
+>> +       else
+>> +               dev_dbg(dev, "desired_clk-%d, ser_clk-%d, clk_div-%d\n",
+>> +                               desired_clk, ser_clk, *clk_div);
+> Pretty sure the robot is going to yell at you again here. Here is my
+> analysis in detail:
+>
+> desired_clk
+> * type: unsigned long
+> * proper format code: %lu
+> * marginally acceptable code: %ld
+> * format code you used in v3: %lu
+> * did robot yell at you about this in v3: no
+> * format code you used in v4: %d
+> * will robot yell at you in v4: YES
+>
+> ser_clk:
+> * type: unsigned long
+> * proper format code: %lu
+> * marginally acceptable code: %ld
+> * format code you used in v3: %lu
+> * did robot yell at you about this in v3: no
+> * format code you used in v4: %d
+> * will robot yell at you in v4: YES
+>
+> *clk_div:
+> * type: unsigned int
+> * proper format code: %u
+> * marginally acceptable code: %d
+> * format code you used in v3: %lu
+> * did robot yell at you about this in v3: YES
+> * format code you used in v4: %d
+> * will robot yell at you in v4: no
+> * should you change it to %u: yes
+>
+>
+> -Doug
+Thank you very much.
+For some reason robot seems to be more forgiving towards dev_funcs than 
+pr_funcs, at least it did not yell at v4.
 
-smatch warnings:
-lib/kunit/executor.c:78 kunit_filter_tests() warn: possible memory leak of 'copy'
+Also I found usage of %d for uls at many locations.
 
-vim +/copy +78 lib/kunit/executor.c
+Made the changes and uploaded V5.
 
-a127b154a8f2317 Daniel Latypov 2021-09-14  57  static struct kunit_suite *
-d2fbdde838f2703 Daniel Latypov 2022-05-16  58  kunit_filter_tests(const struct kunit_suite *const suite, const char *test_glob)
-a127b154a8f2317 Daniel Latypov 2021-09-14  59  {
-a127b154a8f2317 Daniel Latypov 2021-09-14  60  	int n = 0;
-a127b154a8f2317 Daniel Latypov 2021-09-14  61  	struct kunit_case *filtered, *test_case;
-a127b154a8f2317 Daniel Latypov 2021-09-14  62  	struct kunit_suite *copy;
-a127b154a8f2317 Daniel Latypov 2021-09-14  63  
-a127b154a8f2317 Daniel Latypov 2021-09-14  64  	kunit_suite_for_each_test_case(suite, test_case) {
-a127b154a8f2317 Daniel Latypov 2021-09-14  65  		if (!test_glob || glob_match(test_glob, test_case->name))
-a127b154a8f2317 Daniel Latypov 2021-09-14  66  			++n;
-a127b154a8f2317 Daniel Latypov 2021-09-14  67  	}
-a127b154a8f2317 Daniel Latypov 2021-09-14  68  
-a127b154a8f2317 Daniel Latypov 2021-09-14  69  	if (n == 0)
-a127b154a8f2317 Daniel Latypov 2021-09-14  70  		return NULL;
-a127b154a8f2317 Daniel Latypov 2021-09-14  71  
-d2fbdde838f2703 Daniel Latypov 2022-05-16  72  	copy = kmemdup(suite, sizeof(*copy), GFP_KERNEL);
-a02353f491622e4 Daniel Latypov 2022-05-11  73  	if (!copy)
-a02353f491622e4 Daniel Latypov 2022-05-11  74  		return ERR_PTR(-ENOMEM);
-a127b154a8f2317 Daniel Latypov 2021-09-14  75  
-a127b154a8f2317 Daniel Latypov 2021-09-14  76  	filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
-a02353f491622e4 Daniel Latypov 2022-05-11  77  	if (!filtered)
-a02353f491622e4 Daniel Latypov 2022-05-11 @78  		return ERR_PTR(-ENOMEM);
+-Vijay/
 
-kfree(copy)?  Is the burden of random devs looking at this warning
-forever more than the burden of adding a kfree()?  Hard to measure.
-
-a127b154a8f2317 Daniel Latypov 2021-09-14  79  
-a127b154a8f2317 Daniel Latypov 2021-09-14  80  	n = 0;
-a127b154a8f2317 Daniel Latypov 2021-09-14  81  	kunit_suite_for_each_test_case(suite, test_case) {
-a127b154a8f2317 Daniel Latypov 2021-09-14  82  		if (!test_glob || glob_match(test_glob, test_case->name))
-a127b154a8f2317 Daniel Latypov 2021-09-14  83  			filtered[n++] = *test_case;
-a127b154a8f2317 Daniel Latypov 2021-09-14  84  	}
-a127b154a8f2317 Daniel Latypov 2021-09-14  85  
-a127b154a8f2317 Daniel Latypov 2021-09-14  86  	copy->test_cases = filtered;
-a127b154a8f2317 Daniel Latypov 2021-09-14  87  	return copy;
-a127b154a8f2317 Daniel Latypov 2021-09-14  88  }
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
 
