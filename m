@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E330BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5952AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235663AbiGLTI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
+        id S235584AbiGLTIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235534AbiGLTHu (ORCPT
+        with ESMTP id S235550AbiGLTHz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:07:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB318FC997;
-        Tue, 12 Jul 2022 11:51:37 -0700 (PDT)
+        Tue, 12 Jul 2022 15:07:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC42E43D1;
+        Tue, 12 Jul 2022 11:51:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC40E61257;
-        Tue, 12 Jul 2022 18:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E043CC3411C;
-        Tue, 12 Jul 2022 18:51:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A94B861491;
+        Tue, 12 Jul 2022 18:51:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF782C3411C;
+        Tue, 12 Jul 2022 18:51:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651886;
-        bh=5S6bKsuNQF1LlVZaO05dG/FARg+b3qQ1Qba7KeHSXuQ=;
+        s=korg; t=1657651898;
+        bh=MXrrOTrkk/RGgoaIHAExHDTa3cUXx3Dyxn8DhpPAaWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJnP7dImpJjreTZr9DFiKq1q+mt+VWMBoRQ7EThs2tzXPiIEAn2ztMKaLh8D0LfuQ
-         tLqbvqbxivl/dPUxbepDXdphwV1JFlNMk6R0VsoM4eI4vUh+W94pOwbJduS0eeZs0+
-         E4Q30DfzysT2mgqxkcqib0KYMGx7yRcHSjKZDhVw=
+        b=ipHmrddWCTTacHSmkOtwR8SWm0lTgdBIuXm30dvmK9RMy/wYCpWtkfA/DMz0CXz5v
+         xT2CVwaM7cE8hB0n/zE53IQIRdl7NJotz6L2u2x5ZZnqzZHstSoVO5BCAkHydoDOzQ
+         FqL3VogMvwe6jqMYw1ZEcinhU+q/jsC7es+K3qsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 04/61] x86/entry: Dont call error_entry() for XENPV
-Date:   Tue, 12 Jul 2022 20:39:01 +0200
-Message-Id: <20220712183237.115100099@linuxfoundation.org>
+Subject: [PATCH 5.18 16/61] x86/bpf: Use alternative RET encoding
+Date:   Tue, 12 Jul 2022 20:39:13 +0200
+Message-Id: <20220712183237.596015580@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -49,49 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 64cbd0acb58203fb769ed2f4eab526d43e243847 upstream.
+commit d77cfe594ad50e0bf95d457e02ccd578791b2a15 upstream.
 
-XENPV guests enter already on the task stack and they can't fault for
-native_iret() nor native_load_gs_index() since they use their own pvop
-for IRET and load_gs_index(). A CR3 switch is not needed either.
+Use the return thunk in eBPF generated code, if needed.
 
-So there is no reason to call error_entry() in XENPV.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220503032107.680190-6-jiangshanlai@gmail.com
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |   13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+ arch/x86/net/bpf_jit_comp.c |   19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -336,8 +336,17 @@ SYM_CODE_END(push_and_clear_regs)
- 	call push_and_clear_regs
- 	UNWIND_HINT_REGS
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -420,6 +420,21 @@ static void emit_indirect_jump(u8 **ppro
+ 	*pprog = prog;
+ }
  
--	call	error_entry
--	movq	%rax, %rsp			/* switch to the task stack if from userspace */
-+	/*
-+	 * Call error_entry() and switch to the task stack if from userspace.
-+	 *
-+	 * When in XENPV, it is already in the task stack, and it can't fault
-+	 * for native_iret() nor native_load_gs_index() since XENPV uses its
-+	 * own pvops for IRET and load_gs_index().  And it doesn't need to
-+	 * switch the CR3.  So it can skip invoking error_entry().
-+	 */
-+	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
-+		"", X86_FEATURE_XENPV
++static void emit_return(u8 **pprog, u8 *ip)
++{
++	u8 *prog = *pprog;
 +
- 	ENCODE_FRAME_POINTER
- 	UNWIND_HINT_REGS
++	if (cpu_feature_enabled(X86_FEATURE_RETHUNK)) {
++		emit_jump(&prog, &__x86_return_thunk, ip);
++	} else {
++		EMIT1(0xC3);		/* ret */
++		if (IS_ENABLED(CONFIG_SLS))
++			EMIT1(0xCC);	/* int3 */
++	}
++
++	*pprog = prog;
++}
++
+ /*
+  * Generate the following code:
+  *
+@@ -1680,7 +1695,7 @@ emit_jmp:
+ 			ctx->cleanup_addr = proglen;
+ 			pop_callee_regs(&prog, callee_regs_used);
+ 			EMIT1(0xC9);         /* leave */
+-			EMIT1(0xC3);         /* ret */
++			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
+ 			break;
  
+ 		default:
+@@ -2157,7 +2172,7 @@ int arch_prepare_bpf_trampoline(struct b
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
+ 		/* skip our return address and return to parent */
+ 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
+-	EMIT1(0xC3); /* ret */
++	emit_return(&prog, prog);
+ 	/* Make sure the trampoline generation logic doesn't overflow */
+ 	if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
+ 		ret = -EFAULT;
 
 
