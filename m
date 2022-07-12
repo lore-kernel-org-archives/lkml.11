@@ -2,106 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE41DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9025C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233017AbiGLKME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        id S232647AbiGLKMn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232647AbiGLKLp (ORCPT
+        with ESMTP id S232554AbiGLKMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:11:45 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D17AE3AE;
-        Tue, 12 Jul 2022 03:10:54 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id 6so13116188ybc.8;
-        Tue, 12 Jul 2022 03:10:54 -0700 (PDT)
+        Tue, 12 Jul 2022 06:12:21 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F3AAC068
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:11:56 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id 9-20020a1c0209000000b003a2dfdebe47so3663643wmc.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:11:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZrbCxqggRZgufaB5CskDiyadw0Cspfud9ibS8+AuPuk=;
-        b=Yk8iKP/8vgEX0WPSPr+xRjpb4dIH3/V3BA+FYO6VDhvl/l7xVvRWBfW+o9JMSJ75Da
-         vOeoVGJolK3DH+lsn+4nESm60wjSPWdxXYhMbhnqqk2rPXQQBM/ffB+ZXcFtaSMiygzY
-         M7cRaAK4NnsTxNDxzWkTSCfK+63tV1m6P7xwwrchzFAJsLUN7sprjd91MFbRFOJ0RspR
-         LqZhBz4sczywLwXQovlWNaP/SUsyrBnUvQDa0s2Yns6nLEOuLK0wxODopQsxHl/1meOS
-         sN9YMY792gkDzlgSacr08pVSd/QOsOt6GwTxkBww9q+xMszIH8jM00XA9hRtYrNWK/M6
-         QEVg==
+        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=i2XYOzCUtA8Ta1rr8OzoyXDjrIADtZBW93UGTbpRQTs=;
+        b=HuqOXEtE1Aefa8vkyqcUnK8kCIMt6cgP0dnwVak+AjhJ/OJs5cVFYIaPCgtc8AybKr
+         PM1mAszWA+rKfgVfOqv32nx5ok8Q978lXTCZlK3ze46hzvc4YYD60jBe/HLJfP00kLrX
+         bNCjxDultJYZJznYedjsjFfy0/mq/fejVM3zypto8nxiwJZ+IBvAcxf8cpBARlRSuNOA
+         lpK5F/aGSKF9RpEaZSXaWZVDH2vIfnBMoIeaMVJPDOqjwZCBOcPb+IHx7t+E9kzv/q6L
+         ojoJcJ/O5CjA++wuWCKvUpbgaN6WGsuwQgpqQkvkPFC3Qr0ueEfeV/uQw1y/AUvNAdPS
+         DkHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZrbCxqggRZgufaB5CskDiyadw0Cspfud9ibS8+AuPuk=;
-        b=de1YnMPEYDssl05ErppCd/g/9Cv8roZ6OyTUVXv6sHg9EOP/dk3FhL7Bzw4HiYti5b
-         gjLVOA+uHOs1PQrVPfEGLngIWpGTE2XVI0iDjk3N0ECZzwg2KXsRuCoCjCe+lRvUnXUx
-         m9l/gqwLBm/MHB+mIyOvLDPXsucHRULnO8Q/38AfA8nnvLkXsuraUrE1OwVwk+M2N7kw
-         bvfGpgQbvK4C5OATLGXUbKjMt0zWqDruFfe9tLXG5XrOK608B7a6+On/YdFORifMElbK
-         u1stU29uYgTSZET5oqRc2Ee1GwSR0f16Ije0GeEJ2Ki9zOXS8ydgNy+xlGAN7g0TZF0C
-         mmPg==
-X-Gm-Message-State: AJIora/Yq7uR+5taXVPw9jjzMdFAYwWo2tRehWeXSCzPGr8YflQy4Hbb
-        KitbDQVEQjkdAX9gXUEpNl70I731LQuxB/SryWg=
-X-Google-Smtp-Source: AGRyM1teu7aOq5oE9YFjF4RCgZz+6u17KG+1hMabxQp9o6pQtFpCaQg2BbQgLOxu9d3xFPmAjzPnH6cpkiK6xgkJq3A=
-X-Received: by 2002:a25:df97:0:b0:66f:6e7c:b3c0 with SMTP id
- w145-20020a25df97000000b0066f6e7cb3c0mr4621519ybg.93.1657620653173; Tue, 12
- Jul 2022 03:10:53 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=i2XYOzCUtA8Ta1rr8OzoyXDjrIADtZBW93UGTbpRQTs=;
+        b=A2xnLXZyqg3J9WOL5mrRu4vnWlFYecxlo817xcDk0mru4ftNhUdsQdV6bGh4D2jvAD
+         JVYGTW7QSOuPZm8BasL0N0aOnqq+AM6rp0ZcbkB69ZXl3lbmN9siePv84wR1jolvCzap
+         oVFpjeD/qrweKnI06VLpaNeL/48PeSoTLl6NANFfOX5vGr/u1+vccZGcFMM3KdrFdqm+
+         ihqkaEWu4yNTUF5j5fJsRS2bd+UHqsk9jYl1aq5Ot13l+/31Fw1Wd4Lt3LOY2i9tco0h
+         GiFZkEPr0t3lEXq4sDWdFXIhonTNH4AwCBfTYEHW/+sztS47nx9RSm2DnP2ArtPAh2bY
+         WUuw==
+X-Gm-Message-State: AJIora9NN6+bKDcgN+GMVVIcHFQd+Zc0m/nqf8YPhpB2hI+EAb2YmjoX
+        qao5ygEzCBPagVscPxIEkLsHKw==
+X-Google-Smtp-Source: AGRyM1vDQohmXGbbjMuTB8tna0YftEx/WQsqRgPk4KBe+/NA1T7pca7ljNWjq5QzQB47mumtb7HS6g==
+X-Received: by 2002:a05:600c:3845:b0:3a2:c04d:5ff9 with SMTP id s5-20020a05600c384500b003a2c04d5ff9mr2997243wmr.74.1657620715194;
+        Tue, 12 Jul 2022 03:11:55 -0700 (PDT)
+Received: from [192.168.178.32] ([51.155.200.13])
+        by smtp.gmail.com with ESMTPSA id b2-20020adfde02000000b0021d9591c64fsm7895138wrm.33.2022.07.12.03.11.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 03:11:54 -0700 (PDT)
+Message-ID: <e1dd40cd-647c-10b4-53f9-a313e509474e@isovalent.com>
+Date:   Tue, 12 Jul 2022 11:11:53 +0100
 MIME-Version: 1.0
-References: <20220710081853.1699028-1-uwu@icenowy.me> <20220710081853.1699028-3-uwu@icenowy.me>
- <CAHp75Vdso_PGUomjmKaF1ytdUe4qLeAbpwkNmcRng9aNHs7g8w@mail.gmail.com> <7a947683de71e68a0925cfd4cab80238c3a03205.camel@icenowy.me>
-In-Reply-To: <7a947683de71e68a0925cfd4cab80238c3a03205.camel@icenowy.me>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 12:10:15 +0200
-Message-ID: <CAHp75Vc0kfQZJjdu+MrJAAdcR7GKD9Sh1zU4gz5dua5Lw9BVHA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] pinctrl: sunxi: add support for R329 CPUX pin controller
-To:     Icenowy Zheng <uwu@icenowy.me>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.1
+Subject: Re: [PATCH bpf-next 1/3] samples: bpf: Fix cross-compiling error by
+ using bootstrap bpftool
+Content-Language: en-GB
+To:     Pu Lehui <pulehui@huawei.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20220712030813.865410-1-pulehui@huawei.com>
+ <20220712030813.865410-2-pulehui@huawei.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+In-Reply-To: <20220712030813.865410-2-pulehui@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 11:37 AM Icenowy Zheng <uwu@icenowy.me> wrote:
-> =E5=9C=A8 2022-07-10=E6=98=9F=E6=9C=9F=E6=97=A5=E7=9A=84 21:06 +0200=EF=
-=BC=8CAndy Shevchenko=E5=86=99=E9=81=93=EF=BC=9A
-> > On Sun, Jul 10, 2022 at 10:22 AM Icenowy Zheng <uwu@icenowy.me>
-> > wrote:
+On 12/07/2022 04:08, Pu Lehui wrote:
+> Currently, when cross compiling bpf samples, the host side cannot
+> use arch-specific bpftool to generate vmlinux.h or skeleton. Since
+> samples/bpf use bpftool for vmlinux.h, skeleton, and static linking
+> only, we can use lightweight bootstrap version of bpftool to handle
+> these, and it's always host-native.
+> 
+> Signed-off-by: Pu Lehui <pulehui@huawei.com>
+> Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  samples/bpf/Makefile | 16 +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+> 
+> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> index 5002a5b9a7da..57012b8259d2 100644
+> --- a/samples/bpf/Makefile
+> +++ b/samples/bpf/Makefile
+> @@ -282,12 +282,18 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
+>  
+>  BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
+>  BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
+> -BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
+> +BPFTOOL := $(BPFTOOL_OUTPUT)/bootstrap/bpftool
+> +ifeq ($(CROSS_COMPILE),)
+>  $(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
+> -	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
+> -		OUTPUT=$(BPFTOOL_OUTPUT)/ \
+> -		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
+> -		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
+> +	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../		\
+> +		OUTPUT=$(BPFTOOL_OUTPUT)/ 					\
+> +		LIBBPF_BOOTSTRAP_OUTPUT=$(LIBBPF_OUTPUT)/ 			\
+> +		LIBBPF_BOOTSTRAP_DESTDIR=$(LIBBPF_DESTDIR)/ bootstrap
+> +else
+> +$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
 
-...
+Thanks for this! Just trying to fully understand the details here. When
+cross-compiling, you leave aside the dependency on target-arch-libbpf,
+so that "make -C <bpftool-dir> bootstrap" rebuilds its own host-arch
+libbpf, is this correct?
 
-> > > +#include <linux/of.h>
-> > > +#include <linux/of_device.h>
-> >
-> > No use of these.
-> >
-> > > +#include <linux/pinctrl/pinctrl.h>
-> >
-> > Missed headers:
-> > mod_devicetable.h
->
-> Thanks for these.
->
-> In addition, how to decide what header should be included? The code
-> works properly because of_device.h includes mod_devicetable.h.
+> +	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ 		\
+> +		OUTPUT=$(BPFTOOL_OUTPUT)/ bootstrap
+> +endif
+>  
+>  $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+>  	$(call msg,MKDIR,$@)
 
-The best approach is usually learnt with experience =E2=80=94 the more you
-code, the more you get. One of the rules is to avoid too many
-inclusions and at the same time reduce indirect inclusions, so that
-the headers which are guaranteed to be included by others shouldn't
-appear. Another rule is that, for the headers (*.h files) the forward
-declarations are preferable over the inclusion in case if the opaque
-pointers are in use.
-
---=20
-With Best Regards,
-Andy Shevchenko
