@@ -2,110 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DAF4CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07963C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:17:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiGLIQD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:16:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
+        id S232622AbiGLIRL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:17:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbiGLIQA (ORCPT
+        with ESMTP id S229739AbiGLIRK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:16:00 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD23B9FE2A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:15:58 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id bn33so8971008ljb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:15:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Gz399WGL/sxc1W3UfSmBpMoYFpV/x2jFmQy30J4h9co=;
-        b=Bimnodoh6uwfH+NtlsoPLf/Oi3uwH1U9mdkas6pSxeNsfHtRE/ouuE4NVGQXKwO5Ax
-         tgvQA8BXdm4JLpKz3Dr5HtOmGssyEfVYflCnkfelRrnRkJQ8oRqe64GooyhRUHDjxkU2
-         uXEr9MrHoUyP7oUgs/ylu3G/cHCV6/1nzTL7WceYyjQxzpK/JAmDtnsXvuIZIKB1NGUC
-         XbpACoUKcn5zHbBCzfUQFmokEf57OrJIzLb+9fqHGkyR8uL+Kl6bNRIwYHywCcX9/Fl7
-         9Qp7DkcGbr3dz6kwCX9WBZZWJqGPKP9ClckhirLmqBZtK20HbS5z9B+ncQ52UQQxYQv+
-         Rq8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Gz399WGL/sxc1W3UfSmBpMoYFpV/x2jFmQy30J4h9co=;
-        b=eKSygiupd52e4P5NeM/hpUuI5zsrXUM+wT4IOfchYuQCMCg7VmO2kbSGna0YnjRUbw
-         2UvUNKUWcceZc6yrbQ8Q4kT39Uv7x5pSCwpvvNDLHVg4Q+M6hZGGlH5MZeJIBwn/Gx7L
-         pJXt6UN1WPSP6FqYHPHj5dxmOYJ7Pd6sPsu39ECbTCdSUtBt1VzRoMOWf54m+n0ueCKt
-         GwoXn0ZqD1ab7AcKOD0n5o0+QN8K+kF2WokRKDHEze82/zwT9JchBz7gQBtubx95wkcn
-         EL+zwzXmDDsZXpe+mOv29guVKPnUiDLK7JgTxoePmblGJep6HVA1vtGJXwNG1XkbHoKE
-         5R1g==
-X-Gm-Message-State: AJIora96mOdV12N/isoOrWmHSkA1iO/AKPZtydcVG6f2O4OKmEtQgpD5
-        1sRgdB8GM9H8ief2FPqJHbxUaQ==
-X-Google-Smtp-Source: AGRyM1uthbH4eFg5trDb190JDSVIAHXMJyTiKFa+qO5+e0KBkT0TIyS1XH4glZaTr2Im0vcadeZUXQ==
-X-Received: by 2002:a2e:a172:0:b0:25d:6242:ee10 with SMTP id u18-20020a2ea172000000b0025d6242ee10mr8419047ljl.399.1657613757286;
-        Tue, 12 Jul 2022 01:15:57 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5cab-55.bb.online.no. [88.92.171.55])
-        by smtp.gmail.com with ESMTPSA id j5-20020a056512344500b004855e979abcsm2038559lfr.99.2022.07.12.01.15.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 01:15:56 -0700 (PDT)
-Message-ID: <154dd9ef-cb8c-d8d7-ae62-a73bac160089@linaro.org>
-Date:   Tue, 12 Jul 2022 10:15:54 +0200
+        Tue, 12 Jul 2022 04:17:10 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05210A025E;
+        Tue, 12 Jul 2022 01:17:08 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 25AE06601A1F;
+        Tue, 12 Jul 2022 09:17:06 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657613826;
+        bh=d3b+CsWkPsYr8qKMtwTzmv9uLDZ9cL0m9n4E0ufVExw=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=fz2EGkZ9bpmliBI/TP4TTip8xfXgxpG5FeE08vweder9fo1LWxz2ddfc7e8VoKWmz
+         RQ4kSUcxxDI4oLUsXevLx+JYL7tdGNnWWR8aOJZHGNFm8GPmllL4539yYFiO8VL7Ol
+         TZhBRKH2wBKPHk/2rWYn749U0n8p/kPgtM66BigWXIEUUL2hLBlRrSH1M9akZJ+6Bu
+         1bq30IcUqKIB4VM3tLxfZIuqNomlRc/xnIX9w4GNa2xq1b/l7URBuZDPTVGwKwT2Tx
+         x0MgBVzjfZqQUbSs5Fgcj9lMT60Sbhv9q5RrALe1VsWrY/9yMWj+MFvp6DoyenH8jC
+         KSyRblMEgs7GA==
+Message-ID: <b6523c64-dfe2-13b0-db60-fb4f53ed1e31@collabora.com>
+Date:   Tue, 12 Jul 2022 10:17:03 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: npcm: Add npcm845
- compatible string
+Subject: Re: [PATCH v1 08/16] arm64: dts: mt8195: Add power domains controller
 Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, j.neuschaefer@gmx.net,
-        zhengbin13@huawei.com
-Cc:     openbmc@lists.ozlabs.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220711134312.234268-1-tmaimon77@gmail.com>
- <20220711134312.234268-2-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220711134312.234268-2-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-9-tinghan.shen@mediatek.com>
+ <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
+ <eec6aee5cd023fff6d986882db0330e1ab85a59d.camel@mediatek.com>
+ <0301ebc6-1222-e813-f237-f14ad8444940@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <0301ebc6-1222-e813-f237-f14ad8444940@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11/07/2022 15:43, Tomer Maimon wrote:
-> Add a compatible string for Nuvoton BMC NPCM845 ADC.
+Il 06/07/22 17:18, Krzysztof Kozlowski ha scritto:
+> On 06/07/2022 14:00, Tinghan Shen wrote:
+>> Hi Krzysztof,
+>>
+>> After discussing your message with our power team,
+>> we realized that we need your help to ensure we fully understand you.
+>>
+>> On Mon, 2022-07-04 at 14:38 +0200, Krzysztof Kozlowski wrote:
+>>> On 04/07/2022 12:00, Tinghan Shen wrote:
+>>>> Add power domains controller node for mt8195.
+>>>>
+>>>> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
+>>>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>>>> ---
+>>>>   arch/arm64/boot/dts/mediatek/mt8195.dtsi | 327 +++++++++++++++++++++++
+>>>>   1 file changed, 327 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>> index 8d59a7da3271..d52e140d9271 100644
+>>>> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>> @@ -10,6 +10,7 @@
+>>>>   #include <dt-bindings/interrupt-controller/irq.h>
+>>>>   #include <dt-bindings/phy/phy.h>
+>>>>   #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
+>>>> +#include <dt-bindings/power/mt8195-power.h>
+>>>>   
+>>>>   / {
+>>>>   	compatible = "mediatek,mt8195";
+>>>> @@ -338,6 +339,332 @@
+>>>>   			#interrupt-cells = <2>;
+>>>>   		};
+>>>>   
+>>>> +		scpsys: syscon@10006000 {
+>>>> +			compatible = "syscon", "simple-mfd";
+>>>
+>>> These compatibles cannot be alone.
+>>
+>> the scpsys sub node has the compatible of the power domain driver.
+>> do you suggest that the compatible in the sub node should move to here?
 > 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
-> ---
->  .../devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml     | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> Not necessarily, depends. You have here device node representing system
+> registers. They need they own compatibles, just like everywhere in the
+> kernel (except the broken cases...).
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-> index 001cf263b7d5..c9e9c5bf5e5b 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-> @@ -14,7 +14,10 @@ description:
->  
->  properties:
->    compatible:
-> -    const: nuvoton,npcm750-adc
-> +    oneOf:
-> +      - items:
+> Whether this should be compatible of power-domain driver, it depends
+> what this device node is. I don't know, I don't have your datasheets or
+> your architecture diagrams...
+> 
+>>
+>>>> +			reg = <0 0x10006000 0 0x1000>;
+>>>> +			#power-domain-cells = <1>;
+>>>
+>>> If it is simple MFD, then probably it is not a power domain provider.
+>>> Decide.
+>>
+>> this MFD device is the power controller on mt8195.
+> 
+> Then it is not a simple MFD but a power controller. Do not use
+> "simple-mfd" compatible.
+> 
+>> Some features need
+>> to do some operations on registers in this node. We think that implement
+>> the operation of these registers as the MFD device can provide flexibility
+>> for future use. We want to clarify if you're saying that an MFD device
+>> cannot be a power domain provider.
+> 
+> MFD device is Linuxism, so it has nothing to do here. I am talking only
+> about simple-mfd. simple-mfd is a simple device only instantiating
+> children and not providing anything to anyone. Neither to children. This
+>   the most important part. The children do not depend on anything from
+> simple-mfd device. For example simple-mfd device can be shut down
+> (gated) and children should still operate. Being a power domain
+> controller, contradicts this usually.
+> 
 
-This does not make sense. oneOf with one item. You also create now list
-breaking all existing users/ABI.
+If my interpretation of this issue is right, I have pushed a solution for it.
+Krzysztof, Matthias, can you please check [1] and give feedback, so that
+Tinghan can rewrite this commit ASAP?
 
-You probably wanted an enum here.
+Reason is - I need the MT8195 devicetree to be complete to push the remaining
+pieces for Tomato Chromebooks, of course.
 
-> +          - const: nuvoton,npcm750-adc
-> +          - const: nuvoton,npcm845-adc
->  
->    reg:
->      maxItems: 1
+[1]: https://patchwork.kernel.org/project/linux-mediatek/list/?series=658527
 
-
-Best regards,
-Krzysztof
+Thanks a lot,
+Angelo
