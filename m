@@ -2,139 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55F8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1508C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiGLM6N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:58:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S229752AbiGLM6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:58:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiGLM6K (ORCPT
+        with ESMTP id S229581AbiGLM6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:58:10 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3747DAA761
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=AdhEHYr8+2vzJ5ieaWHpDyda90wFHDOWzppwqyUC9n8=; b=Pv9rMtaJNlryzmYE7km5XCMOam
-        vdHV/99a/k+NILfGven3UhK9+SDXJfEE7RVvca24Vqj2Yoj22TI8zjqQiorYc6Q24/f4eYNVJ00R7
-        mft5zWm26mvW0iKvcuPGf++H0oeU4JNUnEGRp2gFWwVjveB5erlus28bF0qEHFuTTbQ+/KKSVhAZK
-        st3Sz7vnbCHGUSLUA2B4ruuUA9BJWn1yggNtRQactz076eGLOcmSrW8QQcRe4ltCZz3TdFUHMKyK8
-        eGufGrV7yIoJv7KnEIGXSdHogVZgqx8/0EDxDpsMKVcJ3wTtVl2aO2amUFFd3PzQKbfsJOENcmsf8
-        5dJL8TCw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBFSi-006w3J-0m; Tue, 12 Jul 2022 12:58:00 +0000
-Date:   Tue, 12 Jul 2022 13:57:59 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        syzbot <syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        syzkaller-bugs@googlegroups.com, Zach O'Keefe <zokeefe@google.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Liam Howlett <liam.howlett@oracle.com>
-Subject: Re: [syzbot] memory leak in xas_create
-Message-ID: <Ys1v1548IkSJ45F/@casper.infradead.org>
-References: <000000000000eb2d6c05e35a0d73@google.com>
- <20220711133808.d86400ce9960febcb0fd537b@linux-foundation.org>
- <YsyMQ2jzOICVbCda@casper.infradead.org>
- <CACT4Y+bL3aM-cVeYSLU7az1x2Yj1vH7GaQSq=Z-BGc5Vk1Vi4w@mail.gmail.com>
- <Ys1r06szkVi3QEai@casper.infradead.org>
- <CACT4Y+Z44fS04StzMh+sfUWo-k5sjYf3VGhhK2ppkHP=9RZQEw@mail.gmail.com>
+        Tue, 12 Jul 2022 08:58:49 -0400
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34568DE9A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:58:47 -0700 (PDT)
+Received: by mail-lj1-x22b.google.com with SMTP id m16so9754877ljh.10
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:58:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EGT/5rR75zdMwDOLE513Y0sGyM5McQ5xj8+VzcoomHc=;
+        b=x5Myz/Puv22xNJAXrjPJuxPyw/U2U2hxyuBqBUFFYjHVX1N0FHv7sQnEbXeuKbh8Dc
+         Y4jEovGFbfEASy1txuvK4uExzQEUGP2Pu6YK4ZkkbU7/AH/3km/AGzqkC3GGszhV4HZa
+         1ijAxPma5gSbh6bcGDsp6rc2rsmkHBmnZyfECrIfMLCmDyeYNLZmZKkVeJv0ux8aam2S
+         OYkQnwB2J2velsBalSoRT7/nggrbKlXyZzETTZ5CYBIsPz/2HCTKaaiSou/9bx63vRZr
+         6f2Azarr3yz0zR7P9TNSHkB4m7zEQVUDD1EIyQlCzAX7Cs+SNnPc0fchpnNbsUhvV0dJ
+         3+hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EGT/5rR75zdMwDOLE513Y0sGyM5McQ5xj8+VzcoomHc=;
+        b=vnbiQ/clAbswXn0QD4HpHfrTsYBWYqelP5pFDvcbkTqcxlEapM17ENr7fzU5D3HyhS
+         RNm+wnD21o2mlpXHKEskFNmBw3C60yN9glHg/uXHrKc6mnXA1b5PMwhVWIycdE1Oby3i
+         wNRA1X9FXg8+0JjbkB9B1Bj+9qRNRRQeY5Meo5+rKpvYPGqeIueboTCQQlwNC5A2JY8c
+         u3d+R3ecCcp8b1ZVFFSlwqylYLCh2+deKEFvIFZHVomNkjAQGgf31G5e+igIUySnBLFj
+         dd/QmJ/UiWW5zkeTG83Vq/AZ/ugyuLGBdvQsVurAUPX3ttUG4e7LjlADVIlXzS88DXFB
+         Qzvg==
+X-Gm-Message-State: AJIora+5FrbK1x5tBTfcim8NDGc1rsZRQJIrF2/z/36YNhPwhW1mfNut
+        Dw8BQWaKxYTbLwE9luKzT8lPkQ==
+X-Google-Smtp-Source: AGRyM1tOUFmMvb7s4feimVleVi8I888W6gmqG6Ll2R6vFTMNI4O190e6r4pHr1mrlMHGffiLIwdaCw==
+X-Received: by 2002:a2e:3016:0:b0:25d:702c:a923 with SMTP id w22-20020a2e3016000000b0025d702ca923mr4473194ljw.288.1657630725347;
+        Tue, 12 Jul 2022 05:58:45 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id q5-20020a056512210500b00489ed49d243sm508636lfr.260.2022.07.12.05.58.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 05:58:44 -0700 (PDT)
+Message-ID: <4795d9a8-3a57-ffe5-c0e5-9877860f5107@linaro.org>
+Date:   Tue, 12 Jul 2022 14:58:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACT4Y+Z44fS04StzMh+sfUWo-k5sjYf3VGhhK2ppkHP=9RZQEw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 08/16] arm64: dts: mt8195: Add power domains controller
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Tinghan Shen <tinghan.shen@mediatek.com>,
+        Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>
+Cc:     iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-9-tinghan.shen@mediatek.com>
+ <3b65405d-167f-a0c7-d15e-5da6f08d99b3@linaro.org>
+ <eec6aee5cd023fff6d986882db0330e1ab85a59d.camel@mediatek.com>
+ <0301ebc6-1222-e813-f237-f14ad8444940@linaro.org>
+ <b6523c64-dfe2-13b0-db60-fb4f53ed1e31@collabora.com>
+ <1eb212ea-c5a9-b06f-606f-1271ac52adf9@linaro.org>
+ <c243bc9c-0862-450d-6bff-00ec5591e791@collabora.com>
+ <d8bc3b20-45db-a869-2aff-9cda8e0fca92@linaro.org>
+ <83162e4f-a31f-79cf-ba01-58b45fd4f62e@collabora.com>
+ <410cf9aa-471b-644c-9540-9bc0b89b8fd9@linaro.org>
+ <0ca0e46d-0685-8228-4d26-c6cf20d7a9fc@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <0ca0e46d-0685-8228-4d26-c6cf20d7a9fc@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 02:50:50PM +0200, Dmitry Vyukov wrote:
-> On Tue, 12 Jul 2022 at 14:40, Matthew Wilcox <willy@infradead.org> wrote:
-> >
-> > On Tue, Jul 12, 2022 at 08:54:28AM +0200, Dmitry Vyukov wrote:
-> > > On Mon, 11 Jul 2022 at 22:47, Matthew Wilcox <willy@infradead.org> wrote:
-> > > >
-> > > > On Mon, Jul 11, 2022 at 01:38:08PM -0700, Andrew Morton wrote:
-> > > > > On Sat, 09 Jul 2022 00:13:23 -0700 syzbot <syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com> wrote:
-> > > > >
-> > > > > > Hello,
-> > > > > >
-> > > > > > syzbot found the following issue on:
-> > > > > >
-> > > > > > HEAD commit:    c1084b6c5620 Merge tag 'soc-fixes-5.19-2' of git://git.ker..
-> > > > > > git tree:       upstream
-> > > > > > console output: https://syzkaller.appspot.com/x/log.txt?x=14967ccc080000
-> > > > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=916233b7694a38ff
-> > > > > > dashboard link: https://syzkaller.appspot.com/bug?extid=a785d07959bc94837d51
-> > > > > > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> > > > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=122ae834080000
-> > > > > >
-> > > > > > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > > > > > Reported-by: syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com
-> > > > > >
-> > > > > > 2022/07/05 05:22:17 executed programs: 828
-> > > > > > 2022/07/05 05:22:23 executed programs: 846
-> > > > > > 2022/07/05 05:22:30 executed programs: 866
-> > > > > > 2022/07/05 05:22:37 executed programs: 875
-> > > > > > BUG: memory leak
-> > > > >
-> > > > > Thanks.  Presumably due to khugepaged changes.
-> > > >
-> > > > Huh, I was expecting it to be something I'd messed up.  I've been
-> > > > looking at it today, but no luck figuring it out so far.
-> > > >
-> > > > > Can we expect a bisection search?
-> > > >
-> > > > We only have a syz reproducer so far, and if I understand correctly,
-> > > > it's probably because this is a flaky test (because it's trying to
-> > > > find something that's a race condition).
-> > > >
-> > > > I expect a bisection search to go badly wrong if this is true.
-> > >
-> > > Is it possible that parts of xas are not freed on the error paths?
-> > > I don't immediately see where anything is freed on these error paths:
-> > >
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/xarray.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n681
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/lib/xarray.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n721
-> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1675
-> >
-> > There's nothing to free; if a node is allocated, then it's stored in
-> > the tree where it can later be found and reused.
+On 12/07/2022 14:54, AngeloGioacchino Del Regno wrote:
+> Il 12/07/22 14:47, Krzysztof Kozlowski ha scritto:
+>> On 12/07/2022 12:33, AngeloGioacchino Del Regno wrote:
+>>> Il 12/07/22 11:03, Krzysztof Kozlowski ha scritto:
+>>>> On 12/07/2022 10:53, AngeloGioacchino Del Regno wrote:
+>>>>> Il 12/07/22 10:37, Krzysztof Kozlowski ha scritto:
+>>>>>> On 12/07/2022 10:17, AngeloGioacchino Del Regno wrote:
+>>>>>>> Il 06/07/22 17:18, Krzysztof Kozlowski ha scritto:
+>>>>>>>> On 06/07/2022 14:00, Tinghan Shen wrote:
+>>>>>>>>> Hi Krzysztof,
+>>>>>>>>>
+>>>>>>>>> After discussing your message with our power team,
+>>>>>>>>> we realized that we need your help to ensure we fully understand you.
+>>>>>>>>>
+>>>>>>>>> On Mon, 2022-07-04 at 14:38 +0200, Krzysztof Kozlowski wrote:
+>>>>>>>>>> On 04/07/2022 12:00, Tinghan Shen wrote:
+>>>>>>>>>>> Add power domains controller node for mt8195.
+>>>>>>>>>>>
+>>>>>>>>>>> Signed-off-by: Weiyi Lu <weiyi.lu@mediatek.com>
+>>>>>>>>>>> Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+>>>>>>>>>>> ---
+>>>>>>>>>>>      arch/arm64/boot/dts/mediatek/mt8195.dtsi | 327 +++++++++++++++++++++++
+>>>>>>>>>>>      1 file changed, 327 insertions(+)
+>>>>>>>>>>>
+>>>>>>>>>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>>>>>>>>> index 8d59a7da3271..d52e140d9271 100644
+>>>>>>>>>>> --- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>>>>>>>>> +++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
+>>>>>>>>>>> @@ -10,6 +10,7 @@
+>>>>>>>>>>>      #include <dt-bindings/interrupt-controller/irq.h>
+>>>>>>>>>>>      #include <dt-bindings/phy/phy.h>
+>>>>>>>>>>>      #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
+>>>>>>>>>>> +#include <dt-bindings/power/mt8195-power.h>
+>>>>>>>>>>>      
+>>>>>>>>>>>      / {
+>>>>>>>>>>>      	compatible = "mediatek,mt8195";
+>>>>>>>>>>> @@ -338,6 +339,332 @@
+>>>>>>>>>>>      			#interrupt-cells = <2>;
+>>>>>>>>>>>      		};
+>>>>>>>>>>>      
+>>>>>>>>>>> +		scpsys: syscon@10006000 {
+>>>>>>>>>>> +			compatible = "syscon", "simple-mfd";
+>>>>>>>>>>
+>>>>>>>>>> These compatibles cannot be alone.
+>>>>>>>>>
+>>>>>>>>> the scpsys sub node has the compatible of the power domain driver.
+>>>>>>>>> do you suggest that the compatible in the sub node should move to here?
+>>>>>>>>
+>>>>>>>> Not necessarily, depends. You have here device node representing system
+>>>>>>>> registers. They need they own compatibles, just like everywhere in the
+>>>>>>>> kernel (except the broken cases...).
+>>>>>>>>
+>>>>>>>> Whether this should be compatible of power-domain driver, it depends
+>>>>>>>> what this device node is. I don't know, I don't have your datasheets or
+>>>>>>>> your architecture diagrams...
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>>> +			reg = <0 0x10006000 0 0x1000>;
+>>>>>>>>>>> +			#power-domain-cells = <1>;
+>>>>>>>>>>
+>>>>>>>>>> If it is simple MFD, then probably it is not a power domain provider.
+>>>>>>>>>> Decide.
+>>>>>>>>>
+>>>>>>>>> this MFD device is the power controller on mt8195.
+>>>>>>>>
+>>>>>>>> Then it is not a simple MFD but a power controller. Do not use
+>>>>>>>> "simple-mfd" compatible.
+>>>>>>>>
+>>>>>>>>> Some features need
+>>>>>>>>> to do some operations on registers in this node. We think that implement
+>>>>>>>>> the operation of these registers as the MFD device can provide flexibility
+>>>>>>>>> for future use. We want to clarify if you're saying that an MFD device
+>>>>>>>>> cannot be a power domain provider.
+>>>>>>>>
+>>>>>>>> MFD device is Linuxism, so it has nothing to do here. I am talking only
+>>>>>>>> about simple-mfd. simple-mfd is a simple device only instantiating
+>>>>>>>> children and not providing anything to anyone. Neither to children. This
+>>>>>>>>      the most important part. The children do not depend on anything from
+>>>>>>>> simple-mfd device. For example simple-mfd device can be shut down
+>>>>>>>> (gated) and children should still operate. Being a power domain
+>>>>>>>> controller, contradicts this usually.
+>>>>>>>>
+>>>>>>>
+>>>>>>> If my interpretation of this issue is right, I have pushed a solution for it.
+>>>>>>> Krzysztof, Matthias, can you please check [1] and give feedback, so that
+>>>>>>> Tinghan can rewrite this commit ASAP?
+>>>>>>>
+>>>>>>> Reason is - I need the MT8195 devicetree to be complete to push the remaining
+>>>>>>> pieces for Tomato Chromebooks, of course.
+>>>>>>>
+>>>>>>> [1]: https://patchwork.kernel.org/project/linux-mediatek/list/?series=658527
+>>>>>>
+>>>>>> I have two or three similar discussions, so maybe I lost the context,
+>>>>>> but I don't understand how your fix is matching real hardware.
+>>>>>>
+>>>>>> In the patchset here, Tinghan claimed that power domain controller is a
+>>>>>> child of 10006000. 10006000 is also a power domain controller. This was
+>>>>>> explicitly described by the DTS code.
+>>>>>>
+>>>>>> Now you abandon this hierarchy in favor of syscon. If the hierarchy was
+>>>>>> correct, your patchset does not match the hardware, so it's a no-go.
+>>>>>> Describe the hardware.
+>>>>>>
+>>>>>> However maybe this patch did not make any sense and there is no
+>>>>>> relationship parent-child... so what do you guys send here? Bunch of
+>>>>>> hacks and work-arounds?
+>>>>>>
+>>>>>
+>>>>> For how I get it, hardware side, the SPM (System Power Manager) resides inside
+>>>>> of the SCPSYS block (consequently, in that iospace).
+>>>>>
+>>>>> As Matthias pointed out earlier, SCPSYS provides more functionality, but the
+>>>>> only one that's currently implemented upstream is the System Power Manager,
+>>>>> responsible for managing the MTCMOS (power domains).
+>>>>>
+>>>>> In any case, now I'm a little confused on how to proceed, can you please give
+>>>>> some suggestion?
+>>>>
+>>>> You should make SCPSYS (0x10006000, AFAIU) a proper driver with its own
+>>>> compatible (followed by syscon if needed), even if now it is almost
+>>>> empty stub. The driver should populate OF children and then you can
+>>>> embed SPM inside and reference to parent's regmap. No need for
+>>>> simple-mfd. Later the SCPSYS can grow, if you ever need it.
+>>>>
+>>>>
+>>>
+>>> I see an issue with such approach: the SCPSYS doesn't have a mailbox, doesn't
+>>> need power management from the Linux side, doesn't have any register to check
+>>> HW revision, it's always online (hence it doesn't need Linux to boot it), it
+>>> doesn't need any root clock, nor regulator, nor mmu context, and there's no
+>>> retrievable "boot log" of any sort.
+>>
+>> No problems, there are other drivers who do not need any resources,
+>> except address space.
+>>
+>>>
+>>> Hence, a driver with its own compatible would be an empty stub forever: it's
+>>> not going to get any "scpsys root handling" at all, because there's none to do.
+>>
+>> But it is a power domain provider, so you need to embed it in some
+>> dirver, don't you?
+>>
+>>
+>>> Digging through some downstream kernels, the only other functionality that I
+>>> can find in the SCPSYS is a MODULE_RESET (which is used to reset the SCP System)
+>>> and a INFRA_IRQ_SET, used to set "wake locks" on the AP and CONNSYS (modem).
+>>
+>> So why was power domain provider added to SCPSYS? Guys, I don't know
+>> your architecture, so I deduct it based on pieces of DTS code I see.
+>>
+>>>
+>>> Both of these may only be used in the SCP mailbox driver (which is *not* SCPSYS)
+>>> to perform an ipi_send operation (but currently we simply en/disable the clock
+>>> and that's enough), or to perform a reset and firmware reload of the SCP (but
+>>> currently we're simply powering off and back on: this may change in the future).
+>>>
+>>> So, at the end of the day, we would end up having a copy of simple-pm-bus and
+>>> nothing else, which doesn't look like being optimal at all.
+>>
+>> No, because you need that power domain driver, don't you? If you don't
+>> need power domain provider/driver, why the heck this is there:
+>>
+>> +		scpsys: syscon@10006000 {
+>> +			compatible = "syscon", "simple-mfd";
+>> +			reg = <0 0x10006000 0 0x1000>;
+>> +			#power-domain-cells = <1>;
+>>                          ^^^^^^^^^^^^^^^^^
+>> Entire discussion started from this.
+>>
 > 
-> What I was thinking of is:
+> Is this all a huge misunderstanding? It probably is, at least partially.
 > 
-> The leaked memory is allocated with:
-> xas_create_range(&xas);
-> here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1670
-> 
-> So I assumed the nodes stored in the xas object, which is local to the
-> collapse_file() function.
+> That node shouldn't have any #power-domain-cells, the only PD is the SPM node
+> (mediatek,mt8195-power-controller), not the scpsys parent! Ugh...
 
-Yes, that's a reasonable thing to think, but it's actually not how
-it works.  When we allocate a node in xas_create(), we put it straight
-into the tree without storing it in xas->xa_alloc.  We may then end
-up not using it, but the node isn't leaked because it's in the tree.
+My comment was quite clear I think:
 
-If the GFP_NOWAIT allocation fails (it didn't in these stack traces),
-we call xas_nomem(), which sees an -ENOMEM, allocates a node and stores
-it in xas->xa_alloc; then we go round the loop again where xas_create()
-will take the node from xas->xa_alloc.  But the backtraces here don't
-implicate xas_nomem().
+  > +			#power-domain-cells = <1>;
+  If it is simple MFD, then probably it is not a power domain provider.
+  Decide.
 
-> So if we do "goto out" here:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/mm/khugepaged.c?id=c1084b6c5620a743f86947caca66d90f24060f56#n1676
-> 
-> There does not seem to be anything that frees anything stored in the xas:
-> 
-> out:
->     VM_BUG_ON(!list_empty(&pagelist));
->     if (!IS_ERR_OR_NULL(*hpage))
->         mem_cgroup_uncharge(page_folio(*hpage));
->     /* TODO: tracepoints */
-> }
-> 
+and you keep telling me that it is a power domain provider and MFD and
+something more.
+
+Anyway neither syscon nor simple-mfd can be without specific compatible.
+
+Best regards,
+Krzysztof
