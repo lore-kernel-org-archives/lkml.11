@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4493CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56005C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:02:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235224AbiGLTCS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40490 "EHLO
+        id S235295AbiGLTCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbiGLTBJ (ORCPT
+        with ESMTP id S235189AbiGLTBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:01:09 -0400
+        Tue, 12 Jul 2022 15:01:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DCF13CFC;
-        Tue, 12 Jul 2022 11:48:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F00814002;
+        Tue, 12 Jul 2022 11:48:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85EF760765;
-        Tue, 12 Jul 2022 18:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B726C3411C;
-        Tue, 12 Jul 2022 18:48:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AF37D60765;
+        Tue, 12 Jul 2022 18:48:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CAE7C3411C;
+        Tue, 12 Jul 2022 18:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651730;
-        bh=6H9Lyl9oIAdqchAN6Gj+v6lW5keext/SAPl2qXlkcwg=;
+        s=korg; t=1657651733;
+        bh=ww9oCvPzMBHZ0rv0j/7CB9FkdTSKRzkwo7fl6q30hHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vhb6RLjEQ8TggbpIEEBd0i3Ocxth+R7s6WNNLHfc2mG1hL5f95LRkM+cLDKka6UY7
-         Dbcq2lY9l5lC8CvOC3366N9/Kgn1x4rdmz2kbG3ewt1HDm3eOT/gtzL5pcuCNR3JuR
-         MwYkMa44rtGSOZQ9N7tui1511wjCJGSqJ6ar/1iI=
+        b=Mo4cG5ZeLcWlb0loqYWx2Zx0blHaKQyRH743e2zQJiFfNlP2RuzLPCd8cHfjqS+T0
+         yVt7vkFVMRkGGnAZ0Sug4iTUOvXTqJ+aotOnbCDSNrlXMPuy7MXwq0xoe4Z/xcoTyo
+         77lKFvCwMD4SeVI+T3GbWTHdo3M/Bh0MGXI2cBzc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 37/78] x86/sev: Avoid using __x86_return_thunk
-Date:   Tue, 12 Jul 2022 20:39:07 +0200
-Message-Id: <20220712183240.316952035@linuxfoundation.org>
+Subject: [PATCH 5.15 38/78] x86: Use return-thunk in asm code
+Date:   Tue, 12 Jul 2022 20:39:08 +0200
+Message-Id: <20220712183240.363977214@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -51,47 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
+commit aa3d480315ba6c3025a60958e1981072ea37c3df upstream.
 
-Specifically, it's because __enc_copy() encrypts the kernel after
-being relocated outside the kernel in sme_encrypt_execute(), and the
-RET macro's jmp offset isn't amended prior to execution.
+Use the return thunk in asm code. If the thunk isn't needed, it will
+get patched into a RET instruction during boot by apply_returns().
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Since alternatives can't handle relocations outside of the first
+instruction, putting a 'jmp __x86_return_thunk' in one is not valid,
+therefore carve out the memmove ERMS path into a separate label and jump
+to it.
+
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: no RANDSTRUCT_CFLAGS]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/entry/vdso/Makefile   |    1 +
+ arch/x86/include/asm/linkage.h |    8 ++++++++
+ arch/x86/lib/memmove_64.S      |    7 ++++++-
+ 3 files changed, 15 insertions(+), 1 deletion(-)
 
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	movq	%rbp, %rsp		/* Restore original stack pointer */
- 	pop	%rbp
+--- a/arch/x86/entry/vdso/Makefile
++++ b/arch/x86/entry/vdso/Makefile
+@@ -92,6 +92,7 @@ endif
+ endif
  
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- SYM_FUNC_END(sme_encrypt_execute)
+ $(vobjs): KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO) $(GCC_PLUGINS_CFLAGS) $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
++$(vobjs): KBUILD_AFLAGS += -DBUILD_VDSO
  
- SYM_FUNC_START(__enc_copy)
-@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r12
- 	pop	%r15
+ #
+ # vDSO code runs in userspace and -pg doesn't help with profiling anyway.
+--- a/arch/x86/include/asm/linkage.h
++++ b/arch/x86/include/asm/linkage.h
+@@ -18,19 +18,27 @@
+ #define __ALIGN_STR	__stringify(__ALIGN)
+ #endif
  
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- .L__enc_copy_end:
- SYM_FUNC_END(__enc_copy)
++#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
++#define RET	jmp __x86_return_thunk
++#else /* CONFIG_RETPOLINE */
+ #ifdef CONFIG_SLS
+ #define RET	ret; int3
+ #else
+ #define RET	ret
+ #endif
++#endif /* CONFIG_RETPOLINE */
+ 
+ #else /* __ASSEMBLY__ */
+ 
++#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
++#define ASM_RET	"jmp __x86_return_thunk\n\t"
++#else /* CONFIG_RETPOLINE */
+ #ifdef CONFIG_SLS
+ #define ASM_RET	"ret; int3\n\t"
+ #else
+ #define ASM_RET	"ret\n\t"
+ #endif
++#endif /* CONFIG_RETPOLINE */
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+--- a/arch/x86/lib/memmove_64.S
++++ b/arch/x86/lib/memmove_64.S
+@@ -40,7 +40,7 @@ SYM_FUNC_START(__memmove)
+ 	/* FSRM implies ERMS => no length checks, do the copy directly */
+ .Lmemmove_begin_forward:
+ 	ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
+-	ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), X86_FEATURE_ERMS
++	ALTERNATIVE "", "jmp .Lmemmove_erms", X86_FEATURE_ERMS
+ 
+ 	/*
+ 	 * movsq instruction have many startup latency
+@@ -206,6 +206,11 @@ SYM_FUNC_START(__memmove)
+ 	movb %r11b, (%rdi)
+ 13:
+ 	RET
++
++.Lmemmove_erms:
++	movq %rdx, %rcx
++	rep movsb
++	RET
+ SYM_FUNC_END(__memmove)
+ SYM_FUNC_END_ALIAS(memmove)
+ EXPORT_SYMBOL(__memmove)
 
 
