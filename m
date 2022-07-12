@@ -2,160 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91CD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbiGLC2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 22:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34000 "EHLO
+        id S231135AbiGLC22 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 22:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiGLC2R (ORCPT
+        with ESMTP id S229883AbiGLC2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 11 Jul 2022 22:28:17 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6E87358C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:28:13 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJ6Ep2C_1657592888;
-Received: from localhost.localdomain(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0VJ6Ep2C_1657592888)
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D13AC8AB26
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:28:15 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R271e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJ6Ep2o_1657592891;
+Received: from localhost.localdomain(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0VJ6Ep2o_1657592891)
           by smtp.aliyun-inc.com;
-          Tue, 12 Jul 2022 10:28:10 +0800
+          Tue, 12 Jul 2022 10:28:12 +0800
 From:   Rongwei Wang <rongwei.wang@linux.alibaba.com>
 To:     akpm@linux-foundation.org, vbabka@suse.cz, 42.hyeyoo@gmail.com,
         roman.gushchin@linux.dev, iamjoonsoo.kim@lge.com,
         rientjes@google.com, penberg@kernel.org, cl@gentwo.de
 Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/3] mm/slub: fix the race between validate_slab and slab_free
-Date:   Tue, 12 Jul 2022 10:28:05 +0800
-Message-Id: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
+Subject: [PATCH v2 3/3] mm/slub: delete confusing pr_err when debugging slub
+Date:   Tue, 12 Jul 2022 10:28:07 +0800
+Message-Id: <20220712022807.44113-3-rongwei.wang@linux.alibaba.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
+References: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In use cases where allocating and freeing slab frequently, some
-error messages, such as "Left Redzone overwritten", "First byte
-0xbb instead of 0xcc" would be printed when validating slabs.
-That's because an object has been filled with SLAB_RED_INACTIVE,
-but has not been added to slab's freelist. And between these
-two states, the behaviour of validating slab is likely to occur.
+The n->nr_slabs will be updated when really to allocate or
+free a slab, but this slab is unnecessarily in full list
+or partial list of one node. That means the total count of
+slab in node's full and partial list is unnecessarily equal
+to n->nr_slabs, even though flush_all() has been called.
 
-Actually, it doesn't mean the slab can not work stably. But, these
-confusing messages will disturb slab debugging more or less.
+An example here, an error message likes below will be
+printed when 'slabinfo -v' is executed:
+
+SLUB: kmemleak_object 4157 slabs counted but counter=4161
+SLUB: kmemleak_object 4072 slabs counted but counter=4077
+SLUB: kmalloc-2k 19 slabs counted but counter=20
+SLUB: kmalloc-2k 12 slabs counted but counter=13
+SLUB: kmemleak_object 4205 slabs counted but counter=4209
+
+Here, deleting this pr_err() directly.
 
 Signed-off-by: Rongwei Wang <rongwei.wang@linux.alibaba.com>
 ---
- mm/slub.c | 43 +++++++++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 18 deletions(-)
+ mm/slub.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
 diff --git a/mm/slub.c b/mm/slub.c
-index b1281b8654bd..e950d8df8380 100644
+index 587416e39292..cdac004f232f 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -1391,18 +1391,16 @@ static noinline int free_debug_processing(
- 	void *head, void *tail, int bulk_cnt,
- 	unsigned long addr)
- {
--	struct kmem_cache_node *n = get_node(s, slab_nid(slab));
- 	void *object = head;
- 	int cnt = 0;
--	unsigned long flags, flags2;
-+	unsigned long flags;
- 	int ret = 0;
- 	depot_stack_handle_t handle = 0;
+@@ -5059,11 +5059,6 @@ static int validate_slab_node(struct kmem_cache *s,
+ 		validate_slab(s, slab, obj_map);
+ 		count++;
+ 	}
+-	if (count != atomic_long_read(&n->nr_slabs)) {
+-		pr_err("SLUB: %s %ld slabs counted but counter=%ld\n",
+-		       s->name, count, atomic_long_read(&n->nr_slabs));
+-		slab_add_kunit_errors();
+-	}
  
- 	if (s->flags & SLAB_STORE_USER)
- 		handle = set_track_prepare();
- 
--	spin_lock_irqsave(&n->list_lock, flags);
--	slab_lock(slab, &flags2);
-+	slab_lock(slab, &flags);
- 
- 	if (s->flags & SLAB_CONSISTENCY_CHECKS) {
- 		if (!check_slab(s, slab))
-@@ -1435,8 +1433,7 @@ static noinline int free_debug_processing(
- 		slab_err(s, slab, "Bulk freelist count(%d) invalid(%d)\n",
- 			 bulk_cnt, cnt);
- 
--	slab_unlock(slab, &flags2);
--	spin_unlock_irqrestore(&n->list_lock, flags);
-+	slab_unlock(slab, &flags);
- 	if (!ret)
- 		slab_fix(s, "Object at 0x%p not freed", object);
- 	return ret;
-@@ -3330,7 +3327,7 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
- 
- {
- 	void *prior;
--	int was_frozen;
-+	int was_frozen, to_take_off = 0;
- 	struct slab new;
- 	unsigned long counters;
- 	struct kmem_cache_node *n = NULL;
-@@ -3341,14 +3338,23 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
- 	if (kfence_free(head))
- 		return;
- 
--	if (kmem_cache_debug(s) &&
--	    !free_debug_processing(s, slab, head, tail, cnt, addr))
--		return;
-+	n = get_node(s, slab_nid(slab));
-+	if (kmem_cache_debug(s)) {
-+		int ret;
- 
--	do {
--		if (unlikely(n)) {
-+		spin_lock_irqsave(&n->list_lock, flags);
-+		ret = free_debug_processing(s, slab, head, tail, cnt, addr);
-+		if (!ret) {
- 			spin_unlock_irqrestore(&n->list_lock, flags);
--			n = NULL;
-+			return;
-+		}
-+	}
-+
-+	do {
-+		if (unlikely(to_take_off)) {
-+			if (!kmem_cache_debug(s))
-+				spin_unlock_irqrestore(&n->list_lock, flags);
-+			to_take_off = 0;
- 		}
- 		prior = slab->freelist;
- 		counters = slab->counters;
-@@ -3369,8 +3375,6 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
- 				new.frozen = 1;
- 
- 			} else { /* Needs to be taken off a list */
--
--				n = get_node(s, slab_nid(slab));
- 				/*
- 				 * Speculatively acquire the list_lock.
- 				 * If the cmpxchg does not succeed then we may
-@@ -3379,8 +3383,10 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
- 				 * Otherwise the list_lock will synchronize with
- 				 * other processors updating the list of slabs.
- 				 */
--				spin_lock_irqsave(&n->list_lock, flags);
-+				if (!kmem_cache_debug(s))
-+					spin_lock_irqsave(&n->list_lock, flags);
- 
-+				to_take_off = 1;
- 			}
- 		}
- 
-@@ -3389,8 +3395,9 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
- 		head, new.counters,
- 		"__slab_free"));
- 
--	if (likely(!n)) {
--
-+	if (likely(!to_take_off)) {
-+		if (kmem_cache_debug(s))
-+			spin_unlock_irqrestore(&n->list_lock, flags);
- 		if (likely(was_frozen)) {
- 			/*
- 			 * The list lock was not taken therefore no list
+ out:
+ 	spin_unlock_irqrestore(&n->list_lock, flags);
 -- 
 2.27.0
 
