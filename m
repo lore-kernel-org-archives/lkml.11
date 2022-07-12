@@ -2,99 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19230C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D11C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbiGLUAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:00:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        id S233810AbiGLUDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiGLUAe (ORCPT
+        with ESMTP id S230050AbiGLUDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:00:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825283E74B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:00:32 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oBM3Q-0006FU-SA; Tue, 12 Jul 2022 22:00:20 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oBM3L-000ZR4-3x; Tue, 12 Jul 2022 22:00:15 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1oBM3K-004mxU-9S; Tue, 12 Jul 2022 22:00:14 +0200
-Date:   Tue, 12 Jul 2022 22:00:10 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, olivia@selenic.com,
-        paul.gortmaker@windriver.com, dwmw2@infradead.org,
-        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        gregkh@linuxfoundation.org
-Subject: Re: [PATCH] MAINTAINERS: Change mentions of mpm to olivia
-Message-ID: <20220712200010.kbx24o2nxobrhmey@pengutronix.de>
-References: <20220712185419.45487-1-f.fainelli@gmail.com>
+        Tue, 12 Jul 2022 16:03:21 -0400
+Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19DB3E74B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:03:20 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:58916)
+        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oBM6F-008snJ-KZ; Tue, 12 Jul 2022 14:03:15 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38716 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oBM6B-00EgHA-UL; Tue, 12 Jul 2022 14:03:14 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Keno Fischer <keno@juliacomputing.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mingo@kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        "Robert O'Callahan" <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Oleg Nesterov <oleg@redhat.com>
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>
+        <87edyvgs2s.fsf@email.froward.int.ebiederm.org>
+        <CABV8kRxQNPUzLaJ1tFF8H-E_iqCkz0+Ac5rPBurnmA3GcofMmQ@mail.gmail.com>
+Date:   Tue, 12 Jul 2022 15:03:04 -0500
+In-Reply-To: <CABV8kRxQNPUzLaJ1tFF8H-E_iqCkz0+Ac5rPBurnmA3GcofMmQ@mail.gmail.com>
+        (Keno Fischer's message of "Fri, 8 Jul 2022 19:22:01 -0400")
+Message-ID: <875yk22j5z.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3ugdib3frsqf57yr"
-Content-Disposition: inline
-In-Reply-To: <20220712185419.45487-1-f.fainelli@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain
+X-XM-SPF: eid=1oBM6B-00EgHA-UL;;;mid=<875yk22j5z.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+YkQubfrIv1qgyoUMDuaCP6iHCuoPdSL4=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 0/3] ptrace: Stop supporting SIGKILL for PTRACE_EVENT_EXIT
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Keno Fischer <keno@juliacomputing.com> writes:
 
---3ugdib3frsqf57yr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Hi Eric,
+>
+> On Fri, Jul 8, 2022 at 6:25 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> > Recently I had a conversation where it was pointed out to me that
+>> > SIGKILL sent to a tracee stropped in PTRACE_EVENT_EXIT is quite
+>> > difficult for a tracer to handle.
+>> >
+>>
+>> RR folks any comments?
+>>
+>> Did I properly understand what Keno Fischer was asking for when we
+>> talked in person?
+>
+> Yes, this is indeed what I had in mind. I have not yet had the opportunity
+> to try out your patch series (sorry), but from visual inspection, it does indeed
+> do what I wanted, which is to make sure that a tracee stays in
+> PTRACE_EVENT_EXIT for the tracer to inspect, even if there is another
+> SIGKILL incoming simultaneously (since otherwise it may be impossible
+> for the tracer to observe the PTRACE_EVENT_EXIT if two SIGKILLs
+> come in rapid succession). I will try to take this series for a proper spin
+> shortly.
 
-On Tue, Jul 12, 2022 at 11:54:19AM -0700, Florian Fainelli wrote:
-> Following this mercurial changeset:
-> https://www.mercurial-scm.org/repo/hg-stable/rev/d4ba4d51f85f
->=20
-> update the MAINTAINERS entry to replace the now obsolete identity.
->=20
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> This was first submitted by Uwe:
->=20
-> https://lore.kernel.org/lkml/20210920080635.253826-1-u.kleine-koenig@peng=
-utronix.de/
+Thanks,
 
-My variant was to drop Matt/Olivia. Given that we didn't get any
-feedback from them, that's still what I would favour.
+I haven't yet figured out how to get the rr test suite to run
+successfully.  Something about my test machine and lack of perf counters
+seems to be causing problems.  So if you can perform the testing on your
+side that would be fantastic.
 
-Without any feedback (and committment?) from Olivia, I tend to nack this
-patch.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---3ugdib3frsqf57yr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLN0scACgkQwfwUeK3K
-7AnREAf+PlSlT47//PJVYU31Gt4GNAV4v2o/8joQSsAof8dic1OI0hclbKS7IOGG
-w4DveYc5FjsI6/u0tO4+q2bdTS1Ehnj3L3RUmpOlsKJ386Pkv9ztnCn9fblY8b27
-fbZCpPmPAwveg4rXLfGeFVaQ6GiJpmggU0k9RC/7wBsu29P7RVir/R8gA7Nm+bj3
-B+3J1F/iwPCYufbmfpLLiGD+h5//FnkBjG/2eM6hcvLDf2pV9d86tXZkfH3JyUyc
-lG6+s5bSvISc5Gd5a/FDJreHAJqkBBrntK+odt17xlpYGUcu3Z5OWQXgW2EXZCSU
-OMRs+d1GEHHw1ftHLWcTVhV+eZ5xIA==
-=O8jQ
------END PGP SIGNATURE-----
-
---3ugdib3frsqf57yr--
+Eric
