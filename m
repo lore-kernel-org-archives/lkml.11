@@ -2,194 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38492C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD71C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231233AbiGLUgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41180 "EHLO
+        id S231629AbiGLUiZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:38:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229681AbiGLUgw (ORCPT
+        with ESMTP id S229681AbiGLUiY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:36:52 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96710A58D8
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:36:51 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id n7so9045998ioo.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:36:51 -0700 (PDT)
+        Tue, 12 Jul 2022 16:38:24 -0400
+Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37C1B968F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:38:23 -0700 (PDT)
+Received: by mail-il1-x12a.google.com with SMTP id v1so5560476ilg.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:38:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Y/kf7WpiJhpV7S8Lv6B6nSloUE3ZIK760tIURsCB2pw=;
-        b=HK+0DWTz7CWIFl+SYCiY0c1eT23V1rfCJ2QRHvfA8bSUNlP5B7cbxj+fSAo0QWdQZF
-         L4916vyqIJ6hBECNHpwM9VpomRkI9oU7ux781zK8Ag6wUNbvi0zH1theP+ClUZe+WfHY
-         bB29E+meNCNUo/BX9CrmNicvZbvo7Dsb1noCwXeeg8uBLkIOTzOd2JFGDmLPi5Fxrwdh
-         pVPnnhlFhQXWdSntoI9CvaNMVywddCOqtSosLlEXuaU9ngzuYPqFAR4H3H3Z9UHakffi
-         K5w8ACxyuEOxAhWUkNEfCxymzEHp020sUAC2tCxdWfJj6r37lwRMsOlfEC07Le2qsU6U
-         hBRg==
+        bh=gtA9X+fkjEw/LyXx7cshYRPvYgSQ7aQHvwyjYuYISkY=;
+        b=n9RIa554dycPGIKBOybZCxXvgE7O3FOURYuK5Rnd/mSxb6YmPx4NecnpLLC17ZO13g
+         z2A3RBDfsGBdtTvmzt3QWmSQZahjAWF62t9H+KbGXH2iBNkyI5TTBHickAHetTgp+gm1
+         e4d5G7Qu0bfcSaX20DM9iU8hk1RtRpOgraFK+HU4nkHoRbsXkTby588r0/xTUbYX5TZP
+         ICqKI5uM6ndDxfDavEceu3s5Zc1Twx7qSiApci11ooZBvr9YqtCX+qyTmfm58kk8k6j7
+         PaAQFdD2y9HOeCmn3N+DOd1eVwAM76SIKI9tEIkKwUIFXBkiVg1Njzo9F2A+S8HSvhkc
+         Imrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Y/kf7WpiJhpV7S8Lv6B6nSloUE3ZIK760tIURsCB2pw=;
-        b=ZACTWIqoIrGxxCXnE5CO38vmbknvpXVDBoEi7nJNYgOIz8eotO6Q7LbMkdZNgQnhxs
-         T8QxO/g95gtjXfCt2cp3UhlSIw0HW7sb3WVEAbibaWn/AWgEWhCiDQhW1suc22XmZwjq
-         axGx0j71JXaOp5yrAjk3bnQXfe6g9Hf7FpBYKKd42a8hh+dkhHy3Q8TMOo9MGG/JSpEL
-         k19vlZ7FBQwb3TAqzJ4QyK5YDG1alsO8EwrGefKSIwPdYWuFhWhg3n3ac8BUKKiF/Hzk
-         ULwEn1uz75vOs4drtjyIBv/jR+TZdZl41Gw1ToqwKCXW+lH63K9g8MFZBJmMTY1FOKbu
-         EN5w==
-X-Gm-Message-State: AJIora8vGGxaxGLLMCrWzU2NaW4WoYRMtMBYkUdIN2fqR88I3ldPf90Y
-        8KthZMgBwyuGJ55BR2djyc689eP9xV+hatYtHYwUfV/R
-X-Google-Smtp-Source: AGRyM1vcVt7E6J7CXFHWcDWieOMzcW12/B3aaLXom2LHjUZJ7rjCMBYmaxd73fcDTKZ0bf0NWkgwf+myIsxTC/h2scA=
-X-Received: by 2002:a05:6638:3812:b0:33f:4a06:ad48 with SMTP id
- i18-20020a056638381200b0033f4a06ad48mr9488946jav.71.1657658210925; Tue, 12
- Jul 2022 13:36:50 -0700 (PDT)
+        bh=gtA9X+fkjEw/LyXx7cshYRPvYgSQ7aQHvwyjYuYISkY=;
+        b=ZPu1UGrM6B+VHDLyPlsI8DeuoxSn3DlSPZZhwoEsTfEMFEsxZTzTu1g/9af4U6ZP4I
+         iIKk6BTdVNZ4PvTIM052+t+VAp4o3qBWUmihg2XxSHhxOar5/gDKURKtIF1HmgtPWn2l
+         9J1Dn9OAGbMiCmJetsBHb8HT2uf95Lt4FXn0Oonnj+wwMn870cfAR0qURHNEA8EoA4bw
+         umIw5ZbIryPKCbHteMKqnGs/B4bEndB/gV/N7U1lLoJ/mRmRiOv66Nc5XuJuf0pjMc8u
+         6BcNBh7dxBDCtZG4oF+/C/a9+TqK/Kl5spu0wYKOoEb3Smt48japRwCf6cZ+fv9vZ7mk
+         M/Ww==
+X-Gm-Message-State: AJIora8bArJyhVHwNsJTdum11XOQQbzjpv3aDXEh0ZmiBahsllENL/sV
+        bX+UH79OPrWPzlH4th/W6FsSdsT1eRNMJ3W6XIE=
+X-Google-Smtp-Source: AGRyM1sVN9YSYB7R1dSBnm2ETFni6QgUDtN1HElitlfGihAv/kBYE0FaXotZOZQmmTStA3kvphxi9Y1pG9MpCrbFaDE=
+X-Received: by 2002:a92:c562:0:b0:2dc:7ca1:a54c with SMTP id
+ b2-20020a92c562000000b002dc7ca1a54cmr15605ilj.28.1657658303138; Tue, 12 Jul
+ 2022 13:38:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220615062219.22618-1-Kuan-Ying.Lee@mediatek.com>
-In-Reply-To: <20220615062219.22618-1-Kuan-Ying.Lee@mediatek.com>
+References: <cover.1655150842.git.andreyknvl@google.com> <f7f5cfc5eb8f1a1f849665641b9dd2cfb4a62c3c.1655150842.git.andreyknvl@google.com>
+ <5949bc710889be1324d5dada995a263fd3c29cb5.camel@mediatek.com>
+In-Reply-To: <5949bc710889be1324d5dada995a263fd3c29cb5.camel@mediatek.com>
 From:   Andrey Konovalov <andreyknvl@gmail.com>
-Date:   Tue, 12 Jul 2022 22:36:40 +0200
-Message-ID: <CA+fCnZc_sqfp4NOZPMWig9t01-yz2HOswoesTVfzGubrvqECDw@mail.gmail.com>
-Subject: Re: [PATCH] kasan: separate double free case from invalid free
+Date:   Tue, 12 Jul 2022 22:38:12 +0200
+Message-ID: <CA+fCnZd2tND0CN1kVXt2ZpqtypDuQba8gXVMyL-XnLd+61X1cQ@mail.gmail.com>
+Subject: Re: [PATCH 21/32] kasan: simplify invalid-free reporting
 To:     Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-Cc:     Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+Cc:     "andrey.konovalov@linux.dev" <andrey.konovalov@linux.dev>,
+        Marco Elver <elver@google.com>,
         Alexander Potapenko <glider@google.com>,
         Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        Florian Mayer <fmayer@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Chinwen Chang <chinwen.chang@mediatek.com>,
-        =?UTF-8?B?WWVlIExlZSAo5p2O5bu66Kq8KQ==?= <yee.lee@mediatek.com>,
-        casper.li@mediatek.com, Andrew Yang <andrew.yang@mediatek.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrey Konovalov <andreyknvl@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jun 15, 2022 at 8:22 AM 'Kuan-Ying Lee' via kasan-dev
-<kasan-dev@googlegroups.com> wrote:
+On Tue, Jun 21, 2022 at 9:17 AM Kuan-Ying Lee
+<Kuan-Ying.Lee@mediatek.com> wrote:
 >
-> Currently, KASAN describes all invalid-free/double-free bugs as
-> "double-free or invalid-free". This is ambiguous.
+> On Tue, 2022-06-14 at 04:14 +0800, andrey.konovalov@linux.dev wrote:
+> > From: Andrey Konovalov <andreyknvl@google.com>
+> >
+> > Right now, KASAN uses the kasan_report_type enum to describe report
+> > types.
+> >
+> > As this enum only has two options, replace it with a bool variable.
+> >
+> > Also, unify printing report header for invalid-free and other bug
+> > types
+> > in print_error_description().
+> >
+> > Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+> > ---
+> >  mm/kasan/kasan.h  |  7 +------
+> >  mm/kasan/report.c | 16 +++++++---------
+> >  2 files changed, 8 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
+> > index e8329935fbfb..f696d50b09fb 100644
+> > --- a/mm/kasan/kasan.h
+> > +++ b/mm/kasan/kasan.h
+> > @@ -146,16 +146,11 @@ static inline bool kasan_requires_meta(void)
+> >  #define META_MEM_BYTES_PER_ROW (META_BYTES_PER_ROW *
+> > KASAN_GRANULE_SIZE)
+> >  #define META_ROWS_AROUND_ADDR 2
+> >
+> > -enum kasan_report_type {
+> > -       KASAN_REPORT_ACCESS,
+> > -       KASAN_REPORT_INVALID_FREE,
+> > -};
+> > -
+> >  struct kasan_report_info {
+> > -       enum kasan_report_type type;
+> >         void *access_addr;
+> >         void *first_bad_addr;
+> >         size_t access_size;
+> > +       bool is_free;
+> >         bool is_write;
+> >         unsigned long ip;
+> >  };
+> > diff --git a/mm/kasan/report.c b/mm/kasan/report.c
+> > index f951fd39db74..7269b6249488 100644
+> > --- a/mm/kasan/report.c
+> > +++ b/mm/kasan/report.c
+> > @@ -175,14 +175,12 @@ static void end_report(unsigned long *flags,
+> > void *addr)
+> >
 >
-> KASAN should report "double-free" when a double-free is a more
-> likely cause (the address points to the start of an object) and
-> report "invalid-free" otherwise [1].
+> Hi Andrey,
 >
-> [1] https://bugzilla.kernel.org/show_bug.cgi?id=212193
+> Do we need to distinguish "double free" case from "invalid free" or
+> we just print "double-free or invalid-free"?
 >
-> Signed-off-by: Kuan-Ying Lee <Kuan-Ying.Lee@mediatek.com>
-> ---
->  mm/kasan/common.c |  8 ++++----
->  mm/kasan/kasan.h  |  3 ++-
->  mm/kasan/report.c | 12 ++++++++----
->  3 files changed, 14 insertions(+), 9 deletions(-)
+> I sent a patch[1] to separate double free case from invalid
+> free last week and I saw it has been merged into akpm tree.
 >
-> diff --git a/mm/kasan/common.c b/mm/kasan/common.c
-> index c40c0e7b3b5f..707c3a527fcb 100644
-> --- a/mm/kasan/common.c
-> +++ b/mm/kasan/common.c
-> @@ -343,7 +343,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
->
->         if (unlikely(nearest_obj(cache, virt_to_slab(object), object) !=
->             object)) {
-> -               kasan_report_invalid_free(tagged_object, ip);
-> +               kasan_report_invalid_free(tagged_object, ip, KASAN_REPORT_INVALID_FREE);
->                 return true;
->         }
->
-> @@ -352,7 +352,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
->                 return false;
->
->         if (!kasan_byte_accessible(tagged_object)) {
-> -               kasan_report_invalid_free(tagged_object, ip);
-> +               kasan_report_invalid_free(tagged_object, ip, KASAN_REPORT_DOUBLE_FREE);
->                 return true;
->         }
->
-> @@ -377,12 +377,12 @@ bool __kasan_slab_free(struct kmem_cache *cache, void *object,
->  static inline bool ____kasan_kfree_large(void *ptr, unsigned long ip)
->  {
->         if (ptr != page_address(virt_to_head_page(ptr))) {
-> -               kasan_report_invalid_free(ptr, ip);
-> +               kasan_report_invalid_free(ptr, ip, KASAN_REPORT_INVALID_FREE);
->                 return true;
->         }
->
->         if (!kasan_byte_accessible(ptr)) {
-> -               kasan_report_invalid_free(ptr, ip);
-> +               kasan_report_invalid_free(ptr, ip, KASAN_REPORT_DOUBLE_FREE);
->                 return true;
->         }
->
-> diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-> index 610d60d6e5b8..01c03e45acd4 100644
-> --- a/mm/kasan/kasan.h
-> +++ b/mm/kasan/kasan.h
-> @@ -125,6 +125,7 @@ static inline bool kasan_sync_fault_possible(void)
->  enum kasan_report_type {
->         KASAN_REPORT_ACCESS,
->         KASAN_REPORT_INVALID_FREE,
-> +       KASAN_REPORT_DOUBLE_FREE,
->  };
->
->  struct kasan_report_info {
-> @@ -277,7 +278,7 @@ static inline void kasan_print_address_stack_frame(const void *addr) { }
->
->  bool kasan_report(unsigned long addr, size_t size,
->                 bool is_write, unsigned long ip);
-> -void kasan_report_invalid_free(void *object, unsigned long ip);
-> +void kasan_report_invalid_free(void *object, unsigned long ip, enum kasan_report_type type);
->
->  struct page *kasan_addr_to_page(const void *addr);
->  struct slab *kasan_addr_to_slab(const void *addr);
-> diff --git a/mm/kasan/report.c b/mm/kasan/report.c
-> index b341a191651d..fe3f606b3a98 100644
-> --- a/mm/kasan/report.c
-> +++ b/mm/kasan/report.c
-> @@ -176,8 +176,12 @@ static void end_report(unsigned long *flags, void *addr)
->  static void print_error_description(struct kasan_report_info *info)
->  {
->         if (info->type == KASAN_REPORT_INVALID_FREE) {
-> -               pr_err("BUG: KASAN: double-free or invalid-free in %pS\n",
-> -                      (void *)info->ip);
-> +               pr_err("BUG: KASAN: invalid-free in %pS\n", (void *)info->ip);
-> +               return;
-> +       }
-> +
-> +       if (info->type == KASAN_REPORT_DOUBLE_FREE) {
-> +               pr_err("BUG: KASAN: double-free in %pS\n", (void *)info->ip);
->                 return;
->         }
->
-> @@ -433,7 +437,7 @@ static void print_report(struct kasan_report_info *info)
->         }
->  }
->
-> -void kasan_report_invalid_free(void *ptr, unsigned long ip)
-> +void kasan_report_invalid_free(void *ptr, unsigned long ip, enum kasan_report_type type)
->  {
->         unsigned long flags;
->         struct kasan_report_info info;
-> @@ -448,7 +452,7 @@ void kasan_report_invalid_free(void *ptr, unsigned long ip)
->
->         start_report(&flags, true);
->
-> -       info.type = KASAN_REPORT_INVALID_FREE;
-> +       info.type = type;
->         info.access_addr = ptr;
->         info.first_bad_addr = kasan_reset_tag(ptr);
->         info.access_size = 0;
-> --
-> 2.18.0
+> [1]
+> https://lore.kernel.org/linux-mm/20220615062219.22618-1-Kuan-Ying.Lee@mediatek.com/
 
-Reviewed-by: Andrey Konovalov <andreyknvl@gmail.com>
+Hi Kuan-Ying,
 
-Thanks for the patch!
+Yes, thank you for the patch! I will rebase my series onto it.
+
+Thanks!
