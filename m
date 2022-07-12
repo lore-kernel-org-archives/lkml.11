@@ -2,108 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF1EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE994CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231446AbiGLTP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:15:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
+        id S236069AbiGLTQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236175AbiGLTOd (ORCPT
+        with ESMTP id S236171AbiGLTOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 15:14:33 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75514D5140;
-        Tue, 12 Jul 2022 11:54:23 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id y9so8218340pff.12;
-        Tue, 12 Jul 2022 11:54:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=K1IKCfZW89XQvo85Z8BhSh0884PYpNxI9KGLgL48HhU=;
-        b=mONWmWg9j5WWAGQnDhb6lMqqVC1nGf+CbhThgBUbRkwpwdhBTiHtddhsRDyShUVy6V
-         cMwn/8SH2HLSYs4td6iqqq4CHS9hciHjKY1El6t/DOl8ITfQ7bJnL/T3agcPf1nFdJ2i
-         dwVtLSeN6WoO7TztYLDuhVOUc5Kv/UL/LL1kNUZDWwMh+2/lz1vB411wsbUllsg8F26B
-         4iFi2ueShWaCXdokHRrD8EeOodNxBUOmUlWOKWE5ue+ilcpLKRuK4D5tK2Fyb6RK3KlA
-         T8b+H217RGCmpryowWSfEH8yYPeygWIrvKTcFvgCqPBGwqzV/a6OdKCdBCDnz5/XNisk
-         bKig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=K1IKCfZW89XQvo85Z8BhSh0884PYpNxI9KGLgL48HhU=;
-        b=KuKS1IDN6grFWFJR1TP66NkjBLLk45qSH8jbrPrmKQyyScvex0HCySgQqOgtztwERy
-         OE5z0Z0Ll0sIVGUHnLP1xNf5HtXkvXPoMlh8G1fZqnfyFoj2Vrp9q5sv5rfdX+XfknEv
-         OzN8YdAR8U9Bck34xkw5hG+O43j5sRIksoaOALwb6o9E35rcQZIBlQ9x+cl+RVpHzS3c
-         uses1mm5yRdjFcsK8vBdVGeVfud2CuGc+vyyAe6Iib7jr+Q5VYScK4vYvej5KGw19tBt
-         e+qubg5G07L4DOvBcY6jgvr2FYcPtDrbhtdiZ6Z36+9DSZYBeXTw+ZSIRDqGer43PSbC
-         StCw==
-X-Gm-Message-State: AJIora/Olg4Vlc6IQFZmRdCiKmophuRGuUMbISC4JbjJvdywi4Mt3VGX
-        4/lrb/ZQjBuhhnHuT9Es1unvx8jHQM8=
-X-Google-Smtp-Source: AGRyM1tijtHmJAYOsuSQDbbEVFzF0OvZrIYUyBGfKAZp6IEQzl6/TAkU1kCiKsbOgqNXU+SB7aRHSQ==
-X-Received: by 2002:a63:104f:0:b0:40d:2293:f1d6 with SMTP id 15-20020a63104f000000b0040d2293f1d6mr21274190pgq.167.1657652062552;
-        Tue, 12 Jul 2022 11:54:22 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b8-20020a6567c8000000b0040de29f847asm6575539pgs.52.2022.07.12.11.54.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 11:54:22 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E69CDABB5;
+        Tue, 12 Jul 2022 11:54:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D258661274;
+        Tue, 12 Jul 2022 18:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7AA2C3411C;
+        Tue, 12 Jul 2022 18:54:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657652060;
+        bh=HytcfT2UpPGDmTSPalV+ComyLV1EIZVjO8X2fhichWg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mZc5h0ISGdrVQNgGsEkTgrtQ1IU9pboNS3KaiAw7Rjh0aOaneJM4Fay3GOUeukjzd
+         KZkbbt3RUbv+RljDVLjd5ZzROOUI+WPmacI62ykzA9aeb0xYdct8lqNqv2ZbBLv+Q/
+         h5nKCsB9Vc2SVZYjnq0sXJ9WQCJgjEyQko8itgYs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     olivia@selenic.com, u.kleine-koenig@pengutronix.de,
-        paul.gortmaker@windriver.com, dwmw2@infradead.org,
-        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
-        gregkh@linuxfoundation.org, Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH] MAINTAINERS: Change mentions of mpm to olivia
-Date:   Tue, 12 Jul 2022 11:54:19 -0700
-Message-Id: <20220712185419.45487-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.18 46/61] objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
+Date:   Tue, 12 Jul 2022 20:39:43 +0200
+Message-Id: <20220712183238.788053078@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
+References: <20220712183236.931648980@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following this mercurial changeset:
-https://www.mercurial-scm.org/repo/hg-stable/rev/d4ba4d51f85f
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-update the MAINTAINERS entry to replace the now obsolete identity.
+commit 8faea26e611189e933ea2281975ff4dc7c1106b6 upstream.
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Commit
+
+  c536ed2fffd5 ("objtool: Remove SAVE/RESTORE hints")
+
+removed the save/restore unwind hints because they were no longer
+needed. Now they're going to be needed again so re-add them.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-This was first submitted by Uwe:
+ arch/x86/include/asm/unwind_hints.h   |   12 ++++++++--
+ include/linux/objtool.h               |    6 +++--
+ tools/include/linux/objtool.h         |    6 +++--
+ tools/objtool/check.c                 |   40 ++++++++++++++++++++++++++++++++++
+ tools/objtool/include/objtool/check.h |   19 ++++++++--------
+ 5 files changed, 68 insertions(+), 15 deletions(-)
 
-https://lore.kernel.org/lkml/20210920080635.253826-1-u.kleine-koenig@pengutronix.de/
-
-but the discussion derailed into whether the EMBEDDED LINUX entry ought
-to be there or not, meanwhile we still have a bouncing entry with an
-obsolete identify.
-
- MAINTAINERS | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f679152bdbad..b1ce4b84f99f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7404,7 +7404,7 @@ F:	Documentation/admin-guide/media/em28xx*
- F:	drivers/media/usb/em28xx/
+--- a/arch/x86/include/asm/unwind_hints.h
++++ b/arch/x86/include/asm/unwind_hints.h
+@@ -8,11 +8,11 @@
+ #ifdef __ASSEMBLY__
  
- EMBEDDED LINUX
--M:	Matt Mackall <mpm@selenic.com>
-+M:	Olivia Mackall <olivia@selenic.com>
- M:	David Woodhouse <dwmw2@infradead.org>
- L:	linux-embedded@vger.kernel.org
- S:	Maintained
-@@ -8787,7 +8787,7 @@ F:	include/trace/events/hwmon*.h
- K:	(devm_)?hwmon_device_(un)?register(|_with_groups|_with_info)
+ .macro UNWIND_HINT_EMPTY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_CALL end=1
+ .endm
  
- HARDWARE RANDOM NUMBER GENERATOR CORE
--M:	Matt Mackall <mpm@selenic.com>
-+M:	Olivia Mackall <olivia@selenic.com>
- M:	Herbert Xu <herbert@gondor.apana.org.au>
- L:	linux-crypto@vger.kernel.org
- S:	Odd fixes
--- 
-2.25.1
+ .macro UNWIND_HINT_ENTRY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_ENTRY end=1
+ .endm
+ 
+ .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
+@@ -56,6 +56,14 @@
+ 	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=8 type=UNWIND_HINT_TYPE_FUNC
+ .endm
+ 
++.macro UNWIND_HINT_SAVE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_SAVE
++.endm
++
++.macro UNWIND_HINT_RESTORE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_RESTORE
++.endm
++
+ #else
+ 
+ #define UNWIND_HINT_FUNC \
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -125,7 +127,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -178,7 +180,7 @@ struct unwind_hint {
+ #define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -125,7 +127,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -178,7 +180,7 @@ struct unwind_hint {
+ #define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2031,6 +2031,17 @@ static int read_unwind_hints(struct objt
+ 
+ 		insn->hint = true;
+ 
++		if (hint->type == UNWIND_HINT_TYPE_SAVE) {
++			insn->hint = false;
++			insn->save = true;
++			continue;
++		}
++
++		if (hint->type == UNWIND_HINT_TYPE_RESTORE) {
++			insn->restore = true;
++			continue;
++		}
++
+ 		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
+ 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
+ 
+@@ -3436,6 +3447,35 @@ static int validate_branch(struct objtoo
+ 			state.instr += insn->instr;
+ 
+ 		if (insn->hint) {
++			if (insn->restore) {
++				struct instruction *save_insn, *i;
++
++				i = insn;
++				save_insn = NULL;
++
++				sym_for_each_insn_continue_reverse(file, func, i) {
++					if (i->save) {
++						save_insn = i;
++						break;
++					}
++				}
++
++				if (!save_insn) {
++					WARN_FUNC("no corresponding CFI save for CFI restore",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				if (!save_insn->visited) {
++					WARN_FUNC("objtool isn't smart enough to handle this CFI save/restore combo",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				insn->cfi = save_insn->cfi;
++				nr_cfi_reused++;
++			}
++
+ 			state.cfi = *insn->cfi;
+ 		} else {
+ 			/* XXX track if we actually changed state.cfi */
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -46,18 +46,19 @@ struct instruction {
+ 	enum insn_type type;
+ 	unsigned long immediate;
+ 
+-	u8 dead_end	: 1,
+-	   ignore	: 1,
+-	   ignore_alts	: 1,
+-	   hint		: 1,
+-	   retpoline_safe : 1,
+-	   noendbr	: 1,
+-	   entry	: 1;
+-		/* 1 bit hole */
++	u16 dead_end		: 1,
++	   ignore		: 1,
++	   ignore_alts		: 1,
++	   hint			: 1,
++	   save			: 1,
++	   restore		: 1,
++	   retpoline_safe	: 1,
++	   noendbr		: 1,
++	   entry		: 1;
++		/* 7 bit hole */
+ 
+ 	s8 instr;
+ 	u8 visited;
+-	/* u8 hole */
+ 
+ 	struct alt_group *alt_group;
+ 	struct symbol *call_dest;
+
 
