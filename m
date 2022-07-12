@@ -2,125 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C529FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:21:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAB0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232244AbiGLMUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:20:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
+        id S232520AbiGLMV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiGLMUX (ORCPT
+        with ESMTP id S232278AbiGLMVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:20:23 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F2A564CF;
-        Tue, 12 Jul 2022 05:20:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657628362; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=FJj1MZJAFJrfnBPewVGJgduey6uHYBrbH6lGXkQlj1dpr4J2tOphiNlZiKL1Tsyk37f0QapHAV0f5kMaOLDJJFwukDxmV1e6lgmS8uYKGllHhY9EG6kXjdaG0gK9WTVKzNvdz0taQQZztiVAkTOQlGtIKUvV56NCh3sbwq3BZac=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1657628362; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=SxdnHC2dnxNY4yLBqg/y0wuycbRGOVX5whTYGdp2GTw=; 
-        b=T1XQ1Ez2wjc4wupOXVhG8YW3VvsbgdrG1XdcJrye5IJQreS54W84054CdfN5KXBsPlGfzXoUt5K8Z8WYUUjFU1nX68sJzNEdPwx3krIhy/TxIlX2Lfxks+0D2DcHujIzJJf4YrY4chR2cpoDztbwkDBWnMZqeGtdHZeWGCJ60Fc=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657628362;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=SxdnHC2dnxNY4yLBqg/y0wuycbRGOVX5whTYGdp2GTw=;
-        b=Jwtz8dwblhId0JrvlCSpBmOBx0InzCgsI0Bicb1FXOB1Ikj5g1XZLtyZ3uL2okis
-        1YqE9x6FBm/ac6ZGwcGvU9sFNQCJfmiUvNVgFktZbALHCqyJ4l4T4hz/b0YrH12nmp3
-        7clzSOv7K+2PsCQ2H1Jnmw0gpzUpqI1tZ7UZft3k=
-Received: from edelgard.icenowy.me (59.41.160.3 [59.41.160.3]) by mx.zohomail.com
-        with SMTPS id 1657628218526833.9611344929851; Tue, 12 Jul 2022 05:16:58 -0700 (PDT)
-Message-ID: <dfa6507c68bae9c62520cf100172e1a79bc201c1.camel@icenowy.me>
-Subject: Re: [PATCH 06/12] clk: sunxi=ng: add support for R329 CCUs
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Samuel Holland <samuel@sholland.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andre Przywara <andre.przywara@arm.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
-Date:   Tue, 12 Jul 2022 20:16:49 +0800
-In-Reply-To: <4fc9873e87c11dce23099a24be34465f09f3a9a4.camel@aosc.io>
-References: <20220422140902.1058101-1-icenowy@aosc.io>
-         <BYAPR20MB2472930AAFFBDC0ACB9A7487BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
-         <c858b944-d72f-4e59-6a1a-329b5b8949c4@sholland.org>
-         <4fc9873e87c11dce23099a24be34465f09f3a9a4.camel@aosc.io>
-Organization: Anthon Open-Source Community
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 
+        Tue, 12 Jul 2022 08:21:22 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BEF6D549
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:21:21 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31d7db3e6e5so48327207b3.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:21:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UaSHri8uX8QzRonJXk/9Ev1ksxotFizg9AxbyPG4jRk=;
+        b=AdA9qT8whnij0+KR+xYBYzsjojFQe6acCMTqkTici9ybil/uXKlgNpGU4ccpVCEIhz
+         9lstl2oAgiyy3zfDj8omvZMXE2HfC9BztuasX9rV3FAtelrWEST4nMElNJrEIUbHg6xz
+         vLBb8YSGSfV6wwGP//JqkXtQWBzWnS6IQnt0H/AhukwKmCy+De2sO+LsQj6CPfc47DEP
+         GPy1Qc9iOVk/8rq20s4g9LqjTdYELDMJmbd3WnYzVj9FTIda6MtL0VuZXtIj4K0Lxzhq
+         mXgFDNw0qg6K2V5/KOq8itfFBvS3GWdiVr7JMEdKlZRGv/i9f+m7rMBo/pDfaPsFN5yP
+         NkQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UaSHri8uX8QzRonJXk/9Ev1ksxotFizg9AxbyPG4jRk=;
+        b=HkCqm5owuBKLUCAbb4kngmnvV4P9IiVXVGFkX1Br6d0Fqc8ORrEOk6LjfIn4AW2BFI
+         DwS0F2phDx6fIMvwQIL1gRPI9pF984OnU5Bee8RWncZj9j9O+wDZVc3RB+/6sMQtOQsZ
+         nURzFzvfBjcApf/NifrPioMcUL/VU01KHKMYx0KQ7Vjv8qc4zxeU/akQrAMBZGckmPba
+         DdaJaGha1oqEWF3lSYgKYpmu/nvgltRotSsDeTiytpwM0UiMB1kDeef3o7eRYoOQvtam
+         7+aqXquqgyBCiwVvR3Hcvl1FIlUL60066W0X4T464K9kStFsabA7NhP6BrSSu39u6haG
+         yMMQ==
+X-Gm-Message-State: AJIora/46TzrRTbIC6bE+BiyDqtPGwY86LJulYNypDGpp8vJnE6CMoHz
+        ytvwUe+ClLedocRBQ+nQ+UwvK6Yf5M4BZJLSb+uwQg==
+X-Google-Smtp-Source: AGRyM1tNTqqD1WJS4VX6QxCOJmIA4NZigO0ohBTbUAMEjXFjLnHlS2MHRgJF6cAyN0c2yj/38K4PnLL3yJAEs4Jhs+g=
+X-Received: by 2002:a81:1492:0:b0:31c:a1ff:9ec with SMTP id
+ 140-20020a811492000000b0031ca1ff09ecmr23857082ywu.327.1657628480468; Tue, 12
+ Jul 2022 05:21:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-15-glider@google.com>
+In-Reply-To: <20220701142310.2188015-15-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 12 Jul 2022 14:20:44 +0200
+Message-ID: <CANpmjNP8kmZYRsdpHCni33W-Yjgy-ajCAuTE94zwUniyYt7WQw@mail.gmail.com>
+Subject: Re: [PATCH v4 14/45] mm: kmsan: maintain KMSAN metadata for page operations
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-=E5=9C=A8 2022-07-12=E6=98=9F=E6=9C=9F=E4=BA=8C=E7=9A=84 19:57 +0800=EF=BC=
-=8CIcenowy Zheng=E5=86=99=E9=81=93=EF=BC=9A
-> =E5=9C=A8 2022-04-23=E6=98=9F=E6=9C=9F=E5=85=AD=E7=9A=84 21:12 -0500=EF=
-=BC=8CSamuel Holland=E5=86=99=E9=81=93=EF=BC=9A
-> > On 4/22/22 10:41 AM, icenowy@outlook.com=C2=A0wrote:
-> > > From: Icenowy Zheng <icenowy@aosc.io>
-> > >=20
-> > > Allwinner R329 has two CCUs, one in CPUX and another in PRCM.
-> > >=20
-> > > Add support for them.
-> > >=20
-> > > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> >=20
-> > There is a typo in your commit title. =3D should be -.
-> >=20
-> > Thanks for updating the driver to use .fw_name and be loadable as a
-> > module. All
-> > of those changes look good.
-> >=20
-> > There are still some missing clocks here compared to the BSP, and a
-> > couple of
-> > other minor issues. Please see my earlier review:
-> >=20
-> > https://lore.kernel.org/linux-sunxi/99a74950-fdc0-ecfe-e5f0-ba4a7d8751f=
-0@sholland.org/
-> >=20
-> > So far it's been consistent that any settable bits in the CCU
-> > registers actually
-> > do something. So I would expect all of those bits to have an index
-> > reserved in
-> > the binding, even if we do not model them. I want to avoid having
-> > to
->=20
-> Sorry but I don't think it proper to reserve unclear bits, because
-> we're just allocating the numbers as a random sequence (in fact it's
-> the sequence that it gets implemented).
->=20
-> Or consider a structural number scheme, in which a value can be
-> uniquely predicted by its name?
+On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
+>
+> Insert KMSAN hooks that make the necessary bookkeeping changes:
+>  - poison page shadow and origins in alloc_pages()/free_page();
+>  - clear page shadow and origins in clear_page(), copy_user_highpage();
+>  - copy page metadata in copy_highpage(), wp_page_copy();
+>  - handle vmap()/vunmap()/iounmap();
+>
+> Signed-off-by: Alexander Potapenko <glider@google.com>
+> ---
+> v2:
+>  -- move page metadata hooks implementation here
+>  -- remove call to kmsan_memblock_free_pages()
+>
+> v3:
+>  -- use PAGE_SHIFT in kmsan_ioremap_page_range()
+>
+> v4:
+>  -- change sizeof(type) to sizeof(*ptr)
+>  -- replace occurrences of |var| with @var
+>  -- swap mm: and kmsan: in the subject
+>  -- drop __no_sanitize_memory from clear_page()
+>
+> Link: https://linux-review.googlesource.com/id/I6d4f53a0e7eab46fa29f0348f3095d9f2e326850
+> ---
+>  arch/x86/include/asm/page_64.h |  12 ++++
+>  arch/x86/mm/ioremap.c          |   3 +
+>  include/linux/highmem.h        |   3 +
+>  include/linux/kmsan.h          | 123 +++++++++++++++++++++++++++++++++
+>  mm/internal.h                  |   6 ++
+>  mm/kmsan/hooks.c               |  87 +++++++++++++++++++++++
+>  mm/kmsan/shadow.c              | 114 ++++++++++++++++++++++++++++++
+>  mm/memory.c                    |   2 +
+>  mm/page_alloc.c                |  11 +++
+>  mm/vmalloc.c                   |  20 +++++-
+>  10 files changed, 379 insertions(+), 2 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/page_64.h b/arch/x86/include/asm/page_64.h
+> index baa70451b8df5..227dd33eb4efb 100644
+> --- a/arch/x86/include/asm/page_64.h
+> +++ b/arch/x86/include/asm/page_64.h
+> @@ -45,14 +45,26 @@ void clear_page_orig(void *page);
+>  void clear_page_rep(void *page);
+>  void clear_page_erms(void *page);
+>
+> +/* This is an assembly header, avoid including too much of kmsan.h */
 
-Well by thinking a little further, I realized our current CCU DT
-binding is just based on implementation details of sunxi-ng drivers
-(for example, some intermediate clocks get a number too, just not
-exposed to the DT binding header). This continues to prove that
-reserving numbers is just needed at all, and the current way to make
-CCU DT bindings might be totally wrong.
+All of this code is under an "#ifndef __ASSEMBLY__" guard, does it matter?
 
-Maybe we should start to use reasonable slice numbers in the next CCU
-driver?
+> +#ifdef CONFIG_KMSAN
+> +void kmsan_unpoison_memory(const void *addr, size_t size);
+> +#endif
+>  static inline void clear_page(void *page)
+>  {
+> +#ifdef CONFIG_KMSAN
+> +       /* alternative_call_2() changes @page. */
+> +       void *page_copy = page;
+> +#endif
+>         alternative_call_2(clear_page_orig,
+>                            clear_page_rep, X86_FEATURE_REP_GOOD,
+>                            clear_page_erms, X86_FEATURE_ERMS,
+>                            "=D" (page),
+>                            "0" (page)
+>                            : "cc", "memory", "rax", "rcx");
+> +#ifdef CONFIG_KMSAN
+> +       /* Clear KMSAN shadow for the pages that have it. */
+> +       kmsan_unpoison_memory(page_copy, PAGE_SIZE);
 
->=20
-> > go back and
-> > add gates to the binding out-of-order later, like we are doing for
-> > H6.
-> >=20
-> > Regards,
-> > Samuel
->=20
->=20
->=20
+What happens if this is called before the alternative-call? Could this
+(in the interest of simplicity) be moved above it? And if you used the
+kmsan-checks.h header, it also doesn't need any "ifdef CONFIG_KMSAN"
+anymore.
 
-
+> +#endif
+>  }
