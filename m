@@ -2,646 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 643FDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6387BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:16:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232625AbiGLMPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32950 "EHLO
+        id S232618AbiGLMQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:16:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiGLMPV (ORCPT
+        with ESMTP id S233183AbiGLMQ2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:15:21 -0400
-Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3E864D837;
-        Tue, 12 Jul 2022 05:15:17 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 4A835D5F;
-        Tue, 12 Jul 2022 15:17:10 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 4A835D5F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1657628230;
-        bh=tZTjf3cX1dhnh8S47Ndkoot2A9dQwfWQZ34UVN+WvzE=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=RgqYZpVS9iyeYeT+LPexTfA5WrKcO4sXmidtdpmq31SkUTyt2EOTYcQGKN2xBYIu7
-         OxlnaG6ePpt097Qcn5nTj9yIhMdt6Kt0OzexolObpumONtxhj69HwyALDRCuTAVyJ8
-         RG3CIk4Jiw9bAIGGTewM6ZzoAKdpKME3R8n7UaTs=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 12 Jul 2022 15:15:16 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Stephen Boyd <sboyd@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v8 7/7] clk: baikal-t1: Convert to platform device driver
-Date:   Tue, 12 Jul 2022 15:15:05 +0300
-Message-ID: <20220712121505.5671-8-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru>
+        Tue, 12 Jul 2022 08:16:28 -0400
+X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 05:16:06 PDT
+Received: from relay-us1.mymailcheap.com (relay-us1.mymailcheap.com [51.81.35.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C56AE558;
+        Tue, 12 Jul 2022 05:16:06 -0700 (PDT)
+Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.241.64])
+        by relay-us1.mymailcheap.com (Postfix) with ESMTPS id 2A613201AE;
+        Tue, 12 Jul 2022 11:57:56 +0000 (UTC)
+Received: from relay2.mymailcheap.com (relay2.mymailcheap.com [217.182.113.132])
+        by relay5.mymailcheap.com (Postfix) with ESMTPS id 5CE24206D3;
+        Tue, 12 Jul 2022 11:57:53 +0000 (UTC)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay2.mymailcheap.com (Postfix) with ESMTPS id 01CD73ECD9;
+        Tue, 12 Jul 2022 13:57:51 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id 565912A37A;
+        Tue, 12 Jul 2022 11:57:50 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id M5DJ4iuCCZiA; Tue, 12 Jul 2022 11:57:49 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Tue, 12 Jul 2022 11:57:49 +0000 (UTC)
+Received: from edelgard.icenowy.me (unknown [59.41.160.3])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 42D17401CE;
+        Tue, 12 Jul 2022 11:57:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1657627068; bh=ngIZLTuVH9bK77KIsBS8/RQadlTRO2EmRZFRx9q6pic=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=legNVkDF7C6eeEdfhizFOZu6xr38rsC6eHTxb8EoeQJZFlO5hbwJXtVo71Q6znPff
+         GlcbGVi35E7LcHRbnqH5JEmuc55DX567CisvB0fDIhE8yWpU14AZmtGFt2P1lnyo00
+         x12JEgzd3uzbPPieUjRTJBMJh/HgFomrIp2e3Kc8=
+Message-ID: <4fc9873e87c11dce23099a24be34465f09f3a9a4.camel@aosc.io>
+Subject: Re: [PATCH 06/12] clk: sunxi=ng: add support for R329 CCUs
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 19:57:29 +0800
+In-Reply-To: <c858b944-d72f-4e59-6a1a-329b5b8949c4@sholland.org>
+References: <20220422140902.1058101-1-icenowy@aosc.io>
+         <BYAPR20MB2472930AAFFBDC0ACB9A7487BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+         <c858b944-d72f-4e59-6a1a-329b5b8949c4@sholland.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In accordance with the way the MIPS platform is normally design there are
-only six clock sources which need to be available on the kernel start in
-order to one end up booting correctly:
-+ CPU PLL: needed by the r4k and MIPS GIC timer drivers. The former one is
-  initialized by the arch code, while the later one is implemented in the
-  mips-gic-timer.c driver as the OF-declared timer.
-+ PCIe PLL: required as a parental clock source for the APB/timer domains.
-+ APB clock: needed in order to access all the SoC CSRs at least for the
-  timer OF-declared drivers.
-+ APB Timer{0-2} clocks: these are the DW APB timers which drivers
-  dw_apb_timer_of.c are implemented as the OF-declared timers.
+在 2022-04-23星期六的 21:12 -0500，Samuel Holland写道：
+> On 4/22/22 10:41 AM, icenowy@outlook.com wrote:
+> > From: Icenowy Zheng <icenowy@aosc.io>
+> > 
+> > Allwinner R329 has two CCUs, one in CPUX and another in PRCM.
+> > 
+> > Add support for them.
+> > 
+> > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> 
+> There is a typo in your commit title. = should be -.
+> 
+> Thanks for updating the driver to use .fw_name and be loadable as a
+> module. All
+> of those changes look good.
+> 
+> There are still some missing clocks here compared to the BSP, and a
+> couple of
+> other minor issues. Please see my earlier review:
+> 
+> https://lore.kernel.org/linux-sunxi/99a74950-fdc0-ecfe-e5f0-ba4a7d8751f0@sholland.org/
+> 
+> So far it's been consistent that any settable bits in the CCU
+> registers actually
+> do something. So I would expect all of those bits to have an index
+> reserved in
+> the binding, even if we do not model them. I want to avoid having to
 
-So as long as the clocks above are available early the kernel will
-normally work. Let's convert the Baikal-T1 CCU drivers to the platform
-device drivers keeping that in mind.
+Sorry but I don't think it proper to reserve unclear bits, because
+we're just allocating the numbers as a random sequence (in fact it's
+the sequence that it gets implemented).
 
-Generally speaking the conversion isn't that complicated since the driver
-infrastructure has been designed as flexible enough for that. First we
-need to add a new PLL/Divider clock features flag which indicates the
-corresponding clock source as a basic one and that clock sources will be
-available on the kernel early boot stages. Second the internal PLL/Divider
-descriptors need to be initialized with -EPROBE_DEFER value as the
-corresponding clock source is unavailable at the early stages. They will
-be allocated and initialized on the Baikal-T1 clock platform driver probe
-procedure. Finally the already available PLL/Divider init functions need
-to be split up into two ones: init procedure performed in the framework of
-the OF-declared clock initialization (of_clk_init()), and the probe
-procedure called by the platform devices bus driver. Note the later method
-will just continue the system clocks initialization started in the former
-one.
+Or consider a structural number scheme, in which a value can be
+uniquely predicted by its name?
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+> go back and
+> add gates to the binding out-of-order later, like we are doing for
+> H6.
+> 
+> Regards,
+> Samuel
 
----
-
-Changelog v4:
-- This is a new patch created on v4 lap of the series to make @Stephen
-  a bit more happy about this series.)
-
-Changelog v7:
-- Fix "Alignment should match open parenthesis" warning for the
-  pr_err() method invocations. (@Philipp)
----
- drivers/clk/baikal-t1/ccu-div.h     |   3 +
- drivers/clk/baikal-t1/ccu-pll.h     |   8 ++
- drivers/clk/baikal-t1/clk-ccu-div.c | 149 +++++++++++++++++++++++-----
- drivers/clk/baikal-t1/clk-ccu-pll.c | 128 +++++++++++++++++++-----
- 4 files changed, 235 insertions(+), 53 deletions(-)
-
-diff --git a/drivers/clk/baikal-t1/ccu-div.h b/drivers/clk/baikal-t1/ccu-div.h
-index ff97bb30fcc3..76d8ee44d415 100644
---- a/drivers/clk/baikal-t1/ccu-div.h
-+++ b/drivers/clk/baikal-t1/ccu-div.h
-@@ -23,6 +23,8 @@
- 
- /*
-  * CCU Divider private flags
-+ * @CCU_DIV_BASIC: Basic divider clock required by the kernel as early as
-+ *		   possible.
-  * @CCU_DIV_SKIP_ONE: Due to some reason divider can't be set to 1.
-  *		      It can be 0 though, which is functionally the same.
-  * @CCU_DIV_SKIP_ONE_TO_THREE: For some reason divider can't be within [1,3].
-@@ -30,6 +32,7 @@
-  * @CCU_DIV_LOCK_SHIFTED: Find lock-bit at non-standard position.
-  * @CCU_DIV_RESET_DOMAIN: There is a clock domain reset handle.
-  */
-+#define CCU_DIV_BASIC			BIT(0)
- #define CCU_DIV_SKIP_ONE		BIT(1)
- #define CCU_DIV_SKIP_ONE_TO_THREE	BIT(2)
- #define CCU_DIV_LOCK_SHIFTED		BIT(3)
-diff --git a/drivers/clk/baikal-t1/ccu-pll.h b/drivers/clk/baikal-t1/ccu-pll.h
-index 76cd9132a219..a71bfd7b90ec 100644
---- a/drivers/clk/baikal-t1/ccu-pll.h
-+++ b/drivers/clk/baikal-t1/ccu-pll.h
-@@ -13,6 +13,12 @@
- #include <linux/bits.h>
- #include <linux/of.h>
- 
-+/*
-+ * CCU PLL private flags
-+ * @CCU_PLL_BASIC: Basic PLL required by the kernel as early as possible.
-+ */
-+#define CCU_PLL_BASIC		BIT(0)
-+
- /*
-  * struct ccu_pll_init_data - CCU PLL initialization data
-  * @id: Clock private identifier.
-@@ -22,6 +28,7 @@
-  * @sys_regs: Baikal-T1 System Controller registers map.
-  * @np: Pointer to the node describing the CCU PLLs.
-  * @flags: PLL clock flags.
-+ * @features: PLL private features.
-  */
- struct ccu_pll_init_data {
- 	unsigned int id;
-@@ -31,6 +38,7 @@ struct ccu_pll_init_data {
- 	struct regmap *sys_regs;
- 	struct device_node *np;
- 	unsigned long flags;
-+	unsigned long features;
- };
- 
- /*
-diff --git a/drivers/clk/baikal-t1/clk-ccu-div.c b/drivers/clk/baikal-t1/clk-ccu-div.c
-index 278aa38d767e..b0577c5cf41c 100644
---- a/drivers/clk/baikal-t1/clk-ccu-div.c
-+++ b/drivers/clk/baikal-t1/clk-ccu-div.c
-@@ -12,6 +12,7 @@
- #define pr_fmt(fmt) "bt1-ccu-div: " fmt
- 
- #include <linux/kernel.h>
-+#include <linux/platform_device.h>
- #include <linux/printk.h>
- #include <linux/slab.h>
- #include <linux/clk-provider.h>
-@@ -180,7 +181,7 @@ static const struct ccu_div_info sys_info[] = {
- 			 CLK_SET_RATE_PARENT),
- 	CCU_DIV_VAR_INFO(CCU_SYS_APB_CLK, "sys_apb_clk",
- 			 "pcie_clk", CCU_SYS_APB_BASE, 5,
--			 CLK_IS_CRITICAL, CCU_DIV_RESET_DOMAIN),
-+			 CLK_IS_CRITICAL, CCU_DIV_BASIC | CCU_DIV_RESET_DOMAIN),
- 	CCU_DIV_GATE_INFO(CCU_SYS_GMAC0_TX_CLK, "sys_gmac0_tx_clk",
- 			  "eth_clk", CCU_SYS_GMAC0_BASE, 5),
- 	CCU_DIV_FIXED_INFO(CCU_SYS_GMAC0_PTP_CLK, "sys_gmac0_ptp_clk",
-@@ -214,28 +215,53 @@ static const struct ccu_div_info sys_info[] = {
- 			   "ref_clk", 25),
- 	CCU_DIV_VAR_INFO(CCU_SYS_TIMER0_CLK, "sys_timer0_clk",
- 			 "ref_clk", CCU_SYS_TIMER0_BASE, 17,
--			 CLK_SET_RATE_GATE, 0),
-+			 CLK_SET_RATE_GATE, CCU_DIV_BASIC),
- 	CCU_DIV_VAR_INFO(CCU_SYS_TIMER1_CLK, "sys_timer1_clk",
- 			 "ref_clk", CCU_SYS_TIMER1_BASE, 17,
--			 CLK_SET_RATE_GATE, 0),
-+			 CLK_SET_RATE_GATE, CCU_DIV_BASIC),
- 	CCU_DIV_VAR_INFO(CCU_SYS_TIMER2_CLK, "sys_timer2_clk",
- 			 "ref_clk", CCU_SYS_TIMER2_BASE, 17,
--			 CLK_SET_RATE_GATE, 0),
-+			 CLK_SET_RATE_GATE, CCU_DIV_BASIC),
- 	CCU_DIV_VAR_INFO(CCU_SYS_WDT_CLK, "sys_wdt_clk",
- 			 "eth_clk", CCU_SYS_WDT_BASE, 17,
- 			 CLK_SET_RATE_GATE, CCU_DIV_SKIP_ONE_TO_THREE)
- };
- 
-+static struct ccu_div_data *axi_data;
-+static struct ccu_div_data *sys_data;
-+
-+static void ccu_div_set_data(struct ccu_div_data *data)
-+{
-+	struct device_node *np = data->np;
-+
-+	if (of_device_is_compatible(np, "baikal,bt1-ccu-axi"))
-+		axi_data = data;
-+	else if (of_device_is_compatible(np, "baikal,bt1-ccu-sys"))
-+		sys_data = data;
-+	else
-+		pr_err("Invalid DT node '%s' specified\n", of_node_full_name(np));
-+}
-+
-+static struct ccu_div_data *ccu_div_get_data(struct device_node *np)
-+{
-+	if (of_device_is_compatible(np, "baikal,bt1-ccu-axi"))
-+		return axi_data;
-+	else if (of_device_is_compatible(np, "baikal,bt1-ccu-sys"))
-+		return sys_data;
-+
-+	pr_err("Invalid DT node '%s' specified\n", of_node_full_name(np));
-+
-+	return NULL;
-+}
-+
- static struct ccu_div *ccu_div_find_desc(struct ccu_div_data *data,
- 					 unsigned int clk_id)
- {
--	struct ccu_div *div;
- 	int idx;
- 
- 	for (idx = 0; idx < data->divs_num; ++idx) {
--		div = data->divs[idx];
--		if (div && div->id == clk_id)
--			return div;
-+		if (data->divs_info[idx].id == clk_id)
-+			return data->divs[idx];
- 	}
- 
- 	return ERR_PTR(-EINVAL);
-@@ -307,14 +333,16 @@ static struct clk_hw *ccu_div_of_clk_hw_get(struct of_phandle_args *clkspec,
- 	clk_id = clkspec->args[0];
- 	div = ccu_div_find_desc(data, clk_id);
- 	if (IS_ERR(div)) {
--		pr_info("Invalid clock ID %d specified\n", clk_id);
-+		if (div != ERR_PTR(-EPROBE_DEFER))
-+			pr_info("Invalid clock ID %d specified\n", clk_id);
-+
- 		return ERR_CAST(div);
- 	}
- 
- 	return ccu_div_get_clk_hw(div);
- }
- 
--static int ccu_div_clk_register(struct ccu_div_data *data)
-+static int ccu_div_clk_register(struct ccu_div_data *data, bool defer)
- {
- 	int idx, ret;
- 
-@@ -322,6 +350,13 @@ static int ccu_div_clk_register(struct ccu_div_data *data)
- 		const struct ccu_div_info *info = &data->divs_info[idx];
- 		struct ccu_div_init_data init = {0};
- 
-+		if (!!(info->features & CCU_DIV_BASIC) ^ defer) {
-+			if (!data->divs[idx])
-+				data->divs[idx] = ERR_PTR(-EPROBE_DEFER);
-+
-+			continue;
-+		}
-+
- 		init.id = info->id;
- 		init.name = info->name;
- 		init.parent_name = info->parent_name;
-@@ -354,30 +389,43 @@ static int ccu_div_clk_register(struct ccu_div_data *data)
- 		}
- 	}
- 
--	ret = of_clk_add_hw_provider(data->np, ccu_div_of_clk_hw_get, data);
--	if (ret) {
--		pr_err("Couldn't register dividers '%s' clock provider\n",
--			of_node_full_name(data->np));
--		goto err_hw_unregister;
--	}
--
- 	return 0;
- 
- err_hw_unregister:
--	for (--idx; idx >= 0; --idx)
-+	for (--idx; idx >= 0; --idx) {
-+		if (!!(data->divs_info[idx].features & CCU_DIV_BASIC) ^ defer)
-+			continue;
-+
- 		ccu_div_hw_unregister(data->divs[idx]);
-+	}
- 
- 	return ret;
- }
- 
--static void ccu_div_clk_unregister(struct ccu_div_data *data)
-+static void ccu_div_clk_unregister(struct ccu_div_data *data, bool defer)
- {
- 	int idx;
- 
--	of_clk_del_provider(data->np);
-+	/* Uninstall only the clocks registered on the specfied stage */
-+	for (idx = 0; idx < data->divs_num; ++idx) {
-+		if (!!(data->divs_info[idx].features & CCU_DIV_BASIC) ^ defer)
-+			continue;
- 
--	for (idx = 0; idx < data->divs_num; ++idx)
- 		ccu_div_hw_unregister(data->divs[idx]);
-+	}
-+}
-+
-+static int ccu_div_of_register(struct ccu_div_data *data)
-+{
-+	int ret;
-+
-+	ret = of_clk_add_hw_provider(data->np, ccu_div_of_clk_hw_get, data);
-+	if (ret) {
-+		pr_err("Couldn't register dividers '%s' clock provider\n",
-+		       of_node_full_name(data->np));
-+	}
-+
-+	return ret;
- }
- 
- static int ccu_div_rst_register(struct ccu_div_data *data)
-@@ -397,7 +445,49 @@ static int ccu_div_rst_register(struct ccu_div_data *data)
- 	return 0;
- }
- 
--static void ccu_div_init(struct device_node *np)
-+static int ccu_div_probe(struct platform_device *pdev)
-+{
-+	struct ccu_div_data *data;
-+	int ret;
-+
-+	data = ccu_div_get_data(dev_of_node(&pdev->dev));
-+	if (!data)
-+		return -EINVAL;
-+
-+	ret = ccu_div_clk_register(data, false);
-+	if (ret)
-+		return ret;
-+
-+	ret = ccu_div_rst_register(data);
-+	if (ret)
-+		goto err_clk_unregister;
-+
-+	return 0;
-+
-+err_clk_unregister:
-+	ccu_div_clk_unregister(data, false);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id ccu_div_of_match[] = {
-+	{ .compatible = "baikal,bt1-ccu-axi" },
-+	{ .compatible = "baikal,bt1-ccu-sys" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ccu_div_of_match);
-+
-+static struct platform_driver ccu_div_driver = {
-+	.probe  = ccu_div_probe,
-+	.driver = {
-+		.name = "clk-ccu-div",
-+		.of_match_table = ccu_div_of_match,
-+		.suppress_bind_attrs = true,
-+	},
-+};
-+builtin_platform_driver(ccu_div_driver);
-+
-+static __init void ccu_div_init(struct device_node *np)
- {
- 	struct ccu_div_data *data;
- 	int ret;
-@@ -410,22 +500,27 @@ static void ccu_div_init(struct device_node *np)
- 	if (ret)
- 		goto err_free_data;
- 
--	ret = ccu_div_clk_register(data);
-+	ret = ccu_div_clk_register(data, true);
- 	if (ret)
- 		goto err_free_data;
- 
--	ret = ccu_div_rst_register(data);
-+	ret = ccu_div_of_register(data);
- 	if (ret)
- 		goto err_clk_unregister;
- 
-+	ccu_div_set_data(data);
-+
- 	return;
- 
- err_clk_unregister:
--	ccu_div_clk_unregister(data);
-+	ccu_div_clk_unregister(data, true);
- 
- err_free_data:
- 	ccu_div_free_data(data);
- }
-+CLK_OF_DECLARE_DRIVER(ccu_axi, "baikal,bt1-ccu-axi", ccu_div_init);
-+CLK_OF_DECLARE_DRIVER(ccu_sys, "baikal,bt1-ccu-sys", ccu_div_init);
- 
--CLK_OF_DECLARE(ccu_axi, "baikal,bt1-ccu-axi", ccu_div_init);
--CLK_OF_DECLARE(ccu_sys, "baikal,bt1-ccu-sys", ccu_div_init);
-+MODULE_AUTHOR("Serge Semin <Sergey.Semin@baikalelectronics.ru>");
-+MODULE_DESCRIPTION("Baikal-T1 CCU Dividers clock driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/baikal-t1/clk-ccu-pll.c b/drivers/clk/baikal-t1/clk-ccu-pll.c
-index 2445d4b12baf..ad420c6477ee 100644
---- a/drivers/clk/baikal-t1/clk-ccu-pll.c
-+++ b/drivers/clk/baikal-t1/clk-ccu-pll.c
-@@ -12,6 +12,7 @@
- #define pr_fmt(fmt) "bt1-ccu-pll: " fmt
- 
- #include <linux/kernel.h>
-+#include <linux/platform_device.h>
- #include <linux/printk.h>
- #include <linux/slab.h>
- #include <linux/clk-provider.h>
-@@ -31,13 +32,14 @@
- #define CCU_PCIE_PLL_BASE		0x018
- #define CCU_ETH_PLL_BASE		0x020
- 
--#define CCU_PLL_INFO(_id, _name, _pname, _base, _flags)	\
--	{						\
--		.id = _id,				\
--		.name = _name,				\
--		.parent_name = _pname,			\
--		.base = _base,				\
--		.flags = _flags				\
-+#define CCU_PLL_INFO(_id, _name, _pname, _base, _flags, _features)	\
-+	{								\
-+		.id = _id,						\
-+		.name = _name,						\
-+		.parent_name = _pname,					\
-+		.base = _base,						\
-+		.flags = _flags,					\
-+		.features = _features,					\
- 	}
- 
- #define CCU_PLL_NUM			ARRAY_SIZE(pll_info)
-@@ -48,6 +50,7 @@ struct ccu_pll_info {
- 	const char *parent_name;
- 	unsigned int base;
- 	unsigned long flags;
-+	unsigned long features;
- };
- 
- /*
-@@ -61,15 +64,15 @@ struct ccu_pll_info {
-  */
- static const struct ccu_pll_info pll_info[] = {
- 	CCU_PLL_INFO(CCU_CPU_PLL, "cpu_pll", "ref_clk", CCU_CPU_PLL_BASE,
--		     CLK_IS_CRITICAL),
-+		     CLK_IS_CRITICAL, CCU_PLL_BASIC),
- 	CCU_PLL_INFO(CCU_SATA_PLL, "sata_pll", "ref_clk", CCU_SATA_PLL_BASE,
--		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE),
-+		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE, 0),
- 	CCU_PLL_INFO(CCU_DDR_PLL, "ddr_pll", "ref_clk", CCU_DDR_PLL_BASE,
--		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE),
-+		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE, 0),
- 	CCU_PLL_INFO(CCU_PCIE_PLL, "pcie_pll", "ref_clk", CCU_PCIE_PLL_BASE,
--		     CLK_IS_CRITICAL),
-+		     CLK_IS_CRITICAL, CCU_PLL_BASIC),
- 	CCU_PLL_INFO(CCU_ETH_PLL, "eth_pll", "ref_clk", CCU_ETH_PLL_BASE,
--		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE)
-+		     CLK_IS_CRITICAL | CLK_SET_RATE_GATE, 0)
- };
- 
- struct ccu_pll_data {
-@@ -78,16 +81,16 @@ struct ccu_pll_data {
- 	struct ccu_pll *plls[CCU_PLL_NUM];
- };
- 
-+static struct ccu_pll_data *pll_data;
-+
- static struct ccu_pll *ccu_pll_find_desc(struct ccu_pll_data *data,
- 					 unsigned int clk_id)
- {
--	struct ccu_pll *pll;
- 	int idx;
- 
- 	for (idx = 0; idx < CCU_PLL_NUM; ++idx) {
--		pll = data->plls[idx];
--		if (pll && pll->id == clk_id)
--			return pll;
-+		if (pll_info[idx].id == clk_id)
-+			return data->plls[idx];
- 	}
- 
- 	return ERR_PTR(-EINVAL);
-@@ -133,14 +136,16 @@ static struct clk_hw *ccu_pll_of_clk_hw_get(struct of_phandle_args *clkspec,
- 	clk_id = clkspec->args[0];
- 	pll = ccu_pll_find_desc(data, clk_id);
- 	if (IS_ERR(pll)) {
--		pr_info("Invalid PLL clock ID %d specified\n", clk_id);
-+		if (pll != ERR_PTR(-EPROBE_DEFER))
-+			pr_info("Invalid PLL clock ID %d specified\n", clk_id);
-+
- 		return ERR_CAST(pll);
- 	}
- 
- 	return ccu_pll_get_clk_hw(pll);
- }
- 
--static int ccu_pll_clk_register(struct ccu_pll_data *data)
-+static int ccu_pll_clk_register(struct ccu_pll_data *data, bool defer)
- {
- 	int idx, ret;
- 
-@@ -148,6 +153,14 @@ static int ccu_pll_clk_register(struct ccu_pll_data *data)
- 		const struct ccu_pll_info *info = &pll_info[idx];
- 		struct ccu_pll_init_data init = {0};
- 
-+		/* Defer non-basic PLLs allocation for the probe stage */
-+		if (!!(info->features & CCU_PLL_BASIC) ^ defer) {
-+			if (!data->plls[idx])
-+				data->plls[idx] = ERR_PTR(-EPROBE_DEFER);
-+
-+			continue;
-+		}
-+
- 		init.id = info->id;
- 		init.name = info->name;
- 		init.parent_name = info->parent_name;
-@@ -155,6 +168,7 @@ static int ccu_pll_clk_register(struct ccu_pll_data *data)
- 		init.sys_regs = data->sys_regs;
- 		init.np = data->np;
- 		init.flags = info->flags;
-+		init.features = info->features;
- 
- 		data->plls[idx] = ccu_pll_hw_register(&init);
- 		if (IS_ERR(data->plls[idx])) {
-@@ -165,22 +179,71 @@ static int ccu_pll_clk_register(struct ccu_pll_data *data)
- 		}
- 	}
- 
-+	return 0;
-+
-+err_hw_unregister:
-+	for (--idx; idx >= 0; --idx) {
-+		if (!!(pll_info[idx].features & CCU_PLL_BASIC) ^ defer)
-+			continue;
-+
-+		ccu_pll_hw_unregister(data->plls[idx]);
-+	}
-+
-+	return ret;
-+}
-+
-+static void ccu_pll_clk_unregister(struct ccu_pll_data *data, bool defer)
-+{
-+	int idx;
-+
-+	/* Uninstall only the clocks registered on the specfied stage */
-+	for (idx = 0; idx < CCU_PLL_NUM; ++idx) {
-+		if (!!(pll_info[idx].features & CCU_PLL_BASIC) ^ defer)
-+			continue;
-+
-+		ccu_pll_hw_unregister(data->plls[idx]);
-+	}
-+}
-+
-+static int ccu_pll_of_register(struct ccu_pll_data *data)
-+{
-+	int ret;
-+
- 	ret = of_clk_add_hw_provider(data->np, ccu_pll_of_clk_hw_get, data);
- 	if (ret) {
- 		pr_err("Couldn't register PLL provider of '%s'\n",
- 			of_node_full_name(data->np));
--		goto err_hw_unregister;
- 	}
- 
--	return 0;
-+	return ret;
-+}
- 
--err_hw_unregister:
--	for (--idx; idx >= 0; --idx)
--		ccu_pll_hw_unregister(data->plls[idx]);
-+static int ccu_pll_probe(struct platform_device *pdev)
-+{
-+	struct ccu_pll_data *data = pll_data;
- 
--	return ret;
-+	if (!data)
-+		return -EINVAL;
-+
-+	return ccu_pll_clk_register(data, false);
- }
- 
-+static const struct of_device_id ccu_pll_of_match[] = {
-+	{ .compatible = "baikal,bt1-ccu-pll" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, ccu_pll_of_match);
-+
-+static struct platform_driver ccu_pll_driver = {
-+	.probe  = ccu_pll_probe,
-+	.driver = {
-+		.name = "clk-ccu-pll",
-+		.of_match_table = ccu_pll_of_match,
-+		.suppress_bind_attrs = true,
-+	},
-+};
-+builtin_platform_driver(ccu_pll_driver);
-+
- static __init void ccu_pll_init(struct device_node *np)
- {
- 	struct ccu_pll_data *data;
-@@ -194,13 +257,26 @@ static __init void ccu_pll_init(struct device_node *np)
- 	if (ret)
- 		goto err_free_data;
- 
--	ret = ccu_pll_clk_register(data);
-+	ret = ccu_pll_clk_register(data, true);
- 	if (ret)
- 		goto err_free_data;
- 
-+	ret = ccu_pll_of_register(data);
-+	if (ret)
-+		goto err_clk_unregister;
-+
-+	pll_data = data;
-+
- 	return;
- 
-+err_clk_unregister:
-+	ccu_pll_clk_unregister(data, true);
-+
- err_free_data:
- 	ccu_pll_free_data(data);
- }
--CLK_OF_DECLARE(ccu_pll, "baikal,bt1-ccu-pll", ccu_pll_init);
-+CLK_OF_DECLARE_DRIVER(ccu_pll, "baikal,bt1-ccu-pll", ccu_pll_init);
-+
-+MODULE_AUTHOR("Serge Semin <Sergey.Semin@baikalelectronics.ru>");
-+MODULE_DESCRIPTION("Baikal-T1 CCU PLL clock driver");
-+MODULE_LICENSE("GPL");
--- 
-2.35.1
 
