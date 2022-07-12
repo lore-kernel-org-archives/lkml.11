@@ -2,121 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 113FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB078C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233741AbiGLUkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44208 "EHLO
+        id S233638AbiGLUk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:40:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232959AbiGLUkA (ORCPT
+        with ESMTP id S232918AbiGLUkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:40:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C812CC790;
-        Tue, 12 Jul 2022 13:39:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15EFDB81BE7;
-        Tue, 12 Jul 2022 20:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C61ECC341C8;
-        Tue, 12 Jul 2022 20:39:56 +0000 (UTC)
-Received: from rostedt by gandalf.local.home with local (Exim 4.95)
-        (envelope-from <rostedt@goodmis.org>)
-        id 1oBMfj-0049O7-PU;
-        Tue, 12 Jul 2022 16:39:55 -0400
-Message-ID: <20220712203955.624861483@goodmis.org>
-User-Agent: quilt/0.66
-Date:   Tue, 12 Jul 2022 16:39:25 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Tom Zanussi <tom.zanussi@linux.intel.com>,
-        Zheng Yejian <zhengyejian1@huawei.com>
-Subject: [for-linus][PATCH 1/6] tracing/histograms: Fix memory leak problem
-References: <20220712203924.060569640@goodmis.org>
+        Tue, 12 Jul 2022 16:40:03 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159D2CC790
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:40:02 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so177647pjr.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:40:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:in-reply-to:references:subject:message-id:date:mime-version
+         :content-transfer-encoding;
+        bh=aX97FT52LcXsTBCiBL5hq7AYEJzsuUqnsB+OeO5wNUI=;
+        b=ISNO/DvKwrzvLX+I3lt4LSTitlFeuCDsXxg7l0bOqQrLfTda0AaH7JwUwddV3ZXjtY
+         NsOyVdJCBRvz26jArgXSzLHTq2NF6SdRNfj7PWjfhVDlJxFudzKCZMZx20MHK1Y1knq0
+         /9u8jaX5Z291rmQYVGsyY/uxj9NpYGX5ej9ij7Sy5K3oUeWcRy+WFVyI8FKD0BQf7t0Q
+         Hp09wJ6te5WZp9BUQS9FOOj1Xgk6kHejMeI4YdsNG8Zpb851rS8W0+UEsMeTSGmFgOeA
+         +ZKnmH7ZNxajWMDHPJy8ocCWothlzQY43DBWcQCx71CFqz+kGTstfski/wZ1zNhCrXUA
+         msXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=aX97FT52LcXsTBCiBL5hq7AYEJzsuUqnsB+OeO5wNUI=;
+        b=7suMEluya9M3R2LactgcHztohN1t59sEd1Pm1gBTspVxwfVWN4MyjtD112+parabBS
+         XNJwy3o9r40gJw0hXKcNwUSglQ0lLzmpPCN8OqTS8cxZZDVhuhx4jRxQs1O/2qdl1Z1w
+         aSp8oVOEg3ssWFTo0CN6QbgHXk5PTgXL2I1srv0UEG6DydKtlB/4UOnDjsxNDOTtiscM
+         oeGHXry/EwXlj/yV1mT1JhahMbQbUER5QrHeN86JaLnuyCsy06kbQmGO551XZYHC111P
+         p5Zq4nABxLY1i1+uY8SMXHqf5X2rKBVFkd9bnkVvAAkfaKF0UJ+TD9POedAMjth5YirB
+         kSVQ==
+X-Gm-Message-State: AJIora+WNVKG+tonc5rR5T1bMjphzCBOm3OzivS5v1/ROLzwK/6FpI5b
+        fZLZWhAz4IIVPY/gxtDxd1BDx+IEudB1/A==
+X-Google-Smtp-Source: AGRyM1t6x1Ab7heabJRf35mE4oK6fvMWsvfp1HSbfdON5u+tBveeyFBGQ4hJxCuNCdDcPgjTKuMiBA==
+X-Received: by 2002:a17:902:f60d:b0:16a:1a7f:a22f with SMTP id n13-20020a170902f60d00b0016a1a7fa22fmr25715932plg.13.1657658401528;
+        Tue, 12 Jul 2022 13:40:01 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id d6-20020a170902654600b0016c0c82e85csm7245012pln.75.2022.07.12.13.40.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 13:40:01 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     linux-kernel@vger.kernel.org, ubizjak@gmail.com,
+        linux-block@vger.kernel.org
+In-Reply-To: <20220712152741.7324-1-ubizjak@gmail.com>
+References: <20220712152741.7324-1-ubizjak@gmail.com>
+Subject: Re: [PATCH v2] block: Use try_cmpxchg in update_io_ticks
+Message-Id: <165765840073.44296.3101525406707231315.b4-ty@kernel.dk>
+Date:   Tue, 12 Jul 2022 14:40:00 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yejian <zhengyejian1@huawei.com>
+On Tue, 12 Jul 2022 17:27:41 +0200, Uros Bizjak wrote:
+> Use try_cmpxchg instead of cmpxchg (*ptr, old, new) == old in
+> update_io_ticks. x86 CMPXCHG instruction returns success in ZF flag,
+> so this change saves a compare after cmpxchg (and related
+> move instruction in front of cmpxchg).
+> 
+> No functional change intended.
+> 
+> [...]
 
-This reverts commit 46bbe5c671e06f070428b9be142cc4ee5cedebac.
+Applied, thanks!
 
-As commit 46bbe5c671e0 ("tracing: fix double free") said, the
-"double free" problem reported by clang static analyzer is:
-  > In parse_var_defs() if there is a problem allocating
-  > var_defs.expr, the earlier var_defs.name is freed.
-  > This free is duplicated by free_var_defs() which frees
-  > the rest of the list.
+[1/1] block: Use try_cmpxchg in update_io_ticks
+      commit: 939f9dd040fe1063d884f8f0f89b037093fe2341
 
-However, if there is a problem allocating N-th var_defs.expr:
-  + in parse_var_defs(), the freed 'earlier var_defs.name' is
-    actually the N-th var_defs.name;
-  + then in free_var_defs(), the names from 0th to (N-1)-th are freed;
-
-                        IF ALLOCATING PROBLEM HAPPENED HERE!!! -+
-                                                                 \
-                                                                  |
-          0th           1th                 (N-1)-th      N-th    V
-          +-------------+-------------+-----+-------------+-----------
-var_defs: | name | expr | name | expr | ... | name | expr | name | ///
-          +-------------+-------------+-----+-------------+-----------
-
-These two frees don't act on same name, so there was no "double free"
-problem before. Conversely, after that commit, we get a "memory leak"
-problem because the above "N-th var_defs.name" is not freed.
-
-If enable CONFIG_DEBUG_KMEMLEAK and inject a fault at where the N-th
-var_defs.expr allocated, then execute on shell like:
-  $ echo 'hist:key=call_site:val=$v1,$v2:v1=bytes_req,v2=bytes_alloc' > \
-/sys/kernel/debug/tracing/events/kmem/kmalloc/trigger
-
-Then kmemleak reports:
-  unreferenced object 0xffff8fb100ef3518 (size 8):
-    comm "bash", pid 196, jiffies 4295681690 (age 28.538s)
-    hex dump (first 8 bytes):
-      76 31 00 00 b1 8f ff ff                          v1......
-    backtrace:
-      [<0000000038fe4895>] kstrdup+0x2d/0x60
-      [<00000000c99c049a>] event_hist_trigger_parse+0x206f/0x20e0
-      [<00000000ae70d2cc>] trigger_process_regex+0xc0/0x110
-      [<0000000066737a4c>] event_trigger_write+0x75/0xd0
-      [<000000007341e40c>] vfs_write+0xbb/0x2a0
-      [<0000000087fde4c2>] ksys_write+0x59/0xd0
-      [<00000000581e9cdf>] do_syscall_64+0x3a/0x80
-      [<00000000cf3b065c>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-Link: https://lkml.kernel.org/r/20220711014731.69520-1-zhengyejian1@huawei.com
-
-Cc: stable@vger.kernel.org
-Fixes: 46bbe5c671e0 ("tracing: fix double free")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Suggested-by: Steven Rostedt <rostedt@goodmis.org>
-Reviewed-by: Tom Zanussi <tom.zanussi@linux.intel.com>
-Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
- kernel/trace/trace_events_hist.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index 48e82e141d54..e87a46794079 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -4430,6 +4430,8 @@ static int parse_var_defs(struct hist_trigger_data *hist_data)
- 
- 			s = kstrdup(field_str, GFP_KERNEL);
- 			if (!s) {
-+				kfree(hist_data->attrs->var_defs.name[n_vars]);
-+				hist_data->attrs->var_defs.name[n_vars] = NULL;
- 				ret = -ENOMEM;
- 				goto free;
- 			}
+Best regards,
 -- 
-2.35.1
+Jens Axboe
+
+
