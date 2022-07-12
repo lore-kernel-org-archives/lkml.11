@@ -2,97 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:29:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233633AbiGLS3V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:29:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S233346AbiGLSaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229590AbiGLS3U (ORCPT
+        with ESMTP id S230096AbiGLSaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:29:20 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDB42A43A
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:29:19 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id e69so15414532ybh.2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:29:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5+CRJwxgr3RwmxsPLFpAzp9LSqC6LpBVUE2YrUJJqMY=;
-        b=TPBVw3zPRpaWQdE/I24xJe12PNP366ffMUe9ZbJElSALxDd5JacyM1b2cCueFFbj+g
-         bbtng71YJ1cJZV1sZVsXrp9Zn8Ci5bV4SMwpHEreeMrFmzY7rAxmbhfA3jYxbQfgGulj
-         OxWY/fcecG1mWpF7gSs04GPjg2xOb+qorrbjRwrlV8vF5S6lxm6AZTlAaOR2rI15FYGM
-         rzPDUSt/vZ12PzHBEAx1OQhmWX+FOaFTBEY5+1t5bxsmQihDf8/eYzVpb5d5ItIvx0Pa
-         LAu4IVDl1pExZdUOBLSVnUQy0RbffgzMWisIHALOy0+YMex7Y5yANJz1RAL36ISjAfVt
-         YTbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5+CRJwxgr3RwmxsPLFpAzp9LSqC6LpBVUE2YrUJJqMY=;
-        b=nNdvyrsD1qoqNg+6yRBhQhAoHeGUT8LfGfhYeswEXRMVbaO5PwT7L7vOWgHW2X47CL
-         xvR65jsfPgQKlv6oDkVxwkpLartwo4zOjXH1OcYRdOfR90EuZ2GIjJk2bm3mu0kxfW83
-         FAgfe8ygDt5iQZ7X4x8xsEDRZKZF+PeywQ3iHumg4R7zg8R6T2CetHGJLBSMn77Q6aCv
-         50h48hq714F9h8CD+6yJQ9LKgHsE2Vl+jfhojfUHwloNrX2O9QVr6rsOoB5eeFq+bfrR
-         DOCrAHQZZbEjuOUerCGosW4zwBX43Pq5tzcSTBH7/+5pwoGsc6F0PT8ELZMe311ojBO/
-         Nqow==
-X-Gm-Message-State: AJIora8VCDfxyd7RXTg8fYeV30vpu2hz2baKPGP5enfrL8/rIP1nsR4L
-        6yI9dCLZrLiYVPcbT8CLWc29WcNQ0Mt6lR1JMso=
-X-Google-Smtp-Source: AGRyM1ux9OgeLzuxTR55QshLROCaEjHiQDqJCNscE9F1xFr4KKwTnM06+wSR36yyOJgCmItJKILESkAGmJs9INp/FzE=
-X-Received: by 2002:a25:cbcf:0:b0:66e:8893:a02c with SMTP id
- b198-20020a25cbcf000000b0066e8893a02cmr24480407ybg.460.1657650558734; Tue, 12
- Jul 2022 11:29:18 -0700 (PDT)
+        Tue, 12 Jul 2022 14:30:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C806B258
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:30:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98476B81B94
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE75EC3411C;
+        Tue, 12 Jul 2022 18:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657650614;
+        bh=anlDKDka6DFB/QifmAHbo9FqGSG5XlLAabqil1wRujg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fID7Rpz+CtcSJB9DB8/KK28EAXEvGw6DaphbrLvUU8fq0R94JM5jqEpkf1rNX634o
+         W8ojRefX5TR+IGaPn5m+YeI+MIX5hSvslDoiUcuiLJAiaBdLUQuE7N8sHsv5KUCIKo
+         0QIkZy5qKDyRdCmeB0oxWWIph/Eaec729s38KfIk=
+Date:   Tue, 12 Jul 2022 20:30:11 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Joel Slebodnick <jslebodn@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, f.fainelli@gmail.com,
+        rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, nsaenz@kernel.org,
+        athierry@redhat.com, gustavoars@kernel.org, keescook@chromium.org,
+        stefan.wahren@i2se.com, gascoar@gmail.com, ojaswin98@gmail.com,
+        len.baker@gmx.com, jakobkoschel@gmail.com,
+        linux-staging@lists.linux.dev,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, jsavitz@redhat.com
+Subject: Re: [PATCH] remove custom return values in vc04_services
+Message-ID: <Ys29s/02Km/FQwUv@kroah.com>
+References: <20220712181928.17547-1-jslebodn@redhat.com>
 MIME-Version: 1.0
-References: <20220711044711.466822-1-yury.norov@gmail.com> <CAHp75Vf8EhRYWdQN6Oc79GzWCvo-sRJDvy7_Aek_Z63GCu2dMQ@mail.gmail.com>
- <CAAH8bW_RYG_Tbpip=BkSFAymDm2y3jJBqTi0PJWA=H-a-L_3tg@mail.gmail.com>
-In-Reply-To: <CAAH8bW_RYG_Tbpip=BkSFAymDm2y3jJBqTi0PJWA=H-a-L_3tg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 20:28:42 +0200
-Message-ID: <CAHp75VcQq3wmwmpaDtu6HC2yrK4rWp+4HOcqMaOHQ3EQQ0c=DA@mail.gmail.com>
-Subject: Re: [PATCH v2 0/5] lib/find: add find_nth_bit()
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, David Gow <davidgow@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Isabella Basso <isabbasso@riseup.net>,
-        Kees Cook <keescook@chromium.org>,
-        Keith Busch <kbusch@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Marco Elver <elver@google.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712181928.17547-1-jslebodn@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 6:26 PM Yury Norov <yury.norov@gmail.com> wrote:
-> On Mon, Jul 11, 2022 at 1:55 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Mon, Jul 11, 2022 at 6:51 AM Yury Norov <yury.norov@gmail.com> wrote:
+On Tue, Jul 12, 2022 at 02:19:28PM -0400, Joel Slebodnick wrote:
+> Remove all instances of enum vchiq_status from vc04_services and replace
+> them with regular linux error values.
+> 
+> VCHIQ_SUCCESS replaced with 0, VCHIQ_ERROR replaced with -EINVAL, and
+> VCHIQ_RETRY replaced (for the most part) with -EINTR as VCHIQ_RETRY
+> often is returned from an interruptable function call.
+> 
+> The exceptions to this are vchiq_send_remote_use() and
+> vchiq_send_remote_use_active() as they return a VCHIQ_RETRY but have
+> been changed to return -EINVAL instead of -EINTR. This is because when
+> the conn_state is VCHIQ_CONNSTATE_DISCONNECTED, the state is not valid
+> to continue on in the function
+> 
+> Signed-off-by: Joel Slebodnick <jslebodn@redhat.com>
+> ---
+>  .../bcm2835-audio/bcm2835-vchiq.c             |  10 +-
+>  .../include/linux/raspberrypi/vchiq.h         |  67 +++---
+>  drivers/staging/vc04_services/interface/TODO  |   5 -
+>  .../interface/vchiq_arm/vchiq_arm.c           | 122 +++++-----
+>  .../interface/vchiq_arm/vchiq_arm.h           |  12 +-
+>  .../interface/vchiq_arm/vchiq_core.c          | 220 +++++++++---------
+>  .../interface/vchiq_arm/vchiq_core.h          |  18 +-
+>  .../interface/vchiq_arm/vchiq_dev.c           |  38 ++-
+>  .../interface/vchiq_arm/vchiq_ioctl.h         |   8 +-
+>  9 files changed, 238 insertions(+), 262 deletions(-)
+> 
 
-...
+Hi,
 
-> > 2) fns() is not good abbreviation, because among ffs (First) and fls
-> > (Last), fns would be read as Next, which is misleading, I'm not sure
-> > fnths(), which is correct, is good for readers.
->
-> I agree that fns() may be confusing, but fnths() is even worse to me.
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-I also think it's not the best choice.
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-> I expect that it will be mostly used indirectly via find_nth_bit(), and
-> will not create a lot of confusion for users.
+- Your patch did many different things all at once, making it difficult
+  to review.  All Linux kernel patches need to only do one thing at a
+  time.  If you need to do multiple things (such as clean up all coding
+  style issues in a file/driver), do it in a sequence of patches, each
+  one doing only one thing.  This will make it easier to review the
+  patches to ensure that they are correct, and to help alleviate any
+  merge issues that larger patches can cause.
 
-Perhaps in that case we can survive with something else? Naming is hard...
 
--- 
-With Best Regards,
-Andy Shevchenko
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
