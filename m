@@ -2,144 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BAAFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:35:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FC6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233842AbiGLQfL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:35:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S232523AbiGLQgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234384AbiGLQeS (ORCPT
+        with ESMTP id S233369AbiGLQgP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:34:18 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C253627CE7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:34:13 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id r14so11975679wrg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:34:13 -0700 (PDT)
+        Tue, 12 Jul 2022 12:36:15 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316D5D31DA
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:35:43 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id f11so7183390pgj.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:35:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ctpa/T2vVk1WErHGmcuqVVZ1P5/ZM5PQkEWqW8vXr7A=;
-        b=CylXyQDI7NjZJJjGahP8/G+x1mwQdZyXU1fYlhjC5I+uzbIwEhCLjmEc+xJOEXf7Bc
-         tRW4CZ/BQCYEKwyTayBWm+c1YPePeednwnGU4AOuP9vhrJZzEB5u1OsyscE8sn2LuV8N
-         NcjprcgH3b8zWb+wimWqIP+Bpf7qFEm1gyCvQ=
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=pNpgR7KjQZurbGbWyaYhBlQrOEKytoR8yRHws8TVBHE=;
+        b=GdmkU9SQ/Luh/zyi5KlOBPHktypKoYVIDapjas/WdAlmty0F0pzGAW+hR+UJUy7lK7
+         Bx0s4LcoTaCRMOlNLONekoxEfQOhToyqHbxHrpG7Fb+WayJ0KJ+UTxKm5/0j0gIk+gcP
+         37WPz5ZMtQU3zAHIDquIPoQjniYsFEzWa/2OVcVz3oJR1KvggRIVdsJCkBUTw1cicYQV
+         0aFk1D46NLMpnbCsQzAuefQGtUQ0BTvCAGuRdBfFP3rAh/uneG+AhKtSIzCrI3FaPGL6
+         wR0yAyOGDKMGqjTMZMemJld3SPpC4F5C6th2Nms2SNE3NAp4SjG6e+H+SlgV+5vkTVm5
+         L7dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ctpa/T2vVk1WErHGmcuqVVZ1P5/ZM5PQkEWqW8vXr7A=;
-        b=IhZ4xHw3ZL7XTSNVc4Q5DpA0dUD37ZWIN0xuMU9SYMypt6Ar7jbugIGUCPtPaMUxkv
-         KEWzZrQ7jY3qgcrICaunE8DQzuADE9C5MIWy5aKhKnOewdN6eIlbQABAUVmFlJEpdjwi
-         0/YltuDmzgFP5/DSK5JswBqCqK3E8Nv/yNj9HtehBv6vyvNwQFt9HDm7IbYa26N3YADY
-         RVId7ZJlT/6CrgvTyYKjWIKMCSOG0jXOwUNCxXOB2AMkYfRy4KiweO79mtujE5DasQPI
-         Ojtmb1rx8yBBztP6yACt8KsUddPiRtUl3IMecm7UsgkiDqQ3lWuvpBBdx9l9o6F6FWdA
-         9ndQ==
-X-Gm-Message-State: AJIora9Pk4XptZxHKRF3i0bAXmFCjVL2ZyJV/2Ho3JQp7M2gm1/qX9Jg
-        1lgvLFPHaD7HUimEgJgUcCMnCg==
-X-Google-Smtp-Source: AGRyM1u29k4IN2wgzOHnCdDeUpOtAD+K54m2KKU/q6uYaGIMJ+4h1Ier0c3zwV+m+j7TaLoaY4k7qQ==
-X-Received: by 2002:a5d:584e:0:b0:21c:ea0c:3734 with SMTP id i14-20020a5d584e000000b0021cea0c3734mr22283780wrf.420.1657643651827;
-        Tue, 12 Jul 2022 09:34:11 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-53-214.cust.vodafonedsl.it. [188.217.53.214])
-        by smtp.gmail.com with ESMTPSA id j16-20020a5d6050000000b0021db2dcd0aasm2321052wrt.108.2022.07.12.09.34.10
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=pNpgR7KjQZurbGbWyaYhBlQrOEKytoR8yRHws8TVBHE=;
+        b=h7U8pQpy3MUgHsDnlnjDv+tw8S7p5tTsZefT4XuKUzt6sGqaSIvtEQdjguXGfetQH+
+         sC5D3L8mc+UE+2FnUVVKtQCR7849m1fMXKupGpskfwGkDoeMfomWmDaMdStQSa2EGGRk
+         VuAi6ERhx8pToI5naKv/mbI9q0Lp5W2gyQSXLmC+AVIcfjFWtYUrcMOOwf0foPIDSohF
+         Ht6LPTo6Du5jp1BShdJVagXBODBGXDeNByArWnCW5c8rwB67w1DYdVJoRw/KAR8bNpg9
+         YnvYw7PptMstXCOHwhujOgmrOQd4AgntcwNfhZ6ESXPdLIVfAn/ciOFDmfJ5iZb3ZV2w
+         AH5A==
+X-Gm-Message-State: AJIora+HdD7vjtvAzTiDYa/NJe8yWM7yDTKwhvXSvTvOHom7W7Z0aJqg
+        /wKflF4xy+5Wz3hJrqXPp9S3WQ==
+X-Google-Smtp-Source: AGRyM1vZhE6tnkL4CzrnqfWOAJrF64lL6s+95FL6N4OVYNlp7L0wFtuLgl1JEoSoNwTKVmVT2HESQQ==
+X-Received: by 2002:a63:c15:0:b0:411:f92a:8ec7 with SMTP id b21-20020a630c15000000b00411f92a8ec7mr20993517pgl.86.1657643742090;
+        Tue, 12 Jul 2022 09:35:42 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id h11-20020a170902680b00b0016a11750b50sm7005007plk.16.2022.07.12.09.35.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 09:34:11 -0700 (PDT)
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-To:     tommaso.merciai@amarulasolutions.com
-Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
-        quentin.schulz@theobroma-systems.com,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Daniel Scally <djrscally@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v6 3/6] media: ov5693: rename clk into xvclk
-Date:   Tue, 12 Jul 2022 18:33:46 +0200
-Message-Id: <20220712163349.1308540-4-tommaso.merciai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712163349.1308540-1-tommaso.merciai@amarulasolutions.com>
-References: <20220712163349.1308540-1-tommaso.merciai@amarulasolutions.com>
+        Tue, 12 Jul 2022 09:35:40 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 16:35:36 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: x86: Add dedicated helper to get CPUID entry
+ with significant index
+Message-ID: <Ys2i2B/jt5yDsAKj@google.com>
+References: <20220712000645.1144186-1-seanjc@google.com>
+ <8a1ff7338f1252d75ff96c3518f16742919f92d7.camel@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <8a1ff7338f1252d75ff96c3518f16742919f92d7.camel@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rename clk pdata pointer into xvclk (system clock input).
-Same for clk_rate into xvclk_rate. This is more explicit
+On Tue, Jul 12, 2022, Maxim Levitsky wrote:
+> On Tue, 2022-07-12 at 00:06 +0000, Sean Christopherson wrote:
+> >  static inline struct kvm_cpuid_entry2 *cpuid_entry2_find(
+> > -       struct kvm_cpuid_entry2 *entries, int nent, u32 function, u32 index)
+> > +       struct kvm_cpuid_entry2 *entries, int nent, u32 function, u64 index)
+> How I wish that this would be just called EAX and ECX... Anyway....
 
-Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
----
-Changes since v3:
- - Add reviewed-by tag, suggested by Jacopo, Krzysztof
+Heh, I strongly disagree.  EAX and ECX are how the CPUID instruction specifies
+the function and index, CPUID the lookup itself operates on function+index,
+e.g. there are plenty of situations where KVM queries CPUID info without the
+inputs coming from EAX/ECX.
 
- drivers/media/i2c/ov5693.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+> >  {
+> >         struct kvm_cpuid_entry2 *e;
+> >         int i;
+> > @@ -77,9 +85,22 @@ static inline struct kvm_cpuid_entry2 *cpuid_entry2_find(
+> >         for (i = 0; i < nent; i++) {
+> >                 e = &entries[i];
+> >  
+> > -               if (e->function == function &&
+> > -                   (!(e->flags & KVM_CPUID_FLAG_SIGNIFCANT_INDEX) || e->index == index))
+> > +               if (e->function != function)
+> > +                       continue;
+> > +
+> > +               /*
+> > +                * If the index isn't significant, use the first entry with a
+> > +                * matching function.  It's userspace's responsibilty to not
+> > +                * provide "duplicate" entries in all cases.
+> > +                */
+> > +               if (!(e->flags & KVM_CPUID_FLAG_SIGNIFCANT_INDEX) || e->index == index)
+> >                         return e;
+> > +
+> > +               /*
+> > +                * Function matches and index is significant; not specifying an
+> > +                * exact index in this case is a KVM bug.
+> > +                */
+> Nitpick: Why KVM bug? Bad userspace can also provide a index-significant entry for cpuid
+> leaf for which index is not significant in the x86 spec.
 
-diff --git a/drivers/media/i2c/ov5693.c b/drivers/media/i2c/ov5693.c
-index 9e84468d920e..d2adc5513a21 100644
---- a/drivers/media/i2c/ov5693.c
-+++ b/drivers/media/i2c/ov5693.c
-@@ -157,7 +157,7 @@ struct ov5693_device {
- 	struct gpio_desc *reset;
- 	struct gpio_desc *powerdown;
- 	struct regulator_bulk_data supplies[OV5693_NUM_SUPPLIES];
--	struct clk *clk;
-+	struct clk *xvclk;
- 
- 	struct ov5693_mode {
- 		struct v4l2_rect crop;
-@@ -794,7 +794,7 @@ static void ov5693_sensor_powerdown(struct ov5693_device *ov5693)
- 
- 	regulator_bulk_disable(OV5693_NUM_SUPPLIES, ov5693->supplies);
- 
--	clk_disable_unprepare(ov5693->clk);
-+	clk_disable_unprepare(ov5693->xvclk);
- }
- 
- static int ov5693_sensor_powerup(struct ov5693_device *ov5693)
-@@ -804,7 +804,7 @@ static int ov5693_sensor_powerup(struct ov5693_device *ov5693)
- 	gpiod_set_value_cansleep(ov5693->reset, 1);
- 	gpiod_set_value_cansleep(ov5693->powerdown, 1);
- 
--	ret = clk_prepare_enable(ov5693->clk);
-+	ret = clk_prepare_enable(ov5693->xvclk);
- 	if (ret) {
- 		dev_err(ov5693->dev, "Failed to enable clk\n");
- 		goto fail_power;
-@@ -1390,7 +1390,7 @@ static int ov5693_check_hwcfg(struct ov5693_device *ov5693)
- static int ov5693_probe(struct i2c_client *client)
- {
- 	struct ov5693_device *ov5693;
--	u32 clk_rate;
-+	u32 xvclk_rate;
- 	int ret = 0;
- 
- 	ov5693 = devm_kzalloc(&client->dev, sizeof(*ov5693), GFP_KERNEL);
-@@ -1408,16 +1408,16 @@ static int ov5693_probe(struct i2c_client *client)
- 
- 	v4l2_i2c_subdev_init(&ov5693->sd, client, &ov5693_ops);
- 
--	ov5693->clk = devm_clk_get(&client->dev, "xvclk");
--	if (IS_ERR(ov5693->clk)) {
-+	ov5693->xvclk = devm_clk_get(&client->dev, "xvclk");
-+	if (IS_ERR(ov5693->xvclk)) {
- 		dev_err(&client->dev, "Error getting clock\n");
--		return PTR_ERR(ov5693->clk);
-+		return PTR_ERR(ov5693->xvclk);
- 	}
- 
--	clk_rate = clk_get_rate(ov5693->clk);
--	if (clk_rate != OV5693_XVCLK_FREQ)
-+	xvclk_rate = clk_get_rate(ov5693->xvclk);
-+	if (xvclk_rate != OV5693_XVCLK_FREQ)
- 		dev_warn(&client->dev, "Found clk freq %u, expected %u\n",
--			 clk_rate, OV5693_XVCLK_FREQ);
-+			 xvclk_rate, OV5693_XVCLK_FREQ);
- 
- 	ret = ov5693_configure_gpios(ov5693);
- 	if (ret)
--- 
-2.25.1
+Ugh, you're right.
+
+> We could arrange a table of all known leaves and for each leaf if it has an index
+> in the x86 spec, and warn/reject the userspace CPUID info if it doesn't match.
+
+We have such a table, cpuid_function_is_indexed().  The alternative would be to
+do:
+
+		WARN_ON_ONCE(index == KVM_CPUID_INDEX_NOT_SIGNIFICANT &&
+			     cpuid_function_is_indexed(function));
+
+The problem with rejecting userspace CPUID on mismatch is that it could break
+userspace :-/  Of course, this entire patch would also break userspace to some
+extent, e.g. if userspace is relying on an exact match on index==0.  The only
+difference being the guest lookups with an exact index would still work.
+
+I think the restriction we could put in place would be that userspace can make
+a leaf more relaxed, e.g. to play nice if userspace forgets to set the SIGNFICANT
+flag, but rejects attempts to make guest CPUID more restrictive, i.e. disallow
+setting the SIGNFICANT flag on leafs that KVM doesn't enumerate as significant.
+
+> > +               WARN_ON_ONCE(index == KVM_CPUID_INDEX_NOT_SIGNIFICANT);
+> >         }
+> >  
+> >         return NULL;
+> > @@ -96,7 +117,8 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
+> >          * The existing code assumes virtual address is 48-bit or 57-bit in the
+> >          * canonical address checks; exit if it is ever changed.
+> >          */
+> > -       best = cpuid_entry2_find(entries, nent, 0x80000008, 0);
+> > +       best = cpuid_entry2_find(entries, nent, 0x80000008,
+> > +                                KVM_CPUID_INDEX_NOT_SIGNIFICANT);
+> OK.
+
+Thanks for looking through all these!
+
+> >  static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
+> > @@ -219,7 +242,7 @@ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_e
+> >         struct kvm_cpuid_entry2 *best;
+> >         u64 guest_supported_xcr0 = cpuid_get_supported_xcr0(entries, nent);
+> >  
+> > -       best = cpuid_entry2_find(entries, nent, 1, 0);
+> > +       best = cpuid_entry2_find(entries, nent, 1, KVM_CPUID_INDEX_NOT_SIGNIFICANT);
+> 
+> Leaf 1, no index indeed.
+> 
+> Offtopic: I wonder why we call this 'best'?
+
+Awful, awful historic code.  IIRC, for functions whose index is not significant,
+KVM would iterate over all entries and look for an exact function+index match
+anyways.  If there was at least one partial match (function match only) but no
+full match, KVM would use the first partial match, which it called the "best" match.
+
+We've been slowly/opportunistically killing off the "best" terminology.
+
+> > -struct kvm_cpuid_entry2 *kvm_find_cpuid_entry(struct kvm_vcpu *vcpu,
+> > -                                             u32 function, u32 index)
+> > +struct kvm_cpuid_entry2 *kvm_find_cpuid_entry_index(struct kvm_vcpu *vcpu,
+> > +                                                   u32 function, u32 index)
+> Nitpick: could you fix the indention while at it?
+
+The indentation is correct, it's only the diff that appears misaligned.
+
+> > @@ -1353,11 +1384,11 @@ get_out_of_range_cpuid_entry(struct kvm_vcpu *vcpu, u32 *fn_ptr, u32 index)
+> >                 return NULL;
+> >  
+> >         if (function >= 0x40000000 && function <= 0x4fffffff)
+> > -               class = kvm_find_cpuid_entry(vcpu, function & 0xffffff00, 0);
+> > +               class = kvm_find_cpuid_entry(vcpu, function & 0xffffff00);
+> >         else if (function >= 0xc0000000)
+> > -               class = kvm_find_cpuid_entry(vcpu, 0xc0000000, 0);
+> > +               class = kvm_find_cpuid_entry(vcpu, 0xc0000000);
+> >         else
+> > -               class = kvm_find_cpuid_entry(vcpu, function & 0x80000000, 0);
+> > +               class = kvm_find_cpuid_entry(vcpu, function & 0x80000000);
+> This assumes that all the classes has first entry whose EAX specifies max leaf
+> for this class. True for sure for basic and extended features, don't know
+> if true for hypervisor and Centaur entries. Seems OK.
+
+It holds true for all known hypervisors.  There's no formal definition for using
+0x400000yy as the hypervisor range, but the de facto standard is to use EBX, ECX,
+and EDX for the signature, and EAX for the max leaf.
+
+The Centaur behavior is very much a guess, but odds are it's a correct guess.  When
+I added the Centaur code, I spent far too much time trying (and failing) to hunt
+down documentation.  
 
