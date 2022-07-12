@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD64CCCA47B
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:19:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F99DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232149AbiGLATI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        id S231397AbiGLATV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:19:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232020AbiGLASm (ORCPT
+        with ESMTP id S231686AbiGLASn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:18:42 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3F33CBEA;
-        Mon, 11 Jul 2022 17:17:28 -0700 (PDT)
+        Mon, 11 Jul 2022 20:18:43 -0400
+Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9814F25CA;
+        Mon, 11 Jul 2022 17:17:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1657585048; x=1689121048;
+  t=1657585075; x=1689121075;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2/JUE16oCF+4cpfr8WiHy3tpDjWsOOCaeiKcZmcdNSY=;
-  b=QvWewKar7yilH3ozC8dU9kdBW0wM77nYVDIdwI2A6/wVcojIaijBWdrN
-   /02cAncJKg/votPyEArzXZA5d0Vzyhy22brHqqkP9SOxZCsGqTcWkECw5
-   I372C3ZJOycHFALmjSDigDN1KabvPK8i9EJTFZEwj1umWbWaJyMsDkfyU
-   k=;
+  bh=CRTePnIGj4H8ALoH5op4ZiB9ClWBa861ZK27V5EF1iQ=;
+  b=fpWJli214IGdeYR5zOtVuv5WnDmWDlypDjLctBrGtpyqMg+gl9oyMvp6
+   P7259xrb+iQjTYJ+alpReLakJK6LXxJ5RekfGDPzbMxeP05L7mpBFpD7Y
+   xSvuKblMms7C+dKv/NxfePnWsZXRMnomjWjaakdvNiW4XGZfMrN9pH+HV
+   E=;
 X-IronPort-AV: E=Sophos;i="5.92,264,1650931200"; 
-   d="scan'208";a="209075135"
-Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com) ([10.124.125.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 12 Jul 2022 00:17:12 +0000
+   d="scan'208";a="220431228"
+Received: from iad6-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.124.125.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 12 Jul 2022 00:17:43 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com (Postfix) with ESMTPS id 4A850818EE;
-        Tue, 12 Jul 2022 00:17:11 +0000 (UTC)
+        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id 70F584C0053;
+        Tue, 12 Jul 2022 00:17:41 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.36; Tue, 12 Jul 2022 00:17:10 +0000
+ id 15.0.1497.36; Tue, 12 Jul 2022 00:17:40 +0000
 Received: from 88665a182662.ant.amazon.com.com (10.43.161.185) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.9;
- Tue, 12 Jul 2022 00:17:07 +0000
+ Tue, 12 Jul 2022 00:17:37 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,9 +51,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v1 net 04/15] icmp: Fix a data-race around sysctl_icmp_echo_ignore_all.
-Date:   Mon, 11 Jul 2022 17:15:22 -0700
-Message-ID: <20220712001533.89927-5-kuniyu@amazon.com>
+Subject: [PATCH v1 net 06/15] icmp: Fix a data-race around sysctl_icmp_echo_ignore_broadcasts.
+Date:   Mon, 11 Jul 2022 17:15:24 -0700
+Message-ID: <20220712001533.89927-7-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220712001533.89927-1-kuniyu@amazon.com>
 References: <20220712001533.89927-1-kuniyu@amazon.com>
@@ -67,8 +67,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-While reading sysctl_icmp_echo_ignore_all, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_icmp_echo_ignore_broadcasts, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
@@ -78,23 +78,23 @@ Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 0f9e61d29f73..1df4aae310e0 100644
+index c406e324c594..4b1d84d3feaa 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
-@@ -993,7 +993,7 @@ static enum skb_drop_reason icmp_echo(struct sk_buff *skb)
- 
- 	net = dev_net(skb_dst(skb)->dev);
- 	/* should there be an ICMP stat for ignored echos? */
--	if (net->ipv4.sysctl_icmp_echo_ignore_all)
-+	if (READ_ONCE(net->ipv4.sysctl_icmp_echo_ignore_all))
- 		return SKB_NOT_DROPPED_YET;
- 
- 	icmp_param.data.icmph	   = *icmp_hdr(skb);
+@@ -1249,7 +1249,7 @@ int icmp_rcv(struct sk_buff *skb)
+ 		 */
+ 		if ((icmph->type == ICMP_ECHO ||
+ 		     icmph->type == ICMP_TIMESTAMP) &&
+-		    net->ipv4.sysctl_icmp_echo_ignore_broadcasts) {
++		    READ_ONCE(net->ipv4.sysctl_icmp_echo_ignore_broadcasts)) {
+ 			reason = SKB_DROP_REASON_INVALID_PROTO;
+ 			goto error;
+ 		}
 diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index cd448cdd3b38..64682a01914a 100644
+index 64682a01914a..cb53476a292e 100644
 --- a/net/ipv4/sysctl_net_ipv4.c
 +++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -599,6 +599,8 @@ static struct ctl_table ipv4_net_table[] = {
+@@ -617,6 +617,8 @@ static struct ctl_table ipv4_net_table[] = {
  		.maxlen		= sizeof(u8),
  		.mode		= 0644,
  		.proc_handler	= proc_dou8vec_minmax,
@@ -102,7 +102,7 @@ index cd448cdd3b38..64682a01914a 100644
 +		.extra2		= SYSCTL_ONE
  	},
  	{
- 		.procname	= "icmp_echo_enable_probe",
+ 		.procname	= "icmp_ignore_bogus_error_responses",
 -- 
 2.30.2
 
