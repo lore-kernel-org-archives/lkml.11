@@ -2,113 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EFBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF78C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232012AbiGLRAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 13:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47852 "EHLO
+        id S231200AbiGLRDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 13:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233665AbiGLRAZ (ORCPT
+        with ESMTP id S229823AbiGLRDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 13:00:25 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DFFCC031;
-        Tue, 12 Jul 2022 10:00:24 -0700 (PDT)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id C884C22239;
-        Tue, 12 Jul 2022 19:00:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657645222;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=HOAwmVQszaxxnTCQjg7ogOxAJJ9GlApKgxO5vP/luoM=;
-        b=JWb7gi1lnqey1XfCQFXgNPtgb2P/lsdshHffdkfifUemQkE/RzpJYJsd3+Du7eZjndoyhl
-        ZLHfWxgibKzfDHiYO7DDCTu9f1eE+YtBapY4bm+0Ex93PnvgIVRw6jLtR7kuStw9Xszdc8
-        3DI0qElzEx5otJ5veddliJ9wiL0DQPc=
-From:   Michael Walle <michael@walle.cc>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH] NFC: nxp-nci: add error reporting
-Date:   Tue, 12 Jul 2022 19:00:10 +0200
-Message-Id: <20220712170011.2990629-1-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
+        Tue, 12 Jul 2022 13:03:06 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2467DCC00A
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:03:06 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id s27so8097507pga.13
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eu38gMEhlCLDFy6KkUeAsbrjDX67p3SRtgMNjLCMflQ=;
+        b=PJWVB/myr/wcbSmiFH8IWsfipFzM8q+DgJJNf26SDblPjf6i9tww20D44Tp6Auxtnx
+         Wxa6nEPNfng7lVd8cDSG6W/PhUm8WQaqFYbaYWR6PIZESnkjssgadKSq+fZ5BuCBdmtg
+         seE4e6SvrxqHxjhNM0oxPclJRv/tj0B0vlrqAEIds1/uYTkvhiVmSK6LPHjidJutHdWP
+         wAgxpdcI2jB/Ke0eJaxrFHTtivzpZXDmErwobM60POTYTewnlbboJRklJN9zzjGz7zu7
+         qDwrzxZJbWIoIE/ugSYzPA4eBK61H5Pvuv+YomAy9xNCI8s4GDXU56PmUBOp2jHGugHV
+         IIKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eu38gMEhlCLDFy6KkUeAsbrjDX67p3SRtgMNjLCMflQ=;
+        b=nejp+s5y+GphJKpARPUUN+0snDrN5Y24db6qo97+LYY5t81LF3X06cuT3578ZKBos+
+         3onyh9lSQ4q608yJiN8djrP28BTq+ZbJrh2nZgHmyhJFJ1UdUIOtM6zd3jc9GPrlZLr/
+         qLcoZVdejRbWfj0GmLAe20zYa58MlMTlfnipsyoWI4Zv9R8Q6ylQAQwnsuV57VOpo0e5
+         1TCtWwRwsgt+Q5aeI+TTCQVTvlzbJ2G2aCYY+PsYbCLZlU+ulAr4+tqhsrMnI2u8WLKm
+         6CGwzjLgfzrETwjr4nUJuuVbNWyfyzfLUqoM/F/nbZPNizcXzq7Kt3LZZCWAZPE6K9v/
+         CSow==
+X-Gm-Message-State: AJIora9J5o5R9IeKRrkcE9XhdTncqecF4uw+LfJx2cEGgPyxUoWQymM2
+        Qjg4/+3Kj8ofz4DKS0xkyoTah/yJinBbXD1dRVwjlU3ZCUY=
+X-Google-Smtp-Source: AGRyM1txobi65oZyr08oYxAWdMJVeMiBiU9GqjYAztqFQDwa+JZ/PqOXEduhDypqtoEZMIz2uoSPlX7LP+O35+uezEw=
+X-Received: by 2002:a63:9142:0:b0:412:b171:b6ac with SMTP id
+ l63-20020a639142000000b00412b171b6acmr21029214pge.206.1657645385595; Tue, 12
+ Jul 2022 10:03:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <202207100715.TBIYQ4fc-lkp@intel.com>
+In-Reply-To: <202207100715.TBIYQ4fc-lkp@intel.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Tue, 12 Jul 2022 10:02:53 -0700
+Message-ID: <CAHbLzkoFjZoX0WFy9YaOO1rEC+=yyytgDimapeTEyuNyMNTHLg@mail.gmail.com>
+Subject: Re: [akpm-mm:mm-unstable 284/293] mm/khugepaged.c:2409
+ madvise_collapse() warn: possible memory leak of 'cc'
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, "Zach O'Keefe" <zokeefe@google.com>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The PN7160 supports error notifications. Add the appropriate callbacks.
+On Tue, Jul 12, 2022 at 5:36 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-unstable
+> head:   0e9f775fb0b4adf1a4ef50ea156ead09a0fc5194
+> commit: 9f626ffb1d1c5c26b4a8e0fdffec784a5f773274 [284/293] mm/madvise: introduce MADV_COLLAPSE sync hugepage collapse
+> config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220710/202207100715.TBIYQ4fc-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+>
+> smatch warnings:
+> mm/khugepaged.c:2409 madvise_collapse() warn: possible memory leak of 'cc'
+>
+> vim +/cc +2409 mm/khugepaged.c
+>
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2387  int madvise_collapse(struct vm_area_struct *vma, struct vm_area_struct **prev,
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2388                 unsigned long start, unsigned long end)
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2389  {
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2390    struct collapse_control *cc;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2391    struct mm_struct *mm = vma->vm_mm;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2392    unsigned long hstart, hend, addr;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2393    int thps = 0, last_fail = SCAN_FAIL;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2394    bool mmap_locked = true;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2395
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2396    BUG_ON(vma->vm_start > start);
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2397    BUG_ON(vma->vm_end < end);
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2398
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2399    cc = kmalloc(sizeof(*cc), GFP_KERNEL);
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2400    if (!cc)
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2401            return -ENOMEM;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2402    cc->is_khugepaged = false;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2403    cc->last_target_node = NUMA_NO_NODE;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2404
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2405    *prev = vma;
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2406
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2407    /* TODO: Support file/shmem */
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06  2408    if (!vma->anon_vma || !vma_is_anonymous(vma))
+> 9f626ffb1d1c5c Zach O'Keefe 2022-07-06 @2409            return -EINVAL;
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
- drivers/nfc/nxp-nci/core.c | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+It seems better to move the cc kmalloc after the anonymous vma check?
 
-diff --git a/drivers/nfc/nxp-nci/core.c b/drivers/nfc/nxp-nci/core.c
-index 518e2afb43a8..7c93d484dc1b 100644
---- a/drivers/nfc/nxp-nci/core.c
-+++ b/drivers/nfc/nxp-nci/core.c
-@@ -27,6 +27,9 @@
- 			       NFC_PROTO_ISO14443_B_MASK | \
- 			       NFC_PROTO_NFC_DEP_MASK)
- 
-+#define NXP_NCI_RF_PLL_UNLOCKED_NTF nci_opcode_pack(NCI_GID_RF_MGMT, 0x21)
-+#define NXP_NCI_RF_TXLDO_ERROR_NTF nci_opcode_pack(NCI_GID_RF_MGMT, 0x23)
-+
- static int nxp_nci_open(struct nci_dev *ndev)
- {
- 	struct nxp_nci_info *info = nci_get_drvdata(ndev);
-@@ -83,11 +86,42 @@ static int nxp_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
- 	return r;
- }
- 
-+static int nxp_nci_rf_pll_unlocked_ntf(struct nci_dev *ndev,
-+				       struct sk_buff *skb)
-+{
-+	nfc_err(&ndev->nfc_dev->dev,
-+		"PLL didn't lock. Missing or unstable clock?\n");
-+
-+	return 0;
-+}
-+
-+static int nxp_nci_rf_txldo_error_ntf(struct nci_dev *ndev,
-+				      struct sk_buff *skb)
-+{
-+	nfc_err(&ndev->nfc_dev->dev,
-+		"RF transmitter couldn't start. Bad power and/or configuration?\n");
-+
-+	return 0;
-+}
-+
-+static const struct nci_driver_ops nxp_nci_core_ops[] = {
-+	{
-+		.opcode = NXP_NCI_RF_PLL_UNLOCKED_NTF,
-+		.ntf = nxp_nci_rf_pll_unlocked_ntf,
-+	},
-+	{
-+		.opcode = NXP_NCI_RF_TXLDO_ERROR_NTF,
-+		.ntf = nxp_nci_rf_txldo_error_ntf,
-+	},
-+};
-+
- static const struct nci_ops nxp_nci_ops = {
- 	.open = nxp_nci_open,
- 	.close = nxp_nci_close,
- 	.send = nxp_nci_send,
- 	.fw_download = nxp_nci_fw_download,
-+	.core_ops = nxp_nci_core_ops,
-+	.n_core_ops = ARRAY_SIZE(nxp_nci_core_ops),
- };
- 
- int nxp_nci_probe(void *phy_id, struct device *pdev,
--- 
-2.30.2
-
+>
+> kfree(cc);?
+>
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+>
+>
