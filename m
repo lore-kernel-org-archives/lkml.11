@@ -2,141 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 654ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:13:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232976AbiGLLNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        id S230135AbiGLLNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiGLLMj (ORCPT
+        with ESMTP id S232258AbiGLLMk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:12:39 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50100B1846
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:12:36 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o3-20020a17090a744300b001ef8f7f3dddso7614528pjk.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:12:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Qb55Kbq0y4vwgfIg3wFDxJyNQoImybJoWJeGkFEBt8Y=;
-        b=1j7HJgDk+BOlvIrPto5v/w0UyoFz/lnQv9wgfOdsMphjfRFqT2DIg1DRCHe62jotIw
-         Wcd/TP+YDwzfz1hnJ6brTDEGw2ZuVW3aJM4o1q8Q0gS/+iGgF/XMxyvjeSCbVzLv2yv/
-         AZOOfT7iwDEcacqkH1Rg/gSvMy7ht63jN/2WIxL6byrFEmQFcJ+MCxNo/6iVX5tgrM46
-         jeNMwF7+1ZlSigpdyBSpowNoE2GVGisPcjq7xOSY0ZJs36ILM/NQQSm4zFPQUpdNls/C
-         2lw78hd8AKVpILhM+sGMlgeveyvYN0B+WRx8Por5mmiOEpPIllo6NLOIUa7ziMhmBgP1
-         rMMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Qb55Kbq0y4vwgfIg3wFDxJyNQoImybJoWJeGkFEBt8Y=;
-        b=j/RPBINkaKB4KIPoX8tRedIyxx/ZVmMtdAebbjcV4FTBObSN+25XD5FZN3L5ilODFT
-         KCqckuxxeC3PrEc+hBoTz8aVd3NABs5BeBM8EDEJ3bsSx1pycyhe2k8ECESxVuTmUPQZ
-         O1hHQp7MPw1/xWyHki9DT/uKxqaS9KIwalqD6KKUa4uR/BnP8t16M7jJ2Sfb2jKOQNsU
-         UinU/HKDorO0gWqs1/F4sYRyTaQo4V/GQysCyk1gKZzBbcdt6SGuHadAEEf/nq14+uYl
-         YiLZPeixFzyv1C+5ZXfHyGrYBfU/x6SvbYV64pWbO7v9lRB6xAynTO5AFKxji+O05Nyd
-         GgKw==
-X-Gm-Message-State: AJIora80nudj8n1yElUVKIFGw1gQI9nQf81202VOOlS+RyUcE17qAsm5
-        eYvpzoI7TgHe7aiF/5NGzeKHFw==
-X-Google-Smtp-Source: AGRyM1uY3FpE7QhDTBbilYTgVnALa3bIqWVrC/zDtaL3RXmhC1OZWn1T+qY6Y660eckXwBBY0oBkyA==
-X-Received: by 2002:a17:90b:2c0b:b0:1ef:aa42:f19b with SMTP id rv11-20020a17090b2c0b00b001efaa42f19bmr3729663pjb.211.1657624355862;
+        Tue, 12 Jul 2022 07:12:40 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1B76B0FB0;
         Tue, 12 Jul 2022 04:12:35 -0700 (PDT)
-Received: from [10.4.113.6] ([139.177.225.234])
-        by smtp.gmail.com with ESMTPSA id t7-20020a17090340c700b0016c59b38254sm1550585pld.127.2022.07.12.04.12.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 04:12:35 -0700 (PDT)
-Message-ID: <41ae31a7-6998-be88-858c-744e31a76b2a@bytedance.com>
-Date:   Tue, 12 Jul 2022 19:12:18 +0800
+X-UUID: 83ccf677604941eeb52ca60ba414c7bd-20220712
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:72db14e6-f54d-49f3-a8ec-3e67ff50be90,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:a77a1364-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 83ccf677604941eeb52ca60ba414c7bd-20220712
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1317374725; Tue, 12 Jul 2022 19:12:26 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 12 Jul 2022 19:12:25 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.3 via Frontend Transport; Tue, 12 Jul 2022 19:12:25 +0800
+From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
+To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
+        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Subject: [PATCH v14 07/10] drm/mediatek: add hpd debounce
+Date:   Tue, 12 Jul 2022 19:12:20 +0800
+Message-ID: <20220712111223.13080-8-rex-bc.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH v2 0/5] mm, oom: Introduce per numa node oom for
- CONSTRAINT_{MEMORY_POLICY,CPUSET}
-Content-Language: en-US
-To:     Michal Hocko <mhocko@suse.com>, Gang Li <ligang.bdlg@bytedance.com>
-Cc:     akpm@linux-foundation.org, surenb@google.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        viro@zeniv.linux.org.uk, ebiederm@xmission.com,
-        keescook@chromium.org, rostedt@goodmis.org, mingo@redhat.com,
-        peterz@infradead.org, acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, david@redhat.com, imbrenda@linux.ibm.com,
-        adobriyan@gmail.com, yang.yang29@zte.com.cn, brauner@kernel.org,
-        stephen.s.brennan@oracle.com, zhengqi.arch@bytedance.com,
-        haolee.swjtu@gmail.com, xu.xin16@zte.com.cn,
-        Liam.Howlett@oracle.com, ohoono.kwon@samsung.com,
-        peterx@redhat.com, arnd@arndb.de, shy828301@gmail.com,
-        alex.sierra@amd.com, xianting.tian@linux.alibaba.com,
-        willy@infradead.org, ccross@google.com, vbabka@suse.cz,
-        sujiaxun@uniontech.com, sfr@canb.auug.org.au,
-        vasily.averin@linux.dev, mgorman@suse.de, vvghjk1234@gmail.com,
-        tglx@linutronix.de, luto@kernel.org, bigeasy@linutronix.de,
-        fenghua.yu@intel.com, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-mm@kvack.org, linux-perf-users@vger.kernel.org,
-        hezhongkun.hzk@bytedance.com
-References: <20220708082129.80115-1-ligang.bdlg@bytedance.com>
- <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
-From:   Abel Wu <wuyun.abel@bytedance.com>
-In-Reply-To: <YsfwyTHE/5py1kHC@dhcp22.suse.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michal,
+From: Jitao Shi <jitao.shi@mediatek.com>
 
-On 7/8/22 4:54 PM, Michal Hocko Wrote:
-> On Fri 08-07-22 16:21:24, Gang Li wrote:
->> TLDR
->> ----
->> If a mempolicy or cpuset is in effect, out_of_memory() will select victim
->> on specific node to kill. So that kernel can avoid accidental killing on
->> NUMA system.
-> 
-> We have discussed this in your previous posting and an alternative
-> proposal was to use cpusets to partition NUMA aware workloads and
-> enhance the oom killer to be cpuset aware instead which should be a much
-> easier solution.
-> 
->> Problem
->> -------
->> Before this patch series, oom will only kill the process with the highest
->> memory usage by selecting process with the highest oom_badness on the
->> entire system.
->>
->> This works fine on UMA system, but may have some accidental killing on NUMA
->> system.
->>
->> As shown below, if process c.out is bind to Node1 and keep allocating pages
->> from Node1, a.out will be killed first. But killing a.out did't free any
->> mem on Node1, so c.out will be killed then.
->>
->> A lot of AMD machines have 8 numa nodes. In these systems, there is a
->> greater chance of triggering this problem.
-> 
-> Please be more specific about existing usecases which suffer from the
-> current OOM handling limitations.
+From the DP spec 1.4a chapter 3.3, upstream devices should implement
+HPD signal de-bouncing on an external connection.
+A period of 100ms should be used to detect an HPD connect event.
+To cover these cases, HPD de-bounce should be implemented only after
+HPD low has been detected for at least 100ms.
 
-I was just going through the mail list and happen to see this. There
-is another usecase for us about per-numa memory usage.
+Therefore,
+1. If HPD is low (which means plugging out) for longer than 100ms:
+   we need to do de-bouncing (which means we need to wait for 100ms).
+2. If HPD low is for less than 100ms:
+   we don't need to care about the de-bouncing.
 
-Say we have several important latency-critical services sitting inside
-different NUMA nodes without intersection. The need for memory of these
-LC services varies, so the free memory of each node is also different.
-Then we launch several background containers without cpuset constrains
-to eat the left resources. Now the problem is that there doesn't seem
-like a proper memory policy available to balance the usage between the
-nodes, which could lead to memory-heavy LC services suffer from high
-memory pressure and fails to meet the SLOs.
+In this patch, we start a 100ms timer and use a need_debounce boolean
+to implement the feature.
 
-It's quite appreciated if you can shed some light on this!
+Two cases when HPD is high:
+1. If the timer is expired (>100ms):
+   - need_debounce is true.
+   - When HPD high (plugging event comes), need_debounce will be true
+     and then we need to do de-bouncing (wait for 100ms).
+2. If the timer is not expired (<100ms):
+   - need_debounce is false.
+   - When HPD high (plugging event comes), need_debounce will be false
+     and no need to do de-bouncing.
 
-Thanks & BR,
-Abel
+HPD_______             __________________
+          |            |<-  100ms   ->
+          |____________|
+          <-  100ms   ->
+
+Without HPD de-bouncing, USB-C to HDMI Adapaters will not be detected.
+
+The change has been successfully tested with the following devices:
+- Dell Adapter - USB-C to HDMI
+- Acer 1in1 HDMI dongle
+- Ugreen 1in1 HDMI dongle
+- innowatt HDMI + USB3 hub
+- Acer 2in1 HDMI dongle
+- Apple 3in1 HDMI dongle (A2119)
+- J5Create 3in1 HDMI dongle (JAC379)
+
+Tested-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: Rex-BC Chen <rex-bc.chen@mediatek.com>
+Signed-off-by: Jitao Shi <jitao.shi@mediatek.com>
+Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/gpu/drm/mediatek/mtk_dp.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
+index 610651dd6365..50a4159095a1 100644
+--- a/drivers/gpu/drm/mediatek/mtk_dp.c
++++ b/drivers/gpu/drm/mediatek/mtk_dp.c
+@@ -105,6 +105,8 @@ struct mtk_dp {
+ 	bool enabled;
+ 
+ 	struct drm_connector *conn;
++	bool need_debounce;
++	struct timer_list debounce_timer;
+ };
+ 
+ static struct regmap_config mtk_dp_regmap_config = {
+@@ -1551,7 +1553,11 @@ static irqreturn_t mtk_dp_hpd_event_thread(int hpd, void *dev)
+ 	if (event < 0)
+ 		return IRQ_HANDLED;
+ 
++	if (mtk_dp->need_debounce && mtk_dp->train_info.cable_plugged_in)
++		msleep(100);
++
+ 	dev_dbg(mtk_dp->dev, "drm_helper_hpd_irq_event\n");
++
+ 	drm_helper_hpd_irq_event(mtk_dp->bridge.dev);
+ 
+ 	if (mtk_dp->train_info.cable_state_change) {
+@@ -1614,6 +1620,12 @@ static irqreturn_t mtk_dp_hpd_isr_handler(struct mtk_dp *mtk_dp)
+ 
+ 	train_info->cable_state_change = true;
+ 
++	if (!train_info->cable_plugged_in) {
++		mod_timer(&mtk_dp->debounce_timer,
++			  jiffies + msecs_to_jiffies(100) - 1);
++		mtk_dp->need_debounce = false;
++	}
++
+ 	return IRQ_WAKE_THREAD;
+ }
+ 
+@@ -2058,6 +2070,13 @@ static const struct drm_bridge_funcs mtk_dp_bridge_funcs = {
+ 	.detect = mtk_dp_bdg_detect,
+ };
+ 
++static void mtk_dp_debounce_timer(struct timer_list *t)
++{
++	struct mtk_dp *mtk_dp = from_timer(mtk_dp, t, debounce_timer);
++
++	mtk_dp->need_debounce = true;
++}
++
+ static int mtk_dp_probe(struct platform_device *pdev)
+ {
+ 	struct mtk_dp *mtk_dp;
+@@ -2135,6 +2154,9 @@ static int mtk_dp_probe(struct platform_device *pdev)
+ 
+ 	drm_bridge_add(&mtk_dp->bridge);
+ 
++	mtk_dp->need_debounce = true;
++	timer_setup(&mtk_dp->debounce_timer, mtk_dp_debounce_timer, 0);
++
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_sync(dev);
+ 
+@@ -2147,6 +2169,7 @@ static int mtk_dp_remove(struct platform_device *pdev)
+ 
+ 	platform_device_unregister(mtk_dp->phy_dev);
+ 	mtk_dp_video_mute(mtk_dp, true);
++	del_timer_sync(&mtk_dp->debounce_timer);
+ 
+ 	pm_runtime_disable(&pdev->dev);
+ 
+-- 
+2.18.0
+
