@@ -2,162 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D73ABC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 21:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCA27C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 21:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231179AbiGLVEU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 17:04:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
+        id S230011AbiGLVMG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 17:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233105AbiGLVEK (ORCPT
+        with ESMTP id S229568AbiGLVMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 17:04:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25781658E;
-        Tue, 12 Jul 2022 14:04:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57CB8B81BDC;
-        Tue, 12 Jul 2022 21:04:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6D63C3411C;
-        Tue, 12 Jul 2022 21:04:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657659847;
-        bh=St6/VdAKGLX+JJf7JsVyNpbfxGkR3gNsSZDo3YD+UPQ=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=refsQ9gY4AlqPp0e2bt982paTgyx7v5LAkIStviFafU6RJNRDx+jwlqapPTvnhF2m
-         J1S8AalgLJjI4dJFsqVsDZAcLe61ppumzqm40au4EPVET1W/SwJonLHxpUfVvlgbng
-         5nrC0ZJbiXQkgp0+GO4N4L9VVOJt0ccRECFg2lxj+PWVbyZQtdZFXjgvvOsFLUZwSb
-         jjhTRy9qjM8MNrFa7rXoVxItZTmOlK+wKu0ZlBlGsTgkFP7VslhAhlAqXjLqjpv8oU
-         NskUew8QAZEhSkK4SshVAyLipZfKmhOSQTPiG3c7qKdtODsrm9Ooe/f64fPcHWgGZA
-         g11PXHGLtamzA==
-Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
-        id 890C75C08C7; Tue, 12 Jul 2022 14:04:06 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 14:04:06 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     rcu@vger.kernel.org, linux-kernel@vger.kernel.org,
-        rushikesh.s.kadam@intel.com, urezki@gmail.com,
-        neeraj.iitr10@gmail.com, frederic@kernel.org, rostedt@goodmis.org,
-        vineeth@bitbyteword.org
-Subject: Re: [PATCH v2 1/8] rcu: Introduce call_rcu_lazy() API implementation
-Message-ID: <20220712210406.GF1790663@paulmck-ThinkPad-P17-Gen-1>
-Reply-To: paulmck@kernel.org
-References: <20220622225102.2112026-1-joel@joelfernandes.org>
- <20220622225102.2112026-3-joel@joelfernandes.org>
- <20220626040019.GK1790663@paulmck-ThinkPad-P17-Gen-1>
- <Yso4690g+lI/8eJS@google.com>
- <20220710160330.GI1790663@paulmck-ThinkPad-P17-Gen-1>
- <aef0f8a6-cde6-18f3-16ab-7e07a4413f31@joelfernandes.org>
+        Tue, 12 Jul 2022 17:12:05 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EF3313AC;
+        Tue, 12 Jul 2022 14:12:04 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 64E54C01D; Tue, 12 Jul 2022 23:12:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657660323; bh=eiN+XhbOvX8WghrfI1OIJHzddrvBj7ZBjjDv3Q3CGk4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=EUZ32aVlw1e2tAzktlNuxLyX5X7B0FmXxoJ46QPUd+4bpVojHcKUQRxrD0j4Af2Jw
+         RTO7MEoyUQL0qFx7eYDhzWa3BHvUcjGVoe2z53IppjBvEN0K9FdyLbzfmvPpvIRZcr
+         uj6y/M2AYkeRYaOoBUNTbUz2Qvsh/WQw6h2ih7bOLijgP1v1CQs5Y+05LPuNm3Rs2c
+         Icd2/LOVkGQh74GHI6hHz4fWfPBMQn9QdxKSNhyv1g7qw23o72SjGUiM1jifswSHVL
+         PjDryJ2mDz2uP6XZrzoZx+CVl8ALGIoX9Tk7QHD7SHU5QZnv2fP5r64fBdWSfL5Hvh
+         sSU7c63Y56/ng==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id B6C96C009;
+        Tue, 12 Jul 2022 23:12:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657660322; bh=eiN+XhbOvX8WghrfI1OIJHzddrvBj7ZBjjDv3Q3CGk4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=whF+2hsQE5IlwguKvo69lZPFa4ZLhnyjqMZIdisEC8g3LQ6IyW+TiitL7m1wqEKlu
+         t1Rc2Ybd6E6c8CTcAxWG6wkFcp5uItE1W8JTMtlnN1yJiHQe3XPhcgS7RXBRAUi0uT
+         ijufJiLZT95CD4cBAu4fc2MLW5ABqaeAkgQMVbokubiSv7EU2v/4hRR99xKbg868RO
+         XPLbH2NvOaKd2aii5tU6dgHXTDdpKZ5RmRqmd19v2D+QVFMTfpJMr77ekkLIenLl6P
+         GlcOuoslEFMGyjxWrYlZ0YgedIkvQ5r8iznbvJpeq3cv6lCXPiWpvPcg1bYIvwwtsW
+         4Ux4mGteDf3TQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 0c84a27d;
+        Tue, 12 Jul 2022 21:11:57 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 06:11:42 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     Latchesar Ionkov <lucho@ionkov.net>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [V9fs-developer] [PATCH v5 11/11] net/9p: allocate appropriate
+ reduced message buffers
+Message-ID: <Ys3jjg52EIyITPua@codewreck.org>
+References: <cover.1657636554.git.linux_oss@crudebyte.com>
+ <5fb0bcc402e032cbc0779f428be5797cddfd291c.1657636554.git.linux_oss@crudebyte.com>
+ <Ys3Mj+SgWLzhQGWK@codewreck.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aef0f8a6-cde6-18f3-16ab-7e07a4413f31@joelfernandes.org>
+In-Reply-To: <Ys3Mj+SgWLzhQGWK@codewreck.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 04:53:48PM -0400, Joel Fernandes wrote:
-> 
-> On 7/10/2022 12:03 PM, Paul E. McKenney wrote:
-> [..]
-> >>>> +	// Note that if the bypass list has lazy CBs, and the main list is
-> >>>> +	// empty, and rhp happens to be non-lazy, then we end up flushing all
-> >>>> +	// the lazy CBs to the main list as well. That's the right thing to do,
-> >>>> +	// since we are kick-starting RCU GP processing anyway for the non-lazy
-> >>>> +	// one, we can just reuse that GP for the already queued-up lazy ones.
-> >>>> +	if ((rdp->nocb_nobypass_count < nocb_nobypass_lim_per_jiffy && !lazy) ||
-> >>>> +	    (lazy && n_lazy_cbs >= qhimark)) {
-> >>>>  		rcu_nocb_lock(rdp);
-> >>>>  		*was_alldone = !rcu_segcblist_pend_cbs(&rdp->cblist);
-> >>>>  		if (*was_alldone)
-> >>>>  			trace_rcu_nocb_wake(rcu_state.name, rdp->cpu,
-> >>>> -					    TPS("FirstQ"));
-> >>>> -		WARN_ON_ONCE(!rcu_nocb_flush_bypass(rdp, NULL, j));
-> >>>> +					    lazy ? TPS("FirstLazyQ") : TPS("FirstQ"));
-> >>>> +		WARN_ON_ONCE(!rcu_nocb_flush_bypass(rdp, NULL, j, false));
-> >>>
-> >>> The "false" here instead of "lazy" is because the caller is to do the
-> >>> enqueuing, correct?
-> >>
-> >> There is no difference between using false or lazy here, because the bypass
-> >> flush is not also enqueuing the lazy callback, right?
-> >>
-> >> We can also pass lazy instead of false if that's less confusing.
-> >>
-> >> Or maybe I missed the issue you're raising?
+Dominique Martinet wrote on Wed, Jul 13, 2022 at 04:33:35AM +0900:
+> Christian Schoenebeck wrote on Tue, Jul 12, 2022 at 04:31:36PM +0200:
+> > So far 'msize' was simply used for all 9p message types, which is far
+> > too much and slowed down performance tremendously with large values
+> > for user configurable 'msize' option.
 > > 
-> > I am mostly checking up on your intended meaning of "lazy" in various
-> > contexts.  It could mean only that the caller requested laziness, or in
-> > some cases it could mean that the callback actually will be lazy.
+> > Let's stop this waste by using the new p9_msg_buf_size() function for
+> > allocating more appropriate, smaller buffers according to what is
+> > actually sent over the wire.
 > > 
-> > I can rationalize the "false" above as a "don't care" in this case
-> > because (as you say) there is not callback.  In which case this code
-> > is OK as is, as long as the header comment for rcu_nocb_flush_bypass()
-> > clearly states that this parameter has meaning only when there really
-> > is a callback being queued.
-> 
-> I decided to change this and the below to "lazy" variable instead of
-> true/false, as the code is cleaner and less confusing IMO. It makes
-> sense to me and in my testing it works fine. Hope that's Ok with you.
+> > Only exception: RDMA transport is currently excluded from this, as
+> > it would not cope with it. [1]
 
-Sounds plausible.
+Thinking back on RDMA:
+- vs. one or two buffers as discussed in another thread, rdma will still
+require two buffers, we post the receive buffer before sending as we
+could otherwise be raced (reply from server during the time it'd take to
+recycle the send buffer)
+In practice the recv buffers should act liks a fifo and we might be able
+to post the buffer we're about to send for recv before sending it and it
+shouldn't be overwritten until it's sent, but that doesn't look quite good.
 
-> About changing the lazy length count to a flag, one drawback of doing
-> that is, say if there are some non-lazy CBs in the bypass list, then the
-> lazy shrinker will end up reporting an inaccurate count. Also
-> considering that it might be harder to add the count back later say if
-> we need it for tracing, I would say lets leave it as is. I will keep the
-> counter for v3 and we can discuss. Does that sound good to you?
+- for this particular patch, we can still allocate smaller short buffers
+for requests, so we should probably keep tsize to 0.
+rsize there really isn't much we can do without a protocol change
+though...
 
-You lost me on this one.  If there are any non-lazy callbacks, the whole
-bypass list is already being treated as non-lazy, right?  If so, then
-the lazy shrinker should report the full count if all callbacks are lazy,
-and should report none otherwise.  Or am I missing something here?
-
-> I think some more testing, checkpatch running etc and I should be good
-> to send v3 :)
-
-Sounds good!
-
-							Thanx, Paul
-
-> Thanks!
-> 
->  - Joel
-> 
-> 
-> > 
-> >>>>  		WARN_ON_ONCE(rcu_cblist_n_cbs(&rdp->nocb_bypass));
-> >>>>  		return false; // Caller must enqueue the callback.
-> >>>>  	}
-> >>>>  
-> >>>>  	// If ->nocb_bypass has been used too long or is too full,
-> >>>>  	// flush ->nocb_bypass to ->cblist.
-> >>>> -	if ((ncbs && j != READ_ONCE(rdp->nocb_bypass_first)) ||
-> >>>> -	    ncbs >= qhimark) {
-> >>>> +	if ((ncbs && j != READ_ONCE(rdp->nocb_bypass_first)) || ncbs >= qhimark) {
-> >>>>  		rcu_nocb_lock(rdp);
-> >>>> -		if (!rcu_nocb_flush_bypass(rdp, rhp, j)) {
-> >>>> +		if (!rcu_nocb_flush_bypass(rdp, rhp, j, true)) {
-> >>>
-> >>> But shouldn't this "true" be "lazy"?  I don't see how we are guaranteed
-> >>> that the callback is in fact lazy at this point in the code.  Also,
-> >>> there is not yet a guarantee that the caller will do the enqueuing.
-> >>> So what am I missing?
-> >>
-> >> Sorry I screwed this part up. I think I meant 'false' here, if the list grew
-> >> too big- then I think I would prefer if the new lazy CB instead is treated as
-> >> non-lazy. But if that's too confusing, I will just pass 'lazy' instead. What
-> >> do you think?
-> > 
-> > Good point, if we are choosing to override the laziness requested by the
-> > caller, then it should say "true".  It would be good to have a comment
-> > saying that is what we are doing, correct?
-> > 
-> >> Will reply more to the rest of the comments soon, thanks!
-> > 
-> > Sounds good!  (Hey, wouldn't want you to be bored!)
-> > 
-> > 							Thanx, Paul
+--
+Dominique
