@@ -2,182 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85CC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1C1CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiGLHk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        id S232390AbiGLHl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230269AbiGLHkx (ORCPT
+        with ESMTP id S232402AbiGLHlM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:40:53 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2051.outbound.protection.outlook.com [40.107.94.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 889FC9A6B9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:40:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AHQ9fSYXhua/WIwSPBRdWdU0x+NfgNZmBdqlJVpijxNFvc1IFNN6uP3Jc6Hpr+8ejK1zCA5n+5+fqRTUtoH1G3UsvnMljyLRooUXgjYAvxei7cltySgldSexFsDAF3QJScSVF7pXvW0rT3yq9RnEqaiKXz25Lt0ocmve7O15XsJar6uQAoqNv8FtTKVfiI4ZIMtzC9q0cEO9jRiot1dGb8Z4UPF9KcBx3vW5oMBEgSU/hXFcS4WDgnE/0rpDI8uah0wgpTrg86h8XT2v0RbT8e10q9/sewQF3t+4AtWcwJAtIUFGuFPjXOhpIpv97nV5PRAlEWCyD6IEwCXXVHlEFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LljEbNcrmLAY1h1c2o74wsD1xWuCeMjzVzWtxrN2f5E=;
- b=DpYqkVZ8tRuViuV+iJZw91Fp5eRi41P/CL0cXFTQURve5mztgEDg9G8wKp1B+FolCDLgERJzIxjpzYMFrSyX5wl/+pvScymHUZkjwy89+ezkDy5h1j2/bSJza/78J6tQXYDKIm2D9NkOY2mYMfWRgbffQRiUdTuwpAwBr9HDlBSdl5P1Ho9+e9ME67HxdlIufKJ5Y8SsRXs5FY3jSFjDkmSmh53XZV63Fv6eaWZf1BnThrdQT71KQQByLTkBJ02OhufYjJn+r+yr4qx9+MKEGaZDYF/N1y5tuodFcaJ0CkhYXr3Rh8VI8W7GdcfxKql7dlzvhw6wkj2T/v6PTnb6Hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LljEbNcrmLAY1h1c2o74wsD1xWuCeMjzVzWtxrN2f5E=;
- b=rj7ko61CVplh9Y0oBvGzRsFkwkaT/NtiGM32WcC/xiDFqwdJTm1VYhyp5RuNnIUrt+NUaKnsFlM+aLlvDkzBu1ManlUtff0zrJIw7vN5dHwNz53lDUlznoZqlha6GawOmtNgEvuMrGBIJts32TZpG/vQo2WtBwjpQ6nqAJNwzcI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
- by SN6PR12MB4685.namprd12.prod.outlook.com (2603:10b6:805:b::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Tue, 12 Jul
- 2022 07:40:47 +0000
-Received: from BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
- ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 07:40:47 +0000
-Message-ID: <13c5ca05-a366-2751-4f26-d978d074f748@amd.com>
-Date:   Tue, 12 Jul 2022 09:40:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [RFC][PATCH 1/3] drm: drm_syncobj: Add note in DOC about absolute
- timeout values
-Content-Language: en-US
-To:     John Stultz <jstultz@google.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Lionel Landwerlin <lionel.g.landwerlin@intel.com>,
-        Chunming Zhou <david1.zhou@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org
-References: <20220712042258.293010-1-jstultz@google.com>
-From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-In-Reply-To: <20220712042258.293010-1-jstultz@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0549.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:319::18) To BN8PR12MB3587.namprd12.prod.outlook.com
- (2603:10b6:408:43::13)
+        Tue, 12 Jul 2022 03:41:12 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E20979B185
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:41:02 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id bk26so9917397wrb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:41:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uXpg/iY82hEm9tokQdYtqJ4gX8iwUMDbB/yvs2d8omo=;
+        b=hfD3Z60Vyp2ebK1/oVLfYekTLjmEM4uokftPm7qlCpAyugRjZ8+NglNPS0HCz3ro8s
+         RhRCfmEUjEBKhEgOfOLPmgJeZ7mH/qZU2ZDSPlC+OW2FeHoiUMrKFWZBvJ1nzm0prWqC
+         tAH4mHgrNRPIX1Cgqv0zxcR983u9EKacVJLurjU2HnM4R/O/GLvC26nmf9nez9Inx76N
+         kVyCHCWUwB0xf/9G0Haq9lDHtkto1yudX6xB+1OZsraKscQvym+psv7AXupqBnLldzYH
+         Jz6qZwRzKF4lpQDRYFqQ86IwVEVyxwJfLrvZkp2lsd5vpaYh8FTkz/CzDwvrUsq4YCm4
+         VOiw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uXpg/iY82hEm9tokQdYtqJ4gX8iwUMDbB/yvs2d8omo=;
+        b=A3tCj34jpmYWvfvQEOBf9rfQhGGh19uXeW/1ZNq8nIMhjViI/IbAheyCVsJ6YcetKW
+         uoCYoa5m4VGw/X1GqKEi7KDbqB0VXH1Kb3gopVHt0r/r6Z8nyzSBAQtB/dmSUxJvaXBC
+         pSW8W7oSgGmPPCtjjvJqWRxyctaRgQwW2oeNpO5I2dI2J/MJJqXPJHMqbocFxzhECj/i
+         Q9NKG+CTZufbslolZX5RWKjItVL/0ijfSxCu+BQNDfuax4PVux3pFIs+g9LOP2qvD2Ew
+         QlP+SyBKC3T6k00uYZJucHd56YO/LWNuQFVQTEVfxwSnrfXSbNv2rb3C/OfA0uTMXpHT
+         pTuA==
+X-Gm-Message-State: AJIora+tZ1a8KA8ztI8Q0yuaq4U0UPfzBQfgBaq3GnnPbdqlW6pOg1jg
+        YTDjE59383I1ktL2PgXxekL5Jg==
+X-Google-Smtp-Source: AGRyM1sjO+5Zp5uEx98PsQdY6oBQiAuF6TvxkZBfMtLneoIj5n4eudQALZXKfBo3YT2MZNyOp54vDw==
+X-Received: by 2002:adf:f345:0:b0:21d:6a26:6d8f with SMTP id e5-20020adff345000000b0021d6a266d8fmr21114628wrp.538.1657611660742;
+        Tue, 12 Jul 2022 00:41:00 -0700 (PDT)
+Received: from brgl-uxlite.home ([2a01:cb1d:334:ac00:f331:f20b:d10:e79e])
+        by smtp.gmail.com with ESMTPSA id m9-20020a056000024900b0021d9207e6f1sm7725462wrz.34.2022.07.12.00.41.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 00:41:00 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Kent Gibson <warthog618@gmail.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <brgl@bgdev.pl>, stable@vger.kernel.org
+Subject: [PATCH v2] gpio: sim: fix the chip_name configfs item
+Date:   Tue, 12 Jul 2022 09:40:55 +0200
+Message-Id: <20220712074055.10588-1-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 32fa93a7-e450-4bca-1546-08da63d9d5c6
-X-MS-TrafficTypeDiagnostic: SN6PR12MB4685:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8FMIpQxIUXHzNWVz9jG9EeOf9JzxfIZ3HCc+y2ejl0JCh09EJAVy/sY2fAeFcAavQiTeEz9j/Dj5g+/IyPfzO70fuR0hTi5cL8WnklJnkXc8otKSRHesEl0BdxPdhs0TZaJMsq79PN9dWHAzQlOatptlJY7BgON/ntjwIQ9l5qXPKSZDsDi2g8wyqDvBShGnUXfSlfNUEbT45Xju1hdzjIOk8Pcm5BO64jHXLPIR177JKX8Z/aJ4tqxDEoAbD82K0jRQXXbWkI36BoqDsnKQ2Qv4SlLsYZKY/l5MIYoV4RLWWOAe1XRoXG4WyjDahvngY3wSNXzqlFfbRY00qx/5jZIVz+ogOHdc7FpD5aDnA8aBuoa2oXI8J4pf+l28nuaGclQJp6mLZ3fPGCxpaRLBMMF5T3hNhPkeMyCiuKNzYVieGC7ON3FlnrWIS3uxFQNWF1mSrgKk8Z2NBBEtfSfeyFjxHJe7GzdbeC2cHwRAg101p5GYmPOYG2rdtJ68yauEbhVG0lh5x/VImmEAGK2w7XIbKuA+kKLYLaG2D8Z2gcRuK5Tz84v2GpyKR15AQlZSddOciXfDmhd03BHHXsEwG+Nqy5VfzTtwEYO7AkBV3gQdZHZBgQmAPpN1MasQiPIfijZbk8RyQAnjJ/KgUOO5ZGoKs1kfr17dvTDbmyUPXV0GW+Dv5qWPH4LVAmJeX/FLKTktsDHOpnniz7HtSv7GXVjqNQdAEu2X6lQ9kH41yTX0onVoJJJSfheOCpxUMtacqGC9kD5YfKqI3bdEaYuOzpHojycVl7NBd7egcQMvqpldZ2rI3h9CGcIDDAKm0mLWsOoWeS/7lThojVIZAkArO28beSnGfrPafsXWkDm901TDIrgNFq+vHebRDu9cFG8p
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(39860400002)(376002)(396003)(136003)(346002)(31696002)(6506007)(6512007)(31686004)(478600001)(7416002)(8936002)(38100700002)(316002)(6666004)(2906002)(5660300002)(86362001)(41300700001)(966005)(4326008)(6486002)(66556008)(66946007)(8676002)(186003)(83380400001)(66476007)(26005)(2616005)(36756003)(110136005)(54906003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MEdPaVpGK2E5b3Z5c04xS0lqOVFvcXRZSzVCMHY5K3UvQjltZDE4bnhKYkJy?=
- =?utf-8?B?YXJZVENWekowcUFuWXlXQWhVNTZjeE5ONXBhSGxPTTkyTFk4bmVLclpBdXlS?=
- =?utf-8?B?RjFnaGpGRGM1QmJZMUp4eVJBT0hTMlA3ekdEOHlUZWIzUjcyOCsvS05MRW0v?=
- =?utf-8?B?NkxqK2JWbmVCMm5CdnhlSDdlTytFZ1p5VmVudDNKcUxEZjJINzJybDJRRjBa?=
- =?utf-8?B?OFFCK29zZjEwTFJSRXRMSkptRDRYeGw1czFWNSt4Z1dCRlFCa2tKV0wydkR0?=
- =?utf-8?B?cjRpeGc5cXZ2MXgxSmdLbXBjQnJkY3VsK282eWZodGcrTGF1a2k4eGZJVEJw?=
- =?utf-8?B?MThKTkRMaVBvNm0rY1dSOURUUzk1cjRXbWF3RkU4NHB1Ylp1dFdRS3B3ODdW?=
- =?utf-8?B?TlVnMHBWTW4wTGlsVFVxWktmNlFCd3FtckhiSXV6bUJQRmo3MUdKVlZyU20v?=
- =?utf-8?B?T2o4M0pQdVJRWktaM3NFME4vSU1USHI1dTM3THBpdmozb0FndjRqVzd3NzN2?=
- =?utf-8?B?TnZkNlI5d09kVWhmeTFPQ2lzUjExb2RBZkZBT2tLREtxbVZlOW5MZGc4ZzZ1?=
- =?utf-8?B?UnhSQXR5NHdFZ3VncVViK05McWZVZ0pQNDFoclBwa24wNmR5MmlaRXBQc0ZW?=
- =?utf-8?B?bkhiSVR0UEVvVXQrVk1GVGJTWWtkMk5TSzZOV0RYNVkxUWlyOGdSSlNJcDZr?=
- =?utf-8?B?TFFmbi9KWUgzOUllUjhGS3F4UERFMHY4ZVI0NHFaQjJXR2NhazdXbE5ML1Vz?=
- =?utf-8?B?em9hTnRqM3UranNyWldlbUQ0Mk15ZWRaRzAxaGhza3R5QkMwRXpGUVBLY3BR?=
- =?utf-8?B?NUp5OXE2RGdvdy9XOGVjNjdlYlo4eDdtTlZoT3ZSTFE2SXkzeEp1cW1hRXhG?=
- =?utf-8?B?TkxMZ3U1TEpsU0pyVis5Z0hLSExZMjJLN0JXaE0wK091ZWZ6Uk05WURraEQ0?=
- =?utf-8?B?T2dDemlIblRtNnF0Qm5KaTd0Wllvd09nZU5Qb1Q2QXR1d1J6RWdURjZPeTJm?=
- =?utf-8?B?RE1ZeGdxMUlRVHpGeDliZzFYOXA3Q3VURUZ2QlQ2QktmaHhJOTFRUjJRN3du?=
- =?utf-8?B?VlBDVy9xWXJvZHdYYk1lQTlsdmFMVno5VldoTnZ3TjVSNldNRkNwQnhMQllu?=
- =?utf-8?B?aGZEOHBtbmV1OXdhM3JKRTdEcUZEajJWNTU4Zy9wU2g5WHhmZmlwcVh1K3l4?=
- =?utf-8?B?WTBUOWwrWmpWMEdldVJsNGlKUTQzWVJaYlJNR3hTbTJvQUVnQkJ1TGdWNWF4?=
- =?utf-8?B?c1o1aGZxS0JzMDFBS0dSc0k5bnFhQkV4N1ZUV003NHZTNHlaN3FQSW5lRXRn?=
- =?utf-8?B?UzBxRWV2di93UVlBMlNEbEtMUUlacUg3cy9KRlZKLzlQek45V1gzZ1lQeHZa?=
- =?utf-8?B?N1pUZnE3Z2hFcGxPRlA4S0kvQ1gxdldrS25kVHplcjQxRWY3ZEp2Ui9laVJM?=
- =?utf-8?B?TVlTWUZKK3FsWVZZV1FRNWtWVlRvWHpTbkpBR2xqbXZ5WVZlMHkxNUVaTE4x?=
- =?utf-8?B?OXRuY2lYS0Q3TlliYktvQmZOOFMya3N3cHhIbXVtTlc5bC90QXVuVUMwLzJ4?=
- =?utf-8?B?ZWQrcUU5TUFBSVA2NUVCQjJYUzJuTGg4cUw0dlFRWmRmVktSenhoY1FQU0gv?=
- =?utf-8?B?cTl2Mi9zcE9iaUpUcStGdUJmQjFPNUNGRFEyTGt2NDZGaWpzYm80YnVHdEZJ?=
- =?utf-8?B?d3FLVXVEZHBIZExucjd1NndsVXBUTHR1VlE2aWoxeU83N25jd2hBT3dUWURB?=
- =?utf-8?B?MlZOR3BqTkpIK1VJeVRMdW1uaUNtT1p6bzNpZnk5Ri9VVkh4eko1NDhBYTVl?=
- =?utf-8?B?ckJlU2NnNHFVbnZvQko0RS81MFVuMnFUcndmbVYrQ2NxUWtuRHpMWW1xZVIv?=
- =?utf-8?B?cDZtOWJXVTlwMGZ5K3dGaFgramtIVk4yaUxCZzZMR3FpQlQ2Q0J6cXhJKzhI?=
- =?utf-8?B?a1Q0TUdQcEVHYmIxNS9DSHc4bmRVVXNGNzE4aVE4ZHIvVG9BdnpERERQc2Vt?=
- =?utf-8?B?dG5DK0hNYWhMTXJDak82Z0RFY1RCSFBBbVpxYlJRcjBVdkV2enZSNU83ZkF4?=
- =?utf-8?B?TzBWSDkxVTZyaUpMdDlRWTVvbnJNVUFaUHMwTGw5bkhKZnVteWY1S3lYTWRm?=
- =?utf-8?Q?MInFNYQwE/KESIaQ2/X7SO2ag?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32fa93a7-e450-4bca-1546-08da63d9d5c6
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 07:40:47.3178
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SFJAOP2I3m5jhXBWpGfc3mQUArtIX6R7xHpgxxULx4ZVC7POqQbOdT4VVOOrHaTr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4685
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am 12.07.22 um 06:22 schrieb John Stultz:
-> After having to debug down through the kernel to figure out
-> why my _WAIT calls were always timing out, I realized its
-> an absolute timeout value instead of the more common relative
-> timeouts.
->
-> This detail should be called out in the documentation, as while
-> the absolute value makes sense here, its not as common for timeout
-> values.
+The chip_name configs attribute always displays the device name of the
+first GPIO bank because the logic of the relevant function is simply
+wrong.
 
-Well absolute timeout values are mandatory for making -ERESTARTSYS work 
-without any additional handling.
+Fix it by correctly comparing the bank's swnode against the GPIO
+device's children.
 
-So using them is recommended for ~20 years now and IIRC even documented 
-somewhere.
+Fixes: cb8c474e79be ("gpio: sim: new testing module")
+Cc: stable@vger.kernel.org
+Reported-by: Kent Gibson <warthog618@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+---
+v1 -> v2:
+- use device_match_fwnode for shorter code
 
-See here as well https://lwn.net/Articles/17744/ how much trouble system 
-calls with relative timeouts are.
+ drivers/gpio/gpio-sim.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-Regards,
-Christian.
-
->
-> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Thomas Zimmermann <tzimmermann@suse.de>
-> Cc: Jason Ekstrand <jason@jlekstrand.net>
-> Cc: Christian König <christian.koenig@amd.com>
-> Cc: Lionel Landwerlin <lionel.g.landwerlin@intel.com>
-> Cc: Chunming Zhou <david1.zhou@amd.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: John Stultz <jstultz@google.com>
-> ---
->   drivers/gpu/drm/drm_syncobj.c | 4 ++++
->   1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/gpu/drm/drm_syncobj.c b/drivers/gpu/drm/drm_syncobj.c
-> index 7e48dcd1bee4..b84d842a1c21 100644
-> --- a/drivers/gpu/drm/drm_syncobj.c
-> +++ b/drivers/gpu/drm/drm_syncobj.c
-> @@ -136,6 +136,10 @@
->    * requirement is inherited from the wait-before-signal behavior required by
->    * the Vulkan timeline semaphore API.
->    *
-> + * It should be noted, that both &DRM_IOCTL_SYNCOBJ_WAIT and
-> + * &DRM_SYNCOBJ_WAIT_FLAGS_WAIT_FOR_SUBMIT takes an *absolute* CLOCK_MONOTONIC
-> + * nanosecond value for the timeout value. Accidentally passing relative time
-> + * values will likely result in an immediate -ETIME return.
->    *
->    * Import/export of syncobjs
->    * -------------------------
+diff --git a/drivers/gpio/gpio-sim.c b/drivers/gpio/gpio-sim.c
+index 98109839102f..1020c2feb249 100644
+--- a/drivers/gpio/gpio-sim.c
++++ b/drivers/gpio/gpio-sim.c
+@@ -991,28 +991,22 @@ static struct configfs_attribute *gpio_sim_device_config_attrs[] = {
+ };
+ 
+ struct gpio_sim_chip_name_ctx {
+-	struct gpio_sim_device *dev;
++	struct fwnode_handle *swnode;
+ 	char *page;
+ };
+ 
+ static int gpio_sim_emit_chip_name(struct device *dev, void *data)
+ {
+ 	struct gpio_sim_chip_name_ctx *ctx = data;
+-	struct fwnode_handle *swnode;
+-	struct gpio_sim_bank *bank;
+ 
+ 	/* This would be the sysfs device exported in /sys/class/gpio. */
+ 	if (dev->class)
+ 		return 0;
+ 
+-	swnode = dev_fwnode(dev);
++	if (device_match_fwnode(dev, ctx->swnode))
++		return sprintf(ctx->page, "%s\n", dev_name(dev));
+ 
+-	list_for_each_entry(bank, &ctx->dev->bank_list, siblings) {
+-		if (bank->swnode == swnode)
+-			return sprintf(ctx->page, "%s\n", dev_name(dev));
+-	}
+-
+-	return -ENODATA;
++	return 0;
+ }
+ 
+ static ssize_t gpio_sim_bank_config_chip_name_show(struct config_item *item,
+@@ -1020,7 +1014,7 @@ static ssize_t gpio_sim_bank_config_chip_name_show(struct config_item *item,
+ {
+ 	struct gpio_sim_bank *bank = to_gpio_sim_bank(item);
+ 	struct gpio_sim_device *dev = gpio_sim_bank_get_device(bank);
+-	struct gpio_sim_chip_name_ctx ctx = { dev, page };
++	struct gpio_sim_chip_name_ctx ctx = { bank->swnode, page };
+ 	int ret;
+ 
+ 	mutex_lock(&dev->lock);
+-- 
+2.34.1
 
