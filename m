@@ -2,108 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60E3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:09:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52A0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233152AbiGLRJp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 13:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53862 "EHLO
+        id S230015AbiGLRNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 13:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230015AbiGLRJk (ORCPT
+        with ESMTP id S229592AbiGLRNL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 13:09:40 -0400
-X-Greylist: delayed 158 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 10:09:38 PDT
-Received: from pb-smtp2.pobox.com (pb-smtp2.pobox.com [64.147.108.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A310A26AF9;
-        Tue, 12 Jul 2022 10:09:38 -0700 (PDT)
-Received: from pb-smtp2.pobox.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id 5B8DC13C9FE;
-        Tue, 12 Jul 2022 13:06:59 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=pobox.com; h=from:to:cc
-        :subject:date:message-id:mime-version:content-type
-        :content-transfer-encoding; s=sasl; bh=w0UKyYdQ1A+V1udZfVAXLlWWc
-        FkkGbvbz51v1rTX1/k=; b=RE3OnpXVoYq5NOlkZEVfSBiZlV93QbcG1Apn9xzvs
-        CchKu5jUf5S2JHPNLp7MJpIdjTA7sPyZcDm/dXcOp9RiEtQevy6cx1iHkfZnHBFS
-        z1Ba6MRhCkh9eVZfh/OX0a4b8FeywLSBfY7qqLqkFY5q63nYGRIbtZRfjgnyF9Dp
-        uY=
-Received: from pb-smtp2.nyi.icgroup.com (unknown [127.0.0.1])
-        by pb-smtp2.pobox.com (Postfix) with ESMTP id 521B313C9FD;
-        Tue, 12 Jul 2022 13:06:59 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-Received: from pobox.com (unknown [34.83.92.57])
+        Tue, 12 Jul 2022 13:13:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F1025591
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:13:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by pb-smtp2.pobox.com (Postfix) with ESMTPSA id AED7B13C9FC;
-        Tue, 12 Jul 2022 13:06:58 -0400 (EDT)
-        (envelope-from junio@pobox.com)
-From:   Junio C Hamano <gitster@pobox.com>
-To:     git@vger.kernel.org
-Cc:     Linux Kernel <linux-kernel@vger.kernel.org>,
-        git-packagers@googlegroups.com
-Subject: [ANNOUNCE] Git v2.37.1 and others
-Date:   Tue, 12 Jul 2022 10:06:57 -0700
-Message-ID: <xmqqv8s2fefi.fsf@gitster.g>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE9EF617C3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 17:13:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC56CC3411C;
+        Tue, 12 Jul 2022 17:13:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657645989;
+        bh=8mG46t3TuVyKPlLiLBSw4LoS7dMnhCqizqMq7SkWiDo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=m9jmsa9y3YMNxAPfVRqN+3IqC4WPktDuJfU9VkMxUI6w1CF0jClLhGmBVg0CA5q8A
+         PC9M8aSw6xiC3gEJrNgP4hudJV0njN9FUXx2vqZwh7lNWk48vfVUa6+PlT7ZCtftHg
+         n6y5wiC38XdhIkhEmIdtkxCGKisqlBdf1NQTYQDZuUZYtB7OSlCxW3c8UaOtaa2ilv
+         riJUrj16Nq9cjpPTVAq3rpjCRnidyd5Pr0zU0NgLdOsvAuAwfwxkDegKEk4aZe7M1Y
+         Csy420H0TJ5SuddSFTfBmK58oAsnF61lDHzQei0Hc6Ee9aLSpl35PJPFslEN7/1NHB
+         o3z8nEE9HAL7g==
+From:   SeongJae Park <sj@kernel.org>
+To:     kernel test robot <lkp@intel.com>
+Cc:     SeongJae Park <sj@kernel.org>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: Re: [sj:damon/next 20/20] drivers/block/xen-blkback/xenbus.c:184:38: error: use of undeclared identifier 'feature_persistent'
+Date:   Tue, 12 Jul 2022 17:13:06 +0000
+Message-Id: <20220712171306.75486-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <202207121401.8Yis7IHm-lkp@intel.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-X-Pobox-Relay-ID: 0A2F8064-0205-11ED-AA91-CB998F0A682E-77302942!pb-smtp2.pobox.com
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Git v2.37.1, together with v2.30.5, v2.31.4, v2.32.3, v2.33.4,
-v2.34.4, v2.35.4, and v2.36.2 for older maintenance tracks, are now
-available at the usual places.
+On Tue, 12 Jul 2022 14:22:23 +0800 kernel test robot <lkp@intel.com> wrote:
 
-These are to address CVE-2022-29187, where the fixes in v2.36.1 and
-below to address CVE-2022-24765 released earlier may not have been
-complete.
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/sj/linux.git damon/next
+> head:   40d1ef717dd762939c0a8734fd901ee517b50334
+> commit: 40d1ef717dd762939c0a8734fd901ee517b50334 [20/20] xen-blkback: fix persistent grants negotiation
+> config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220712/202207121401.8Yis7IHm-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project badda4ac3c489a8c8cccdad1f74b9308c350a9e0)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/sj/linux.git/commit/?id=40d1ef717dd762939c0a8734fd901ee517b50334
+>         git remote add sj https://git.kernel.org/pub/scm/linux/kernel/git/sj/linux.git
+>         git fetch --no-tags sj damon/next
+>         git checkout 40d1ef717dd762939c0a8734fd901ee517b50334
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/block/xen-blkback/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+> >> drivers/block/xen-blkback/xenbus.c:184:38: error: use of undeclared identifier 'feature_persistent'
+>            blkif->vbd.feature_gnt_persistent = feature_persistent;
+>                                                ^
+>    1 error generated.
 
-The tarballs are found at:
+Thank you for the report.  I fixed it as below and pushed:
 
-    https://www.kernel.org/pub/software/scm/git/
+    +/* Enable the persistent grants feature. */
+    +static bool feature_persistent = true;
+    +module_param(feature_persistent, bool, 0644);
+    +MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
+    +
+     static struct xen_blkif *xen_blkif_alloc(domid_t domid)
+     {
+            struct xen_blkif *blkif;
+    @@ -474,12 +479,6 @@ static void xen_vbd_free(struct xen_vbd *vbd)
+            vbd->bdev = NULL;
+     }
+    
+    -/* Enable the persistent grants feature. */
+    -static bool feature_persistent = true;
+    -module_param(feature_persistent, bool, 0644);
+    -MODULE_PARM_DESC(feature_persistent,
+    -               "Enables the persistent grants feature");
+    -
+     static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+                              unsigned major, unsigned minor, int readonly,
+                              int cdrom)
 
-The following public repositories all have a copy of the 'v2.37.1'
-tag and other tags for older maintenance tracks.
+Note: The commit is only for my personal test at the moment.
 
-  url =3D https://git.kernel.org/pub/scm/git/git
-  url =3D https://kernel.googlesource.com/pub/scm/git/git
-  url =3D git://repo.or.cz/alt-git.git
-  url =3D https://github.com/gitster/git
-
-----------------------------------------------------------------
-
-Git 2.37.1 Release Notes
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-This release merges up the fixes that appear in v2.30.5, v2.31.4,
-v2.32.3, v2.33.4, v2.34.4, v2.35.4, and v2.36.2 to address the
-security issue CVE-2022-29187; see the release notes for these
-versions for details.
-
-Fixes since Git 2.37
---------------------
-
- * Rewrite of "git add -i" in C that appeared in Git 2.25 didn't
-   correctly record a removed file to the index, which is an old
-   regression but has become widely known because the C version has
-   become the default in the latest release.
-
- * Fix for CVE-2022-29187.
-
-----------------------------------------------------------------
-
-Git v2.30.5 Release Notes
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-
-This release contains minor fix-ups for the changes that went into
-Git 2.30.3 and 2.30.4, addressing CVE-2022-29187.
-
- * The safety check that verifies a safe ownership of the Git
-   worktree is now extended to also cover the ownership of the Git
-   directory (and the `.git` file, if there is any).
-
-Carlo Marcelo Arenas Bel=C3=B3n (1):
-      setup: tighten ownership checks post CVE-2022-24765
+[...]
