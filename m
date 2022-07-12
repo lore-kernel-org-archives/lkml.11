@@ -2,128 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A10C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4692EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233955AbiGLPFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:05:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54398 "EHLO
+        id S233983AbiGLPFf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233936AbiGLPEJ (ORCPT
+        with ESMTP id S233852AbiGLPES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:04:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4AD63A8;
-        Tue, 12 Jul 2022 08:00:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 12 Jul 2022 11:04:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1FD02C1FD3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:00:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657638007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qHIwZpiJRMPZwMYxpWwtTJ5sBMX/ZYVwJbrU5kpB1sg=;
+        b=LrBbF7wPHFcT8pDHXpRapzaqRAUrF+1fjbBz9xA7tzRjr9xoAGzGDqxT5gImkaVGlZ5TuD
+        ViDFWYra0Ea6ofpGEd1VF6rCHWq2ReptaKTqeNW97/TXJVO/LDz5tqP3fZvQz53axSbTyV
+        ILIjkW6fMZlPiRUqhL1695FmMALI8Ek=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-186-lDSzDhueMhisNKzIWdAelg-1; Tue, 12 Jul 2022 11:00:05 -0400
+X-MC-Unique: lDSzDhueMhisNKzIWdAelg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0553061221;
-        Tue, 12 Jul 2022 15:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33461C341CF;
-        Tue, 12 Jul 2022 15:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657638011;
-        bh=4stto/0WdKGy1PAM7cobud0ZktYRhwuIUHvFotEri6o=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kuVF7pg7PKX53+paGnLUTnLYkCzxjavhSjkjkPKVKfMA6yBWwbCM0eCa78ysbYzNl
-         /MNYBktPDvvt3nGQrZjSbRkLOf1ESWkBOaEbCBCeZl/LmGhdm0XazCO7iCzetTzxIX
-         j/8bpJQgHZVljOZo/nXxlh/v2mhOWJCsztl4lFmK2yQEo4sZ8g+2UfzA712XvxDoOh
-         RH1IEtLDCFibFK4/zR50dUYCyCc+ctEcCTnsu9SkDMSAvJRbzc4JN6vKWjCFQ2Mx6/
-         rzouqEz4GAccJHA9K1XFes2H5kROO5Ial9u2R0uNkybUoEdu5dxxGZ4jaU0P+kGh91
-         kGqYwjooNtovA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oBHMz-0002FB-38; Tue, 12 Jul 2022 17:00:13 +0200
-Date:   Tue, 12 Jul 2022 17:00:13 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
-Message-ID: <Ys2MfeD73qBLO7zV@hovoldconsulting.com>
-References: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
- <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
- <YszcSgnSrbsncw0J@ripper>
- <Ys2K/BH/kAeTBz5t@hovoldconsulting.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C48213C30005;
+        Tue, 12 Jul 2022 15:00:03 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.195.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 41C852166B26;
+        Tue, 12 Jul 2022 14:59:59 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v6 15/23] selftests/bpf/hid: add test to change the report size
+Date:   Tue, 12 Jul 2022 16:58:42 +0200
+Message-Id: <20220712145850.599666-16-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys2K/BH/kAeTBz5t@hovoldconsulting.com>
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 04:53:48PM +0200, Johan Hovold wrote:
-> On Mon, Jul 11, 2022 at 07:28:26PM -0700, Bjorn Andersson wrote:
-> > On Mon 11 Jul 01:56 PDT 2022, Johan Hovold wrote:
-> > 
-> > > On Thu, Jul 07, 2022 at 09:08:58AM -0700, Bjorn Andersson wrote:
-> > > > The timer node needs ranges specified to map the 1-cell children to the
-> > > > 2-cell address range used in /soc. This addition never made it into the
-> > > > patch that was posted and merged, so add it now.
-> > > > 
-> > > > Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > > ---
-> > > >  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > > 
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > index 2bdb42c88311..37a4cd6f85b6 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > @@ -1667,6 +1667,7 @@ timer@17c20000 {
-> > > >  			reg = <0x0 0x17c20000 0x0 0x1000>;
-> > > >  			#address-cells = <1>;
-> > > >  			#size-cells = <1>;
-> > > > +			ranges = <0 0 0 0x20000000>;
-> > > 
-> > > While addressing the current issue, this looks odd to me. Why not use a
-> > > non-zero parent bus address here instead?
-> > > 
-> > 
-> > I guess we could express the frames relative the timer range, but that
-> > would imply that anyone porting downstream dts snippets would have to
-> > translate these addresses - or more likely would end up just copying the
-> > existing cases.
-> > 
-> > > And please use hex notation consistently for the addresses.
-> > 
-> > That seems like a reasonable ask, I can fix that up. But on both
-> > accounts this matches what I merged for all the other platforms in:
-> > 
-> > 458ebdbb8e5d ("arm64: dts: qcom: timer should use only 32-bit size")
-> > 
-> > 
-> > So I guess we'll also need to go back and fix up the style of all the
-> > other platforms - just because we're not allowed to express the frames
-> > in 64-bits according to the binding...
-> 
-> Would have been easier to just amend the binding. I don't think that
-> #size-cells = 1 constraint is set in stone as it was added when
-> converting to DT schema.
+Use a different report with a bigger size and ensures we are doing
+things properly.
 
-Ok, maybe it was done on purpose since Rob later merged
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-	c5c689d3221e ("dt-bindings: timer: Use non-empty ranges in example")
+---
 
-which suggests we should use a non-empty ranges as I mentioned above.
+no changes in v6
 
-Any comments, Rob?
+new in v5
+---
+ tools/testing/selftests/bpf/prog_tests/hid.c | 60 ++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/hid.c      | 15 ++++-
+ 2 files changed, 74 insertions(+), 1 deletion(-)
 
-> I also don't think you need to fixup the hex notation elsewhere, it's
-> quite inconsistent currently, but no need to make it worse.
-> 
-> But you probably should amend the commit message and mention that this
-> fixes time keeping. I had recently noticed that something was off
-> (journals rotating, and erratic cursor blinking) but didn't realise that
-> timers were broken until you posted this.
+diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
+index 719d220c8d86..47bc0a30c275 100644
+--- a/tools/testing/selftests/bpf/prog_tests/hid.c
++++ b/tools/testing/selftests/bpf/prog_tests/hid.c
+@@ -17,6 +17,17 @@ static unsigned char rdesc[] = {
+ 	0xa1, 0x01,		/* COLLECTION (Application) */
+ 	0x09, 0x01,			/* Usage (Vendor Usage 0x01) */
+ 	0xa1, 0x00,			/* COLLECTION (Physical) */
++	0x85, 0x02,				/* REPORT_ID (2) */
++	0x19, 0x01,				/* USAGE_MINIMUM (1) */
++	0x29, 0x08,				/* USAGE_MAXIMUM (3) */
++	0x15, 0x00,				/* LOGICAL_MINIMUM (0) */
++	0x25, 0xff,				/* LOGICAL_MAXIMUM (255) */
++	0x95, 0x08,				/* REPORT_COUNT (8) */
++	0x75, 0x08,				/* REPORT_SIZE (8) */
++	0x81, 0x02,				/* INPUT (Data,Var,Abs) */
++	0xc0,				/* END_COLLECTION */
++	0x09, 0x01,			/* Usage (Vendor Usage 0x01) */
++	0xa1, 0x00,			/* COLLECTION (Physical) */
+ 	0x85, 0x01,				/* REPORT_ID (1) */
+ 	0x06, 0x00, 0xff,			/* Usage Page (Vendor Defined Page 1) */
+ 	0x19, 0x01,				/* USAGE_MINIMUM (1) */
+@@ -635,6 +646,53 @@ static int test_attach_detach(int uhid_fd, int dev_id)
+ 	return ret;
+ }
+ 
++/*
++ * Attach hid_change_report_id to the given uhid device,
++ * retrieve and open the matching hidraw node,
++ * inject one event in the uhid device,
++ * check that the program sees it and can change the data
++ */
++static int test_hid_change_report(int uhid_fd, int dev_id)
++{
++	struct test_params params;
++	int err, hidraw_fd = -1;
++	u8 buf[10] = {0};
++	int ret = -1;
++
++	err = prep_test(dev_id, "hid_change_report_id", &params);
++	if (!ASSERT_EQ(err, 0, "prep_test(hid_change_report_id)"))
++		goto cleanup;
++
++	hidraw_fd = params.hidraw_fd;
++
++	/* inject one event */
++	buf[0] = 1;
++	buf[1] = 42;
++	send_event(uhid_fd, buf, 6);
++
++	/* read the data from hidraw */
++	memset(buf, 0, sizeof(buf));
++	err = read(hidraw_fd, buf, sizeof(buf));
++	if (!ASSERT_EQ(err, 9, "read_hidraw"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[0], 2, "hid_change_report_id"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[1], 42, "hid_change_report_id"))
++		goto cleanup;
++
++	if (!ASSERT_EQ(buf[2], 0, "leftovers_from_previous_test"))
++		goto cleanup;
++
++	ret = 0;
++
++cleanup:
++	cleanup_test(&params);
++
++	return ret;
++}
++
+ void serial_test_hid_bpf(void)
+ {
+ 	int err, uhid_fd;
+@@ -660,6 +718,8 @@ void serial_test_hid_bpf(void)
+ 	ASSERT_OK(err, "hid");
+ 	err = test_attach_detach(uhid_fd, dev_id);
+ 	ASSERT_OK(err, "hid_attach_detach");
++	err = test_hid_change_report(uhid_fd, dev_id);
++	ASSERT_OK(err, "hid_change_report");
+ 
+ 	destroy(uhid_fd);
+ 
+diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
+index fc0a4241643a..ee7529c47ad8 100644
+--- a/tools/testing/selftests/bpf/progs/hid.c
++++ b/tools/testing/selftests/bpf/progs/hid.c
+@@ -32,7 +32,20 @@ int BPF_PROG(hid_first_event, struct hid_bpf_ctx *hid_ctx)
+ 
+ 	rw_data[2] = rw_data[1] + 5;
+ 
+-	return 0;
++	return hid_ctx->size;
++}
++
++SEC("?fmod_ret/hid_bpf_device_event")
++int BPF_PROG(hid_change_report_id, struct hid_bpf_ctx *hid_ctx)
++{
++	__u8 *rw_data = hid_bpf_get_data(hid_ctx, 0 /* offset */, 3 /* size */);
++
++	if (!rw_data)
++		return 0; /* EPERM check */
++
++	rw_data[0] = 2;
++
++	return 9;
+ }
+ 
+ SEC("syscall")
+-- 
+2.36.1
 
-Johan
