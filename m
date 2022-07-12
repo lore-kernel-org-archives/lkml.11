@@ -2,76 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D62B8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 13:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232855AbiGLNoR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 09:44:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54810 "EHLO
+        id S233197AbiGLNoU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 09:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229700AbiGLNny (ORCPT
+        with ESMTP id S233282AbiGLNoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 09:43:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A83C1BE96;
-        Tue, 12 Jul 2022 06:43:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2852617FE;
-        Tue, 12 Jul 2022 13:43:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A813AC341C8;
-        Tue, 12 Jul 2022 13:43:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657633431;
-        bh=Qb/oUeQurbQ9x0BxaRhTtPoP0Rue+w9iCNr3XC122bw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RKJm9saZQJLyT7txlacfxKQhiRYO2mgMqWSMoSF4rBGk2U2eLzJt/dPWBYiN//8uE
-         mE8YiOrmiTYxuOJj2Yy9pr7naWd8pWnDtQMNn3RSKZY1cp2HioL4/5oHbOa2G+aCsm
-         H7ytYiR8Pj9r9Az3wxx/jAkJyNZvOa1GrZBxTy1g=
-Date:   Tue, 12 Jul 2022 15:43:48 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Xin Ji <xji@analogixsemi.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v16 1/3] usb: typec: tcpci: move tcpci.h to
- include/linux/usb/
-Message-ID: <Ys16lEvhVSSSRMP7@kroah.com>
-References: <20220712090534.2783494-1-xji@analogixsemi.com>
- <0bd85140-f006-8b29-0a43-500733f1654c@roeck-us.net>
+        Tue, 12 Jul 2022 09:44:11 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8002AE1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 06:44:08 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id n74so13994346yba.3
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 06:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MyQuL5EzG5eMdd3tjqHgbmALZQ6QoMWn3xa4SlD7s1A=;
+        b=XsmwdUhnV9Nrh1SGSj3JOV2MR95zR+WwDM8KHyqTK6nHKRO0cezI02yyceFlwPZoGf
+         LD9hFog+Z5JS+mZ9fFL2w/Ykf6nXujJFNCtizbi6oqD1uCF9yqBSB8/MHRkkvvEDdyDU
+         I3o5KHJ4r9ziBNn2dgCp2K5rjLiCyIM+WlUOiQyuM078Q8jJrwxq7cktVsi42HspunWN
+         TAGH4SZCzymam+0/ttGe45EPW7yHZMPm/1FIpA/kzCIQRFMrVyyuL0gR4qVqjjuD9NLH
+         ifM7a1uFz8TXyJoivkCURiXWYCFNRU3TydpTR5nKVX4hBL3m9C/5ri4ubLU+E01uShRG
+         jdVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MyQuL5EzG5eMdd3tjqHgbmALZQ6QoMWn3xa4SlD7s1A=;
+        b=S4Ez+IRdHQrJqi88RJNuhEUMk6RndnN4wbSU8gzcu18jSjxB0GT1dsAVLKoGkvs5/s
+         jBnTNJsqtSJVdi9Yhn3y7fpf7hz5LIyJfU/Igk9krAGZWdBv1zLH4T4pW2d0uo1OjZML
+         Pb/heh8iINJnF7nBM74pAMSTR2qssig8rYhS52NvTjMRf95bI9MYfF48wUCU7lWR/6x3
+         rudzec/lrazQgegWmo+eIR+bq8TKs0hDOYZvVbuY5dgbfVmysshTPDIqpoJM75+YZ4c+
+         aQ06ueXbmhCbKMORXnRRF2Pu+OmQED+IpNqHwv/DNxIF/VBJQFh2Cqrh9MoSyPOz7ICI
+         W4Ow==
+X-Gm-Message-State: AJIora9AAeszzTSyrwaphOufZv+C6xIdcQAaJeLjE25UwVS1hWkSKznX
+        Ifp6wX0Anr6uQS/INevlCC/1FO6r3FQi0WtHsGJhDQ==
+X-Google-Smtp-Source: AGRyM1tJAHsdZLmYiI5P+T53CpbIO2hs/5gCoOEJtbFHqMVTgNWTq1cDtAtMQvatMTbVUxcRky7bRa+o9m1YQjjdVwc=
+X-Received: by 2002:a25:1583:0:b0:668:e74a:995f with SMTP id
+ 125-20020a251583000000b00668e74a995fmr23207491ybv.1.1657633447949; Tue, 12
+ Jul 2022 06:44:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0bd85140-f006-8b29-0a43-500733f1654c@roeck-us.net>
+References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-34-glider@google.com>
+In-Reply-To: <20220701142310.2188015-34-glider@google.com>
+From:   Marco Elver <elver@google.com>
+Date:   Tue, 12 Jul 2022 15:43:31 +0200
+Message-ID: <CANpmjNMpCow-pwqQnw8aHRUZKuBcOUU4On=JgEgysT8SBTrz6g@mail.gmail.com>
+Subject: Re: [PATCH v4 33/45] x86: kmsan: disable instrumentation of
+ unsupported code
+To:     Alexander Potapenko <glider@google.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Rientjes <rientjes@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Kees Cook <keescook@chromium.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vegard Nossum <vegard.nossum@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
+        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 06:31:22AM -0700, Guenter Roeck wrote:
-> On 7/12/22 02:05, Xin Ji wrote:
-> > USB PD controllers which consisting of a microcontroller (acting as the TCPM)
-> > and a port controller (TCPC) - may require that the driver for the PD
-> > controller accesses directly also the on-chip port controller in some cases.
-> > 
-> > Move tcpci.h to include/linux/usb/ is convenience access TCPC registers.
-> > 
-> > Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-> > Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-> > Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> > 
-> > ---
-> > V9 -> V10: Rebase on the latest code
-> > V8 -> V9 : Add more commit message
-> > V7 -> V8 : Fix Guanter's comment, remove unnecessary explain
-> 
-> We are now at v16. The change log has not been updated since v10,
-> making it all but worthless.
+On Fri, 1 Jul 2022 at 16:24, 'Alexander Potapenko' via kasan-dev
+<kasan-dev@googlegroups.com> wrote:
+[...]
+> ---
+>  arch/x86/boot/Makefile            | 1 +
+>  arch/x86/boot/compressed/Makefile | 1 +
+>  arch/x86/entry/vdso/Makefile      | 3 +++
+>  arch/x86/kernel/Makefile          | 2 ++
+>  arch/x86/kernel/cpu/Makefile      | 1 +
+>  arch/x86/mm/Makefile              | 2 ++
+>  arch/x86/realmode/rm/Makefile     | 1 +
+>  lib/Makefile                      | 2 ++
+[...]
+> --- a/lib/Makefile
+> +++ b/lib/Makefile
+> @@ -272,6 +272,8 @@ obj-$(CONFIG_POLYNOMIAL) += polynomial.o
+>  CFLAGS_stackdepot.o += -fno-builtin
+>  obj-$(CONFIG_STACKDEPOT) += stackdepot.o
+>  KASAN_SANITIZE_stackdepot.o := n
+> +# In particular, instrumenting stackdepot.c with KMSAN will result in infinite
+> +# recursion.
+>  KMSAN_SANITIZE_stackdepot.o := n
+>  KCOV_INSTRUMENT_stackdepot.o := n
 
-It's also already in my tree for a while, so I have no idea what this is
-being generated against :(
-
+This is generic code and not x86, should it have been in the earlier patch?
