@@ -2,311 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79059C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AA9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234154AbiGLSnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33280 "EHLO
+        id S234196AbiGLSnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233961AbiGLSm3 (ORCPT
+        with ESMTP id S233884AbiGLSmc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:42:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03D3FD6CD6;
-        Tue, 12 Jul 2022 11:41:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 710BA6186E;
-        Tue, 12 Jul 2022 18:41:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D133C3411E;
-        Tue, 12 Jul 2022 18:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651300;
-        bh=E7rbmcrV7XwUzajBPQnJcFe7GQ/LEzE1EoPxgXcQPSg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ykA2mUkwDS9+G1O+v4oWyWh4RC1DOzNjNHcf6FUS2Jm1wRhYyKSwzHVcRIveMBW1d
-         NaBAhjqzcTrFspUqGLOK7Sb4FaeCRJxEtIKwdwYx70UynlYKN4heaIbGhrvk3Lk/4l
-         DmFJgRHioweN2+Ni+HO7dqVeXbCeTO+0/UszGAsQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 034/130] objtool/x86: Rewrite retpoline thunk calls
-Date:   Tue, 12 Jul 2022 20:38:00 +0200
-Message-Id: <20220712183247.970930676@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
-References: <20220712183246.394947160@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 12 Jul 2022 14:42:32 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966E0D6CE0;
+        Tue, 12 Jul 2022 11:41:45 -0700 (PDT)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lj8cd2YRDz67M3B;
+        Wed, 13 Jul 2022 02:37:21 +0800 (CST)
+Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Jul 2022 20:41:41 +0200
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <kpsingh@kernel.org>, <dhowells@redhat.com>, <jarkko@kernel.org>,
+        <shuah@kernel.org>
+CC:     <bpf@vger.kernel.org>, <keyrings@vger.kernel.org>,
+        <linux-security-module@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: [PATCH v7 0/7] bpf: Add bpf_verify_pkcs7_signature() helper
+Date:   Tue, 12 Jul 2022 20:41:21 +0200
+Message-ID: <20220712184128.999301-1-roberto.sassu@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.204.63.22]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml714-chm.china.huawei.com (10.206.15.33)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+One of the desirable features in security is the ability to restrict import
+of data to a given system based on data authenticity. If data import can be
+restricted, it would be possible to enforce a system-wide policy based on
+the signing keys the system owner trusts.
 
-commit 9bc0bb50727c8ac69fbb33fb937431cf3518ff37 upstream.
+This feature is widely used in the kernel. For example, if the restriction
+is enabled, kernel modules can be plugged in only if they are signed with a
+key whose public part is in the primary or secondary keyring.
 
-When the compiler emits: "CALL __x86_indirect_thunk_\reg" for an
-indirect call, have objtool rewrite it to:
+For eBPF, it can be useful as well. For example, it might be useful to
+authenticate data an eBPF program makes security decisions on.
 
-	ALTERNATIVE "call __x86_indirect_thunk_\reg",
-		    "call *%reg", ALT_NOT(X86_FEATURE_RETPOLINE)
+After a discussion in the eBPF mailing list, it was decided that the stated
+goal should be accomplished by introducing a new helper:
+bpf_verify_pkcs7_signature(), dedicated to verify PKCS#7 signatures.
 
-Additionally, in order to not emit endless identical
-.altinst_replacement chunks, use a global symbol for them, see
-__x86_indirect_alt_*.
+Other than the data and the signature, the helper also receives two
+parameters for the keyring, which can be provided as alternatives: one is a
+key pointer returned by the new bpf_lookup_user_key() helper, called with a
+key serial possibly decided by the user; another is a pre-determined ID
+among values defined in include/linux/verification.h.
 
-This also avoids objtool from having to do code generation.
+While the first keyring-related parameter provides great flexibility, it
+seems suboptimal in terms of security guarantees, as even if the eBPF
+program is assumed to be trusted, the serial used to obtain the key pointer
+might come from untrusted user space not choosing one that the system
+administrator approves to enforce a mandatory policy.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/20210326151300.320177914@infradead.org
-[bwh: Backported to 5.10: include "arch_elf.h" instead of "arch/elf.h"]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/include/asm/asm-prototypes.h |   12 ++-
- arch/x86/lib/retpoline.S              |   41 +++++++++++
- tools/objtool/arch/x86/decode.c       |  117 ++++++++++++++++++++++++++++++++++
- 3 files changed, 167 insertions(+), 3 deletions(-)
+The second keyring-related parameter instead provides much stronger
+guarantees, especially if the pre-determined ID is not passed by user space
+but is hardcoded in the eBPF program, and that program is signed. In this
+case, bpf_verify_pkcs7_signature() will always perform signature
+verification with a key that the system administrator approves, i.e. the
+primary, secondary or platform keyring.
 
---- a/arch/x86/include/asm/asm-prototypes.h
-+++ b/arch/x86/include/asm/asm-prototypes.h
-@@ -19,11 +19,19 @@ extern void cmpxchg8b_emu(void);
- 
- #ifdef CONFIG_RETPOLINE
- 
--#define DECL_INDIRECT_THUNK(reg) \
-+#undef GEN
-+#define GEN(reg) \
- 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) \
-+	extern asmlinkage void __x86_indirect_alt_call_ ## reg (void);
-+#include <asm/GEN-for-each-reg.h>
- 
- #undef GEN
--#define GEN(reg) DECL_INDIRECT_THUNK(reg)
-+#define GEN(reg) \
-+	extern asmlinkage void __x86_indirect_alt_jmp_ ## reg (void);
- #include <asm/GEN-for-each-reg.h>
- 
- #endif /* CONFIG_RETPOLINE */
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -10,6 +10,8 @@
- #include <asm/unwind_hints.h>
- #include <asm/frame.h>
- 
-+	.section .text.__x86.indirect_thunk
-+
- .macro RETPOLINE reg
- 	ANNOTATE_INTRA_FUNCTION_CALL
- 	call    .Ldo_rop_\@
-@@ -25,9 +27,9 @@
- .endm
- 
- .macro THUNK reg
--	.section .text.__x86.indirect_thunk
- 
- 	.align 32
-+
- SYM_FUNC_START(__x86_indirect_thunk_\reg)
- 
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
-@@ -39,6 +41,32 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
- .endm
- 
- /*
-+ * This generates .altinstr_replacement symbols for use by objtool. They,
-+ * however, must not actually live in .altinstr_replacement since that will be
-+ * discarded after init, but module alternatives will also reference these
-+ * symbols.
-+ *
-+ * Their names matches the "__x86_indirect_" prefix to mark them as retpolines.
-+ */
-+.macro ALT_THUNK reg
-+
-+	.align 1
-+
-+SYM_FUNC_START_NOALIGN(__x86_indirect_alt_call_\reg)
-+	ANNOTATE_RETPOLINE_SAFE
-+1:	call	*%\reg
-+2:	.skip	5-(2b-1b), 0x90
-+SYM_FUNC_END(__x86_indirect_alt_call_\reg)
-+
-+SYM_FUNC_START_NOALIGN(__x86_indirect_alt_jmp_\reg)
-+	ANNOTATE_RETPOLINE_SAFE
-+1:	jmp	*%\reg
-+2:	.skip	5-(2b-1b), 0x90
-+SYM_FUNC_END(__x86_indirect_alt_jmp_\reg)
-+
-+.endm
-+
-+/*
-  * Despite being an assembler file we can't just use .irp here
-  * because __KSYM_DEPS__ only uses the C preprocessor and would
-  * only see one instance of "__x86_indirect_thunk_\reg" rather
-@@ -61,3 +89,14 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
- #define GEN(reg) EXPORT_THUNK(reg)
- #include <asm/GEN-for-each-reg.h>
- 
-+#undef GEN
-+#define GEN(reg) ALT_THUNK reg
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_call_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_jmp_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -16,6 +16,7 @@
- #include "../../arch.h"
- #include "../../warn.h"
- #include <asm/orc_types.h>
-+#include "arch_elf.h"
- 
- static unsigned char op_to_cfi_reg[][2] = {
- 	{CFI_AX, CFI_R8},
-@@ -585,6 +586,122 @@ const char *arch_nop_insn(int len)
- 	return nops[len-1];
- }
- 
-+/* asm/alternative.h ? */
-+
-+#define ALTINSTR_FLAG_INV	(1 << 15)
-+#define ALT_NOT(feat)		((feat) | ALTINSTR_FLAG_INV)
-+
-+struct alt_instr {
-+	s32 instr_offset;	/* original instruction */
-+	s32 repl_offset;	/* offset to replacement instruction */
-+	u16 cpuid;		/* cpuid bit set for replacement */
-+	u8  instrlen;		/* length of original instruction */
-+	u8  replacementlen;	/* length of new instruction */
-+} __packed;
-+
-+static int elf_add_alternative(struct elf *elf,
-+			       struct instruction *orig, struct symbol *sym,
-+			       int cpuid, u8 orig_len, u8 repl_len)
-+{
-+	const int size = sizeof(struct alt_instr);
-+	struct alt_instr *alt;
-+	struct section *sec;
-+	Elf_Scn *s;
-+
-+	sec = find_section_by_name(elf, ".altinstructions");
-+	if (!sec) {
-+		sec = elf_create_section(elf, ".altinstructions",
-+					 SHF_WRITE, size, 0);
-+
-+		if (!sec) {
-+			WARN_ELF("elf_create_section");
-+			return -1;
-+		}
-+	}
-+
-+	s = elf_getscn(elf->elf, sec->idx);
-+	if (!s) {
-+		WARN_ELF("elf_getscn");
-+		return -1;
-+	}
-+
-+	sec->data = elf_newdata(s);
-+	if (!sec->data) {
-+		WARN_ELF("elf_newdata");
-+		return -1;
-+	}
-+
-+	sec->data->d_size = size;
-+	sec->data->d_align = 1;
-+
-+	alt = sec->data->d_buf = malloc(size);
-+	if (!sec->data->d_buf) {
-+		perror("malloc");
-+		return -1;
-+	}
-+	memset(sec->data->d_buf, 0, size);
-+
-+	if (elf_add_reloc_to_insn(elf, sec, sec->sh.sh_size,
-+				  R_X86_64_PC32, orig->sec, orig->offset)) {
-+		WARN("elf_create_reloc: alt_instr::instr_offset");
-+		return -1;
-+	}
-+
-+	if (elf_add_reloc(elf, sec, sec->sh.sh_size + 4,
-+			  R_X86_64_PC32, sym, 0)) {
-+		WARN("elf_create_reloc: alt_instr::repl_offset");
-+		return -1;
-+	}
-+
-+	alt->cpuid = cpuid;
-+	alt->instrlen = orig_len;
-+	alt->replacementlen = repl_len;
-+
-+	sec->sh.sh_size += size;
-+	sec->changed = true;
-+
-+	return 0;
-+}
-+
-+#define X86_FEATURE_RETPOLINE                ( 7*32+12)
-+
-+int arch_rewrite_retpolines(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	struct reloc *reloc;
-+	struct symbol *sym;
-+	char name[32] = "";
-+
-+	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
-+
-+		if (!strcmp(insn->sec->name, ".text.__x86.indirect_thunk"))
-+			continue;
-+
-+		reloc = insn->reloc;
-+
-+		sprintf(name, "__x86_indirect_alt_%s_%s",
-+			insn->type == INSN_JUMP_DYNAMIC ? "jmp" : "call",
-+			reloc->sym->name + 21);
-+
-+		sym = find_symbol_by_name(file->elf, name);
-+		if (!sym) {
-+			sym = elf_create_undef_symbol(file->elf, name);
-+			if (!sym) {
-+				WARN("elf_create_undef_symbol");
-+				return -1;
-+			}
-+		}
-+
-+		if (elf_add_alternative(file->elf, insn, sym,
-+					ALT_NOT(X86_FEATURE_RETPOLINE), 5, 5)) {
-+			WARN("elf_add_alternative");
-+			return -1;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg)
- {
- 	struct cfi_reg *cfa = &insn->cfi.cfa;
+bpf_lookup_user_key() comes with the corresponding release helper
+bpf_key_put(), to decrement the reference count of the key found with the
+former helper. The eBPF verifier has been enhanced to ensure that the
+release helper is always called whenever the acquire helper is called, or
+otherwise refuses to load the program.
 
+bpf_lookup_user_key() also accepts lookup-specific flags KEY_LOOKUP_CREATE
+and KEY_LOOKUP_PARTIAL. Although these are most likely not useful for the
+bpf_verify_pkcs7_signature(), newly defined flags could be.
+
+bpf_lookup_user_key() does not request a particular permission to
+lookup_user_key(), as it cannot determine it by itself. Also, it should not
+get it from the user, as the user could pass an arbitrary value and use the
+key for a different purpose. Instead, bpf_lookup_user_key() requests
+KEY_DEFER_PERM_CHECK, and defers the permission check to the helper that
+actually uses the key, in this patch set to bpf_verify_pkcs7_signature().
+
+Since key_task_permission() is called by the PKCS#7 code during signature
+verification, the only additional function bpf_verify_pkcs7_signature() has
+to call is key_validate(). With that, the permission check can be
+considered complete and equivalent, as it was done by bpf_lookup_user_key()
+with the appropriate permission (in this case KEY_NEED_SEARCH).
+
+All helpers can be called only from sleepable programs, because of memory
+allocation (with lookup flag KEY_LOOKUP_CREATE) and crypto operations. For
+example, the lsm.s/bpf attach point is suitable,
+fexit/array_map_update_elem is not.
+
+The correctness of implementation of the new helpers and of their usage is
+checked with the introduced tests.
+
+The patch set is organized as follows.
+
+Patch 1 exports bpf_dynptr_get_size(), to obtain the real size of data
+carried by a dynamic pointer. Patch 2 makes available for new eBPF helpers
+some key-related definitions. Patch 3 introduces the bpf_lookup_user_key()
+and bpf_key_put() helpers. Patch 4 introduces the
+bpf_verify_pkcs7_signature(). Finally, patches 5-7 introduce the tests.
+
+Changelog
+
+v6:
+ - Switch back to key lookup helpers + signature verification (until v5),
+   and defer permission check from bpf_lookup_user_key() to
+   bpf_verify_pkcs7_signature()
+ - Add additional key lookup test to illustrate the usage of the
+   KEY_LOOKUP_CREATE flag and validate the flags (suggested by Daniel)
+ - Make description of flags of bpf_lookup_user_key() more user-friendly
+   (suggested by Daniel)
+ - Fix validation of flags parameter in bpf_lookup_user_key() (reported by
+   Daniel)
+ - Rename bpf_verify_pkcs7_signature() keyring-related parameters to
+   user_keyring and system_keyring to make their purpose more clear
+ - Accept keyring-related parameters of bpf_verify_pkcs7_signature() as
+   alternatives (suggested by KP)
+ - Replace unsigned long type with u64 in helper declaration (suggested by
+   Daniel)
+ - Extend the bpf_verify_pkcs7_signature() test by calling the helper
+   without data, by ensuring that the helper enforces the keyring-related
+   parameters as alternatives, by ensuring that the helper rejects
+   inaccessible and expired keyrings, and by checking all system keyrings
+ - Move bpf_lookup_user_key() and bpf_key_put() usage tests to
+   ref_tracking.c (suggested by John)
+ - Call bpf_lookup_user_key() and bpf_key_put() only in sleepable programs
+
+v5:
+ - Move KEY_LOOKUP_ to include/linux/key.h
+   for validation of bpf_verify_pkcs7_signature() parameter
+ - Remove bpf_lookup_user_key() and bpf_key_put() helpers, and the
+   corresponding tests
+ - Replace struct key parameter of bpf_verify_pkcs7_signature() with the
+   keyring serial and lookup flags
+ - Call lookup_user_key() and key_put() in bpf_verify_pkcs7_signature()
+   code, to ensure that the retrieved key is used according to the
+   permission requested at lookup time
+ - Clarified keyring precedence in the description of
+   bpf_verify_pkcs7_signature() (suggested by John)
+ - Remove newline in the second argument of ASSERT_
+ - Fix helper prototype regular expression in bpf_doc.py
+
+v4:
+ - Remove bpf_request_key_by_id(), don't return an invalid pointer that
+   other helpers can use
+ - Pass the keyring ID (without ULONG_MAX, suggested by Alexei) to
+   bpf_verify_pkcs7_signature()
+ - Introduce bpf_lookup_user_key() and bpf_key_put() helpers (suggested by
+   Alexei)
+ - Add lookup_key_norelease test, to ensure that the verifier blocks eBPF
+   programs which don't decrement the key reference count
+ - Parse raw PKCS#7 signature instead of module-style signature in the
+   verify_pkcs7_signature test (suggested by Alexei)
+ - Parse kernel module in user space and pass raw PKCS#7 signature to the
+   eBPF program for signature verification
+
+v3:
+ - Rename bpf_verify_signature() back to bpf_verify_pkcs7_signature() to
+   avoid managing different parameters for each signature verification
+   function in one helper (suggested by Daniel)
+ - Use dynamic pointers and export bpf_dynptr_get_size() (suggested by
+   Alexei)
+ - Introduce bpf_request_key_by_id() to give more flexibility to the caller
+   of bpf_verify_pkcs7_signature() to retrieve the appropriate keyring
+   (suggested by Alexei)
+ - Fix test by reordering the gcc command line, always compile sign-file
+ - Improve helper support check mechanism in the test
+
+v2:
+ - Rename bpf_verify_pkcs7_signature() to a more generic
+   bpf_verify_signature() and pass the signature type (suggested by KP)
+ - Move the helper and prototype declaration under #ifdef so that user
+   space can probe for support for the helper (suggested by Daniel)
+ - Describe better the keyring types (suggested by Daniel)
+ - Include linux/bpf.h instead of vmlinux.h to avoid implicit or
+   redeclaration
+ - Make the test selfcontained (suggested by Alexei)
+
+v1:
+ - Don't define new map flag but introduce simple wrapper of
+   verify_pkcs7_signature() (suggested by Alexei and KP)
+
+Roberto Sassu (7):
+  bpf: Export bpf_dynptr_get_size()
+  KEYS: Move KEY_LOOKUP_ to include/linux/key.h
+  bpf: Add bpf_lookup_user_key() and bpf_key_put() helpers
+  bpf: Add bpf_verify_pkcs7_signature() helper
+  selftests: Add verifier tests for bpf_lookup_user_key() and
+    bpf_key_put()
+  selftests/bpf: Add additional test for bpf_lookup_user_key()
+  selftests/bpf: Add test for bpf_verify_pkcs7_signature() helper
+
+ include/linux/bpf.h                           |   1 +
+ include/linux/key.h                           |   3 +
+ include/uapi/linux/bpf.h                      |  47 ++
+ kernel/bpf/bpf_lsm.c                          | 116 +++++
+ kernel/bpf/helpers.c                          |   2 +-
+ kernel/bpf/verifier.c                         |   6 +-
+ scripts/bpf_doc.py                            |   2 +
+ security/keys/internal.h                      |   2 -
+ tools/include/uapi/linux/bpf.h                |  47 ++
+ tools/testing/selftests/bpf/Makefile          |  14 +-
+ tools/testing/selftests/bpf/config            |   2 +
+ .../bpf/prog_tests/lookup_user_key.c          |  94 ++++
+ .../bpf/prog_tests/verify_pkcs7_sig.c         | 410 ++++++++++++++++++
+ .../bpf/progs/test_lookup_user_key.c          |  35 ++
+ .../bpf/progs/test_verify_pkcs7_sig.c         |  90 ++++
+ tools/testing/selftests/bpf/test_verifier.c   |   3 +-
+ .../selftests/bpf/verifier/ref_tracking.c     |  66 +++
+ .../testing/selftests/bpf/verify_sig_setup.sh | 104 +++++
+ 18 files changed, 1035 insertions(+), 9 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/lookup_user_key.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/verify_pkcs7_sig.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_lookup_user_key.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_verify_pkcs7_sig.c
+ create mode 100755 tools/testing/selftests/bpf/verify_sig_setup.sh
+
+-- 
+2.25.1
 
