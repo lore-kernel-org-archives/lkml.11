@@ -2,186 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48496C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C529FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:21:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232184AbiGLMUZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
+        id S232244AbiGLMUv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiGLMUV (ORCPT
+        with ESMTP id S229924AbiGLMUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:20:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94DA86D549
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:20:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657628419;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=D/fC+rsuewsmYyokkHN4davc+n6pcIuIFkioCEI5EXs=;
-        b=KWtiIi7iIdV/9yg2/AC6x/ClTJSLIxLzEPhg9WPI+s0KWpamj4r2i2HyKKesn0dHIExabS
-        fq+1G9HBQo38wDrhXmW0u8srzuXCbsZnc9QEYCHi4PSm0rdd1WECGafJ3mq8QzqCi+1S0k
-        s3LW4slFilsmcjRUl6x18tBwYmagl6s=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-14-lazxwkXlOveUr_VqD-oelQ-1; Tue, 12 Jul 2022 08:19:09 -0400
-X-MC-Unique: lazxwkXlOveUr_VqD-oelQ-1
-Received: by mail-wm1-f71.google.com with SMTP id i5-20020a1c3b05000000b003a2e8a77dd1so637043wma.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:19:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=D/fC+rsuewsmYyokkHN4davc+n6pcIuIFkioCEI5EXs=;
-        b=yU9hgBInS6jLRdoq73b4gSxNfCldb0IG2ruoTNSVAsShb8Ir7E/Dy6S8Do+cCjpLjm
-         NbYmons3GYmp005LYWKMTWbpJhiW5o1jZd4nYh9GeRwxLE4GbCxzV4qKHYWUgruQm1dT
-         +3PL/TDhAFBVDd/qAofINIt5dxCW4wy9pHkf8KlgUjzMQ1C5va0M/tXQPcTI3DZ+ETqe
-         eBgIQM3ozkLkpksk7PKfQ8TAR69ardIkKKOU1D3sWsHGoLnnzNw1pzQb3EDX10stHr/r
-         QRrAWWF2Oe0hn36KjdmOHGTvcfkZ+dK65hS45mz91UNjTUNCEtTIM+JqoIcZZyOS2HGh
-         aMgw==
-X-Gm-Message-State: AJIora8FLBj2nHr5poKk25sTfVvsgbrxIcBXcvkc+mvpqVwwUCYEkxxj
-        tuyjEaWYoGZgwtIgtFhykm8u6Zlx+pRZQRm3fJkFYkFHKPneZREIUeiLTR7NFUupxEGgia2ApEQ
-        /zACqYLod8YqQPle66Hy18uQt
-X-Received: by 2002:a05:600c:3845:b0:3a2:c04d:5ff9 with SMTP id s5-20020a05600c384500b003a2c04d5ff9mr3619765wmr.74.1657628348621;
-        Tue, 12 Jul 2022 05:19:08 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tSAiVrHcowqDbe7dPEm4sreDyxs47ZG63PfIWwugXmlHXOLYhohrraQDJqffTNnuGllHv/ag==
-X-Received: by 2002:a05:600c:3845:b0:3a2:c04d:5ff9 with SMTP id s5-20020a05600c384500b003a2c04d5ff9mr3619748wmr.74.1657628348428;
-        Tue, 12 Jul 2022 05:19:08 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id j5-20020adff545000000b0021d864d4461sm8090767wrp.83.2022.07.12.05.19.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 05:19:07 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH v3 03/25] x86/hyperv: Update 'struct
- hv_enlightened_vmcs' definition
-In-Reply-To: <6cf5812083ebfa18ba52563527298cb8b91f7fab.camel@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
- <20220708144223.610080-4-vkuznets@redhat.com>
- <6cf5812083ebfa18ba52563527298cb8b91f7fab.camel@redhat.com>
-Date:   Tue, 12 Jul 2022 14:19:06 +0200
-Message-ID: <874jzmplqd.fsf@redhat.com>
+        Tue, 12 Jul 2022 08:20:23 -0400
+Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4F2A564CF;
+        Tue, 12 Jul 2022 05:20:12 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1657628362; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=FJj1MZJAFJrfnBPewVGJgduey6uHYBrbH6lGXkQlj1dpr4J2tOphiNlZiKL1Tsyk37f0QapHAV0f5kMaOLDJJFwukDxmV1e6lgmS8uYKGllHhY9EG6kXjdaG0gK9WTVKzNvdz0taQQZztiVAkTOQlGtIKUvV56NCh3sbwq3BZac=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1657628362; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=SxdnHC2dnxNY4yLBqg/y0wuycbRGOVX5whTYGdp2GTw=; 
+        b=T1XQ1Ez2wjc4wupOXVhG8YW3VvsbgdrG1XdcJrye5IJQreS54W84054CdfN5KXBsPlGfzXoUt5K8Z8WYUUjFU1nX68sJzNEdPwx3krIhy/TxIlX2Lfxks+0D2DcHujIzJJf4YrY4chR2cpoDztbwkDBWnMZqeGtdHZeWGCJ60Fc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=icenowy.me;
+        spf=pass  smtp.mailfrom=uwu@icenowy.me;
+        dmarc=pass header.from=<uwu@icenowy.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657628362;
+        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
+        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=SxdnHC2dnxNY4yLBqg/y0wuycbRGOVX5whTYGdp2GTw=;
+        b=Jwtz8dwblhId0JrvlCSpBmOBx0InzCgsI0Bicb1FXOB1Ikj5g1XZLtyZ3uL2okis
+        1YqE9x6FBm/ac6ZGwcGvU9sFNQCJfmiUvNVgFktZbALHCqyJ4l4T4hz/b0YrH12nmp3
+        7clzSOv7K+2PsCQ2H1Jnmw0gpzUpqI1tZ7UZft3k=
+Received: from edelgard.icenowy.me (59.41.160.3 [59.41.160.3]) by mx.zohomail.com
+        with SMTPS id 1657628218526833.9611344929851; Tue, 12 Jul 2022 05:16:58 -0700 (PDT)
+Message-ID: <dfa6507c68bae9c62520cf100172e1a79bc201c1.camel@icenowy.me>
+Subject: Re: [PATCH 06/12] clk: sunxi=ng: add support for R329 CCUs
+From:   Icenowy Zheng <uwu@icenowy.me>
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andre Przywara <andre.przywara@arm.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 20:16:49 +0800
+In-Reply-To: <4fc9873e87c11dce23099a24be34465f09f3a9a4.camel@aosc.io>
+References: <20220422140902.1058101-1-icenowy@aosc.io>
+         <BYAPR20MB2472930AAFFBDC0ACB9A7487BCF79@BYAPR20MB2472.namprd20.prod.outlook.com>
+         <c858b944-d72f-4e59-6a1a-329b5b8949c4@sholland.org>
+         <4fc9873e87c11dce23099a24be34465f09f3a9a4.camel@aosc.io>
+Organization: Anthon Open-Source Community
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+X-ZohoMailClient: External
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maxim Levitsky <mlevitsk@redhat.com> writes:
+=E5=9C=A8 2022-07-12=E6=98=9F=E6=9C=9F=E4=BA=8C=E7=9A=84 19:57 +0800=EF=BC=
+=8CIcenowy Zheng=E5=86=99=E9=81=93=EF=BC=9A
+> =E5=9C=A8 2022-04-23=E6=98=9F=E6=9C=9F=E5=85=AD=E7=9A=84 21:12 -0500=EF=
+=BC=8CSamuel Holland=E5=86=99=E9=81=93=EF=BC=9A
+> > On 4/22/22 10:41 AM, icenowy@outlook.com=C2=A0wrote:
+> > > From: Icenowy Zheng <icenowy@aosc.io>
+> > >=20
+> > > Allwinner R329 has two CCUs, one in CPUX and another in PRCM.
+> > >=20
+> > > Add support for them.
+> > >=20
+> > > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+> >=20
+> > There is a typo in your commit title. =3D should be -.
+> >=20
+> > Thanks for updating the driver to use .fw_name and be loadable as a
+> > module. All
+> > of those changes look good.
+> >=20
+> > There are still some missing clocks here compared to the BSP, and a
+> > couple of
+> > other minor issues. Please see my earlier review:
+> >=20
+> > https://lore.kernel.org/linux-sunxi/99a74950-fdc0-ecfe-e5f0-ba4a7d8751f=
+0@sholland.org/
+> >=20
+> > So far it's been consistent that any settable bits in the CCU
+> > registers actually
+> > do something. So I would expect all of those bits to have an index
+> > reserved in
+> > the binding, even if we do not model them. I want to avoid having
+> > to
+>=20
+> Sorry but I don't think it proper to reserve unclear bits, because
+> we're just allocating the numbers as a random sequence (in fact it's
+> the sequence that it gets implemented).
+>=20
+> Or consider a structural number scheme, in which a value can be
+> uniquely predicted by its name?
 
-> On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
->> Updated Hyper-V Enlightened VMCS specification lists several new
->> fields for the following features:
->>=20
->> - PerfGlobalCtrl
->> - EnclsExitingBitmap
->> - Tsc Scaling
->> - GuestLbrCtl
->> - CET
->> - SSP
->>=20
->> Update the definition. The updated definition is available only when
->> CPUID.0x4000000A.EBX BIT(0) is '1'. Add a define for it as well.
->>=20
->> Note: The latest TLFS is available at
->> https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/=
-tlfs
->>=20
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
->> ---
->>  arch/x86/include/asm/hyperv-tlfs.h | 18 ++++++++++++++++--
->>  1 file changed, 16 insertions(+), 2 deletions(-)
->>=20
->> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/h=
-yperv-tlfs.h
->> index 6f0acc45e67a..6f2c3cdacdf4 100644
->> --- a/arch/x86/include/asm/hyperv-tlfs.h
->> +++ b/arch/x86/include/asm/hyperv-tlfs.h
->> @@ -138,6 +138,9 @@
->>  #define HV_X64_NESTED_GUEST_MAPPING_FLUSH		BIT(18)
->>  #define HV_X64_NESTED_MSR_BITMAP			BIT(19)
->>=20=20
->
-> Maybe add a comment that this is undocumented + what that cpuid bit does?
->
->> +/* Nested quirks. These are HYPERV_CPUID_NESTED_FEATURES.EBX bits. */
->> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE		BIT(0)
->> +
->>  /*
->>   * This is specific to AMD and specifies that enlightened TLB flush is
->>   * supported. If guest opts in to this feature, ASID invalidations only
->> @@ -559,9 +562,20 @@ struct hv_enlightened_vmcs {
->>  	u64 partition_assist_page;
->>  	u64 padding64_4[4];
->>  	u64 guest_bndcfgs;
->> -	u64 padding64_5[7];
->> +	u64 guest_ia32_perf_global_ctrl;
->> +	u64 guest_ia32_s_cet;
->> +	u64 guest_ssp;
->> +	u64 guest_ia32_int_ssp_table_addr;
->> +	u64 guest_ia32_lbr_ctl;
->> +	u64 padding64_5[2];
->
-> This change looks OK
->
->>  	u64 xss_exit_bitmap;
->> -	u64 padding64_6[7];
->> +	u64 host_ia32_perf_global_ctrl;
->> +	u64 encls_exiting_bitmap;
->> +	u64 tsc_multiplier;
->> +	u64 host_ia32_s_cet;
->> +	u64 host_ssp;
->> +	u64 host_ia32_int_ssp_table_addr;
->> +	u64 padding64_6;
->
-> I think we have a mistake here:
->
-> UINT64 XssExitingBitmap;
-> UINT64 EnclsExitingBitmap;
-> UINT64 HostPerfGlobalCtrl;
-> UINT64 TscMultiplier;
-> UINT64 HostSCet;
-> UINT64 HostSsp;
-> UINT64 HostInterruptSspTableAddr;
-> UINT64 Rsvd8;
->
->
-> I think you need to swap encls_exiting_bitmap and host_ia32_perf_global_c=
-trl
->
-> I used=C2=A0https://docs.microsoft.com/en-us/virtualization/hyper-v-on-wi=
-ndows/tlfs/datatypes/hv_vmx_enlightened_vmcs
-> as the reference.=C2=A0
+Well by thinking a little further, I realized our current CCU DT
+binding is just based on implementation details of sunxi-ng drivers
+(for example, some intermediate clocks get a number too, just not
+exposed to the DT binding header). This continues to prove that
+reserving numbers is just needed at all, and the current way to make
+CCU DT bindings might be totally wrong.
 
-Oh, nice catch, thanks! I have no idea how this mistake crept in. A
-conspiracy theory: maybe the online version of TLFS was updated
-under our feet? :-)
+Maybe we should start to use reasonable slice numbers in the next CCU
+driver?
 
-v4 is coming to rescue.
+>=20
+> > go back and
+> > add gates to the binding out-of-order later, like we are doing for
+> > H6.
+> >=20
+> > Regards,
+> > Samuel
+>=20
+>=20
+>=20
 
->
->
-> Best regards,
-> 	Maxim Levitsky
->
->
->>  } __packed;
->>=20=20
->>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE			0
->
->
-
---=20
-Vitaly
 
