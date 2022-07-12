@@ -2,135 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505C7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 627A3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233051AbiGLOcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:32:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50516 "EHLO
+        id S233137AbiGLOdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231804AbiGLOcg (ORCPT
+        with ESMTP id S233317AbiGLOc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:32:36 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A62E524975;
-        Tue, 12 Jul 2022 07:32:35 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CDma9B004466;
-        Tue, 12 Jul 2022 14:32:08 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=h1BR0t+GW1FabNOu8DeCdTYCLSEeOu2dr7VoXB7G/5k=;
- b=RMtp6NltEQ/oJ0a/xnrieRN7TwVIZcaAKBNKbjqH/bZdn7kzuva5pHDTmLTCgvWEMNdA
- D6dyAehOGALwubHc8XwMRCTShB6vRH1cWP419CLv5gZo75iif2dQVKc8al0gDD1bDG3R
- Xdag0zrxGiJ7qbvDi88FzpbJE3j0wlT058N78ggCrO1ukmL1DMj5yyPUvsbUM1vWSMBw
- GWcVtmv43umcPA1pT0UjQpKwQ2nZetgD1VfuzVQ7dSbPjYnYPKroftARKuTkFpw/5RTf
- yqwrhMgEr0C0uqKEE+DdY7ivDnvCjiwnlAvDMxedBKSA9SBLtZHpmJc4AUUll8mgM6Lv 3Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9a5vs821-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:32:07 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26CDnTjF008428;
-        Tue, 12 Jul 2022 14:32:07 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9a5vs819-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:32:07 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CELkKr027662;
-        Tue, 12 Jul 2022 14:32:05 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04ams.nl.ibm.com with ESMTP id 3h8rrn17jq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Jul 2022 14:32:05 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CEW3qX15335740
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 14:32:03 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2A28CA4054;
-        Tue, 12 Jul 2022 14:32:03 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9AFB5A405B;
-        Tue, 12 Jul 2022 14:32:02 +0000 (GMT)
-Received: from pomme.tlslab.ibm.com (unknown [9.101.4.33])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Jul 2022 14:32:02 +0000 (GMT)
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-To:     mpe@ellerman.id.au, npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        wim@linux-watchdog.org, linux@roeck-us.net, nathanl@linux.ibm.com
-Cc:     haren@linux.vnet.ibm.com, hch@infradead.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-watchdog@vger.kernel.org
-Subject: [PATCH v4 0/4] Extending NMI watchdog during LPM
-Date:   Tue, 12 Jul 2022 16:31:58 +0200
-Message-Id: <20220712143202.23144-1-ldufour@linux.ibm.com>
-X-Mailer: git-send-email 2.37.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: N7AHu3hsE37M-VEPRTo0ViCcX-XjZ2s4
-X-Proofpoint-GUID: PeLenaXmoPxOwkOxTHIgyjFrY_3D_XvQ
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Tue, 12 Jul 2022 10:32:59 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6893CB6DB6;
+        Tue, 12 Jul 2022 07:32:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657636372; x=1689172372;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=a+ceZCUGe/ap+hQFrd92HyoZ9QEte3GdAy+AwFGYt2M=;
+  b=NKmg6Sn4AIuXJJHK7Zq1dmT+jJw/yjQRByv0HosDnRhkk3At1WtsQpkp
+   xkpU5edK7PgmyS8oJgV/0jWChLbH+WQympXVXT9sTfQE8mfbpO1Z4RKsg
+   /VH3lIzXKm/gxeYRkKxCYAFck8yIC+KZeUnkvK78S5YZtgDnZnIqnpXW5
+   m+XStk3ql+p78uyhUJ494P6EGeNynDy720oUUa4PSNwu9HKo4E3bwgbtP
+   tWFANX0ijpzWs42lDtMeAZkjN46vnH3Lw2Vp8eyo2iTW1FL3OkL6fHDR8
+   5yV5YrVbBk+6m4cagTXmkzEudNrRKbUFux75UfWfYpPY9SR1nx0Iz7L8d
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10405"; a="267986173"
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="267986173"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 07:32:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
+   d="scan'208";a="595305832"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga002.jf.intel.com with ESMTP; 12 Jul 2022 07:32:48 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26CEWlWR009263;
+        Tue, 12 Jul 2022 15:32:47 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        kernel test robot <oliver.sang@intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
+        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
+        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+        linux-arch@vger.kernel.org, lkp@lists.01.org, lkp@intel.com
+Subject: Re: [bitops] 0e862838f2: BUG:KASAN:wild-memory-access_in_dmar_parse_one_rhsa
+Date:   Tue, 12 Jul 2022 16:31:23 +0200
+Message-Id: <20220712143123.38008-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <CAAH8bW_fypvDtWEFX32iFSagyAS2Mi+yG+bafTeTynYynBdDWA@mail.gmail.com>
+References: <YsbpTNmDaam8pl+f@xsang-OptiPlex-9020> <YsggZNUQcsKIU9xU@smile.fi.intel.com> <20220711161341.21605-1-alexandr.lobakin@intel.com> <CAAH8bW_fypvDtWEFX32iFSagyAS2Mi+yG+bafTeTynYynBdDWA@mail.gmail.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 spamscore=0 bulkscore=0 clxscore=1015 suspectscore=0
- mlxlogscore=938 priorityscore=1501 phishscore=0 adultscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207120055
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a partition is transferred, once it arrives at the destination node,
-the partition is active but much of its memory must be transferred from the
-start node.
+From: Yury Norov <yury.norov@gmail.com>
+Date: Mon, 11 Jul 2022 11:24:42 -0700
 
-It depends on the activity in the partition, but the more CPU the partition
-has, the more memory to be transferred is likely to be. This causes latency
-when accessing pages that need to be transferred, and often, for large
-partitions, it triggers the NMI watchdog.
+> On Mon, Jul 11, 2022 at 9:15 AM Alexander Lobakin
+> <alexandr.lobakin@intel.com> wrote:
+> >
+> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > Date: Fri, 8 Jul 2022 15:17:40 +0300
+> >
+> >> On Thu, Jul 07, 2022 at 10:10:20PM +0800, kernel test robot wrote:
+> >>>
+> >>> (please be noted we reported
+> >>> "[bitops]  001bea109d: BUG:KASAN:wild-memory-access_in_dmar_parse_one_rhsa"
+> >>> on
+> >>> https://lore.kernel.org/all/YrnGLtDXAveqXGok@xsang-OptiPlex-9020/
+> >>> now we noticed this commit has already been merged into linux-next/master,
+> >>> and the issue is still existing. report again FYI)
+> >>>
+> >>> Greeting,
+> >>>
+> >>> FYI, we noticed the following commit (built with gcc-11):
+> >>>
+> >>> commit: 0e862838f290147ea9c16db852d8d494b552d38d ("bitops: unify non-atomic bitops prototypes across architectures")
+> >>> https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git master
+> >>>
+> >>> in testcase: xfstests
+> >>> version: xfstests-x86_64-c1144bf-1_20220627
+> >>> with following parameters:
+> >>>
+> >>>     disk: 2pmem
+> >>>     fs: ext4
+> >>>     test: ext4-dax
+> >>>     ucode: 0x700001c
+> >>>
+> >>> test-description: xfstests is a regression test suite for xfs and other files ystems.
+> >>> test-url: git://git.kernel.org/pub/scm/fs/xfs/xfstests-dev.git
+> >>>
+> >>>
+> >>> on test machine: 16 threads 1 sockets Intel(R) Xeon(R) CPU D-1541 @ 2.10GHz with 48G memory
+> >>>
+> >>> caused below changes (please refer to attached dmesg/kmsg for entire log/backtrace):
+> >>>
+> >>>
+> >>>
+> >>> If you fix the issue, kindly add following tag
+> >>> Reported-by: kernel test robot <oliver.sang@intel.com>
+> >>>
+> >>>
+> >>> [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+> >>> [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
+> >>> [    4.683454][    T0]
+> >>> [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
+> >>> [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
+> >>> [    4.703196][    T0] Call Trace:
+> >>> [    4.706334][    T0]  <TASK>
+> >>> [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+> >>> [ 4.714272][ T0] dump_stack_lvl (lib/dump_stack.c:107 (discriminator 1))
+> >>> [ 4.718632][ T0] kasan_report (mm/kasan/report.c:162 mm/kasan/report.c:493)
+> >>> [ 4.722903][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+> >>> [ 4.728042][ T0] kasan_check_range (mm/kasan/generic.c:190)
+> >>> [ 4.732750][ T0] dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
+> >>> [ 4.737715][ T0] dmar_walk_remapping_entries (drivers/iommu/intel/dmar.c:609)
+> >>> [ 4.743375][ T0] parse_dmar_table (drivers/iommu/intel/dmar.c:671)
+> >>> [ 4.748079][ T0] ? dmar_table_detect (drivers/iommu/intel/dmar.c:633)
+> >>> [ 4.752872][ T0] ? dmar_free_dev_scope (drivers/iommu/intel/dmar.c:408)
+> >>> [ 4.758010][ T0] ? init_dmars (drivers/iommu/intel/iommu.c:3359)
+> >>> [ 4.762370][ T0] ? iommu_resume (drivers/iommu/intel/iommu.c:3419)
+> >>> [ 4.766903][ T0] ? dmar_walk_dsm_resource+0x300/0x300
+> >>> [ 4.772909][ T0] ? dmar_acpi_insert_dev_scope (drivers/iommu/intel/dmar.c:466)
+> >>> [ 4.778655][ T0] ? dmar_check_one_atsr (drivers/iommu/intel/iommu.c:3521)
+> >>> [ 4.783795][ T0] dmar_table_init (drivers/iommu/intel/dmar.c:846)
+> >>> [ 4.788239][ T0] intel_prepare_irq_remapping (drivers/iommu/intel/irq_remapping.c:742)
+> >>> [ 4.793811][ T0] irq_remapping_prepare (drivers/iommu/irq_remapping.c:102)
+> >>> [ 4.798778][ T0] enable_IR_x2apic (arch/x86/kernel/apic/apic.c:1928)
+> >>> [ 4.803395][ T0] default_setup_apic_routing (arch/x86/kernel/apic/probe_64.c:25 (discriminator 1))
+> >>> [ 4.808883][ T0] apic_intr_mode_init (arch/x86/kernel/apic/apic.c:1446)
+> >>> [ 4.813761][ T0] x86_late_time_init (arch/x86/kernel/time.c:101)
+> >>> [ 4.818467][ T0] start_kernel (init/main.c:1101)
+> >>> [ 4.822827][ T0] secondary_startup_64_no_verify (arch/x86/kernel/head_64.S:358)
+> >>
+> >> Seems like related to nodemask APIs.
+> >
+> > It points to arch_test_bit() (node_online() -> test_bit()),
+> > converted from a macro to a function, more precisely, to
+> > variable_test_bit(), which I didn't touch.
+> >
+> > ...oh ok I got it!
+> >
+> > pxm_to_node() can return %NUMA_NO_NODE which equals to -1. The
+> > mentioned commit converts the macro to the function which now takes
+> > `unsigned long` as @nr (bit number). So I guess it gets converted to
+> > %ULONG_MAX - 1.
+> >
+> > Now the question is: what should a bitop do if we have negative bit
+> > number? Because there are 2 solutions:
+> >
+> > 1. (I prefer it) A caller must check that bitop arguments are valid.
+> >    UB for negative (== too big) bit numbers.
+> >    dmar_parse_one_rhsa() must be fixed so that it will check return
+> >    value of pxm_to_node():
+> >
+> >                         int node = pxm_to_node(rhsa->proximity_domain);
+> >
+> > -                       if (!node_online(node))
+> > +                       if (node != NUMA_NO_NODE && !node_online(node))
+> 
+> Would it make sense to check it inside node_online()?
 
-The NMI watchdog causes the CPU stack to dump where it appears to be
-stuck. In this case, it does not bring much information since it can happen
-during any memory access of the kernel.
+Probably as a more global improvement. I believe it's used very
+often on hotpath, where it's known it can't be < 0, so for now
+I'd pick the check inside this function.
 
-In addition, the NMI interrupt mechanism is not secure and can generate a
-dump system in the event that the interruption is taken while MSR[RI]=0.
+> 
+> >                                 node = NUMA_NO_NODE;
+> >
+> > 2. My code is broken, I shouldn't change `long` to `unsigned long`
+> >    or should change it for {constant,variable}_test_bit() as well
+> >    or do something else and let it behave as it was previously
+> >    (it wasn't crashing probably due to a good luck or...).
+> 
+> This is definitely a NUMA problem. Bitmap has 2 kernel-wide users:
+> cpumasks and numa nodes. Both use negative indexes for their
+> reasons, which is dangerous, as we can see from here, because
+> bitmaps don't support them and don't handle it properly...
+> 
+> Can you please send a fix dmar_parse_one_rhsa() as you suggested,
+> so that I'll add the fix before the beginning of next merge window?
 
-Depending on the LPAR size and load, it may be interesting to extend the
-NMI watchdog timer during the LPM.
+Sure, sending in a couple hours. I guess it would be nice to get
+Acked-by from a maintainer of that subsys (if it won't take too
+long).
 
-That's configurable through sysctl with the new introduced variable
-(specific to powerpc) nmi_watchdog_factor. This value represents the
-percentage added to watchdog_tresh to set the NMI watchdog timeout during a
-LPM.
+> 
+> Regarding a general path, this is what I'm thinking on (for a while):
+>  - #define NUMA_NO_NODE MAX_NUMNODES;
+>  - stronger typechecking, like you did in your series;
+>  - introduce CONFIG_DEBUG_BITMAP  to catch bad arguments
+>    on-the-fly;
+> 
+> I'm working on DEBUG_BITMAP, hopefully submit it for next merge
+> cycle.
 
-Changes in v4 (no functional changes in this version):
- - Patch 1/4 :fix typo and add a comment in pseries_migrate_partition()
- - Patch 3/4: rename new variables and functions as Nick requested.
- - Patch 4/4: rename the called new function
+I like the idea!
 
-v2:
-https://lore.kernel.org/linuxppc-dev/121217bb-6a34-8ccb-9819-f82806d6f47c@linux.ibm.com/
+> 
+> Thanks,
+> Yury
 
-Laurent Dufour (4):
-  powerpc/mobility: wait for memory transfer to complete
-  watchdog: export lockup_detector_reconfigure
-  powerpc/watchdog: introduce a NMI watchdog's factor
-  pseries/mobility: set NMI watchdog factor during LPM
-
- Documentation/admin-guide/sysctl/kernel.rst | 12 +++
- arch/powerpc/include/asm/nmi.h              |  2 +
- arch/powerpc/kernel/watchdog.c              | 21 ++++-
- arch/powerpc/platforms/pseries/mobility.c   | 91 ++++++++++++++++++++-
- include/linux/nmi.h                         |  2 +
- kernel/watchdog.c                           | 21 +++--
- 6 files changed, 141 insertions(+), 8 deletions(-)
-
--- 
-2.37.0
-
+Thanks,
+Olek
