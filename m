@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA57C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E330BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235542AbiGLTIX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:08:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56328 "EHLO
+        id S235663AbiGLTI1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:08:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235619AbiGLTHj (ORCPT
+        with ESMTP id S235534AbiGLTHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:07:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD2DFC999;
+        Tue, 12 Jul 2022 15:07:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB318FC997;
         Tue, 12 Jul 2022 11:51:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78D77B81B96;
-        Tue, 12 Jul 2022 18:51:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CDB6BC3411C;
-        Tue, 12 Jul 2022 18:51:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC40E61257;
+        Tue, 12 Jul 2022 18:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E043CC3411C;
+        Tue, 12 Jul 2022 18:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651889;
-        bh=QFtu6LEUVhhyyGMdTOWNVD0uhJnGgEZyFjkPl/nR0kk=;
+        s=korg; t=1657651886;
+        bh=5S6bKsuNQF1LlVZaO05dG/FARg+b3qQ1Qba7KeHSXuQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yyk5SjHQtO4uKu2azUIEGqviFM4qrSfoBUqR85RYCTN1Mh8Rnc3JrNEGh5CEtzv7z
-         cwaqZP63giGHfrn7x5WfT/zrAYtQ7cvspUM7ninaOmgT9EVWlGzTmANU473503LafJ
-         ajYpoTrIFw6TbUCXHthlRmA8WUHiJvp4LUM1LuMI=
+        b=NJnP7dImpJjreTZr9DFiKq1q+mt+VWMBoRQ7EThs2tzXPiIEAn2ztMKaLh8D0LfuQ
+         tLqbvqbxivl/dPUxbepDXdphwV1JFlNMk6R0VsoM4eI4vUh+W94pOwbJduS0eeZs0+
+         E4Q30DfzysT2mgqxkcqib0KYMGx7yRcHSjKZDhVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 05/61] x86/entry: Remove skip_r11rcx
-Date:   Tue, 12 Jul 2022 20:39:02 +0200
-Message-Id: <20220712183237.154895828@linuxfoundation.org>
+Subject: [PATCH 5.18 04/61] x86/entry: Dont call error_entry() for XENPV
+Date:   Tue, 12 Jul 2022 20:39:01 +0200
+Message-Id: <20220712183237.115100099@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -50,68 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit 1b331eeea7b8676fc5dbdf80d0a07e41be226177 upstream.
+commit 64cbd0acb58203fb769ed2f4eab526d43e243847 upstream.
 
-Yes, r11 and rcx have been restored previously, but since they're being
-popped anyway (into rsi) might as well pop them into their own regs --
-setting them to the value they already are.
+XENPV guests enter already on the task stack and they can't fault for
+native_iret() nor native_load_gs_index() since they use their own pvop
+for IRET and load_gs_index(). A CR3 switch is not needed either.
 
-Less magical code.
+So there is no reason to call error_entry() in XENPV.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+  [ bp: Massage commit message. ]
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220503032107.680190-6-jiangshanlai@gmail.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/calling.h  |   10 +---------
- arch/x86/entry/entry_64.S |    3 +--
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ arch/x86/entry/entry_64.S |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
---- a/arch/x86/entry/calling.h
-+++ b/arch/x86/entry/calling.h
-@@ -119,27 +119,19 @@ For 32-bit we have the following convent
- 	CLEAR_REGS
- .endm
- 
--.macro POP_REGS pop_rdi=1 skip_r11rcx=0
-+.macro POP_REGS pop_rdi=1
- 	popq %r15
- 	popq %r14
- 	popq %r13
- 	popq %r12
- 	popq %rbp
- 	popq %rbx
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %r11
--	.endif
- 	popq %r10
- 	popq %r9
- 	popq %r8
- 	popq %rax
--	.if \skip_r11rcx
--	popq %rsi
--	.else
- 	popq %rcx
--	.endif
- 	popq %rdx
- 	popq %rsi
- 	.if \pop_rdi
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_h
- 	 * perf profiles. Nothing jumps here.
- 	 */
- syscall_return_via_sysret:
--	/* rcx and r11 are already restored (see code above) */
--	POP_REGS pop_rdi=0 skip_r11rcx=1
-+	POP_REGS pop_rdi=0
+@@ -336,8 +336,17 @@ SYM_CODE_END(push_and_clear_regs)
+ 	call push_and_clear_regs
+ 	UNWIND_HINT_REGS
  
- 	/*
- 	 * Now all regs are restored except RSP and RDI.
+-	call	error_entry
+-	movq	%rax, %rsp			/* switch to the task stack if from userspace */
++	/*
++	 * Call error_entry() and switch to the task stack if from userspace.
++	 *
++	 * When in XENPV, it is already in the task stack, and it can't fault
++	 * for native_iret() nor native_load_gs_index() since XENPV uses its
++	 * own pvops for IRET and load_gs_index().  And it doesn't need to
++	 * switch the CR3.  So it can skip invoking error_entry().
++	 */
++	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
++		"", X86_FEATURE_XENPV
++
+ 	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
+ 
 
 
