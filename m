@@ -2,66 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:01:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F7DC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:02:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiGLOBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45384 "EHLO
+        id S230092AbiGLOCc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229534AbiGLOAy (ORCPT
+        with ESMTP id S229534AbiGLOC2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:00:54 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6B7CE0D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:00:32 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id i14so14086713yba.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:00:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=sYY6nXCKD6t30QeXZzY/iyGlqBqf+vc2z0phNL/Eg5g=;
-        b=k8HJGhE9i7B3f6fXvhZ3P0HZBKpKwDS1pIja6IaScsD/R4cHnW/TfG0WC2C/yGAR0H
-         lW83iJwH0EyDvfLzP9E+VKMVCEnWEEoR6GrJPtGn1utXHOoX/4ADJariDHDERwoniiOc
-         DWPMIjXUca8RrVQceMUeI0KBsTI7oMAo1XuXoMuLCD4KixLFKsePYP1wwfQY2xo6EE2w
-         vxBSuUpmkDFV+WgLqc45N1VfEAtHfARRedGII5h4s5EmWfwGUi4X++V4U30TJr1tHb1K
-         sabpmRyvwLsIPOS8Zjpcxwg9t5NckJil5NJcITxrM0cCE/f95Z+wi15uKyCcWybfjaCS
-         Wo+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=sYY6nXCKD6t30QeXZzY/iyGlqBqf+vc2z0phNL/Eg5g=;
-        b=iTUUorcn5cPTrSyV2arXD8WmcE8jNp9z7PNfp7iUMPMLbHmDXM13dpdff0hZLD+Thu
-         0yeMJIabRyu1hjKG8COGMk/QC998jJxok/XJ/jytTEQ7n33cGAuB5NTMhvaVkeQ9Hh4v
-         0VApSQIF09grGMTf2UhOnNZUVwWl83xwvZVhYM3jRZvPfFwbXsPzfgfdkE7PupRVXpJ0
-         03T6/vFyU95kVqudIt2gMvI3sgT5KAEl8l+sJRJT+B7Zr84IYhO7FbzBCjejJ9KOIQVi
-         Setl9RGO24HfuKJN0+YEDT8uSUOMDoVtw2DfzL8FwWokihQY11F0LomsbokHzKnBJlG2
-         /BPA==
-X-Gm-Message-State: AJIora/DdFS8/XyKezXrf/zZJQr/7xv1UXAuCrIFw4P959Z4yudUIeE4
-        J9UDv8izWkM+FSLVqc7G+vQMEPdGoV4SOCa7WHM=
-X-Google-Smtp-Source: AGRyM1vQ/Z4slZe3IQ0KDjUeluH6AIisNX0us5ZbdFvcLrNpwdlkbv9EzKh42yNUn6me2yh2cb0KyBpRhi8gL8FLkMY=
-X-Received: by 2002:a05:6902:686:b0:66e:627f:4d29 with SMTP id
- i6-20020a056902068600b0066e627f4d29mr21041851ybt.385.1657634432032; Tue, 12
- Jul 2022 07:00:32 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com>
- <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com> <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
- <6c8e4104-2239-a188-649d-585f059cabdd@intel.com> <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
- <a73b3ec0-5abb-ddfd-414b-b9807f05413e@linux.intel.com> <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
- <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com> <CAHp75VfvN-iJTpgg6JeKhOqJLhtYSieo7d7SOCBoUu-81FtSqg@mail.gmail.com>
- <c19ed4a6-6a96-b4a4-0f5a-7ca1dba925d1@intel.com> <YsnoH64cKCT7gndw@smile.fi.intel.com>
- <2c6a4a61-e6c8-0487-8d29-dc3fbb90bbe2@intel.com>
-In-Reply-To: <2c6a4a61-e6c8-0487-8d29-dc3fbb90bbe2@intel.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 15:59:54 +0200
-Message-ID: <CAHp75VejUSXoGsvCP6Mrf9Ypi4f93-fWLr_AwsOu-0=fvZ8eYg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
+        Tue, 12 Jul 2022 10:02:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE3C2631
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:02:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED67C616CF
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 14:02:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29559C341C8;
+        Tue, 12 Jul 2022 14:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657634547;
+        bh=+zN1GNGCIL6+YVEG7IbxuOhZlEY06u/BIUm+9zyo8wI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=a6BSQCwxx8ttq402GPYNi4QvOmYUM+e67eYC0xleIyy6mb0YpM3YZL3DUlSS9VVzN
+         ggmi9qUpPLVy90FlUcBacN7u+Rg35MhmNgoKegrQkpPym8aQJq1LHUzhqNn18e+SGL
+         n4mbTvpctfRbzJbqcpYH9/6hq1WL2Ahw+L0llxNRrwc3WXBkiYkxAUHZ+vbeTTWKp6
+         99e8F1NpeXe65A8XT9Lzmv2a6ttfMz6vhdkyRHqqN7SDXjikl+UDqnRecik67fLHta
+         h6HHglostPy8fy863cHS9y/sE9KUW5q/Wcy/aEcM+ZbDajXo+kIRprvr4Xr/0DBsG2
+         rp7HxCGIeZGiw==
+Date:   Tue, 12 Jul 2022 15:02:20 +0100
+From:   Mark Brown <broonie@kernel.org>
 To:     Cezary Rojewski <cezary.rojewski@intel.com>
-Cc:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        =?iso-8859-1?Q?P=E9ter?= Ujfalusi 
+        <peter.ujfalusi@linux.intel.com>,
         Andy Shevchenko <andy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
         ALSA Development Mailing List <alsa-devel@alsa-project.org>,
         Takashi Iwai <tiwai@suse.com>,
         Jaroslav Kysela <perex@perex.cz>,
@@ -73,112 +50,54 @@ Cc:     =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Kai Vehmanen <kai.vehmanen@linux.intel.com>,
         Bard Liao <yung-chuan.liao@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
+Message-ID: <Ys1+7P5zN4irxKW3@sirena.org.uk>
+References: <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
+ <6c8e4104-2239-a188-649d-585f059cabdd@intel.com>
+ <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
+ <a73b3ec0-5abb-ddfd-414b-b9807f05413e@linux.intel.com>
+ <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
+ <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com>
+ <CAHp75VfvN-iJTpgg6JeKhOqJLhtYSieo7d7SOCBoUu-81FtSqg@mail.gmail.com>
+ <c19ed4a6-6a96-b4a4-0f5a-7ca1dba925d1@intel.com>
+ <YsnoH64cKCT7gndw@smile.fi.intel.com>
+ <2c6a4a61-e6c8-0487-8d29-dc3fbb90bbe2@intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="VOtkm5XuX2adiHc/"
+Content-Disposition: inline
+In-Reply-To: <2c6a4a61-e6c8-0487-8d29-dc3fbb90bbe2@intel.com>
+X-Cookie: I like your SNOOPY POSTER!!
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 3:51 PM Cezary Rojewski
-<cezary.rojewski@intel.com> wrote:
-> On 2022-07-09 10:42 PM, Andy Shevchenko wrote:
-> > On Sat, Jul 09, 2022 at 10:45:49AM +0200, Cezary Rojewski wrote:
-> >> On 2022-07-08 6:49 PM, Andy Shevchenko wrote:
-> >>> On Fri, Jul 8, 2022 at 6:32 PM Cezary Rojewski
-> >>> <cezary.rojewski@intel.com> wrote:
-> >>>> On 2022-07-08 5:25 PM, Andy Shevchenko wrote:
-> >>>>> On Fri, Jul 8, 2022 at 2:34 PM P=C3=A9ter Ujfalusi
-> >>>>> <peter.ujfalusi@linux.intel.com> wrote:
 
-...
+--VOtkm5XuX2adiHc/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> >>>> A long shot, but what if we were to modify get_options() so it takes
-> >>>> additional element-size parameter instead?
-> >>>
-> >>> But why? int / unsigned int, u32 / s32  are all compatible in the cur=
-rent cases.
-> >>
-> >> I'd like to avoid any additional operations, so that the retrieved pay=
-load
-> >> can be provided to the IPC handler directly. The IPC handlers for Audi=
-oDSP
-> >> drivers are expecting payload in u32s.
-> >>
-> >> // u32 **tkns, size_t *num_tkns as foo() arguments
-> >> // u32 *ints, int nints as locals
-> >>
-> >>      get_options(buf, 0, &nints);
-> >>      if (!nints) {
-> >>              ret =3D -ENOENT;
-> >>              goto free_buf;
-> >>      }
-> >>
-> >>      ints =3D kcalloc(nints + 1, sizeof(*ints), GFP_KERNEL);
-> >>      if (!ints) {
-> >>              ret =3D -ENOMEM;
-> >>              goto free_buf;
-> >>      }
-> >>
-> >>      get_num_options(buf, nints + 1, ints, sizeof(*ints));
-> >>
-> >>      *tkns =3D ints;
-> >>      *num_tkns =3D nints;
-> >>
-> >> No additional operations in between. The intermediate IPC handler can =
-later
-> >> refer to the actual payload via &tkns[1] before passing it to the gene=
-ric
-> >> one.
-> >>
-> >> Casting int array into u32 array does not feel right, or perhaps I'm m=
-issing
-> >> something like in the doc case.
-> >
-> > C standard.
-> >
-> > int to unsigned int is not promoted. And standard says that "The rank o=
-f any
-> > unsigned integer type shall equal the rank of the corresponding signed =
-integer
-> > type, if any."
-> >
-> > I don't know why one needs to have an additional churn here. int and un=
-signed
-> > int are interoperable with the adjustment to the sign when the other ar=
-gument
-> > is signed or lesser rank of.
->
-> I still believe that casting blindly is not the way to go. I did
-> explicitly ask about int vs u32,
+On Tue, Jul 12, 2022 at 03:51:04PM +0200, Cezary Rojewski wrote:
 
-There is no such type in the C standard.
+> Please correct me if I'm wrong, but there is no guarantee that int is always
+> 32bits long. What is guaranteed though, is that int holds at least -/+
+> 32,767. Also, values larger than INT_MAX are allowed in the IPC payload.
 
-> not int vs unsigned int. Please note
-> that these values are later passed to the IPC handlers, and this changes
-> the context a bit. If hw expects u32, then u32 it shall be.
+Right, int is just the natural size for an integer on the platform.
 
-H/W doesn't expect u32, HW expects bytes or group of bytes with:
-1) dedicated address alignment (if required);
-2) dedicated byte order;
-3) dedicated padding (if required).
+--VOtkm5XuX2adiHc/
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Correct me if I'm wrong.
+-----BEGIN PGP SIGNATURE-----
 
-> Please correct me if I'm wrong, but there is no guarantee that int is
-> always 32bits long.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLNfuwACgkQJNaLcl1U
+h9C/QQf9FtMNLt7fY7kTHfnJjxoc2xRbWmtmteMI/X1xnpa0sAS30hZrAP5o49ri
+tl19bcPCbpY15Ih/BJlE7TOW358K5CxVlICUZdZ088SVbKN+tTAig9DVnCk4cjoI
+53fscUp8y/saZ3R0HnDZY+KQhoh9j60bMWs3ff3ciAHx6HXVOdJ6qgKbWgsnxo5A
+viX6XmKmA0tPnn69FBCHz7ooJE9R8I+Wh1oWjL02rJMrWwARzqpyt8yubvHL1tSo
+4EU+DCDtCYimR9nzs1/m4jdK3J2T7FpX2NQgO1NNDmRbcAqkiu4Gd0Ek+ydaIcym
+uIOTy5RjhQb41oJUTlQvfqfdQ0tsMA==
+=JOe6
+-----END PGP SIGNATURE-----
 
-There is no guarantee by the C standard, indeed, but there is an upper
-level guarantee, by the Linux kernel.
-
-> What is guaranteed though, is that int holds at
-> least -/+ 32,767. Also, values larger than INT_MAX are allowed in the
-> IPC payload.
-
-Yeah... this is binary protocol, right? So, what limits are you
-talking about here if they are not applicable there anyway. It's
-simply different dimension of limits (i.e. bytes and bits and not C
-language types).
-
---=20
-With Best Regards,
-Andy Shevchenko
+--VOtkm5XuX2adiHc/--
