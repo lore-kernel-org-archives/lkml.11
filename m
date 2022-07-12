@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A09C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA85BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbiGLTLW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
+        id S235767AbiGLTLZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235813AbiGLTJh (ORCPT
+        with ESMTP id S235860AbiGLTJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:09:37 -0400
+        Tue, 12 Jul 2022 15:09:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63C2FF585;
-        Tue, 12 Jul 2022 11:52:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6148FE539;
+        Tue, 12 Jul 2022 11:52:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B214B81BBB;
-        Tue, 12 Jul 2022 18:52:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3276C3411C;
-        Tue, 12 Jul 2022 18:52:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AC83B81BAC;
+        Tue, 12 Jul 2022 18:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB41FC3411C;
+        Tue, 12 Jul 2022 18:52:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651941;
-        bh=UgWjiyGrjzxseWjdQCCrweYA4YrS8m+Q1xJSLaoPIIA=;
+        s=korg; t=1657651947;
+        bh=LkVA0xiAiMwnxQTu6pYRQJruQNd4vWhOLkXE1iKbhYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WsqghiK5/aqCjqbcVoEiO3a1/I60nC1VhZPr8dJHzEUZa/je1DFkWG5OHtAMNu4DU
-         b/3EEPHihgbtGFVwed6bxHWP+TFcXB5sdYikWbUufnZVfONfjkbKt4A9goeXEbRx34
-         nI2T17xbA/zJgiuZtrEOv6lgCHmlO4cU2n6uj5Wc=
+        b=Q0j3uOvNtjjp2Ls9W5/n/8b1rOGPYOSFYQV1FvV13DydSitqT93FkDr2bsxlbupUl
+         VVOGqS3o+Jk06WtSx76uMoD7bC8ZMKWeiPqDZ18R3tQJk5NE6MJ1d7PkxdtgFEJpvF
+         0PIbvjf8kQ2Bt0+1OBepYLdcr309+PsMDWYouTyA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 29/61] x86/bugs: Optimize SPEC_CTRL MSR writes
-Date:   Tue, 12 Jul 2022 20:39:26 +0200
-Message-Id: <20220712183238.132147447@linuxfoundation.org>
+Subject: [PATCH 5.18 31/61] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
+Date:   Tue, 12 Jul 2022 20:39:28 +0200
+Message-Id: <20220712183238.217475302@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -53,12 +53,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit c779bc1a9002fa474175b80e72b85c9bf628abb0 upstream.
+commit 166115c08a9b0b846b783088808a27d739be6e8d upstream.
 
-When changing SPEC_CTRL for user control, the WRMSR can be delayed
-until return-to-user when KERNEL_IBRS has been enabled.
-
-This avoids an MSR write during context switch.
+retbleed will depend on spectre_v2, while spectre_v2_user depends on
+retbleed. Break this cycle.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
@@ -67,92 +65,88 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    2 +-
- arch/x86/kernel/cpu/bugs.c           |   18 ++++++++++++------
- arch/x86/kernel/process.c            |    2 +-
- 3 files changed, 14 insertions(+), 8 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   25 +++++++++++++++++--------
+ 1 file changed, 17 insertions(+), 8 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -253,7 +253,7 @@ static inline void indirect_branch_predi
- 
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern void write_spec_ctrl_current(u64 val);
-+extern void write_spec_ctrl_current(u64 val, bool force);
- 
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -63,13 +63,19 @@ static DEFINE_MUTEX(spec_ctrl_mutex);
-  * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
-  * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
-  */
--void write_spec_ctrl_current(u64 val)
-+void write_spec_ctrl_current(u64 val, bool force)
- {
- 	if (this_cpu_read(x86_spec_ctrl_current) == val)
- 		return;
+@@ -37,8 +37,9 @@
+ #include "cpu.h"
  
- 	this_cpu_write(x86_spec_ctrl_current, val);
--	wrmsrl(MSR_IA32_SPEC_CTRL, val);
-+
+ static void __init spectre_v1_select_mitigation(void);
+-static void __init retbleed_select_mitigation(void);
+ static void __init spectre_v2_select_mitigation(void);
++static void __init retbleed_select_mitigation(void);
++static void __init spectre_v2_user_select_mitigation(void);
+ static void __init ssb_select_mitigation(void);
+ static void __init l1tf_select_mitigation(void);
+ static void __init mds_select_mitigation(void);
+@@ -145,13 +146,19 @@ void __init check_bugs(void)
+ 
+ 	/* Select the proper CPU mitigations before patching alternatives: */
+ 	spectre_v1_select_mitigation();
++	spectre_v2_select_mitigation();
 +	/*
-+	 * When KERNEL_IBRS this MSR is written on return-to-user, unless
-+	 * forced the update can be delayed until that time.
++	 * retbleed_select_mitigation() relies on the state set by
++	 * spectre_v2_select_mitigation(); specifically it wants to know about
++	 * spectre_v2=ibrs.
 +	 */
-+	if (force || !cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS))
-+		wrmsrl(MSR_IA32_SPEC_CTRL, val);
+ 	retbleed_select_mitigation();
+ 	/*
+-	 * spectre_v2_select_mitigation() relies on the state set by
++	 * spectre_v2_user_select_mitigation() relies on the state set by
+ 	 * retbleed_select_mitigation(); specifically the STIBP selection is
+ 	 * forced for UNRET.
+ 	 */
+-	spectre_v2_select_mitigation();
++	spectre_v2_user_select_mitigation();
+ 	ssb_select_mitigation();
+ 	l1tf_select_mitigation();
+ 	md_clear_select_mitigation();
+@@ -1006,13 +1013,15 @@ static void __init spec_v2_user_print_co
+ 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
  }
  
- /*
-@@ -1290,7 +1296,7 @@ static void __init spectre_v2_select_mit
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
++static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
++
+ static enum spectre_v2_user_cmd __init
+-spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_parse_user_cmdline(void)
+ {
+ 	char arg[20];
+ 	int ret, i;
+ 
+-	switch (v2_cmd) {
++	switch (spectre_v2_cmd) {
+ 	case SPECTRE_V2_CMD_NONE:
+ 		return SPECTRE_V2_USER_CMD_NONE;
+ 	case SPECTRE_V2_CMD_FORCE:
+@@ -1047,7 +1056,7 @@ static inline bool spectre_v2_in_ibrs_mo
+ }
+ 
+ static void __init
+-spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
++spectre_v2_user_select_mitigation(void)
+ {
+ 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
+ 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
+@@ -1060,7 +1069,7 @@ spectre_v2_user_select_mitigation(enum s
+ 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
+ 		smt_possible = false;
+ 
+-	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
++	cmd = spectre_v2_parse_user_cmdline();
+ 	switch (cmd) {
+ 	case SPECTRE_V2_USER_CMD_NONE:
+ 		goto set_mode;
+@@ -1384,7 +1393,7 @@ static void __init spectre_v2_select_mit
  	}
  
- 	switch (mode) {
-@@ -1345,7 +1351,7 @@ static void __init spectre_v2_select_mit
+ 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
+-	spectre_v2_user_select_mitigation(cmd);
++	spectre_v2_cmd = cmd;
+ }
  
  static void update_stibp_msr(void * __unused)
- {
--	write_spec_ctrl_current(x86_spec_ctrl_base);
-+	write_spec_ctrl_current(x86_spec_ctrl_base, true);
- }
- 
- /* Update x86_spec_ctrl_base in case SMT state changed. */
-@@ -1588,7 +1594,7 @@ static enum ssb_mitigation __init __ssb_
- 			x86_amd_ssb_disable();
- 		} else {
- 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
--			write_spec_ctrl_current(x86_spec_ctrl_base);
-+			write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 		}
- 	}
- 
-@@ -1839,7 +1845,7 @@ int arch_prctl_spec_ctrl_get(struct task
- void x86_spec_ctrl_setup_ap(void)
- {
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
--		write_spec_ctrl_current(x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 
- 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
- 		x86_amd_ssb_disable();
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -600,7 +600,7 @@ static __always_inline void __speculatio
- 	}
- 
- 	if (updmsr)
--		write_spec_ctrl_current(msr);
-+		write_spec_ctrl_current(msr, false);
- }
- 
- static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
 
 
