@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F02C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:14:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CB6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 23:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234336AbiGLXOY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 19:14:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S234353AbiGLXO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 19:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233927AbiGLXNi (ORCPT
+        with ESMTP id S233928AbiGLXNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 19:13:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E407E46
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:13:31 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7F0F47
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 16:13:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657667612; x=1689203612;
+  t=1657667614; x=1689203614;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=TsGIhct/Z37tuvSy85zzkhbg6Om8lhudHriCZDgaRcc=;
-  b=IWauyGzsG4rC63lfxWpL1MU6vytopG6VAXkPC1WpP/lWxokPhoduOmhF
-   dLz+Bw55k7CnVEdtrDm/mHpp4kS/+UhtHOMD0Hy2NDCzalBtpoQkRlv/w
-   7Fj50EPkEQ/HJnKXtucfjfuamzmwPqNA5yf5WIKaYU77/xdk2EpOiM279
-   jZ5KB951madL4hrRs8txpEK/kIFtBE1FPiCVPnGTHt+EPpKIyp8c0wJBC
-   gHRS15mNOVknIIdF6aIpTcx1aVf3qYt7Oa0kPIpFZwPtUr8JnRbNYI+4G
-   v/916sSB+8k2/Rr25mAMplerX0eAU8ISgdlTRGTrIPPlFIwEwu62RfNwP
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="283818847"
+  bh=MGBbR/k1AssmUS4ywd/fm01GaItlo8jGpggyRDWPYcs=;
+  b=L9uV19MvuJ5sfhn9qCFEPqAbv6PuhKKQqMlPGBoG0aNUCs9kDg80XCPd
+   ROIh0zZWEo/cUPxDaZkwHbKugXmQPvKGvyI2cwJ05CsH1tmQq6ZwKx2mG
+   QoFhBBsigP1BP36CpVch1hfsX/HR6qWcmMVlPJ3lz1pMimCWX2npR3DZG
+   AQNUVDjVHIchbmon0052EeIbs59CbQkd8sTIRugCelf5x0kj2yOfPwuxi
+   Uz8frz3lKSLUqhXttYbj4oDLaDH/fNVhoqNfekHO7VdwC5XAWKu2oOCRo
+   v8dLjhM03u+h7VRtK8J5VuFAnx/Ofam9CezlVbnWPTUCOBp1J+hJg+Ws7
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285808446"
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="283818847"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 16:13:31 -0700
+   d="scan'208";a="285808446"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 16:13:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="595466249"
+   d="scan'208";a="841547745"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga002.jf.intel.com with ESMTP; 12 Jul 2022 16:13:26 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 12 Jul 2022 16:13:26 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 21147544; Wed, 13 Jul 2022 02:13:30 +0300 (EEST)
+        id 39A185F6; Wed, 13 Jul 2022 02:13:30 +0300 (EEST)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     Dave Hansen <dave.hansen@linux.intel.com>,
         Andy Lutomirski <luto@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     x86@kernel.org, Kostya Serebryany <kcc@google.com>,
         linux-mm@kvack.org, linux-kernel@vger.kernel.org,
         Weihong Zhang <weihong.zhang@intel.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv5 09/13] selftests/x86/lam: Add mmap and SYSCALL test cases for linear-address masking
-Date:   Wed, 13 Jul 2022 02:13:24 +0300
-Message-Id: <20220712231328.5294-10-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv5 11/13] selftests/x86/lam: Add inherit test cases for linear-address masking
+Date:   Wed, 13 Jul 2022 02:13:26 +0300
+Message-Id: <20220712231328.5294-12-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
 References: <20220712231328.5294-1-kirill.shutemov@linux.intel.com>
@@ -70,203 +70,163 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Weihong Zhang <weihong.zhang@intel.com>
 
-Add mmap and SYSCALL test cases.
+LAM is enabled per-thread and gets inherited on fork(2)/clone(2). exec()
+reverts LAM status to the default disabled state.
 
-SYSCALL test cases:
+There are two test scenarios:
 
- - LAM supports set metadata in high bits 62:57 (LAM_U57) of a user pointer, pass
-   the pointer to SYSCALL, SYSCALL can dereference the pointer and return correct
-   result.
+ - Fork test cases:
 
- - Disable LAM, pass a pointer with metadata in high bits to SYSCALL,
-   SYSCALL returns -1 (EFAULT).
+   These cases were used to test the inheritance of LAM for per-thread,
+   Child process generated by fork() should inherit LAM feature from
+   parent process, Child process can get the LAM mode same as parent
+   process.
 
-MMAP test cases:
+ - Execve test cases:
 
- - Enable LAM_U57, MMAP with low address (below bits 47), set metadata
-   in high bits of the address, dereference the address should be
-   allowed.
-
- - Enable LAM_U57, MMAP with high address (above bits 47), set metadata
-   in high bits of the address, dereference the address should be
-   allowed.
+   Processes generated by execve() are different from processes
+   generated by fork(), these processes revert LAM status to disabled
+   status.
 
 Signed-off-by: Weihong Zhang <weihong.zhang@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- tools/testing/selftests/x86/lam.c | 134 +++++++++++++++++++++++++++++-
- 1 file changed, 132 insertions(+), 2 deletions(-)
+ tools/testing/selftests/x86/lam.c | 124 +++++++++++++++++++++++++++++-
+ 1 file changed, 121 insertions(+), 3 deletions(-)
 
 diff --git a/tools/testing/selftests/x86/lam.c b/tools/testing/selftests/x86/lam.c
-index 4aaf6ad107c3..70c01cc9386b 100644
+index d2ae75b3bdc0..fcac5feb47d0 100644
 --- a/tools/testing/selftests/x86/lam.c
 +++ b/tools/testing/selftests/x86/lam.c
-@@ -7,6 +7,7 @@
- #include <signal.h>
- #include <setjmp.h>
- #include <sys/mman.h>
-+#include <sys/utsname.h>
- #include <sys/wait.h>
- #include <inttypes.h>
+@@ -34,7 +34,9 @@
+ #define FUNC_SYSCALL            0x4
+ #define FUNC_URING              0x8
  
-@@ -25,11 +26,18 @@
- 
- /* Specified test function bits  */
- #define FUNC_MALLOC             0x1
-+#define FUNC_MMAP               0x2
-+#define FUNC_SYSCALL            0x4
- 
--#define TEST_MASK               0x1
-+#define TEST_MASK               0x7
+-#define TEST_MASK               0xf
++#define FUNC_INHERITE           0x10
 +
-+#define LOW_ADDR                (0x1UL << 30)
-+#define HIGH_ADDR               (0x3UL << 48)
++#define TEST_MASK               0x1f
  
- #define MALLOC_LEN              32
- 
-+#define PAGE_SIZE               (4 << 10)
-+
- struct testcases {
- 	unsigned int later;
- 	int expected; /* 2: SIGSEGV Error; 1: other errors */
-@@ -45,6 +53,7 @@ jmp_buf segv_env;
- static void segv_handler(int sig)
- {
- 	ksft_print_msg("Get segmentation fault(%d).", sig);
-+
- 	siglongjmp(segv_env, 1);
- }
- 
-@@ -57,6 +66,16 @@ static inline int cpu_has_lam(void)
- 	return (cpuinfo[0] & (1 << 26));
- }
- 
-+/* Check 5-level page table feature in CPUID.(EAX=07H, ECX=00H):ECX.[bit 16] */
-+static inline int cpu_has_la57(void)
-+{
-+	unsigned int cpuinfo[4];
-+
-+	__cpuid_count(0x7, 0, cpuinfo[0], cpuinfo[1], cpuinfo[2], cpuinfo[3]);
-+
-+	return (cpuinfo[2] & (1 << 16));
-+}
-+
- /*
-  * Set tagged address and read back untag mask.
-  * check if the untagged mask is expected.
-@@ -161,6 +180,68 @@ static int handle_malloc(struct testcases *test)
+ #define LOW_ADDR                (0x1UL << 30)
+ #define HIGH_ADDR               (0x3UL << 48)
+@@ -142,6 +144,28 @@ static int set_lam(unsigned long lam)
  	return ret;
  }
  
-+static int handle_mmap(struct testcases *test)
++/*
++ * Set tagged address and read back untag mask.
++ * check if the untag mask is expected.
++ */
++static int get_lam(void)
 +{
-+	void *ptr;
-+	unsigned int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_FIXED;
-+	int ret = 0;
++	uint64_t ptr = 0;
++	int ret = -1;
++	/* Get untagged mask */
++	if (syscall(SYS_arch_prctl, ARCH_GET_UNTAG_MASK, &ptr) == -1)
++		return -1;
 +
-+	if (test->later == 0 && test->lam != 0)
-+		if (set_lam(test->lam) != 0)
-+			return 1;
++	/* Check mask returned is expected */
++	if (ptr == ~(0x3fULL << 57))
++		ret = LAM_U57_BITS;
++	else if (ptr == -1ULL)
++		ret = LAM_NONE;
 +
-+	ptr = mmap((void *)test->addr, PAGE_SIZE, PROT_READ | PROT_WRITE,
-+		   flags, -1, 0);
-+	if (ptr == MAP_FAILED) {
-+		if (test->addr == HIGH_ADDR)
-+			if (!cpu_has_la57())
-+				return 3; /* unsupport LA57 */
-+		return 1;
-+	}
-+
-+	if (test->later != 0 && test->lam != 0)
-+		if (set_lam(test->lam) != 0)
-+			ret = 1;
-+
-+	if (ret == 0) {
-+		if (sigsetjmp(segv_env, 1) == 0) {
-+			signal(SIGSEGV, segv_handler);
-+			ret = handle_lam_test(ptr, test->lam);
-+		} else {
-+			ret = 2;
-+		}
-+	}
-+
-+	munmap(ptr, PAGE_SIZE);
-+	return ret;
-+}
-+
-+static int handle_syscall(struct testcases *test)
-+{
-+	struct utsname unme, *pu;
-+	int ret = 0;
-+
-+	if (test->later == 0 && test->lam != 0)
-+		if (set_lam(test->lam) != 0)
-+			return 1;
-+
-+	if (sigsetjmp(segv_env, 1) == 0) {
-+		signal(SIGSEGV, segv_handler);
-+		pu = (struct utsname *)get_metadata((uint64_t)&unme, test->lam);
-+		ret = uname(pu);
-+		if (ret < 0)
-+			ret = 1;
-+	} else {
-+		ret = 2;
-+	}
-+
-+	if (test->later != 0 && test->lam != 0)
-+		if (set_lam(test->lam) != -1 && ret == 0)
-+			ret = 1;
 +
 +	return ret;
 +}
 +
- static int fork_test(struct testcases *test)
+ /* According to LAM mode, set metadata in high bits */
+ static uint64_t get_metadata(uint64_t src, unsigned long lam)
  {
- 	int ret, child_ret;
-@@ -216,11 +297,54 @@ static struct testcases malloc_cases[] = {
+@@ -580,6 +604,72 @@ static int fork_test(struct testcases *test)
+ 	return ret;
+ }
+ 
++static int handle_execve(struct testcases *test)
++{
++	int ret, child_ret;
++	int lam = test->lam;
++	pid_t pid;
++
++	pid = fork();
++	if (pid < 0) {
++		perror("Fork failed.");
++		ret = 1;
++	} else if (pid == 0) {
++		char path[PATH_MAX];
++
++		/* Set LAM mode in parent process */
++		if (set_lam(lam) != 0)
++			return 1;
++
++		/* Get current binary's path and the binary was run by execve */
++		if (readlink("/proc/self/exe", path, PATH_MAX) <= 0)
++			exit(-1);
++
++		/* run binary to get LAM mode and return to parent process */
++		if (execlp(path, path, "-t 0x0", NULL) < 0) {
++			perror("error on exec");
++			exit(-1);
++		}
++	} else {
++		wait(&child_ret);
++		ret = WEXITSTATUS(child_ret);
++		if (ret != LAM_NONE)
++			return 1;
++	}
++
++	return 0;
++}
++
++static int handle_inheritance(struct testcases *test)
++{
++	int ret, child_ret;
++	int lam = test->lam;
++	pid_t pid;
++
++	/* Set LAM mode in parent process */
++	if (set_lam(lam) != 0)
++		return 1;
++
++	pid = fork();
++	if (pid < 0) {
++		perror("Fork failed.");
++		return 1;
++	} else if (pid == 0) {
++		/* Set LAM mode in parent process */
++		int child_lam = get_lam();
++
++		exit(child_lam);
++	} else {
++		wait(&child_ret);
++		ret = WEXITSTATUS(child_ret);
++
++		if (lam != ret)
++			return 1;
++	}
++
++	return 0;
++}
++
+ static void run_test(struct testcases *test, int count)
+ {
+ 	int i, ret = 0;
+@@ -674,11 +764,26 @@ static struct testcases mmap_cases[] = {
  	},
  };
  
-+static struct testcases syscall_cases[] = {
++static struct testcases inheritance_cases[] = {
 +	{
-+		.later = 0,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_syscall,
-+		.msg = "SYSCALL: LAM_U57. syscall with metadata\n",
-+	},
-+	{
-+		.later = 1,
-+		.expected = 1,
-+		.lam = LAM_U57_BITS,
-+		.test_func = handle_syscall,
-+		.msg = "SYSCALL:[Negtive] Disable LAM. Dereferencing pointer with metadata.\n",
-+	},
-+};
-+
-+static struct testcases mmap_cases[] = {
-+	{
-+		.later = 1,
 +		.expected = 0,
 +		.lam = LAM_U57_BITS,
-+		.addr = HIGH_ADDR,
-+		.test_func = handle_mmap,
-+		.msg = "MMAP: First mmap high address, then set LAM_U57.\n",
++		.test_func = handle_inheritance,
++		.msg = "FORK: LAM_U57, child process should get LAM mode same as parent\n",
 +	},
 +	{
-+		.later = 0,
 +		.expected = 0,
 +		.lam = LAM_U57_BITS,
-+		.addr = HIGH_ADDR,
-+		.test_func = handle_mmap,
-+		.msg = "MMAP: First LAM_U57, then High address.\n",
-+	},
-+	{
-+		.later = 0,
-+		.expected = 0,
-+		.lam = LAM_U57_BITS,
-+		.addr = LOW_ADDR,
-+		.test_func = handle_mmap,
-+		.msg = "MMAP: First LAM_U57, then Low address.\n",
++		.test_func = handle_execve,
++		.msg = "EXECVE: LAM_U57, child process should get disabled LAM mode\n",
 +	},
 +};
 +
@@ -274,20 +234,43 @@ index 4aaf6ad107c3..70c01cc9386b 100644
  {
  	printf("usage: lam [-h] [-t test list]\n");
  	printf("\t-t test list: run tests specified in the test list, default:0x%x\n", TEST_MASK);
--	printf("\t\t0x1:malloc;\n");
-+	printf("\t\t0x1:malloc; 0x2:mmap; 0x4:syscall.\n");
+-	printf("\t\t0x1:malloc; 0x2:mmap; 0x4:syscall; 0x8:io_uring.\n");
++	printf("\t\t0x1:malloc; 0x2:mmap; 0x4:syscall; 0x8:io_uring; 0x10:inherit;\n");
  	printf("\t-h: help\n");
  }
  
-@@ -257,6 +381,12 @@ int main(int argc, char **argv)
+@@ -698,7 +803,7 @@ int main(int argc, char **argv)
+ 		switch (c) {
+ 		case 't':
+ 			tests = strtoul(optarg, NULL, 16);
+-			if (!(tests & TEST_MASK)) {
++			if (tests && !(tests & TEST_MASK)) {
+ 				ksft_print_msg("Invalid argument!\n");
+ 				return -1;
+ 			}
+@@ -712,6 +817,16 @@ int main(int argc, char **argv)
+ 		}
+ 	}
+ 
++	/*
++	 * When tests is 0, it is not a real test case;
++	 * the option used by test case(execve) to check the lam mode in
++	 * process generated by execve, the process read back lam mode and
++	 * check with lam mode in parent process.
++	 */
++	if (!tests)
++		return (get_lam());
++
++	/* Run test cases */
  	if (tests & FUNC_MALLOC)
  		run_test(malloc_cases, ARRAY_SIZE(malloc_cases));
  
-+	if (tests & FUNC_MMAP)
-+		run_test(mmap_cases, ARRAY_SIZE(mmap_cases));
-+
-+	if (tests & FUNC_SYSCALL)
-+		run_test(syscall_cases, ARRAY_SIZE(syscall_cases));
+@@ -724,6 +839,9 @@ int main(int argc, char **argv)
+ 	if (tests & FUNC_URING)
+ 		run_test(uring_cases, ARRAY_SIZE(uring_cases));
+ 
++	if (tests & FUNC_INHERITE)
++		run_test(inheritance_cases, ARRAY_SIZE(inheritance_cases));
 +
  	ksft_set_plan(tests_cnt);
  
