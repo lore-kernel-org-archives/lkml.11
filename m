@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B1BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:52:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234707AbiGLSwi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:52:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56436 "EHLO
+        id S234716AbiGLSwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:52:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234132AbiGLSwB (ORCPT
+        with ESMTP id S234469AbiGLSwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:52:01 -0400
+        Tue, 12 Jul 2022 14:52:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17CECD31C7;
-        Tue, 12 Jul 2022 11:44:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58A6DA0DF;
+        Tue, 12 Jul 2022 11:44:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3F87B81B96;
-        Tue, 12 Jul 2022 18:44:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3CB9C3411C;
-        Tue, 12 Jul 2022 18:44:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21DB0B81BAC;
+        Tue, 12 Jul 2022 18:44:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D8B6C3411C;
+        Tue, 12 Jul 2022 18:44:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651479;
-        bh=QtnsdZLxc5e//iy3s2gLvf5/wn1Pnwcij+P+Wg6G5ag=;
+        s=korg; t=1657651485;
+        bh=I1nVtJhBaBbQvFmmxP+Ixri0tvBlRaN4Uz+xRtIocyY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FEJM3EmKnuRFGJvRTESFUbLUy95QghKVwMROvqD86OvBPAhieDKYyfBjGiLNlyBdB
-         e2xdW800ZskYmwuvQFboZ4MratP4eRgzzJC7EfyaZmkBK1TcdZNvlPvevanDtpShEH
-         K691DPrVbx7sUNPXZdwoidYEiTViBZkpZ7bxjtWY=
+        b=KB/IPB6LZkL8DOFAsf+fuHx2nU4nM74brFbpvM3IWCtkcDdnzZZV0sEsrigdkFyLR
+         r9SIjKOTs4TBUmU9Z8FgSG6VByuAQgqkMww/nk4qYhbVHV3pYN3+g4alvKn+9VayFT
+         y0Wq4LIkP5LdbcaqEK1vUm4dyH92Oy1tg+eTiRqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -38,9 +38,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 089/130] x86/bpf: Use alternative RET encoding
-Date:   Tue, 12 Jul 2022 20:38:55 +0200
-Message-Id: <20220712183250.566452431@linuxfoundation.org>
+Subject: [PATCH 5.10 091/130] x86/vsyscall_emu/64: Dont use RET in vsyscall emulation
+Date:   Tue, 12 Jul 2022 20:38:57 +0200
+Message-Id: <20220712183250.656782090@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -54,64 +54,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit d77cfe594ad50e0bf95d457e02ccd578791b2a15 upstream.
+commit 15583e514eb16744b80be85dea0774ece153177d upstream.
 
-Use the return thunk in eBPF generated code, if needed.
+This is userspace code and doesn't play by the normal kernel rules.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-[bwh: Backported to 5.10: add the necessary cnt variable to emit_return()]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/net/bpf_jit_comp.c |   20 ++++++++++++++++++--
- 1 file changed, 18 insertions(+), 2 deletions(-)
+ arch/x86/entry/vsyscall/vsyscall_emu_64.S |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -399,6 +399,22 @@ static void emit_indirect_jump(u8 **ppro
- 	*pprog = prog;
- }
+--- a/arch/x86/entry/vsyscall/vsyscall_emu_64.S
++++ b/arch/x86/entry/vsyscall/vsyscall_emu_64.S
+@@ -19,17 +19,20 @@ __vsyscall_page:
  
-+static void emit_return(u8 **pprog, u8 *ip)
-+{
-+	u8 *prog = *pprog;
-+	int cnt = 0;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_RETHUNK)) {
-+		emit_jump(&prog, &__x86_return_thunk, ip);
-+	} else {
-+		EMIT1(0xC3);		/* ret */
-+		if (IS_ENABLED(CONFIG_SLS))
-+			EMIT1(0xCC);	/* int3 */
-+	}
-+
-+	*pprog = prog;
-+}
-+
- /*
-  * Generate the following code:
-  *
-@@ -1443,7 +1459,7 @@ emit_jmp:
- 			ctx->cleanup_addr = proglen;
- 			pop_callee_regs(&prog, callee_regs_used);
- 			EMIT1(0xC9);         /* leave */
--			EMIT1(0xC3);         /* ret */
-+			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
- 			break;
+ 	mov $__NR_gettimeofday, %rax
+ 	syscall
+-	RET
++	ret
++	int3
  
- 		default:
-@@ -1884,7 +1900,7 @@ int arch_prepare_bpf_trampoline(struct b
- 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
- 		/* skip our return address and return to parent */
- 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
--	EMIT1(0xC3); /* ret */
-+	emit_return(&prog, prog);
- 	/* Make sure the trampoline generation logic doesn't overflow */
- 	if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
- 		ret = -EFAULT;
+ 	.balign 1024, 0xcc
+ 	mov $__NR_time, %rax
+ 	syscall
+-	RET
++	ret
++	int3
+ 
+ 	.balign 1024, 0xcc
+ 	mov $__NR_getcpu, %rax
+ 	syscall
+-	RET
++	ret
++	int3
+ 
+ 	.balign 4096, 0xcc
+ 
 
 
