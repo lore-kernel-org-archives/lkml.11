@@ -2,69 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F37C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F3CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233524AbiGLQ7g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:59:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
+        id S233629AbiGLRAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 13:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231321AbiGLQ7f (ORCPT
+        with ESMTP id S231321AbiGLRAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:59:35 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E14DEE7;
-        Tue, 12 Jul 2022 09:59:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
-        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
-        In-Reply-To:References; bh=HUhWfnGEox2/HCo9PEzTsvKGjQ6EBjpsz0Yndja9NZM=; b=Ep
-        sxnW5MGBYWBmxGFwxMClpi0GfrQWE+l8RciaaicdBmaJVZR19x3efheTGNPBSQU3uy2VrrsXq508a
-        taa/+Go1MQ98907VUYTKtDBApBZ8XIGBzpPF9ZYn5CknU4gUulp9y29QMRhLMLC96xnBHc1Ksnk8q
-        4ZUr0b3Wq8hyVFY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oBJEG-00A4be-HE; Tue, 12 Jul 2022 18:59:20 +0200
-Date:   Tue, 12 Jul 2022 18:59:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/10] ARM: dts: mvebu: Add definitions for PCIe
- legacy INTx interrupts
-Message-ID: <Ys2oaL7U7Ue5syU4@lunn.ch>
-References: <20220712164108.30262-1-kabel@kernel.org>
+        Tue, 12 Jul 2022 13:00:20 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74A36CC00A;
+        Tue, 12 Jul 2022 10:00:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F53D165C;
+        Tue, 12 Jul 2022 10:00:19 -0700 (PDT)
+Received: from [10.57.85.194] (unknown [10.57.85.194])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 63ED83F73D;
+        Tue, 12 Jul 2022 10:00:16 -0700 (PDT)
+Message-ID: <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
+Date:   Tue, 12 Jul 2022 18:00:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220712164108.30262-1-kabel@kernel.org>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 6/7] iommu/exynos: Add SysMMU v7 register sets
+Content-Language: en-GB
+To:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Janghyuck Kim <janghyuck.kim@samsung.com>,
+        Cho KyongHo <pullip.cho@samsung.com>,
+        Daniel Mentz <danielmentz@google.com>,
+        David Virag <virag.david003@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220710230603.13526-1-semen.protsenko@linaro.org>
+ <20220710230603.13526-7-semen.protsenko@linaro.org>
+From:   Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20220710230603.13526-7-semen.protsenko@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 06:40:58PM +0200, Marek Behún wrote:
-> As suggested by Gregory [1] (although he suggested it only for armada
-> 380), add definitions for PCIe legacy INTx interrupts into every DTS
-> file used by the pci-mvebu.c controller driver.
+On 2022-07-11 00:06, Sam Protsenko wrote:
+> SysMMU v7 might have different register layouts (VM capable or non-VM
+> capable). Check which layout is implemented in current SysMMU module and
+> prepare the corresponding register table for futher usage.
 > 
-> It was tested on 88F6820 (A385) and 88F6281 (Kirkwood) SoCs.
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> ---
+> Changes in v2:
+>    - (none) This patch is new and added in v2
 > 
-> [1] https://lore.kernel.org/linux-arm-kernel/87wnhxjxlq.fsf@BL-laptop/
+>   drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++----
+>   1 file changed, 22 insertions(+), 4 deletions(-)
 > 
-> Changes since v1:
-> - dropped armada-385 patch, which was already applied
-> - added commit messages
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index 48681189ccf8..64bf3331064f 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -166,6 +166,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
+>   enum {
+>   	REG_SET_V1,
+>   	REG_SET_V5,
+> +	REG_SET_V7_NON_VM,
+> +	REG_SET_V7_VM,
+>   	MAX_REG_SET
+>   };
+>   
+> @@ -201,6 +203,16 @@ static const unsigned int sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
+>   		0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
+>   		0x60, 0x64,
+>   	},
+> +	/* SysMMU v7: Default register set (non-VM) */
+> +	{
+> +		0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
+> +		0x60, 0x64,
+> +	},
+> +	/* SysMMU v7: VM capable register set */
+> +	{
+> +		0x00, 0x04, 0x08, 0x800c, 0x8010, 0x8014, 0x8018, 0x8020,
+> +		0x8024, 0x60, 0x64,
 
-Thanks for updating the commit message.
+Yuck, see, it's turning into an unreadable mess already.
 
-I don't see any Fixes: tags here. So from that, can i assume that
-there are no known broken devices? We don't need to involve stable.
+This is also raising the question of whether it's worth abstracting 
+accesses to the common registers if it means having an ever-increasing 
+number of copies of those same offsets. Personally I'd leave those using 
+regular readl/writel, but even if there's an argument for keeping all 
+the callsites consistent (modulo the one that already can't be), there's 
+no reason the wrappers couldn't pick up the slack, e.g.:
 
-      Andrew
+static void sysmmu_write(struct sysmmu_drvdata *data, size_t idx, u32 val)
+{
+	unsigned int offset;
+
+	if (idx <= IDX_STATUS) {
+		offset = idx * 4;
+	} else {
+		offset = data->regs[idx - IDX_PT_BASE];
+		if (WARN_ON(!offset))
+			return;
+	}
+	writel(val, data->sfrbase + offset);
+}
+
+Indeed, not abstracting REG_MMU_CTRL via data->regs would then make it 
+trivial to be robust against unimplemented registers without even having 
+to remember to initialise their offsets to some magic value, which seems 
+rather attractive.
+
+(also, as it only strikes me now, why are we passing enum values around 
+as size_t? That's just odd)
+
+Thanks,
+Robin.
+
+> +	},
+>   };
+>   
+>   static struct device *dma_dev;
+> @@ -440,12 +452,18 @@ static void sysmmu_get_hw_info(struct sysmmu_drvdata *data)
+>   	__sysmmu_enable_clocks(data);
+>   
+>   	__sysmmu_get_version(data);
+> -	if (MMU_MAJ_VER(data->version) >= 7 && __sysmmu_has_capa1(data))
+> -		__sysmmu_get_vcr(data);
+> -	if (MMU_MAJ_VER(data->version) < 5)
+> +	if (MMU_MAJ_VER(data->version) < 5) {
+>   		data->regs = sysmmu_regs[REG_SET_V1];
+> -	else
+> +	} else if (MMU_MAJ_VER(data->version) < 7) {
+>   		data->regs = sysmmu_regs[REG_SET_V5];
+> +	} else {
+> +		if (__sysmmu_has_capa1(data))
+> +			__sysmmu_get_vcr(data);
+> +		if (data->has_vcr)
+> +			data->regs = sysmmu_regs[REG_SET_V7_VM];
+> +		else
+> +			data->regs = sysmmu_regs[REG_SET_V7_NON_VM];
+> +	}
+>   
+>   	__sysmmu_disable_clocks(data);
+>   }
