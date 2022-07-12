@@ -2,190 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8550FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiGLKsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35356 "EHLO
+        id S232298AbiGLKts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229542AbiGLKss (ORCPT
+        with ESMTP id S229740AbiGLKtq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:48:48 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0F989580
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:48:46 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CC2781515;
-        Tue, 12 Jul 2022 03:48:46 -0700 (PDT)
-Received: from wubuntu (unknown [10.57.86.197])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E9003F792;
-        Tue, 12 Jul 2022 03:48:44 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 11:48:43 +0100
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     Vincent Guittot <vincent.guittot@linaro.org>
-Cc:     Ingo Molnar <mingo@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        linux-kernel@vger.kernel.org, Xuewen Yan <xuewen.yan94@gmail.com>,
-        Wei Wang <wvw@google.com>,
-        Jonathan JMChen <Jonathan.JMChen@mediatek.com>,
-        Hank <han.lin@mediatek.com>
-Subject: Re: [PATCH 2/7] sched/uclamp: Make task_fits_capacity() use
- util_fits_cpu()
-Message-ID: <20220712104843.frbtkgkiftaovcon@wubuntu>
-References: <20220629194632.1117723-1-qais.yousef@arm.com>
- <20220629194632.1117723-3-qais.yousef@arm.com>
- <CAKfTPtAxK=NGbpQkiW8-tx3kEwp-M7LAr1Rq_kdWDdsSq7Hd9A@mail.gmail.com>
+        Tue, 12 Jul 2022 06:49:46 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B055D31925
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 03:49:44 -0700 (PDT)
+Received: from fsav117.sakura.ne.jp (fsav117.sakura.ne.jp [27.133.134.244])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26CAnYEO041672;
+        Tue, 12 Jul 2022 19:49:34 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav117.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp);
+ Tue, 12 Jul 2022 19:49:34 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav117.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26CAnXP1041666
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 12 Jul 2022 19:49:34 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <5c45c8a3-7516-7b87-fd87-fa49d6d18ce6@I-love.SAKURA.ne.jp>
+Date:   Tue, 12 Jul 2022 19:49:31 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAKfTPtAxK=NGbpQkiW8-tx3kEwp-M7LAr1Rq_kdWDdsSq7Hd9A@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] rapidio/tsi721: Replace flush_scheduled_work() with
+ flush_work().
+Content-Language: en-US
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <ad924306-d15c-9f1e-13dc-eaf674878022@I-love.SAKURA.ne.jp>
+ <6143d632-7c3a-35c5-1766-a3ae74c1c259@I-love.SAKURA.ne.jp>
+ <1d2ce082-821e-13d2-f2b0-8a0ba00470b0@I-love.SAKURA.ne.jp>
+In-Reply-To: <1d2ce082-821e-13d2-f2b0-8a0ba00470b0@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/11/22 15:09, Vincent Guittot wrote:
-> On Wed, 29 Jun 2022 at 21:48, Qais Yousef <qais.yousef@arm.com> wrote:
+Can we start testing this change?
 
-[...]
-
-> > @@ -8502,15 +8504,16 @@ static void update_cpu_capacity(struct sched_domain *sd, int cpu)
-> >         trace_sched_cpu_capacity_tp(cpu_rq(cpu));
-> >
-> >         sdg->sgc->capacity = capacity;
-> > -       sdg->sgc->min_capacity = capacity;
-> > -       sdg->sgc->max_capacity = capacity;
-> > +       sdg->sgc->min_capacity_cpu = cpu;
-> > +       sdg->sgc->max_capacity_cpu = cpu;
+On 2022/06/26 22:56, Tetsuo Handa wrote:
+> Is this change correct?
 > 
-> you make these fields useless. There is only one cpu per sched_group
-> at this level so you don't need to save the twice cpu number of the
-> nly cpu of this group
+> On 2022/06/12 22:31, Tetsuo Handa wrote:
+>> Since "struct tsi721_device" is per a device struct, I assume that
+>> tsi721_remove() needs to wait for only two works associated with that
+>> device. Therefore, wait for only these works using flush_work().
+>>
+>> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+>> ---
+>> Changes in v2:
+>>   Use flush_work() instead of introducing a dedicated WQ.
+>>
+>> Please see commit c4f135d643823a86 ("workqueue: Wrap flush_workqueue()
+>> using a macro") for background.
+>>
+>>  drivers/rapidio/devices/tsi721.c | 3 ++-
+>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/rapidio/devices/tsi721.c b/drivers/rapidio/devices/tsi721.c
+>> index b3134744fb55..0a42d6a2af24 100644
+>> --- a/drivers/rapidio/devices/tsi721.c
+>> +++ b/drivers/rapidio/devices/tsi721.c
+>> @@ -2941,7 +2941,8 @@ static void tsi721_remove(struct pci_dev *pdev)
+>>  
+>>  	tsi721_disable_ints(priv);
+>>  	tsi721_free_irq(priv);
+>> -	flush_scheduled_work();
+>> +	flush_work(&priv->idb_work);
+>> +	flush_work(&priv->pw_work);
+>>  	rio_unregister_mport(&priv->mport);
+>>  
+>>  	tsi721_unregister_dma(priv);
 
-Ah, so we can use group->asym_prefer_cpu then?
-
-I think I got confused and thought we could cover multiple capacity levels
-there.
-
-> >  }
-> >
-> >  void update_group_capacity(struct sched_domain *sd, int cpu)
-> >  {
-> > -       struct sched_domain *child = sd->child;
-> >         struct sched_group *group, *sdg = sd->groups;
-> > -       unsigned long capacity, min_capacity, max_capacity;
-> > +       struct sched_domain *child = sd->child;
-> > +       int min_capacity_cpu, max_capacity_cpu;
-> > +       unsigned long capacity;
-> >         unsigned long interval;
-> >
-> >         interval = msecs_to_jiffies(sd->balance_interval);
-> > @@ -8523,8 +8526,7 @@ void update_group_capacity(struct sched_domain *sd, int cpu)
-> >         }
-> >
-> >         capacity = 0;
-> > -       min_capacity = ULONG_MAX;
-> > -       max_capacity = 0;
-> > +       min_capacity_cpu = max_capacity_cpu = cpu;
-> >
-> >         if (child->flags & SD_OVERLAP) {
-> >                 /*
-> > @@ -8536,29 +8538,44 @@ void update_group_capacity(struct sched_domain *sd, int cpu)
-> >                         unsigned long cpu_cap = capacity_of(cpu);
-> >
-> >                         capacity += cpu_cap;
-> > -                       min_capacity = min(cpu_cap, min_capacity);
-> > -                       max_capacity = max(cpu_cap, max_capacity);
-> > +                       if (cpu_cap < capacity_of(min_capacity_cpu))
-> > +                               min_capacity_cpu = cpu;
-> > +
-> > +                       if (cpu_cap > capacity_of(max_capacity_cpu))
-> > +                               max_capacity_cpu = cpu;
-> >                 }
-> >         } else  {
-> >                 /*
-> >                  * !SD_OVERLAP domains can assume that child groups
-> >                  * span the current group.
-> >                  */
-> > +               unsigned long min_capacity = ULONG_MAX;
-> > +               unsigned long max_capacity = 0;
-> >
-> >                 group = child->groups;
-> >                 do {
-> >                         struct sched_group_capacity *sgc = group->sgc;
-> > +                       unsigned long cpu_cap_min = capacity_of(sgc->min_capacity_cpu);
-> > +                       unsigned long cpu_cap_max = capacity_of(sgc->max_capacity_cpu);
-> 
-> By replacing sgc->min_capacity with sgc->min_capacity_cpu, the
-> min_capacity is no more stable and can become > max_capacity
-
-Right.
-
-> 
-> >
-> >                         capacity += sgc->capacity;
-> > -                       min_capacity = min(sgc->min_capacity, min_capacity);
-> > -                       max_capacity = max(sgc->max_capacity, max_capacity);
-> > +                       if (cpu_cap_min < min_capacity) {
-> > +                               min_capacity = cpu_cap_min;
-> > +                               min_capacity_cpu = sgc->min_capacity_cpu;
-> > +                       }
-> > +
-> > +                       if (cpu_cap_max > max_capacity) {
-> > +                               max_capacity = cpu_cap_max;
-> > +                               max_capacity_cpu = sgc->max_capacity_cpu;
-> > +                       }
-> > +
-> >                         group = group->next;
-> >                 } while (group != child->groups);
-> >         }
-> >
-> >         sdg->sgc->capacity = capacity;
-> > -       sdg->sgc->min_capacity = min_capacity;
-> > -       sdg->sgc->max_capacity = max_capacity;
-> > +       sdg->sgc->min_capacity_cpu = min_capacity_cpu;
-> > +       sdg->sgc->max_capacity_cpu = max_capacity_cpu;
-> >  }
-> >
-> >  /*
-> > @@ -8902,7 +8919,7 @@ static bool update_sd_pick_busiest(struct lb_env *env,
-> >          * internally or be covered by avg_load imbalance (eventually).
-> >          */
-> >         if (sgs->group_type == group_misfit_task &&
-> > -           (!capacity_greater(capacity_of(env->dst_cpu), sg->sgc->max_capacity) ||
-> > +           (!capacity_greater(env->dst_cpu, sg->sgc->max_capacity_cpu) ||
-> >              sds->local_stat.group_type != group_has_spare))
-> >                 return false;
-> >
-> > @@ -8986,7 +9003,7 @@ static bool update_sd_pick_busiest(struct lb_env *env,
-> >          */
-> >         if ((env->sd->flags & SD_ASYM_CPUCAPACITY) &&
-> >             (sgs->group_type <= group_fully_busy) &&
-> > -           (capacity_greater(sg->sgc->min_capacity, capacity_of(env->dst_cpu))))
-> > +           (capacity_greater(sg->sgc->min_capacity_cpu, env->dst_cpu)))
-> >                 return false;
-> >
-> >         return true;
-> > @@ -9108,7 +9125,7 @@ static inline void update_sg_wakeup_stats(struct sched_domain *sd,
-> >
-> >         /* Check if task fits in the group */
-> >         if (sd->flags & SD_ASYM_CPUCAPACITY &&
-> > -           !task_fits_capacity(p, group->sgc->max_capacity)) {
-> > +           !task_fits_cpu(p, group->sgc->max_capacity_cpu)) {
-> 
-> All the changes and added complexity above for this line. Can't you
-> find another way ?
-
-You're right, I might have got carried away trying to keep the logic the same.
-
-Can we use group->asym_prefer_cpu or pick a cpu from group->sgc->cpumask
-instead?
-
-I'll dig more into it anyway and try to come up with simpler alternative.
-
-
-Thanks!
-
---
-Qais Yousef
