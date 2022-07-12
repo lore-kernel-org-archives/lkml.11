@@ -2,131 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093CDCCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7ECAC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232450AbiGLMo4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59864 "EHLO
+        id S233022AbiGLMpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiGLMoy (ORCPT
+        with ESMTP id S230152AbiGLMpC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:44:54 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36F6599ED
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:44:52 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id fz10so7515382pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:44:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=QYL0SRgLUmg8BnK5Yo3lzlJ4c0o1vhFy27q1BHms55E=;
-        b=M9ZOyqVnnUe1kQ1lYFItGrYNc078kUr6Am55NLN0d1kC3kIbA+ABERmQoje+GHES78
-         AlnIcs/g2MpFEwNW6yLzuJipMD3yEPQs7stbk8+q8MBWP02Qgz+ZyINb8gTS8mPiiW+m
-         duREQLrPy3kHmKzqDU3zfNEvKbJwvVnnsGCMPiDOxTfzNysdXYCWGhpyXyi+cj8nRbhS
-         SzNwVQ+n5xTqUPo/Caxl7D/FnnVPEa5lZm5c0RCZPkpiLQzPrSkKKmwFsr3OIqRJcCxm
-         nxPO1jpXd+n4kbNBbR+9KmnWfeiV3c+vEbi313WP3dPYB2DZO0tGPYywVH3wS1NsXIpi
-         fjlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=QYL0SRgLUmg8BnK5Yo3lzlJ4c0o1vhFy27q1BHms55E=;
-        b=Zs05ejjuW0MlpC0DkDUxHrkwNDJ/4MJBBDtXMsvKpPjU6kL5D+PyzZ4QKcTzREWDWL
-         FOX0YuhwWUb7JSFNDqMhan47Jy7CsKhnntAceDQCDOqkft3ybftN5auiRGncX/t/NfiY
-         1DWbfzKOzmDQ17awf2ys/TEVXE7OA61ZdWy3EW8KiNCRliom6dCyA4cjscPKKaConTIV
-         stiOayQPfBvzQSpKTG//Gk2lbVX2FMhRi5Il2JFlnLZs0S9iJ05JxWuhIhyeUUtongD3
-         7g1ptvMChFym0e8WGsn/LhGIMR3k6Gmk08oVkC4lM2pxTuPdIdDftQDL7GAR4FS04nzZ
-         jOzg==
-X-Gm-Message-State: AJIora/tiGExZy3JMJK9UwOM8fsJVo7gLcX2l+RihNW5SyglrNroheJF
-        RxT6yZAfu5RFjf0cXkz6DjyR
-X-Google-Smtp-Source: AGRyM1v+M5lV7lgNVXXA7ep5lugVxUMn5AWgMFlKRyd/tc8Cbi7QwigHgSxgIwlOdFq966IerhvE4g==
-X-Received: by 2002:a17:90b:4c91:b0:1ef:f85b:6342 with SMTP id my17-20020a17090b4c9100b001eff85b6342mr4254301pjb.75.1657629892302;
-        Tue, 12 Jul 2022 05:44:52 -0700 (PDT)
-Received: from workstation ([117.207.31.14])
-        by smtp.gmail.com with ESMTPSA id pi4-20020a17090b1e4400b001df264610c4sm3212648pjb.0.2022.07.12.05.44.48
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Jul 2022 05:44:51 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 18:14:45 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Robert Marko <robimarko@gmail.com>, bjorn.andersson@linaro.org,
-        agross@kernel.org, linus.walleij@linaro.org,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] pinctrl: qcom: spmi-gpio: make the irqchip immutable
-Message-ID: <20220712124445.GC21746@workstation>
-References: <20220624195112.894916-1-robimarko@gmail.com>
- <87edyq1ujr.wl-maz@kernel.org>
+        Tue, 12 Jul 2022 08:45:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9DCF9C250;
+        Tue, 12 Jul 2022 05:45:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6720DB81815;
+        Tue, 12 Jul 2022 12:45:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55488C341C8;
+        Tue, 12 Jul 2022 12:44:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657629898;
+        bh=ua5RqLgj1pT4fISxEKfLQGWLQOzwOavenhptwtXM0n8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kG2llNRiY3/bYpj6fbak6UwigPSxVTjUUkdsIukEV1GzMkKABNHT5Tm3j8OoepEzK
+         BKaG0ATFKTzf9CNcFTBHVYfNXibE0u6HYjQ8yHgPafqOKxy8pUfASpBn8j7bheEYgW
+         VpTYT1S7NZg3vNi4e3vLGIR1+MUE+/PIvEctCvdc=
+Date:   Tue, 12 Jul 2022 14:44:53 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Ben Kao <ben.kao@intel.com>
+Cc:     mathias.nyman@intel.com, mathias.nyman@linux.intel.com,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] xhci-pci: Enable runtime PM on Alder Lake-N PCH xHCI
+ controller
+Message-ID: <Ys1sxRT0i/NXSui7@kroah.com>
+References: <20220712122442.22504-1-ben.kao@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87edyq1ujr.wl-maz@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220712122442.22504-1-ben.kao@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 11:42:32AM +0100, Marc Zyngier wrote:
-> On Fri, 24 Jun 2022 20:51:12 +0100,
-> Robert Marko <robimarko@gmail.com> wrote:
-> > 
-> > Commit 6c846d026d49 ("gpio: Don't fiddle with irqchips marked as
-> > immutable") added a warning to indicate if the gpiolib is altering the
-> > internals of irqchips.
-> > 
-> > Following this change the following warning is now observed for the SPMI
-> > PMIC pinctrl driver:
-> > gpio gpiochip1: (200f000.spmi:pmic@0:gpio@c000): not an immutable chip, please consider fixing it!
-> > 
-> > Fix this by making the irqchip in the SPMI PMIC pinctrl driver immutable.
-> > 
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
-> > ---
-> >  drivers/pinctrl/qcom/pinctrl-spmi-gpio.c | 22 ++++++++++++----------
-> >  1 file changed, 12 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-> > index c3255b0bece4..406ee0933d0b 100644
-> > --- a/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-> > +++ b/drivers/pinctrl/qcom/pinctrl-spmi-gpio.c
-> > @@ -171,7 +171,6 @@ struct pmic_gpio_state {
-> >  	struct regmap	*map;
-> >  	struct pinctrl_dev *ctrl;
-> >  	struct gpio_chip chip;
-> > -	struct irq_chip irq;
-> >  	u8 usid;
-> >  	u8 pid_base;
-> >  };
-> > @@ -988,6 +987,17 @@ static void *pmic_gpio_populate_parent_fwspec(struct gpio_chip *chip,
-> >  	return fwspec;
-> >  }
-> >  
-> > +static const struct irq_chip spmi_gpio_irq_chip = {
-> > +	.name		= "spmi-gpio",
-> > +	.irq_ack	= irq_chip_ack_parent,
-> > +	.irq_mask	= irq_chip_mask_parent,
-> > +	.irq_unmask	= irq_chip_unmask_parent,
+On Tue, Jul 12, 2022 at 08:24:42PM +0800, Ben Kao wrote:
+> There are two Alder Lake-N xHCI host controllers with PCI IDs
+> 0x464e and 0x54ed, now we add the quirk to default enable runtime
+> PM for 0x54ed.
 > 
-> No, this is wrong. Please look at the documentation to see how you
-> must now directly call into the gpiolib helpers for these two
-> callbacks.
+> Signed-off-by: Ben Kao <ben.kao@intel.com>
+> ---
+>  drivers/usb/host/xhci-pci.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
+> diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+> index dce6c0ec8d34..44486156bd5d 100644
+> --- a/drivers/usb/host/xhci-pci.c
+> +++ b/drivers/usb/host/xhci-pci.c
+> @@ -61,6 +61,7 @@
+>  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
+>  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI		0x464e
+>  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+> +#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_PCH_XHCI	0x54ed
 
-IIUC, you are referring to gpiochip_disable_irq() and
-gpiochip_enable_irq() APIs. These APIs are supposed to let the gpiolib
-know about that the IRQ usage of these GPIOs. But for the case of hierarchial
-IRQ domain, isn't the parent is going to do that?
+I think we ask this every time, but why don't we enable this for all
+devices and then only disable it for the tiny number that don't need it?
 
-Please correct me if I'm wrong.
+Why do you all force us to add this for every new device created?
 
-Thanks,
-Mani
+thanks,
 
-> Thanks,
-> 
-> 	M.
-> 
-> -- 
-> Without deviation from the norm, progress is not possible.
+greg k-h
