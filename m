@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C0DFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234984AbiGLS6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
+        id S235009AbiGLS61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235022AbiGLS5g (ORCPT
+        with ESMTP id S234521AbiGLS52 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:57:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B104DD213;
-        Tue, 12 Jul 2022 11:47:24 -0700 (PDT)
+        Tue, 12 Jul 2022 14:57:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC204EDB59;
+        Tue, 12 Jul 2022 11:47:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18B27B81B95;
-        Tue, 12 Jul 2022 18:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87105C3411C;
-        Tue, 12 Jul 2022 18:47:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B2BAB81B95;
+        Tue, 12 Jul 2022 18:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC864C3411C;
+        Tue, 12 Jul 2022 18:47:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651641;
-        bh=1DCPxPvjrPP4RCFt/kmt9VosaPKCE1ukz5C8TaZI250=;
+        s=korg; t=1657651636;
+        bh=s9BBdXTRzWO6rilbhoZPvTfn8C7dwgczJt4XxU408Fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FCOy8ordxRwzE9kFdcCKoyiLTVnfaOYll+5Gd0qtVciQtp40jWDPNsN0SML8RNhw4
-         jOIWEKB++T0+k+CnRa9GPFb9G0fiWqgD8eh9QSlbeZ5Psg4KevJhv2vJPP/CpgVOkk
-         gMAgbWFQ2uAX61qVUOTJDhtVGhNyILTN5UlyJDbE=
+        b=SQofIi0WZ+E0kOQOa8KZLB8odZsuAKH7nZyG3xSEW7i3rIxHxmC8pifIKP02Hmhza
+         1Mo+pUDyN1rOhPukTxsmWWehx5CpLKEt4puukqueLW159l+uoA5a6cvGRPKM3OEpKq
+         VrrCGCE7zhMgupAR68qjiInZETSzQwxWAxhOzsgk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 02/78] x86/entry: Switch the stack after error_entry() returns
-Date:   Tue, 12 Jul 2022 20:38:32 +0200
-Message-Id: <20220712183238.937020352@linuxfoundation.org>
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 106/130] objtool: Update Retpoline validation
+Date:   Tue, 12 Jul 2022 20:39:12 +0200
+Message-Id: <20220712183251.362057353@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
-References: <20220712183238.844813653@linuxfoundation.org>
+In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
+References: <20220712183246.394947160@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,81 +52,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 520a7e80c96d655fbe4650d9cc985bd9d0443389 upstream.
+commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
 
-error_entry() calls fixup_bad_iret() before sync_regs() if it is a fault
-from a bad IRET, to copy pt_regs to the kernel stack. It switches to the
-kernel stack directly after sync_regs().
+Update retpoline validation with the new CONFIG_RETPOLINE requirement of
+not having bare naked RET instructions.
 
-But error_entry() itself is also a function call, so it has to stash
-the address it is going to return to, in %r12 which is unnecessarily
-complicated.
-
-Move the stack switching after error_entry() and get rid of the need to
-handle the return address.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220503032107.680190-3-jiangshanlai@gmail.com
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: conflict fixup at arch/x86/xen/xen-head.S]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |   16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |    6 ++++++
+ arch/x86/mm/mem_encrypt_boot.S       |    2 ++
+ arch/x86/xen/xen-head.S              |    1 +
+ tools/objtool/check.c                |   19 +++++++++++++------
+ 4 files changed, 22 insertions(+), 6 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -323,6 +323,8 @@ SYM_CODE_END(ret_from_fork)
- .macro idtentry_body cfunc has_error_code:req
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -76,6 +76,12 @@
+ .endm
  
- 	call	error_entry
-+	movq	%rax, %rsp			/* switch to the task stack if from userspace */
-+	ENCODE_FRAME_POINTER
- 	UNWIND_HINT_REGS
+ /*
++ * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
++ * vs RETBleed validation.
++ */
++#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
++
++/*
+  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
+  * indirect jmp/call which may be susceptible to the Spectre variant 2
+  * attack.
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	pop	%rbp
  
- 	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
-@@ -982,14 +984,10 @@ SYM_CODE_START_LOCAL(error_entry)
- 	/* We have user CR3.  Change to kernel CR3. */
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
+ 	/* Offset to __x86_return_thunk would be wrong here */
++	ANNOTATE_UNRET_SAFE
+ 	ret
+ 	int3
+ SYM_FUNC_END(sme_encrypt_execute)
+@@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r15
  
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- .Lerror_entry_from_usermode_after_swapgs:
- 	/* Put us onto the real thread stack. */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
- 	call	sync_regs
--	movq	%rax, %rsp			/* switch stack */
--	ENCODE_FRAME_POINTER
--	pushq	%r12
- 	RET
+ 	/* Offset to __x86_return_thunk would be wrong here */
++	ANNOTATE_UNRET_SAFE
+ 	ret
+ 	int3
+ .L__enc_copy_end:
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -70,6 +70,7 @@ SYM_CODE_START(hypercall_page)
+ 	.rept (PAGE_SIZE / 32)
+ 		UNWIND_HINT_FUNC
+ 		.skip 31, 0x90
++		ANNOTATE_UNRET_SAFE
+ 		RET
+ 	.endr
  
- 	/*
-@@ -1021,6 +1019,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 */
- .Lerror_entry_done_lfence:
- 	FENCE_SWAPGS_KERNEL_ENTRY
-+	leaq	8(%rsp), %rax			/* return pt_regs pointer */
- 	RET
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1799,8 +1799,9 @@ static int read_retpoline_hints(struct o
+ 		}
  
- .Lbstep_iret:
-@@ -1041,12 +1040,9 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * Pretend that the exception came from user mode: set up pt_regs
- 	 * as if we faulted immediately after IRET.
- 	 */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
--	mov	%rax, %rsp
--	ENCODE_FRAME_POINTER
--	pushq	%r12
-+	mov	%rax, %rdi
- 	jmp	.Lerror_entry_from_usermode_after_swapgs
- SYM_CODE_END(error_entry)
+ 		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC) {
+-			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
++		    insn->type != INSN_CALL_DYNAMIC &&
++		    insn->type != INSN_RETURN) {
++			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
+ 				  insn->sec, insn->offset);
+ 			return -1;
+ 		}
+@@ -3051,7 +3052,8 @@ static int validate_retpoline(struct obj
  
+ 	for_each_insn(file, insn) {
+ 		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC)
++		    insn->type != INSN_CALL_DYNAMIC &&
++		    insn->type != INSN_RETURN)
+ 			continue;
+ 
+ 		if (insn->retpoline_safe)
+@@ -3066,9 +3068,14 @@ static int validate_retpoline(struct obj
+ 		if (!strcmp(insn->sec->name, ".init.text") && !module)
+ 			continue;
+ 
+-		WARN_FUNC("indirect %s found in RETPOLINE build",
+-			  insn->sec, insn->offset,
+-			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
++		if (insn->type == INSN_RETURN) {
++			WARN_FUNC("'naked' return found in RETPOLINE build",
++				  insn->sec, insn->offset);
++		} else {
++			WARN_FUNC("indirect %s found in RETPOLINE build",
++				  insn->sec, insn->offset,
++				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
++		}
+ 
+ 		warnings++;
+ 	}
 
 
