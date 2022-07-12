@@ -2,128 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EE3CCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A7A4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbiGLPpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56016 "EHLO
+        id S233535AbiGLPq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231423AbiGLPpm (ORCPT
+        with ESMTP id S233346AbiGLPqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:45:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB08C548D;
-        Tue, 12 Jul 2022 08:45:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657640742; x=1689176742;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=g8HjPXg0vMWijjAzqReQodiFn+1+MvBU8lI9SQD+sr0=;
-  b=WNov3cmqADhXP3f6ouBCwlYD7Rr+N1xsQjNHJLALicQP++qNgIEw/l0i
-   ePNlPa9PMaE3fQ0EwOANlGUkFBGKaZeWuXrMolDmj98s2iLUrTSIzL6vK
-   BG/rHYiD10BBsOl3KUmo/QQQlMWaa1j0y5JZwsepNG+7DSRlCRppUkUav
-   nsjdsXzVQV1xBi4nSDOTmn+GJydjIemimMuMqLMCU4n+C6eBOwE4pHN4E
-   JyOXk2lgDUP34NRK+ahZCfNn76xGBDMm1GrQ8ixAZk7H+M+2EfjJlxMD0
-   V+p0wUPKIfJji6H/S1iN8ryj1kPyOnvSrb1Oxzix0kkKFeGl9l8He2Uq9
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="371281382"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="371281382"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 08:45:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="592674036"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 12 Jul 2022 08:45:38 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26CFjb8E024821;
-        Tue, 12 Jul 2022 16:45:37 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        David Woodhouse <dwmw2@infradead.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Suresh Siddha <suresh.b.siddha@intel.com>,
-        kernel test robot <oliver.sang@intel.com>,
-        iommu@lists.linux.dev, stable@vger.kernel.org,
+        Tue, 12 Jul 2022 11:46:23 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A74C5494
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:46:22 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id t25so14623770lfg.7
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 08:46:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d5pYk2bgENoJKmAgJjP5u55IOFZv0T0dQhNKXZeD8lc=;
+        b=M0hAkO/ALSrNhqkwUr/tsVDZsxYCiyAIDDaijWDF/AlvXiL+HHnJ5t0UlDpdX+DVui
+         fpE/bgj461v35xJXE/X/OGyNTzRHO0A5Xzp4NxbpNF7ToaLTQm5rzo17JjVyc1cC5RQc
+         1LqplN58movOWgeQdwxI5PqkvhLU3nr5qKvb5IKR8xjaUWl5nWVWiPis6Zjrjx/LiiQY
+         pQa5/An7MivsJ2Fzw5QhqcEZQrylU3HRJRoFk/plVSQX+Gj3z4mM+CwO9yruN/l8Qdm9
+         NAhyI1rJCJf+8dxsnOOEnFrBZE2lwR81m+hfLiDeF/9tFwHZ9L7xmWE65jtXW5YtEML8
+         ADLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d5pYk2bgENoJKmAgJjP5u55IOFZv0T0dQhNKXZeD8lc=;
+        b=cjLOa2fViRcXn0ztfRuTsWp1+eNLzBCUn0Y72XJua49GLPQ5ifK668CTY4aYtcRDPC
+         drAuj3fspbP+ODhCxvXwGAGeWaW0g1ibGtxV/V3MlDP3tlWImwFEmGxcNMY93mm3NsPz
+         0iOvQbd9ZiiKmXSUVE5KC5Sg1ZDAUF45+kTKaWg2LCGJIl3uvsD+7KQzQPlDWKuecJmU
+         Eoc7bz/DINt8tKJlc/sslNaHa9T4201yn8c4omRPvaFznZf74rNBOzD+pkz9RUdiDXtb
+         CVe3nUqGKOScva5rbKf4g7K7FSoYd1iHUGszu9u4w5gdv/SySnlcmvcduVXTxeC1HMxS
+         qJOA==
+X-Gm-Message-State: AJIora+OWVdde5b45ztVhPnsS4RicaC+kuSE68jSFebXbawL83m4BK+G
+        tgBsIdhtx79HAxnVsjn2RDSh8Q==
+X-Google-Smtp-Source: AGRyM1vv1jizlfHJgxqT0dOxee25WGxKd5vBg/s8PWXRo0/Bt2J1h5OGxf2AyNpVQfJjMnogy+hAdw==
+X-Received: by 2002:a05:6512:2290:b0:489:d433:605d with SMTP id f16-20020a056512229000b00489d433605dmr8806532lfu.629.1657640780501;
+        Tue, 12 Jul 2022 08:46:20 -0700 (PDT)
+Received: from krzk-bin.. (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id q5-20020a056512210500b00489ed49d243sm582396lfr.260.2022.07.12.08.46.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 08:46:19 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Michael Srba <Michael.Srba@seznam.cz>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: avoid invalid memory access via node_online(NUMA_NO_NODE)
-Date:   Tue, 12 Jul 2022 17:44:07 +0200
-Message-Id: <20220712154407.42196-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220712153836.41599-1-alexandr.lobakin@intel.com>
-References: <20220712153836.41599-1-alexandr.lobakin@intel.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: bus: qcom,ssc-block-bus: rework arrays and drop redundant minItems
+Date:   Tue, 12 Jul 2022 17:46:02 +0200
+Message-Id: <20220712154602.26994-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Tue, 12 Jul 2022 17:38:36 +0200
+There is no need to specify "minItems" if it equals to "maxItems".  On the
+other hand number of items in an array can be specified via describing
+items, which might bring some additional information.  This simplifies a
+bit the binding.
 
-> KASAN reports:
-> 
-> [ 4.668325][ T0] BUG: KASAN: wild-memory-access in dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
-> [    4.676149][    T0] Read of size 8 at addr 1fffffff85115558 by task swapper/0/0
-> [    4.683454][    T0]
-> [    4.685638][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc3-00004-g0e862838f290 #1
-> [    4.694331][    T0] Hardware name: Supermicro SYS-5018D-FN4T/X10SDV-8C-TLN4F, BIOS 1.1 03/02/2016
-> [    4.703196][    T0] Call Trace:
-> [    4.706334][    T0]  <TASK>
-> [ 4.709133][ T0] ? dmar_parse_one_rhsa (arch/x86/include/asm/bitops.h:214 arch/x86/include/asm/bitops.h:226 include/asm-generic/bitops/instrumented-non-atomic.h:142 include/linux/nodemask.h:415 drivers/iommu/intel/dmar.c:497)
-> 
-> after converting the type of the first argument (@nr, bit number)
-> of arch_test_bit() from `long` to `unsigned long`[0].
-> 
-> Under certain conditions (for example, when ACPI NUMA is disabled
-> via command line), pxm_to_node() can return %NUMA_NO_NODE (-1).
-> It is valid 'magic' number of NUMA node, but not valid bit number
-> to use in bitops.
-> node_online() eventually descends to test_bit() without checking
-> for the input, assuming it's on caller side (which might be good
-> for perf-critical tasks). There, -1 becomes %ULONG_MAX which leads
-> to an insane array index when calculating bit position in memory.
-> 
-> For now, add an explicit check for @node being not %NUMA_NO_NODE
-> before calling test_bit(). The actual logics didn't change here
-> at all.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../bindings/bus/qcom,ssc-block-bus.yaml      | 25 ++++++++-----------
+ 1 file changed, 11 insertions(+), 14 deletions(-)
 
-Bah, forgot to insert the link here. Hope not worth resending ._.
+diff --git a/Documentation/devicetree/bindings/bus/qcom,ssc-block-bus.yaml b/Documentation/devicetree/bindings/bus/qcom,ssc-block-bus.yaml
+index 5b9705079015..8e9e6ff35d7d 100644
+--- a/Documentation/devicetree/bindings/bus/qcom,ssc-block-bus.yaml
++++ b/Documentation/devicetree/bindings/bus/qcom,ssc-block-bus.yaml
+@@ -28,11 +28,9 @@ properties:
+       - const: qcom,ssc-block-bus
+ 
+   reg:
+-    description: |
+-      Shall contain the addresses of the SSCAON_CONFIG0 and SSCAON_CONFIG1
+-      registers
+-    minItems: 2
+-    maxItems: 2
++    items:
++      - description: SSCAON_CONFIG0 registers
++      - description: SSCAON_CONFIG1 registers
+ 
+   reg-names:
+     items:
+@@ -48,7 +46,6 @@ properties:
+   ranges: true
+ 
+   clocks:
+-    minItems: 6
+     maxItems: 6
+ 
+   clock-names:
+@@ -61,9 +58,9 @@ properties:
+       - const: ssc_ahbs
+ 
+   power-domains:
+-    description: Power domain phandles for the ssc_cx and ssc_mx power domains
+-    minItems: 2
+-    maxItems: 2
++    items:
++      - description: CX power domain
++      - description: MX power domain
+ 
+   power-domain-names:
+     items:
+@@ -71,11 +68,11 @@ properties:
+       - const: ssc_mx
+ 
+   resets:
+-    description: |
+-      Reset phandles for the ssc_reset and ssc_bcr resets (note: ssc_bcr is the
+-      branch control register associated with the ssc_xo and ssc_ahbs clocks)
+-    minItems: 2
+-    maxItems: 2
++    items:
++      - description: Main reset
++      - description:
++          SSC Branch Control Register reset (associated with the ssc_xo and
++          ssc_ahbs clocks)
+ 
+   reset-names:
+     items:
+-- 
+2.34.1
 
-[0] https://github.com/norov/linux/commit/0e862838f290147ea9c16db852d8d494b552d38d
-
-> 
-> Fixes: ee34b32d8c29 ("dmar: support for parsing Remapping Hardware Static Affinity structure")
-> Cc: stable@vger.kernel.org # 2.6.33+
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> ---
->  drivers/iommu/intel/dmar.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index 9699ca101c62..64b14ac4c7b0 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -494,7 +494,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
->  		if (drhd->reg_base_addr == rhsa->base_address) {
->  			int node = pxm_to_node(rhsa->proximity_domain);
->  
-> -			if (!node_online(node))
-> +			if (node != NUMA_NO_NODE && !node_online(node))
->  				node = NUMA_NO_NODE;
->  			drhd->iommu->node = node;
->  			return 0;
-> -- 
-> 2.36.1
-
-Thanks,
-Olek
