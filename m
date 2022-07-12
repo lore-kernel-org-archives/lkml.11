@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC07CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E70C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235618AbiGLTIr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
+        id S235477AbiGLTIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235585AbiGLTH5 (ORCPT
+        with ESMTP id S235221AbiGLTIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:07:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21070E52B4;
-        Tue, 12 Jul 2022 11:51:44 -0700 (PDT)
+        Tue, 12 Jul 2022 15:08:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD2BE52B8;
+        Tue, 12 Jul 2022 11:51:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66A5DB81BBE;
-        Tue, 12 Jul 2022 18:51:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEFC2C3411E;
-        Tue, 12 Jul 2022 18:51:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CD91361123;
+        Tue, 12 Jul 2022 18:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98008C3411C;
+        Tue, 12 Jul 2022 18:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651895;
-        bh=cl1JzN7F0eth4JOetCv10eNt1GVlMIXPFGGABdD1LSM=;
+        s=korg; t=1657651901;
+        bh=b6ihENthbUbQ5lJ4c2//Yhi5Ha1tezAvuDGyRHTe7Vk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NcLwf5ZcJfGCxeCAnmTISKTFtlQaJTmiSjKPYSX9saCVYgiOGMR3Yp1DU78J24mtP
-         TRFCWLum5buX+U9w6/bO4v6opvKoiBRqlDU6H1512LsTtvYcdtGkrQmBzVzYkcZeDE
-         SqKeXTXt1MzJm9x86KAIAe37eN5mPQUIZZOhMkYg=
+        b=RXBUY6UtgfCG4aXt6dlogIDmtJk/UkXwaFMgFlomhlrwXaPE0cjhnNePnvqsx+5p0
+         mt9jfkBahVzu6RklY2x0QhoAlFEGKYfJeRLFpBwrljc738Z2XIli3h+Oo3h+hRiI4Q
+         2mrMmDWx9plA99AfsoOx2khzVC0Phg8k/tNh7rnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 07/61] x86/cpufeatures: Move RETPOLINE flags to word 11
-Date:   Tue, 12 Jul 2022 20:39:04 +0200
-Message-Id: <20220712183237.243340693@linuxfoundation.org>
+Subject: [PATCH 5.18 17/61] x86/kvm: Fix SETcc emulation for return thunks
+Date:   Tue, 12 Jul 2022 20:39:14 +0200
+Message-Id: <20220712183237.631825759@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -53,11 +53,23 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit a883d624aed463c84c22596006e5a96f5b44db31 upstream.
+commit af2e140f34208a5dfb6b7a8ad2d56bda88f0524d upstream.
 
-In order to extend the RETPOLINE features to 4, move them to word 11
-where there is still room. This mostly keeps DISABLE_RETPOLINE
-simple.
+Prepare the SETcc fastop stuff for when RET can be larger still.
+
+The tricky bit here is that the expressions should not only be
+constant C expressions, but also absolute GAS expressions. This means
+no ?: and 'true' is ~0.
+
+Also ensure em_setcc() has the same alignment as the actual FOP_SETCC()
+ops, this ensures there cannot be an alignment hole between em_setcc()
+and the first op.
+
+Additionally, add a .skip directive to the FOP_SETCC() macro to fill
+any remaining space with INT3 traps; however the primary purpose of
+this directive is to generate AS warnings when the remaining space
+goes negative. Which is a very good indication the alignment magic
+went side-ways.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
@@ -66,32 +78,66 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/cpufeatures.h |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c |   28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -203,8 +203,8 @@
- #define X86_FEATURE_PROC_FEEDBACK	( 7*32+ 9) /* AMD ProcFeedbackInterface */
- /* FREE!                                ( 7*32+10) */
- #define X86_FEATURE_PTI			( 7*32+11) /* Kernel Page Table Isolation enabled */
--#define X86_FEATURE_RETPOLINE		( 7*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
--#define X86_FEATURE_RETPOLINE_LFENCE	( 7*32+13) /* "" Use LFENCE for Spectre variant 2 */
-+/* FREE!				( 7*32+12) */
-+/* FREE!				( 7*32+13) */
- #define X86_FEATURE_INTEL_PPIN		( 7*32+14) /* Intel Processor Inventory Number */
- #define X86_FEATURE_CDP_L2		( 7*32+15) /* Code and Data Prioritization L2 */
- #define X86_FEATURE_MSR_SPEC_CTRL	( 7*32+16) /* "" MSR SPEC_CTRL is implemented */
-@@ -295,6 +295,10 @@
- #define X86_FEATURE_PER_THREAD_MBA	(11*32+ 7) /* "" Per-thread Memory Bandwidth Allocation */
- #define X86_FEATURE_SGX1		(11*32+ 8) /* "" Basic SGX */
- #define X86_FEATURE_SGX2		(11*32+ 9) /* "" SGX Enclave Dynamic Memory Management (EDMM) */
-+/* FREE!				(11*32+10) */
-+/* FREE!				(11*32+11) */
-+#define X86_FEATURE_RETPOLINE		(11*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
-+#define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -325,13 +325,15 @@ static int fastop(struct x86_emulate_ctx
+ #define FOP_RET(name) \
+ 	__FOP_RET(#name)
  
- /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+-#define FOP_START(op) \
++#define __FOP_START(op, align) \
+ 	extern void em_##op(struct fastop *fake); \
+ 	asm(".pushsection .text, \"ax\" \n\t" \
+ 	    ".global em_" #op " \n\t" \
+-	    ".align " __stringify(FASTOP_SIZE) " \n\t" \
++	    ".align " __stringify(align) " \n\t" \
+ 	    "em_" #op ":\n\t"
+ 
++#define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
++
+ #define FOP_END \
+ 	    ".popsection")
+ 
+@@ -435,16 +437,15 @@ static int fastop(struct x86_emulate_ctx
+ /*
+  * Depending on .config the SETcc functions look like:
+  *
+- * ENDBR       [4 bytes; CONFIG_X86_KERNEL_IBT]
+- * SETcc %al   [3 bytes]
+- * RET         [1 byte]
+- * INT3        [1 byte; CONFIG_SLS]
+- *
+- * Which gives possible sizes 4, 5, 8 or 9.  When rounded up to the
+- * next power-of-two alignment they become 4, 8 or 16 resp.
++ * ENDBR			[4 bytes; CONFIG_X86_KERNEL_IBT]
++ * SETcc %al			[3 bytes]
++ * RET | JMP __x86_return_thunk	[1,5 bytes; CONFIG_RETPOLINE]
++ * INT3				[1 byte; CONFIG_SLS]
+  */
+-#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 4 + IS_ENABLED(CONFIG_SLS))
+-#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
++#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETPOLINE)) + \
++			 IS_ENABLED(CONFIG_SLS))
++#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 3 + RET_LENGTH)
++#define SETCC_ALIGN	(4 << ((SETCC_LENGTH > 4) & 1) << ((SETCC_LENGTH > 8) & 1))
+ static_assert(SETCC_LENGTH <= SETCC_ALIGN);
+ 
+ #define FOP_SETCC(op) \
+@@ -453,9 +454,10 @@ static_assert(SETCC_LENGTH <= SETCC_ALIG
+ 	#op ": \n\t" \
+ 	ASM_ENDBR \
+ 	#op " %al \n\t" \
+-	__FOP_RET(#op)
++	__FOP_RET(#op) \
++	".skip " __stringify(SETCC_ALIGN) " - (.-" #op "), 0xcc \n\t"
+ 
+-FOP_START(setcc)
++__FOP_START(setcc, SETCC_ALIGN)
+ FOP_SETCC(seto)
+ FOP_SETCC(setno)
+ FOP_SETCC(setc)
 
 
