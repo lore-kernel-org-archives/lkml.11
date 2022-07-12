@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2344C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A717BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234669AbiGLSvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
+        id S234579AbiGLSvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234589AbiGLSu5 (ORCPT
+        with ESMTP id S234607AbiGLSvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:50:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23423E528E;
-        Tue, 12 Jul 2022 11:44:29 -0700 (PDT)
+        Tue, 12 Jul 2022 14:51:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4CA3E52B4;
+        Tue, 12 Jul 2022 11:44:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 106A460765;
-        Tue, 12 Jul 2022 18:44:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C02BFC3411E;
-        Tue, 12 Jul 2022 18:44:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B324DB81B95;
+        Tue, 12 Jul 2022 18:44:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C735EC3411E;
+        Tue, 12 Jul 2022 18:44:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651466;
-        bh=NbqSanLB3Qxt8nxUvYutjP8Hct7V+q/cUJf7O//Vvd4=;
+        s=korg; t=1657651450;
+        bh=YK9+XOi9SbioXxUkEVO0zL8ub18V/83umVoV5u7euKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G8S+xaPU1S804M6GXhz29/U/WAvAaKGnCcV1pPlzML6V0l0KAF5CMAMXEtjwK7a5H
-         EB7FrVMqaACNDzVR8PmOtIUG/8dtvDfLQLmfmg+Gn+JgrwdHg0VYvMOmnIJ4K2aHkc
-         xrGSNU07QgO6hD01wgzFwkeIOqD8k4yKG2WOCym8=
+        b=XxM6d+tDtQ/iFXxdDQFy2Ia6nfXZYj7oBnvCoUusfJzuraJExzqzPJc3BMAZFsYOm
+         P0/0RMkk3NDfeBGZDH0YgGSfEhc+oB36h+AO+xv3tG65sChmCqr/8flozLfLLZ4wko
+         g2GHFAD2qE0xcjsPlo0/dbfU8EE7Ut+sy6iHVI58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 085/130] x86,objtool: Create .return_sites
-Date:   Tue, 12 Jul 2022 20:38:51 +0200
-Message-Id: <20220712183250.374856020@linuxfoundation.org>
+Subject: [PATCH 5.10 049/130] objtool,x86: Replace alternatives with .retpoline_sites
+Date:   Tue, 12 Jul 2022 20:38:15 +0200
+Message-Id: <20220712183248.695039022@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -54,84 +55,218 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit d9e9d2300681d68a775c28de6aa6e5290ae17796 upstream.
+commit 134ab5bd1883312d7a4b3033b05c6b5a1bb8889b upstream.
 
-Find all the return-thunk sites and record them in a .return_sites
-section such that the kernel can undo this.
+Instead of writing complete alternatives, simply provide a list of all
+the retpoline thunk calls. Then the kernel is free to do with them as
+it pleases. Simpler code all-round.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: conflict fixup because of functions added to support IBT]
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120309.850007165@infradead.org
+[cascardo: fixed conflict because of missing
+ 8b946cc38e063f0f7bb67789478c38f6d7d457c9]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-[bwh: Backported to 5.10: adjust context]
+[bwh: Backported to 5.10: deleted functions had slightly different code]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/arch.h            |    1 
- tools/objtool/arch/x86/decode.c |    5 ++
- tools/objtool/check.c           |   75 ++++++++++++++++++++++++++++++++++++++++
+ arch/x86/kernel/vmlinux.lds.S   |   14 ++++
+ tools/objtool/arch/x86/decode.c |  120 ------------------------------------
+ tools/objtool/check.c           |  132 ++++++++++++++++++++++++++++------------
+ tools/objtool/elf.c             |   83 -------------------------
  tools/objtool/elf.h             |    1 
- tools/objtool/objtool.c         |    1 
- tools/objtool/objtool.h         |    1 
- 6 files changed, 84 insertions(+)
+ tools/objtool/special.c         |    8 --
+ 6 files changed, 107 insertions(+), 251 deletions(-)
 
---- a/tools/objtool/arch.h
-+++ b/tools/objtool/arch.h
-@@ -89,6 +89,7 @@ const char *arch_ret_insn(int len);
- int arch_decode_hint_reg(u8 sp_reg, int *base);
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -272,6 +272,20 @@ SECTIONS
+ 		__parainstructions_end = .;
+ 	}
  
- bool arch_is_retpoline(struct symbol *sym);
-+bool arch_is_rethunk(struct symbol *sym);
- 
- int arch_rewrite_retpolines(struct objtool_file *file);
- 
++#ifdef CONFIG_RETPOLINE
++	/*
++	 * List of instructions that call/jmp/jcc to retpoline thunks
++	 * __x86_indirect_thunk_*(). These instructions can be patched along
++	 * with alternatives, after which the section can be freed.
++	 */
++	. = ALIGN(8);
++	.retpoline_sites : AT(ADDR(.retpoline_sites) - LOAD_OFFSET) {
++		__retpoline_sites = .;
++		*(.retpoline_sites)
++		__retpoline_sites_end = .;
++	}
++#endif
++
+ 	/*
+ 	 * struct alt_inst entries. From the header (alternative.h):
+ 	 * "Alternative instructions for different CPU types or capabilities"
 --- a/tools/objtool/arch/x86/decode.c
 +++ b/tools/objtool/arch/x86/decode.c
-@@ -649,3 +649,8 @@ bool arch_is_retpoline(struct symbol *sy
- {
- 	return !strncmp(sym->name, "__x86_indirect_", 15);
+@@ -606,126 +606,6 @@ const char *arch_ret_insn(int len)
+ 	return ret[len-1];
  }
-+
-+bool arch_is_rethunk(struct symbol *sym)
-+{
-+	return !strcmp(sym->name, "__x86_return_thunk");
-+}
+ 
+-/* asm/alternative.h ? */
+-
+-#define ALTINSTR_FLAG_INV	(1 << 15)
+-#define ALT_NOT(feat)		((feat) | ALTINSTR_FLAG_INV)
+-
+-struct alt_instr {
+-	s32 instr_offset;	/* original instruction */
+-	s32 repl_offset;	/* offset to replacement instruction */
+-	u16 cpuid;		/* cpuid bit set for replacement */
+-	u8  instrlen;		/* length of original instruction */
+-	u8  replacementlen;	/* length of new instruction */
+-} __packed;
+-
+-static int elf_add_alternative(struct elf *elf,
+-			       struct instruction *orig, struct symbol *sym,
+-			       int cpuid, u8 orig_len, u8 repl_len)
+-{
+-	const int size = sizeof(struct alt_instr);
+-	struct alt_instr *alt;
+-	struct section *sec;
+-	Elf_Scn *s;
+-
+-	sec = find_section_by_name(elf, ".altinstructions");
+-	if (!sec) {
+-		sec = elf_create_section(elf, ".altinstructions",
+-					 SHF_ALLOC, 0, 0);
+-
+-		if (!sec) {
+-			WARN_ELF("elf_create_section");
+-			return -1;
+-		}
+-	}
+-
+-	s = elf_getscn(elf->elf, sec->idx);
+-	if (!s) {
+-		WARN_ELF("elf_getscn");
+-		return -1;
+-	}
+-
+-	sec->data = elf_newdata(s);
+-	if (!sec->data) {
+-		WARN_ELF("elf_newdata");
+-		return -1;
+-	}
+-
+-	sec->data->d_size = size;
+-	sec->data->d_align = 1;
+-
+-	alt = sec->data->d_buf = malloc(size);
+-	if (!sec->data->d_buf) {
+-		perror("malloc");
+-		return -1;
+-	}
+-	memset(sec->data->d_buf, 0, size);
+-
+-	if (elf_add_reloc_to_insn(elf, sec, sec->sh.sh_size,
+-				  R_X86_64_PC32, orig->sec, orig->offset)) {
+-		WARN("elf_create_reloc: alt_instr::instr_offset");
+-		return -1;
+-	}
+-
+-	if (elf_add_reloc(elf, sec, sec->sh.sh_size + 4,
+-			  R_X86_64_PC32, sym, 0)) {
+-		WARN("elf_create_reloc: alt_instr::repl_offset");
+-		return -1;
+-	}
+-
+-	alt->cpuid = cpuid;
+-	alt->instrlen = orig_len;
+-	alt->replacementlen = repl_len;
+-
+-	sec->sh.sh_size += size;
+-	sec->changed = true;
+-
+-	return 0;
+-}
+-
+-#define X86_FEATURE_RETPOLINE                ( 7*32+12)
+-
+-int arch_rewrite_retpolines(struct objtool_file *file)
+-{
+-	struct instruction *insn;
+-	struct reloc *reloc;
+-	struct symbol *sym;
+-	char name[32] = "";
+-
+-	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
+-
+-		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC)
+-			continue;
+-
+-		if (!strcmp(insn->sec->name, ".text.__x86.indirect_thunk"))
+-			continue;
+-
+-		reloc = insn->reloc;
+-
+-		sprintf(name, "__x86_indirect_alt_%s_%s",
+-			insn->type == INSN_JUMP_DYNAMIC ? "jmp" : "call",
+-			reloc->sym->name + 21);
+-
+-		sym = find_symbol_by_name(file->elf, name);
+-		if (!sym) {
+-			sym = elf_create_undef_symbol(file->elf, name);
+-			if (!sym) {
+-				WARN("elf_create_undef_symbol");
+-				return -1;
+-			}
+-		}
+-
+-		if (elf_add_alternative(file->elf, insn, sym,
+-					ALT_NOT(X86_FEATURE_RETPOLINE), 5, 5)) {
+-			WARN("elf_add_alternative");
+-			return -1;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+ int arch_decode_hint_reg(u8 sp_reg, int *base)
+ {
+ 	switch (sp_reg) {
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -653,6 +653,52 @@ static int create_retpoline_sites_sectio
+@@ -606,6 +606,52 @@ static int create_static_call_sections(s
  	return 0;
  }
  
-+static int create_return_sites_sections(struct objtool_file *file)
++static int create_retpoline_sites_sections(struct objtool_file *file)
 +{
 +	struct instruction *insn;
 +	struct section *sec;
 +	int idx;
 +
-+	sec = find_section_by_name(file->elf, ".return_sites");
++	sec = find_section_by_name(file->elf, ".retpoline_sites");
 +	if (sec) {
-+		WARN("file already has .return_sites, skipping");
++		WARN("file already has .retpoline_sites, skipping");
 +		return 0;
 +	}
 +
 +	idx = 0;
-+	list_for_each_entry(insn, &file->return_thunk_list, call_node)
++	list_for_each_entry(insn, &file->retpoline_call_list, call_node)
 +		idx++;
 +
 +	if (!idx)
 +		return 0;
 +
-+	sec = elf_create_section(file->elf, ".return_sites", 0,
++	sec = elf_create_section(file->elf, ".retpoline_sites", 0,
 +				 sizeof(int), idx);
 +	if (!sec) {
-+		WARN("elf_create_section: .return_sites");
++		WARN("elf_create_section: .retpoline_sites");
 +		return -1;
 +	}
 +
 +	idx = 0;
-+	list_for_each_entry(insn, &file->return_thunk_list, call_node) {
++	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
 +
 +		int *site = (int *)sec->data->d_buf + idx;
 +		*site = 0;
@@ -140,7 +275,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 +					  idx * sizeof(int),
 +					  R_X86_64_PC32,
 +					  insn->sec, insn->offset)) {
-+			WARN("elf_add_reloc_to_insn: .return_sites");
++			WARN("elf_add_reloc_to_insn: .retpoline_sites");
 +			return -1;
 +		}
 +
@@ -153,99 +288,259 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  /*
   * Warnings shouldn't be reported for ignored functions.
   */
-@@ -888,6 +934,11 @@ __weak bool arch_is_retpoline(struct sym
- 	return false;
+@@ -893,6 +939,11 @@ static void annotate_call_site(struct ob
+ 		return;
+ 	}
+ 
++	if (sym->retpoline_thunk) {
++		list_add_tail(&insn->call_node, &file->retpoline_call_list);
++		return;
++	}
++
+ 	/*
+ 	 * Many compilers cannot disable KCOV with a function attribute
+ 	 * so they need a little help, NOP out any KCOV calls from noinstr
+@@ -933,6 +984,39 @@ static void add_call_dest(struct objtool
+ 	annotate_call_site(file, insn, sibling);
  }
  
-+__weak bool arch_is_rethunk(struct symbol *sym)
-+{
-+	return false;
-+}
-+
- #define NEGATIVE_RELOC	((void *)-1L)
- 
- static struct reloc *insn_reloc(struct objtool_file *file, struct instruction *insn)
-@@ -1029,6 +1080,19 @@ static void add_retpoline_call(struct ob
- 
- 	annotate_call_site(file, insn, false);
- }
-+
-+static void add_return_call(struct objtool_file *file, struct instruction *insn)
++static void add_retpoline_call(struct objtool_file *file, struct instruction *insn)
 +{
 +	/*
-+	 * Return thunk tail calls are really just returns in disguise,
++	 * Retpoline calls/jumps are really dynamic calls/jumps in disguise,
 +	 * so convert them accordingly.
 +	 */
-+	insn->type = INSN_RETURN;
++	switch (insn->type) {
++	case INSN_CALL:
++		insn->type = INSN_CALL_DYNAMIC;
++		break;
++	case INSN_JUMP_UNCONDITIONAL:
++		insn->type = INSN_JUMP_DYNAMIC;
++		break;
++	case INSN_JUMP_CONDITIONAL:
++		insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
++		break;
++	default:
++		return;
++	}
++
 +	insn->retpoline_safe = true;
 +
-+	list_add_tail(&insn->call_node, &file->return_thunk_list);
-+}
++	/*
++	 * Whatever stack impact regular CALLs have, should be undone
++	 * by the RETURN of the called function.
++	 *
++	 * Annotated intra-function calls retain the stack_ops but
++	 * are converted to JUMP, see read_intra_function_calls().
++	 */
++	remove_insn_ops(insn);
 +
++	annotate_call_site(file, insn, false);
++}
  /*
   * Find the destination instructions for all jumps.
   */
-@@ -1053,6 +1117,9 @@ static int add_jump_destinations(struct
+@@ -955,19 +1039,7 @@ static int add_jump_destinations(struct
+ 			dest_sec = reloc->sym->sec;
+ 			dest_off = arch_dest_reloc_offset(reloc->addend);
  		} else if (reloc->sym->retpoline_thunk) {
- 			add_retpoline_call(file, insn);
+-			/*
+-			 * Retpoline jumps are really dynamic jumps in
+-			 * disguise, so convert them accordingly.
+-			 */
+-			if (insn->type == INSN_JUMP_UNCONDITIONAL)
+-				insn->type = INSN_JUMP_DYNAMIC;
+-			else
+-				insn->type = INSN_JUMP_DYNAMIC_CONDITIONAL;
+-
+-			list_add_tail(&insn->call_node,
+-				      &file->retpoline_call_list);
+-
+-			insn->retpoline_safe = true;
++			add_retpoline_call(file, insn);
  			continue;
-+		} else if (reloc->sym->return_thunk) {
-+			add_return_call(file, insn);
-+			continue;
  		} else if (insn->func) {
  			/* internal or external sibling call (with reloc) */
- 			add_call_dest(file, insn, reloc->sym, true);
-@@ -1842,6 +1909,9 @@ static int classify_symbols(struct objto
- 			if (arch_is_retpoline(func))
- 				func->retpoline_thunk = true;
+@@ -1096,18 +1168,7 @@ static int add_call_destinations(struct
+ 			add_call_dest(file, insn, dest, false);
  
-+			if (arch_is_rethunk(func))
-+				func->return_thunk = true;
-+
- 			if (!strcmp(func->name, "__fentry__"))
- 				func->fentry = true;
+ 		} else if (reloc->sym->retpoline_thunk) {
+-			/*
+-			 * Retpoline calls are really dynamic calls in
+-			 * disguise, so convert them accordingly.
+-			 */
+-			insn->type = INSN_CALL_DYNAMIC;
+-			insn->retpoline_safe = true;
+-
+-			list_add_tail(&insn->call_node,
+-				      &file->retpoline_call_list);
+-
+-			remove_insn_ops(insn);
+-			continue;
++			add_retpoline_call(file, insn);
  
-@@ -3235,6 +3305,11 @@ int check(struct objtool_file *file)
- 		if (ret < 0)
- 			goto out;
- 		warnings += ret;
-+
-+		ret = create_return_sites_sections(file);
+ 		} else
+ 			add_call_dest(file, insn, reloc->sym, false);
+@@ -1806,11 +1867,6 @@ static void mark_rodata(struct objtool_f
+ 	file->rodata = found;
+ }
+ 
+-__weak int arch_rewrite_retpolines(struct objtool_file *file)
+-{
+-	return 0;
+-}
+-
+ static int decode_sections(struct objtool_file *file)
+ {
+ 	int ret;
+@@ -1879,15 +1935,6 @@ static int decode_sections(struct objtoo
+ 	if (ret)
+ 		return ret;
+ 
+-	/*
+-	 * Must be after add_special_section_alts(), since this will emit
+-	 * alternatives. Must be after add_{jump,call}_destination(), since
+-	 * those create the call insn lists.
+-	 */
+-	ret = arch_rewrite_retpolines(file);
+-	if (ret)
+-		return ret;
+-
+ 	return 0;
+ }
+ 
+@@ -3159,6 +3206,13 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	warnings += ret;
+ 
++	if (retpoline) {
++		ret = create_retpoline_sites_sections(file);
 +		if (ret < 0)
 +			goto out;
 +		warnings += ret;
- 	}
- 
++	}
++
  	if (stats) {
+ 		printf("nr_insns_visited: %ld\n", nr_insns_visited);
+ 		printf("nr_cfi: %ld\n", nr_cfi);
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -766,89 +766,6 @@ static int elf_add_string(struct elf *el
+ 	return len;
+ }
+ 
+-struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name)
+-{
+-	struct section *symtab, *symtab_shndx;
+-	struct symbol *sym;
+-	Elf_Data *data;
+-	Elf_Scn *s;
+-
+-	sym = malloc(sizeof(*sym));
+-	if (!sym) {
+-		perror("malloc");
+-		return NULL;
+-	}
+-	memset(sym, 0, sizeof(*sym));
+-
+-	sym->name = strdup(name);
+-
+-	sym->sym.st_name = elf_add_string(elf, NULL, sym->name);
+-	if (sym->sym.st_name == -1)
+-		return NULL;
+-
+-	sym->sym.st_info = GELF_ST_INFO(STB_GLOBAL, STT_NOTYPE);
+-	// st_other 0
+-	// st_shndx 0
+-	// st_value 0
+-	// st_size 0
+-
+-	symtab = find_section_by_name(elf, ".symtab");
+-	if (!symtab) {
+-		WARN("can't find .symtab");
+-		return NULL;
+-	}
+-
+-	s = elf_getscn(elf->elf, symtab->idx);
+-	if (!s) {
+-		WARN_ELF("elf_getscn");
+-		return NULL;
+-	}
+-
+-	data = elf_newdata(s);
+-	if (!data) {
+-		WARN_ELF("elf_newdata");
+-		return NULL;
+-	}
+-
+-	data->d_buf = &sym->sym;
+-	data->d_size = sizeof(sym->sym);
+-	data->d_align = 1;
+-
+-	sym->idx = symtab->len / sizeof(sym->sym);
+-
+-	symtab->len += data->d_size;
+-	symtab->changed = true;
+-
+-	symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
+-	if (symtab_shndx) {
+-		s = elf_getscn(elf->elf, symtab_shndx->idx);
+-		if (!s) {
+-			WARN_ELF("elf_getscn");
+-			return NULL;
+-		}
+-
+-		data = elf_newdata(s);
+-		if (!data) {
+-			WARN_ELF("elf_newdata");
+-			return NULL;
+-		}
+-
+-		data->d_buf = &sym->sym.st_size; /* conveniently 0 */
+-		data->d_size = sizeof(Elf32_Word);
+-		data->d_align = 4;
+-		data->d_type = ELF_T_WORD;
+-
+-		symtab_shndx->len += 4;
+-		symtab_shndx->changed = true;
+-	}
+-
+-	sym->sec = find_section_by_index(elf, 0);
+-
+-	elf_add_symbol(elf, sym);
+-
+-	return sym;
+-}
+-
+ struct section *elf_create_section(struct elf *elf, const char *name,
+ 				   unsigned int sh_flags, size_t entsize, int nr)
+ {
 --- a/tools/objtool/elf.h
 +++ b/tools/objtool/elf.h
-@@ -58,6 +58,7 @@ struct symbol {
- 	u8 uaccess_safe      : 1;
- 	u8 static_call_tramp : 1;
- 	u8 retpoline_thunk   : 1;
-+	u8 return_thunk      : 1;
- 	u8 fentry            : 1;
- 	u8 kcov              : 1;
- };
---- a/tools/objtool/objtool.c
-+++ b/tools/objtool/objtool.c
-@@ -62,6 +62,7 @@ struct objtool_file *objtool_open_read(c
- 	INIT_LIST_HEAD(&file.insn_list);
- 	hash_init(file.insn_hash);
- 	INIT_LIST_HEAD(&file.retpoline_call_list);
-+	INIT_LIST_HEAD(&file.return_thunk_list);
- 	INIT_LIST_HEAD(&file.static_call_list);
- 	file.c_file = !vmlinux && find_section_by_name(file.elf, ".comment");
- 	file.ignore_unreachables = no_unreachable;
---- a/tools/objtool/objtool.h
-+++ b/tools/objtool/objtool.h
-@@ -19,6 +19,7 @@ struct objtool_file {
- 	struct list_head insn_list;
- 	DECLARE_HASHTABLE(insn_hash, 20);
- 	struct list_head retpoline_call_list;
-+	struct list_head return_thunk_list;
- 	struct list_head static_call_list;
- 	bool ignore_unreachables, c_file, hints, rodata;
- };
+@@ -136,7 +136,6 @@ int elf_write_insn(struct elf *elf, stru
+ 		   unsigned long offset, unsigned int len,
+ 		   const char *insn);
+ int elf_write_reloc(struct elf *elf, struct reloc *reloc);
+-struct symbol *elf_create_undef_symbol(struct elf *elf, const char *name);
+ int elf_write(struct elf *elf);
+ void elf_close(struct elf *elf);
+ 
+--- a/tools/objtool/special.c
++++ b/tools/objtool/special.c
+@@ -105,14 +105,6 @@ static int get_alt_entry(struct elf *elf
+ 			return -1;
+ 		}
+ 
+-		/*
+-		 * Skip retpoline .altinstr_replacement... we already rewrite the
+-		 * instructions for retpolines anyway, see arch_is_retpoline()
+-		 * usage in add_{call,jump}_destinations().
+-		 */
+-		if (arch_is_retpoline(new_reloc->sym))
+-			return 1;
+-
+ 		reloc_to_sec_off(new_reloc, &alt->new_sec, &alt->new_off);
+ 
+ 		/* _ASM_EXTABLE_EX hack */
 
 
