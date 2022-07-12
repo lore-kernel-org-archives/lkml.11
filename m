@@ -2,203 +2,396 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C29BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 17:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B575CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233429AbiGLRy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 13:54:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55806 "EHLO
+        id S233446AbiGLR76 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 13:59:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230047AbiGLRyz (ORCPT
+        with ESMTP id S232488AbiGLR75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 13:54:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4962C13E0B;
-        Tue, 12 Jul 2022 10:54:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657648495; x=1689184495;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=I6axTZti0Agbl7Q5HIyLKikfCQ6sz4AlrGfaSkBZ754=;
-  b=N7x4wzJlCf58xoYc3ND34ydILy/DSvgO2hbyU/9wKwSvs4YCdbfo6DcI
-   zmKkP/aCTqMTEuuwnJD4O7nLSwZwtu8w0eIJzWGcYMTj+Ltx+MG8+yWFb
-   kxDc4+2oclB6+zyuRUCayPWkvXJz0+4ss2yaRIDgZtoLsWzNfkmJERJBq
-   2HTziRIUiHeu5PRIPax2g+6Yrw82sFWhRytpGtYhi3AKpLe9keOSSeo1o
-   b65O2jF71bndx7NeBh2IbmjHeLBv+T8L8zoNwkHRGpsWI8Tjz+UVY7ZbG
-   Fit3O7hCmMqeui1/+WvPBrKOqc1EVURlhoGwzMh8tOd3HrtyO+o0GMuLn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265416894"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="265416894"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 10:54:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="698107464"
-Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
-  by fmsmga002.fm.intel.com with ESMTP; 12 Jul 2022 10:54:54 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 12 Jul 2022 10:54:54 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 12 Jul 2022 10:54:54 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 12 Jul 2022 10:54:54 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 12 Jul 2022 10:54:53 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mktYp0mpXONKZaEQvWtft1Wnp0YPdcmaC86badbecF3Tfu9mVjh5oaTNONbNejOuU1wyiYH1is4Sf7r1h2928qLiUobKNcj/Ip7VpAY/rFfuXPL7vvd1j32P6WhxrDw+VOWNwgEhs4K3+LDK3M5bQBq1PuEWNbaBTrfxpzAeIgLJIHz1khnUR9fAbyljrODh0QW6Ka1dbitOlSc6I6jRF1jYn5syamfWdJyQ+ibn/lH59dZhBSfLv8H3RUtoXZ6S0qp57z7v2lYwPxJKs+7VFbJxw74E6Tk6Mjx5id0hH9O8oGJJsWhtlpzZBJDDeNh3KxniiewMZwIoudlDNHKdDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5opj3bWTcb3+ScJcT8b2xfK1K/vNYfApIc6jX6Nd1kE=;
- b=B3yrDwAwplzSZrScVyb9jdD8bbboOrah3KJeDetglmNA3nl97X87W01gpdZO6l9+8vHFA6O4zPlJLR49OyVE4uQcRFXYqu4cXCOOwsDK581MyEucFxQGv8JnfZJrH9wycayF2CSJc/ZePPYCRG9j67rsxXyRifhPeeH/JlsnUbf91lSddWXZk0JkTMMBrDHlHHzZ9kDwiz43HaPA6etd1yn4JIDIFmU6aV5pupE6vXNtn9Hb/UfPhL7ZvvTzrk2Fr9BbDKRaJiXDj4m0C6335nAcjsXqIJK8aD7zMEC6lUqchzHUtQgBsrFxods2gBIIluNCFhblEavMpt1tbFA0UQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MW4PR11MB5933.namprd11.prod.outlook.com (2603:10b6:303:16a::15)
- by CO6PR11MB5587.namprd11.prod.outlook.com (2603:10b6:303:139::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Tue, 12 Jul
- 2022 17:54:52 +0000
-Received: from MW4PR11MB5933.namprd11.prod.outlook.com
- ([fe80::71d0:716c:7d6d:94c4]) by MW4PR11MB5933.namprd11.prod.outlook.com
- ([fe80::71d0:716c:7d6d:94c4%3]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 17:54:52 +0000
-Message-ID: <db39a1c0-45e5-7458-00c5-87ebd56f3894@intel.com>
-Date:   Wed, 13 Jul 2022 01:54:41 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH] kunit: executor: Fix a memory leak on failure in
- kunit_filter_tests
-Content-Language: en-US
-To:     David Gow <davidgow@google.com>
-CC:     <kunit-dev@googlegroups.com>, <linux-kselftest@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        <llvm@lists.linux.dev>, Shuah Khan <skhan@linuxfoundation.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Daniel Latypov <dlatypov@google.com>
-References: <20220712095627.1770312-1-davidgow@google.com>
-From:   Yujie Liu <yujie.liu@intel.com>
-In-Reply-To: <20220712095627.1770312-1-davidgow@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0059.apcprd02.prod.outlook.com
- (2603:1096:4:54::23) To MW4PR11MB5933.namprd11.prod.outlook.com
- (2603:10b6:303:16a::15)
+        Tue, 12 Jul 2022 13:59:57 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72347B6DAB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:59:54 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so9150611pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 10:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/G0DDZaE1NIOrqy5BRsHqgUbEx+jksrp+9dmSSmyp7Y=;
+        b=nd4B3HXTEpQlHv1ZF6Ub9xw48XHN6vwcEAzyzUnSSn0uLCdNsolCnggOVbYElnE4L8
+         YN4EHeQdlgjIIEogyKkqkSqwSB+VNyKNMX+4QQXiVbSgCak/ir2F60cHhYcCPK3inwzg
+         QRJz5rVm/4dQcpWnucjDnce0DF+DUnwc/9Evk5aRiIRbaheDLG/sBOwG4eHUXBEjbJc7
+         s4NRVuEc3ajg5/m/3h57RWb19yLX9IaPDrXrK/pex6yySwXyQBp8A8JmCTZt0U0rVL3N
+         VR8ueHFZOJ3e4ZvFytPKNjGRiNaQlOcBTCCtR0Up5W1Se2aO/hSid4/wUki5J4GJ80k9
+         hLkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/G0DDZaE1NIOrqy5BRsHqgUbEx+jksrp+9dmSSmyp7Y=;
+        b=e6QPt2HxOjfHFzFIcKh5/om2e1rUlGbimMZYihqJR0Cc2LnX+usBNBauYzTCX9JiWF
+         Neu7g9CdC1kB9llqycX254WZVrWOidP5WgOqoDYBnmhU5OowVUYqg0f4drXwXUG3Ovh4
+         V+2TjmnVBffBd8u3zq7v+j05do+2wF34QBGZQ9fNK2K2GFig6E31Q/zxLrkBBp4CBsgz
+         8b1MjISvVtjG3HZqL1pauY/A4Hc3YjHBETheGHpHK5XC71xGfAuFCzw1QzbIJF5rFFJd
+         nBTidKElP5YT5OzFeNB18GMdC/y2sZKL1ulsgfcjLr7xX/WXUWJOJrtIBiHW3E/OSeBY
+         5YHw==
+X-Gm-Message-State: AJIora9hN8d+PYGAFOkemXgXoa4V3Tru+UsnVvUR3dJz3fMsciQbMnBb
+        ADKt4JL2iWfmCOVuIfub3tavVQ==
+X-Google-Smtp-Source: AGRyM1s5W3ZLpfE03NYqOFOmC2p8eVAXh7vv8P+5VAMvHNqcxM8kZH6pv0cfRRC5p3/A+9bzCxAYUw==
+X-Received: by 2002:a17:90b:314e:b0:1ef:9db1:a2b9 with SMTP id ip14-20020a17090b314e00b001ef9db1a2b9mr5615974pjb.18.1657648793906;
+        Tue, 12 Jul 2022 10:59:53 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id t6-20020aa79466000000b005289c9a46aesm7192336pfq.80.2022.07.12.10.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 10:59:52 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 11:59:49 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-remoteproc@vger.kernel.org, devicetree@vger.kernel.org,
+        nm@ti.com, ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, rogerq@kernel.org,
+        grygorii.strashko@ti.com, vigneshr@ti.com, kishon@ti.com,
+        robh@kernel.org
+Subject: Re: [PATCH v5 2/6] remoteproc: pru: Add APIs to get and put the PRU
+ cores
+Message-ID: <20220712175949.GB2945984@p14s>
+References: <20220607045650.4999-1-p-mohan@ti.com>
+ <20220607045650.4999-3-p-mohan@ti.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f44017d7-ec97-4c6e-27e4-08da642f9efd
-X-MS-TrafficTypeDiagnostic: CO6PR11MB5587:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RcyAcpn1UnJwZWvOpcfOr7rMWw2uUAAU0cyCcqYPJtdpC5wwgR+t0nRUDbaFoDXZ6j+Tjkk3SBTl6Px3S7skHrzH4Ur7iyC+mUPqWkhKs1tXFJT5Of+20wELboQ50WF9GRnmDmDVAawr6vx1aIqfjCn3LTJwB0W4XQPLenfCVSBY1Mb49Sid7cDYJmW7TBcLEvaqqkO1m7KVBU/zrh3lPSw+PuoWms4DACz5PsnxrATvcmHkkhPlwVGVeBwK5Wdm9cz3IV+5ugwcyWyKGNsEspYU3HZHfXND1pmGh/r3W9nIt96L54NDr91QFjH8S7k890Y/Wtzaaz686Sr+Jf0Q9bXmFEqQBfqXJq7xphbDOvP/g4Wn+Rmjuz8qvy9ODTAylx1Yeo+cKr0fKGvDG4H1z7+IukiWB6y2p1zKqAS3NnVH5wO36KuX5Pa14CCUnuSPfnykTi4yMstog7PvpfEaSRcHUuSrLtmHXIHuUu/VKAOFMJdpI/U0eQL5yV00r9tRjqd8HpIv5X3qGn3mW+yepNYd7BLYWuQ93FjTty9TFaO71q53jTpfC5gV4HmSTHgPrygWOnhvrSPZ55v5aCS/d4UW545mIePi1tbUN/eFNiAeYZYl04M0Qpeu1OL53CB54C5yUJUZxWmj9Khppz9Dn8UbZ7JNkv2GDf/W1maImM17a0bKANb0hWRtqOi9zg/d6viLRpJNNhKaothve6CBFjnt5+corNgEeZSRyfUqQJ4FsRIz51Rwwj5/DGaCYXGQL9O2Nu2W1cxPQiYsxaXXzwZuyk6P25LeyMmqsjIipyBCqeWPyME0rtszKVg71ZkQW5s5njQHwzFuNxwmT++K1LgHHCIL5pfKlFLcunvmBQnRUKh8vg2fwIN4suugoTJr
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5933.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(376002)(366004)(346002)(136003)(39860400002)(38100700002)(82960400001)(31696002)(5660300002)(44832011)(8676002)(8936002)(66476007)(66946007)(86362001)(66556008)(83380400001)(316002)(2906002)(2616005)(966005)(478600001)(6506007)(54906003)(4326008)(53546011)(31686004)(41300700001)(186003)(6512007)(6916009)(26005)(6486002)(36756003)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Zm80UEFoNGhmTjgyeDNWQ2c1emdPUm1rL2Ivd0tXQ1gxOC91SFBCZlo2THBz?=
- =?utf-8?B?RHBDNWtGL1ZYdTNNVDFHeGRLYUZKZ1V4d0tLcmFCbHZJdVRieDVLbzBoeGtu?=
- =?utf-8?B?YU5Wb1JjZEFYekZQYmNoVnpCTFlLS25HOW1GRkkyU3NRQzY1ZVVrVXVUUExP?=
- =?utf-8?B?QU9KQ1hEZG5lTWJZWkRxOXJHdnNBcXNuVkZqNDc0L2w3Zm9RdGhBOW5aWFU0?=
- =?utf-8?B?NnJYTld2Zk9VVnJia0xFbGZBMllrbkkzUVN6akI2RGlvMjlKZWV6MXRUNUpx?=
- =?utf-8?B?VWQ5SEttZHErSDM0M2FuSVRFMVFsVEppWVFaVitiR1ZPbG9pWVJicjF2aW5Q?=
- =?utf-8?B?ZmVHMkVFTmk5azM2amlrRGEwSkIyeVJhREZrSlQ0K012a0VXMkN4cmswQk9h?=
- =?utf-8?B?TEs1bEE5bVRmbG94bWlia1QxRmJndHVsOVd4UGtDWWpNMWZYU2x6cWZwN2dR?=
- =?utf-8?B?RU5IQk5SUDRjL3kyZG4wZ0xlMk5YS2FPaTVqVGV6OHRBdW8xMGRZSzF2aWx0?=
- =?utf-8?B?K25oVW1JVnBrcFROM0VyQXpYVWQvd0xKU0t0V0RJaUg5TGFrQll2UGtMVk5u?=
- =?utf-8?B?QzdNS3U1MHA1UGZoNFIvL2lkMUdubllkU0JMNG5naHZxRGxaRUQxbzNGRTFy?=
- =?utf-8?B?eUdBaWFOaU1CdE94QUlFOG5IODdRaVQrZHE5Vll2ZU4xTEM4SVBkRnZXbkE3?=
- =?utf-8?B?NDZwcEFMQmFyZnA5UmxteHNKVDN5a0IwRXBGbDdNbGdyZndMVHFlOWtSYjdy?=
- =?utf-8?B?UmRLRUVWY3VkczZBdFB3ZDhCN09xNWEzdFdnam9QVFlTdFF3SXBUNk50Lzk2?=
- =?utf-8?B?Zm5iZjdGU3F4Y1BjSzRlaUN5Z1IreXRGUy83UjNWeHB1Vm8yZi9NRHg5YUtN?=
- =?utf-8?B?U0hXdFVKOTdQeldHdHFWQ01kMWdUZ2w4MTR6aFJrTGxpRzZvMlJjYWQ0S3J2?=
- =?utf-8?B?ajBxSU1SQk0ybkhCVFNMWnVJL3Y4cHNMSTBjRkp4OFJCUkF5TVk4dEd0ZEY4?=
- =?utf-8?B?WUkwYkE4clNaRzhGT3hneXR2WHJmdTA1L3ZNV3hIeVhDRHNnUDJ1bXBkL3gz?=
- =?utf-8?B?NzNVOGR3SlFRRFJZaVduT2RwSUQzblAySzVGRnZGOVNrellMQTNGRWdGcHIy?=
- =?utf-8?B?Kzg5bDJBN3VLM3NkNmd1MFFVTVMvR1FOekhuKzBNN1BYbitqMm5jU2JoM1d1?=
- =?utf-8?B?L25tQkFvVkJlay9pcGlvZUhqbnN4bkEwR0R5Z3IzMFNubzdERzJBWnBQUXF6?=
- =?utf-8?B?WWhTSy9wMEd3U0hZem1FcXY4bEMwWWczYmoxNk5EU2lpdjIvWWxvTmI1c015?=
- =?utf-8?B?Y3NYM0YwSE4zQld0UmRGOWlQZEdpeHhqbWwvbnhGSE9BVHV5TTJmckVkcXhl?=
- =?utf-8?B?Ry91QzhOOTljNUkvOXpOUnRhUG5CTytHejIwbzB6Z0U0elNPWXA3ZGs5R0k4?=
- =?utf-8?B?T2RtSDhZOER6dTJSZVNuMEtQQjVSdWtSbUpENld0cE5RY2F5SGZDTVdSYWEx?=
- =?utf-8?B?K2dibGU3UUVxWGpoMHhnS2dpcDFWcVlhVWZYd3M2MWdUclh3MXA2WmxkQ1hK?=
- =?utf-8?B?NFhueS90Y2RNYzVWM1c0Z2JTRTl3UUVjN0JSV25pbWtkZlpVNXJ6eDc3enZh?=
- =?utf-8?B?UFR0U0E3bUY3K1lZMWg3SWc3Vm9XUmIyRUZoMUJmWXFXMWhkc041RGdkOTlF?=
- =?utf-8?B?RHdZSVBSZkRmZ29sQUZ6bzZiRlZubjNYQ001ZS96ak1yUTVaV1Y0STNReTRG?=
- =?utf-8?B?dlBnd1R4MXJkKzE4T2dPazhsNVcvNW9vaWlQNkdLZnlmbG9CcmdXM2xmWlhv?=
- =?utf-8?B?TmdabExrREJ1eW9zbTZWS1BOUTRER2s1ckJINnArcE1JY09tUEhTQ2pFVWlQ?=
- =?utf-8?B?dGhQNGpEWm4zcjlRbDFQcHNMeUNoRUJZNUxvRjZlc0M2bUJzUTJBc3Nudmda?=
- =?utf-8?B?b3h4eXg0OEp4dmtNZy9WZ3JrYTFta3lkMUNDS1p4aXJQL1luUlo1Zm1XTG1y?=
- =?utf-8?B?QU1TUGFoc29JVHVPYjJtT3YzcDhTVS9KZ0ZTa3RPVHByOWFla2Z4ODRISSt5?=
- =?utf-8?B?VmhWTGQzQjNPemE1eXlGUjE1K2RTNlh3VnZWMGd0SlFHRmVMME1wZk5DZTBt?=
- =?utf-8?Q?HcX0eZcGNknta4c9+JNnpFt53?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: f44017d7-ec97-4c6e-27e4-08da642f9efd
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5933.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 17:54:52.3102
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VcrYeGkjocRk5Q8RC5o7zGtJDcYH76r/TI/TuSSWwzXsO/etaM46LF61MCrgEC1Nu2QlaOCyx67UFudESx9aVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR11MB5587
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220607045650.4999-3-p-mohan@ti.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi David,
+Hi Puranjay,
 
-On 7/12/2022 17:56, David Gow wrote:
-> It's possible that memory allocation for the copy will fail, but for the
+On Tue, Jun 07, 2022 at 10:26:46AM +0530, Puranjay Mohan wrote:
+> From: Tero Kristo <t-kristo@ti.com>
+> 
+> Add two new APIs, pru_rproc_get() and pru_rproc_put(), to the PRU
+> driver to allow client drivers to acquire and release the remoteproc
+> device associated with a PRU core. The PRU cores are treated as
+> resources with only one client owning it at a time.
+> 
+> The pru_rproc_get() function returns the rproc handle corresponding
+> to a PRU core identified by the device tree "ti,prus" property under
+> the client node. The pru_rproc_put() is the complementary function
+> to pru_rproc_get().
+> 
+> Co-developed-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Suman Anna <s-anna@ti.com>
+> Signed-off-by: Tero Kristo <t-kristo@ti.com>
+> Co-developed-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Signed-off-by: Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>
+> Co-developed-by: Puranjay Mohan <p-mohan@ti.com>
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> ---
+>  drivers/remoteproc/pru_rproc.c | 138 +++++++++++++++++++++++++++++++--
+>  include/linux/pruss.h          |  56 +++++++++++++
+>  2 files changed, 189 insertions(+), 5 deletions(-)
+>  create mode 100644 include/linux/pruss.h
+> 
+> diff --git a/drivers/remoteproc/pru_rproc.c b/drivers/remoteproc/pru_rproc.c
+> index 1777a01fa84e..7a35b400287a 100644
+> --- a/drivers/remoteproc/pru_rproc.c
+> +++ b/drivers/remoteproc/pru_rproc.c
+> @@ -2,12 +2,13 @@
+>  /*
+>   * PRU-ICSS remoteproc driver for various TI SoCs
+>   *
+> - * Copyright (C) 2014-2020 Texas Instruments Incorporated - https://www.ti.com/
+> + * Copyright (C) 2014-2022 Texas Instruments Incorporated - https://www.ti.com/
+>   *
+>   * Author(s):
+>   *	Suman Anna <s-anna@ti.com>
+>   *	Andrew F. Davis <afd@ti.com>
+>   *	Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org> for Texas Instruments
+> + *	Puranjay Mohan <p-mohan@ti.com>
+>   */
+>  
+>  #include <linux/bitops.h>
+> @@ -16,6 +17,7 @@
+>  #include <linux/module.h>
+>  #include <linux/of_device.h>
+>  #include <linux/of_irq.h>
+> +#include <linux/pruss.h>
+>  #include <linux/pruss_driver.h>
+>  #include <linux/remoteproc.h>
+>  
+> @@ -111,6 +113,8 @@ struct pru_private_data {
+>   * @rproc: remoteproc pointer for this PRU core
+>   * @data: PRU core specific data
+>   * @mem_regions: data for each of the PRU memory regions
+> + * @client_np: client device node
+> + * @lock: mutex to protect client usage
+>   * @fw_name: name of firmware image used during loading
+>   * @mapped_irq: virtual interrupt numbers of created fw specific mapping
+>   * @pru_interrupt_map: pointer to interrupt mapping description (firmware)
+> @@ -126,6 +130,8 @@ struct pru_rproc {
+>  	struct rproc *rproc;
+>  	const struct pru_private_data *data;
+>  	struct pruss_mem_region mem_regions[PRU_IOMEM_MAX];
+> +	struct device_node *client_np;
+> +	struct mutex lock; /* client access lock */
+>  	const char *fw_name;
+>  	unsigned int *mapped_irq;
+>  	struct pru_irq_rsc *pru_interrupt_map;
+> @@ -146,6 +152,125 @@ void pru_control_write_reg(struct pru_rproc *pru, unsigned int reg, u32 val)
+>  	writel_relaxed(val, pru->mem_regions[PRU_IOMEM_CTRL].va + reg);
+>  }
+>  
+> +static struct rproc *__pru_rproc_get(struct device_node *np, int index)
+> +{
+> +	struct device_node *rproc_np = NULL;
+> +	struct platform_device *pdev;
+> +	struct rproc *rproc;
+> +
+> +	rproc_np = of_parse_phandle(np, "ti,prus", index);
+> +	if (!rproc_np || !of_device_is_available(rproc_np))
+> +		return ERR_PTR(-ENODEV);
+> +
+> +	pdev = of_find_device_by_node(rproc_np);
+> +	of_node_put(rproc_np);
+> +
+> +	if (!pdev || !(&pdev->dev) || !((&pdev->dev)->driver))
+> +		/* probably PRU not yet probed */
+> +		return ERR_PTR(-EPROBE_DEFER);
+> +
+> +	/* make sure it is PRU rproc */
+> +	if (!is_pru_rproc(&pdev->dev)) {
+> +		put_device(&pdev->dev);
+> +		return ERR_PTR(-ENODEV);
+> +	}
+> +
+> +	rproc = platform_get_drvdata(pdev);
+> +	put_device(&pdev->dev);
+> +	if (!rproc)
+> +		return ERR_PTR(-EPROBE_DEFER);
+> +
+> +	get_device(&rproc->dev);
+> +
+> +	return rproc;
+> +}
+> +
+> +/**
+> + * pru_rproc_get() - get the PRU rproc instance from a device node
+> + * @np: the user/client device node
+> + * @index: index to use for the ti,prus property
+> + * @pru_id: optional pointer to return the PRU remoteproc processor id
+> + *
+> + * This function looks through a client device node's "ti,prus" property at
+> + * index @index and returns the rproc handle for a valid PRU remote processor if
+> + * found. The function allows only one user to own the PRU rproc resource at a
+> + * time. Caller must call pru_rproc_put() when done with using the rproc, not
+> + * required if the function returns a failure.
+> + *
+> + * When optional @pru_id pointer is passed the PRU remoteproc processor id is
+> + * returned.
+> + *
+> + * Return: rproc handle on success, and an ERR_PTR on failure using one
+> + * of the following error values
+> + *    -ENODEV if device is not found
+> + *    -EBUSY if PRU is already acquired by anyone
+> + *    -EPROBE_DEFER is PRU device is not probed yet
+> + */
+> +struct rproc *pru_rproc_get(struct device_node *np, int index,
+> +			    enum pruss_pru_id *pru_id)
+> +{
+> +	struct rproc *rproc;
+> +	struct pru_rproc *pru;
+> +	struct device *dev;
+> +
+> +	try_module_get(THIS_MODULE);
 
-I think it is "for the _filtered_ will fail". Maybe a typo?
+There should be a module_put() in pru_rproc_put()...
+
+More comments to come tomorrow.  I'm especially worried about this API racing
+with a remote processor being removed or detached.
 
 Thanks,
-Yujie
+Mathieu
 
-> copy of the suite to succeed. In this case, the copy could be leaked.
-> 
-> Properly free 'copy' in the error case for the allocation of 'filtered'
-> failing.
-> 
-> Note that there may also have been a similar issue in
-> kunit_filter_subsuites, before it was removed in "kunit: flatten
-> kunit_suite*** to kunit_suite** in .kunit_test_suites".
-> 
-> This was reported by clang-analyzer via the kernel test robot, here:
-> https://lore.kernel.org/all/c8073b8e-7b9e-0830-4177-87c12f16349c@intel.com/
-> 
-> Fixes: a02353f49162 ("kunit: bail out of test filtering logic quicker if OOM")
-> Reported-by: kernel test robot <yujie.liu@intel.com>
-> Signed-off-by: David Gow <davidgow@google.com>
-> ---
->   lib/kunit/executor.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/lib/kunit/executor.c b/lib/kunit/executor.c
-> index 6c489d6c5e5d..5e223327196a 100644
-> --- a/lib/kunit/executor.c
-> +++ b/lib/kunit/executor.c
-> @@ -74,8 +74,10 @@ kunit_filter_tests(const struct kunit_suite *const suite, const char *test_glob)
->   		return ERR_PTR(-ENOMEM);
->   
->   	filtered = kcalloc(n + 1, sizeof(*filtered), GFP_KERNEL);
-> -	if (!filtered)
-> +	if (!filtered) {
-> +		kfree(copy);
->   		return ERR_PTR(-ENOMEM);
+> +
+> +	rproc = __pru_rproc_get(np, index);
+> +	if (IS_ERR(rproc))
+> +		return rproc;
+> +
+> +	pru = rproc->priv;
+> +	dev = &rproc->dev;
+> +
+> +	mutex_lock(&pru->lock);
+> +
+> +	if (pru->client_np) {
+> +		mutex_unlock(&pru->lock);
+> +		put_device(dev);
+> +		return ERR_PTR(-EBUSY);
 > +	}
->   
->   	n = 0;
->   	kunit_suite_for_each_test_case(suite, test_case) {
+> +
+> +	pru->client_np = np;
+> +
+> +	mutex_unlock(&pru->lock);
+> +
+> +	if (pru_id)
+> +		*pru_id = pru->id;
+> +
+> +	return rproc;
+> +}
+> +EXPORT_SYMBOL_GPL(pru_rproc_get);
+> +
+> +/**
+> + * pru_rproc_put() - release the PRU rproc resource
+> + * @rproc: the rproc resource to release
+> + *
+> + * Releases the PRU rproc resource and makes it available to other
+> + * users.
+> + */
+> +void pru_rproc_put(struct rproc *rproc)
+> +{
+> +	struct pru_rproc *pru;
+> +
+> +	if (IS_ERR_OR_NULL(rproc) || !is_pru_rproc(rproc->dev.parent))
+> +		return;
+> +
+> +	pru = rproc->priv;
+> +
+> +	mutex_lock(&pru->lock);
+> +
+> +	if (!pru->client_np) {
+> +		mutex_unlock(&pru->lock);
+> +		return;
+> +	}
+> +
+> +	pru->client_np = NULL;
+> +	mutex_unlock(&pru->lock);
+> +
+> +	put_device(&rproc->dev);
+> +}
+> +EXPORT_SYMBOL_GPL(pru_rproc_put);
+> +
+>  static inline u32 pru_debug_read_reg(struct pru_rproc *pru, unsigned int reg)
+>  {
+>  	return readl_relaxed(pru->mem_regions[PRU_IOMEM_DEBUG].va + reg);
+> @@ -438,7 +563,7 @@ static void *pru_d_da_to_va(struct pru_rproc *pru, u32 da, size_t len)
+>  	dram0 = pruss->mem_regions[PRUSS_MEM_DRAM0];
+>  	dram1 = pruss->mem_regions[PRUSS_MEM_DRAM1];
+>  	/* PRU1 has its local RAM addresses reversed */
+> -	if (pru->id == 1)
+> +	if (pru->id == PRUSS_PRU1)
+>  		swap(dram0, dram1);
+>  	shrd_ram = pruss->mem_regions[PRUSS_MEM_SHRD_RAM2];
+>  
+> @@ -747,14 +872,14 @@ static int pru_rproc_set_id(struct pru_rproc *pru)
+>  	case RTU0_IRAM_ADDR_MASK:
+>  		fallthrough;
+>  	case PRU0_IRAM_ADDR_MASK:
+> -		pru->id = 0;
+> +		pru->id = PRUSS_PRU0;
+>  		break;
+>  	case TX_PRU1_IRAM_ADDR_MASK:
+>  		fallthrough;
+>  	case RTU1_IRAM_ADDR_MASK:
+>  		fallthrough;
+>  	case PRU1_IRAM_ADDR_MASK:
+> -		pru->id = 1;
+> +		pru->id = PRUSS_PRU1;
+>  		break;
+>  	default:
+>  		ret = -EINVAL;
+> @@ -816,6 +941,8 @@ static int pru_rproc_probe(struct platform_device *pdev)
+>  	pru->pruss = platform_get_drvdata(ppdev);
+>  	pru->rproc = rproc;
+>  	pru->fw_name = fw_name;
+> +	pru->client_np = NULL;
+> +	mutex_init(&pru->lock);
+>  
+>  	for (i = 0; i < ARRAY_SIZE(mem_names); i++) {
+>  		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+> @@ -903,7 +1030,7 @@ MODULE_DEVICE_TABLE(of, pru_rproc_match);
+>  
+>  static struct platform_driver pru_rproc_driver = {
+>  	.driver = {
+> -		.name   = "pru-rproc",
+> +		.name   = PRU_RPROC_DRVNAME,
+>  		.of_match_table = pru_rproc_match,
+>  		.suppress_bind_attrs = true,
+>  	},
+> @@ -915,5 +1042,6 @@ module_platform_driver(pru_rproc_driver);
+>  MODULE_AUTHOR("Suman Anna <s-anna@ti.com>");
+>  MODULE_AUTHOR("Andrew F. Davis <afd@ti.com>");
+>  MODULE_AUTHOR("Grzegorz Jaszczyk <grzegorz.jaszczyk@linaro.org>");
+> +MODULE_AUTHOR("Puranjay Mohan <p-mohan@ti.com>");
+>  MODULE_DESCRIPTION("PRU-ICSS Remote Processor Driver");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/pruss.h b/include/linux/pruss.h
+> new file mode 100644
+> index 000000000000..fdc719b43db0
+> --- /dev/null
+> +++ b/include/linux/pruss.h
+> @@ -0,0 +1,56 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/**
+> + * PRU-ICSS Subsystem user interfaces
+> + *
+> + * Copyright (C) 2015-2022 Texas Instruments Incorporated - http://www.ti.com
+> + *	Suman Anna <s-anna@ti.com>
+> + */
+> +
+> +#ifndef __LINUX_PRUSS_H
+> +#define __LINUX_PRUSS_H
+> +
+> +#include <linux/device.h>
+> +#include <linux/types.h>
+> +
+> +#define PRU_RPROC_DRVNAME "pru-rproc"
+> +
+> +/*
+> + * enum pruss_pru_id - PRU core identifiers
+> + */
+> +enum pruss_pru_id {
+> +	PRUSS_PRU0 = 0,
+> +	PRUSS_PRU1,
+> +	PRUSS_NUM_PRUS,
+> +};
+> +
+> +struct device_node;
+> +
+> +#if IS_ENABLED(CONFIG_PRU_REMOTEPROC)
+> +
+> +struct rproc *pru_rproc_get(struct device_node *np, int index,
+> +			    enum pruss_pru_id *pru_id);
+> +void pru_rproc_put(struct rproc *rproc);
+> +
+> +#else
+> +
+> +static inline struct rproc *
+> +pru_rproc_get(struct device_node *np, int index, enum pruss_pru_id *pru_id)
+> +{
+> +	return ERR_PTR(-EOPNOTSUPP);
+> +}
+> +
+> +static inline void pru_rproc_put(struct rproc *rproc) { }
+> +
+> +#endif /* CONFIG_PRU_REMOTEPROC */
+> +
+> +static inline bool is_pru_rproc(struct device *dev)
+> +{
+> +	const char *drv_name = dev_driver_string(dev);
+> +
+> +	if (strncmp(drv_name, PRU_RPROC_DRVNAME, sizeof(PRU_RPROC_DRVNAME)))
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+> +#endif /* __LINUX_PRUSS_H */
+> -- 
+> 2.17.1
+> 
