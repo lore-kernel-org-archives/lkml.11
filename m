@@ -2,91 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D85AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D94C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbiGLOwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S233771AbiGLOwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233751AbiGLOvy (ORCPT
+        with ESMTP id S233769AbiGLOwK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:51:54 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8965BA17F;
-        Tue, 12 Jul 2022 07:51:51 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id l124so7667138pfl.8;
-        Tue, 12 Jul 2022 07:51:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a1Tizn7ReuniA3QRV5u1tt09n7x6OjmxExAXJYs6xK4=;
-        b=Uu5iH68CcLbl4s9NpaGtnd4syR1tMhJ5Vy2j0bdg3iXbYLBtyhLe8wcMTw0P/DbY8A
-         F31jlpYxpHnpr8GmSm9mLL2pnwzTI1NgDGtRmOCSoujf3A6WigwrSL3QBldjG5nLX7ZS
-         sWGBWWbVZapagdySfWVvZGODJQ8jWc1UhpVFQauxJbU3/GLeb9txKalaK4JUvAx2SuYG
-         gBtrJELeekbs9SASNALkZqjijoVCvm/wGBDi9sZGw9uDJZ+X2WinobdzRHIYIiVFpsOU
-         YvqadQm4iKT5nQN1zwT984K48+GcqZhwA6lw4IJZNbmMpbaVI+CEspEkT39W0zI3Tdm7
-         Aavw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a1Tizn7ReuniA3QRV5u1tt09n7x6OjmxExAXJYs6xK4=;
-        b=PSZCLUcQLktaPU+IsznR6h5A/cmmSAOj4LEUKFz36CkHU4jGEy9ck5XP7o1scld3BT
-         nhnQ+2UNYX7rciDRkodfwF5CGnNBvbVRHTs4mZUZd/VjW2wfBfmxYpthtCOt6NJOmAhd
-         SiCPfgxwxyjEYolaNy3/HUkrA1hA41bEq734nXNwEZ8DVxfIun8/1x40n8+UP8DUixFv
-         DUtb4EyWvmyfkT42OXAv/qU+fDtnuVnGsHiCxubfwTQ+5yiI/lz7vkrYm9OvXTThnmw9
-         AQ67nkzhvQLc0j6YsVxgtcwWBqV+PW2F80QMZ6V1kJaqI5wm4rZy//x0yOoF8K6g+8ly
-         T3bw==
-X-Gm-Message-State: AJIora/TU3t88TIC993shLhIjELTzzF7vLRZfcIOjKFiaFX6z+py4Bfu
-        YlVTb0/ygf6W0kKLe823PGU=
-X-Google-Smtp-Source: AGRyM1vtYFCfK2Xj9SteX78/tUjbDahenzMUS3LxO9ubungtJ4sauypDsL+4f75WIf8f74sr9Z2Lww==
-X-Received: by 2002:a05:6a00:194a:b0:52a:d6ff:22e2 with SMTP id s10-20020a056a00194a00b0052ad6ff22e2mr8355015pfk.10.1657637511463;
-        Tue, 12 Jul 2022 07:51:51 -0700 (PDT)
-Received: from localhost.localdomain ([112.0.190.94])
-        by smtp.gmail.com with ESMTPSA id o11-20020a170903210b00b0016bf1e8f1besm6876926ple.28.2022.07.12.07.51.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:51:50 -0700 (PDT)
-From:   Molly Sophia <mollysophia379@gmail.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Molly Sophia <mollysophia379@gmail.com>
-Subject: [PATCH v6 1/2] dt-bindings: arm: qcom: Add Xiaomi Mi Mix2s bindings
-Date:   Tue, 12 Jul 2022 22:51:38 +0800
-Message-Id: <20220712145139.9473-1-mollysophia379@gmail.com>
-X-Mailer: git-send-email 2.37.0
+        Tue, 12 Jul 2022 10:52:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E77A4BA398;
+        Tue, 12 Jul 2022 07:52:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB9BAB819A6;
+        Tue, 12 Jul 2022 14:52:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21205C3411C;
+        Tue, 12 Jul 2022 14:52:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657637524;
+        bh=DTpoBX/qQ/7h9wGaIdApkgpJtMwxfpNExs/uY3HT+eM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MB1OfkHD4K3eXCbdYcA4zOtML5Ik3INgUnlWF6A6yimNWxN8YJXWsf0Or3V464FrL
+         rieNoAyJ4sLNu4fT5t8PjdQVUbvv2uMk1z5nMt6CPFbFlLYUpWL4W0ofTCiWfhZj4n
+         CC8szZrMuWSTUdW4Q+T87txQGI2KhjHEy/2eCgNoRvvERxowUzPpnSFn5iFet/uksp
+         91SzKlHOmK4EYq5cSxULoAs21x3llm2EsTrYs2iVCd4QpJVelHIuInHrDMnOqhDnt7
+         4yR9KJVfxhrURarcAuv8yfApXW/bdfdV2v8jV01MsiJahMB6CSx8QN0FaUnYZbvsaR
+         EcUkGVlQCHxQQ==
+Date:   Tue, 12 Jul 2022 15:52:01 +0100
+From:   Filipe Manana <fdmanana@kernel.org>
+To:     bingjingc <bingjingc@synology.com>
+Cc:     josef@toxicpanda.com, dsterba@suse.com, clm@fb.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robbieko@synology.com, bxxxjxxg@gmail.com
+Subject: Re: [PATCH v2 0/2] btrfs: send: fix sending link commands for
+ existing file paths
+Message-ID: <20220712145201.GA1074561@falcondesktop>
+References: <20220712013632.7042-1-bingjingc@synology.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712013632.7042-1-bingjingc@synology.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation for "xiaomi,polaris" device.
+On Tue, Jul 12, 2022 at 09:36:30AM +0800, bingjingc wrote:
+> From: BingJing Chang <bingjingc@synology.com>
+> 
+> There is a bug sending link commands for existing file paths. When we're
+> processing an inode, we go over all references. All the new file paths are
+> added to the "new_refs" list. And all the deleted file paths are added to
+> the "deleted_refs" list. In the end, when we finish processing the inode,
+> we iterate over all the items in the "new_refs" list and send link commands
+> for those file paths. After that, we go over all the items in the
+> "deleted_refs" list and send unlink commands for them. If there are
+> duplicated file paths in both lists, we will try to create them before we
+> remove them. Then the receiver gets an -EEXIST error when trying the link
+> operations.
+> 
+> BingJing Chang (2):
+>   btrfs: send: introduce recorded_ref_alloc and recorded_ref_free
+>   btrfs: send: fix sending link commands for existing file paths
+> 
+>  fs/btrfs/send.c | 195 ++++++++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 181 insertions(+), 14 deletions(-)
 
-Signed-off-by: Molly Sophia <mollysophia379@gmail.com>
----
- Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Looks good now, thanks.
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 02087bb1f698..cb4efd43dd2f 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -353,6 +353,7 @@ properties:
-               - sony,apollo-row
-               - thundercomm,db845c
-               - xiaomi,beryllium
-+              - xiaomi,polaris
-           - const: qcom,sdm845
- 
-       - items:
--- 
-2.37.0
+Reviewed-by: Filipe Manana <fdmanana@suse.com>
 
+Also, are you planning on submitting a test case for fstests too?
+
+> 
+> -- 
+> 2.37.0
+> 
