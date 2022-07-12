@@ -2,56 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C17AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB40C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229622AbiGLAIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S230201AbiGLAKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiGLAIa (ORCPT
+        with ESMTP id S229716AbiGLAKg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:08:30 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.187.6.220])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id A8A583F32B;
-        Mon, 11 Jul 2022 17:08:26 -0700 (PDT)
-Received: by ajax-webmail-mail-app2 (Coremail) ; Tue, 12 Jul 2022 08:08:12
- +0800 (GMT+08:00)
-X-Originating-IP: [218.12.17.87]
-Date:   Tue, 12 Jul 2022 08:08:12 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     linux-hams@vger.kernel.org, pabeni@redhat.com, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v5] net: rose: fix null-ptr-deref caused by
- rose_kill_by_neigh
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220711104949.3de90fc5@kernel.org>
-References: <56319300.38660.181e861b71b.Coremail.duoming@zju.edu.cn>
- <20220711104949.3de90fc5@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Mon, 11 Jul 2022 20:10:36 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E8A3E771
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:10:35 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id 73so6103139pgb.10
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:10:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:references:in-reply-to:mime-version
+         :message-id:content-transfer-encoding;
+        bh=nPm1+OWctOA0Hf4porrExLMLHsKwOrco71sJEdbBhGg=;
+        b=oYsF4NiH6G+/jxKKqgdR7avAvjSc5+n+MHMxK2MQ0BUE7i4KcN6Q7aSldg5ssnxs3d
+         z6QXwEFH0oHNCZbWlsfvX8WhZPU4N9NGI+xbPAKkYkG5V5CQOwWgOlmB3nLpK7Nc3/5u
+         bvLrwnMdBzPsoboRTaqnpf4l+OKWnvln7fO4z05VZMpHWZaX5ayB1Lvg4M3TCcZcq55K
+         tRryg3sN7kFnLVbFVcXELDq/6uhKYDa1mV//fpvQ/ArXAxulxRVGCKalrQU4rMrYIZHd
+         aW9vyfaKF88C+3o8jKB4139Mk9hF290blNVVkGJS8SAVdlK2gaMJ0ehBYXcUHWC1ufij
+         4Ibg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
+         :mime-version:message-id:content-transfer-encoding;
+        bh=nPm1+OWctOA0Hf4porrExLMLHsKwOrco71sJEdbBhGg=;
+        b=0mpHgHtuwgbU3XXl25UzxY+x4mqqosrecQcY7yE3NBpSggtLXkavSWW51anIlDkclU
+         /v1Ssl2zcDxy2PsA7QhUgPa7/QrPZPKvIDB3YantvtkFwO2atojumtTQ0JGeIH2/JRJZ
+         o65N4MntYoracf+wanuQhP2szP2xb1ScuslNhOlvFrOKgl83BGdqXdynMgP4xYu0W4oZ
+         jFOoGez9YoXJpZNr6a7f0n9rhQt8iaGXBuz/8k8LSWIzVorPTUuADMDJrYHIy3ZzbPti
+         7KztL5dxRp0WYeYwmPGQWHh33ugpLOk25HawbGCZ4BJKOSRVWVHU2DcuzRfgn63LWoqT
+         DEsg==
+X-Gm-Message-State: AJIora/iZjjaz5qEXtzIlcViRwIuBYGhbGAY4ySjXEIF6sg8009h/MjX
+        iIipt+OUIKziWvXPZh5iAMA=
+X-Google-Smtp-Source: AGRyM1slJeHPQsN+1JVSFRGQl9bHUvz+vaH7yldqTha7eQsTTCLPD8U/vXSui/10qDO+p5ev3Nb4nA==
+X-Received: by 2002:a63:4d5f:0:b0:412:12cb:b09f with SMTP id n31-20020a634d5f000000b0041212cbb09fmr17772429pgl.26.1657584634978;
+        Mon, 11 Jul 2022 17:10:34 -0700 (PDT)
+Received: from localhost (193-116-203-247.tpgi.com.au. [193.116.203.247])
+        by smtp.gmail.com with ESMTPSA id w13-20020a17090a1b8d00b001e2f892b352sm7536224pjc.45.2022.07.11.17.10.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 17:10:34 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 10:10:27 +1000
+From:   Nicholas Piggin <npiggin@gmail.com>
+Subject: Re: [PATCH 03/13] locking/qspinlock: split common mcs queueing code
+ into its own function
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Boqun Feng <boqun.feng@gmail.com>, linux-kernel@vger.kernel.org,
+        Waiman Long <longman@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>
+References: <20220704143820.3071004-1-npiggin@gmail.com>
+        <20220704143820.3071004-4-npiggin@gmail.com>
+        <YsRucXLUueWlAeJC@worktop.programming.kicks-ass.net>
+In-Reply-To: <YsRucXLUueWlAeJC@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Message-ID: <43096493.3daca.181efbc1f66.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: by_KCgCHz1ttu8xiA3RGAA--.6928W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcIAVZdtan97gAPsH
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Message-Id: <1657584429.qwey1g734l.astroid@bobo.none>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8sCgpPbiBNb24sIDExIEp1bCAyMDIyIDEwOjQ5OjQ5IC0wNzAwIEpha3ViIEtpY2luc2tp
-IHdyb3RlOgoKPiBVbnJlbGF0ZWQgdG8gdGhpcyBwYXJ0aWN1bGFyIHBhdGNoLCBidXQgaXQgc2Vl
-bXMgbGlrZSB5b3UncmUgd29ya2luZwo+IGEgbG90IG9uIEFGX1JPU0UsIHdvdWxkIHlvdSBjb25z
-aWRlciBhZGRpbmcgYSBnb29kIHNldCBvZiBzZWxmdGVzdHMgCj4gZm9yIGl0PyAgSXQnZCBiZSBl
-YXNpZXIgdG8geW91IHRvIHZhbGlkYXRlIHRoZSBjaGFuZ2VzIGFuZCBtdWNoIGVhc2llcgo+IGZv
-ciB1cyB0byB0cnVzdCB0aGUgZml4ZXMgc2VlaW5nIGhvdyB0aGV5IHdlcmUgdmFsaWRhdGVkLgoK
-VGhhbmsgeW91IGZvciB5b3VyIHJlcGx5LCBJIHdpbGwgdHJ5IHRvIHByb3ZpZGUgYSBzZXQgb2Yg
-c2VsZnRlc3RzLgoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3U=
+Excerpts from Peter Zijlstra's message of July 6, 2022 3:01 am:
+> On Tue, Jul 05, 2022 at 12:38:10AM +1000, Nicholas Piggin wrote:
+>> +void queued_spin_lock_slowpath(struct qspinlock *lock, u32 val)
+>> +{
+>> +	if (pv_enabled()) {
+>> +		queued_spin_lock_mcs_queue(lock);
+>> +		return;
+>> +	}
+>> +
+>> +	if (virt_spin_lock(lock))
+>> +		return;
+>> +
+>=20
+> This reminds me; at the time I meant to make queued_spin_lock_slowpath()
+> a static_call() and redirect the function appropriately at boot time.
+> But that was before static_call() was merged and I never seem to have
+> gotten around to doing that afterwards...
+
+Wouldn't hurt. OTOH hyper optimising the contended path is probably
+almost not measurable. Optimising coherency in the contended path
+absolutely, but straight line code less so. That said don't let me
+stop you :)
+
+Thanks,
+Nick
