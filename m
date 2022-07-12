@@ -2,129 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D74C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B96C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:49:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbiGLHra (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
+        id S232438AbiGLHtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiGLHr0 (ORCPT
+        with ESMTP id S232431AbiGLHtb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:47:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5A4699C264
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:47:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657612043;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=IwKfKFbx4WwviqtMMacQ0C+SYHYAOQOV85TH5GU4PBI=;
-        b=HXZ5cqUdnOYg+KkchxmmV0VMLNPePmWMIcLxoXNp9NuRSFQ+WZZtc7sWJak3ZKL6YJA9bE
-        Mge+r0GuEm9zyZZ2DWl08MVnr68ef4t6NUIF6mNjPTT3ZGnol6UlmkjoI3ZAX64mZSdG0t
-        7RuQKIsbGydTkzm8w+500VYrwZ4Clt0=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-486-lWqTc9k-NwOQ2KkLNRlK6g-1; Tue, 12 Jul 2022 03:47:18 -0400
-X-MC-Unique: lWqTc9k-NwOQ2KkLNRlK6g-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 736ED8037AA;
-        Tue, 12 Jul 2022 07:47:17 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.192.39])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 08618C15D58;
-        Tue, 12 Jul 2022 07:47:17 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id A946318000A9; Tue, 12 Jul 2022 09:47:15 +0200 (CEST)
-Date:   Tue, 12 Jul 2022 09:47:15 +0200
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Michel =?utf-8?Q?D=C3=A4nzer?= <michel.daenzer@mailbox.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Noralf =?utf-8?Q?Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux/m68k <linux-m68k@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] drm/fourcc: Add missing big-endian XRGB1555 and
- RGB565 formats
-Message-ID: <20220712074715.kopstlvz4q6npaye@sirius.home.kraxel.org>
-References: <cover.1657300532.git.geert@linux-m68k.org>
- <0744671ac096a12f0d538906bd324efa71b11400.1657300532.git.geert@linux-m68k.org>
- <96a87833-d878-dde9-e335-9ea51a4ba406@mailbox.org>
- <CAMuHMdUgdbZeoFLFL8+Hm-6fG9cg5Wzq++JED3KR5P9YZtRQ4A@mail.gmail.com>
+        Tue, 12 Jul 2022 03:49:31 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 839ED9B562
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:49:29 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B30A21516;
+        Tue, 12 Jul 2022 00:49:29 -0700 (PDT)
+Received: from [10.1.29.134] (e127744.cambridge.arm.com [10.1.29.134])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 885A93F73D;
+        Tue, 12 Jul 2022 00:49:27 -0700 (PDT)
+Subject: Re: [PATCH] drivers/perf: arm_spe: Fix consistency of
+ SYS_PMSCR_EL1.CX
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     james.clark@arm.com, suzuki.poulose@arm.com,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, Leo Yan <leo.yan@linaro.org>
+References: <20220712051404.2546851-1-anshuman.khandual@arm.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <42caa18b-6287-0cfe-90c6-e47ec1709154@arm.com>
+Date:   Tue, 12 Jul 2022 08:49:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUgdbZeoFLFL8+Hm-6fG9cg5Wzq++JED3KR5P9YZtRQ4A@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+In-Reply-To: <20220712051404.2546851-1-anshuman.khandual@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 05:30:30PM +0200, Geert Uytterhoeven wrote:
-> Hi Michel,
-> 
-> > > Cirrus is the only driver setting quirk_addfb_prefer_host_byte_order
-> > > and supporting RGB565 or XRGB1555, but no one tried that on big-endian?
-> > > Cirrus does not support DRM_FORMAT_RGB565 | DRM_FORMAT_BIG_ENDIAN
-> > > in cirrus_fb_create, so you cannot get a graphical text console.
-> > >
-> > > Do we need these definitions on little-endian platforms, too?
-> > > Would it be better to use "DRM_FORMAT_{XRGB1555,RGB565} |
-> > > DRM_FORMAT_BIG_ENDIAN" instead of "DRM_FORMAT_HOST_{XRGB1555,RGB565}" in
-> > > formats[]?
-> >
-> > The intention of DRM_FORMAT_HOST_* is that they are macros in
-> > include/drm/drm_fourcc.h which just map to little endian formats
-> > defined in drivers/gpu/drm/drm_fourcc.c. Since this is not possible
-> > for big endian hosts for XRGB1555 or RGB565 (or any other format
-> > with non-8-bit components), this isn't applicable here.
+Thanks for reworking the patch, Anshuman,
 
-It IMHO is not applicable to any physical hardware.  It's used by
-virtio-gpu where the supported format depends on the byte order
-(it is argb8888 in native byte order).  Only virtual hardware can
-have that kind of behavior.
+On 12/07/2022 06:14, Anshuman Khandual wrote:
+> The arm_spe_pmu driver will enable SYS_PMSCR_EL1.CX in order to add CONTEXT
+> packets into the traces, if the owner of the perf event runs with required
+> capabilities i.e CAP_PERFMON or CAP_SYS_ADMIN via perfmon_capable() helper.
+>
+> The value of this bit is computed in the arm_spe_event_to_pmscr() function
+> but the check for capabilities happens in the pmu event init callback i.e
+> arm_spe_pmu_event_init(). This suggests that the value of the CX bit should
+> remain consistent for the duration of the perf session.
+>
+> However, the function arm_spe_event_to_pmscr() may be called later during
+> the event start callback i.e arm_spe_pmu_start() when the "current" process
+> is not the owner of the perf session, hence the CX bit setting is currently
+> not consistent.
+>
+> One way to fix this, is by caching the required value of the CX bit during
+> the initialization of the PMU event, so that it remains consistent for the
+> duration of the session. It uses currently unused 'event->hw.flags' element
+> to cache perfmon_capable() value, which can be referred during event start
+> callback to compute SYS_PMSCR_EL1.CX. This ensures consistent availability
+> of context packets in the trace as per event owner capabilities.
+>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-And we can probably drop the DRM_FORMAT_HOST_* variants for 1555 and
-565, they are not used anywhere.
+I'll add the Fixes tag, which I forgot to add in the prev version (I think it's the right one :)
 
-> I read that as that you prefer to write "DRM_FORMAT_{XRGB1555,RGB565}
-> | DRM_FORMAT_BIG_ENDIAN" in formats[]?
+Fixed: cea7d0d4a59b ("drivers/perf: Open access for CAP_PERFMON privileged process")
 
-Agree.
-
-> > It's also doubtful that Cirrus hardware would access these formats
-> > as big endian (drivers/gpu/drm/tiny/cirrus.c has no endianness
-> > references at all, and the hardware was surely designed for x86
-> > first and foremost).
-
-Yes.  qemu mimics physical cirrus hardware which uses little endian.
-
-> > Instead, fbcon (and user space) needs to convert to little endian
-> > when using DRM_FORMAT_HOST_{XRGB1555,RGB565} with the cirrus driver
-> > on big endian hosts.
-
-Well, the cirrus driver uses shadow framebuffers anyway (the only
-workable approach given it has 4M vram only), and it also supports
-converting formats on-the-fly when copying from shadow to vram.
-
-So adding support for bigendian formats to the driver shouldn't be
-much of a problem.  The vram will continue to run in little endian
-RGB565, the shadow will be big endian RGB565, and the driver must
-byteswap when copying.
-
-> Yeah, probably the cirrus driver can use some fixes...
-
-I'd call it improvements.  It's not like the cirrus driver is broken.
-
-take care,
-  Gerd
-
+> ---
+> This applies on v5.19-rc6 and built on an earlier version posted by German
+> https://lore.kernel.org/all/20220117124432.3119132-1-german.gomez@arm.com/
+>
+>  drivers/perf/arm_spe_pmu.c | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
+> index db670b265897..011e98428233 100644
+> --- a/drivers/perf/arm_spe_pmu.c
+> +++ b/drivers/perf/arm_spe_pmu.c
+> @@ -39,6 +39,26 @@
+>  #include <asm/mmu.h>
+>  #include <asm/sysreg.h>
+>  
+> +/*
+> + * event.hw.flags remain unused for events created for this
+> + * PMU driver. A single bit there i.e BIT(0), could be used
+> + * to remember initiating process's perfmon_capable() value
+> + * which can be subsequently used to enable SYS_PMSCR_EL.CX
+> + * thus enabling context information in the trace.
+> + */
+> +#define SPE_PMU_HW_FLAGS_CX			BIT(0)
+> +
+> +static void event_hw_flags_set_cx(struct perf_event *event)
+> +{
+> +	if (perfmon_capable())
+> +		event->hw.flags |= SPE_PMU_HW_FLAGS_CX;
+> +}
+> +
+> +static bool event_hw_flags_has_cx(struct perf_event *event)
+> +{
+> +	return !!(event->hw.flags & SPE_PMU_HW_FLAGS_CX);
+> +}
+> +
+>  #define ARM_SPE_BUF_PAD_BYTE			0
+>  
+>  struct arm_spe_pmu_buf {
+> @@ -272,7 +292,7 @@ static u64 arm_spe_event_to_pmscr(struct perf_event *event)
+>  	if (!attr->exclude_kernel)
+>  		reg |= BIT(SYS_PMSCR_EL1_E1SPE_SHIFT);
+>  
+> -	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && perfmon_capable())
+> +	if (IS_ENABLED(CONFIG_PID_IN_CONTEXTIDR) && event_hw_flags_has_cx(event))
+>  		reg |= BIT(SYS_PMSCR_EL1_CX_SHIFT);
+>  
+>  	return reg;
+> @@ -710,7 +730,8 @@ static int arm_spe_pmu_event_init(struct perf_event *event)
+>  		return -EOPNOTSUPP;
+>  
+>  	reg = arm_spe_event_to_pmscr(event);
+> -	if (!perfmon_capable() &&
+> +	event_hw_flags_set_cx(event);
+> +	if (!event_hw_flags_has_cx(event) &&
+>  	    (reg & (BIT(SYS_PMSCR_EL1_PA_SHIFT) |
+>  		    BIT(SYS_PMSCR_EL1_CX_SHIFT) |
+>  		    BIT(SYS_PMSCR_EL1_PCT_SHIFT))))
