@@ -2,204 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 236B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8274AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233062AbiGLO6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:58:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52580 "EHLO
+        id S233281AbiGLO6v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233128AbiGLO6q (ORCPT
+        with ESMTP id S233157AbiGLO6r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:58:46 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3132563EA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:58:44 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id h200so8043745iof.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:58:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=n8VJkx0UohrHUcfROik699gEfwwdc0SDpII8DJF6C8s=;
-        b=Oak10QNvZgMB7/UKrDYLWKdMeoxUzqKUF3rSNzKHrqxJ1iS9Sgo1duF4JPHtxMsuZL
-         utvW26G04zusV8xskL22aeSChqvVcnzpNfbapVcrXTBO3oMVfm8W4KPiReYoUZynv2uD
-         oKhbR8iJh+lKj7Pu5pUeE1FqXCWR+Rt1IYoNZmqryiNw3onhtWc7Tt7UOGgCoouOrPi0
-         jGsrVhTa7Kf23vhLbiIp9/EyUxUwsk/sNgQRlkqubrReB4F5sPqEBZKpDDfOcYOSAN21
-         BM64FZqhBpZhUe/RvMXRcpr4X9OHFssw56m9LldNto/w1+uxKazQwLA8CAAtM0UL6xgU
-         /iAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=n8VJkx0UohrHUcfROik699gEfwwdc0SDpII8DJF6C8s=;
-        b=Mr7DNE4irXc9qe6QcleTcybT76rJarIYxECd7sjnanFWX0s9wNZO18HKarphV+5N0y
-         9q+bcXHcG7Q81X6+fZIJfwNked76Jp5aMoGYKVJJNq5jLbjHQ3WQ9VZETiAMyXXL8xeM
-         xIQIxeEutjEVGWIrGLqnRbVzvg06wJa55jrVWyArFsmNWHHkGXxVpeHPJyfiBi1oFzWh
-         rWyvtT8gMuwaLFu6MJAbw1Tugci0qTshFiX+NXPqQcB+uBLzxlZAtiNHl7SNqf+fNsP3
-         LZxP7QA7najV8vZI6nc90zq1Q4MZH5zGXEQyu7N72jFnPFi+TdUHiEX4FOmv+aNvgaZK
-         6jjg==
-X-Gm-Message-State: AJIora8CqPf4faBDyztmDf9+prbFitHXK2nqFT3atIdvGwX1VIb5T+vG
-        U5zqJDJpX1OEvNtlMLtFRuBfLGV6ifG4fDpVLWA=
-X-Google-Smtp-Source: AGRyM1u3ECrix1ihvS3lPIRW2TSqVAMmFrHahV+S27hy0ug9xr2n6Xd3HUx6RGShCH+WQqtO5vuAmpP/GG0Fy4KT0IA=
-X-Received: by 2002:a05:6602:2b14:b0:67b:8976:2945 with SMTP id
- p20-20020a0566022b1400b0067b89762945mr6442734iov.82.1657637924305; Tue, 12
- Jul 2022 07:58:44 -0700 (PDT)
+        Tue, 12 Jul 2022 10:58:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4EAFC2;
+        Tue, 12 Jul 2022 07:58:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 735AC6100A;
+        Tue, 12 Jul 2022 14:58:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71878C341D4;
+        Tue, 12 Jul 2022 14:58:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657637924;
+        bh=67IQ4Y/7UvE66dE9cFJZ8ttBz7pMivg6Th53C9I9f0w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Z8aZrPPuVwPBZiGyLU1hN/58OGLSBOCLuvUmpj6pL3ixnB1sAaH1AF32F/dTk2sy2
+         7mgF4u70ubzvk+fEt/uSsz+JMSwKBVAj45jVfKF7h65M0O+NB7lbhqOembr1KCovx8
+         KDwlm7k5egniwkq7kScrjZsubpAncIVhFAm+FAuw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.9.323
+Date:   Tue, 12 Jul 2022 16:58:40 +0200
+Message-Id: <16576379211965@kroah.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-References: <20220710142822.52539-1-arthurchang09@gmail.com>
- <20220710142822.52539-3-arthurchang09@gmail.com> <3a1b50d2-a7aa-3e89-56fe-5d14ef9da22f@gmail.com>
- <CAD4RrFPihC+8LScC1RJ5GfOsLs4kze0QwALS1ykNH_m89Z1NGg@mail.gmail.com> <48db247e-f6fd-cb4b-7cc5-455bf26bb153@gmail.com>
-In-Reply-To: <48db247e-f6fd-cb4b-7cc5-455bf26bb153@gmail.com>
-From:   Yu-Jen Chang <arthurchang09@gmail.com>
-Date:   Tue, 12 Jul 2022 22:58:32 +0800
-Message-ID: <CAD4RrFPfwu4Ascj5tdz8qq2Qgnu5GN2eHjVwMW5AqUa1H7JapA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] lib/string.c: Optimize memchr()
-To:     Andrey Semashev <andrey.semashev@gmail.com>
-Cc:     andy@kernel.org, akinobu.mita@gmail.com,
-        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Andrey Semashev <andrey.semashev@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=9C=
-=8811=E6=97=A5 =E9=80=B1=E4=B8=80 =E6=99=9A=E4=B8=8A11:00=E5=AF=AB=E9=81=93=
-=EF=BC=9A
->
-> On 7/11/22 17:52, Yu-Jen Chang wrote:
-> > Andrey Semashev <andrey.semashev@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=
-=9C=8811=E6=97=A5 =E9=80=B1=E4=B8=80 =E5=87=8C=E6=99=A84:01=E5=AF=AB=E9=81=
-=93=EF=BC=9A
-> >>
-> >> On 7/10/22 17:28, Yu-Jen Chang wrote:
-> >>> The original version of memchr() is implemented with the byte-wise
-> >>> comparing technique, which does not fully use 64-bits or 32-bits
-> >>> registers in CPU. We use word-wide comparing so that 8 characters
-> >>> can be compared at the same time on CPU. This code is base on
-> >>> David Laight's implementation.
-> >>>
-> >>> We create two files to measure the performance. The first file
-> >>> contains on average 10 characters ahead the target character.
-> >>> The second file contains at least 1000 characters ahead the
-> >>> target character. Our implementation of =E2=80=9Cmemchr()=E2=80=9D is=
- slightly
-> >>> better in the first test and nearly 4x faster than the orginal
-> >>> implementation in the second test.
-> >>>
-> >>> Signed-off-by: Yu-Jen Chang <arthurchang09@gmail.com>
-> >>> Signed-off-by: Ching-Chun (Jim) Huang <jserv@ccns.ncku.edu.tw>
-> >>> ---
-> >>>  lib/string.c | 28 +++++++++++++++++++++-------
-> >>>  1 file changed, 21 insertions(+), 7 deletions(-)
-> >>>
-> >>> diff --git a/lib/string.c b/lib/string.c
-> >>> index 80469e6c3..8ca965431 100644
-> >>> --- a/lib/string.c
-> >>> +++ b/lib/string.c
-> >>> @@ -905,21 +905,35 @@ EXPORT_SYMBOL(strnstr);
-> >>>  #ifndef __HAVE_ARCH_MEMCHR
-> >>>  /**
-> >>>   * memchr - Find a character in an area of memory.
-> >>> - * @s: The memory area
-> >>> + * @p: The memory area
-> >>>   * @c: The byte to search for
-> >>> - * @n: The size of the area.
-> >>> + * @length: The size of the area.
-> >>>   *
-> >>>   * returns the address of the first occurrence of @c, or %NULL
-> >>>   * if @c is not found
-> >>>   */
-> >>> -void *memchr(const void *s, int c, size_t n)
-> >>> +void *memchr(const void *p, int c, unsigned long length)
->
-> I didn't comment on this initially, but is the change of length type
-> intentional? Why?
+I'm announcing the release of the 4.9.323 kernel.
 
-It is my mistake. I will change the type back to size_t.
+All users of the 4.9 kernel series must upgrade.
 
->
-> >>>  {
-> >>> -     const unsigned char *p =3D s;
-> >>> -     while (n-- !=3D 0) {
-> >>> -             if ((unsigned char)c =3D=3D *p++) {
-> >>> -                     return (void *)(p - 1);
-> >>> +     u64 mask, val;
-> >>> +     const void *end =3D p + length;
-> >>> +
-> >>> +     c &=3D 0xff;
-> >>> +     if (p <=3D end - 8) {
-> >>> +             mask =3D c;
-> >>> +             MEMCHR_MASK_GEN(mask);
-> >>> +
-> >>> +             for (; p <=3D end - 8; p +=3D 8) {
-> >>> +                     val =3D *(u64 *)p ^ mask;
-> >>
-> >> What if p is not aligned to 8 (or 4 on 32-bit targets) bytes? Not all
-> >> targets support (efficient) unaligned loads, do they?
-> >
-> > I think it works if p is not aligned to 8 or 4 bytes.
-> >
-> > Let's say the string is 10 bytes. The for loop here will search the fir=
-st
-> > 8 bytes. If the target character is in the last 2 bytes, the second for
-> > loop will find it. It also work like this on 32-bit machine.
->
-> I think you're missing the point. Loads at unaligned addresses may not
-> be allowed by hardware using conventional load instructions or may be
-> inefficient. Given that this memchr implementation is used as a fallback
-> when no hardware-specific version is available, you should be
-> conservative wrt. hardware capabilities and behavior. You should
-> probably have a pre-alignment loop.
+The updated 4.9.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-Got it. I add  pre-alignment loop. It aligns the address to 8 or 4bytes.
+thanks,
 
-void *memchr(const void *p, int c, size_t length)
-{
-    u64 mask, val;
-    const void *end =3D p + length;
-    c &=3D 0xff;
-    while ((long ) p & (sizeof(long) - 1)) {
-        if (p >=3D end)
-            return NULL;
-        if (*(unsigned char *)p =3D=3D c)
-            return (void *) p;
-        p++;
-    }
-    if (p <=3D end - 8) {
-        mask =3D c;
-        MEMCHR_MASK_GEN(mask);
+greg k-h
 
-        for (; p <=3D end - 8; p +=3D 8) {
-            val =3D *(u64*)p ^ mask;
-            if ((val + 0xfefefefefefefeffull)
-& (~val & 0x8080808080808080ull))
-                break;
-        }
-    }
+------------
 
-    for (; p < end; p++)
-        if (*(unsigned char *)p =3D=3D c)
-            return (void *)p;
+ Makefile                                   |    2 +-
+ drivers/dma/at_xdmac.c                     |    5 +++++
+ drivers/dma/ti-dma-crossbar.c              |    5 +++++
+ drivers/i2c/busses/i2c-cadence.c           |    1 +
+ drivers/iommu/dmar.c                       |    2 +-
+ drivers/net/can/grcan.c                    |    1 -
+ drivers/net/can/usb/gs_usb.c               |   23 +++++++++++++++++++++--
+ drivers/net/usb/usbnet.c                   |   17 ++++++++++++-----
+ drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c |   10 +++++-----
+ fs/xfs/xfs_inode.c                         |    1 -
+ include/video/of_display_timing.h          |    2 ++
+ lib/idr.c                                  |    4 +++-
+ mm/slub.c                                  |    5 +++++
+ net/rose/rose_route.c                      |    4 ++--
+ 14 files changed, 63 insertions(+), 19 deletions(-)
 
-    return NULL;
-}
+Duoming Zhou (1):
+      net: rose: fix UAF bug caused by rose_t0timer_expiry
 
->
-> >>
-> >>> +                     if ((val + 0xfefefefefefefeffu) &
-> >>> +                         (~val & 0x8080808080808080u))
-> >>> +                             break;
-> >>>               }
-> >>>       }
-> >>> +
-> >>> +     for (; p < end; p++)
-> >>> +             if (*(unsigned char *)p =3D=3D c)
-> >>> +                     return (void *)p;
-> >>> +
-> >>>       return NULL;
-> >>>  }
-> >>>  EXPORT_SYMBOL(memchr);
-> >>
->
+Eric Sandeen (1):
+      xfs: remove incorrect ASSERT in xfs_rename
+
+Greg Kroah-Hartman (1):
+      Linux 4.9.323
+
+Hsin-Yi Wang (1):
+      video: of_display_timing.h: include errno.h
+
+Jann Horn (1):
+      mm/slub: add missing TID updates on slab deactivation
+
+Liang He (1):
+      can: grcan: grcan_probe(): remove extra of_node_get()
+
+Linus Torvalds (1):
+      ida: don't use BUG_ON() for debugging
+
+Miaoqian Lin (2):
+      dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
+      dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
+
+Michael Walle (1):
+      dmaengine: at_xdma: handle errors of at_xdmac_alloc_desc() correctly
+
+Oliver Neukum (1):
+      usbnet: fix memory leak in error case
+
+Rhett Aultman (1):
+      can: gs_usb: gs_usb_open/close(): fix memory leak
+
+Samuel Holland (1):
+      pinctrl: sunxi: a83t: Fix NAND function name for some pins
+
+Satish Nagireddy (1):
+      i2c: cadence: Unregister the clk notifier in error path
+
+Yian Chen (1):
+      iommu/vt-d: Fix PCI bus rescan device hot add
+
