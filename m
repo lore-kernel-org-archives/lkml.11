@@ -2,124 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58DAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:18:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbiGLOSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
+        id S233282AbiGLOTq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:19:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233379AbiGLOR4 (ORCPT
+        with ESMTP id S230441AbiGLOTh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:17:56 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF037B23FE
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:54 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2ef5380669cso82284037b3.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:54 -0700 (PDT)
+        Tue, 12 Jul 2022 10:19:37 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEF803340A;
+        Tue, 12 Jul 2022 07:19:35 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id t1so10661103lft.8;
+        Tue, 12 Jul 2022 07:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BBNAmGtBjsKiAgWVGNt1epS6tn9dFMCvgo2fNVioNes=;
-        b=s50HuPFgYbKen/bxFHp/HuYFIGEoTRrbQ/hn9+FX0DryxJbh3I2wjTB+ZqoXhGc1vF
-         mefIGN7LwwVpoAKeN8uKzIaaj0R2z5on9iLq4c5JKv88W1Gtk6rtEkbHTKce6pJqoXso
-         G/swJc2ySNFMa1ftgJM+l7qYjrVPgurj0mBwdLN0/nGKTw9F3TX0OG0BBlp9pWyECh7V
-         +3ZCUQ7TwcVdDJlRCFDdPFcl6xhD9aPLCV5MzUYGyo3ixHOA5k+4V8hRnCuy0Twn4GF4
-         tj3NaPsBPNgM3ufwGa6cwLnx24GIqfOuwYwszd7NUyClxQaoG80Qt+zdHO1TLhwI7kwv
-         5Q4Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7U7RsYqGMW/Fuz5G2Ml9y4+TwTHhAM4/OuSGIAeWbUM=;
+        b=opkQ5LRmeZQfW7OxvixldzYBv/+hIidMoUVZf13hKz5+zku8M/PtCuwFuwaTdTMFRp
+         5oUdZgmSizQJ2YyKGTkbAOIEyemv9Nf0qk1VWum6QBkGcsDf+yS1qr89Sg5/LQ0RiE5o
+         4KSUa5LSRsgFmqN81eiHygwnn0fUu6YfFVNQ4YyX/7Cx/+MyP8r9Emk4mUyzGKhIA+b4
+         bie6NVVcSKZCFiRQDpNL0ke49gkNI4XrAkWDUY+vupjYblUBVmPK9pJ0vCTFJ9v6SrEA
+         lVwrvlb3JlRPQ54xZQ9b/WtBWhFyXh7gNOYf5easL+4DSzD4J60nDBYbX7adGd5dVJIA
+         qyUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BBNAmGtBjsKiAgWVGNt1epS6tn9dFMCvgo2fNVioNes=;
-        b=1NpEodxwgEVZpGIHHl1bphefB8h9fz2IU1pH/MysOuXzhOJGw1k6t45QNR4a4RkwNx
-         AjFe3ol/Jt0End46l3SPF0OWTceLfXQ05UeE+hLp4DHtv3NTD1VNc7o5y5h1cfr3CxSk
-         qDilfhTfd5gH3LkOX0TJUdhpDebRS70QX6/jEvRCMlLsFHu26+rw+vtGcwEClHHBNpfC
-         OLlLAIV+hROCG14+Bwq39uEwY9WeBvh73MqGF1Z/aolqlf7f0PgQGoq+Gnoc0a0L7a3i
-         wb9ceoGSnaSFRilIWNuh3je82nQwQAe5qU1zj7cQFcfid1J1BeGd71HEw1RkDN46xFdX
-         zrGw==
-X-Gm-Message-State: AJIora9DSBrhPqIKTE+9sVCzk030iWLSy9lxsNlkXlBGLCmEUg/FT+ff
-        uqUMFTGV2QLu2xsxqUdR4g73tOSd+j6fgNUaxISGjA==
-X-Google-Smtp-Source: AGRyM1ugqmt9DDomYcxjZBCfHColnGRSwoMdU+8bT2TZSM+C2v9BWbIiEBZHHNxj556rRL/VmzE76DtGsOcOMTQT/sw=
-X-Received: by 2002:a81:1492:0:b0:31c:a1ff:9ec with SMTP id
- 140-20020a811492000000b0031ca1ff09ecmr24431681ywu.327.1657635473811; Tue, 12
- Jul 2022 07:17:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-9-glider@google.com>
-In-Reply-To: <20220701142310.2188015-9-glider@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 12 Jul 2022 16:17:18 +0200
-Message-ID: <CANpmjNOb_aY5BrxKY=WzuDb7Y708XS1hSR0pJ8PKQi7Z8MDNCA@mail.gmail.com>
-Subject: Re: [PATCH v4 08/45] kmsan: mark noinstr as __no_sanitize_memory
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7U7RsYqGMW/Fuz5G2Ml9y4+TwTHhAM4/OuSGIAeWbUM=;
+        b=0ReUyD2pJgdA+3oBc1RxlpCBMoCBD2qVMU/qJvsbWurS6JgaoIKbtLG8luvtLoFVMy
+         1r2n9kt60mst8MRKnNYbS9W59+g8uH1nI6UbyRE2iOZeesBIwIxkzGsmfdGjYk0g1ea6
+         VQ5CoEb2ffwA5OKL3FYQImxQUcOTogBlH6QrhwI5yQD4Aq8EWu/skYq2LhZXPgcReo7R
+         slwQS/9G2r5iD090jd3eaOyGJId1fj+UMWvi87toRoMX9LmhUJezqo1onQU6/Q6ghF2b
+         2aEH2HOPBDgZtjMhfJrXeCWzZUNmGG8BRwWd/gU1KMNb3To89V/g2gMasZXk7WwPo3yy
+         UfZw==
+X-Gm-Message-State: AJIora+b8xzMFLJRUkwGHMPWGZdaDK8/ABvWeJZcMzuKX9HYRvFafCHv
+        5HboTc/TKtpsU+UlkT3tdDcHUhOc1EtzLg==
+X-Google-Smtp-Source: AGRyM1tVrlnrOfg8pwo/F6ioRtUvp/BhxrW3YH3CUSeqJ2l2ax7KrKyDDTSNAmQu/5A5zzNZz889yQ==
+X-Received: by 2002:a05:6512:10d1:b0:489:feee:3b80 with SMTP id k17-20020a05651210d100b00489feee3b80mr85265lfg.212.1657635573757;
+        Tue, 12 Jul 2022 07:19:33 -0700 (PDT)
+Received: from localhost (95-31-189-152.broadband.corbina.ru. [95.31.189.152])
+        by smtp.gmail.com with ESMTPSA id o16-20020a2e9b50000000b0025d6856933fsm1854964ljj.134.2022.07.12.07.19.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 07:19:33 -0700 (PDT)
+From:   Mikhail Rudenko <mike.rudenko@gmail.com>
+To:     linux-media@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Cc:     Mikhail Rudenko <mike.rudenko@gmail.com>
+Subject: [PATCH 0/2] Add Omnivision OV4689 image sensor driver
+Date:   Tue, 12 Jul 2022 17:19:08 +0300
+Message-Id: <20220712141925.678595-1-mike.rudenko@gmail.com>
+X-Mailer: git-send-email 2.37.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
->
-> noinstr functions should never be instrumented, so make KMSAN skip them
-> by applying the __no_sanitize_memory attribute.
->
-> Signed-off-by: Alexander Potapenko <glider@google.com>
+Hello,
 
-Reviewed-by: Marco Elver <elver@google.com>
+this series implements support for Omnivision OV4689 image
+sensor. The Omnivision OV4689 is a high performance, 1/3-inch, 4
+megapixel image sensor. Ihis chip supports high frame rate speeds up
+to 90 fps at 2688x1520 resolution. It is programmable through an I2C
+interface, and sensor output is sent via 1/2/4 lane MIPI CSI-2
+connection.
 
-> ---
-> v2:
->  -- moved this patch earlier in the series per Mark Rutland's request
->
-> Link: https://linux-review.googlesource.com/id/I3c9abe860b97b49bc0c8026918b17a50448dec0d
-> ---
->  include/linux/compiler_types.h | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> index d08dfcb0ac687..fb5777e5228e7 100644
-> --- a/include/linux/compiler_types.h
-> +++ b/include/linux/compiler_types.h
-> @@ -227,7 +227,8 @@ struct ftrace_likely_data {
->  /* Section for code which can't be instrumented at all */
->  #define noinstr                                                                \
->         noinline notrace __attribute((__section__(".noinstr.text")))    \
-> -       __no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage
-> +       __no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage \
-> +       __no_sanitize_memory
->
->  #endif /* __KERNEL__ */
->
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+The driver is based on Rockchip BSP kernel [1]. It implements 4-lane CSI-2
+and single 2688x1520 @ 30 fps mode. The driver was tested on Rockchip
+3399-based FriendlyElec NanoPi M4 board with MCAM400 camera module.
+
+While porting the driver, I stumbled upon two issues:
+
+(1) In the original driver, horizontal total size (HTS) was set to a
+value (2584) lower then the frame width (2688), resulting in negative
+hblank. In this driver, I increased HTS to 2688, but fps dropped from
+29.88 to 28.73. What is the preferred way to handle this?
+
+(2) The original driver exposes analog gain range 0x0 - 0x7ff, but the
+gain is not linear across that range. Instead, it is piecewise linear
+(and discontinuous). 0x0-0xff register values result in 0x-2x gain,
+0x100-0x1ff to 0x-4x, 0x300-0x3ff to 0x-8x, and 0x700-0x7ff to 0x-16x,
+with more linear segments in between. Rockchip's camera engine code
+chooses one of the above segments depenging on the desired gain
+value. The question is, how should we proceed keeping in mind
+libcamera use case? Should the whole 0x0-0x7ff be exposed as-is and
+libcamera will do the mapping, or the driver will do the mapping
+itself and expose some logical gain units not tied to the actual gain
+register value? Meanwhile, this driver conservatively exposes only
+0x0-0xf8 gain register range.
+
+[1] https://github.com/rockchip-linux/kernel/blob/develop-4.19/drivers/media/i2c/ov4689.c
+
+Mikhail Rudenko (2):
+  media: dt-bindings: media: i2c: document OV4689 DT bindings
+  media: i2c: add support for ov4689
+
+ .../bindings/media/i2c/ovti,ov4689.yaml       | 122 +++
+ MAINTAINERS                                   |   8 +
+ drivers/media/i2c/Kconfig                     |  14 +
+ drivers/media/i2c/Makefile                    |   1 +
+ drivers/media/i2c/ov4689.c                    | 899 ++++++++++++++++++
+ 5 files changed, 1044 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov4689.yaml
+ create mode 100644 drivers/media/i2c/ov4689.c
+
+--
+2.37.0
