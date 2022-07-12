@@ -2,210 +2,318 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81762C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1301C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:43:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbiGLTmq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:42:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S234848AbiGLTnD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233744AbiGLTmX (ORCPT
+        with ESMTP id S232821AbiGLTmk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:42:23 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9D910B241
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 12:20:16 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CIdQ1f031069;
-        Tue, 12 Jul 2022 19:19:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=iD85MsUZ8TPR4rd4PbP1LyBxIUKYZGUtgDJrOvDl/+8=;
- b=MYUiYlMHFFzmlDgaHt6zHsHfCqHaSkbzUOf4DpJ5FSDrCv+AnJpPFVwBgnZZ8E4bWFTF
- /hhkVOHIOUxQMNxJw6gCFAE9y+/HyFdRwlOrj4RE6XCz8i+AQj3qlu5bowf0aj8lTKmM
- XYeEYNZAE3vMgszxp191E3XiiMVxKOdkOZjpWBSCgiC96611k9uXzD6a8xyheSU/h2u5
- 76/K4q0wXAeNcZFBYMWREoZnPFbPgn7D/hCBG+yyJHPK5/PUknb09p0ehi1aeK3ZliA7
- g02VPhz5iQhkZK+vbW5SBBGHNJ3xytgn0y7SM0lq5bJCVKMq84qzNj8T/OWOddoUyfbC wQ== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71rfyy0c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 19:19:46 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26CJADdG021677;
-        Tue, 12 Jul 2022 19:19:46 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2104.outbound.protection.outlook.com [104.47.55.104])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3h70445qs1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 19:19:46 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bzSgiaA6JrYRhxiKKU4rxKoOJqNFdtgLY3+EUHGVKi21zgUwCdGri+Unrj/g5OfcYf5igdWUNLgYfAfN8GFLlaHTlWNZfcxw0aMxQQpeyH2aJy8dyRhjVFd8hNdl7kcrzRGOXaH2RzKMI+6akXHrPW6ilhyQ6Jv2UNQgnymxXDXAwJ329My/7zWF7koU1mhYV7xIhemQN5uw/H89a/rsEwJn3arGR3XuzV82OIcfyDwOmz+ZWZd18tK9zMhN9jmj4fTeD3WMkvcWqRVELllXojYsnCgQH5/B8zF0du9FOYMoY6RxgupROCAzt0EDGSO1TigbGxezKhUTiR/aaBtAgQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iD85MsUZ8TPR4rd4PbP1LyBxIUKYZGUtgDJrOvDl/+8=;
- b=OsZrueX6TCiRIRhP59UqAiSPet5cm5h5ly3U3IGjPSqjnbpc4ea0AW1Nmj532RFDTnK/U43VX8SKUkjmTUWtWqVSHtwPzCWy2uvUN8qASTMQpj9qg/51ukeDF9G+jSlQdzOBKip6izKW09GyQLl9hyCEO1Ud8IT7clcbQu3hSAMUiUaF0HvMn8NpuLcpkuXeHRvH0ypwEIhaZAGQtxVxQcYHseYd/XOh+uF01zQia9d3mC4ijJgJNJxguE0K7ZTheIfRuKXHFYMOmttAQBTiHTV43WTgqRM4Kf3jGLaPmr9GtnYz+fOBF6FaflyTPPNvbeg5HSM8zmWMPhZqxFiISg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iD85MsUZ8TPR4rd4PbP1LyBxIUKYZGUtgDJrOvDl/+8=;
- b=FcYd/jSBCgK/1iu2JGd04EKQXtwOmJ9KpPMvBN3FaxmrhJigfejaoWJbkVZO7AS0cJkXX/AiHNs4u4I0CWrfxsOOC9i1XqIKDwGK+7gU/RxcmpDGhRAnlfPwIFzqtpBdIHGyw8DtlBJwBwefb6H5gUQGT8RKrxiy2kGPbDlnZ4A=
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com (2603:10b6:208:321::10)
- by BY5PR10MB4177.namprd10.prod.outlook.com (2603:10b6:a03:205::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Tue, 12 Jul
- 2022 19:19:43 +0000
-Received: from BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::80e:be92:1fd5:b066]) by BLAPR10MB5009.namprd10.prod.outlook.com
- ([fe80::80e:be92:1fd5:b066%4]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 19:19:43 +0000
-Message-ID: <ddcdd531-fc33-39df-a69f-5352d7a1c8af@oracle.com>
-Date:   Tue, 12 Jul 2022 15:19:39 -0400
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: Build warnings in Xen 5.15.y and 5.10.y with retbleed backports
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org,
-        linux-kernel@vger.kernel.org
-References: <Ys2jlGMqAe6+h1SX@kroah.com>
-From:   Boris Ostrovsky <boris.ostrovsky@oracle.com>
-In-Reply-To: <Ys2jlGMqAe6+h1SX@kroah.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SA1PR03CA0018.namprd03.prod.outlook.com
- (2603:10b6:806:2d3::29) To BLAPR10MB5009.namprd10.prod.outlook.com
- (2603:10b6:208:321::10)
+        Tue, 12 Jul 2022 15:42:40 -0400
+Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7D7DC8A8;
+        Tue, 12 Jul 2022 12:21:22 -0700 (PDT)
+Received: by mail-il1-f171.google.com with SMTP id a20so5443338ilk.9;
+        Tue, 12 Jul 2022 12:21:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=t0aNyxP21GZCBEkZVZT8NoRqTZzqSF9erFDxLkI8OCE=;
+        b=tLDWRFzjBhkygv0aTn/+kP8tjG/jisQERrqfmkMw8g5YP8rAOZQep0kqSXF5SU5IlU
+         lfbEPO+YV8+oUw0oATzrNnFNSo/PPAm6QoVnEPEMdpee8x3ZE3OolapLZlFdvyhcEokm
+         3fSRhiFsSIBD0RvYLhbWzlTU8c/Bwk6ydG1fVz2JYIcZ6eZEb9mjpghCnW+rAhKrdjA8
+         Jo4u4DvLDCvP6NDCMu5980EQy9d1dToLnN0sS89OMNXwAiamV8Y4P1GVHEmVbn2/T14Q
+         KivSuSWPcFvEwhrFB2L7BrqQuIYlAGqh/easyZCjAaVgiwZl255k0E3O/9W7xfofqKSZ
+         ZYDQ==
+X-Gm-Message-State: AJIora/zGCY7CL4GNIK0ykzuQhpH3zCNgvOs46jYBUrZxs4i/4nhwHst
+        OP6z0oCkmQUqZldy5e5Rzw==
+X-Google-Smtp-Source: AGRyM1s5cpn8A2ors+BY93VkqJFWZPkOCrE2BaSZNJ/3lIe92TyVMWqAp3du+VuHapI0beHPSumJuQ==
+X-Received: by 2002:a05:6e02:1c42:b0:2dc:11b4:4fca with SMTP id d2-20020a056e021c4200b002dc11b44fcamr13712769ilg.307.1657653681737;
+        Tue, 12 Jul 2022 12:21:21 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id f24-20020a056638113800b0033f3ab94271sm4421144jar.139.2022.07.12.12.21.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 12:21:21 -0700 (PDT)
+Received: (nullmailer pid 2216514 invoked by uid 1000);
+        Tue, 12 Jul 2022 19:21:19 -0000
+Date:   Tue, 12 Jul 2022 13:21:19 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Tinghan Shen <tinghan.shen@mediatek.com>
+Cc:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Weiyi Lu <weiyi.lu@mediatek.com>,
+        iommu@lists.linux-foundation.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+Subject: Re: [PATCH v1 03/16] dt-bindings: power: mediatek: Refine multiple
+ level power domain nodes
+Message-ID: <20220712192119.GK1823936-robh@kernel.org>
+References: <20220704100028.19932-1-tinghan.shen@mediatek.com>
+ <20220704100028.19932-4-tinghan.shen@mediatek.com>
+ <20220705205739.GA2599256-robh@kernel.org>
+ <b5667c052447d1b3c3498131af98d80a07ed4767.camel@mediatek.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a514469f-3d1d-47a0-6330-08da643b79ce
-X-MS-TrafficTypeDiagnostic: BY5PR10MB4177:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7YSrWJ3aM2Bi0FRjqIYfs2tB8FKDhjSVvITymp1OUfmLEA/KXR3cOouT9lOTMODZbIPsOVEDDsF+AJyWxqohEJ28cBQ80ApUg7rYlpns8bl5mX+PHBo0ytou9B00lvfzhlvRWxGpVUDXW8a3DHWDkCHAhmSyRN+Wf8L1v1DUs4xxiAUPPHp/Yca9AVIyHz0HUi1skVrCkak9s70L0Vvbi8eBxahSlBO3tlHZjl0vIAyw4J67b5NZ4GxFgVAgFztELaLSSOS/Rg/apii7KouosHl+YUoniUMyR1urro5SbyfRmg6nDE92SL/n3y7DcJyCaJA5JhNZIazLeuP5YQSqsq+CVCZVRwhT0+akF1mj+H2qN+desn2cFWOqAQbEXlDGcj8L5sp7Y5g3+ilByGGKMQLJ7DoFot8GWQdCRmaQWVSDLiEQkpx8y0P0KE6BzJTkQ9IhJ/0QKaPhbC/nD/4PNWMBCOdfzfvhEsyeK5e9TMd6xjsxWoPL0HU9JT/XQnKmLWQJgw/5RcnPfWkznyEWxnU2QFfxWn0eRfPeSxUMIwIo2O4KOWhJG8yiE+aHF0Ff/MV7HvzA3VaU/SgjRw0KRSRfI/YjMeSjqlxvgStV+2u509+5fEzTyJtNuuyv3qiueCppbj+TlAKIEp3jVjaah2IvscIdxo899y1xYs7CNoLHfh7dIxAYeWBjoEeBaI8FTMlRAvesW2Tzx9LDcUEzDw/KInm4iP+jNz4TKbzDCjhRQYvw0KSiwMMYwwgAfhW/WFcfm7ThEv257B2CmiIpWUshUSFozp94jHBGUd++pMMWO7NzhwOW4lomlSs9QVg+LRDT6AqVcASFplF0s1OPcTuWB0CWfi2NB/vajOSAH5A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5009.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(136003)(376002)(346002)(366004)(396003)(6486002)(53546011)(38100700002)(478600001)(31696002)(86362001)(26005)(110136005)(6506007)(36756003)(8676002)(66556008)(54906003)(31686004)(316002)(66476007)(2616005)(4326008)(66946007)(186003)(41300700001)(6666004)(2906002)(8936002)(6512007)(44832011)(7416002)(5660300002)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UEQ3OUE3M2xYOWs3UkczWWVkQUlRbDFZUk9STEJjNmtJTmwrUGVid2tRRlBH?=
- =?utf-8?B?cnUzZjA3dGZscEs4VzBOZ2dmY2swODNJNWVVTkFObnRnazZES1kxRGtYeHJJ?=
- =?utf-8?B?TEYyMXNYQmlpRTc0eURPYXhhZGc1TStLSkJwSVZVRGF0cGhxQmpVczEwUjdU?=
- =?utf-8?B?VGlaNWg2VWRWODc3ejVnbGU3emRtcThaR2FOTG9ocFZKajZsS0gyMm4xdWFs?=
- =?utf-8?B?YmFWTUJmVUlwYm9kdTJwUnNIRmJQcUd1N0l0dDJxZzcyYjR0dHdseGlaMnhn?=
- =?utf-8?B?blBPbkw0YUNyaGhUVjNCS2NlM1lKdWFRZWZRcHB6VzBocndrK2J4Lyt0SVdo?=
- =?utf-8?B?OHc2OXBvYmt0RjZYbHpxUmNIdk9xV1ZxTXlQNENTVUNPdVNEYmVYNmhvUHpa?=
- =?utf-8?B?UXEwM0x3UG1tUFFUd3o1NG41YTJnMHFMZXEwVFQ4VjR6ZWlrZ2Jsd3JYOHpF?=
- =?utf-8?B?MVZNSGRzejBmbFVXbm5ic1QwVm1YcjhGMUI5SUZoKzlBNFpONnQ4cDJCV01q?=
- =?utf-8?B?MzgwWnl5K2NTd2grSTd6TFhkbUkxZFZOY0dJdkcvcDVLamY2MVE5OEVBZVZs?=
- =?utf-8?B?YVpxL0xtWEZhbFVabzRYVEpxbmtEZWNjdGh0WmM0bW4zb1ZKVG5SWWlabG1p?=
- =?utf-8?B?SzU2N25Mc3QvMXFySHBMcnF3UDZpRzNUY2JYTUZwU0hvd2FKVnVYREhwMEcz?=
- =?utf-8?B?bkVEdGEweDFrSEdocTRGOGFCMTVoalpjQkZrSEpFS3RkVzlCNEtMUXhMZWlm?=
- =?utf-8?B?aEhSZlFZcFVVVGN3QkhzbGpzMTdzNWoyZjFsQm5yV2VRNS9CZGtQUi84bWc4?=
- =?utf-8?B?ZDBzNWZFajRGdUVTdk5jL2lnYkFtNW9GQTdtbHNGcEhyZlhqa2VvZXNPTEdW?=
- =?utf-8?B?cTdER1Y1bzZQdFdlN1llK3lIVTJNcGV1ZDNiL1RrR1lXY2JaR0xXbTR2WU1w?=
- =?utf-8?B?THh1TnR3NWpOVXB6QWZXT21neHdZVXRtZDdXcHJJL29LaEJoOCs0NURaT2pr?=
- =?utf-8?B?UlhiWVliMjJRSUExaGlDMCs4R05VZ2pRU1VDait6d09WY0tCVzRXQ2lyVjVT?=
- =?utf-8?B?eVVnSHROdUVORlE4aHA3NktHWCtqNjhtVk92eElzSnVSeGRaMUJsNHZVdm1y?=
- =?utf-8?B?U3M2Vlp2YS85UlllQnFmWHgxQWxnSVFoMjZHc05tM1pReG1GVHFmY2l2T29K?=
- =?utf-8?B?UXRtUzJOdndQYUxuQkJmMmsxZjl4aWNDYzhzU2ErMDdXVVFPS2RyVmZRdFVj?=
- =?utf-8?B?T1ZiUlVnQUh3NEZZcDlFSHJNMlc4R1BnS1hJdjBVeTd4QisyOE9XWlhWOXBx?=
- =?utf-8?B?SGxFZTFvYW1MaWVHWWJFaFNReTdwdStqN3ZpOVBNWE5tWUtoYWJPaW9qbkhC?=
- =?utf-8?B?RFRvWUI4OXlYYWNzQTFKVy95WHR3UzhoS1o2T2dDM3ZvWVM5Y2t4N2xmcUdV?=
- =?utf-8?B?MlFuaHpJbk1LUUd5NVAvUE5QTDJhTHBMaUhKSWNtdFdyTCtIbUdlOE5HbE9C?=
- =?utf-8?B?SFJTSnF4clJDTmlwK1FWNkd3cnRER0g0UVBtaU5PcmtReERBUFVDMnIrZXZm?=
- =?utf-8?B?SnhVQVZZaWVoQnRJWGxLRVpQQjRSdFNVdEl1bG85ZGtkald4UE5sWTVlaUEx?=
- =?utf-8?B?cHdCSlZ5a2pDN0pDdjVqVy9mMU5YQ21OVWw2SVhVYUt2YkR5NmVUNlpzeXk4?=
- =?utf-8?B?M29iVjNuMkVUMXkxbjBLb09pUTBDdzQvY0RRRXNoMzRRM1Y2cjJBZFlUcy9j?=
- =?utf-8?B?Y0RXWEtoYkxsZTJGRWs0ZGhoL1J3cUlpVC9keFlxUDlSRmJ4ZXBic01pQkVp?=
- =?utf-8?B?ZXQrZmtJM2ViakllMXBQZE9uc1RxQlZDT1I1TlRKZXhCYmJweDFwQzhyRkoy?=
- =?utf-8?B?SDBQNTNtcVIxbUJWaStIejZmUThTaVhmeEZUUTlZVnlFMWlBc0tuYmt6Sllk?=
- =?utf-8?B?QXFoUk1MRTFsZjhFOW5FeEt2U293WGFYbnVidFphT0xGL1Nva3BxRStWZHZE?=
- =?utf-8?B?RnErOGdXckRJcy9tazJTU3pCSFRJVFdINlpZV2xobWpBelI2eGVCZ2VWSEFn?=
- =?utf-8?B?a1piYitJN0tBSGQwQlFYL24zNDZOY3d4cytPV0VzZGN2UU5vSm5pY1FtT1Bx?=
- =?utf-8?B?NXp2S2wzYlhyamJ6OTVVSFN5cEJQMFMyTFVYLzVUcnRHUThaeDhNMmhkVHo2?=
- =?utf-8?B?dHc9PQ==?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a514469f-3d1d-47a0-6330-08da643b79ce
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5009.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 19:19:43.7950
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HQJM1K9sNLgGnSc+KfmMDVuavnqpn33RnDHqw40ta7hbJYnXiGUk4ygyUzZF4SLrgrBM6FrFroAtoG4ZcDInMoCrM1epNkHvxvvFt5Tjvm4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4177
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-12_12:2022-07-12,2022-07-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxlogscore=999
- malwarescore=0 suspectscore=0 mlxscore=0 spamscore=0 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207120078
-X-Proofpoint-GUID: 90l5qejajIJQaoY7LC9GUmnpRHoQle1s
-X-Proofpoint-ORIG-GUID: 90l5qejajIJQaoY7LC9GUmnpRHoQle1s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b5667c052447d1b3c3498131af98d80a07ed4767.camel@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 06, 2022 at 02:19:08PM +0800, Tinghan Shen wrote:
+> On Tue, 2022-07-05 at 14:57 -0600, Rob Herring wrote:
+> > On Mon, Jul 04, 2022 at 06:00:15PM +0800, Tinghan Shen wrote:
+> > > Extract duplicated properties and support more levels of power
+> > > domain nodes.
+> > > 
+> > > This change fix following error when do dtbs_check,
+> > >     arch/arm64/boot/dts/mediatek/mt8195-evb.dtb: power-controller: power-domain@15:
+> > > power-domain@16:power-domain@18: 'power-domain@19', 'power-domain@20', 'power-domain@21' do not
+> > > match any of the regexes: 'pinctrl-[0-9]+'
+> > > 	 From schema: Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > > 
+> > > Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
+> > > ---
+> > >  .../power/mediatek,power-controller.yaml      | 132 ++----------------
+> > >  1 file changed, 12 insertions(+), 120 deletions(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > > b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > > index 135c6f722091..09a537a802b8 100644
+> > > --- a/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > > +++ b/Documentation/devicetree/bindings/power/mediatek,power-controller.yaml
+> > > @@ -39,8 +39,17 @@ properties:
+> > >    '#size-cells':
+> > >      const: 0
+> > >  
+> > > +required:
+> > > +  - compatible
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > >  patternProperties:
+> > >    "^power-domain@[0-9a-f]+$":
+> > > +    $ref: "#/$defs/power-domain-node"
+> > > +
+> > > +$defs:
+> > > +  power-domain-node:
+> > >      type: object
+> > >      description: |
+> > >        Represents the power domains within the power controller node as documented
+> > > @@ -98,127 +107,10 @@ patternProperties:
+> > >          $ref: /schemas/types.yaml#/definitions/phandle
+> > >          description: phandle to the device containing the SMI register range.
+> > >  
+> > > -    patternProperties:
+> > > -      "^power-domain@[0-9a-f]+$":
+> > > -        type: object
+> > > -        description: |
+> > > -          Represents a power domain child within a power domain parent node.
+> > > -
+> > > -        properties:
+> > > -
+> > > -          '#power-domain-cells':
+> > > -            description:
+> > > -              Must be 0 for nodes representing a single PM domain and 1 for nodes
+> > > -              providing multiple PM domains.
+> > > -
+> > > -          '#address-cells':
+> > > -            const: 1
+> > > -
+> > > -          '#size-cells':
+> > > -            const: 0
+> > > -
+> > > -          reg:
+> > > -            maxItems: 1
+> > > -
+> > > -          clocks:
+> > > -            description: |
+> > > -              A number of phandles to clocks that need to be enabled during domain
+> > > -              power-up sequencing.
+> > > -
+> > > -          clock-names:
+> > > -            description: |
+> > > -              List of names of clocks, in order to match the power-up sequencing
+> > > -              for each power domain we need to group the clocks by name. BASIC
+> > > -              clocks need to be enabled before enabling the corresponding power
+> > > -              domain, and should not have a '-' in their name (i.e mm, mfg, venc).
+> > > -              SUSBYS clocks need to be enabled before releasing the bus protection,
+> > > -              and should contain a '-' in their name (i.e mm-0, isp-0, cam-0).
+> > > -
+> > > -              In order to follow properly the power-up sequencing, the clocks must
+> > > -              be specified by order, adding first the BASIC clocks followed by the
+> > > -              SUSBSYS clocks.
+> > > -
+> > > -          domain-supply:
+> > > -            description: domain regulator supply.
+> > > -
+> > > -          mediatek,infracfg:
+> > > -            $ref: /schemas/types.yaml#/definitions/phandle
+> > > -            description: phandle to the device containing the INFRACFG register range.
+> > > -
+> > > -          mediatek,smi:
+> > > -            $ref: /schemas/types.yaml#/definitions/phandle
+> > > -            description: phandle to the device containing the SMI register range.
+> > > -
+> > > -        patternProperties:
+> > > -          "^power-domain@[0-9a-f]+$":
+> > > -            type: object
+> > > -            description: |
+> > > -              Represents a power domain child within a power domain parent node.
+> > > -
+> > > -            properties:
+> > > +      required:
+> > > +        - reg
+> > >  
+> > > -              '#power-domain-cells':
+> > > -                description:
+> > > -                  Must be 0 for nodes representing a single PM domain and 1 for nodes
+> > > -                  providing multiple PM domains.
+> > > -
+> > > -              '#address-cells':
+> > > -                const: 1
+> > > -
+> > > -              '#size-cells':
+> > > -                const: 0
+> > > -
+> > > -              reg:
+> > > -                maxItems: 1
+> > > -
+> > > -              clocks:
+> > > -                description: |
+> > > -                  A number of phandles to clocks that need to be enabled during domain
+> > > -                  power-up sequencing.
+> > > -
+> > > -              clock-names:
+> > > -                description: |
+> > > -                  List of names of clocks, in order to match the power-up sequencing
+> > > -                  for each power domain we need to group the clocks by name. BASIC
+> > > -                  clocks need to be enabled before enabling the corresponding power
+> > > -                  domain, and should not have a '-' in their name (i.e mm, mfg, venc).
+> > > -                  SUSBYS clocks need to be enabled before releasing the bus protection,
+> > > -                  and should contain a '-' in their name (i.e mm-0, isp-0, cam-0).
+> > > -
+> > > -                  In order to follow properly the power-up sequencing, the clocks must
+> > > -                  be specified by order, adding first the BASIC clocks followed by the
+> > > -                  SUSBSYS clocks.
+> > > -
+> > > -              domain-supply:
+> > > -                description: domain regulator supply.
+> > > -
+> > > -              mediatek,infracfg:
+> > > -                $ref: /schemas/types.yaml#/definitions/phandle
+> > > -                description: phandle to the device containing the INFRACFG register range.
+> > > -
+> > > -              mediatek,smi:
+> > > -                $ref: /schemas/types.yaml#/definitions/phandle
+> > > -                description: phandle to the device containing the SMI register range.
+> > > -
+> > > -            required:
+> > > -              - reg
+> > > -
+> > > -            additionalProperties: false
+> > > -
+> > > -        required:
+> > > -          - reg
+> > > -
+> > > -        additionalProperties: false
+> > > -
+> > > -    required:
+> > > -      - reg
+> > > -
+> > > -    additionalProperties: false
+> > > -
+> > > -required:
+> > > -  - compatible
+> > > -
+> > > -additionalProperties: false
+> > > +      additionalProperties: false
+> > You now aren't checking more than 1 level because you have defined 
+> > 'additionalProperties' to be a DT property. Check the indentation.
+> > 
+> > You need this in $defs/power-domain-node to recurse:
+> > 
+> >     additionalProperties:
+> >       $ref: #/$defs/power-domain-node
+> Hi Rob,
+> 
+> I get the following error after adding the 'additionalProperties' to $defs/power-domain-node.
+> The same error occurs when I run dt_binding_check on power/renesas,sysc-rmobile.yaml, which has the
+> similar property.
+> 
+> $ make dt_binding_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/power/mediatek,power-
+> controller.yaml O=out
+> make[1]: Entering directory '/test/upstream-cros/src/third_party/kernel/v5.10/out'
+>   LINT    Documentation/devicetree/bindings
+>   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+>   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> /test/upstream-
+> cros/src/third_party/kernel/v5.10/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+> : ignoring, error in schema: patternProperties: ^thermistor@: properties: adi,excitation-current-
+> nanoamp
+> /test/upstream-
+> cros/src/third_party/kernel/v5.10/Documentation/devicetree/bindings/display/tegra/nvidia,tegra124-
+> sor.yaml: ignoring, error in schema: allOf: 1: if: not: properties
+> /test/upstream-
+> cros/src/third_party/kernel/v5.10/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml: ignoring,
+> error parsing file
+>   DTEX    Documentation/devicetree/bindings/power/mediatek,power-controller.example.dts
+>   DTC     Documentation/devicetree/bindings/power/mediatek,power-controller.example.dtb
+>   CHECK   Documentation/devicetree/bindings/power/mediatek,power-controller.example.dtb
+> Traceback (most recent call last):
+>   File "/test/.venv/py3.9/bin/dt-validate", line 173, in <module>
+>     testtree = dtschema.load(filename, line_number=args.line_number)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 913, in load
+>     return [ dtschema.dtb.fdt_unflatten(f.read()) ]
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/dtb.py", line 463, in fdt_unflatten
+>     p = dtschema.get_prop_types()
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 892, in get_prop_types
+>     props = dtschema.extract_types(schema_cache)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 883, in extract_types
+>     _extract_subschema_types(props, sch, sch)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 874, in
+> _extract_subschema_types
+> 
+> [...snip...]
+> 
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 803, in
+> _extract_prop_type
+>     _extract_prop_type(props, schema, propname, subschema)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 794, in
+> _extract_prop_type
+>     _extract_subschema_types(props, schema, subschema)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 874, in
+> _extract_subschema_types
+>     _extract_prop_type(props, schema, p, v)
+>   File "/test/.venv/py3.9/lib/python3.9/site-packages/dtschema/lib.py", line 790, in
+> _extract_prop_type
+>     if not isinstance(subschema, dict):
+> RecursionError: maximum recursion depth exceeded while calling a Python object
+> make[1]: Leaving directory '/test/upstream-cros/src/third_party/kernel/v5.10/out'
 
-On 7/12/22 12:38 PM, Greg KH wrote:
-> Hi all,
->
-> I'm seeing the following build warning:
-> 	arch/x86/kernel/head_64.o: warning: objtool: xen_hypercall_mmu_update(): can't find starting instruction
-> in the 5.15.y and 5.10.y retbleed backports.
->
-> I don't know why just this one hypercall is being called out by objtool,
-> and this warning isn't in 5.18 and Linus's tree due to I think commit
-> 5b2fc51576ef ("x86/ibt,xen: Sprinkle the ENDBR") being there.
->
-> But, is this a ret call that we "forgot" here?  It's a "real" ret in
-> Linus's branch:
->
-> .pushsection .noinstr.text, "ax"
-> 	.balign PAGE_SIZE
-> SYM_CODE_START(hypercall_page)
-> 	.rept (PAGE_SIZE / 32)
-> 		UNWIND_HINT_FUNC
-> 		ANNOTATE_NOENDBR
-> 		ANNOTATE_UNRET_SAFE
-> 		ret
-> 		/*
-> 		 * Xen will write the hypercall page, and sort out ENDBR.
-> 		 */
-> 		.skip 31, 0xcc
-> 	.endr
->
-> while 5.15.y and older has:
-> .pushsection .text
-> 	.balign PAGE_SIZE
-> SYM_CODE_START(hypercall_page)
-> 	.rept (PAGE_SIZE / 32)
-> 		UNWIND_HINT_FUNC
-> 		.skip 31, 0x90
-> 		ANNOTATE_UNRET_SAFE
-> 		RET
-> 	.endr
->
-> So should the "ret" remain or be turned into "RET" in mainline right
-> now?
+Okay, I think you need something more like this that doesn't recurse 
+infinitely:
+
+patternProperties:
+  "^power-domain@[0-9a-f]+$":
+    $ref: #/$defs/power-domain-node
+
+    unevaluatedProperties:
+      $ref: #/$defs/power-domain-node
+
+If you need a 3rd level of nodes:
+      unevaluatedProperties:
+        $ref: #/$defs/power-domain-node
 
 
-It doesn't matter --- this is overwritten by the hypervisor during initialization when Xen fills in actual hypercall code.
-
-
-So f4b4bc10b0b85ec66f1a9bf5dddf475e6695b6d2 added 'ret' to make objtool happy and then 14b476e07fab6 replaced 'ret' with RET as part of SLS fixes. The latter was not really necessary but harmless.
-
-
-So it can be 'ret', RET, or anything else that tools don't complain about. It will not be executed.
-
-
--boris
-
+Rob
