@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 884E9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235382AbiGLTDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S235332AbiGLTDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235166AbiGLTCI (ORCPT
+        with ESMTP id S235283AbiGLTCJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:02:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3601C193FB;
-        Tue, 12 Jul 2022 11:49:35 -0700 (PDT)
+        Tue, 12 Jul 2022 15:02:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF34B6D564;
+        Tue, 12 Jul 2022 11:49:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E8770B81BB9;
-        Tue, 12 Jul 2022 18:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 502B6C3411E;
-        Tue, 12 Jul 2022 18:49:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 70E3F61491;
+        Tue, 12 Jul 2022 18:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48F40C341C0;
+        Tue, 12 Jul 2022 18:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651772;
-        bh=u+BhN/gg3dg1PEa2+ENCjYpRMt1S2L7NIfbqX1tzYLY=;
+        s=korg; t=1657651775;
+        bh=9d+Kp6/2NX6lzNnjWTljAdV1EFVIu8UX09rYANXkE74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ULGBRUvthY53Svc7xFwx8fyRKS8ThIupNg/j/A5gwvEtiVJ20H9X5zplxJXjk8bRJ
-         SP1cGxb9h4jCGdlY/7rKvEWfT+Ham/NJ/O5HE4stqDu3Z5cPpGoarpL/Fg4z+cVOT9
-         L6QAsjp5TY4SnFIsWE4A6LVGR17I7kOP5ghxAQaU=
+        b=I18VgXOeNvZmDV3o/Nj6oPrZLgUJNyC7WQB88wzgQlH0IeNphCoTUNLn3/ifJRhsS
+         dZYzcyzyhl31yQxETJnUOQOhiN3DouF6Gklu/vp7mrRj4UdbaiXuTT9RHMM80Tktq9
+         12i9n35iiUgIJuUAZuqtzph9Np8oI3xnfD/oJG6E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 53/78] x86/xen: Rename SYS* entry points
-Date:   Tue, 12 Jul 2022 20:39:23 +0200
-Message-Id: <20220712183241.025598382@linuxfoundation.org>
+Subject: [PATCH 5.15 54/78] x86/xen: Add UNTRAIN_RET
+Date:   Tue, 12 Jul 2022 20:39:24 +0200
+Message-Id: <20220712183241.074396117@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -53,11 +53,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit b75b7f8ef1148be1b9321ffc2f6c19238904b438 upstream.
+commit d147553b64bad34d2f92cb7d8ba454ae95c3baac upstream.
 
-Native SYS{CALL,ENTER} entry points are called
-entry_SYS{CALL,ENTER}_{64,compat}, make sure the Xen versions are
-named consistently.
+Ensure the Xen entry also passes through UNTRAIN_RET.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
@@ -66,118 +64,32 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/setup.c   |    6 +++---
- arch/x86/xen/xen-asm.S |   20 ++++++++++----------
- arch/x86/xen/xen-ops.h |    6 +++---
- 3 files changed, 16 insertions(+), 16 deletions(-)
+ arch/x86/entry/entry_64.S |    8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/arch/x86/xen/setup.c
-+++ b/arch/x86/xen/setup.c
-@@ -922,7 +922,7 @@ void xen_enable_sysenter(void)
- 	if (!boot_cpu_has(sysenter_feature))
- 		return;
- 
--	ret = register_callback(CALLBACKTYPE_sysenter, xen_sysenter_target);
-+	ret = register_callback(CALLBACKTYPE_sysenter, xen_entry_SYSENTER_compat);
- 	if(ret != 0)
- 		setup_clear_cpu_cap(sysenter_feature);
- }
-@@ -931,7 +931,7 @@ void xen_enable_syscall(void)
- {
- 	int ret;
- 
--	ret = register_callback(CALLBACKTYPE_syscall, xen_syscall_target);
-+	ret = register_callback(CALLBACKTYPE_syscall, xen_entry_SYSCALL_64);
- 	if (ret != 0) {
- 		printk(KERN_ERR "Failed to set syscall callback: %d\n", ret);
- 		/* Pretty fatal; 64-bit userspace has no other
-@@ -940,7 +940,7 @@ void xen_enable_syscall(void)
- 
- 	if (boot_cpu_has(X86_FEATURE_SYSCALL32)) {
- 		ret = register_callback(CALLBACKTYPE_syscall32,
--					xen_syscall32_target);
-+					xen_entry_SYSCALL_compat);
- 		if (ret != 0)
- 			setup_clear_cpu_cap(X86_FEATURE_SYSCALL32);
- 	}
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -227,7 +227,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
-  */
- 
- /* Normal 64-bit system call target */
--SYM_CODE_START(xen_syscall_target)
-+SYM_CODE_START(xen_entry_SYSCALL_64)
- 	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
-@@ -241,12 +241,12 @@ SYM_CODE_START(xen_syscall_target)
- 	movq $__USER_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSCALL_64_after_hwframe
--SYM_CODE_END(xen_syscall_target)
-+SYM_CODE_END(xen_entry_SYSCALL_64)
- 
- #ifdef CONFIG_IA32_EMULATION
- 
- /* 32-bit compat syscall target */
--SYM_CODE_START(xen_syscall32_target)
-+SYM_CODE_START(xen_entry_SYSCALL_compat)
- 	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
-@@ -260,10 +260,10 @@ SYM_CODE_START(xen_syscall32_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSCALL_compat_after_hwframe
--SYM_CODE_END(xen_syscall32_target)
-+SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- /* 32-bit compat sysenter target */
--SYM_CODE_START(xen_sysenter_target)
-+SYM_CODE_START(xen_entry_SYSENTER_compat)
- 	UNWIND_HINT_EMPTY
- 	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
-@@ -281,18 +281,18 @@ SYM_CODE_START(xen_sysenter_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSENTER_compat_after_hwframe
--SYM_CODE_END(xen_sysenter_target)
-+SYM_CODE_END(xen_entry_SYSENTER_compat)
- 
- #else /* !CONFIG_IA32_EMULATION */
- 
--SYM_CODE_START(xen_syscall32_target)
--SYM_CODE_START(xen_sysenter_target)
-+SYM_CODE_START(xen_entry_SYSCALL_compat)
-+SYM_CODE_START(xen_entry_SYSENTER_compat)
- 	UNWIND_HINT_EMPTY
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
- 	pushq $0
- 	jmp hypercall_iret
--SYM_CODE_END(xen_sysenter_target)
--SYM_CODE_END(xen_syscall32_target)
-+SYM_CODE_END(xen_entry_SYSENTER_compat)
-+SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- #endif	/* CONFIG_IA32_EMULATION */
---- a/arch/x86/xen/xen-ops.h
-+++ b/arch/x86/xen/xen-ops.h
-@@ -10,10 +10,10 @@
- /* These are code, but not functions.  Defined in entry.S */
- extern const char xen_failsafe_callback[];
- 
--void xen_sysenter_target(void);
-+void xen_entry_SYSENTER_compat(void);
- #ifdef CONFIG_X86_64
--void xen_syscall_target(void);
--void xen_syscall32_target(void);
-+void xen_entry_SYSCALL_64(void);
-+void xen_entry_SYSCALL_compat(void);
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -320,6 +320,12 @@ SYM_CODE_END(ret_from_fork)
  #endif
+ .endm
  
- extern void *xen_initial_gdt;
++SYM_CODE_START_LOCAL(xen_error_entry)
++	UNWIND_HINT_FUNC
++	UNTRAIN_RET
++	RET
++SYM_CODE_END(xen_error_entry)
++
+ /**
+  * idtentry_body - Macro to emit code calling the C function
+  * @cfunc:		C function to be called
+@@ -339,7 +345,7 @@ SYM_CODE_END(ret_from_fork)
+ 	 * switch the CR3.  So it can skip invoking error_entry().
+ 	 */
+ 	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
+-		"", X86_FEATURE_XENPV
++		    "call xen_error_entry", X86_FEATURE_XENPV
+ 
+ 	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
 
 
