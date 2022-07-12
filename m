@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9614C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234887AbiGLSzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:55:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56296 "EHLO
+        id S234893AbiGLSzQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:55:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234322AbiGLSya (ORCPT
+        with ESMTP id S234462AbiGLSya (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 14:54:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BADCE95EB;
-        Tue, 12 Jul 2022 11:45:58 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28FCDB2E0;
+        Tue, 12 Jul 2022 11:45:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E53060AC3;
-        Tue, 12 Jul 2022 18:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DCA1C3411E;
-        Tue, 12 Jul 2022 18:45:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9310A60C93;
+        Tue, 12 Jul 2022 18:45:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A23DEC3411C;
+        Tue, 12 Jul 2022 18:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651556;
-        bh=NDj9XORo/OeKYd/gw/mw/rUhZ8m5yMraNTBvIwn97J8=;
+        s=korg; t=1657651559;
+        bh=mhfFvQtBEybVbqarS8ueWbYRtpojy7GFRiJPB7rBpNU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJL3fTMuPcsBo8vXOLsvNG0u5K7QNWJD6OXYMV/r6N9mjzW8WKJYtslRMUmBl3dIa
-         Sxi/huCEL4238RU1Xu0NTMlh3Pu3zrM1/KCR9jyDX8pmAu30NymoSVCgeA5bgE8tm/
-         KLHoxP38g0e9F+QEG7fcDYbtcVrrNXRMAK+GQwVM=
+        b=GseVcq3CpEMn6OoHbi4Gfk5/7+UWzSg2DdJjABcWzpvhn3HdZC0M6UYjwZEoy2CK0
+         AKUhFfaSyCAESmCBUISgbZpk/odp2bMo7ikh7AZzEm1irrFXhNGHqO3Klft/ShdCQ+
+         Jx6ONYgXXfpOI6SWT0uF8nZ2moYKv589JjTDeHZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 082/130] Makefile: Set retpoline cflags based on CONFIG_CC_IS_{CLANG,GCC}
-Date:   Tue, 12 Jul 2022 20:38:48 +0200
-Message-Id: <20220712183250.241424402@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 073/130] objtool: Fix type of reloc::addend
+Date:   Tue, 12 Jul 2022 20:38:39 +0200
+Message-Id: <20220712183249.838939751@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -47,40 +50,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Peter Zijlstra <peterz@infradead.org>
 
-This was done as part of commit 7d73c3e9c51400d3e0e755488050804e4d44737a
-"Makefile: remove stale cc-option checks" upstream, and is needed to
-support backporting further retpoline changes.
+commit c087c6e7b551b7f208c0b852304f044954cf2bb3 upstream.
 
+Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
+that our reloc::addend needs to be long or face tuncation issues when
+we do elf_rebuild_reloc_section():
+
+  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
+  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
+
+Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lkml.kernel.org/r/20220419203807.596871927@infradead.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Makefile |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ tools/objtool/check.c |    8 ++++----
+ tools/objtool/elf.c   |    2 +-
+ tools/objtool/elf.h   |    4 ++--
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/Makefile
-+++ b/Makefile
-@@ -670,12 +670,14 @@ ifdef CONFIG_FUNCTION_TRACER
-   CC_FLAGS_FTRACE := -pg
- endif
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -467,12 +467,12 @@ static int add_dead_ends(struct objtool_
+ 		else if (reloc->addend == reloc->sym->sec->len) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find unreachable insn at %s+0x%x",
++				WARN("can't find unreachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find unreachable insn at %s+0x%x",
++			WARN("can't find unreachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+@@ -502,12 +502,12 @@ reachable:
+ 		else if (reloc->addend == reloc->sym->sec->len) {
+ 			insn = find_last_insn(file, reloc->sym->sec);
+ 			if (!insn) {
+-				WARN("can't find reachable insn at %s+0x%x",
++				WARN("can't find reachable insn at %s+0x%lx",
+ 				     reloc->sym->sec->name, reloc->addend);
+ 				return -1;
+ 			}
+ 		} else {
+-			WARN("can't find reachable insn at %s+0x%x",
++			WARN("can't find reachable insn at %s+0x%lx",
+ 			     reloc->sym->sec->name, reloc->addend);
+ 			return -1;
+ 		}
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -509,7 +509,7 @@ static struct section *elf_create_reloc_
+ 						int reltype);
  
--RETPOLINE_CFLAGS_GCC := -mindirect-branch=thunk-extern -mindirect-branch-register
--RETPOLINE_VDSO_CFLAGS_GCC := -mindirect-branch=thunk-inline -mindirect-branch-register
--RETPOLINE_CFLAGS_CLANG := -mretpoline-external-thunk
--RETPOLINE_VDSO_CFLAGS_CLANG := -mretpoline
--RETPOLINE_CFLAGS := $(call cc-option,$(RETPOLINE_CFLAGS_GCC),$(call cc-option,$(RETPOLINE_CFLAGS_CLANG)))
--RETPOLINE_VDSO_CFLAGS := $(call cc-option,$(RETPOLINE_VDSO_CFLAGS_GCC),$(call cc-option,$(RETPOLINE_VDSO_CFLAGS_CLANG)))
-+ifdef CONFIG_CC_IS_GCC
-+RETPOLINE_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-extern -mindirect-branch-register)
-+RETPOLINE_VDSO_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-inline -mindirect-branch-register)
-+endif
-+ifdef CONFIG_CC_IS_CLANG
-+RETPOLINE_CFLAGS	:= -mretpoline-external-thunk
-+RETPOLINE_VDSO_CFLAGS	:= -mretpoline
-+endif
- export RETPOLINE_CFLAGS
- export RETPOLINE_VDSO_CFLAGS
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend)
++		  unsigned int type, struct symbol *sym, long addend)
+ {
+ 	struct reloc *reloc;
  
+--- a/tools/objtool/elf.h
++++ b/tools/objtool/elf.h
+@@ -73,7 +73,7 @@ struct reloc {
+ 	struct symbol *sym;
+ 	unsigned long offset;
+ 	unsigned int type;
+-	int addend;
++	long addend;
+ 	int idx;
+ 	bool jump_table_start;
+ };
+@@ -127,7 +127,7 @@ struct elf *elf_open_read(const char *na
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ 
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+-		  unsigned int type, struct symbol *sym, int addend);
++		  unsigned int type, struct symbol *sym, long addend);
+ int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
+ 			  unsigned long offset, unsigned int type,
+ 			  struct section *insn_sec, unsigned long insn_off);
 
 
