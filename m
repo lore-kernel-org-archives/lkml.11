@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41334C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B32ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:11:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235723AbiGLTKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41844 "EHLO
+        id S235730AbiGLTK6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:10:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235681AbiGLTIw (ORCPT
+        with ESMTP id S235672AbiGLTIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:08:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F4AFD537;
-        Tue, 12 Jul 2022 11:51:59 -0700 (PDT)
+        Tue, 12 Jul 2022 15:08:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8987FD52E;
+        Tue, 12 Jul 2022 11:51:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B576FB81BBC;
-        Tue, 12 Jul 2022 18:51:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19369C3411C;
-        Tue, 12 Jul 2022 18:51:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDC43B81BAC;
+        Tue, 12 Jul 2022 18:51:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE66FC3411C;
+        Tue, 12 Jul 2022 18:51:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651916;
-        bh=c7cT0pGJvYgrreCApbBPIWLaruKPYpFkqKQ21dEuQZk=;
+        s=korg; t=1657651913;
+        bh=PjLflK8MjhM3rqIEBxMhacaCf2idux+fD9l3qP+1hNk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U19wlParvmSKrHdqJA48UsKe91RpdWpPnTkXgFEtCDIJ5vBIiDVhF3/WObfouTs6b
-         voH1LsmJjzxzpF4B8UzbilAfJ4qwAlTipZn9wJYkAnQZfLCXzFB27vBOl5O45A/a4/
-         wv5+OUYLSRMUpwarZWPJ8isU1iPFzRlfSdfcXKVw=
+        b=r+t1Yg4t3Ok4ksRVOogHOfQblMBGlcnCEPsww3VYhZ2bvnoEZjnKqhgbb6e7yFgCv
+         AIAOcRmJWekCT9lasQTlf/XHqQLwSca/3QMyPZ+icoaXLln8+WuvyTgS2BsgJJ/xML
+         GEf3TmmpPaXO6K4bMP0irZ6pCWJCXn1cYkovZHI0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 22/61] objtool: Treat .text.__x86.* as noinstr
-Date:   Tue, 12 Jul 2022 20:39:19 +0200
-Message-Id: <20220712183237.837418060@linuxfoundation.org>
+Subject: [PATCH 5.18 21/61] x86/entry: Avoid very early RET
+Date:   Tue, 12 Jul 2022 20:39:18 +0200
+Message-Id: <20220712183237.794875995@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -53,13 +53,24 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 951ddecf435659553ed15a9214e153a3af43a9a1 upstream.
+commit 7c81c0c9210c9bfab2bae76aab2999de5bad27db upstream.
 
-Needed because zen_untrain_ret() will be called from noinstr code.
+Commit
 
-Also makes sense since the thunks MUST NOT contain instrumentation nor
-be poked with dynamic instrumentation.
+  ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
 
+manages to introduce a CALL/RET pair that is before SWITCH_TO_KERNEL_CR3,
+which means it is before RETBleed can be mitigated.
+
+Revert to an earlier version of the commit in Fixes. Down side is that
+this will bloat .text size somewhat. The alternative is fully reverting
+it.
+
+The purpose of this patch was to allow migrating error_entry() to C,
+including the whole of kPTI. Much care needs to be taken moving that
+forward to not re-introduce this problem of early RETs.
+
+Fixes: ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
@@ -67,20 +78,36 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/entry/entry_64.S |   12 ++----------
+ 1 file changed, 2 insertions(+), 10 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -374,7 +374,8 @@ static int decode_instructions(struct ob
- 			sec->text = true;
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -317,14 +317,6 @@ SYM_CODE_END(ret_from_fork)
+ #endif
+ .endm
  
- 		if (!strcmp(sec->name, ".noinstr.text") ||
--		    !strcmp(sec->name, ".entry.text"))
-+		    !strcmp(sec->name, ".entry.text") ||
-+		    !strncmp(sec->name, ".text.__x86.", 12))
- 			sec->noinstr = true;
+-/* Save all registers in pt_regs */
+-SYM_CODE_START_LOCAL(push_and_clear_regs)
+-	UNWIND_HINT_FUNC
+-	PUSH_AND_CLEAR_REGS save_ret=1
+-	ENCODE_FRAME_POINTER 8
+-	RET
+-SYM_CODE_END(push_and_clear_regs)
+-
+ /**
+  * idtentry_body - Macro to emit code calling the C function
+  * @cfunc:		C function to be called
+@@ -332,8 +324,8 @@ SYM_CODE_END(push_and_clear_regs)
+  */
+ .macro idtentry_body cfunc has_error_code:req
  
- 		for (offset = 0; offset < sec->sh.sh_size; offset += insn->len) {
+-	call push_and_clear_regs
+-	UNWIND_HINT_REGS
++	PUSH_AND_CLEAR_REGS
++	ENCODE_FRAME_POINTER
+ 
+ 	/*
+ 	 * Call error_entry() and switch to the task stack if from userspace.
 
 
