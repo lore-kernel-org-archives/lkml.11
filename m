@@ -2,137 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:09:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C598C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230393AbiGLWJx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 18:09:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
+        id S232163AbiGLWLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 18:11:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiGLWJv (ORCPT
+        with ESMTP id S231343AbiGLWLO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 18:09:51 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2081DBD392;
-        Tue, 12 Jul 2022 15:09:51 -0700 (PDT)
+        Tue, 12 Jul 2022 18:11:14 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CEC48EF
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:11:13 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso589632pjc.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:11:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657663791; x=1689199791;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=lAo1VfvPuLlXREWPm6OylD9fuy8q1fMF1LonA1ckRLY=;
-  b=RRPJoFR5WOtxM6y7Pok1QJKupW8KjKVl4ogf8Zn6FH/EQCSCpkkwwC5C
-   18kd9rqhxCwGvhIQuFd6VAn1JnwdTU/oLeF7fPCCUty0RdZLz9+a0bPC3
-   vD0+vKFALWB9PgZwo1i3IXi22uzS8DP68/HAaqB6R03IJLBxvRPLbDj76
-   Y=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 12 Jul 2022 15:09:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 15:09:50 -0700
-Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 12 Jul 2022 15:08:50 -0700
-Received: from [10.110.36.60] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 12 Jul
- 2022 15:08:49 -0700
-Message-ID: <8029f6bb-4704-0495-00d2-ee78ee684eb3@quicinc.com>
-Date:   Tue, 12 Jul 2022 15:08:49 -0700
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V5+SKXw7xQ8pOW3xLBv/UilgsLJssuxU4DHDUS6CbQc=;
+        b=M0mF9jUFX4FVreFrTePPsEIkrtpYgoEBr1di/wduOo2KoxQ0jSOypHtBVeXIllLvXn
+         yyPgcxKzbCEeqxVvRHjofm7TboLZfOFUWUCMxGANS88cuOSTX+KhXqfzkEMBJ94XciFJ
+         8kb53RPFjzoQqA1BFWZzbm63AHFLTzbrgTKJLbN6RFG/ZMI8Bt2tsQTq6EdagRCwbdRz
+         WQipvDGM+3aNXKbF7hruJgugaYTATQ0FzpGG38H1dP8ZL1GN+5LTaMHqk7+RFaHwOdx2
+         cAICVm2/WKiTIDYmlq1sIjtlvsHcztIzdsF5KzgF+24K6i/Ywiph7L+z+IytXUyXSevg
+         MPwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V5+SKXw7xQ8pOW3xLBv/UilgsLJssuxU4DHDUS6CbQc=;
+        b=JlZLZkA2QngJp4jp++ke0m147phjCThtux23rLFJqJz+DigZty5HoTV21xDRhOtRlC
+         PBXN0rGZAwA+KXzG4f4Qbch4WkRK5aNnB/qD2eyY/qFoHVg3l3SUp0wwUfdpAYw39e+t
+         IN9JLQNv1nj0uJexsihApCzkG6LKTzCnonI2UP9t9kaNb4FoFKk1pY94tVICMBKrnAm3
+         pqZHi9GTj0o+8paz3wlS+fQPqu42XohDihb9y8n7AiEmIJyNvAvTA5h612VPComCdPl4
+         yHqyTleEUuMeRv59d+VNi876kE1nIBjg4mf6IELRxQwxlxhOkNWOA7XmhQaqarf2WyvG
+         Hhfg==
+X-Gm-Message-State: AJIora+RDUE90uvWerfcK1JPv9anFBBWFQnRz5jfRKiURDV42f7A6qr/
+        XbDAQ2L93E69MFwHhHbU9scKulGjPHqE92CW1RDn2Q==
+X-Google-Smtp-Source: AGRyM1tH5qwHM1eKTMf6FAQlhOKEGgTM2L8i+n9p3AUCA/nGBRZblR3qk+QLnYGQJJv4fLafWZ1DTgQJVFrbg1IrbKE=
+X-Received: by 2002:a17:902:e746:b0:16c:4eb6:915d with SMTP id
+ p6-20020a170902e74600b0016c4eb6915dmr160322plf.106.1657663873107; Tue, 12 Jul
+ 2022 15:11:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 4/5] usb: dwc3: Allow end transfer commands to be sent
- during soft disconnect
-Content-Language: en-US
-To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        "balbi@kernel.org" <balbi@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>
-References: <20220708185007.21743-1-quic_wcheng@quicinc.com>
- <20220708185007.21743-5-quic_wcheng@quicinc.com>
- <06498069-db45-202b-eba6-47bfa6948143@synopsys.com>
-From:   Wesley Cheng <quic_wcheng@quicinc.com>
-In-Reply-To: <06498069-db45-202b-eba6-47bfa6948143@synopsys.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
+References: <20220711162827.184743-1-roman.gushchin@linux.dev> <CAADnVQ+2Az23WLHj_1pQWYXdd8CbeKooCLrkT_GnzKXV7Yp8hw@mail.gmail.com>
+In-Reply-To: <CAADnVQ+2Az23WLHj_1pQWYXdd8CbeKooCLrkT_GnzKXV7Yp8hw@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 12 Jul 2022 15:11:02 -0700
+Message-ID: <CALvZod5uPV9cNKCMjs3HmadVnF--fum5BgG-Zcv1vTM_Bak8hw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] bpf: reparent bpf maps on memcg offlining
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Roman Gushchin <roman.gushchin@linux.dev>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thinh,
+On Tue, Jul 12, 2022 at 2:49 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, Jul 11, 2022 at 9:28 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+> >
+> > The memory consumed by a mpf map is always accounted to the memory
+> > cgroup of the process which created the map. The map can outlive
+> > the memory cgroup if it's used by processes in other cgroups or
+> > is pinned on bpffs. In this case the map pins the original cgroup
+> > in the dying state.
+> >
+> > For other types of objects (slab objects, non-slab kernel allocations,
+> > percpu objects and recently LRU pages) there is a reparenting process
+> > implemented: on cgroup offlining charged objects are getting
+> > reassigned to the parent cgroup. Because all charges and statistics
+> > are fully recursive it's a fairly cheap operation.
+> >
+> > For efficiency and consistency with other types of objects, let's do
+> > the same for bpf maps. Fortunately thanks to the objcg API, the
+> > required changes are minimal.
+> >
+> > Please, note that individual allocations (slabs, percpu and large
+> > kmallocs) already have the reparenting mechanism. This commit adds
+> > it to the saved map->memcg pointer by replacing it to map->objcg.
+> > Because dying cgroups are not visible for a user and all charges are
+> > recursive, this commit doesn't bring any behavior changes for a user.
+> >
+> > v2:
+> >   added a missing const qualifier
+> >
+> > Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+> > Reviewed-by: Shakeel Butt <shakeelb@google.com>
+> > ---
+> >  include/linux/bpf.h  |  2 +-
+> >  kernel/bpf/syscall.c | 35 +++++++++++++++++++++++++++--------
+> >  2 files changed, 28 insertions(+), 9 deletions(-)
+> >
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index 2b21f2a3452f..85a4db3e0536 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -221,7 +221,7 @@ struct bpf_map {
+> >         u32 btf_vmlinux_value_type_id;
+> >         struct btf *btf;
+> >  #ifdef CONFIG_MEMCG_KMEM
+> > -       struct mem_cgroup *memcg;
+> > +       struct obj_cgroup *objcg;
+> >  #endif
+> >         char name[BPF_OBJ_NAME_LEN];
+> >         struct bpf_map_off_arr *off_arr;
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index ab688d85b2c6..ef60dbc21b17 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -419,35 +419,52 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
+> >  #ifdef CONFIG_MEMCG_KMEM
+> >  static void bpf_map_save_memcg(struct bpf_map *map)
+> >  {
+> > -       map->memcg = get_mem_cgroup_from_mm(current->mm);
+> > +       /* Currently if a map is created by a process belonging to the root
+> > +        * memory cgroup, get_obj_cgroup_from_current() will return NULL.
+> > +        * So we have to check map->objcg for being NULL each time it's
+> > +        * being used.
+> > +        */
+> > +       map->objcg = get_obj_cgroup_from_current();
+> >  }
+> >
+> >  static void bpf_map_release_memcg(struct bpf_map *map)
+> >  {
+> > -       mem_cgroup_put(map->memcg);
+> > +       if (map->objcg)
+> > +               obj_cgroup_put(map->objcg);
+> > +}
+> > +
+> > +static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map) {
+> > +       if (map->objcg)
+> > +               return get_mem_cgroup_from_objcg(map->objcg);
+> > +
+> > +       return root_mem_cgroup;
+> >  }
+> >
+> >  void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
+> >                            int node)
+> >  {
+> > -       struct mem_cgroup *old_memcg;
+> > +       struct mem_cgroup *memcg, *old_memcg;
+> >         void *ptr;
+> >
+> > -       old_memcg = set_active_memcg(map->memcg);
+> > +       memcg = bpf_map_get_memcg(map);
+> > +       old_memcg = set_active_memcg(memcg);
+> >         ptr = kmalloc_node(size, flags | __GFP_ACCOUNT, node);
+> >         set_active_memcg(old_memcg);
+> > +       mem_cgroup_put(memcg);
+>
+> Here we might css_put root_mem_cgroup.
+> Should we css_get it when returning or
+> it's marked as CSS_NO_REF ?
+> But mem_cgroup_alloc() doesn't seem to be doing that marking.
+> I'm lost at that code.
 
-On 7/8/2022 6:58 PM, Thinh Nguyen wrote:
-> On 7/8/2022, Wesley Cheng wrote:
->> If soft disconnect is in progress, allow the endxfer command to be sent,
->> without this, there is an issue where the stop active transfer call
->> (during pullup disable) wouldn't actually issue the endxfer command,
->> while clearing the DEP flag.
->>
->> In addition, if the DWC3_EP_DELAY_STOP flag was set before soft disconnect
->> started (i.e. from the dequeue path), ensure that when the EP0 transaction
->> completes during soft disconnect, to issue the endxfer with the force
->> parameter set, as it does not expect a command complete event.
->>
->> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
->> ---
->>    drivers/usb/dwc3/ep0.c    | 3 +--
->>    drivers/usb/dwc3/gadget.c | 5 ++++-
->>    2 files changed, 5 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
->> index 506ef717fdc0..5851b0e9db0a 100644
->> --- a/drivers/usb/dwc3/ep0.c
->> +++ b/drivers/usb/dwc3/ep0.c
->> @@ -290,8 +290,7 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
->>    		if (!(dwc3_ep->flags & DWC3_EP_DELAY_STOP))
->>    			continue;
->>    
->> -		dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
->> -		dwc3_stop_active_transfer(dwc3_ep, true, true);
->> +		dwc3_stop_active_transfer(dwc3_ep, true, dwc->connected);
->>    	}
->>    }
->>    
->> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
->> index bd40608b19df..fba2797ad9ae 100644
->> --- a/drivers/usb/dwc3/gadget.c
->> +++ b/drivers/usb/dwc3/gadget.c
->> @@ -3696,8 +3696,10 @@ void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
->>    	if (dep->number <= 1 && dwc->ep0state != EP0_DATA_PHASE)
->>    		return;
->>    
->> +	if (interrupt && (dep->flags & DWC3_EP_DELAY_STOP))
->> +		return;
->> +
->>    	if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
->> -	    (dep->flags & DWC3_EP_DELAY_STOP) ||
->>    	    (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
->>    		return;
->>    
->> @@ -3744,6 +3746,7 @@ void dwc3_stop_active_transfer(struct dwc3_ep *dep, bool force,
->>    	__dwc3_stop_active_transfer(dep, force, interrupt);
->>    	spin_lock(&dwc->lock);
->>    
->> +	dep->flags &= ~DWC3_EP_DELAY_STOP;
-> 
-> Can we clear this flag in __dwc3_stop_active_transfer(). It should apply
-> if End Transfer command was sent.
-
-I wanted to make sure that we weren't modifying the DEP flags outside of 
-a spin lock.  Patch#3 modifies it where we unlock before calling 
-__dwc3_stop_active_transfer(), so we can allow the dwc3 threaded IRQ 
-handle events while the cmd status polling happens.
-
-Maybe we can unlock/lock the dwc3->lock inside 
-__dwc3_stop_active_transfer() and that way we can ensure DEP flags are 
-modified properly?
-
-Thanks
-Wesley Cheng
+CSS_NO_REF is set for root_mem_cgroup in cgroup_init_subsys().
