@@ -2,120 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DDEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4054AC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232558AbiGLIAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
+        id S232335AbiGLIBX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232417AbiGLH76 (ORCPT
+        with ESMTP id S231259AbiGLIBT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:59:58 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437439B54B;
-        Tue, 12 Jul 2022 00:59:57 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id o7so12584481lfq.9;
-        Tue, 12 Jul 2022 00:59:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=S+qr/rB1qp3jjME/ZnJzZQtFse2L01G1JMoWBlVLSGU=;
-        b=D9uRYKokFim4JLJO9gvLlORuIh6vcIUQJfDCoZKNyWB35esEUVUh/49prmxrSVqZwV
-         3KQ1TeNXyy/4v9rfTGx1At0tvDe26KiAp4lF+NNjE0yzw2mg2iHXSmNUVLtGn/ZiOTs9
-         ROTw/puBgp1n1TEeFXFQWpIUSiW/kG7hjZjmTHNq7uU8AuMMyDsB5wclUERNySepNxP/
-         +xEhyP0MKwMwQLBTEIjajP4XfENyyWToPSpmEMm19FCMtste/xtaECL+wPeUbUu/sFXt
-         Z3h+62Qa9RN2XgHk2DQ6ceN8TshvjagwtjpSHeauWhdI3v4m9FW6jPd3dqs4vCMo3csa
-         hBFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S+qr/rB1qp3jjME/ZnJzZQtFse2L01G1JMoWBlVLSGU=;
-        b=RHQ8zf5hpMbq0HALb447qwQkVi36Z3F5eDK0RQJSzszR2A6y698BFR9uMFU3Qreykh
-         nDUjw+aFbdP916cOBqiFP4Rwu35O+KSCQQEIGvIz7WD8T5fhVXIVOmOE91im95EyJQd2
-         WP2twYfuq0MF/ofAbcznCvh1SysaSiXW+/MmC7et1UAIGB+KRLeRwuXTBwAMhScGQCWh
-         p7zJ1WY5BPvITBcYUC2pK8djw+pzXfJPcG79vGZKzaORoH4Fnob+8Zwe08SN8rU7FVIK
-         l3Ayu9VELvEKog5X9b1/pRLt1hIufkmdRqlyXGEA1PcwmoPmugAokm2OM43qn1Voo54L
-         ZbEg==
-X-Gm-Message-State: AJIora+5F42WyGH3/j4TeAbdIcgla3Rnqdy2GaNWWsjkiqM1ErTFVue8
-        fJY/G6PfcsojpamWn7jI9WrXb0wys7aNNYkg4tg=
-X-Google-Smtp-Source: AGRyM1shi6v9DXsk4lwIdb0yjkJzIJOV8Bqm/mWXus8sJ5A9abScTn9/Us6KGjW2cBxKfXtDm7lOkhAKt2bBzLjAPho=
-X-Received: by 2002:a05:6512:324a:b0:486:a915:7b70 with SMTP id
- c10-20020a056512324a00b00486a9157b70mr12988761lfr.265.1657612795528; Tue, 12
- Jul 2022 00:59:55 -0700 (PDT)
+        Tue, 12 Jul 2022 04:01:19 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27EAC24958;
+        Tue, 12 Jul 2022 01:01:18 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1oBApZ-0000Vp-00; Tue, 12 Jul 2022 10:01:17 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 41528C035A; Tue, 12 Jul 2022 09:30:01 +0200 (CEST)
+Date:   Tue, 12 Jul 2022 09:30:01 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Serge Semin <fancer.lancer@gmail.com>, linux-mips@vger.kernel.org,
+        gerg@kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] MIPS: Fixed __debug_virt_addr_valid()
+Message-ID: <20220712073001.GA6980@alpha.franken.de>
+References: <20220707215237.1730283-1-f.fainelli@gmail.com>
+ <20220711083848.GE6084@alpha.franken.de>
+ <20220711104052.ddefbgd34xbbjykg@mobilestation>
+ <20220711112740.GA12918@alpha.franken.de>
+ <20220711112953.j4dwany3i77df4xe@mobilestation>
+ <7fb06e9c-6405-9bee-5eda-7dbd56511e2c@gmail.com>
 MIME-Version: 1.0
-References: <20220711134312.234268-1-tmaimon77@gmail.com> <20220711134312.234268-3-tmaimon77@gmail.com>
- <CAHp75VdXsiH9ityqopznRpjxvwOboS_Zbi9iO6nRZ03TuKxTtg@mail.gmail.com> <CAHp75VeCPRVUMHYdNWgPja2eWeStokRDSogW-7ALz10_yEaDMA@mail.gmail.com>
-In-Reply-To: <CAHp75VeCPRVUMHYdNWgPja2eWeStokRDSogW-7ALz10_yEaDMA@mail.gmail.com>
-From:   Tomer Maimon <tmaimon77@gmail.com>
-Date:   Tue, 12 Jul 2022 10:59:44 +0300
-Message-ID: <CAP6Zq1j_-w0n9WTUG99UVTJwsyqY0Zcs294wmA7LuWdiF4KYMA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] iio: adc: npcm: Add NPCM8XX support
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7fb06e9c-6405-9bee-5eda-7dbd56511e2c@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andy,
+On Mon, Jul 11, 2022 at 05:02:51PM -0700, Florian Fainelli wrote:
+> On 7/11/2022 4:29 AM, Serge Semin wrote:
+> > On Mon, Jul 11, 2022 at 01:27:40PM +0200, Thomas Bogendoerfer wrote:
+> > > On Mon, Jul 11, 2022 at 01:40:52PM +0300, Serge Semin wrote:
+> > > > On Mon, Jul 11, 2022 at 10:38:48AM +0200, Thomas Bogendoerfer wrote:
+> > > > > On Thu, Jul 07, 2022 at 02:52:36PM -0700, Florian Fainelli wrote:
+> > > > > > It is permissible for kernel code to call virt_to_phys() against virtual
+> > > > > > addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
+> > > > > > types. Add a final condition that ensures that the virtual address is
+> > > > > > below KSEG2.
+> > > > > > 
+> > > > > > Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
+> > > > > > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> > > > > > ---
+> > > > > >   arch/mips/mm/physaddr.c | 3 ++-
+> > > > > >   1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > > > 
+> > > > > > diff --git a/arch/mips/mm/physaddr.c b/arch/mips/mm/physaddr.c
+> > > > > > index a1ced5e44951..a82f8f57a652 100644
+> > > > > > --- a/arch/mips/mm/physaddr.c
+> > > > > > +++ b/arch/mips/mm/physaddr.c
+> > > > > > @@ -5,6 +5,7 @@
+> > > > > >   #include <linux/mmdebug.h>
+> > > > > >   #include <linux/mm.h>
+> > > > > > +#include <asm/addrspace.h>
+> > > > > >   #include <asm/sections.h>
+> > > > > >   #include <asm/io.h>
+> > > > > >   #include <asm/page.h>
+> > > > > > @@ -30,7 +31,7 @@ static inline bool __debug_virt_addr_valid(unsigned long x)
+> > > > > >   	if (x == MAX_DMA_ADDRESS)
+> > > > > >   		return true;
+> > > > > > -	return false;
+> > > > > > +	return KSEGX(x) < KSEG2;
+> > > > > >   }
+> > > > > >   phys_addr_t __virt_to_phys(volatile const void *x)
+> > > > > > -- 
+> > > > > > 2.25.1
+> > > > > 
+> > > > 
+> > > > > applied to mips-next.
+> > > > 
+> > > > Are you sure it was ready to be applied?
+> > > > Link: https://lore.kernel.org/linux-mips/20220708115851.ejsooiilxcopkoei@mobilestation/
+> > > 
+> > 
+> > > your comment sounded like optimizing, which can be done later on, so
+> > > I assumed it ready.
+> > 
+> > What about Malta and EVA?
+> 
+> Sergey's comment definitively need to be addressed, and I would not see the
+> point in making an incremental change to a wrong fix. Can you drop that
+> patch for now? Thanks!
 
-Thanks for your comments, they will be addressed next version.
+dropped.
 
-On Mon, 11 Jul 2022 at 17:16, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Jul 11, 2022 at 4:14 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Mon, Jul 11, 2022 at 3:59 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
->
-> ...
->
-> > >         struct device *dev = &pdev->dev;
-> > > +       const struct of_device_id *match;
->
-> > > +       match = of_match_node(npcm_adc_match, pdev->dev.of_node);
-> > > +       if (!match || !match->data) {
-> > > +               dev_err(dev, "Failed getting npcm_adc_data\n");
-> > > +               return -ENODEV;
-> > > +       }
-> > >
-> > > +       info->data = (struct npcm_adc_info *)match->data;
-> >
-> > Instead of above
-> >
-> >   info->data = device_get_match_data(dev);
-> >   if (!info->data)
->
->
-> >     return -ENODEV;
->
-> Or
->
->   return dev_err_probe(dev, -EINVAL, "...\n");
->
-> if you want that message to be issued.
->
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+Thomas.
 
-Best regards,
-
-Tomer
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
