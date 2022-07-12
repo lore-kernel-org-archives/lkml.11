@@ -2,79 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D00CCA482
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234101AbiGLQCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41344 "EHLO
+        id S233510AbiGLQCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbiGLQCK (ORCPT
+        with ESMTP id S233386AbiGLQCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:02:10 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [80.241.56.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76818C766D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:02:08 -0700 (PDT)
-Received: from smtp102.mailbox.org (smtp102.mailbox.org [IPv6:2001:67c:2050:b231:465::102])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 12 Jul 2022 12:02:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCFFC54B6;
+        Tue, 12 Jul 2022 09:02:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4Lj59S3m2Kz9sSd;
-        Tue, 12 Jul 2022 18:02:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dragonslave.de;
-        s=MBO0001; t=1657641724;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=83iQhRFKVk1mc+/DOJ47+bxvoNcFz6OLK68kEiS8wTA=;
-        b=bLJxcGyYai20DSm3qcZsuWw4YRwg12OFYm3BAPGlShK9efmnxmZjmuCdzZgzxktlwV+mtK
-        K8/UI1od8ErNoq5FIXlNtLsJW5dMLpVs10hQz7PDxJHACQHfXLQJ3RO7TRPKbEvoKJ9zre
-        8D657QjhZmGfUlg6duJfspdwNEqJEAHmtv+M9FqvU4FbKD2ilMjy5z24r0HcHmRfHggzfq
-        yRZ5/0jAd+8LS1um0eeCnXvnGBW0Gl2jryorint0L5GwOZmRJVf0/TWc4OKBK59tZJafkO
-        ICqtrHUN/bOTI3YE6jkfoYwwsswQhBUuyUaRZYAnzxPONYuXVHhz+tp3jomwFQ==
-Message-ID: <46fd7a73-06fd-a8a0-8530-0ecf9b18c08d@dragonslave.de>
-Date:   Tue, 12 Jul 2022 18:02:03 +0200
-MIME-Version: 1.0
-Content-Language: en-US
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc:     Daniel Exner <dex@dragonslave.de>
-From:   Daniel Exner <dex@dragonslave.de>
-Subject: Regression in v5.19-rc4 Sound Distortion
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4Lj59S3m2Kz9sSd
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAE36617AB;
+        Tue, 12 Jul 2022 16:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 27DECC385A2;
+        Tue, 12 Jul 2022 16:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657641735;
+        bh=0Qg4rX/nTEz2srme6kYvG//si1aLq7lju1ZtMsDkPYI=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=kCxNuv/IvdyTi6md36MANZyQc1YMwVw0A/X/7ixLxHurwChonRCLXljlmTf4tXcUK
+         4BIdq2P4MAFLnFEMnv9P3zZiVXlNtpd5tzHxRVpu4TP/iw3d40QbJxl7/A53d4iQ/O
+         mojllDbIpnJP1jn88ITaoIwqhCXOv7kADKSVtTEF0gDNU/EGKPw4vW70pnpSX/ZU2z
+         VAuFC/AqXIDfioGArk8LT7eVCmlnsEGC7BcTRYhLvohO7Y3/zkfxuDl/IW77aVTIRP
+         myQE0+nuhk6X6tGKW+Fs+tQWEIf6petAmNuSB6Pv403S+zEtHxrTfAHHw+tX9sfedO
+         fJ3vdh7/6Q7tg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13D1CE45221;
+        Tue, 12 Jul 2022 16:02:15 +0000 (UTC)
+Subject: Re: [GIT PULL] overlayfs fixes for 5.19-rc7
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <Ys13gTA+irEuI+OA@miu.piliscsaba.redhat.com>
+References: <Ys13gTA+irEuI+OA@miu.piliscsaba.redhat.com>
+X-PR-Tracked-List-Id: <linux-unionfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <Ys13gTA+irEuI+OA@miu.piliscsaba.redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/vfs.git tags/ovl-fixes-5.19-rc7
+X-PR-Tracked-Commit-Id: 4a47c6385bb4e0786826e75bd4555aba32953653
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 72a8e05d4f66b5af7854df4490e3135168694b6b
+Message-Id: <165764173507.23543.13119309512770152751.pr-tracker-bot@kernel.org>
+Date:   Tue, 12 Jul 2022 16:02:15 +0000
+To:     Miklos Szeredi <miklos@szeredi.hu>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-unionfs@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi everyone,
+The pull request you sent on Tue, 12 Jul 2022 15:31:24 +0200:
 
+> git://git.kernel.org/pub/scm/linux/kernel/git/mszeredi/vfs.git tags/ovl-fixes-5.19-rc7
 
-(please keep me CC as I am currently not subscribed to LKML)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/72a8e05d4f66b5af7854df4490e3135168694b6b
 
+Thank you!
 
-Since  v5.19-rc4 this box got some *loud* distorting sound on boot and 
-after some time without any sound if something plays sound again from 
-the integrated speakers in my monitor.
-
-
-I managed to bisect this down to:
-
-> commit 202773260023b56e868d09d13d3a417028f1ff5b
-> Author: Dmitry Osipenko <dmitry.osipenko@collabora.com>
-> Date:   Fri Jun 17 15:24:02 2022 +0300
->
->    PM: hibernate: Use kernel_can_power_off()
->
-
-Reverting that commit on top of v5.19-rc6 does indeed fix the problem here.
-
-Any ideas?
-
-
-Greetings,
-
-Daniel
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
