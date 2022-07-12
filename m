@@ -2,117 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A12C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6DBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 10:13:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232988AbiGLKM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 06:12:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59224 "EHLO
+        id S232770AbiGLKNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 06:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbiGLKM2 (ORCPT
+        with ESMTP id S233011AbiGLKM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 06:12:28 -0400
-Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBD00AB7DA;
-        Tue, 12 Jul 2022 03:12:16 -0700 (PDT)
-Received: by mail-yb1-xb29.google.com with SMTP id l11so13063258ybu.13;
-        Tue, 12 Jul 2022 03:12:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=zGLFrLBHG+1vv4/3v4Wd5AI8LgLowaMQ1bylMp8eakU=;
-        b=QLb4YxBFgvCvVSM3WWcpg/dUiKZWa7PTOwW655/JTyr59QyvjD5FM95w9faZhye6CX
-         9uFJ6x8kItnEYz5Kr3Wwl1WASKa2yXCfqytF06RseZjJoHh+cBDmw+tEtqUClRzBr/Oc
-         iBYMzopVI0D82GFaEUbNFxjPX+8mxdhUm/qfoe9WOi9H2oIXD5j19d4BqFX67m/fHKFs
-         kOzWcpgEpnhmb+qTosCLhQThWYUwrIzcrtp2m7e4ZGfQAGDZ9vZlmR5p8ttPWQ1/RXEI
-         /uO5wgRSY7ByZPDUTvjPDRIe2Sij5lJx5kx2OZcc+8MsTWSPZGrXnyfHbOdiOXD9kJ4Y
-         WtGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=zGLFrLBHG+1vv4/3v4Wd5AI8LgLowaMQ1bylMp8eakU=;
-        b=QWNEMkrt1QDYimyI3SdBd6GtYVi5VrahSx1mBATkTojjrpM/J3Oc3AFWZPks1oR1LQ
-         SsQKnr2iNsntt5LBawOQgE/SiPqJ6MJnZ7qevmRWa35ncq0KzGVV3Xs+CsYbl0DChJ5a
-         Hmi2gAU3v+6w4L0yxL143XEouqF9Wyr4O26/DpisAwbpdw1jZXuVEukSV1dv7Aq7cvFS
-         upHqyStMihrmCCewblquUffXWIEdYuApKrpi7Sg29R+WiJYe25ZnAtHBbZdYDvS6MXMn
-         1u3Q0ONGUJH348etP6qfHJ8rMifpGWtiBnef1yHRqfJZuriW5IxZ8FByt3FBEIFKezOV
-         FA/Q==
-X-Gm-Message-State: AJIora/vUUx2BFL8YyHqIsNyLt80nc88RnJYTOYiD2rMucrwMe0g8Q2h
-        gZcPfXrW+iqOZjFDtjrmZJGgPn46XvZYAOw3VqY=
-X-Google-Smtp-Source: AGRyM1uHJNRmgjQfalyLG4jytq0xStL7w+XWRtNelxM3bTZS79V1VyOF1h+TbGs8VkEMK0RdJshJwdamh4TFrh8p69I=
-X-Received: by 2002:a05:6902:10c9:b0:668:e27c:8f7 with SMTP id
- w9-20020a05690210c900b00668e27c08f7mr21528639ybu.128.1657620735969; Tue, 12
- Jul 2022 03:12:15 -0700 (PDT)
+        Tue, 12 Jul 2022 06:12:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28712ACEE8;
+        Tue, 12 Jul 2022 03:12:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB8D1B8164D;
+        Tue, 12 Jul 2022 10:12:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9948C341C8;
+        Tue, 12 Jul 2022 10:12:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657620774;
+        bh=mLrmLqzTtmLB7H+6kJe3yIOgyd7GxtXKOM0u5WSZMNc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=aEVFzkMR91MxJpFetnlno2ZaR6hbjYAzIcC+w/aFNokTe+msBrHCZfsNps690YH+Y
+         52atfKYxMctWDKO4hQC8zWpNejLZwnD0doeE3spK1LIMJ6d9sbyUfVYonTUuZOqKLD
+         BW3RA+M8GcSO2N2q5f5aiCSSfX8wA7AhzUgPRB0A=
+Date:   Tue, 12 Jul 2022 12:12:51 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Darren Hart <darren@os.amperecomputing.com>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH] Documentation/process: Add embargoed HW contact for LLVM
+Message-ID: <Ys1JI3nhgQHmUJ2F@kroah.com>
+References: <20220711181101.1559558-1-ndesaulniers@google.com>
 MIME-Version: 1.0
-References: <20220710081853.1699028-1-uwu@icenowy.me> <20220710081853.1699028-3-uwu@icenowy.me>
- <CAHp75Vdso_PGUomjmKaF1ytdUe4qLeAbpwkNmcRng9aNHs7g8w@mail.gmail.com>
- <7a947683de71e68a0925cfd4cab80238c3a03205.camel@icenowy.me> <CAHp75Vc0kfQZJjdu+MrJAAdcR7GKD9Sh1zU4gz5dua5Lw9BVHA@mail.gmail.com>
-In-Reply-To: <CAHp75Vc0kfQZJjdu+MrJAAdcR7GKD9Sh1zU4gz5dua5Lw9BVHA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jul 2022 12:11:39 +0200
-Message-ID: <CAHp75Vcv3zVGjty_vLUgYu3sowNtg-sWg=qtVt7Vp6mqX6pLvg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/3] pinctrl: sunxi: add support for R329 CPUX pin controller
-To:     Icenowy Zheng <uwu@icenowy.me>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        linux-sunxi@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711181101.1559558-1-ndesaulniers@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 12:10 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Jul 12, 2022 at 11:37 AM Icenowy Zheng <uwu@icenowy.me> wrote:
-> > =E5=9C=A8 2022-07-10=E6=98=9F=E6=9C=9F=E6=97=A5=E7=9A=84 21:06 +0200=EF=
-=BC=8CAndy Shevchenko=E5=86=99=E9=81=93=EF=BC=9A
-> > > On Sun, Jul 10, 2022 at 10:22 AM Icenowy Zheng <uwu@icenowy.me>
-> > > wrote:
->
-> ...
->
-> > > > +#include <linux/of.h>
-> > > > +#include <linux/of_device.h>
-> > >
-> > > No use of these.
-> > >
-> > > > +#include <linux/pinctrl/pinctrl.h>
-> > >
-> > > Missed headers:
-> > > mod_devicetable.h
-> >
-> > Thanks for these.
-> >
-> > In addition, how to decide what header should be included? The code
-> > works properly because of_device.h includes mod_devicetable.h.
+On Mon, Jul 11, 2022 at 11:10:58AM -0700, Nick Desaulniers wrote:
+> Should the need for toolchain mitigations ever be necessary, add a group
+> for toolchain ambassadors.
+> 
+> Add Nick Desaulniers as LLVM's ambassador for the embargoed hardware
+> issues process.
+> 
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>  Documentation/process/embargoed-hardware-issues.rst | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Forgot to put in the first place this:
+Thanks for volunteering, I'll go queue this up.
 
-The rule of thumb is Include headers that the header or C module is
-direct user of. Additional information is located in the sections
-below.
-
-> The best approach is usually learnt with experience =E2=80=94 the more yo=
-u
-> code, the more you get. One of the rules is to avoid too many
-> inclusions and at the same time reduce indirect inclusions, so that
-> the headers which are guaranteed to be included by others shouldn't
-> appear. Another rule is that, for the headers (*.h files) the forward
-> declarations are preferable over the inclusion in case if the opaque
-> pointers are in use.
-
---=20
-With Best Regards,
-Andy Shevchenko
+greg k-h
