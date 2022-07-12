@@ -2,72 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E86C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 723E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiGLOOl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S231160AbiGLOPD convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiGLOO2 (ORCPT
+        with ESMTP id S229737AbiGLOPB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:14:28 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E6B1033A0B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:14:23 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26CEB93o025896;
-        Tue, 12 Jul 2022 09:11:09 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26CEB7M3025895;
-        Tue, 12 Jul 2022 09:11:07 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 12 Jul 2022 09:11:07 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Michael Ellerman <michael@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] powerpc: e500: Fix compilation with gcc e500 compiler
-Message-ID: <20220712141107.GM25951@gate.crashing.org>
-References: <8D562851-304F-4153-9194-426CC22B7FF2@ellerman.id.au> <20220704103951.nm4m4kpgnus3ucqo@pali> <CAK8P3a2tdny8SA7jcqhUZT13iq1mYqjFueC-gnTUZA1JKCtfgg@mail.gmail.com> <20220708171227.74nbcgsk63y4bdna@pali> <CAK8P3a3YMqGEjRr+ZD4Enm4pnuNNZOaeXqpY=PDXAP7w3P7y4A@mail.gmail.com> <d9339bb9-2410-bea5-7502-1c7839707f4e@csgroup.eu> <20220711161442.GD25951@gate.crashing.org> <2552726a-cca4-ecd4-6fca-4f73bbf7942e@csgroup.eu> <20220711214840.GJ25951@gate.crashing.org> <aab87b89-3518-f13e-995a-cbe48892e200@csgroup.eu>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aab87b89-3518-f13e-995a-cbe48892e200@csgroup.eu>
-User-Agent: Mutt/1.4.2.3i
+        Tue, 12 Jul 2022 10:15:01 -0400
+Received: from relay5.hostedemail.com (smtprelay0016.hostedemail.com [216.40.44.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5170C60538
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:15:00 -0700 (PDT)
+Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay09.hostedemail.com (Postfix) with ESMTP id 8EFD83349B;
+        Tue, 12 Jul 2022 14:14:58 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf10.hostedemail.com (Postfix) with ESMTPA id 0F8743D;
+        Tue, 12 Jul 2022 14:14:55 +0000 (UTC)
+Message-ID: <1d6fd2b271dfa0514ccb914c032e362bc4f669fa.camel@perches.com>
+Subject: Re: [PATCH v3] staging: qlge: Fix indentation issue under long for
+ loop
+From:   Joe Perches <joe@perches.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Binyi Han <dantengknight@gmail.com>
+Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
+        Coiby Xu <coiby.xu@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 07:14:55 -0700
+In-Reply-To: <20220712134610.GO2338@kadam>
+References: <20220710210418.GA148412@cloud-MacBookPro>
+         <20220712134610.GO2338@kadam>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
+MIME-Version: 1.0
+X-Stat-Signature: xgmszzrqg6ctunmgjqypab8cmkczqtxe
+X-Rspamd-Server: rspamout08
+X-Rspamd-Queue-Id: 0F8743D
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/Igx7O1NfTBE3jWpvwAE+8H153v3blsy4=
+X-HE-Tag: 1657635295-347823
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:22:12AM +0000, Christophe Leroy wrote:
-> Le 11/07/2022 à 23:48, Segher Boessenkool a écrit :
-> > I believe the eieio instruction is disabled on some e500 models, because
-> > it does not work correctly, so EIEIO_EN=1 cannot work, something like
-> > that?
+On Tue, 2022-07-12 at 16:46 +0300, Dan Carpenter wrote:
+> On Sun, Jul 10, 2022 at 02:04:18PM -0700, Binyi Han wrote:
+> > Fix indentation issue to adhere to Linux kernel coding style,
+> > Issue found by checkpatch. Change the long for loop into 3 lines. And
+> > optimize by avoiding the multiplication.
 > 
-> Don't know.
+> There is no possible way this optimization helps benchmarks.  Better to
+> focus on readability.
+
+I think removing the multiply _improves_ readability.
+
+> > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+[]
+> > @@ -3007,10 +3007,12 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
+> >  		tmp = (u64)rx_ring->lbq.base_dma;
+> >  		base_indirect_ptr = rx_ring->lbq.base_indirect;
+> >  
+> > -		for (page_entries = 0; page_entries <
+> > -			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
+> > -				base_indirect_ptr[page_entries] =
+> > -					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
+> > +		for (page_entries = 0;
+> > +		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
+> > +		     page_entries++) {
+> > +			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
+> > +			tmp += DB_PAGE_SIZE;
 > 
-> It is also disabled on 405 and 440.
+> I've previously said that using "int i;" is clearer here.  You would
+> kind of expect "page_entries" to be the number of entries, so it's kind
+> of misleading.  In other words, it's not just harmless wordiness and
+> needless exposition, it's actively bad.
 
-BookE does not have the eieio insn.  Instead, it reuses the same opcode
-for mbar, which has similar but different semantics.
+Likely true.
 
-e500 has that EIEIO_EN thing which makes the insn behave like eieio.
+> I would probably just put it on one line:
+> 
+> 		for (i = 0; i MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); i++)
+> 			base_indirect_ptr[i] = cpu_to_le64(tmp + (i * DB_PAGE_SIZE));
+> 
+> But if you want to break it up you could do:
+> 
+> 		for (i = 0; i MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); i++)
+> 			base_indirect_ptr[i] = cpu_to_le64(tmp +
+> 							   (i * DB_PAGE_SIZE));
+> 
+> "tmp" is kind of a bad name.  Also "base_indirect_ptr" would be better
+> as "base_indirect".
 
-> That's new with GCC 12.
+tmp is a poor name here.  Maybe dma would be better.
 
-Yup.  In the past we used -many, but that just hides problems in the
-best case, and causes more problems itself :-(
+MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN) is also a poorly named macro
+where all the existing uses are QLGE_BQ_LEN.
 
-There are many mnemonics that cause a different instruction to be
-emitted on different targets, and that causes a lot of wasted time
-trying to find and fix the problems this causes.
+And there's base_indirect_ptr and base_indirect_dma in the struct
+so just base_indirect might not be the best.
 
-If you hit any remaining problems related to this, please let me know!
+		tmp = (u64)rx_ring->lbq.base_dma;
+		base_indirect_ptr = rx_ring->lbq.base_indirect;
 
+And clarity is good.
+Though here, clarity to value for effort though is dubious.
 
-Segher
+btw: this code got moved to staging 3 years ago.
+
+Maybe it's getting closer to removal time.
+
