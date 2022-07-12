@@ -2,104 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE08ACCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:28:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9C4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233382AbiGLO2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:28:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
+        id S232767AbiGLO3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233376AbiGLO2h (ORCPT
+        with ESMTP id S233572AbiGLO3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:28:37 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDCAC2AF3;
-        Tue, 12 Jul 2022 07:28:36 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E0B51596;
-        Tue, 12 Jul 2022 07:28:37 -0700 (PDT)
-Received: from [10.57.13.42] (unknown [10.57.13.42])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7C6E13F73D;
-        Tue, 12 Jul 2022 07:28:35 -0700 (PDT)
-Message-ID: <4ee2e1fb-89e4-698c-525a-71a4423a245b@arm.com>
-Date:   Tue, 12 Jul 2022 15:28:33 +0100
+        Tue, 12 Jul 2022 10:29:13 -0400
+Received: from gentwo.de (gentwo.de [IPv6:2a02:c206:2048:5042::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60038D8F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:29:12 -0700 (PDT)
+Received: by gentwo.de (Postfix, from userid 1001)
+        id C672CB00422; Tue, 12 Jul 2022 16:29:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gentwo.de; s=default;
+        t=1657636150; bh=XqZSR6vsTCgGnza0thiZL4p41K1Z4arAxxg+LT4Q08U=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=chNsj66T6C5Yjk38kP6Y0X+r2jkn6hvDNBcnA8D90YmilYAEo5d6zRTUSGwXkkFGD
+         o4lGaT7bKF3qaMOK3o4XvxNYZsUEBs1pY/ZziLN5sFaKAjqCqQ+SEMquPrZ1LRpyDv
+         ohhlK1pLjQW8JhhsSAZpI74oGAorx26f9mV7Q0TpRt3h0iDUPNuSHyPZkYHpnTRci8
+         ifnorxskQC3dnoBIMmxhQMIof19CKPgpELRmSpY0MoGwy/UnfTmO02wdywBKRYBs/i
+         m6V9lhor16N7I5+uS6nL7N3YF6S5RAz2NwBUGR3ilCR2WNNUjiGFstbqKSKcbaN4OV
+         ldKCg7YAdQfmg==
+Received: from localhost (localhost [127.0.0.1])
+        by gentwo.de (Postfix) with ESMTP id C2A03B0026E;
+        Tue, 12 Jul 2022 16:29:10 +0200 (CEST)
+Date:   Tue, 12 Jul 2022 16:29:10 +0200 (CEST)
+From:   Christoph Lameter <cl@gentwo.de>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+cc:     Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v3 1/15] mm/slab: move NUMA-related code to
+ __do_cache_alloc()
+In-Reply-To: <20220712133946.307181-2-42.hyeyoo@gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2207121626530.55992@gentwo.de>
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com> <20220712133946.307181-2-42.hyeyoo@gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v2 3/3] thermal/core: Fix thermal trip cross point
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     quic_manafm@quicinc.com, rui.zhang@intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Amit Kucheria <amitk@kernel.org>, rafael@kernel.org
-References: <20220708183210.1334839-1-daniel.lezcano@linaro.org>
- <20220708183210.1334839-3-daniel.lezcano@linaro.org>
- <6ce87fbb-1460-503b-f1f1-8cf53e702cdf@arm.com>
- <2d680cd9-9e97-e06c-55c2-2a3a1504488e@linaro.org>
- <5d513646-a917-b969-b2d2-9d5f4e0e6f4d@arm.com>
- <af074493-d342-9439-8d78-c07c5df82203@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <af074493-d342-9439-8d78-c07c5df82203@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 12 Jul 2022, Hyeonggon Yoo wrote:
+
+> @@ -3241,31 +3219,46 @@ slab_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid, size_t orig_
+>  }
+>
+>  static __always_inline void *
+> -__do_cache_alloc(struct kmem_cache *cache, gfp_t flags)
+> +__do_cache_alloc(struct kmem_cache *cachep, gfp_t flags, int nodeid)
+>  {
+> -	void *objp;
+> +	void *objp = NULL;
+> +	int slab_node = numa_mem_id();
+>
+> -	if (current->mempolicy || cpuset_do_slab_mem_spread()) {
+> -		objp = alternate_node_alloc(cache, flags);
+> -		if (objp)
+> -			goto out;
+> +	if (nodeid == NUMA_NO_NODE) {
+> +		if (current->mempolicy || cpuset_do_slab_mem_spread()) {
+> +			objp = alternate_node_alloc(cachep, flags);
+> +			if (objp)
+> +				goto out;
+> +		}
+> +		/*
+> +		 * Use the locally cached objects if possible.
+> +		 * However ____cache_alloc does not allow fallback
+> +		 * to other nodes. It may fail while we still have
+> +		 * objects on other nodes available.
+> +		 */
+> +		objp = ____cache_alloc(cachep, flags);
+> +		nodeid = slab_node;
+> +	} else if (nodeid == slab_node) {
+> +		objp = ____cache_alloc(cachep, flags);
+> +	} else if (!get_node(cachep, nodeid)) {
+> +		/* Node not bootstrapped yet */
+> +		objp = fallback_alloc(cachep, flags);
+> +		goto out;
+>  	}
+> -	objp = ____cache_alloc(cache, flags);
+>
+>  	/*
+>  	 * We may just have run out of memory on the local node.
+>  	 * ____cache_alloc_node() knows how to locate memory on other nodes
+>  	 */
+>  	if (!objp)
+> -		objp = ____cache_alloc_node(cache, flags, numa_mem_id());
+> -
+> +		objp = ____cache_alloc_node(cachep, flags, nodeid);
 
 
-On 7/12/22 14:06, Daniel Lezcano wrote:
-> On 12/07/2022 14:40, Lukasz Luba wrote:
->>
->>
->> On 7/12/22 13:30, Daniel Lezcano wrote:
->>> On 12/07/2022 13:29, Lukasz Luba wrote:
->>>
->>> [ ... ]
->>>
->>>>> @@ -511,8 +528,13 @@ void thermal_zone_device_update(struct 
->>>>> thermal_zone_device *tz,
->>>>>       tz->notify_event = event;
->>>>> -    for (count = 0; count < tz->trips; count++)
->>>>> -        handle_thermal_trip(tz, count);
->>>>> +    if (tz->last_temperature <= tz->temperature) {
->>>>> +        for (count = 0; count < tz->trips; count++)
->>>>> +            handle_thermal_trip(tz, count);
->>>>> +    } else {
->>>>> +        for (count = tz->prev_trip; count >= 0; count--)
->>>>> +            handle_thermal_trip(tz, count);
->>>>> +    }
->>>>
->>>> In general the code look good. I have one question, though:
->>>> Is it always true that these trip points coming from the DT
->>>> and parsed in thermal_of_build_thermal_zone() populated by
->>>>      for_each_child_of_node(child, gchild) {
->>>>           thermal_of_populate_trip(gchild, &tz->trips[i++]);
->>>>
->>>> are always defined in right order in DT?
->>>
->>> Hmm, that is a good question. Even if the convention is to put the 
->>> trip point in the ascending order, I don't find any documentation 
->>> telling it is mandatory. Given that I don't feel particularly 
->>> comfortable to assume that is the case.
->>>
->>> Perhaps, it would make more sense to build a map of indexes telling 
->>> the order in the trip points and work with it instead.
->>>
->>>
->>
->> Sounds a reliable way to move forward. Maybe you could just sort in the
->> right order those trip points in the thermal_of_build_thermal_zone()
->> in an additional patch to this series?
->> Than this patch could stay as is, because it looks go
-> 
-> Unfortunately, there is the manual setup as well as the ACPI.
-> 
-> 
-> 
+Does this preserve the original behavior? nodeid is the parameter passed
+to __do_cache_alloc(). numa_mem_id() is the nearest memory node.
 
-I see. OK, so continue to solve it completely. I can review your next
-version.
-
-Regards,
-Lukasz
