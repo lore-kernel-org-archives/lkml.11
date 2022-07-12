@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34CFFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235470AbiGLTFa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:05:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60286 "EHLO
+        id S235481AbiGLTFi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235553AbiGLTEg (ORCPT
+        with ESMTP id S235560AbiGLTEh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:04:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DCEF7897;
-        Tue, 12 Jul 2022 11:50:32 -0700 (PDT)
+        Tue, 12 Jul 2022 15:04:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F57EF789B;
+        Tue, 12 Jul 2022 11:50:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD973B81B95;
-        Tue, 12 Jul 2022 18:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B729C3411E;
-        Tue, 12 Jul 2022 18:50:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2016FB81B96;
+        Tue, 12 Jul 2022 18:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AE3C3411C;
+        Tue, 12 Jul 2022 18:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651829;
-        bh=9XYS4Lio0c0OABlfphhMJokwdGGBvmmPgNIwN8pZBew=;
+        s=korg; t=1657651811;
+        bh=SfdQxSB5jaTWOp2wHXx0KQT53IToPjdRAv7+3JXM6qk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d6ez/9OdZxqdpzQcyYY7pbkgYAH0ZPg9njU2+v+yLvcdgwlqvoKUSomhOK0DR8tpb
-         vWZaLlf8O8rVK+C+fvoDR/aK2Vhgg10b37bjeTav3whYHui4cdBaSKrB12D1nZpqo6
-         fZ2b1B5m3kCpeUVVrHmA2gQcvf3JWM+JYuCatiMc=
+        b=ixxGaqmImMkxO48UNFapX5MP3f3YjVCxrMuNO+XZeApDFLroCoP4ufaglN5QIRF/J
+         AbLtksLgB2/hz0kCBePLlDspB200bQTtxl/3DQNgc5k1INiHf2asYT2avYdUnHFXsE
+         Mvtikc48kB5SyKbhcP0Qw6DO//pGcKnLDAFU5aoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kim Phillips <kim.phillips@amd.com>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 44/78] x86/bugs: Enable STIBP for JMP2RET
-Date:   Tue, 12 Jul 2022 20:39:14 +0200
-Message-Id: <20220712183240.630386194@linuxfoundation.org>
+Subject: [PATCH 5.15 65/78] KVM: VMX: Flatten __vmx_vcpu_run()
+Date:   Tue, 12 Jul 2022 20:39:35 +0200
+Message-Id: <20220712183241.500551239@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -51,142 +50,196 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit e8ec1b6e08a2102d8755ccb06fa26d540f26a2fa upstream.
+commit 8bd200d23ec42d66ccd517a72dd0b9cc6132d2fd upstream.
 
-For untrained return thunks to be fully effective, STIBP must be enabled
-or SMT disabled.
+Move the vmx_vm{enter,exit}() functionality into __vmx_vcpu_run().  This
+will make it easier to do the spec_ctrl handling before the first RET.
 
-Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: remove ENDBR]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   16 ++++--
- arch/x86/kernel/cpu/bugs.c                      |   58 +++++++++++++++++++-----
- 2 files changed, 57 insertions(+), 17 deletions(-)
+ arch/x86/kvm/vmx/vmenter.S |  118 +++++++++++++++++----------------------------
+ 1 file changed, 45 insertions(+), 73 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4972,11 +4972,17 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
+--- a/arch/x86/kvm/vmx/vmenter.S
++++ b/arch/x86/kvm/vmx/vmenter.S
+@@ -31,68 +31,6 @@
+ .section .noinstr.text, "ax"
  
--			off         - unconditionally disable
--			auto        - automatically select a migitation
--			unret       - force enable untrained return thunks,
--				      only effective on AMD Zen {1,2}
--				      based systems.
-+			off          - no mitigation
-+			auto         - automatically select a migitation
-+			auto,nosmt   - automatically select a mitigation,
-+				       disabling SMT if necessary for
-+				       the full mitigation (only on Zen1
-+				       and older without STIBP).
-+			unret        - force enable untrained return thunks,
-+				       only effective on AMD f15h-f17h
-+				       based systems.
-+			unret,nosmt  - like unret, will disable SMT when STIBP
-+			               is not available.
+ /**
+- * vmx_vmenter - VM-Enter the current loaded VMCS
+- *
+- * %RFLAGS.ZF:	!VMCS.LAUNCHED, i.e. controls VMLAUNCH vs. VMRESUME
+- *
+- * Returns:
+- *	%RFLAGS.CF is set on VM-Fail Invalid
+- *	%RFLAGS.ZF is set on VM-Fail Valid
+- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
+- *
+- * Note that VMRESUME/VMLAUNCH fall-through and return directly if
+- * they VM-Fail, whereas a successful VM-Enter + VM-Exit will jump
+- * to vmx_vmexit.
+- */
+-SYM_FUNC_START_LOCAL(vmx_vmenter)
+-	/* EFLAGS.ZF is set if VMCS.LAUNCHED == 0 */
+-	je 2f
+-
+-1:	vmresume
+-	RET
+-
+-2:	vmlaunch
+-	RET
+-
+-3:	cmpb $0, kvm_rebooting
+-	je 4f
+-	RET
+-4:	ud2
+-
+-	_ASM_EXTABLE(1b, 3b)
+-	_ASM_EXTABLE(2b, 3b)
+-
+-SYM_FUNC_END(vmx_vmenter)
+-
+-/**
+- * vmx_vmexit - Handle a VMX VM-Exit
+- *
+- * Returns:
+- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
+- *
+- * This is vmx_vmenter's partner in crime.  On a VM-Exit, control will jump
+- * here after hardware loads the host's state, i.e. this is the destination
+- * referred to by VMCS.HOST_RIP.
+- */
+-SYM_FUNC_START(vmx_vmexit)
+-#ifdef CONFIG_RETPOLINE
+-	ALTERNATIVE "jmp .Lvmexit_skip_rsb", "", X86_FEATURE_RETPOLINE
+-	/* Preserve guest's RAX, it's used to stuff the RSB. */
+-	push %_ASM_AX
+-
+-	/* IMPORTANT: Stuff the RSB immediately after VM-Exit, before RET! */
+-	FILL_RETURN_BUFFER %_ASM_AX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
+-
+-	/* Clear RFLAGS.CF and RFLAGS.ZF to preserve VM-Exit, i.e. !VM-Fail. */
+-	or $1, %_ASM_AX
+-
+-	pop %_ASM_AX
+-.Lvmexit_skip_rsb:
+-#endif
+-	RET
+-SYM_FUNC_END(vmx_vmexit)
+-
+-/**
+  * __vmx_vcpu_run - Run a vCPU via a transition to VMX guest mode
+  * @vmx:	struct vcpu_vmx * (forwarded to vmx_update_host_rsp)
+  * @regs:	unsigned long * (to guest registers)
+@@ -124,8 +62,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	/* Copy @launched to BL, _ASM_ARG3 is volatile. */
+ 	mov %_ASM_ARG3B, %bl
  
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -776,19 +776,34 @@ static enum retbleed_mitigation retbleed
- static enum retbleed_mitigation_cmd retbleed_cmd __ro_after_init =
- 	RETBLEED_CMD_AUTO;
+-	/* Adjust RSP to account for the CALL to vmx_vmenter(). */
+-	lea -WORD_SIZE(%_ASM_SP), %_ASM_ARG2
++	lea (%_ASM_SP), %_ASM_ARG2
+ 	call vmx_update_host_rsp
  
-+static int __ro_after_init retbleed_nosmt = false;
+ 	/* Load @regs to RAX. */
+@@ -154,11 +91,36 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	/* Load guest RAX.  This kills the @regs pointer! */
+ 	mov VCPU_RAX(%_ASM_AX), %_ASM_AX
+ 
+-	/* Enter guest mode */
+-	call vmx_vmenter
++	/* Check EFLAGS.ZF from 'testb' above */
++	je .Lvmlaunch
+ 
+-	/* Jump on VM-Fail. */
+-	jbe 2f
++	/*
++	 * After a successful VMRESUME/VMLAUNCH, control flow "magically"
++	 * resumes below at 'vmx_vmexit' due to the VMCS HOST_RIP setting.
++	 * So this isn't a typical function and objtool needs to be told to
++	 * save the unwind state here and restore it below.
++	 */
++	UNWIND_HINT_SAVE
 +
- static int __init retbleed_parse_cmdline(char *str)
- {
- 	if (!str)
- 		return -EINVAL;
- 
--	if (!strcmp(str, "off"))
--		retbleed_cmd = RETBLEED_CMD_OFF;
--	else if (!strcmp(str, "auto"))
--		retbleed_cmd = RETBLEED_CMD_AUTO;
--	else if (!strcmp(str, "unret"))
--		retbleed_cmd = RETBLEED_CMD_UNRET;
--	else
--		pr_err("Unknown retbleed option (%s). Defaulting to 'auto'\n", str);
-+	while (str) {
-+		char *next = strchr(str, ',');
-+		if (next) {
-+			*next = 0;
-+			next++;
-+		}
++/*
++ * If VMRESUME/VMLAUNCH and corresponding vmexit succeed, execution resumes at
++ * the 'vmx_vmexit' label below.
++ */
++.Lvmresume:
++	vmresume
++	jmp .Lvmfail
 +
-+		if (!strcmp(str, "off")) {
-+			retbleed_cmd = RETBLEED_CMD_OFF;
-+		} else if (!strcmp(str, "auto")) {
-+			retbleed_cmd = RETBLEED_CMD_AUTO;
-+		} else if (!strcmp(str, "unret")) {
-+			retbleed_cmd = RETBLEED_CMD_UNRET;
-+		} else if (!strcmp(str, "nosmt")) {
-+			retbleed_nosmt = true;
-+		} else {
-+			pr_err("Ignoring unknown retbleed option (%s).", str);
-+		}
++.Lvmlaunch:
++	vmlaunch
++	jmp .Lvmfail
 +
-+		str = next;
-+	}
- 
- 	return 0;
- }
-@@ -834,6 +849,10 @@ static void __init retbleed_select_mitig
- 		setup_force_cpu_cap(X86_FEATURE_RETHUNK);
- 		setup_force_cpu_cap(X86_FEATURE_UNRET);
- 
-+		if (!boot_cpu_has(X86_FEATURE_STIBP) &&
-+		    (retbleed_nosmt || cpu_mitigations_auto_nosmt()))
-+			cpu_smt_disable(false);
++	_ASM_EXTABLE(.Lvmresume, .Lfixup)
++	_ASM_EXTABLE(.Lvmlaunch, .Lfixup)
 +
- 		if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
- 			pr_err(RETBLEED_UNTRAIN_MSG);
-@@ -1080,6 +1099,13 @@ spectre_v2_user_select_mitigation(enum s
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+		if (mode != SPECTRE_V2_USER_STRICT &&
-+		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
-+			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation'\n");
-+		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
-+	}
++SYM_INNER_LABEL(vmx_vmexit, SYM_L_GLOBAL)
 +
- 	spectre_v2_user_stibp = mode;
++	/* Restore unwind state from before the VMRESUME/VMLAUNCH. */
++	UNWIND_HINT_RESTORE
  
- set_mode:
-@@ -2090,10 +2116,18 @@ static ssize_t srbds_show_state(char *bu
+ 	/* Temporarily save guest's RAX. */
+ 	push %_ASM_AX
+@@ -185,9 +147,13 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	mov %r15, VCPU_R15(%_ASM_AX)
+ #endif
  
- static ssize_t retbleed_show_state(char *buf)
- {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET &&
--	    (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
--	     boot_cpu_data.x86_vendor != X86_VENDOR_HYGON))
--		return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
-+		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
-+		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
++	/* IMPORTANT: RSB must be stuffed before the first return. */
++	FILL_RETURN_BUFFER %_ASM_BX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
 +
-+	    return sprintf(buf, "%s; SMT %s\n",
-+			   retbleed_strings[retbleed_mitigation],
-+			   !sched_smt_active() ? "disabled" :
-+			   spectre_v2_user_stibp == SPECTRE_V2_USER_STRICT ||
-+			   spectre_v2_user_stibp == SPECTRE_V2_USER_STRICT_PREFERRED ?
-+			   "enabled with STIBP protection" : "vulnerable");
-+	}
+ 	/* Clear RAX to indicate VM-Exit (as opposed to VM-Fail). */
+ 	xor %eax, %eax
  
- 	return sprintf(buf, "%s\n", retbleed_strings[retbleed_mitigation]);
- }
++.Lclear_regs:
+ 	/*
+ 	 * Clear all general purpose registers except RSP and RAX to prevent
+ 	 * speculative use of the guest's values, even those that are reloaded
+@@ -197,7 +163,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	 * free.  RSP and RAX are exempt as RSP is restored by hardware during
+ 	 * VM-Exit and RAX is explicitly loaded with 0 or 1 to return VM-Fail.
+ 	 */
+-1:	xor %ecx, %ecx
++	xor %ecx, %ecx
+ 	xor %edx, %edx
+ 	xor %ebx, %ebx
+ 	xor %ebp, %ebp
+@@ -216,8 +182,8 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 
+ 	/* "POP" @regs. */
+ 	add $WORD_SIZE, %_ASM_SP
+-	pop %_ASM_BX
+ 
++	pop %_ASM_BX
+ #ifdef CONFIG_X86_64
+ 	pop %r12
+ 	pop %r13
+@@ -230,9 +196,15 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	pop %_ASM_BP
+ 	RET
+ 
+-	/* VM-Fail.  Out-of-line to avoid a taken Jcc after VM-Exit. */
+-2:	mov $1, %eax
+-	jmp 1b
++.Lfixup:
++	cmpb $0, kvm_rebooting
++	jne .Lvmfail
++	ud2
++.Lvmfail:
++	/* VM-Fail: set return value to 1 */
++	mov $1, %eax
++	jmp .Lclear_regs
++
+ SYM_FUNC_END(__vmx_vcpu_run)
+ 
+ 
 
 
