@@ -2,174 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7007C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 06:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F26F6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 06:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231947AbiGLGnP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 02:43:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57020 "EHLO
+        id S231989AbiGLGoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 02:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229523AbiGLGnJ (ORCPT
+        with ESMTP id S229572AbiGLGoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 02:43:09 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48D5528A5;
-        Mon, 11 Jul 2022 23:43:08 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26BFq2u1020001;
-        Mon, 11 Jul 2022 23:43:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0220;
- bh=1Hd5DhUpb0GuosInqk3haf2sH4mbjP/m2urZoH555U4=;
- b=F10Oe51NNKQqRxx9rbQG4kkzcTvSYFU60Ge/MskjMbvNcTqvbda8Rk9dT1t3eikduIbW
- CRPeE0YDjGLwKMwaZ2b+hSPoPMhfV5E5GmTHDy+1DPxck28oUL5Dw3RXU670Ph1elfjH
- vTY2EUWasxPCcpqe/2XOibOOIVA8PH1vBohiFsa5XdTlsgt1HPG5a58aTunyfZYBo3ZO
- agym6vjUfIYArtSgn+Kd29pz5sCl4dn2aEMMPi6cPJq841bZSk9ZjxeH89Z+eVlHrBD1
- njxCIc6mEY+XaZedc/qHX8b7sVK4K1SXlkkdh1jaECkzReAjkNrTuhcaexPi/PpOLokM wg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3h796n0ac3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jul 2022 23:43:01 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 11 Jul
- 2022 23:42:59 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 11 Jul 2022 23:42:59 -0700
-Received: from hyd1soter3.marvell.com (unknown [10.29.37.12])
-        by maili.marvell.com (Postfix) with ESMTP id 9BFE23F7065;
-        Mon, 11 Jul 2022 23:42:56 -0700 (PDT)
-From:   Geetha sowjanya <gakula@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <sgoutham@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>
-Subject: [net-next PATCH v2] octeontx2-af: Skip CGX/RPM probe incase of zero lmac count
-Date:   Tue, 12 Jul 2022 12:12:50 +0530
-Message-ID: <20220712064250.29903-1-gakula@marvell.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Jul 2022 02:44:22 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBDE737F82
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 23:44:20 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so6185653wme.0
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 23:44:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ofWGVMe2JZ9sFGaZsWNyqNiTcjwQEOup3zeDROG1vTY=;
+        b=JJaHOBAGw1kYs025zHaWuWodwCCoTBHsoEZPHceDCn4uC57u6IsXRNFlgw11aV18p+
+         5ic9tqQQnlTHQ592+LSeSgJ3u04ZKerRE11zI9VJ5eZVvAbcBUFMtsvG2SLIqDgpHjzG
+         N+7cx6pF/Coawu/+/DrC05otUO3wbCMItKUJZwViCam7aEUtj6IPaudlZ0+dmYVoJzv5
+         vRn4ySIYaVhM8eaJZ+q0/A9jpXVzgHfu+9P8OX7YPyybhmXBK58AbxDvgjxyLpSxNkA8
+         W/fJX9QjuAHsY4OcgwWIcy3v9UwyzgTdEoFYLWndTzAYbjAcGxK514wCu5nIP9wVePdS
+         C8Nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ofWGVMe2JZ9sFGaZsWNyqNiTcjwQEOup3zeDROG1vTY=;
+        b=kj9uQmpVm81EC2V0JahWnkz7yRvKpYfLhJwec6VyetO/3uivH6xcF0wgzUcwU/0Q9f
+         mkDr/iSyLnmWvOPh/P9jvO0fmszZKmIX/JkslRlxB32HFEaZOeI/zhPj72avdaEUHU+E
+         kbWUtciFY11B6NVR9vTElZQSVYz2wlHwVbcEwTnaGBm6lqFJCOLAkqZA3FfpYJQYp1u2
+         iQrKiRM3AJEcknGedWIJ39xgejFwgqQdmfxmipiPXqJb43F0EVhbbqvyQIA4wSshptzG
+         /4Y2SB+SKtIv68IeqnO9tTWj6MQfsh1GHhxw4O0tHwm56ItPTInbUHQ/ktbowIZhj02f
+         Hogg==
+X-Gm-Message-State: AJIora9QSfd3TTA5s6SnA0AGyP2M+U1KdVQL/vj9GkCHCbTV0uPlyzff
+        Y+PkLM8XLbjntrThi1J+L1fp16DwJQVjSaQwmI9aiwwIpqk=
+X-Google-Smtp-Source: AGRyM1tZaNY3RnpsWXPhubtirONGD9WJkruBLM3+IN0NN9iASwGWk+J9hyYDSii8WApr2iertUTtnt4b6jMvtc4zgRQ=
+X-Received: by 2002:a05:600c:34ce:b0:3a0:3b4b:9022 with SMTP id
+ d14-20020a05600c34ce00b003a03b4b9022mr2117717wmq.66.1657608259479; Mon, 11
+ Jul 2022 23:44:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-GUID: iinDj5qGV2VRebYDNR00IHKCWL6Eg3Q_
-X-Proofpoint-ORIG-GUID: iinDj5qGV2VRebYDNR00IHKCWL6Eg3Q_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_05,2022-07-08_01,2022-06-22_01
+References: <20220711162713.2467476-1-dlatypov@google.com> <20220711204859.3DDD5C34115@smtp.kernel.org>
+ <CAGS_qxqxGfQ5tA063XoRbL1ktimyfmt+CuucJ_rsYVnoi4i7gw@mail.gmail.com>
+In-Reply-To: <CAGS_qxqxGfQ5tA063XoRbL1ktimyfmt+CuucJ_rsYVnoi4i7gw@mail.gmail.com>
+From:   David Gow <davidgow@google.com>
+Date:   Tue, 12 Jul 2022 14:44:08 +0800
+Message-ID: <CABVgOS=bm5TmEBd8jxuTPJy426OgC14ryqn4FLQR1pHNf5uhsw@mail.gmail.com>
+Subject: Re: [PATCH] clk: explicitly disable CONFIG_UML_PCI_OVER_VIRTIO in .kunitconfig
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-clk@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000007f92c305e395ffce"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+--0000000000007f92c305e395ffce
+Content-Type: text/plain; charset="UTF-8"
 
-In few error cases MAC(CGX/RPM) block is having 0 lmacs.
-AF driver uses MAC block with lmac pair to get firmware
-data etc. These commands will fail as there is no LMAC
-associated with MAC block.
+On Tue, Jul 12, 2022 at 7:03 AM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> On Mon, Jul 11, 2022 at 1:49 PM Stephen Boyd <sboyd@kernel.org> wrote:
+> >
+> > Quoting Daniel Latypov (2022-07-11 09:27:13)
+> > > CONFIG_UML_PCI_OVER_VIRTIO=y is needed to enable CONFIG_PCI=y on UML.
+> > > However, this causes test failures when running the clk tests, i.e.
+> > > $ ./tools/testing/kunit/kunit.py run --kunitconfig=drivers/clk
+> > >
+> > > A snippet of the particular error is:
+> > > >     ok 1 - clk_gate_test_parent_rate
+> > > > ------------[ cut here ]------------
+> > > > WARNING: CPU: 0 PID: 45 at lib/logic_iomem.c:141 __raw_readl+0x9f/0xd0
+> > >
+> > > This is triggered by this cast in the test:
+> > >    143          ctx->fake_mem = (void __force __iomem *)&ctx->fake_reg;
+> > > this seems to work except when logic iomem is enabled, i.e.
+> > > CONFIG_INDIRECT_IOMEM=y.
+> > >
+> > > As a short-term fix, explicitly disable CONFIG_UML_PCI_OVER_VIRTIO in
+> > > drivers/clk/.kunitconfig so we can enable it for everyone else by
+> > > default in kunit.py.
+> > >
+> > > The long-term fix probably requires something more complicated, like
+> > >   #ifdef CONFIG_INDIRECT_IOMEM
+> > >     logic_iomem_add_region(...);
+> > >   #endif
+> >
+> > If this is how platform IO is mocked then yes we'll have to implement
+> > that.
+>
+> It's not clear that it will be, but it's likely.
+> Until it's more clear, I figured we'd go with this simple bandaid fix for now.
+>
+> There was initially some talk of using function-level
+> "stubbing"/"mocking" [1] to do the same, but Brendan started playing
+> around with logic iomem more. He and David can comment on it more
+> cogently than I can.
 
-This patch skips the probe of these MAC blocks such that AF driver
-uses correct MAC block and LMAC pair for firmware communication and
-define new LMAC_AF_ERROR types for command timeout etc.
+So, as I understand it, casting a regular pointer to an __iomem
+pointer (as the clk test does) isn't technically correct, though it
+does work on almost every architecture out there. If we want some way
+of intercepting I/O access, then then that'll need to be handled by
+the various read()/write() functions.
 
-This patch also enables channel back pressure for all LMACs.
+UML doesn't support iomem at all out of the box, and logic_iomem is a
+way of implementing it which allow us to attach handler functions to
+blocks of memory, albeit with more constraints about what addresses
+get used. Brendan started implementing a "fake hardware" interface on
+top of this here, though it's still in-progress:
+https://kunit-review.googlesource.com/c/linux/+/5272/4
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: Geetha sowjanya <gakula@marvell.com>
----
-v1-v2:
-  Rebased on latest net-next.
+Ultimately, I think the 'correct' solution here will be
+logic_iomem-based, but doing that nicely will probably require one of
+two things:
+- logic_iomem to support non-UML architectures as well (becoming a
+generic "insert a 'fake' device here" system)
+- logic_iomem to have some way of "passing through" access to an io
+memory region through to the normal underlying memory.
 
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c     | 13 ++++++++++---
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h    |  2 ++
- drivers/net/ethernet/marvell/octeontx2/af/rpm.c     |  3 +++
- drivers/net/ethernet/marvell/octeontx2/af/rpm.h     |  1 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c |  2 +-
- 5 files changed, 17 insertions(+), 4 deletions(-)
+Ideally, we'll have both, and maybe even defaults which will allow
+hacks like this to continue working (perhaps with a warning?). That'll
+require some significant (and probably not uncontroversial) work on
+how iomem accesses work in general, though, possibly with performance
+impact.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 931a1a7ebf76..894425768a31 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -1012,9 +1012,9 @@ int cgx_fwi_cmd_send(u64 req, u64 *resp, struct lmac *lmac)
- 	if (!wait_event_timeout(lmac->wq_cmd_cmplt, !lmac->cmd_pend,
- 				msecs_to_jiffies(CGX_CMD_TIMEOUT))) {
- 		dev = &cgx->pdev->dev;
--		dev_err(dev, "cgx port %d:%d cmd timeout\n",
--			cgx->cgx_id, lmac->lmac_id);
--		err = -EIO;
-+		dev_err(dev, "cgx port %d:%d cmd %lld timeout\n",
-+			cgx->cgx_id, lmac->lmac_id, FIELD_GET(CMDREG_ID, req));
-+		err = LMAC_AF_ERR_CMD_TIMEOUT;
- 		goto unlock;
- 	}
- 
-@@ -1750,6 +1750,13 @@ static int cgx_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto err_release_regions;
- 	}
- 
-+	cgx->lmac_count = cgx->mac_ops->get_nr_lmacs(cgx);
-+	if (!cgx->lmac_count) {
-+		dev_notice(dev, "CGX %d LMAC count is zero, skipping probe\n", cgx->cgx_id);
-+		err = -EOPNOTSUPP;
-+		goto err_release_regions;
-+	}
-+
- 	nvec = pci_msix_vec_count(cgx->pdev);
- 	err = pci_alloc_irq_vectors(pdev, nvec, nvec, PCI_IRQ_MSIX);
- 	if (err < 0 || err != nvec) {
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 430aa8a05c23..51c2cadd1333 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -1648,6 +1648,8 @@ enum cgx_af_status {
- 	LMAC_AF_ERR_PERM_DENIED		= -1103,
- 	LMAC_AF_ERR_PFC_ENADIS_PERM_DENIED       = -1104,
- 	LMAC_AF_ERR_8023PAUSE_ENADIS_PERM_DENIED = -1105,
-+	LMAC_AF_ERR_CMD_TIMEOUT = -1106,
-+	LMAC_AF_ERR_FIRMWARE_DATA_NOT_MAPPED = -1107,
- 	LMAC_AF_ERR_EXACT_MATCH_TBL_ADD_FAILED = -1108,
- 	LMAC_AF_ERR_EXACT_MATCH_TBL_DEL_FAILED = -1109,
- 	LMAC_AF_ERR_EXACT_MATCH_TBL_LOOK_UP_FAILED = -1110,
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 05666922a45b..9025825597a2 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -281,6 +281,9 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
- 	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
- 	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, 0, cfg);
- 	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
-+
-+	/* Enable channel mask for all LMACS */
-+	rpm_write(rpm, 0, RPMX_CMR_CHAN_MSK_OR, ~0ULL);
- }
- 
- int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 8205f2626f61..8247db8c1d36 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -51,6 +51,7 @@
- #define RPMX_CMR_RX_OVR_BP		0x4120
- #define RPMX_CMR_RX_OVR_BP_EN(x)	BIT_ULL((x) + 8)
- #define RPMX_CMR_RX_OVR_BP_BP(x)	BIT_ULL((x) + 4)
-+#define RPMX_CMR_CHAN_MSK_OR            0x4118
- #define RPMX_MTI_STAT_RX_STAT_PAGES_COUNTERX 0x12000
- #define RPMX_MTI_STAT_TX_STAT_PAGES_COUNTERX 0x13000
- #define RPMX_MTI_STAT_DATA_HI_CDC            0x10038
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 5090ddcc7e8a..41c124b7aea9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -1087,7 +1087,7 @@ int rvu_mbox_handler_cgx_get_aux_link_info(struct rvu *rvu, struct msg_req *req,
- 	u8 cgx_id, lmac_id;
- 
- 	if (!rvu->fwdata)
--		return -ENXIO;
-+		return LMAC_AF_ERR_FIRMWARE_DATA_NOT_MAPPED;
- 
- 	if (!is_pf_cgxmapped(rvu, pf))
- 		return -EPERM;
--- 
-2.17.1
+The other option of using function redirection on the io read()
+write() functions exists, and would be a bit simpler in the
+short-term, but would probably result in a lot of tests reimplementing
+this, and also would have some performance impacts, as the I/O
+accesses wouldn't be able to be inlined if KUNIT is enabled.
 
+Cheers,
+-- David
+
+--0000000000007f92c305e395ffce
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIPnwYJKoZIhvcNAQcCoIIPkDCCD4wCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+ggz5MIIEtjCCA56gAwIBAgIQeAMYYHb81ngUVR0WyMTzqzANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA3MjgwMDAwMDBaFw0yOTAzMTgwMDAwMDBaMFQxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMSowKAYDVQQDEyFHbG9iYWxTaWduIEF0bGFz
+IFIzIFNNSU1FIENBIDIwMjAwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCvLe9xPU9W
+dpiHLAvX7kFnaFZPuJLey7LYaMO8P/xSngB9IN73mVc7YiLov12Fekdtn5kL8PjmDBEvTYmWsuQS
+6VBo3vdlqqXZ0M9eMkjcKqijrmDRleudEoPDzTumwQ18VB/3I+vbN039HIaRQ5x+NHGiPHVfk6Rx
+c6KAbYceyeqqfuJEcq23vhTdium/Bf5hHqYUhuJwnBQ+dAUcFndUKMJrth6lHeoifkbw2bv81zxJ
+I9cvIy516+oUekqiSFGfzAqByv41OrgLV4fLGCDH3yRh1tj7EtV3l2TngqtrDLUs5R+sWIItPa/4
+AJXB1Q3nGNl2tNjVpcSn0uJ7aFPbAgMBAAGjggGKMIIBhjAOBgNVHQ8BAf8EBAMCAYYwHQYDVR0l
+BBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMEMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFHzM
+CmjXouseLHIb0c1dlW+N+/JjMB8GA1UdIwQYMBaAFI/wS3+oLkUkrk1Q+mOai97i3Ru8MHsGCCsG
+AQUFBwEBBG8wbTAuBggrBgEFBQcwAYYiaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL3Jvb3Ry
+MzA7BggrBgEFBQcwAoYvaHR0cDovL3NlY3VyZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvcm9vdC1y
+My5jcnQwNgYDVR0fBC8wLTAroCmgJ4YlaHR0cDovL2NybC5nbG9iYWxzaWduLmNvbS9yb290LXIz
+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
+z/tQRXr3iPeVmZCr7nttMEwGA1UdIARFMEMwQQYJKwYBBAGgMgEoMDQwMgYIKwYBBQUHAgEWJmh0
+dHBzOi8vd3d3Lmdsb2JhbHNpZ24uY29tL3JlcG9zaXRvcnkvMAwGA1UdEwEB/wQCMAAwgZoGCCsG
+AQUFBwEBBIGNMIGKMD4GCCsGAQUFBzABhjJodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9jYS9n
+c2F0bGFzcjNzbWltZWNhMjAyMDBIBggrBgEFBQcwAoY8aHR0cDovL3NlY3VyZS5nbG9iYWxzaWdu
+LmNvbS9jYWNlcnQvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3J0MB8GA1UdIwQYMBaAFHzMCmjXouse
+LHIb0c1dlW+N+/JjMEYGA1UdHwQ/MD0wO6A5oDeGNWh0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20v
+Y2EvZ3NhdGxhc3Izc21pbWVjYTIwMjAuY3JsMA0GCSqGSIb3DQEBCwUAA4IBAQAx+EQjLATc/sze
+VoZkH7OLz+/no1+y31x4BQ3wjW7lKfay9DAAVym896b7ECttSo95GEvS7pYMikzud57WypK7Bjpi
+ep8YLarLRDrvyyvBuYtyDrIewkuASHtV1oy5E6QZZe2VOxMm6e2oJnFFjbflot4A08D3SwqDwV0i
+OOYwT0BUtHYR/3903Dmdx5Alq+NDvUHDjozgo0f6oIkwDXT3yBV36utQ/jFisd36C8RD5mM+NFpu
+3aqLXARRbKtxw29ErCwulof2dcAonG7cd5j+gmS84sLhKU+BhL1OQVXnJ5tj7xZ5Ri5I23brcwk0
+lk/gWqfgs3ppT9Xk7zVit9q8MYICajCCAmYCAQEwaDBUMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQ
+R2xvYmFsU2lnbiBudi1zYTEqMCgGA1UEAxMhR2xvYmFsU2lnbiBBdGxhcyBSMyBTTUlNRSBDQSAy
+MDIwAhABh9LgIPnlfMFHR0Die8n7MA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBn
+Tk66uJbvglg0AKHX/x9QBJo9CpMpTq1HZEq2FGB/JzAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
+MBwGCSqGSIb3DQEJBTEPFw0yMjA3MTIwNjQ0MTlaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUD
+BAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsG
+CSqGSIb3DQEBBzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAURDWVVbo39P6Fu6M/q7O
+bf56OiM9u1dc0ScLJCMYnpvpJGQS38C8nCBZwcYajFWO6hz5W/YtOSRStKF7zPHY+CaQ7lk1pD3N
+bW5/dB3ryH1aEmRs4NOalJkhJm48Pe4JHxpdmPIDC9WLacXN6vRStThkoL+GIAlg2q45U20nqakA
+OssWtfUuvOv1geY0g0dFds4cYZxPjgV1eH7tbZ2XqlsMKiPyK8buBWy4eGEQ1R0aUPXSg8FF5DpC
+1itT9aulzOc3KiJW4s8UTaDJPV0g6IOpY2pyMCYSWtPLWaLvJniJfKEFkclazl8/YYXshnN392mb
+GwNMlikx8xcElsu/UA==
+--0000000000007f92c305e395ffce--
