@@ -2,98 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06CAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28511C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:36:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230061AbiGLBfZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 21:35:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55018 "EHLO
+        id S230229AbiGLBgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 21:36:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGLBfW (ORCPT
+        with ESMTP id S229515AbiGLBgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 21:35:22 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7162AE1C
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 18:35:20 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id l124so6218217pfl.8
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 18:35:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=jXRrOtHMmDMb2DadCR02O1dtCn+wTACMEkhobAkdpNE=;
-        b=JLcc59y5fh09ywEyDKJ7x4gepL4JF4hxb2zvX9UVYa87uaRp9ul73Fj6NQr4FUV4h8
-         ylxqMYidlIO7XauV86NBKmMiz717kZzmlSORkNNtyyTfEyt6uzmci1umye3/3SZaTm7g
-         0XsYCwHYeVkfHhAXqlt++Fx1GUqWmh7NxrX2pO1PPKNBsc40yGTPTqX8EbwDZY0OhPHj
-         8f/72F7Qa5qy0N/Ah1wK2rGP96luC6koyDdw22W8h+RQjX4vpqe94mz/9TbtpBy/eD7m
-         xKHl6i++amGJhCMYk8HVP7s8suCQUiKnzDd1gRkO5kF/jklTq14OJKRmQmC+d2efY+Y1
-         ttuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=jXRrOtHMmDMb2DadCR02O1dtCn+wTACMEkhobAkdpNE=;
-        b=OAXuE8kyCuk/F8wygOMktnjXV7T54CuSkYoDfXplYdEgGPmQmyeqJEZoIHIv2iKy8J
-         F+KGqbm2Iwbm4ESZnc0c6XpETBJC+wt3qdzKhvH/FAGzUjNJngvQbM7sJMKLh4kksGcR
-         18bqNpS9sgurz7calffOJMu7XGS4vEQVHYe5SRpUduRyrWOxONNpZBd63RSARrRfw7xJ
-         owTeZ/FRdbd+Q0ecORAbzrVsZVbeUfcSkHka6Pzjudd9syJhk3uWH3/gG3VSwtYJ9jPX
-         ZWCkigNSFcGVw1MwhV15koJC7h6qgo3s7KelXhnb0W6lWr9ktihjOjJqrW2EsdF89H8t
-         R7ZQ==
-X-Gm-Message-State: AJIora/Ex7ppyHVDkTNbGRul/QAPoJom5/POld2FNCnVnnb5J8dsE2I/
-        LPRMRP8BjoE2nwW4YJgD6U9sSO40J0EUww==
-X-Google-Smtp-Source: AGRyM1uY4XxNFwUuqiwYISuIg8rYGVvu8Y2ALlr00SQqXAJZbRJH72e+bqt0pfXV8c5r62x5nbMFfQ==
-X-Received: by 2002:a05:6a00:c92:b0:528:a24f:60f9 with SMTP id a18-20020a056a000c9200b00528a24f60f9mr20853725pfv.47.1657589719888;
-        Mon, 11 Jul 2022 18:35:19 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id a200-20020a621ad1000000b0052ab37ef3absm5392606pfa.116.2022.07.11.18.35.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 18:35:19 -0700 (PDT)
-References: <20220708211755.73637-1-schspa@gmail.com>
- <20220708172614.14191089@gandalf.local.home> <m2v8s7mg78.fsf@gmail.com>
- <20220711161037.06b8c1ea@gandalf.local.home> <m2edyrnny9.fsf@gmail.com>
- <20220711211639.6c714635@gandalf.local.home>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] sched/rt: fix bad task migration for rt tasks
-Date:   Tue, 12 Jul 2022 09:33:58 +0800
-In-reply-to: <20220711211639.6c714635@gandalf.local.home>
-Message-ID: <m2sfn7glkk.fsf@gmail.com>
+        Mon, 11 Jul 2022 21:36:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42D542B1A5
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 18:36:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D247C61653
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:36:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8663C3411C;
+        Tue, 12 Jul 2022 01:36:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657589777;
+        bh=abHCq8B2o5LmiSh6NVX2ViHoKDAMvedKljs2uYyePag=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qaDgs4VDWLWaO2CeuIz4TzgPD6Da8R8RL1qnYqUcmYK3NFlvaiUgw7aD83/CeAebW
+         ZhQUavLZzC4w8UC7VmZ/trapbEmsdEc0vQoOPLnKPWdOPSN6LJ9R5vsnUIViIoItED
+         uv3lSDL8gEv7d9eAaz2wbZfToTVVkfc1svdtnr5DlQa2KdRf4omCDl4OMMAfkhsIm+
+         QKBlbhGwxpLj/+b9hoMqVm4VdTXgwoqXWC8VHI8zh02WYOBTp7tsskeuxuJR50ISP4
+         ZFE1A3eTxBhhD+q6gYa1zHM03J+tD7SS0Px2M3DUMs82iTdDPwOyIuSVw4hs7C6Amf
+         M7A3i/8ZvkUig==
+Date:   Mon, 11 Jul 2022 18:36:15 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Chao Liu <chaoliu719@gmail.com>
+Cc:     Chao Yu <chao@kernel.org>, linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Yue Hu <huyue2@coolpad.com>,
+        Wayne Zhang <zhangwen@coolpad.com>,
+        Chao Liu <liuchao@coolpad.com>
+Subject: Re: [PATCH v2] f2fs: allow compression of files without blocks
+Message-ID: <YszQD8Pk3YTvPgpn@google.com>
+References: <20220707090924.4183376-1-chaoliu719@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707090924.4183376-1-chaoliu719@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 07/07, Chao Liu wrote:
+> From: Chao Liu <liuchao@coolpad.com>
+> 
+> Files created by truncate(1) have a size but no blocks, so
+> they can be allowed to enable compression.
+> 
+> Signed-off-by: Chao Liu <liuchao@coolpad.com>
+> ---
+> v2:
+>  - update commit message: truncate -> truncate(1)
+> 
+>  fs/f2fs/file.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 0f29af7876a6..f7a82858486a 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -1879,7 +1879,7 @@ static int f2fs_setflags_common(struct inode *inode, u32 iflags, u32 mask)
+>  		if (iflags & F2FS_COMPR_FL) {
+>  			if (!f2fs_may_compress(inode))
+>  				return -EINVAL;
+> -			if (S_ISREG(inode->i_mode) && inode->i_size)
+> +			if (S_ISREG(inode->i_mode) && F2FS_HAS_BLOCKS(inode))
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+What about inline_data case?
 
-> On Tue, 12 Jul 2022 08:53:56 +0800
-> Schspa Shi <schspa@gmail.com> wrote:
->
->> How about to change this to 
->> 
->> 			/*
->> 			 * We had to unlock the run queue. In
->> 			 * the mean time, task could have
->> 			 * migrated already or had its affinity changed.
->> 			 * Also make sure that it wasn't scheduled on its rq.
->> 			 * It is possible the task was scheduled, set
->>              * "migrate_disabled" and then got preempted, And we
->>              * check task migration disable flag here too.
->> 			 */
->
-> That's better. But of course it needs better formatting ;-)
->
-> -- Steve
-
-I have upload a v5 patch for this comment change, please review it. ;-)
-Link: https://lore.kernel.org/all/20220712013125.623338-1-schspa@gmail.com/T/#t
-
--- 
-BRs
-Schspa Shi
+>  				return -EINVAL;
+> 
+>  			set_compress_context(inode);
+> --
+> 2.36.1
