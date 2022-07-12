@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B49C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 988EDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233077AbiGLUx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:53:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
+        id S234207AbiGLUyE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231349AbiGLUxn (ORCPT
+        with ESMTP id S234049AbiGLUxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:53:43 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C937D0380;
-        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id c131-20020a1c3589000000b003a2cc290135so93713wma.2;
-        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
+        Tue, 12 Jul 2022 16:53:44 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94023D038E;
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id bu1so11642111wrb.9;
+        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=93tCkgQSnWP7j8MKkQNUUkCctSIIcngjSEkqdPJ6fOw=;
-        b=fc571E8SVwODapQL0U19Opr1UFzf0q5QnKd1RASOgTqD1+rq7tyYrd2eHiC2uwlrv2
-         EovC5vq+D1z7pKbUvECinQEEkM7S/iWcjjF0EAQ6UZWiqBQSJuqKr7w8pEIJuOU0Rt4I
-         3bgNyzwq9YAWUNvU8FZWQwILB/QCx1RZHjLCla1ibLyUZT3hICnZlq2txEtzfoFnN1Dd
-         N5XdC4dMGlMR5kYfJzbrDkrflgM2w5kj/4pFoD38YxbfgYaDqUx5tnFDJu+fcPL2jyXg
-         6tvdPx9kKv9fVmV2b2rMsR0IpV7spxDBuGCGiPtNVEEJsp654oiUwaRw8j6GggKgZQAE
-         MdOw==
+        bh=OJ0hXZfV5Alrn5VQyEcS8Jj+bIgVFhTm5Bw+BZyTG0c=;
+        b=gUEjS0b1uKrgeP8SV+ckYTtCLYwhpD7RrM77qL572lXDM/R9S/ant/W8YQXwWS8+zB
+         hMd/GuIMiQbUiCN7T9Kz3mcSLcXXPvy9vWl1ZWFtznrlOFtDTcti6qS0TlFpvKxQjcoe
+         sGsQI+eAGvIGcRv8p5WIswDXDQT6geiY3gmb/Iyu1uiVYWBblSdY/5QHUaYCZSJUNk+z
+         bMz+59jAper6eKDw3Bjn9wB7nnW48inVy3bLJfehRAuErxPTdNfdbceGPdrHorQFpp1z
+         S7P6PC/b6hYgj5N6zZc7mwIkmsnMkejqrK2p1ZhJBxUqR8cCFbSb2UbTdqJzEEbYqSmb
+         6IQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=93tCkgQSnWP7j8MKkQNUUkCctSIIcngjSEkqdPJ6fOw=;
-        b=W1NU2Ub4bEBIstTVKb88F5BKtILt8dssulu7GK3mv7pchDaYwsEU4mIm0Bbgv+NupA
-         BjBHyYJ1P7NEV4ro9opnU6N237YNhLTycg+TRUPBosZSM72iCPZi/Eh+DbbRbbEnzRW+
-         253cz1db6gX3of1XHK4RFSqgTD2nWNvJEGjg9MzqTeIU+RxnguoTO6+Q7MKlz53WLEu8
-         OUVPCj6h2YqlvB0vfluyNpIYCl8xX14SxTdHoVpHzYbZumyAv1EcsAbjs6BSzBRyWiFk
-         ncTgu+rtJnN032njG321ZS98qI5W0fu9x33fKxcTOqmLy+InFZzY7Y+VsoEUo8wKK837
-         7oGQ==
-X-Gm-Message-State: AJIora9+vmGVYvXkaoFjUmgEIv1A5JWhpHN4m+x5K7yMfA8dT5KLpVwh
-        nUrxs8jfNU7zPm6g5ebhoI/hwfOcILg=
-X-Google-Smtp-Source: AGRyM1sbJ9UkYmXzur77FvKfiydeJpmt08QWMLfgXVHgYyEiKJ0cddUvd8qHIVStFA1S8oB8U9exZA==
-X-Received: by 2002:a7b:cd82:0:b0:3a1:7528:2d79 with SMTP id y2-20020a7bcd82000000b003a175282d79mr6043091wmj.79.1657659198241;
-        Tue, 12 Jul 2022 13:53:18 -0700 (PDT)
+        bh=OJ0hXZfV5Alrn5VQyEcS8Jj+bIgVFhTm5Bw+BZyTG0c=;
+        b=ycoHrmkTrgrqOQx7ptenRImEfrrV8AX/qi+KMMulpeatYDLkPt/MLBUX/GQP7QA1Ct
+         kiSLF4DY6FOGVcHqao8OcPKw3q5uUGHWK0dCEdB5xQbjcpF31EiDpssYknjHpbZ9sXR7
+         umH322GpXEXPwwo4J78zBne1FJFDsjTPG6MOIduteQ6Ogzuya5ABc5EIUnTJwAWRTe/R
+         gUXOZU6guav9DW05UKq7On8WhaFfDewA1f2mjbGpFamLXpBGB+JlKp2qoiOA10Ivymxp
+         Bp2UKIRftR4tz84HdM/otT2RSrbKPGcW5csFKXOP/Wtlx42/Yyxof8kYI5YnuxzM4XUc
+         eTPA==
+X-Gm-Message-State: AJIora9V/l+jUhFod1AoylzdwGvK04hTs813+PgBw7GCd0e6Xz+TTP6f
+        REkyfUgPNHYc7SgSqCv/rBYtOkEC9f0=
+X-Google-Smtp-Source: AGRyM1vd7lHZ0K8ZfBC4o5wvmHxAWa3AvtgHBbjRQkWNlv/9DxoLb2w3ZwrpMYP+O6fyLAgn5NaSUg==
+X-Received: by 2002:a5d:4892:0:b0:20c:d4eb:1886 with SMTP id g18-20020a5d4892000000b0020cd4eb1886mr24080604wrq.96.1657659200697;
+        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.17
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:17 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:20 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 09/27] ipv4/udp: support externally provided ubufs
-Date:   Tue, 12 Jul 2022 21:52:33 +0100
-Message-Id: <c7660dfeaf1950a209c8af8959713377eab5ca94.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 11/27] tcp: support externally provided ubufs
+Date:   Tue, 12 Jul 2022 21:52:35 +0100
+Message-Id: <ed55670c84dc1b0d442e33a0855429a3e5c780d2.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,84 +69,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Teach ipv4/udp how to use external ubuf_info provided in msghdr and
+Teach tcp how to use external ubuf_info provided in msghdr and
 also prepare it for managed frags by sprinkling
 skb_zcopy_downgrade_managed() when it could mix managed and not managed
 frags.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv4/ip_output.c | 44 +++++++++++++++++++++++++++++++-------------
- 1 file changed, 31 insertions(+), 13 deletions(-)
+ net/ipv4/tcp.c | 32 ++++++++++++++++++++------------
+ 1 file changed, 20 insertions(+), 12 deletions(-)
 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index 581d1e233260..df7f9dfbe8be 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1017,18 +1017,35 @@ static int __ip_append_data(struct sock *sk,
- 	    (!exthdrlen || (rt->dst.dev->features & NETIF_F_HW_ESP_TX_CSUM)))
- 		csummode = CHECKSUM_PARTIAL;
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 390eb3dc53bd..a81f694af5e9 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1223,17 +1223,23 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
--	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
--		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
--		if (!uarg)
--			return -ENOBUFS;
--		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
--		if (rt->dst.dev->features & NETIF_F_SG &&
--		    csummode == CHECKSUM_PARTIAL) {
--			paged = true;
--			zc = true;
--		} else {
+ 	flags = msg->msg_flags;
+ 
+-	if (flags & MSG_ZEROCOPY && size && sock_flag(sk, SOCK_ZEROCOPY)) {
++	if ((flags & MSG_ZEROCOPY) && size) {
+ 		skb = tcp_write_queue_tail(sk);
+-		uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
+-		if (!uarg) {
+-			err = -ENOBUFS;
+-			goto out_err;
+-		}
+ 
+-		zc = sk->sk_route_caps & NETIF_F_SG;
+-		if (!zc)
 -			uarg->zerocopy = 0;
--			skb_zcopy_set(skb, uarg, &extra_uref);
-+	if ((flags & MSG_ZEROCOPY) && length) {
-+		struct msghdr *msg = from;
-+
-+		if (getfrag == ip_generic_getfrag && msg->msg_ubuf) {
-+			if (skb_zcopy(skb) && msg->msg_ubuf != skb_zcopy(skb))
-+				return -EINVAL;
-+
-+			/* Leave uarg NULL if can't zerocopy, callers should
-+			 * be able to handle it.
-+			 */
-+			if ((rt->dst.dev->features & NETIF_F_SG) &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+				uarg = msg->msg_ubuf;
-+			}
++		if (msg->msg_ubuf) {
++			uarg = msg->msg_ubuf;
++			net_zcopy_get(uarg);
++			zc = sk->sk_route_caps & NETIF_F_SG;
 +		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
-+			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
-+			if (!uarg)
-+				return -ENOBUFS;
-+			extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
-+			if (rt->dst.dev->features & NETIF_F_SG &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+			} else {
-+				uarg->zerocopy = 0;
-+				skb_zcopy_set(skb, uarg, &extra_uref);
++			uarg = msg_zerocopy_realloc(sk, size, skb_zcopy(skb));
++			if (!uarg) {
++				err = -ENOBUFS;
++				goto out_err;
 +			}
- 		}
++			zc = sk->sk_route_caps & NETIF_F_SG;
++			if (!zc)
++				uarg->zerocopy = 0;
++		}
  	}
  
-@@ -1192,13 +1209,14 @@ static int __ip_append_data(struct sock *sk,
- 				err = -EFAULT;
- 				goto error;
- 			}
--		} else if (!uarg || !uarg->zerocopy) {
-+		} else if (!zc) {
- 			int i = skb_shinfo(skb)->nr_frags;
+ 	if (unlikely(flags & MSG_FASTOPEN || inet_sk(sk)->defer_connect) &&
+@@ -1356,9 +1362,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
  
- 			err = -ENOMEM;
- 			if (!sk_page_frag_refill(sk, pfrag))
- 				goto error;
+ 			copy = min_t(int, copy, pfrag->size - pfrag->offset);
  
-+			skb_zcopy_downgrade_managed(skb);
- 			if (!skb_can_coalesce(skb, i, pfrag->page,
- 					      pfrag->offset)) {
- 				err = -EMSGSIZE;
+-			if (tcp_downgrade_zcopy_pure(sk, skb))
+-				goto wait_for_space;
+-
++			if (unlikely(skb_zcopy_pure(skb) || skb_zcopy_managed(skb))) {
++				if (tcp_downgrade_zcopy_pure(sk, skb))
++					goto wait_for_space;
++				skb_zcopy_downgrade_managed(skb);
++			}
+ 			copy = tcp_wmem_schedule(sk, copy);
+ 			if (!copy)
+ 				goto wait_for_space;
 -- 
 2.37.0
 
