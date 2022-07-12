@@ -2,137 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3737C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F343CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233622AbiGLQea convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:34:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49604 "EHLO
+        id S234022AbiGLQej (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:34:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233465AbiGLQd7 (ORCPT
+        with ESMTP id S232364AbiGLQeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:33:59 -0400
-Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E63825C77
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:33:56 -0700 (PDT)
-Received: from CHE01-GV0-obe.outbound.protection.outlook.com
- (mail-gv0che01lp2047.outbound.protection.outlook.com [104.47.22.47]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- de-mta-22-YhE3n9sQNaiEuQ0SLJnAOw-6; Tue, 12 Jul 2022 18:33:54 +0200
-X-MC-Unique: YhE3n9sQNaiEuQ0SLJnAOw-6
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
- ZRAP278MB0173.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2c::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5417.15; Tue, 12 Jul 2022 16:33:49 +0000
-Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::3d:ca30:8c24:1a95]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- ([fe80::3d:ca30:8c24:1a95%7]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 16:33:48 +0000
-From:   Francesco Dolcini <francesco.dolcini@toradex.com>
-To:     Lee Jones <lee.jones@linaro.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Francesco Dolcini <francesco.dolcini@toradex.com>,
-        linux-input@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v2 5/5] dt-bindings: input: touchscreen: stmpe: Remove node name requirement
-Date:   Tue, 12 Jul 2022 18:33:45 +0200
-Message-ID: <20220712163345.445811-6-francesco.dolcini@toradex.com>
+        Tue, 12 Jul 2022 12:34:07 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E7724F35
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:34:06 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id ay25so5046679wmb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:34:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c6teTydIk4t8Jfe1GVRPgDH0Cnjkz/LFOBPcMOzjX2k=;
+        b=hbds50A23XdPZ/MyWEgqMas3xkVJigPUarGAZzquZM+KlNSQ33HCScs6eR7wUTsgHD
+         fYFLfQ7Md51SPaLgl8ZlgfwKJtXDS6geGTTU7oJltqPmTreoCtt8W0cKZXAr6oUPx4qH
+         mplCIVlA2kTiad+2PpKQCPfgdPV51Ya9LZ6eY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c6teTydIk4t8Jfe1GVRPgDH0Cnjkz/LFOBPcMOzjX2k=;
+        b=m/nx+CCp5I3uFZ4rSrWvpVi+i3q9ewg/Zaddk6vBzbJu56E7yKxVcM+SIWzPvmD7ng
+         BWYnh4BEupnLLazJS8+a1q/4uDkRfz4qEu+EwVtUAmvDxJ9jHM6UArdOhaqeHBdq7+WX
+         LgOP2B/xyIfRe3kssKPsEEatIbojOv9IOLztEHB0HoOYKKi3Sl7cdgLb1pyYGNgoXfWp
+         t7KOxn7Lkf6tqYCG50ArP7C4bVbd77efdn8UlbJl4kC1U3HjLnU0oWabL2MLbmbI8pFu
+         FmMkqPcTBtamg2E0zJpxJhGWjDcgnxPmFwB8a7jp8kGPPnoq3rnxTzsT0ikDS0/4sDp0
+         N05g==
+X-Gm-Message-State: AJIora95QPX0MURaq7NLWDgLIP9elIVT1NhGiZZOqpDt8i7zJOctRRRD
+        qoCOfpEk0nzTSf8K+KBfAncGYg==
+X-Google-Smtp-Source: AGRyM1tP4uQpddYbZ4q00ptDRsb/ZshNUi01VxF56FnV1BI4J+d4SLP6x/KGAAn3PqSt902XmWc3JQ==
+X-Received: by 2002:a05:600c:190d:b0:3a0:585a:256 with SMTP id j13-20020a05600c190d00b003a0585a0256mr4619381wmq.54.1657643644965;
+        Tue, 12 Jul 2022 09:34:04 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-53-214.cust.vodafonedsl.it. [188.217.53.214])
+        by smtp.gmail.com with ESMTPSA id j16-20020a5d6050000000b0021db2dcd0aasm2321052wrt.108.2022.07.12.09.34.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 09:34:04 -0700 (PDT)
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     tommaso.merciai@amarulasolutions.com
+Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
+        quentin.schulz@theobroma-systems.com,
+        Daniel Scally <djrscally@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 0/6] media: ov5693: cleanup code and add dts support
+Date:   Tue, 12 Jul 2022 18:33:43 +0200
+Message-Id: <20220712163349.1308540-1-tommaso.merciai@amarulasolutions.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712163345.445811-1-francesco.dolcini@toradex.com>
-References: <20220712163345.445811-1-francesco.dolcini@toradex.com>
-X-ClientProxiedBy: MR2P264CA0141.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:30::33) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef14eb12-6841-4609-3fbc-08da64244c09
-X-MS-TrafficTypeDiagnostic: ZRAP278MB0173:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0
-X-Microsoft-Antispam-Message-Info: +OHKvMfKQtyjN5h7PV139KkarzLijwAPlwtrwS1sbqVXNLpqDN49j9REc9dx7F2HB6O3AFHY/RQyz1bcNKH/RV9Ws3am9/f/c7tI6TUxKflKq+Kx1R0KWJa8O+FXq79a8mve8XLQX+FUlSrIi8o21BCVHL3fQXIfpeGNt4Rm3wd+XzsHT6guJFMonHia5Vdx1cmOAi1Ft+Y0WWPviR1HRvlC6o6hCQ80jx9tVn6aKBscR4T/JQFypMZSO+spNNd+s4/ixxUqrtinl5z694XEZbOVOakXTe2/DWvi8iWkOPAYm6Wq3DILYmu8d4oVKxmYan/MBfc4/CV0BBJWKCUjv2uR3UD5DIJvuu5VrHHR8xz4V+jrXNcHCqJw9Habpljtdg8qnH+i961lxmUh9dxAO3xrtjpswVDyZXgThnLSaqk+pA3zfK7VUj6G3iZfKfeUZ5jM1F3Nf/IeIR5aNV1LTZERBZzN7JZnJNfrt9a36mMgk6Q0B2N13uIweDke+g+8B29Rrni7i0nHxE+/vvkZtCmNjnpGDHvEyntQdblZrdXVLitCTITUq/cUwDotKIpVcGJyiJCDaF/rniGVxoklEjQfXjM3ydL3J/dQ/umGRJkPl+GI7DVxw79NExyuWsBSc2H8xOwJONF2WhBYo5TLaqkow1YDkkYLpqmHfjTCRwcfjgpm01o2My+N52cTwYvojgeWDfL1SKD6dNfSu/XWUd2bRgszS0yzj2zaT6D3OvxXiqnLoWiQ9VYlJKZ4GKTcgUNyPQq5BEu2cnz+ccQMA6uBvz+o1ZoEQlmfBSRxmPjRnN7WYUwTSJONaxSNgfKe
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39850400004)(376002)(346002)(366004)(396003)(136003)(478600001)(44832011)(6666004)(36756003)(6486002)(8936002)(41300700001)(83380400001)(7416002)(110136005)(316002)(5660300002)(2616005)(66946007)(26005)(1076003)(66556008)(8676002)(6512007)(186003)(52116002)(4326008)(66476007)(2906002)(38350700002)(6506007)(38100700002)(86362001);DIR:OUT;SFP:1102
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?NjPpBsTfWm/r3Y8NOlP30kSyZmEZn2nvlVWSvxOiCCnI3/sPbOZ+SwAdUP5k?=
- =?us-ascii?Q?1plglscyLOSj++6N/HQ/ZJSLkANS3yYwiBVQLTwqRVf6XM2BNRX2LX8NqUOn?=
- =?us-ascii?Q?SKhFrWdxcOuuF+L0gKLmgYRG+1nvpX78+uneQnsW39r5gHltvj4PQ6IXDiPb?=
- =?us-ascii?Q?vJqUa3EFDfq7UMlrTqeUbT5vmlk5r8wF2h8R5mWd5IQcpQLHvl9bKldn8AOU?=
- =?us-ascii?Q?oLLEPYoW9hezc4DFaVpyQIOylunKsFS0evNZXmCab4IZXBrpsXnEFc1ZV5n3?=
- =?us-ascii?Q?nSfb/AR0+XmECv3XNbB1Ng+NGEC7SAyRBfHinNCZ/5jF0HU31jZiVLDnKitc?=
- =?us-ascii?Q?uWpN5aKhMJwASCJQjttXWndK3BFfnrPIlJ5EmdUOr+spt0hHyuguiKjlVSUb?=
- =?us-ascii?Q?5Ncf3pP2ktfR4PlI/ixCn6Q96CPcURwmm2rxxV1YyIn9tKNl6p8XD1G6wxtU?=
- =?us-ascii?Q?CIjhUdZEB49MwRRDUOgAM/UVhCE770PcuqSwN/mIEMrqoO/S+ARM7jawz+XS?=
- =?us-ascii?Q?EMFQyGKFhMtZ7Sy4Mi/P1ss8M1wXfa2D6q3LAYLtd6jIIJh4eqTJELqpdr3M?=
- =?us-ascii?Q?0ca6cavq2zDNaT8I+NX8bkXvw402hGyc4VOkkdh5CNk9A9vB13z5HwKtpO8P?=
- =?us-ascii?Q?nmdxX/lcGgq28RLZtHvVZvjTMKQV4npPvthTB6gSlTboAJdnMRN/J1lZMx9w?=
- =?us-ascii?Q?d5i2PEY4NqOMuvwsmAW+mLmqACzLjq2LfIBI1GvFRIj+pVNg7Wt3VwXPM7vy?=
- =?us-ascii?Q?5VfYXEAOZOOBOazchbWCEl72JqzxkBOBx1bqf0e2NO3wI4N/mFzpbngLZ596?=
- =?us-ascii?Q?U66Mp26DoFiP6rmcWHRq+y1GyzUxINQQgNHF4fnXbxioNFZ/T5dTiLlFKaJW?=
- =?us-ascii?Q?l/sDIHClXV1HON4r3eVqY8poJHSRbkJyYIJjaw6FBHPBl/7vRA+EOURf6RN8?=
- =?us-ascii?Q?2XgiTaaGpzL8Ho+hcUD3rAcgnew6it5IxBF6tNDYoZQoTXv0T75o2xxn2iHv?=
- =?us-ascii?Q?3GQaPHn/lxgOp+RQu+PhLfEMCBtFkMZkUXyMymXyUcDM54EVqK+MsOVGvAtY?=
- =?us-ascii?Q?zB9UrnRGs3l8eITUps+aZBzzchEDr/qBu1YjAXvv6BM+O1nlu96xU+dTqsdr?=
- =?us-ascii?Q?qymWkOIxReEd7lT1a/Q516Kt5Yx7rtjtujC7W0DcqeXx7pUKo+sOJ+9Oplm1?=
- =?us-ascii?Q?w1pjjo4oOj0qoGAqcgKFkTFsT8PDxhHRmFhP5XejwA47LmG42Gs12gEQ0cxr?=
- =?us-ascii?Q?FzLdAsvuLcP5TyOtedGGGKGC2TOkPVlEIQce/oOxRxLM9y6rbK680BO6MdsC?=
- =?us-ascii?Q?uIv6D7uStDc7UihgtPIYFu7wYnwmW3kl4HxJCg/UZx6Vq0J6KRBqEXBEBmD4?=
- =?us-ascii?Q?KBfFj2tVn/mDfx2VsL1/MmGCLqB4NuvxR2vCXfKgFskzfv83pDz1cao10OwB?=
- =?us-ascii?Q?um8VdPl2WJKxi4NyBIp6Hd1kJ4RZwbQHpNdQOayWHpSqHJsu5UHvYnXjC4+e?=
- =?us-ascii?Q?rV03eDHA2u6hR247O/qOL0aU0a/+ptDSdWtz50/wquW/p/B9Kzit4M/WRNXb?=
- =?us-ascii?Q?/fvthzRzVcG8bGpAXacXzNFPY4RqgEvVo+XT4pd4HBFtl6Y9lHe06FnLCZZo?=
- =?us-ascii?Q?xg=3D=3D?=
-X-OriginatorOrg: toradex.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef14eb12-6841-4609-3fbc-08da64244c09
-X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 16:33:48.4694
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: guYmCgSURjfA0WIhFTUIQbHbynKZCpkPMWD1SUNOSzi5EWLZ9+ASIXj7Jrwdrxgjik2whORtIFOhfFDUCoGRwwXdS7txJt8U5WluN1Bugco=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0173
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: toradex.com
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-STMPE driver does not require a specific node name anymore, only the
-compatible is checked, update binding according to this.
+Hi All,
+This series cleanup code on ov5693 driver and bring up dts support, also add
+documentation for ov5693 camera sensor
 
-Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
----
- Documentation/devicetree/bindings/input/touchscreen/stmpe.txt | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Inspired by recently Quentin series:
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-index c549924603d2..238b51555c04 100644
---- a/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-+++ b/Documentation/devicetree/bindings/input/touchscreen/stmpe.txt
-@@ -54,8 +54,7 @@ Optional properties common with MFD (deprecated):
- 				1 -> 3.25 MHz
- 				2 || 3 -> 6.5 MHz
- 
--Node name must be stmpe_touchscreen and should be child node of stmpe node to
--which it belongs.
-+Node should be child node of stmpe node to which it belongs.
- 
- Note that common ADC settings of stmpe_touchscreen (child) will take precedence
- over the settings done in MFD.
+ - https://patchwork.kernel.org/project/linux-media/list/?series=64807
+
+Tommaso Merciai (6):
+  media: ov5693: count num_supplies using array_size
+  media: ov5693: add dvdd into ov5693_supply_names array
+  media: ov5693: rename clk into xvclk
+  media: ov5693: add support for acpi clock-frequency prop
+  media: dt-bindings: ov5693: document YAML binding
+  media: ov5693: add ov5693_of_match, dts support
+
+ .../bindings/media/i2c/ovti,ov5693.yaml       | 103 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ drivers/media/i2c/ov5693.c                    |  57 ++++++----
+ 3 files changed, 142 insertions(+), 19 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+
 -- 
 2.25.1
 
