@@ -2,94 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34FFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 241C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:28:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbiGLQ2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:28:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45462 "EHLO
+        id S233827AbiGLQ2o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231364AbiGLQ2f (ORCPT
+        with ESMTP id S233188AbiGLQ2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:28:35 -0400
-Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BEDEFDD;
+        Tue, 12 Jul 2022 12:28:37 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F81FE5;
         Tue, 12 Jul 2022 09:28:33 -0700 (PDT)
-Received: by mail-vs1-xe35.google.com with SMTP id l190so8347657vsc.0;
-        Tue, 12 Jul 2022 09:28:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=tiAl750NkryVpXr5atyiwu0K6pH2JObLoKDMkX+rdZc=;
-        b=jDj2Q4kGP+6WTtEGNU9gH0eLDiB33OYoN6hsT17mc7uZkEixfeH6bWy2OBQBioNJDe
-         d3mxksZIuDMwBILgq5PYJ8mHATPQkxS3SdfP59tYL+r61jlgmG+4JaxY747Clw/mDIK+
-         q+1PlZbSBtfSW68HfoG1BpeenZ2+KsYO+G963m3ntwkwTKhO8IzaQ06LONtCi0JdQWLO
-         qVW1eUsLvVlNHWuXcomKQ++LICwSqesV2DhYlagIAjQL1eirFtGQ78lrXaOk6RonaEtk
-         lGZbO39tpvK0RzRbvSjDnN1yQDqialhFRwKIiYobiHOScAdw8Ye1buHnvTQupNk46Ke/
-         mAFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=tiAl750NkryVpXr5atyiwu0K6pH2JObLoKDMkX+rdZc=;
-        b=z4KJtu6O7VAMB/BzDcq7GUz5C9UF59GEI2379D06atxEcbmFqzDmhKAB2mtatAAjBI
-         rBZXYJ5kWG42bYgyN3ukSN0IyzB7bzNt0KjyM7rrg/w8Xi2tzsiej3y91o4nwMDtWq+d
-         isbzEIC/CG/4XugwFW0ECKPyk9sqlpJZklbnInHqtX8kkfAVFFLMyCs3dcMXM0fAqY4E
-         GLSHPbzCLUmBArZvr/PyAyeWjjPLvOuZu80yvj79vSySaZQMZvhCMzGxovhdGTMJk7cd
-         OuEOQtmba6y7QMMvywX2P0uOuLPwVjPuBaAdFrY7/jumC/sQDXy5Z4asCuhPLezJnZeG
-         f2GA==
-X-Gm-Message-State: AJIora9mb+dQ86ZejRNh2YChpKesT4CZvwMUZjsfOPMWVNjePdmTKvwV
-        EselS6bAIvM/0R/oHL72T6Vurlar1cm8Q7IYevoOWCopNFI=
-X-Google-Smtp-Source: AGRyM1v9GRItLGO0NnGY3JtDJRItJWeaCsgUSGiyjHvuYIi2OIAx399f5fn1YueSY+InobD1Z531rCGN5BEZbEbufts=
-X-Received: by 2002:a05:6102:3d9e:b0:357:4526:ae58 with SMTP id
- h30-20020a0561023d9e00b003574526ae58mr7640346vsv.56.1657643312206; Tue, 12
- Jul 2022 09:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657643313; x=1689179313;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=I3mUL3/zAiCGwntN0HY2apn/gTgpJHWfc8dI+sFDedg=;
+  b=R9x9RD8Nb4XUanuPGaXyePTLej7vd/AVWXfJntPQjn5ffVqi4ihGYsJd
+   7KVC6rewtImA3K887tmy429c2DmkD6jfpWZJpVarVQvficOSQbLrgDMyM
+   L8cT/J9MCn/O1veuMj1z5mI864H/piBvJu8+ftdZarcUHLuDufjDnEoFd
+   tI82uRY54q1qlW3/pKAOz3uVNWD/aLPvuMoRYC/CmHNnCEM+qyB8IG1Nc
+   ywncALbGVD7a57fzc4j4z8XlrlsZVfK6FsR4asVP5FbqIZeMEimkJBOn5
+   /cVTf3fqNM36qoqqf5KrDBj84SG7Nvt46HvupGtCud/7Am6ObpqGnnr6/
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="104127836"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 09:28:03 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 12 Jul 2022 09:28:01 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 12 Jul 2022 09:27:54 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <broonie@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>
+CC:     <linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <Kavyasree.Kotagiri@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <tudor.ambarus@microchip.com>,
+        Sergiu Moga <sergiu.moga@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3] spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema
+Date:   Tue, 12 Jul 2022 19:25:55 +0300
+Message-ID: <20220712162554.148741-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220706174253.4175492-1-yury.norov@gmail.com>
-In-Reply-To: <20220706174253.4175492-1-yury.norov@gmail.com>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Tue, 12 Jul 2022 09:28:21 -0700
-Message-ID: <CAAH8bW-OcdzetthsBanbkObVQxF1J6CiyBBnab=VXd2wcj517Q@mail.gmail.com>
-Subject: Re: [PATCH v2 00/10] lib: cleanup bitmap-related headers
-To:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Howells <dhowells@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        NeilBrown <neilb@suse.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Russell King <linux@armlinux.org.uk>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        William Kucharski <william.kucharski@oracle.com>,
-        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 6, 2022 at 10:42 AM Yury Norov <yury.norov@gmail.com> wrote:
->
-> This series unifies declarations of bitmap-related functions and aligns
-> return types with values that actually returned. Also, it moves one-liner
-> wrappers around cpumask functions into headers, so that compiler has a
-> chance to optimize better.
->
-> With this series, GCC 11.2 for ARM64 with kernel v5.19-rc4:
-> add/remove: 15/7 grow/shrink: 461/164 up/down: 14844/-4580 (10264)
->
-> This +10K didn't surprise me because  modern compilers are more aggressive
-> in inlining, loop unrolling, and other techniques that increase size of
-> the image.
->
-> v1: https://lore.kernel.org/linux-mm/YsAzU3g2QpgmIGre@smile.fi.intel.com/T/
-> v2: - Align whitespaces in headers;
->     - Make bitmap_weight() unsigned long consistently;
->     - Pick 2 patches from Ingo's sched/headers series [1] that split
->       linux/gfp.h, and drop my similar patch for it.
+Convert SPI DT binding for Atmel/Microchip SoCs to json-schema.
 
-Ping?
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+
+v1 -> v2:
+- change subject headline prefix from "dt-bindings: spi" to "spi: atmel"
+- change maintainer
+- kept the compatbile as items (instead of switching to enums) and at91rm9200
+as fallback for sam9x60, since the evolution of IP's is incremental.
+- removed unnecessay "cs-gpios" property and descriptions
+- added min/max for fifo-size property.
+
+
+v2 -> v3:
+- change subject headline prefix from "spi: atmel" to
+"spi: dt-bindings: atmel,at91rm9200-spi: convert to json-schema"
+- use enum instead of a range for "atmel,fifo-size"
+
+
+ .../bindings/spi/atmel,at91rm9200-spi.yaml    | 76 +++++++++++++++++++
+ .../devicetree/bindings/spi/spi_atmel.txt     | 36 ---------
+ 2 files changed, 76 insertions(+), 36 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
+ delete mode 100644 Documentation/devicetree/bindings/spi/spi_atmel.txt
+
+diff --git a/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml b/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
+new file mode 100644
+index 000000000000..084897cc8f66
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spi/atmel,at91rm9200-spi.yaml
+@@ -0,0 +1,76 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spi/atmel,spi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel SPI device
++
++maintainers:
++  - Tudor Ambarus <tudor.ambarus@microchip.com>
++
++allOf:
++  - $ref: spi-controller.yaml#
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: atmel,at91rm9200-spi
++      - items:
++          - const: microchip,sam9x60-spi
++          - const: atmel,at91rm9200-spi
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clock-names:
++    contains:
++      const: spi_clk
++
++  clocks:
++    maxItems: 1
++
++  atmel,fifo-size:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      Maximum number of data the RX and TX FIFOs can store for FIFO
++      capable SPI controllers.
++  enum: [ 16, 32 ]
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clock-names
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi1: spi@fffcc000 {
++        compatible = "atmel,at91rm9200-spi";
++        reg = <0xfffcc000 0x4000>;
++        interrupts = <13 IRQ_TYPE_LEVEL_HIGH 5>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        clocks = <&spi1_clk>;
++        clock-names = "spi_clk";
++        cs-gpios = <&pioB 3 GPIO_ACTIVE_HIGH>;
++        atmel,fifo-size = <32>;
++
++        mmc@0 {
++            compatible = "mmc-spi-slot";
++            reg = <0>;
++            gpios = <&pioC 4 GPIO_ACTIVE_HIGH>;    /* CD */
++            spi-max-frequency = <25000000>;
++        };
++    };
+diff --git a/Documentation/devicetree/bindings/spi/spi_atmel.txt b/Documentation/devicetree/bindings/spi/spi_atmel.txt
+deleted file mode 100644
+index 5bb4a8f1df7a..000000000000
+--- a/Documentation/devicetree/bindings/spi/spi_atmel.txt
++++ /dev/null
+@@ -1,36 +0,0 @@
+-Atmel SPI device
+-
+-Required properties:
+-- compatible : should be "atmel,at91rm9200-spi" or "microchip,sam9x60-spi".
+-- reg: Address and length of the register set for the device
+-- interrupts: Should contain spi interrupt
+-- cs-gpios: chipselects (optional for SPI controller version >= 2 with the
+-  Chip Select Active After Transfer feature).
+-- clock-names: tuple listing input clock names.
+-	Required elements: "spi_clk"
+-- clocks: phandles to input clocks.
+-
+-Optional properties:
+-- atmel,fifo-size: maximum number of data the RX and TX FIFOs can store for FIFO
+-  capable SPI controllers.
+-
+-Example:
+-
+-spi1: spi@fffcc000 {
+-	compatible = "atmel,at91rm9200-spi";
+-	reg = <0xfffcc000 0x4000>;
+-	interrupts = <13 4 5>;
+-	#address-cells = <1>;
+-	#size-cells = <0>;
+-	clocks = <&spi1_clk>;
+-	clock-names = "spi_clk";
+-	cs-gpios = <&pioB 3 0>;
+-	atmel,fifo-size = <32>;
+-
+-	mmc-slot@0 {
+-		compatible = "mmc-spi-slot";
+-		reg = <0>;
+-		gpios = <&pioC 4 0>;	/* CD */
+-		spi-max-frequency = <25000000>;
+-	};
+-};
+-- 
+2.25.1
+
