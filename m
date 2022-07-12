@@ -2,141 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBFEC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:27:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65181CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230494AbiGLC1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 22:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
+        id S229667AbiGLC2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 22:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230457AbiGLC06 (ORCPT
+        with ESMTP id S229840AbiGLC2R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 22:26:58 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92BE78FD4A;
-        Mon, 11 Jul 2022 19:26:52 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=ziyangzhang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VJ6IXEP_1657592808;
-Received: from 30.97.56.235(mailfrom:ZiyangZhang@linux.alibaba.com fp:SMTPD_---0VJ6IXEP_1657592808)
+        Mon, 11 Jul 2022 22:28:17 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E05447E016
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:28:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJ6Ep2a_1657592890;
+Received: from localhost.localdomain(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0VJ6Ep2a_1657592890)
           by smtp.aliyun-inc.com;
-          Tue, 12 Jul 2022 10:26:49 +0800
-Message-ID: <1f021cc5-3cbe-a69d-7d50-8c758174d178@linux.alibaba.com>
-Date:   Tue, 12 Jul 2022 10:26:47 +0800
+          Tue, 12 Jul 2022 10:28:11 +0800
+From:   Rongwei Wang <rongwei.wang@linux.alibaba.com>
+To:     akpm@linux-foundation.org, vbabka@suse.cz, 42.hyeyoo@gmail.com,
+        roman.gushchin@linux.dev, iamjoonsoo.kim@lge.com,
+        rientjes@google.com, penberg@kernel.org, cl@gentwo.de
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 2/3] mm/slub: improve consistency of nr_slabs count
+Date:   Tue, 12 Jul 2022 10:28:06 +0800
+Message-Id: <20220712022807.44113-2-rongwei.wang@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
+References: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH V4 2/2] ublk_drv: add UBLK_IO_REFETCH_REQ for supporting
- to build as module
-Content-Language: en-US
-To:     Gabriel Krisman Bertazi <krisman@collabora.com>
-Cc:     Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
-References: <20220711022024.217163-1-ming.lei@redhat.com>
- <20220711022024.217163-3-ming.lei@redhat.com> <87lesze7o3.fsf@collabora.com>
-From:   Ziyang Zhang <ZiyangZhang@linux.alibaba.com>
-In-Reply-To: <87lesze7o3.fsf@collabora.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/12 04:06, Gabriel Krisman Bertazi wrote:
-> Ming Lei <ming.lei@redhat.com> writes:
-> 
->> Add UBLK_IO_REFETCH_REQ command to fetch the incoming io request in
->> ubq daemon context, so we can avoid to call task_work_add(), then
->> it is fine to build ublk driver as module.
->>
->> In this way, iops is affected a bit, but just by ~5% on ublk/null,
->> given io_uring provides pretty good batching issuing & completing.
->>
->> One thing to be careful is race between ->queue_rq() and handling
->> abort, which is avoided by quiescing queue when aborting queue.
->> Except for that, handling abort becomes much easier with
->> UBLK_IO_REFETCH_REQ since aborting handler is strictly exclusive with
->> anything done in ubq daemon kernel context.
-> 
-> Hi Ming,
-> 
-> FWIW, I'm not very fond this change.  It adds complexity to the kernel
-> driver and to the userspace server implementation, who now have to deal
-> with different interface semantics just because the driver was built-in
-> or built as a module.  I don't think the tristate support warrants such
-> complexity.  I was hoping we might get away with exporting that symbol
-> or adding a built-in ubd-specific wrapper that can be exported and
-> invokes task_work_add.
-> 
-> Either way, Alibaba seems to consider this feature useful, and if that
-> is the case, we can just not use it on our side.
+Currently, discard_slab() can change nr_slabs count
+without holding node's list_lock. This will lead some
+error messages print when scanning node's partial or
+full list, e.g. validate all slabs. Literally, it
+affects the consistency of nr_slabs count.
 
-Our app handles IOs itself with network(RPC) and internal memory pool
-so UBLK_IO_REFETCH_REQ
-(actually I think it is like NEED_GET_DATA in the earlist version :) )
-is helpful to us because we can assign data buffer address AFTER the app
-gets one IO requests(WRITE, with data size) and we avoid PRE-allocating buffers.
+Here, discard_slab() is abandoned, And dec_slabs_node()
+is called before releasing node's list_lock.
+dec_slabs_nodes() and free_slab() can be called separately
+to ensure consistency of nr_slabs count.
 
-Besides, adding UBLK_IO_REFETCH_REQ is helpful to build ublk driver as module
-It seems like kernel developers do not want a built-in driver. :)
+Signed-off-by: Rongwei Wang <rongwei.wang@linux.alibaba.com>
+---
+ mm/slub.c | 26 ++++++++++++++------------
+ 1 file changed, 14 insertions(+), 12 deletions(-)
 
-Maybe your app is different from ours(you may not need to handle IOs by yourelf).
+diff --git a/mm/slub.c b/mm/slub.c
+index e950d8df8380..587416e39292 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2065,12 +2065,6 @@ static void free_slab(struct kmem_cache *s, struct slab *slab)
+ 		__free_slab(s, slab);
+ }
+ 
+-static void discard_slab(struct kmem_cache *s, struct slab *slab)
+-{
+-	dec_slabs_node(s, slab_nid(slab), slab->objects);
+-	free_slab(s, slab);
+-}
+-
+ /*
+  * Management of partially allocated slabs.
+  */
+@@ -2439,6 +2433,7 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+ 
+ 	if (!new.inuse && n->nr_partial >= s->min_partial) {
+ 		mode = M_FREE;
++		spin_lock_irqsave(&n->list_lock, flags);
+ 	} else if (new.freelist) {
+ 		mode = M_PARTIAL;
+ 		/*
+@@ -2463,7 +2458,7 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+ 				old.freelist, old.counters,
+ 				new.freelist, new.counters,
+ 				"unfreezing slab")) {
+-		if (mode == M_PARTIAL || mode == M_FULL)
++		if (mode != M_FULL_NOLIST)
+ 			spin_unlock_irqrestore(&n->list_lock, flags);
+ 		goto redo;
+ 	}
+@@ -2475,7 +2470,10 @@ static void deactivate_slab(struct kmem_cache *s, struct slab *slab,
+ 		stat(s, tail);
+ 	} else if (mode == M_FREE) {
+ 		stat(s, DEACTIVATE_EMPTY);
+-		discard_slab(s, slab);
++		dec_slabs_node(s, slab_nid(slab), slab->objects);
++		spin_unlock_irqrestore(&n->list_lock, flags);
++
++		free_slab(s, slab);
+ 		stat(s, FREE_SLAB);
+ 	} else if (mode == M_FULL) {
+ 		add_full(s, n, slab);
+@@ -2528,6 +2526,7 @@ static void __unfreeze_partials(struct kmem_cache *s, struct slab *partial_slab)
+ 		if (unlikely(!new.inuse && n->nr_partial >= s->min_partial)) {
+ 			slab->next = slab_to_discard;
+ 			slab_to_discard = slab;
++			dec_slabs_node(s, slab_nid(slab), slab->objects);
+ 		} else {
+ 			add_partial(n, slab, DEACTIVATE_TO_TAIL);
+ 			stat(s, FREE_ADD_PARTIAL);
+@@ -2542,7 +2541,7 @@ static void __unfreeze_partials(struct kmem_cache *s, struct slab *partial_slab)
+ 		slab_to_discard = slab_to_discard->next;
+ 
+ 		stat(s, DEACTIVATE_EMPTY);
+-		discard_slab(s, slab);
++		free_slab(s, slab);
+ 		stat(s, FREE_SLAB);
+ 	}
+ }
+@@ -3443,9 +3442,10 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
+ 		remove_full(s, n, slab);
+ 	}
+ 
++	dec_slabs_node(s, slab_nid(slab), slab->objects);
+ 	spin_unlock_irqrestore(&n->list_lock, flags);
+ 	stat(s, FREE_SLAB);
+-	discard_slab(s, slab);
++	free_slab(s, slab);
+ }
+ 
+ /*
+@@ -4302,6 +4302,7 @@ static void free_partial(struct kmem_cache *s, struct kmem_cache_node *n)
+ 		if (!slab->inuse) {
+ 			remove_partial(n, slab);
+ 			list_add(&slab->slab_list, &discard);
++			dec_slabs_node(s, slab_nid(slab), slab->objects);
+ 		} else {
+ 			list_slab_objects(s, slab,
+ 			  "Objects remaining in %s on __kmem_cache_shutdown()");
+@@ -4310,7 +4311,7 @@ static void free_partial(struct kmem_cache *s, struct kmem_cache_node *n)
+ 	spin_unlock_irq(&n->list_lock);
+ 
+ 	list_for_each_entry_safe(slab, h, &discard, slab_list)
+-		discard_slab(s, slab);
++		free_slab(s, slab);
+ }
+ 
+ bool __kmem_cache_empty(struct kmem_cache *s)
+@@ -4640,6 +4641,7 @@ static int __kmem_cache_do_shrink(struct kmem_cache *s)
+ 			if (free == slab->objects) {
+ 				list_move(&slab->slab_list, &discard);
+ 				n->nr_partial--;
++				dec_slabs_node(s, slab_nid(slab), slab->objects);
+ 			} else if (free <= SHRINK_PROMOTE_MAX)
+ 				list_move(&slab->slab_list, promote + free - 1);
+ 		}
+@@ -4655,7 +4657,7 @@ static int __kmem_cache_do_shrink(struct kmem_cache *s)
+ 
+ 		/* Release empty slabs */
+ 		list_for_each_entry_safe(slab, t, &discard, slab_list)
+-			discard_slab(s, slab);
++			free_slab(s, slab);
+ 
+ 		if (slabs_node(s, node))
+ 			ret = 1;
+-- 
+2.27.0
 
-Thanks， 
-Ziyang Zhang
-
-
-> 
-> That said, the patch looks good to me, just a minor comment inline.
-> 
-> Thanks,
-> 
->> Signed-off-by: Ming Lei <ming.lei@redhat.com>
->> ---
->>  drivers/block/Kconfig         |   2 +-
->>  drivers/block/ublk_drv.c      | 121 ++++++++++++++++++++++++++--------
->>  include/uapi/linux/ublk_cmd.h |  17 +++++
->>  3 files changed, 113 insertions(+), 27 deletions(-)
->>
->> diff --git a/drivers/block/Kconfig b/drivers/block/Kconfig
->> index d218089cdbec..2ba77fd960c2 100644
->> --- a/drivers/block/Kconfig
->> +++ b/drivers/block/Kconfig
->> @@ -409,7 +409,7 @@ config BLK_DEV_RBD
->>  	  If unsure, say N.
->>  
->>  config BLK_DEV_UBLK
->> -	bool "Userspace block driver"
->> +	tristate "Userspace block driver"
->>  	select IO_URING
->>  	help
->>            io uring based userspace block driver.
->> diff --git a/drivers/block/ublk_drv.c b/drivers/block/ublk_drv.c
->> index 0076418e6fad..98482f8d1a77 100644
->> --- a/drivers/block/ublk_drv.c
->> +++ b/drivers/block/ublk_drv.c
->> @@ -92,6 +92,7 @@ struct ublk_queue {
->>  	int q_id;
->>  	int q_depth;
->>  
->> +	unsigned long flags;
->>  	struct task_struct	*ubq_daemon;
->>  	char *io_cmd_buf;
->>  
->> @@ -141,6 +142,15 @@ struct ublk_device {
->>  	struct work_struct	stop_work;
->>  };
->>  
->> +#define ublk_use_task_work(ubq)						\
->> +({                                                                      \
->> +	bool ret = false;						\
->> +	if (IS_BUILTIN(CONFIG_BLK_DEV_UBLK) &&                          \
->> +			!((ubq)->flags & UBLK_F_NEED_REFETCH))		\
->> +		ret = true;						\
->> +	ret;								\
->> +})
->> +
-> 
-> This should be an inline function, IMO.
-> 
-> 
