@@ -2,123 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F56C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B2DEC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 22:40:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233026AbiGLWf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 18:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47906 "EHLO
+        id S233602AbiGLWkR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 18:40:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229693AbiGLWf4 (ORCPT
+        with ESMTP id S232157AbiGLWkP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 18:35:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B4C4C3AF2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:35:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657665354;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OETO5+tmZb+tFwem9JGI1S5zgmLmT7/eQERlYvFc98w=;
-        b=gsldbmtjRWur6DXE8I7G3gKdqd1c7v4ww2uv5FaEfa+aFmN2OJwLv0O7c+EHJwTNUtHH44
-        jxLt+tnEnh64xs8QnDMZ3XWgkhn6I7CaVPPkIAPKJBpDytfggRQNbo47tYkkeuaUspbY5b
-        Ud7sX6+P+ncHIwunxQ9FkBYIQbOc1I4=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-PUBkNQMOOIqCyX8NikQNkg-1; Tue, 12 Jul 2022 18:35:53 -0400
-X-MC-Unique: PUBkNQMOOIqCyX8NikQNkg-1
-Received: by mail-qk1-f200.google.com with SMTP id bk16-20020a05620a1a1000b006b5b339157aso400501qkb.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 15:35:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OETO5+tmZb+tFwem9JGI1S5zgmLmT7/eQERlYvFc98w=;
-        b=4ts2TAQylkefzSeZS3Dbr2VCdJQ4vtFL7eP6mSlTpSxnptLmjF4e+pf661PY/2qIoM
-         dxLbukIWoLqmM+MFRSaIuSbFWXu64PyL76cmaM208+jVFXpm2+bUxJeeePBtr6DM9gSa
-         FdCLgLPgU/mQPklevqxrSaW5mzwVrvsOAFiocn6gJrf2xm73o2lmh349vblGrSxDpDFA
-         2+NFRZooNx8CyQR7LI9iwgmTLw85x/t+tMuquMW2nMmAaPhfh2hiJc3vdXjA2rcRKhVF
-         GN/BrdTsX5FTn9XuY/kzMyiOYx8KTOjADIOJsUUD4QcwBTzVpsC1Lg1CM/QQEzG0k8ri
-         IQlw==
-X-Gm-Message-State: AJIora+e8nylG9/rFll4H8DiwJVlRG2J7rcgCkKz6biqcf4RedKiCwrp
-        mArXTRwjzXXeNxP9LAUORGgze+ZT8M19KtCQ9e9BJNloGKP6WmWLGszzGWrrybjLxBDyDXuIbEh
-        xfYMBB2tH30Wp4LebXWYE288r
-X-Received: by 2002:ac8:5892:0:b0:31e:bc96:b262 with SMTP id t18-20020ac85892000000b0031ebc96b262mr235188qta.285.1657665352472;
-        Tue, 12 Jul 2022 15:35:52 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1smlOYFtZYL1XDGm2X8xRHSp0Ztii6UFQzBq/ilGtKJ8FDnGcOq3+rS+TJz2xUlNGGzxeRC/Q==
-X-Received: by 2002:ac8:5892:0:b0:31e:bc96:b262 with SMTP id t18-20020ac85892000000b0031ebc96b262mr235176qta.285.1657665352261;
-        Tue, 12 Jul 2022 15:35:52 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-37-74-12-30-48.dsl.bell.ca. [74.12.30.48])
-        by smtp.gmail.com with ESMTPSA id v8-20020ac873c8000000b00317ccf991a3sm8096681qtp.19.2022.07.12.15.35.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 15:35:51 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 18:35:50 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/4] KVM: x86/mmu: Shrink pte_list_desc size when KVM is
- using TDP
-Message-ID: <Ys33RtxeDz0egEM0@xz-m1.local>
-References: <20220624232735.3090056-1-seanjc@google.com>
- <20220624232735.3090056-4-seanjc@google.com>
+        Tue, 12 Jul 2022 18:40:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BFF4C8EBF;
+        Tue, 12 Jul 2022 15:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 266B36171A;
+        Tue, 12 Jul 2022 22:40:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7B7F4C3411E;
+        Tue, 12 Jul 2022 22:40:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657665613;
+        bh=kd/QSA21RebkuuWfF2r55X8nDkz5oUzRzXKtOYa6eh4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lGdNTVzfgZSIZlAzoLRBmXw/6OCsg/bE+2BxAtYZD3XXuedUS1oOrBFjAmE0IXHX8
+         n95F6QrcoAldL8H0R6/YeQGNdx0E4avislepoOQE3Sz8mamtz8YL66UQqf6oGAck1Q
+         TrSStLUau7ebG2rPBMQ3S1R/TnnHlfsOu9slba4XJc+zueDkF/iRYoZ10ZlahyO6aW
+         sXS7zbaPMSyJ4GK42fV2+J/7LjwEdMM/YfCqTiZQ6kLiShDO1EZqfl3cv2pkmAP5X2
+         Z+A+Wu8Vr8nCWwSHIXUHWVYtQfiCznp+8FcWMDSkEg4AVXtCS2J2ftMgHGb69CMCxP
+         iqCe9ZjB1Nl1w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4F636E45225;
+        Tue, 12 Jul 2022 22:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220624232735.3090056-4-seanjc@google.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v6 bpf-next 0/2] bpf: add a ksym BPF iterator
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165766561331.1577.12047199920533136622.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Jul 2022 22:40:13 +0000
+References: <1657629105-7812-1-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1657629105-7812-1-git-send-email-alan.maguire@oracle.com>
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     ast@kernel.org, andrii@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, haoluo@google.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, jolsa@kernel.org,
+        mhiramat@kernel.org, akpm@linux-foundation.org, void@manifault.com,
+        swboyd@chromium.org, ndesaulniers@google.com,
+        9erthalion6@gmail.com, kennyyu@fb.com, geliang.tang@suse.com,
+        kuniyu@amazon.co.jp, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 11:27:34PM +0000, Sean Christopherson wrote:
-> Dynamically size struct pte_list_desc's array of sptes based on whether
-> or not KVM is using TDP.  Commit dc1cff969101 ("KVM: X86: MMU: Tune
-> PTE_LIST_EXT to be bigger") bumped the number of entries in order to
-> improve performance when using shadow paging, but its analysis that the
-> larger size would not affect TDP was wrong.  Consuming pte_list_desc
-> objects for nested TDP is indeed rare, but _allocating_ objects is not,
-> as KVM allocates 40 objects for each per-vCPU cache.  Reducing the size
-> from 128 bytes to 32 bytes reduces that per-vCPU cost from 5120 bytes to
-> 1280, and also provides similar savings when eager page splitting for
-> nested MMUs kicks in.
-> 
-> The per-vCPU overhead could be further reduced by using a custom, smaller
-> capacity for the per-vCPU caches, but that's more of an "and" than
-> an "or" change, e.g. it wouldn't help the eager page split use case.
-> 
-> Set the list size to the bare minimum without completely defeating the
-> purpose of an array (and because pte_list_add() assumes the array is at
-> least two entries deep).  A larger size, e.g. 4, would reduce the number
-> of "allocations", but those "allocations" only become allocations in
-> truth if a single vCPU depletes its cache to where a topup is needed,
-> i.e. if a single vCPU "allocates" 30+ lists.  Conversely, those 2 extra
-> entries consume 16 bytes * 40 * nr_vcpus in the caches the instant nested
-> TDP is used.
-> 
-> In the unlikely event that performance of aliased gfns for nested TDP
-> really is (or becomes) a priority for oddball workloads, KVM could add a
-> knob to let the admin tune the array size for their environment.
-> 
-> Note, KVM also unnecessarily tops up the per-vCPU caches even when not
-> using rmaps; this can also be addressed separately.
+Hello:
 
-The only possible way of using pte_list_desc when tdp=1 is when the
-hypervisor tries to map the same host pages with different GPAs?
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
 
-And we don't really have a real use case of that, or.. do we?
+On Tue, 12 Jul 2022 13:31:43 +0100 you wrote:
+> a ksym BPF iterator would be useful as it would allow more flexible
+> interactions with kernel symbols than are currently supported; it could
+> for example create more efficient map representations for lookup,
+> speed up symbol resolution etc.
+> 
+> The idea was initially discussed here [1].
+> 
+> [...]
 
-Sorry to start with asking questions, it's just that if we know that
-pte_list_desc is probably not gonna be used then could we simply skip the
-cache layer as a whole?  IOW, we don't make the "array size of pte list
-desc" dynamic, instead we make the whole "pte list desc cache layer"
-dynamic.  Is it possible?
+Here is the summary with links:
+  - [v6,bpf-next,1/2] bpf: add a ksym BPF iterator
+    https://git.kernel.org/bpf/bpf-next/c/647cafa22349
+  - [v6,bpf-next,2/2] selftests/bpf: add a ksym iter subtest
+    https://git.kernel.org/bpf/bpf-next/c/a9d2fae89fa8
 
+You are awesome, thank you!
 -- 
-Peter Xu
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
