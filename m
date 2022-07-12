@@ -2,135 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA51C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DF1EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236052AbiGLTPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48396 "EHLO
+        id S231446AbiGLTP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:15:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236165AbiGLTOd (ORCPT
+        with ESMTP id S236175AbiGLTOd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 15:14:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C4EDAB9F;
-        Tue, 12 Jul 2022 11:54:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6267DB81BAB;
-        Tue, 12 Jul 2022 18:54:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B49C7C3411C;
-        Tue, 12 Jul 2022 18:54:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652057;
-        bh=afUNIL8EugqzhYqa1lgD+Lbf2agMvsyXkNXYavc+OXY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N4L9D/pxQbCTy4790c8XRJFJZM+TRQfwreilb8XHHSJuPZje6lokl6kOkwoJYzfEL
-         Q0ATODNYaRz8OzG6VaZSIHM2fJEzgUP30v4Z46Yz7D1FTQSQNGc/An6pQLAG7VuCkl
-         qUAXzWSOO0Q6+URUX/+6cV6qHWOnwmRFEyf8GnVM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75514D5140;
+        Tue, 12 Jul 2022 11:54:23 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id y9so8218340pff.12;
+        Tue, 12 Jul 2022 11:54:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K1IKCfZW89XQvo85Z8BhSh0884PYpNxI9KGLgL48HhU=;
+        b=mONWmWg9j5WWAGQnDhb6lMqqVC1nGf+CbhThgBUbRkwpwdhBTiHtddhsRDyShUVy6V
+         cMwn/8SH2HLSYs4td6iqqq4CHS9hciHjKY1El6t/DOl8ITfQ7bJnL/T3agcPf1nFdJ2i
+         dwVtLSeN6WoO7TztYLDuhVOUc5Kv/UL/LL1kNUZDWwMh+2/lz1vB411wsbUllsg8F26B
+         4iFi2ueShWaCXdokHRrD8EeOodNxBUOmUlWOKWE5ue+ilcpLKRuK4D5tK2Fyb6RK3KlA
+         T8b+H217RGCmpryowWSfEH8yYPeygWIrvKTcFvgCqPBGwqzV/a6OdKCdBCDnz5/XNisk
+         bKig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K1IKCfZW89XQvo85Z8BhSh0884PYpNxI9KGLgL48HhU=;
+        b=KuKS1IDN6grFWFJR1TP66NkjBLLk45qSH8jbrPrmKQyyScvex0HCySgQqOgtztwERy
+         OE5z0Z0Ll0sIVGUHnLP1xNf5HtXkvXPoMlh8G1fZqnfyFoj2Vrp9q5sv5rfdX+XfknEv
+         OzN8YdAR8U9Bck34xkw5hG+O43j5sRIksoaOALwb6o9E35rcQZIBlQ9x+cl+RVpHzS3c
+         uses1mm5yRdjFcsK8vBdVGeVfud2CuGc+vyyAe6Iib7jr+Q5VYScK4vYvej5KGw19tBt
+         e+qubg5G07L4DOvBcY6jgvr2FYcPtDrbhtdiZ6Z36+9DSZYBeXTw+ZSIRDqGer43PSbC
+         StCw==
+X-Gm-Message-State: AJIora/Olg4Vlc6IQFZmRdCiKmophuRGuUMbISC4JbjJvdywi4Mt3VGX
+        4/lrb/ZQjBuhhnHuT9Es1unvx8jHQM8=
+X-Google-Smtp-Source: AGRyM1tijtHmJAYOsuSQDbbEVFzF0OvZrIYUyBGfKAZp6IEQzl6/TAkU1kCiKsbOgqNXU+SB7aRHSQ==
+X-Received: by 2002:a63:104f:0:b0:40d:2293:f1d6 with SMTP id 15-20020a63104f000000b0040d2293f1d6mr21274190pgq.167.1657652062552;
+        Tue, 12 Jul 2022 11:54:22 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b8-20020a6567c8000000b0040de29f847asm6575539pgs.52.2022.07.12.11.54.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 11:54:22 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 45/61] x86/speculation: Remove x86_spec_ctrl_mask
-Date:   Tue, 12 Jul 2022 20:39:42 +0200
-Message-Id: <20220712183238.753910078@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
-References: <20220712183236.931648980@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     olivia@selenic.com, u.kleine-koenig@pengutronix.de,
+        paul.gortmaker@windriver.com, dwmw2@infradead.org,
+        herbert@gondor.apana.org.au, linux-crypto@vger.kernel.org,
+        gregkh@linuxfoundation.org, Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH] MAINTAINERS: Change mentions of mpm to olivia
+Date:   Tue, 12 Jul 2022 11:54:19 -0700
+Message-Id: <20220712185419.45487-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+Following this mercurial changeset:
+https://www.mercurial-scm.org/repo/hg-stable/rev/d4ba4d51f85f
 
-commit acac5e98ef8d638a411cfa2ee676c87e1973f126 upstream.
+update the MAINTAINERS entry to replace the now obsolete identity.
 
-This mask has been made redundant by kvm_spec_ctrl_test_value().  And it
-doesn't even work when MSR interception is disabled, as the guest can
-just write to SPEC_CTRL directly.
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- arch/x86/kernel/cpu/bugs.c |   31 +------------------------------
- 1 file changed, 1 insertion(+), 30 deletions(-)
+This was first submitted by Uwe:
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -86,12 +86,6 @@ u64 spec_ctrl_current(void)
- EXPORT_SYMBOL_GPL(spec_ctrl_current);
- 
- /*
-- * The vendor and possibly platform specific bits which can be modified in
-- * x86_spec_ctrl_base.
-- */
--static u64 __ro_after_init x86_spec_ctrl_mask = SPEC_CTRL_IBRS;
--
--/*
-  * AMD specific MSR info for Speculative Store Bypass control.
-  * x86_amd_ls_cfg_ssbd_mask is initialized in identify_boot_cpu().
-  */
-@@ -146,10 +140,6 @@ void __init check_bugs(void)
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
- 		rdmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
- 
--	/* Allow STIBP in MSR_SPEC_CTRL if supported */
--	if (boot_cpu_has(X86_FEATURE_STIBP))
--		x86_spec_ctrl_mask |= SPEC_CTRL_STIBP;
--
- 	/* Select the proper CPU mitigations before patching alternatives: */
- 	spectre_v1_select_mitigation();
- 	spectre_v2_select_mitigation();
-@@ -208,19 +198,10 @@ void __init check_bugs(void)
- void
- x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
- {
--	u64 msrval, guestval, hostval = spec_ctrl_current();
-+	u64 msrval, guestval = guest_spec_ctrl, hostval = spec_ctrl_current();
- 	struct thread_info *ti = current_thread_info();
- 
--	/* Is MSR_SPEC_CTRL implemented ? */
- 	if (static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL)) {
--		/*
--		 * Restrict guest_spec_ctrl to supported values. Clear the
--		 * modifiable bits in the host base value and or the
--		 * modifiable bits from the guest value.
--		 */
--		guestval = hostval & ~x86_spec_ctrl_mask;
--		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
--
- 		if (hostval != guestval) {
- 			msrval = setguest ? guestval : hostval;
- 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
-@@ -1659,16 +1640,6 @@ static enum ssb_mitigation __init __ssb_
- 	}
- 
- 	/*
--	 * If SSBD is controlled by the SPEC_CTRL MSR, then set the proper
--	 * bit in the mask to allow guests to use the mitigation even in the
--	 * case where the host does not enable it.
--	 */
--	if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
--	    static_cpu_has(X86_FEATURE_AMD_SSBD)) {
--		x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
--	}
--
--	/*
- 	 * We have three CPU feature flags that are in play here:
- 	 *  - X86_BUG_SPEC_STORE_BYPASS - CPU is susceptible.
- 	 *  - X86_FEATURE_SSBD - CPU is able to turn off speculative store bypass
+https://lore.kernel.org/lkml/20210920080635.253826-1-u.kleine-koenig@pengutronix.de/
 
+but the discussion derailed into whether the EMBEDDED LINUX entry ought
+to be there or not, meanwhile we still have a bouncing entry with an
+obsolete identify.
+
+ MAINTAINERS | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f679152bdbad..b1ce4b84f99f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7404,7 +7404,7 @@ F:	Documentation/admin-guide/media/em28xx*
+ F:	drivers/media/usb/em28xx/
+ 
+ EMBEDDED LINUX
+-M:	Matt Mackall <mpm@selenic.com>
++M:	Olivia Mackall <olivia@selenic.com>
+ M:	David Woodhouse <dwmw2@infradead.org>
+ L:	linux-embedded@vger.kernel.org
+ S:	Maintained
+@@ -8787,7 +8787,7 @@ F:	include/trace/events/hwmon*.h
+ K:	(devm_)?hwmon_device_(un)?register(|_with_groups|_with_info)
+ 
+ HARDWARE RANDOM NUMBER GENERATOR CORE
+-M:	Matt Mackall <mpm@selenic.com>
++M:	Olivia Mackall <olivia@selenic.com>
+ M:	Herbert Xu <herbert@gondor.apana.org.au>
+ L:	linux-crypto@vger.kernel.org
+ S:	Odd fixes
+-- 
+2.25.1
 
