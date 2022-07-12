@@ -2,87 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A93C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:14:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E0ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232265AbiGLHOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:14:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53730 "EHLO
+        id S232315AbiGLHOW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:14:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229529AbiGLHON (ORCPT
+        with ESMTP id S232303AbiGLHOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:14:13 -0400
-Received: from m12-15.163.com (m12-15.163.com [220.181.12.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E13E52E7E
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:14:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=bSYm9
-        C5OeuYbDhENBAdXq4HRvNSPczwQvj64WhMLeyk=; b=KB5xRyB0ILL9VqILcLd4a
-        S83vIxTAf0E3sDLh+IaFKKo9mFY/+zguQaYmpGa8ukqNu1zJ6iBn0SZUzUWirtFI
-        YOPnaQnz31qw+8WWU4+DTiL5vZ1KRhfduBZ7fTcYXBcj04mzReko0ehU+D5Ejw7G
-        XSo8sbf8UrMi8lwLxqseb8=
-Received: from localhost.localdomain (unknown [111.48.58.12])
-        by smtp11 (Coremail) with SMTP id D8CowAAHffomH81i5anSMQ--.64515S2;
-        Tue, 12 Jul 2022 15:13:44 +0800 (CST)
-From:   Jiangshan Yi <13667453960@163.com>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jiangshan Yi <yijiangshan@kylinos.cn>
-Subject: [PATCH] component: replace ternary operator with min()
-Date:   Tue, 12 Jul 2022 15:12:23 +0800
-Message-Id: <20220712071223.301160-1-13667453960@163.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 12 Jul 2022 03:14:19 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA7D643EE
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:14:16 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id s21so6836272pjq.4
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:14:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=heitbaum.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KMreW5eGuFVvOYr05yXN/MmRKeCw6m+Yo80wN8GeX2g=;
+        b=Y0NLuwIaUmmT9xp6Aj1li2W+gPligTJllQnBREwnfOaCF1octg2rwTpCoMUjN6rTua
+         s0efPXxeseIBb8WOW+mIlA35ns4qrzHL0GjhYLuNW/glGCOK1Xz7WrEx0ZX6gVe4dtL/
+         5cvBZEt4ywK5EODgHtrF9Nu/jq3oXwIAKrxMg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KMreW5eGuFVvOYr05yXN/MmRKeCw6m+Yo80wN8GeX2g=;
+        b=Y6YU8Ilsfxeb0BqRJQAiSUhqoLit+ltL/6y0g/3d6x58Eg3O+3AG8va6QWcfOIm/BS
+         8z5XRsQSab/w35IVw9a+eM/AqT/2SrSwrfBu9YESYfcgVQOhpEaB4BsdI9GJd7z3xmeB
+         HLkX3oBq6NUN9bu9yGJhgzBfq4yDcKlc38+7Iqrza04VeS32tbYBrxLooPWIRH/yVQ1E
+         YYqq7Qw1Qz8lW/ljlA0o0YcDBRh7pP5IDxtIkAmlkF9EUxYW9c8rTBQHUv77wi7tg4KQ
+         wf8YTDSvDmYiyA+wrgWUUKBB/rBj6cSxxCfE5LRJhOgw8CPHPWpr+WqJYJ4yOZZzqKSI
+         EPdQ==
+X-Gm-Message-State: AJIora+s8/2p0vLWKJ8sFADkSzwTmFvDoThrdTzFJi4omCC6UaxhRhbH
+        VovxQjdjMyc76GlmWO9loMgBhCSpvEYCKTPZC2o=
+X-Google-Smtp-Source: AGRyM1vQ0OIKy/h8usrtTKp3KzhRbevhNvjMlpSWVoEX/9ilPzC45+YahgzZ4+tgR3vzHRsZv2BN1w==
+X-Received: by 2002:a17:90a:6741:b0:1ef:7f62:6cd1 with SMTP id c1-20020a17090a674100b001ef7f626cd1mr2590182pjm.89.1657610056397;
+        Tue, 12 Jul 2022 00:14:16 -0700 (PDT)
+Received: from 84a0fe815f2e ([203.220.223.63])
+        by smtp.gmail.com with ESMTPSA id y22-20020a170902d65600b0016be8d6fc15sm5982822plh.104.2022.07.12.00.14.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 00:14:15 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 07:14:08 +0000
+From:   Rudi Heitbaum <rudi@heitbaum.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.18 000/112] 5.18.11-rc1 review
+Message-ID: <20220712071408.GA8@84a0fe815f2e>
+References: <20220711090549.543317027@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: D8CowAAHffomH81i5anSMQ--.64515S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKw4kXF4DJw4UAry8WFWrAFb_yoWkCFc_Cr
-        nruas7Cr1fCrWrZr12vwsIyryvqayj9F1jqFnagr1fG34UZan2gFykZryrt348Cr1Yg3Zr
-        Gr1qyry2yr4IkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnc_-DUUUUU==
-X-Originating-IP: [111.48.58.12]
-X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbizQg8+1c7NeZ7AgAAsE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220711090549.543317027@linuxfoundation.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiangshan Yi <yijiangshan@kylinos.cn>
+On Mon, Jul 11, 2022 at 11:06:00AM +0200, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.11 release.
+> There are 112 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 13 Jul 2022 09:05:28 +0000.
+> Anything received after that time might be too late.
 
-Fix the following coccicheck warning:
+Hi Greg,
 
-drivers/base/component.c:544: WARNING opportunity for min().
-drivers/base/component.c:740: WARNING opportunity for min().
+5.18.11-rc1 tested.
 
-min() macro is defined in include/linux/minmax.h. It avoids
-multiple evaluations of the arguments when non-constant and performs
-strict type-checking.
+Run tested on:
+- Allwinner H6 (Tanix TX6)
+- Intel Tiger Lake x86_64 (nuc11 i7-1165G7)
 
-Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
----
- drivers/base/component.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In addition - build tested for:
+- Allwinner A64
+- Allwinner H3
+- Allwinner H5
+- NXP iMX6
+- NXP iMX8
+- Qualcomm Dragonboard
+- Rockchip RK3288
+- Rockchip RK3328
+- Rockchip RK3399pro
+- Samsung Exynos
 
-diff --git a/drivers/base/component.c b/drivers/base/component.c
-index 5eadeac6c532..349c54694481 100644
---- a/drivers/base/component.c
-+++ b/drivers/base/component.c
-@@ -541,7 +541,7 @@ int component_master_add_with_match(struct device *parent,
- 
- 	mutex_unlock(&component_mutex);
- 
--	return ret < 0 ? ret : 0;
-+	return min(ret, 0);
- }
- EXPORT_SYMBOL_GPL(component_master_add_with_match);
- 
-@@ -737,7 +737,7 @@ static int __component_add(struct device *dev, const struct component_ops *ops,
- 	}
- 	mutex_unlock(&component_mutex);
- 
--	return ret < 0 ? ret : 0;
-+	return min(ret, 0);
- }
- 
- /**
--- 
-2.25.1
-
+Tested-by: Rudi Heitbaum <rudi@heitbaum.com>
+--
+Rudi
