@@ -2,97 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81D11C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9892FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233810AbiGLUDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
+        id S233851AbiGLUDp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230050AbiGLUDV (ORCPT
+        with ESMTP id S234052AbiGLUDl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:03:21 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19DB3E74B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:03:20 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:58916)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oBM6F-008snJ-KZ; Tue, 12 Jul 2022 14:03:15 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38716 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oBM6B-00EgHA-UL; Tue, 12 Jul 2022 14:03:14 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Keno Fischer <keno@juliacomputing.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mingo@kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Jann Horn <jannh@google.com>,
-        Kees Cook <keescook@chromium.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        "Robert O'Callahan" <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
-        Oleg Nesterov <oleg@redhat.com>
-References: <20220421150248.667412396@infradead.org>
-        <20220421150654.817117821@infradead.org>
-        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
-        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
-        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
-        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
-        <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>
-        <87edyvgs2s.fsf@email.froward.int.ebiederm.org>
-        <CABV8kRxQNPUzLaJ1tFF8H-E_iqCkz0+Ac5rPBurnmA3GcofMmQ@mail.gmail.com>
-Date:   Tue, 12 Jul 2022 15:03:04 -0500
-In-Reply-To: <CABV8kRxQNPUzLaJ1tFF8H-E_iqCkz0+Ac5rPBurnmA3GcofMmQ@mail.gmail.com>
-        (Keno Fischer's message of "Fri, 8 Jul 2022 19:22:01 -0400")
-Message-ID: <875yk22j5z.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 12 Jul 2022 16:03:41 -0400
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1892926C6
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 13:03:35 -0700 (PDT)
+Received: from localhost.localdomain (abxj14.neoplus.adsl.tpnet.pl [83.9.3.14])
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 625B53F62F;
+        Tue, 12 Jul 2022 22:03:32 +0200 (CEST)
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+To:     ~postmarketos/upstreaming@lists.sr.ht
+Cc:     martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: display/panel: Add Sony Tama TD4353 JDI display panel
+Date:   Tue, 12 Jul 2022 22:02:40 +0200
+Message-Id: <20220712200244.960018-1-konrad.dybcio@somainline.org>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oBM6B-00EgHA-UL;;;mid=<875yk22j5z.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+YkQubfrIv1qgyoUMDuaCP6iHCuoPdSL4=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 0/3] ptrace: Stop supporting SIGKILL for PTRACE_EVENT_EXIT
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Keno Fischer <keno@juliacomputing.com> writes:
+Add bindings for the display panel used on some Sony Xperia XZ2 and XZ2
+Compact smartphones.
 
-> Hi Eric,
->
-> On Fri, Jul 8, 2022 at 6:25 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> > Recently I had a conversation where it was pointed out to me that
->> > SIGKILL sent to a tracee stropped in PTRACE_EVENT_EXIT is quite
->> > difficult for a tracer to handle.
->> >
->>
->> RR folks any comments?
->>
->> Did I properly understand what Keno Fischer was asking for when we
->> talked in person?
->
-> Yes, this is indeed what I had in mind. I have not yet had the opportunity
-> to try out your patch series (sorry), but from visual inspection, it does indeed
-> do what I wanted, which is to make sure that a tracee stays in
-> PTRACE_EVENT_EXIT for the tracer to inspect, even if there is another
-> SIGKILL incoming simultaneously (since otherwise it may be impossible
-> for the tracer to observe the PTRACE_EVENT_EXIT if two SIGKILLs
-> come in rapid succession). I will try to take this series for a proper spin
-> shortly.
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+---
+ .../display/panel/sony,td4353-jdi.yaml        | 84 +++++++++++++++++++
+ 1 file changed, 84 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/display/panel/sony,td4353-jdi.yaml
 
-Thanks,
+diff --git a/Documentation/devicetree/bindings/display/panel/sony,td4353-jdi.yaml b/Documentation/devicetree/bindings/display/panel/sony,td4353-jdi.yaml
+new file mode 100644
+index 000000000000..d75abc72ad1b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/display/panel/sony,td4353-jdi.yaml
+@@ -0,0 +1,84 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/display/panel/sony,td4353-jdi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sony TD4353 JDI 5 / 5.7" 2160x1080 MIPI-DSI Panel
++
++maintainers:
++  - Konrad Dybcio <konrad.dybcio@somainline.org>
++
++description: |
++  The Sony TD4353 JDI is a 5 (XZ2c) / 5.7 (XZ2) inch 2160x1080
++  MIPI-DSI panel, used in Xperia XZ2 and XZ2 Compact smartphones.
++
++allOf:
++  - $ref: panel-common.yaml#
++
++properties:
++  compatible:
++    enum:
++      - sony,td4353-jdi-akari
++      - sony,td4353-jdi-apollo
++
++  reg: true
++
++  backlight: true
++
++  vddio-supply:
++    description: VDDIO 1.8V supply
++
++  vsp-supply:
++    description: Positive 5.5V supply
++
++  vsn-supply:
++    description: Negative 5.5V supply
++
++  preset-gpios:
++    description: Display panel reset pin
++
++  treset-gpios:
++    description: Touch panel reset pin
++
++  port: true
++
++required:
++  - compatible
++  - reg
++  - vddio-supply
++  - vsp-supply
++  - vsn-supply
++  - preset-gpios
++  - treset-gpios
++  - port
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    dsi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        panel: panel@0 {
++            compatible = "sony,td4353-jdi-akari";
++            reg = <0>;
++
++            backlight = <&pmi8998_wled>;
++            vddio-supply = <&vreg_l14a_1p8>;
++            vsp-supply = <&lab>;
++            vsn-supply = <&ibb>;
++            preset-gpios = <&tlmm 6 GPIO_ACTIVE_HIGH>;
++            treset-gpios = <&tlmm 99 GPIO_ACTIVE_HIGH>;
++
++            port {
++                    panel_in: endpoint {
++                            remote-endpoint = <&dsi0_out>;
++                    };
++            };
++        };
++    };
++...
+-- 
+2.37.0
 
-I haven't yet figured out how to get the rr test suite to run
-successfully.  Something about my test machine and lack of perf counters
-seems to be causing problems.  So if you can perform the testing on your
-side that would be fantastic.
-
-Eric
