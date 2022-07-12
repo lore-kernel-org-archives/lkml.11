@@ -2,58 +2,243 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D667C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 06:44:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A055C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 06:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbiGLGo2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 02:44:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58682 "EHLO
+        id S232050AbiGLGp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 02:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231184AbiGLGoX (ORCPT
+        with ESMTP id S229733AbiGLGp4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 02:44:23 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2CA37190;
-        Mon, 11 Jul 2022 23:44:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=swJefpXncEluK9yw4UzvA4sA1DCzOw/wXgNu2apBFQg=; b=yiO5Hr/u2nR7lagixpbqvT8rVc
-        Ay0EFIElSbZHWvZ3O/VQgB4/UoLDsPySlkZyYWz8nLXmlojBnhGbldHwYjcA/fPgzreE5eG9MuFHa
-        kpgMlolQWm5p+ybiN6wppJl+PHFSSmH5NPLpLkL+lvWDru3M8e3dY6JdDe47WZWcjZt2FNZqAgdoF
-        yiQh02YgZ9aSuc/HkY05SSx2rCXViPOYSCpSOT2NcUeNc5MvBgLNx0NJVx7shsjcNqjhv0UZd7h02
-        fBsz11CSDnZo+4dUDLnfY5CyPcWTzZ+LqIiLHKAGGdTuOhdQQyHwCSMp6YzoOaNORqfXOE7KCBrr4
-        e+s4noXQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oB9cr-0086KR-CV; Tue, 12 Jul 2022 06:44:05 +0000
-Date:   Mon, 11 Jul 2022 23:44:05 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Tianyu Lan <ltykernel@gmail.com>
-Cc:     corbet@lwn.net, hch@infradead.org, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, paulmck@kernel.org, bp@suse.de,
-        keescook@chromium.org, akpm@linux-foundation.org, pmladek@suse.com,
-        rdunlap@infradead.org, damien.lemoal@opensource.wdc.com,
-        michael.h.kelley@microsoft.com, kys@microsoft.com,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        iommu@lists.linux-foundation.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vkuznets@redhat.com,
-        wei.liu@kernel.org, parri.andrea@gmail.com,
-        thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
-        kirill.shutemov@intel.com, andi.kleen@intel.com,
-        Andi Kleen <ak@linux.intel.com>
-Subject: Re: [PATCH V4] swiotlb: Split up single swiotlb lock
-Message-ID: <Ys0YNdvNip5kB27V@infradead.org>
-References: <20220708161544.522312-1-ltykernel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708161544.522312-1-ltykernel@gmail.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+        Tue, 12 Jul 2022 02:45:56 -0400
+Received: from mailout3.rbg.tum.de (mailout3.rbg.tum.de [131.159.0.8])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2663DF1D;
+        Mon, 11 Jul 2022 23:45:54 -0700 (PDT)
+Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
+        by mailout3.rbg.tum.de (Postfix) with ESMTPS id 12757101223;
+        Tue, 12 Jul 2022 08:45:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
+        s=20220209; t=1657608353;
+        bh=L5z0BKhZwBpamcT5arrYS2KRI63KC15oA+S8b1j4SMg=;
+        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
+        b=QBRhqAxas4IG1fxQv/MvRjH/BMxY20t/HbGA7X8ZxqyB5ckEiF4mFvpSEW02mRhSz
+         otNcnC1HooIAjLRxhgEDv+6SVVrBel7RNtfyzN363OvgM7wgIJtAOoTY8MCrEjlRyr
+         mW1iTldHbMwsTY7g5OkmNyTeOZraRC+C/x0X0hT/nzCme1gv+UXMTKsb6l1YJM/Vh5
+         dINUDh4XF/8AaltlLQRmQuY+Uh+wlzOGqUAMJe05u4r4ancDtTtPH9UJzvG79b21KU
+         u1ZuxZjSbLNPcSvz0wZjQOCnUkNgBDK2dtZbUGbH9sDTi1679emMitvAj24fenB6PI
+         4JjSjTNEVIuCg==
+Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
+        id 0E5D1D6; Tue, 12 Jul 2022 08:45:53 +0200 (CEST)
+Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id DF028D2;
+        Tue, 12 Jul 2022 08:45:52 +0200 (CEST)
+Received: from mail.in.tum.de (vmrbg426.in.tum.de [131.159.0.73])
+        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id DAB1DCE;
+        Tue, 12 Jul 2022 08:45:52 +0200 (CEST)
+Received: by mail.in.tum.de (Postfix, from userid 112)
+        id D6B054A0226; Tue, 12 Jul 2022 08:45:52 +0200 (CEST)
+Received: (Authenticated sender: heidekrp)
+        by mail.in.tum.de (Postfix) with ESMTPSA id F37204A0033;
+        Tue, 12 Jul 2022 08:45:51 +0200 (CEST)
+        (Extended-Queue-bit xtech_ma@fff.in.tum.de)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH v2] tools/memory-model: Clarify LKMM's limitations in
+ litmus-tests.txt
+From:   =?utf-8?Q?Paul_Heidekr=C3=BCger?= <Paul.Heidekrueger@in.tum.de>
+In-Reply-To: <20220711163011.GN1790663@paulmck-ThinkPad-P17-Gen-1>
+Date:   Tue, 12 Jul 2022 08:45:51 +0200
+Cc:     Alan Stern <stern@rowland.harvard.edu>,
+        Marco Elver <elver@google.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Will Deacon <will@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        David Howells <dhowells@redhat.com>,
+        Jade Alglave <j.alglave@ucl.ac.uk>,
+        Luc Maranget <luc.maranget@inria.fr>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Daniel Lustig <dlustig@nvidia.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Charalampos Mainas <charalampos.mainas@gmail.com>,
+        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
+        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
+        Martin Fink <martin.fink@in.tum.de>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F9BC91E3-5B01-4BDE-B0C0-4A567473B1D2@in.tum.de>
+References: <Yqdb3CZ8bKtbWZ+z@rowland.harvard.edu>
+ <20220614154812.1870099-1-paul.heidekrueger@in.tum.de>
+ <CANpmjNOkXz=+221i70CWJexQWwfA_By3+7Cnimwgjmwn7RQdBg@mail.gmail.com>
+ <YshC8sJ4dZq3m2wy@rowland.harvard.edu>
+ <20220708184749.GW1790663@paulmck-ThinkPad-P17-Gen-1>
+ <EE1854E3-C33D-4A4E-AC31-4194A701052B@in.tum.de>
+ <20220711163011.GN1790663@paulmck-ThinkPad-P17-Gen-1>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks,
+Paul E. McKenney <paulmck@kernel.org> wrote:
 
-applied to the dma-mapping tree.
+> On Mon, Jul 11, 2022 at 05:14:55PM +0200, Paul Heidekr=C3=BCger wrote:
+>>> On 8. Jul 2022, at 20:47, Paul E. McKenney <paulmck@kernel.org> =
+wrote:
+>>>=20
+>>> On Fri, Jul 08, 2022 at 10:45:06AM -0400, Alan Stern wrote:
+>>>> On Fri, Jul 08, 2022 at 01:44:06PM +0200, Marco Elver wrote:
+>>>>> On Tue, 14 Jun 2022 at 17:49, Paul Heidekr=C3=BCger
+>>>>> <paul.heidekrueger@in.tum.de> wrote:
+>>>>>> As discussed, clarify LKMM not recognizing certain kinds of =
+orderings.
+>>>>>> In particular, highlight the fact that LKMM might deliberately =
+make
+>>>>>> weaker guarantees than compilers and architectures.
+>>>>>>=20
+>>>>>> Link: =
+https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/=
+#u
+>>>>>> Signed-off-by: Paul Heidekr=C3=BCger =
+<paul.heidekrueger@in.tum.de>
+>>>>>> Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
+>>>>>=20
+>>>>> Reviewed-by: Marco Elver <elver@google.com>
+>>>>>=20
+>>>>> However with the Co-developed-by, this is missing Alan's SOB.
+>>>>=20
+>>>> For the record:
+>>>>=20
+>>>> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+>>>>=20
+>>>> (Note that according to =
+Documentation/process/submitting-patches.rst,=20
+>>>> the submitting author's SOB is supposed to come last.)
+>>>=20
+>>> And this is what I ended up with. Please provide additional feedback
+>>> as needed, and in the meantime, thank you all!
+>>>=20
+>>> 							Thanx, Paul
+>>=20
+>> Looks great - my first commit in the Linux kernel!
+>=20
+> Congratulations!!! ;-)
+
+Thanks! Hopefully many more to come :-)
+
+> My commits for the upcoming merge window, which is probably 2-3 weeks
+> from now, are already set. So this is targeted at the merge window
+> after that, which is likely to be in late September or early October.
+>=20
+> So it is well on its way!
+
+Awesome!
+
+Many thanks,
+Paul
+
+> 							Thanx, Paul
+>=20
+>> Thanks everyone!
+>>=20
+>> Paul
+>>=20
+>>> =
+------------------------------------------------------------------------
+>>>=20
+>>> commit 3c7753e959706f39e1ee183ef8dcde3b4cfbb4c7
+>>> Author: Paul Heidekr=C3=BCger <paul.heidekrueger@in.tum.de>
+>>> Date: Tue Jun 14 15:48:11 2022 +0000
+>>>=20
+>>> tools/memory-model: Clarify LKMM's limitations in litmus-tests.txt
+>>>=20
+>>> As discussed, clarify LKMM not recognizing certain kinds of =
+orderings.
+>>> In particular, highlight the fact that LKMM might deliberately make
+>>> weaker guarantees than compilers and architectures.
+>>>=20
+>>> Link: =
+https://lore.kernel.org/all/YpoW1deb%2FQeeszO1@ethstick13.dse.in.tum.de/T/=
+#u
+>>> Co-developed-by: Alan Stern <stern@rowland.harvard.edu>
+>>> Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+>>> Signed-off-by: Paul Heidekr=C3=BCger <paul.heidekrueger@in.tum.de>
+>>> Reviewed-by: Marco Elver <elver@google.com>
+>>> Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+>>> Cc: Charalampos Mainas <charalampos.mainas@gmail.com>
+>>> Cc: Pramod Bhatotia <pramod.bhatotia@in.tum.de>
+>>> Cc: Soham Chakraborty <s.s.chakraborty@tudelft.nl>
+>>> Cc: Martin Fink <martin.fink@in.tum.de>
+>>> Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+>>>=20
+>>> diff --git a/tools/memory-model/Documentation/litmus-tests.txt =
+b/tools/memory-model/Documentation/litmus-tests.txt
+>>> index 8a9d5d2787f9e..cc355999815cb 100644
+>>> --- a/tools/memory-model/Documentation/litmus-tests.txt
+>>> +++ b/tools/memory-model/Documentation/litmus-tests.txt
+>>> @@ -946,22 +946,39 @@ Limitations of the Linux-kernel memory model =
+(LKMM) include:
+>>> 	carrying a dependency, then the compiler can break that =
+dependency
+>>> 	by substituting a constant of that value.
+>>>=20
+>>> -	Conversely, LKMM sometimes doesn't recognize that a particular
+>>> -	optimization is not allowed, and as a result, thinks that a
+>>> -	dependency is not present (because the optimization would break =
+it).
+>>> -	The memory model misses some pretty obvious control dependencies
+>>> -	because of this limitation. A simple example is:
+>>> +	Conversely, LKMM will sometimes overestimate the amount of
+>>> +	reordering compilers and CPUs can carry out, leading it to miss
+>>> +	some pretty obvious cases of ordering. A simple example is:
+>>>=20
+>>> 		r1 =3D READ_ONCE(x);
+>>> 		if (r1 =3D=3D 0)
+>>> 			smp_mb();
+>>> 		WRITE_ONCE(y, 1);
+>>>=20
+>>> -	There is a control dependency from the READ_ONCE to the =
+WRITE_ONCE,
+>>> -	even when r1 is nonzero, but LKMM doesn't realize this and =
+thinks
+>>> -	that the write may execute before the read if r1 !=3D 0. (Yes, =
+that
+>>> -	doesn't make sense if you think about it, but the memory model's
+>>> -	intelligence is limited.)
+>>> +	The WRITE_ONCE() does not depend on the READ_ONCE(), and as a
+>>> +	result, LKMM does not claim ordering. However, even though no
+>>> +	dependency is present, the WRITE_ONCE() will not be executed =
+before
+>>> +	the READ_ONCE(). There are two reasons for this:
+>>> +
+>>> + The presence of the smp_mb() in one of the branches
+>>> + prevents the compiler from moving the WRITE_ONCE()
+>>> + up before the "if" statement, since the compiler has
+>>> + to assume that r1 will sometimes be 0 (but see the
+>>> + comment below);
+>>> +
+>>> + CPUs do not execute stores before po-earlier conditional
+>>> + branches, even in cases where the store occurs after the
+>>> + two arms of the branch have recombined.
+>>> +
+>>> +	It is clear that it is not dangerous in the slightest for LKMM =
+to
+>>> +	make weaker guarantees than architectures. In fact, it is
+>>> +	desirable, as it gives compilers room for making optimizations.=20=
+
+>>> +	For instance, suppose that a 0 value in r1 would trigger =
+undefined
+>>> +	behavior elsewhere. Then a clever compiler might deduce that r1
+>>> +	can never be 0 in the if condition. As a result, said clever
+>>> +	compiler might deem it safe to optimize away the smp_mb(),
+>>> +	eliminating the branch and any ordering an architecture would
+>>> +	guarantee otherwise.
+>>>=20
+>>> 2.	Multiple access sizes for a single variable are not supported,
+>>> 	and neither are misaligned or partially overlapping accesses.
+
+
