@@ -2,103 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 646AECCA47C
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C23EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:46:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbiGLLma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
+        id S232240AbiGLLqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232760AbiGLLmO (ORCPT
+        with ESMTP id S231961AbiGLLqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:42:14 -0400
-Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01B92B1950;
-        Tue, 12 Jul 2022 04:42:12 -0700 (PDT)
-Received: by fieldses.org (Postfix, from userid 2815)
-        id 7D98661D1; Tue, 12 Jul 2022 07:42:11 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org 7D98661D1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
-        s=default; t=1657626131;
-        bh=0Y9FMfwftkPOnmB93rdMLCL6Et7+YdNAuaMYJwinhvA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kBm59xFl775N5od/lv83C+mUJaaeT9KS7HdBL/ooWznKjnmJQ8EfQXjaYNk3j6blM
-         rvrUupSNZfR7AW6vsOUTGB96kAB/F+rjQkOqX3+yBOh3X+7JTqhkRB07VIuJMNPiN5
-         /WiWjT+lmG1GlMABqVdM0BS1K5gdtO6rH5qdECSc=
-Date:   Tue, 12 Jul 2022 07:42:11 -0400
-From:   Bruce Fields <bfields@fieldses.org>
-To:     Igor Mammedov <imammedo@redhat.com>
-Cc:     Jeff Layton <jlayton@redhat.com>,
-        Chuck Lever III <chuck.lever@oracle.com>,
-        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
-        Ondrej Valousek <ondrej.valousek.xm@renesas.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [GIT PULL] nfsd changes for 5.18
-Message-ID: <20220712114211.GA29976@fieldses.org>
-References: <EF97E1F5-B70F-4F9F-AC6D-7B48336AE3E5@oracle.com>
- <20220710124344.36dfd857@redhat.com>
- <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
- <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
- <20220711181941.GC14184@fieldses.org>
- <20220712102746.5404e88a@redhat.com>
+        Tue, 12 Jul 2022 07:46:39 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D58B1CD9;
+        Tue, 12 Jul 2022 04:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1657626396;
+        bh=4DGf9fAelIjMIL4cUJBkvt2Bi+U2qT/l8y6i/0sSxCc=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=bSsxshPVadp1rVWgMuIivI/DsctDGVeCFlgX3X4lk66FpK/ULERrFUue06IgXtBn2
+         v7WcOMILMsQGWuH2hAESp3KgybaqEznoVHe3QSYCbSp1DKoc9NOcKm8G/gUB9X0kHn
+         EQ+yacEcLivaRRLMHMvTcolHduFQHyc7cC/xKr/w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.68]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N1fmq-1nR8321qH2-011xma; Tue, 12
+ Jul 2022 13:46:36 +0200
+Message-ID: <b758ebfd-f153-c0e6-14f9-d66c760b2e11@gmx.de>
+Date:   Tue, 12 Jul 2022 13:46:35 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712102746.5404e88a@redhat.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.18 000/112] 5.18.11-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:E7ZaxQ+z/MCf46JzgJ2cLP1+KrC+xzzihykRni5jmO6x6CD/TEL
+ iHMXDAbvSjO08ie14o25H9PE37Y2bsYiLtJ9VSxr3uWjTTwTJVwe00dDDhf3GSBFYWYNwOm
+ MrEB6sHLKmLPL1VctC9MBRGDhfrwaPMK4L7vthG6+VZvPKTg3JMVbbCkwVQQG4XzUAjxoMH
+ DVG6OJcMlxWTEpu7fotlQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:p0PcumnsIYU=:UOQhRZmG7GodKjmzBDyNVA
+ J9YORX0U2vR557HI7tqjsL0jEEjb2KGKuIL7HdW4dDwIdNB/Sso0JGmlabwse8NZtjfFje3U3
+ A5Yw81hwGTnfZKoyjQYJlzwzjJHqASFtsFYh+X8PyugjeaWw7Zh+R8Nyw8wXx5Kt7s/UEGDou
+ z/MY5hDnD8MAkEcHIhG6DLqVGOzL0LH4f5vzUSguZD4dCVcF6oYMHhX77uE6rDZUfkIFxjHq4
+ L2Un6uP+4ETenxeKJ1x1quCWvEkAfXWFHjevzmoMF74FXem6wryy8nqJwnYlfLCydlB5tI2WK
+ 8Pxe+JE0ani4cD+LLRm8TbdpcdA6aa2Wei2c6l4YQibIvfKjcSCvFJ9plo4B3lCEt7zs72dqn
+ r2ItjOw9q4Y3HDDIorCTJ7GDwU+644rtHdgmTmSPEqzbsPkqnw314orVfa47+PYil90L8xRQ6
+ wXYIkz9JCVy+d4CTDuj3hMOB3pXwoDxIfQX5DZ6B27zkblKLTa9LBIEE9MpI8/h+jDvGMt/y9
+ QM6eBtNS31vo109kB51FeQSuTgcOseL56u4TpFnzMAb80czPOP73JcHvIOAfb+cnECcom0YEU
+ b5HgYHevvByItDjozzwnZFe1QklHq21W3U0X2/QkN/wFDprZKxGBCwQsIm01Fih6nInrDd6EH
+ yPdDXxyw/2BHheP6GWyxhj0ya7bSvIkB6Mjk6ms33wanzUeki7l24lzsyOS1Das2Je/RZa7mx
+ N0xO5kTZBgqbvT74iysngKMuBBJ9mOvICDVQ57uZc0ccVEEfVjc3qCbZ0E/GtsGsMaVeRNaSK
+ K2IKiarqM2/dGqD0H/DgOPC/YRYjfwgVIskzDiqq5jUDElhJbXhE9wzcZNOgPDLfUNAQqTGUw
+ Lt0jhXq3qk5FY+e9XzubMU+zOE8EXNJEyVhpLK7OZKSa4yz10Yi46DMqaJXM/baeEKZckXWZn
+ 6XDPjtBkCUTYBKfeMHW5WGA9w48PDphpvafp+eHaD2zF8MuGDW2RLjabuiviPud7tMFG+IALP
+ baSEsrbmdyzC0chTmqgUUPGU7TYoSKbzLO72wcGMlZAacQNJN0z104iKQvp2pnvAHKpAlmUeT
+ GxLkHq9muf07TWcvHSfWAvbMWjl+vxw1FMd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 10:27:46AM +0200, Igor Mammedov wrote:
-> On Mon, 11 Jul 2022 14:19:41 -0400
-> Bruce Fields <bfields@fieldses.org> wrote:
-> 
-> > On Mon, Jul 11, 2022 at 06:33:04AM -0400, Jeff Layton wrote:
-> > > On Sun, 2022-07-10 at 16:42 +0000, Chuck Lever III wrote:  
-> > > > > This patch regressed clients that support TIME_CREATE attribute.
-> > > > > Starting with this patch client might think that server supports
-> > > > > TIME_CREATE and start sending this attribute in its requests.  
-> > > > 
-> > > > Indeed, e377a3e698fb ("nfsd: Add support for the birth time
-> > > > attribute") does not include a change to nfsd4_decode_fattr4()
-> > > > that decodes the birth time attribute.
-> > > > 
-> > > > I don't immediately see another storage protocol stack in our
-> > > > kernel that supports a client setting the birth time, so NFSD
-> > > > might have to ignore the client-provided value.
-> > > >   
-> > > 
-> > > Cephfs allows this. My thinking at the time that I implemented it was
-> > > that it should be settable for backup purposes, but this was possibly a
-> > > mistake. On most filesystems, the btime seems to be equivalent to inode
-> > > creation time and is read-only.  
-> > 
-> > So supporting it as read-only seems reasonable.
-> > 
-> > Clearly, failing to decode the setattr attempt isn't the right way to do
-> > that.  I'm not sure what exactly it should be doing--some kind of
-> > permission error on any setattr containing TIME_CREATE?
-> 
-> erroring out on TIME_CREATE will break client that try to
-> set this attribute (legitimately). That's what by chance 
-> happening with current master (return error when TIME_CREATE
-> is present).
+hallo Greg
 
-Hang on, now--our current server completely fails to decode any RPC
-including a SETATTR that attempts to set TIME_CREATE, which means it
-isn't able to return a useful error or tell the client which attribute
-was the problem.
+5.18.11-rc1
 
-It's not too surprising that that would cause a problem for a client.
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
 
-But failures to set supported attributes are completely normal, and if
-mounts are failing completely because of that, something is really very
-wrong with the client.
+Thanks
 
-Could you first retest with a server that's patched to at least decode
-the attribute correctly?  I suspect that may be enough.  If not, then
-the client in question has a more interesting problem on its hands.
+Tested-by: rwarsow@gmx.de
 
---b.
