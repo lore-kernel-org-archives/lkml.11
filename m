@@ -2,195 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB408C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62AA7CCA47C
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:15:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbiGLMOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:14:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
+        id S233090AbiGLMPQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:15:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiGLMON (ORCPT
+        with ESMTP id S231902AbiGLMPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:14:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 80BF045059
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:14:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657628051;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WAxGI00yNn9GNFeh9dlU/4akmeOA8R+tofyDowtvI5A=;
-        b=dbNwqZpZrFlT1bP01S+mzLK5MbEs5D9UP64vjQaPVXzd8+3Fbn4w/dNSyN7NWavMWG2equ
-        t8r2VRhynq0Nq/B+XaRfTRrdXNC8T71MMmHC6vkmqwsDQxl+a+g16fkPXriCchaPlpz46e
-        4AA/OYb8cphUOzw9aWMOhi6R5X1KGWI=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-529-SAap4GI_M9uSoNJxwLwYHQ-1; Tue, 12 Jul 2022 08:14:10 -0400
-X-MC-Unique: SAap4GI_M9uSoNJxwLwYHQ-1
-Received: by mail-wm1-f71.google.com with SMTP id p21-20020a05600c1d9500b003a2d6c2b643so635957wms.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:14:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=WAxGI00yNn9GNFeh9dlU/4akmeOA8R+tofyDowtvI5A=;
-        b=Yco1UC+ew8Muj8VFCOcOOaJx8Tl35YEi6vk8t24VClEE8rnn974k0KNNxl0WEaEYMn
-         vHDQzWabAylEKi2ncVegcgH7gjAhX71RKc3JO4PpiHZT84r0uH7Kf93quQ/vjX9lbJgX
-         tMfuYMjUoxs+lBM2SSmoNQb+/QiVHsZZj6RpHIFBEWNvGLX75v+zrIz0dNb4sUGIILqR
-         PPsFEozXLeBxalxkkiO/TWq6LOeQhyhuBaDAE7azqR5+leDP3b9tHsIO+MPS3YgCqWnq
-         uvRQ0OuRzObvXbpfm4rgRfg2q5nV4D3eIROGEoQpRz9Wx1AwJ5Bp3J0VP0Fa9oBolkR1
-         4U7g==
-X-Gm-Message-State: AJIora84OZ3iE3TKEWDHjvK9TxIGVCgYBAMtsU0eJ71WWQ9o3RGjEeWa
-        GDXzshuUQDd9uiKvUG2uFsNPA3R8Rbjwd8veyoXzNYYXWbWek62XCUQefe42u06st39OQ/KZQ3u
-        cDFg7i2N/t3x19uoDk6NBaYe+
-X-Received: by 2002:a05:600c:a02:b0:39c:97cc:82e3 with SMTP id z2-20020a05600c0a0200b0039c97cc82e3mr3631774wmp.97.1657628049102;
-        Tue, 12 Jul 2022 05:14:09 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vJr7AKZGM9mihE37deXYF43Gq0ysHz0r6eaHk1Fd0fSvJKJonKBW6zwaLCeWi3o7tRipBdtg==
-X-Received: by 2002:a05:600c:a02:b0:39c:97cc:82e3 with SMTP id z2-20020a05600c0a0200b0039c97cc82e3mr3631744wmp.97.1657628048818;
-        Tue, 12 Jul 2022 05:14:08 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id bg32-20020a05600c3ca000b003a04d19dab3sm2256602wmb.3.2022.07.12.05.14.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 05:14:07 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>, kvm@vger.kernel.org
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH v3 11/25] KVM: VMX: Get rid of eVMCS specific VMX
- controls sanitization
-In-Reply-To: <f1d030d7db4aaf3075fe625799b99ae335fc9f60.camel@redhat.com>
-References: <20220708144223.610080-1-vkuznets@redhat.com>
- <20220708144223.610080-12-vkuznets@redhat.com>
- <f1d030d7db4aaf3075fe625799b99ae335fc9f60.camel@redhat.com>
-Date:   Tue, 12 Jul 2022 14:14:06 +0200
-Message-ID: <877d4iplyp.fsf@redhat.com>
+        Tue, 12 Jul 2022 08:15:13 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EC6A645056;
+        Tue, 12 Jul 2022 05:15:09 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id ECC98BC0;
+        Tue, 12 Jul 2022 15:17:01 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com ECC98BC0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1657628222;
+        bh=BveNLPY/YG4fFAd5N/AaPUO76c/YnxfM372ERsi7TmM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=S/UvqGHLTjAgh/hCwra5uJoir16ytBU7ZCQylF9DFOIQprsFP9B88V4s3KKqRi+OC
+         m/YpdyQWh8eqwatnYIGS7W/fLZnSLaPZ29AcK2kf/4njTcTuFFy+DhuDKgq0v8dMdB
+         98MAvS0Z8OXybDyDirizopQq7A5Pw7VI8HPTjwPk=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 12 Jul 2022 15:15:07 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        Marek Vasut <marek.vasut@gmail.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH v8 1/7] clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
+Date:   Tue, 12 Jul 2022 15:14:59 +0300
+Message-ID: <20220712121505.5671-2-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Maxim Levitsky <mlevitsk@redhat.com> writes:
+We have discovered random glitches during the system boot up procedure.
+The problem investigation led us to the weird outcomes: when none of the
+Renesas 5P49V6901 ports are explicitly enabled by the kernel driver, the
+glitches disappeared. It was a mystery since the SoC external clock
+domains were fed with different 5P49V6901 outputs. The driver code didn't
+seem like bogus either. We almost despaired to find out a root cause when
+the solution has been found for a more modern revision of the chip. It
+turned out the 5P49V6901 clock generator stopped its output for a short
+period of time during the VC5_OUT_DIV_CONTROL register writing. The same
+problem was found for the 5P49V6965 revision of the chip and was
+successfully fixed in commit fc336ae622df ("clk: vc5: fix output disabling
+when enabling a FOD") by enabling the "bypass_sync" flag hidden inside
+"Unused Factory Reserved Register". Even though the 5P49V6901 registers
+description and programming guide doesn't provide any intel regarding that
+flag, setting it up anyway in the officially unused register completely
+eliminated the denoted glitches. Thus let's activate the functionality
+submitted in commit fc336ae622df ("clk: vc5: fix output disabling when
+enabling a FOD") for the Renesas 5P49V6901 chip too in order to remove the
+ports implicit inter-dependency.
 
-> On Fri, 2022-07-08 at 16:42 +0200, Vitaly Kuznetsov wrote:
->> With the updated eVMCSv1 definition, there's no known 'problematic'
->> controls which are exposed in VMX control MSRs but are not present in
->> eVMCSv1. Get rid of VMX control MSRs filtering for KVM on Hyper-V.
->
-> If I understand correctly we are taking about running KVM as a nested gue=
-st of Hyper-V here:
->
-> Don't we need to check the new CPUID bit and only then use the new fields=
- of eVMCS,
-> aka check that the 'cpu' supports the updated eVMCS version?
->
+Fixes: dbf6b16f5683 ("clk: vc5: Add support for IDT VersaClock 5P49V6901")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Luca Ceresoli <luca@lucaceresoli.net>
 
-I've checked various Hyper-V versions available around and it seems
-there's no need for that: these new features are exposed in VMX control
-MSRs only when the updated eVMCS is supported.
+---
 
-We can, in theory, preserve the filtering for non-updated eVMCS verison
-but I'd vote for putting a WARN_ON() or something around: we can
-eventually get rid of it in case we don't get any reports.
+Changelog v4:
+- This is a new patch added on v4 lap of the series.
 
-> Best regards,
-> 	Maxim Levitsky
->
->
->
->>=20
->> Note: VMX control MSRs filtering for Hyper-V on KVM
->> (nested_evmcs_filter_control_msr()) stays as even the updated eVMCSv1
->> definition doesn't have all the features implemented by KVM and some
->> fields are still missing. Moreover, nested_evmcs_filter_control_msr()
->> has to support the original eVMCSv1 version when VMM wishes so.
->>=20
->> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
->> ---
->> =C2=A0arch/x86/kvm/vmx/evmcs.c | 13 -------------
->> =C2=A0arch/x86/kvm/vmx/evmcs.h |=C2=A0 1 -
->> =C2=A0arch/x86/kvm/vmx/vmx.c=C2=A0=C2=A0 |=C2=A0 5 -----
->> =C2=A03 files changed, 19 deletions(-)
->>=20
->> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
->> index 52a53debd806..b5cfbf7d487b 100644
->> --- a/arch/x86/kvm/vmx/evmcs.c
->> +++ b/arch/x86/kvm/vmx/evmcs.c
->> @@ -320,19 +320,6 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] =
-=3D {
->> =C2=A0};
->> =C2=A0const unsigned int nr_evmcs_1_fields =3D ARRAY_SIZE(vmcs_field_to_=
-evmcs_1);
->> =C2=A0
->> -#if IS_ENABLED(CONFIG_HYPERV)
->> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
->> -{
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->cpu_based_exec_ctr=
-l &=3D ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->pin_based_exec_ctr=
-l &=3D ~EVMCS1_UNSUPPORTED_PINCTRL;
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->cpu_based_2nd_exec=
-_ctrl &=3D ~EVMCS1_UNSUPPORTED_2NDEXEC;
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->cpu_based_3rd_exec=
-_ctrl =3D 0;
->> -
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->vmexit_ctrl &=3D ~=
-EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->vmentry_ctrl &=3D =
-~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
->> -}
->> -#endif
->> -
->> =C2=A0bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_=
-gpa)
->> =C2=A0{
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct hv_vp_assist_page=
- assist_page;
->> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
->> index 4b809c79ae63..0feac101cce4 100644
->> --- a/arch/x86/kvm/vmx/evmcs.h
->> +++ b/arch/x86/kvm/vmx/evmcs.h
->> @@ -203,7 +203,6 @@ static inline void evmcs_load(u64 phys_addr)
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vp_ap->enlighten_vmentry=
- =3D 1;
->> =C2=A0}
->> =C2=A0
->> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
->> =C2=A0#else /* !IS_ENABLED(CONFIG_HYPERV) */
->> =C2=A0static __always_inline void evmcs_write64(unsigned long field, u64=
- value) {}
->> =C2=A0static inline void evmcs_write32(unsigned long field, u32 value) {}
->> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
->> index b4915d841357..dd905ad72637 100644
->> --- a/arch/x86/kvm/vmx/vmx.c
->> +++ b/arch/x86/kvm/vmx/vmx.c
->> @@ -2689,11 +2689,6 @@ static __init int setup_vmcs_config(struct vmcs_c=
-onfig *vmcs_conf,
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->vmexit_ctrl=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D _vmexit_control;
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0vmcs_conf->vmentry_ctrl=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =3D _vmentry_control;
->> =C2=A0
->> -#if IS_ENABLED(CONFIG_HYPERV)
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (enlightened_vmcs)
->> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0evmcs_sanitize_exec_ctrls(vmcs_conf);
->> -#endif
->> -
->> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
->> =C2=A0}
->> =C2=A0
->
->
+Changelog v5:
+- Fix some grammar mistakes in the commit log. (@Sergey Shtylyov)
+---
+ drivers/clk/clk-versaclock5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
-Vitaly
+diff --git a/drivers/clk/clk-versaclock5.c b/drivers/clk/clk-versaclock5.c
+index e7be3e54b9be..03cfef494b49 100644
+--- a/drivers/clk/clk-versaclock5.c
++++ b/drivers/clk/clk-versaclock5.c
+@@ -1204,7 +1204,7 @@ static const struct vc5_chip_info idt_5p49v6901_info = {
+ 	.model = IDT_VC6_5P49V6901,
+ 	.clk_fod_cnt = 4,
+ 	.clk_out_cnt = 5,
+-	.flags = VC5_HAS_PFD_FREQ_DBL,
++	.flags = VC5_HAS_PFD_FREQ_DBL | VC5_HAS_BYPASS_SYNC_BIT,
+ };
+ 
+ static const struct vc5_chip_info idt_5p49v6965_info = {
+-- 
+2.35.1
 
