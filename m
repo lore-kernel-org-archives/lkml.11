@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE51CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:00:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F39CCA483
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233526AbiGLSAI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:00:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        id S233570AbiGLSAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233456AbiGLSAG (ORCPT
+        with ESMTP id S232488AbiGLSAG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 14:00:06 -0400
 Received: from smtp.uniroma2.it (smtp.uniroma2.it [160.80.6.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5965B93C2;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A799BB93C1;
         Tue, 12 Jul 2022 11:00:01 -0700 (PDT)
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 26CHxCBu005871
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 26CHxCBt005871
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
         Tue, 12 Jul 2022 19:59:14 +0200
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
@@ -42,9 +42,9 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Anton Makarov <anton.makarov11235@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [net 3/3] seg6: bpf: fix skb checksum in bpf_push_seg6_encap()
-Date:   Tue, 12 Jul 2022 19:58:37 +0200
-Message-Id: <20220712175837.16267-4-andrea.mayer@uniroma2.it>
+Subject: [net 2/3] seg6: fix skb checksum in SRv6 End.B6 and End.B6.Encaps behaviors
+Date:   Tue, 12 Jul 2022 19:58:36 +0200
+Message-Id: <20220712175837.16267-3-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220712175837.16267-1-andrea.mayer@uniroma2.it>
 References: <20220712175837.16267-1-andrea.mayer@uniroma2.it>
@@ -56,36 +56,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both helper functions bpf_lwt_seg6_action() and bpf_lwt_push_encap() use
-the bpf_push_seg6_encap() to encapsulate the packet in an IPv6 with Segment
-Routing Header (SRH) or insert an SRH between the IPv6 header and the
-payload.
-To achieve this result, such helper functions rely on bpf_push_seg6_encap()
-which, in turn, leverages seg6_do_srh_{encap,inline}() to perform the
-required operation (i.e. encap/inline).
+The SRv6 End.B6 and End.B6.Encaps behaviors rely on functions
+seg6_do_srh_{encap,inline}() to, respectively: i) encapsulate the
+packet within an outer IPv6 header with the specified Segment Routing
+Header (SRH); ii) insert the specified SRH directly after the IPv6
+header of the packet.
 
 This patch removes the initialization of the IPv6 header payload length
-from bpf_push_seg6_encap(), as it is now handled properly by
-seg6_do_srh_{encap,inline}() to prevent corruption of the skb checksum.
+from the input_action_end_b6{_encap}() functions, as it is now handled
+properly by seg6_do_srh_{encap,inline}() to avoid corruption of the skb
+checksum.
 
-Fixes: fe94cc290f53 ("bpf: Add IPv6 Segment Routing helpers")
+Fixes: 140f04c33bbc ("ipv6: sr: implement several seg6local actions")
 Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
 ---
- net/core/filter.c | 1 -
- 1 file changed, 1 deletion(-)
+ net/ipv6/seg6_local.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 4ef77ec5255e..59aada9c4e19 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6204,7 +6204,6 @@ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 98a34287439c..2cd4a8d3b30a 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -826,7 +826,6 @@ static int input_action_end_b6(struct sk_buff *skb, struct seg6_local_lwt *slwt)
  	if (err)
- 		return err;
+ 		goto drop;
  
 -	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
  	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
  
- 	return seg6_lookup_nexthop(skb, NULL, 0);
+ 	seg6_lookup_nexthop(skb, NULL, 0);
+@@ -858,7 +857,6 @@ static int input_action_end_b6_encap(struct sk_buff *skb,
+ 	if (err)
+ 		goto drop;
+ 
+-	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
+ 	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
+ 
+ 	seg6_lookup_nexthop(skb, NULL, 0);
 -- 
 2.20.1
 
