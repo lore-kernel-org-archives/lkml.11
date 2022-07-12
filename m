@@ -2,140 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBEFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BDDFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233004AbiGLQZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
+        id S234355AbiGLQ0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233943AbiGLQZp (ORCPT
+        with ESMTP id S234316AbiGLQZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:25:45 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834D7CB453;
-        Tue, 12 Jul 2022 09:25:44 -0700 (PDT)
+        Tue, 12 Jul 2022 12:25:51 -0400
+X-Greylist: delayed 1805 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:25:45 PDT
+Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13876CB469;
+        Tue, 12 Jul 2022 09:25:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=EyUFDwm+MCF5o/jfmCwe0q+h8aIIfJ6Fh6QWFZidMRQ=; b=o7F7qm8JPqBXj5UYxBg1ZN3Oz+
-        6C8spyb8w8F+4P09llAiHI8Wuy0lpK087JBQEthXA1isE0s+SKnUBUcBhkVNTPO0aMwYgxSA3pdNi
-        CbVedOTzknDAgDJwtxaVuziPs9sWWkxmtQguv2Lh/DPSxzBMrnLpEj0DMNW5DXKnRw7LxDNGNEaSp
-        oXUH8yN7BNYsimD++6N+CwpgDrD5/IaXGSZhEy7RHl5ejZHcfgi4Mn3IAiedh5M06h6QUm4NGx4qX
-        q0vuQEzjtx4PKMb9PgsOc19SQsFznoZbdfvBdaeQ+99sDDlhUdjCKfiMpLaG0DdbvQdCtKkOLm7Pn
-        OZnZor1g==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBIha-00ClSx-5G; Tue, 12 Jul 2022 16:25:34 +0000
-Message-ID: <a646b2e9-e7a7-3d52-413e-4e2b8c48e383@infradead.org>
-Date:   Tue, 12 Jul 2022 09:25:32 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 4/4] pseries/mobility: set NMI watchdog factor during
- LPM
-Content-Language: en-US
-To:     Laurent Dufour <ldufour@linux.ibm.com>, mpe@ellerman.id.au,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        wim@linux-watchdog.org, linux@roeck-us.net, nathanl@linux.ibm.com
-Cc:     haren@linux.vnet.ibm.com, hch@infradead.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-watchdog@vger.kernel.org
-References: <20220712143202.23144-1-ldufour@linux.ibm.com>
- <20220712143202.23144-5-ldufour@linux.ibm.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220712143202.23144-5-ldufour@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
+        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
+        Content-Description; bh=WkWVLOzQWUJG7V+0cVVMnUDBPNnlBLlSNA5Xuhzm6pA=; b=aD16h
+        5gXIacLM+1mKsQucP0kvMs1Fpx/v64jPPsvNzeW35TGuWfoYzMytlBfHhPvf1oSvRoOZYe7qUsak/
+        I5koC434XT/m9d7E1GifFFjL7pDTkR+SVID+/2TwUktPRkkVPOjVv9mTjKx2M27cY10xKMKXBdEz6
+        9AOmdn8Q4W62X7I5kimxR867tOz/Djt7vwLmwvvzIYlZjuQPmOz90o+Zb+AzTkhMcltdtGewF0bMn
+        P8Xvfzi9DywTt7BEd5oitWJBS9Ct0G48T2z6HqNO6qTCzttKIpUBojl2l1dASWXsqH9lyuFavuQUY
+        pZdvZnsMOn5Szx/T9Vhfa/K3K0m0Q==;
+Message-Id: <7c0f01dec9b91f9d9f034f02d2c04e70c456aa68.1657636554.git.linux_oss@crudebyte.com>
+In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
+References: <cover.1657636554.git.linux_oss@crudebyte.com>
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+Date:   Tue, 12 Jul 2022 16:31:21 +0200
+Subject: [PATCH v5 05/11] 9p/trans_virtio: support larger msize values
+To:     v9fs-developer@lists.sourceforge.net
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi--
+The virtio transport supports by default a 9p 'msize' of up to
+approximately 500 kB. This patch adds support for larger 'msize'
+values by resizing the amount of scatter/gather lists if required.
 
-On 7/12/22 07:32, Laurent Dufour wrote:
-> During a LPM, while the memory transfer is in progress on the arrival side,
-> some latencies is generated when accessing not yet transferred pages on the
+Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+---
 
-                 are
+I am not sure if it is safe the way SG lists are resized here. I "think"
+Dominique said before there should be no concurrency here, but probably
+deserves a revisit.
 
-> arrival side. Thus, the NMI watchdog may be triggered too frequently, which
-> increases the risk to hit a NMI interrupt in a bad place in the kernel,
+ net/9p/trans_virtio.c | 61 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
-                            an NMI
-
-> leading to a kernel panic.
-> 
-> Disabling the Hard Lockup Watchdog until the memory transfer could be a too
-> strong work around, some users would want this timeout to be eventually
-> triggered if the system is hanging even during LPM.
-> 
-> Introduce a new sysctl variable nmi_watchdog_factor. It allows to apply
-> a factor to the NMI watchdog timeout during a LPM. Just before the CPU are
-
-                                              an LPM.            the CPU is
-
-> stopped for the switchover sequence, the NMI watchdog timer is set to
->  watchdog_tresh + factor%
-
-   watchdog_thresh
-
-> 
-> A value of 0 has no effect. The default value is 200, meaning that the NMI
-> watchdog is set to 30s during LPM (based on a 10s watchdog_tresh value).
-
-                                                    watchdog_thresh
-
-> Once the memory transfer is achieved, the factor is reset to 0.
-> 
-> Setting this value to a high number is like disabling the NMI watchdog
-> during a LPM.
-
-         an LPM.
-
-> 
-> Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
-> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
-> ---
->  Documentation/admin-guide/sysctl/kernel.rst | 12 ++++++
->  arch/powerpc/platforms/pseries/mobility.c   | 43 +++++++++++++++++++++
->  2 files changed, 55 insertions(+)
-> 
-> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
-> index ddccd1077462..0bb0b7f27e96 100644
-> --- a/Documentation/admin-guide/sysctl/kernel.rst
-> +++ b/Documentation/admin-guide/sysctl/kernel.rst
-> @@ -592,6 +592,18 @@ to the guest kernel command line (see
->  Documentation/admin-guide/kernel-parameters.rst).
->  
-
-This entire block should be in kernel-parameters.txt, not .rst,
-and it should be formatted like everything else in the .txt file.
-
->  
-> +nmi_watchdog_factor (PPC only)
-> +==================================
-> +
-> +Factor apply to to the NMI watchdog timeout (only when ``nmi_watchdog`` is
-
-   Factor to apply to the NMI
-
-> +set to 1). This factor represents the percentage added to
-> +``watchdog_thresh`` when calculating the NMI watchdog timeout during a
-
-                                                                 during an
-
-> +LPM. The soft lockup timeout is not impacted.
-> +
-> +A value of 0 means no change. The default value is 200 meaning the NMI
-> +watchdog is set to 30s (based on ``watchdog_thresh`` equal to 10).
-> +
-> +
->  numa_balancing
->  ==============
->  
-
-
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index f63cd1b08bca..51c48741ff20 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -203,6 +203,31 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
+ 	return vq_sg;
+ }
+ 
++/**
++ * vq_sg_resize - resize passed virtqueue scatter/gather lists to the passed
++ * amount of lists
++ * @_vq_sg: scatter/gather lists to be resized
++ * @nsgl: new amount of scatter/gather lists
++ */
++static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
++{
++	struct virtqueue_sg *vq_sg;
++
++	BUG_ON(!_vq_sg || !nsgl);
++	vq_sg = *_vq_sg;
++	if (vq_sg->nsgl == nsgl)
++		return 0;
++
++	/* lazy resize implementation for now */
++	vq_sg = vq_sg_alloc(nsgl);
++	if (!vq_sg)
++		return -ENOMEM;
++
++	kfree(*_vq_sg);
++	*_vq_sg = vq_sg;
++	return 0;
++}
++
+ /**
+  * p9_virtio_close - reclaim resources of a channel
+  * @client: client instance
+@@ -774,6 +799,10 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 	struct virtio_chan *chan;
+ 	int ret = -ENOENT;
+ 	int found = 0;
++#if !defined(CONFIG_ARCH_NO_SG_CHAIN)
++	size_t npages;
++	size_t nsgl;
++#endif
+ 
+ 	if (devname == NULL)
+ 		return -EINVAL;
+@@ -796,6 +825,38 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 		return ret;
+ 	}
+ 
++	/*
++	 * if user supplied an 'msize' option that's larger than what this
++	 * transport supports by default, then try to allocate more sg lists
++	 */
++	if (client->msize > client->trans_maxsize) {
++#ifdef CONFIG_ARCH_NO_SG_CHAIN
++		pr_info("limiting 'msize' to %d because architecture does not "
++			"support chained scatter gather lists\n",
++			client->trans_maxsize);
++#else
++		npages = DIV_ROUND_UP(client->msize, PAGE_SIZE);
++		if (npages > chan->p9_max_pages) {
++			npages = chan->p9_max_pages;
++			pr_info("limiting 'msize' as it would exceed the max. "
++				"of %lu pages allowed on this system\n",
++				chan->p9_max_pages);
++		}
++		nsgl = DIV_ROUND_UP(npages, SG_USER_PAGES_PER_LIST);
++		if (nsgl > chan->vq_sg->nsgl) {
++			/*
++			 * if resize fails, no big deal, then just
++			 * continue with default msize instead
++			 */
++			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
++				client->trans_maxsize =
++					PAGE_SIZE *
++					((nsgl * SG_USER_PAGES_PER_LIST) - 3);
++			}
++		}
++#endif /* CONFIG_ARCH_NO_SG_CHAIN */
++	}
++
+ 	client->trans = (void *)chan;
+ 	client->status = Connected;
+ 	chan->client = client;
 -- 
-~Randy
+2.30.2
+
