@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE36CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E69C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231429AbiGLTPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
+        id S233244AbiGLTPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:15:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236126AbiGLTO3 (ORCPT
+        with ESMTP id S235620AbiGLTNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:14:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A99EE7AC2;
-        Tue, 12 Jul 2022 11:54:12 -0700 (PDT)
+        Tue, 12 Jul 2022 15:13:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E446A6325;
+        Tue, 12 Jul 2022 11:53:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F3B61123;
-        Tue, 12 Jul 2022 18:54:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DDFAC3411C;
-        Tue, 12 Jul 2022 18:54:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B380A6157B;
+        Tue, 12 Jul 2022 18:53:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B82DBC3411C;
+        Tue, 12 Jul 2022 18:53:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652050;
-        bh=N7xRo/S7eUzo2YjbTTxDeIjczUHyBLeWeth9bT8iJ9U=;
+        s=korg; t=1657652015;
+        bh=kC8Yo+zlmSXkHVKbkmutWgRB5JaAAmyWQj1eufr2znI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EHdcI0ICCcabx1SghGAD/qerLzehxO33Tl6qo9KJ4RuiWxKVqDVq/K+sbLRmdKse0
-         YIHxWCzlWCo6FmqDFa1JPEFrBNU87pTw7iq2j2nRTrWW06YuZK9oAVJKKOSxCzlTlH
-         1q3vTqrfKgCYX0joeTYxwIIhzncW5i09RyxPtBaU=
+        b=Ba5cASgEz/I0y1xKYRStRFbBZljzcYWQd9pQeXwLTeSwIjcLuEjjL0fZADl884LLK
+         GeRKESAOgQYh7Vj77Y60VlSiv0cvsQKfI5/aqFcHrB5m+vizfPnXKrP4Nalu9OhlAr
+         EWjy+iDuHkG4Rv9hrPPrNjTKH5aV96J6NZkvK+PI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Andrew Cooper <andrew.cooper3@citrix.com>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 43/61] x86/speculation: Fix SPEC_CTRL write on SMT state change
-Date:   Tue, 12 Jul 2022 20:39:40 +0200
-Message-Id: <20220712183238.685207713@linuxfoundation.org>
+Subject: [PATCH 5.18 54/61] x86/cpu/amd: Enumerate BTC_NO
+Date:   Tue, 12 Jul 2022 20:39:51 +0200
+Message-Id: <20220712183239.052853854@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -50,33 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Andrew Cooper <andrew.cooper3@citrix.com>
 
-commit 56aa4d221f1ee2c3a49b45b800778ec6e0ab73c5 upstream.
+commit 26aae8ccbc1972233afd08fb3f368947c0314265 upstream.
 
-If the SMT state changes, SSBD might get accidentally disabled.  Fix
-that.
+BTC_NO indicates that hardware is not susceptible to Branch Type Confusion.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Zen3 CPUs don't suffer BTC.
+
+Hypervisors are expected to synthesise BTC_NO when it is appropriate
+given the migration pool, to prevent kernels using heuristics.
+
+  [ bp: Massage. ]
+
+Signed-off-by: Andrew Cooper <andrew.cooper3@citrix.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: no X86_FEATURE_BRS]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/cpufeatures.h |    1 +
+ arch/x86/kernel/cpu/amd.c          |   21 +++++++++++++++------
+ arch/x86/kernel/cpu/common.c       |    6 ++++--
+ 3 files changed, 20 insertions(+), 8 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1451,7 +1451,8 @@ static void __init spectre_v2_select_mit
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -321,6 +321,7 @@
+ #define X86_FEATURE_VIRT_SSBD		(13*32+25) /* Virtualized Speculative Store Bypass Disable */
+ #define X86_FEATURE_AMD_SSB_NO		(13*32+26) /* "" Speculative Store Bypass is fixed in hardware. */
+ #define X86_FEATURE_CPPC		(13*32+27) /* Collaborative Processor Performance Control */
++#define X86_FEATURE_BTC_NO		(13*32+29) /* "" Not vulnerable to Branch Type Confusion */
  
- static void update_stibp_msr(void * __unused)
- {
--	write_spec_ctrl_current(x86_spec_ctrl_base, true);
-+	u64 val = spec_ctrl_current() | (x86_spec_ctrl_base & SPEC_CTRL_STIBP);
-+	write_spec_ctrl_current(val, true);
+ /* Thermal and Power Management Leaf, CPUID level 0x00000006 (EAX), word 14 */
+ #define X86_FEATURE_DTHERM		(14*32+ 0) /* Digital Thermal Sensor */
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -890,12 +890,21 @@ static void init_amd_zn(struct cpuinfo_x
+ 	node_reclaim_distance = 32;
+ #endif
+ 
+-	/*
+-	 * Fix erratum 1076: CPB feature bit not being set in CPUID.
+-	 * Always set it, except when running under a hypervisor.
+-	 */
+-	if (!cpu_has(c, X86_FEATURE_HYPERVISOR) && !cpu_has(c, X86_FEATURE_CPB))
+-		set_cpu_cap(c, X86_FEATURE_CPB);
++	/* Fix up CPUID bits, but only if not virtualised. */
++	if (!cpu_has(c, X86_FEATURE_HYPERVISOR)) {
++
++		/* Erratum 1076: CPB feature bit not being set in CPUID. */
++		if (!cpu_has(c, X86_FEATURE_CPB))
++			set_cpu_cap(c, X86_FEATURE_CPB);
++
++		/*
++		 * Zen3 (Fam19 model < 0x10) parts are not susceptible to
++		 * Branch Type Confusion, but predate the allocation of the
++		 * BTC_NO bit.
++		 */
++		if (c->x86 == 0x19 && !cpu_has(c, X86_FEATURE_BTC_NO))
++			set_cpu_cap(c, X86_FEATURE_BTC_NO);
++	}
  }
  
- /* Update x86_spec_ctrl_base in case SMT state changed. */
+ static void init_amd(struct cpuinfo_x86 *c)
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1385,8 +1385,10 @@ static void __init cpu_set_bug_bits(stru
+ 	    !arch_cap_mmio_immune(ia32_cap))
+ 		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
+ 
+-	if ((cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA)))
+-		setup_force_cpu_bug(X86_BUG_RETBLEED);
++	if (!cpu_has(c, X86_FEATURE_BTC_NO)) {
++		if (cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA))
++			setup_force_cpu_bug(X86_BUG_RETBLEED);
++	}
+ 
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
+ 		return;
 
 
