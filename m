@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD91C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB30C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235964AbiGLTPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:15:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
+        id S235979AbiGLTP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:15:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236048AbiGLTOV (ORCPT
+        with ESMTP id S236103AbiGLTO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:14:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D353C6364;
-        Tue, 12 Jul 2022 11:54:02 -0700 (PDT)
+        Tue, 12 Jul 2022 15:14:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CC8CE6837;
+        Tue, 12 Jul 2022 11:54:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D1DC61123;
-        Tue, 12 Jul 2022 18:54:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 579E1C3411C;
-        Tue, 12 Jul 2022 18:54:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F414B81BBC;
+        Tue, 12 Jul 2022 18:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4FD5C3411C;
+        Tue, 12 Jul 2022 18:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657652040;
-        bh=AGltoFjHSKOvDf8pB/bmiaRkj18+FhxPuUtWptDeuFM=;
+        s=korg; t=1657652047;
+        bh=t55yt/LMlIfpbPsw7IS/Yaxzn6Vb7UHsPvECtfrxVOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DplmMXOrlVjc/xX7TmQcdLndbBzTYD4JqFKNxd9PA2u+1beBnLmz9SnIgJ7rWtFHe
-         c3NzaY73ICWWc1Jsb9/tDCdA+qXDiBsoZKwi71HhiUXIUfYnA/lXgBADjMaYAthoh+
-         zEtxLSy8zBhJGJjqyNmMPXN1dTeyEdYVnRKi2RjI=
+        b=jaf8xUgj2MoUu6TRWVRjm/0SOTv2XDRHnmuMkGGKLmoxr5EMoIBUtUM7A3khgsRCi
+         1RkqIAeY8/FgwPvRWN+JvKD/JPy9o4WdSbWOikUQe/h2/Reblg7SKmf3DK0WbkC/am
+         MDCBFXSXGmCa2vFGDe4SaDmuBBp1WwMdc1iQZwyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.18 61/61] x86/static_call: Serialize __static_call_fixup() properly
-Date:   Tue, 12 Jul 2022 20:39:58 +0200
-Message-Id: <20220712183239.312205699@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.18 42/61] x86/speculation: Fix firmware entry SPEC_CTRL handling
+Date:   Tue, 12 Jul 2022 20:39:39 +0200
+Message-Id: <20220712183238.642675838@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -48,73 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit c27c753ea6fd1237f4f96abf8b623d7bab505513 upstream.
+commit e6aa13622ea8283cc699cac5d018cc40a2ba2010 upstream.
 
-__static_call_fixup() invokes __static_call_transform() without holding
-text_mutex, which causes lockdep to complain in text_poke_bp().
+The firmware entry code may accidentally clear STIBP or SSBD. Fix that.
 
-Adding the proper locking cures that, but as this is either used during
-early boot or during module finalizing, it's not required to use
-text_poke_bp(). Add an argument to __static_call_transform() which tells
-it to use text_poke_early() for it.
-
-Fixes: ee88d363d156 ("x86,static_call: Use alternative RET encoding")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/static_call.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -25,7 +25,8 @@ static const u8 xor5rax[] = { 0x2e, 0x2e
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -285,18 +285,16 @@ extern u64 spec_ctrl_current(void);
+  */
+ #define firmware_restrict_branch_speculation_start()			\
+ do {									\
+-	u64 val = x86_spec_ctrl_base | SPEC_CTRL_IBRS;			\
+-									\
+ 	preempt_disable();						\
+-	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
++	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
++			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
+ 			      X86_FEATURE_USE_IBRS_FW);			\
+ } while (0)
  
- static const u8 retinsn[] = { RET_INSN_OPCODE, 0xcc, 0xcc, 0xcc, 0xcc };
- 
--static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
-+static void __ref __static_call_transform(void *insn, enum insn_type type,
-+					  void *func, bool modinit)
- {
- 	const void *emulate = NULL;
- 	int size = CALL_INSN_SIZE;
-@@ -60,7 +61,7 @@ static void __ref __static_call_transfor
- 	if (memcmp(insn, code, size) == 0)
- 		return;
- 
--	if (unlikely(system_state == SYSTEM_BOOTING))
-+	if (system_state == SYSTEM_BOOTING || modinit)
- 		return text_poke_early(insn, code, size);
- 
- 	text_poke_bp(insn, code, size, emulate);
-@@ -114,12 +115,12 @@ void arch_static_call_transform(void *si
- 
- 	if (tramp) {
- 		__static_call_validate(tramp, true, true);
--		__static_call_transform(tramp, __sc_insn(!func, true), func);
-+		__static_call_transform(tramp, __sc_insn(!func, true), func, false);
- 	}
- 
- 	if (IS_ENABLED(CONFIG_HAVE_STATIC_CALL_INLINE) && site) {
- 		__static_call_validate(site, tail, false);
--		__static_call_transform(site, __sc_insn(!func, tail), func);
-+		__static_call_transform(site, __sc_insn(!func, tail), func, false);
- 	}
- 
- 	mutex_unlock(&text_mutex);
-@@ -145,8 +146,10 @@ bool __static_call_fixup(void *tramp, u8
- 		return false;
- 	}
- 
-+	mutex_lock(&text_mutex);
- 	if (op == RET_INSN_OPCODE || dest == &__x86_return_thunk)
--		__static_call_transform(tramp, RET, NULL);
-+		__static_call_transform(tramp, RET, NULL, true);
-+	mutex_unlock(&text_mutex);
- 
- 	return true;
- }
+ #define firmware_restrict_branch_speculation_end()			\
+ do {									\
+-	u64 val = x86_spec_ctrl_base;					\
+-									\
+-	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
++	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
++			      spec_ctrl_current(),			\
+ 			      X86_FEATURE_USE_IBRS_FW);			\
+ 	preempt_enable();						\
+ } while (0)
 
 
