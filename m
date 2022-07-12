@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A08C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA44C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235435AbiGLTFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56082 "EHLO
+        id S235419AbiGLTFU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:05:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235487AbiGLTEX (ORCPT
+        with ESMTP id S235488AbiGLTEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 15:04:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BABC1FD8;
-        Tue, 12 Jul 2022 11:50:19 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083F5F683E;
+        Tue, 12 Jul 2022 11:50:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E39EB81BBD;
-        Tue, 12 Jul 2022 18:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8D2AC3411C;
-        Tue, 12 Jul 2022 18:50:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0BB61274;
+        Tue, 12 Jul 2022 18:50:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F88C3411C;
+        Tue, 12 Jul 2022 18:50:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651803;
-        bh=wPsbQJ1Esnk4q8K/3ZlNTMTr2q0GgDEreGwpsNW0F9s=;
+        s=korg; t=1657651820;
+        bh=AuEJdmeweOaW6vgmV9MACQxt/UZ9ELX48QErmlm0K34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2mpMbDJ5IxUMoD3rsPHq+hFu+niulN56wLEaB6URISyuDn0nGEKT4DH3aO0FRaZtz
-         B0vAtFtbkTnrHYzZaQQZbaHDUbMSMdFXBxUprov0lJnGiJOd8ku8LAiXQN6bFj4MDV
-         C2syQ/Qfht/afruCU8eHxMTCRFDFNsqIG+R68QXo=
+        b=KaeXHZSzn5TE5s0Xgs3oXPVRa66Sm3ndMt8/BPYaaSYrdEgZKp/TrqnbOYaeXMI9c
+         k3BHiyvbL/BNGba8xlMPFHa/LNzLRHuocSRkSwwovvrIymlgeEgxPIEjwPtgZisxDY
+         DFtCgq0XwWlBk8vQsAE0VZnbCCk/mf4AcBuBjArI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 62/78] x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit
-Date:   Tue, 12 Jul 2022 20:39:32 +0200
-Message-Id: <20220712183241.390562663@linuxfoundation.org>
+Subject: [PATCH 5.15 68/78] KVM: VMX: Fix IBRS handling after vmexit
+Date:   Tue, 12 Jul 2022 20:39:38 +0200
+Message-Id: <20220712183241.606943502@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -52,10 +52,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit bbb69e8bee1bd882784947095ffb2bfe0f7c9470 upstream.
+commit bea7e31a5caccb6fe8ed989c065072354f0ecb52 upstream.
 
-There's no need to recalculate the host value for every entry/exit.
-Just use the cached value in spec_ctrl_current().
+For legacy IBRS to work, the IBRS bit needs to be always re-written
+after vmexit, even if it's already on.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
@@ -63,43 +63,25 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ arch/x86/kvm/vmx/vmx.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -208,7 +208,7 @@ void __init check_bugs(void)
- void
- x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
- {
--	u64 msrval, guestval, hostval = x86_spec_ctrl_base;
-+	u64 msrval, guestval, hostval = spec_ctrl_current();
- 	struct thread_info *ti = current_thread_info();
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -6685,8 +6685,13 @@ void noinstr vmx_spec_ctrl_restore_host(
  
- 	/* Is MSR_SPEC_CTRL implemented ? */
-@@ -221,15 +221,6 @@ x86_virt_spec_ctrl(u64 guest_spec_ctrl,
- 		guestval = hostval & ~x86_spec_ctrl_mask;
- 		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+ 	/*
+ 	 * If the guest/host SPEC_CTRL values differ, restore the host value.
++	 *
++	 * For legacy IBRS, the IBRS bit always needs to be written after
++	 * transitioning from a less privileged predictor mode, regardless of
++	 * whether the guest/host values differ.
+ 	 */
+-	if (vmx->spec_ctrl != hostval)
++	if (cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS) ||
++	    vmx->spec_ctrl != hostval)
+ 		native_wrmsrl(MSR_IA32_SPEC_CTRL, hostval);
  
--		/* SSBD controlled in MSR_SPEC_CTRL */
--		if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
--		    static_cpu_has(X86_FEATURE_AMD_SSBD))
--			hostval |= ssbd_tif_to_spec_ctrl(ti->flags);
--
--		/* Conditional STIBP enabled? */
--		if (static_branch_unlikely(&switch_to_cond_stibp))
--			hostval |= stibp_tif_to_spec_ctrl(ti->flags);
--
- 		if (hostval != guestval) {
- 			msrval = setguest ? guestval : hostval;
- 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
-@@ -1390,7 +1381,6 @@ static void __init spectre_v2_select_mit
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
- 
- 	if (spectre_v2_in_ibrs_mode(mode)) {
--		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
- 		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 	}
+ 	barrier_nospec();
 
 
