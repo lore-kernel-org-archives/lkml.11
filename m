@@ -2,142 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A41C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233537AbiGLOSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
+        id S233548AbiGLOSR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:18:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGLORr (ORCPT
+        with ESMTP id S233237AbiGLORu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:17:47 -0400
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF599D519
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:46 -0700 (PDT)
-Received: by mail-yb1-xb34.google.com with SMTP id g4so14149768ybg.9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:17:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0beGq21p9DMXHd5s7bgYgiKqbqbtLOLYpdLEVtFVxzo=;
-        b=KBfwn0NWRdjlAlnm78kQy8tetaYreiz77Y8pUuEWWPugZUbjxhRgenJK2m1SIRjBig
-         WMpwQ5rhXusyEyDymAjbbkawtqCvFm7xCLlF24E/B+FQliXAm1mJ77+1o4i237SN+NMN
-         Hx5kOvVfRfNj30L4FQMs8HZogW1F2ihS9IueY+v3NX5G9p0aa44btudBP14q3xqsSzph
-         IOrltwO6HwRBj4o/XG4KdQQ2/LOdOyG8sjW56dapWE/365fz6RBtrO1aaLpIiNRs7Gif
-         BBkEQanbqIrKeVJSno+7AsR2RNBYnu+6Mhg+P7/4kVSIt9CQuQnT5CAXTAx/Y5e5kKGN
-         abpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0beGq21p9DMXHd5s7bgYgiKqbqbtLOLYpdLEVtFVxzo=;
-        b=aQ+UIUCmVN+M9yLaOGHAwFYiFwq8yc2XXz8WRr/sg8gwIyc2kpA1tOOk5P091pCHFX
-         QFCQPGyXYORdhRXBg17RISQeD8TXIuLIyT3ANsuPmwJrKZQ9BZvThspvPgY8TAtee2zd
-         i/GHxKbCtGichz1Q9AhTvTtCwrdrIp36t0YoBvpafaHa0kCUL+BB1lfLjUpBtvCtTkRO
-         A8/7iH9AvEcvjgAWNXoS4SpUYVr6+1+OYI76NZQadkmjlCQMB/F5IyiD4IslBdE1VhBX
-         0YOKeoR6AI6x5+Q1ctBFNIi1hI+49ym/j9HNwzkbh1O2wCp32S+3ZKT4d365/MnHIJnW
-         qHsg==
-X-Gm-Message-State: AJIora9SJFiUB8Hq3X3RZfxJ9O73KvOQij2rx1IYDjUxB+/GAux5B/jU
-        nz3IvC1lFOGoxTtcQsmf9DwqrJgO/fFyzMjxzgN87g==
-X-Google-Smtp-Source: AGRyM1uNJbYAzJEiHCz+WeojPCu0/5uwt/JdhiaRhEpRyhDjN0kKwSV2YWGVhXee1UxvoNMcsabuiAL8+o0CcFARhhk=
-X-Received: by 2002:a25:2d59:0:b0:66e:32d3:7653 with SMTP id
- s25-20020a252d59000000b0066e32d37653mr22600223ybe.625.1657635465536; Tue, 12
- Jul 2022 07:17:45 -0700 (PDT)
+        Tue, 12 Jul 2022 10:17:50 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E681A2E74;
+        Tue, 12 Jul 2022 07:17:48 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lj2p76HlXz1L8sb;
+        Tue, 12 Jul 2022 22:15:11 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Jul 2022 22:17:45 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 12 Jul 2022 22:17:44 +0800
+Message-ID: <4b5f52c3-00ea-0aac-ff05-a25741f3f0e3@huawei.com>
+Date:   Tue, 12 Jul 2022 22:17:44 +0800
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-6-glider@google.com>
-In-Reply-To: <20220701142310.2188015-6-glider@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Tue, 12 Jul 2022 16:17:09 +0200
-Message-ID: <CANpmjNM-hotpgDZqHvutHedoEbyeuuNeoPQ5UR4Op8rs6itr3g@mail.gmail.com>
-Subject: Re: [PATCH v4 05/45] asm-generic: instrument usercopy in cacheflush.h
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] zram: fix unused 'zram_wb_devops' warning
+Content-Language: en-US
+To:     Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>,
+        "Sergey Senozhatsky" <senozhatsky@chromium.org>,
+        Jens Axboe <axboe@kernel.dk>, <linux-kernel@vger.kernel.org>
+CC:     <linux-block@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
+        "Andrew Morton" <akpm@linux-foundation.org>
+References: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <20220608072534.68850-1-wangkefeng.wang@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 at 16:23, Alexander Potapenko <glider@google.com> wrote:
++mm,  kindly ping...
+
+On 2022/6/8 15:25, Kefeng Wang wrote:
+> drivers/block/zram/zram_drv.c:55:45: warning: 'zram_wb_devops' defined but not used [-Wunused-const-variable=]
 >
-> Notify memory tools about usercopy events in copy_to_user_page() and
-> copy_from_user_page().
+> Fix the above warning if CONFIG_ZRAM_WRITEBACK not enabled.
 >
-> Signed-off-by: Alexander Potapenko <glider@google.com>
-
-Reviewed-by: Marco Elver <elver@google.com>
-
-
+> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
 > ---
-> Link: https://linux-review.googlesource.com/id/Ic1ee8da1886325f46ad67f52176f48c2c836c48f
-> ---
->  include/asm-generic/cacheflush.h | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
+>   drivers/block/zram/zram_drv.c | 2 ++
+>   1 file changed, 2 insertions(+)
 >
-> diff --git a/include/asm-generic/cacheflush.h b/include/asm-generic/cacheflush.h
-> index 4f07afacbc239..0f63eb325025f 100644
-> --- a/include/asm-generic/cacheflush.h
-> +++ b/include/asm-generic/cacheflush.h
-> @@ -2,6 +2,8 @@
->  #ifndef _ASM_GENERIC_CACHEFLUSH_H
->  #define _ASM_GENERIC_CACHEFLUSH_H
->
-> +#include <linux/instrumented.h>
-> +
->  struct mm_struct;
->  struct vm_area_struct;
->  struct page;
-> @@ -105,6 +107,7 @@ static inline void flush_cache_vunmap(unsigned long start, unsigned long end)
->  #ifndef copy_to_user_page
->  #define copy_to_user_page(vma, page, vaddr, dst, src, len)     \
->         do { \
-> +               instrument_copy_to_user(dst, src, len); \
->                 memcpy(dst, src, len); \
->                 flush_icache_user_page(vma, page, vaddr, len); \
->         } while (0)
-> @@ -112,7 +115,11 @@ static inline void flush_cache_vunmap(unsigned long start, unsigned long end)
->
->  #ifndef copy_from_user_page
->  #define copy_from_user_page(vma, page, vaddr, dst, src, len) \
-> -       memcpy(dst, src, len)
-> +       do { \
-> +               instrument_copy_from_user_before(dst, src, len); \
-> +               memcpy(dst, src, len); \
-> +               instrument_copy_from_user_after(dst, src, len, 0); \
-> +       } while (0)
->  #endif
->
->  #endif /* _ASM_GENERIC_CACHEFLUSH_H */
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+> diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
+> index 39cd1397ed3b..fff5eb4d3f20 100644
+> --- a/drivers/block/zram/zram_drv.c
+> +++ b/drivers/block/zram/zram_drv.c
+> @@ -52,7 +52,9 @@ static unsigned int num_devices = 1;
+>   static size_t huge_class_size;
+>   
+>   static const struct block_device_operations zram_devops;
+> +#ifdef CONFIG_ZRAM_WRITEBACK
+>   static const struct block_device_operations zram_wb_devops;
+> +#endif
+>   
+>   static void zram_free_page(struct zram *zram, size_t index);
+>   static int zram_bvec_read(struct zram *zram, struct bio_vec *bvec,
