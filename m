@@ -2,259 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF676C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EBACCA483
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:30:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233129AbiGLO32 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:29:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47394 "EHLO
+        id S229778AbiGLOaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233071AbiGLO3Y (ORCPT
+        with ESMTP id S229829AbiGLO36 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:29:24 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A1DC7F
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:29:22 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ez10so14600871ejc.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:29:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UpQJKKbtg93cX86UuSBO9tVRJrPAdwmdctCEOdnSRnU=;
-        b=ijq11B8dVKWd4WwXQdLWGL47Ff65ZWhCh8I3SE5MaxMAad6+ff+0LigbAoCe2JY4iV
-         3LYhRmAzDWby1Q6v0gv1VaqErS7z7UeZOhoWW35oxwjCuJ3tvmQYNhvS3m9DSj3ZipSe
-         75C5HfTf7UALfjjpZlu/UxdxlwILLB1WhqUf4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UpQJKKbtg93cX86UuSBO9tVRJrPAdwmdctCEOdnSRnU=;
-        b=PPLN+kCaaAMHx1IpqIIEgK165/X7SmTjA6IxFSORNMf/kMYJKQR7JyqJMblrwnfC0J
-         ICk1ofyerGCRIfq4vGrEaoP/GP4rE0VHvy2c3BNsdCixOZ6Y74eT5jUzqk0EgaSgIrEM
-         tUIO79Faus7o8hDM0vgGnMC+F/coR8ecDU42szuc7GMGc9WQZiLsefJ9VYwuUNXUsxjK
-         Rjd31NQbnrmDB2n3hFgaeT+JrcK278jnaQ9j4n54yP3EABcfouvjKGshsEfSizREovwc
-         jnuOnhkGrUG3lbZIx0lx3jzfQwoBTWm3u69nBdOVTyPod/+5VVsNlRFm1OlaoRhGX68B
-         iO2Q==
-X-Gm-Message-State: AJIora+JjQnT4sm58XVUU127e2y7hgzRVa1CWNqGNK9mULAQ9QmRwcPj
-        NXF2uOx2anUkg87X3X6gNPXEsDHo8PljwYmBF34=
-X-Google-Smtp-Source: AGRyM1urVUaZPWI0RrNKGSED+xIGP4FuOathQyMz1Jg+F2cUm56uRRZmoC0i6z1jlj4zyvp719a7Kw==
-X-Received: by 2002:a17:907:62a6:b0:6ef:8118:d3e2 with SMTP id nd38-20020a17090762a600b006ef8118d3e2mr23596090ejc.605.1657636161137;
-        Tue, 12 Jul 2022 07:29:21 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
-        by smtp.gmail.com with ESMTPSA id o2-20020aa7dd42000000b0043ad162b5e3sm3953538edw.18.2022.07.12.07.29.19
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 07:29:19 -0700 (PDT)
-Received: by mail-wr1-f47.google.com with SMTP id v16so11400441wrd.13
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:29:19 -0700 (PDT)
-X-Received: by 2002:adf:d1c1:0:b0:21b:a5e9:b7b2 with SMTP id
- b1-20020adfd1c1000000b0021ba5e9b7b2mr22505619wrd.405.1657636159126; Tue, 12
- Jul 2022 07:29:19 -0700 (PDT)
+        Tue, 12 Jul 2022 10:29:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018D22871F;
+        Tue, 12 Jul 2022 07:29:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91A80618F8;
+        Tue, 12 Jul 2022 14:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB807C341C8;
+        Tue, 12 Jul 2022 14:29:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657636196;
+        bh=eD8CW9WNiJT8VXhu8zwAPpJ2nHI6u87NDwtq5Ro4Zkk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pT24m+7R6+CJHODdS4TaCZnUnta0iUdEIVJOWr7keb/BUm3h8P7woBbOS3bnGjyDG
+         H3mH8VlmYAOdfSrROvE1aHkFMIrbycy6ANEXqEhrJW/Ghrz44jlSwKPyBdILAs2wA5
+         dTcNFqENehXUrSK18juekpJWXSpPHviib7ngzjdlwddI71q7gznYGIbaAmWW+U2G8z
+         M5f1BeBaM1PtpaPkUS7tBWvBBD/0i7SHYyhqxoiuKn0pkMhz5sQ7X+GG/6nWvkREZi
+         JyK9eAkIQNR4bQKKM63DQCF2McAsV1jsJBarnKRktOrNLnYL0zGgJ7UELJG3t4trgV
+         Vs7l2LXgTXxcw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oBGth-0001zS-P1; Tue, 12 Jul 2022 16:29:57 +0200
+Date:   Tue, 12 Jul 2022 16:29:57 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Viresh Kumar <vireshk@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V2 00/13] OPP: Add support for multiple clocks*
+Message-ID: <Ys2FZa6YDwt7d/Zc@hovoldconsulting.com>
+References: <cover.1657003420.git.viresh.kumar@linaro.org>
+ <YsxSkswzsqgMOc0l@hovoldconsulting.com>
+ <20220712075240.lsjd42yhcskqlzrh@vireshk-i7>
 MIME-Version: 1.0
-References: <20220711082940.39539-1-krzysztof.kozlowski@linaro.org>
- <20220711082940.39539-3-krzysztof.kozlowski@linaro.org> <CAD=FV=WUCPzzZHAPqoz-vhmcVxzYDxkKQs=+1tLZvsQjWe4q3Q@mail.gmail.com>
- <f8744ff8-15a0-bf31-c49f-b1bb35ba5cdd@linaro.org> <CAD=FV=X2ZfwwDO_hSSN35ObfvBbBbPjMoSB4GvS7m0yJieNg3Q@mail.gmail.com>
- <629ede41-326b-9c84-4bb8-2f7e695ca928@linaro.org>
-In-Reply-To: <629ede41-326b-9c84-4bb8-2f7e695ca928@linaro.org>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Tue, 12 Jul 2022 07:29:06 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=W7dypM9=uqaY650TGfiV4EaZR9EBH_3svQefyNv-oE7Q@mail.gmail.com>
-Message-ID: <CAD=FV=W7dypM9=uqaY650TGfiV4EaZR9EBH_3svQefyNv-oE7Q@mail.gmail.com>
-Subject: Re: [PATCH v2 2/5] dt-bindings: mmc: sdhci-msm: constrain reg-names
- perp variants
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712075240.lsjd42yhcskqlzrh@vireshk-i7>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Tue, Jul 12, 2022 at 01:22:40PM +0530, Viresh Kumar wrote:
+> On 11-07-22, 18:40, Johan Hovold wrote:
+> > This break OPP parsing on SC8280XP and hence cpufreq and other things:
+> > 
+> > [  +0.010890] cpu cpu0: _opp_add_static_v2: opp key field not found
+> > [  +0.000019] cpu cpu0: _of_add_opp_table_v2: Failed to add OPP, -19
+> > [  +0.000060] cpu cpu0: _opp_is_duplicate: duplicate OPPs detected. Existing: freq: 300000000, volt: 576000, enabled: 1. New: freq: 403200000, volt: 576000, enabled: 1
+> > [  +0.000030] cpu cpu0: _opp_is_duplicate: duplicate OPPs detected. Existing: freq: 300000000, volt: 576000, enabled: 1. New: freq: 499200000, volt: 576000, enabled: 1
+> > ...
+> > 
+> > I just did a rebase on next-20220708 and hit this.
+> > 
+> > I've narrowed it down to _read_rate() now returning -ENODEV since
+> > opp_table->clk_count is zero.
+> > 
+> > Similar to what was reported for tegra for v1:
+> > 
+> > 	https://lore.kernel.org/all/58cc8e3c-74d4-e432-8502-299312a1f15e@collabora.com/
+> > 
+> > I don't have time to look at this any more today, but it would we nice
+> > if you could unbreak linux-next.
+> > 
+> > Perhaps Bjorn or Mani can help with further details, but this doesn't
+> > look like something that is specific to SC8280XP.
+> 
+> It is actually. This is yet another corner case, Tegra had one as
+> well.
 
-On Tue, Jul 12, 2022 at 12:02 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 11/07/2022 17:11, Doug Anderson wrote:
-> > Hi,
-> >
-> > On Mon, Jul 11, 2022 at 7:53 AM Krzysztof Kozlowski
-> > <krzysztof.kozlowski@linaro.org> wrote:
-> >>
-> >> On 11/07/2022 16:52, Doug Anderson wrote:
-> >>> Hi
-> >>>
-> >>> On Mon, Jul 11, 2022 at 1:29 AM Krzysztof Kozlowski
-> >>> <krzysztof.kozlowski@linaro.org> wrote:
-> >>>>
-> >>>> The entries in arrays must have fixed order, so the bindings and Linux
-> >>>> driver expecting various combinations of 'reg' addresses was never
-> >>>> actually conforming to guidelines.
-> >>>>
-> >>>> The 'core' reg entry is valid only for SDCC v4 and lower, so disallow it
-> >>>> in SDCC v5.  SDCC v4 supports CQE and ICE, so allow them, even though
-> >>>> the qcom,sdhci-msm-v4 compatible is used also for earlier SoCs with SDCC
-> >>>> v2 or v3, so it is not entirely accurate.
-> >>>>
-> >>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> >>>>
-> >>>> ---
-> >>>>
-> >>>> Changes since v1:
-> >>>> 1. Rework the patch based on Doug's feedback.
-> >>>> ---
-> >>>>  .../devicetree/bindings/mmc/sdhci-msm.yaml    | 61 ++++++++++++-------
-> >>>>  1 file changed, 38 insertions(+), 23 deletions(-)
-> >>>
-> >>> In the ${SUBJECT} I'm not sure what a "perp variant" is. Is that a
-> >>> typo or just a phrase I'm not aware of?
-> >>
-> >> Should be:
-> >> "per variants"
-> >>
-> >>>
-> >>>
-> >>>> diff --git a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> >>>> index fc6e5221985a..2f0fdd65e908 100644
-> >>>> --- a/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> >>>> +++ b/Documentation/devicetree/bindings/mmc/sdhci-msm.yaml
-> >>>> @@ -49,33 +49,11 @@ properties:
-> >>>>
-> >>>>    reg:
-> >>>>      minItems: 1
-> >>>> -    items:
-> >>>> -      - description: Host controller register map
-> >>>> -      - description: SD Core register map
-> >>>> -      - description: CQE register map
-> >>>> -      - description: Inline Crypto Engine register map
-> >>>> +    maxItems: 4
-> >>>>
-> >>>>    reg-names:
-> >>>>      minItems: 1
-> >>>>      maxItems: 4
-> >>>> -    oneOf:
-> >>>> -      - items:
-> >>>> -          - const: hc
-> >>>> -      - items:
-> >>>> -          - const: hc
-> >>>> -          - const: core
-> >>>> -      - items:
-> >>>> -          - const: hc
-> >>>> -          - const: cqhci
-> >>>> -      - items:
-> >>>> -          - const: hc
-> >>>> -          - const: cqhci
-> >>>> -          - const: ice
-> >>>> -      - items:
-> >>>> -          - const: hc
-> >>>> -          - const: core
-> >>>> -          - const: cqhci
-> >>>> -          - const: ice
-> >>>>
-> >>>>    clocks:
-> >>>>      minItems: 3
-> >>>> @@ -177,6 +155,43 @@ required:
-> >>>>  allOf:
-> >>>>    - $ref: mmc-controller.yaml#
-> >>>>
-> >>>> +  - if:
-> >>>> +      properties:
-> >>>> +        compatible:
-> >>>> +          contains:
-> >>>> +            enum:
-> >>>> +              - qcom,sdhci-msm-v4
-> >>>> +    then:
-> >>>> +      properties:
-> >>>> +        reg:
-> >>>> +          minItems: 2
-> >>>> +          items:
-> >>>> +            - description: Host controller register map
-> >>>> +            - description: SD Core register map
-> >>>> +            - description: CQE register map
-> >>>> +            - description: Inline Crypto Engine register map
-> >>>> +        reg-names:
-> >>>> +          minItems: 2
-> >>>> +          items:
-> >>>> +            - const: hc
-> >>>> +            - const: core
-> >>>> +            - const: cqhci
-> >>>> +            - const: ice
-> >>>> +    else:
-> >>>> +      properties:
-> >>>> +        reg:
-> >>>> +          minItems: 1
-> >>>> +          items:
-> >>>> +            - description: Host controller register map
-> >>>> +            - description: CQE register map
-> >>>> +            - description: Inline Crypto Engine register map
-> >>>> +        reg-names:
-> >>>> +          minItems: 1
-> >>>> +          items:
-> >>>> +            - const: hc
-> >>>> +            - const: cqhci
-> >>>> +            - const: ice
-> >>>
-> >>> Do you need to set "maxItems" here? If you don't then will it inherit
-> >>> the maxItems of 4 from above?
-> >>
-> >> No, items determine the size instead.
-> >
-> > Can you just remove the "maxItems" from above then? Does it buy us anything?
->
-> There is no maxItems directly here...
+I literally meant that it does not appear to be SC8280XP specific. Bjorn
+reported seeing similar problems on multiple Qualcomm SoCs.
 
-Sorry, I mean above in the schema. After your patch the schema is effectively:
+> I have tried to understand the Qcom code / setup to best of my
+> abilities, and the problem as per me is that qcom-cpufreq-hw doesn't
+> provide a clk to the OPP core, which breaks it after the new updates
+> to the OPP core. I believe following will solve it. Can someone please
+> try this ? I will then merge it with the right commit.
+> 
+> diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+> index 666e1ebf91d1..4f4a285886fa 100644
+> --- a/drivers/opp/core.c
+> +++ b/drivers/opp/core.c
+> @@ -1384,6 +1384,20 @@ static struct opp_table *_update_opp_table_clk(struct device *dev,
+>         }
+> 
+>         if (ret == -ENOENT) {
+> +               /*
+> +                * There are few platforms which don't want the OPP core to
+> +                * manage device's clock settings. In such cases neither the
+> +                * platform provides the clks explicitly to us, nor the DT
+> +                * contains a valid clk entry. The OPP nodes in DT may still
+> +                * contain "opp-hz" property though, which we need to parse and
+> +                * allow the platform to find an OPP based on freq later on.
+> +                *
+> +                * This is a simple solution to take care of such corner cases,
+> +                * i.e. make the clk_count 1, which lets us allocate space for
+> +                * frequency in opp->rates and also parse the entries in DT.
+> +                */
+> +               opp_table->clk_count = 1;
+> +
+>                 dev_dbg(dev, "%s: Couldn't find clock: %d\n", __func__, ret);
+>                 return opp_table;
+>         }
 
-reg:
-  minItems: 1
-  maxItems: 4
-reg-names:
-  minItems: 1
-  maxItems: 4
+This looks like a hack. And it also triggers a bunch of new warning when
+opp is trying to create debugfs entries for an entirely different table
+which now gets clk_count set to 1:
 
-...
+[  +0.000979]  cx: _update_opp_table_clk: Couldn't find clock: -2
+[  +0.000022] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000004] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000004] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
+[  +0.000003] debugfs: Directory 'opp:0' with parent 'cx' already present!
 
-allOf:
-  - if:
-      blah-blah-blah
-    then:
-      properties:
-        reg:
-          minItems: 2
-          items:
-            - description: ...
-            - description: ...
-            - description: ...
-            - description: ...
-        reg-names:
-          blah-blah-blah
-    else:
-      blah-blah-blah
+This is for the rpmhpd whose opp table does not have either opp-hz or
+clocks (just opp-level).
 
-I'm asking about the maxItems _above_, AKA in the section:
+The above unbreaks cpufreq though.
 
-reg:
-  minItems: 1
-  maxItems: 4
-reg-names:
-  minItems: 1
-  maxItems: 4
-
-Can we remove the "maxItems: 4" from the above and have it just be:
-
-reg:
-  minItems: 1
-reg-names:
-  minItems: 1
-
--Doug
+Johan
