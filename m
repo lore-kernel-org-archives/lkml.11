@@ -2,79 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53CB5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBEFC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:25:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234276AbiGLQZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40878 "EHLO
+        id S233004AbiGLQZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:25:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232533AbiGLQZj (ORCPT
+        with ESMTP id S233943AbiGLQZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:25:39 -0400
-X-Greylist: delayed 1803 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 09:25:37 PDT
-Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F03B3CA6D0;
-        Tue, 12 Jul 2022 09:25:37 -0700 (PDT)
+        Tue, 12 Jul 2022 12:25:45 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834D7CB453;
+        Tue, 12 Jul 2022 09:25:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=3fYK9aLEk4+QTiWncARzWNrEsKD8KVzMmkos5F1PmkE=; b=ETBrD
-        ObyYRP1acCvA1v2Xk+F1rfuh1bcGPDlekNgLxXeQywThYUkGAguSb2jIssNRU3xbZKaunKjyo1abp
-        QST18cOxcaSxdFjgPc4ZtfDwMpuXDReB/Is0OyhOXqgENfp177oFsPM657gANtc2J7fMrYLV3tq//
-        xBXWuS75YGx7iq7jUkb6C6UhWzzLUF0tZDOWahVs7dNSpHokcvbKIJ0NoQeSFuMXy2fAbWvvdqGLL
-        kB5Av52kVNYvNj0oRZYAzf/KucbHAaRQA4j9RGZA0m1/VgiiUuQN8AkDDXo8OU6/CsgJXoz5p2mHi
-        CtTdv4ashnNp2sMyBCrd9LO3q4Lgg==;
-Message-Id: <0a5679aea70e506433887cb67129241dfc32502b.1657636554.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1657636554.git.linux_oss@crudebyte.com>
-References: <cover.1657636554.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Tue, 12 Jul 2022 16:31:31 +0200
-Subject: [PATCH v5 09/11] 9p: add P9_ERRMAX for 9p2000 and 9p2000.u
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=EyUFDwm+MCF5o/jfmCwe0q+h8aIIfJ6Fh6QWFZidMRQ=; b=o7F7qm8JPqBXj5UYxBg1ZN3Oz+
+        6C8spyb8w8F+4P09llAiHI8Wuy0lpK087JBQEthXA1isE0s+SKnUBUcBhkVNTPO0aMwYgxSA3pdNi
+        CbVedOTzknDAgDJwtxaVuziPs9sWWkxmtQguv2Lh/DPSxzBMrnLpEj0DMNW5DXKnRw7LxDNGNEaSp
+        oXUH8yN7BNYsimD++6N+CwpgDrD5/IaXGSZhEy7RHl5ejZHcfgi4Mn3IAiedh5M06h6QUm4NGx4qX
+        q0vuQEzjtx4PKMb9PgsOc19SQsFznoZbdfvBdaeQ+99sDDlhUdjCKfiMpLaG0DdbvQdCtKkOLm7Pn
+        OZnZor1g==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oBIha-00ClSx-5G; Tue, 12 Jul 2022 16:25:34 +0000
+Message-ID: <a646b2e9-e7a7-3d52-413e-4e2b8c48e383@infradead.org>
+Date:   Tue, 12 Jul 2022 09:25:32 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 4/4] pseries/mobility: set NMI watchdog factor during
+ LPM
+Content-Language: en-US
+To:     Laurent Dufour <ldufour@linux.ibm.com>, mpe@ellerman.id.au,
+        npiggin@gmail.com, christophe.leroy@csgroup.eu,
+        wim@linux-watchdog.org, linux@roeck-us.net, nathanl@linux.ibm.com
+Cc:     haren@linux.vnet.ibm.com, hch@infradead.org,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-watchdog@vger.kernel.org
+References: <20220712143202.23144-1-ldufour@linux.ibm.com>
+ <20220712143202.23144-5-ldufour@linux.ibm.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220712143202.23144-5-ldufour@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add P9_ERRMAX macro to 9P protocol header which reflects the maximum
-error string length of Rerror replies for 9p2000 and 9p2000.u protocol
-versions. Unfortunately a maximum error string length is not defined by
-the 9p2000 spec, picking 128 as value for now, as this seems to be a
-common max. size for POSIX error strings in practice.
+Hi--
 
-9p2000.L protocol version uses Rlerror replies instead which does not
-contain an error string.
+On 7/12/22 07:32, Laurent Dufour wrote:
+> During a LPM, while the memory transfer is in progress on the arrival side,
+> some latencies is generated when accessing not yet transferred pages on the
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
+                 are
 
-This could probably be merged with the next patch, on doubt I posted it
-separately as squashing is easy. The advantage of a separate patch is
-making the discussion of the chosen value of max. 128 bytes more
-prominent.
+> arrival side. Thus, the NMI watchdog may be triggered too frequently, which
+> increases the risk to hit a NMI interrupt in a bad place in the kernel,
 
- include/net/9p/9p.h | 3 +++
- 1 file changed, 3 insertions(+)
+                            an NMI
 
-diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
-index 24a509f559ee..13abe013af21 100644
---- a/include/net/9p/9p.h
-+++ b/include/net/9p/9p.h
-@@ -331,6 +331,9 @@ enum p9_qid_t {
- /* size of header for zero copy read/write */
- #define P9_ZC_HDR_SZ 4096
- 
-+/* maximum length of an error string */
-+#define P9_ERRMAX 128
-+
- /**
-  * struct p9_qid - file system entity information
-  * @type: 8-bit type &p9_qid_t
+> leading to a kernel panic.
+> 
+> Disabling the Hard Lockup Watchdog until the memory transfer could be a too
+> strong work around, some users would want this timeout to be eventually
+> triggered if the system is hanging even during LPM.
+> 
+> Introduce a new sysctl variable nmi_watchdog_factor. It allows to apply
+> a factor to the NMI watchdog timeout during a LPM. Just before the CPU are
+
+                                              an LPM.            the CPU is
+
+> stopped for the switchover sequence, the NMI watchdog timer is set to
+>  watchdog_tresh + factor%
+
+   watchdog_thresh
+
+> 
+> A value of 0 has no effect. The default value is 200, meaning that the NMI
+> watchdog is set to 30s during LPM (based on a 10s watchdog_tresh value).
+
+                                                    watchdog_thresh
+
+> Once the memory transfer is achieved, the factor is reset to 0.
+> 
+> Setting this value to a high number is like disabling the NMI watchdog
+> during a LPM.
+
+         an LPM.
+
+> 
+> Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+> ---
+>  Documentation/admin-guide/sysctl/kernel.rst | 12 ++++++
+>  arch/powerpc/platforms/pseries/mobility.c   | 43 +++++++++++++++++++++
+>  2 files changed, 55 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
+> index ddccd1077462..0bb0b7f27e96 100644
+> --- a/Documentation/admin-guide/sysctl/kernel.rst
+> +++ b/Documentation/admin-guide/sysctl/kernel.rst
+> @@ -592,6 +592,18 @@ to the guest kernel command line (see
+>  Documentation/admin-guide/kernel-parameters.rst).
+>  
+
+This entire block should be in kernel-parameters.txt, not .rst,
+and it should be formatted like everything else in the .txt file.
+
+>  
+> +nmi_watchdog_factor (PPC only)
+> +==================================
+> +
+> +Factor apply to to the NMI watchdog timeout (only when ``nmi_watchdog`` is
+
+   Factor to apply to the NMI
+
+> +set to 1). This factor represents the percentage added to
+> +``watchdog_thresh`` when calculating the NMI watchdog timeout during a
+
+                                                                 during an
+
+> +LPM. The soft lockup timeout is not impacted.
+> +
+> +A value of 0 means no change. The default value is 200 meaning the NMI
+> +watchdog is set to 30s (based on ``watchdog_thresh`` equal to 10).
+> +
+> +
+>  numa_balancing
+>  ==============
+>  
+
+
 -- 
-2.30.2
-
+~Randy
