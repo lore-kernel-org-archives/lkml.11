@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83BCACCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:50:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC9FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiGLSuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:50:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44972 "EHLO
+        id S234618AbiGLSvA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiGLSuZ (ORCPT
+        with ESMTP id S234399AbiGLSu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:50:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7F8E3C06;
+        Tue, 12 Jul 2022 14:50:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF99E3C0A;
         Tue, 12 Jul 2022 11:44:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2600C6090C;
-        Tue, 12 Jul 2022 18:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15AF7C3411E;
-        Tue, 12 Jul 2022 18:44:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AF0D6186E;
+        Tue, 12 Jul 2022 18:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8272EC3411C;
+        Tue, 12 Jul 2022 18:43:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651453;
-        bh=Cc2FMcbo41U7/t4HCIrRJ9iCyx8ihS/uOqE18E+9374=;
+        s=korg; t=1657651434;
+        bh=jvHwMZhTHBgi2667p9dTXzJhBqmd7pBBtH9FrE3/mks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jPkssVVBhkuKndtOLTev+48BowUX8u2KS8pacTUPDUh/Xbj3UjPPe4Fhnf5/aZ6N7
-         6uH6jY+Zw1L4lXz0D0naj6O2HGAdZmTXdNYDlzw9YfVTi17idExIq60d/HfA8IhTJh
-         PiJ+Jrlwef8GQkuJcKKg0MmbHusJ2jU7H1IyF8Mk=
+        b=s0im9JAtrGWsaxNC217gtOe199BoDwIP6utvJlfXbRD8SMRAsrunGMD53trt+QWIs
+         zQtcGjNIm8+2saFFlOS/XbWX+RoWJTr848w5J9Hi2Ciy0+qdE/viarUPGHaQU4BDgv
+         4BuMj1LYl2vnADNLdm6pj0eyJ7rTXxjUg0xGK02Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Joe Lawrence <joe.lawrence@redhat.com>,
+        Miroslav Benes <mbenes@suse.cz>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
-        Ingo Molnar <mingo@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 040/130] objtool: Dont make .altinstructions writable
-Date:   Tue, 12 Jul 2022 20:38:06 +0200
-Message-Id: <20220712183248.256129632@linuxfoundation.org>
+Subject: [PATCH 5.10 044/130] objtool: Make .altinstructions section entry size consistent
+Date:   Tue, 12 Jul 2022 20:38:10 +0200
+Message-Id: <20220712183248.440753569@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,24 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Joe Lawrence <joe.lawrence@redhat.com>
 
-commit e31694e0a7a709293319475d8001e05e31f2178c upstream.
+commit dc02368164bd0ec603e3f5b3dd8252744a667b8a upstream.
 
-When objtool creates the .altinstructions section, it sets the SHF_WRITE
-flag to make the section writable -- unless the section had already been
-previously created by the kernel.  The mismatch between kernel-created
-and objtool-created section flags can cause failures with external
-tooling (kpatch-build).  And the section doesn't need to be writable
-anyway.
+Commit e31694e0a7a7 ("objtool: Don't make .altinstructions writable")
+aligned objtool-created and kernel-created .altinstructions section
+flags, but there remains a minor discrepency in their use of a section
+entry size: objtool sets one while the kernel build does not.
 
-Make the section flags consistent with the kernel's.
+While sh_entsize of sizeof(struct alt_instr) seems intuitive, this small
+deviation can cause failures with external tooling (kpatch-build).
+
+Fix this by creating new .altinstructions sections with sh_entsize of 0
+and then later updating sec->sh_size as alternatives are added to the
+section.  An added benefit is avoiding the data descriptor and buffer
+created by elf_create_section(), but previously unused by
+elf_add_alternative().
 
 Fixes: 9bc0bb50727c ("objtool/x86: Rewrite retpoline thunk calls")
-Reported-by: Joe Lawrence <joe.lawrence@redhat.com>
+Signed-off-by: Joe Lawrence <joe.lawrence@redhat.com>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/6c284ae89717889ea136f9f0064d914cd8329d31.1624462939.git.jpoimboe@redhat.com
+Link: https://lore.kernel.org/r/20210822225037.54620-2-joe.lawrence@redhat.com
+Cc: Andy Lavr <andy.lavr@gmail.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: x86@kernel.org
+Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
@@ -80,8 +91,8 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	sec = find_section_by_name(elf, ".altinstructions");
  	if (!sec) {
  		sec = elf_create_section(elf, ".altinstructions",
--					 SHF_WRITE, size, 0);
-+					 SHF_ALLOC, size, 0);
+-					 SHF_ALLOC, size, 0);
++					 SHF_ALLOC, 0, 0);
  
  		if (!sec) {
  			WARN_ELF("elf_create_section");
