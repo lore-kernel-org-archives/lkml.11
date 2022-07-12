@@ -2,86 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F19EBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96886C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233045AbiGLO06 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:26:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43490 "EHLO
+        id S232977AbiGLO2U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:28:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233308AbiGLO0d (ORCPT
+        with ESMTP id S233618AbiGLO2F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:26:33 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2142DB93C9;
-        Tue, 12 Jul 2022 07:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657635978; x=1689171978;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0L9J2eXxRU3T3ZDdzxJjwk06pdsoufFKChVyEazSj6I=;
-  b=EH0eAnjCqFzDJuF6HIcqqZQN1Z8Nv8KZsGa3iz+XapXOd5Aj0YnbYrLb
-   y71Rha4fpA2n9uYYw9PQ6mXTaQrllHM8ZmEI5VTcglProTQey90258TKO
-   0/SkmOjXcSDYVhIxQrT61CYJaGwbR9fQg4YClYzGArOip5I8SFTWPZonC
-   CaONlljf5k59yfWRv8eVW7JD8xs+P/+PK1J7DevMD6LAwovsX5NsnGTNK
-   q1fNGalqBecEh0S6LUPg9ys1LMslwubEvSZ1qYCLA30f/de+FOl1BYO9p
-   q2i7E4dqh7Az9BRV6cuXqz8UliT3B1yetNGfKhOrYVj2YeoIBT5blvId1
-   g==;
-X-IronPort-AV: E=Sophos;i="5.92,265,1650956400"; 
-   d="scan'208";a="171772480"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 07:26:17 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Jul 2022 07:26:15 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Tue, 12 Jul 2022 07:26:13 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        "Lee Jones" <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>
-CC:     Daire McNamara <daire.mcnamara@microchip.com>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Subject: [PATCH v6 4/4] MAINTAINERS: add pwm to PolarFire SoC entry
-Date:   Tue, 12 Jul 2022 15:25:57 +0100
-Message-ID: <20220712142557.1773075-5-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220712142557.1773075-1-conor.dooley@microchip.com>
-References: <20220712142557.1773075-1-conor.dooley@microchip.com>
+        Tue, 12 Jul 2022 10:28:05 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78AC3B8EBB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:27:42 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id v7so5562098pfb.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Eh6QM0esPfevg7x/BB3b6Yko4lRoZyFoVWjVPWewdNo=;
+        b=I2sk+DFIVPh47uHTQS71+n61TGbuZMV+oHO9BfGK9vK5ijKlVywZ9Qi7n570c5/q4Q
+         GfDK3UXbnLMXbDyISIwHG4nZZ6OL1gcCRPfGovZrCPctahmGwRiDrnTLJD/LBd3uQjW+
+         RB3m8II83eQNDiBJqrCa3q7uMFnSJWj86BKaPWaGckX0LTr8hb4/1idEftUFUkWjVbYM
+         j+wftkimHHWbadJJs+2MzAL8cqmmlDjkBWgmdbMyTP7o6lxCy3DvGCKuAQkvmvqI9dGV
+         mmqVq16BYd/PSsFpkGYzxNm7FxmRttIQCFA3PUZB8ZC9bgkhCruObW9cBk+TSrfYKfoZ
+         SODg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Eh6QM0esPfevg7x/BB3b6Yko4lRoZyFoVWjVPWewdNo=;
+        b=nQumIW4KpwCWPp8aCzjmCCfHCjPXaU47d08FKbwMAWzHfB1jz3z1Zpv+y0AfbEslV7
+         WEOUrp+sBvfrgHzGIUzbXb6ssOFgracnVZ67GUqZPJAZm24162mKrj2l41DgcN4pzRBn
+         oZgkl0srUw9oCMho3ciI1ekynv7EY1jtyUKFUV5W0APtFLl4aK0XFl7ZZ+XGV/pEWr+5
+         ZHvZZxqBg85Zv3gu7A/WfwbhLXAFiZG2M/IpEEX72wETeCacMzl266iooT9vboUez2Aa
+         pfcOU+NmKrVvAwV0WKKNGD+CT601qlLdmeBw8t+0GlPo5D6mHgG43pyqZ26pD0SP1MNl
+         yMQQ==
+X-Gm-Message-State: AJIora+fit4coXsuSZXw4KOUhuYB75nOfSFjL+Drqvc9WHH82AjyTa7s
+        fAFadEZNe3gPNcsEvCmZsl3oKA==
+X-Google-Smtp-Source: AGRyM1uXr9/jjBVrPiITmVyF1a9AatjPfDy6rFi7wfBpBnkAXEaqoZLHXjAq5HzOs7U9PffHk7CW4w==
+X-Received: by 2002:a05:6a00:885:b0:510:950f:f787 with SMTP id q5-20020a056a00088500b00510950ff787mr23501521pfj.83.1657636061774;
+        Tue, 12 Jul 2022 07:27:41 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id e7-20020a17090301c700b0016c4f006603sm3932994plh.54.2022.07.12.07.27.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 07:27:41 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 14:27:37 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Durrant, Paul" <pdurrant@amazon.co.uk>
+Cc:     "x86@kernel.org" <x86@kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>
+Subject: Re: [PATCH v5] KVM: x86/xen: Update Xen CPUID Leaf 4 (tsc info)
+ sub-leaves, if present
+Message-ID: <Ys2E2ckrk0JtDl52@google.com>
+References: <20220629130514.15780-1-pdurrant@amazon.com>
+ <YsynoyUb4zrMBhRU@google.com>
+ <369c3e9e02f947e2a2b0c093cbddc99c@EX13D32EUC003.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <369c3e9e02f947e2a2b0c093cbddc99c@EX13D32EUC003.ant.amazon.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the newly introduced pwm driver to the existing PolarFire SoC entry.
+On Tue, Jul 12, 2022, Durrant, Paul wrote:
+> > > @@ -1855,3 +1858,51 @@ void kvm_xen_destroy_vm(struct kvm *kvm)
+> > >       if (kvm->arch.xen_hvm_config.msr)
+> > >               static_branch_slow_dec_deferred(&kvm_xen_enabled);
+> > >  }
+> > > +
+> > > +void kvm_xen_after_set_cpuid(struct kvm_vcpu *vcpu)
+> > > +{
+> > > +     u32 base = 0;
+> > > +     u32 limit;
+> > > +     u32 function;
+> > > +
+> > > +     vcpu->arch.xen.cpuid_tsc_info = 0;
+> > > +
+> > > +     for_each_possible_hypervisor_cpuid_base(function) {
+> > > +             struct kvm_cpuid_entry2 *entry = kvm_find_cpuid_entry(vcpu, function, 0);
+> > > +
+> > > +             if (entry &&
+> > > +                 entry->ebx == XEN_CPUID_SIGNATURE_EBX &&
+> > > +                 entry->ecx == XEN_CPUID_SIGNATURE_ECX &&
+> > > +                 entry->edx == XEN_CPUID_SIGNATURE_EDX) {
+> > > +                     base = function;
+> > > +                     limit = entry->eax;
+> > > +                     break;
+> > > +             }
+> > > +     }
+> > > +     if (!base)
+> > > +             return;
+> > 
+> > Rather than open code a variant of kvm_update_kvm_cpuid_base(), that helper can
+> > be tweaked to take a signature.  Along with a patch to provide a #define for Xen's
+> > signature as a string, this entire function becomes a one-liner.
+> > 
+> 
+> Sure, but as said above, we could make capturing the limit part of the
+> general function too. It could even be extended to capture the Hyper-V
+> base/limit too.  As for defining the sig as a string... I guess it would be
+> neater to use the values from the Xen header, but it'll probably make the
+> code more ugly so a secondary definition is reasonable.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+The base needs to be captured separately for KVM and Xen because KVM (and presumably
+Xen itself since Xen also allows a variable base) supports advertising multiple
+hypervisors to the guest.  I don't know if there are any guests that will concurrently
+utilize multiple hypervisor's paravirt features, so maybe we could squeak by, but
+saving 4 bytes isn't worth the risk.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index b5aeaddc9539..99f490a19850 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -17468,6 +17468,7 @@ F:	drivers/char/hw_random/mpfs-rng.c
- F:	drivers/clk/microchip/clk-mpfs.c
- F:	drivers/mailbox/mailbox-mpfs.c
- F:	drivers/pci/controller/pcie-microchip-host.c
-+F:	drivers/pwm/pwm-microchip-core.c
- F:	drivers/rtc/rtc-mpfs.c
- F:	drivers/soc/microchip/
- F:	drivers/spi/spi-microchip-core.c
--- 
-2.36.1
-
+AFAIK, Hyper-V doesn't allow for a variable base, and so doesn't utilize the
+for_each_possible... macro.
