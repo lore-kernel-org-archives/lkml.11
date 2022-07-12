@@ -2,115 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF01DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D096CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233644AbiGLQza (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S233208AbiGLQ5U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:57:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiGLQz1 (ORCPT
+        with ESMTP id S229497AbiGLQ5T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:55:27 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5488B3D4B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:55:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657644926; x=1689180926;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=RkulpFMaDCPfKZH1MhfG6E5Oi/4BKRCv+mbAWTJF10M=;
-  b=JRpmu+GcJYgktpfo679ahJM1uEzzCYvaZz5YyF1KejCUFPJrBXubcsKm
-   o6Zdbe2lWUwIbvNY3PSCNXqGW+CO6O+ysA+ZB2uPQrmw2EVh66Ht7EtMP
-   4mqWyrAy8ofveGi35Ubq/K1BAtU6xuM/Kr4K3esDJFv0X4gvePMyDxp2+
-   FuorQ2wPpYrrNZU/xF6owbKMSPJkGfgyY//7hDpfacW5GUfw5dXkH3srl
-   n2c+EzFBKmyf4IfcDNvoTkLkX1X7tPs9e6TQILrNwGTIQBo9mwKYGq8A5
-   vsVkpDlanuQK2SiwsY20Px8yfsvMEAZC8BoWH6rV/fIQYPQhEIdujF+AP
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265400882"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="265400882"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 09:55:26 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="684839642"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 12 Jul 2022 09:55:25 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBJAT-0002T1-88;
-        Tue, 12 Jul 2022 16:55:25 +0000
-Date:   Wed, 13 Jul 2022 00:54:30 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [chunkuang-hu:pagecaller 2/2] mm/vmstat.c:1551:25: error: implicit
- declaration of function 'kallsyms_lookup'
-Message-ID: <202207130026.0vnQ1Yl0-lkp@intel.com>
+        Tue, 12 Jul 2022 12:57:19 -0400
+Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1FA5BA3B7;
+        Tue, 12 Jul 2022 09:57:17 -0700 (PDT)
+Received: by mail-il1-f180.google.com with SMTP id d4so3961276ilc.8;
+        Tue, 12 Jul 2022 09:57:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bO4cis7Fu6e3Sp6G9HzdVn/dbSUsSia8XAXEeOC2q4I=;
+        b=xbK8nX1ZdjvY7EExhvh3jXrfuUV+Kt2Y/qxtDFQiFk/P/k3oRfzKDu36G62pI0Jde8
+         HqSrFBeYHg4HEqBXw5RQ0lClSn5oE/RtlvowdKqdhYKMqxBKejrnjSuy4vqiwsY+nNEn
+         7nctk7xz/OCfXMmIgLfGq/RmvoIZZ0NKJ2qpL0wZ21hGrR9A6ZQ01+zQaKOFsyVQUnyp
+         EsM5m8DSn2g9Z+oEC2oA+o6ZFjZypM3Rmek9TPZ2QpFoOV7eOD91OdpuXDkKTmdBvV2d
+         p+m4QUEsxFHCLCToQtCcL3e0o1L8hhuc/KFSMrm6LZRkm05DVIuloqzCStA/I2gqB0zd
+         hgEA==
+X-Gm-Message-State: AJIora+wQ3AmdnC+mezDuzatOStj5lTvaBFtSPWjhl9pE/KPgd1XHVV7
+        iZhSP4G+/msJE/9XhsR9Zg==
+X-Google-Smtp-Source: AGRyM1udMn8pbyabNzTUkhKwpXdRhSD4MzQfo0is+Z0Sw1A4/pvUbtI9AS4iImStQlQEGGNVMit23A==
+X-Received: by 2002:a92:cda2:0:b0:2dc:7060:ef14 with SMTP id g2-20020a92cda2000000b002dc7060ef14mr8871282ild.56.1657645037165;
+        Tue, 12 Jul 2022 09:57:17 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id n9-20020a056e021ba900b002d3ad9791dcsm3880957ili.27.2022.07.12.09.57.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 09:57:16 -0700 (PDT)
+Received: (nullmailer pid 2015943 invoked by uid 1000);
+        Tue, 12 Jul 2022 16:57:15 -0000
+Date:   Tue, 12 Jul 2022 10:57:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        Robert Foss <robert.foss@linaro.org>,
+        linux-arm-msm@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alex Elder <elder@linaro.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-kernel@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>
+Subject: Re: [PATCH v4] dt-bindings: qcom: document preferred compatible
+ naming
+Message-ID: <20220712165715.GD1823936-robh@kernel.org>
+References: <20220705161301.493364-1-krzysztof.kozlowski@linaro.org>
+ <1657048737.406960.2471232.nullmailer@robh.at.kernel.org>
+ <3f4f62da-302f-c6cb-0c32-73f4e36e5022@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <3f4f62da-302f-c6cb-0c32-73f4e36e5022@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git pagecaller
-head:   de987a7312cd3e22d7d6985225db9839c3bd9818
-commit: de987a7312cd3e22d7d6985225db9839c3bd9818 [2/2] mm: vmstat: add pagecaller information
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220713/202207130026.0vnQ1Yl0-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git/commit/?id=de987a7312cd3e22d7d6985225db9839c3bd9818
-        git remote add chunkuang-hu https://git.kernel.org/pub/scm/linux/kernel/git/chunkuang.hu/linux.git
-        git fetch --no-tags chunkuang-hu pagecaller
-        git checkout de987a7312cd3e22d7d6985225db9839c3bd9818
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+On Wed, Jul 06, 2022 at 08:55:18AM +0200, Krzysztof Kozlowski wrote:
+> On 05/07/2022 21:18, Rob Herring wrote:
+> > On Tue, 05 Jul 2022 18:13:01 +0200, Krzysztof Kozlowski wrote:
+> >> Compatibles can come in two formats.  Either "vendor,ip-soc" or
+> >> "vendor,soc-ip".  Qualcomm bindings were mixing both of usages, so add a
+> >> DT schema file documenting preferred policy and enforcing it for all new
+> >> compatibles, except few existing patterns.
+> >>
+> >> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> >>
+> >> ---
+> >>
+> >> Changes since v3:
+> >> 1. Add qcom,kpss-wdt-xxx to pattern for exceptions.
+> >> 2. Add ipq806x entries to list of exceptions.
+> >>
+> >> Changes since v2:
+> >> 1. Narrow the expected pattern to be followed by dash '-' after model
+> >>    number (msm8996-) or by two letters and a dash (sc8280xp-).
+> >> 2. Add qcom,apss-wdt-xxx to list of exceptions.
+> >> 3. Use comment instead of description in the oneOf list.
+> >>
+> >> Changes since v1:
+> >> 1. Add schema instead of readme (Rob).
+> >>
+> >> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> >> Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> >> Cc: Vinod Koul <vkoul@kernel.org>
+> >> Cc: Alex Elder <elder@linaro.org>
+> >> Cc: Robert Foss <robert.foss@linaro.org>
+> >> Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
+> >> ---
+> >>  .../devicetree/bindings/arm/qcom-soc.yaml     | 63 +++++++++++++++++++
+> >>  1 file changed, 63 insertions(+)
+> >>  create mode 100644 Documentation/devicetree/bindings/arm/qcom-soc.yaml
+> >>
+> > 
+> > My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+> > on your patch (DT_CHECKER_FLAGS is new in v5.13):
+> > 
+> > yamllint warnings/errors:
+> > 
+> > dtschema/dtc warnings/errors:
+> > /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/cpufreq/qcom-cpufreq-nvmem.example.dtb: /: compatible: 'oneOf' conditional failed, one must be fixed:
+> > 	'qcom,qcs404' does not match '^qcom,(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$'
+> > 	'qcom,qcs404' does not match '^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$'
+> > 	'qcom,qcs404' does not match '^qcom,[ak]pss-wdt-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' does not match '^qcom,gcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' does not match '^qcom,mmcc-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' does not match '^qcom,pcie-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' does not match '^qcom,rpm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' does not match '^qcom,scm-(apq|ipq|mdm|msm|qcs|sa|sc|sdm|sdx|sm)[0-9]+.*$'
+> > 	'qcom,qcs404' is not one of ['qcom,gpucc-sdm630', 'qcom,gpucc-sdm660', 'qcom,lcc-apq8064', 'qcom,lcc-ipq8064', 'qcom,lcc-mdm9615', 'qcom,lcc-msm8960', 'qcom,lpass-cpu-apq8016', 'qcom,usb-ss-ipq4019-phy', 'qcom,usb-hs-ipq4019-phy', 'qcom,vqmmc-ipq4019-regulator']
+> > 	'qcom,qcs404' is not one of ['qcom,ipq806x-nand', 'qcom,ipq806x-usb-phy-ss', 'qcom,ipq806x-usb-phy-hs']
+> > 	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+> > 
+> 
+> This is fixed by:
+> https://lore.kernel.org/all/20220627143340.477120-1-krzysztof.kozlowski@linaro.org/
+> https://lore.kernel.org/all/20220628092253.21905-1-krzysztof.kozlowski@linaro.org/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Okay, as long as those are applied together:
 
-All errors (new ones prefixed by >>):
-
-   mm/vmstat.c: In function 'dump_pagecaller':
->> mm/vmstat.c:1551:25: error: implicit declaration of function 'kallsyms_lookup' [-Werror=implicit-function-declaration]
-    1551 |                         kallsyms_lookup(pagecaller[i], &symbolsize,
-         |                         ^~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/kallsyms_lookup +1551 mm/vmstat.c
-
-  1531	
-  1532	static void dump_pagecaller(struct seq_file *m)
-  1533	{
-  1534		unsigned long i;
-  1535	
-  1536		seq_printf(m, "max_pfn = %lu\n", max_pfn);
-  1537		seq_printf(m, "pagecaller_nr = %lu\n", pagecaller_nr);
-  1538	
-  1539		for (i = 0; i < pagecaller_nr; i++)
-  1540			if (pagecaller[i] == 0) {
-  1541				seq_printf(m, "0x%016lx %16lu [Free memory]\n",
-  1542					   pagecaller[i], pagecaller_cnt[i] * 4);
-  1543			} else if (pagecaller[i] == 0xffffffffffffffff) {
-  1544				seq_printf(m, "0x%016lx %16lu [Reserved memory]\n",
-  1545					   pagecaller[i], pagecaller_cnt[i] * 4);
-  1546			} else {
-  1547				char symbol[80];
-  1548				unsigned long symbolsize;
-  1549				unsigned long offset;
-  1550				char *modname;
-> 1551				kallsyms_lookup(pagecaller[i], &symbolsize,
-  1552						&offset, &modname, symbol);
-  1553				seq_printf(m, "0x%016lx %16lu %s\n", pagecaller[i],
-  1554					   pagecaller_cnt[i] * 4, symbol);
-  1555			}
-  1556	}
-  1557	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Reviewed-by: Rob Herring <robh@kernel.org>
