@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B93EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF097C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235905AbiGLTMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
+        id S235875AbiGLTND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235769AbiGLTMU (ORCPT
+        with ESMTP id S235816AbiGLTMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:12:20 -0400
+        Tue, 12 Jul 2022 15:12:24 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E8D10272F;
-        Tue, 12 Jul 2022 11:53:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 856B21034C4;
+        Tue, 12 Jul 2022 11:53:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0347061578;
-        Tue, 12 Jul 2022 18:53:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00D60C3411C;
-        Tue, 12 Jul 2022 18:53:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 155D761257;
+        Tue, 12 Jul 2022 18:53:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 050A8C3411E;
+        Tue, 12 Jul 2022 18:53:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651993;
-        bh=h88RRdhALqRqeQGkQu8w5tHHC/J2GjUZi8h4KKxYYFo=;
+        s=korg; t=1657651996;
+        bh=gxWo/jcboDjuU3NrMgER3GlDJpsiOG+ZPhsr76J6rZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jGV6B9GMgqLgO5dVJnECJlhbV6H9IkWLAlErrqnFXS5tWt3SGBtk953kIEKY9noXD
-         7mdbT+lW1N9VttmrZ7hI17pPDCf10Y2yArmCR/6yMq+nTT4w4SjhX12ZXGFfOwYuYu
-         kLWod7ubnLf8tKSIPeDUWvOpMBs0Nkpm2u7KPEpA=
+        b=kvIj6lOutWdYUuoYYsi/vnd6p9C8+qlfD/WVTpn48tkf9y2uc45gsmtWnzfReqFY8
+         giSv6Bd0Z0zEhQk5VJ94F24E+M1/M8aXZAVK0XoeGILfde++1BTglPdoKzD7lQuyn1
+         ELml1mulJ6Zn/jwgI8uIJpkPqTo4v8axOUS/fHlY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 39/61] objtool: Add entry UNRET validation
-Date:   Tue, 12 Jul 2022 20:39:36 +0200
-Message-Id: <20220712183238.545788508@linuxfoundation.org>
+Subject: [PATCH 5.18 48/61] KVM: VMX: Convert launched argument to flags
+Date:   Tue, 12 Jul 2022 20:39:45 +0200
+Message-Id: <20220712183238.860186370@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -51,542 +50,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit a09a6e2399ba0595c3042b3164f3ca68a3cff33e upstream.
+commit bb06650634d3552c0f8557e9d16aa1a408040e28 upstream.
 
-Since entry asm is tricky, add a validation pass that ensures the
-retbleed mitigation has been done before the first actual RET
-instruction.
+Convert __vmx_vcpu_run()'s 'launched' argument to 'flags', in
+preparation for doing SPEC_CTRL handling immediately after vmexit, which
+will need another flag.
 
-Entry points are those that either have UNWIND_HINT_ENTRY, which acts
-as UNWIND_HINT_EMPTY but marks the instruction as an entry point, or
-those that have UWIND_HINT_IRET_REGS at +0.
+This is much easier than adding a fourth argument, because this code
+supports both 32-bit and 64-bit, and the fourth argument on 32-bit would
+have to be pushed on the stack.
 
-This is basically a variant of validate_branch() that is
-intra-function and it will simply follow all branches from marked
-entry points and ensures that all paths lead to ANNOTATE_UNRET_END.
+Note that __vmx_vcpu_run_flags() is called outside of the noinstr
+critical section because it will soon start calling potentially
+traceable functions.
 
-If a path hits RET or an indirection the path is a fail and will be
-reported.
-
-There are 3 ANNOTATE_UNRET_END instances:
-
- - UNTRAIN_RET itself
- - exception from-kernel; this path doesn't need UNTRAIN_RET
- - all early exceptions; these also don't need UNTRAIN_RET
-
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: tools/objtool/builtin-check.c no link option validation]
-[cascardo: tools/objtool/check.c opts.ibt is ibt]
-[cascardo: tools/objtool/include/objtool/builtin.h leave unret option as bool, no struct opts]
-[cascardo: objtool is still called from scripts/link-vmlinux.sh]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S               |    3 
- arch/x86/entry/entry_64_compat.S        |    6 -
- arch/x86/include/asm/nospec-branch.h    |   12 ++
- arch/x86/include/asm/unwind_hints.h     |    4 
- arch/x86/kernel/head_64.S               |    5 
- arch/x86/xen/xen-asm.S                  |   10 -
- include/linux/objtool.h                 |    3 
- scripts/link-vmlinux.sh                 |    3 
- tools/include/linux/objtool.h           |    3 
- tools/objtool/builtin-check.c           |    3 
- tools/objtool/check.c                   |  177 ++++++++++++++++++++++++++++++--
- tools/objtool/include/objtool/builtin.h |    2 
- tools/objtool/include/objtool/check.h   |   11 +
- 13 files changed, 220 insertions(+), 22 deletions(-)
+ arch/x86/kvm/vmx/nested.c    |    2 +-
+ arch/x86/kvm/vmx/run_flags.h |    7 +++++++
+ arch/x86/kvm/vmx/vmenter.S   |    9 +++++----
+ arch/x86/kvm/vmx/vmx.c       |   17 ++++++++++++++---
+ arch/x86/kvm/vmx/vmx.h       |    5 ++++-
+ 5 files changed, 31 insertions(+), 9 deletions(-)
+ create mode 100644 arch/x86/kvm/vmx/run_flags.h
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -85,7 +85,7 @@
-  */
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3091,7 +3091,7 @@ static int nested_vmx_check_vmentry_hw(s
+ 	}
  
- SYM_CODE_START(entry_SYSCALL_64)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
+ 	vm_fail = __vmx_vcpu_run(vmx, (unsigned long *)&vcpu->arch.regs,
+-				 vmx->loaded_vmcs->launched);
++				 __vmx_vcpu_run_flags(vmx));
  
- 	swapgs
-@@ -1088,6 +1088,7 @@ SYM_CODE_START_LOCAL(error_entry)
- .Lerror_entry_done_lfence:
- 	FENCE_SWAPGS_KERNEL_ENTRY
- 	leaq	8(%rsp), %rax			/* return pt_regs pointer */
-+	ANNOTATE_UNRET_END
- 	RET
- 
- .Lbstep_iret:
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -49,7 +49,7 @@
-  * 0(%ebp) arg6
-  */
- SYM_CODE_START(entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/* Interrupts are off on entry. */
- 	SWAPGS
-@@ -204,7 +204,7 @@ SYM_CODE_END(entry_SYSENTER_compat)
-  * 0(%esp) arg6
-  */
- SYM_CODE_START(entry_SYSCALL_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/* Interrupts are off on entry. */
- 	swapgs
-@@ -353,7 +353,7 @@ SYM_CODE_END(entry_SYSCALL_compat)
-  * ebp  arg6
-  */
- SYM_CODE_START(entry_INT80_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/*
- 	 * Interrupts are off on entry.
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -82,6 +82,17 @@
- #define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
- 
- /*
-+ * Abuse ANNOTATE_RETPOLINE_SAFE on a NOP to indicate UNRET_END, should
-+ * eventually turn into it's own annotation.
-+ */
-+.macro ANNOTATE_UNRET_END
-+#ifdef CONFIG_DEBUG_ENTRY
-+	ANNOTATE_RETPOLINE_SAFE
-+	nop
-+#endif
-+.endm
+ 	if (vmx->msr_autoload.host.nr)
+ 		vmcs_write32(VM_EXIT_MSR_LOAD_COUNT, vmx->msr_autoload.host.nr);
+--- /dev/null
++++ b/arch/x86/kvm/vmx/run_flags.h
+@@ -0,0 +1,7 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __KVM_X86_VMX_RUN_FLAGS_H
++#define __KVM_X86_VMX_RUN_FLAGS_H
 +
-+/*
-  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
-  * indirect jmp/call which may be susceptible to the Spectre variant 2
-  * attack.
-@@ -131,6 +142,7 @@
-  */
- .macro UNTRAIN_RET
- #ifdef CONFIG_RETPOLINE
-+	ANNOTATE_UNRET_END
- 	ALTERNATIVE_2 "",						\
- 	              "call zen_untrain_ret", X86_FEATURE_UNRET,	\
- 		      "call entry_ibpb", X86_FEATURE_ENTRY_IBPB
---- a/arch/x86/include/asm/unwind_hints.h
-+++ b/arch/x86/include/asm/unwind_hints.h
-@@ -11,6 +11,10 @@
- 	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
- .endm
- 
-+.macro UNWIND_HINT_ENTRY
-+	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
-+.endm
++#define VMX_RUN_VMRESUME	(1 << 0)
 +
- .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
- 	.if \base == %rsp
- 		.if \indirect
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -334,6 +334,8 @@ SYM_CODE_START_NOALIGN(vc_boot_ghcb)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
++#endif /* __KVM_X86_VMX_RUN_FLAGS_H */
+--- a/arch/x86/kvm/vmx/vmenter.S
++++ b/arch/x86/kvm/vmx/vmenter.S
+@@ -5,6 +5,7 @@
+ #include <asm/kvm_vcpu_regs.h>
+ #include <asm/nospec-branch.h>
+ #include <asm/segment.h>
++#include "run_flags.h"
  
-+	ANNOTATE_UNRET_END
-+
- 	/* Build pt_regs */
- 	PUSH_AND_CLEAR_REGS
+ #define WORD_SIZE (BITS_PER_LONG / 8)
  
-@@ -393,6 +395,7 @@ SYM_CODE_END(early_idt_handler_array)
- 
- SYM_CODE_START_LOCAL(early_idt_handler_common)
- 	UNWIND_HINT_IRET_REGS offset=16
-+	ANNOTATE_UNRET_END
- 	/*
- 	 * The stack is the hardware frame, an error code or zero, and the
- 	 * vector number.
-@@ -442,6 +445,8 @@ SYM_CODE_START_NOALIGN(vc_no_ghcb)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
- 
-+	ANNOTATE_UNRET_END
-+
- 	/* Build pt_regs */
- 	PUSH_AND_CLEAR_REGS
- 
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -121,7 +121,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
- 
- .macro xen_pv_trap name
- SYM_CODE_START(xen_\name)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	pop %rcx
- 	pop %r11
-@@ -235,7 +235,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
- 
- /* Normal 64-bit system call target */
- SYM_CODE_START(xen_entry_SYSCALL_64)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	popq %rcx
- 	popq %r11
-@@ -255,7 +255,7 @@ SYM_CODE_END(xen_entry_SYSCALL_64)
- 
- /* 32-bit compat syscall target */
- SYM_CODE_START(xen_entry_SYSCALL_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	popq %rcx
- 	popq %r11
-@@ -273,7 +273,7 @@ SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- /* 32-bit compat sysenter target */
- SYM_CODE_START(xen_entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
-@@ -297,7 +297,7 @@ SYM_CODE_END(xen_entry_SYSENTER_compat)
- 
- SYM_CODE_START(xen_entry_SYSCALL_compat)
- SYM_CODE_START(xen_entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -32,11 +32,14 @@ struct unwind_hint {
+@@ -34,7 +35,7 @@
+  * __vmx_vcpu_run - Run a vCPU via a transition to VMX guest mode
+  * @vmx:	struct vcpu_vmx * (forwarded to vmx_update_host_rsp)
+  * @regs:	unsigned long * (to guest registers)
+- * @launched:	%true if the VMCS has been launched
++ * @flags:	VMX_RUN_VMRESUME: use VMRESUME instead of VMLAUNCH
   *
-  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-  * Useful for code which doesn't have an ELF function annotation.
-+ *
-+ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
-+#define UNWIND_HINT_TYPE_ENTRY		4
+  * Returns:
+  *	0 on VM-Exit, 1 on VM-Fail
+@@ -59,7 +60,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	 */
+ 	push %_ASM_ARG2
  
- #ifdef CONFIG_STACK_VALIDATION
+-	/* Copy @launched to BL, _ASM_ARG3 is volatile. */
++	/* Copy @flags to BL, _ASM_ARG3 is volatile. */
+ 	mov %_ASM_ARG3B, %bl
  
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -130,6 +130,9 @@ objtool_link()
+ 	lea (%_ASM_SP), %_ASM_ARG2
+@@ -69,7 +70,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	mov (%_ASM_SP), %_ASM_AX
  
- 	if is_enabled CONFIG_VMLINUX_VALIDATION; then
- 		objtoolopt="${objtoolopt} --noinstr"
-+		if is_enabled CONFIG_RETPOLINE; then
-+			objtoolopt="${objtoolopt} --unret"
-+		fi
- 	fi
+ 	/* Check if vmlaunch or vmresume is needed */
+-	testb %bl, %bl
++	testb $VMX_RUN_VMRESUME, %bl
  
- 	if [ -n "${objtoolopt}" ]; then
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -32,11 +32,14 @@ struct unwind_hint {
-  *
-  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-  * Useful for code which doesn't have an ELF function annotation.
-+ *
-+ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
-+#define UNWIND_HINT_TYPE_ENTRY		4
+ 	/* Load guest registers.  Don't clobber flags. */
+ 	mov VCPU_RCX(%_ASM_AX), %_ASM_CX
+@@ -92,7 +93,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
+ 	mov VCPU_RAX(%_ASM_AX), %_ASM_AX
  
- #ifdef CONFIG_STACK_VALIDATION
+ 	/* Check EFLAGS.ZF from 'testb' above */
+-	je .Lvmlaunch
++	jz .Lvmlaunch
  
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -21,7 +21,7 @@
- 
- bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
-      lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
--     ibt;
-+     ibt, unret;
- 
- static const char * const check_usage[] = {
- 	"objtool check [<options>] file.o",
-@@ -37,6 +37,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('f', "no-fp", &no_fp, "Skip frame pointer validation"),
- 	OPT_BOOLEAN('u', "no-unreachable", &no_unreachable, "Skip 'unreachable instruction' warnings"),
- 	OPT_BOOLEAN('r', "retpoline", &retpoline, "Validate retpoline assumptions"),
-+	OPT_BOOLEAN(0,   "unret", &unret, "validate entry unret placement"),
- 	OPT_BOOLEAN('m', "module", &module, "Indicates the object will be part of a kernel module"),
- 	OPT_BOOLEAN('b', "backtrace", &backtrace, "unwind on error"),
- 	OPT_BOOLEAN('a', "uaccess", &uaccess, "enable uaccess checking"),
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2031,16 +2031,24 @@ static int read_unwind_hints(struct objt
- 
- 		insn->hint = true;
- 
--		if (ibt && hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
-+		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
- 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
- 
--			if (sym && sym->bind == STB_GLOBAL &&
--			    insn->type != INSN_ENDBR && !insn->noendbr) {
--				WARN_FUNC("UNWIND_HINT_IRET_REGS without ENDBR",
--					  insn->sec, insn->offset);
-+			if (sym && sym->bind == STB_GLOBAL) {
-+				if (ibt && insn->type != INSN_ENDBR && !insn->noendbr) {
-+					WARN_FUNC("UNWIND_HINT_IRET_REGS without ENDBR",
-+						  insn->sec, insn->offset);
-+				}
-+
-+				insn->entry = 1;
- 			}
- 		}
- 
-+		if (hint->type == UNWIND_HINT_TYPE_ENTRY) {
-+			hint->type = UNWIND_HINT_TYPE_CALL;
-+			insn->entry = 1;
-+		}
-+
- 		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
- 			insn->cfi = &func_cfi;
- 			continue;
-@@ -2115,8 +2123,9 @@ static int read_retpoline_hints(struct o
- 
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
- 		    insn->type != INSN_CALL_DYNAMIC &&
--		    insn->type != INSN_RETURN) {
--			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
-+		    insn->type != INSN_RETURN &&
-+		    insn->type != INSN_NOP) {
-+			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret/nop",
- 				  insn->sec, insn->offset);
- 			return -1;
- 		}
-@@ -3412,8 +3421,8 @@ static int validate_branch(struct objtoo
- 			return 1;
- 		}
- 
--		visited = 1 << state.uaccess;
--		if (insn->visited) {
-+		visited = VISITED_BRANCH << state.uaccess;
-+		if (insn->visited & VISITED_BRANCH_MASK) {
- 			if (!insn->hint && !insn_cfi_match(insn, &state.cfi))
- 				return 1;
- 
-@@ -3642,6 +3651,145 @@ static int validate_unwind_hints(struct
- 	return warnings;
+ 	/*
+ 	 * After a successful VMRESUME/VMLAUNCH, control flow "magically"
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -839,6 +839,16 @@ static bool msr_write_intercepted(struct
+ 					 MSR_IA32_SPEC_CTRL);
  }
  
-+/*
-+ * Validate rethunk entry constraint: must untrain RET before the first RET.
-+ *
-+ * Follow every branch (intra-function) and ensure ANNOTATE_UNRET_END comes
-+ * before an actual RET instruction.
-+ */
-+static int validate_entry(struct objtool_file *file, struct instruction *insn)
++unsigned int __vmx_vcpu_run_flags(struct vcpu_vmx *vmx)
 +{
-+	struct instruction *next, *dest;
-+	int ret, warnings = 0;
++	unsigned int flags = 0;
 +
-+	for (;;) {
-+		next = next_insn_to_validate(file, insn);
++	if (vmx->loaded_vmcs->launched)
++		flags |= VMX_RUN_VMRESUME;
 +
-+		if (insn->visited & VISITED_ENTRY)
-+			return 0;
-+
-+		insn->visited |= VISITED_ENTRY;
-+
-+		if (!insn->ignore_alts && !list_empty(&insn->alts)) {
-+			struct alternative *alt;
-+			bool skip_orig = false;
-+
-+			list_for_each_entry(alt, &insn->alts, list) {
-+				if (alt->skip_orig)
-+					skip_orig = true;
-+
-+				ret = validate_entry(file, alt->insn);
-+				if (ret) {
-+				        if (backtrace)
-+						BT_FUNC("(alt)", insn);
-+					return ret;
-+				}
-+			}
-+
-+			if (skip_orig)
-+				return 0;
-+		}
-+
-+		switch (insn->type) {
-+
-+		case INSN_CALL_DYNAMIC:
-+		case INSN_JUMP_DYNAMIC:
-+		case INSN_JUMP_DYNAMIC_CONDITIONAL:
-+			WARN_FUNC("early indirect call", insn->sec, insn->offset);
-+			return 1;
-+
-+		case INSN_JUMP_UNCONDITIONAL:
-+		case INSN_JUMP_CONDITIONAL:
-+			if (!is_sibling_call(insn)) {
-+				if (!insn->jump_dest) {
-+					WARN_FUNC("unresolved jump target after linking?!?",
-+						  insn->sec, insn->offset);
-+					return -1;
-+				}
-+				ret = validate_entry(file, insn->jump_dest);
-+				if (ret) {
-+					if (backtrace) {
-+						BT_FUNC("(branch%s)", insn,
-+							insn->type == INSN_JUMP_CONDITIONAL ? "-cond" : "");
-+					}
-+					return ret;
-+				}
-+
-+				if (insn->type == INSN_JUMP_UNCONDITIONAL)
-+					return 0;
-+
-+				break;
-+			}
-+
-+			/* fallthrough */
-+		case INSN_CALL:
-+			dest = find_insn(file, insn->call_dest->sec,
-+					 insn->call_dest->offset);
-+			if (!dest) {
-+				WARN("Unresolved function after linking!?: %s",
-+				     insn->call_dest->name);
-+				return -1;
-+			}
-+
-+			ret = validate_entry(file, dest);
-+			if (ret) {
-+				if (backtrace)
-+					BT_FUNC("(call)", insn);
-+				return ret;
-+			}
-+			/*
-+			 * If a call returns without error, it must have seen UNTRAIN_RET.
-+			 * Therefore any non-error return is a success.
-+			 */
-+			return 0;
-+
-+		case INSN_RETURN:
-+			WARN_FUNC("RET before UNTRAIN", insn->sec, insn->offset);
-+			return 1;
-+
-+		case INSN_NOP:
-+			if (insn->retpoline_safe)
-+				return 0;
-+			break;
-+
-+		default:
-+			break;
-+		}
-+
-+		if (!next) {
-+			WARN_FUNC("teh end!", insn->sec, insn->offset);
-+			return -1;
-+		}
-+		insn = next;
-+	}
-+
-+	return warnings;
++	return flags;
 +}
 +
-+/*
-+ * Validate that all branches starting at 'insn->entry' encounter UNRET_END
-+ * before RET.
-+ */
-+static int validate_unret(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	int ret, warnings = 0;
-+
-+	for_each_insn(file, insn) {
-+		if (!insn->entry)
-+			continue;
-+
-+		ret = validate_entry(file, insn);
-+		if (ret < 0) {
-+			WARN_FUNC("Failed UNRET validation", insn->sec, insn->offset);
-+			return ret;
-+		}
-+		warnings += ret;
-+	}
-+
-+	return warnings;
-+}
-+
- static int validate_retpoline(struct objtool_file *file)
+ static void clear_atomic_switch_msr_special(struct vcpu_vmx *vmx,
+ 		unsigned long entry, unsigned long exit)
  {
- 	struct instruction *insn;
-@@ -4005,6 +4153,17 @@ int check(struct objtool_file *file)
- 		goto out;
- 	warnings += ret;
+@@ -6827,7 +6837,8 @@ static fastpath_t vmx_exit_handlers_fast
+ }
  
-+	if (unret) {
-+		/*
-+		 * Must be after validate_branch() and friends, it plays
-+		 * further games with insn->visited.
-+		 */
-+		ret = validate_unret(file);
-+		if (ret < 0)
-+			return ret;
-+		warnings += ret;
-+	}
-+
- 	if (ibt) {
- 		ret = validate_ibt(file);
- 		if (ret < 0)
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -10,7 +10,7 @@
- extern const struct option check_options[];
- extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
- 	    lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
--	    ibt;
-+	    ibt, unret;
- 
- extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
- 
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -51,8 +51,10 @@ struct instruction {
- 	   ignore_alts	: 1,
- 	   hint		: 1,
- 	   retpoline_safe : 1,
--	   noendbr	: 1;
--		/* 2 bit hole */
-+	   noendbr	: 1,
-+	   entry	: 1;
-+		/* 1 bit hole */
-+
- 	s8 instr;
- 	u8 visited;
- 	/* u8 hole */
-@@ -69,6 +71,11 @@ struct instruction {
- 	struct cfi_state *cfi;
- };
- 
-+#define VISITED_BRANCH		0x01
-+#define VISITED_BRANCH_UACCESS	0x02
-+#define VISITED_BRANCH_MASK	0x03
-+#define VISITED_ENTRY		0x04
-+
- static inline bool is_static_jump(struct instruction *insn)
+ static noinstr void vmx_vcpu_enter_exit(struct kvm_vcpu *vcpu,
+-					struct vcpu_vmx *vmx)
++					struct vcpu_vmx *vmx,
++					unsigned long flags)
  {
- 	return insn->type == INSN_JUMP_CONDITIONAL ||
+ 	guest_state_enter_irqoff();
+ 
+@@ -6846,7 +6857,7 @@ static noinstr void vmx_vcpu_enter_exit(
+ 		native_write_cr2(vcpu->arch.cr2);
+ 
+ 	vmx->fail = __vmx_vcpu_run(vmx, (unsigned long *)&vcpu->arch.regs,
+-				   vmx->loaded_vmcs->launched);
++				   flags);
+ 
+ 	vcpu->arch.cr2 = native_read_cr2();
+ 
+@@ -6954,7 +6965,7 @@ static fastpath_t vmx_vcpu_run(struct kv
+ 	x86_spec_ctrl_set_guest(vmx->spec_ctrl, 0);
+ 
+ 	/* The actual VMENTER/EXIT is in the .noinstr.text section. */
+-	vmx_vcpu_enter_exit(vcpu, vmx);
++	vmx_vcpu_enter_exit(vcpu, vmx, __vmx_vcpu_run_flags(vmx));
+ 
+ 	/*
+ 	 * We do not use IBRS in the kernel. If this vCPU has used the
+--- a/arch/x86/kvm/vmx/vmx.h
++++ b/arch/x86/kvm/vmx/vmx.h
+@@ -13,6 +13,7 @@
+ #include "vmcs.h"
+ #include "vmx_ops.h"
+ #include "cpuid.h"
++#include "run_flags.h"
+ 
+ #define MSR_TYPE_R	1
+ #define MSR_TYPE_W	2
+@@ -404,7 +405,9 @@ void vmx_set_virtual_apic_mode(struct kv
+ struct vmx_uret_msr *vmx_find_uret_msr(struct vcpu_vmx *vmx, u32 msr);
+ void pt_update_intercept_for_msr(struct kvm_vcpu *vcpu);
+ void vmx_update_host_rsp(struct vcpu_vmx *vmx, unsigned long host_rsp);
+-bool __vmx_vcpu_run(struct vcpu_vmx *vmx, unsigned long *regs, bool launched);
++unsigned int __vmx_vcpu_run_flags(struct vcpu_vmx *vmx);
++bool __vmx_vcpu_run(struct vcpu_vmx *vmx, unsigned long *regs,
++		    unsigned int flags);
+ int vmx_find_loadstore_msr_slot(struct vmx_msrs *m, u32 msr);
+ void vmx_ept_load_pdptrs(struct kvm_vcpu *vcpu);
+ 
 
 
