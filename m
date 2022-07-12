@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44457CCA480
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9FECCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234836AbiGLSze (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:55:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54432 "EHLO
+        id S234915AbiGLSzh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:55:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234768AbiGLSyf (ORCPT
+        with ESMTP id S234787AbiGLSyi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:54:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C591E95EC;
-        Tue, 12 Jul 2022 11:46:04 -0700 (PDT)
+        Tue, 12 Jul 2022 14:54:38 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592BFE95F8;
+        Tue, 12 Jul 2022 11:46:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50192B81B95;
-        Tue, 12 Jul 2022 18:46:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B945BC3411C;
-        Tue, 12 Jul 2022 18:46:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC43160A1C;
+        Tue, 12 Jul 2022 18:46:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB91BC3411C;
+        Tue, 12 Jul 2022 18:46:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651562;
-        bh=ay3LWH7pBox0dI17p/VUYfmLXWQBubpVZeIlarQLFx4=;
+        s=korg; t=1657651565;
+        bh=rn3X5p8IfphIAOw9YW6Id6cWDmF/8gFuGDqC30KUOfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u15CJFXew1VTkYZlxQ6ilYtrnt2c0415qf6jEH15JS9Mim3ZcOlFzioA4ZxhsvYzE
-         Uwof1DMtnHABEDRbDUckWn2U2J1Kl1u3T27hgyuXaql2ze2m3p0Orwp4gfgDeSza2k
-         POsbZ8Uz/+Q+sqvBunl9uNHEokDR4zBhTdnVx61U=
+        b=qZb0a6XuOSLa+mhzZgOvHpbQLMN448pu3H7MbeL6kN3V5qp3NPbEjklXW4fwnvItD
+         V5SnIoneL04Lrn8oy4he0xKHNRyIN6zneqRtoQtqR6JqPimNSJKuwD3xqW4/P2P9fQ
+         eXqcAVTmLVXwA2UCGAowAYiZ8GzdTidMaF2ZyMqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 107/130] x86/xen: Rename SYS* entry points
-Date:   Tue, 12 Jul 2022 20:39:13 +0200
-Message-Id: <20220712183251.409713836@linuxfoundation.org>
+Subject: [PATCH 5.10 116/130] x86/speculation: Remove x86_spec_ctrl_mask
+Date:   Tue, 12 Jul 2022 20:39:22 +0200
+Message-Id: <20220712183251.809364205@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -52,134 +51,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit b75b7f8ef1148be1b9321ffc2f6c19238904b438 upstream.
+commit acac5e98ef8d638a411cfa2ee676c87e1973f126 upstream.
 
-Native SYS{CALL,ENTER} entry points are called
-entry_SYS{CALL,ENTER}_{64,compat}, make sure the Xen versions are
-named consistently.
+This mask has been made redundant by kvm_spec_ctrl_test_value().  And it
+doesn't even work when MSR interception is disabled, as the guest can
+just write to SPEC_CTRL directly.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/setup.c   |    6 +++---
- arch/x86/xen/xen-asm.S |   20 ++++++++++----------
- arch/x86/xen/xen-ops.h |    6 +++---
- 3 files changed, 16 insertions(+), 16 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   31 +------------------------------
+ 1 file changed, 1 insertion(+), 30 deletions(-)
 
---- a/arch/x86/xen/setup.c
-+++ b/arch/x86/xen/setup.c
-@@ -922,7 +922,7 @@ void xen_enable_sysenter(void)
- 	if (!boot_cpu_has(sysenter_feature))
- 		return;
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -85,12 +85,6 @@ u64 spec_ctrl_current(void)
+ EXPORT_SYMBOL_GPL(spec_ctrl_current);
  
--	ret = register_callback(CALLBACKTYPE_sysenter, xen_sysenter_target);
-+	ret = register_callback(CALLBACKTYPE_sysenter, xen_entry_SYSENTER_compat);
- 	if(ret != 0)
- 		setup_clear_cpu_cap(sysenter_feature);
- }
-@@ -931,7 +931,7 @@ void xen_enable_syscall(void)
- {
- 	int ret;
- 
--	ret = register_callback(CALLBACKTYPE_syscall, xen_syscall_target);
-+	ret = register_callback(CALLBACKTYPE_syscall, xen_entry_SYSCALL_64);
- 	if (ret != 0) {
- 		printk(KERN_ERR "Failed to set syscall callback: %d\n", ret);
- 		/* Pretty fatal; 64-bit userspace has no other
-@@ -940,7 +940,7 @@ void xen_enable_syscall(void)
- 
- 	if (boot_cpu_has(X86_FEATURE_SYSCALL32)) {
- 		ret = register_callback(CALLBACKTYPE_syscall32,
--					xen_syscall32_target);
-+					xen_entry_SYSCALL_compat);
- 		if (ret != 0)
- 			setup_clear_cpu_cap(X86_FEATURE_SYSCALL32);
- 	}
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -276,7 +276,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
+ /*
+- * The vendor and possibly platform specific bits which can be modified in
+- * x86_spec_ctrl_base.
+- */
+-static u64 __ro_after_init x86_spec_ctrl_mask = SPEC_CTRL_IBRS;
+-
+-/*
+  * AMD specific MSR info for Speculative Store Bypass control.
+  * x86_amd_ls_cfg_ssbd_mask is initialized in identify_boot_cpu().
   */
+@@ -138,10 +132,6 @@ void __init check_bugs(void)
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+ 		rdmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
  
- /* Normal 64-bit system call target */
--SYM_CODE_START(xen_syscall_target)
-+SYM_CODE_START(xen_entry_SYSCALL_64)
- 	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
-@@ -290,12 +290,12 @@ SYM_CODE_START(xen_syscall_target)
- 	movq $__USER_CS, 1*8(%rsp)
+-	/* Allow STIBP in MSR_SPEC_CTRL if supported */
+-	if (boot_cpu_has(X86_FEATURE_STIBP))
+-		x86_spec_ctrl_mask |= SPEC_CTRL_STIBP;
+-
+ 	/* Select the proper CPU mitigations before patching alternatives: */
+ 	spectre_v1_select_mitigation();
+ 	spectre_v2_select_mitigation();
+@@ -199,19 +189,10 @@ void __init check_bugs(void)
+ void
+ x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
+ {
+-	u64 msrval, guestval, hostval = spec_ctrl_current();
++	u64 msrval, guestval = guest_spec_ctrl, hostval = spec_ctrl_current();
+ 	struct thread_info *ti = current_thread_info();
  
- 	jmp entry_SYSCALL_64_after_hwframe
--SYM_CODE_END(xen_syscall_target)
-+SYM_CODE_END(xen_entry_SYSCALL_64)
+-	/* Is MSR_SPEC_CTRL implemented ? */
+ 	if (static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL)) {
+-		/*
+-		 * Restrict guest_spec_ctrl to supported values. Clear the
+-		 * modifiable bits in the host base value and or the
+-		 * modifiable bits from the guest value.
+-		 */
+-		guestval = hostval & ~x86_spec_ctrl_mask;
+-		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+-
+ 		if (hostval != guestval) {
+ 			msrval = setguest ? guestval : hostval;
+ 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
+@@ -1622,16 +1603,6 @@ static enum ssb_mitigation __init __ssb_
+ 	}
  
- #ifdef CONFIG_IA32_EMULATION
- 
- /* 32-bit compat syscall target */
--SYM_CODE_START(xen_syscall32_target)
-+SYM_CODE_START(xen_entry_SYSCALL_compat)
- 	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
-@@ -309,10 +309,10 @@ SYM_CODE_START(xen_syscall32_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSCALL_compat_after_hwframe
--SYM_CODE_END(xen_syscall32_target)
-+SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- /* 32-bit compat sysenter target */
--SYM_CODE_START(xen_sysenter_target)
-+SYM_CODE_START(xen_entry_SYSENTER_compat)
- 	UNWIND_HINT_EMPTY
  	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
-@@ -330,18 +330,18 @@ SYM_CODE_START(xen_sysenter_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSENTER_compat_after_hwframe
--SYM_CODE_END(xen_sysenter_target)
-+SYM_CODE_END(xen_entry_SYSENTER_compat)
- 
- #else /* !CONFIG_IA32_EMULATION */
- 
--SYM_CODE_START(xen_syscall32_target)
--SYM_CODE_START(xen_sysenter_target)
-+SYM_CODE_START(xen_entry_SYSCALL_compat)
-+SYM_CODE_START(xen_entry_SYSENTER_compat)
- 	UNWIND_HINT_EMPTY
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
- 	pushq $0
- 	jmp hypercall_iret
--SYM_CODE_END(xen_sysenter_target)
--SYM_CODE_END(xen_syscall32_target)
-+SYM_CODE_END(xen_entry_SYSENTER_compat)
-+SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- #endif	/* CONFIG_IA32_EMULATION */
---- a/arch/x86/xen/xen-ops.h
-+++ b/arch/x86/xen/xen-ops.h
-@@ -10,10 +10,10 @@
- /* These are code, but not functions.  Defined in entry.S */
- extern const char xen_failsafe_callback[];
- 
--void xen_sysenter_target(void);
-+void xen_entry_SYSENTER_compat(void);
- #ifdef CONFIG_X86_64
--void xen_syscall_target(void);
--void xen_syscall32_target(void);
-+void xen_entry_SYSCALL_64(void);
-+void xen_entry_SYSCALL_compat(void);
- #endif
- 
- extern void *xen_initial_gdt;
+-	 * If SSBD is controlled by the SPEC_CTRL MSR, then set the proper
+-	 * bit in the mask to allow guests to use the mitigation even in the
+-	 * case where the host does not enable it.
+-	 */
+-	if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
+-	    static_cpu_has(X86_FEATURE_AMD_SSBD)) {
+-		x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
+-	}
+-
+-	/*
+ 	 * We have three CPU feature flags that are in play here:
+ 	 *  - X86_BUG_SPEC_STORE_BYPASS - CPU is susceptible.
+ 	 *  - X86_FEATURE_SSBD - CPU is able to turn off speculative store bypass
 
 
