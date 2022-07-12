@@ -2,124 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4669FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 01:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230478AbiGLBgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 21:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S231303AbiGLBhH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 21:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229515AbiGLBge (ORCPT
+        with ESMTP id S229515AbiGLBhG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 21:36:34 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D270C2AE1C;
-        Mon, 11 Jul 2022 18:36:32 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 26C1aA8l029362;
-        Tue, 12 Jul 2022 10:36:11 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 26C1aA8l029362
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1657589771;
-        bh=/DJh0T9UEeSd0UnVmkJ3Yb1uvTEdoJFkOji+14jZ4Ng=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=UoSn8bUbb/ZWt7KcKridmJV+Sd0BR5TdoznG8B20/ipOYMKgAyl/WTkjPrVlzRqlQ
-         zYiWb+Z+zzYwi7jjiIHHqQUiTQtrvg7OxltvIpB5zQ4L2ALpMWh4USRAW6UqW3v2oB
-         RUyMkI8QUGuZ/CObljwd1UBo6vBg4lEgJHyw/bEDw/yjcg7RT3ko6ydhWzXvzOKHt8
-         etCvMaTk5YYgYEe1IQVsWeKOlR14oqVTPBvC9zRilWYUYYi523co62dp7I6gRTDxtC
-         7Gako/XtVZ3PzVOWfrp5GJWhblp3jfFoxffHez0PKmmywYbn25pNX/RPcfjwIU1mDo
-         EZoMNRWOlQ9UA==
-X-Nifty-SrcIP: [209.85.221.43]
-Received: by mail-wr1-f43.google.com with SMTP id b26so9161542wrc.2;
-        Mon, 11 Jul 2022 18:36:11 -0700 (PDT)
-X-Gm-Message-State: AJIora+ZogMsHMcBLyahFErYjHjPyZdo+fivR4UgvJlOxSJVllNqk2RI
-        ydMQWfTHwAz/vQIItO/YjcpxS/IWZVMfyYTmIJk=
-X-Google-Smtp-Source: AGRyM1sS0c7XakFYh+QVVsDh5Mp5VGqoOVoPqEqwSPVTCvw1lpzi8qbXdMfY3A5T8s0mm3VXDnQr5bgwD4PEB0vMGAQ=
-X-Received: by 2002:a05:6000:104c:b0:21d:87bf:63a2 with SMTP id
- c12-20020a056000104c00b0021d87bf63a2mr18678986wrx.461.1657589769995; Mon, 11
- Jul 2022 18:36:09 -0700 (PDT)
+        Mon, 11 Jul 2022 21:37:06 -0400
+Received: from synology.com (mail.synology.com [211.23.38.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2F562C13D;
+        Mon, 11 Jul 2022 18:37:04 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.17.41.204])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by synology.com (Postfix) with ESMTPSA id 4831B1E6BB62A;
+        Tue, 12 Jul 2022 09:37:02 +0800 (CST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synology.com; s=123;
+        t=1657589823; bh=y/DZkYjNce34c1ltc+Hweg+VBPqUwo5EWavKtLafmCA=;
+        h=From:To:Cc:Subject:Date;
+        b=uXWEAx2pavwhDFMSvhk1LvsXmZXAONAZMxhEyGxpMlvY8gEAc92QWyeo8B1mVqUEr
+         djrbqw3cHbsM4JA+al/RlOZQyFUOSJj7mLQC3g0H12Ua6AXJ3B0UT4/rzWq3MzOR28
+         7GkR/ORKR2u3pIJAiN0VYLpoVLJo8G0ffXklro74=
+From:   bingjingc <bingjingc@synology.com>
+To:     josef@toxicpanda.com, dsterba@suse.com, clm@fb.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     fdmanana@kernel.org, bingjingc@synology.com, robbieko@synology.com,
+        bxxxjxxg@gmail.com
+Subject: [PATCH v2 0/2] btrfs: send: fix sending link commands for existing file paths
+Date:   Tue, 12 Jul 2022 09:36:30 +0800
+Message-Id: <20220712013632.7042-1-bingjingc@synology.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-References: <cover.1657296695.git.guillaume.tucker@collabora.com> <4d34d06baf945dc31c78f873771cef3a75b60067.1657296695.git.guillaume.tucker@collabora.com>
-In-Reply-To: <4d34d06baf945dc31c78f873771cef3a75b60067.1657296695.git.guillaume.tucker@collabora.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Tue, 12 Jul 2022 10:35:30 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASe3zQv82pQsTdWtia9nQQm8XGgs_mrUMvbLRkxa0T48Q@mail.gmail.com>
-Message-ID: <CAK7LNASe3zQv82pQsTdWtia9nQQm8XGgs_mrUMvbLRkxa0T48Q@mail.gmail.com>
-Subject: Re: [PATCH 4/4] Makefile: add headers_install to kselftest targets
-To:     Guillaume Tucker <guillaume.tucker@collabora.com>
-Cc:     Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>, kernel@collabora.com,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Synology-MCP-Status: no
+X-Synology-Spam-Flag: no
+X-Synology-Spam-Status: score=0, required 6, WHITELIST_FROM_ADDRESS 0
+X-Synology-Virus-Status: no
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 9, 2022 at 1:23 AM Guillaume Tucker
-<guillaume.tucker@collabora.com> wrote:
->
-> Add headers_install as a dependency to kselftest targets so that they
-> can be run directly from the top of the tree.  The kselftest Makefile
-> used to try to call headers_install "backwards" but failed due to the
-> relative path not being consistent.
->
-> Now we can either run this directly:
->
->   $ make O=build kselftest-all
->
-> or this:
->
->   $ make O=build headers_install
->   $ make O=build -C tools/testing/selftest all
->
-> The same commands work as well when building directly in the source
-> tree (no O=) or any arbitrary path (relative or absolute).
->
-> Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
-> ---
->  Makefile | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/Makefile b/Makefile
-> index 1a6678d817bd..afc9d739ba44 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1347,10 +1347,10 @@ tools/%: FORCE
->  # Kernel selftest
->
->  PHONY += kselftest
-> -kselftest:
-> +kselftest: headers_install
->         $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests run_tests
+From: BingJing Chang <bingjingc@synology.com>
 
-Nit.
-Please use 'headers' for in-kernel use of exportedI headers.
+There is a bug sending link commands for existing file paths. When we're
+processing an inode, we go over all references. All the new file paths are
+added to the "new_refs" list. And all the deleted file paths are added to
+the "deleted_refs" list. In the end, when we finish processing the inode,
+we iterate over all the items in the "new_refs" list and send link commands
+for those file paths. After that, we go over all the items in the
+"deleted_refs" list and send unlink commands for them. If there are
+duplicated file paths in both lists, we will try to create them before we
+remove them. Then the receiver gets an -EEXIST error when trying the link
+operations.
 
-kselftest: headers
+BingJing Chang (2):
+  btrfs: send: introduce recorded_ref_alloc and recorded_ref_free
+  btrfs: send: fix sending link commands for existing file paths
 
-
->
-> -kselftest-%: FORCE
-> +kselftest-%: headers_install FORCE
->         $(Q)$(MAKE) -C $(srctree)/tools/testing/selftests $*
-
-Ditto.
-
-kselftest-%: headers FORCE
-
-
->
->  PHONY += kselftest-merge
-> --
-> 2.30.2
->
-
+ fs/btrfs/send.c | 195 ++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 181 insertions(+), 14 deletions(-)
 
 -- 
-Best Regards
-Masahiro Yamada
+2.37.0
+
