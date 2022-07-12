@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43149C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82471C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 08:14:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232592AbiGLIOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 04:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45718 "EHLO
+        id S232608AbiGLIOx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:14:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbiGLIOT (ORCPT
+        with ESMTP id S232594AbiGLIOt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 04:14:19 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E184DC1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:14:18 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id a9so12637479lfk.11
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:14:18 -0700 (PDT)
+        Tue, 12 Jul 2022 04:14:49 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE54F6268
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:14:48 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id r9so4648250lfp.10
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 01:14:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=piVMAlOpffJwid9tZ0g858Wy2lJidXX23spAtayy7OI=;
-        b=StLfu8nwjSGQBtoVu4xYBsPLaD86GA58kvcFstln0NzGJ/tDTYxbzgh3KFuopdgHNF
-         fK+aRHHn5QwzVLgwmscm7kPdZVWj+Lyj+G6BTDqzEVOJMulJ+zd4o8+JeCOdURYADhdN
-         dJCsIuavIfqIWAzB5j1VjwTnovlSzB+zyXJM5URY8uDY5idEMKcQGkhk7QT6ka1njyOs
-         gXDpjtdnsNFSHZQh59Az9HtdqoLcByUS4I9wjlO4d2zx4Q5iGdnSiL+FyuVfIbPlvJOO
-         oD26l4vQ80PEHbSKsVUliv8Ke8if2qF42yz+10hJLfWg54eG43XGUooXN25VQE3E2Fkd
-         ugfw==
+        bh=NaYE0YC5oBomgL0PmclsweYRAytccspL/sTByqhvc7I=;
+        b=XV6LgXVn8D1tK9kHTYiLURnyiM7aue61n6dT5mNZwp7VGrsl9wcAgZsiYjLgfVeYtY
+         AN9vERoMbcUyuYjcRZpPAJPBVrFArEvQt+qd3TDJYQUsDH/Sj5GvbJub9fEv0f1lqfwO
+         ogpEjwFHMT3pZlkjoanORhcX+rIHznRkm8Uf0V6plzlcV3t5mTF05LagSSv8Z3WSmI3h
+         JU/MUe29p5qYV1wj+6rrfy37pGqEHkd+XkLPWHYwM2bZKTnCR0crQCkbOZvBZ7L5O2JI
+         uNx1+XkNSrkXMtuBT3xD27F3T/qjIVbFwJXjeUYUPCI6q2OAu0DWZ7CJkwW0Bpt7rsN9
+         pWHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=piVMAlOpffJwid9tZ0g858Wy2lJidXX23spAtayy7OI=;
-        b=dhcoJFiX1pVtPqc9Ek4ckT5edUZPQLLiQ2q1J3ZMv99tQ3VzYjwh8ws5fQDiU9UBhD
-         40TlcadQf3lGD7/dCQX5o60bSzHT1c7FF2rkcwkeKcAXlFR48iMsU9oR+sy3hjr4+XjZ
-         0CIN4qX3ALcqyVoFrLkZLLMo9s++fYkzCvHZzAtk5a+oCvH1ze1WAMeTK60Qy4ALy4+i
-         0ekRYu6fte+LGipupWe/lhAZWl1CrDWv+3m/729ynRe+FFpLBgqLtF8cP0cT3RUOzcL+
-         i+qAmc5MLlXsdQ9iW3b3GQYXcec9tj1NPvktFmvhNzRiVK4XkdgwaxjNn3B6kZqMsLpv
-         UEYg==
-X-Gm-Message-State: AJIora+cBKvP4VwtAIDDTXw8K8U6iJVOmjjIs0sYszV8NTSi5i8vdKg1
-        hn1fZ6AF7snfYEhfN0euDbK+9w==
-X-Google-Smtp-Source: AGRyM1vqqp5s0BWN1F/7Lz3d6Rxo5GmlvLhM0XjExtACcM8zjS7RAxUFqyw3vof8bqYboTmuemBL4g==
-X-Received: by 2002:a05:6512:2345:b0:489:e76e:cc1a with SMTP id p5-20020a056512234500b00489e76ecc1amr3619483lfu.219.1657613656558;
-        Tue, 12 Jul 2022 01:14:16 -0700 (PDT)
+        bh=NaYE0YC5oBomgL0PmclsweYRAytccspL/sTByqhvc7I=;
+        b=ZZ8cFsSrIP4HPqegJGEQ7gnfA9CkgpHRnmZgWQKG+BYZyp2asowyu0biRxZ05J5PRx
+         k5GvVHitfpD3aHTTotBP/kGzskhnz5KDEqmTjto3usMy1N19WgG7PFnot6wLY3jP5wea
+         ADnbEtJwqkKZ6grNMLrkpAUFmAfnIU6mRjlBlSp06iqpAjzyoeiN/VVCqv3StYpSTeYb
+         nNKbdntP2+NKkQQe++8Oj2IE+uERn0+3+u/TAWoYGbG4YZbCnluzhXmyAKzziEHa52Es
+         3lNpEg5sHxYM6zHII3c2Y79PnjGzQ6Smi3lWkosT8+X/zN/JqyQ/NOZDs2OA8wmN5vm6
+         vdlg==
+X-Gm-Message-State: AJIora/oxAdu/ggfKYbsPjhs1K54QjVgNLiKCYfkHVRed5IsM4rH2YIK
+        ntOcICkaTqdP882wF2RDXFiGbA==
+X-Google-Smtp-Source: AGRyM1uTRuXVxUGxHjUXtpenfQ8xEOSmzLpVZr/APJjFs1AGo/9O39jOrEr1RmWyohWhys6FfXZczw==
+X-Received: by 2002:a05:6512:c0f:b0:489:dc4c:55bd with SMTP id z15-20020a0565120c0f00b00489dc4c55bdmr6821749lfu.118.1657613687148;
+        Tue, 12 Jul 2022 01:14:47 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5cab-55.bb.online.no. [88.92.171.55])
-        by smtp.gmail.com with ESMTPSA id f14-20020a05651c02ce00b0025d754ba5f4sm639397ljo.99.2022.07.12.01.14.14
+        by smtp.gmail.com with ESMTPSA id v9-20020a05651203a900b004790a4ce3e5sm2051670lfp.278.2022.07.12.01.14.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 01:14:16 -0700 (PDT)
-Message-ID: <1d048162-8051-f95b-c359-0ab59e32e507@linaro.org>
-Date:   Tue, 12 Jul 2022 10:14:14 +0200
+        Tue, 12 Jul 2022 01:14:46 -0700 (PDT)
+Message-ID: <18103915-6ab5-cf23-c5c5-707864b3e049@linaro.org>
+Date:   Tue, 12 Jul 2022 10:14:44 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/2] dt-binding: sound: atmel,pdmic: Convert to
+Subject: Re: [PATCH v2 1/2] dt-bindings: sound: atmel,classd: Convert to
  json-schema
 Content-Language: en-US
 To:     Ryan.Wanner@microchip.com, lgirdwood@gmail.com, broonie@kernel.org,
@@ -64,9 +64,9 @@ To:     Ryan.Wanner@microchip.com, lgirdwood@gmail.com, broonie@kernel.org,
 Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 References: <20220711183010.39123-1-Ryan.Wanner@microchip.com>
- <20220711183010.39123-3-Ryan.Wanner@microchip.com>
+ <20220711183010.39123-2-Ryan.Wanner@microchip.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220711183010.39123-3-Ryan.Wanner@microchip.com>
+In-Reply-To: <20220711183010.39123-2-Ryan.Wanner@microchip.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -74,119 +74,21 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 11/07/2022 20:30, Ryan.Wanner@microchip.com wrote:
-> From: Ryan Wanner <Ryan.Wanner@microchip.com>
-> 
-> Convert Atmel PDMIC devicetree binding to json-schema.
-> Change file naming to match json-schema naming.
-> 
-> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
-> ---
-> v1 -> v2:
-> - Fix title.
-> - Removed trivial descriptions.
-> - Fix formatting.
-> 
->  .../bindings/sound/atmel,sama5d2-pdmic.yaml   | 98 +++++++++++++++++++
->  .../devicetree/bindings/sound/atmel-pdmic.txt | 55 -----------
->  2 files changed, 98 insertions(+), 55 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
->  delete mode 100644 Documentation/devicetree/bindings/sound/atmel-pdmic.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml b/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
-> new file mode 100644
-> index 000000000000..88fa92a30147
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
-> @@ -0,0 +1,98 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/sound/atmel,sama5d2-pdmic.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Atmel PDMIC decoder
-> +
-> +maintainers:
-> +  - Claudiu Beznea <claudiu.beznea@microchip.com>
-> +
-> +description:
-> +  Atmel Pulse Density Modulation Interface Controller
-> +  (PDMIC) peripheral is a mono PDM decoder module
-> +  that decodes an incoming PDM sample stream.
-> +
-> +properties:
-> +  compatible:
-> +    const: atmel,sama5d2-pdmic
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    items:
-> +      - description: peripheral clock
-> +      - description: generated clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: pclk
-> +      - const: gclk
-> +
-> +  dmas:
-> +    maxItems: 1
-> +
-> +  dma-names:
-> +    const: rx
-> +
-> +  atmel,mic-min-freq:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      The minimal frequency that the microphone supports.
-> +
-> +  atmel,mic-max-freq:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description:
-> +      The maximal frequency that the microphone supports.
-> +
-> +  atmel,model:
-> +    description: The user-visible name of this sound card.
 
-In previous properties the description was the last one, so keep it
-consistent.
+One more:
 
-> +    $ref: /schemas/types.yaml#/definitions/string
-> +    default: PDMIC
-> +
-> +  atmel,mic-offset:
-> +    $ref: /schemas/types.yaml#/definitions/int32
-> +    description: The offset that should be added.
-> +    default: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - dmas
-> +  - dma-names
-> +  - clock-names
-> +  - clocks
-> +  - atmel,mic-min-freq
-> +  - atmel,mic-max-freq
-> +
-> +additionalProperties: false
 > +
 > +examples:
 > +  - |
 > +    #include <dt-bindings/dma/at91.h>
 > +    #include <dt-bindings/interrupt-controller/arm-gic.h>
 > +
-> +    pdmic: sound@f8018000 {
-> +    	compatible = "atmel,sama5d2-pdmic";
+> +    classd: sound@fc048000 {
+> +    	compatible = "atmel,sama5d2-classd";
+> +    	reg = <0xfc048000 0x100>;
+> +        interrupts = <59 IRQ_TYPE_LEVEL_HIGH 7>;
 
-Wrong indentation. I already asked for this.
+Wrong indentation. I asked about this in v1.
 
 
 Best regards,
