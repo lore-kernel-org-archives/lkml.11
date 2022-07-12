@@ -2,114 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D67C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64F7FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232457AbiGLHtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51172 "EHLO
+        id S232422AbiGLHuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:50:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232450AbiGLHtk (ORCPT
+        with ESMTP id S232450AbiGLHt4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:49:40 -0400
-Received: from qproxy3-pub.mail.unifiedlayer.com (qproxy3-pub.mail.unifiedlayer.com [67.222.38.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E92F9CE04
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:49:36 -0700 (PDT)
-Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
-        by qproxy3.mail.unifiedlayer.com (Postfix) with ESMTP id C577B802CE4D
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:49:25 +0000 (UTC)
-Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
-        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id 6FC7710047DA9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:48:54 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id BAdaod6jCgTLJBAdaoRJcs; Tue, 12 Jul 2022 07:48:54 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=XKL19StE c=1 sm=1 tr=0 ts=62cd2766
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=RgO8CyIxsXoA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=IGmYStlPXvYheIXF0BTxVIf6r1W3G7BS2Y1q6e79HC0=; b=H/zk5DII5PbU2FVImwyg/WQ/Wd
-        dMM+ZsHLQwKP18SrO8BedghF/Iav/XyRq6Zo6zGheAPu8IA4NYxlkMwEzUssC8WE5S99CWbcbctYW
-        OGLCtN2WDqu9DmwSqjLeUAStsCAAySqwajzExKOGozPP3vZ9B22yrXV4H5JGUIvTNBf2RiyprEFHO
-        h+ZSwPhTWgMQQ4wfS3flGFscIIWuzsQ8m5lhCUlskW5sW+VDWEf+mYXHlQtJf+RKMGh10PA1EPp/R
-        +0e4iYl7te8cNbkV7/fLWwJrQRcPtti1WIip3m08rYcBEi25WqSbTPCCmAlZIUUOYnYXbaUOSd1Pv
-        9T/T/U+w==;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:35512 helo=[10.0.1.48])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <re@w6rz.net>)
-        id 1oBAdY-002PpQ-Vu;
-        Tue, 12 Jul 2022 01:48:53 -0600
-Subject: Re: [PATCH 5.15 000/229] 5.15.54-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-References: <20220711145306.494277196@linuxfoundation.org>
-In-Reply-To: <20220711145306.494277196@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <31adc8fc-e210-947b-5a25-ecd12df5a6cb@w6rz.net>
-Date:   Tue, 12 Jul 2022 00:48:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 12 Jul 2022 03:49:56 -0400
+Received: from mailout2.samsung.com (mailout2.samsung.com [203.254.224.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C7F9A69E
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 00:49:53 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220712074950epoutp02ac8a77bc2e144b5f9323c16f729c6f4e~BBYErI88X0639706397epoutp02G
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:49:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220712074950epoutp02ac8a77bc2e144b5f9323c16f729c6f4e~BBYErI88X0639706397epoutp02G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657612190;
+        bh=gEwQtqGECLpxEtA+sZ5ZleXsmdODF2JoJO1Frfr3CNc=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=YWad4Kbz6XMxZN0o40wKisHF9/5YSwazKdj80d56Zgh0v7Z9uk1UMvPb9SvyfGBiN
+         hDzzDEu5hiJuO7X0w/4a4kBtTNUPLGhLYTv5lQZlwo90cbIOmF6w1nBi8pbv+c8IYf
+         /YkbI4W+n7sdl5Xdshn1mLbOnrDpYqInztk4QtAM=
+Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20220712074948epcas2p32cf6f101cd38338544e055f6f5bf0b9f~BBYDVfanC1502515025epcas2p3I;
+        Tue, 12 Jul 2022 07:49:48 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.36.91]) by
+        epsnrtp1.localdomain (Postfix) with ESMTP id 4LhtFS19wfz4x9Pv; Tue, 12 Jul
+        2022 07:49:48 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        E7.BF.09662.A972DC26; Tue, 12 Jul 2022 16:49:46 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220712074946epcas2p2de643084312b94a7ea0823d8900126e2~BBYBHjb8U3191331913epcas2p2l;
+        Tue, 12 Jul 2022 07:49:46 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220712074946epsmtrp1802d5b2acc65aa54080235f4380aca0e~BBYBGzf993222332223epsmtrp1D;
+        Tue, 12 Jul 2022 07:49:46 +0000 (GMT)
+X-AuditID: b6c32a48-9e1ff700000025be-cd-62cd279aa7aa
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        76.19.08905.A972DC26; Tue, 12 Jul 2022 16:49:46 +0900 (KST)
+Received: from KORCO082417 (unknown [10.229.8.121]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220712074946epsmtip1f70137a1ec650255499ad7f2518d72f1~BBYA5kqP21104611046epsmtip1S;
+        Tue, 12 Jul 2022 07:49:46 +0000 (GMT)
+From:   "Chanho Park" <chanho61.park@samsung.com>
+To:     "'Arnd Bergmann'" <arnd@arndb.de>,
+        "'Youngmin Nam'" <youngmin.nam@samsung.com>
+Cc:     "'John Stultz'" <jstultz@google.com>,
+        "'Thomas Gleixner'" <tglx@linutronix.de>,
+        "'Stephen Boyd'" <sboyd@kernel.org>,
+        "'Linux Kernel Mailing List'" <linux-kernel@vger.kernel.org>,
+        <hajun.sung@samsung.com>, <hosung0.kim@samsung.com>,
+        <d7271.choe@samsung.com>
+In-Reply-To: <CAK8P3a0pCov7ZiNhG+by7PpxMdBbBpUa7TKNc9e0p-zXvqg-7g@mail.gmail.com>
+Subject: RE: [PATCH] time: remove useless "const" keyword in
+ ns_to_kernel_old_timeval() and ns_to_timespec64()
+Date:   Tue, 12 Jul 2022 16:49:46 +0900
+Message-ID: <01a201d895c3$f4955ba0$ddc012e0$@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1oBAdY-002PpQ-Vu
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:35512
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQJDeDvkkBXeDou4pRSMa+nAkmZkTQMAn7SBAeYw4mOsfV+nQA==
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGJsWRmVeSWpSXmKPExsWy7bCmue4s9bNJBrvOWVv8nXSM3eLa3ons
+        Fk37LzFbfL3+iN3iz4mNbBaXd81hs/h3bSOLxeZNU5ktFh/4xO7A6fH71yRGjwWbSj02repk
+        83h37hy7R9+WVYwenzfJBbBFZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynk
+        Jeam2iq5+AToumXmAB2lpFCWmFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwL9ArTswt
+        Ls1L18tLLbEyNDAwMgUqTMjOOPO+g7XgI2fFm95XrA2MDRxdjJwcEgImEq3L+pm6GLk4hAR2
+        MEoc2tzFCuF8YpTY8ugHO4TzjVHiy7nZjDAtCxfNgWrZyyix5O0pFgjnBaPE65ufmECq2AT0
+        JV52bGMFsUUEQiQ+nf4C1sEs0MUkMffuPRaQBKdAoMT376vBbGGBAolZjxrZQGwWAVWJu5N/
+        s4PYvAKWEl+OvGaFsAUlTs58AlbPLKAtsWzha2aIkxQkfj5dBrXMSWLl2/vMEDUiErM725hB
+        FksILOSQONk7GaiZA8hxkVh0qxiiV1ji1fEt7BC2lMTL/jYou1hi6axPTBC9DYwSl7f9YoNI
+        GEvMetbOCDKHWUBTYv0ufYiRyhJHbkGdxifRcfgvO0SYV6KjTQiiUV3iwPbpLBC2rET3nM+s
+        ExiVZiF5bBaSx2YheWAWwq4FjCyrGMVSC4pz01OLjQpM4LGdnJ+7iRGcYLU8djDOfvtB7xAj
+        EwfjIUYJDmYlEd4/Z08lCfGmJFZWpRblxxeV5qQWH2I0BQb1RGYp0eR8YIrPK4k3NLE0MDEz
+        MzQ3MjUwVxLn9UrZkCgkkJ5YkpqdmlqQWgTTx8TBKdXAZGjhoWmxSbXdQNRo047Lb1fHM+eo
+        /tN4fG3yZMbtS+esWua3//RLyz/z0q/OESyK6vt88vw5rfmMshWzeKbumvPOL8DWqjzw0S/f
+        Nj52loLjsvx3pp7ozxMpdVOdoxk8iyNkbcaHHVM3y86YNv0SJ/+5yqY9qxdpFjP7qzgWrV4u
+        Ym1S897oWNuDqzEab+5umH7S+ful0nkWChPLpvHUCXqddX8p6Lbn1FELBtmi09OXli06paH4
+        McPk4oT9azfaVr2e0HVGxchcuNTc9Pp1hgkXW++7tq6tsrntUHTvhadqsmlHWsCXq+a3c0XE
+        lbnCotosplyN7nXubXdlYSxYa55W9Oolk4lzYMABxby7SizFGYmGWsxFxYkAyPNG2TkEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprEIsWRmVeSWpSXmKPExsWy7bCSnO4s9bNJBj/O8ln8nXSM3eLa3ons
+        Fk37LzFbfL3+iN3iz4mNbBaXd81hs/h3bSOLxeZNU5ktFh/4xO7A6fH71yRGjwWbSj02repk
+        83h37hy7R9+WVYwenzfJBbBFcdmkpOZklqUW6dslcGWsvdfFWPCOs+L1y1bWBsbv7F2MnBwS
+        AiYSCxfNYepi5OIQEtjNKLFz+QkWiISsxLN3O6CKhCXutxxhhSh6xigxadpeZpAEm4C+xMuO
+        bawgtohAiMS6OXuYQGxmgQlMEsdv6EA0XGWUePbhG9gkToFAie/fV4NtEBbIkzh55QgjiM0i
+        oCpxd/JvsBpeAUuJL0des0LYghInZz5hgRiqLfH05lM4e9nC18wQ1ylI/Hy6DOoIJ4mVb+8z
+        Q9SISMzubGOewCg8C8moWUhGzUIyahaSlgWMLKsYJVMLinPTc4sNCwzzUsv1ihNzi0vz0vWS
+        83M3MYKjTUtzB+P2VR/0DjEycTAeYpTgYFYS4f1z9lSSEG9KYmVValF+fFFpTmrxIUZpDhYl
+        cd4LXSfjhQTSE0tSs1NTC1KLYLJMHJxSDUyC13OVSkuXCKXHl3gr5rN7WC4RUQ/Nr1miU/ji
+        fXXmjnsO+xZtL7orK/Sne11k3Web5vNz4pYv8JJ9/Yc3/qyM1G/Hpg+TDlp+v7ltRWVAc4Fv
+        uUrZD59nPpG/La9eZr0trJZse8/qk3iMgHzODvEU3biP5bG9yxdcYI/cr3XO/EJX9u4H0Y2a
+        y120NGfG2gZ8sJp79HSk/EnumydmHFENMf3qpqNWVvFOlS3Icucjs3gD79yfDaG3yxhd71W5
+        9izK2hZbuf1WQsm9r5enNoSybXK6U2aj+fpa/PK9b/+wsMzzVGSYcz7qy2Kmz4o66g/lf/j3
+        NXi4TMoSNtUv1Bbh/6KocjRSkaFE2ltbiaU4I9FQi7moOBEATZmhqCUDAAA=
+X-CMS-MailID: 20220712074946epcas2p2de643084312b94a7ea0823d8900126e2
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209
+References: <CGME20220712071941epcas2p2faa87d8efe182e9c28a924ea3de15209@epcas2p2.samsung.com>
+        <20220712074705.420399-1-youngmin.nam@samsung.com>
+        <CAK8P3a0pCov7ZiNhG+by7PpxMdBbBpUa7TKNc9e0p-zXvqg-7g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/11/22 7:54 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.54 release.
-> There are 229 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Wed, 13 Jul 2022 14:51:35 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.54-rc2.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+> > As mentioned below,
+> >
+> https://lore.kernel.org/lkml/CAK8P3a3nknJgEDESGdJH91jMj6R_xydFqWASd8r5Bbe=
+s
+> dvMBgA=40mail.gmail.com/
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+I'm not sure why you drop my originality but please use my commit message a=
+nd put this link between --- and include/linux/time32.h if you need additio=
+nal comments.
+https://lore.kernel.org/all/20220531064346.51677-1-chanho61.park=40samsung.=
+com/T/
 
-Tested-by: Ron Economos <re@w6rz.net>
+Indeed you should put Fixes tag for stable tree.
+
+Best Regards,
+Chanho Park
+
+> >
+> > The =22const=22 keyword is useless, so we drop it from the function
+> definition and declaration.
+> >
+> > Change-Id: If35bba78aa7757476e22be42afc719c27fb0f527
+> > Signed-off-by: Youngmin Nam <youngmin.nam=40samsung.com>
+>=20
+> The patch looks good, but the description can be improved:
+>=20
+> - drop the useless Change-Id field
+> - move the URL into a 'Link: field'
+> - wrap the lines to fit into the normal width of an email (under 80
+> characters,
+>   ideally 70)
+> - explain why the change helps, rather than just stating the keyword is
+> useless.
+>   In your description, it's not clear if one is better than the other, it
+> sounds
+>   like it should make no difference.
+>=20
+> With that done:
+>=20
+> Reviewed-by: Arnd Bergmann <arnd=40arndb.de>
 
