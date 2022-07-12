@@ -2,100 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33817C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbiGLOiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
+        id S233257AbiGLOiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230152AbiGLOh6 (ORCPT
+        with ESMTP id S233040AbiGLOh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:37:58 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0062707
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:37:57 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id t5-20020a17090a6a0500b001ef965b262eso8206676pjj.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:37:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=fo//0I0AslshoYVyaZDmo1hPdJN5skuX2wqL7b4ff0Q=;
-        b=jUUaGMYMJc1jvzr5WBavgHoBCc460nCY1fRSyTSANegMRdHDSgqIiysHoCTftA8yCI
-         rX2mPjpliOL9g0CuwJOCMUvsvbxXbT/efus1kWmgnQ3vuZ4CoYpmKOogIhM9OrLDfG/G
-         V3wlWA+HzNK/eUNN2t7eSXCNz+xBkcVncT2ArpHJay7n1NXiplYWVaDL2i201+r+apom
-         c+SMcD1h4CTY5HOLZ89flF44MCFoufvlNcHc9PJUWsuoej1d8swkYm0D3fU7h4H/2sCR
-         zSGqJjlcE432FeQ9PoZs/EaOEpRUooSTTmLCze0/yS3hcE4NJgaA8kq+obyEtnctnHaD
-         iEHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=fo//0I0AslshoYVyaZDmo1hPdJN5skuX2wqL7b4ff0Q=;
-        b=m3s/o4UKrItTno+grBs5x554hoVRvbTw9nNT1d6ckWOVOLhQCn1CQcfDPx1YaIY5U/
-         wUR0qTIrpETpr4vf5i1nicmvpkLPYpBxW+WOB2cQ74tCuzSZpRcwxLLZMbe3EI+80i4l
-         RcTZEcMLle6IFnQowabKJ1LVan2VIpw6ENZxRrJR9E2VmtgVjouqMJBeU6dBYZq3JQCR
-         KFTj4WLAsTSXBcrEf9Rg0f+zIgGBxEYYi8Gfzf3XHZ6e7SR04saN5dlQs7IwJ4XQh2B+
-         VzzHZHm+s3d2XKu1Me7McxnC5ANScJtY8uX781mrdo3YlnGwkqw0hHdjr3l23Af7XMT4
-         T3yg==
-X-Gm-Message-State: AJIora+34Qly8WLF0UcN+eGG/Blc+TTsf5J2GLX+YkjikuWaPqxgWuLo
-        YHg6JKMlksn+5EGw1Q9qDxABnSS4mhrBWw==
-X-Google-Smtp-Source: AGRyM1uH9tzK5trUw3ts3HkjrhqLJ1vmb3prkMen4qeAaIfcwjw2kRqOsAtvAZGkdoZURV7zBp/qpA==
-X-Received: by 2002:a17:902:ff0f:b0:16b:db22:717c with SMTP id f15-20020a170902ff0f00b0016bdb22717cmr24466722plj.94.1657636676892;
-        Tue, 12 Jul 2022 07:37:56 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id a12-20020a62d40c000000b00528d8ce7394sm6822670pfh.125.2022.07.12.07.37.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:37:56 -0700 (PDT)
-References: <20220712013125.623338-1-schspa@gmail.com>
- <20220712095325.408d1730@gandalf.local.home>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 1/2] sched/rt: fix bad task migration for rt tasks
-Date:   Tue, 12 Jul 2022 22:37:05 +0800
-In-reply-to: <20220712095325.408d1730@gandalf.local.home>
-Message-ID: <m28royflc9.fsf@gmail.com>
+        Tue, 12 Jul 2022 10:37:59 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 07:37:58 PDT
+Received: from mta-01.yadro.com (mta-02.yadro.com [89.207.88.252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BE9237CB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:37:58 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id 7242241207;
+        Tue, 12 Jul 2022 14:21:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        content-type:content-type:content-transfer-encoding:mime-version
+        :x-mailer:message-id:date:date:subject:subject:from:from
+        :received:received:received:received; s=mta-01; t=1657635687; x=
+        1659450088; bh=AaOui02YEi9Ip9b2cycfHTnE1G+dZu4PYyIF31Vbb5A=; b=R
+        KFSZXqXSZEsbdWU2b8VjtMUNQWoisI4jpNNIdVUKssbvgYuSs80ZJHrYpE7UxvME
+        lV0hbge3sDEa48iO/ZbFVRsu9qivQpSwN9ZWsn488lwiYQNYvyRvHe+sOoSwxlH3
+        XPWJGLyNkI9tvFaK/g9bdZ+b9s+//NrZqFG5v2hZAQ=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Hjv7YybZuw8Q; Tue, 12 Jul 2022 17:21:27 +0300 (MSK)
+Received: from T-EXCH-01.corp.yadro.com (t-exch-01.corp.yadro.com [172.17.10.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 6317941209;
+        Tue, 12 Jul 2022 17:21:24 +0300 (MSK)
+Received: from T-EXCH-06.corp.yadro.com (172.17.10.110) by
+ T-EXCH-01.corp.yadro.com (172.17.10.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Tue, 12 Jul 2022 17:21:24 +0300
+Received: from v.yadro.com (10.178.114.10) by T-EXCH-06.corp.yadro.com
+ (172.17.10.110) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.1118.9; Tue, 12 Jul
+ 2022 17:21:23 +0300
+From:   Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
+CC:     <linux@yadro.com>,
+        Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "Stephen Boyd" <sboyd@kernel.org>, Zong Li <zong.li@sifive.com>,
+        <devicetree@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] riscv: dts: fu740: Add PDMA node
+Date:   Tue, 12 Jul 2022 17:20:38 +0300
+Message-ID: <20220712142040.12021-1-v.v.mitrofanov@yadro.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-Originating-IP: [10.178.114.10]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-06.corp.yadro.com (172.17.10.110)
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+HiFive unmatched supports PDMA but is not implemented in DT.
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+Add the PDMA node in SiFive FU740 soc-specific DT file.
 
-> On Tue, 12 Jul 2022 09:31:24 +0800
-> Schspa Shi <schspa@gmail.com> wrote:
->
->> @@ -1998,11 +1998,15 @@ static struct rq *find_lock_lowest_rq(struct task_struct *task, struct rq *rq)
->>  			 * the mean time, task could have
->>  			 * migrated already or had its affinity changed.
->>  			 * Also make sure that it wasn't scheduled on its rq.
->> +			 * It is possible the task was scheduled, set
->> +			 * "migrate_disabled" and then got preempted, And we
->> +			 * check task migration disable flag here too.
->
-> Nit.  "got preempted, so we must check the task migration disable flag here
-> too".
->
+Signed-off-by: Viacheslav Mitrofanov <v.v.mitrofanov@yadro.com>
+---
+ arch/riscv/boot/dts/sifive/fu740-c000.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-OK, I will make a upload for this too.
-
-> But other than that.
->
-> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
->
-> -- Steve
->
->>  			 */
-
-
+diff --git a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
+index 7b77c13496d8..4bd670d8632f 100644
+--- a/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
++++ b/arch/riscv/boot/dts/sifive/fu740-c000.dtsi
+@@ -161,6 +161,14 @@ prci: clock-controller@10000000 {
+ 			#clock-cells = <1>;
+ 			#reset-cells = <1>;
+ 		};
++		dma: dma-controller@3000000 {
++			compatible = "sifive,pdma0";
++			reg = <0x0 0x3000000 0x0 0x8000>;
++			interrupt-parent = <&plic0>;
++			interrupts = <11 12 13 14 15 16 17 18>;
++			dma-channels = <4>;
++			#dma-cells = <1>;
++		};
+ 		uart0: serial@10010000 {
+ 			compatible = "sifive,fu740-c000-uart", "sifive,uart0";
+ 			reg = <0x0 0x10010000 0x0 0x1000>;
 -- 
-BRs
-Schspa Shi
+2.25.1
+
