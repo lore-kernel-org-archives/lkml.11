@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B96FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C99B4CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235657AbiGLTKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
+        id S235670AbiGLTK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235640AbiGLTIe (ORCPT
+        with ESMTP id S235783AbiGLTJb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:08:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E9BE52AC;
-        Tue, 12 Jul 2022 11:51:53 -0700 (PDT)
+        Tue, 12 Jul 2022 15:09:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8634E586B;
+        Tue, 12 Jul 2022 11:52:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E048B81B96;
-        Tue, 12 Jul 2022 18:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C42F9C3411C;
-        Tue, 12 Jul 2022 18:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DA49B81BAC;
+        Tue, 12 Jul 2022 18:52:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A643FC3411C;
+        Tue, 12 Jul 2022 18:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651910;
-        bh=CxcPrhiPZWW9bNWcwJqaGaYLMQw5OK3YOv7N9gr+eoY=;
+        s=korg; t=1657651935;
+        bh=YviMuseI7ZZnS9AUuLIn0isWO6Kg2NnspcB5yQa98XU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E6ZWqoLwRVRH4wA0MKF2EKttOr7JpBhtDxK1D8gtfyXl9n5MXpalwVQYaJvpHCKBb
-         96qT4zOt1EYdLl+tzOP3MeYOdp1/9D6TDWbHD769svA9dhamdiOaFiybJOLoSn5c6E
-         eQFreN1UtM/sOqUm5CcX4u0/Mko7/IgqzHGjPDNI=
+        b=WVYTiHcUenj99H0tvSIeA2C8nz9RF//UOL98XOB1wjIFYzSK4cJBGmgFNZlSAghXE
+         DgK5K6YOd+a4GKQiyNRWJde4CMguQiZ+HcOyvcqFZlhI0GB9u2ZTD1SkmeQN9zVDy+
+         K7VP4zWyPR5U/EwzglnQPNvZYPRTxV/xetY8MPvs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 20/61] x86: Use return-thunk in asm code
-Date:   Tue, 12 Jul 2022 20:39:17 +0200
-Message-Id: <20220712183237.764050483@linuxfoundation.org>
+Subject: [PATCH 5.18 27/61] x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value
+Date:   Tue, 12 Jul 2022 20:39:24 +0200
+Message-Id: <20220712183238.048856685@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -53,91 +53,116 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit aa3d480315ba6c3025a60958e1981072ea37c3df upstream.
+commit caa0ff24d5d0e02abce5e65c3d2b7f20a6617be5 upstream.
 
-Use the return thunk in asm code. If the thunk isn't needed, it will
-get patched into a RET instruction during boot by apply_returns().
+Due to TIF_SSBD and TIF_SPEC_IB the actual IA32_SPEC_CTRL value can
+differ from x86_spec_ctrl_base. As such, keep a per-CPU value
+reflecting the current task's MSR content.
 
-Since alternatives can't handle relocations outside of the first
-instruction, putting a 'jmp __x86_return_thunk' in one is not valid,
-therefore carve out the memmove ERMS path into a separate label and jump
-to it.
+  [jpoimboe: rename]
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: no RANDSTRUCT_CFLAGS]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/vdso/Makefile   |    1 +
- arch/x86/include/asm/linkage.h |    8 ++++++++
- arch/x86/lib/memmove_64.S      |    7 ++++++-
- 3 files changed, 15 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |    1 +
+ arch/x86/kernel/cpu/bugs.c           |   28 +++++++++++++++++++++++-----
+ arch/x86/kernel/process.c            |    2 +-
+ 3 files changed, 25 insertions(+), 6 deletions(-)
 
---- a/arch/x86/entry/vdso/Makefile
-+++ b/arch/x86/entry/vdso/Makefile
-@@ -92,6 +92,7 @@ endif
- endif
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -253,6 +253,7 @@ static inline void indirect_branch_predi
  
- $(vobjs): KBUILD_CFLAGS := $(filter-out $(CC_FLAGS_LTO) $(GCC_PLUGINS_CFLAGS) $(RETPOLINE_CFLAGS),$(KBUILD_CFLAGS)) $(CFL)
-+$(vobjs): KBUILD_AFLAGS += -DBUILD_VDSO
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
++extern void write_spec_ctrl_current(u64 val);
  
- #
- # vDSO code runs in userspace and -pg doesn't help with profiling anyway.
---- a/arch/x86/include/asm/linkage.h
-+++ b/arch/x86/include/asm/linkage.h
-@@ -19,19 +19,27 @@
- #define __ALIGN_STR	__stringify(__ALIGN)
- #endif
+ /*
+  * With retpoline, we must use IBRS to restrict branch prediction
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -49,12 +49,30 @@ static void __init mmio_select_mitigatio
+ static void __init srbds_select_mitigation(void);
+ static void __init l1d_flush_select_mitigation(void);
  
-+#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
-+#define RET	jmp __x86_return_thunk
-+#else /* CONFIG_RETPOLINE */
- #ifdef CONFIG_SLS
- #define RET	ret; int3
- #else
- #define RET	ret
- #endif
-+#endif /* CONFIG_RETPOLINE */
- 
- #else /* __ASSEMBLY__ */
- 
-+#if defined(CONFIG_RETPOLINE) && !defined(__DISABLE_EXPORTS) && !defined(BUILD_VDSO)
-+#define ASM_RET	"jmp __x86_return_thunk\n\t"
-+#else /* CONFIG_RETPOLINE */
- #ifdef CONFIG_SLS
- #define ASM_RET	"ret; int3\n\t"
- #else
- #define ASM_RET	"ret\n\t"
- #endif
-+#endif /* CONFIG_RETPOLINE */
- 
- #endif /* __ASSEMBLY__ */
- 
---- a/arch/x86/lib/memmove_64.S
-+++ b/arch/x86/lib/memmove_64.S
-@@ -39,7 +39,7 @@ SYM_FUNC_START(__memmove)
- 	/* FSRM implies ERMS => no length checks, do the copy directly */
- .Lmemmove_begin_forward:
- 	ALTERNATIVE "cmp $0x20, %rdx; jb 1f", "", X86_FEATURE_FSRM
--	ALTERNATIVE "", __stringify(movq %rdx, %rcx; rep movsb; RET), X86_FEATURE_ERMS
-+	ALTERNATIVE "", "jmp .Lmemmove_erms", X86_FEATURE_ERMS
- 
- 	/*
- 	 * movsq instruction have many startup latency
-@@ -205,6 +205,11 @@ SYM_FUNC_START(__memmove)
- 	movb %r11b, (%rdi)
- 13:
- 	RET
+-/* The base value of the SPEC_CTRL MSR that always has to be preserved. */
++/* The base value of the SPEC_CTRL MSR without task-specific bits set */
+ u64 x86_spec_ctrl_base;
+ EXPORT_SYMBOL_GPL(x86_spec_ctrl_base);
 +
-+.Lmemmove_erms:
-+	movq %rdx, %rcx
-+	rep movsb
-+	RET
- SYM_FUNC_END(__memmove)
- EXPORT_SYMBOL(__memmove)
++/* The current value of the SPEC_CTRL MSR with task-specific bits set */
++DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
++EXPORT_SYMBOL_GPL(x86_spec_ctrl_current);
++
+ static DEFINE_MUTEX(spec_ctrl_mutex);
  
+ /*
++ * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
++ * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
++ */
++void write_spec_ctrl_current(u64 val)
++{
++	if (this_cpu_read(x86_spec_ctrl_current) == val)
++		return;
++
++	this_cpu_write(x86_spec_ctrl_current, val);
++	wrmsrl(MSR_IA32_SPEC_CTRL, val);
++}
++
++/*
+  * The vendor and possibly platform specific bits which can be modified in
+  * x86_spec_ctrl_base.
+  */
+@@ -1272,7 +1290,7 @@ static void __init spectre_v2_select_mit
+ 	if (spectre_v2_in_eibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+-		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base);
+ 	}
+ 
+ 	switch (mode) {
+@@ -1327,7 +1345,7 @@ static void __init spectre_v2_select_mit
+ 
+ static void update_stibp_msr(void * __unused)
+ {
+-	wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++	write_spec_ctrl_current(x86_spec_ctrl_base);
+ }
+ 
+ /* Update x86_spec_ctrl_base in case SMT state changed. */
+@@ -1570,7 +1588,7 @@ static enum ssb_mitigation __init __ssb_
+ 			x86_amd_ssb_disable();
+ 		} else {
+ 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
+-			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++			write_spec_ctrl_current(x86_spec_ctrl_base);
+ 		}
+ 	}
+ 
+@@ -1821,7 +1839,7 @@ int arch_prctl_spec_ctrl_get(struct task
+ void x86_spec_ctrl_setup_ap(void)
+ {
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+-		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
++		write_spec_ctrl_current(x86_spec_ctrl_base);
+ 
+ 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
+ 		x86_amd_ssb_disable();
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -600,7 +600,7 @@ static __always_inline void __speculatio
+ 	}
+ 
+ 	if (updmsr)
+-		wrmsrl(MSR_IA32_SPEC_CTRL, msr);
++		write_spec_ctrl_current(msr);
+ }
+ 
+ static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
 
 
