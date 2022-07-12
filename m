@@ -2,120 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC99C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 00:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231948AbiGLAgP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 20:36:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42548 "EHLO
+        id S230099AbiGLAiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 20:38:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231312AbiGLAgL (ORCPT
+        with ESMTP id S230080AbiGLAiO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 20:36:11 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96A83C8F1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso9876955pjc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
+        Mon, 11 Jul 2022 20:38:14 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362303C8D6;
+        Mon, 11 Jul 2022 17:38:14 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so9887252pjl.5;
+        Mon, 11 Jul 2022 17:38:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WAek49bBLKkEe+owxVCfCub6H+seciPz++KKwv+pX/8=;
-        b=QDw+FfNDyyo7ET4Yu6iVaWbAg7q7ADy3JRspXKlrjaWn4rW+kjvwl3M9GBsptsk0Dd
-         pZX+NXWQXVQfhEgdkLv4nTSsGEjDUz6cBQ5BVm+Uir17aJT0eLwLGl03G1Tj5kwF5B4X
-         hXIUESZLOkKYsa2A5MAWwBVnysAZSQvQ1bz8vhAK/XBUcrdwBrRPduPZPZT5KUjHTRsx
-         ZH1m47BHO+5ECbo2cazzS2xbRLgv4WxteXUgav804PfV+dscEqDa2bysI3RCPyT4ALgg
-         9zZkKm1KXPZsckkyOzAUoVxyUM5aKeu2KdmLIdDZ6oHEvH0j2B81td2UyEo6MRJZ25n3
-         enig==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JJppeYPpiQk2YSUaODqq/NfKy0bniqk6PDQKnI1rd/Q=;
+        b=kNP3aJdY63KR3teCaO/Qp0ZDg7K4C13ThusDQFDAUMKqADeS0omOzTTcIKOMGGshO7
+         AZWMrdXJcVx87XlfjsjoDmqMa0K1b7H3t2TtBwLuJ20vOA8ylMqWgm3JaNdaVoGCKUMv
+         tgo37HsPUcPNaHaLksZ23BQdq1O9OUrkL2vBTVlNMZ+4Tm6iB7uU5oJZ+2NDpjpFXfwA
+         VnMuBTC7vANC1dHGOiW6ufV0Hg3NNL6GSCa57Bee5Slvh6Jfgh1hz236aAC3FgtcJ5gs
+         w4cbmgTHsi4hP6JaULz4u+o65NRgEnwYaDBr6KEtzji4qVe9tjAqDlPKTWMYtgPf/pT7
+         qlwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=WAek49bBLKkEe+owxVCfCub6H+seciPz++KKwv+pX/8=;
-        b=B8tc+6MwtSEMzF/LFu3lx1WoKSHCRbH5V5Td7SSH6g9jPgAb1s1sZe3L1qpRwySeRc
-         819xxdp6md5jGKSa72yvrpCDhZdBmPnUGtOxS7badFPvsf5vHX5Hd/ZjB/B6CawZ7hS2
-         jomnq6yr1Oksg1Qbmr0LAcFjVLlOhib30heXTi4O9C8xThZODFh09WhlMsLlAIVghOLa
-         pND/3mj3m64+Df5m8ciKW5ua4DJ51PURFMSp9nCfhBOiduUQIm173uXF+ggpo4YplSEx
-         ay3lv4oFC8v5kq6FxV9rcZP0PHXXGw9VhYNgWYf0BGr6XWiSNHEKI/KiXvWAUv817fq1
-         gpqg==
-X-Gm-Message-State: AJIora+BTTh+4uW3bR7FrJcWnw9shw2HxTkvujU7eHOEMwgX/RJpxwf5
-        +Wb86sRNWh5hh3IxuS57wOQ=
-X-Google-Smtp-Source: AGRyM1ugPCkcRJ13KLoZL3PklL8129Ta2OlycUJbNj+aX35eV5I5+1+gCdFt7k7PWpiPss34srfJrw==
-X-Received: by 2002:a17:902:ce05:b0:16c:2a1:c335 with SMTP id k5-20020a170902ce0500b0016c02a1c335mr21404368plg.5.1657586170126;
-        Mon, 11 Jul 2022 17:36:10 -0700 (PDT)
-Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
-        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b001635b86a790sm5337867plk.44.2022.07.11.17.36.09
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JJppeYPpiQk2YSUaODqq/NfKy0bniqk6PDQKnI1rd/Q=;
+        b=bXd3PUlUczpajE/tVXtGowCoQxd+qgK5VCBQeV2C39jeKCMXWF4zklgW+iiQ87ARh3
+         eRKAS4WSNump/bhWXPJdAMlU7mXa3CVazItBT5JksQKwPJriSuWK1T2VFvh4Y8dDyQmx
+         KScLuT+7yGImCka50x9NERNVk9Ju5PEISMZM1RLj6A7h6Xb0GJBIE+DyefQguOeXu4Op
+         r01cPvo4yYN624g8ONAiV7xAhuAFCzZ2Y5DAeqbcWV7peZcvaFC7DysIuKYM00rjbsVc
+         btD4izLJK98KKFDImpEGlLrXo7V5Tc7KsV2l799xDFYeQZFs0BuiJjUKajG5dgL5ZN5K
+         FyaQ==
+X-Gm-Message-State: AJIora+spHxwI++rK6T8DD03y/gmdI0w3pkCywmFdwLW7UoxglAzoEfk
+        eYMq1oS65oYRkp5+PiHXK5uFUCTj11Y=
+X-Google-Smtp-Source: AGRyM1vLB9AE7oHESlQrn34FEHTgjASGUrN/PcmbPkMX59LmIS8kK+h2WKtuuqcTDy5lRkoq4sWD+A==
+X-Received: by 2002:a17:90b:3e89:b0:1f0:4233:b20e with SMTP id rj9-20020a17090b3e8900b001f04233b20emr1190973pjb.0.1657586293471;
+        Mon, 11 Jul 2022 17:38:13 -0700 (PDT)
+Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
+        by smtp.gmail.com with ESMTPSA id l3-20020a170902f68300b0016c5306917fsm1535279plg.53.2022.07.11.17.38.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 17:36:09 -0700 (PDT)
-From:   Nadav Amit <nadav.amit@gmail.com>
-X-Google-Original-From: Nadav Amit
-To:     Dave Hansen <dave.hansen@linux.intel.com>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        Nadav Amit <namit@vmware.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: [PATCH v2] x86/mm/tlb: Skip tracing when flush is not done
-Date:   Mon, 11 Jul 2022 10:01:43 -0700
-Message-Id: <20220711170143.2996-1-namit@vmware.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 11 Jul 2022 17:38:12 -0700 (PDT)
+Date:   Mon, 11 Jul 2022 17:38:11 -0700
+From:   Isaku Yamahata <isaku.yamahata@gmail.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH v7 008/102] KVM: x86: Refactor KVM VMX module init/exit
+ functions
+Message-ID: <20220712003811.GB1379820@ls.amr.corp.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <b8761fc945630d6f264ff22a388d286394a2904f.1656366338.git.isaku.yamahata@intel.com>
+ <46acf87f3980a6f709e191cfc10ff4be78e23553.camel@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <46acf87f3980a6f709e191cfc10ff4be78e23553.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nadav Amit <namit@vmware.com>
+On Tue, Jun 28, 2022 at 03:53:31PM +1200,
+Kai Huang <kai.huang@intel.com> wrote:
 
-Currently, if flush_tlb_func() does not flush for some reason, the
-tracing of the flush will be done only in certain cases, depending on
-the reason of the flush. Be consistent and just do not trace in all
-cases when the flush was eventually not done.
+> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
+> > From: Isaku Yamahata <isaku.yamahata@intel.com>
+> > 
+> > Currently, KVM VMX module initialization/exit functions are a single
+> > function each.  Refactor KVM VMX module initialization functions into KVM
+> > common part and VMX part so that TDX specific part can be added cleanly.
+> > Opportunistically refactor module exit function as well.
+> > 
+> > The current module initialization flow is, 1.) calculate the sizes of VMX
+> > kvm structure and VMX vcpu structure, 2.) hyper-v specific initialization
+> > 3.) report those sizes to the KVM common layer and KVM common
+> > initialization, and 4.) VMX specific system-wide initialization.
+> > 
+> > Refactor the KVM VMX module initialization function into functions with a
+> > wrapper function to separate VMX logic in vmx.c from a file, main.c, common
+> > among VMX and TDX.  We have a wrapper function, "vt_init() {vmx kvm/vcpu
+> > size calculation; hv_vp_assist_page_init(); kvm_init(); vmx_init(); }" in
+> > main.c, and hv_vp_assist_page_init() and vmx_init() in vmx.c.
+> > hv_vp_assist_page_init() initializes hyper-v specific assist pages,
+> > kvm_init() does system-wide initialization of the KVM common layer, and
+> > vmx_init() does system-wide VMX initialization.
+> > 
+> > The KVM architecture common layer allocates struct kvm with reported size
+> > for architecture-specific code.  The KVM VMX module defines its structure
+> > as struct vmx_kvm { struct kvm; VMX specific members;} and uses it as
+> > struct vmx kvm.  Similar for vcpu structure. TDX KVM patches will define
+> > TDX specific kvm and vcpu structures, add tdx_pre_kvm_init() to report the
+> > sizes of them to the KVM common layer.
+> > 
+> > The current module exit function is also a single function, a combination
+> > of VMX specific logic and common KVM logic.  Refactor it into VMX specific
+> > logic and KVM common logic.  This is just refactoring to keep the VMX
+> > specific logic in vmx.c from main.c.
+> 
+> This patch, coupled with the patch:
+> 
+> 	KVM: VMX: Move out vmx_x86_ops to 'main.c' to wrap VMX and TDX
+> 
+> Basically provides an infrastructure to support both VMX and TDX.  Why we cannot
+> merge them into one patch?  What's the benefit of splitting them?
+> 
+> At least, why the two patches cannot be put together closely?
 
-Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Signed-off-by: Nadav Amit <namit@vmware.com>
+It is trivial for the change of "KVM: VMX: Move out vmx_x86_ops to 'main.c' to
+wrap VMX and TDX" to introduce no functional change.  But it's not trivial
+for this patch to introduce no functional change.
 
----
-
-v1->v2:
-* Remove comment [Andy]
----
- arch/x86/mm/tlb.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 0f346c51dd99..f012445f6d94 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -736,7 +736,7 @@ static void flush_tlb_func(void *info)
- 	u32 loaded_mm_asid = this_cpu_read(cpu_tlbstate.loaded_mm_asid);
- 	u64 local_tlb_gen = this_cpu_read(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen);
- 	bool local = smp_processor_id() == f->initiating_cpu;
--	unsigned long nr_invalidate = 0;
-+	unsigned long nr_invalidate;
- 	u64 mm_tlb_gen;
- 
- 	/* This code cannot presently handle being reentered. */
-@@ -795,7 +795,7 @@ static void flush_tlb_func(void *info)
- 		 * be handled can catch us all the way up, leaving no work for
- 		 * the second flush.
- 		 */
--		goto done;
-+		return;
- 	}
- 
- 	WARN_ON_ONCE(local_tlb_gen > mm_tlb_gen);
-@@ -870,8 +870,6 @@ static void flush_tlb_func(void *info)
- 	/* Both paths above update our state to mm_tlb_gen. */
- 	this_cpu_write(cpu_tlbstate.ctxs[loaded_mm_asid].tlb_gen, mm_tlb_gen);
- 
--	/* Tracing is done in a unified manner to reduce the code size */
--done:
- 	trace_tlb_flush(!local ? TLB_REMOTE_SHOOTDOWN :
- 				(f->mm == NULL) ? TLB_LOCAL_SHOOTDOWN :
- 						  TLB_LOCAL_MM_SHOOTDOWN,
+So I moved this patch right after the main.c patch.
 -- 
-2.25.1
-
+Isaku Yamahata <isaku.yamahata@gmail.com>
