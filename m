@@ -2,75 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C23EC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:46:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4C5CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbiGLLqm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59096 "EHLO
+        id S229889AbiGLLtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbiGLLqj (ORCPT
+        with ESMTP id S230257AbiGLLtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:46:39 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D58B1CD9;
-        Tue, 12 Jul 2022 04:46:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1657626396;
-        bh=4DGf9fAelIjMIL4cUJBkvt2Bi+U2qT/l8y6i/0sSxCc=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=bSsxshPVadp1rVWgMuIivI/DsctDGVeCFlgX3X4lk66FpK/ULERrFUue06IgXtBn2
-         v7WcOMILMsQGWuH2hAESp3KgybaqEznoVHe3QSYCbSp1DKoc9NOcKm8G/gUB9X0kHn
-         EQ+yacEcLivaRRLMHMvTcolHduFQHyc7cC/xKr/w=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.68]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N1fmq-1nR8321qH2-011xma; Tue, 12
- Jul 2022 13:46:36 +0200
-Message-ID: <b758ebfd-f153-c0e6-14f9-d66c760b2e11@gmx.de>
-Date:   Tue, 12 Jul 2022 13:46:35 +0200
+        Tue, 12 Jul 2022 07:49:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3D7221C923
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:49:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657626554;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MhycE2vEwnb9k/UxKYsjDnSNw/br2B5mjJJO+OCBKJk=;
+        b=ehznDEmkGM2ONKd+Uo0Q2cYNEmIOn7L4pWRFrjSH8CKPBqZ2+VOipBsrBdDVUJnpaoteTg
+        WjS0y7jKt3UYrfamVO59A4CNa03rnvwBExy8hzorTVbVHvQQwQeDLMtfcK9pC8P2mShHF9
+        C4uP9QtM9oWBhA87sLLyqtJtNg/MitE=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-362-zrXtPKR1N4KhJBhxvH0Wqw-1; Tue, 12 Jul 2022 07:49:13 -0400
+X-MC-Unique: zrXtPKR1N4KhJBhxvH0Wqw-1
+Received: by mail-qk1-f200.google.com with SMTP id bj31-20020a05620a191f00b006b5a69786fcso813610qkb.15
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:49:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=MhycE2vEwnb9k/UxKYsjDnSNw/br2B5mjJJO+OCBKJk=;
+        b=P5dn1IBytmmg10WY/BUfhNOA86diuXiuBIedcGKSZwEyLnrXfgI44H285S0h9dsgk7
+         ec1JU0kvt9VTQPL7FAQGRiAtpn/YAzBH6tJ5fb1+fnVrSS5IGPBz+IoVJkSIxD2JCe0I
+         ljDcvsSrYTFZuaSEoGQad6fdlGrfh6dJcs55jpAbgZQ2WMLfOJ+htO4KraXrgfW09NRm
+         CDyG82uRw5EzmYWUbRXKxdXx+DJl2INVh88ImbP75DJDa6n+70SgB0BZL8rXhrRIKXfA
+         eiWfSsmxWBcDIvVS/aeADKGNphiCO/XD5ptSrCIyLCRIHCC/48T8jLj0zag1rs2iMgLX
+         7A3w==
+X-Gm-Message-State: AJIora+FhNuVTOFO5+k1omwL5JUlote2TV8/nc9OMh9F0pW6Y7ljUo8W
+        wZLff1LHSJY+J9gVDBIbloarLU3Ap0JZQQ40Ssm6D5gtl+NLg0nCMlfWy+7daarkRdLLFcDPuTn
+        b0NRQkdrTCuZWxM3DViWX7ml+
+X-Received: by 2002:a05:622a:1a1b:b0:31e:b7c8:b6cb with SMTP id f27-20020a05622a1a1b00b0031eb7c8b6cbmr5750537qtb.175.1657626552900;
+        Tue, 12 Jul 2022 04:49:12 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s34OKcGuKrWbIoEXwTK/WXOI2GkPYpqBLQQTkv+ldrVvzF+HzU3Am9Cir8DCWD7cHNtNoTFQ==
+X-Received: by 2002:a05:622a:1a1b:b0:31e:b7c8:b6cb with SMTP id f27-20020a05622a1a1b00b0031eb7c8b6cbmr5750518qtb.175.1657626552708;
+        Tue, 12 Jul 2022 04:49:12 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id m6-20020a05620a290600b006a758ce2ae1sm9729262qkp.104.2022.07.12.04.49.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 04:49:12 -0700 (PDT)
+Message-ID: <6a92c7b3ab9932ebfb459841021f2cc1de03b5e1.camel@redhat.com>
+Subject: Re: [PATCH v3 01/25] KVM: x86: hyper-v: Expose access to debug MSRs
+ in the partition privilege flags
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 14:49:08 +0300
+In-Reply-To: <20220708144223.610080-2-vkuznets@redhat.com>
+References: <20220708144223.610080-1-vkuznets@redhat.com>
+         <20220708144223.610080-2-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.18 000/112] 5.18.11-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:E7ZaxQ+z/MCf46JzgJ2cLP1+KrC+xzzihykRni5jmO6x6CD/TEL
- iHMXDAbvSjO08ie14o25H9PE37Y2bsYiLtJ9VSxr3uWjTTwTJVwe00dDDhf3GSBFYWYNwOm
- MrEB6sHLKmLPL1VctC9MBRGDhfrwaPMK4L7vthG6+VZvPKTg3JMVbbCkwVQQG4XzUAjxoMH
- DVG6OJcMlxWTEpu7fotlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:p0PcumnsIYU=:UOQhRZmG7GodKjmzBDyNVA
- J9YORX0U2vR557HI7tqjsL0jEEjb2KGKuIL7HdW4dDwIdNB/Sso0JGmlabwse8NZtjfFje3U3
- A5Yw81hwGTnfZKoyjQYJlzwzjJHqASFtsFYh+X8PyugjeaWw7Zh+R8Nyw8wXx5Kt7s/UEGDou
- z/MY5hDnD8MAkEcHIhG6DLqVGOzL0LH4f5vzUSguZD4dCVcF6oYMHhX77uE6rDZUfkIFxjHq4
- L2Un6uP+4ETenxeKJ1x1quCWvEkAfXWFHjevzmoMF74FXem6wryy8nqJwnYlfLCydlB5tI2WK
- 8Pxe+JE0ani4cD+LLRm8TbdpcdA6aa2Wei2c6l4YQibIvfKjcSCvFJ9plo4B3lCEt7zs72dqn
- r2ItjOw9q4Y3HDDIorCTJ7GDwU+644rtHdgmTmSPEqzbsPkqnw314orVfa47+PYil90L8xRQ6
- wXYIkz9JCVy+d4CTDuj3hMOB3pXwoDxIfQX5DZ6B27zkblKLTa9LBIEE9MpI8/h+jDvGMt/y9
- QM6eBtNS31vo109kB51FeQSuTgcOseL56u4TpFnzMAb80czPOP73JcHvIOAfb+cnECcom0YEU
- b5HgYHevvByItDjozzwnZFe1QklHq21W3U0X2/QkN/wFDprZKxGBCwQsIm01Fih6nInrDd6EH
- yPdDXxyw/2BHheP6GWyxhj0ya7bSvIkB6Mjk6ms33wanzUeki7l24lzsyOS1Das2Je/RZa7mx
- N0xO5kTZBgqbvT74iysngKMuBBJ9mOvICDVQ57uZc0ccVEEfVjc3qCbZ0E/GtsGsMaVeRNaSK
- K2IKiarqM2/dGqD0H/DgOPC/YRYjfwgVIskzDiqq5jUDElhJbXhE9wzcZNOgPDLfUNAQqTGUw
- Lt0jhXq3qk5FY+e9XzubMU+zOE8EXNJEyVhpLK7OZKSa4yz10Yi46DMqaJXM/baeEKZckXWZn
- 6XDPjtBkCUTYBKfeMHW5WGA9w48PDphpvafp+eHaD2zF8MuGDW2RLjabuiviPud7tMFG+IALP
- baSEsrbmdyzC0chTmqgUUPGU7TYoSKbzLO72wcGMlZAacQNJN0z104iKQvp2pnvAHKpAlmUeT
- GxLkHq9muf07TWcvHSfWAvbMWjl+vxw1FMd
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+On Fri, 2022-07-08 at 16:41 +0200, Vitaly Kuznetsov wrote:
+> For some features, Hyper-V spec defines two separate CPUID bits: one
+> listing whether the feature is supported or not and another one showing
+> whether guest partition was granted access to the feature ("partition
+> privilege mask"). 'Debug MSRs available' is one of such features. Add
+> the missing 'access' bit.
+> 
+> Fixes: f97f5a56f597 ("x86/kvm/hyper-v: Add support for synthetic debugger interface")
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/kvm/hyperv.c             | 1 +
+>  include/asm-generic/hyperv-tlfs.h | 2 ++
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+> index e2e95a6fccfd..e08189211d9a 100644
+> --- a/arch/x86/kvm/hyperv.c
+> +++ b/arch/x86/kvm/hyperv.c
+> @@ -2496,6 +2496,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
+>  			ent->eax |= HV_MSR_RESET_AVAILABLE;
+>  			ent->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
+>  			ent->eax |= HV_ACCESS_FREQUENCY_MSRS;
+> +			ent->eax |= HV_ACCESS_DEBUG_MSRS;
+>  			ent->eax |= HV_ACCESS_REENLIGHTENMENT;
+>  
+>  			ent->ebx |= HV_POST_MESSAGES;
+> diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+> index fdce7a4cfc6f..1d99dd296a76 100644
+> --- a/include/asm-generic/hyperv-tlfs.h
+> +++ b/include/asm-generic/hyperv-tlfs.h
+> @@ -70,6 +70,8 @@
+>  #define HV_MSR_GUEST_IDLE_AVAILABLE		BIT(10)
+>  /* Partition local APIC and TSC frequency registers available */
+>  #define HV_ACCESS_FREQUENCY_MSRS		BIT(11)
+> +/* Debug MSRs available */
+> +#define HV_ACCESS_DEBUG_MSRS			BIT(12)
+>  /* AccessReenlightenmentControls privilege */
+>  #define HV_ACCESS_REENLIGHTENMENT		BIT(13)
+>  /* AccessTscInvariantControls privilege */
 
-5.18.11-rc1
 
-compiles, boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
+I guess you mean HV_FEATURE_DEBUG_MSRS_AVAILABLE and the new HV_ACCESS_DEBUG_MSRS
 
-Thanks
+I checked the spec and the bits match, so I guess:
 
-Tested-by: rwarsow@gmx.de
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
 
