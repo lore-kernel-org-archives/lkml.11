@@ -2,191 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F983C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50474C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:59:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233593AbiGLO7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:59:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53396 "EHLO
+        id S233677AbiGLO7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233808AbiGLO7L (ORCPT
+        with ESMTP id S233815AbiGLO7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 12 Jul 2022 10:59:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD09011453;
-        Tue, 12 Jul 2022 07:59:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C47B626AFB
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:59:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657637948;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rNMMrtYTZ3r/ojhGFO/7q3Z/iBX3TiYjKv+1Pm5Rw30=;
+        b=iFmYXe5r++vZduRtpfA/6nm501f9yFVRaGSHHbbvdHA1ppIqWvFFrf/HRdKNiExha/9Wsd
+        GjcP3qvvg8ORb/M9B24Si3qtSDZ4EE6YbapFU9CYPKGTIXPFr2ReyPLZq8eh3xw81PaupJ
+        U4qgj/3ge1Nq2Vgl8aUdhStHDPSIPnk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-205-dsndXIpmPdCnppEJ8jRctg-1; Tue, 12 Jul 2022 10:59:05 -0400
+X-MC-Unique: dsndXIpmPdCnppEJ8jRctg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 435BF60C70;
-        Tue, 12 Jul 2022 14:59:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A879C341C0;
-        Tue, 12 Jul 2022 14:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657637948;
-        bh=1fdpy7J8Q7P8f1d0GgzVpevYZ0LFY3vAm0/xtFYhVcw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=T5r/pParr+cVFCRYw+G2jBpzAxigzLQqAp4ejB9W6g+LJP434O4NWcCNp3XNTjzTF
-         Xt4jCTyPAcW3sNVECyaPz/CfE1cKYc6kJZFeT5Cj5CUAUotGO1hzola2Q5diluu7z8
-         ubrAiQTp/bYmTQ9kL0xWp0eSCdzKsdgEIphhvQ7s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.4.205
-Date:   Tue, 12 Jul 2022 16:58:58 +0200
-Message-Id: <1657637939113252@kroah.com>
-X-Mailer: git-send-email 2.37.0
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6940685A585;
+        Tue, 12 Jul 2022 14:59:04 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.195.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65A852166B26;
+        Tue, 12 Jul 2022 14:59:01 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v6 01/23] selftests/bpf: fix config for CLS_BPF
+Date:   Tue, 12 Jul 2022 16:58:28 +0200
+Message-Id: <20220712145850.599666-2-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.4.205 kernel.
+When running test_progs under the VM (with vmtest.sh), some tests are
+failing because the classifier bpf is not available.
 
-All users of the 5.4 kernel series must upgrade.
+Given that the script doesn't load that particular module, make it
+part of vmlinux.
 
-The updated 5.4.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-thanks,
+---
 
-greg k-h
+new in v6
+---
+ tools/testing/selftests/bpf/config | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-------------
-
- Documentation/devicetree/bindings/dma/allwinner,sun50i-a64-dma.yaml |    2 
- Makefile                                                            |    2 
- arch/arm/mach-at91/pm.c                                             |    6 
- arch/arm/mach-meson/platsmp.c                                       |    2 
- arch/powerpc/platforms/powernv/rng.c                                |   16 
- drivers/dma/at_xdmac.c                                              |    5 
- drivers/dma/imx-sdma.c                                              |    2 
- drivers/dma/pl330.c                                                 |    2 
- drivers/dma/ti/dma-crossbar.c                                       |    5 
- drivers/i2c/busses/i2c-cadence.c                                    |    1 
- drivers/iommu/dmar.c                                                |    2 
- drivers/misc/cardreader/rtsx_usb.c                                  |   27 -
- drivers/net/can/grcan.c                                             |    1 
- drivers/net/can/usb/gs_usb.c                                        |   23 
- drivers/net/can/usb/kvaser_usb/kvaser_usb.h                         |   25 
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c                    |  255 +++++-----
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c                   |    4 
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c                    |  119 ++--
- drivers/net/ethernet/ibm/ibmvnic.c                                  |    9 
- drivers/net/usb/usbnet.c                                            |   17 
- drivers/pinctrl/sunxi/pinctrl-sun8i-a83t.c                          |   10 
- drivers/pinctrl/sunxi/pinctrl-sunxi.c                               |    2 
- drivers/video/fbdev/core/fbcon.c                                    |   33 +
- drivers/video/fbdev/core/fbmem.c                                    |   16 
- fs/xfs/xfs_inode.c                                                  |    1 
- include/linux/fbcon.h                                               |    4 
- include/linux/rtsx_usb.h                                            |    2 
- include/net/esp.h                                                   |    2 
- include/video/of_display_timing.h                                   |    2 
- lib/idr.c                                                           |    3 
- mm/slub.c                                                           |    4 
- net/can/bcm.c                                                       |   18 
- net/ipv4/esp4.c                                                     |    5 
- net/ipv6/esp6.c                                                     |    5 
- net/rose/rose_route.c                                               |    4 
- tools/testing/selftests/net/forwarding/lib.sh                       |    6 
- 36 files changed, 407 insertions(+), 235 deletions(-)
-
-Andrei Lalaev (1):
-      pinctrl: sunxi: sunxi_pconf_set: use correct offset
-
-Claudiu Beznea (2):
-      ARM: at91: pm: use proper compatible for sama5d2's rtc
-      ARM: at91: pm: use proper compatibles for sam9x60's rtc and rtt
-
-Dmitry Osipenko (1):
-      dmaengine: pl330: Fix lockdep warning about non-static key
-
-Duoming Zhou (1):
-      net: rose: fix UAF bug caused by rose_t0timer_expiry
-
-Eric Sandeen (1):
-      xfs: remove incorrect ASSERT in xfs_rename
-
-Greg Kroah-Hartman (1):
-      Linux 5.4.205
-
-Guiling Deng (1):
-      fbdev: fbmem: Fix logo center image dx issue
-
-Helge Deller (3):
-      fbmem: Check virtual screen sizes in fb_set_var()
-      fbcon: Disallow setting font bigger than screen size
-      fbcon: Prevent that screen size is smaller than font size
-
-Hsin-Yi Wang (1):
-      video: of_display_timing.h: include errno.h
-
-Jann Horn (1):
-      mm/slub: add missing TID updates on slab deactivation
-
-Jason A. Donenfeld (1):
-      powerpc/powernv: delay rng platform device creation until later in boot
-
-Jimmy Assarsson (3):
-      can: kvaser_usb: replace run-time checks with struct kvaser_usb_driver_info
-      can: kvaser_usb: kvaser_usb_leaf: fix CAN clock frequency regression
-      can: kvaser_usb: kvaser_usb_leaf: fix bittiming limits
-
-Liang He (1):
-      can: grcan: grcan_probe(): remove extra of_node_get()
-
-Linus Torvalds (1):
-      ida: don't use BUG_ON() for debugging
-
-Miaoqian Lin (3):
-      ARM: meson: Fix refcount leak in meson_smp_prepare_cpus
-      dmaengine: ti: Fix refcount leak in ti_dra7_xbar_route_allocate
-      dmaengine: ti: Add missing put_device in ti_dra7_xbar_route_allocate
-
-Michael Walle (1):
-      dmaengine: at_xdma: handle errors of at_xdmac_alloc_desc() correctly
-
-Oliver Hartkopp (1):
-      can: bcm: use call_rcu() instead of costly synchronize_rcu()
-
-Oliver Neukum (1):
-      usbnet: fix memory leak in error case
-
-Peter Robinson (1):
-      dmaengine: imx-sdma: Allow imx8m for imx7 FW revs
-
-Rhett Aultman (1):
-      can: gs_usb: gs_usb_open/close(): fix memory leak
-
-Rick Lindsley (1):
-      ibmvnic: Properly dispose of all skbs during a failover.
-
-Sabrina Dubroca (1):
-      esp: limit skb_page_frag_refill use to a single page
-
-Samuel Holland (2):
-      pinctrl: sunxi: a83t: Fix NAND function name for some pins
-      dt-bindings: dma: allwinner,sun50i-a64-dma: Fix min/max typo
-
-Satish Nagireddy (1):
-      i2c: cadence: Unregister the clk notifier in error path
-
-Shuah Khan (3):
-      misc: rtsx_usb: fix use of dma mapped buffer for usb bulk transfer
-      misc: rtsx_usb: use separate command and response buffers
-      misc: rtsx_usb: set return value in rsp_buf alloc err path
-
-Vladimir Oltean (3):
-      selftests: forwarding: fix flood_unicast_test when h2 supports IFF_UNICAST_FLT
-      selftests: forwarding: fix learning_test when h1 supports IFF_UNICAST_FLT
-      selftests: forwarding: fix error message in learning_test
-
-Yian Chen (1):
-      iommu/vt-d: Fix PCI bus rescan device hot add
+diff --git a/tools/testing/selftests/bpf/config b/tools/testing/selftests/bpf/config
+index c05904d631ec..c69c119f4bb7 100644
+--- a/tools/testing/selftests/bpf/config
++++ b/tools/testing/selftests/bpf/config
+@@ -1,6 +1,6 @@
+ CONFIG_BPF=y
+ CONFIG_BPF_SYSCALL=y
+-CONFIG_NET_CLS_BPF=m
++CONFIG_NET_CLS_BPF=y
+ CONFIG_BPF_EVENTS=y
+ CONFIG_TEST_BPF=m
+ CONFIG_CGROUP_BPF=y
+-- 
+2.36.1
 
