@@ -2,173 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 679D7C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:26:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2258C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 12:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiGLM0I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 08:26:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        id S233202AbiGLM0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 08:26:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233139AbiGLMZy (ORCPT
+        with ESMTP id S233050AbiGLMZz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 08:25:54 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB80EB1859
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:25:53 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CCDnN7009255;
-        Tue, 12 Jul 2022 12:25:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=cHt6uQ4F5qfK2EMpjPFi6QtQrULwClp+JiIc39C2DR0=;
- b=fPKgJ+lgNC1aBg4olCMxyD064A4Ae/RMDNrQimZseLR4B/0KFgD3Xh4tH9DkXIKsgIR9
- 1NsQm+NAt4AY5ka3vVSb7U6wo6Acwu+h4jYc+qpF+EyRmzuE4iisZRPFZjr4AQ0m83xu
- D0v+gwTlydCX8dOLh9WfTTIbLCHllJIimuc3OnK8XlsLRASwXJbkl8f1pWQlSHiUFlYo
- dQ2M48XNvDQ5GPXjO2Mu0rEMXMqrPYjhdUHmgO0308EPurONP3W124cKKpWCJhMDVbgt
- qvYLsPZfuCF8mHfC3mzJ12t6kSkjzeIdeC1XPRQ1v3gF3hTr73Q8NjREuZhz+1/El1Al qg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71sgpamx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 12:25:40 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26CCKcfe035269;
-        Tue, 12 Jul 2022 12:25:38 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2170.outbound.protection.outlook.com [104.47.59.170])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7042w6dh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 12:25:38 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aIRckGKHgtV+Mdj/QnA/hSUg6GWK4teYx6YuUPDnjv+ltWDZunTDOZYPyDGLTU+tiIYVTDNuJ4Esp8EC4aHbanqzUrbhnpM7NO6JZjqBA8lQfeGHyXDnJ22DMJiNFEI69TSn+ZCe9PGIzFTgkhSp6nLS/EwZ1X9KqG0yH88zRnsTL51jn6aJdCD9lOixtK8oTe+3x5D0llDNzFtj+MMnI8FkqtK8xa5xME/MaV3if/g4XZsUdJU4FqDXgnzJvMkhnbmxc9wAM+nWQqzm3EmxJyUXmLBfzfp76m0G/hNuFp6NO7WN9tQ+xkw0bLiZdHkZM+ysHgT4DWw1Nocmaghr/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cHt6uQ4F5qfK2EMpjPFi6QtQrULwClp+JiIc39C2DR0=;
- b=dTAXT5oF0s7kexbZtr7YNsjrv+XdpBameTkEUGQnIuIVSO0O9lRL2gZ0+L6vDyvfGoVkxWHzAOOs+W+Ozwn76wwBjq40urzzFG0JRphA7cjpptYKfvk1B9BOZOr+dlZZCE0/wgBeDf8iWyL2mnyBD4yEFs0D1B0GJW5nh+JxAQXXgbrnK65H76Nl8SX850/sAWNcRgDuKRBDpiYFks9payLHjiEs8ClPs5gUuIlMJKVbAIRBoYEHUOpz+A3hb/bgxS6S78mzfbBY5ArplmTs88XsqPFwadn/+cI2cuA8ZRMsvfY1C+C/ZpffOPZjsu4U5nzv+fLkhrg1FnXMpDxXTg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 12 Jul 2022 08:25:55 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 387C2B0249
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:25:52 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id cp18-20020a17090afb9200b001ef79e8484aso1180204pjb.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 05:25:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHt6uQ4F5qfK2EMpjPFi6QtQrULwClp+JiIc39C2DR0=;
- b=dC/YHrCh07Id0UwZZgKwJ8tPgu0bWZf2zgt8NfBvOk6cVmU3xa5J9rMUt+V7gDTHbx7wO73xPcwQs5NUHjEggi7WL3C/nIitqtUcmtUeHjD1oRnuVx+5Q9RnHZxl2NWq5VAdY9QGh8kKvBepXoo7sUe4BwF++YDn6pMu1JXW4xg=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by SN6PR10MB3454.namprd10.prod.outlook.com
- (2603:10b6:805:d2::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Tue, 12 Jul
- 2022 12:25:31 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 12:25:31 +0000
-Date:   Tue, 12 Jul 2022 15:25:08 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Martin Kaiser <martin@kaiser.cx>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Michael Straube <straube.linux@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/14] staging: r8188eu: use a local buffer for efuse data
-Message-ID: <20220712122507.GN2338@kadam>
-References: <20220709171000.180481-1-martin@kaiser.cx>
- <20220709171000.180481-6-martin@kaiser.cx>
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=P7Kkdpw0CXoEWIErTCFA3Qrrlf9LnDXlc1tDM9FQEkM=;
+        b=KuK+XxEAiZqgqYpARe+Ajp5+Xdwyu7FklH95kCtVjkvgG+1uPVQMUhmdejypzwsmBf
+         Mo2dlK8V3ZWr/GxLdSczjCIlGFxuf+SqP2UzOA52DGrUp6dLD+xeFAsYTL7PgJ9kPAcC
+         mtW+6fqF7M412Pj8YOHBXLLFEqiOasGTHcx72eZTsMfr0dyK5VfHFh4gXRbcW1fCUoIE
+         ttT5O3cTky3v+47P0Y/IlYrTawdf8t75/PedOHBBnreEgIdlJw5oqHKarJN4588BL/XE
+         cXPVJCIqGBTASqn3khqMiRBtsFwDl2IZaS8yUbgvRmdVE4+r+UWADTpcbBUaaXatoyu0
+         Ih+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=P7Kkdpw0CXoEWIErTCFA3Qrrlf9LnDXlc1tDM9FQEkM=;
+        b=Ky+xK7qWWjmXxi/fHqV6jAfnCSlCz/JCQClJUNzuwF1mFdyW/eOFxA+d9bse8NpFNu
+         1JZbh2bX8cikUw44kgO8JHDqU4jK5QYmIUR+7pMZu937F2lOWyGdeHone4Xsserzt0eJ
+         Ajsiq456N9AjjCx2aCrsaujnGbKwd0bNJ6OEAGErHLXRHVZ85sMzZ+lAejnm4rXbRSbZ
+         RD1XHHkDwDd0YgpofIQgCQ/FwVFZBxt4xZ+FiAFJvbIvxlRQrr/qOQWP4xSIiYD+KR7p
+         L0ROW3REBcsxcUxd0QZ877vH15zvT5XnOAL0ZRTZsTTRc321iXmQIpHHQ4iIMBTXGylz
+         T11w==
+X-Gm-Message-State: AJIora/y7p8r9z8VDWnbmiCeFgbPHhFcD52SlH9W87dRgTVscgTE8iiv
+        DT609esvCXyMwYPC3XHQP8dX
+X-Google-Smtp-Source: AGRyM1uKDhZojzscbBh0F9qg+DTu0azBDT/jsX0vJ6G1yxcsnu7T8U/Es7XsMpSg8z41cXpj/4V+GQ==
+X-Received: by 2002:a17:902:be16:b0:16c:151d:3e21 with SMTP id r22-20020a170902be1600b0016c151d3e21mr24149386pls.49.1657628751649;
+        Tue, 12 Jul 2022 05:25:51 -0700 (PDT)
+Received: from workstation ([117.207.31.14])
+        by smtp.gmail.com with ESMTPSA id f12-20020a170902860c00b0016191b843e2sm6698327plo.235.2022.07.12.05.25.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Jul 2022 05:25:51 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 17:55:41 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Viresh Kumar <viresh.kumar@linaro.org>
+Cc:     Johan Hovold <johan@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Chanwoo Choi <cw00.choi@samsung.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        MyungJoo Ham <myungjoo.ham@samsung.com>,
+        Nishanth Menon <nm@ti.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Viresh Kumar <vireshk@kernel.org>, linux-pm@vger.kernel.org,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH V2 00/13] OPP: Add support for multiple clocks*
+Message-ID: <20220712122541.GA21746@workstation>
+References: <cover.1657003420.git.viresh.kumar@linaro.org>
+ <YsxSkswzsqgMOc0l@hovoldconsulting.com>
+ <20220712075240.lsjd42yhcskqlzrh@vireshk-i7>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220709171000.180481-6-martin@kaiser.cx>
+In-Reply-To: <20220712075240.lsjd42yhcskqlzrh@vireshk-i7>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNXP275CA0018.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:19::30)
- To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 605d7074-f6e0-431c-ceda-08da64019c29
-X-MS-TrafficTypeDiagnostic: SN6PR10MB3454:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eA0aGAwxhK0fRRgmzg5r7u/MOG0ldiPyn6m3ZjVNyh6yzsHi/6D2iQ2PN9yp7zBd5UqCouZJRqi7zqH1p4wwWqKDrAUxvgmP23bsGwGFnAc+D1v5k0KkJIfaYiT8Xs4SYRctMsBRNxqnan4bPEpBfZmlY2sTWdUS+kmw7dai8DbbB6aMSBe+Bd0iR1byKrFh/U0eqh8z8PrYoFCkKCLg4mnTPNgFOQf6RunxivQeLf8DZEHaqquoHNFCTf8gL14ajqlgCP89imPtOMem0NkQ1+36L7Wvc1bZvNQzzjn0t1jfWaYdKa3GuSeamLHodO09ABY+roJh5BnyIB5c7mZs9AuGBfPOvl1WWREUhp7M3ZoZS4iHNfsDBlUQuSl0+KdvNFBcdaAvyrMalJYp7qlBrnQ/aheZvwTDy0ofrBrLKu1ZLUHPJvZWzWkF2BYEozB0mt6+pMUtR/yk0zEiDE6viiuquJdOv+1JD8wiiHJz6/thai+ju3JmZL6KUjMTQ18L68cmJlQ0w2KhBzX/jjXq0LlTYzfl/IaNX1Glpk5F2liomZ4SBqLXBEwMsFMiA12EDiBy7O3lqqqWHOGLGJ5/m5TVSXvxTXSvOji2jjXSSqAfd6M765HszUIGr9rZfCKl1ymq0Ba8DAyjIonWn2w2c/qoeNceVroznJQWt7lg8V7rK92rhXWSPqpgn9YPgsJgDkLG10LhuSeEGoMryzl13WYJz3Xbi+z07Az0BWAQ0hOMe/KZdqwTEsAvbnG4Nk3JcxCs0c227XHsPgAfWYfsj19NVKlgivh4tJ6IWEBVSg9jjEpRXb+dsW+u0nr7pyQe
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(366004)(346002)(136003)(376002)(39860400002)(52116002)(6506007)(8676002)(4326008)(6666004)(38350700002)(38100700002)(5660300002)(33716001)(86362001)(33656002)(8936002)(26005)(2906002)(1076003)(83380400001)(44832011)(186003)(9686003)(19627235002)(41300700001)(6512007)(316002)(66556008)(6486002)(66946007)(478600001)(6916009)(54906003)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xulD4sJSv9LdPnc6juhW+tHFN55WG6RGQzZ05jlR174vru0JA7Le5s8KEDTo?=
- =?us-ascii?Q?gbKvBlUnsbFyCUWsbVkwnFHpI1bcqXn2NzPIohd2iUiedokhEC5fARu4ZKDm?=
- =?us-ascii?Q?TN/odLvifp4Wz2j5VDPMUU4yQnrs1S7LdRlV41bvQqdR9WvmMaHgHWg/pcvR?=
- =?us-ascii?Q?i2T7wmvw8T5CtHU18IsCI8wALNM3GETN2SiT0c503W4GwghPFk1SQ1AwD7Gu?=
- =?us-ascii?Q?33zF0HQTkdjuc+HH2dMhdSQWarGWB/fwvs4auWqqyTUAfjtlRx/ZToK7v59H?=
- =?us-ascii?Q?dmtp9iWgdlgVUTDNFepohuLP7W87LsgBY3hpiCfL7x+XgpnWfWB9nUYl1QxJ?=
- =?us-ascii?Q?7zYerisxK0o4NDmqdzSaZ9UBd5wpWZ0YXZXPXI5uFiXPwBv9c5avQB3t0GJ5?=
- =?us-ascii?Q?of/j3YA+srVO5VOAp627HK0NSzTj5jwWkdUMTZzEoqbOvPyprYuH1w9Igkvp?=
- =?us-ascii?Q?vETcldqcNABSiiTgYMdwbYGWD/5y8aRt2lsd8CTMv3i/49pJJq2T4Daff7B8?=
- =?us-ascii?Q?fPdSlPxMVsRXNKO4goZ4XIaZdfv7G/UDJOqxr8erE6smivpcvHqg9pkOgwDi?=
- =?us-ascii?Q?unINusJv3fXxFJkVu9l5hIpIRHVDZYnHXuJqqVzOWqaIKaHAhlgScQhLvn04?=
- =?us-ascii?Q?Mq2hUXFXXdZfv3DHbmPzG/FuZ9+1ltCsEMI1iZ5pm13gthlpRQ5hgUx1R9l8?=
- =?us-ascii?Q?if7Km6xj3aha4s+UAYJhweDqOrHLQ02ThQUccFeVJiHcXu1hDb7O2gtEwFFQ?=
- =?us-ascii?Q?ajv3HcW6KmPVhWDEml2FPPfB+Yvq2NxtLvbDFYx9UBQjQ6SvD4j5BJ3vdMkz?=
- =?us-ascii?Q?VImHc031mv9RsCFwaQA7vWd/o12EvB/Y1vJmvblQgZ+O5pcZpA1JfCyHwPMq?=
- =?us-ascii?Q?93YQCZo6FdVC8CUT9KHqUls54u49vO5TWBwXPdXtOtn9QaY7Bhwy/7BYvkNH?=
- =?us-ascii?Q?XquGWMIMseBToRKTmXuX6ECrk95WtNlsG0bQ6N2uQucrUT6zXFhFu61+naL1?=
- =?us-ascii?Q?TYuSy5FNTWdme7nh1It9I9Vw4ZsWU2oSyb4xoyiOFEpghXVQaClC2/gTYhPo?=
- =?us-ascii?Q?Uh8bfN34iU8SVjGAwIjx3fQRdgY9q4wN44T1+BDp847mAGOcPdBcWEmAVft7?=
- =?us-ascii?Q?AdoEB650ZDvs2Q011Kl5lt+qkjUIE2UDtlm7AOeOtguxB1dUMyC5JOZ9GT4Y?=
- =?us-ascii?Q?qQY4T8Kc23XrbK515g+Cbd12o1+3GnZCRcdWAUZM7JJBzKgJQCshyBW16pX0?=
- =?us-ascii?Q?kb3A1v/0Rjc4Zk39kojNLnudLqSdNYtuOhEs0S/5gJG7ffENLhTwxYBWD0Wu?=
- =?us-ascii?Q?IqorcpF8McxVuF8cJNxkNQOCTGNDd7DHpPHjH6522FJEk0texqs9CcVRNVb3?=
- =?us-ascii?Q?tcDOpaQpe5sPyZjtB/7oBGtNbLFHzvPgmx0ckaowOgGCDxodJc0tdmwgfnBt?=
- =?us-ascii?Q?e2UKTwQEZgCxShzid2fPTu+k4/gneY2Ah/Bwevfb+nNoTt5oinwms5U0jUim?=
- =?us-ascii?Q?WaC1M8Y9WhgeTUfvcFJlqttLsVvxxwXeiibiwcNLUshzExbvoeT1Ys2CoDb+?=
- =?us-ascii?Q?GTAwLnfJY5fhaKBSmYDpmBu3Co3Brixsn0kBJqpi?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 605d7074-f6e0-431c-ceda-08da64019c29
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 12:25:30.9076
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ziO4i0+plvxnQwN1wd5x3QX9Fr3WeRQjLJOyxD17J/kbm9lRR1fEk2xHscRxdphsv4Qs2kjNrGrNSgweo1bEciGiwYuEqslgoBu5UWZ83Q4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR10MB3454
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-12_08:2022-07-12,2022-07-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207120048
-X-Proofpoint-GUID: -222AL0Euoa-4Q7ZwC525ezrKsnDPrr2
-X-Proofpoint-ORIG-GUID: -222AL0Euoa-4Q7ZwC525ezrKsnDPrr2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 07:09:51PM +0200, Martin Kaiser wrote:
-> The efuse_eeprom_data array in struct eeprom_priv is used only by
-> ReadAdapterInfo8188EU. We can remove efuse_eeprom_data and use a local
-> buffer instead.
+On Tue, Jul 12, 2022 at 01:22:40PM +0530, Viresh Kumar wrote:
+> On 11-07-22, 18:40, Johan Hovold wrote:
+> > This break OPP parsing on SC8280XP and hence cpufreq and other things:
+> > 
+> > [  +0.010890] cpu cpu0: _opp_add_static_v2: opp key field not found
+> > [  +0.000019] cpu cpu0: _of_add_opp_table_v2: Failed to add OPP, -19
+> > [  +0.000060] cpu cpu0: _opp_is_duplicate: duplicate OPPs detected. Existing: freq: 300000000, volt: 576000, enabled: 1. New: freq: 403200000, volt: 576000, enabled: 1
+> > [  +0.000030] cpu cpu0: _opp_is_duplicate: duplicate OPPs detected. Existing: freq: 300000000, volt: 576000, enabled: 1. New: freq: 499200000, volt: 576000, enabled: 1
+> > ...
+> > 
+> > I just did a rebase on next-20220708 and hit this.
+> > 
+> > I've narrowed it down to _read_rate() now returning -ENODEV since
+> > opp_table->clk_count is zero.
+> > 
+> > Similar to what was reported for tegra for v1:
+> > 
+> > 	https://lore.kernel.org/all/58cc8e3c-74d4-e432-8502-299312a1f15e@collabora.com/
+> > 
+> > I don't have time to look at this any more today, but it would we nice
+> > if you could unbreak linux-next.
+> > 
+> > Perhaps Bjorn or Mani can help with further details, but this doesn't
+> > look like something that is specific to SC8280XP.
 > 
-> Use EFUSE_MAP_LEN_88E as buffer size. Its value is the same as
-> HWSET_MAX_SIZE_512. The functions that access the buffer use
-> EFUSE_MAP_LEN_88E for its size.
+> It is actually. This is yet another corner case, Tegra had one as
+> well.
 > 
-> Signed-off-by: Martin Kaiser <martin@kaiser.cx>
-> ---
->  drivers/staging/r8188eu/hal/usb_halinit.c    | 23 ++++++++++----------
->  drivers/staging/r8188eu/include/rtw_eeprom.h |  3 ---
->  2 files changed, 12 insertions(+), 14 deletions(-)
+> I have tried to understand the Qcom code / setup to best of my
+> abilities, and the problem as per me is that qcom-cpufreq-hw doesn't
+> provide a clk to the OPP core, which breaks it after the new updates
+> to the OPP core. I believe following will solve it. Can someone please
+> try this ? I will then merge it with the right commit.
 > 
-> diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
-> index 18c2817bf1e3..807d8ce8cbfc 100644
-> --- a/drivers/staging/r8188eu/hal/usb_halinit.c
-> +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
-> @@ -929,6 +929,7 @@ void ReadAdapterInfo8188EU(struct adapter *Adapter)
->  {
->  	struct eeprom_priv *eeprom = &Adapter->eeprompriv;
->  	struct led_priv *ledpriv = &Adapter->ledpriv;
-> +	u8 efuse_buf[EFUSE_MAP_LEN_88E] __aligned(4);
 
-This is 512 bytes.  We used to be slightly worried about declaring 512
-bytes on the stack, but I'm not sure the situation now.
+I gave it a shot on Lenovo X13s based on SC8280 SoC and it fixes the OPP
+issue. So you can add,
 
-regards,
-dan carpenter
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
+Thanks,
+Mani
+
+> diff --git a/drivers/opp/core.c b/drivers/opp/core.c
+> index 666e1ebf91d1..4f4a285886fa 100644
+> --- a/drivers/opp/core.c
+> +++ b/drivers/opp/core.c
+> @@ -1384,6 +1384,20 @@ static struct opp_table *_update_opp_table_clk(struct device *dev,
+>         }
+> 
+>         if (ret == -ENOENT) {
+> +               /*
+> +                * There are few platforms which don't want the OPP core to
+> +                * manage device's clock settings. In such cases neither the
+> +                * platform provides the clks explicitly to us, nor the DT
+> +                * contains a valid clk entry. The OPP nodes in DT may still
+> +                * contain "opp-hz" property though, which we need to parse and
+> +                * allow the platform to find an OPP based on freq later on.
+> +                *
+> +                * This is a simple solution to take care of such corner cases,
+> +                * i.e. make the clk_count 1, which lets us allocate space for
+> +                * frequency in opp->rates and also parse the entries in DT.
+> +                */
+> +               opp_table->clk_count = 1;
+> +
+>                 dev_dbg(dev, "%s: Couldn't find clock: %d\n", __func__, ret);
+>                 return opp_table;
+>         }
+> 
+> -- 
+> viresh
