@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F371CCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234338AbiGLSpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:45:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S234185AbiGLSpn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:45:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234268AbiGLSo7 (ORCPT
+        with ESMTP id S234291AbiGLSpK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:44:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5985CDABAB;
-        Tue, 12 Jul 2022 11:42:24 -0700 (PDT)
+        Tue, 12 Jul 2022 14:45:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D68A9DB2C2;
+        Tue, 12 Jul 2022 11:42:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA2DF61AD2;
-        Tue, 12 Jul 2022 18:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBEBC341D0;
-        Tue, 12 Jul 2022 18:42:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73EFDB81B96;
+        Tue, 12 Jul 2022 18:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEF5DC3411C;
+        Tue, 12 Jul 2022 18:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651343;
-        bh=KOPBfmIxu9SkTNKcXX0nwvznMmnj5WtPQ0BxdN1yLmw=;
+        s=korg; t=1657651346;
+        bh=XZe6mZDywRYuCTJTB4/Kt7NN12giWZC5dpHCMsUZakg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PptCVk9+l2dstg2j5TXkXLJNJdDCEmTnQgKZNG20h0EivWtcoCNw9sOmiJhLihfUr
-         4gAiB4RDsMflkkRDKoAm+V7tOgIs/k2QJ5qSWKXa5ERAkhokdUTi7SFMezsP2vencn
-         ZmsDpeg9OzSNKkRspCO8/gUqK9KnT0tY3m9K3wug=
+        b=fpsp3vEoFY6p3C7/Bx/o3sZVMacTkxc/99brFav3Kx62Z4eKfDPuqs249b6FAwHZa
+         vUzAL1sRII2Bm9OwY78mEDDIYTEZoaZoxXkH/x2NXNNf0eExjte1yXCIHAguJ146wO
+         LPeEvKSsEo6AWP0Rkyf1GOUVyjkOExD7gJqOv/jo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Borislav Petkov <bp@alien8.de>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 007/130] objtool: Assume only ELF functions do sibling calls
-Date:   Tue, 12 Jul 2022 20:37:33 +0200
-Message-Id: <20220712183246.727242541@linuxfoundation.org>
+Subject: [PATCH 5.10 041/130] objtool: Teach get_alt_entry() about more relocation types
+Date:   Tue, 12 Jul 2022 20:38:07 +0200
+Message-Id: <20220712183248.303544818@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -48,121 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit ecf11ba4d066fe527586c6edd6ca68457ca55cf4 upstream.
+commit 24ff652573754fe4c03213ebd26b17e86842feb3 upstream.
 
-There's an inconsistency in how sibling calls are detected in
-non-function asm code, depending on the scope of the object.  If the
-target code is external to the object, objtool considers it a sibling
-call.  If the target code is internal but not a function, objtool
-*doesn't* consider it a sibling call.
+Occasionally objtool encounters symbol (as opposed to section)
+relocations in .altinstructions. Typically they are the alternatives
+written by elf_add_alternative() as encountered on a noinstr
+validation run on vmlinux after having already ran objtool on the
+individual .o files.
 
-This can cause some inconsistencies between per-object and vmlinux.o
-validation.
+Basically this is the counterpart of commit 44f6a7c0755d ("objtool:
+Fix seg fault with Clang non-section symbols"), because when these new
+assemblers (binutils now also does this) strip the section symbols,
+elf_add_reloc_to_insn() is forced to emit symbol based relocations.
 
-Instead, assume only ELF functions can do sibling calls.  This generally
-matches existing reality, and makes sibling call validation consistent
-between vmlinux.o and per-object.
+As such, teach get_alt_entry() about different relocation types.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/0e9ab6f3628cc7bf3bde7aa6762d54d7df19ad78.1611263461.git.jpoimboe@redhat.com
+Fixes: 9bc0bb50727c ("objtool/x86: Rewrite retpoline thunk calls")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Reported-by: Borislav Petkov <bp@alien8.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/YVWUvknIEVNkPvnP@hirez.programming.kicks-ass.net
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c |   36 ++++++++++++++++++++++--------------
- 1 file changed, 22 insertions(+), 14 deletions(-)
+ tools/objtool/special.c |   32 +++++++++++++++++++++++++-------
+ 1 file changed, 25 insertions(+), 7 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -109,15 +109,20 @@ static struct instruction *prev_insn_sam
- 
- static bool is_sibling_call(struct instruction *insn)
+--- a/tools/objtool/special.c
++++ b/tools/objtool/special.c
+@@ -55,6 +55,24 @@ void __weak arch_handle_alternative(unsi
  {
-+	/*
-+	 * Assume only ELF functions can make sibling calls.  This ensures
-+	 * sibling call detection consistency between vmlinux.o and individual
-+	 * objects.
-+	 */
-+	if (!insn->func)
-+		return false;
-+
- 	/* An indirect jump is either a sibling call or a jump to a table. */
- 	if (insn->type == INSN_JUMP_DYNAMIC)
- 		return list_empty(&insn->alts);
- 
--	if (!is_static_jump(insn))
--		return false;
--
- 	/* add_jump_destinations() sets insn->call_dest for sibling calls. */
--	return !!insn->call_dest;
-+	return (is_static_jump(insn) && insn->call_dest);
  }
  
- /*
-@@ -788,7 +793,7 @@ static int add_jump_destinations(struct
- 			continue;
++static bool reloc2sec_off(struct reloc *reloc, struct section **sec, unsigned long *off)
++{
++	switch (reloc->sym->type) {
++	case STT_FUNC:
++		*sec = reloc->sym->sec;
++		*off = reloc->sym->offset + reloc->addend;
++		return true;
++
++	case STT_SECTION:
++		*sec = reloc->sym->sec;
++		*off = reloc->addend;
++		return true;
++
++	default:
++		return false;
++	}
++}
++
+ static int get_alt_entry(struct elf *elf, struct special_entry *entry,
+ 			 struct section *sec, int idx,
+ 			 struct special_alt *alt)
+@@ -87,15 +105,12 @@ static int get_alt_entry(struct elf *elf
+ 		WARN_FUNC("can't find orig reloc", sec, offset + entry->orig);
+ 		return -1;
+ 	}
+-	if (orig_reloc->sym->type != STT_SECTION) {
+-		WARN_FUNC("don't know how to handle non-section reloc symbol %s",
++	if (!reloc2sec_off(orig_reloc, &alt->orig_sec, &alt->orig_off)) {
++		WARN_FUNC("don't know how to handle reloc symbol type: %s",
+ 			   sec, offset + entry->orig, orig_reloc->sym->name);
+ 		return -1;
+ 	}
  
- 		reloc = find_reloc_by_dest_range(file->elf, insn->sec,
--					       insn->offset, insn->len);
-+						 insn->offset, insn->len);
- 		if (!reloc) {
- 			dest_sec = insn->sec;
- 			dest_off = arch_jump_destination(insn);
-@@ -808,18 +813,21 @@ static int add_jump_destinations(struct
+-	alt->orig_sec = orig_reloc->sym->sec;
+-	alt->orig_off = orig_reloc->addend;
+-
+ 	if (!entry->group || alt->new_len) {
+ 		new_reloc = find_reloc_by_dest(elf, sec, offset + entry->new);
+ 		if (!new_reloc) {
+@@ -112,8 +127,11 @@ static int get_alt_entry(struct elf *elf
+ 		if (arch_is_retpoline(new_reloc->sym))
+ 			return 1;
  
- 			insn->retpoline_safe = true;
- 			continue;
--		} else if (reloc->sym->sec->idx) {
--			dest_sec = reloc->sym->sec;
--			dest_off = reloc->sym->sym.st_value +
--				   arch_dest_reloc_offset(reloc->addend);
--		} else {
--			/* external sibling call */
-+		} else if (insn->func) {
-+			/* internal or external sibling call (with reloc) */
- 			insn->call_dest = reloc->sym;
- 			if (insn->call_dest->static_call_tramp) {
- 				list_add_tail(&insn->static_call_node,
- 					      &file->static_call_list);
- 			}
- 			continue;
-+		} else if (reloc->sym->sec->idx) {
-+			dest_sec = reloc->sym->sec;
-+			dest_off = reloc->sym->sym.st_value +
-+				   arch_dest_reloc_offset(reloc->addend);
-+		} else {
-+			/* non-func asm code jumping to another file */
-+			continue;
- 		}
+-		alt->new_sec = new_reloc->sym->sec;
+-		alt->new_off = (unsigned int)new_reloc->addend;
++		if (!reloc2sec_off(new_reloc, &alt->new_sec, &alt->new_off)) {
++			WARN_FUNC("don't know how to handle reloc symbol type: %s",
++				  sec, offset + entry->new, new_reloc->sym->name);
++			return -1;
++		}
  
- 		insn->jump_dest = find_insn(file, dest_sec, dest_off);
-@@ -868,7 +876,7 @@ static int add_jump_destinations(struct
- 			} else if (insn->jump_dest->func->pfunc != insn->func->pfunc &&
- 				   insn->jump_dest->offset == insn->jump_dest->func->offset) {
- 
--				/* internal sibling call */
-+				/* internal sibling call (without reloc) */
- 				insn->call_dest = insn->jump_dest->func;
- 				if (insn->call_dest->static_call_tramp) {
- 					list_add_tail(&insn->static_call_node,
-@@ -2570,7 +2578,7 @@ static int validate_branch(struct objtoo
- 
- 		case INSN_JUMP_CONDITIONAL:
- 		case INSN_JUMP_UNCONDITIONAL:
--			if (func && is_sibling_call(insn)) {
-+			if (is_sibling_call(insn)) {
- 				ret = validate_sibling_call(insn, &state);
- 				if (ret)
- 					return ret;
-@@ -2592,7 +2600,7 @@ static int validate_branch(struct objtoo
- 
- 		case INSN_JUMP_DYNAMIC:
- 		case INSN_JUMP_DYNAMIC_CONDITIONAL:
--			if (func && is_sibling_call(insn)) {
-+			if (is_sibling_call(insn)) {
- 				ret = validate_sibling_call(insn, &state);
- 				if (ret)
- 					return ret;
+ 		/* _ASM_EXTABLE_EX hack */
+ 		if (alt->new_off >= 0x7ffffff0)
 
 
