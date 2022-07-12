@@ -2,177 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F949C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DD3CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232663AbiGLJTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46856 "EHLO
+        id S232724AbiGLJUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 05:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232702AbiGLJT1 (ORCPT
+        with ESMTP id S232048AbiGLJUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:19:27 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4EC29CB3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 02:19:25 -0700 (PDT)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220712091923epoutp046661bf4f274a511baee369b5be2bbf94~BCmRNT-lH3147931479epoutp04j
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:19:23 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220712091923epoutp046661bf4f274a511baee369b5be2bbf94~BCmRNT-lH3147931479epoutp04j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1657617563;
-        bh=S4sWA7zpUxXQxa89UcMXHDfRa3Uo+V+0HHoj21c47ls=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=af3Qne0fYzJY56jPLx168ctUBFJggh3DBZ0HiXN2gxrtHvDh53FsW5Zuwx09Dytl2
-         kk152BIzGlZhGNgVr/2Kypg3W5MYCnlyXfB1ZiPoBrdwUZy+w6wMTGDHIvlcMlXWXU
-         kYiDL/wFSfMuyteJNJl/o03F2AYgd8jmHpbr+UbM=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
-        20220712091923epcas2p2d8c9949b628b4b6e4153660b8e8a77a8~BCmQ3UYbS0377803778epcas2p2I;
-        Tue, 12 Jul 2022 09:19:23 +0000 (GMT)
-Received: from epsmges2p2.samsung.com (unknown [182.195.36.70]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4LhwDp6CqMz4x9Px; Tue, 12 Jul
-        2022 09:19:22 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        E1.BD.09650.A9C3DC26; Tue, 12 Jul 2022 18:19:22 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a~BCmP5wUjE1861318613epcas2p38;
-        Tue, 12 Jul 2022 09:19:22 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220712091922epsmtrp26f3397e855bb57a8d27fd5e227f08c28~BCmP49ybx0221702217epsmtrp2P;
-        Tue, 12 Jul 2022 09:19:22 +0000 (GMT)
-X-AuditID: b6c32a46-0b9ff700000025b2-86-62cd3c9a4cc5
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        00.23.08905.A9C3DC26; Tue, 12 Jul 2022 18:19:22 +0900 (KST)
-Received: from perf.dsn.sec.samsung.com (unknown [10.229.95.91]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220712091922epsmtip216614efb6837191bae4945185bdb719f~BCmPwWW292457724577epsmtip2C;
-        Tue, 12 Jul 2022 09:19:22 +0000 (GMT)
-From:   Youngmin Nam <youngmin.nam@samsung.com>
-To:     arnd@arndb.de, jstultz@google.com, tglx@linutronix.de
-Cc:     sboyd@kernel.org, linux-kernel@vger.kernel.org,
-        youngmin.nam@samsung.com, chanho61.park@samsung.com,
-        hajun.sung@samsung.com, hosung0.kim@samsung.com,
-        d7271.choe@samsung.com
-Subject: [PATCH] time: correct the prototype of ns_to_kernel_old_timeval and
- ns_to_timespec64
-Date:   Tue, 12 Jul 2022 18:47:15 +0900
-Message-Id: <20220712094715.2918823-1-youngmin.nam@samsung.com>
-X-Mailer: git-send-email 2.34.0
+        Tue, 12 Jul 2022 05:20:05 -0400
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1512BE2F;
+        Tue, 12 Jul 2022 02:20:03 -0700 (PDT)
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-10bf634bc50so9660505fac.3;
+        Tue, 12 Jul 2022 02:20:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qbAwHtAb/u/Ek/RuPM5JbYjzEl/C/Q4rkrYxQHQ2tOE=;
+        b=jzL8pEXmIaNigELpv13jFQoRdnl5jvC+7liaZoKXorq01whFlA73w5TkuJqBDrXAOd
+         YtffKTe8me0qwTOVTYbwvm80jRuh/iWnEF9Ylpgs/mAIpCIKs/xgA9ieCcH6mqxKRAsZ
+         FbMTxKprK59hdaYkNppVcnz/Lr3azde0VaprEO7/np7A4MYo72lZWfOm4OTrPgOMUsg0
+         Zj0UscHxR6Uror+XPx3sfRb2tY8ioILSn6CVbGsjMNNseBVUUmAc4BRokamElU4/0AaZ
+         tlJYrBnBI6cRIs+nS4ovGCDWvi2ftQmOXVTIJgBcLhj/dUjwwyyOpwNbAstHMz6/ZnXR
+         GZHw==
+X-Gm-Message-State: AJIora/fNlLmmh1txePH8WHHw8zMS91S7CarB1CJ/bBnhJJW3o2v6uFy
+        Qes9GKn61pUcfPn9D2PctwLfKppwoGYZgw==
+X-Google-Smtp-Source: AGRyM1uS5x/fAIYWz4HGbPagTi1+iCdO4MKFJkXB68BJswORCJqSsPVPLYSfVEoVZKNaCehI7+2a1g==
+X-Received: by 2002:a05:6871:612:b0:10c:a467:a78c with SMTP id w18-20020a056871061200b0010ca467a78cmr1212688oan.36.1657617603055;
+        Tue, 12 Jul 2022 02:20:03 -0700 (PDT)
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com. [209.85.210.53])
+        by smtp.gmail.com with ESMTPSA id n22-20020a05680803b600b0033a09f381c6sm1368510oie.47.2022.07.12.02.20.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 02:20:02 -0700 (PDT)
+Received: by mail-ot1-f53.google.com with SMTP id n12-20020a9d64cc000000b00616ebd87fc4so5712936otl.7;
+        Tue, 12 Jul 2022 02:20:02 -0700 (PDT)
+X-Received: by 2002:a25:2b48:0:b0:668:3b7d:326c with SMTP id
+ r69-20020a252b48000000b006683b7d326cmr20912003ybr.380.1657617216068; Tue, 12
+ Jul 2022 02:13:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupnk+LIzCtJLcpLzFFi42LZdljTXHeWzdkkg89/9S3+TjrGbnF5v7bF
-        tb0T2S2a9l9itvh6/RG7xZ8TG9ksLu+aw2bx79pGFovNm6YyWyw+8Indgcvj969JjB4LNpV6
-        bFrVyebx7tw5do++LasYPT5vkgtgi8q2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0
-        MFdSyEvMTbVVcvEJ0HXLzAE6TEmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6g
-        V5yYW1yal66Xl1piZWhgYGQKVJiQnXH9QitTwXeRioetjxgbGD8LdjFyckgImEgsW3KXtYuR
-        i0NIYAejxMent1ggnE+MErd3rWMBqRIS+MYo0fZRAKajve8XO0TRXkaJ+2++sUE4XxklVn/e
-        zQxSxSagK7HtxD/GLkYODhEBS4lb/T4gNcwCWxglWiedYAaJCwvES3S90wApZxFQldh6cREb
-        iM0rYC8x5+UTJpASCQF5iT+vBCDCghInZz4Bu4cZKNy8dTYzyEgJgbfsEhf3/2CGOM5F4ufn
-        b+wQtrDEq+NboGwpic/v9rJB2MUST84uZYRobmCU2L34NQtEwlhi1rN2sJuZBTQl1u/Sh7hB
-        WeLILai9fBIdh/+yQ4R5JTrahCAa1SR+TdnACGHLAA1cAXWNh8TNkweYIUEYK9F2aDnzBEb5
-        WUi+mYXkm1kIexcwMq9iFEstKM5NTy02KjCCR2lyfu4mRnDK1HLbwTjl7Qe9Q4xMHIyHGCU4
-        mJVEeP+cPZUkxJuSWFmVWpQfX1Sak1p8iNEUGLwTmaVEk/OBSTuvJN7QxNLAxMzM0NzI1MBc
-        SZzXK2VDopBAemJJanZqakFqEUwfEwenVAOT9pzgiaqeSa8zI9q+R8z8mzaFK85my/IJHNsC
-        4pvdDp24WH96aUln1Zy7U0J33S0QfVyReGb//trNP/32NL3+/XK+6lHpS446wXbTtddotfZF
-        zpl2+55W8YHboY+dw8T/9qU/UDtw+oDmtWde18p8t+enl9YaL1U6pDFXqc3kwB578dm3c2Zt
-        TInWMI/YUMK5+GsxT8Ore/xbi3e98n9xV3f7TuGZrduYe/zn20rtt+hKUKkIYNyy4vG5DTcn
-        XOsQLn804em57YdSG1+6zhQ2+3C0Pdv47dndReatqdeex1ue06sWsJ08c7XszLQHzYce78yY
-        de1KRsqaY16m25Mcow8ueRMxP///ws1zH50341JiKc5INNRiLipOBADpzyVRIgQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrALMWRmVeSWpSXmKPExsWy7bCSvO4sm7NJBjdXCFn8nXSM3eLyfm2L
-        a3snsls07b/EbPH1+iN2iz8nNrJZXN41h83i37WNLBabN01ltlh84BO7A5fH71+TGD0WbCr1
-        2LSqk83j3blz7B59W1YxenzeJBfAFsVlk5Kak1mWWqRvl8CVcf1CK1PBd5GKh62PGBsYPwt2
-        MXJySAiYSLT3/WLvYuTiEBLYzSgxf9YDJoiEjMTtlZdZIWxhifstR8BsIYHPjBJ9Z2RAbDYB
-        XYltJ/4xgtgiArYSH5bNAxvELLCHUeLb3HlgDcICsRLn7k1mAbFZBFQltl5cxAZi8wrYS8x5
-        +QRoGQfQAnmJP68EIMKCEidnPgErZwYKN2+dzTyBkW8WktQsJKkFjEyrGCVTC4pz03OLDQsM
-        81LL9YoTc4tL89L1kvNzNzGCA1lLcwfj9lUf9A4xMnEwHmKU4GBWEuH9c/ZUkhBvSmJlVWpR
-        fnxRaU5q8SFGaQ4WJXHeC10n44UE0hNLUrNTUwtSi2CyTBycUg1MudFTYgQzrjlpOhStcQpR
-        z3j2b+oCU9WYvZ4bVRfmftY9ks394cKcApt1vnPStnBOX7Np02UOr7rojufdXRqMIQKpm7N2
-        rTwi36K87v5z7+ZH/rKrLES5FkwNFLRwb3tUXZUsK5BXdkPHhXWW3nXf2asNZ0+ws3eO8red
-        9Or54hVfjh8/MK3i7qyPz7jtf/8yu6XGzbf5oOxsy2VzXszilHh3oFb04MMTbmyFP6MjzLtk
-        rk2dMmHXbK6VU0Wvyd47ybnmlCbH/GSGnvcvA0SFa3Z4PlVbufhx3VzZG+m3n9zae8VptcaR
-        79lyh+Ju7ql/XW87xyDCnNFM4nZv5r188fzFf6Rb9oXrSO7Ysmj9GiWW4oxEQy3mouJEAD26
-        Dc3TAgAA
-X-CMS-MailID: 20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a
-References: <CGME20220712091922epcas2p34d7c89f02780afa58950b103a62eb59a@epcas2p3.samsung.com>
+References: <20220712075255.1345991-1-chenhuacai@loongson.cn>
+ <20220712075255.1345991-3-chenhuacai@loongson.cn> <CAMuHMdUazqHLbc80vpZ+Msg9A3j5aPJ3fx+CdCG3kuWDSf8WSw@mail.gmail.com>
+ <CAAhV-H775jXMbcR9j=oLBuHo1PfFziZSUQWttJAEw20sUt+GAA@mail.gmail.com>
+ <CAMuHMdUHbepd974u5iox3BcOyo_Q2ZgT-znruk+WCt+HMQ_Lgw@mail.gmail.com> <CAAhV-H78Fi0aE-h5MOgRa5L+Jt7D0wG0nLcYzx45jVney8T1BQ@mail.gmail.com>
+In-Reply-To: <CAAhV-H78Fi0aE-h5MOgRa5L+Jt7D0wG0nLcYzx45jVney8T1BQ@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Tue, 12 Jul 2022 11:13:24 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVXFmKR4LuXHYRrSk3Q0VRqATGbsM512DxayWCPCE-wvg@mail.gmail.com>
+Message-ID: <CAMuHMdVXFmKR4LuXHYRrSk3Q0VRqATGbsM512DxayWCPCE-wvg@mail.gmail.com>
+Subject: Re: [PATCH 3/6] M68K: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
+To:     Huacai Chen <chenhuacai@gmail.com>
+Cc:     Huacai Chen <chenhuacai@loongson.cn>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Michal Simek <monstr@monstr.eu>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>, Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        loongarch@lists.linux.dev, Linux-Arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Linux-sh list <linux-sh@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In ns_to_kernel_old_timeval() definition,
-the function argument is defined with const identifier in kernel/time/time.c,
-but the prototype in include/linux/time32.h looks different.
+Hi Huacai,
 
-- The function is defined in kernel/time/time.c as below:
-struct __kernel_old_timeval ns_to_kernel_old_timeval(const s64 nsec)
+On Tue, Jul 12, 2022 at 11:08 AM Huacai Chen <chenhuacai@gmail.com> wrote:
+> On Tue, Jul 12, 2022 at 5:01 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Tue, Jul 12, 2022 at 10:53 AM Huacai Chen <chenhuacai@gmail.com> wrote:
+> > > On Tue, Jul 12, 2022 at 4:33 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > > On Tue, Jul 12, 2022 at 9:53 AM Huacai Chen <chenhuacai@loongson.cn> wrote:
+> > > > > When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
+> > > >
+> > > > DEBUG_PER_CPU_MAPS depends on SMP, which is not supported on m68k,
+> > > > and thus cannot be enabled.
+> > > This patch is derived from MIPS and LoongArch, I search all
+> > > architectures and change those that look the same as MIPS and
+> > > LoongArch.
+> > > And the warning message below is also a copy-paste from LoongArch, sorry.
+> > >
+> > > Since M68K doesn't support SMP, then this patch seems to make no
+> > > difference, but does it make sense to keep consistency across all
+> > > architectures?
+> >
+> > Yes, having consistency is good.  But that should be mentioned in the
+> > patch description, instead of a scary warning CCed to stable ;-)
+> >
+> > BTW, you probably want to update the other copy of c_start() in
+> > arch/m68k/kernel/setup_mm.c, too.
+> For no-SMP architectures, it seems c_start() in
+> arch/m68k/kernel/setup_mm.c is more reasonable (just use 1, neither
+> NR_CPUS, nor nr_cpu_ids)?
 
-- The function is decalared in include/linux/time32.h as below:
-extern struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec);
+The advantage of using nr_cpu_ids() is that this is one place less
+to update when adding SMP support later...
 
-Because the variable of arithmethic types isn't modified in the calling scope,
-there's no need to mark arguments as const.
-And there is a review in Link[1] why it was omitted during review stage,
-so they should be matched.
+Gr{oetje,eeting}s,
 
-Likewise, we can remove the "const" keyword in both definition and declaration
-of ns_to_timespec64() as it was metentined below Link[2] and Link[3].
+                        Geert
 
-Link[1]: https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1637458.html
-Link[2]: https://lore.kernel.org/all/20220531064346.51677-1-chanho61.park@samsung.com/T/
-Link[3]: https://lore.kernel.org/lkml/CAK8P3a3nknJgEDESGdJH91jMj6R_xydFqWASd8r5BbesdvMBgA@mail.gmail.com
-Fixes: a84d1169164b ("y2038: Introduce struct __kernel_old_timeval")
-Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
----
- include/linux/time64.h | 2 +-
- kernel/time/time.c     | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-diff --git a/include/linux/time64.h b/include/linux/time64.h
-index 81b9686a2079..ee021da0966e 100644
---- a/include/linux/time64.h
-+++ b/include/linux/time64.h
-@@ -142,7 +142,7 @@ static inline s64 timespec64_to_ns(const struct timespec64 *ts)
-  *
-  * Returns the timespec64 representation of the nsec parameter.
-  */
--extern struct timespec64 ns_to_timespec64(const s64 nsec);
-+extern struct timespec64 ns_to_timespec64(s64 nsec);
- 
- /**
-  * timespec64_add_ns - Adds nanoseconds to a timespec64
-diff --git a/kernel/time/time.c b/kernel/time/time.c
-index 29923b20e0e4..526257b3727c 100644
---- a/kernel/time/time.c
-+++ b/kernel/time/time.c
-@@ -449,7 +449,7 @@ time64_t mktime64(const unsigned int year0, const unsigned int mon0,
- }
- EXPORT_SYMBOL(mktime64);
- 
--struct __kernel_old_timeval ns_to_kernel_old_timeval(const s64 nsec)
-+struct __kernel_old_timeval ns_to_kernel_old_timeval(s64 nsec)
- {
- 	struct timespec64 ts = ns_to_timespec64(nsec);
- 	struct __kernel_old_timeval tv;
-@@ -503,7 +503,7 @@ EXPORT_SYMBOL(set_normalized_timespec64);
-  *
-  * Returns the timespec64 representation of the nsec parameter.
-  */
--struct timespec64 ns_to_timespec64(const s64 nsec)
-+struct timespec64 ns_to_timespec64(s64 nsec)
- {
- 	struct timespec64 ts = { 0, 0 };
- 	s32 rem;
--- 
-2.34.0
-
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
