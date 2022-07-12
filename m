@@ -2,85 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0A0C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68A8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 09:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232799AbiGLJoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 05:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
+        id S232813AbiGLJpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 05:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232726AbiGLJor (ORCPT
+        with ESMTP id S232638AbiGLJpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 05:44:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE135AA742;
-        Tue, 12 Jul 2022 02:44:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7882F61768;
-        Tue, 12 Jul 2022 09:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 034D0C341CE;
-        Tue, 12 Jul 2022 09:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657619084;
-        bh=HJVV8hXX5II2o8jaxx4kBpml75YDJf76DdzCbI/DI8I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PAzXLXai9OffFoUCYP++XvyDEluh5YLJelM6/AZIriftppqi/2qDF+5PfMw+dAq72
-         6BZSR8muT7UA/O3nSNJotzofVa8+Yw7qNFi1X9lDzvpVcG0bR+OgOEPLlYMg2tcI6V
-         DQGxegRYp4B0p1Qw9v3fW3ByM/Dh/LRGvvqoNLXk=
-Date:   Tue, 12 Jul 2022 11:44:39 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Joe Perches <joe@perches.com>
-Cc:     Binyi Han <dantengknight@gmail.com>,
-        Manish Chopra <manishc@marvell.com>,
-        GR-Linux-NIC-Dev@marvell.com, Coiby Xu <coiby.xu@gmail.com>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] staging: qlge: Fix indentation issue under long for
- loop
-Message-ID: <Ys1Chwsa6e9EjRNs@kroah.com>
-References: <20220710210418.GA148412@cloud-MacBookPro>
- <YsvZuPkbwe8yX8oi@kroah.com>
- <93dc367b01cdfbb68e6edf7367d2f69adfb5d407.camel@perches.com>
+        Tue, 12 Jul 2022 05:45:03 -0400
+Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D418AAA75B;
+        Tue, 12 Jul 2022 02:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=9HVer
+        fBt+Non2O0XiWT1ENnNQ3VPbM2dwQNWx6VdMKg=; b=EN3pH8pn5iLjcD4s8hxdX
+        Rrc9cVT7s/SHBxF7cehrDdgOe7KZ1OsCXBqyxjBFkM8ekKGK9ezo7D95HVtoey5U
+        Jj1tyDLeba9H3VGZ+wRy4vKj1h1Br1xieLAuDpDZmOrJ8B/knFlR4RjIkOQXCX5z
+        XVOA4q3zXmwpkZyY28kLIw=
+Received: from localhost.localdomain (unknown [111.48.58.12])
+        by smtp14 (Coremail) with SMTP id EsCowAC3IPd6Qs1iG8QrMg--.48916S2;
+        Tue, 12 Jul 2022 17:44:29 +0800 (CST)
+From:   Jiangshan Yi <13667453960@163.com>
+To:     axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiangshan Yi <yijiangshan@kylinos.cn>
+Subject: [PATCH] mtip32xx: replace ternary operator with min_t()
+Date:   Tue, 12 Jul 2022 17:43:50 +0800
+Message-Id: <20220712094350.1379942-1-13667453960@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <93dc367b01cdfbb68e6edf7367d2f69adfb5d407.camel@perches.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EsCowAC3IPd6Qs1iG8QrMg--.48916S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7AFW3Wry7ur4xuFyktryUGFg_yoW8AF4kpF
+        n5Xay8Ar12kF17XF4jkw4DKa4fWwn8Jry8Wa4093WUuF9Yyrs2gFZ8Ca45GF4fJr4jqFZr
+        JFn2krn8JF48uw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jhJ5rUUUUU=
+X-Originating-IP: [111.48.58.12]
+X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/xtbBAh08+2B0IizjagAAsL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 01:55:24PM -0700, Joe Perches wrote:
-> On Mon, 2022-07-11 at 10:05 +0200, Greg Kroah-Hartman wrote:
-> > On Sun, Jul 10, 2022 at 02:04:18PM -0700, Binyi Han wrote:
-> > > Fix indentation issue to adhere to Linux kernel coding style,
-> > > Issue found by checkpatch. Change the long for loop into 3 lines. And
-> > > optimize by avoiding the multiplication.
-> > > 
-> > > Signed-off-by: Binyi Han <dantengknight@gmail.com>
-> > > ---
-> > > v2:
-> > > 	- Change the long for loop into 3 lines.
-> > > v3:
-> > > 	- Align page_entries in the for loop to open parenthesis.
-> > > 	- Optimize by avoiding the multiplication.
-> > 
-> > Please do not mix coding style fixes with "optimizations" or logical
-> > changes.  This should be multiple patches.
-> > 
-> > Also, did you test this change on real hardware?  At first glance, it's
-> > not obvious that the code is still doing the same thing, so "proof" of
-> > that would be nice to have.
-> 
-> I read the code and suggested the optimization.  It's the same logic.
-> 
-> 
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
 
-I appreciate the review, but it looks quite different from the original
-so it should be 2 different patches, one for coding style changes, and
-the second for the "optimization".
+Fix the following coccicheck warning:
 
-thanks,
+drivers/block/mtip32xx/mtip32xx.c:2264: WARNING opportunity for min().
+drivers/block/mtip32xx/mtip32xx.c:2328: WARNING opportunity for min().
+drivers/block/mtip32xx/mtip32xx.c:2357: WARNING opportunity for min().
 
-greg k-h
+min_t() macro is defined in include/linux/minmax.h. It avoids
+multiple evaluations of the arguments when non-constant and performs
+strict type-checking.
+
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+---
+ drivers/block/mtip32xx/mtip32xx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/block/mtip32xx/mtip32xx.c b/drivers/block/mtip32xx/mtip32xx.c
+index 27386a572ba4..ef6bc68f86a3 100644
+--- a/drivers/block/mtip32xx/mtip32xx.c
++++ b/drivers/block/mtip32xx/mtip32xx.c
+@@ -2261,7 +2261,7 @@ static ssize_t mtip_hw_read_device_status(struct file *f, char __user *ubuf,
+ 
+ 	size += show_device_status(NULL, buf);
+ 
+-	*offset = size <= len ? size : len;
++	*offset = min_t(size_t, size, len);
+ 	size = copy_to_user(ubuf, buf, *offset);
+ 	if (size)
+ 		rv = -EFAULT;
+@@ -2325,7 +2325,7 @@ static ssize_t mtip_hw_read_registers(struct file *f, char __user *ubuf,
+ 	}
+ 	size += sprintf(&buf[size], "]\n");
+ 
+-	*offset = size <= len ? size : len;
++	*offset = min_t(size_t, size, len);
+ 	size = copy_to_user(ubuf, buf, *offset);
+ 	if (size)
+ 		rv = -EFAULT;
+@@ -2354,7 +2354,7 @@ static ssize_t mtip_hw_read_flags(struct file *f, char __user *ubuf,
+ 	size += sprintf(&buf[size], "Flag-dd   : [ %08lX ]\n",
+ 							dd->dd_flag);
+ 
+-	*offset = size <= len ? size : len;
++	*offset = min_t(size_t, size, len);
+ 	size = copy_to_user(ubuf, buf, *offset);
+ 	if (size)
+ 		rv = -EFAULT;
+-- 
+2.25.1
+
