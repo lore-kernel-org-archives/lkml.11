@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF59C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:56:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7301C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234396AbiGLU4J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:56:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57704 "EHLO
+        id S234174AbiGLU4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbiGLUyx (ORCPT
+        with ESMTP id S234180AbiGLUyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:54:53 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C938275F0;
-        Tue, 12 Jul 2022 13:53:40 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id bk26so12796424wrb.11;
-        Tue, 12 Jul 2022 13:53:40 -0700 (PDT)
+        Tue, 12 Jul 2022 16:54:55 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2E72ED52;
+        Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id b26so12831567wrc.2;
+        Tue, 12 Jul 2022 13:53:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZyhUoseN7KcL9h32+uJElLshw0im2xlB0TZ9Ykk2TuM=;
-        b=K/W12bdjjB492Vw/NxDsoG9XLKOA0bhbPjHXqLPwZwbgYiNIHsr2dMt29RR5G4IrK3
-         BZsnR+vs4toRkZ3scnvhn8pOVPz9V/fROfYiiaAs/dprOGshnmWYHbSRSc3GLL7Oki0F
-         RVjL3hx5Ru7f/GK/1nxuezIbB5sLtvN2tg+ZQzYEzq2Ne1z0IXjLz36kkLUaOg9dIm1l
-         bpePGHId/KZ2/QsgSCOzxxXhi1KQW3nfrPQhw/7DECfWqwOnomgjZEfseM6Z57/z4LYy
-         gXzvy8SgT7HJuVLk/lOOh+EUJ4DYn/jcLA+SGRP54yRUAFVQ61eKs3VJ9qjK/kPD3IdG
-         0+yQ==
+        bh=WExwuGiqZIBx1fmX1iBGP3JMT2QbBuC/oWcmMGulQEg=;
+        b=AR1tcfKYxhwttlnwbEu04QtHHvFEwA8d6fTwm8XkFzi/3Skk2t67yWkd539d0tBtOg
+         eUBF9HhPWXwa5aJyj6lJl75cbOLHT8evfHscEvlH5D8iFJErYCZUvl3NFVVEgccRXboK
+         I9U3YW74wdBrCHMgnJ3M6E9p09tuXoZjeE6GhkKnnUI8U/yMNjVxbszzDsOG6fXLmpAG
+         2ioGMJFPqz1uxUxQZLa0GsCZnJQusg7jKmk/tt9N4Kw5JoyYgUdEdG3TmlRI/QUt80M3
+         /9YxMGdZSvS+u587xf+O2jsirphJ5whxgTaM0uFlLh4gfeOI35K2kMu2wu79/Jy9Lla8
+         tgUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ZyhUoseN7KcL9h32+uJElLshw0im2xlB0TZ9Ykk2TuM=;
-        b=sQ4qXfVYLpLoAEpSkrZFvf+HZ+/S1ivuEd4wZFSQjiB+e1ik2ALY9dw+Mlo3ZKixK+
-         eE8HyA64d9i4EaUH8MwltJVYjdg8I7Ne7G8CCIA/JJ1XAMmFCcTl5OJ0z2r8DBYBJrcP
-         3PcJNR1kp771d5n49Ukgwl5/L2NdYxxTCS/lsRp9uq7luSsHVpQAoKIUXW72px6AK7f7
-         ONQNQQp/g4creRfnfCdPRujL/c39Y31F9UnTIHFitCOkH/HwnqohJCoC+1wCjF9Csyzr
-         AxzXBrmkNEVlVTQFOsCWk+tQjd5eDHarW6PAOPE+4HeY0sGHhLiq3Qvzr8yrQNx1NhlS
-         YUAQ==
-X-Gm-Message-State: AJIora/IGeW0KtF37WgxrLaGNk+mFALGiIwyYmKaVM11SXPF4kSnRjvI
-        OV2nI9gLCkrLEch68eyWn4EQtd5J4yM=
-X-Google-Smtp-Source: AGRyM1tv8MryVUOtChYGi7b4XRYgX+c81MKmCTna0ZFQ5ergTSrx6kVXSMRpgh54YLpGYE86Zkjp8g==
-X-Received: by 2002:adf:eccb:0:b0:21d:7b41:22c7 with SMTP id s11-20020adfeccb000000b0021d7b4122c7mr22294366wro.543.1657659216773;
-        Tue, 12 Jul 2022 13:53:36 -0700 (PDT)
+        bh=WExwuGiqZIBx1fmX1iBGP3JMT2QbBuC/oWcmMGulQEg=;
+        b=6TWucY1DYrW1SNtUT5fILBNoGWe8UyBRxqIafMYzTUj+UDujkrGLAEXKwPBtm0Lxbi
+         ZFZk5wM+PRDlX4Y2Y+YdXkTcXFneqd8APpdkz5O+huoAiZtTK8lIAJG7AiKM4TMtqYl3
+         1HxIxfm0M29XlJR57b1QGF9fed0IFNHfHHGMVEaclL2ucmgqHV98D0XuVnqCjbdyZVF8
+         D49m5mBvlc9Ynd1xDoi8TGHEVf2diZQ3RmvkbMirSvMJYe0zlZHeV08wZrlaknPDe0f5
+         WF072+UzHQsUJU52Kfu41ypKcWsIoS22tl2euDxQ0z8gUnAHgJFVPcCluHPC1ApHZudv
+         A5XA==
+X-Gm-Message-State: AJIora8zErZoTzYGq0DZUqSVHJRZi2QQmGT5fkMMA6CgsEOHuPooGcxx
+        TssfS1PrwIyMUxc4IoISBunV+iL0gXE=
+X-Google-Smtp-Source: AGRyM1unJ1n2O0NPeI9UuP/QZRL5LZMj16HAQZczt097u1MFWD1uXx0tu81pUtVLOKUHy1uQupxduw==
+X-Received: by 2002:a5d:64e8:0:b0:21d:b277:d4a7 with SMTP id g8-20020a5d64e8000000b0021db277d4a7mr5252670wri.621.1657659219223;
+        Tue, 12 Jul 2022 13:53:39 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.35
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:36 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:38 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 24/27] io_uring: rename IORING_OP_FILES_UPDATE
-Date:   Tue, 12 Jul 2022 21:52:48 +0100
-Message-Id: <0a907133907d9af3415a8a7aa1802c6aa97c03c6.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 26/27] io_uring: enable managed frags with register buffers
+Date:   Tue, 12 Jul 2022 21:52:50 +0100
+Message-Id: <278731d3f20caf346cfc025fbee0b4c9ee4ed751.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,146 +69,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-IORING_OP_FILES_UPDATE will be a more generic opcode serving different
-resource types, rename it into IORING_OP_RSRC_UPDATE and add subtype
-handling.
+io_uring's registered buffers infra has a good performant way of pinning
+pages, so let's use SKBFL_MANAGED_FRAG_REFS when our requests are purely
+register buffer backed.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- include/uapi/linux/io_uring.h | 12 +++++++++++-
- io_uring/opdef.c              |  9 +++++----
- io_uring/rsrc.c               | 17 +++++++++++++++--
- io_uring/rsrc.h               |  4 ++--
- 4 files changed, 33 insertions(+), 9 deletions(-)
+ io_uring/net.c | 56 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/io_uring.h b/include/uapi/linux/io_uring.h
-index 7d21fba54b62..37e8c104d31f 100644
---- a/include/uapi/linux/io_uring.h
-+++ b/include/uapi/linux/io_uring.h
-@@ -171,7 +171,8 @@ enum io_uring_op {
- 	IORING_OP_FALLOCATE,
- 	IORING_OP_OPENAT,
- 	IORING_OP_CLOSE,
--	IORING_OP_FILES_UPDATE,
-+	IORING_OP_RSRC_UPDATE,
-+	IORING_OP_FILES_UPDATE = IORING_OP_RSRC_UPDATE,
- 	IORING_OP_STATX,
- 	IORING_OP_READ,
- 	IORING_OP_WRITE,
-@@ -220,6 +221,7 @@ enum io_uring_op {
- #define IORING_TIMEOUT_ETIME_SUCCESS	(1U << 5)
- #define IORING_TIMEOUT_CLOCK_MASK	(IORING_TIMEOUT_BOOTTIME | IORING_TIMEOUT_REALTIME)
- #define IORING_TIMEOUT_UPDATE_MASK	(IORING_TIMEOUT_UPDATE | IORING_LINK_TIMEOUT_UPDATE)
-+
- /*
-  * sqe->splice_flags
-  * extends splice(2) flags
-@@ -286,6 +288,14 @@ enum io_uring_op {
-  */
- #define IORING_ACCEPT_MULTISHOT	(1U << 0)
- 
-+
-+/*
-+ * IORING_OP_RSRC_UPDATE flags
-+ */
-+enum {
-+	IORING_RSRC_UPDATE_FILES,
-+};
-+
- /*
-  * IORING_OP_MSG_RING command types, stored in sqe->addr
-  */
-diff --git a/io_uring/opdef.c b/io_uring/opdef.c
-index 7ab19bbf3126..72dd2b2d8a9d 100644
---- a/io_uring/opdef.c
-+++ b/io_uring/opdef.c
-@@ -246,12 +246,13 @@ const struct io_op_def io_op_defs[] = {
- 		.prep			= io_close_prep,
- 		.issue			= io_close,
- 	},
--	[IORING_OP_FILES_UPDATE] = {
-+	[IORING_OP_RSRC_UPDATE] = {
- 		.audit_skip		= 1,
- 		.iopoll			= 1,
--		.name			= "FILES_UPDATE",
--		.prep			= io_files_update_prep,
--		.issue			= io_files_update,
-+		.name			= "RSRC_UPDATE",
-+		.prep			= io_rsrc_update_prep,
-+		.issue			= io_rsrc_update,
-+		.ioprio			= 1,
- 	},
- 	[IORING_OP_STATX] = {
- 		.audit_skip		= 1,
-diff --git a/io_uring/rsrc.c b/io_uring/rsrc.c
-index 1182cf0ea1fc..98ce8a93a816 100644
---- a/io_uring/rsrc.c
-+++ b/io_uring/rsrc.c
-@@ -21,6 +21,7 @@ struct io_rsrc_update {
- 	u64				arg;
- 	u32				nr_args;
- 	u32				offset;
-+	int				type;
- };
- 
- static int io_sqe_buffer_register(struct io_ring_ctx *ctx, struct iovec *iov,
-@@ -658,7 +659,7 @@ __cold int io_register_rsrc(struct io_ring_ctx *ctx, void __user *arg,
- 	return -EINVAL;
- }
- 
--int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
-+int io_rsrc_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- {
- 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
- 
-@@ -672,6 +673,7 @@ int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 	if (!up->nr_args)
- 		return -EINVAL;
- 	up->arg = READ_ONCE(sqe->addr);
-+	up->type = READ_ONCE(sqe->ioprio);
+diff --git a/io_uring/net.c b/io_uring/net.c
+index bf9916d5e50c..a4e863dce7ec 100644
+--- a/io_uring/net.c
++++ b/io_uring/net.c
+@@ -704,6 +704,60 @@ int io_sendzc_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
  	return 0;
  }
  
-@@ -711,7 +713,7 @@ static int io_files_update_with_index_alloc(struct io_kiocb *req,
- 	return ret;
- }
- 
--int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
-+static int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- {
- 	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
- 	struct io_ring_ctx *ctx = req->ctx;
-@@ -740,6 +742,17 @@ int io_files_update(struct io_kiocb *req, unsigned int issue_flags)
- 	return IOU_OK;
- }
- 
-+int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags)
++static int io_sg_from_iter(struct sock *sk, struct sk_buff *skb,
++			   struct iov_iter *from, size_t length)
 +{
-+	struct io_rsrc_update *up = io_kiocb_to_cmd(req);
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++	int frag = shinfo->nr_frags;
++	int ret = 0;
++	struct bvec_iter bi;
++	ssize_t copied = 0;
++	unsigned long truesize = 0;
 +
-+	switch (up->type) {
-+	case IORING_RSRC_UPDATE_FILES:
-+		return io_files_update(req, issue_flags);
++	if (!shinfo->nr_frags)
++		shinfo->flags |= SKBFL_MANAGED_FRAG_REFS;
++
++	if (!skb_zcopy_managed(skb) || !iov_iter_is_bvec(from)) {
++		skb_zcopy_downgrade_managed(skb);
++		return __zerocopy_sg_from_iter(NULL, sk, skb, from, length);
 +	}
-+	return -EINVAL;
++
++	bi.bi_size = min(from->count, length);
++	bi.bi_bvec_done = from->iov_offset;
++	bi.bi_idx = 0;
++
++	while (bi.bi_size && frag < MAX_SKB_FRAGS) {
++		struct bio_vec v = mp_bvec_iter_bvec(from->bvec, bi);
++
++		copied += v.bv_len;
++		truesize += PAGE_ALIGN(v.bv_len + v.bv_offset);
++		__skb_fill_page_desc_noacc(shinfo, frag++, v.bv_page,
++					   v.bv_offset, v.bv_len);
++		bvec_iter_advance_single(from->bvec, &bi, v.bv_len);
++	}
++	if (bi.bi_size)
++		ret = -EMSGSIZE;
++
++	shinfo->nr_frags = frag;
++	from->bvec += bi.bi_idx;
++	from->nr_segs -= bi.bi_idx;
++	from->count = bi.bi_size;
++	from->iov_offset = bi.bi_bvec_done;
++
++	skb->data_len += copied;
++	skb->len += copied;
++	skb->truesize += truesize;
++
++	if (sk && sk->sk_type == SOCK_STREAM) {
++		sk_wmem_queued_add(sk, truesize);
++		if (!skb_zcopy_pure(skb))
++			sk_mem_charge(sk, truesize);
++	} else {
++		refcount_add(truesize, &skb->sk->sk_wmem_alloc);
++	}
++	return ret;
 +}
 +
- int io_queue_rsrc_removal(struct io_rsrc_data *data, unsigned idx,
- 			  struct io_rsrc_node *node, void *rsrc)
+ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
  {
-diff --git a/io_uring/rsrc.h b/io_uring/rsrc.h
-index af342fd239d0..21813a23215f 100644
---- a/io_uring/rsrc.h
-+++ b/io_uring/rsrc.h
-@@ -167,6 +167,6 @@ static inline u64 *io_get_tag_slot(struct io_rsrc_data *data, unsigned int idx)
- 	return &data->tags[table_idx][off];
- }
+ 	struct sockaddr_storage address;
+@@ -768,7 +822,7 @@ int io_sendzc(struct io_kiocb *req, unsigned int issue_flags)
  
--int io_files_update(struct io_kiocb *req, unsigned int issue_flags);
--int io_files_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
-+int io_rsrc_update(struct io_kiocb *req, unsigned int issue_flags);
-+int io_rsrc_update_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe);
- #endif
+ 	msg.msg_flags = msg_flags;
+ 	msg.msg_ubuf = &notif->uarg;
+-	msg.sg_from_iter = NULL;
++	msg.sg_from_iter = io_sg_from_iter;
+ 	ret = sock_sendmsg(sock, &msg);
+ 
+ 	if (unlikely(ret < min_ret)) {
 -- 
 2.37.0
 
