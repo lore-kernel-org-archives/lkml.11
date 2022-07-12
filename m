@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F42C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233863AbiGLSmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60540 "EHLO
+        id S234089AbiGLSmQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:42:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233704AbiGLSlp (ORCPT
+        with ESMTP id S233995AbiGLSlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:41:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BFFBD7B80;
-        Tue, 12 Jul 2022 11:41:17 -0700 (PDT)
+        Tue, 12 Jul 2022 14:41:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39332D7B86;
+        Tue, 12 Jul 2022 11:41:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DCED1B81BBD;
-        Tue, 12 Jul 2022 18:41:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 498CAC3411C;
-        Tue, 12 Jul 2022 18:41:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E9C61ACE;
+        Tue, 12 Jul 2022 18:41:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72B46C3411C;
+        Tue, 12 Jul 2022 18:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651274;
-        bh=A6uIYjf26dxGw4rLoh2QwKZAbV4FlEfHPIwrpmluWPU=;
+        s=korg; t=1657651278;
+        bh=P8MOob0Am9dbWMK9nvqs5Mo/UzNxM2C3QOR3rxgRsAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dp6ILhT3dfa2ejgWFYA3EhRQBDbfd78b5wZq9J+UahFZb07lX/hPCJ2vbijMcbeGY
-         tN/twIo2wf/6be3UNndKE6/PItUW2Ag0OnO408UjADurRiawMG/rbvI1A4HJtaG/tz
-         ibAWseq9jyVl7SAvA0bd0dF1JROnyj/4DWMV5XQc=
+        b=a8mqfG1G+CvwcIk1lcSkS/nWpH5gzO5UGkoJCMtefjTv1FRGwA9yC2PZ5BKUuYAYn
+         RUPWuambYAlxbF/Vex0CW5TG40hD2MCtSRka/aB7LbjcamgEUtFKd/4km5udOzJE0L
+         G0mRiITwqPdUpcOOJlymsQuN7B0TDCn+p6hYifNA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 009/130] x86/xen: Support objtool validation in xen-asm.S
-Date:   Tue, 12 Jul 2022 20:37:35 +0200
-Message-Id: <20220712183246.819718462@linuxfoundation.org>
+Subject: [PATCH 5.10 027/130] objtool: Create reloc sections implicitly
+Date:   Tue, 12 Jul 2022 20:37:53 +0200
+Message-Id: <20220712183247.639584442@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -50,138 +51,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit cde07a4e4434ddfb9b1616ac971edf6d66329804 upstream.
+commit d0c5c4cc73da0b05b0d9e5f833f2d859e1b45f8e upstream.
 
-The OBJECT_FILES_NON_STANDARD annotation is used to tell objtool to
-ignore a file.  File-level ignores won't work when validating vmlinux.o.
+Have elf_add_reloc() create the relocation section implicitly.
 
-Tweak the ELF metadata and unwind hints to allow objtool to follow the
-code.
-
-Cc: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/8b042a09c69e8645f3b133ef6653ba28f896807d.1611263462.git.jpoimboe@redhat.com
+Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Link: https://lkml.kernel.org/r/20210326151259.880174448@infradead.org
+[bwh: Backported to 5.10: drop changes in create_mcount_loc_sections()]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/Makefile  |    1 -
- arch/x86/xen/xen-asm.S |   29 +++++++++++++++++++----------
- 2 files changed, 19 insertions(+), 11 deletions(-)
+ tools/objtool/check.c   |    3 ---
+ tools/objtool/elf.c     |    9 ++++++++-
+ tools/objtool/elf.h     |    1 -
+ tools/objtool/orc_gen.c |    2 --
+ 4 files changed, 8 insertions(+), 7 deletions(-)
 
---- a/arch/x86/xen/Makefile
-+++ b/arch/x86/xen/Makefile
-@@ -1,5 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0
--OBJECT_FILES_NON_STANDARD_xen-asm.o := y
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -459,9 +459,6 @@ static int create_static_call_sections(s
+ 	if (!sec)
+ 		return -1;
  
- ifdef CONFIG_FUNCTION_TRACER
- # Do not profile debug and lowlevel utilities
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -14,6 +14,7 @@
- #include <asm/thread_info.h>
- #include <asm/asm.h>
- #include <asm/frame.h>
-+#include <asm/unwind_hints.h>
+-	if (!elf_create_reloc_section(file->elf, sec, SHT_RELA))
+-		return -1;
+-
+ 	idx = 0;
+ 	list_for_each_entry(insn, &file->static_call_list, static_call_node) {
  
- #include <xen/interface/xen.h>
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -498,11 +498,18 @@ err:
+ 	return -1;
+ }
  
-@@ -147,6 +148,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
++static struct section *elf_create_reloc_section(struct elf *elf,
++						struct section *base,
++						int reltype);
++
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+ 		  unsigned int type, struct symbol *sym, int addend)
+ {
+ 	struct reloc *reloc;
  
- .macro xen_pv_trap name
- SYM_CODE_START(xen_\name)
-+	UNWIND_HINT_EMPTY
- 	pop %rcx
- 	pop %r11
- 	jmp  \name
-@@ -186,6 +188,7 @@ xen_pv_trap asm_exc_xen_hypervisor_callb
- SYM_CODE_START(xen_early_idt_handler_array)
- 	i = 0
- 	.rept NUM_EXCEPTION_VECTORS
-+	UNWIND_HINT_EMPTY
- 	pop %rcx
- 	pop %r11
- 	jmp early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE
-@@ -212,11 +215,13 @@ hypercall_iret = hypercall_page + __HYPE
-  * rsp->rax		}
-  */
- SYM_CODE_START(xen_iret)
-+	UNWIND_HINT_EMPTY
- 	pushq $0
- 	jmp hypercall_iret
- SYM_CODE_END(xen_iret)
++	if (!sec->reloc && !elf_create_reloc_section(elf, sec, SHT_RELA))
++		return -1;
++
+ 	reloc = malloc(sizeof(*reloc));
+ 	if (!reloc) {
+ 		perror("malloc");
+@@ -880,7 +887,7 @@ static struct section *elf_create_rela_r
+ 	return sec;
+ }
  
- SYM_CODE_START(xen_sysret64)
-+	UNWIND_HINT_EMPTY
- 	/*
- 	 * We're already on the usermode stack at this point, but
- 	 * still with the kernel gs, so we can easily switch back.
-@@ -271,7 +276,8 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
-  */
+-struct section *elf_create_reloc_section(struct elf *elf,
++static struct section *elf_create_reloc_section(struct elf *elf,
+ 					 struct section *base,
+ 					 int reltype)
+ {
+--- a/tools/objtool/elf.h
++++ b/tools/objtool/elf.h
+@@ -122,7 +122,6 @@ static inline u32 reloc_hash(struct relo
  
- /* Normal 64-bit system call target */
--SYM_FUNC_START(xen_syscall_target)
-+SYM_CODE_START(xen_syscall_target)
-+	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
+ struct elf *elf_open_read(const char *name, int flags);
+ struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+-struct section *elf_create_reloc_section(struct elf *elf, struct section *base, int reltype);
  
-@@ -284,12 +290,13 @@ SYM_FUNC_START(xen_syscall_target)
- 	movq $__USER_CS, 1*8(%rsp)
+ int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
+ 		  unsigned int type, struct symbol *sym, int addend);
+--- a/tools/objtool/orc_gen.c
++++ b/tools/objtool/orc_gen.c
+@@ -222,8 +222,6 @@ int orc_create(struct objtool_file *file
+ 	sec = elf_create_section(file->elf, ".orc_unwind_ip", 0, sizeof(int), nr);
+ 	if (!sec)
+ 		return -1;
+-	if (!elf_create_reloc_section(file->elf, sec, SHT_RELA))
+-		return -1;
  
- 	jmp entry_SYSCALL_64_after_hwframe
--SYM_FUNC_END(xen_syscall_target)
-+SYM_CODE_END(xen_syscall_target)
- 
- #ifdef CONFIG_IA32_EMULATION
- 
- /* 32-bit compat syscall target */
--SYM_FUNC_START(xen_syscall32_target)
-+SYM_CODE_START(xen_syscall32_target)
-+	UNWIND_HINT_EMPTY
- 	popq %rcx
- 	popq %r11
- 
-@@ -302,10 +309,11 @@ SYM_FUNC_START(xen_syscall32_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSCALL_compat_after_hwframe
--SYM_FUNC_END(xen_syscall32_target)
-+SYM_CODE_END(xen_syscall32_target)
- 
- /* 32-bit compat sysenter target */
--SYM_FUNC_START(xen_sysenter_target)
-+SYM_CODE_START(xen_sysenter_target)
-+	UNWIND_HINT_EMPTY
- 	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
- 	 * that we don't need to guard against single step exceptions here.
-@@ -322,17 +330,18 @@ SYM_FUNC_START(xen_sysenter_target)
- 	movq $__USER32_CS, 1*8(%rsp)
- 
- 	jmp entry_SYSENTER_compat_after_hwframe
--SYM_FUNC_END(xen_sysenter_target)
-+SYM_CODE_END(xen_sysenter_target)
- 
- #else /* !CONFIG_IA32_EMULATION */
- 
--SYM_FUNC_START_ALIAS(xen_syscall32_target)
--SYM_FUNC_START(xen_sysenter_target)
-+SYM_CODE_START(xen_syscall32_target)
-+SYM_CODE_START(xen_sysenter_target)
-+	UNWIND_HINT_EMPTY
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
- 	pushq $0
- 	jmp hypercall_iret
--SYM_FUNC_END(xen_sysenter_target)
--SYM_FUNC_END_ALIAS(xen_syscall32_target)
-+SYM_CODE_END(xen_sysenter_target)
-+SYM_CODE_END(xen_syscall32_target)
- 
- #endif	/* CONFIG_IA32_EMULATION */
+ 	/* Write ORC entries to sections: */
+ 	list_for_each_entry(entry, &orc_list, list) {
 
 
