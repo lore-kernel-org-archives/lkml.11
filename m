@@ -2,215 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8133C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1DBC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 02:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230250AbiGLCbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 11 Jul 2022 22:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
+        id S229897AbiGLCd4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 11 Jul 2022 22:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiGLCbN (ORCPT
+        with ESMTP id S229839AbiGLCdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 11 Jul 2022 22:31:13 -0400
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEEB3336F
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:31:12 -0700 (PDT)
-Received: by mail-qk1-x736.google.com with SMTP id v6so5318889qkh.2
-        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:31:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AmIBu9eJI4O2vCJpeuCdhgJb9LGCZJQYDhsDtn3WLRU=;
-        b=AmGsvlyIHhgUj9HXy2/JuS72mE/38WBicCbwWGTxyt1M3gaUQCPiYU5yoPWDTIk4Fg
-         tV6PDt2i64dJGXL1dn8j58hfUVuaOXDl4Sp9IwFjgq4gV6dCd/d4rBWLAjB5FMoYkOaZ
-         3/Pu4IThZUbwO151VlbJZuoiyvFz5rWCTb23AUCJGdFgwHCpZRWXkwVeT7BLD8hYxqTf
-         mGi1ZjvROVrJ1VmR8Pc3ewc1sJxjeAXyjciQQraHjr4kMO6ip93eLgFRc5JnL99UHuRp
-         0nbcaJHpo/DbaUVniy1rLxXestDYdJoAMKxGGep9zzIkW4u5Vld9ZIwHCblk0yhZpsF7
-         YQzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AmIBu9eJI4O2vCJpeuCdhgJb9LGCZJQYDhsDtn3WLRU=;
-        b=DyVbPyE9Sw1/X7dV+zQyUagwP0HT9LiTuLbRrauqdMv2TZ/kSeem+R8DUFYhmhasoB
-         d/fCx85nP3OYmO3QmVXkYwC0R3FrY/54O9YxcsS20mVqR6AJNKnoO+RtSb1Q1JvDZXcS
-         5rD0aIqcoxkgCqEzdyen1IS1DOm+zN8o4V/w8XHrfs7JBo6U2WWRjWf3ODogj3+MzWC+
-         PQKXBL4WRN8Qj/iTfAQO7xhyecosebnAmXJ6U28iwUKtEjuP5J+VVNjePsjVXs5Gp6Cw
-         81tH+DrlL0MAK/ueS0KJm4IPejlyn8zz4cAqTipCH0sSOgt5Q7EaF0/GGqMJpFvW20Wc
-         Z9Tw==
-X-Gm-Message-State: AJIora9dmnK/JrUOuPmBanPGmDrqr9+7kFc6JFJX1b9cayK8qDW1/vDi
-        Qfh5FWXAb5adSkIaGr3vMlRCFLw886eVXQ==
-X-Google-Smtp-Source: AGRyM1tKTKG1peLHl78LBetPvvq8nWXRgR/nKcyIrD6QeeNC0fY5CNcs/lT6T7KXgsX5fKO4vjwPgQ==
-X-Received: by 2002:a05:620a:2455:b0:6b5:797a:5d85 with SMTP id h21-20020a05620a245500b006b5797a5d85mr7829367qkn.249.1657593071977;
-        Mon, 11 Jul 2022 19:31:11 -0700 (PDT)
-Received: from fedora (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id bk9-20020a05620a1a0900b006af3f3b385csm8221838qkb.98.2022.07.11.19.31.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 19:31:11 -0700 (PDT)
-Date:   Mon, 11 Jul 2022 22:31:09 -0400
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Fred Eckert <Frede@cmslaser.com>,
-        John Hentges <jhentges@accesio.com>,
-        Jay Dolan <jay.dolan@accesio.com>
-Subject: Re: [PATCH v2 1/6] gpio: i8255: Introduce the i8255 module
-Message-ID: <Yszc7cvyB37b8UHg@fedora>
-References: <cover.1657216200.git.william.gray@linaro.org>
- <6be749842a4ad629c8697101f170dc7e425ae082.1657216200.git.william.gray@linaro.org>
- <CAHp75VdM7QoBfcsQ-S4OEn2ZLnFH+0HfLY44FcRQC+_cw+UXzg@mail.gmail.com>
+        Mon, 11 Jul 2022 22:33:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05693CE30
+        for <linux-kernel@vger.kernel.org>; Mon, 11 Jul 2022 19:33:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657593232;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YuFnA1ScHe8Ca2Lrpo5OIU62sivSllvoFdKtYzv9rMM=;
+        b=GhUAkfmlmBAwCkG4l9Fuo7EyiYNqAu1mZAMrN33tnxSjTwAI4q3l0oDxdZLu2SatDFCbG8
+        BjQJLlXxGhAghWQ9NRxz+P8LpRtJg59srIfj4OT53Kb7+2+6CFWPA3QAe0Pto1JH6lIDxh
+        OueDujPHGL58nqW8MbhhSCjj105yqvs=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-581-16hIgtYyPym5NFtFHQV1cw-1; Mon, 11 Jul 2022 22:33:45 -0400
+X-MC-Unique: 16hIgtYyPym5NFtFHQV1cw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 8FCB885A581;
+        Tue, 12 Jul 2022 02:33:44 +0000 (UTC)
+Received: from T590 (ovpn-8-24.pek2.redhat.com [10.72.8.24])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id EA2B92166B26;
+        Tue, 12 Jul 2022 02:33:39 +0000 (UTC)
+Date:   Tue, 12 Jul 2022 10:33:34 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Gabriel Krisman Bertazi <krisman@collabora.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
+        Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH V4 2/2] ublk_drv: add UBLK_IO_REFETCH_REQ for supporting
+ to build as module
+Message-ID: <YszdfgTbmHWveFjW@T590>
+References: <20220711022024.217163-1-ming.lei@redhat.com>
+ <20220711022024.217163-3-ming.lei@redhat.com>
+ <87lesze7o3.fsf@collabora.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="eII5gPQELsvNu0az"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75VdM7QoBfcsQ-S4OEn2ZLnFH+0HfLY44FcRQC+_cw+UXzg@mail.gmail.com>
+In-Reply-To: <87lesze7o3.fsf@collabora.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Gabriel,
 
---eII5gPQELsvNu0az
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jul 08, 2022 at 04:40:01PM +0200, Andy Shevchenko wrote:
-> On Fri, Jul 8, 2022 at 1:16 AM William Breathitt Gray
-> <william.gray@linaro.org> wrote:
+On Mon, Jul 11, 2022 at 04:06:04PM -0400, Gabriel Krisman Bertazi wrote:
+> Ming Lei <ming.lei@redhat.com> writes:
+> 
+> > Add UBLK_IO_REFETCH_REQ command to fetch the incoming io request in
+> > ubq daemon context, so we can avoid to call task_work_add(), then
+> > it is fine to build ublk driver as module.
 > >
-> > Exposes consumer functions providing support for Intel 8255 Programmable
-> > Peripheral Interface devices. A CONFIG_GPIO_I8255 Kconfig option is
-> > introduced; modules wanting access to these functions should select this
-> > Kconfig option.
->=20
-> Spent much time with these chips in my teenage times :-)
->=20
-> Very good written library, see my comments below.
->=20
-> ...
->=20
-> > +#include <linux/compiler_types.h>
->=20
-> Should be simple types.h as you are using u8, etc.
+> > In this way, iops is affected a bit, but just by ~5% on ublk/null,
+> > given io_uring provides pretty good batching issuing & completing.
+> >
+> > One thing to be careful is race between ->queue_rq() and handling
+> > abort, which is avoided by quiescing queue when aborting queue.
+> > Except for that, handling abort becomes much easier with
+> > UBLK_IO_REFETCH_REQ since aborting handler is strictly exclusive with
+> > anything done in ubq daemon kernel context.
+> 
+> Hi Ming,
+> 
+> FWIW, I'm not very fond this change.  It adds complexity to the kernel
+> driver and to the userspace server implementation, who now have to deal
 
-Ack.
+IMO, this way just adds dozens line of code, no much complexity. The only
+complexity in ublk driver should be in aborting code, which is actually
+originated from concurrent aborting work and running task work which may be
+run after task is exiting. But any storage driver's aborting/error
+handling code is complicated.
 
-> > +#include <linux/err.h>
-> > +#include <linux/export.h>
->=20
-> > +#include <linux/gpio/i8255.h>
->=20
-> gpio/driver.h ?
->=20
-> And since it belongs to GPIO, I would group them and move after all
-> other include/* to emphasize the relationship.
->=20
-> Also, why is it in the global header folder? Do you expect some
-> drivers outside of drivers/gpio/? Maybe we can move after when the
-> user comes?
+Using REFETCH_REQ actually becomes much easier for handling abort which is
+run exclusively with any code running in ubq daemon context, but with
+performance cost.
 
-I think gpio/driver.h does make more sense for now since all the users
-of library are located under drivers/gpio/. I'll move the header code
-into gpio/driver.h then and adjust the includes accordingly.
+> with different interface semantics just because the driver was built-in
+> or built as a module.  I don't think the tristate support warrants such
+> complexity.  I was hoping we might get away with exporting that symbol
+> or adding a built-in ubd-specific wrapper that can be exported and
+> invokes task_work_add.
 
-> > +#include <linux/io.h>
-> > +#include <linux/module.h>
->=20
-> ...
->=20
-> > +#define I8255_CONTROL_PORTCLOWER_DIRECTION BIT(0)
-> > +#define I8255_CONTROL_PORTCUPPER_DIRECTION BIT(3)
->=20
-> Missed underscore.
+If task_work_add can be exported, that would be very great.
 
-Ack.
+Cc more guys who contributed to task_work_add().
 
-> ...
->=20
-> > +static u8 i8255_direction_mask(const unsigned long offset)
-> > +{
-> > +       const unsigned long io_port =3D offset / 8;
-> > +       const unsigned long ppi_port =3D io_port % 3;
+Oleg, Jens and other guys, I am wondering if you may share your opinion
+wrt. exporting task_work_add for ublk's use case? Then ublk_drv can be
+built as module without this patch.
+
+> 
+> Either way, Alibaba seems to consider this feature useful, and if that
+> is the case, we can just not use it on our side.
+
+If this new added command is proved as useful, we may add it without
+binding with module if task_work_add can be exported.
+
+> 
+> That said, the patch looks good to me, just a minor comment inline.
+> 
+> Thanks,
+> 
+> > Signed-off-by: Ming Lei <ming.lei@redhat.com>
+> > ---
+> >  drivers/block/Kconfig         |   2 +-
+> >  drivers/block/ublk_drv.c      | 121 ++++++++++++++++++++++++++--------
+> >  include/uapi/linux/ublk_cmd.h |  17 +++++
+> >  3 files changed, 113 insertions(+), 27 deletions(-)
+> >
+> > diff --git a/drivers/block/Kconfig b/drivers/block/Kconfig
+> > index d218089cdbec..2ba77fd960c2 100644
+> > --- a/drivers/block/Kconfig
+> > +++ b/drivers/block/Kconfig
+> > @@ -409,7 +409,7 @@ config BLK_DEV_RBD
+> >  	  If unsure, say N.
+> >  
+> >  config BLK_DEV_UBLK
+> > -	bool "Userspace block driver"
+> > +	tristate "Userspace block driver"
+> >  	select IO_URING
+> >  	help
+> >            io uring based userspace block driver.
+> > diff --git a/drivers/block/ublk_drv.c b/drivers/block/ublk_drv.c
+> > index 0076418e6fad..98482f8d1a77 100644
+> > --- a/drivers/block/ublk_drv.c
+> > +++ b/drivers/block/ublk_drv.c
+> > @@ -92,6 +92,7 @@ struct ublk_queue {
+> >  	int q_id;
+> >  	int q_depth;
+> >  
+> > +	unsigned long flags;
+> >  	struct task_struct	*ubq_daemon;
+> >  	char *io_cmd_buf;
+> >  
+> > @@ -141,6 +142,15 @@ struct ublk_device {
+> >  	struct work_struct	stop_work;
+> >  };
+> >  
+> > +#define ublk_use_task_work(ubq)						\
+> > +({                                                                      \
+> > +	bool ret = false;						\
+> > +	if (IS_BUILTIN(CONFIG_BLK_DEV_UBLK) &&                          \
+> > +			!((ubq)->flags & UBLK_F_NEED_REFETCH))		\
+> > +		ret = true;						\
+> > +	ret;								\
+> > +})
 > > +
-> > +       switch (ppi_port) {
-> > +       case I8255_PORTA:
-> > +               return I8255_CONTROL_PORTA_DIRECTION;
-> > +       case I8255_PORTB:
-> > +               return I8255_CONTROL_PORTB_DIRECTION;
-> > +       case I8255_PORTC:
-> > +               /* Port C can be configured by nibble */
->=20
-> > +               if (offset % 8 > 3)
->=20
-> I would move it to the local definition block close to offset/8. On
-> some architectures this may give one assembly instruction for two
-> variables.
+> 
+> This should be an inline function, IMO.
 
-Ack.
+You are right. I worried that compiler may not be intelligent
+enough for handling the code correctly. But just tried inline,
+task_work_add() won't be linked in if CONFIG_BLK_DEV_UBLK is
+defined as m.
 
-> > +                       return I8255_CONTROL_PORTCUPPER_DIRECTION;
-> > +               return I8255_CONTROL_PORTCLOWER_DIRECTION;
-> > +       default:
-> > +               /* Should never reach this path */
-> > +               return 0;
-> > +       }
-> > +}
->=20
-> > +void i8255_direction_input(struct i8255 __iomem *const ppi,
-> > +                          u8 *const control_state, const unsigned long=
- offset)
-> > +{
-> > +       const unsigned long io_port =3D offset / 8;
-> > +       const unsigned long group =3D io_port / 3;
-> > +
-> > +       control_state[group] |=3D I8255_CONTROL_MODE_SET;
-> > +       control_state[group] |=3D i8255_direction_mask(offset);
-> > +
-> > +       iowrite8(control_state[group], &ppi[group].control);
->=20
-> No I/O serialization? Can this be accessed during interrupt? (It may
-> be that the code is correct, but please go through it and check with a
-> question "can this register be accessed during IRQ and if yes, will
-> the user get the correct / meaningful data?")
 
-Writing to the 8255 control register for the device shouldn't be a
-problem, but we do have a race condition with the control_state[group]
-value. This value is accessed and modified in other functions (e.g. the
-i8255_direction_output() right below) so if an interrupt occurs the
-value could end up clobbered before it's written.
+Thanks,
+Ming
 
-I'm not sure what the best approach would be here. In the subsequent
-patches I have the GPIO drivers take a lock before calling these i8255_*
-functions in order to synchronize access to those state arrays. Do you
-think it would be better to move the sychronization lock acquisition
-internally to the i8255_* functions here?
-
-> > +}
-> > +EXPORT_SYMBOL_GPL(i8255_direction_input);
->=20
-> Make it with a namespace. Ditto for the rest.
-
-Ack.
-
-William Breathitt Gray
-
-> --=20
-> With Best Regards,
-> Andy Shevchenko
-
---eII5gPQELsvNu0az
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEARYKAB0WIQSNN83d4NIlKPjon7a1SFbKvhIjKwUCYszc7QAKCRC1SFbKvhIj
-K46yAQC1oTzg124TYsWDbLzyTHSPNZUL+J0wxtKJ8zAAQ4h6RgD/SkAQxFs0yRNd
-UlNDP4cEmMuWJqRQ4v2owveUeyXy0g4=
-=WTnk
------END PGP SIGNATURE-----
-
---eII5gPQELsvNu0az--
