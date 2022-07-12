@@ -2,474 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D4CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 16:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233893AbiGLQEH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 12:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44938 "EHLO
+        id S233969AbiGLQEb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 12:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbiGLQEG (ORCPT
+        with ESMTP id S234229AbiGLQEW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 12:04:06 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92FE2E6A1;
-        Tue, 12 Jul 2022 09:04:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657641843; x=1689177843;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=C/G5WNpy1z0HE+Bn9PpQap6/xtg42ECP2OSRuH8gL/4=;
-  b=UnxGVu52emzqdoTEaP1uxCmmXU6hcrb44Vsvx1Sde1vXfbjOxtfAy8XW
-   Q8dFyQlChPIEXVKbo30pg5F4BllogNqjqyXhiOsluvaQZkxCihZybqq9P
-   8VeWka6dI8DNARNZmfMmMzsamxNL4hH22rf8T98vglVpkMJ8Ea9I2gzBn
-   til77zAV8oLGRy9D4QENom7y+g2D/30phJw+RXBtodBY6u4EyouFbQEaG
-   pUcyHuvrtjwWy/w4+3Fk2OfAr00Dcgs6c9kZzl/mi86P1WM0fp62F7CMN
-   itgyl41MACmg9q6y9GvUnamqaTT+CrarLQ2UySMH35YAD5ftKKm77wTpO
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="167484131"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jul 2022 09:04:02 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 12 Jul 2022 09:04:00 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 12 Jul 2022 09:03:50 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>
-Subject: [RFC Patch net-next 02/10] net: dsa: microchip: add common gigabit set and get function
-Date:   Tue, 12 Jul 2022 21:33:00 +0530
-Message-ID: <20220712160308.13253-3-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220712160308.13253-1-arun.ramadoss@microchip.com>
-References: <20220712160308.13253-1-arun.ramadoss@microchip.com>
+        Tue, 12 Jul 2022 12:04:22 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011A32A404
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:04:20 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id z25so14737196lfr.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 09:04:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=c0RcQSLjeYCnLvxH8el7ACbuvLKqs4ymAPhMSssf3fo=;
+        b=rgy8GpGjigNewPkDfawGIyJhs5SthypU/zUHIYssEnhqMMiqNAKc4ezJ19mpUkfSMy
+         nHlnPMccqvaAAhX/ySaXKSzNEJ+RUL0TBhSHaW0HqHGvmgX2wxKuTd+jA0VHIQPZ9QFF
+         a6LEAvMbeWy1+vmRd8d6u+JJ7f13B0rTgQTdohwT7+APFsOdcZJnmvacai86xywgvwxZ
+         kEZYabnYpVeCuAKxSwQRmTLVQyoTaFQAZoagdzVEMYGEcN4G14TusnppOWvHU3N4UMpc
+         t6xNmt5QTEm/TElgI+kc11twOzYFn1L/5P2tE2Iy6Q0EvlpQEc4560MbpDvwkPfROLHC
+         yEdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=c0RcQSLjeYCnLvxH8el7ACbuvLKqs4ymAPhMSssf3fo=;
+        b=Y3Qayz6UvNv2CIvoP7DC6rHtq0c6djUo6OEo0L1/CLVJz9fDRzZ3xPmfmSST4SWKuG
+         HlaYzn80sbnHFvMvx81Crjf0yLx8X30293d08AQgFQkmVagfxsdc/WzqVBnRv1q/vpd5
+         PnIMNauIV/2uq+gSPYm9ASfHf5DajHMqyXSgipwoCjEtQ7aP1hxkjZIlNGSdFIiFnebT
+         B6QI7XNKgIjGj+xxjOAjbs9y3QV+VJrHLpN+1IlWvLLO0GDo6GJZznSyo6dNZGD5J3i8
+         Jgp0NPrd7jvSfHjjZZJK8WZq4JZHngPe8wNy43oTdxdhMLICSN2b6IRSkhyTEh4lHI1j
+         xWzA==
+X-Gm-Message-State: AJIora+AGlDgBlsC5MXBvd7mCtr8gegEKbPnCdpWuLewVDLvydlSLgNp
+        zN6/Z/ehdDdUX9UgRC8D2DVW0eeBQjACt3SYNhgHXQ==
+X-Google-Smtp-Source: AGRyM1ve5bKkRgY91JODr6G0KYNj14IUXmUe2XTmEOY9UMxbgvLVrQb6DVioXtQ4vfZSOB7V9pobKh55jgw4lPONCfA=
+X-Received: by 2002:a05:6512:32c5:b0:481:1822:c41f with SMTP id
+ f5-20020a05651232c500b004811822c41fmr16158485lfg.373.1657641857910; Tue, 12
+ Jul 2022 09:04:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <cover.1655761627.git.ashish.kalra@amd.com> <6a513cf79bf71c479dbd72165faf1d804d77b3af.1655761627.git.ashish.kalra@amd.com>
+ <CAMkAt6obGwyiJh7J34Vt8tC+XXMNm8YPrv4gV=TVoF2Xga5GjQ@mail.gmail.com>
+ <SN6PR12MB27672AA31E96179256235C338E879@SN6PR12MB2767.namprd12.prod.outlook.com>
+ <CAMkAt6ryLr6a5iQnwZQT3hqwEpZpb7bn-T8SDY6=5zYs_5NBow@mail.gmail.com> <SN6PR12MB2767D8C552388D438D9F88268E869@SN6PR12MB2767.namprd12.prod.outlook.com>
+In-Reply-To: <SN6PR12MB2767D8C552388D438D9F88268E869@SN6PR12MB2767.namprd12.prod.outlook.com>
+From:   Peter Gonda <pgonda@google.com>
+Date:   Tue, 12 Jul 2022 10:04:05 -0600
+Message-ID: <CAMkAt6pO3knGsvctewCC1z0K0c5jfgpTzGhB3Ujvc-xCYcEojQ@mail.gmail.com>
+Subject: Re: [PATCH Part2 v6 28/49] KVM: SVM: Add KVM_SEV_SNP_LAUNCH_FINISH command
+To:     "Kalra, Ashish" <Ashish.Kalra@amd.com>
+Cc:     "the arch/x86 maintainers" <x86@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kvm list <kvm@vger.kernel.org>,
+        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Joerg Roedel <jroedel@suse.de>,
+        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+        "H. Peter Anvin" <hpa@zytor.com>, Ard Biesheuvel <ardb@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jim Mattson <jmattson@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Sergio Lopez <slp@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Dov Murik <dovmurik@linux.ibm.com>,
+        Tobin Feldman-Fitzthum <tobin@ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        "Roth, Michael" <Michael.Roth@amd.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        "Kirill A . Shutemov" <kirill@shutemov.name>,
+        Andi Kleen <ak@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>, Marc Orr <marcorr@google.com>,
+        Sathyanarayanan Kuppuswamy 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        Alper Gun <alpergun@google.com>,
+        "Dr. David Alan Gilbert" <dgilbert@redhat.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch add helper function for setting and getting the gigabit
-enable for the ksz series switch. KSZ8795 switch has different register
-address compared to all other ksz switches. KSZ8795 series uses the Port
-5 Interface control 6 Bit 6 for configuring the 1Gbps or 100/10Mbps
-speed selection. All other switches uses the xMII control 1 0xN301
-register Bit6 for gigabit.
-Further, for KSZ8795 & KSZ9893 switches if bit 1 then 1Gbps is chosen
-and if bit 0 then 100/10Mbps is chosen. It is other way around for
-other switches bit 0 is for 1Gbps. So, this patch implements the common
-function for configuring the gigabit set and get capability.
+On Tue, Jul 12, 2022 at 9:22 AM Kalra, Ashish <Ashish.Kalra@amd.com> wrote:
+>
+> [AMD Official Use Only - General]
+>
+> Hello Peter,
+>
+> >> >Given the guest uses the SNP NAE AP boot protocol we were expecting t=
+hat there would be some option to add vCPUs to the VM but mark them as "pen=
+ding AP boot creation protocol" state. This would allow the LaunchDigest of=
+ a VM doesn't change >just because its vCPU count changes. Would it be poss=
+ible to add a new add an argument to KVM_SNP_LAUNCH_FINISH to tell it which=
+ vCPUs to LAUNCH_UPDATE VMSA pages for or similarly a new argument for KVM_=
+CREATE_VCPU?
+> >>
+> >> But don't we want/need to measure all vCPUs using LAUNCH_UPDATE_VMSA b=
+efore we issue SNP_LAUNCH_FINISH command ?
+> >>
+> >> If we are going to add vCPUs and mark them as "pending AP boot creatio=
+n" state then how are we going to do LAUNCH_UPDATE_VMSAs for them after SNP=
+_LAUNCH_FINISH ?
+>
+> >If I understand correctly we don't need or even want the APs to be LAUNC=
+H_UPDATE_VMSA'd. LAUNCH_UPDATEing all the VMSAs causes VMs with different n=
+umbers of vCPUs to have different launch digests. Its my understanding the =
+SNP AP >Creation protocol was to solve this so that VMs with different vcpu=
+ counts have the same launch digest.
+>
+> >Looking at patch "[Part2,v6,44/49] KVM: SVM: Support SEV-SNP AP Creation=
+ NAE event" and section "4.1.9 SNP AP Creation" of the GHCB spec. There is =
+no need to mark the LAUNCH_UPDATE the AP's VMSA or mark the vCPUs runnable.=
+ Instead we >can do that only for the BSP. Then in the guest UEFI the BSP c=
+an: create new VMSAs from guest pages, RMPADJUST them into the RMP state VM=
+SA, then use the SNP AP Creation NAE to get the hypervisor to mark them run=
+nable. I believe this is all >setup in the UEFI patch:
+> >https://nam11.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fwww.=
+mail-archive.com%2Fdevel%40edk2.groups.io%2Fmsg38460.html&amp;data=3D05%7C0=
+1%7CAshish.Kalra%40amd.com%7Ca40178ac6f284a9e33aa08da64152baa%>7C3dd8961fe4=
+884e608e11a82d994e183d%7C0%7C0%7C637932339382401133%7CUnknown%7CTWFpbGZsb3d=
+8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000%=
+7C%7C%7C&amp;sdata=3DZaiHHo9S24f9BB6E%>2FjexOt5TdKJQXxQDJI5QoYdDDHc%3D&amp;=
+reserved=3D0.
+>
+> Yes, I discussed the same with Tom, and this will be supported going forw=
+ard, only the BSP will need to go through the LAUNCH_UPDATE_VMSA and at run=
+time the guest can dynamically create more APs using the SNP AP Creation NA=
+E event.
+>
+> Now, coming back to the original question, why do we need a separate vCPU=
+ count argument for SNP_LAUNCH_FINISH, won't the statically created vCPUs i=
+n kvm->created_vcpus/online_vcpus be sufficient for that, any dynamically c=
+reated
+> vCPU's won't be part of the initial measurement or LaunchDigest of the VM=
+, right ?
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
- drivers/net/dsa/microchip/ksz9477.c      | 36 ++-----------
- drivers/net/dsa/microchip/ksz9477_reg.h  |  4 --
- drivers/net/dsa/microchip/ksz_common.c   | 66 ++++++++++++++++++++++++
- drivers/net/dsa/microchip/ksz_common.h   | 12 +++++
- drivers/net/dsa/microchip/lan937x_main.c | 16 ++----
- drivers/net/dsa/microchip/lan937x_reg.h  |  1 -
- 6 files changed, 87 insertions(+), 48 deletions(-)
+Are you suggesting that QEMU will KVM_CREATE_VCPU the BSP, then
+LAUNCH_FINISH, then KVM_CREATE_VCPU all the APs to their VMSAs were
+not LAUNCH_UPDATED? If so, it seems annoying to have to create vCPUs
+at different times to get their VMSAs into different states. That's
+why I was suggesting some other mechanism so we can continue to
+KVM_CREATE_VCPU all the vCPUs at the same time.
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 6453642fa14c..cfa7ddf60718 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -866,32 +866,6 @@ void ksz9477_port_mirror_del(struct ksz_device *dev, int port,
- 			     PORT_MIRROR_SNIFFER, false);
- }
- 
--static bool ksz9477_get_gbit(struct ksz_device *dev, u8 data)
--{
--	bool gbit;
--
--	if (dev->features & NEW_XMII)
--		gbit = !(data & PORT_MII_NOT_1GBIT);
--	else
--		gbit = !!(data & PORT_MII_1000MBIT_S1);
--	return gbit;
--}
--
--static void ksz9477_set_gbit(struct ksz_device *dev, bool gbit, u8 *data)
--{
--	if (dev->features & NEW_XMII) {
--		if (gbit)
--			*data &= ~PORT_MII_NOT_1GBIT;
--		else
--			*data |= PORT_MII_NOT_1GBIT;
--	} else {
--		if (gbit)
--			*data |= PORT_MII_1000MBIT_S1;
--		else
--			*data &= ~PORT_MII_1000MBIT_S1;
--	}
--}
--
- static int ksz9477_get_xmii(struct ksz_device *dev, u8 data)
- {
- 	int mode;
-@@ -977,7 +951,7 @@ static phy_interface_t ksz9477_get_interface(struct ksz_device *dev, int port)
- 	if (port < dev->phy_port_cnt)
- 		return PHY_INTERFACE_MODE_NA;
- 	ksz_pread8(dev, port, REG_PORT_XMII_CTRL_1, &data8);
--	gbit = ksz9477_get_gbit(dev, data8);
-+	gbit = ksz_get_gbit(dev, port);
- 	mode = ksz9477_get_xmii(dev, data8);
- 	switch (mode) {
- 	case 2:
-@@ -1122,22 +1096,22 @@ void ksz9477_port_setup(struct ksz_device *dev, int port, bool cpu_port)
- 		switch (p->interface) {
- 		case PHY_INTERFACE_MODE_MII:
- 			ksz9477_set_xmii(dev, 0, &data8);
--			ksz9477_set_gbit(dev, false, &data8);
-+			ksz_set_gbit(dev, port, false);
- 			p->phydev.speed = SPEED_100;
- 			break;
- 		case PHY_INTERFACE_MODE_RMII:
- 			ksz9477_set_xmii(dev, 1, &data8);
--			ksz9477_set_gbit(dev, false, &data8);
-+			ksz_set_gbit(dev, port, false);
- 			p->phydev.speed = SPEED_100;
- 			break;
- 		case PHY_INTERFACE_MODE_GMII:
- 			ksz9477_set_xmii(dev, 2, &data8);
--			ksz9477_set_gbit(dev, true, &data8);
-+			ksz_set_gbit(dev, port, true);
- 			p->phydev.speed = SPEED_1000;
- 			break;
- 		default:
- 			ksz9477_set_xmii(dev, 3, &data8);
--			ksz9477_set_gbit(dev, true, &data8);
-+			ksz_set_gbit(dev, port, true);
- 			data8 &= ~PORT_RGMII_ID_IG_ENABLE;
- 			data8 &= ~PORT_RGMII_ID_EG_ENABLE;
- 			if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-diff --git a/drivers/net/dsa/microchip/ksz9477_reg.h b/drivers/net/dsa/microchip/ksz9477_reg.h
-index d0cce4ca3cf9..f23ed4809e47 100644
---- a/drivers/net/dsa/microchip/ksz9477_reg.h
-+++ b/drivers/net/dsa/microchip/ksz9477_reg.h
-@@ -1185,10 +1185,6 @@
- #define REG_PORT_XMII_CTRL_1		0x0301
- 
- #define PORT_RMII_CLK_SEL		BIT(7)
--/* S1 */
--#define PORT_MII_1000MBIT_S1		BIT(6)
--/* S2 */
--#define PORT_MII_NOT_1GBIT		BIT(6)
- #define PORT_MII_SEL_EDGE		BIT(5)
- #define PORT_RGMII_ID_IG_ENABLE		BIT(4)
- #define PORT_RGMII_ID_EG_ENABLE		BIT(3)
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 4bc6277b4361..5ebcd87fc531 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -256,6 +256,7 @@ static const u16 ksz8795_regs[] = {
- 	[S_START_CTRL]			= 0x01,
- 	[S_BROADCAST_CTRL]		= 0x06,
- 	[S_MULTICAST_CTRL]		= 0x04,
-+	[P_XMII_CTRL_1]			= 0x56,
- };
- 
- static const u32 ksz8795_masks[] = {
-@@ -280,6 +281,11 @@ static const u32 ksz8795_masks[] = {
- 	[DYNAMIC_MAC_TABLE_TIMESTAMP]	= GENMASK(28, 27),
- };
- 
-+static const u8 ksz8795_values[] = {
-+	[P_MII_1GBIT]			= 1,
-+	[P_MII_NOT_1GBIT]		= 0,
-+};
-+
- static const u8 ksz8795_shifts[] = {
- 	[VLAN_TABLE_MEMBERSHIP_S]	= 7,
- 	[VLAN_TABLE]			= 16,
-@@ -350,6 +356,7 @@ static const u16 ksz9477_regs[] = {
- 	[S_START_CTRL]			= 0x0300,
- 	[S_BROADCAST_CTRL]		= 0x0332,
- 	[S_MULTICAST_CTRL]		= 0x0331,
-+	[P_XMII_CTRL_1]			= 0x0301,
- };
- 
- static const u32 ksz9477_masks[] = {
-@@ -361,6 +368,16 @@ static const u8 ksz9477_shifts[] = {
- 	[ALU_STAT_INDEX]		= 16,
- };
- 
-+static const u8 ksz9477_values[] = {
-+	[P_MII_1GBIT]			= 0,
-+	[P_MII_NOT_1GBIT]		= 1,
-+};
-+
-+static const u8 ksz9893_values[] = {
-+	[P_MII_1GBIT]			= 1,
-+	[P_MII_NOT_1GBIT]		= 0,
-+};
-+
- static const u32 lan937x_masks[] = {
- 	[ALU_STAT_WRITE]		= 1,
- 	[ALU_STAT_READ]			= 2,
-@@ -387,6 +404,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
- 		.shifts = ksz8795_shifts,
-+		.bitval = ksz8795_values,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -423,6 +441,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
- 		.shifts = ksz8795_shifts,
-+		.bitval = ksz8795_values,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -445,6 +464,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz8795_regs,
- 		.masks = ksz8795_masks,
- 		.shifts = ksz8795_shifts,
-+		.bitval = ksz8795_values,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -487,6 +507,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = ksz9477_masks,
- 		.shifts = ksz9477_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -513,6 +534,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = ksz9477_masks,
- 		.shifts = ksz9477_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -538,6 +560,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = ksz9477_masks,
- 		.shifts = ksz9477_shifts,
-+		.bitval = ksz9893_values,
- 		.supports_mii = {false, false, true},
- 		.supports_rmii = {false, false, true},
- 		.supports_rgmii = {false, false, true},
-@@ -560,6 +583,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = ksz9477_masks,
- 		.shifts = ksz9477_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   false, true, true},
- 		.supports_rmii	= {false, false, false, false,
-@@ -585,6 +609,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = lan937x_masks,
- 		.shifts = lan937x_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii = {false, false, false, false, true},
- 		.supports_rmii = {false, false, false, false, true},
- 		.supports_rgmii = {false, false, false, false, true},
-@@ -606,6 +631,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = lan937x_masks,
- 		.shifts = lan937x_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii = {false, false, false, false, true, true},
- 		.supports_rmii = {false, false, false, false, true, true},
- 		.supports_rgmii = {false, false, false, false, true, true},
-@@ -627,6 +653,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = lan937x_masks,
- 		.shifts = lan937x_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -652,6 +679,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = lan937x_masks,
- 		.shifts = lan937x_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -677,6 +705,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.regs = ksz9477_regs,
- 		.masks = lan937x_masks,
- 		.shifts = lan937x_shifts,
-+		.bitval = ksz9477_values,
- 		.supports_mii	= {false, false, false, false,
- 				   true, true, false, false},
- 		.supports_rmii	= {false, false, false, false,
-@@ -1352,6 +1381,43 @@ static void ksz_phylink_mac_config(struct dsa_switch *ds, int port,
- 		dev->dev_ops->phylink_mac_config(dev, port, mode, state);
- }
- 
-+bool ksz_get_gbit(struct ksz_device *dev, int port)
-+{
-+	const u8 *bitval = dev->info->bitval;
-+	const u16 *regs = dev->info->regs;
-+	bool gbit = false;
-+	u8 data8;
-+	bool val;
-+
-+	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-+
-+	val = FIELD_GET(P_MII_1GBIT_M, data8);
-+
-+	if (val == bitval[P_MII_1GBIT])
-+		gbit = true;
-+
-+	return gbit;
-+}
-+
-+void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit)
-+{
-+	const u8 *bitval = dev->info->bitval;
-+	const u16 *regs = dev->info->regs;
-+	u8 data8;
-+
-+	ksz_pread8(dev, port, regs[P_XMII_CTRL_1], &data8);
-+
-+	data8 &= ~P_MII_1GBIT_M;
-+
-+	if (gbit)
-+		data8 |= FIELD_PREP(P_MII_1GBIT_M, bitval[P_MII_1GBIT]);
-+	else
-+		data8 |= FIELD_PREP(P_MII_1GBIT_M, bitval[P_MII_NOT_1GBIT]);
-+
-+	/* Write the updated value */
-+	ksz_pwrite8(dev, port, regs[P_XMII_CTRL_1], data8);
-+}
-+
- static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
- 				    unsigned int mode,
- 				    phy_interface_t interface,
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 41fe6388af9e..a76dfef6309c 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -51,6 +51,7 @@ struct ksz_chip_data {
- 	const u16 *regs;
- 	const u32 *masks;
- 	const u8 *shifts;
-+	const u8 *bitval;
- 	int stp_ctrl_reg;
- 	int broadcast_ctrl_reg;
- 	int multicast_ctrl_reg;
-@@ -171,6 +172,7 @@ enum ksz_regs {
- 	S_START_CTRL,
- 	S_BROADCAST_CTRL,
- 	S_MULTICAST_CTRL,
-+	P_XMII_CTRL_1,
- };
- 
- enum ksz_masks {
-@@ -210,6 +212,11 @@ enum ksz_shifts {
- 	ALU_STAT_INDEX,
- };
- 
-+enum ksz_values {
-+	P_MII_1GBIT,
-+	P_MII_NOT_1GBIT,
-+};
-+
- struct alu_struct {
- 	/* entry 1 */
- 	u8	is_static:1;
-@@ -295,6 +302,8 @@ void ksz_switch_remove(struct ksz_device *dev);
- void ksz_init_mib_timer(struct ksz_device *dev);
- void ksz_r_mib_stats64(struct ksz_device *dev, int port);
- void ksz_port_stp_state_set(struct dsa_switch *ds, int port, u8 state);
-+bool ksz_get_gbit(struct ksz_device *dev, int port);
-+void ksz_set_gbit(struct ksz_device *dev, int port, bool gbit);
- extern const struct ksz_chip_data ksz_switch_chips[];
- 
- /* Common register access functions */
-@@ -458,6 +467,9 @@ static inline int is_lan937x(struct ksz_device *dev)
- 
- #define SW_START			0x01
- 
-+/* xMII configuration */
-+#define P_MII_1GBIT_M			BIT(6)
-+
- /* Regmap tables generation */
- #define KSZ_SPI_OP_RD		3
- #define KSZ_SPI_OP_WR		2
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index c29d175ca6f7..efca96b02e15 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -312,14 +312,6 @@ int lan937x_change_mtu(struct ksz_device *dev, int port, int new_mtu)
- 	return 0;
- }
- 
--static void lan937x_config_gbit(struct ksz_device *dev, bool gbit, u8 *data)
--{
--	if (gbit)
--		*data &= ~PORT_MII_NOT_1GBIT;
--	else
--		*data |= PORT_MII_NOT_1GBIT;
--}
--
- static void lan937x_mac_config(struct ksz_device *dev, int port,
- 			       phy_interface_t interface)
- {
-@@ -333,11 +325,11 @@ static void lan937x_mac_config(struct ksz_device *dev, int port,
- 	/* configure MAC based on interface */
- 	switch (interface) {
- 	case PHY_INTERFACE_MODE_MII:
--		lan937x_config_gbit(dev, false, &data8);
-+		ksz_set_gbit(dev, port, false);
- 		data8 |= PORT_MII_SEL;
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
--		lan937x_config_gbit(dev, false, &data8);
-+		ksz_set_gbit(dev, port, false);
- 		data8 |= PORT_RMII_SEL;
- 		break;
- 	default:
-@@ -363,9 +355,9 @@ static void lan937x_config_interface(struct ksz_device *dev, int port,
- 			PORT_MII_TX_FLOW_CTRL | PORT_MII_RX_FLOW_CTRL);
- 
- 	if (speed == SPEED_1000)
--		lan937x_config_gbit(dev, true, &xmii_ctrl1);
-+		ksz_set_gbit(dev, port, true);
- 	else
--		lan937x_config_gbit(dev, false, &xmii_ctrl1);
-+		ksz_set_gbit(dev, port, false);
- 
- 	if (speed == SPEED_100)
- 		xmii_ctrl0 |= PORT_MII_100MBIT;
-diff --git a/drivers/net/dsa/microchip/lan937x_reg.h b/drivers/net/dsa/microchip/lan937x_reg.h
-index c187d0a3e7fa..747295d34411 100644
---- a/drivers/net/dsa/microchip/lan937x_reg.h
-+++ b/drivers/net/dsa/microchip/lan937x_reg.h
-@@ -140,7 +140,6 @@
- #define PORT_GRXC_ENABLE		BIT(0)
- 
- #define REG_PORT_XMII_CTRL_1		0x0301
--#define PORT_MII_NOT_1GBIT		BIT(6)
- #define PORT_MII_SEL_EDGE		BIT(5)
- #define PORT_RGMII_ID_IG_ENABLE		BIT(4)
- #define PORT_RGMII_ID_EG_ENABLE		BIT(3)
--- 
-2.36.1
-
+>
+> Thanks,
+> Ashish
