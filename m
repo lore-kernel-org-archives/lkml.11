@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9177C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:07:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA5DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235544AbiGLTHx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
+        id S235361AbiGLTH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:07:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235539AbiGLTHI (ORCPT
+        with ESMTP id S235379AbiGLTHO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:07:08 -0400
+        Tue, 12 Jul 2022 15:07:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76985FB8F0;
-        Tue, 12 Jul 2022 11:51:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 669B2E43F9;
+        Tue, 12 Jul 2022 11:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2AD86149A;
-        Tue, 12 Jul 2022 18:51:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEEA0C3411C;
-        Tue, 12 Jul 2022 18:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D42561578;
+        Tue, 12 Jul 2022 18:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85E3DC3411C;
+        Tue, 12 Jul 2022 18:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651871;
-        bh=sO/NRT++o1GVJ2ZubOWRLCd5AukTe/ungHx3/aluXy8=;
+        s=korg; t=1657651873;
+        bh=DfqqxgL1oa25Fb2YprLqTxborguWklpYaCo7MDYJn8U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMSBg/upjTUYNgowMTS3eRPly58zf3TxI//bKZNRxxOCMJCP55UIhVoUPBiv/lrK5
-         ihTPlGho9ZE55wPwMKBjy4w6F5ZG3R3+Q9UP+h6s+PpiHIF4kXubCFpfKdZvxLeg4m
-         60WqgiudDwrieQXvo3TJSRW+iDM7vLNbaX2BTAjo=
+        b=jX7McGpuCrFGJA8xgVuYAaq/j+Gi3LJh2ocD20oAHGgHWTDiP06/BAZGFNi/FhfH3
+         ggnMZuHzYVIa1/OLBZnvIYU+zVZaXQ/iDErEVeyCb8oDLIenB/pl7DLdVXE5JufDR7
+         1NZKkJTj+aiJ8N7Ya+6iegG3abFB4fxZm+rFVFu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 78/78] x86/static_call: Serialize __static_call_fixup() properly
-Date:   Tue, 12 Jul 2022 20:39:48 +0200
-Message-Id: <20220712183242.085202699@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 74/78] x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
+Date:   Tue, 12 Jul 2022 20:39:44 +0200
+Message-Id: <20220712183241.888485231@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -48,73 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit c27c753ea6fd1237f4f96abf8b623d7bab505513 upstream.
+commit 2c08b9b38f5b0f4a6c2d29be22b695e4ec4a556b upstream.
 
-__static_call_fixup() invokes __static_call_transform() without holding
-text_mutex, which causes lockdep to complain in text_poke_bp().
+Commit
 
-Adding the proper locking cures that, but as this is either used during
-early boot or during module finalizing, it's not required to use
-text_poke_bp(). Add an argument to __static_call_transform() which tells
-it to use text_poke_early() for it.
+  ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
 
-Fixes: ee88d363d156 ("x86,static_call: Use alternative RET encoding")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+moved PUSH_AND_CLEAR_REGS out of error_entry, into its own function, in
+part to avoid calling error_entry() for XenPV.
+
+However, commit
+
+  7c81c0c9210c ("x86/entry: Avoid very early RET")
+
+had to change that because the 'ret' was too early and moved it into
+idtentry, bloating the text size, since idtentry is expanded for every
+exception vector.
+
+However, with the advent of xen_error_entry() in commit
+
+  d147553b64bad ("x86/xen: Add UNTRAIN_RET")
+
+it became possible to remove PUSH_AND_CLEAR_REGS from idtentry, back
+into *error_entry().
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: error_entry still does cld]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/static_call.c |   13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/entry/entry_64.S |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kernel/static_call.c
-+++ b/arch/x86/kernel/static_call.c
-@@ -25,7 +25,8 @@ static const u8 xor5rax[] = { 0x2e, 0x2e
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -320,6 +320,8 @@ SYM_CODE_END(ret_from_fork)
  
- static const u8 retinsn[] = { RET_INSN_OPCODE, 0xcc, 0xcc, 0xcc, 0xcc };
+ SYM_CODE_START_LOCAL(xen_error_entry)
+ 	UNWIND_HINT_FUNC
++	PUSH_AND_CLEAR_REGS save_ret=1
++	ENCODE_FRAME_POINTER 8
+ 	UNTRAIN_RET
+ 	RET
+ SYM_CODE_END(xen_error_entry)
+@@ -331,9 +333,6 @@ SYM_CODE_END(xen_error_entry)
+  */
+ .macro idtentry_body cfunc has_error_code:req
  
--static void __ref __static_call_transform(void *insn, enum insn_type type, void *func)
-+static void __ref __static_call_transform(void *insn, enum insn_type type,
-+					  void *func, bool modinit)
- {
- 	const void *emulate = NULL;
- 	int size = CALL_INSN_SIZE;
-@@ -60,7 +61,7 @@ static void __ref __static_call_transfor
- 	if (memcmp(insn, code, size) == 0)
- 		return;
+-	PUSH_AND_CLEAR_REGS
+-	ENCODE_FRAME_POINTER
+-
+ 	/*
+ 	 * Call error_entry() and switch to the task stack if from userspace.
+ 	 *
+@@ -1014,6 +1013,10 @@ SYM_CODE_END(paranoid_exit)
+ SYM_CODE_START_LOCAL(error_entry)
+ 	UNWIND_HINT_FUNC
+ 	cld
++
++	PUSH_AND_CLEAR_REGS save_ret=1
++	ENCODE_FRAME_POINTER 8
++
+ 	testb	$3, CS+8(%rsp)
+ 	jz	.Lerror_kernelspace
  
--	if (unlikely(system_state == SYSTEM_BOOTING))
-+	if (system_state == SYSTEM_BOOTING || modinit)
- 		return text_poke_early(insn, code, size);
- 
- 	text_poke_bp(insn, code, size, emulate);
-@@ -108,12 +109,12 @@ void arch_static_call_transform(void *si
- 
- 	if (tramp) {
- 		__static_call_validate(tramp, true);
--		__static_call_transform(tramp, __sc_insn(!func, true), func);
-+		__static_call_transform(tramp, __sc_insn(!func, true), func, false);
- 	}
- 
- 	if (IS_ENABLED(CONFIG_HAVE_STATIC_CALL_INLINE) && site) {
- 		__static_call_validate(site, tail);
--		__static_call_transform(site, __sc_insn(!func, tail), func);
-+		__static_call_transform(site, __sc_insn(!func, tail), func, false);
- 	}
- 
- 	mutex_unlock(&text_mutex);
-@@ -139,8 +140,10 @@ bool __static_call_fixup(void *tramp, u8
- 		return false;
- 	}
- 
-+	mutex_lock(&text_mutex);
- 	if (op == RET_INSN_OPCODE || dest == &__x86_return_thunk)
--		__static_call_transform(tramp, RET, NULL);
-+		__static_call_transform(tramp, RET, NULL, true);
-+	mutex_unlock(&text_mutex);
- 
- 	return true;
- }
 
 
