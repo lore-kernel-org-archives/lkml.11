@@ -2,175 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AFFC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:18:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83890C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:19:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233181AbiGLSSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43172 "EHLO
+        id S229901AbiGLSTH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230004AbiGLSSQ (ORCPT
+        with ESMTP id S229652AbiGLSTE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:18:16 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17705CF6DA
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:18:16 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so12548101pjl.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:18:16 -0700 (PDT)
+        Tue, 12 Jul 2022 14:19:04 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F1D24093
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:19:03 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id p6so8032906ljc.8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 11:19:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=b5LXxoYEnZ+cuP/QvlxotZQYl2iL+zPVlwD3i2K8fuc=;
-        b=ZSmdIZrL33qMKKFrAbzAJQ97+3+R0my/vaAnWDYdV0as1okv+ETvN7twZiSxbUNDIv
-         jF92vpf88y3YN9j6BxtL2UPKvmZ6Cf3MbkJLOwIIaqv76ACglcDgYnAX9wQAWHTfus8N
-         2gDA7N9XtEGGxxKq/mEhseERQ7pEtjm6PTvT8=
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=JMQ1Fi79A0irIgGyUI6PCh63flvImOH2aGttq9qDyQs=;
+        b=y9r7FhafnYvsSz00A1RwZZhtcyDeUlxPoSJaq4eDskAgQegtb06JvvJBQmgxjTxayH
+         G55b8QAbWHkyo/JGBUculJi2pqTIWWJ79SEadMsTIY1Di8YVIbcmHrLhdxz4G5nFHvse
+         bc+OIH22tPsQ71EYxKdGw5IsF0JNxhBctA54rxOiuhi1+PtcrnW4xnJKkc6yy8ZrvM98
+         4iOoPcRztj4evF/vVZWXyaTUIaDjh5VpPgvKvgtYSThWj84LK/c6rbWMATbFPW9wycJC
+         XRhr1NJJrDLcT6dDXAC3tb9XU373VffnpQsIfB7Zq2+hZaXeOBt4CQ+qIp2pF+F+x9qq
+         FgDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=b5LXxoYEnZ+cuP/QvlxotZQYl2iL+zPVlwD3i2K8fuc=;
-        b=lpwyoqc8WY61/zf4Pv58EeqDbwUVqXjn+lq2a1Rbi+A7SpdPt/DEg8bh289OdUBa/f
-         eQrxTEFBgf9T8orrx3V2oCFnhknLzJMelntYb1NhlXFlQ9ni+ykv6V8EZR4+HAnPuIYc
-         5P5f5i+LZS5BowLe+cQYl4IxWe+NKJRki+ZWXGxUuD2GT52aFAH7M73HNIqKeTlrngsd
-         aUD4onrcDmup1v8tnrJ1PYwKa219dfXCSgur8XWRQXr9pT7c40WEyErcCJzZU/sM8pD5
-         ZVyv1zy8Ec1K0XY3M5Ijnmyavm7IUh+diG/722HqRpJmQnXvqf/y62m7/0AiU89keJQT
-         AWJw==
-X-Gm-Message-State: AJIora9Mu03Qe+Sg4kjlEldDdJNTx4T22sEPPOj+bqEaAuGYweyzXH8b
-        /elu0Uz81qZ9A+xweRWRpkoZbQ==
-X-Google-Smtp-Source: AGRyM1uKb57JkiTemiXq8hwr9IB/lWg76dUCeapG/Pb7FplLkT203fxzaIXbMr7pBikz7MkxFTH1DQ==
-X-Received: by 2002:a17:90b:4a08:b0:1ef:f36b:18e1 with SMTP id kk8-20020a17090b4a0800b001eff36b18e1mr5808116pjb.246.1657649895595;
-        Tue, 12 Jul 2022 11:18:15 -0700 (PDT)
-Received: from ubuntu-22.dhcp.broadcom.net ([192.19.222.250])
-        by smtp.gmail.com with ESMTPSA id mr2-20020a17090b238200b001ef8912f763sm7111210pjb.7.2022.07.12.11.18.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 11:18:14 -0700 (PDT)
-From:   William Zhang <william.zhang@broadcom.com>
-To:     Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>
-Cc:     dan.beygelman@broadcom.com, kursad.oney@broadcom.com,
-        florian.fainelli@broadcom.com, joel.peshkin@broadcom.com,
-        anand.gore@broadcom.com,
-        William Zhang <william.zhang@broadcom.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: brcmnand: update STB BRCMNAND driver maintainer
-Date:   Tue, 12 Jul 2022 11:18:11 -0700
-Message-Id: <20220712181811.3745-1-william.zhang@broadcom.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=JMQ1Fi79A0irIgGyUI6PCh63flvImOH2aGttq9qDyQs=;
+        b=NxN/iAICXcGmpCafN9p9+jGj6SRJnD+qVcT25fuDvPJoPTIq2yQ4e4MGvnGndHusgu
+         PIB9lR3vdkI0IHXxztY0IzAfUU6Hct2d3hQ3scUDgu1q+09S1aiePonjDjkjwvZslX6B
+         bY9tAqJ4G52VH7IvQBkglYbPWqKT5OgqQqeweBzTipyXZgd1R8caCxZKDRc7r1TVgTsi
+         NriUrWqBogy3Y7KKyKdOuQESUInPNZ9yac48WKWUVWdAyyzlXUa0Fm7ex0Pv9kupn93Z
+         cIAuKfS+7Q3q6hTItDmiH8iu5JU7+HzX5GfY41L81UbG1+XOpwKL6BSiPOAuwNAZ+xRD
+         XsGA==
+X-Gm-Message-State: AJIora+v5Hi4gP1ViwXGk7O54I3qfVNDWtz6hBw/k7U1HK1leCPYzV/x
+        xHuctTW94qQk3Hn5zlKgVW39yg==
+X-Google-Smtp-Source: AGRyM1tC/q9gDYFNopU+9HAIbDNxNonrgeLFGrJ13IUtbK5ZlYSmdteLoZQ1OfR0Hjc5cWoZJOcL6g==
+X-Received: by 2002:a2e:9695:0:b0:25d:65f9:fb95 with SMTP id q21-20020a2e9695000000b0025d65f9fb95mr8153763lji.302.1657649942181;
+        Tue, 12 Jul 2022 11:19:02 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id m5-20020a2ea885000000b0025a7338317esm2511199ljq.64.2022.07.12.11.19.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 11:19:01 -0700 (PDT)
+Message-ID: <c40f20c7-59ee-99f4-9a11-e928b41eda9f@linaro.org>
+Date:   Tue, 12 Jul 2022 20:18:59 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000348e8c05e39fb16c"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC PATCH 1/3] dt-bindings: arm64: bcmbca: Merge BCM4908 into
+ BCMBCA
+Content-Language: en-US
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        dan.beygelman@broadcom.com, f.fainelli@gmail.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rafal@milecki.pl
+References: <20220712021144.7068-1-william.zhang@broadcom.com>
+ <20220712021144.7068-2-william.zhang@broadcom.com>
+ <ca8c3003-1bcb-6658-592c-566609fd7bd2@linaro.org>
+ <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000348e8c05e39fb16c
-Content-Transfer-Encoding: 8bit
+On 12/07/2022 19:37, William Zhang wrote:
+>>> +      - description: BCM4908 Family based boards
+>>> +        items:
+>>> +          - enum:
+>>> +              # BCM4908 SoC based boards
+>>> +              - brcm,bcm94908
+>>> +              - asus,gt-ac5300
+>>> +              - netgear,raxe500
+>>> +              # BCM4906 SoC based boards
+>>> +              - brcm,bcm94906
+>>> +              - netgear,r8000p
+>>> +              - tplink,archer-c2300-v1
+>>> +          - enum:
+>>> +              - brcm,bcm4908
+>>> +              - brcm,bcm4906
+>>> +              - brcm,bcm49408
+>>
+>> This is wrong.  brcm,bcm94908 followed by brcm,bcm4906 does not look
+>> like valid list of compatibles.
+>>
+> For 4908 board variant, it will need to be followed by 4908 chip. Sorry 
+> for the basic question but is there any requirement to enforce this kind 
+> of rule?  I would assume dts writer know what he/she is doing and select 
+> the right combination.
 
-As the BCMBCA chip uses the same nand controller as STB chip and I
-have been working on this driver internally in Broadcom, I'd like
-to join the maintainer group of this driver and expect to contribute
-changes to support BCMBCA chips, general driver changes and review
-incoming patches as well.
+The entire point of DT schema is to validate DTS. Combination like above
+prevents that goal.
 
-Signed-off-by: William Zhang <william.zhang@broadcom.com>
-
----
-
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1854a885165a..17df7252c51b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4294,6 +4294,7 @@ F:	drivers/memory/brcmstb_dpfe.c
- BROADCOM STB NAND FLASH DRIVER
- M:	Brian Norris <computersforpeace@gmail.com>
- M:	Kamal Dasu <kdasu.kdev@gmail.com>
-+M:	William Zhang <william.zhang@broadcom.com>
- R:	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
- L:	linux-mtd@lists.infradead.org
- S:	Maintained
--- 
-2.34.1
-
-
---000000000000348e8c05e39fb16c
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-TltlrAeBKRJ1M9O/DY5v7L1Yrs//7XIRg/d2ZPAOSGBQzFYjYTFWwNBiR1s1zP0m2y56DPbS5gwj
-fqAN/I4PJHIvTh3zUgHXNKadYoYRiPHXfaTWO9UhzysOpQIDAQABo4IB2zCCAdcwDgYDVR0PAQH/
-BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3VyZS5nbG9i
-YWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEGCCsGAQUF
-BzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAy
-MDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93d3cuZ2xv
-YmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6hjhodHRw
-Oi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNybDAlBgNV
-HREEHjAcgRp3aWxsaWFtLnpoYW5nQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAf
-BgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUohM5GmNlGWe5wpzDxzIy
-+EgzbRswDQYJKoZIhvcNAQELBQADggEBACKu9JSQAYTlmC+JTniO/C/UcXGonATI/muBjWTxtkHc
-abZtz0uwzzrRrpV+mbHLGVFFeRbXSLvcEzqHp8VomXifEZlfsE9LajSehzaqhd+np+tmUPz1RlI/
-ibZ7vW+1VF18lfoL+wHs2H0fsG6JfoqZldEWYXASXnUrs0iTLgXxvwaQj69cSMuzfFm1X5kWqWCP
-W0KkR8025J0L5L4yXfkSO6psD/k4VcTsMJHLN4RfMuaXIT6EM0cNO6h3GypyTuPf1N1X+F6WQPKb
-1u+rvdML63P9fX7e7mwwGt5klRnf8aK2VU7mIdYCcrFHaKDTW3fkG6kIgrE1wWSgiZYL400xggJt
-MIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYD
-VQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgw28eX6TfvsbNfu
-SIMwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIIKNJAhg+CAMZo1b2CmdWR/zdvn6
-EwDLh2oYvjiPId5aMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIy
-MDcxMjE4MTgxNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsG
-CWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFl
-AwQCATANBgkqhkiG9w0BAQEFAASCAQB5ecMzXaH9gAsXmLigmGuZZC00PrWqBNbTDQGTUfc33MUh
-wi1I6x69H9Q2Hx9j/DGJ76TodMiVUgngKl5T/8KjHk1ptCGbrbqbpIED2hOlbTxnOfaW9QutO//h
-wqgSSpAwsQMWQy71+bQtsbRS+YiiK1wixjLaz7xng6+LcmIord4ipeGZHDnTyUzF4L6Amsgggqkv
-97qj8e2kVGAaHsH7pGEAUebtPmhjuDFhU9rOdibEWLgSmpq3uNHqtJUYVQE9eQN2+j5GslTNwlD2
-f+6rfX7oTd2BVqAGseJ8N9HHedspNChyHD6mpACSIa4hZfBiWnmsDOmn+DochojjDX85
---000000000000348e8c05e39fb16c--
+Best regards,
+Krzysztof
