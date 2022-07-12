@@ -2,140 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4B8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:36:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A230FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229924AbiGLOge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:36:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55228 "EHLO
+        id S232170AbiGLOhD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiGLOgB (ORCPT
+        with ESMTP id S233358AbiGLOgn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:36:01 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1E3BA384
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:35:59 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id b2so7409275plx.7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:35:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=GeUfY6Tn/Q9ioj3wHa1IQnm+34PkJWvBAjhW7FXaij8=;
-        b=FFQ3ZoI38S7htoLyXPyrs8plraXqTTr8yHOFDxdU1PsAkwG0XPngF9GF1Tlfqttg2P
-         ziAgp5Pz/14MkxsLy8N4uxnR43jNUHndWEuYY93g77XUSGXNs6XbSpEbtMb8eXhjZdzB
-         0n3SA8nqrbl5Do5PJsLHI2hkToFAK8s2ZVxiGR1Yfr5xNYQkSV+mJPfZcoPeL17Z6l8D
-         iFueEOHC67SJKFNfs1o+sOQsxaiSllwJRMQmmnbFrNFg1/npr4D3nb/hriKURG6xeVPJ
-         xNFETLZNqFxxGGEU1++4arL5s1FdE1YlrBFMEsoWMRueYTGjO5RN2t+7two8YBDXw9Yv
-         wnQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=GeUfY6Tn/Q9ioj3wHa1IQnm+34PkJWvBAjhW7FXaij8=;
-        b=F5a5OPXqYHs7Ol0Fkk+fZvFhWXT+ehWzEvE8mlWD1UxDT4Ch9AOluSxBH1is6SkQoU
-         i1GxrRUs3cKBo0pZItXxhu0sEBoVC8ECZkDA+0Gux2F8PaT9LTgYkon0TVKoF/x2hQks
-         ylPAGvMwzOuGMv+6MyME7lV5R4RnCzC3IHH9hpLgJSe1u+LUCruvgi7w3HNfA6z91I66
-         EQSHKvRZTPljoh4hDwRM/oZSuhqUSvetMTC6z4ZJi4H/spP1Q+yb0HdunwlhmohgneB0
-         pMev8UA3ZPPDs9ZPbqIzDznq+7NLcy3Ps2QJ5GRNIQk+BWO3pQaHq7kmy4bFrFJX+obG
-         i+Zg==
-X-Gm-Message-State: AJIora8I1Y5Y+ERA5qGGQhe8K3gKMGbCLeBCxKor0rsaHiKbgtAr31Cp
-        R1OL2XXsVjmQ9OQSmTCbo2wAXaECARLymA==
-X-Google-Smtp-Source: AGRyM1ujG6w5ps9GriP+SnnUbvp+k2fcL96y5EjeY3XqpOFzffJQt14d+s4va4cHCFiFduFwFdYjpg==
-X-Received: by 2002:a17:90b:1c12:b0:1f0:2836:7799 with SMTP id oc18-20020a17090b1c1200b001f028367799mr4821591pjb.139.1657636558973;
-        Tue, 12 Jul 2022 07:35:58 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id b13-20020a621b0d000000b005252ab25363sm6878600pfb.206.2022.07.12.07.35.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 07:35:58 -0700 (PDT)
-References: <20220712013125.623338-1-schspa@gmail.com>
- <20220712013125.623338-2-schspa@gmail.com>
- <20220712102953.02d4a3bd@gandalf.local.home>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     mingo@redhat.com, peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] sched/rt: Trying to push current task when
- target disable migrating
-Date:   Tue, 12 Jul 2022 22:34:40 +0800
-In-reply-to: <20220712102953.02d4a3bd@gandalf.local.home>
-Message-ID: <m2fsj6flfk.fsf@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+        Tue, 12 Jul 2022 10:36:43 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CC5BA386
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 07:36:42 -0700 (PDT)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CDC7r7012013;
+        Tue, 12 Jul 2022 14:36:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=790MkQcJxYna5ILBe0ZbAjCXOj4DIU0QiKAhG//8tVw=;
+ b=aeqgb+XZfG1MnjuyA4ncTulK3VXmKb0zzvdJrkpIu8V19cl/MBZDB838hlgMF5u2CRUG
+ 2gVARetwi/1Z/iBl+U7oDYzUKOk9Pdfsl33LX4OXYzg43r+rYyVm8yz/hzBywB/3m5lA
+ bsidBH1WSaePjmhvvIn09sYtlgYvTA889z4pMcG54XfrQJ97n0rxQfSHXBwoOK9tFwK2
+ oN57z/LmmD0LZWSwfQCCnjN1isRvsqf9rnDHBtGEsR2blQtEsL09ioLB6VK0vUUyxBMH
+ oy+yxylhbO963aPh9B/ur0trapXELbnTkUnlwXAb+jb5pVbRORq2tsslCuB1lwBh6+9X zw== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3h98jvm5ys-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 14:36:32 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26CEZulG007859;
+        Tue, 12 Jul 2022 14:36:31 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3h8ncngds1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jul 2022 14:36:30 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26CEYxHw23724416
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jul 2022 14:34:59 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A303CA405B;
+        Tue, 12 Jul 2022 14:36:28 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 38A00A4054;
+        Tue, 12 Jul 2022 14:36:28 +0000 (GMT)
+Received: from sig-9-145-145-217.de.ibm.com (unknown [9.145.145.217])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Jul 2022 14:36:28 +0000 (GMT)
+Message-ID: <ff46adb9be9df70f6906e86c5e9220adf50842fd.camel@linux.ibm.com>
+Subject: Re: [PATCH 1/1] nvme-pci: fix hang during error recovery when the
+ PCI device is isolated
+From:   Niklas Schnelle <schnelle@linux.ibm.com>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Stefan Roese <sr@denx.de>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Tue, 12 Jul 2022 16:36:27 +0200
+In-Reply-To: <Ys2CeIqv//5ZGJTM@kbusch-mbp>
+References: <20220712124453.2227362-1-schnelle@linux.ibm.com>
+         <20220712124453.2227362-2-schnelle@linux.ibm.com>
+         <Ys2CeIqv//5ZGJTM@kbusch-mbp>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: 08SCBWmOnqCeDLIk72GnqSbgz8WUgCCw
+X-Proofpoint-ORIG-GUID: 08SCBWmOnqCeDLIk72GnqSbgz8WUgCCw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-12_08,2022-07-12_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 lowpriorityscore=0 mlxlogscore=999
+ impostorscore=0 clxscore=1015 spamscore=0 bulkscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207120056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 2022-07-12 at 08:17 -0600, Keith Busch wrote:
+> On Tue, Jul 12, 2022 at 02:44:53PM +0200, Niklas Schnelle wrote:
+> > On s390 and powerpc PCI devices are isolated when an error is detected
+> > and driver->err_handler->error_detected is called with an inaccessible
+> > PCI device and PCI channel state set to pci_channel_io_frozen
+> > (see Step 1 in Documentation/PCI/pci-error-recovery.rst).
+> > 
+> > In the case of NVMe devices nvme_error_detected() then calls
+> > nvme_dev_disable(dev, false) and requests a reset. After a successful
+> > reset the device is accessible again and nvme_slot_reset() resets the
+> > controller and queues nvme_reset_work() which then recovers the
+> > controller.
+> > 
+> > Since commit b98235d3a471 ("nvme-pci: harden drive presence detect in
+> > nvme_dev_disable()") however nvme_dev_disable() no longer freezes the
+> > queues if pci_device_is_present() returns false. This is the case for an
+> > isolated PCI device. In principle this makes sense as there are no
+> > accessible hardware queues to run. The problem though is that for
+> > a previously live reset controller with online queues nvme_reset_work()
+> > calls nvme_wait_freeze() which, without the freeze having been
+> > initiated, then hangs forever. Fix this by starting the freeze in
+> > nvme_slot_reset() which is the earliest point where we know the device
+> > should be accessible again.
+> > 
+> > Fixes: b98235d3a471 ("nvme-pci: harden drive presence detect in nvme_dev_disable()")
+> > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> 
+> Oh, we've messed up the expected sequence. The mistaken assumption is a device
+> not present means we're about to unbind from it, but it could appear that way
+> just for normal error handling and reset, so we need to preserve the previous
+> handling.
+> 
+> The offending commit really just wants to avoid the register access (which we
+> shouldn't have to do, but hey, broken hardware...). So let's keep the sequence
+> the same as before and just skip the register read. Does this work for you?
 
-Steven Rostedt <rostedt@goodmis.org> writes:
+Ah thanks for the explanation! I had actually tested a similar patch
+but wasn't sure if nvme_start_freeze() also does register access for
+starting the HW queues and if it makes sense on a dead/isolated device
+at all. On the other hand this code very explicitly handles dead
+devices so I guess this was kept in mind.
 
-> On Tue, 12 Jul 2022 09:31:25 +0800
-> Schspa Shi <schspa@gmail.com> wrote:
->
->> When the task to push disable migration, retry to push the current
->> running task on this CPU away, instead doing nothing for this migrate
->> disabled task.
->> 
->> Signed-off-by: Schspa Shi <schspa@gmail.com>
->> ---
->>  kernel/sched/core.c | 6 +++++-
->>  kernel/sched/rt.c   | 6 ++++++
->>  2 files changed, 11 insertions(+), 1 deletion(-)
->> 
->> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
->> index da0bf6fe9ecdc..0b1fefd97d874 100644
->> --- a/kernel/sched/core.c
->> +++ b/kernel/sched/core.c
->> @@ -2509,8 +2509,12 @@ int push_cpu_stop(void *arg)
->>  	if (p->sched_class->find_lock_rq)
->>  		lowest_rq = p->sched_class->find_lock_rq(p, rq);
->>  
->> -	if (!lowest_rq)
->> +	if (!lowest_rq) {
->
-> Probably should add a comment reminding us that the find_lock() function
-> above could have released the rq lock and allow p to schedule and be
-> preempted again, and that lowest_rq could be NULL because p now has the
-> migrate_disable flag set and not because it could not find the lowest rq.
->
+So yes the below patch works for me.
 
-OK, it will be better.
-
-Let me upload a v6 patch for that.
-
-> -- Steve
->
->
->> +		if (unlikely(is_migration_disabled(p)))
->> +			p->migration_flags |= MDF_PUSH;
->> +
->>  		goto out_unlock;
->> +	}
->>  
->>  	// XXX validate p is still the highest prio task
->>  	if (task_rq(p) == rq) {
->> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
->> index 7c32ba51b6d85..877380e465b7a 100644
->> --- a/kernel/sched/rt.c
->> +++ b/kernel/sched/rt.c
->> @@ -2136,6 +2136,12 @@ static int push_rt_task(struct rq *rq, bool pull)
->>  		 */
->>  		task = pick_next_pushable_task(rq);
->>  		if (task == next_task) {
->> +			/*
->> +			 * If next task has now disabled migrating, see if we
->> +			 * can push the current task.
->> +			 */
->> +			if (unlikely(is_migration_disabled(task)))
->> +				goto retry;
->>  			/*
->>  			 * The task hasn't migrated, and is still the next
->>  			 * eligible task, but we failed to find a run-queue
+> 
+> ---
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index fdfee3e590db..c40e82cee735 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+>  static void nvme_dev_remove_admin(struct nvme_dev *dev)
+> @@ -2690,9 +2772,11 @@ static void nvme_dev_disable(struct nvme_dev *dev, bool shutdown)
+>  	struct pci_dev *pdev = to_pci_dev(dev->dev);
+>  
+>  	mutex_lock(&dev->shutdown_lock);
+> -	if (pci_device_is_present(pdev) && pci_is_enabled(pdev)) {
+> -		u32 csts = readl(dev->bar + NVME_REG_CSTS);
+> +	if (pci_is_enabled(pdev)) {
+> +		u32 csts = ~0;
+>  
+> +		if (pci_device_is_present(pdev))
+> +			csts = readl(dev->bar + NVME_REG_CSTS);
+>  		if (dev->ctrl.state == NVME_CTRL_LIVE ||
+>  		    dev->ctrl.state == NVME_CTRL_RESETTING) {
+>  			freeze = true;
+> --
 
 
--- 
-BRs
-Schspa Shi
