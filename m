@@ -2,214 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1604C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24661C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 15:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233421AbiGLPUJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 11:20:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
+        id S232873AbiGLPUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 11:20:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232878AbiGLPTD (ORCPT
+        with ESMTP id S234207AbiGLPTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 11:19:03 -0400
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79777C4441;
-        Tue, 12 Jul 2022 08:14:15 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1E5D45C00C5;
-        Tue, 12 Jul 2022 11:14:13 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Tue, 12 Jul 2022 11:14:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1657638853; x=1657725253; bh=K0oMR9Ywpn
-        pKggCpxNkdlZh5kdkAJqeLH7UnRFMxakI=; b=C9jqbtzu0ua6Xvp3yUcf1xf+Lm
-        VPJH2O9Sp4oY3pywlygS/B03nZPxTRBwIQwhYpsvQOggXQrIPS1gbHdO+UeQRpxU
-        gsdjoN2YtmfSjtxFVGk9jByVmpWs2fas4X6Xwr2lYHeWWS+Rto9gXAp5QoDMgHnG
-        rG1sr1ycMnP5gu+Pl4idKf2SqgHWxRsP88Zsv6+eeBl+6N+uL1qwrE9IJVlGOgjy
-        ogSqbDRbW40WfhlkuZbMxT1zHUqG0cXRlk8fpfHNdbTZc3JVgX7VNJyAiIsHtrSW
-        9fplwBUE1Cs1hYgTh/9Ruln84neAU+L9STM8RRmX1Px3Go2Ich0qGfLm5/wg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1657638853; x=1657725253; bh=K0oMR9YwpnpKggCpxNkdlZh5kdkA
-        JqeLH7UnRFMxakI=; b=MLyWGRCS1eNuiNFYsB+Qvr3q3mk6v7JBLrsEv1096i1l
-        EdyfWzcbYZxXSdLVLIq+M8LgrOtJtjGk9EV6hJ8bC5sco2qcauVQYbrWjH191nWB
-        fscU3Oyd/or/GLlAn3aYOl6YtbP4SsnE1/5f4W3xeIKFZPqfi5lP6Jzc0F5nDH7j
-        TE2FsE29qKH603ed1+7z8AcV3mMTqOAvK51sQMSwgYZhrArWCsee7vYKB/GwrFsQ
-        RvT2gSiaFUigKU9hempeaBkjsTkxQ76imOlCzj3JIj4pyEL876o1FMYOKr6ORH3u
-        eKQmxkiPrqROzsMq0SZV/bcfojILAtVdXf4VEky3wg==
-X-ME-Sender: <xms:xI_NYux5d-8Iev1TLqAiy9kLYYN5IrHzsqQehAXxzqSZkQomJbpeVA>
-    <xme:xI_NYqQN76Lt0BJ8LS_eIUYRRHwc1mug93J9ybYl01UzJi6ilC3VECkxtfSfdgnyT
-    xvJzYIdqPCboOPVX8w>
-X-ME-Received: <xmr:xI_NYgV_muiSLBJ16BAyTAQ2fNtMoMHg6pzdoTXeU6ccl9MQwQS2v8OW>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejhedgkeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihtghh
-    ohcutehnuggvrhhsvghnuceothihtghhohesthihtghhohdrphhiiiiirgeqnecuggftrf
-    grthhtvghrnhepueettdetgfejfeffheffffekjeeuveeifeduleegjedutdefffetkeel
-    hfelleetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epthihtghhohesthihtghhohdrphhiiiiirg
-X-ME-Proxy: <xmx:xI_NYkj_ZYvQglH4Sqp7xt1zNZJOYLDWh7AaA_2WaEYdX6LQ4iEJtQ>
-    <xmx:xI_NYgAmbADCYfkWcFbWrW2DiXsTpu9zAqbLhcCpsU4Nw1UcRbe4rw>
-    <xmx:xI_NYlLKFuH_pEiUhM0OZM_pQ3sXrgYmuCocbrpcPcEQmzHeSIJlAQ>
-    <xmx:xY_NYj_P4MUdWdoUFGdHSP_FHN7-LtyWzH68FAQePCFy00SSy3AVfw>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 12 Jul 2022 11:14:11 -0400 (EDT)
-Date:   Tue, 12 Jul 2022 09:14:09 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Miklos Szeredi <miklos@szeredi.hu>,
-        Christian Brauner <brauner@kernel.org>,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: strange interaction between fuse + pidns
-Message-ID: <Ys2PwTS0qFmGNFqy@netflix>
-References: <YrShFXRLtRt6T/j+@risky>
- <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
- <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
- <YsyHMVLuT5U6mm+I@netflix>
- <877d4jbabb.fsf@email.froward.int.ebiederm.org>
- <Ysyp8Kbl8FzhApUb@netflix>
- <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
- <Ys16l6+iotX2JE33@netflix>
- <87sfn62yd1.fsf@email.froward.int.ebiederm.org>
+        Tue, 12 Jul 2022 11:19:39 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A60F60DF;
+        Tue, 12 Jul 2022 08:16:09 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xiaoguang.wang@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VJ8npQf_1657638965;
+Received: from 30.227.94.73(mailfrom:xiaoguang.wang@linux.alibaba.com fp:SMTPD_---0VJ8npQf_1657638965)
+          by smtp.aliyun-inc.com;
+          Tue, 12 Jul 2022 23:16:06 +0800
+Message-ID: <afed0772-3626-44e6-a33c-7134a7d623f0@linux.alibaba.com>
+Date:   Tue, 12 Jul 2022 23:16:05 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87sfn62yd1.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH V4 0/2] ublk: add io_uring based userspace block driver
+Content-Language: en-US
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     Jens Axboe <axboe@kernel.dk>, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>
+References: <20220711022024.217163-1-ming.lei@redhat.com>
+ <c8e593e6-105f-7a69-857f-5b91ecd3b801@linux.alibaba.com>
+ <YswtwnJuWG+55NM1@T590>
+ <0697cae5-f366-6f69-be39-96f060d8c586@linux.alibaba.com>
+ <Ys1bTrVd+L5zYODg@T590>
+From:   Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+In-Reply-To: <Ys1bTrVd+L5zYODg@T590>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 09:34:50AM -0500, Eric W. Biederman wrote:
-> Tycho Andersen <tycho@tycho.pizza> writes:
-> 
-> > On Mon, Jul 11, 2022 at 06:06:21PM -0500, Eric W. Biederman wrote:
-> >> Tycho Andersen <tycho@tycho.pizza> writes:
-> >> It is not different enough to change the semantics.  What I am aiming
-> >> for is having a dedicated flag indicating a task will exit, that
-> >> fatal_signal_pending can check.  And I intend to make that flag one way
-> >> so that once it is set it will never be cleared.
-> >
-> > Ok - how far out is that? I'd like to try to convince Miklos to land
-> > the fuse part of this fix now, but without the "look at shared signals
-> > too" patch, that fix is useless. I'm not married to my patch, but I
-> > would like to get this fixed somehow soon.
-> 
-> My point is that we need to figure out why you need the look at shared
-> signals.
+hi,
 
-At least in the case where the task was already exiting, it's because
-complete_signal() never wakes them up.
+>>>
+>>> If we adopt to pass one io_uring fd per queue when starting device,
+>>> blk-mq's queue_rq() will get corresponding io_uring file for this queue and
+>>> use it to generate cqes directly to notify new io commands inserted,
+>>> then UBLK_CMD_START_DEV doesn't need to wait, and can be in the
+>>> same thread with ublksrv_queue_init or ublksrv_process_io.
+>>> Seems that for demo_null.c, they are still in different threads.
+>>>
+>>> For current io_uring implementation, one sqe may generate one or more
+>>> cqes, but indeed, we can generate cqes without submitting sqes, just
+>>> fill one event to io_uring ctx.
+>>> Just suggestions :)
+> I don't have any interest in so unusual usage of io_uring, especially it
+> needs fundamental change in io_uring.
+Got it, I see your point now and will respect that.
 
-> If I can get everything reviewed my changes will be in the next merge
-> window (it unfortunately always takes longer to get the code reviewed
-> than I would like).
-> 
-> However when my changes land does not matter.  What you are trying to
-> solve is orthogonal of my on-going work.
-> 
-> The problem is that looking at shared signals is fundamentally broken.
-> A case in point is that kernel threads can have a pending SIGKILL that
-> is not a fatal signal.  As kernel threads are allowed to ignore or even
-> handle SIGKILL.
-> 
-> If you want to change fatal_signal_pending to include PF_EXITING I would
-> need to double check the implications but I think that would work, and
-> would not have the problems including the shared pending state of
-> SIGKILL.
+>
+> Compared with kernel side change, removing waiting until queue setup in
+> userspace side simplifies nothing.
+>
+> You still need io_kiocb/io_uring_cmd and both are allocated in
+> submission code path, since 'io_ring_ctx' is private for
+> io_uring.
+>
+> And ublk server still needs one command to send io result to ublk driver,
+> that said this way saves nothing for us cause ublk driver uses single
+> command for both fetching io request and committing io result.
+>
+> Easy to say than done, you may try to write a patch to verify your
+> ideas, especially no one uses io_ring in this way.
+I have done a hack change in io_uring:
+iff --git a/fs/io_uring.c b/fs/io_uring.c
+index 5ff2cdb425bc..e6696319148e 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -11958,6 +11958,21 @@ static int io_get_ext_arg(unsigned flags, const void __user *argp, size_t *argsz
+        return 0;
+ }
 
-I think that would work. I'll test it out, thanks.
++static u64 tst_count;
++
++static void io_gen_cqe_direct(struct file *file)
++{
++       struct io_ring_ctx *ctx;
++       ctx = file->private_data;
++
++       printk(KERN_ERR "tst_count %llu\n", tst_count);
++       spin_lock(&ctx->completion_lock);
++       io_fill_cqe_aux(ctx, tst_count++, 0, 0);
++       io_commit_cqring(ctx);
++       spin_unlock(&ctx->completion_lock);
++       io_cqring_ev_posted(ctx);
++}
++
+ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd, u32, to_submit,
+                u32, min_complete, u32, flags, const void __user *, argp,
+                size_t, argsz)
+@@ -12005,6 +12020,7 @@ SYSCALL_DEFINE6(io_uring_enter, unsigned int, fd, u32, to_submit,
+        if (unlikely(ctx->flags & IORING_SETUP_R_DISABLED))
+                goto out;
 
-> >> The other thing I have played with that might be relevant was removing
-> >> the explicit wait in zap_pid_ns_processes and simply not allowing wait
-> >> to reap the pid namespace init until all it's children had been reaped.
-> >> Essentially how we deal with the thread group leader for ordinary
-> >> processes.  Does that sound like it might help in the fuse case?
-> >
-> > No, the problem is that the wait code doesn't know to look in the
-> > right place, so waiting later still won't help.
-> 
-> I was suggesting to modify the kernel so that zap_pid_ns_processes would
-> not wait for the zapped processes.  Instead I was proposing that
-> delay_group_leader called from wait_consider_task would simply refuse to
-> allow the init process of a pid namespace to be reaped until every other
-> process of that pid namespace had exited.
-> 
-> You can prototype how that would affect the deadlock by simply removing
-> the waiting from zap_pid_ns_processes.
-> 
-> I suggest that simply because that has the potential to remove some of
-> the strange pid namespace cases.
-> 
-> I don't understand the problematic interaction between pid namespace
-> shutdown and the fuse daemon, so I am merely suggesting a possibility
-> that I know can simplify pid namespace shutdown.
-> 
-> Something like:
-> 
-> diff --git a/kernel/pid_namespace.c b/kernel/pid_namespace.c
-> index f4f8cb0435b4..d22a30b0b0cf 100644
-> --- a/kernel/pid_namespace.c
-> +++ b/kernel/pid_namespace.c
-> @@ -207,47 +207,6 @@ void zap_pid_ns_processes(struct pid_namespace *pid_ns)
->  	read_unlock(&tasklist_lock);
->  	rcu_read_unlock();
->  
-> -	/*
-> -	 * Reap the EXIT_ZOMBIE children we had before we ignored SIGCHLD.
-> -	 * kernel_wait4() will also block until our children traced from the
-> -	 * parent namespace are detached and become EXIT_DEAD.
-> -	 */
-> -	do {
-> -		clear_thread_flag(TIF_SIGPENDING);
-> -		rc = kernel_wait4(-1, NULL, __WALL, NULL);
-> -	} while (rc != -ECHILD);
-> -
-> -	/*
-> -	 * kernel_wait4() misses EXIT_DEAD children, and EXIT_ZOMBIE
-> -	 * process whose parents processes are outside of the pid
-> -	 * namespace.  Such processes are created with setns()+fork().
-> -	 *
-> -	 * If those EXIT_ZOMBIE processes are not reaped by their
-> -	 * parents before their parents exit, they will be reparented
-> -	 * to pid_ns->child_reaper.  Thus pidns->child_reaper needs to
-> -	 * stay valid until they all go away.
-> -	 *
-> -	 * The code relies on the pid_ns->child_reaper ignoring
-> -	 * SIGCHILD to cause those EXIT_ZOMBIE processes to be
-> -	 * autoreaped if reparented.
-> -	 *
-> -	 * Semantically it is also desirable to wait for EXIT_ZOMBIE
-> -	 * processes before allowing the child_reaper to be reaped, as
-> -	 * that gives the invariant that when the init process of a
-> -	 * pid namespace is reaped all of the processes in the pid
-> -	 * namespace are gone.
-> -	 *
-> -	 * Once all of the other tasks are gone from the pid_namespace
-> -	 * free_pid() will awaken this task.
-> -	 */
-> -	for (;;) {
-> -		set_current_state(TASK_INTERRUPTIBLE);
-> -		if (pid_ns->pid_allocated == init_pids)
-> -			break;
-> -		schedule();
-> -	}
-> -	__set_current_state(TASK_RUNNING);
-> -
->  	if (pid_ns->reboot)
->  		current->signal->group_exit_code = pid_ns->reboot;
++       io_gen_cqe_direct(f.file);
+        /*
+         * For SQ polling, the thread will do all submissions and completions.
+         * Just return the requested submit count, and wake the thread if
 
-Yes, but we need to add the wait to delay_group_leader(), and if the
-tasks are stuck indefinitely looking at the wrong condition, I don't
-see how moving it will help resolve things.
+And in user-space:
+ret = io_uring_queue_init(QD, &ring, 0);
 
-Thanks,
+for (i = 0; i < 100; i++) {
+    io_uring_submit_and_wait(&ring, 0);
+    io_uring_wait_cqe(&ring, &cqe);
+    printf("lege user_data %llu\n", cqe->user_data);
+    io_uring_cqe_seen(&ring, cqe);
+}
 
-Tycho
+Now user-space app will get cqes continually, by it does not submit any sqes.
+Indeed, io_fill_cqe_aux() has been used somewhere in kernel io_uring, for example,
+sent one cqe from one io_uring instance to another instance.
+
+I had planned to use io_gen_cqe_direct() in ublk's queue_rq to notify io requests
+inserted. But now I'm fine that dropping this idea.
+>
+>> As I said before, there maybe such benefits:
+>> 1. may decouple io command descriptor acquire and io command handling well.
+>> At least helper like tcmulib_get_next_command maybe added easily. I'm not sure, some
+>> applications based on tcmu previously may need this helper.
+> Why do we need similar helper of tcmulib_get_next_command()? for what
+> purpose? In current design of ublk server, it should be enough for target
+> code to focus on ->handle_io_async(), ->target_io_done() in case of handling
+> target io via ubq io_uring, ->handle_event() in case of handling target io in
+> other contexts.
+I'll have a deep think about it. Initially I tried to make libublk offer
+similar programming interface to libtcmu, so apps can switch to ublk
+easily, but indeed they maybe totally different things.
+
+Sorry for noises again.
+>
+> ublk server is one io_uring application, and interfaces provided
+> are based on io_uring design/interfaces. I guess TCMU isn't based on
+> io_uring, so it may have original style interface. You may ask
+> TCMU guys if it is possible to reuse current interface for supporting
+> io_uring with expected performance.
+>
+>> 2. UBLK_CMD_START_DEV won't need to wait another thread context to submit
+>> number of queue depth of sqes firstly, but I admit that it's not a big issue.
+> Yeah, it simplifies nothing, compared with fundamental io_uring change
+> and ublk driver side change.
+>
+>>
+>> I admit batch will be good, and syscalls userspace and kernel context switch
+>> introduce overhead. But for big io requests, batch in one context is not good. In
+>> the example of read requests, if io request is big, say 1MB, io_uring will do
+>> commit req sequentially, which indeed mainly do memcpy work. But if users
+>> can choose to issue multiple ioctls which do commit req concurrently, I think
+>> user may get higher io throughput.
+> If BS is big, single job could saturate devices bw easily, multiple jobs won't
+> make a difference, will it? Not mention sync cost among multiple jobs.n
+No, I don't consider device scenes, at least for us, our target will visit distributed
+file systems, which can offer very high io throughput, far greater than normal device.
+>
+> Not mention current ublk server does support multiple io jobs.
+Yeah, I see that. But for read request, commit req commands will still be done
+in ubq->ubq_daemon task context, and commit req commands mainly do memcpy work.
+
+Regards,
+Xiaoguang Wang
+
+>
+>> And in this case, user may not care userspace and kernel context switch overhead at all.
+>>
+>> Or to put it another way, should libublk offer synchronous programming interface ?
+> It depends what the sync interface is.
+>
+> You can call sync read()/write() for target io directly in ->handdle_io_async(),
+> or call them in other pthread(s) just by telling ubq after these sync ios are done
+> with the eventfd API.
+>
+> demo_null.c is actually one such example.
+>
+>>> With ublk, usually we handle dozens or even more than hundred of IOs in
+>>> single io_uring_enter() syscall.
+>>>
+>>>> io workers can run concurrently. Since GET_DATA(write request)
+>>>> or COMMIT_REQ(read request) mainly do memcpy work, one
+>>>> io_uring instance will just do these jobs sequentially, which may
+>>>> not take advantage of multi-cpu.
+>>> IMO you can implement target code to handle io in other pthreads against
+>>> current libublksrv design, see demo_event.c. Or if you think it is still
+>>> enough, please just share with us what the problem is. Without
+>>> understanding the problem, I won't try to figure out any solution or
+>>> change.
+>> I need to read your ublk userspace codes carefully, if I made
+> One small suggestion, you may start with the two builtin examples, both
+> are simple & clean, and the big one is only 300+ LOC, really complicated?
+>
+>
+> Thanks.
+> Ming
+
