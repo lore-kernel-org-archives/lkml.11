@@ -2,222 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C4E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F93C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 14:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233591AbiGLOf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 10:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        id S233620AbiGLOfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 10:35:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233309AbiGLOe4 (ORCPT
+        with ESMTP id S233499AbiGLOfJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 10:34:56 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE60126567;
-        Tue, 12 Jul 2022 07:34:35 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26CCtVAS022340;
-        Tue, 12 Jul 2022 14:34:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : content-type : in-reply-to :
- mime-version; s=corp-2021-07-09;
- bh=QSZigwN1kKitg+isvFZfGizCi9W47sLx6XXTZKgEmvg=;
- b=Br3zh6wpCj9pSoxSczcxLQgrh55EoZbOwlACBgI5Nnbm7FRg5bwhb9/ND60FEOEZlPq7
- YQnugMgbSjXWhYFJCV+xP91FhTgjIo4mTfhCHK36pfYtWhzrTfhso0+xcl2DtSuElhfU
- eYa1RHC0mecwzHev8k4qBWIy8qTCRo12y5Dta8A8TaMCUV0ZQQULEw7jLqRjstlTuQYI
- Rqv+Rtzp7Zklp68oFBXYjrcxJiUXr+IiFOv4nZQt4Mi/hKHI18Qci7c2RO68ux2sAf24
- D0lbO2pyoMkEt7fMQrkzk0FN/6vUea1q56+G7h/B0QM7MJOyGUvA4q0oxazqDWS+7pdT jg== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h727sf50c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 14:34:12 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26CEGcVB002346;
-        Tue, 12 Jul 2022 14:33:34 GMT
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2174.outbound.protection.outlook.com [104.47.56.174])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h70432sbc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jul 2022 14:33:34 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HmNuUQuyG72AR8YbJa/nNbF/5rwoHM3h4Iz7h6fn3UU240CWKYQSZntmrUa6bZNyAm/T38Iwt359RQ5ylYTNNRRIq9cA4iA8BZz5wdDG0QRjJwqwd87SmXFJOslaP1Vi/364+g4lfG7U1xdo2nRFWAM68qGOfD2gpK53TlR9wdZcIaZHvYpU5jAgU/91/qiouaQ6edr7BlDNtDpaQxiQvoJmS3a93gPSXIQkHyKSc3MkJzTF/twsJDuz2ZgRIoN/UzpJwZTGsIHkFoARRvd9KFdv2A/ejLhQy78KG58q0e+64uHI3E+xvKV3CWHt29d6bgoQRRa01bvS8/4Ix4Wgiw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QSZigwN1kKitg+isvFZfGizCi9W47sLx6XXTZKgEmvg=;
- b=Vbaz64l4oFqUVkwc8bAyAl3P2yqAXf5WHEkLHaxkhS9hNOq+9low69AA7OO6Sb7yKPEPgy5qMLo7GpBVsIOi4FrtREpKN1QuAvjQrOCRVtqTeEnR3aYvNBoFT7eyLCDhf0s/JBt7JVJqDTBTRfKUEBvYXBk+A0/2HnWOwCdbWHozL6P5pVnc6ksiZoT4Rp8LzEQvsLHJpLR2cYWRX7/CG2kwRzrkr/TuxpHKhXNF3YV/hht0Pwq4ENpDoAnCzx9EG+QHFzssKRIs5i2V3VJacf8jzV+DMlc6xunVEbLFQx/+zElV6xT2uje1h5SyPhCrDuoS4gUGYdP3JcTtBJhp3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QSZigwN1kKitg+isvFZfGizCi9W47sLx6XXTZKgEmvg=;
- b=XgwEXdSW0jQ2KpXke6d+F/nFcxJtJ6aCaIQde4xFXso33WXL67LVQNp2UdIvTebUILfSNAFKLzYZL4So1oI7ViOePNqXpmL5N8iRvOPAL6VP+xYjzvrx33DXnTNFhkx9FL94iTSWur5jDlZ9I+4kZNjF/Ztoiu6cn/6oo4WBFsg=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by DM6PR10MB4059.namprd10.prod.outlook.com
- (2603:10b6:5:1d5::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Tue, 12 Jul
- 2022 14:33:31 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
- 14:33:31 +0000
-Date:   Tue, 12 Jul 2022 17:33:19 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Dan Carpenter <error27@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        kbuild-all@lists.01.org, Yishai Hadas <yishaih@nvidia.com>,
-        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] vfio/mlx5: clean up overflow check
-Message-ID: <20220712143318.GQ2338@kadam>
-References: <YsbzgQQ4bg6v+iTS@kili>
- <202207080331.FTVSHxW8-lkp@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202207080331.FTVSHxW8-lkp@intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MRXP264CA0041.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:14::29) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        Tue, 12 Jul 2022 10:35:09 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150F4B31F5;
+        Tue, 12 Jul 2022 07:34:59 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:57756)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oBGyX-00B32U-U5; Tue, 12 Jul 2022 08:34:57 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:46192 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oBGyW-00Dghw-Qt; Tue, 12 Jul 2022 08:34:57 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     Miklos Szeredi <miklos@szeredi.hu>,
+        Christian Brauner <brauner@kernel.org>,
+        fuse-devel <fuse-devel@lists.sourceforge.net>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <YrShFXRLtRt6T/j+@risky>
+        <CAJfpegvH1EMS_469yOyUP9f=eCAEqzhyngm7h=YLRExeRdPEaw@mail.gmail.com>
+        <CAJfpegurW7==LEp2yXWMYdBYXTZN4HCMMVJPu-f8yvHVbu79xQ@mail.gmail.com>
+        <YsyHMVLuT5U6mm+I@netflix>
+        <877d4jbabb.fsf@email.froward.int.ebiederm.org>
+        <Ysyp8Kbl8FzhApUb@netflix>
+        <87zghf6yhe.fsf@email.froward.int.ebiederm.org>
+        <Ys16l6+iotX2JE33@netflix>
+Date:   Tue, 12 Jul 2022 09:34:50 -0500
+In-Reply-To: <Ys16l6+iotX2JE33@netflix> (Tycho Andersen's message of "Tue, 12
+        Jul 2022 07:43:51 -0600")
+Message-ID: <87sfn62yd1.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d9df0652-0b60-42c0-acd6-08da64137e4c
-X-MS-TrafficTypeDiagnostic: DM6PR10MB4059:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qDHa+OO9wHhBQ9RCulbKff0Mc2vPj1IBKnCbnXetplrYhmqqKDy2Gxp8dF2QPwfSx16YjzjWVZ+/V5GLd0b6V8oLDjMgtHTG0PovCON10yEdaR101r0GPgR0eRBxipYFsB1ttB/HVJyyv+FaX/hnTokWjURVhQkQmra7ocuQs5Iw9KethaYKw8o9coLcPej+mqwQ9crMpj5p3jd35qgV5CLr69oALZH5aiexTLci1p8J+RdVmr2/e5p46daqgh32BucRZg01m+EzwYFYCio3+LbFQgmbgJg+wQdM+Uk2S+mpv5P4b0vuR0B2dtEFI0vDPPNlQkfnJ/aokWi6XyGtAo8Sy1+ovFaFGhTr7qSgGugsuF1COynJkUyyebkaVS6bhAGr33OgKt/ByNSfeoASf3/Zv6Jw8etey2OguzMCt+MDImFE+L4P7U5iOaLs+PMDo0l6g5CKc2rDeMHhCegdA+LrmVcUIwstp64GDSryg3gphTs62jH2tHJSE8x01NmqILeNw1TGOkmiJcczV24Jsu4OhMZGO917+cuiC7yfKMpDWqRgaGXbvFAcwOrdTM2EpQlFCuVq/Bwz6CeL/8jDZQrfdlmR/qtv1he/OSTRfpVD6/E2DkgSEa7TU2PzqCWMoVu/lC2oFNV7xDwfj+l1st0NEdTGEl4v03VpNzbC6n52ji3UV+6qs5xrYL2HEo2qit58eOisldV0rxXwXjD39Qoi4euCfljiG35G38CjRuG7jupWGVaAJqrLDZTeqStfW29CsHlQj/JjCat9jwsR9U2qsv9X1B0k2KedHScOzU9orR3RSyqlBN5Ex5Tv2yui3vpTvWGKawKbVazR1WigqUmXjvquNIb9LaYiSepEc6Cnl851YN+7+qEng/4phZQH
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(136003)(396003)(39860400002)(346002)(376002)(6486002)(38100700002)(41300700001)(478600001)(33656002)(966005)(38350700002)(8936002)(6666004)(52116002)(44832011)(7416002)(1076003)(2906002)(6506007)(186003)(8676002)(26005)(66556008)(54906003)(6916009)(4326008)(66946007)(316002)(83380400001)(33716001)(66476007)(5660300002)(9686003)(6512007)(86362001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PFp4261S14GEPNR1I0DHtT7LmR7EvA8L7N/ic4AZARLhA859UBzg9K9emDAy?=
- =?us-ascii?Q?KUJyEbenJoXrmmBRYG2Eh4kST3IYDxyuu6C5IXGCXhV++hF0GH6vzwQ93yDa?=
- =?us-ascii?Q?vJz8G6XthydzHh2qd+Dyd3RjAEuds+0paOPsDmdVLReEyIE6Rrc4qgRlb0Gs?=
- =?us-ascii?Q?9gEolU3ktV+WqiBMYWVaxNeJGpT2qfgn8bWbV5EA7ggEohYGB5F29H32J7wu?=
- =?us-ascii?Q?H8R6hkCm2B8q5JifyfNw2poldjaZDKsVuTDJ18orMvPt71JCGNGcl/iQU1yU?=
- =?us-ascii?Q?HJjTDttPQcrxoGfCgz2TcDJ6mQJf4Au0+waEAJ4j06wuCNqWTbHORyBJiRAc?=
- =?us-ascii?Q?Xo+QvkwWYtqObqPOQihsENcWtOjSAoC3hOH8OCAMaVxxQ8kriGP3rUvKX8bM?=
- =?us-ascii?Q?4wwJ0dXoPhwfHNTAYxamwlbNXfRlAVJY+m9V5Lm20MCcHXn9X39/xgriF5T+?=
- =?us-ascii?Q?2mIXY9mIhmbmbqLxXvLF6SHKhy4UXwWq5inbENEs7wZvqRycqsdDKwssgAHu?=
- =?us-ascii?Q?0Vb87FC53Va/jDGG516pURlpycuvsslU30vby7NS5G0fWDX9JUakmT6JvUxE?=
- =?us-ascii?Q?7CgFDCdmkAoDId7ZrWIHhn1LP1UpHTCUGZrU2jCU3eQgNqnVE1gOnCWqlpkO?=
- =?us-ascii?Q?HrkF7vAC0K1w5s3iuPVp/V9kp+NTdxt2Zl0+IuqX1qDi4BqM4GCCdCnotfwR?=
- =?us-ascii?Q?L1xxqnV8aRccMjexlus3BJkys6cfIVUTPKX2tBGwqFFuGgOFrQH2r6Dexhi+?=
- =?us-ascii?Q?yTId0JAf1/+6vhVRyBgXibql2uRil6zN2khBPHwHLr4QeLwx7Zxbl4p1X/P9?=
- =?us-ascii?Q?csVljsrU36V2H141RyKPT0nTrs2v0eURSNcUC3B94nzkXWbrwKENgtg+QbnW?=
- =?us-ascii?Q?9OToNBt/N6HqKDfvy9HMgjRf1DHwGaxMyHoKkbvER9hieXlkFsv741/pK3Hq?=
- =?us-ascii?Q?1wNDMAkJZTgOwgrVRydjIVtOSi1Q5YKX6p9F96nPURuFjVChwbp4IVg2ouW0?=
- =?us-ascii?Q?3zbiXiQ++Qe6DBXchDEJIDVIB8g062R9NLBN0WcRS/ZWu8mBEgKlmPFy1u8/?=
- =?us-ascii?Q?DJsRZf5KocQWGbCh0kMlu4T4DeF95N/4TDhzp1K8QR5M6Jg7vfflwZ8MIYiu?=
- =?us-ascii?Q?HQa4VxJqTXlzi7oCyRtyw5G8PvPMdTw3lakdW96XjZh7nwQvhE3Uc2fQ8l+b?=
- =?us-ascii?Q?eGL6RheKruBOgJZwzX83JYd3N27glxznLI35YNWyvJwUCS/NLKKlSY5/dc9t?=
- =?us-ascii?Q?YW3Pu0XTiAJO18pHfESHjDphohBSsqXpsvEY3Hq/qpHNzPPbWbJkAujFBsgQ?=
- =?us-ascii?Q?r0v/Le4ybIxTdR3PakRQqhUO+hT6RQvHO06pvq9TICPENFNBiOVfJ/WHLfAq?=
- =?us-ascii?Q?hxZVdDxC5Gd8Cbs5AJ8dMBo8WpSQwaCR28kc7wP6VF72oST0k3Ku/EwOMa57?=
- =?us-ascii?Q?SPQZiolvu1ZMRBtdHl60bPMgovOQU1uinyYMUlvFZdl8fIEdywfMpf08zaN6?=
- =?us-ascii?Q?DFgU6qy47NTgj0pOmcv39dvT4wsA1ZpXEXKKvDoLTqmPsxXG+MUmlda83gZF?=
- =?us-ascii?Q?daX3kUZXHQNvGMCIsuG59ZHGlIvVmuQ9UWTdoVtwLGivaPSsHQAroCwDVdei?=
- =?us-ascii?Q?Gg=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9df0652-0b60-42c0-acd6-08da64137e4c
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 14:33:31.4488
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bnma7jdngo7Hzym7/3CpP2idjyu0zhjPtLz8PhaaF2V+E+vNQQUDaV5IwJQ7RJ49cHYsV1Gx3Bi6kCriz3yZA8rXW8PoK+loiCzCHC+FJmU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR10MB4059
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-12_08:2022-07-12,2022-07-12 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207120056
-X-Proofpoint-ORIG-GUID: ZoWtc1li90CmvryBCoJWCJ1F2RZE7KaO
-X-Proofpoint-GUID: ZoWtc1li90CmvryBCoJWCJ1F2RZE7KaO
+Content-Type: text/plain
+X-XM-SPF: eid=1oBGyW-00Dghw-Qt;;;mid=<87sfn62yd1.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19GFtaSVDwPoTYZnHwdRxtgbEun6enaSZ4=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: strange interaction between fuse + pidns
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for these!  I need to resend, of course.  I'm sligtly delayed
-because it was a three day weekend.  I will try do that tomorrow.
+Tycho Andersen <tycho@tycho.pizza> writes:
 
-regards,
-dan carpenter
+> On Mon, Jul 11, 2022 at 06:06:21PM -0500, Eric W. Biederman wrote:
+>> Tycho Andersen <tycho@tycho.pizza> writes:
+>> It is not different enough to change the semantics.  What I am aiming
+>> for is having a dedicated flag indicating a task will exit, that
+>> fatal_signal_pending can check.  And I intend to make that flag one way
+>> so that once it is set it will never be cleared.
+>
+> Ok - how far out is that? I'd like to try to convince Miklos to land
+> the fuse part of this fix now, but without the "look at shared signals
+> too" patch, that fix is useless. I'm not married to my patch, but I
+> would like to get this fixed somehow soon.
 
-On Fri, Jul 08, 2022 at 03:37:32AM +0800, kernel test robot wrote:
-> Hi Dan,
-> 
-> Thank you for the patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on awilliam-vfio/next]
-> [also build test WARNING on rdma/for-next linus/master v5.19-rc5 next-20220707]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Dan-Carpenter/vfio-mlx5-clean-up-overflow-check/20220707-225657
-> base:   https://github.com/awilliam/linux-vfio.git next
-> config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220708/202207080331.FTVSHxW8-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-> reproduce (this is a W=1 build):
->         # https://github.com/intel-lab-lkp/linux/commit/44607f8f3817e1af6622db7d70ad5bc457b8f203
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Dan-Carpenter/vfio-mlx5-clean-up-overflow-check/20220707-225657
->         git checkout 44607f8f3817e1af6622db7d70ad5bc457b8f203
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/vfio/pci/mlx5/
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    In file included from include/linux/device.h:29,
->                     from drivers/vfio/pci/mlx5/main.c:6:
->    drivers/vfio/pci/mlx5/main.c: In function 'mlx5vf_resume_write':
-> >> include/linux/overflow.h:67:22: warning: comparison of distinct pointer types lacks a cast
->       67 |         (void) (&__a == &__b);                  \
->          |                      ^~
->    drivers/vfio/pci/mlx5/main.c:282:13: note: in expansion of macro 'check_add_overflow'
->      282 |             check_add_overflow(len, (unsigned long)*pos, &requested_length))
->          |             ^~~~~~~~~~~~~~~~~~
->    include/linux/overflow.h:68:22: warning: comparison of distinct pointer types lacks a cast
->       68 |         (void) (&__a == __d);                   \
->          |                      ^~
->    drivers/vfio/pci/mlx5/main.c:282:13: note: in expansion of macro 'check_add_overflow'
->      282 |             check_add_overflow(len, (unsigned long)*pos, &requested_length))
->          |             ^~~~~~~~~~~~~~~~~~
-> 
-> 
-> vim +67 include/linux/overflow.h
-> 
-> 9b80e4c4ddaca35 Kees Cook        2020-08-12  54  
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  55  /*
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  56   * For simplicity and code hygiene, the fallback code below insists on
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  57   * a, b and *d having the same type (similar to the min() and max()
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  58   * macros), whereas gcc's type-generic overflow checkers accept
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  59   * different types. Hence we don't just make check_add_overflow an
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  60   * alias for __builtin_add_overflow, but add type checks similar to
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  61   * below.
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  62   */
-> 9b80e4c4ddaca35 Kees Cook        2020-08-12  63  #define check_add_overflow(a, b, d) __must_check_overflow(({	\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  64  	typeof(a) __a = (a);			\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  65  	typeof(b) __b = (b);			\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  66  	typeof(d) __d = (d);			\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08 @67  	(void) (&__a == &__b);			\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  68  	(void) (&__a == __d);			\
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  69  	__builtin_add_overflow(__a, __b, __d);	\
-> 9b80e4c4ddaca35 Kees Cook        2020-08-12  70  }))
-> f0907827a8a9152 Rasmus Villemoes 2018-05-08  71  
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+My point is that we need to figure out why you need the look at shared
+signals.
+
+If I can get everything reviewed my changes will be in the next merge
+window (it unfortunately always takes longer to get the code reviewed
+than I would like).
+
+However when my changes land does not matter.  What you are trying to
+solve is orthogonal of my on-going work.
+
+The problem is that looking at shared signals is fundamentally broken.
+A case in point is that kernel threads can have a pending SIGKILL that
+is not a fatal signal.  As kernel threads are allowed to ignore or even
+handle SIGKILL.
+
+If you want to change fatal_signal_pending to include PF_EXITING I would
+need to double check the implications but I think that would work, and
+would not have the problems including the shared pending state of
+SIGKILL.
+
+>> The other thing I have played with that might be relevant was removing
+>> the explicit wait in zap_pid_ns_processes and simply not allowing wait
+>> to reap the pid namespace init until all it's children had been reaped.
+>> Essentially how we deal with the thread group leader for ordinary
+>> processes.  Does that sound like it might help in the fuse case?
+>
+> No, the problem is that the wait code doesn't know to look in the
+> right place, so waiting later still won't help.
+
+I was suggesting to modify the kernel so that zap_pid_ns_processes would
+not wait for the zapped processes.  Instead I was proposing that
+delay_group_leader called from wait_consider_task would simply refuse to
+allow the init process of a pid namespace to be reaped until every other
+process of that pid namespace had exited.
+
+You can prototype how that would affect the deadlock by simply removing
+the waiting from zap_pid_ns_processes.
+
+I suggest that simply because that has the potential to remove some of
+the strange pid namespace cases.
+
+I don't understand the problematic interaction between pid namespace
+shutdown and the fuse daemon, so I am merely suggesting a possibility
+that I know can simplify pid namespace shutdown.
+
+Something like:
+
+diff --git a/kernel/pid_namespace.c b/kernel/pid_namespace.c
+index f4f8cb0435b4..d22a30b0b0cf 100644
+--- a/kernel/pid_namespace.c
++++ b/kernel/pid_namespace.c
+@@ -207,47 +207,6 @@ void zap_pid_ns_processes(struct pid_namespace *pid_ns)
+ 	read_unlock(&tasklist_lock);
+ 	rcu_read_unlock();
+ 
+-	/*
+-	 * Reap the EXIT_ZOMBIE children we had before we ignored SIGCHLD.
+-	 * kernel_wait4() will also block until our children traced from the
+-	 * parent namespace are detached and become EXIT_DEAD.
+-	 */
+-	do {
+-		clear_thread_flag(TIF_SIGPENDING);
+-		rc = kernel_wait4(-1, NULL, __WALL, NULL);
+-	} while (rc != -ECHILD);
+-
+-	/*
+-	 * kernel_wait4() misses EXIT_DEAD children, and EXIT_ZOMBIE
+-	 * process whose parents processes are outside of the pid
+-	 * namespace.  Such processes are created with setns()+fork().
+-	 *
+-	 * If those EXIT_ZOMBIE processes are not reaped by their
+-	 * parents before their parents exit, they will be reparented
+-	 * to pid_ns->child_reaper.  Thus pidns->child_reaper needs to
+-	 * stay valid until they all go away.
+-	 *
+-	 * The code relies on the pid_ns->child_reaper ignoring
+-	 * SIGCHILD to cause those EXIT_ZOMBIE processes to be
+-	 * autoreaped if reparented.
+-	 *
+-	 * Semantically it is also desirable to wait for EXIT_ZOMBIE
+-	 * processes before allowing the child_reaper to be reaped, as
+-	 * that gives the invariant that when the init process of a
+-	 * pid namespace is reaped all of the processes in the pid
+-	 * namespace are gone.
+-	 *
+-	 * Once all of the other tasks are gone from the pid_namespace
+-	 * free_pid() will awaken this task.
+-	 */
+-	for (;;) {
+-		set_current_state(TASK_INTERRUPTIBLE);
+-		if (pid_ns->pid_allocated == init_pids)
+-			break;
+-		schedule();
+-	}
+-	__set_current_state(TASK_RUNNING);
+-
+ 	if (pid_ns->reboot)
+ 		current->signal->group_exit_code = pid_ns->reboot;
+ 
+
+Eric
