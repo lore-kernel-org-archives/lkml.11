@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1191C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234333AbiGLSp0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S234338AbiGLSpb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:45:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbiGLSo5 (ORCPT
+        with ESMTP id S234268AbiGLSo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:44:57 -0400
+        Tue, 12 Jul 2022 14:44:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C20DABA1;
-        Tue, 12 Jul 2022 11:42:21 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5985CDABAB;
+        Tue, 12 Jul 2022 11:42:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B4C61AC9;
-        Tue, 12 Jul 2022 18:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C63BC3411C;
-        Tue, 12 Jul 2022 18:42:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA2DF61AD2;
+        Tue, 12 Jul 2022 18:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBBEBC341D0;
+        Tue, 12 Jul 2022 18:42:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651340;
-        bh=bMri/2ybeRizR5q4f7KPtsMM4WqlBC0dFA8XjkQWNXU=;
+        s=korg; t=1657651343;
+        bh=KOPBfmIxu9SkTNKcXX0nwvznMmnj5WtPQ0BxdN1yLmw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pMYsEuRlTTuyPRSqmI2qvjFuTf6Zdoq1WLHc8t0JIn4c0L6mkotiimU/ww8kYn3jP
-         ONFWlJZ08m0xoydDX9PkrRDO9WWiZ8RaBdtNIo8rGc7epkRdy93/UNxe6bCTyETO+l
-         kkq6Jo/SAWnCfEnmnFxu83bcKuxHJ7HB+KHU8Dg0=
+        b=PptCVk9+l2dstg2j5TXkXLJNJdDCEmTnQgKZNG20h0EivWtcoCNw9sOmiJhLihfUr
+         4gAiB4RDsMflkkRDKoAm+V7tOgIs/k2QJ5qSWKXa5ERAkhokdUTi7SFMezsP2vencn
+         ZmsDpeg9OzSNKkRspCO8/gUqK9KnT0tY3m9K3wug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 016/130] x86/insn: Add a __ignore_sync_check__ marker
-Date:   Tue, 12 Jul 2022 20:37:42 +0200
-Message-Id: <20220712183247.148347921@linuxfoundation.org>
+Subject: [PATCH 5.10 007/130] objtool: Assume only ELF functions do sibling calls
+Date:   Tue, 12 Jul 2022 20:37:33 +0200
+Message-Id: <20220712183246.727242541@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -49,199 +48,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit d30c7b820be5c4777fe6c3b0c21f9d0064251e51 upstream.
+commit ecf11ba4d066fe527586c6edd6ca68457ca55cf4 upstream.
 
-Add an explicit __ignore_sync_check__ marker which will be used to mark
-lines which are supposed to be ignored by file synchronization check
-scripts, its advantage being that it explicitly denotes such lines in
-the code.
+There's an inconsistency in how sibling calls are detected in
+non-function asm code, depending on the scope of the object.  If the
+target code is external to the object, objtool considers it a sibling
+call.  If the target code is internal but not a function, objtool
+*doesn't* consider it a sibling call.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Link: https://lkml.kernel.org/r/20210304174237.31945-4-bp@alien8.de
+This can cause some inconsistencies between per-object and vmlinux.o
+validation.
+
+Instead, assume only ELF functions can do sibling calls.  This generally
+matches existing reality, and makes sibling call validation consistent
+between vmlinux.o and per-object.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Link: https://lore.kernel.org/r/0e9ab6f3628cc7bf3bde7aa6762d54d7df19ad78.1611263461.git.jpoimboe@redhat.com
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/inat.h       |    2 +-
- arch/x86/include/asm/insn.h       |    2 +-
- arch/x86/lib/inat.c               |    2 +-
- arch/x86/lib/insn.c               |    6 +++---
- tools/arch/x86/include/asm/inat.h |    2 +-
- tools/arch/x86/include/asm/insn.h |    2 +-
- tools/arch/x86/lib/inat.c         |    2 +-
- tools/arch/x86/lib/insn.c         |    6 +++---
- tools/objtool/sync-check.sh       |   17 +++++++++++++----
- tools/perf/check-headers.sh       |   15 +++++++++++----
- 10 files changed, 36 insertions(+), 20 deletions(-)
+ tools/objtool/check.c |   36 ++++++++++++++++++++++--------------
+ 1 file changed, 22 insertions(+), 14 deletions(-)
 
---- a/arch/x86/include/asm/inat.h
-+++ b/arch/x86/include/asm/inat.h
-@@ -6,7 +6,7 @@
-  *
-  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-  */
--#include <asm/inat_types.h>
-+#include <asm/inat_types.h> /* __ignore_sync_check__ */
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -109,15 +109,20 @@ static struct instruction *prev_insn_sam
+ 
+ static bool is_sibling_call(struct instruction *insn)
+ {
++	/*
++	 * Assume only ELF functions can make sibling calls.  This ensures
++	 * sibling call detection consistency between vmlinux.o and individual
++	 * objects.
++	 */
++	if (!insn->func)
++		return false;
++
+ 	/* An indirect jump is either a sibling call or a jump to a table. */
+ 	if (insn->type == INSN_JUMP_DYNAMIC)
+ 		return list_empty(&insn->alts);
+ 
+-	if (!is_static_jump(insn))
+-		return false;
+-
+ 	/* add_jump_destinations() sets insn->call_dest for sibling calls. */
+-	return !!insn->call_dest;
++	return (is_static_jump(insn) && insn->call_dest);
+ }
  
  /*
-  * Internal bits. Don't use bitmasks directly, because these bits are
---- a/arch/x86/include/asm/insn.h
-+++ b/arch/x86/include/asm/insn.h
-@@ -8,7 +8,7 @@
-  */
+@@ -788,7 +793,7 @@ static int add_jump_destinations(struct
+ 			continue;
  
- /* insn_attr_t is defined in inat.h */
--#include <asm/inat.h>
-+#include <asm/inat.h> /* __ignore_sync_check__ */
+ 		reloc = find_reloc_by_dest_range(file->elf, insn->sec,
+-					       insn->offset, insn->len);
++						 insn->offset, insn->len);
+ 		if (!reloc) {
+ 			dest_sec = insn->sec;
+ 			dest_off = arch_jump_destination(insn);
+@@ -808,18 +813,21 @@ static int add_jump_destinations(struct
  
- struct insn_field {
- 	union {
---- a/arch/x86/lib/inat.c
-+++ b/arch/x86/lib/inat.c
-@@ -4,7 +4,7 @@
-  *
-  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-  */
--#include <asm/insn.h>
-+#include <asm/insn.h> /* __ignore_sync_check__ */
+ 			insn->retpoline_safe = true;
+ 			continue;
+-		} else if (reloc->sym->sec->idx) {
+-			dest_sec = reloc->sym->sec;
+-			dest_off = reloc->sym->sym.st_value +
+-				   arch_dest_reloc_offset(reloc->addend);
+-		} else {
+-			/* external sibling call */
++		} else if (insn->func) {
++			/* internal or external sibling call (with reloc) */
+ 			insn->call_dest = reloc->sym;
+ 			if (insn->call_dest->static_call_tramp) {
+ 				list_add_tail(&insn->static_call_node,
+ 					      &file->static_call_list);
+ 			}
+ 			continue;
++		} else if (reloc->sym->sec->idx) {
++			dest_sec = reloc->sym->sec;
++			dest_off = reloc->sym->sym.st_value +
++				   arch_dest_reloc_offset(reloc->addend);
++		} else {
++			/* non-func asm code jumping to another file */
++			continue;
+ 		}
  
- /* Attribute tables are generated from opcode map */
- #include "inat-tables.c"
---- a/arch/x86/lib/insn.c
-+++ b/arch/x86/lib/insn.c
-@@ -10,10 +10,10 @@
- #else
- #include <string.h>
- #endif
--#include <asm/inat.h>
--#include <asm/insn.h>
-+#include <asm/inat.h> /*__ignore_sync_check__ */
-+#include <asm/insn.h> /* __ignore_sync_check__ */
+ 		insn->jump_dest = find_insn(file, dest_sec, dest_off);
+@@ -868,7 +876,7 @@ static int add_jump_destinations(struct
+ 			} else if (insn->jump_dest->func->pfunc != insn->func->pfunc &&
+ 				   insn->jump_dest->offset == insn->jump_dest->func->offset) {
  
--#include <asm/emulate_prefix.h>
-+#include <asm/emulate_prefix.h> /* __ignore_sync_check__ */
+-				/* internal sibling call */
++				/* internal sibling call (without reloc) */
+ 				insn->call_dest = insn->jump_dest->func;
+ 				if (insn->call_dest->static_call_tramp) {
+ 					list_add_tail(&insn->static_call_node,
+@@ -2570,7 +2578,7 @@ static int validate_branch(struct objtoo
  
- /* Verify next sizeof(t) bytes can be on the same instruction */
- #define validate_next(t, insn, n)	\
---- a/tools/arch/x86/include/asm/inat.h
-+++ b/tools/arch/x86/include/asm/inat.h
-@@ -6,7 +6,7 @@
-  *
-  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-  */
--#include "inat_types.h"
-+#include "inat_types.h" /* __ignore_sync_check__ */
+ 		case INSN_JUMP_CONDITIONAL:
+ 		case INSN_JUMP_UNCONDITIONAL:
+-			if (func && is_sibling_call(insn)) {
++			if (is_sibling_call(insn)) {
+ 				ret = validate_sibling_call(insn, &state);
+ 				if (ret)
+ 					return ret;
+@@ -2592,7 +2600,7 @@ static int validate_branch(struct objtoo
  
- /*
-  * Internal bits. Don't use bitmasks directly, because these bits are
---- a/tools/arch/x86/include/asm/insn.h
-+++ b/tools/arch/x86/include/asm/insn.h
-@@ -8,7 +8,7 @@
-  */
- 
- /* insn_attr_t is defined in inat.h */
--#include "inat.h"
-+#include "inat.h" /* __ignore_sync_check__ */
- 
- struct insn_field {
- 	union {
---- a/tools/arch/x86/lib/inat.c
-+++ b/tools/arch/x86/lib/inat.c
-@@ -4,7 +4,7 @@
-  *
-  * Written by Masami Hiramatsu <mhiramat@redhat.com>
-  */
--#include "../include/asm/insn.h"
-+#include "../include/asm/insn.h" /* __ignore_sync_check__ */
- 
- /* Attribute tables are generated from opcode map */
- #include "inat-tables.c"
---- a/tools/arch/x86/lib/insn.c
-+++ b/tools/arch/x86/lib/insn.c
-@@ -10,10 +10,10 @@
- #else
- #include <string.h>
- #endif
--#include "../include/asm/inat.h"
--#include "../include/asm/insn.h"
-+#include "../include/asm/inat.h" /* __ignore_sync_check__ */
-+#include "../include/asm/insn.h" /* __ignore_sync_check__ */
- 
--#include "../include/asm/emulate_prefix.h"
-+#include "../include/asm/emulate_prefix.h" /* __ignore_sync_check__ */
- 
- /* Verify next sizeof(t) bytes can be on the same instruction */
- #define validate_next(t, insn, n)	\
---- a/tools/objtool/sync-check.sh
-+++ b/tools/objtool/sync-check.sh
-@@ -16,11 +16,14 @@ arch/x86/include/asm/emulate_prefix.h
- arch/x86/lib/x86-opcode-map.txt
- arch/x86/tools/gen-insn-attr-x86.awk
- include/linux/static_call_types.h
--arch/x86/include/asm/inat.h     -I '^#include [\"<]\(asm/\)*inat_types.h[\">]'
--arch/x86/include/asm/insn.h     -I '^#include [\"<]\(asm/\)*inat.h[\">]'
--arch/x86/lib/inat.c             -I '^#include [\"<]\(../include/\)*asm/insn.h[\">]'
--arch/x86/lib/insn.c             -I '^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]' -I '^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]'
- "
-+
-+SYNC_CHECK_FILES='
-+arch/x86/include/asm/inat.h
-+arch/x86/include/asm/insn.h
-+arch/x86/lib/inat.c
-+arch/x86/lib/insn.c
-+'
- fi
- 
- check_2 () {
-@@ -63,3 +66,9 @@ while read -r file_entry; do
- done <<EOF
- $FILES
- EOF
-+
-+if [ "$SRCARCH" = "x86" ]; then
-+	for i in $SYNC_CHECK_FILES; do
-+		check $i '-I "^.*\/\*.*__ignore_sync_check__.*\*\/.*$"'
-+	done
-+fi
---- a/tools/perf/check-headers.sh
-+++ b/tools/perf/check-headers.sh
-@@ -75,6 +75,13 @@ include/uapi/asm-generic/mman-common.h
- include/uapi/asm-generic/unistd.h
- '
- 
-+SYNC_CHECK_FILES='
-+arch/x86/include/asm/inat.h
-+arch/x86/include/asm/insn.h
-+arch/x86/lib/inat.c
-+arch/x86/lib/insn.c
-+'
-+
- # These copies are under tools/perf/trace/beauty/ as they are not used to in
- # building object files only by scripts in tools/perf/trace/beauty/ to generate
- # tables that then gets included in .c files for things like id->string syscall
-@@ -129,6 +136,10 @@ for i in $FILES; do
-   check $i -B
- done
- 
-+for i in $SYNC_CHECK_FILES; do
-+  check $i '-I "^.*\/\*.*__ignore_sync_check__.*\*\/.*$"'
-+done
-+
- # diff with extra ignore lines
- check arch/x86/lib/memcpy_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memcpy_\(erms\|orig\))"'
- check arch/x86/lib/memset_64.S        '-I "^EXPORT_SYMBOL" -I "^#include <asm/export.h>" -I"^SYM_FUNC_START\(_LOCAL\)*(memset_\(erms\|orig\))"'
-@@ -137,10 +148,6 @@ check include/uapi/linux/mman.h       '-
- check include/linux/build_bug.h       '-I "^#\(ifndef\|endif\)\( \/\/\)* static_assert$"'
- check include/linux/ctype.h	      '-I "isdigit("'
- check lib/ctype.c		      '-I "^EXPORT_SYMBOL" -I "^#include <linux/export.h>" -B'
--check arch/x86/include/asm/inat.h     '-I "^#include [\"<]\(asm/\)*inat_types.h[\">]"'
--check arch/x86/include/asm/insn.h     '-I "^#include [\"<]\(asm/\)*inat.h[\">]"'
--check arch/x86/lib/inat.c	      '-I "^#include [\"<]\(../include/\)*asm/insn.h[\">]"'
--check arch/x86/lib/insn.c             '-I "^#include [\"<]\(../include/\)*asm/in\(at\|sn\).h[\">]" -I "^#include [\"<]\(../include/\)*asm/emulate_prefix.h[\">]"'
- 
- # diff non-symmetric files
- check_2 tools/perf/arch/x86/entry/syscalls/syscall_64.tbl arch/x86/entry/syscalls/syscall_64.tbl
+ 		case INSN_JUMP_DYNAMIC:
+ 		case INSN_JUMP_DYNAMIC_CONDITIONAL:
+-			if (func && is_sibling_call(insn)) {
++			if (is_sibling_call(insn)) {
+ 				ret = validate_sibling_call(insn, &state);
+ 				if (ret)
+ 					return ret;
 
 
