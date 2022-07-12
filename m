@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BB42CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234259AbiGLSrh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:47:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44874 "EHLO
+        id S234323AbiGLSrk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:47:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234417AbiGLSrJ (ORCPT
+        with ESMTP id S234209AbiGLSrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:47:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25742D31F1;
-        Tue, 12 Jul 2022 11:43:06 -0700 (PDT)
+        Tue, 12 Jul 2022 14:47:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EFA1DD236;
+        Tue, 12 Jul 2022 11:43:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 30D9661ACC;
-        Tue, 12 Jul 2022 18:43:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8BC7C3411C;
-        Tue, 12 Jul 2022 18:42:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 120F4B81BB9;
+        Tue, 12 Jul 2022 18:43:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52E67C3411C;
+        Tue, 12 Jul 2022 18:43:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651379;
-        bh=0N1LzbyNDavrV5k+6A090X+J0FMWV2xO3y75l1OYMoI=;
+        s=korg; t=1657651382;
+        bh=p69Pkhj7FSTSQGKzGUI/7ybWeLAgcbtPAlo52bDLKgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zX031KWRaP+FC5NDjn6bHLO6C7dQEjCGuNtU9lqmQXixXba2gut6VK8UbCnTPxEbn
-         SiNIsyrOVw/CQHixTsgjF0C/kGhWkFo5o1yKb8lJIhMZDbvZDYY21x25c6LhBGrYCk
-         L5vwJVab874xWpaepW4cST8tldHXnNBU3WCcLafY=
+        b=sWI5SDZ0qTT9/exp53pXM+ZyAwTWn4OCrUazT04A0BxpMcbJNgfGafKhzr+TZ/vlb
+         DjCzRNoTuEaAa4KgZkOWlfp3EED5j5VQ9z7tsYTrKKbCuH19uEG4AtEUKVgb/XUEHU
+         FEXCVJspPFMUX+eIOS+0TZGhhVc5xmmYaG79rdO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 059/130] bpf,x86: Simplify computing label offsets
-Date:   Tue, 12 Jul 2022 20:38:25 +0200
-Message-Id: <20220712183249.182040650@linuxfoundation.org>
+Subject: [PATCH 5.10 042/130] objtool: print out the symbol type when complaining about it
+Date:   Tue, 12 Jul 2022 20:38:08 +0200
+Message-Id: <20220712183248.351269760@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
 References: <20220712183246.394947160@linuxfoundation.org>
@@ -53,261 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit dceba0817ca329868a15e2e1dd46eb6340b69206 upstream.
+commit 7fab1c12bde926c5a8c7d5984c551d0854d7e0b3 upstream.
 
-Take an idea from the 32bit JIT, which uses the multi-pass nature of
-the JIT to compute the instruction offsets on a prior pass in order to
-compute the relative jump offsets on a later pass.
+The objtool warning that the kvm instruction emulation code triggered
+wasn't very useful:
 
-Application to the x86_64 JIT is slightly more involved because the
-offsets depend on program variables (such as callee_regs_used and
-stack_depth) and hence the computed offsets need to be kept in the
-context of the JIT.
+    arch/x86/kvm/emulate.o: warning: objtool: __ex_table+0x4: don't know how to handle reloc symbol type: kvm_fastop_exception
 
-This removes, IMO quite fragile, code that hard-codes the offsets and
-tries to compute the length of variable parts of it.
+in that it helpfully tells you which symbol name it had trouble figuring
+out the relocation for, but it doesn't actually say what the unknown
+symbol type was that triggered it all.
 
-Convert both emit_bpf_tail_call_*() functions which have an out: label
-at the end. Additionally emit_bpt_tail_call_direct() also has a poke
-table entry, for which it computes the offset from the end (and thus
-already relies on the previous pass to have computed addrs[i]), also
-convert this to be a forward based offset.
+In this case it was because of missing type information (type 0, aka
+STT_NOTYPE), but on the whole it really should just have printed that
+out as part of the message.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.552304864@infradead.org
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-[bwh: Backported to 5.10: keep the cnt variable in
- emit_bpf_tail_call_{,in}direct()]
+Because if this warning triggers, that's very much the first thing you
+want to know - why did reloc2sec_off() return failure for that symbol?
+
+So rather than just saying you can't handle some type of symbol without
+saying what the type _was_, just print out the type number too.
+
+Fixes: 24ff65257375 ("objtool: Teach get_alt_entry() about more relocation types")
+Link: https://lore.kernel.org/lkml/CAHk-=wiZwq-0LknKhXN4M+T8jbxn_2i9mcKpO+OaBSSq_Eh7tg@mail.gmail.com/
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/net/bpf_jit_comp.c |  125 ++++++++++++++------------------------------
- 1 file changed, 42 insertions(+), 83 deletions(-)
+ tools/objtool/special.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -212,6 +212,14 @@ static void jit_fill_hole(void *area, un
+--- a/tools/objtool/special.c
++++ b/tools/objtool/special.c
+@@ -106,8 +106,10 @@ static int get_alt_entry(struct elf *elf
+ 		return -1;
+ 	}
+ 	if (!reloc2sec_off(orig_reloc, &alt->orig_sec, &alt->orig_off)) {
+-		WARN_FUNC("don't know how to handle reloc symbol type: %s",
+-			   sec, offset + entry->orig, orig_reloc->sym->name);
++		WARN_FUNC("don't know how to handle reloc symbol type %d: %s",
++			   sec, offset + entry->orig,
++			   orig_reloc->sym->type,
++			   orig_reloc->sym->name);
+ 		return -1;
+ 	}
  
- struct jit_context {
- 	int cleanup_addr; /* Epilogue code offset */
-+
-+	/*
-+	 * Program specific offsets of labels in the code; these rely on the
-+	 * JIT doing at least 2 passes, recording the position on the first
-+	 * pass, only to generate the correct offset on the second pass.
-+	 */
-+	int tail_call_direct_label;
-+	int tail_call_indirect_label;
- };
+@@ -128,8 +130,10 @@ static int get_alt_entry(struct elf *elf
+ 			return 1;
  
- /* Maximum number of bytes emitted while JITing one eBPF insn */
-@@ -371,22 +379,6 @@ int bpf_arch_text_poke(void *ip, enum bp
- 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
- }
+ 		if (!reloc2sec_off(new_reloc, &alt->new_sec, &alt->new_off)) {
+-			WARN_FUNC("don't know how to handle reloc symbol type: %s",
+-				  sec, offset + entry->new, new_reloc->sym->name);
++			WARN_FUNC("don't know how to handle reloc symbol type %d: %s",
++				  sec, offset + entry->new,
++				  new_reloc->sym->type,
++				  new_reloc->sym->name);
+ 			return -1;
+ 		}
  
--static int get_pop_bytes(bool *callee_regs_used)
--{
--	int bytes = 0;
--
--	if (callee_regs_used[3])
--		bytes += 2;
--	if (callee_regs_used[2])
--		bytes += 2;
--	if (callee_regs_used[1])
--		bytes += 2;
--	if (callee_regs_used[0])
--		bytes += 1;
--
--	return bytes;
--}
--
- /*
-  * Generate the following code:
-  *
-@@ -402,30 +394,12 @@ static int get_pop_bytes(bool *callee_re
-  * out:
-  */
- static void emit_bpf_tail_call_indirect(u8 **pprog, bool *callee_regs_used,
--					u32 stack_depth)
-+					u32 stack_depth, u8 *ip,
-+					struct jit_context *ctx)
- {
- 	int tcc_off = -4 - round_up(stack_depth, 8);
--	u8 *prog = *pprog;
--	int pop_bytes = 0;
--	int off1 = 42;
--	int off2 = 31;
--	int off3 = 9;
--	int cnt = 0;
--
--	/* count the additional bytes used for popping callee regs from stack
--	 * that need to be taken into account for each of the offsets that
--	 * are used for bailing out of the tail call
--	 */
--	pop_bytes = get_pop_bytes(callee_regs_used);
--	off1 += pop_bytes;
--	off2 += pop_bytes;
--	off3 += pop_bytes;
--
--	if (stack_depth) {
--		off1 += 7;
--		off2 += 7;
--		off3 += 7;
--	}
-+	u8 *prog = *pprog, *start = *pprog;
-+	int cnt = 0, offset;
- 
- 	/*
- 	 * rdi - pointer to ctx
-@@ -440,8 +414,9 @@ static void emit_bpf_tail_call_indirect(
- 	EMIT2(0x89, 0xD2);                        /* mov edx, edx */
- 	EMIT3(0x39, 0x56,                         /* cmp dword ptr [rsi + 16], edx */
- 	      offsetof(struct bpf_array, map.max_entries));
--#define OFFSET1 (off1 + RETPOLINE_RCX_BPF_JIT_SIZE) /* Number of bytes to jump */
--	EMIT2(X86_JBE, OFFSET1);                  /* jbe out */
-+
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JBE, offset);                   /* jbe out */
- 
- 	/*
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-@@ -449,8 +424,9 @@ static void emit_bpf_tail_call_indirect(
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);         /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
--#define OFFSET2 (off2 + RETPOLINE_RCX_BPF_JIT_SIZE)
--	EMIT2(X86_JA, OFFSET2);                   /* ja out */
-+
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JA, offset);                    /* ja out */
- 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);         /* mov dword ptr [rbp - tcc_off], eax */
- 
-@@ -463,12 +439,11 @@ static void emit_bpf_tail_call_indirect(
- 	 *	goto out;
- 	 */
- 	EMIT3(0x48, 0x85, 0xC9);                  /* test rcx,rcx */
--#define OFFSET3 (off3 + RETPOLINE_RCX_BPF_JIT_SIZE)
--	EMIT2(X86_JE, OFFSET3);                   /* je out */
- 
--	*pprog = prog;
--	pop_callee_regs(pprog, callee_regs_used);
--	prog = *pprog;
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JE, offset);                    /* je out */
-+
-+	pop_callee_regs(&prog, callee_regs_used);
- 
- 	EMIT1(0x58);                              /* pop rax */
- 	if (stack_depth)
-@@ -488,39 +463,18 @@ static void emit_bpf_tail_call_indirect(
- 	RETPOLINE_RCX_BPF_JIT();
- 
- 	/* out: */
-+	ctx->tail_call_indirect_label = prog - start;
- 	*pprog = prog;
- }
- 
- static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
--				      u8 **pprog, int addr, u8 *image,
--				      bool *callee_regs_used, u32 stack_depth)
-+				      u8 **pprog, u8 *ip,
-+				      bool *callee_regs_used, u32 stack_depth,
-+				      struct jit_context *ctx)
- {
- 	int tcc_off = -4 - round_up(stack_depth, 8);
--	u8 *prog = *pprog;
--	int pop_bytes = 0;
--	int off1 = 20;
--	int poke_off;
--	int cnt = 0;
--
--	/* count the additional bytes used for popping callee regs to stack
--	 * that need to be taken into account for jump offset that is used for
--	 * bailing out from of the tail call when limit is reached
--	 */
--	pop_bytes = get_pop_bytes(callee_regs_used);
--	off1 += pop_bytes;
--
--	/*
--	 * total bytes for:
--	 * - nop5/ jmpq $off
--	 * - pop callee regs
--	 * - sub rsp, $val if depth > 0
--	 * - pop rax
--	 */
--	poke_off = X86_PATCH_SIZE + pop_bytes + 1;
--	if (stack_depth) {
--		poke_off += 7;
--		off1 += 7;
--	}
-+	u8 *prog = *pprog, *start = *pprog;
-+	int cnt = 0, offset;
- 
- 	/*
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-@@ -528,28 +482,30 @@ static void emit_bpf_tail_call_direct(st
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);             /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);         /* cmp eax, MAX_TAIL_CALL_CNT */
--	EMIT2(X86_JA, off1);                          /* ja out */
-+
-+	offset = ctx->tail_call_direct_label - (prog + 2 - start);
-+	EMIT2(X86_JA, offset);                        /* ja out */
- 	EMIT3(0x83, 0xC0, 0x01);                      /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);             /* mov dword ptr [rbp - tcc_off], eax */
- 
--	poke->tailcall_bypass = image + (addr - poke_off - X86_PATCH_SIZE);
-+	poke->tailcall_bypass = ip + (prog - start);
- 	poke->adj_off = X86_TAIL_CALL_OFFSET;
--	poke->tailcall_target = image + (addr - X86_PATCH_SIZE);
-+	poke->tailcall_target = ip + ctx->tail_call_direct_label - X86_PATCH_SIZE;
- 	poke->bypass_addr = (u8 *)poke->tailcall_target + X86_PATCH_SIZE;
- 
- 	emit_jump(&prog, (u8 *)poke->tailcall_target + X86_PATCH_SIZE,
- 		  poke->tailcall_bypass);
- 
--	*pprog = prog;
--	pop_callee_regs(pprog, callee_regs_used);
--	prog = *pprog;
-+	pop_callee_regs(&prog, callee_regs_used);
- 	EMIT1(0x58);                                  /* pop rax */
- 	if (stack_depth)
- 		EMIT3_off32(0x48, 0x81, 0xC4, round_up(stack_depth, 8));
- 
- 	memcpy(prog, ideal_nops[NOP_ATOMIC5], X86_PATCH_SIZE);
- 	prog += X86_PATCH_SIZE;
-+
- 	/* out: */
-+	ctx->tail_call_direct_label = prog - start;
- 
- 	*pprog = prog;
- }
-@@ -1274,13 +1230,16 @@ xadd:			if (is_imm8(insn->off))
- 		case BPF_JMP | BPF_TAIL_CALL:
- 			if (imm32)
- 				emit_bpf_tail_call_direct(&bpf_prog->aux->poke_tab[imm32 - 1],
--							  &prog, addrs[i], image,
-+							  &prog, image + addrs[i - 1],
- 							  callee_regs_used,
--							  bpf_prog->aux->stack_depth);
-+							  bpf_prog->aux->stack_depth,
-+							  ctx);
- 			else
- 				emit_bpf_tail_call_indirect(&prog,
- 							    callee_regs_used,
--							    bpf_prog->aux->stack_depth);
-+							    bpf_prog->aux->stack_depth,
-+							    image + addrs[i - 1],
-+							    ctx);
- 			break;
- 
- 			/* cond jump */
 
 
