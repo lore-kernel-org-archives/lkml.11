@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60126C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C658CCA485
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 20:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233822AbiGLUyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 16:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
+        id S233986AbiGLUyj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 16:54:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234077AbiGLUxq (ORCPT
+        with ESMTP id S234109AbiGLUxr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 16:53:46 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC2DD0398;
-        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id y22-20020a7bcd96000000b003a2e2725e89so108869wmj.0;
-        Tue, 12 Jul 2022 13:53:21 -0700 (PDT)
+        Tue, 12 Jul 2022 16:53:47 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4A0D085C;
+        Tue, 12 Jul 2022 13:53:24 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id 9-20020a1c0209000000b003a2dfdebe47so85146wmc.3;
+        Tue, 12 Jul 2022 13:53:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=s8Z4UCQCwXUXw8ymrA0AVRoggqHC6f/FDd/tj/tGO10=;
-        b=YI+zuSHqDwgBSxMQDbNdfCXJYnhCEzG4jPJonm/OmJPXWYtolgG2mlqxIhZ+njdofI
-         knhC01VD3yq1AxzXVlRRvfZDTpIXxbDi/ljvOl7fu+97hDXxyo71aDpQ/4sSrPq0TF9E
-         XATyfL9AWsmPeUok7LUGrB07G9QDvlfELB/rFcvym7OGBrM8CkFiIBcfhuc065c5k8wR
-         q6Ew2qcY8s8CYrsonVSA3c5pqRnuSqM81RKk37QqsOX7kIb5jiE0vZyd+WG0IjIQtpSK
-         /rEQ/xNxv3xz34QhrecjpSmSBFeY93Z3IBGhsiWLjDOe3t0+weJ6+OknbAuXMCNh3Ijx
-         /aTg==
+        bh=t800C3UW24EYUJ7jIBViV/Es6005J2b7uIwCCrhjWNQ=;
+        b=YRIMsVyKoyP/kU4ZdScISJ4L6DZjSnsTWvwKFZwgiVRZJnM+UFyIh2/FJDFaqfT8wF
+         zKg/CJycE8Awf2lysm/pLhFOh6ZjdDBFCoZt1HQYjTk82M4LSpMVrYK+V1v9vS+neKxY
+         W9p/iryUhFJ5LFsTl/MUzsFgi3iBsR7fDQicnDgrcqVAhqnCzMuLzDmlZjqtX4737Dgq
+         UB083BCgopx63K63+0Ngt/UphCaFyAlNvtm+AQFaYDwzpP8G1EEHx5R4m3f+r5ZD2Mp2
+         A4ZouS83CH/rrI6+YpNvQCxCa5R1U5a5U0L72MfpaRlbV4NgKYu4fhfEeDOfRVRniCXD
+         hGlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=s8Z4UCQCwXUXw8ymrA0AVRoggqHC6f/FDd/tj/tGO10=;
-        b=klN8gSfmOwhEh0IZ9z5dSOLCHDhvq0MuigvPFbws094qw4Cr2zYM1TDqIqJ+8300Bv
-         f+JUDsh3QJQr7e9dxvb551Ubd/vrELKrJP/h23IxYd0dRFLknGEsxDVNnSUne8P1BpU3
-         9UfIlJt1iDFhe+tubuo6uBbpuTMiC8ovsiX+CcObIWpRNWYS0kCn2IO3Wo+PUNIGQqrD
-         ZPPSB3sYHNhv0QWakp6O6eXdL7S0iZX/P2JoA6L20pVC8srQSXlH3ivJlB4elnm63sFE
-         ugNhxNx4w8iScVVbOcuKU8DcWGR49l8Cg/IAnZa+zE5kUJ4lKwoQjjwWqVeK2UIAT/KD
-         tfsg==
-X-Gm-Message-State: AJIora9nZCWUKAakRIS/myNXSuhASu0RRLzYSapPmtnnpP7CCxPPRcrg
-        B7jWMAszkn3MB3gttsGZSOjLTH/IjqA=
-X-Google-Smtp-Source: AGRyM1tHCITSPTZ0F1HAPZl2f3/b1zgi2kTBLFOzml+urwPzYJHZiZ4OEm8WKUydwn4dPFhWDsbuWw==
-X-Received: by 2002:a05:600c:3512:b0:3a0:5005:86b5 with SMTP id h18-20020a05600c351200b003a0500586b5mr6132266wmq.191.1657659199486;
-        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
+        bh=t800C3UW24EYUJ7jIBViV/Es6005J2b7uIwCCrhjWNQ=;
+        b=2pKatZJqADUpIGOHzI3UkfeibT601k6fCKA1SxPbfwIcEu2nZfKD2Tcrt8Xw7M4ycy
+         +r7c0Wc2Yo6H4dBjdqLozeRlmouunbLfp9vrdVNziS1aU0kE3BxXhfSm2ADja1Mm2jJA
+         sBloMcTqp2wXCN01OhEd0LgmmOiN74mtNpRh6SGJOe/2s5WrOHCTRAx6g4ARwHLrm+WZ
+         LjsRLHBo3SQm1rhnSKcjMo5GHtFqCWRZl1E/N8V74iOCmi5PDxLQkX3TTPilpB7aaqsh
+         CepuLXaOSCBOxtt5s4mC2CQ8Ben7N3t/I196YdN6EvXm5YqiaYqCDfIC6DjVce14T6Ip
+         kTHQ==
+X-Gm-Message-State: AJIora9z0RQX6DeJzdnhGMPdXhGBX/19tVB5noJS4v32k+0zvE8i8SZO
+        aUF1bolF6yxFE/MmFnR1kgCXpHGqZ4s=
+X-Google-Smtp-Source: AGRyM1uNbx+CtqsvokSH4Szzl4TpleQVijINmFvzFFrVB0wRpW5GCpJaCWuKMG/6MQFXZH/EAlYlPA==
+X-Received: by 2002:a05:600c:1e22:b0:3a2:ec81:a415 with SMTP id ay34-20020a05600c1e2200b003a2ec81a415mr6042471wmb.139.1657659203055;
+        Tue, 12 Jul 2022 13:53:23 -0700 (PDT)
 Received: from 127.0.0.1localhost (188.28.125.106.threembb.co.uk. [188.28.125.106])
-        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.18
+        by smtp.gmail.com with ESMTPSA id c14-20020a7bc00e000000b003a044fe7fe7sm89833wmb.9.2022.07.12.13.53.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 13:53:19 -0700 (PDT)
+        Tue, 12 Jul 2022 13:53:22 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     io-uring@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Willem de Bruijn <willemb@google.com>,
         Jens Axboe <axboe@kernel.dk>, David Ahern <dsahern@kernel.org>,
         kernel-team@fb.com, Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v5 10/27] ipv6/udp: support externally provided ubufs
-Date:   Tue, 12 Jul 2022 21:52:34 +0100
-Message-Id: <d35ed18eb47cf8c2778f48703ee75bced37878ad.1657643355.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v5 13/27] io_uring: export io_put_task()
+Date:   Tue, 12 Jul 2022 21:52:37 +0100
+Message-Id: <3686807d4c03b72e389947b0e8692d4d44334ef0.1657643355.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <cover.1657643355.git.asml.silence@gmail.com>
 References: <cover.1657643355.git.asml.silence@gmail.com>
@@ -69,84 +69,151 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Teach ipv6/udp how to use external ubuf_info provided in msghdr and
-also prepare it for managed frags by sprinkling
-skb_zcopy_downgrade_managed() when it could mix managed and not managed
-frags.
+Make io_put_task() available to non-core parts of io_uring, we'll need
+it for notification infrastructure.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/ip6_output.c | 44 ++++++++++++++++++++++++++++++-------------
- 1 file changed, 31 insertions(+), 13 deletions(-)
+ include/linux/io_uring_types.h | 25 +++++++++++++++++++++++++
+ io_uring/io_uring.c            | 11 +----------
+ io_uring/io_uring.h            | 10 ++++++++++
+ io_uring/tctx.h                | 26 --------------------------
+ 4 files changed, 36 insertions(+), 36 deletions(-)
 
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index fc74ce3ed8cc..897ca4f9b791 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -1542,18 +1542,35 @@ static int __ip6_append_data(struct sock *sk,
- 	    rt->dst.dev->features & (NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM))
- 		csummode = CHECKSUM_PARTIAL;
+diff --git a/include/linux/io_uring_types.h b/include/linux/io_uring_types.h
+index 26ef11e978d4..d876a0367081 100644
+--- a/include/linux/io_uring_types.h
++++ b/include/linux/io_uring_types.h
+@@ -4,6 +4,7 @@
+ #include <linux/blkdev.h>
+ #include <linux/task_work.h>
+ #include <linux/bitmap.h>
++#include <linux/llist.h>
+ #include <uapi/linux/io_uring.h>
  
--	if (flags & MSG_ZEROCOPY && length && sock_flag(sk, SOCK_ZEROCOPY)) {
--		uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
--		if (!uarg)
--			return -ENOBUFS;
--		extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
--		if (rt->dst.dev->features & NETIF_F_SG &&
--		    csummode == CHECKSUM_PARTIAL) {
--			paged = true;
--			zc = true;
--		} else {
--			uarg->zerocopy = 0;
--			skb_zcopy_set(skb, uarg, &extra_uref);
-+	if ((flags & MSG_ZEROCOPY) && length) {
-+		struct msghdr *msg = from;
+ struct io_wq_work_node {
+@@ -43,6 +44,30 @@ struct io_hash_table {
+ 	unsigned		hash_bits;
+ };
+ 
++/*
++ * Arbitrary limit, can be raised if need be
++ */
++#define IO_RINGFD_REG_MAX 16
 +
-+		if (getfrag == ip_generic_getfrag && msg->msg_ubuf) {
-+			if (skb_zcopy(skb) && msg->msg_ubuf != skb_zcopy(skb))
-+				return -EINVAL;
++struct io_uring_task {
++	/* submission side */
++	int				cached_refs;
++	const struct io_ring_ctx 	*last;
++	struct io_wq			*io_wq;
++	struct file			*registered_rings[IO_RINGFD_REG_MAX];
 +
-+			/* Leave uarg NULL if can't zerocopy, callers should
-+			 * be able to handle it.
-+			 */
-+			if ((rt->dst.dev->features & NETIF_F_SG) &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+				uarg = msg->msg_ubuf;
-+			}
-+		} else if (sock_flag(sk, SOCK_ZEROCOPY)) {
-+			uarg = msg_zerocopy_realloc(sk, length, skb_zcopy(skb));
-+			if (!uarg)
-+				return -ENOBUFS;
-+			extra_uref = !skb_zcopy(skb);	/* only ref on new uarg */
-+			if (rt->dst.dev->features & NETIF_F_SG &&
-+			    csummode == CHECKSUM_PARTIAL) {
-+				paged = true;
-+				zc = true;
-+			} else {
-+				uarg->zerocopy = 0;
-+				skb_zcopy_set(skb, uarg, &extra_uref);
-+			}
- 		}
- 	}
++	struct xarray			xa;
++	struct wait_queue_head		wait;
++	atomic_t			in_idle;
++	atomic_t			inflight_tracked;
++	struct percpu_counter		inflight;
++
++	struct { /* task_work */
++		struct llist_head	task_list;
++		struct callback_head	task_work;
++	} ____cacheline_aligned_in_smp;
++};
++
+ struct io_uring {
+ 	u32 head ____cacheline_aligned_in_smp;
+ 	u32 tail ____cacheline_aligned_in_smp;
+diff --git a/io_uring/io_uring.c b/io_uring/io_uring.c
+index caf979cd4327..bb644b1b575a 100644
+--- a/io_uring/io_uring.c
++++ b/io_uring/io_uring.c
+@@ -602,7 +602,7 @@ static bool io_cqring_overflow_flush(struct io_ring_ctx *ctx)
+ 	return ret;
+ }
  
-@@ -1747,13 +1764,14 @@ static int __ip6_append_data(struct sock *sk,
- 				err = -EFAULT;
- 				goto error;
- 			}
--		} else if (!uarg || !uarg->zerocopy) {
-+		} else if (!zc) {
- 			int i = skb_shinfo(skb)->nr_frags;
+-static void __io_put_task(struct task_struct *task, int nr)
++void __io_put_task(struct task_struct *task, int nr)
+ {
+ 	struct io_uring_task *tctx = task->io_uring;
  
- 			err = -ENOMEM;
- 			if (!sk_page_frag_refill(sk, pfrag))
- 				goto error;
+@@ -612,15 +612,6 @@ static void __io_put_task(struct task_struct *task, int nr)
+ 	put_task_struct_many(task, nr);
+ }
  
-+			skb_zcopy_downgrade_managed(skb);
- 			if (!skb_can_coalesce(skb, i, pfrag->page,
- 					      pfrag->offset)) {
- 				err = -EMSGSIZE;
+-/* must to be called somewhat shortly after putting a request */
+-static inline void io_put_task(struct task_struct *task, int nr)
+-{
+-	if (likely(task == current))
+-		task->io_uring->cached_refs += nr;
+-	else
+-		__io_put_task(task, nr);
+-}
+-
+ static void io_task_refs_refill(struct io_uring_task *tctx)
+ {
+ 	unsigned int refill = -tctx->cached_refs + IO_TCTX_REFS_CACHE_NR;
+diff --git a/io_uring/io_uring.h b/io_uring/io_uring.h
+index 868f45d55543..2379d9e70c10 100644
+--- a/io_uring/io_uring.h
++++ b/io_uring/io_uring.h
+@@ -66,6 +66,7 @@ void io_wq_submit_work(struct io_wq_work *work);
+ 
+ void io_free_req(struct io_kiocb *req);
+ void io_queue_next(struct io_kiocb *req);
++void __io_put_task(struct task_struct *task, int nr);
+ 
+ bool io_match_task_safe(struct io_kiocb *head, struct task_struct *task,
+ 			bool cancel_all);
+@@ -253,4 +254,13 @@ static inline void io_commit_cqring_flush(struct io_ring_ctx *ctx)
+ 		__io_commit_cqring_flush(ctx);
+ }
+ 
++/* must to be called somewhat shortly after putting a request */
++static inline void io_put_task(struct task_struct *task, int nr)
++{
++	if (likely(task == current))
++		task->io_uring->cached_refs += nr;
++	else
++		__io_put_task(task, nr);
++}
++
+ #endif
+diff --git a/io_uring/tctx.h b/io_uring/tctx.h
+index 8a33ff6e5d91..25974beed4d6 100644
+--- a/io_uring/tctx.h
++++ b/io_uring/tctx.h
+@@ -1,31 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
+ 
+-#include <linux/llist.h>
+-
+-/*
+- * Arbitrary limit, can be raised if need be
+- */
+-#define IO_RINGFD_REG_MAX 16
+-
+-struct io_uring_task {
+-	/* submission side */
+-	int				cached_refs;
+-	const struct io_ring_ctx 	*last;
+-	struct io_wq			*io_wq;
+-	struct file			*registered_rings[IO_RINGFD_REG_MAX];
+-
+-	struct xarray			xa;
+-	struct wait_queue_head		wait;
+-	atomic_t			in_idle;
+-	atomic_t			inflight_tracked;
+-	struct percpu_counter		inflight;
+-
+-	struct { /* task_work */
+-		struct llist_head	task_list;
+-		struct callback_head	task_work;
+-	} ____cacheline_aligned_in_smp;
+-};
+-
+ struct io_tctx_node {
+ 	struct list_head	ctx_node;
+ 	struct task_struct	*task;
 -- 
 2.37.0
 
