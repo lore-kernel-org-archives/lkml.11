@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE58C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A058C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235075AbiGLTAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40876 "EHLO
+        id S235103AbiGLTAZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:00:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235079AbiGLS67 (ORCPT
+        with ESMTP id S235147AbiGLS7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:58:59 -0400
+        Tue, 12 Jul 2022 14:59:10 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D659EFF96;
-        Tue, 12 Jul 2022 11:47:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBCEEEFF85;
+        Tue, 12 Jul 2022 11:47:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12F66B81BAB;
-        Tue, 12 Jul 2022 18:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 509F9C3411C;
-        Tue, 12 Jul 2022 18:47:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1474DB81BBB;
+        Tue, 12 Jul 2022 18:47:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6324AC3411C;
+        Tue, 12 Jul 2022 18:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651672;
-        bh=wpBmRMd+SkGmzZJsNlYrzIGWj1oIwGeg0RtrD2E2B6s=;
+        s=korg; t=1657651675;
+        bh=kSgwTRsllFILj+qKMFsmLtIGbXkCDdd8/3UJkSJqtAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xeWfDbwq0vvFSGyEJLtDiHz0hSaoT79evonsYpK7Ct1uAy+3q+v4sspS5ONqBUkLj
-         vrAweRp9mkFKhX9cBe9uxhYwdgH/6pl4DnIfSKNP6wSnuGKspRlUj0icBWYH3noBu0
-         5XLolAhSpTgk8diJ+A7W0I3skAUfaQ0G6tWoIEEs=
+        b=X5xmQIFykJ9jVkFNjBUoq2rrJZPSJlyRi6l63wy8PpCIOjXHtIilroBKG/gcwaXOx
+         uqldTRHDq4HgN/1MeHR1xaI0rD4SmpFVrxAwSI3KXJppBB6aoYny7AOLn5hVJMHiIn
+         7EXlXIfZuJBvk8PQSQxXNtAKBFRpN1FggGXH4oLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Alexei Starovoitov <ast@kernel.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 20/78] bpf,x86: Respect X86_FEATURE_RETPOLINE*
-Date:   Tue, 12 Jul 2022 20:38:50 +0200
-Message-Id: <20220712183239.658166015@linuxfoundation.org>
+Subject: [PATCH 5.15 21/78] objtool: Default ignore INT3 for unreachable
+Date:   Tue, 12 Jul 2022 20:38:51 +0200
+Message-Id: <20220712183239.696980857@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -54,245 +52,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 87c87ecd00c54ecd677798cb49ef27329e0fab41 upstream.
+commit 1ffbe4e935f9b7308615c75be990aec07464d1e7 upstream.
 
-Current BPF codegen doesn't respect X86_FEATURE_RETPOLINE* flags and
-unconditionally emits a thunk call, this is sub-optimal and doesn't
-match the regular, compiler generated, code.
-
-Update the i386 JIT to emit code equal to what the compiler emits for
-the regular kernel text (IOW. a plain THUNK call).
-
-Update the x86_64 JIT to emit code similar to the result of compiler
-and kernel rewrites as according to X86_FEATURE_RETPOLINE* flags.
-Inlining RETPOLINE_AMD (lfence; jmp *%reg) and !RETPOLINE (jmp *%reg),
-while doing a THUNK call for RETPOLINE.
-
-This removes the hard-coded retpoline thunks and shrinks the generated
-code. Leaving a single retpoline thunk definition in the kernel.
+Ignore all INT3 instructions for unreachable code warnings, similar to NOP.
+This allows using INT3 for various paddings instead of NOPs.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.614772675@infradead.org
-[cascardo: RETPOLINE_AMD was renamed to RETPOLINE_LFENCE]
+Link: https://lore.kernel.org/r/20220308154317.343312938@infradead.org
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |   59 -----------------------------------
- arch/x86/net/bpf_jit_comp.c          |   46 +++++++++++++--------------
- arch/x86/net/bpf_jit_comp32.c        |   22 +++++++++++--
- 3 files changed, 41 insertions(+), 86 deletions(-)
+ tools/objtool/check.c |   12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -320,63 +320,4 @@ static inline void mds_idle_clear_cpu_bu
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2965,9 +2965,8 @@ static int validate_branch(struct objtoo
+ 		switch (insn->type) {
  
- #endif /* __ASSEMBLY__ */
- 
--/*
-- * Below is used in the eBPF JIT compiler and emits the byte sequence
-- * for the following assembly:
-- *
-- * With retpolines configured:
-- *
-- *    callq do_rop
-- *  spec_trap:
-- *    pause
-- *    lfence
-- *    jmp spec_trap
-- *  do_rop:
-- *    mov %rcx,(%rsp) for x86_64
-- *    mov %edx,(%esp) for x86_32
-- *    retq
-- *
-- * Without retpolines configured:
-- *
-- *    jmp *%rcx for x86_64
-- *    jmp *%edx for x86_32
-- */
--#ifdef CONFIG_RETPOLINE
--# ifdef CONFIG_X86_64
--#  define RETPOLINE_RCX_BPF_JIT_SIZE	17
--#  define RETPOLINE_RCX_BPF_JIT()				\
--do {								\
--	EMIT1_off32(0xE8, 7);	 /* callq do_rop */		\
--	/* spec_trap: */					\
--	EMIT2(0xF3, 0x90);       /* pause */			\
--	EMIT3(0x0F, 0xAE, 0xE8); /* lfence */			\
--	EMIT2(0xEB, 0xF9);       /* jmp spec_trap */		\
--	/* do_rop: */						\
--	EMIT4(0x48, 0x89, 0x0C, 0x24); /* mov %rcx,(%rsp) */	\
--	EMIT1(0xC3);             /* retq */			\
--} while (0)
--# else /* !CONFIG_X86_64 */
--#  define RETPOLINE_EDX_BPF_JIT()				\
--do {								\
--	EMIT1_off32(0xE8, 7);	 /* call do_rop */		\
--	/* spec_trap: */					\
--	EMIT2(0xF3, 0x90);       /* pause */			\
--	EMIT3(0x0F, 0xAE, 0xE8); /* lfence */			\
--	EMIT2(0xEB, 0xF9);       /* jmp spec_trap */		\
--	/* do_rop: */						\
--	EMIT3(0x89, 0x14, 0x24); /* mov %edx,(%esp) */		\
--	EMIT1(0xC3);             /* ret */			\
--} while (0)
--# endif
--#else /* !CONFIG_RETPOLINE */
--# ifdef CONFIG_X86_64
--#  define RETPOLINE_RCX_BPF_JIT_SIZE	2
--#  define RETPOLINE_RCX_BPF_JIT()				\
--	EMIT2(0xFF, 0xE1);       /* jmp *%rcx */
--# else /* !CONFIG_X86_64 */
--#  define RETPOLINE_EDX_BPF_JIT()				\
--	EMIT2(0xFF, 0xE2)        /* jmp *%edx */
--# endif
--#endif
--
- #endif /* _ASM_X86_NOSPEC_BRANCH_H_ */
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -387,6 +387,25 @@ int bpf_arch_text_poke(void *ip, enum bp
- 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
- }
- 
-+#define EMIT_LFENCE()	EMIT3(0x0F, 0xAE, 0xE8)
-+
-+static void emit_indirect_jump(u8 **pprog, int reg, u8 *ip)
-+{
-+	u8 *prog = *pprog;
-+
-+#ifdef CONFIG_RETPOLINE
-+	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
-+		EMIT_LFENCE();
-+		EMIT2(0xFF, 0xE0 + reg);
-+	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
-+		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
-+	} else
-+#endif
-+	EMIT2(0xFF, 0xE0 + reg);
-+
-+	*pprog = prog;
-+}
-+
- /*
-  * Generate the following code:
-  *
-@@ -468,7 +487,7 @@ static void emit_bpf_tail_call_indirect(
- 	 * rdi == ctx (1st arg)
- 	 * rcx == prog->bpf_func + X86_TAIL_CALL_OFFSET
- 	 */
--	RETPOLINE_RCX_BPF_JIT();
-+	emit_indirect_jump(&prog, 1 /* rcx */, ip + (prog - start));
- 
- 	/* out: */
- 	ctx->tail_call_indirect_label = prog - start;
-@@ -1185,8 +1204,7 @@ static int do_jit(struct bpf_prog *bpf_p
- 			/* speculation barrier */
- 		case BPF_ST | BPF_NOSPEC:
- 			if (boot_cpu_has(X86_FEATURE_XMM2))
--				/* Emit 'lfence' */
--				EMIT3(0x0F, 0xAE, 0xE8);
-+				EMIT_LFENCE();
+ 		case INSN_RETURN:
+-			if (next_insn && next_insn->type == INSN_TRAP) {
+-				next_insn->ignore = true;
+-			} else if (sls && !insn->retpoline_safe) {
++			if (sls && !insn->retpoline_safe &&
++			    next_insn && next_insn->type != INSN_TRAP) {
+ 				WARN_FUNC("missing int3 after ret",
+ 					  insn->sec, insn->offset);
+ 			}
+@@ -3014,9 +3013,8 @@ static int validate_branch(struct objtoo
  			break;
  
- 			/* ST: *(u8*)(dst_reg + off) = imm */
-@@ -2122,24 +2140,6 @@ cleanup:
- 	return ret;
- }
+ 		case INSN_JUMP_DYNAMIC:
+-			if (next_insn && next_insn->type == INSN_TRAP) {
+-				next_insn->ignore = true;
+-			} else if (sls && !insn->retpoline_safe) {
++			if (sls && !insn->retpoline_safe &&
++			    next_insn && next_insn->type != INSN_TRAP) {
+ 				WARN_FUNC("missing int3 after indirect jump",
+ 					  insn->sec, insn->offset);
+ 			}
+@@ -3187,7 +3185,7 @@ static bool ignore_unreachable_insn(stru
+ 	int i;
+ 	struct instruction *prev_insn;
  
--static int emit_fallback_jump(u8 **pprog)
--{
--	u8 *prog = *pprog;
--	int err = 0;
--
--#ifdef CONFIG_RETPOLINE
--	/* Note that this assumes the the compiler uses external
--	 * thunks for indirect calls. Both clang and GCC use the same
--	 * naming convention for external thunks.
--	 */
--	err = emit_jump(&prog, __x86_indirect_thunk_rdx, prog);
--#else
--	EMIT2(0xFF, 0xE2);	/* jmp rdx */
--#endif
--	*pprog = prog;
--	return err;
--}
--
- static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
- {
- 	u8 *jg_reloc, *prog = *pprog;
-@@ -2161,9 +2161,7 @@ static int emit_bpf_dispatcher(u8 **ppro
- 		if (err)
- 			return err;
+-	if (insn->ignore || insn->type == INSN_NOP)
++	if (insn->ignore || insn->type == INSN_NOP || insn->type == INSN_TRAP)
+ 		return true;
  
--		err = emit_fallback_jump(&prog);	/* jmp thunk/indirect */
--		if (err)
--			return err;
-+		emit_indirect_jump(&prog, 2 /* rdx */, prog);
- 
- 		*pprog = prog;
- 		return 0;
---- a/arch/x86/net/bpf_jit_comp32.c
-+++ b/arch/x86/net/bpf_jit_comp32.c
-@@ -15,6 +15,7 @@
- #include <asm/cacheflush.h>
- #include <asm/set_memory.h>
- #include <asm/nospec-branch.h>
-+#include <asm/asm-prototypes.h>
- #include <linux/bpf.h>
- 
- /*
-@@ -1267,6 +1268,21 @@ static void emit_epilogue(u8 **pprog, u3
- 	*pprog = prog;
- }
- 
-+static int emit_jmp_edx(u8 **pprog, u8 *ip)
-+{
-+	u8 *prog = *pprog;
-+	int cnt = 0;
-+
-+#ifdef CONFIG_RETPOLINE
-+	EMIT1_off32(0xE9, (u8 *)__x86_indirect_thunk_edx - (ip + 5));
-+#else
-+	EMIT2(0xFF, 0xE2);
-+#endif
-+	*pprog = prog;
-+
-+	return cnt;
-+}
-+
- /*
-  * Generate the following code:
-  * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) ...
-@@ -1280,7 +1296,7 @@ static void emit_epilogue(u8 **pprog, u3
-  *   goto *(prog->bpf_func + prologue_size);
-  * out:
-  */
--static void emit_bpf_tail_call(u8 **pprog)
-+static void emit_bpf_tail_call(u8 **pprog, u8 *ip)
- {
- 	u8 *prog = *pprog;
- 	int cnt = 0;
-@@ -1362,7 +1378,7 @@ static void emit_bpf_tail_call(u8 **ppro
- 	 * eax == ctx (1st arg)
- 	 * edx == prog->bpf_func + prologue_size
- 	 */
--	RETPOLINE_EDX_BPF_JIT();
-+	cnt += emit_jmp_edx(&prog, ip + cnt);
- 
- 	if (jmp_label1 == -1)
- 		jmp_label1 = cnt;
-@@ -2122,7 +2138,7 @@ static int do_jit(struct bpf_prog *bpf_p
- 			break;
- 		}
- 		case BPF_JMP | BPF_TAIL_CALL:
--			emit_bpf_tail_call(&prog);
-+			emit_bpf_tail_call(&prog, image + addrs[i - 1]);
- 			break;
- 
- 		/* cond jump */
+ 	/*
 
 
