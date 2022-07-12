@@ -2,85 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F48C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:12:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB5DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 07:12:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232301AbiGLHME (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 03:12:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
+        id S232304AbiGLHMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 03:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiGLHMC (ORCPT
+        with ESMTP id S229747AbiGLHMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 03:12:02 -0400
-Received: from muru.com (muru.com [72.249.23.125])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 284E52AE2D;
-        Tue, 12 Jul 2022 00:12:02 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by muru.com (Postfix) with ESMTPS id 9CD0880B5;
-        Tue, 12 Jul 2022 07:06:20 +0000 (UTC)
-Date:   Tue, 12 Jul 2022 10:12:00 +0300
-From:   Tony Lindgren <tony@atomide.com>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Android Kernel Team <kernel-team@android.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Linux IOMMU <iommu@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>
-Subject: Re: [PATCH v2 1/9] PM: domains: Delete usage of
- driver_deferred_probe_check_state()
-Message-ID: <Ys0ewNYFB25RWNju@atomide.com>
-References: <CAGETcx9aFBzMcuOiTAEy5SJyWw3UfajZ8DVQfW2DGmzzDabZVg@mail.gmail.com>
- <Yrlz/P6Un2fACG98@atomide.com>
- <CAGETcx8c+P0r6ARmhv+ERaz9zAGBOVJQu3bSDXELBycEGfkYQw@mail.gmail.com>
- <CAL_JsqJd3J6k6pRar7CkHVaaPbY7jqvzAePd8rVDisRV-dLLtg@mail.gmail.com>
- <CAGETcx9ZmeTyP1sJCFZ9pBbMyXeifQFohFvWN3aBPx0sSOJ2VA@mail.gmail.com>
- <Yr6HQOtS4ctUYm9m@atomide.com>
- <Yr6QUzdoFWv/eAI6@atomide.com>
- <CAGETcx-0bStPx8sF3BtcJFiu74NwiB0btTQ+xx_B=8B37TEb8w@mail.gmail.com>
- <CAGETcx-Yp2JKgCNfaGD0SzZg9F2Xnu8A3zXmV5=WX1hY7uR=0g@mail.gmail.com>
- <Yr7wA8d4J7xtjwsH@atomide.com>
+        Tue, 12 Jul 2022 03:12:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5DB2AE2D;
+        Tue, 12 Jul 2022 00:12:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 170E7CE19C1;
+        Tue, 12 Jul 2022 07:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0395C3411E;
+        Tue, 12 Jul 2022 07:12:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657609957;
+        bh=ZxGWYMMD64itBG/ESY2ZgGhNK3FcEGZ7q+1wcoeTY3Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TRan373ApgToLLso3FpoCPZM7ASspUjfH+Ms81rl59ZolWlvAQEvzvwMYSlMG4Rlp
+         6SD/VtZOKP9JzT7RYRrdTsOvTmcn1gkyfMh7jZZqU9lFdSpNx1D0xofDyospDP6n3U
+         Eb72YiHXk6w+yrE2YfLZOaMWSJCmulEdj0oBsiMk=
+Date:   Tue, 12 Jul 2022 09:12:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Subject: Re: [PATCH 5.15 000/229] 5.15.54-rc2 review
+Message-ID: <Ys0e3kVgc0iGSiha@kroah.com>
+References: <20220711145306.494277196@linuxfoundation.org>
+ <20220712011904.GG2305683@roeck-us.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yr7wA8d4J7xtjwsH@atomide.com>
+In-Reply-To: <20220712011904.GG2305683@roeck-us.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-* Tony Lindgren <tony@atomide.com> [220701 16:00]:
-> Also, looks like both with the initcall change for prm, and the patch
-> below, there seems to be also another problem where my test devices no
-> longer properly idle somehow compared to reverting the your two patches
-> in next.
+On Mon, Jul 11, 2022 at 06:19:04PM -0700, Guenter Roeck wrote:
+> On Mon, Jul 11, 2022 at 04:54:12PM +0200, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.54 release.
+> > There are 229 patches in this series, all will be posted as a response
+> > to this one.  If anyone has any issues with these being applied, please
+> > let me know.
+> > 
+> > Responses should be made by Wed, 13 Jul 2022 14:51:35 +0000.
+> > Anything received after that time might be too late.
+> > 
+> 
+> This report is for v5.15.53-230-gfba36d04986b.
+> 
+> Build results:
+> 	total: 159 pass: 153 fail: 6
+> Failed builds:
+> 	powerpc:defconfig
+> 	powerpc:allmodconfig
+> 	powerpc:ppc64e_defconfig
+> 	powerpc:cell_defconfig
+> 	powerpc:skiroot_defconfig
+> 	powerpc:maple_defconfig
+> Qemu test results:
+> 	total: 488 pass: 457 fail: 31
+> Failed tests:
+> 	<all ppc64>
+> 
+> All failed builds/tests:
+> --------------
+> Error log:
+> arch/powerpc/kernel/vdso64/gettimeofday.S: Assembler messages:
+> arch/powerpc/kernel/vdso64/gettimeofday.S:25: Error: unrecognized opcode: `cvdso_call'
+> arch/powerpc/kernel/vdso64/gettimeofday.S:36: Error: unrecognized opcode: `cvdso_call'
+> arch/powerpc/kernel/vdso64/gettimeofday.S:47: Error: unrecognized opcode: `cvdso_call'
+> arch/powerpc/kernel/vdso64/gettimeofday.S:57: Error: unrecognized opcode: `cvdso_call_time'
+> make[2]: *** [scripts/Makefile.build:390: arch/powerpc/kernel/vdso64/gettimeofday.o] Error 1
+> 
+> and:
+> 
+> Building powerpc:allmodconfig ... failed
+> 
+> same as above, plus
+> 
+> arch/powerpc/perf/callchain_64.c: In function 'is_sigreturn_64_address':
+> arch/powerpc/include/asm/vdso.h:20:61: error: 'vdso64_offset_sigtramp_rt64' undeclared
+> 
+> arch/powerpc/kernel/vdso.c: In function 'vdso_fixup_features':
+> arch/powerpc/include/asm/vdso.h:20:61: error: 'vdso64_offset_ftr_fixup_start' undeclared
+> arch/powerpc/include/asm/vdso.h:20:61: error: 'vdso64_offset_ftr_fixup_end' undeclared
+> 
+> and various other similar errors.
 
-Sorry looks like was a wrong conclusion. While trying to track down this
-issue, I cannot reproduce it. So I don't see issues idling with either
-the initcall change or your test patch.
+Ick, I think Sasha's builders forgot to run on these patches :(
 
-Not sure what caused my earlier tests to fail though. Maybe a config
-change to enable more debugging, or possibly some kind of warm reset vs
-cold reset type issue.
+I've dropped all of the powerpc vdso patches from the 5.15.y queue now,
+I'll push out a -rc3 if anyone wants to test them on that arch.
 
-Regards,
+thanks,
 
-Tony
+greg k-h
