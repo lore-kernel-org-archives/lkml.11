@@ -2,91 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71365CCA47F
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 835A8CCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234066AbiGLSnY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60312 "EHLO
+        id S234234AbiGLSn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233662AbiGLSmg (ORCPT
+        with ESMTP id S234112AbiGLSmm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:42:36 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10784D9150;
+        Tue, 12 Jul 2022 14:42:42 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99273C4451;
         Tue, 12 Jul 2022 11:41:47 -0700 (PDT)
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lj8h566V0z689wF;
-        Wed, 13 Jul 2022 02:40:21 +0800 (CST)
-Received: from roberto-ThinkStation-P620.huawei.com (10.204.63.22) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Jul 2022 20:41:44 +0200
-From:   Roberto Sassu <roberto.sassu@huawei.com>
-To:     <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <kpsingh@kernel.org>, <dhowells@redhat.com>, <jarkko@kernel.org>,
-        <shuah@kernel.org>
-CC:     <bpf@vger.kernel.org>, <keyrings@vger.kernel.org>,
-        <linux-security-module@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Subject: [PATCH v7 2/7] KEYS: Move KEY_LOOKUP_ to include/linux/key.h
-Date:   Tue, 12 Jul 2022 20:41:23 +0200
-Message-ID: <20220712184128.999301-3-roberto.sassu@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220712184128.999301-1-roberto.sassu@huawei.com>
-References: <20220712184128.999301-1-roberto.sassu@huawei.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C8BBFCE1D85;
+        Tue, 12 Jul 2022 18:41:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3414C3411C;
+        Tue, 12 Jul 2022 18:41:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657651304;
+        bh=yEjzjL/duoq1Md+YLkmgI3lo63MssRrpZ/IVKlR4NWg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QEKpbAUsnODy7sKiJBmT2xEnB774nukLK9qWm93rxuD5XA9/ulx5mBGphV/tzTzhN
+         VcEfKdDDsH4TgQzf7CySq48iuIJPinwj9NPqbRBzBOhy1UZZCG05ikAkBZFIa/3+g2
+         jGz3DUfIPoW3sEPOHXAvgOGdUrub9LJ9YyKBvv8Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 035/130] objtool: Support asm jump tables
+Date:   Tue, 12 Jul 2022 20:38:01 +0200
+Message-Id: <20220712183248.018073095@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
+References: <20220712183246.394947160@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.204.63.22]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml714-chm.china.huawei.com (10.206.15.33)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for the patch that introduces the bpf_lookup_user_key() eBPF
-helper, move KEY_LOOKUP_ definitions to include/linux/key.h, to be able to
-validate the helper parameters.
+From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-Signed-off-by: Roberto Sassu <roberto.sassu@huawei.com>
+commit 99033461e685b48549ec77608b4bda75ddf772ce upstream.
+
+Objtool detection of asm jump tables would normally just work, except
+for the fact that asm retpolines use alternatives.  Objtool thinks the
+alternative code path (a jump to the retpoline) is a sibling call.
+
+Don't treat alternative indirect branches as sibling calls when the
+original instruction has a jump table.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/460cf4dc675d64e1124146562cabd2c05aa322e8.1614182415.git.jpoimboe@redhat.com
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/key.h      | 3 +++
- security/keys/internal.h | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ tools/objtool/check.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/key.h b/include/linux/key.h
-index 7febc4881363..a297e075038c 100644
---- a/include/linux/key.h
-+++ b/include/linux/key.h
-@@ -88,6 +88,9 @@ enum key_need_perm {
- 	KEY_DEFER_PERM_CHECK,	/* Special: permission check is deferred */
- };
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -107,6 +107,18 @@ static struct instruction *prev_insn_sam
+ 	for (insn = next_insn_same_sec(file, insn); insn;		\
+ 	     insn = next_insn_same_sec(file, insn))
  
-+#define KEY_LOOKUP_CREATE	0x01
-+#define KEY_LOOKUP_PARTIAL	0x02
++static bool is_jump_table_jump(struct instruction *insn)
++{
++	struct alt_group *alt_group = insn->alt_group;
 +
- struct seq_file;
- struct user_struct;
- struct signal_struct;
-diff --git a/security/keys/internal.h b/security/keys/internal.h
-index 9b9cf3b6fcbb..3c1e7122076b 100644
---- a/security/keys/internal.h
-+++ b/security/keys/internal.h
-@@ -165,8 +165,6 @@ extern struct key *request_key_and_link(struct key_type *type,
++	if (insn->jump_table)
++		return true;
++
++	/* Retpoline alternative for a jump table? */
++	return alt_group && alt_group->orig_group &&
++	       alt_group->orig_group->first_insn->jump_table;
++}
++
+ static bool is_sibling_call(struct instruction *insn)
+ {
+ 	/*
+@@ -119,7 +131,7 @@ static bool is_sibling_call(struct instr
  
- extern bool lookup_user_key_possessed(const struct key *key,
- 				      const struct key_match_data *match_data);
--#define KEY_LOOKUP_CREATE	0x01
--#define KEY_LOOKUP_PARTIAL	0x02
+ 	/* An indirect jump is either a sibling call or a jump to a table. */
+ 	if (insn->type == INSN_JUMP_DYNAMIC)
+-		return list_empty(&insn->alts);
++		return !is_jump_table_jump(insn);
  
- extern long join_session_keyring(const char *name);
- extern void key_change_session_keyring(struct callback_head *twork);
--- 
-2.25.1
+ 	/* add_jump_destinations() sets insn->call_dest for sibling calls. */
+ 	return (is_static_jump(insn) && insn->call_dest);
+
 
