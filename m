@@ -2,217 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2BDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F7DCCA480
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 11:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232734AbiGLLBp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 07:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47498 "EHLO
+        id S232835AbiGLLCq convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 07:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230122AbiGLLBk (ORCPT
+        with ESMTP id S230122AbiGLLCm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 07:01:40 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66199AE383
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:01:38 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 96FB21515;
-        Tue, 12 Jul 2022 04:01:38 -0700 (PDT)
-Received: from monolith.localdoman (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A5D53F792;
-        Tue, 12 Jul 2022 04:01:36 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 12:02:02 +0100
-From:   Alexandru Elisei <alexandru.elisei@arm.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>
-Cc:     broonie@kernel.org, lgirdwood@gmail.com, perex@perex.cz,
-        tiwai@suse.com, heiko@sntech.de,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, judyhsiao@chromium.org
-Subject: Re: [PATCH] ASoC: rockchip: i2s: Fix NULL pointer dereference when
- pinctrl is not found
-Message-ID: <Ys1UqkHRyvv91UC7@monolith.localdoman>
-References: <20220711130522.401551-1-alexandru.elisei@arm.com>
- <CAGXv+5HyD63MSmnNSoHX6euR2qpnqh-Fn9rdRYRYz4Ci90+w8Q@mail.gmail.com>
- <Ys00vczqcIGzOadV@monolith.localdoman>
- <CAGXv+5G=YvDkm8a=Wyui4mqSskqPq-kQJfU4HGNXSGzz0hXiqw@mail.gmail.com>
+        Tue, 12 Jul 2022 07:02:42 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.109.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 55493AEF48
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 04:02:40 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2048.outbound.protection.outlook.com [104.47.22.48]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-13-wZG3-wYNPKqevNpiF3vJYA-2; Tue, 12 Jul 2022 13:02:36 +0200
+X-MC-Unique: wZG3-wYNPKqevNpiF3vJYA-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ ZRAP278MB0317.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:28::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5417.16; Tue, 12 Jul 2022 11:02:34 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3d:ca30:8c24:1a95%7]) with mapi id 15.20.5417.026; Tue, 12 Jul 2022
+ 11:02:34 +0000
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+CC:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        linux-input@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH v1 3/4] dt-bindings: iio: adc: stmpe: Remove node name requirement
+Date:   Tue, 12 Jul 2022 13:02:31 +0200
+Message-ID: <20220712110232.329164-4-francesco.dolcini@toradex.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220712110232.329164-1-francesco.dolcini@toradex.com>
+References: <20220712110232.329164-1-francesco.dolcini@toradex.com>
+X-ClientProxiedBy: MR1P264CA0174.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:501:55::14) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGXv+5G=YvDkm8a=Wyui4mqSskqPq-kQJfU4HGNXSGzz0hXiqw@mail.gmail.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f46fb30c-d397-412f-de90-08da63f60635
+X-MS-TrafficTypeDiagnostic: ZRAP278MB0317:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: B+QLYnrX3PA11x/nW4UQVV7Gk8TDJGaSZbW1vmzdNMbHROYQV19SYQ42cjv/Q7NDgx8FliPc0AIT6YLrr0EKJF33WDmxdVA0y20cAynoVQqe2RRZvmcN81VszcEIbfJQfqzHXHsGVTjXMq60ZmgTv4wDKzr4cBLG7EnfXqPCCos6+jQ4Dx/PmpWGh2hddrrniIiiHqp6BdcFtIRhkgYBc2c6seDcDAWaykoKCOx+IsK4jhypkd7wYedmp6j3STBXLUuE67PVeAC8ngRT/4jMLZ8utdH3SkUGDXaQLQcdfxbH13OMN2LJsviJcIoREc9GvLRGW04zbV/uTfp82gU4BWCBkMLm3mNue4CFAvvW9bq4XlMj1eIrBYzP/htyPTgrBkvuTXrWhJVW2Fuk+psFJKS409Sbm2VkzdP1g/mkgZB79JmWO1qBhfVCqJtE4dzgheZxjdCQl3X2ExueeDQoYfbxQ30TIiCx+5GD6GnTd0AdMM64UNOvnjqk+NYEo0u0/fA+ouDZxBt6so/9QojJfrmAcLOr0VEzB76alZIvuGMNn10x2gV9I4V6XW98nU2n1UoCyOr5dWdXauEk81+LhDfUPlY1uUmGaxNN4TxeER3vR+ecqu+nM+Dbdz4gNX50fDRKtWV2Ka2KXsTrD/3lcQ6b5rMAVI4dZP5plf2YNRYB7Y2kznK+2cimaj1xL/THOlWI9XoEqmQ4MCtOOt8Gw6mW5eshOqhtdstWIKWl/7AVRyl5aP0jAIkDWM+4uWsGqiVlVKaebfFX1vAuGU03KzgxKZAKsnSEuWdUgwpASJ8pobVPz8ns4kqz9+cZM8OM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(366004)(376002)(39850400004)(396003)(136003)(66476007)(38350700002)(1076003)(52116002)(41300700001)(38100700002)(2906002)(186003)(6506007)(6666004)(44832011)(36756003)(7416002)(66946007)(316002)(110136005)(8936002)(478600001)(5660300002)(26005)(86362001)(83380400001)(66556008)(8676002)(2616005)(6486002)(6512007)(4326008);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R5hp3lCBY+T9sZGjgp4MjCqfR8ZZ2dYoe7v+9+gH2rhVJVsU8guDhcFJXg1f?=
+ =?us-ascii?Q?iA6evZQ3YYtsMM5iYDP+WkrN06o8owNNxXBndzrsZySUgzt/UxX5MwubP/M6?=
+ =?us-ascii?Q?5aG48g8r/dTJG5l74SK5KIxvAhON9wuQcNqvn7qNQuESTP7MHrrKcOC792CO?=
+ =?us-ascii?Q?pa/jEm2SLoB7ARDa40RcQfgNS7vuHlZz5degPJW2T7cLvj90xlB1/eH0qRzF?=
+ =?us-ascii?Q?1e1Pnv26CY88YfGvzsN8yHn1etecaaz1UjVSxcsk7bScT9s3VjdaZts8Wx/l?=
+ =?us-ascii?Q?x9f26EEJLr2xW6TGX5DGx8tfICycfhzbEhfOBpNiIfm0IHpKmbBia9YFkJ0d?=
+ =?us-ascii?Q?0I5oDOSAzcRv1IpnR/tA7IEp/iHFZs8y8iTUZNlVdDKIP5nTiMd4rvlIs9wQ?=
+ =?us-ascii?Q?jr2OFKrjmsuwbl+Ogp/+nNF4qLpUvqVMULf32t6ucwh0JpaNoCPq9CECp2X9?=
+ =?us-ascii?Q?AJWb4RYByzWnDn34VpPy2encneA0ccYWAdNaNHeLv48re7RlRlabjZaAp2Fi?=
+ =?us-ascii?Q?1vociHA2e44mAPMbZvW3jLgUB9ysxY5xN53tFFQLLdhdoMpqtzLCF+6D5eYL?=
+ =?us-ascii?Q?k/8wUSiEXjLbmwr1vbS3DG9HgfMwwkOGCXekTLLsZmknkjfnmm6RXjQ3EihD?=
+ =?us-ascii?Q?Qj063hb0YQf173xZSI28hQOCLVHnYusPbd7gkkhJlGex3L7hyYSPmkM/7mF9?=
+ =?us-ascii?Q?7PV65GrsE9nrhhM+oqV4Uk62n+eC4Jci7FPSCoxcBOLSevGC9bsDdT4P0+JW?=
+ =?us-ascii?Q?aCcgS+OoQGRd8uG7BMow+g1/MM75buMStz+IerG3ijmOwL0dCe6DwApGVeKo?=
+ =?us-ascii?Q?ZdEsiTkiZ6EQEUiK4LwWYckp5OYcz0EWfmooTHDm4Z5jFqnbSmfVhc+CF0B9?=
+ =?us-ascii?Q?8x4HRm2aI9iWqwicbfdjuCIIdVPHyz7UggSV0aKF4UHzO2iZJajx84MgPOPS?=
+ =?us-ascii?Q?JD24a4LnUYcuRer98qLxtOKaUKrxJc8tPjvyMre3Y1ZEx8myqdaoyG4OkXm7?=
+ =?us-ascii?Q?iQ2x5L2kE0tJelICJwNt+MFG/BDOgp3fmCAK7bENXvRTurYWPlqycFAZFTTo?=
+ =?us-ascii?Q?6YoIO40d6EhOd73oBek4GSuDLN3L2F+G1Gde6O4evvOBJvMDaSs10JMFglp7?=
+ =?us-ascii?Q?Ie6k8bRuVTB2V7Vm3wJ3J++kH0TtiXyKbxgrR8UH00pWw5k7cc4Meiv7OLbD?=
+ =?us-ascii?Q?ul1hJN31icfs1swEsLRPYMNVHtwqqnV5+3qRQVaj4kLed89SxB28X4bQjpPw?=
+ =?us-ascii?Q?8qp3beX+YrEltjXTyw7MfBK/aOBN/tsFakkY0iurJPfSgUKbvg81I/2NxHNP?=
+ =?us-ascii?Q?Y4iuWX75+nu9XMqjkwmwdX+dVMSPW3TsAFaXiUGWKPEhe2mSTvSF8YRaaK+g?=
+ =?us-ascii?Q?7VpJeagTj6GZXp8TacaACtfzZgoP74NiSJlpPjMgvuy0Qf+1Y5U1L9gYPtg6?=
+ =?us-ascii?Q?SwJuoNl9cC60Xn6Chiw41e+YO2DTtbm2oAWZiBwdWKRHYZbYZ9nY4aR8LgGn?=
+ =?us-ascii?Q?IXJun4NzB+Ki+wAz6BP/X67jiEJymCtqOxQoBq4DqavuphaG7JqHtdb53pv4?=
+ =?us-ascii?Q?3r+5Qp52QETPmtOetirsha7ME8KPU2SLbZId6Kc90IGqzvZX2cOK7C5+AdFR?=
+ =?us-ascii?Q?xg=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f46fb30c-d397-412f-de90-08da63f60635
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jul 2022 11:02:34.4426
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WAlbAdHQxokQeV8KSBduawvslQfXsHw+eJthIQ/BewH//vvnxeKIe9QZfRQCiZEGSyEBb/BxknR5ayCebClzWQGgrkbW5RH8BavEWhnI+R4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: ZRAP278MB0317
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+STMPE driver does not require a specific node name anymore, only the
+compatible is checked, update binding according to this.
 
-On Tue, Jul 12, 2022 at 05:25:43PM +0800, Chen-Yu Tsai wrote:
-> On Tue, Jul 12, 2022 at 4:53 PM Alexandru Elisei
-> <alexandru.elisei@arm.com> wrote:
-> >
-> > Hi ChenYu,
-> >
-> > On Tue, Jul 12, 2022 at 02:17:32PM +0800, Chen-Yu Tsai wrote:
-> > > On Mon, Jul 11, 2022 at 9:06 PM Alexandru Elisei
-> > > <alexandru.elisei@arm.com> wrote:
-> > > >
-> > > > Commit a5450aba737d ("ASoC: rockchip: i2s: switch BCLK to GPIO") switched
-> > > > BCLK to GPIO functions when probing the i2s bus interface, but missed
-> > > > adding a check for when devm_pinctrl_get() returns an error.  This can lead
-> > > > to the following NULL pointer dereference on a rockpro64-v2 if there are no
-> > > > "pinctrl" properties in the i2s device tree node:
-> > > >
-> > > > [    0.658381] rockchip-i2s ff880000.i2s: failed to find i2s default state
-> > > > [    0.658993] rockchip-i2s ff880000.i2s: failed to find i2s gpio state
-> > > > [    0.660072] rockchip-i2s ff890000.i2s: failed to find i2s default state
-> > > > [    0.660670] rockchip-i2s ff890000.i2s: failed to find i2s gpio state
-> > > > [    0.661716] rockchip-i2s ff8a0000.i2s: failed to find i2s pinctrl
-> > > > [    0.662276] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000005
-> > > > [    0.663061] Mem abort info:
-> > > > [    0.663317]   ESR = 0x0000000096000004
-> > > > [    0.663658]   EC = 0x25: DABT (current EL), IL = 32 bits
-> > > > [    0.664136]   SET = 0, FnV = 0
-> > > > [    0.664171] mmc2: SDHCI controller on fe330000.mmc [fe330000.mmc] using ADMA
-> > > > [    0.664409]   EA = 0, S1PTW = 0
-> > > > [    0.664415]   FSC = 0x04: level 0 translation fault
-> > > > [    0.664421] Data abort info:
-> > > > [    0.666050]   ISV = 0, ISS = 0x00000004
-> > > > [    0.666399]   CM = 0, WnR = 0
-> > > > [    0.666671] [0000000000000005] user address but active_mm is swapper
-> > > > [    0.667240] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> > > > [    0.667742] Modules linked in:
-> > > > [    0.668028] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 5.19.0-rc6 #300
-> > > > [    0.668608] Hardware name: Pine64 RockPro64 v2.0 (DT)
-> > > > [    0.669062] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-> > > > [    0.669689] pc : pinctrl_lookup_state+0x20/0xc0
-> > > > [    0.670110] lr : rockchip_i2s_probe+0x1a8/0x54c
-> > > > [    0.670527] sp : ffff80000a17bb30
-> > > > [    0.670829] x29: ffff80000a17bb30 x28: 0000000000000000 x27: ffff8000097c04c8
-> > > > [    0.671480] x26: ffff800009871060 x25: ffff800009871078 x24: ffff000001c11368
-> > > > [    0.672129] x23: ffff8000092dc850 x22: ffffffffffffffed x21: ffff8000096f7e98
-> > > > [    0.672776] x20: ffffffffffffffed x19: ffff000001d92480 x18: ffffffffffffffff
-> > > > [    0.673423] x17: 000000040044ffff x16: ffff0000f77db2d0 x15: 0764076e07690766
-> > > > [    0.674070] x14: 0720076f07740720 x13: ffff800009e129f0 x12: 000000000000038d
-> > > > [    0.674717] x11: 000000000000012f x10: ffff800009e6a9f0 x9 : ffff800009e129f0
-> > > > [    0.675364] x8 : 00000000ffffefff x7 : ffff800009e6a9f0 x6 : 80000000fffff000
-> > > > [    0.676011] x5 : 000000000000bff4 x4 : 0000000000000000 x3 : 0000000000000000
-> > > > [    0.676657] x2 : 0000000000000000 x1 : ffff8000096f7e98 x0 : ffffffffffffffed
-> > > > [    0.677304] Call trace:
-> > > > [    0.677531]  pinctrl_lookup_state+0x20/0xc0
-> > > > [    0.677914]  rockchip_i2s_probe+0x1a8/0x54c
-> > > > [    0.678297]  platform_probe+0x68/0xc0
-> > > > [    0.678638]  really_probe.part.0+0x9c/0x2ac
-> > > > [    0.679027]  __driver_probe_device+0x98/0x144
-> > > > [    0.679429]  driver_probe_device+0xac/0x140
-> > > > [    0.679814]  __driver_attach+0xf8/0x184
-> > > > [    0.680169]  bus_for_each_dev+0x70/0xd0
-> > > > [    0.680524]  driver_attach+0x24/0x30
-> > > > [    0.680856]  bus_add_driver+0x150/0x200
-> > > > [    0.681210]  driver_register+0x78/0x130
-> > > > [    0.681560]  __platform_driver_register+0x28/0x34
-> > > > [    0.681988]  rockchip_i2s_driver_init+0x1c/0x28
-> > > > [    0.682407]  do_one_initcall+0x50/0x1c0
-> > > > [    0.682760]  kernel_init_freeable+0x204/0x288
-> > > > [    0.683160]  kernel_init+0x28/0x13c
-> > > > [    0.683482]  ret_from_fork+0x10/0x20
-> > > > [    0.683816] Code: aa0003f4 a9025bf5 aa0003f6 aa0103f5 (f8418e93)
-> > > > [    0.684365] ---[ end trace 0000000000000000 ]---
-> > > > [    0.684813] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-> > > > [    0.685500] SMP: stopping secondary CPUs
-> > > > [    0.685995] Kernel Offset: disabled
-> > > > [    0.686310] CPU features: 0x800,00105811,00001086
-> > > > [    0.686736] Memory Limit: none
-> > > > [    0.687021] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b ]---
-> > > >
-> > > > Check that i2s->pinctrl is valid before attempting to search for the
-> > > > bclk_on and bclk_off pinctrl states.
-> > > >
-> > > > Fixes: a5450aba737d ("ASoC: rockchip: i2s: switch BCLK to GPIO")
-> > > > Signed-off-by: Alexandru Elisei <alexandru.elisei@arm.com>
-> > > > ---
-> > > >
-> > > > Full log at [1], config at [2] (pastebins expire after 6 months).
-> > > >
-> > > > I'm not familiar with this part of the kernel, I did my best to come up
-> > > > with an explanation and a fix for the panic.
-> > > >
-> > > > Read Documentation/devicetree/bindings/sound/rockchip-i2s.yaml, which has the
-> > > > definition for the i2s nodes with the same compatible string as the i2s@ff8a0000
-> > > > that is causing the panic (which is, "rockchip,rk3399-i2s"
-> > > > "rockchip,rk3066-i2s"). There's no mention there of a "pinctrl" property, maybe
-> > > > I'm reading the docs wrong, or maybe the board devicetree also needs fixing.
-> > > >
-> > > > [1] https://pastebin.com/vuRVDsKk
-> > > > [2] https://pastebin.com/3yDMF7YE
-> > > >
-> > > >  sound/soc/rockchip/rockchip_i2s.c | 5 ++++-
-> > > >  1 file changed, 4 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-> > > > index 99a128a666fb..c9fedf6eb2e6 100644
-> > > > --- a/sound/soc/rockchip/rockchip_i2s.c
-> > > > +++ b/sound/soc/rockchip/rockchip_i2s.c
-> > > > @@ -808,8 +808,11 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
-> > > >
-> > > >         i2s->bclk_ratio = 64;
-> > > >         i2s->pinctrl = devm_pinctrl_get(&pdev->dev);
-> > > > -       if (IS_ERR(i2s->pinctrl))
-> > > > +       if (IS_ERR(i2s->pinctrl)) {
-> > > >                 dev_err(&pdev->dev, "failed to find i2s pinctrl\n");
-> > > > +               ret = PTR_ERR(i2s->pinctrl);
-> > > > +               goto err_clk;
-> > > > +       }
-> > >
-> > > This would break audio for HDMI audio, which uses an I2S interface
-> > > to feed the HDMI controller and does not need or have pinctrl, but
-> > > here you make pinctrl a requirement.
-> > >
-> > > See https://lore.kernel.org/alsa-devel/20220621185747.2782-1-wens@kernel.org/
-> > > for my fix, which is merged for 5.20.
-> >
-> > For what it's worth, I've tested the fix and the board boots just fine.
-> 
-> Check if your HDMI audio card probed correctly or not?
+Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
+---
+ Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I use my board headless, I didn't even have the HDMI sound card compiled.
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+index 9049c699152f..333744a2159c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+@@ -13,8 +13,7 @@ description:
+   This ADC forms part of an ST microelectronics STMPE multifunction device .
+   The ADC is shared with the STMPE touchscreen. As a result some ADC related
+   settings are specified in the parent node.
+-  The node name myst be stmpe_adc and should be a child node of the stmpe node
+-  to which it belongs.
++  The node should be a child node of the stmpe node to which it belongs.
+ 
+ properties:
+   compatible:
+-- 
+2.25.1
 
-Compiled the hdmi sound driver now (CONFIG_SND_SOC=y,
-CONFIG_SND_SIMPLE_CARD=y), and when I do aplay -L I don't see a hdmi-sound
-device.
-
-Sprinkled some printk's in asoc_simple_probe(), simple_parse_of() returns
--517. Same for v5.19-rc5.
-
-Any suggestions?
-
-Thanks,
-Alex
-
-> 
-> ChenYu
-> 
-> > Thanks,
-> > Alex
-> >
-> > >
-> > > Maybe your patch (which Mark already applied) and commit a5450aba737d
-> > > ("ASoC: rockchip: i2s: switch BCLK to GPIO") should just be reverted from
-> > > the for-5.19?
-> > >
-> > > Mark?
-> > >
-> > >
-> > > Regards
-> > > ChenYu
-> > >
-> > > >
-> > > >         i2s->bclk_on = pinctrl_lookup_state(i2s->pinctrl,
-> > > >                                    "bclk_on");
-> > > > --
-> > > > 2.37.0
-> > > >
-> > > >
-> > > > _______________________________________________
-> > > > Linux-rockchip mailing list
-> > > > Linux-rockchip@lists.infradead.org
-> > > > http://lists.infradead.org/mailman/listinfo/linux-rockchip
