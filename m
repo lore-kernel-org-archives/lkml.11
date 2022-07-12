@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E70C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04500C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:08:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235477AbiGLTIv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37124 "EHLO
+        id S235591AbiGLTIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:08:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235221AbiGLTIH (ORCPT
+        with ESMTP id S235604AbiGLTIQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:08:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD2BE52B8;
-        Tue, 12 Jul 2022 11:51:45 -0700 (PDT)
+        Tue, 12 Jul 2022 15:08:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF05FC9BC;
+        Tue, 12 Jul 2022 11:51:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CD91361123;
-        Tue, 12 Jul 2022 18:51:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98008C3411C;
-        Tue, 12 Jul 2022 18:51:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D6B8B81BAB;
+        Tue, 12 Jul 2022 18:51:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC51C3411C;
+        Tue, 12 Jul 2022 18:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651901;
-        bh=b6ihENthbUbQ5lJ4c2//Yhi5Ha1tezAvuDGyRHTe7Vk=;
+        s=korg; t=1657651907;
+        bh=6H9Lyl9oIAdqchAN6Gj+v6lW5keext/SAPl2qXlkcwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXBUY6UtgfCG4aXt6dlogIDmtJk/UkXwaFMgFlomhlrwXaPE0cjhnNePnvqsx+5p0
-         mt9jfkBahVzu6RklY2x0QhoAlFEGKYfJeRLFpBwrljc738Z2XIli3h+Oo3h+hRiI4Q
-         2mrMmDWx9plA99AfsoOx2khzVC0Phg8k/tNh7rnY=
+        b=hBToac92b3ATsuHJ8QD6lsvzQJCtysTmnozd/xZKhCwhb9vSuM/YNixEa4r4A7Z4C
+         92scNqpIflUNcf/ER2AJX1OiYrc33vM+M6InZ9Qjqicbknlm7G5axTNHJ4bXfMZ5Jz
+         lSzwSDGip7gYA4hxONoNBeMxhNds889fdfK8WyAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 17/61] x86/kvm: Fix SETcc emulation for return thunks
-Date:   Tue, 12 Jul 2022 20:39:14 +0200
-Message-Id: <20220712183237.631825759@linuxfoundation.org>
+Subject: [PATCH 5.18 19/61] x86/sev: Avoid using __x86_return_thunk
+Date:   Tue, 12 Jul 2022 20:39:16 +0200
+Message-Id: <20220712183237.721323452@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183236.931648980@linuxfoundation.org>
 References: <20220712183236.931648980@linuxfoundation.org>
@@ -51,26 +51,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit af2e140f34208a5dfb6b7a8ad2d56bda88f0524d upstream.
+commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
 
-Prepare the SETcc fastop stuff for when RET can be larger still.
+Specifically, it's because __enc_copy() encrypts the kernel after
+being relocated outside the kernel in sme_encrypt_execute(), and the
+RET macro's jmp offset isn't amended prior to execution.
 
-The tricky bit here is that the expressions should not only be
-constant C expressions, but also absolute GAS expressions. This means
-no ?: and 'true' is ~0.
-
-Also ensure em_setcc() has the same alignment as the actual FOP_SETCC()
-ops, this ensures there cannot be an alignment hole between em_setcc()
-and the first op.
-
-Additionally, add a .skip directive to the FOP_SETCC() macro to fill
-any remaining space with INT3 traps; however the primary purpose of
-this directive is to generate AS warnings when the remaining space
-goes negative. Which is a very good indication the alignment magic
-went side-ways.
-
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
@@ -78,66 +67,31 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/emulate.c |   28 +++++++++++++++-------------
- 1 file changed, 15 insertions(+), 13 deletions(-)
+ arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -325,13 +325,15 @@ static int fastop(struct x86_emulate_ctx
- #define FOP_RET(name) \
- 	__FOP_RET(#name)
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	movq	%rbp, %rsp		/* Restore original stack pointer */
+ 	pop	%rbp
  
--#define FOP_START(op) \
-+#define __FOP_START(op, align) \
- 	extern void em_##op(struct fastop *fake); \
- 	asm(".pushsection .text, \"ax\" \n\t" \
- 	    ".global em_" #op " \n\t" \
--	    ".align " __stringify(FASTOP_SIZE) " \n\t" \
-+	    ".align " __stringify(align) " \n\t" \
- 	    "em_" #op ":\n\t"
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ SYM_FUNC_END(sme_encrypt_execute)
  
-+#define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
-+
- #define FOP_END \
- 	    ".popsection")
+ SYM_FUNC_START(__enc_copy)
+@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r12
+ 	pop	%r15
  
-@@ -435,16 +437,15 @@ static int fastop(struct x86_emulate_ctx
- /*
-  * Depending on .config the SETcc functions look like:
-  *
-- * ENDBR       [4 bytes; CONFIG_X86_KERNEL_IBT]
-- * SETcc %al   [3 bytes]
-- * RET         [1 byte]
-- * INT3        [1 byte; CONFIG_SLS]
-- *
-- * Which gives possible sizes 4, 5, 8 or 9.  When rounded up to the
-- * next power-of-two alignment they become 4, 8 or 16 resp.
-+ * ENDBR			[4 bytes; CONFIG_X86_KERNEL_IBT]
-+ * SETcc %al			[3 bytes]
-+ * RET | JMP __x86_return_thunk	[1,5 bytes; CONFIG_RETPOLINE]
-+ * INT3				[1 byte; CONFIG_SLS]
-  */
--#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 4 + IS_ENABLED(CONFIG_SLS))
--#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
-+#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETPOLINE)) + \
-+			 IS_ENABLED(CONFIG_SLS))
-+#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 3 + RET_LENGTH)
-+#define SETCC_ALIGN	(4 << ((SETCC_LENGTH > 4) & 1) << ((SETCC_LENGTH > 8) & 1))
- static_assert(SETCC_LENGTH <= SETCC_ALIGN);
- 
- #define FOP_SETCC(op) \
-@@ -453,9 +454,10 @@ static_assert(SETCC_LENGTH <= SETCC_ALIG
- 	#op ": \n\t" \
- 	ASM_ENDBR \
- 	#op " %al \n\t" \
--	__FOP_RET(#op)
-+	__FOP_RET(#op) \
-+	".skip " __stringify(SETCC_ALIGN) " - (.-" #op "), 0xcc \n\t"
- 
--FOP_START(setcc)
-+__FOP_START(setcc, SETCC_ALIGN)
- FOP_SETCC(seto)
- FOP_SETCC(setno)
- FOP_SETCC(setc)
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ .L__enc_copy_end:
+ SYM_FUNC_END(__enc_copy)
 
 
