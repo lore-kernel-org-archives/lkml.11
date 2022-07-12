@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A555DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 18:58:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233237AbiGLS6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 14:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34132 "EHLO
+        id S234925AbiGLS6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 14:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234978AbiGLS51 (ORCPT
+        with ESMTP id S234957AbiGLS53 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 14:57:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB8FDC892;
-        Tue, 12 Jul 2022 11:47:16 -0700 (PDT)
+        Tue, 12 Jul 2022 14:57:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F782EDB5D;
+        Tue, 12 Jul 2022 11:47:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D6AEEB81BAC;
-        Tue, 12 Jul 2022 18:47:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15C7EC3411C;
-        Tue, 12 Jul 2022 18:47:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7D1F60C91;
+        Tue, 12 Jul 2022 18:47:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC542C3411C;
+        Tue, 12 Jul 2022 18:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651633;
-        bh=6XerrlduLrZI2GtrTstCZEHooVumelY789m2NBzA1Sw=;
+        s=korg; t=1657651639;
+        bh=vDND9sgTLLOXSi8cK5qGpOrlqS641b4ivwKRFScXYUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qL2n2ZyYmio1ELQ6LedaWzCswa8c/bqt+kTmuVbSVg6iTQwYuky9nxny9Dn1V+RPc
-         Ngc/hQHKPVDHf1z1KzvfPOEYrDh9YKET91nPCZ4dx4W3lbI8ot9HaIkr9HCGZmfuvs
-         390ZWhHfImVyogNtufu3yzX2IxHy5mdFdYVN5L+I=
+        b=fiINGjppGYVMWOhlHw1H1htpwy8FWp8cDqHPaiYrVfJOFZ2fnKMqvpoUmYg0gbVei
+         HFotUbXzzUyw96dHLsO+J1jerYdoLr6dkLMqp9o/EGhYs8uww7LLAXdbgLH71nCd7e
+         ka+AISYRwwHejc1NkrMUc2vfZMvSS9dUQOr3IAfg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
         Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 115/130] x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit
-Date:   Tue, 12 Jul 2022 20:39:21 +0200
-Message-Id: <20220712183251.768172760@linuxfoundation.org>
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 01/78] x86/traps: Use pt_regs directly in fixup_bad_iret()
+Date:   Tue, 12 Jul 2022 20:38:31 +0200
+Message-Id: <20220712183238.898668354@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220712183246.394947160@linuxfoundation.org>
-References: <20220712183246.394947160@linuxfoundation.org>
+In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
+References: <20220712183238.844813653@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,57 +51,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit bbb69e8bee1bd882784947095ffb2bfe0f7c9470 upstream.
+commit 0aca53c6b522f8d6e2681ca875acbbe105f5fdcf upstream.
 
-There's no need to recalculate the host value for every entry/exit.
-Just use the cached value in spec_ctrl_current().
+Always stash the address error_entry() is going to return to, in %r12
+and get rid of the void *error_entry_ret; slot in struct bad_iret_stack
+which was supposed to account for it and pt_regs pushed on the stack.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+After this, both fixup_bad_iret() and sync_regs() can work on a struct
+pt_regs pointer directly.
+
+  [ bp: Rewrite commit message, touch ups. ]
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220503032107.680190-2-jiangshanlai@gmail.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ arch/x86/entry/entry_64.S    |    5 ++++-
+ arch/x86/include/asm/traps.h |    2 +-
+ arch/x86/kernel/traps.c      |   19 +++++++------------
+ 3 files changed, 12 insertions(+), 14 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -199,7 +199,7 @@ void __init check_bugs(void)
- void
- x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -1041,9 +1041,12 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
+ 	 */
+-	mov	%rsp, %rdi
++	popq	%r12				/* save return addr in %12 */
++	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+ 	mov	%rax, %rsp
++	ENCODE_FRAME_POINTER
++	pushq	%r12
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
+ 
+--- a/arch/x86/include/asm/traps.h
++++ b/arch/x86/include/asm/traps.h
+@@ -13,7 +13,7 @@
+ #ifdef CONFIG_X86_64
+ asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
+ asmlinkage __visible notrace
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s);
++struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
+ void __init trap_init(void);
+ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
+ #endif
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -762,14 +762,10 @@ sync:
+ }
+ #endif
+ 
+-struct bad_iret_stack {
+-	void *error_entry_ret;
+-	struct pt_regs regs;
+-};
+-
+-asmlinkage __visible noinstr
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
++asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
  {
--	u64 msrval, guestval, hostval = x86_spec_ctrl_base;
-+	u64 msrval, guestval, hostval = spec_ctrl_current();
- 	struct thread_info *ti = current_thread_info();
++	struct pt_regs tmp, *new_stack;
++
+ 	/*
+ 	 * This is called from entry_64.S early in handling a fault
+ 	 * caused by a bad iret to user mode.  To handle the fault
+@@ -778,19 +774,18 @@ struct bad_iret_stack *fixup_bad_iret(st
+ 	 * just below the IRET frame) and we want to pretend that the
+ 	 * exception came from the IRET target.
+ 	 */
+-	struct bad_iret_stack tmp, *new_stack =
+-		(struct bad_iret_stack *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
++	new_stack = (struct pt_regs *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
  
- 	/* Is MSR_SPEC_CTRL implemented ? */
-@@ -212,15 +212,6 @@ x86_virt_spec_ctrl(u64 guest_spec_ctrl,
- 		guestval = hostval & ~x86_spec_ctrl_mask;
- 		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+ 	/* Copy the IRET target to the temporary storage. */
+-	__memcpy(&tmp.regs.ip, (void *)s->regs.sp, 5*8);
++	__memcpy(&tmp.ip, (void *)bad_regs->sp, 5*8);
  
--		/* SSBD controlled in MSR_SPEC_CTRL */
--		if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
--		    static_cpu_has(X86_FEATURE_AMD_SSBD))
--			hostval |= ssbd_tif_to_spec_ctrl(ti->flags);
--
--		/* Conditional STIBP enabled? */
--		if (static_branch_unlikely(&switch_to_cond_stibp))
--			hostval |= stibp_tif_to_spec_ctrl(ti->flags);
--
- 		if (hostval != guestval) {
- 			msrval = setguest ? guestval : hostval;
- 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
-@@ -1353,7 +1344,6 @@ static void __init spectre_v2_select_mit
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
+ 	/* Copy the remainder of the stack from the current stack. */
+-	__memcpy(&tmp, s, offsetof(struct bad_iret_stack, regs.ip));
++	__memcpy(&tmp, bad_regs, offsetof(struct pt_regs, ip));
  
- 	if (spectre_v2_in_ibrs_mode(mode)) {
--		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
- 		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 	}
+ 	/* Update the entry stack */
+ 	__memcpy(new_stack, &tmp, sizeof(tmp));
+ 
+-	BUG_ON(!user_mode(&new_stack->regs));
++	BUG_ON(!user_mode(new_stack));
+ 	return new_stack;
+ }
+ #endif
 
 
