@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E22AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3817C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 12 Jul 2022 19:05:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235501AbiGLTFt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 15:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
+        id S235508AbiGLTFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 15:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235604AbiGLTEo (ORCPT
+        with ESMTP id S235362AbiGLTDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 15:04:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DF7AE2A02;
-        Tue, 12 Jul 2022 11:50:39 -0700 (PDT)
+        Tue, 12 Jul 2022 15:03:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76689DE9F8;
+        Tue, 12 Jul 2022 11:49:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E4561123;
-        Tue, 12 Jul 2022 18:50:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13BEDC3411C;
-        Tue, 12 Jul 2022 18:50:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 695CCB81BBB;
+        Tue, 12 Jul 2022 18:49:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C79C3411C;
+        Tue, 12 Jul 2022 18:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657651838;
-        bh=Cq8kwYR3M3xSpGQFndrKuZbXxfEqHHm+eKh1HLi6Fxk=;
+        s=korg; t=1657651791;
+        bh=fD9UbnWpLXen5tP3V386PPvs7Tyq7aiskcIzVqVuzmg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iKyKY2RRB4se7W7B0K0e5F+vxMB43xLylTpxmn4DpuhFgcJov9YHgQZDbmaVTvMbX
-         hdBaxcWegd5uBOjVG9f46qPdpgclKpISeZyAOLjakwSu6Umt2DRD+x4JT2PUZ2qX6u
-         sSFOYIV7Fgv34wYjsfKGNdxJ4AZIVMXoPwL1Y6vw=
+        b=bNdLzA9pZ99HcQa9zyR+GxGC5/49YJBYWtlMLu1v2TMM5OFCY0I2vW3Rgt1lGtJ31
+         +x2xQwPSwReNopgrUDSuo+US9F0M+NXb3XKrNCYAJtChQ+wDcH0QBsDgVhmEvf9tvQ
+         tnnLuqE7lmzP+HLgJFBb43Y3Eeu2MdgIGAvveVGI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 73/78] x86/bugs: Add Cannon lake to RETBleed affected CPU list
-Date:   Tue, 12 Jul 2022 20:39:43 +0200
-Message-Id: <20220712183241.841806219@linuxfoundation.org>
+Subject: [PATCH 5.15 59/78] x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n
+Date:   Tue, 12 Jul 2022 20:39:29 +0200
+Message-Id: <20220712183241.265719032@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.0
 In-Reply-To: <20220712183238.844813653@linuxfoundation.org>
 References: <20220712183238.844813653@linuxfoundation.org>
@@ -50,30 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit f54d45372c6ac9c993451de5e51312485f7d10bc upstream.
+commit b2620facef4889fefcbf2e87284f34dcd4189bce upstream.
 
-Cannon lake is also affected by RETBleed, add it to the list.
+If a kernel is built with CONFIG_RETPOLINE=n, but the user still wants
+to mitigate Spectre v2 using IBRS or eIBRS, the RSB filling will be
+silently disabled.
 
-Fixes: 6ad0ad2bf8a6 ("x86/bugs: Report Intel retbleed vulnerability")
-Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+There's nothing retpoline-specific about RSB buffer filling.  Remove the
+CONFIG_RETPOLINE guards around it.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/common.c |    1 +
- 1 file changed, 1 insertion(+)
+ arch/x86/entry/entry_32.S            |    2 --
+ arch/x86/entry/entry_64.S            |    2 --
+ arch/x86/include/asm/nospec-branch.h |    2 --
+ 3 files changed, 6 deletions(-)
 
---- a/arch/x86/kernel/cpu/common.c
-+++ b/arch/x86/kernel/cpu/common.c
-@@ -1132,6 +1132,7 @@ static const struct x86_cpu_id cpu_vuln_
- 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPING_ANY,		SRBDS | MMIO | RETBLEED),
-+	VULNBL_INTEL_STEPPINGS(CANNONLAKE_L,	X86_STEPPING_ANY,		RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPING_ANY,		MMIO | MMIO_SBDS | RETBLEED),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPING_ANY,		MMIO),
- 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPING_ANY,		MMIO),
+--- a/arch/x86/entry/entry_32.S
++++ b/arch/x86/entry/entry_32.S
+@@ -701,7 +701,6 @@ SYM_CODE_START(__switch_to_asm)
+ 	movl	%ebx, PER_CPU_VAR(__stack_chk_guard)
+ #endif
+ 
+-#ifdef CONFIG_RETPOLINE
+ 	/*
+ 	 * When switching from a shallower to a deeper call stack
+ 	 * the RSB may either underflow or use entries populated
+@@ -710,7 +709,6 @@ SYM_CODE_START(__switch_to_asm)
+ 	 * speculative execution to prevent attack.
+ 	 */
+ 	FILL_RETURN_BUFFER %ebx, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
+-#endif
+ 
+ 	/* Restore flags or the incoming task to restore AC state. */
+ 	popfl
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -248,7 +248,6 @@ SYM_FUNC_START(__switch_to_asm)
+ 	movq	%rbx, PER_CPU_VAR(fixed_percpu_data) + stack_canary_offset
+ #endif
+ 
+-#ifdef CONFIG_RETPOLINE
+ 	/*
+ 	 * When switching from a shallower to a deeper call stack
+ 	 * the RSB may either underflow or use entries populated
+@@ -257,7 +256,6 @@ SYM_FUNC_START(__switch_to_asm)
+ 	 * speculative execution to prevent attack.
+ 	 */
+ 	FILL_RETURN_BUFFER %r12, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
+-#endif
+ 
+ 	/* restore callee-saved registers */
+ 	popq	%r15
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -122,11 +122,9 @@
+   * monstrosity above, manually.
+   */
+ .macro FILL_RETURN_BUFFER reg:req nr:req ftr:req
+-#ifdef CONFIG_RETPOLINE
+ 	ALTERNATIVE "jmp .Lskip_rsb_\@", "", \ftr
+ 	__FILL_RETURN_BUFFER(\reg,\nr,%_ASM_SP)
+ .Lskip_rsb_\@:
+-#endif
+ .endm
+ 
+ /*
 
 
