@@ -2,112 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0546C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6761C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:59:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232142AbiGMF61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 01:58:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37820 "EHLO
+        id S233362AbiGMF7a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 01:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233669AbiGMF6N (ORCPT
+        with ESMTP id S230237AbiGMF72 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 01:58:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71414735BF;
-        Tue, 12 Jul 2022 22:58:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7F09B81D05;
-        Wed, 13 Jul 2022 05:58:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B401C34114;
-        Wed, 13 Jul 2022 05:58:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657691887;
-        bh=+TFecpe9VYqNJy3cLeqbEtIOTbGwOcH+jyHof4F95ls=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IsYLPU1Bjagy0Wep8RytHKxRpNtS30kzPubfzlikEyjPw/ExMjGxAGav4P+/99i36
-         OaQOrrzkM2yQPa58rSwFx57FHmxUpG+VEarOKajzEv9kPTBvkIZeAjiuf3mIUPUsnM
-         zTDKVhyWMekJyQYgETZGZ2Xivd69UjLMgRa7yDqrEMsD/6RLet6aX9AaZOZg95LwHN
-         GZWmFZAKu4zfIJJ74KREfuKVr5Dil0UFdETQbDLNfPVVBCWOJj920BJ7jbQaAXHXog
-         VL/gUZv+YVTVcNPrf7EebY0W9Bax8aHtRJVumxqomKF8JExBPOKDM6sKM1yP6r5lnv
-         HFIoC4PoOkfJA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oBVNx-0000Cp-2E; Wed, 13 Jul 2022 07:58:09 +0200
-Date:   Wed, 13 Jul 2022 07:58:09 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
-Message-ID: <Ys5e8StvLMj5LBLm@hovoldconsulting.com>
-References: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
- <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
- <YszcSgnSrbsncw0J@ripper>
- <Ys2K/BH/kAeTBz5t@hovoldconsulting.com>
- <Ys4lnuVncPiWkjbH@builder.lan>
+        Wed, 13 Jul 2022 01:59:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9AD3541997
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:59:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657691965;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mzD6kdHxiY7mtO/Z6JY7Tp5Pi+RySdvVPmDOY2LGqsM=;
+        b=eoFQQJPS+Lf3vZo1LDu/2js+PT2/an07gcJF5gY9ulFG1RaPeYaf2M81RtZY+OEErBGLnS
+        yTOqAN9txdq2PO2VDAFW+SnOKaSEIqUfsMfANGb9kyMxTAvRnUsMT2Aq8zdRFS38JVeInW
+        qU7Dc4Q6CXXXuSiaKx9I9t1ChLYlTbs=
+Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
+ [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-307-YutpjvuLMPm-mKdVF4meog-1; Wed, 13 Jul 2022 01:59:23 -0400
+X-MC-Unique: YutpjvuLMPm-mKdVF4meog-1
+Received: by mail-pf1-f198.google.com with SMTP id f13-20020a056a001acd00b0052ab9ae76fbso3411773pfv.20
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:59:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mzD6kdHxiY7mtO/Z6JY7Tp5Pi+RySdvVPmDOY2LGqsM=;
+        b=vmZJHv7u4bxoutvZaoe7t+lGgqHW4EqcFTdz0jEULdwOIbQSgd9V+toLRkEvP4K5GR
+         pjpNNZ5UsTsYNaBQwSiDXPodmOqholzLQsCdhYXvz/0BWBmuRj47RbSlTXz2LX45iyFF
+         lP6yJptpewuERL5SAxAmkZMyrfO+N2d0vqr6JAZ6AA9NMMFxPnVVVhO1TC07qKSL7Jpp
+         Ypa2jlUcpzsUMqwLd4jG9jfh4onLOd7miaoCI/sY5C/3z5LpobMLElZ+LEHks7+fCknh
+         BGgLtgQbv/nBi/4nn9sIQwIilJjjM5+fcc2KWK38RNUFF7ygcfbliPm3wSj5w3N2Iyga
+         sYpA==
+X-Gm-Message-State: AJIora8cxEEK1hncVuE0j2qON7SBD8Z233Bm4ok9PUWp9IrhfOL1ge1D
+        loMj9+D46AQ4+Mg3VUflAIOa5HVERBbKTr0l3ezQ2+gelYKleYGl7Cmg4XNS+gaJxMBid9Bq3FB
+        t9Hb7jCJ5gBqLAQ1MFo7lcOw4
+X-Received: by 2002:a05:6a00:319c:b0:52a:ccb2:ee0b with SMTP id bj28-20020a056a00319c00b0052accb2ee0bmr1537214pfb.59.1657691962687;
+        Tue, 12 Jul 2022 22:59:22 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uWhjXpvdfdtRhWbr1DHQCetvgqmrYhUYE0vPFHOhNUEsXrMGuKxs6K+M0pz7/rLa0NzPcRMQ==
+X-Received: by 2002:a05:6a00:319c:b0:52a:ccb2:ee0b with SMTP id bj28-20020a056a00319c00b0052accb2ee0bmr1537192pfb.59.1657691962403;
+        Tue, 12 Jul 2022 22:59:22 -0700 (PDT)
+Received: from [10.72.12.200] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id t123-20020a625f81000000b0052842527052sm7769513pfb.189.2022.07.12.22.59.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 22:59:21 -0700 (PDT)
+Message-ID: <44610c2a-9fd1-8d15-a792-a96900e89424@redhat.com>
+Date:   Wed, 13 Jul 2022 13:59:17 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys4lnuVncPiWkjbH@builder.lan>
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/5] vduse: Use memcpy_{to,from}_page() in do_bounce()
+Content-Language: en-US
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        xiaodong.liu@intel.com, maxime.coquelin@redhat.com,
+        stefanha@redhat.com
+Cc:     songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220706050503.171-1-xieyongji@bytedance.com>
+ <20220706050503.171-3-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220706050503.171-3-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 08:53:34PM -0500, Bjorn Andersson wrote:
-> On Tue 12 Jul 09:53 CDT 2022, Johan Hovold wrote:
-> > On Mon, Jul 11, 2022 at 07:28:26PM -0700, Bjorn Andersson wrote:
-> > > On Mon 11 Jul 01:56 PDT 2022, Johan Hovold wrote:
 
-> > > > While addressing the current issue, this looks odd to me. Why not use a
-> > > > non-zero parent bus address here instead?
-> > > > 
-> > > 
-> > > I guess we could express the frames relative the timer range, but that
-> > > would imply that anyone porting downstream dts snippets would have to
-> > > translate these addresses - or more likely would end up just copying the
-> > > existing cases.
-> > > 
-> > > > And please use hex notation consistently for the addresses.
-> > > 
-> > > That seems like a reasonable ask, I can fix that up. But on both
-> > > accounts this matches what I merged for all the other platforms in:
-> > > 
-> > > 458ebdbb8e5d ("arm64: dts: qcom: timer should use only 32-bit size")
-> > > 
-> > > 
-> > > So I guess we'll also need to go back and fix up the style of all the
-> > > other platforms - just because we're not allowed to express the frames
-> > > in 64-bits according to the binding...
-> > 
-> > Would have been easier to just amend the binding. I don't think that
-> > #size-cells = 1 constraint is set in stone as it was added when
-> > converting to DT schema.
-> 
-> Rob disagrees with this idea:
-> https://lore.kernel.org/all/CAL_JsqJMMCBnukFZLJ8X14s1PwqT=VEwKjDVj8mm4h55pZpcuw@mail.gmail.com/
+在 2022/7/6 13:05, Xie Yongji 写道:
+> kmap_atomic() is being deprecated in favor of kmap_local_page().
+>
+> The use of kmap_atomic() in do_bounce() is all thread local therefore
+> kmap_local_page() is a sufficient replacement.
+>
+> Convert to kmap_local_page() but, instead of open coding it,
+> use the helpers memcpy_to_page() and memcpy_from_page().
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
-Ok, thanks for the link. I'd still prefer a non-zero parent-bus address
-in that ranges, but we can change that later too.
 
-> > But you probably should amend the commit message and mention that this
-> > fixes time keeping. I had recently noticed that something was off
-> > (journals rotating, and erratic cursor blinking) but didn't realise that
-> > timers were broken until you posted this.
-> > 
-> 
-> That sounds like a good idea, thanks for the suggestion.
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-I guess you're posting a v2, but otherwise feel free to add my 
 
-Reviewed-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>   drivers/vdpa/vdpa_user/iova_domain.c | 9 ++++-----
+>   1 file changed, 4 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+> index bca1f0b8850c..50d7c08d5450 100644
+> --- a/drivers/vdpa/vdpa_user/iova_domain.c
+> +++ b/drivers/vdpa/vdpa_user/iova_domain.c
+> @@ -138,18 +138,17 @@ static void do_bounce(phys_addr_t orig, void *addr, size_t size,
+>   {
+>   	unsigned long pfn = PFN_DOWN(orig);
+>   	unsigned int offset = offset_in_page(orig);
+> -	char *buffer;
+> +	struct page *page;
+>   	unsigned int sz = 0;
+>   
+>   	while (size) {
+>   		sz = min_t(size_t, PAGE_SIZE - offset, size);
+>   
+> -		buffer = kmap_atomic(pfn_to_page(pfn));
+> +		page = pfn_to_page(pfn);
+>   		if (dir == DMA_TO_DEVICE)
+> -			memcpy(addr, buffer + offset, sz);
+> +			memcpy_from_page(addr, page, offset, sz);
+>   		else
+> -			memcpy(buffer + offset, addr, sz);
+> -		kunmap_atomic(buffer);
+> +			memcpy_to_page(page, offset, addr, sz);
+>   
+>   		size -= sz;
+>   		pfn++;
 
-when applying.
-
-Johan
