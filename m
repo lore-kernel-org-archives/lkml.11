@@ -2,512 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95502C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7727EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236244AbiGMLhP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58934 "EHLO
+        id S236266AbiGMLhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236303AbiGMLgy (ORCPT
+        with ESMTP id S236278AbiGMLhd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:36:54 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCD5A1034DE;
-        Wed, 13 Jul 2022 04:36:45 -0700 (PDT)
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26D8hvKq023204;
-        Wed, 13 Jul 2022 13:36:31 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=8cQ2NRTb5Ihj6lzHzXJhmVxBTeeGDb5danX1gPceYE8=;
- b=6B4K/RjQttF3VW81USeQQydKpE3ct1h/+4jfFozoQyaZ/mBkynrwW9a/OoY3bRAhia+4
- rihSs0poPA28HP4V0c29wSFKfQHLmf+vgx1H638T9VhWqKlx6P6cSefa2g+/U6Nltf6N
- 0MG//XsOAnJNjb+/SXFaIUiBj7715ei8N5SdcJxvMyNEOvEDWUkXoKkIaMY3Ilb2K8SC
- r4ScUpk34QbDfefWr80njDPqHO3CLcXUj9vwSOpEo/ACRUKn7GYTBfWz/dXvj86tzD9I
- asWXigsPxiit5/cIesatqJnbz97zJQI2EkfT9zL2paph3gmiwPA7wHdqiBEmRU86QryH zg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h94gugp7j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 13:36:30 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 13CCF10003A;
-        Wed, 13 Jul 2022 13:36:30 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 0B23421D3A3;
-        Wed, 13 Jul 2022 13:36:30 +0200 (CEST)
-Received: from localhost (10.75.127.48) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 13 Jul
- 2022 13:36:29 +0200
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
-        Stefano Stabellini <stefanos@xilinx.com>,
-        Bruce Ashfield <bruce.ashfield@xilinx.com>,
-        <arnaud.pouliquen@foss.st.com>
-Subject: [PATCH v7 3/4] remoteproc: Move rproc_vdev management to remoteproc_virtio.c
-Date:   Wed, 13 Jul 2022 13:36:11 +0200
-Message-ID: <20220713113612.2117279-4-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.24.3
-In-Reply-To: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
-References: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
+        Wed, 13 Jul 2022 07:37:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D0AF102926
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:37:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657712251;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ca2hqxD2vo7dTzCT1zAWwZZgtWxXxx3S9VI85jE2vLg=;
+        b=eubIJJKjfCV4PYsoGnwejp2vM86iYbdL5yjOQiFYoiQ7/GypJkFsP60soMSS7XuxjzL3Nr
+        qMOj53YkDD+Z/OKOmmL0aj7oWiQtPrXOMqSYQN9Oz+5kODmMS0Jq7OtA9Sn+A3Z7f1ZS3i
+        TEVeQ69B6RDPuu4tzdclZ3bcvqkOnco=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-347-GEfrtshfOvWDmN3BnE3VgQ-1; Wed, 13 Jul 2022 07:37:29 -0400
+X-MC-Unique: GEfrtshfOvWDmN3BnE3VgQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 502123C2F765;
+        Wed, 13 Jul 2022 11:37:29 +0000 (UTC)
+Received: from lorien.usersys.redhat.com (unknown [10.22.32.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id BEE522026D07;
+        Wed, 13 Jul 2022 11:37:28 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 07:37:27 -0400
+From:   Phil Auld <pauld@redhat.com>
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki : --cc=" <rafael@kernel.org>,
+        Tian Tao <tiantao6@hisilicon.com>,
+        Barry Song <song.bao.hua@hisilicon.com>
+Subject: Re: [PATCH] drivers/base/node.c: fix userspace break from using
+ bin_attributes for cpumap and cpulist
+Message-ID: <Ys6ud4JmMGjktAlL@lorien.usersys.redhat.com>
+References: <20220712214301.809967-1-pauld@redhat.com>
+ <CAGsJ_4xG0az1-g8DWL-mEv_cF3ZBMe6j87m_cxeL9abvxGNW=g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_14,2022-07-13_02,2022-06-22_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGsJ_4xG0az1-g8DWL-mEv_cF3ZBMe6j87m_cxeL9abvxGNW=g@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move functions related to the management of the rproc_vdev
-structure in the remoteproc_virtio.c.
-The aim is to decorrelate as possible the virtio management from
-the core part.
+On Wed, Jul 13, 2022 at 11:18:59AM +1200 Barry Song wrote:
+> On Wed, Jul 13, 2022 at 9:58 AM Phil Auld <pauld@redhat.com> wrote:
+> >
+> > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
+> > This breaks userspace code that retrieves the size before reading the file. Rather
+> > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
+> > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
+> > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
+> > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960.
+> > In order to get near that you'd need a system with every other CPU on one node or
+> > something similar. e.g. (0,2,4,... 1024,1026...). We set it to a min of PAGE_SIZE
+> > to retain the older behavior. For cpumap, PAGE_SIZE is plenty big.
+> >
+> > On an 80 cpu 4-node system (NR_CPUS == 8192)
+> >
+> > before:
+> >
+> > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
+> > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
+> 
+> it is a fundamental problem of bin_attr, isn't it? when we don't know the
+> exact size of an attribute, and this size might become more than one
+> PAGE_SIZE, we use bin_attr to break the limitation. but the fact is that
+> we really don't know or it is really hard to know the actual size of the
+> attribute.
+>
 
-Due to the strong correlation between the vrings and the resource table
-the rproc_alloc/parse/free_vring functions are kept in the remoteproc core.
+But it broke userspace applications. I figured rather than revert it maybe
+we can find a max size to put in there and make it continue to work.
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> >
+> > after:
+> >
+> > -r--r--r--. 1 root root 40960 Jul 12 16:48 /sys/devices/system/node/node0/cpulist
+> > -r--r--r--. 1 root root  4096 Jul 12 15:50 /sys/devices/system/node/node0/cpumap
+> 
+> if we finally set a size which might be improper, it seems we defeat the
+> purpose we start to move to bin_attr?
+> 
+> >
+> > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > Signed-off-by: Phil Auld <pauld@redhat.com>
+> > ---
+> >  drivers/base/node.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/base/node.c b/drivers/base/node.c
+> > index 0ac6376ef7a1..291c69671f23 100644
+> > --- a/drivers/base/node.c
+> > +++ b/drivers/base/node.c
+> > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
+> >         return n;
+> >  }
+> >
+> > -static BIN_ATTR_RO(cpumap, 0);
+> > +static BIN_ATTR_RO(cpumap, PAGE_SIZE);
+> 
+> PAGE_SIZE is probably big enough, will we still calculate to get it rather than
+> hard coding?
 
----
-Update vs previous revision:
- - remove inappropriate rproc_rvdev_remove_device declaration in
-   remoteproc_internal.h
----
- drivers/remoteproc/remoteproc_core.c     | 156 +----------------------
- drivers/remoteproc/remoteproc_internal.h |  10 +-
- drivers/remoteproc/remoteproc_virtio.c   | 153 +++++++++++++++++++++-
- 3 files changed, 160 insertions(+), 159 deletions(-)
+This one is actually wrong. I did not realize how big a NR_CPUS people were actually using.
+It should be something like (NR_CPUS/4 + NR_CPUS/32). 
 
-diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
-index 13f0f8ef05a5..d3eca1da8aa1 100644
---- a/drivers/remoteproc/remoteproc_core.c
-+++ b/drivers/remoteproc/remoteproc_core.c
-@@ -23,9 +23,7 @@
- #include <linux/panic_notifier.h>
- #include <linux/slab.h>
- #include <linux/mutex.h>
--#include <linux/dma-map-ops.h>
- #include <linux/dma-mapping.h>
--#include <linux/dma-direct.h> /* XXX: pokes into bus_dma_range */
- #include <linux/firmware.h>
- #include <linux/string.h>
- #include <linux/debugfs.h>
-@@ -383,7 +381,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
- 	return 0;
- }
- 
--static int
-+int
- rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
- {
- 	struct rproc *rproc = rvdev->rproc;
-@@ -434,165 +432,17 @@ void rproc_free_vring(struct rproc_vring *rvring)
- 	}
- }
- 
--static int rproc_vdev_do_start(struct rproc_subdev *subdev)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--
--	return rproc_add_virtio_dev(rvdev, rvdev->id);
--}
--
--static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
--{
--	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
--	int ret;
--
--	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
--	if (ret)
--		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
--}
--
--/**
-- * rproc_rvdev_release() - release the existence of a rvdev
-- *
-- * @dev: the subdevice's dev
-- */
--static void rproc_rvdev_release(struct device *dev)
--{
--	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
--
--	of_reserved_mem_device_release(dev);
--
--	kfree(rvdev);
--}
--
--static int copy_dma_range_map(struct device *to, struct device *from)
--{
--	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
--	int num_ranges = 0;
--
--	if (!map)
--		return 0;
--
--	for (r = map; r->size; r++)
--		num_ranges++;
--
--	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
--			  GFP_KERNEL);
--	if (!new_map)
--		return -ENOMEM;
--	to->dma_range_map = new_map;
--	return 0;
--}
--
--static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
- {
- 	if (rvdev && rproc)
- 		list_add_tail(&rvdev->node, &rproc->rvdevs);
- }
- 
--static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev)
- {
- 	if (rvdev)
- 		list_del(&rvdev->node);
- }
--
--static struct rproc_vdev *
--rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
--{
--	struct rproc_vdev *rvdev;
--	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
--	char name[16];
--	int i, ret;
--
--	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
--	if (!rvdev)
--		return ERR_PTR(-ENOMEM);
--
--	kref_init(&rvdev->refcount);
--
--	rvdev->id = rvdev_data->id;
--	rvdev->rproc = rproc;
--	rvdev->index = rvdev_data->index;
--
--	/* Initialise vdev subdevice */
--	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
--	rvdev->dev.parent = &rproc->dev;
--	rvdev->dev.release = rproc_rvdev_release;
--	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
--	dev_set_drvdata(&rvdev->dev, rvdev);
--
--	ret = device_register(&rvdev->dev);
--	if (ret) {
--		put_device(&rvdev->dev);
--		return ERR_PTR(ret);
--	}
--
--	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
--	if (ret)
--		goto free_rvdev;
--
--	/* Make device dma capable by inheriting from parent's capabilities */
--	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
--
--	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
--					   dma_get_mask(rproc->dev.parent));
--	if (ret) {
--		dev_warn(&rvdev->dev,
--			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
--			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
--	}
--
--	/* parse the vrings */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_parse_vring(rvdev, rsc, i);
--		if (ret)
--			goto free_rvdev;
--	}
--
--	/* remember the resource offset*/
--	rvdev->rsc_offset = rvdev_data->rsc_offset;
--
--	/* allocate the vring resources */
--	for (i = 0; i < rsc->num_of_vrings; i++) {
--		ret = rproc_alloc_vring(rvdev, i);
--		if (ret)
--			goto unwind_vring_allocations;
--	}
--
--	rproc_add_rvdev(rproc, rvdev);
--
--	rvdev->subdev.start = rproc_vdev_do_start;
--	rvdev->subdev.stop = rproc_vdev_do_stop;
--
--	rproc_add_subdev(rproc, &rvdev->subdev);
--
--	return rvdev;
--
--unwind_vring_allocations:
--	for (i--; i >= 0; i--)
--		rproc_free_vring(&rvdev->vring[i]);
--free_rvdev:
--	device_unregister(&rvdev->dev);
--	return ERR_PTR(ret);
--}
--
--void rproc_vdev_release(struct kref *ref)
--{
--	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
--	struct rproc_vring *rvring;
--	struct rproc *rproc = rvdev->rproc;
--	int id;
--
--	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
--		rvring = &rvdev->vring[id];
--		rproc_free_vring(rvring);
--	}
--
--	rproc_remove_subdev(rproc, &rvdev->subdev);
--	rproc_remove_rvdev(rvdev);
--	device_unregister(&rvdev->dev);
--}
--
- /**
-  * rproc_handle_vdev() - handle a vdev fw resource
-  * @rproc: the remote processor
-diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
-index 07c503de0f95..711b0e1f2118 100644
---- a/drivers/remoteproc/remoteproc_internal.h
-+++ b/drivers/remoteproc/remoteproc_internal.h
-@@ -41,14 +41,13 @@ struct rproc_vdev_data {
- 
- /* from remoteproc_core.c */
- void rproc_release(struct kref *kref);
--irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
--void rproc_vdev_release(struct kref *ref);
- int rproc_of_parse_firmware(struct device *dev, int index,
- 			    const char **fw_name);
- 
- /* from remoteproc_virtio.c */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
--int rproc_remove_virtio_dev(struct device *dev, void *data);
-+struct rproc_vdev *rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data);
-+irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
-+void rproc_vdev_release(struct kref *ref);
- 
- /* from remoteproc_debugfs.c */
- void rproc_remove_trace_file(struct dentry *tfile);
-@@ -98,6 +97,7 @@ static inline void  rproc_char_device_remove(struct rproc *rproc)
- 
- void rproc_free_vring(struct rproc_vring *rvring);
- int rproc_alloc_vring(struct rproc_vdev *rvdev, int i);
-+int rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i);
- 
- phys_addr_t rproc_va_to_pa(void *cpu_addr);
- int rproc_trigger_recovery(struct rproc *rproc);
-@@ -110,6 +110,8 @@ struct resource_table *rproc_elf_find_loaded_rsc_table(struct rproc *rproc,
- 						       const struct firmware *fw);
- struct rproc_mem_entry *
- rproc_find_carveout_by_name(struct rproc *rproc, const char *name, ...);
-+void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev);
-+void rproc_remove_rvdev(struct rproc_vdev *rvdev);
- 
- static inline int rproc_prepare_device(struct rproc *rproc)
- {
-diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
-index 70ab496d0431..ccc95d4e42cf 100644
---- a/drivers/remoteproc/remoteproc_virtio.c
-+++ b/drivers/remoteproc/remoteproc_virtio.c
-@@ -9,7 +9,9 @@
-  * Brian Swetland <swetland@google.com>
-  */
- 
-+#include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
-+#include <linux/dma-mapping.h>
- #include <linux/export.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/remoteproc.h>
-@@ -23,6 +25,25 @@
- 
- #include "remoteproc_internal.h"
- 
-+static int copy_dma_range_map(struct device *to, struct device *from)
-+{
-+	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
-+	int num_ranges = 0;
-+
-+	if (!map)
-+		return 0;
-+
-+	for (r = map; r->size; r++)
-+		num_ranges++;
-+
-+	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
-+			  GFP_KERNEL);
-+	if (!new_map)
-+		return -ENOMEM;
-+	to->dma_range_map = new_map;
-+	return 0;
-+}
-+
- static struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
- {
- 	return container_of(vdev->dev.parent, struct rproc_vdev, dev);
-@@ -339,7 +360,7 @@ static void rproc_virtio_dev_release(struct device *dev)
-  *
-  * Return: 0 on success or an appropriate error value otherwise
-  */
--int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-+static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
- {
- 	struct rproc *rproc = rvdev->rproc;
- 	struct device *dev = &rvdev->dev;
-@@ -447,10 +468,138 @@ int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
-  *
-  * Return: 0
-  */
--int rproc_remove_virtio_dev(struct device *dev, void *data)
-+static int rproc_remove_virtio_dev(struct device *dev, void *data)
- {
- 	struct virtio_device *vdev = dev_to_virtio(dev);
- 
- 	unregister_virtio_device(vdev);
- 	return 0;
- }
-+
-+static int rproc_vdev_do_start(struct rproc_subdev *subdev)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+
-+	return rproc_add_virtio_dev(rvdev, rvdev->id);
-+}
-+
-+static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
-+{
-+	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
-+	int ret;
-+
-+	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
-+	if (ret)
-+		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
-+}
-+
-+/**
-+ * rproc_rvdev_release() - release the existence of a rvdev
-+ *
-+ * @dev: the subdevice's dev
-+ */
-+static void rproc_rvdev_release(struct device *dev)
-+{
-+	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
-+
-+	of_reserved_mem_device_release(dev);
-+
-+	kfree(rvdev);
-+}
-+
-+struct rproc_vdev *
-+rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
-+{
-+	struct rproc_vdev *rvdev;
-+	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
-+	char name[16];
-+	int i, ret;
-+
-+	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
-+	if (!rvdev)
-+		return ERR_PTR(-ENOMEM);
-+
-+	kref_init(&rvdev->refcount);
-+
-+	rvdev->id = rvdev_data->id;
-+	rvdev->rproc = rproc;
-+	rvdev->index = rvdev_data->index;
-+
-+	/* Initialise vdev subdevice */
-+	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
-+	rvdev->dev.parent = &rproc->dev;
-+	rvdev->dev.release = rproc_rvdev_release;
-+	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
-+	dev_set_drvdata(&rvdev->dev, rvdev);
-+
-+	ret = device_register(&rvdev->dev);
-+	if (ret) {
-+		put_device(&rvdev->dev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
-+	if (ret)
-+		goto free_rvdev;
-+
-+	/* Make device dma capable by inheriting from parent's capabilities */
-+	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
-+
-+	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
-+					   dma_get_mask(rproc->dev.parent));
-+	if (ret) {
-+		dev_warn(&rvdev->dev,
-+			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
-+			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
-+	}
-+
-+	/* parse the vrings */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_parse_vring(rvdev, rsc, i);
-+		if (ret)
-+			goto free_rvdev;
-+	}
-+
-+	/* remember the resource offset*/
-+	rvdev->rsc_offset = rvdev_data->rsc_offset;
-+
-+	/* allocate the vring resources */
-+	for (i = 0; i < rsc->num_of_vrings; i++) {
-+		ret = rproc_alloc_vring(rvdev, i);
-+		if (ret)
-+			goto unwind_vring_allocations;
-+	}
-+
-+	rproc_add_rvdev(rproc, rvdev);
-+
-+	rvdev->subdev.start = rproc_vdev_do_start;
-+	rvdev->subdev.stop = rproc_vdev_do_stop;
-+
-+	rproc_add_subdev(rproc, &rvdev->subdev);
-+
-+	return rvdev;
-+
-+unwind_vring_allocations:
-+	for (i--; i >= 0; i--)
-+		rproc_free_vring(&rvdev->vring[i]);
-+free_rvdev:
-+	device_unregister(&rvdev->dev);
-+	return ERR_PTR(ret);
-+}
-+
-+void rproc_vdev_release(struct kref *ref)
-+{
-+	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
-+	struct rproc_vring *rvring;
-+	struct rproc *rproc = rvdev->rproc;
-+	int id;
-+
-+	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
-+		rvring = &rvdev->vring[id];
-+		rproc_free_vring(rvring);
-+	}
-+
-+	rproc_remove_subdev(rproc, &rvdev->subdev);
-+	rproc_remove_rvdev(rvdev);
-+	device_unregister(&rvdev->dev);
-+}
+> 
+> >
+> >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> >                                    struct bin_attribute *attr, char *buf,
+> > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> >         return n;
+> >  }
+> >
+> > -static BIN_ATTR_RO(cpulist, 0);
+> > +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 5) > PAGE_SIZE) ? NR_CPUS *5 : PAGE_SIZE));
+> 
+> I am still not sure why it is NR_CPUS * 5. Is 5 bytes big enough to
+> describe the number
+> of cpu id? technically it seems not,  for example,  for cpuid=100000,
+> we need at least 6
+> bytes.
+
+Sure. As I said in the comment I wanted to do NR_CPUS * (ceil(log10(NR_CPUS)) + 1) but doing
+that math in the kernel was messy. So I used 5. Even that is probably way bigger than needed.
+Are there really 100000 cpus on one node with discontiguous cpuids? "0-99999" is only, what,
+9 characters?
+
+We can put whatever number you want that is >= the size the read will return.
+
+Thanks,
+Phil
+
+> 
+> BTW, my silly question is that what if we set the size to MAXIMUM int?
+> Will it fix
+> the userspace fsstat?
+> 
+> >
+> >  /**
+> >   * struct node_access_nodes - Access class device to hold user visible
+> > --
+> > 2.31.1
+> >
+> 
+> Thanks
+> Barry
+> 
+
 -- 
-2.24.3
 
