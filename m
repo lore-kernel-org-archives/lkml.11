@@ -2,307 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08ED1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:51:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC538C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234838AbiGMMvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        id S234751AbiGMMvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234908AbiGMMvQ (ORCPT
+        with ESMTP id S231649AbiGMMvm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:51:16 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C56D3ED63
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:11 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id dn9so19658861ejc.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:11 -0700 (PDT)
+        Wed, 13 Jul 2022 08:51:42 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5170031926
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:41 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id j27so1185942qtv.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YqWHK6Yyk33dx1tcMFDdwo1FbX9l1ulzWZZtM5OCjfw=;
-        b=iE32R9noTVPQSi1sdjYoHbPRtfCp3JNWbqZrqOx3kw2qvmainEK2KrqqQJYRJaW2eU
-         izZJaFQIjMKuQw+UVTH1YLI78hiBCopre3HB+zfvSYW1yqRhwsUipedpODOB63aaR4s7
-         3xgbZN7g8HSB1JKxrXzIt96/2olgbOtdd/j9qAJiQznsgy8yZHyBiDsSeExKEe+CKGuf
-         vlHAnvr6KGMXMJltKN73cEklTR85JFzI7Stns+iGDCBqJFSc6TalYROOOYfEB6ZTJQAf
-         rO9XduyUvnw0fX7KKDi3RcxC0HH2k/0qH84DIUaqV/g8wYNo/i7w76qSLBvRTdijBrUP
-         wjFA==
+        bh=YeVsRv8F2tSBJckt36xHpfvvwVi5AqXK04hh4c63th4=;
+        b=ReuVylsEBkkFjRwRW4d7tjBE2kSJe+cRTDXIdS+5/Jo8Y9V7lfH5wgm3FqGPHZe0sG
+         McKsc27g/mXkoTDHAG+NJGtdyKrIxXz9AfzNEu94aflT6qbmeSfS9FDP7ELnjhtV7wVI
+         eShWOkFRTYJzdGhakKNea0/x5Xt93TcLAbDBiKwRFllvcqHri0BJjFjsV133GqKQnKQx
+         w3lUJPpkdWtBxWWahW/ndWlGlQZ3sGKhiXX5MO12NYkjrvI4G8WYEOTt+0nMje550qm5
+         CuRPn3H+DwfzIdCQ+GuFmB9LP0VrZ9/gzpxfwwjD35VAZrDrCkty3dIZV4MPUY62OVP7
+         A8gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YqWHK6Yyk33dx1tcMFDdwo1FbX9l1ulzWZZtM5OCjfw=;
-        b=6S5umprP8oP11cih/JC7+RHuIHdg0KaU121fE8av7YNEVi5CupGThxS1PjThSqsy+W
-         XKfGdj1v7vFxJuXQv2PKEA7Ufl9RTPbMop2co5GtoPgaqhnnBYOedm+OiGAtFFb5T3Sq
-         d7w8oWjlU9+5LxlQLKDcs1A/S92eFqNVnnu6viBIL1yY4C+Jbf81G/Liz+tdpIRUDrUV
-         TOB51Xe3G+PEb+dgZ/7reyQZ0XJm0Xx8ZoWLMR4bRWAuJ5Exve4vdcTq9CmGKwZrSMJG
-         euemACiHSmvauV5b+NAgqCFGz2+m71liGLdRjA7NLA/pTfe2A2T/q8jI/M30Xr8zIN/N
-         UjgA==
-X-Gm-Message-State: AJIora/Mpw+gJ7NB9J7GrA3x3iTU0r2UlyMFmlNWckeZvv0eYmAzVjYT
-        uLjNNl5c7AkEh+6rLc90fCU=
-X-Google-Smtp-Source: AGRyM1s8n5o93jOVOC41BNSFpna1hREU+5q946zt0VcHa9z5vnQ1Xtu9sVkHABx9NdzT/9NS4G61MQ==
-X-Received: by 2002:a17:906:5055:b0:6ff:1dfb:1e2c with SMTP id e21-20020a170906505500b006ff1dfb1e2cmr3432779ejk.200.1657716669851;
-        Wed, 13 Jul 2022 05:51:09 -0700 (PDT)
-Received: from PCBABN.skidata.net ([2001:67c:2330:2014:7a45:c4ff:fe0f:c570])
-        by smtp.gmail.com with ESMTPSA id s17-20020a056402037100b00437938c731fsm7898593edw.97.2022.07.13.05.51.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 05:51:08 -0700 (PDT)
-From:   Benjamin Bara <bbara93@gmail.com>
-To:     support.opensource@diasemi.com, lgirdwood@gmail.com,
-        broonie@kernel.org, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org,
-        Benjamin Bara <benjamin.bara@skidata.com>,
-        Richard Leitner <richard.leitner@skidata.com>
-Subject: [PATCH] regulator: da9063: disable unused voltage monitors
-Date:   Wed, 13 Jul 2022 14:49:58 +0200
-Message-Id: <20220713124958.3094505-1-bbara93@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        bh=YeVsRv8F2tSBJckt36xHpfvvwVi5AqXK04hh4c63th4=;
+        b=mMmvjrwb28WPPzljZDZZR4OIeQTPrPoovvKmUqp7fDfhPCPrXe8CSZYPjCYQ+df41c
+         MmLXc/t8RQT1UmobTg/WkJNmoAk86xaUzKHVb1RmPTyrLeVCVx/a79Z7FX4rLuTFDUNC
+         5d6LZOeGNDc+PVFSzpZ36YENDXWsBSQBW9FE7xfLypOIEJzACylH9xOpMcmUBu+U5IMp
+         Xge+junLF+I87HVjoZDQMzH7VoApMbgPUyLme3KlRZeTu9TlCTNwYo2MxqVzjXnWrqf9
+         e8AkMNqlEKnuzILdK1POjt7hJE3aQ8kVEcnf4WDT1W2EBgaHarM1YOBumQExB+WcJfkJ
+         ZoMA==
+X-Gm-Message-State: AJIora99bflT/kKl2aJsLGLgsOpdeDNU7dkmjAAu4DZDecxrrGvaYcyI
+        QE2ZiCOTIQ5Beo3ykSIGoLCpdLHMEb0TCA==
+X-Google-Smtp-Source: AGRyM1sykaC0cYvh/xFqQVVKqrcwZFR6ktNhqxnB2seYX+V7cMFga1TfnyoT4PM73sUUEfbMqaReUw==
+X-Received: by 2002:a05:622a:110e:b0:31e:b568:b5a5 with SMTP id e14-20020a05622a110e00b0031eb568b5a5mr2636989qty.54.1657716700373;
+        Wed, 13 Jul 2022 05:51:40 -0700 (PDT)
+Received: from MBP.hobot.cc (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
+        by smtp.gmail.com with ESMTPSA id ay2-20020a05622a228200b0031ea95094dcsm3484464qtb.72.2022.07.13.05.51.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 13 Jul 2022 05:51:39 -0700 (PDT)
+From:   Schspa Shi <schspa@gmail.com>
+To:     jiangshanlai@gmail.com, tj@kernel.org
+Cc:     linux-kernel@vger.kernel.org, zhaohui.shi@horizon.ai,
+        Schspa Shi <schspa@gmail.com>
+Subject: [PATCH v2] workqueue: Use active mask for new worker when pool is DISASSOCIATED
+Date:   Wed, 13 Jul 2022 20:51:23 +0800
+Message-Id: <20220713125123.8701-1-schspa@gmail.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Bara <benjamin.bara@skidata.com>
+When CPU-[un]hotplugs, all workers will be bound to active CPU via
+unbind_workers().
 
-This enables the kernel to disable the voltage monitor of unused regs.
+But the unbound worker still has a chance to create a new worker, which
+has bound the newly created task to pool->attrs->cpumask. But the CPU has
+been unplugged.
 
-Some boards might use the PWR_OK functionality, which asserts GP_FB2
-if each measured voltage is in-range.
-However, if a regulator (which is enabled and monitored) is disabled,
-also its voltage monitor must be disabled to keep a valid PWR_OK state.
+Please refer to the following scenarios.
 
-Signed-off-by: Benjamin Bara <benjamin.bara@skidata.com>
-Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
+           CPU0                                  CPU1
+------------------------------------------------------------------
+sched_cpu_deactivate(cpu_active_mask clear)
+workqueue_offline_cpu(work pool POOL_DISASSOCIATED)
+  -- all worker will migrate to another cpu --
+                                    worker_thread
+                                    -- will create new worker if
+                                       pool->worklist is not empty
+                                       create_worker()
+                                     -- new kworker will bound to CPU0
+                               (pool->attrs->cpumask will be mask of CPU0).
+      kworker/0:x will running on rq
+
+sched_cpu_dying
+  if (rq->nr_running != 1 || rq_has_pinned_tasks(rq))
+    WARN(true, "Dying CPU not properly vacated!");
+      ---------OOPS-------------
+
+And the crash log as fellowing.
+
+The crash log is as follows:
+[ 1622.829074] ------------[ cut here ]------------
+[ 1622.829081] Dying CPU not properly vacated!
+[ 1622.829091] WARNING: CPU: 3 PID: 31 at kernel/sched/core.c:7756 sched_cpu_dying+0x74/0x204
+[ 1622.829374] CPU: 3 PID: 31 Comm: migration/3 Tainted: P           O      5.10.59-rt52 #2
+[ 1622.829386] Stopper: multi_cpu_stop+0x0/0x160 <- 0x0
+[ 1622.829400] pstate: 60c00009 (nZCv daif +PAN +UAO -TCO BTYPE=--)
+[ 1622.829408] pc : sched_cpu_dying+0x74/0x204
+[ 1622.829415] lr : sched_cpu_dying+0x74/0x204
+[ 1622.829421] sp : ffff800012933c70
+[ 1622.829424] pmr_save: 00000060
+[ 1622.829426] x29: ffff800012933c70 x28: 0000000000000000
+[ 1622.829435] x27: 0000000000000000 x26: 0000000000000001
+[ 1622.829444] x25: 0000000000000000 x24: ffff800018353c2c
+[ 1622.829452] x23: 0000000000000003 x22: 0000000000000003
+[ 1622.829460] x21: 0000000000000059 x20: 0000000000000000
+[ 1622.829468] x19: ffff00027ee68a80 x18: 0000000000000000
+[ 1622.829477] x17: 0000000000000000 x16: 0000000000000000
+[ 1622.829485] x15: ffffffffffffffff x14: ffff80001169ae30
+[ 1622.829493] x13: ffffffffffc38c07 x12: ffffffffffffffff
+[ 1622.829501] x11: ffffffffffe00000 x10: ffff80001169ae58
+[ 1622.829510] x9 : 000000000000001e x8 : ffff80001169ae30
+[ 1622.829518] x7 : ffff800012933ab0 x6 : 00000000ffff0e20
+[ 1622.829526] x5 : ffff00027ee62988 x4 : 00000000ffff0e20
+[ 1622.829535] x3 : ffff800011e30180 x2 : 0000000100000002
+[ 1622.829543] x1 : 0000000000000000 x0 : 0000000000000000
+[ 1622.829552] Call trace:
+[ 1622.829555]  sched_cpu_dying+0x74/0x204
+[ 1622.829562]  cpuhp_invoke_callback+0xc0/0x1b0
+[ 1622.829571]  take_cpu_down+0xbc/0xd4
+[ 1622.829577]  multi_cpu_stop+0x138/0x160
+[ 1622.829584]  cpu_stopper_thread+0x9c/0x118
+[ 1622.829591]  smpboot_thread_fn+0x1e8/0x1ec
+[ 1622.829598]  kthread+0x114/0x124
+[ 1622.829606]  ret_from_fork+0x10/0x30
+[ 1622.829615] ---[ end trace 0000000000000002 ]---
+[ 1623.830273] CPU3 enqueued tasks (2 total):
+[ 1623.830291] 	pid: 31, name: migration/3
+[ 1623.830440] 	pid: 25654, name: kworker/3:0
+[ 1623.830444] task:kworker/3:0     state:R  running task     stack:    0 pid:25654 ppid:     2 flags:0x00000028
+[ 1623.830458] Call trace:
+[ 1623.830460]  __switch_to+0x164/0x17c
+[ 1623.830472]  __schedule+0x4cc/0x5c0
+[ 1623.830483]  schedule+0x7c/0xcc
+[ 1623.830491]  schedule_preempt_disabled+0x14/0x24
+[ 1623.830500]  kthread+0xd8/0x124
+[ 1623.830509]  ret_from_fork+0x10/0x30
+
+In the crash log, the error enqueued kworker(pid: 25654, name: kworker/3:0)
+is a newly created thread, and have bind to a unpluged CPU 3.
+
+Can crash dump can also verify this.
+crash> task -R nr_cpus_allowed,cpus_mask 25654
+PID: 25654  TASK: ffff000181ff0000  CPU: 3   COMMAND: "kworker/3:0"
+  nr_cpus_allowed = 1,
+  cpus_mask = {
+    bits = {8, 0}
+  },
+
+crash> struct worker_pool.cpu,nr_workers,attrs 0xffff00027ee68380
+  cpu = 3,
+  nr_workers = 3,
+  attrs = 0xffff000180004480,
+crash> struct workqueue_attrs 0xffff000180004480
+struct workqueue_attrs {
+  nice = 0,
+  cpumask = {{
+      bits = {8, 0}
+    }},
+  no_numa = false
+}
+
+The stack trace of the bad running task was dumped via the following patch:
+Link: https://lore.kernel.org/all/20220519161125.41144-1-schspa@gmail.com/
+And I think this debug patch needs to be added to the mainline,
+it can help us to debug this kind of problem
+
+To fix it, we can use cpu_active_mask when work pool is DISASSOCIATED.
+
+Signed-off-by: Schspa Shi <schspa@gmail.com>
+
+--
+
+Changelog:
+v1 -> v2:
+        - Move worker task bind to worker_attach_to_pool, remove extra
+        wq_pool_attach_mutex added.
+        - Add a timing diagram to make this question clearer.
 ---
- drivers/regulator/da9063-regulator.c | 51 ++++++++++++++++++++++++++--
- include/linux/mfd/da9063/registers.h | 23 +++++++++++++
- 2 files changed, 72 insertions(+), 2 deletions(-)
+ kernel/workqueue.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/regulator/da9063-regulator.c b/drivers/regulator/da9063-regulator.c
-index 82f52a2a031a..c0a8c88d9ef6 100644
---- a/drivers/regulator/da9063-regulator.c
-+++ b/drivers/regulator/da9063-regulator.c
-@@ -83,6 +83,9 @@ struct da9063_regulator_info {
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 1ea50f6be843..3f6e6d884793 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -1867,13 +1867,13 @@ static void worker_attach_to_pool(struct worker *worker,
+ 	 * stable across this function.  See the comments above the flag
+ 	 * definition for details.
+ 	 */
+-	if (pool->flags & POOL_DISASSOCIATED)
++	if (pool->flags & POOL_DISASSOCIATED) {
+ 		worker->flags |= WORKER_UNBOUND;
+-	else
++		set_cpus_allowed_ptr(worker->task, cpu_active_mask);
++	} else {
+ 		kthread_set_per_cpu(worker->task, pool->cpu);
+-
+-	if (worker->rescue_wq)
+ 		set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
++	}
  
- 	/* DA9063 event detection bit */
- 	struct reg_field oc_event;
-+
-+	/* DA9063 voltage monitor bit */
-+	struct reg_field vmon;
- };
+ 	list_add_tail(&worker->node, &pool->workers);
+ 	worker->pool = pool;
+@@ -1952,7 +1952,6 @@ static struct worker *create_worker(struct worker_pool *pool)
+ 		goto fail;
  
- /* Macros for LDO */
-@@ -148,6 +151,7 @@ struct da9063_regulator {
- 	struct regmap_field			*suspend;
- 	struct regmap_field			*sleep;
- 	struct regmap_field			*suspend_sleep;
-+	struct regmap_field			*vmon;
- };
+ 	set_user_nice(worker->task, pool->attrs->nice);
+-	kthread_bind_mask(worker->task, pool->attrs->cpumask);
  
- /* Encapsulates all information for the regulators driver */
-@@ -203,6 +207,24 @@ static const unsigned int da9063_bmem_bio_merged_limits[] = {
- 	4600000, 4800000, 5000000, 5200000, 5400000, 5600000, 5800000, 6000000
- };
- 
-+static int da9063_vmon_disable(struct regulator_dev *rdev)
-+{
-+	struct da9063_regulator *regl = rdev_get_drvdata(rdev);
-+
-+	return regmap_field_write(regl->vmon, 0);
-+}
-+
-+static int da9063_disable(struct regulator_dev *rdev)
-+{
-+	int ret;
-+
-+	ret = da9063_vmon_disable(rdev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return regulator_disable_regmap(rdev);
-+}
-+
- static int da9063_buck_set_mode(struct regulator_dev *rdev, unsigned int mode)
- {
- 	struct da9063_regulator *regl = rdev_get_drvdata(rdev);
-@@ -542,7 +564,7 @@ static int da9063_buck_get_current_limit(struct regulator_dev *rdev)
- 
- static const struct regulator_ops da9063_buck_ops = {
- 	.enable			= regulator_enable_regmap,
--	.disable		= regulator_disable_regmap,
-+	.disable		= da9063_disable,
- 	.is_enabled		= regulator_is_enabled_regmap,
- 	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
- 	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
-@@ -560,7 +582,7 @@ static const struct regulator_ops da9063_buck_ops = {
- 
- static const struct regulator_ops da9063_ldo_ops = {
- 	.enable			= regulator_enable_regmap,
--	.disable		= regulator_disable_regmap,
-+	.disable		= da9063_disable,
- 	.is_enabled		= regulator_is_enabled_regmap,
- 	.get_voltage_sel	= regulator_get_voltage_sel_regmap,
- 	.set_voltage_sel	= regulator_set_voltage_sel_regmap,
-@@ -581,36 +603,42 @@ static const struct da9063_regulator_info da9063_regulator_info[] = {
- 			    da9063_buck_a_limits,
- 			    DA9063_REG_BUCK_ILIM_C, DA9063_BCORE1_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BCORE1),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BCORE1_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BCORE2, 300, 10, 1570,
- 			    da9063_buck_a_limits,
- 			    DA9063_REG_BUCK_ILIM_C, DA9063_BCORE2_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BCORE2),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BCORE2_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BPRO, 530, 10, 1800,
- 			    da9063_buck_a_limits,
- 			    DA9063_REG_BUCK_ILIM_B, DA9063_BPRO_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BPRO),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BPRO_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BMEM, 800, 20, 3340,
- 			    da9063_buck_b_limits,
- 			    DA9063_REG_BUCK_ILIM_A, DA9063_BMEM_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BMEM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BMEM_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BIO, 800, 20, 3340,
- 			    da9063_buck_b_limits,
- 			    DA9063_REG_BUCK_ILIM_A, DA9063_BIO_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BIO),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BIO_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BPERI, 800, 20, 3340,
- 			    da9063_buck_b_limits,
- 			    DA9063_REG_BUCK_ILIM_B, DA9063_BPERI_ILIM_MASK),
- 		DA9063_BUCK_COMMON_FIELDS(BPERI),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BPERI_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BCORES_MERGED, 300, 10, 1570,
-@@ -618,6 +646,7 @@ static const struct da9063_regulator_info da9063_regulator_info[] = {
- 			    DA9063_REG_BUCK_ILIM_C, DA9063_BCORE1_ILIM_MASK),
- 		/* BCORES_MERGED uses the same register fields as BCORE1 */
- 		DA9063_BUCK_COMMON_FIELDS(BCORE1),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BCORE1_MON_EN),
- 	},
- 	{
- 		DA9063_BUCK(DA9063, BMEM_BIO_MERGED, 800, 20, 3340,
-@@ -625,47 +654,59 @@ static const struct da9063_regulator_info da9063_regulator_info[] = {
- 			    DA9063_REG_BUCK_ILIM_A, DA9063_BMEM_ILIM_MASK),
- 		/* BMEM_BIO_MERGED uses the same register fields as BMEM */
- 		DA9063_BUCK_COMMON_FIELDS(BMEM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_4, DA9063_BMEM_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO3, 900, 20, 3440),
- 		.oc_event = BFIELD(DA9063_REG_STATUS_D, DA9063_LDO3_LIM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO3_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO7, 900, 50, 3600),
- 		.oc_event = BFIELD(DA9063_REG_STATUS_D, DA9063_LDO7_LIM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO7_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO8, 900, 50, 3600),
- 		.oc_event = BFIELD(DA9063_REG_STATUS_D, DA9063_LDO8_LIM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO8_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO9, 950, 50, 3600),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_3, DA9063_LDO9_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO11, 900, 50, 3600),
- 		.oc_event = BFIELD(DA9063_REG_STATUS_D, DA9063_LDO11_LIM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_3, DA9063_LDO11_MON_EN),
- 	},
- 
- 	/* The following LDOs are present only on DA9063, not on DA9063L */
- 	{
- 		DA9063_LDO(DA9063, LDO1, 600, 20, 1860),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO1_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO2, 600, 20, 1860),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO2_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO4, 900, 20, 3440),
- 		.oc_event = BFIELD(DA9063_REG_STATUS_D, DA9063_LDO4_LIM),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO4_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO5, 900, 50, 3600),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO5_MON_EN),
- 	},
- 	{
- 		DA9063_LDO(DA9063, LDO6, 900, 50, 3600),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_2, DA9063_LDO6_MON_EN),
- 	},
- 
- 	{
- 		DA9063_LDO(DA9063, LDO10, 900, 50, 3600),
-+		.vmon = BFIELD(DA9063_BB_REG_MON_REG_3, DA9063_LDO10_MON_EN),
- 	},
- };
- 
-@@ -932,6 +973,12 @@ static int da9063_regulator_probe(struct platform_device *pdev)
- 			if (IS_ERR(regl->suspend_sleep))
- 				return PTR_ERR(regl->suspend_sleep);
- 		}
-+		if (regl->info->vmon.reg) {
-+			regl->vmon = devm_regmap_field_alloc(&pdev->dev,
-+				da9063->regmap, regl->info->vmon);
-+			if (IS_ERR(regl->vmon))
-+				return PTR_ERR(regl->vmon);
-+		}
- 
- 		/* Register regulator */
- 		memset(&config, 0, sizeof(config));
-diff --git a/include/linux/mfd/da9063/registers.h b/include/linux/mfd/da9063/registers.h
-index 6e0f66a2e727..7b8364bd08a0 100644
---- a/include/linux/mfd/da9063/registers.h
-+++ b/include/linux/mfd/da9063/registers.h
-@@ -1040,6 +1040,29 @@
- /* DA9063_REG_CONFIG_J (addr=0x10F) */
- #define DA9063_TWOWIRE_TO			0x40
- 
-+/* DA9063_REG_MON_REG_2 (addr=0x115) */
-+#define DA9063_LDO1_MON_EN			0x01
-+#define DA9063_LDO2_MON_EN			0x02
-+#define DA9063_LDO3_MON_EN			0x04
-+#define DA9063_LDO4_MON_EN			0x08
-+#define DA9063_LDO5_MON_EN			0x10
-+#define DA9063_LDO6_MON_EN			0x20
-+#define DA9063_LDO7_MON_EN			0x40
-+#define DA9063_LDO8_MON_EN			0x80
-+
-+/* DA9063_REG_MON_REG_3 (addr=0x116) */
-+#define DA9063_LDO9_MON_EN			0x01
-+#define DA9063_LDO10_MON_EN			0x02
-+#define DA9063_LDO11_MON_EN			0x04
-+
-+/* DA9063_REG_MON_REG_4 (addr=0x117) */
-+#define DA9063_BCORE1_MON_EN			0x04
-+#define DA9063_BCORE2_MON_EN			0x08
-+#define DA9063_BPRO_MON_EN			0x10
-+#define DA9063_BIO_MON_EN			0x20
-+#define DA9063_BMEM_MON_EN			0x40
-+#define DA9063_BPERI_MON_EN			0x80
-+
- /* DA9063_REG_MON_REG_5 (addr=0x116) */
- #define DA9063_MON_A8_IDX_MASK			0x07
- #define		DA9063_MON_A8_IDX_NONE		0x00
+ 	/* successful, attach the worker to the pool */
+ 	worker_attach_to_pool(worker, pool);
 -- 
-2.34.1
+2.29.0
 
