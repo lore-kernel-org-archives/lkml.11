@@ -2,122 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06523CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:30:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbiGMIaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:30:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
+        id S235345AbiGMIak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:30:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbiGMIaP (ORCPT
+        with ESMTP id S235238AbiGMIaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:30:15 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F372867598;
-        Wed, 13 Jul 2022 01:30:09 -0700 (PDT)
-X-UUID: 650c26010cca47d9b5098c3f11462513-20220713
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:0e27b8a1-ebc3-4433-a98c-4f434658d320,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:7fddda32-b9e4-42b8-b28a-6364427c76bb,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 650c26010cca47d9b5098c3f11462513-20220713
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1252999840; Wed, 13 Jul 2022 16:30:04 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 13 Jul 2022 16:30:03 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Wed, 13 Jul 2022 16:30:03 +0800
-Message-ID: <386e09152ee920f89597ac1065f94fc8c804634f.camel@mediatek.com>
-Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
- driver
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
-        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Wed, 13 Jul 2022 16:30:02 +0800
-In-Reply-To: <20220712111223.13080-6-rex-bc.chen@mediatek.com>
-References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
-         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 13 Jul 2022 04:30:35 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F74071BE0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:30:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657701035; x=1689237035;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=YQUSBazFo/c4fVEPXFT3RG1PGjmSxbf7eA6p2HwqTTo=;
+  b=GUTfm0VASzTQ05aMMkq2k7jDE5CaolM1Z6Qr1L9mucIGJ4Fm5kMqmebZ
+   jQubqqeiQf0M/SsISnMjx+A83nommhqxsu5/gK5JQJTufAvhonhg355BY
+   9A7/3lrvit4Pyj0C64tEoK0hTcUezajeiP6fHHox+XOXQzAW/+Ds0EhjS
+   E6wwyOddTJjYdELAbZ6oI1yL6eVgpdyhW4EkQ4QSGsOlE52Pvy0pHGcrK
+   owtfBvljnEB4C17vyHQzOkkNGQenCPTwx5BtW9DVhLe3RG/ZfnypbHfaY
+   2RzLGC8jrA/KN2mhbcDTFq31HHZf4VNdM2Et5uitOKzPT/06EoYJJcRM+
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="283905557"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="283905557"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:30:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="570535384"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:30:32 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     Oscar Salvador <osalvador@suse.de>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zi Yan <ziy@nvidia.com>, Yang Shi <shy828301@gmail.com>
+Subject: Re: [PATCH -V2 5/7] migrate_pages(): fix failure counting for THP
+ on -ENOSYS
+References: <20220711084948.274787-1-ying.huang@intel.com>
+        <20220711084948.274787-6-ying.huang@intel.com>
+        <YswW7C5jzQNmeOsL@localhost.localdomain>
+Date:   Wed, 13 Jul 2022 16:30:27 +0800
+In-Reply-To: <YswW7C5jzQNmeOsL@localhost.localdomain> (Oscar Salvador's
+        message of "Mon, 11 Jul 2022 14:26:20 +0200")
+Message-ID: <87wnch4dp8.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Bo-Chen:
+Oscar Salvador <osalvador@suse.de> writes:
 
-On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
-> From: Markus Schneider-Pargmann <msp@baylibre.com>
-> 
-> This patch adds a embedded displayport driver for the MediaTek mt8195
-> SoC.
-> 
-> It supports the MT8195, the embedded DisplayPort units. It offers
-> DisplayPort 1.4 with up to 4 lanes.
-> 
-> The driver creates a child device for the phy. The child device will
-> never exist without the parent being active. As they are sharing a
-> register range, the parent passes a regmap pointer to the child so
-> that
-> both can work with the same register range. The phy driver sets
-> device
-> data that is read by the parent to get the phy device that can be
-> used
-> to control the phy properties.
-> 
-> This driver is based on an initial version by
-> Jitao shi <jitao.shi@mediatek.com>
-> 
-> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> ---
+> On Mon, Jul 11, 2022 at 04:49:46PM +0800, Huang Ying wrote:
+>> If THP or hugetlbfs page migration isn't supported, unmap_and_move()
+>> or unmap_and_move_huge_page() will return -ENOSYS.  For THP, splitting
+>> will be tried, but if splitting doesn't succeed, the THP will be left
+>> in "from" list wrongly.  If some other pages are retried, the THP
+>> migration failure will counted again.  This is fixed via moving the
+>> failure THP from "from" to "ret_pages".
+>> 
+>> Another issue of the original code is that the unsupported failure
+>> processing isn't consistent between THP and hugetlbfs page.  Make them
+>> consistent in this patch to make the code easier to be understood too.
+>> 
+>> Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
+>> Fixes: 5984fabb6e82 ("mm: move_pages: report the number of non-attempted pages")
+>> Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+>> Cc: Zi Yan <ziy@nvidia.com>
+>> Cc: Yang Shi <shy828301@gmail.com>
+>> ---
+>>  mm/migrate.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/mm/migrate.c b/mm/migrate.c
+>> index 4bceba143db0..8cce73b7c046 100644
+>> --- a/mm/migrate.c
+>> +++ b/mm/migrate.c
+>> @@ -1192,10 +1192,8 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
+>>  	 * tables or check whether the hugepage is pmd-based or not before
+>>  	 * kicking migration.
+>>  	 */
+>> -	if (!hugepage_migration_supported(page_hstate(hpage))) {
+>> -		list_move_tail(&hpage->lru, ret);
+>> +	if (!hugepage_migration_supported(page_hstate(hpage)))
+>>  		return -ENOSYS;
+>> -	}
+>>  
+>>  	if (page_count(hpage) == 1) {
+>>  		/* page was freed from under us. So we are done. */
+>> @@ -1392,6 +1390,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+>>  			 *		 page will be put back
+>>  			 *	-EAGAIN: stay on the from list
+>>  			 *	-ENOMEM: stay on the from list
+>> +			 *	-ENOSYS: stay on the from list
+>>  			 *	Other errno: put on ret_pages list then splice to
+>>  			 *		     from list
+>>  			 */
+>> @@ -1421,6 +1420,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
+>>  				}
+>>  
+>>  				nr_failed_pages += nr_subpages;
+>> +				list_move_tail(&page->lru, &ret_pages);
+>
+> I must be missing something, but migrate_pages() calls unmap_and_move_huge_page() 
+> with ret being ret_pages, so
+>
+> list_move_tail(&hpage->lru, ret) == list_move_tail(&page->lru, &ret_pages)
+>
+> Yet, you say "This is fixed via moving the failure THP from "from" to "ret_pages"".
+> /me confused.
 
-[snip]
+To make it consistent between hugetlb page and THP/normal page, I have
+revised the unmap_and_move_huge_page() via deleting the list_move_tail()
+there for ENOSYS.  After that, we move the hugetlb page and THP/normal
+page in the same way in migrate_pages().
 
-> +
-> +static int mtk_dp_set_color_depth(struct mtk_dp *mtk_dp)
-> +{
-> +	/* Only support 8 bits currently */
-> +	mtk_dp->info.depth = DP_MSA_MISC_8_BPC;
-
-Only support DP_MSA_MISC_8_BPC, so it's not necessary use a variable to
-store this information. Drop depth.
-
-Regards,
-CK
-
-> +
-> +	/* Update MISC0 */
-> +	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3034,
-> +			   DP_MSA_MISC_8_BPC, DP_TEST_BIT_DEPTH_MASK);
-> +
-> +	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_303C,
-> +			   VIDEO_COLOR_DEPTH_DP_ENC0_P0_8BIT,
-> +			   VIDEO_COLOR_DEPTH_DP_ENC0_P0_MASK);
-> +	return 0;
-> +}
-> +
-
+Best Regards,
+Huang, Ying
