@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1944FC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D72AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234799AbiGMHrs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42858 "EHLO
+        id S234815AbiGMHrv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234164AbiGMHrl (ORCPT
+        with ESMTP id S234435AbiGMHrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 03:47:41 -0400
 Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0F9E5DD8;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC1BE5DD4;
         Wed, 13 Jul 2022 00:47:39 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id D6881C01E0;
-        Wed, 13 Jul 2022 09:41:57 +0200 (CEST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 197EFC01D6;
+        Wed, 13 Jul 2022 09:41:43 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1657698118; h=from:subject:date:message-id:to:cc:mime-version:
+        t=1657698103; h=from:subject:date:message-id:to:cc:mime-version:
          content-transfer-encoding:in-reply-to:references;
-        bh=OON4EWemRTnjfuAi52ZThbCXiYTlc2KJyIwRE7eWOt4=;
-        b=1KyECdwXld74BH/fCljC8NdpXUjdkiUKbWQXbOVpreYTE6idE7XMjxw9OYZBfMsPd2Fxy/
-        EKNBhTDQHRfFor6GJCftzJy3h2g1YZr/LEXDfGguGKPhzynJXu9mTB/9NncP9v6892IbGI
-        dbmIDfKA+TxD7fJymUxNHPL9e2Ifwp2BcAFF4qMC/GPDTfyQt7itio5FyRvHfJCCkDUH6E
-        UnNeV/R+KaLS4IDuv+M2T5Ndrhxytzyexk71E6/2V/Wz4zQ2bBVXUFSem/PTlfunJxYuXE
-        1nseUT70G8L0rHcqGP1OH7o62Mf3iBHLL+UzJ0Om077KlidlLMj1r9xFqMtaXA==
+        bh=vD5IlybfnBFE7MfUHtq9HkeARrD9dbK3fsEI82fvNNc=;
+        b=XwxpQ0f0zFrmFi+ZQOtWyRd82UBlK2whxnc/f7mMrVYq+g+gkl/5QWTxyBRbvjwUtFdhSE
+        pQX5VKRfrO3f5TwX88p8Ij1I6i+Hp1gg3pp3AqUZnK85yfUgso9mP6IbV7GSjMCGRWxma/
+        W8S71WGDiDvrGOxDbcpbKSZRd4NSMT4BWv7i+/2HFd0RydU0iPZ+6VHUo3cLcSvazniiCg
+        NtAdoWksQ5FYsWDab4aspiXda7DTge6E6vOFE3+WXtwaaeGiMCb5hTUMUOBY8MG1Zr5SDq
+        T4yDa4ioIIdmQI7rMgqI/uH36A+An3xmOoQvS56elr5Lo85dBMM5b1h5f45AqQ==
 From:   Frieder Schrempf <frieder@fris.de>
 To:     devicetree@vger.kernel.org,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>
 Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Denys Drozdov <denys.drozdov@toradex.com>,
-        Fabio Estevam <festevam@denx.de>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Marek Vasut <marex@denx.de>,
-        Matthias Schiffer <matthias.schiffer@tq-group.com>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Rob Herring <robh@kernel.org>,
-        Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH 6/6] dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
-Date:   Wed, 13 Jul 2022 09:41:17 +0200
-Message-Id: <20220713074118.14733-7-frieder@fris.de>
+        NXP Linux Team <linux-imx@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH 2/6] arm64: dts: imx8mm-kontron: Use the VSELECT signal to switch SD card IO voltage
+Date:   Wed, 13 Jul 2022 09:41:13 +0200
+Message-Id: <20220713074118.14733-3-frieder@fris.de>
 In-Reply-To: <20220713074118.14733-1-frieder@fris.de>
 References: <20220713074118.14733-1-frieder@fris.de>
 MIME-Version: 1.0
@@ -58,30 +54,71 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Add bindings for the Kontron BL i.MX8MM OSM-S board.
+It turns out that it is not necessary to declare the VSELECT signal as
+GPIO and let the PMIC driver set it to a fixed high level. This switches
+the voltage between 3.3V and 1.8V by setting the PMIC register for LDO5
+accordingly.
 
+Instead we can do it like other boards already do and simply mux the
+VSELECT signal of the USDHC interface to the pin. This makes sure that
+the correct voltage is selected by setting the PMIC's SD_VSEL input
+to high or low accordingly.
+
+Reported-by: Heiko Thiery <heiko.thiery@gmail.com>
 Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
 ---
- Documentation/devicetree/bindings/arm/fsl.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts    | 3 +++
+ arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/arm/fsl.yaml b/Documentation/devicetree/bindings/arm/fsl.yaml
-index ef524378d449..ef99d948e908 100644
---- a/Documentation/devicetree/bindings/arm/fsl.yaml
-+++ b/Documentation/devicetree/bindings/arm/fsl.yaml
-@@ -847,6 +847,12 @@ properties:
-           - const: kontron,imx8mm-n801x-som
-           - const: fsl,imx8mm
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+index cb8102bb8db5..bc46426ad8f6 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-s.dts
+@@ -321,6 +321,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d0
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d0
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d0
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
  
-+      - description: Kontron BL i.MX8MM OSM-S (N802X S) Board
-+        items:
-+          - const: kontron,imx8mm-n802x-s
-+          - const: kontron,imx8mm-n802x-som
-+          - const: fsl,imx8mm
-+
-       - description: Toradex Boards with Verdin iMX8M Mini Modules
-         items:
-           - enum:
+@@ -333,6 +334,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d4
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d4
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d4
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
+ 
+@@ -345,6 +347,7 @@ MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d6
+ 			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d6
+ 			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d6
+ 			MX8MM_IOMUXC_SD2_CD_B_GPIO2_IO12		0x019
++			MX8MM_IOMUXC_GPIO1_IO04_USDHC2_VSELECT		0x1d0
+ 		>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+index b6d90d646a5f..77c074b491a6 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+@@ -86,7 +86,6 @@ pca9450: pmic@25 {
+ 		pinctrl-0 = <&pinctrl_pmic>;
+ 		interrupt-parent = <&gpio1>;
+ 		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
+-		sd-vsel-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+ 
+ 		regulators {
+ 			reg_vdd_soc: BUCK1 {
+@@ -229,7 +228,6 @@ MX8MM_IOMUXC_I2C1_SDA_I2C1_SDA			0x400001c3
+ 	pinctrl_pmic: pmicgrp {
+ 		fsl,pins = <
+ 			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0		0x141
+-			MX8MM_IOMUXC_GPIO1_IO04_GPIO1_IO4		0x141
+ 		>;
+ 	};
+ 
 -- 
 2.37.0
 
