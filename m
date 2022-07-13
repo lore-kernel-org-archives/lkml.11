@@ -2,102 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ADDCCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 783ABC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232270AbiGMHoL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40228 "EHLO
+        id S234720AbiGMHpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:45:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbiGMHoI (ORCPT
+        with ESMTP id S234227AbiGMHpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:44:08 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF866EEB6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:44:06 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id y8so13021695eda.3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:44:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XpXyhJ4QNFnL4f5EJCGYwB18DxuLMU3vuswmDUU/6LM=;
-        b=dv3RBfCUzpoDhS6Aea9fT3Naw2N/mY3ENtgcsvmkZHsy0KNLqjQJD/v4UUGYYT65Bv
-         L42ePuEoaXv/CD2/0uxp4pR+Hk1qomsNDWmfSSncSfwjW74/Uy4iVCSiFHpQHjYU1jjR
-         NGrqCSVjggpKE46fk3cabnS3319GztqOzcgIkw/Lncbgn7eBhO4m1ffr7mATJwIWL1LJ
-         N2pPTmCI2kAMFJ3m5VnH6tFz8nYeAukT1AoyfYmrO4nVWXA51RstI6RO8+9iK5gPRGMR
-         a2F6/+etVy9DY7zf0MJF6p/PRDsRk6EtY/DxEGWsFb+KqZDKhBN1si7KrDXIuTAT5fDL
-         8SGA==
+        Wed, 13 Jul 2022 03:45:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E33AECC7B4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657698306;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OeJ+iFREKEPDGzZIidEw0qYmCZVogFXpaPgElmJEdn4=;
+        b=Q3bidCWhVnCNoblXxC5POphG+9H2xaTaIEdrQTOuZvoSKS/iFgym1WkJHxDBIY/ro0X+Sg
+        2TAuxmRerJTlpp93uihGD4Aw4VchPN71YXL4eOxjrj4bb2mRlfOboAa9mFBKMKj/uHLjJG
+        caLDZU9zSZDNE/3cSDqTnOxOMqKiJFQ=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-169-PEH9Gn3lPNGTIfk0sXQkCQ-1; Wed, 13 Jul 2022 03:45:01 -0400
+X-MC-Unique: PEH9Gn3lPNGTIfk0sXQkCQ-1
+Received: by mail-ed1-f71.google.com with SMTP id j6-20020a05640211c600b0043a8ea2c138so7768382edw.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:45:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XpXyhJ4QNFnL4f5EJCGYwB18DxuLMU3vuswmDUU/6LM=;
-        b=hQuWU5VuTSzRxTGDTvERqJKes8hMPSMbIlb3qavBD/R1CtbHbvMlkY3x3X1oUuIqsp
-         sPD5l7fzMza1Cg2P1n5UMOBqyE1XTkgjk1hri+9G+0EC/mPCCTIOC3ObFlt+ohe40qYe
-         1KbiesDhlMQjMUYYtKewPy+6w5CBr+OUT4ENusoG0OFJ+ZKPJ1+kyVB6nwlPQQH5muwS
-         ABJYwyXhOpGrFUdKs9v/jpe+K/muBVdZK5ojlNd3pUtA5nuxFycesudI6QjPreatsRt1
-         5ypDnV0UE4KinT8eHTBAJsYP60U8bYbsv6aZ7hRVTf2e312Cu2K9hMBL/3C8NgWXQENd
-         ZXwQ==
-X-Gm-Message-State: AJIora8JdlPw4rdUyuuyHrHIzlQqFgP+5RgKgUCF45A2Y9S8meyh+c2R
-        g5mHu0R0U6UamjEhOBgfECqJyDMDP5g0sn3RlbW+9g==
-X-Google-Smtp-Source: AGRyM1sX4F6SiKqMB+JxZ5Wx2Pmtxkg3bpG8fzVwjszy4OPlIxdaH/u7IdCdfjlRCKG7QJCUEHdRq0RDeziupAcS4J8=
-X-Received: by 2002:a05:6402:430f:b0:43a:d521:bda with SMTP id
- m15-20020a056402430f00b0043ad5210bdamr3077496edc.69.1657698245380; Wed, 13
- Jul 2022 00:44:05 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=OeJ+iFREKEPDGzZIidEw0qYmCZVogFXpaPgElmJEdn4=;
+        b=oIL6mmgRY5EJLX1fFVzGuHSt/BhTwrt75ET9DrZsLt4s+f30POuQqztY+Shq9A9FNa
+         Q86owHE7FVbb9EuPM3WtzF7Hx3mjEe68oFlqF1f8b78aZFS5fMJPARDUM1lt/WgFQ83j
+         X0WrQrye8/bOxTOv5R2ayhqLOYe5oAGXyCseMfFQnNTMb4VUbM2IakPIFC6I1JnnUvWp
+         ARYpmHETrvXfIRnzaPuPq2YFq/l0AV6rudUmSeDxDd/p5oDL82jnTVeAu8Tm4l9v7hPT
+         INq7kRYPH2wGE/L68LINeDiAvxlwnFROywG6t3d1A6MrHhB+wNbAjHGlFhH3xb4G5eZ5
+         EHVw==
+X-Gm-Message-State: AJIora/j5fsweK5rj9W/SFxVpp3zz2lRCBxbpAzlg7dx/3bxGKWblB5F
+        El1x/EumICClNBoWBbMWCYI/gYc52KblKXRYXlxgunh+Pq5qCBjoHkOYswQ/H0KVaLOi3pleZoE
+        3ix7JHAYJ1kWc6Vxie8ybVPye
+X-Received: by 2002:a17:907:2723:b0:72b:5af3:5a11 with SMTP id d3-20020a170907272300b0072b5af35a11mr2069776ejl.584.1657698300816;
+        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u0i5rjFfrpSqjEmGzpTqwuvm4Y57W/o6n5JXE6u+yShz8Ylot177o6FwB5C48121akrJRf7Q==
+X-Received: by 2002:a17:907:2723:b0:72b:5af3:5a11 with SMTP id d3-20020a170907272300b0072b5af35a11mr2069757ejl.584.1657698300651;
+        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id e24-20020a50ec98000000b0043a6a7048absm7339793edr.95.2022.07.13.00.44.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Dongli Zhang <dongli.zhang@oracle.com>
+Cc:     Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Subject: Re: [PATCH] KVM: nVMX: Always enable TSC scaling for L2 when it was
+ enabled for L1
+In-Reply-To: <ed923f16-86a7-1f87-f192-c935371dc48c@oracle.com>
+References: <20220712135009.952805-1-vkuznets@redhat.com>
+ <ed923f16-86a7-1f87-f192-c935371dc48c@oracle.com>
+Date:   Wed, 13 Jul 2022 09:44:59 +0200
+Message-ID: <87y1wxo3r8.fsf@redhat.com>
 MIME-Version: 1.0
-References: <20220712110232.329164-1-francesco.dolcini@toradex.com> <20220712110232.329164-3-francesco.dolcini@toradex.com>
-In-Reply-To: <20220712110232.329164-3-francesco.dolcini@toradex.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Wed, 13 Jul 2022 09:43:54 +0200
-Message-ID: <CAMRc=MeBE=V8cE2ZnuHzw65i5mx2S6iM9LDC8=M-Pa0RWHR7yg@mail.gmail.com>
-Subject: Re: [PATCH v1 2/4] dt-bindings: gpio: stmpe: Remove node name requirement
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Input <linux-input@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 1:02 PM Francesco Dolcini
-<francesco.dolcini@toradex.com> wrote:
+Dongli Zhang <dongli.zhang@oracle.com> writes:
+
+> Hi Vitaly,
 >
-> STMPE driver does not require a specific node name anymore, only the
-> compatible is checked, update binding according to this.
+> On 7/12/22 6:50 AM, Vitaly Kuznetsov wrote:
+>> Windows 10/11 guests with Hyper-V role (WSL2) enabled are observed to
+>> hang upon boot or shortly after when a non-default TSC frequency was
+>> set for L1. The issue is observed on a host where TSC scaling is
 >
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-> ---
->  Documentation/devicetree/bindings/gpio/gpio-stmpe.txt | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> Would you mind helping clarify if it is L1 or L2 that hangs?
 >
-> diff --git a/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt b/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
-> index a0e4cf885213..b33f8f02c0d7 100644
-> --- a/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
-> +++ b/Documentation/devicetree/bindings/gpio/gpio-stmpe.txt
-> @@ -8,8 +8,7 @@ Optional properties:
->   - st,norequest-mask: bitmask specifying which GPIOs should _not_ be requestable
->     due to different usage (e.g. touch, keypad)
->
-> -Node name must be stmpe_gpio and should be child node of stmpe node to which it
-> -belongs.
-> +Node should be child node of stmpe node to which it belongs.
->
->  Example:
->         stmpe_gpio {
-> --
-> 2.25.1
+> The commit message "Windows 10/11 guests with Hyper-V role (WSL2)" confuses me
+> if it is L1 or L2 (perhaps due to my lack of knowledge on hyper-v) that hangs.
 >
 
-Acked-by: Bartosz Golaszewski <brgl@bgdev.pl>
+I think it's L2 but I'm not sure: there's no easy way to interract with
+L1 (Hyper-V) directly, all the interfaces (UI, network,..) are handled
+by L2 (Windows). Prior to the observed 'hang' Hyper-V (L1) programms
+synthetic timer in KVM too far in the future but my guess is that it's
+doing that on Windows' (L2) behalf, basically just relaying the
+request. The issue only shows up with 'hv-reenlightenment' +
+'hv-frequencies' (in QEMU's terms) features as in this case both Hyper-V
+(L1) and Windows (L2) trust the information about TSC frequency from KVM
+but the information turns out to be incorrect for Windows (L2).
+
+-- 
+Vitaly
+
