@@ -2,279 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F161C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8764DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:10:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234629AbiGMIKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
+        id S234748AbiGMIKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:10:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230384AbiGMIKP (ORCPT
+        with ESMTP id S234603AbiGMIKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:10:15 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99CB1E9211;
-        Wed, 13 Jul 2022 01:10:04 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LjVbK2b8Qz1L95Y;
-        Wed, 13 Jul 2022 16:07:25 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 16:09:46 +0800
-Received: from [10.67.100.236] (10.67.100.236) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 16:09:45 +0800
-Message-ID: <767e9981-721a-f298-220c-4fd8bf3e9c70@huawei.com>
-Date:   Wed, 13 Jul 2022 16:09:45 +0800
+        Wed, 13 Jul 2022 04:10:31 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AE1E95D7;
+        Wed, 13 Jul 2022 01:10:29 -0700 (PDT)
+X-UUID: 2ee803403f314842817a5e3de57f3384-20220713
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:73530e99-626a-4617-8909-2bc02f1bded9,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:80672a64-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 2ee803403f314842817a5e3de57f3384-20220713
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 632467954; Wed, 13 Jul 2022 16:10:24 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 13 Jul 2022 16:10:23 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 13 Jul 2022 16:10:23 +0800
+Message-ID: <8fad0421bb7a61ae5e2ecabfc93790f1e2f30b63.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 13 Jul 2022 16:10:23 +0800
+In-Reply-To: <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v3] RAS: Report ARM processor information to userspace
-To:     <james.morse@arm.com>
-References: <20220214030813.135766-1-lostway@zju.edu.cn>
-CC:     <linux-kernel@vger.kernel.org>, <linux-edac@vger.kernel.org>,
-        <bp@alien8.de>, <tony.luck@intel.com>,
-        <jason@os.amperecomputing.com>, <mchehab@kernel.org>,
-        <lostway@zju.edu.cn>, <mark.rutland@arm.com>, <rjw@rjwysocki.net>
-From:   tanxiaofei <tanxiaofei@huawei.com>
-In-Reply-To: <20220214030813.135766-1-lostway@zju.edu.cn>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.100.236]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi, Bo-Chen:
 
-Hi James,
-
-This patch is necceary for error collection of rasdaemon, and also cpu 
-core error  prediction feature . Please help to give some comment when 
-you are free. thanks.
-
-
-在 2022/2/14 11:08, lostway@zju.edu.cn 写道:
-> From: Shengwei Luo <luoshengwei@huawei.com>
+On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
 > 
-> The original arm_event trace code only traces out ARM processor error
-> information data. It's not enough for user to take appropriate action.
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
 > 
-> According to UEFI_2_9 specification chapter N2.4.4, the ARM processor
-> error section includes several ARM processor error information, several
-> ARM processor context information and several vendor specific error
-> information structures. In addition to these info, there are error
-> severity and cpu logical index about the event. Report all of these
-> information to userspace via perf i/f. So that the user can do cpu core
-> isolation according to error severity and other info.
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
 > 
-> Signed-off-by: Shengwei Luo <luoshengwei@huawei.com>
-> Signed-off-by: Jason Tian <jason@os.amperecomputing.com>
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
 > ---
-> Links:
-> https://lore.kernel.org/lkml/20220126030906.56765-1-lostway@zju.edu.cn/
-> https://lore.kernel.org/lkml/20210205022229.313030-1-jason@os.amperecomputing.com/
-> 
-> v2->v3:
-> Add signed-off of original author.
-> Fix commit message to explain why a change is being done.
-> 
-> v1->v2:
-> Cleaned up ci warnings.
-> ---
->   drivers/acpi/apei/ghes.c |  3 +--
->   drivers/ras/ras.c        | 46 ++++++++++++++++++++++++++++++++++++--
->   include/linux/ras.h      | 15 +++++++++++--
->   include/ras/ras_event.h  | 48 +++++++++++++++++++++++++++++++++++-----
->   4 files changed, 101 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-> index 0c5c9acc6254..f824c26057b1 100644
-> --- a/drivers/acpi/apei/ghes.c
-> +++ b/drivers/acpi/apei/ghes.c
-> @@ -490,9 +490,8 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
->   	int sec_sev, i;
->   	char *p;
->   
-> -	log_arm_hw_error(err);
-> -
->   	sec_sev = ghes_severity(gdata->error_severity);
-> +	log_arm_hw_error(err, sec_sev);
->   	if (sev != GHES_SEV_RECOVERABLE || sec_sev != GHES_SEV_RECOVERABLE)
->   		return false;
->   
-> diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
-> index 95540ea8dd9d..2a7f424d59b9 100644
-> --- a/drivers/ras/ras.c
-> +++ b/drivers/ras/ras.c
-> @@ -21,9 +21,51 @@ void log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,
->   	trace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);
->   }
->   
-> -void log_arm_hw_error(struct cper_sec_proc_arm *err)
-> +void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
->   {
-> -	trace_arm_event(err);
-> +	u32 pei_len;
-> +	u32 ctx_len = 0;
-> +	s32 vsei_len;
-> +	u8 *pei_err;
-> +	u8 *ctx_err;
-> +	u8 *ven_err_data;
-> +	struct cper_arm_err_info *err_info;
-> +	struct cper_arm_ctx_info *ctx_info;
-> +	int n, sz;
-> +	int cpu;
+
+[snip]
+
 > +
-> +	pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
-> +	pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
+> +struct mtk_dp_timings {
+> +	struct videomode vm;
+> +};
 > +
-> +	err_info = (struct cper_arm_err_info *)(err + 1);
-> +	ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
-> +	ctx_err = (u8 *)ctx_info;
-> +	for (n = 0; n < err->context_info_num; n++) {
-> +		sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
-> +		ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
-> +		ctx_len += sz;
-> +	}
+> +struct mtk_dp_irq_sta {
+> +	bool hpd_inerrupt;
+> +};
 > +
-> +	vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
-> +						pei_len + ctx_len);
-> +	if (vsei_len < 0) {
-> +		pr_warn(FW_BUG
-> +			"section length: %d\n", err->section_length);
-> +		pr_warn(FW_BUG
-> +			"section length is too small\n");
-> +		pr_warn(FW_BUG
-> +			"firmware-generated error record is incorrect\n");
-> +		vsei_len = 0;
-> +	}
-> +	ven_err_data = (u8 *)ctx_info;
+> +struct mtk_dp_train_info {
+> +	bool tps3;
+> +	bool tps4;
+> +	bool sink_ssc;
+> +	bool cable_plugged_in;
+> +	bool cable_state_change;
+> +	bool cr_done;
+> +	bool eq_done;
+> +	/* link_rate is in multiple of 0.27Gbps */
+> +	int link_rate;
+> +	int lane_count;
+> +	struct mtk_dp_irq_sta irq_sta;
+
+There is only one member in struct mtk_dp_irq_sta, so drop struct
+mtk_dp_irq_sta and use bool hpd_inerrupt directly here.
+
+> +};
 > +
-> +	cpu = GET_LOGICAL_INDEX(err->mpidr);
-> +	/* when return value is invalid, set cpu index to -1 */
-> +	if (cpu < 0)
-> +		cpu = -1;
+> +struct mtk_dp_info {
+> +	u32 depth;
+> +	enum dp_pixelformat format;
+> +	struct mtk_dp_timings timings;
+
+There is only one member in struct mtk_dp_timings, so drop struct
+mtk_dp_timings and use struct videomode vm directly here.
+
+Regards,
+CK
+
+> +};
 > +
-> +	trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
-> +			ven_err_data, (u32)vsei_len, sev, cpu);
->   }
->   
->   static int __init ras_init(void)
-> diff --git a/include/linux/ras.h b/include/linux/ras.h
-> index 1f4048bf2674..4529775374d0 100644
-> --- a/include/linux/ras.h
-> +++ b/include/linux/ras.h
-> @@ -24,7 +24,7 @@ int __init parse_cec_param(char *str);
->   void log_non_standard_event(const guid_t *sec_type,
->   			    const guid_t *fru_id, const char *fru_text,
->   			    const u8 sev, const u8 *err, const u32 len);
-> -void log_arm_hw_error(struct cper_sec_proc_arm *err);
-> +void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev);
->   #else
->   static inline void
->   log_non_standard_event(const guid_t *sec_type,
-> @@ -32,7 +32,18 @@ log_non_standard_event(const guid_t *sec_type,
->   		       const u8 sev, const u8 *err, const u32 len)
->   { return; }
->   static inline void
-> -log_arm_hw_error(struct cper_sec_proc_arm *err) { return; }
-> +log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev) { return; }
->   #endif
->   
-> +#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-> +#include <asm/smp_plat.h>
-> +/*
-> + * Include ARM specific SMP header which provides a function mapping mpidr to
-> + * cpu logical index.
-> + */
-> +#define GET_LOGICAL_INDEX(mpidr) get_logical_index(mpidr & MPIDR_HWID_BITMASK)
-> +#else
-> +#define GET_LOGICAL_INDEX(mpidr) -EINVAL
-> +#endif /* CONFIG_ARM || CONFIG_ARM64 */
-> +
->   #endif /* __RAS_H__ */
-> diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
-> index d0337a41141c..92cfb61bdb20 100644
-> --- a/include/ras/ras_event.h
-> +++ b/include/ras/ras_event.h
-> @@ -168,11 +168,24 @@ TRACE_EVENT(mc_event,
->    * This event is generated when hardware detects an ARM processor error
->    * has occurred. UEFI 2.6 spec section N.2.4.4.
->    */
-> +#define APEIL "ARM Processor Err Info data len"
-> +#define APEID "ARM Processor Err Info raw data"
-> +#define APECIL "ARM Processor Err Context Info data len"
-> +#define APECID "ARM Processor Err Context Info raw data"
-> +#define VSEIL "Vendor Specific Err Info data len"
-> +#define VSEID "Vendor Specific Err Info raw data"
->   TRACE_EVENT(arm_event,
->   
-> -	TP_PROTO(const struct cper_sec_proc_arm *proc),
-> +	TP_PROTO(const struct cper_sec_proc_arm *proc, const u8 *pei_err,
-> +			const u32 pei_len,
-> +			const u8 *ctx_err,
-> +			const u32 ctx_len,
-> +			const u8 *oem,
-> +			const u32 oem_len,
-> +			u8 sev,
-> +			int cpu),
->   
-> -	TP_ARGS(proc),
-> +	TP_ARGS(proc, pei_err, pei_len, ctx_err, ctx_len, oem, oem_len, sev, cpu),
->   
->   	TP_STRUCT__entry(
->   		__field(u64, mpidr)
-> @@ -180,6 +193,14 @@ TRACE_EVENT(arm_event,
->   		__field(u32, running_state)
->   		__field(u32, psci_state)
->   		__field(u8, affinity)
-> +		__field(u32, pei_len)
-> +		__dynamic_array(u8, buf, pei_len)
-> +		__field(u32, ctx_len)
-> +		__dynamic_array(u8, buf1, ctx_len)
-> +		__field(u32, oem_len)
-> +		__dynamic_array(u8, buf2, oem_len)
-> +		__field(u8, sev)
-> +		__field(int, cpu)
->   	),
->   
->   	TP_fast_assign(
-> @@ -199,12 +220,29 @@ TRACE_EVENT(arm_event,
->   			__entry->running_state = ~0;
->   			__entry->psci_state = ~0;
->   		}
-> +		__entry->pei_len = pei_len;
-> +		memcpy(__get_dynamic_array(buf), pei_err, pei_len);
-> +		__entry->ctx_len = ctx_len;
-> +		memcpy(__get_dynamic_array(buf1), ctx_err, ctx_len);
-> +		__entry->oem_len = oem_len;
-> +		memcpy(__get_dynamic_array(buf2), oem, oem_len);
-> +		__entry->sev = sev;
-> +		__entry->cpu = cpu;
->   	),
->   
-> -	TP_printk("affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
-> -		  "running state: %d; PSCI state: %d",
-> +	TP_printk("cpu: %d; error: %d; affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
-> +		  "running state: %d; PSCI state: %d; "
-> +		  "%s: %d; %s: %s; %s: %d; %s: %s; %s: %d; %s: %s",
-> +		  __entry->cpu,
-> +		  __entry->sev,
->   		  __entry->affinity, __entry->mpidr, __entry->midr,
-> -		  __entry->running_state, __entry->psci_state)
-> +		  __entry->running_state, __entry->psci_state,
-> +		  APEIL, __entry->pei_len, APEID,
-> +		  __print_hex(__get_dynamic_array(buf), __entry->pei_len),
-> +		  APECIL, __entry->ctx_len, APECID,
-> +		  __print_hex(__get_dynamic_array(buf1), __entry->ctx_len),
-> +		  VSEIL, __entry->oem_len, VSEID,
-> +		  __print_hex(__get_dynamic_array(buf2), __entry->oem_len))
->   );
->   
->   /*
-> 
+
