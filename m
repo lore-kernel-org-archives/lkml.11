@@ -2,95 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA3DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235136AbiGMLV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45780 "EHLO
+        id S235616AbiGMLXF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:23:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231422AbiGMLVz (ORCPT
+        with ESMTP id S230027AbiGMLXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:21:55 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1763B102061;
-        Wed, 13 Jul 2022 04:21:54 -0700 (PDT)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LjZrj1ZQmzhZ99;
-        Wed, 13 Jul 2022 19:19:17 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 19:21:52 +0800
-Received: from [10.67.110.237] (10.67.110.237) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 19:21:51 +0800
-Subject: Re: [PATCH 4/5] ARM: stacktrace: Make stack walk callback consistent
- with generic code
-To:     Mark Brown <broonie@kernel.org>
-CC:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
-        <ardb@kernel.org>, <will@kernel.org>, <mark.rutland@arm.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
-        <namhyung@kernel.org>, <arnd@arndb.de>, <linus.walleij@linaro.org>,
-        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
-        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-References: <20220712021527.109921-1-lihuafei1@huawei.com>
- <20220712021527.109921-5-lihuafei1@huawei.com>
- <Ys14cMm0n6EqS/cQ@sirena.org.uk>
-From:   Li Huafei <lihuafei1@huawei.com>
-Message-ID: <cbdd6276-4e5c-e983-6b1a-b43863cce9a9@huawei.com>
-Date:   Wed, 13 Jul 2022 19:21:50 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Wed, 13 Jul 2022 07:23:03 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202CC102061
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:23:02 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oBaSB-0004w6-PK; Wed, 13 Jul 2022 13:22:51 +0200
+Message-ID: <4f4ab64a45c23cd1820423bb9a6513d2a4cb15e4.camel@pengutronix.de>
+Subject: Re: [PATCH v14 10/17] PCI: imx6: Turn off regulator when system is
+ in suspend mode
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Hongxing Zhu <hongxing.zhu@nxp.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        "francesco.dolcini@toradex.com" <francesco.dolcini@toradex.com>
+Cc:     "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>
+Date:   Wed, 13 Jul 2022 13:22:50 +0200
+In-Reply-To: <AS8PR04MB8676F0E41C38891B2C21F8D78C899@AS8PR04MB8676.eurprd04.prod.outlook.com>
+References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
+         <1656645935-1370-11-git-send-email-hongxing.zhu@nxp.com>
+         <6f0cd4c69e0eba3e5da513cfbbe5f162e650a8f1.camel@pengutronix.de>
+         <AS8PR04MB8676F0E41C38891B2C21F8D78C899@AS8PR04MB8676.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-In-Reply-To: <Ys14cMm0n6EqS/cQ@sirena.org.uk>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.67.110.237]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Am Mittwoch, dem 13.07.2022 um 10:56 +0000 schrieb Hongxing Zhu:
+> > -----Original Message-----
+> > From: Lucas Stach <l.stach@pengutronix.de>
+> > Sent: 2022年7月13日 16:34
+> > To: Hongxing Zhu <hongxing.zhu@nxp.com>; bhelgaas@google.com;
+> > robh+dt@kernel.org; broonie@kernel.org; lorenzo.pieralisi@arm.com;
+> > festevam@gmail.com; francesco.dolcini@toradex.com
+> > Cc: linux-pci@vger.kernel.org;
+> > linux-arm-kernel@lists.infradead.org;
+> > linux-kernel@vger.kernel.org; kernel@pengutronix.de; dl-linux-imx
+> > <linux-imx@nxp.com>
+> > Subject: Re: [PATCH v14 10/17] PCI: imx6: Turn off regulator when
+> > system is in
+> > suspend mode
+> > 
+> > Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
+> > > The driver should undo any enables it did itself. The regulator
+> > > disable shouldn't be basing decisions on regulator_is_enabled().
+> > > 
+> > > Move the regulator_disable to the suspend function, turn off
+> > > regulator
+> > > when the system is in suspend mode.
+> > > 
+> > > To keep the balance of the regulator usage counter, disable the
+> > > regulator in shutdown.
+> > > 
+> > > Link:
+> > > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2Flore
+> > > .kernel.org%2Fr%2F1655189942-12678-6-git-send-email-
+> > > hongxing.z&amp;d
+> > at
+> > > 
+> > a=05%7C01%7Chongxing.zhu%40nxp.com%7C361c9bf365b64895482808da6
+> > 4aa7cca%
+> > > 
+> > 7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C6379329806385373
+> > 39%7CUnkn
+> > > 
+> > own%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1
+> > haWwi
+> > > 
+> > LCJXVCI6Mn0%3D%7C3000%7C%7C%7C&amp;sdata=A%2Fw6AFCddC0T%2FA
+> > ocBT%2F7OJZ
+> > > ddAeYPTbgeAxpHpPubkw%3D&amp;reserved=0
+> > > hu@nxp.com
+> > > Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+> > > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> > > ---
+> > >  drivers/pci/controller/dwc/pci-imx6.c | 19 +++++++------------
+> > >  1 file changed, 7 insertions(+), 12 deletions(-)
+> > > 
+> > > diff --git a/drivers/pci/controller/dwc/pci-imx6.c
+> > > b/drivers/pci/controller/dwc/pci-imx6.c
+> > > index 2b42c37f1617..f72eb609769b 100644
+> > > --- a/drivers/pci/controller/dwc/pci-imx6.c
+> > > +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> > > @@ -670,8 +670,6 @@ static void imx6_pcie_clk_disable(struct
+> > > imx6_pcie
+> > > *imx6_pcie)
+> > > 
+> > >  static void imx6_pcie_assert_core_reset(struct imx6_pcie
+> > > *imx6_pcie)
+> > > {
+> > > -	struct device *dev = imx6_pcie->pci->dev;
+> > > -
+> > >  	switch (imx6_pcie->drvdata->variant) {
+> > >  	case IMX7D:
+> > >  	case IMX8MQ:
+> > > @@ -702,14 +700,6 @@ static void
+> > > imx6_pcie_assert_core_reset(struct
+> > imx6_pcie *imx6_pcie)
+> > >  		break;
+> > >  	}
+> > > 
+> > > -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie-
+> > > >vpcie) > 0) {
+> > > -		int ret = regulator_disable(imx6_pcie->vpcie);
+> > > -
+> > > -		if (ret)
+> > > -			dev_err(dev, "failed to disable vpcie
+> > > regulator: %d\n",
+> > > -				ret);
+> > > -	}
+> > > -
+> > >  	/* Some boards don't have PCIe reset GPIO. */
+> > >  	if (gpio_is_valid(imx6_pcie->reset_gpio))
+> > >  		gpio_set_value_cansleep(imx6_pcie->reset_gpio,
+> > > @@ -722,7 +712,7 @@ static int
+> > > imx6_pcie_deassert_core_reset(struct
+> > imx6_pcie *imx6_pcie)
+> > >  	struct device *dev = pci->dev;
+> > >  	int ret;
+> > > 
+> > > -	if (imx6_pcie->vpcie && !regulator_is_enabled(imx6_pcie-
+> > > >vpcie)) {
+> > > +	if (imx6_pcie->vpcie) {
+> > >  		ret = regulator_enable(imx6_pcie->vpcie);
+> > >  		if (ret) {
+> > >  			dev_err(dev, "failed to enable vpcie
+> > > regulator: %d\n",
+> > 
+> > The regulator really has nothing to do with the core reset. Please
+> > move this
+> > regulator enable into imx6_pcie_host_init().
+> Hi Lucas:
+> Thanks for your comments.
+> Got that. Had done it in the 11/17 commit.
+> 
+> > 
+> > > @@ -795,7 +785,7 @@ static int
+> > > imx6_pcie_deassert_core_reset(struct
+> > imx6_pcie *imx6_pcie)
+> > >  	return 0;
+> > > 
+> > >  err_clks:
+> > > -	if (imx6_pcie->vpcie && regulator_is_enabled(imx6_pcie-
+> > > >vpcie) > 0) {
+> > > +	if (imx6_pcie->vpcie) {
+> > >  		ret = regulator_disable(imx6_pcie->vpcie);
+> > >  		if (ret)
+> > >  			dev_err(dev, "failed to disable vpcie
+> > > regulator: %d\n", @@
+> > -1022,6
+> > > +1012,9 @@ static int imx6_pcie_suspend_noirq(struct device *dev)
+> > >  		break;
+> > >  	}
+> > > 
+> > > +	if (imx6_pcie->vpcie)
+> > > +		regulator_disable(imx6_pcie->vpcie);
+> > > +
+> > >  	return 0;
+> > >  }
+> > > 
+> > > @@ -1268,6 +1261,8 @@ static void imx6_pcie_shutdown(struct
+> > > platform_device *pdev)
+> > > 
+> > >  	/* bring down link, so bootloader gets clean state in
+> > > case of reboot */
+> > >  	imx6_pcie_assert_core_reset(imx6_pcie);
+> > > +	if (imx6_pcie->vpcie)
+> > > +		regulator_disable(imx6_pcie->vpcie);
+> > 
+> > This looks like a separate change, not mentioned in the commit
+> > message.
+> > I'm not sure if we should do this. Shutdown is supposed to just
+> > stop the device,
+> > which is already achieved by imx6_pcie_assert_core_reset().
+> > 
+> > If we would want to do a full cleanup here we would also need to
+> > disable
+> > clocks and get the reset GPIO into asserted state. I don't think we
+> > want to do
+> > all of this here.
+> The regulator_disable() was contained in
+> imx6_pcie_assert_core_reset() before.
+> When refine the regulator usage, the regulator_disable() is moved out
+> of
+>  imx6_pcie_assert_core_reset().
+> Based on the discussion [1] with Francesco.
+> To keep the same behavior, the regulator_disable() is placed behind
+> of
+>  imx6_pcie_assert_core_reset() in imx6_pcie_shutdown() here.
+> [1]
+> https://patchwork.ozlabs.org/project/linux-pci/patch/1644290735-3797-6-git-send-email-hongxing.zhu@nxp.com/
 
-On 2022/7/12 21:34, Mark Brown wrote:
-> On Tue, Jul 12, 2022 at 10:15:26AM +0800, Li Huafei wrote:
->
->> In order to use generic arch_stack_walk() code, make stack walk callback
->> consistent with it.
-> It might be useful to say what the changes are here, if nothing else
-> that makes it easier to review and confirm that the changes are doing
-> what you intend them to.  See my conversion for arm64 for an example.
+I disagree with Francesco on this. This kind of half-done cleanup
+doesn't help in any way. Either we care about doing a full cleanup
+here, which would involve clocks and reset GPIOs, or we just care about
+getting the core in a state where it survives a reboot, which frankly
+was the original intention when I added the shutdown callback.
 
+As the devices on the bus will see a full PERST reset via the reset
+GPIO anyways, there is no harm in keeping them powered across the
+reboot.
 
-Thanks for the advice. I've looked at the commit:
-
- � baa2cd417053 ("arm64: stacktrace: Make stack walk callback consistent 
-with generic code")
-
-The description is very clear. It describes the change in detail and
-gives a reason for making that change a separate commit. The same
-description applies to the current changes, so I took the commit message
-directly, just made the s/arm64/ARM/ changes, and updated to v2:
-
-https://lore.kernel.org/lkml/20220713110020.85511-1-lihuafei1@huawei.com/
-
-
-> The actual changes here seem OK though
->
-> Reviewed-by: Mark Brown <broonie@kernel.org>
-
-Thanks for the review!
-
-
-Thanks,
-
-Huafei
+Regards,
+Lucas
 
