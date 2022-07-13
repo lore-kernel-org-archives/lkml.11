@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC79C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FFFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235333AbiGMI4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
+        id S235449AbiGMI4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235127AbiGMI4L (ORCPT
+        with ESMTP id S235204AbiGMI4L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:56:11 -0400
-Received: from smtp.smtpout.orange.fr (smtp01.smtpout.orange.fr [80.12.242.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8397C04D3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:56:09 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id BYABo66oB3kbdBYABofk55; Wed, 13 Jul 2022 10:56:07 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 13 Jul 2022 10:56:07 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <9d799a6a-edbd-c7d7-1b20-b033fe38bcf7@wanadoo.fr>
-Date:   Wed, 13 Jul 2022 10:56:06 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] Input: tsc2007 - enable GPIO chips that can sleep
-Content-Language: en-US
-To:     Benjamin Bara <bbara93@gmail.com>, dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Bara <benjamin.bara@skidata.com>,
-        Richard Leitner <richard.leitner@skidata.com>
-References: <20220713084247.3090353-1-bbara93@gmail.com>
+Received: from ciao.gmane.io (ciao.gmane.io [116.202.254.214])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB966D214F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:56:10 -0700 (PDT)
+Received: from list by ciao.gmane.io with local (Exim 4.92)
+        (envelope-from <glk-linux-kernel-4@m.gmane-mx.org>)
+        id 1oBYAB-000ABm-R4
+        for linux-kernel@vger.kernel.org; Wed, 13 Jul 2022 10:56:07 +0200
+X-Injected-Via-Gmane: http://gmane.org/
+To:     linux-kernel@vger.kernel.org
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220713084247.3090353-1-bbara93@gmail.com>
+Subject: Re: [PATCH] Input: tsc2007 - enable GPIO chips that can sleep
+Date:   Wed, 13 Jul 2022 10:56:00 +0200
+Message-ID: <90594bd1-0ff1-0510-6d49-45d9935514b6@wanadoo.fr>
+References: <20220713084247.3090353-1-bbara93@gmail.com>
+Mime-Version: 1.0
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     linux-input@vger.kernel.org
+Content-Language: en-US
+In-Reply-To: <20220713084247.3090353-1-bbara93@gmail.com>
+Cc:     linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -168,4 +165,5 @@ CJ
 >   
 >   	return 0;
 >   }
+
 
