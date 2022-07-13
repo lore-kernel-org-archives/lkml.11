@@ -2,99 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D7AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:28:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C05AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230210AbiGME2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 00:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59178 "EHLO
+        id S233926AbiGME3S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 00:29:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiGME2U (ORCPT
+        with ESMTP id S233941AbiGME2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 00:28:20 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D575C9F4;
-        Tue, 12 Jul 2022 21:28:19 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id s21so10327355pjq.4;
-        Tue, 12 Jul 2022 21:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=cVU0VI6SHUHssnCSIRaLHSdROjTj9L70izUE69+SVQI=;
-        b=VadUZY6UnFi1GZKkPTGWEx6p9p8OtGaFA8ixYPSj5oPo47HbSqaCLJSuzmgeAZ0Vfz
-         +hyQsZsfgrH4hv80taG+hAdxskgo57toHAXDrvzDXPBH+denvHxvWQCpaunJP0tJ0xol
-         AHvqBkgeUdvJ7aAl/BT37D6kx2g+d34x/9HciKNxvAGHSpjUuwh2LWuhJiLt4h1XuAbI
-         3RS9mPHe1IltNeKEfrbJ6aViRlvFoBHDcL586oFZ/Bch29MsjtJYXfttAPizPgiwIlB0
-         b6f//RPGXzIJWXRgAd+AHzT37UpzmdOF2osy+3s1FeOiTIfxzCkgEzZd+14TFy6DET4d
-         KqNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=cVU0VI6SHUHssnCSIRaLHSdROjTj9L70izUE69+SVQI=;
-        b=SfZPnZtL+aomgADbqkK5RX/pylrCttZlp4jfdlbchmfEDCs/oscqC2eanAm7nqUP/a
-         O0RptdliP0Tsd1XpPPVWgp3EQtAlsCfmOcxGDYu/AQXpZJWnDl6M7KzUharAkxx7pAf+
-         UN9QMzTeShUNAjG+zpyB6cmlNRWHZKAQLlXbuQncDv39n4Yn3SASF7wh9WFlMhpLiXA8
-         xjWmLXehjUC1ppLHaI3EGppVe/e2/Xq0q4tzPVlU7tObAylVuSS8L8dgYsYNHEhE8U+q
-         ubbB9lZ+yYPr3yE1Mrf8SuYNcCPlmfiwEgSoHwcjZZRnRa60oTWbYJfdEMk2i10xFXvH
-         /M9w==
-X-Gm-Message-State: AJIora/hgZFjf6ncwLqv4yO2x5oV0lXlWB51pYKg3CgksSo2WXYAxx4w
-        SKfGjTqODkWzzkiYfMGLIFZeHVlRVLg=
-X-Google-Smtp-Source: AGRyM1tatiGwuci6RJxBxVvQPCr3zGspVZ/NLawV19EmxifvkxeY8ns2E9FstJPf5054KmMmFH4zqg==
-X-Received: by 2002:a17:902:ec8b:b0:16c:1cc2:6794 with SMTP id x11-20020a170902ec8b00b0016c1cc26794mr1290201plg.17.1657686498612;
-        Tue, 12 Jul 2022 21:28:18 -0700 (PDT)
-Received: from linux-l9pv.suse (123-194-153-158.dynamic.kbronet.com.tw. [123.194.153.158])
-        by smtp.gmail.com with ESMTPSA id e7-20020a17090301c700b0016c4f006603sm4732513plh.54.2022.07.12.21.28.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Jul 2022 21:28:18 -0700 (PDT)
-From:   "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
-X-Google-Original-From: "Lee, Chun-Yi" <jlee@suse.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ben Boeckel <me@benboeckel.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Malte Gell <malte.gell@gmx.de>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Mimi Zohar <zohar@linux.ibm.com>, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Lee, Chun-Yi" <jlee@suse.com>
-Subject: [PATCH v9,4/4] Documentation/admin-guide/module-signing.rst: add openssl command option example for CodeSign EKU
-Date:   Wed, 13 Jul 2022 12:24:21 +0800
-Message-Id: <20220713042421.21680-5-jlee@suse.com>
-X-Mailer: git-send-email 2.12.3
-In-Reply-To: <20220713042421.21680-1-jlee@suse.com>
-References: <20220713042421.21680-1-jlee@suse.com>
+        Wed, 13 Jul 2022 00:28:55 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D76F222BE;
+        Tue, 12 Jul 2022 21:28:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657686524; x=1689222524;
+  h=from:to:cc:subject:date:message-id;
+  bh=6SiSvwYpSrcAiIBIfoldM1RBHvBHBHxZggPTU5mW53M=;
+  b=XH0jrJXERupBLLSllgJndPE6uXYc1eANMQOH0/GOn9KINjtT1LfBEJ71
+   +4RgW5HTQ6uKWCzEx0JMLTvEPJYURvSibxyDhKNHXdeQHf0nqphyPPO9p
+   3wDL3Oty3We6DjPznudn0hDHiLLQ/5kgnTLZR1LXcKivKN6Lmr6suAtjE
+   GTXMQHK1Dvu0YUYFh2+s4u1xFw6ZsZSwclfMECGYbArM+n2PU/Ig04Fsj
+   n0Rkuq62MqOMjkhERF2y7VtR/e9F66mlOq73t/lNXf4ClW5c2ZF2MRxHz
+   5+eQou2K3jN2eoW4dlZSOQOZfxwTMH/759mcBAT0NWbHh3iy9VXfRpowE
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="264894376"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="264894376"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 21:28:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="570463201"
+Received: from srikandan-ilbpg12.png.intel.com ([10.88.229.69])
+  by orsmga006.jf.intel.com with ESMTP; 12 Jul 2022 21:28:40 -0700
+From:   nandhini.srikandan@intel.com
+To:     fancer.lancer@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, mgross@linux.intel.com,
+        kris.pan@intel.com, kenchappa.demakkanavar@intel.com,
+        furong.zhou@intel.com, mallikarjunappa.sangannavar@intel.com,
+        mahesh.r.vaidya@intel.com, nandhini.srikandan@intel.com,
+        rashmi.a@intel.com
+Subject: [PATCH v6 0/4] Add support for Intel Thunder Bay SPI controller
+Date:   Wed, 13 Jul 2022 12:22:19 +0800
+Message-Id: <20220713042223.1458-1-nandhini.srikandan@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an openssl command option example for generating CodeSign extended
-key usage in X.509 when CONFIG_CHECK_CODESIGN_EKU is enabled.
+From: Nandhini Srikandan <nandhini.srikandan@intel.com>
 
-Signed-off-by: "Lee, Chun-Yi" <jlee@suse.com>
----
- Documentation/admin-guide/module-signing.rst | 6 ++++++
- 1 file changed, 6 insertions(+)
+                                                                                   
+This patch enables support for DW SPI on Intel Thunder Bay.                        
+This patch set also enables master mode for latest Designware SPI versions.        
+                                                                                   
+Patch 1: Fixed dw_spi_ip_is macro with the missing underscore.                     
+Patch 2: DW SPI DT bindings for Intel Thunder Bay SoC.                             
+Patch 3: Adds master mode support for Designware SPI controller.                   
+Patch 4: Adds support for Designware SPI on Intel Thunder Bay SoC.                 
+                                                                                   
+The driver is tested on Keem Bay and Thunder Bay evaluation board                  
+                                                                                   
+Summary: 
+Changes from v5:
+1) Added changelog for Patch 1.
+2) Added Acked-by and Reviewed-by to applicable patches. 
+3) There are no other changes other than changelog in any of the patches.
+                                                                          
+Changes from v4:                                                                   
+1) Reordered master mode selection patch and Thunder Bay support patch.            
+2) The typo fix for macro dw_spi_ip_is is made into seperate patch.                
+                                                                                   
+Changes from v3:                                                                   
+1) Dropped SSTE support in this patch.                                             
+2) Rebased to the latest code.                                                     
+                                                                                   
+Changes from v2:                                                                   
+1) SSTE support made using dt and created seperate patches.                        
+2) SPI controller master mode selection made common to all DW SPI controllers.  
+3) Using a common init function for both keem bay and thunder bay.                 
+                                                                                   
+Changes from v1:                                                                   
+1) Designware CR0 specific macros are named in a generic way.                      
+2) SPI CAP macros are named in generic way rather than naming project specific.
+3) SPI KEEM BAY specific macros are replaced by generic macros.                 
+4) Resued the existing SPI deassert API instead of adding another reset.
 
-diff --git a/Documentation/admin-guide/module-signing.rst b/Documentation/admin-guide/module-signing.rst
-index 7d7c7c8a545c..ca3b8f19466c 100644
---- a/Documentation/admin-guide/module-signing.rst
-+++ b/Documentation/admin-guide/module-signing.rst
-@@ -170,6 +170,12 @@ generate the public/private key files::
- 	   -config x509.genkey -outform PEM -out kernel_key.pem \
- 	   -keyout kernel_key.pem
- 
-+When ``CONFIG_CHECK_CODESIGN_EKU`` option is enabled, the following openssl
-+command option should be added where for generating CodeSign extended key usage
-+in X.509::
-+
-+        -addext "extendedKeyUsage=codeSigning"
-+
- The full pathname for the resulting kernel_key.pem file can then be specified
- in the ``CONFIG_MODULE_SIG_KEY`` option, and the certificate and key therein will
- be used instead of an autogenerated keypair.
+Changes in patches:                                                             
+Patch 1:                                                                        
+--------                                           
+Changes from v5:
+1) Added changelog
+                             
+Changes from v4:                                                                
+1) Newly introduced in v5 as seperate patch.                                    
+                                                                                
+Patch 2:                                                                        
+--------                                                                        
+Changes from v5/v4/v3/v2/v1:                                                       
+1) No change in this patch.                                                     
+                                                                                
+                                                                                
+Patch 3:                                                                        
+--------        
+Changes from v5:
+1) No changes.
+                                                                
+Changes from v4:                                                                
+1) Reordered the patch.                                                         
+2) Setting CTRLR0 BIT31 is done conditionally for 1.02a version.                
+                                                                                
+Changes from v3:                                                                
+1) Corrected dw_spi_ip_is macro with the missing underscore.                    
+2) Setting CTRLR0 BIT31 without any condition check as in older version of      
+   DW SPI controller this bit is reserved.                                      
+                                                                                
+Changes from v2/v1:                                                             
+1)Newly introduced in v3 to make master mode selection as seperate patch.
+
+Patch 4:                                                                        
+--------                                                                        
+Changes from v5:
+1) No changes. 
+
+Changes from v4:                                                                
+1) Reordered the patch.                                                         
+                                                                                
+Changes from v3:                                                                
+1) No changes.                                                                  
+                                                                                
+Changes from v2:                                                                
+1) Init function is made common for Keem Bay and Thunder Bay.                   
+                                                                                
+Thanks & Regards,                                                               
+Nandhini 
+
+Nandhini Srikandan (4):
+  spi: dw: Fix IP-core versions macro
+  dt-bindings: spi: Add bindings for Intel Thunder Bay SOC
+  spi: dw: Add support for master mode selection for DWC SSI controller
+  spi: dw: Add support for Intel Thunder Bay SPI controller
+
+ .../devicetree/bindings/spi/snps,dw-apb-ssi.yaml    |  2 ++
+ drivers/spi/spi-dw-core.c                           |  5 +++--
+ drivers/spi/spi-dw-mmio.c                           |  8 ++++----
+ drivers/spi/spi-dw.h                                | 13 +++----------
+ 4 files changed, 12 insertions(+), 16 deletions(-)
+
 -- 
-2.26.2
+2.17.1
 
