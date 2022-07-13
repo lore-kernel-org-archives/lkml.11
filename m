@@ -2,110 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E43CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC86C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:35:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235608AbiGMIfW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45174 "EHLO
+        id S235643AbiGMIfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235582AbiGMIfT (ORCPT
+        with ESMTP id S235582AbiGMIfh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:35:19 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D40A58CF;
-        Wed, 13 Jul 2022 01:35:18 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id s27so9805389pga.13;
-        Wed, 13 Jul 2022 01:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Y/A0MX75zTaXhVdAEkMhemH3gBjt/Nk1zEMUdzVlPtg=;
-        b=UHmjjrOXfoP7fxm9CtN+JpxL5X27TGGRa4RYkeDqUWFRwC8cO1PcDYMXSvEfshzH6I
-         +6/hNL0DV51m/lzDnsJ2TLPxU0OXa3EEgXL7OMFVijxVOt4nwrVWhpXYaXsdx9BpE5rV
-         sKBIhbHqLxT6qj3F55YgSPgdUpVl9VDufh3eOY4K6PslQPnbtLA/dLP+nFKVEiu0MGgU
-         +VV4Va4Ul45CK5+mJCJdHO6+jef95Js/K3bRrwzhuyvQ346g0jlL4TA2xlbg9RarfCNC
-         msHK3JH2/e/5jq5bmucw3+N6L64YV2WyrGHr/3/t/XKZeYJ9wiY4ixv5gkrfi5/xsWxl
-         Bp0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y/A0MX75zTaXhVdAEkMhemH3gBjt/Nk1zEMUdzVlPtg=;
-        b=gJVOsiXRmzwLqyz8dWVhjvoizF9HPcGWPrPCPBr8MCDYWUhvb4h95jOjN2nGO1ID4d
-         LcFYA9RFCNSyacy/Q/83hHp+4/4/o2eFT91H2bfULV9eBBS8/v3bhhOV4Xn3ojZh6N+5
-         iOPH7dfuQKnzfvB+xOelUlev9qit84TAS+n3xZsUgyEMoCL2Tnq5o95fjjXEUMoECABT
-         UFZK1CWJRTwtaBbKzrUkCWIELj2qMSRB9xJZdeGMUIFktHVl5xvDs7rJ3CkahnnAWnFg
-         65pb+DZDFchppVehfaijT28MfjRVsL9tHiA7qLsN4IYgPtntvM4rIdV66KbKXyZ+/B0s
-         SoxA==
-X-Gm-Message-State: AJIora+OR76LOde2mIyG3DfTlWgHL4k4/L0RY9K9Nq4yjerrcXk9uo3p
-        FWpADqwrgvli7sOtXxJ6ZWaNzcmuU/w=
-X-Google-Smtp-Source: AGRyM1uR3dbgTxYj0lU6KDjUpNErZuR9b4kpTGTEfToeEkm3OSJPSdu6wB53ehz3r7hDonHtBCb5sA==
-X-Received: by 2002:a62:1cc8:0:b0:52a:ee9e:b735 with SMTP id c191-20020a621cc8000000b0052aee9eb735mr2205555pfc.42.1657701317502;
-        Wed, 13 Jul 2022 01:35:17 -0700 (PDT)
-Received: from localhost (fmdmzpr02-ext.fm.intel.com. [192.55.54.37])
-        by smtp.gmail.com with ESMTPSA id i14-20020a170902c94e00b0016c4331e61csm6244399pla.137.2022.07.13.01.35.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:35:16 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 01:35:15 -0700
-From:   Isaku Yamahata <isaku.yamahata@gmail.com>
-To:     Kai Huang <kai.huang@intel.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, isaku.yamahata@gmail.com,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>
-Subject: Re: [PATCH v7 035/102] KVM: x86/mmu: Explicitly check for MMIO spte
- in fast page fault
-Message-ID: <20220713083515.GQ1379820@ls.amr.corp.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <71e4c19d1dff8135792e6c5a17d3a483bc99875b.1656366338.git.isaku.yamahata@intel.com>
- <cfeb3b8b02646b073d5355495ec8842ac33aeae5.camel@intel.com>
+        Wed, 13 Jul 2022 04:35:37 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B51DA58D0;
+        Wed, 13 Jul 2022 01:35:37 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 4B64B1FD4C;
+        Wed, 13 Jul 2022 08:35:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657701334;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CcsBBbemJwPnREj8tUcGtqYBeLDK85WV0Rb0buPzp3s=;
+        b=BJ/2pHkXbNnHfTFeBIIZK9+C7zTuLNqlfrU5AON0AgJDEBieZg/cptr5j4lSS/Tth2GZh5
+        uTTDK6JayWctFwZVWdAzcIMoe1cRbOEyqznFtt3Io4SkUf29BmMApL/9YZ4yawoXTVuWCf
+        erYJs5aGcZo5a/6X98xFnRLAQa4ADEA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657701334;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CcsBBbemJwPnREj8tUcGtqYBeLDK85WV0Rb0buPzp3s=;
+        b=29egoYKkhz8DyFsT88GI2fB5xWVcR3WZlWzZxkJDRz32bg0P8E5Vfsut9piqSGhsjFOuvx
+        Z82YwHDwj+9CZZBQ==
+Received: from g78 (unknown [10.163.24.226])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4DBB22C141;
+        Wed, 13 Jul 2022 08:35:33 +0000 (UTC)
+References: <Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020> <87wncknkfe.fsf@suse.de>
+ <CABGWkvqF9f4vOYUQeYuaDGT7yuB=8=h=yPpuG04VwicNP=wgMA@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 28.1
+From:   Richard Palethorpe <rpalethorpe@suse.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     kernel test robot <oliver.sang@intel.com>, lkp@intel.com,
+        lkp@lists.01.org, Jeroen Hofstee <jhofstee@victronenergy.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-can@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>, ltp@lists.linux.it
+Subject: Re: [LTP] [can] c4e54b063f:
+ BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c
+Date:   Wed, 13 Jul 2022 09:23:28 +0100
+Reply-To: rpalethorpe@suse.de
+In-reply-to: <CABGWkvqF9f4vOYUQeYuaDGT7yuB=8=h=yPpuG04VwicNP=wgMA@mail.gmail.com>
+Message-ID: <87v8s1l8a3.fsf@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <cfeb3b8b02646b073d5355495ec8842ac33aeae5.camel@intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 11:37:15PM +1200,
-Kai Huang <kai.huang@intel.com> wrote:
+Hello,
 
-> On Mon, 2022-06-27 at 14:53 -0700, isaku.yamahata@intel.com wrote:
-> > From: Sean Christopherson <sean.j.christopherson@intel.com>
-> > 
-> > Explicitly check for an MMIO spte in the fast page fault flow.  TDX will
-> > use a not-present entry for MMIO sptes, which can be mistaken for an
-> > access-tracked spte since both have SPTE_SPECIAL_MASK set.
-> 
-> SPTE_SPECIAL_MASK has been removed in latest KVM code.  The changelog needs
-> update.
+Dario Binacchi <dario.binacchi@amarulasolutions.com> writes:
 
-It was renamed to SPTE_TDP_AD_MASK. not removed.
-
-
-> In fact, if I understand correctly, I don't think this changelog is correct:
-
-> The existing code doesn't check is_mmio_spte() because:
-> 
-> 1) If MMIO caching is enabled, MMIO fault is always handled in
-> handle_mmio_page_fault() before reaching here; 
+> Hello,
 >
-> 2) If MMIO caching is disabled, is_shadow_present_pte() always returns false for
-> MMIO spte, and is_mmio_spte() also always return false for MMIO spte, so there's
-> no need check here.
-> 
-> "A non-present entry for MMIO spte" doesn't necessarily mean
-> is_shadow_present_pte() will return true for it, and there's no explanation at
-> all that for TDX guest a MMIO spte could reach here and is_shadow_present_pte()
-> returns true for it.
+> On Mon, Jul 11, 2022 at 10:05 AM Richard Palethorpe <rpalethorpe@suse.de> wrote:
+>>
+>> Hello,
+>>
+>> kernel test robot <oliver.sang@intel.com> writes:
+>>
+>> > Greeting,
+>> >
+>> > FYI, we noticed the following commit (built with gcc-11):
+>> >
+>> > commit: c4e54b063f42f20a6b3ad1ffa61c574e631e0216 ("can: slcan: use CAN network device driver API")
+>> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
+>> > master
+>>
+>> I guess the problem is this may sleep with soft irqs disabled.
+>>
+>> static int slc_close(struct net_device *dev)
+>> {
+>>         struct slcan *sl = netdev_priv(dev);
+>>         int err;
+>>
+>>         spin_lock_bh(&sl->lock); <-- takes lock
+>>         if (sl->tty) {
+>>                 if (sl->can.bittiming.bitrate &&
+>>                     sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
+>>                         spin_unlock_bh(&sl->lock);
+>>                         err = slcan_transmit_cmd(sl, "C\r");
+>>                         spin_lock_bh(&sl->lock);
+>>                         if (err)
+>>                                 netdev_warn(dev,
+>>                                             "failed to send close command 'C\\r'\n");
+>>                 }
+>>
+>>                 /* TTY discipline is running. */
+>>                 clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+>>         }
+>>         netif_stop_queue(dev);
+>>         close_candev(dev); <-- calls cancel_delayed_work_sync()
+>>
+>
+> I would try (since I am unable to replicate the test) to move the
+> spin_unlock_bh()
+> before calling close_candev().
 
-Although it was needed, I noticed the following commit made this patch
-unnecessary.  So I'll drop this patch. Kudos to Sean.
+I haven't tried, but I think it should replicate every time with
+lockdep/lock debugging enabled.
 
-edea7c4fc215c7ee1cc98363b016ad505cbac9f7
-"KVM: x86/mmu: Use a dedicated bit to track shadow/MMU-present SPTEs"
+> Can the patch be sent now or do I have to wait until the code is in
+> mainline?
+
+IMO it *has* to be fixed before going into mainline :-p. I can't comment on
+the correctness of the proposed fix though.
 
 -- 
-Isaku Yamahata <isaku.yamahata@gmail.com>
+Thank you,
+Richard.
