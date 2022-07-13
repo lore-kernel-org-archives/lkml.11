@@ -2,140 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED425C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE905C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:32:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237226AbiGMQa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        id S237212AbiGMQcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:32:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235824AbiGMQaY (ORCPT
+        with ESMTP id S230114AbiGMQcW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:30:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F7B22BCE;
-        Wed, 13 Jul 2022 09:30:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 13 Jul 2022 12:32:22 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D284C2B604;
+        Wed, 13 Jul 2022 09:32:21 -0700 (PDT)
+Received: from localhost (dynamic-002-247-252-243.2.247.pool.telefonica.de [2.247.252.243])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8F36B820DD;
-        Wed, 13 Jul 2022 16:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01FB8C34114;
-        Wed, 13 Jul 2022 16:30:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657729820;
-        bh=Nj/cSJ3aiSlsXlRKjR7iKliBWLuG3wKJK9ksDyvn6io=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DPKw5nM6na4V+WSXIfHBo87+clWTGud4RrmpEoVeEvTyxa4kOp9gcuX8tAureCJNQ
-         9/b9QdaH5Rj5AeESy6rXdy2L/MB7lNyib71IUWDEM+Xd1SJxvvblKShKMjICuyIsNC
-         kveTRv77DcOFQIh1xX9CDIb8oAhnl5389/aQlqVFIhdZBkNsYe/P8bbDK17PxCY77L
-         D/fJ73mBAW24fSdNDS7FDuoAoS+PHPhANQOhAbV4CiKtxKb3u3PgFrbiI8dRAxmK94
-         zrgKcq7NCuqJUhuhX4Q10OUCAgE0X6GvCrHv8BaHyCrkyyA67KPdV6Ts2Zibp7B+zp
-         7zwpa4IUkWwCA==
-Date:   Wed, 13 Jul 2022 17:40:09 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     ktsai@capellamicro.com, lars@metafoo.de, hdegoede@redhat.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: light: cm32181: Add PM support
-Message-ID: <20220713174009.2f18b0e4@jic23-huawei>
-In-Reply-To: <CAAd53p6OS+WH+vP3GUyrExmy_a7KoGyN6-v5hspcFaBoS1S07Q@mail.gmail.com>
-References: <20220707000151.33381-1-kai.heng.feng@canonical.com>
-        <20220707175037.1352fa6b@jic23-huawei>
-        <CAAd53p6OS+WH+vP3GUyrExmy_a7KoGyN6-v5hspcFaBoS1S07Q@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        (Authenticated sender: sebastianfricke)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4B99A660191C;
+        Wed, 13 Jul 2022 17:32:20 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657729940;
+        bh=dIzwKmgbXSEkeJxn4p/FQB/B/V+b2M0cBePpVdA5mgE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iku7kOjHUvAD7+D/BODOjWHZslQRXb7UfbF1HSjv41HaCqGg0CpgjSenu50rlKn1d
+         2db/FNN8L6TrGdl1rw5QfrLh5QN8SvdbKXlb0ZNDgN/R2qNvlAjcYwQhbWorgr2L7V
+         ZL+LO4rmvAMh569pyL1jatslnrmQHdjfJigouTs310LHCdTrMBIdOn7m9Fj89T14r2
+         xb3fbgJUNLVFvxo5zGGl6CREebx30q44PXVp87jJkxwE4M7//JVQxPnPPUesQqnrgI
+         nxHhzY7gumtvkffVS6kgM3hHF/2/U0v6eIrFnwIphbwwzIYF86WuxCtvwDxXGSU5dk
+         JNw8+9GWDK97A==
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     linux-media@vger.kernel.org
+Cc:     jernej.skrabec@gmail.com, knaerzche@gmail.com,
+        kernel@collabora.com, bob.beckett@collabora.com,
+        ezequiel@vanguardiasur.com.ar, mchehab@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        nicolas.dufresne@collabora.com,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH 3/6] bitops: bitmap helper to set variable length values
+Date:   Wed, 13 Jul 2022 18:31:59 +0200
+Message-Id: <20220713163201.136202-1-sebastian.fricke@collabora.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 09:30:52 +0800
-Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+Add a new helper to set variable length values within a bitmap, that can
+overflow the borders of a single BITS_PER_LONG container.
+This function makes it easier to write values to hardware memory blobs that
+do not require alignment.
 
-> On Fri, Jul 8, 2022 at 12:40 AM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Thu,  7 Jul 2022 08:01:51 +0800
-> > Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
-> >  
-> > > The read on in_illuminance_input keeps at 0 after system sleep.
-> > >
-> > > So add proper suspend and resume callback to make the sensor keep
-> > > working after system sleep.
-> > >
-> > > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>  
-> > Applied to the togreg branch of iio.git and pushed out as testing for
-> > the autobuilders to poke at it and see if we missed anything,  
-> 
-> This commit doesn't seem to be included in iio/togreg branch.
+Add tests to the lib/test_bitmap.c kselftest module to verify proper function.
 
-Seems I got distracted and didn't push out.
-Should be there now,
+Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+---
+ include/linux/bitmap.h | 40 +++++++++++++++++++++++++++++++++++
+ lib/test_bitmap.c      | 48 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 88 insertions(+)
 
-Jonathan
-
-> Kai-Heng
-> 
-> >
-> > Thanks,
-> >
-> > Jonathan
-> >  
-> > > ---
-> > > v2:
-> > >  - Use dev_get_drvdata() instead of i2c_get_clientdata() to avoid extra
-> > >    dereference.
-> > >
-> > >  drivers/iio/light/cm32181.c | 22 ++++++++++++++++++++++
-> > >  1 file changed, 22 insertions(+)
-> > >
-> > > diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-> > > index 97649944f1df6..edbe6a3138d0b 100644
-> > > --- a/drivers/iio/light/cm32181.c
-> > > +++ b/drivers/iio/light/cm32181.c
-> > > @@ -460,6 +460,8 @@ static int cm32181_probe(struct i2c_client *client)
-> > >                       return PTR_ERR(client);
-> > >       }
-> > >
-> > > +     i2c_set_clientdata(client, indio_dev);
-> > > +
-> > >       cm32181 = iio_priv(indio_dev);
-> > >       cm32181->client = client;
-> > >       cm32181->dev = dev;
-> > > @@ -486,6 +488,25 @@ static int cm32181_probe(struct i2c_client *client)
-> > >       return 0;
-> > >  }
-> > >
-> > > +static int cm32181_suspend(struct device *dev)
-> > > +{
-> > > +     struct i2c_client *client = to_i2c_client(dev);
-> > > +
-> > > +     return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-> > > +                                      CM32181_CMD_ALS_DISABLE);
-> > > +}
-> > > +
-> > > +static int cm32181_resume(struct device *dev)
-> > > +{
-> > > +     struct i2c_client *client = to_i2c_client(dev);
-> > > +     struct cm32181_chip *cm32181 = iio_priv(dev_get_drvdata(dev));
-> > > +
-> > > +     return i2c_smbus_write_word_data(client, CM32181_REG_ADDR_CMD,
-> > > +                                      cm32181->conf_regs[CM32181_REG_ADDR_CMD]);
-> > > +}
-> > > +
-> > > +DEFINE_SIMPLE_DEV_PM_OPS(cm32181_pm_ops, cm32181_suspend, cm32181_resume);
-> > > +
-> > >  static const struct of_device_id cm32181_of_match[] = {
-> > >       { .compatible = "capella,cm3218" },
-> > >       { .compatible = "capella,cm32181" },
-> > > @@ -506,6 +527,7 @@ static struct i2c_driver cm32181_driver = {
-> > >               .name   = "cm32181",
-> > >               .acpi_match_table = ACPI_PTR(cm32181_acpi_match),
-> > >               .of_match_table = cm32181_of_match,
-> > > +             .pm = pm_sleep_ptr(&cm32181_pm_ops),
-> > >       },
-> > >       .probe_new      = cm32181_probe,
-> > >  };  
-> >  
+diff --git a/include/linux/bitmap.h b/include/linux/bitmap.h
+index 2e6cd5681040..9f8d635b70a9 100644
+--- a/include/linux/bitmap.h
++++ b/include/linux/bitmap.h
+@@ -76,6 +76,7 @@ struct device;
+  *  bitmap_to_arr64(buf, src, nbits)            Copy nbits from buf to u64[] dst
+  *  bitmap_get_value8(map, start)               Get 8bit value from map at start
+  *  bitmap_set_value8(map, value, start)        Set 8bit value to map at start
++ *  bitmap_set_value(map, value, start, nbits)  Set a variable length value to map at start
+  *
+  * Note, bitmap_zero() and bitmap_fill() operate over the region of
+  * unsigned longs, that is, bits behind bitmap till the unsigned long
+@@ -573,6 +574,45 @@ static inline void bitmap_set_value8(unsigned long *map, unsigned long value,
+ 	map[index] |= value << offset;
+ }
+ 
++/**
++ * bitmap_set_value - set a variable length value within a memory region
++ * @map: address to the bitmap memory region
++ * @value: the variable length value
++ * @start: bit offset of the value
++ * @length: Length of the value
++ */
++static inline void bitmap_set_value(unsigned long *map, unsigned long value,
++				    unsigned long start, unsigned char length)
++{
++	size_t index = BIT_WORD(start);
++	unsigned long offset = start % BITS_PER_LONG;
++	int diff_to_max = 0;
++
++	if (!length)
++		return;
++
++
++	if (length < BITS_PER_LONG)
++		value &= (BIT(length) - 1);
++
++	while (length > 0) {
++		diff_to_max = BITS_PER_LONG - offset;
++		map[index] &= ~((BIT(length) - 1) << offset);
++		if (length > diff_to_max) {
++			unsigned long tmp = value & (BIT(diff_to_max) - 1);
++
++			map[index] |= tmp << offset;
++			value >>= diff_to_max;
++			length -= diff_to_max;
++			index += 1;
++			offset = 0;
++		} else {
++			map[index] |= value << offset;
++			length = 0;
++		}
++	}
++}
++
+ #endif /* __ASSEMBLY__ */
+ 
+ #endif /* __LINUX_BITMAP_H */
+diff --git a/lib/test_bitmap.c b/lib/test_bitmap.c
+index d5923a640457..509317ad2f72 100644
+--- a/lib/test_bitmap.c
++++ b/lib/test_bitmap.c
+@@ -869,6 +869,53 @@ static void __init test_bitmap_print_buf(void)
+ 	}
+ }
+ 
++struct test_bitmap_set_value_sample {
++	unsigned long value[2];
++	unsigned char length[2];
++	unsigned int offset[2];
++	unsigned long expected[2][2];
++	int amount;
++};
++
++static const struct test_bitmap_set_value_sample test_set[] __initconst = {
++	/* Check that multiple values can be chained up */
++	{ {10, 20}, {4, 5}, {0, 4}, {{10, 330}}, 2 },
++	/* Check that a value can be set across two BITS_PER_LONG chunks */
++	{ {10, 6}, {4, 3}, {0, 63}, {{10, 10}, {0, 3}}, 2 },
++	/* Set a value with length shorter than the given length */
++	{ {3, 6}, {4, 10}, {0, 4}, {{3, 99}}, 1 },
++	/* Set a value with length longer than the given length */
++	{ {15}, {2}, {0}, {{3}}, 1 },
++	/* Check that values are properly overwritten */
++	{ {15, 12}, {4, 4}, {0, 2}, {{15, 51}}, 2 },
++	/* Check that a set without a length doesn't change anything */
++	{ {10}, {0}, {0}, {{0}}, 1 },
++};
++
++static void __init test_bitmap_set_value(void)
++{
++	int i, j, k;
++	int correct_tests = 0;
++
++	for (i = 0; i < ARRAY_SIZE(test_set); i++) {
++		const struct test_bitmap_set_value_sample *t = &test_set[i];
++		int test_correct = 1;
++		DECLARE_BITMAP(map, BITS_PER_LONG * 2);
++
++		bitmap_zero(map, BITS_PER_LONG * 2);
++		for (j = 0; j < t->amount; j++) {
++			bitmap_set_value(map, t->value[j], t->offset[j], t->length[j]);
++			for (k = 0; k < 2; k++) {
++				if (expect_eq_uint(map[k], t->expected[k][j]))
++					test_correct = 0;
++			}
++		}
++		if (test_correct)
++			correct_tests += 1;
++	}
++	pr_err("set_value: %d/%ld tests correct\n", correct_tests, ARRAY_SIZE(test_set));
++}
++
+ static void __init selftest(void)
+ {
+ 	test_zero_clear();
+@@ -884,6 +931,7 @@ static void __init selftest(void)
+ 	test_for_each_set_clump8();
+ 	test_bitmap_cut();
+ 	test_bitmap_print_buf();
++	test_bitmap_set_value();
+ }
+ 
+ KSTM_MODULE_LOADERS(test_bitmap);
+-- 
+2.25.1
 
