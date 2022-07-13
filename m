@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24785C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:47:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47854C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:47:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237348AbiGMUrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40794 "EHLO
+        id S237357AbiGMUrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:47:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiGMUqw (ORCPT
+        with ESMTP id S237273AbiGMUqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:46:52 -0400
+        Wed, 13 Jul 2022 16:46:53 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A48DA313A2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D757A313B0
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=3RQMJWvVubcEmy
-        dV4Sxn8CpOGksV5lI/Sev4oIgvcmw=; b=QWtz3FfUMwC5c6gFVj8O5rZOvoxxqr
-        PEnkDInz0RjyFcSmnW0RJN/jU7KXbxRfd12YDayb9ueIYXEeXeFUWz9wkfsiMdXX
-        +dOef82nos/dq3haeY3qGJp3yCYkoUcxdFVhIVt9CCimtT56TV/Nmocil5zORfjG
-        WGGRjbOpfoq3w=
-Received: (qmail 305858 invoked from network); 13 Jul 2022 22:46:39 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:39 +0200
-X-UD-Smtp-Session: l3s3148p1@uza04bXjHKEgAwDtxwdRAEXXn+yo/Rze
+        :mime-version:content-transfer-encoding; s=k1; bh=vq8ZQlQ80DA0gC
+        LLtNMkwqtUV6zYyg5dthT1hi7uUhA=; b=CpCVps0CjacU4jE6XvMxEJz5jmeo/s
+        i85lOXEKy+7ABJKoXTqawmfz4RM+kxUGSWmlr5+L138HmHhnHNPhDI6sw53Nxk2p
+        QiCfGyFfigKPiSzk8zhJdakDpI8nQaubxBMmq4UjS3vAHJzrRSJxfJ780U+3WQop
+        8CACpP214POXc=
+Received: (qmail 305912 invoked from network); 13 Jul 2022 22:46:40 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:40 +0200
+X-UD-Smtp-Session: l3s3148p1@yKnN4bXjMKEgAwDtxwdRAEXXn+yo/Rze
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-renesas-soc@vger.kernel.org
 Cc:     John Stultz <jstultz@google.com>,
@@ -32,9 +32,9 @@ Cc:     John Stultz <jstultz@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Stephen Boyd <sboyd@kernel.org>, Shuah Khan <shuah@kernel.org>,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 7/9] selftests: timers: clocksource-switch: add command line switch to skip sanity check
-Date:   Wed, 13 Jul 2022 22:46:19 +0200
-Message-Id: <20220713204623.5443-8-wsa+renesas@sang-engineering.com>
+Subject: [PATCH 9/9] selftests: timers: clocksource-switch: adapt to kselftest framework
+Date:   Wed, 13 Jul 2022 22:46:21 +0200
+Message-Id: <20220713204623.5443-10-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
 References: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
@@ -44,79 +44,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sanity check takes a while. If you do repeated checks when
-debugging, this is time consuming. Add a parameter to skip it.
+So we have proper counters at the end of a test. We also print the
+kselftest header at the end of the test, so we don't mix with the output
+of the child process. There is only this one test anyhow.
 
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
- .../selftests/timers/clocksource-switch.c     | 40 +++++++++++++------
- 1 file changed, 28 insertions(+), 12 deletions(-)
+ tools/testing/selftests/timers/clocksource-switch.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/tools/testing/selftests/timers/clocksource-switch.c b/tools/testing/selftests/timers/clocksource-switch.c
-index ed5b71f5b37c..5256e6215980 100644
+index a1d0d33738b6..e2c0e4485ea8 100644
 --- a/tools/testing/selftests/timers/clocksource-switch.c
 +++ b/tools/testing/selftests/timers/clocksource-switch.c
-@@ -119,12 +119,26 @@ int run_tests(int secs)
+@@ -182,7 +182,9 @@ int main(int argc, char **argv)
+ out:
+ 	change_clocksource(orig_clk);
  
- char clocksource_list[10][30];
- 
--int main(int argv, char **argc)
-+int main(int argc, char **argv)
- {
- 	char orig_clk[512];
--	int count, i, status;
-+	int count, i, status, opt;
-+	int do_sanity_check = 1;
- 	pid_t pid;
- 
-+	/* Process arguments */
-+	while ((opt = getopt(argc, argv, "s")) != -1) {
-+		switch (opt) {
-+		case 's':
-+			do_sanity_check = 0;
-+			break;
-+		default:
-+			printf("Usage: %s [-s]\n", argv[0]);
-+			printf("	-s: skip sanity checks\n");
-+			exit(-1);
-+		}
-+	}
-+
- 	get_cur_clocksource(orig_clk, 512);
- 
- 	count = get_clocksources(clocksource_list);
-@@ -135,19 +149,21 @@ int main(int argv, char **argc)
- 	}
- 
- 	/* Check everything is sane before we start switching asynchronously */
--	for (i = 0; i < count; i++) {
--		printf("Validating clocksource %s\n", clocksource_list[i]);
--		if (change_clocksource(clocksource_list[i])) {
--			status = -1;
--			goto out;
--		}
--		if (run_tests(5)) {
--			status = -1;
--			goto out;
-+	if (do_sanity_check) {
-+		for (i = 0; i < count; i++) {
-+			printf("Validating clocksource %s\n",
-+				clocksource_list[i]);
-+			if (change_clocksource(clocksource_list[i])) {
-+				status = -1;
-+				goto out;
-+			}
-+			if (run_tests(5)) {
-+				status = -1;
-+				goto out;
-+			}
- 		}
- 	}
- 
--
- 	printf("Running Asynchronous Switching Tests...\n");
- 	pid = fork();
- 	if (!pid)
+-	if (status)
+-		return ksft_exit_fail();
+-	return ksft_exit_pass();
++	/* Print at the end to not mix output with child process */
++	ksft_print_header();
++	ksft_set_plan(1);
++	ksft_test_result(!status, "clocksource-switch\n");
++	ksft_exit(!status);
+ }
 -- 
 2.35.1
 
