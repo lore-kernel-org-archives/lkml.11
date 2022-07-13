@@ -2,174 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB182C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79366C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235252AbiGMIkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
+        id S235724AbiGMIkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:40:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231648AbiGMIj5 (ORCPT
+        with ESMTP id S235702AbiGMIkM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:39:57 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3514FD7A4B;
-        Wed, 13 Jul 2022 01:39:57 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26D8aowm006521;
-        Wed, 13 Jul 2022 08:39:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=TizzkofkPLYM5cfAMGlOfFOMezl4jD6xmSbVX7fi9YU=;
- b=YHeQ7VoFeaMtu13RvDV+1/JKhSTQcFXFQzFJYrhgQGlIUzoBR43zkfvzO5VOcyhktNFx
- ZfEcKxaI8CuEmuSxTDPGUwnn1ypgv+ax12Tn6TUGW9zVCUU3MeJmCYcaBIyR/2C4fp/F
- pEc6Z1cmxMH1s4E6nvdV5ZSnJa/bZo7mtxq+lWKWTFNIt5lcNWWIyI3emmRM0R1Ur50w
- JSSimNl1/6s/ISUbPJwmnk0x1sV5v2nv/Mbjiue4JSKF/3svSgFllfWHhPKh83UdbmkR
- 2hmyMCJvex+PAn5elrAC0bfJ/uST0l4BVeElPhE7I9uvcMtLgEWKfkAfBJC+rkurs8PJ 7Q== 
-Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9t2qh01t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 08:39:53 +0000
-Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
-        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26D8LZsV012148;
-        Wed, 13 Jul 2022 08:39:51 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma05fra.de.ibm.com with ESMTP id 3h71a8v1hr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 08:39:50 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26D8dlgU17367388
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Jul 2022 08:39:47 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D83FC4203F;
-        Wed, 13 Jul 2022 08:39:47 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7BD5942045;
-        Wed, 13 Jul 2022 08:39:47 +0000 (GMT)
-Received: from [9.152.224.153] (unknown [9.152.224.153])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Jul 2022 08:39:47 +0000 (GMT)
-Message-ID: <02b6537d-97e6-c27b-7621-c5b116995a00@linux.ibm.com>
-Date:   Wed, 13 Jul 2022 10:39:47 +0200
+        Wed, 13 Jul 2022 04:40:12 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31115E3C3F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:11 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id p6so9874581ljc.8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rFBl54go6bbp895f6CpJo/cJgp+SQIq2apGuPfKEw8I=;
+        b=HJy70qwl9lN8HnV2r/htxl8ByNBeHMo2DaIIq8mk7an1rDp/Hy4hkXfktfvmdxUaxv
+         3A8sUvjtVkw53mw340DrAJeHLmOzxTyLbalQEkV/XibwwFuwinmbY8O4rPtYpX5yrLiy
+         JCufh3uEsQSrI+YvGbyX9Y+722Yi/OGL4EsdeTD0EdSrLJ29gdu6g6g4kPCs/WNN/s56
+         Ok1r003S2vR+FcsNad/mJW0vO/uHVdrcEbuS7mChc7ssvfhznEANrqB0zDNs+h4LpO7Z
+         +re5NfTf0wvT6R8Qp16Ggu7kuyCNhK8MTP9WtoFIw6A9JRGk4YAt/6tiRiaJDLitsXUv
+         FA8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rFBl54go6bbp895f6CpJo/cJgp+SQIq2apGuPfKEw8I=;
+        b=SWsSvX76WjdCD4lIsjGcHDh81yWIDcZGrC6XAC/IhwZBfYrhjsgGe2FcD78UkVgs1b
+         vCRrjtKoVXn7Br3aaSmkPu5AaboekjO+SJFlFRm4M7sVpDuLtiFLxhXVZdBrk3jU+ApN
+         krUBzaAgCtg7Ie34lzkiWYy9OSbUVWFZMSNTOL+wgootoxfzpiEVOr5WlisBVPJdBNYA
+         JxoKrBZSa/fmXSwrIz/MQpor+4lJvGi5NM/6N0rZgT+3FXwRjQSSU8udQ7JxQPSL4ejF
+         MSfNtMfTgSq8O9ATMWIPI95Ob747LTb6bQHjeeZ3U/LtZxQFtEzT3bxavb+ExTLZpr7k
+         uPYA==
+X-Gm-Message-State: AJIora9Xa+e05jB8xmj8yVn1T1xU+LeX1NLvdbponDt7PBxuCU8iac53
+        PvvNUpnWGw9cOldCMftwAoZkBQBrK+hedQ==
+X-Google-Smtp-Source: AGRyM1vqC3mk/Y63Y88qA3IPGzsb8ZUXDS2zCGPmro0xfJGvd0YSbgfDR3MJrICvvK8L1MwmkoFzRw==
+X-Received: by 2002:a05:651c:1038:b0:25d:53cb:ba22 with SMTP id w24-20020a05651c103800b0025d53cbba22mr1104823ljm.407.1657701609473;
+        Wed, 13 Jul 2022 01:40:09 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id 11-20020a05651c128b00b0025d6ecbc897sm1720865ljc.46.2022.07.13.01.40.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 01:40:08 -0700 (PDT)
+Message-ID: <0131e1d6-09c0-31a4-5b9d-0e2fc49d61ac@linaro.org>
+Date:   Wed, 13 Jul 2022 10:40:05 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 3/3] s390/uvdevice: autoload module based on CPU facility
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] arm64: Kconfig.platforms: Re-organized Broadcom menu
 Content-Language: en-US
-To:     Claudio Imbrenda <imbrenda@linux.ibm.com>
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org, nrb@linux.ibm.com
-References: <20220712105220.325010-1-seiden@linux.ibm.com>
- <20220712105220.325010-4-seiden@linux.ibm.com>
- <20220712184924.0d80c474@p-imbrenda>
-From:   Steffen Eiden <seiden@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <20220712184924.0d80c474@p-imbrenda>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        SoC Team <soc@kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        william.zhang@broadcom.com, anand.gore@broadcom.com,
+        Olof Johansson <olof@lixom.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Wei Xu <xuwei5@hisilicon.com>, Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Matthias Brugger <mbrugger@suse.com>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Dinh Nguyen <dinguyen@kernel.org>
+References: <20220712164235.40293-1-f.fainelli@gmail.com>
+ <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Bm1QkXzouI91UwL-R4sSteIHhti0ChGY
-X-Proofpoint-ORIG-GUID: Bm1QkXzouI91UwL-R4sSteIHhti0ChGY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-12_14,2022-07-13_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 mlxlogscore=999 spamscore=0 mlxscore=0 suspectscore=0
- clxscore=1015 priorityscore=1501 phishscore=0 malwarescore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207130035
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/12/22 18:49, Claudio Imbrenda wrote:
-> On Tue, 12 Jul 2022 12:52:20 +0200
-> Steffen Eiden <seiden@linux.ibm.com> wrote:
-> 
->> Make sure the uvdevice driver will be automatically loaded when
->> facility 158 is available.
+On 13/07/2022 10:25, Arnd Bergmann wrote:
+> On Tue, Jul 12, 2022 at 6:42 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
 >>
->> Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
+>> There are now multiple Broadcom SoCs supported so group them under their
+>> own menu such that the selection is visually more appealing and we can
+>> easily add new platforms there in the future. This allows us to move
+>> ARCH_BRCMSTB back to its siblings.
+>>
+>> No functional changes introduced.
+>>
+>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 >> ---
->>   arch/s390/include/asm/cpufeature.h | 1 +
->>   arch/s390/kernel/cpufeature.c      | 1 +
->>   drivers/s390/char/uvdevice.c       | 5 ++---
->>   3 files changed, 4 insertions(+), 3 deletions(-)
 >>
->> diff --git a/arch/s390/include/asm/cpufeature.h b/arch/s390/include/asm/cpufeature.h
->> index aa8081dad411..4b17f876ab54 100644
->> --- a/arch/s390/include/asm/cpufeature.h
->> +++ b/arch/s390/include/asm/cpufeature.h
->> @@ -33,6 +33,7 @@ enum {
->>   	S390_CPU_FEATURE_NNPA,
->>   	S390_CPU_FEATURE_PCI_MIO,
->>   	S390_CPU_FEATURE_SIE,
->> +	S390_CPU_FEATURE_UV,
->>   	MAX_CPU_FEATURES
->>   };
->>   
->> diff --git a/arch/s390/kernel/cpufeature.c b/arch/s390/kernel/cpufeature.c
->> index e70b29804db4..0b854d37edcb 100644
->> --- a/arch/s390/kernel/cpufeature.c
->> +++ b/arch/s390/kernel/cpufeature.c
->> @@ -42,6 +42,7 @@ static struct s390_cpu_feature s390_cpu_features[MAX_CPU_FEATURES] = {
->>   	[S390_CPU_FEATURE_NNPA]		= {.type = TYPE_HWCAP, .num = HWCAP_NR_NNPA},
->>   	[S390_CPU_FEATURE_PCI_MIO]	= {.type = TYPE_HWCAP, .num = HWCAP_NR_PCI_MIO},
->>   	[S390_CPU_FEATURE_SIE]		= {.type = TYPE_HWCAP, .num = HWCAP_NR_SIE},
->> +	[S390_CPU_FEATURE_UV]		= {.type = TYPE_FACILITY, .num = 158},
->>   };
->>   
->>   /*
->> diff --git a/drivers/s390/char/uvdevice.c b/drivers/s390/char/uvdevice.c
->> index 66505d7166a6..1d40457c7b10 100644
->> --- a/drivers/s390/char/uvdevice.c
->> +++ b/drivers/s390/char/uvdevice.c
->> @@ -27,6 +27,7 @@
->>   #include <linux/stddef.h>
->>   #include <linux/vmalloc.h>
->>   #include <linux/slab.h>
->> +#include <linux/cpufeature.h>
->>   
->>   #include <asm/uvdevice.h>
->>   #include <asm/uv.h>
->> @@ -244,12 +245,10 @@ static void __exit uvio_dev_exit(void)
->>   
->>   static int __init uvio_dev_init(void)
->>   {
->> -	if (!test_facility(158))
->> -		return -ENXIO;
->>   	return misc_register(&uvio_dev_miscdev);
->>   }
->>   
->> -module_init(uvio_dev_init);
->> +module_cpu_feature_match(S390_CPU_FEATURE_UV, uvio_dev_init);
+>> Note this is based on "arm64: bcmbca: add arch bcmbca machine entry"
 > 
-> does this still prevent manual loading when the feature is not present?
-yes.
-
-Have a look at the macro definition at 'include/linux/cpufeature.h':
-
-Use module_cpu_feature_match(feature, module_init_function) to 
-
-declare that 
-
-[snip]
-b) the module must not be loaded if CPU feature 'feature' is not present 
-
-    (not even by manual insmod).
-
-The test 'facility(158)' just moved to cpu_have_feature() in 
-'/arch/s390/kernel/cpufeature.c'.
+> Hi Florian,
 > 
->>   module_exit(uvio_dev_exit);
->>   
->>   MODULE_AUTHOR("IBM Corporation");
+> So far, we have tried to keep the Kconfig.platforms file rather coarse-grained,
+> mainly limiting it to company names and high-level families, but avoiding
+> sub-menus or adding too many sub-families.
 > 
+> If we add per-vendor submenus, we should probably first decide how we
+> want to structure this across vendors. I've added maintainers and lists to
+> Cc for a couple of the ones that are in a similar situation.
+> 
+> I can see a couple of ways we can do this:
+> 
+> a) keep the list of platforms as short as possible, combining related
+>   SoC families from a single vendor wherever possible, but no sub-menus
+>   (same as today)
+> 
+> b) Always use sub-menus when there is more than one family, but
+>    keep relatively coarse platform selection.
+> 
+> c) Use sub-menus and also move to a more fine-grained SoC
+>     selection, similar to what we have on 32-bit arm.
+> 
+> I would not really want to go to c), but a) and b) both make sense to
+> me as long as do it consistently across all platforms.
+> 
+> Any other ideas or opinions?
+
+Whatever we decide here, the SoC can override in drivers/soc, just like
+Renesas did. I think Renesas chose option c), but made it in
+drivers/soc. I would vote to have consistent policy, so if arch/arm64 is
+a) or b), sub-archs should not redefine it in drivers/soc.
+
+Or we could choose d)
+d) keep arch/arm64 list of platforms as short as possible, but sub-archs
+can do whatever they like on drivers/soc.
+
+Personally, I find fine-grained SoC selection a bit ridiculous
+optimization, like compiling kernel, Glibc and userspace with -O3,
+-funroll-loops and many other flags. One gets smaller size but looses
+multi-platform and ability to test one kernel on different boards.
+Therefore I would vote for b) with disallowing drivers/soc defining more
+ARCH_ and more SOC_.
+
+Best regards,
+Krzysztof
