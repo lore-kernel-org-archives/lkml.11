@@ -2,89 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30701C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DC0CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:25:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237074AbiGMUXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        id S237029AbiGMUZb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:25:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236537AbiGMUXE (ORCPT
+        with ESMTP id S232043AbiGMUZa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:23:04 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8012C30F56
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:23:03 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id j22so21860505ejs.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:23:03 -0700 (PDT)
+        Wed, 13 Jul 2022 16:25:30 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9218C25C5A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:25:27 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so5689317pjn.0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:25:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=d1P5rX72RXyRvGR7JCZ4qVZh1CiP/TKW9UtB14PFhaQ=;
-        b=hp43ldtRziA5PUHZyd4RJvKAVLE41k/JKMzhpS//B1rETg03AmLcMxtVsSmgdzCMlb
-         t44JOsl9PL+s6wYOQEJPZD0NHxYo63Bm3DBi/uPpvJFGrf3vZkmlu45wXZNa4Qj4zXqW
-         mz1WdEdTJ8v9A+xQt4LlwhRS6fDVV8/nYc5Hs=
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=KNxdzYJ31Vhyt7oycuRbMlgHEjW6wotI0WNAdQq4UMw=;
+        b=t8kPJVCKtimxDlTtyzRgs6JNvOaLECNuXxarQU5OqBNA+ziab/DxNvRTorr+G98Cl5
+         2n5ZybUVwcbsU+P2E2FnhFqF/mDjUjQRVf+6EFKX70Vbyzk6vKllj0cfGMjRaaH7wV46
+         OJqqnL5CnvYZ/tMqCZLuH5USn/gtG52kAARi3QGK/WoJbpmkwcRGlqfg+bv7QswLkwWF
+         sqTDGUA8vN6GDwxQrdyDse3TUfWV6rQR1erg83hXbDszgJFa74wrL8rWeUtIlOlOn2rW
+         idSQYSMMEmA6NKhXQnU+1DLRu0Ph3fLJmWMrp5S4wqtLYYQgpiVlQDtmbrMJhScjh0kg
+         U6CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d1P5rX72RXyRvGR7JCZ4qVZh1CiP/TKW9UtB14PFhaQ=;
-        b=37we87Zg80bBZdJ3hL4t1uhn1CFXYxy6eblho4UvT4bRbQINVNkcvHTglzZRqm9be9
-         GKKWJSS1kQaZz0pmMeJKuWkpGmZPAsXlYFX/g/Cufxv1XtFbrTgwHrNu16fFzUOwtV7R
-         55jwzW5oIT2WOwfc8erU6/GnHBpkHM6+sCMrQA+yBVUeK0wy/GpNRnVo0PGcKhHFM/bl
-         T3EN2cdRwMyH3nbQY76NbcMg8KuWzq+Rt1i6zicBUQa8R5ecC46HmJMXhnGsI/n8Ui84
-         vUnF42YtYMDCSxQmXn9PBLMvNaGMR6C6ZSOj4pUmoCiqtkau8CSHvOJCew474jyc2zm8
-         7Gdg==
-X-Gm-Message-State: AJIora/lHTodZscZa6TWJAn3NEDryCslnykN3dP4rft2jHstUE4tk+bW
-        M5HyNQUf3SnOIEfIhjMpgKV6mrwdFSi/44dfs1w=
-X-Google-Smtp-Source: AGRyM1sF1KZFH4veBYr4QY+Y+w/iPaMRwmqf8QbTcYDZ1ccVg3a5zexrPHg/WpAtZsSpNw3etzIVKw==
-X-Received: by 2002:a17:907:97d3:b0:726:a5db:3a3a with SMTP id js19-20020a17090797d300b00726a5db3a3amr5286527ejc.654.1657743781842;
-        Wed, 13 Jul 2022 13:23:01 -0700 (PDT)
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
-        by smtp.gmail.com with ESMTPSA id f17-20020a17090631d100b0072b6d93b9afsm2917494ejf.210.2022.07.13.13.22.59
-        for <linux-kernel@vger.kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=KNxdzYJ31Vhyt7oycuRbMlgHEjW6wotI0WNAdQq4UMw=;
+        b=a9byf8s5o8up0vy16mKrBe6GiJGW7kk3SbkbCb5puLXOSb8qKUSLK/98GXrk5xOdNH
+         UUKLbNfZpConYUa3Jf4pCo2lWAVoyN1tuU0OW9aibtNHmSGs8KxUFPY9N0/8FVXHerJv
+         +5hzmSIujeVtV+c9y6PhyK86RXqnZzDn9lWfQO2qCCnVPeCEAGoDJ0ECMTrrpZQxPfLe
+         RaQUcKqGzNywhLz+NlutTzaYrn08VTlvPkiPqoJ6X+PjiVo4Od4ip+cG5Fq81wI2lsLG
+         e16N1PeryjjxoPSyXQD6lBXzZozfwE6MDH9Y6isBf0CJ+iWnUlonrddtsB+2Htq9BHeU
+         RQZw==
+X-Gm-Message-State: AJIora+bLfrlbky9YVVWkkv6n9mbrQgyICaI+AgoMS8THzjfPMFGP3g1
+        R4lOXARWoydMoaq3eBFnOsX9MA==
+X-Google-Smtp-Source: AGRyM1uMWJM21AdMA4hg31Ti1BfbhNdmhNhNqXCJYSv6TufmkF9YayM6wEk9gfkZAYCsy7kM3FFnog==
+X-Received: by 2002:a17:90b:240b:b0:1ef:8a68:1596 with SMTP id nr11-20020a17090b240b00b001ef8a681596mr5542909pjb.234.1657743927006;
+        Wed, 13 Jul 2022 13:25:27 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id a15-20020a170902710f00b0016bedcced2fsm9332014pll.35.2022.07.13.13.25.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 13:23:00 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id o19-20020a05600c511300b003a2de48b4bbso1856936wms.5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:22:59 -0700 (PDT)
-X-Received: by 2002:a7b:cd97:0:b0:3a2:dfcf:dd2d with SMTP id
- y23-20020a7bcd97000000b003a2dfcfdd2dmr11342692wmj.68.1657743779568; Wed, 13
- Jul 2022 13:22:59 -0700 (PDT)
+        Wed, 13 Jul 2022 13:25:26 -0700 (PDT)
+Message-ID: <6e5d590b-448d-ea75-f29d-877a2cd6413b@kernel.dk>
+Date:   Wed, 13 Jul 2022 14:25:25 -0600
 MIME-Version: 1.0
-References: <CAHk-=wgTmGaToVFdSdoFqT2sNkk7jg2rSWasUYv-tASUZ2j_0Q@mail.gmail.com>
- <20220713050724.GA2471738@roeck-us.net> <CAHk-=widUqghhXus_GCM9+FESa5vHqMb_pO3=0dGYH8C+yix2w@mail.gmail.com>
- <CADnq5_Ma2oe-6+WG4ZRAm97G7TyS0Nuhdxt=7oqdNLcMP5nKeg@mail.gmail.com>
-In-Reply-To: <CADnq5_Ma2oe-6+WG4ZRAm97G7TyS0Nuhdxt=7oqdNLcMP5nKeg@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 Jul 2022 13:22:43 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgW-g5jAMmKjnG0_mhqtEKzbKxs=Lo8DDv1D2wZvhL-8Q@mail.gmail.com>
-Message-ID: <CAHk-=wgW-g5jAMmKjnG0_mhqtEKzbKxs=Lo8DDv1D2wZvhL-8Q@mail.gmail.com>
-Subject: Re: Linux 5.19-rc6
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH V5 0/2] ublk: add io_uring based userspace block driver
+Content-Language: en-US
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+References: <20220713140711.97356-1-ming.lei@redhat.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220713140711.97356-1-ming.lei@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:53 PM Alex Deucher <alexdeucher@gmail.com> wrote:
->
-> Does this patch fix it?
-> https://patchwork.freedesktop.org/patch/493799/
+On 7/13/22 8:07 AM, Ming Lei wrote:
+> Hello Guys,
+> 
+> ublk driver is one kernel driver for implementing generic userspace block
+> device/driver, which delivers io request from ublk block device(/dev/ublkbN) into
+> ublk server[1] which is the userspace part of ublk for communicating
+> with ublk driver and handling specific io logic by its target module.
 
-Guenter? Willing to check this one too for your setup, and we can
-hopefully close down both issues?
+Ming, is this ready to get merged in an experimental state?
 
-                 Linus
+-- 
+Jens Axboe
+
