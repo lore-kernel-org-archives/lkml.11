@@ -2,170 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7727EC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC3CCCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:38:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236266AbiGMLhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58996 "EHLO
+        id S236122AbiGMLix (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236278AbiGMLhd (ORCPT
+        with ESMTP id S231272AbiGMLis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:37:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0D0AF102926
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:37:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657712251;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ca2hqxD2vo7dTzCT1zAWwZZgtWxXxx3S9VI85jE2vLg=;
-        b=eubIJJKjfCV4PYsoGnwejp2vM86iYbdL5yjOQiFYoiQ7/GypJkFsP60soMSS7XuxjzL3Nr
-        qMOj53YkDD+Z/OKOmmL0aj7oWiQtPrXOMqSYQN9Oz+5kODmMS0Jq7OtA9Sn+A3Z7f1ZS3i
-        TEVeQ69B6RDPuu4tzdclZ3bcvqkOnco=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-347-GEfrtshfOvWDmN3BnE3VgQ-1; Wed, 13 Jul 2022 07:37:29 -0400
-X-MC-Unique: GEfrtshfOvWDmN3BnE3VgQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 502123C2F765;
-        Wed, 13 Jul 2022 11:37:29 +0000 (UTC)
-Received: from lorien.usersys.redhat.com (unknown [10.22.32.177])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id BEE522026D07;
-        Wed, 13 Jul 2022 11:37:28 +0000 (UTC)
-Date:   Wed, 13 Jul 2022 07:37:27 -0400
-From:   Phil Auld <pauld@redhat.com>
-To:     Barry Song <21cnbao@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki : --cc=" <rafael@kernel.org>,
-        Tian Tao <tiantao6@hisilicon.com>,
-        Barry Song <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH] drivers/base/node.c: fix userspace break from using
- bin_attributes for cpumap and cpulist
-Message-ID: <Ys6ud4JmMGjktAlL@lorien.usersys.redhat.com>
-References: <20220712214301.809967-1-pauld@redhat.com>
- <CAGsJ_4xG0az1-g8DWL-mEv_cF3ZBMe6j87m_cxeL9abvxGNW=g@mail.gmail.com>
+        Wed, 13 Jul 2022 07:38:48 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ECD25E9B;
+        Wed, 13 Jul 2022 04:38:46 -0700 (PDT)
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DAL7PF002441;
+        Wed, 13 Jul 2022 13:36:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=qlyvZfRLzVfXB0Qw3Pn66I8IhLrqu5fVUKImjNDVcAM=;
+ b=5rMQDIO00uxXHuSmF8UqZNyCBkb5VkCvzlYTmhzZPNOQQs3u2+pWkK8/6DMsCVGEv8RM
+ /tiWf7fYepKT/5hrgJnKDPv4fwzVhVQtXv6tztzmDQcud2BolJiKmhRkgfZhXdzOHfA6
+ oScfeLqtmwEaeXhOUl5Gdick4gtuAKCIOujTq0zW2MQ9LmINYvuFs2YIY8OTLOqRA0BF
+ jtf2DlnZICPnrNnlxLbRxLGEoZoKnn6SSw7OBcYCacIJSm6hL2JgRsjRruwkdYoppIST
+ IFIipOaWEuJQZqxLMCKjaJ85n40YxSt1MgUQwQaj8HobmPnUTSVuLt4PO4PSSjWCEral 3g== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h9173snag-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 13:36:30 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 78942100034;
+        Wed, 13 Jul 2022 13:36:28 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id E003221D387;
+        Wed, 13 Jul 2022 13:36:28 +0200 (CEST)
+Received: from localhost (10.75.127.51) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 13 Jul
+ 2022 13:36:28 +0200
+From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Stefano Stabellini <stefanos@xilinx.com>,
+        Bruce Ashfield <bruce.ashfield@xilinx.com>,
+        <arnaud.pouliquen@foss.st.com>
+Subject: [PATCH v7 1/4] remoteproc: core: Introduce rproc_rvdev_add_device function
+Date:   Wed, 13 Jul 2022 13:36:09 +0200
+Message-ID: <20220713113612.2117279-2-arnaud.pouliquen@foss.st.com>
+X-Mailer: git-send-email 2.24.3
+In-Reply-To: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
+References: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGsJ_4xG0az1-g8DWL-mEv_cF3ZBMe6j87m_cxeL9abvxGNW=g@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-12_14,2022-07-13_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:18:59AM +1200 Barry Song wrote:
-> On Wed, Jul 13, 2022 at 9:58 AM Phil Auld <pauld@redhat.com> wrote:
-> >
-> > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
-> > This breaks userspace code that retrieves the size before reading the file. Rather
-> > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
-> > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
-> > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
-> > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960.
-> > In order to get near that you'd need a system with every other CPU on one node or
-> > something similar. e.g. (0,2,4,... 1024,1026...). We set it to a min of PAGE_SIZE
-> > to retain the older behavior. For cpumap, PAGE_SIZE is plenty big.
-> >
-> > On an 80 cpu 4-node system (NR_CPUS == 8192)
-> >
-> > before:
-> >
-> > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
-> > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
-> 
-> it is a fundamental problem of bin_attr, isn't it? when we don't know the
-> exact size of an attribute, and this size might become more than one
-> PAGE_SIZE, we use bin_attr to break the limitation. but the fact is that
-> we really don't know or it is really hard to know the actual size of the
-> attribute.
->
+In preparation of the migration of the management of rvdev in
+remoteproc_virtio.c, this patch spins off a new function to manage the
+remoteproc virtio device creation.
 
-But it broke userspace applications. I figured rather than revert it maybe
-we can find a max size to put in there and make it continue to work.
+The rproc_rvdev_add_device will be moved to remoteproc_virtio.c.
 
-> >
-> > after:
-> >
-> > -r--r--r--. 1 root root 40960 Jul 12 16:48 /sys/devices/system/node/node0/cpulist
-> > -r--r--r--. 1 root root  4096 Jul 12 15:50 /sys/devices/system/node/node0/cpumap
-> 
-> if we finally set a size which might be improper, it seems we defeat the
-> purpose we start to move to bin_attr?
-> 
-> >
-> > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
-> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> > Signed-off-by: Phil Auld <pauld@redhat.com>
-> > ---
-> >  drivers/base/node.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/base/node.c b/drivers/base/node.c
-> > index 0ac6376ef7a1..291c69671f23 100644
-> > --- a/drivers/base/node.c
-> > +++ b/drivers/base/node.c
-> > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
-> >         return n;
-> >  }
-> >
-> > -static BIN_ATTR_RO(cpumap, 0);
-> > +static BIN_ATTR_RO(cpumap, PAGE_SIZE);
-> 
-> PAGE_SIZE is probably big enough, will we still calculate to get it rather than
-> hard coding?
+The rproc_vdev_data structure is introduced to provide information for
+the rvdev creation. This structure allows to manage the rvdev and vrings
+allocation in the rproc_rvdev_add_device function.
 
-This one is actually wrong. I did not realize how big a NR_CPUS people were actually using.
-It should be something like (NR_CPUS/4 + NR_CPUS/32). 
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+---
+update vs previous revision:
+The update are based on Mathieu Poirier's comments.
+  - fix typo s/onlyduring/only during
+---
+ drivers/remoteproc/remoteproc_core.c     | 145 +++++++++++++----------
+ drivers/remoteproc/remoteproc_internal.h |  15 +++
+ 2 files changed, 97 insertions(+), 63 deletions(-)
 
-> 
-> >
-> >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
-> >                                    struct bin_attribute *attr, char *buf,
-> > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
-> >         return n;
-> >  }
-> >
-> > -static BIN_ATTR_RO(cpulist, 0);
-> > +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 5) > PAGE_SIZE) ? NR_CPUS *5 : PAGE_SIZE));
-> 
-> I am still not sure why it is NR_CPUS * 5. Is 5 bytes big enough to
-> describe the number
-> of cpu id? technically it seems not,  for example,  for cpuid=100000,
-> we need at least 6
-> bytes.
-
-Sure. As I said in the comment I wanted to do NR_CPUS * (ceil(log10(NR_CPUS)) + 1) but doing
-that math in the kernel was messy. So I used 5. Even that is probably way bigger than needed.
-Are there really 100000 cpus on one node with discontiguous cpuids? "0-99999" is only, what,
-9 characters?
-
-We can put whatever number you want that is >= the size the read will return.
-
-Thanks,
-Phil
-
-> 
-> BTW, my silly question is that what if we set the size to MAXIMUM int?
-> Will it fix
-> the userspace fsstat?
-> 
-> >
-> >  /**
-> >   * struct node_access_nodes - Access class device to hold user visible
-> > --
-> > 2.31.1
-> >
-> 
-> Thanks
-> Barry
-> 
-
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index 02a04ab34a23..f328d45d8376 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -484,74 +484,23 @@ static int copy_dma_range_map(struct device *to, struct device *from)
+ 	return 0;
+ }
+ 
+-/**
+- * rproc_handle_vdev() - handle a vdev fw resource
+- * @rproc: the remote processor
+- * @ptr: the vring resource descriptor
+- * @offset: offset of the resource entry
+- * @avail: size of available data (for sanity checking the image)
+- *
+- * This resource entry requests the host to statically register a virtio
+- * device (vdev), and setup everything needed to support it. It contains
+- * everything needed to make it possible: the virtio device id, virtio
+- * device features, vrings information, virtio config space, etc...
+- *
+- * Before registering the vdev, the vrings are allocated from non-cacheable
+- * physically contiguous memory. Currently we only support two vrings per
+- * remote processor (temporary limitation). We might also want to consider
+- * doing the vring allocation only later when ->find_vqs() is invoked, and
+- * then release them upon ->del_vqs().
+- *
+- * Note: @da is currently not really handled correctly: we dynamically
+- * allocate it using the DMA API, ignoring requested hard coded addresses,
+- * and we don't take care of any required IOMMU programming. This is all
+- * going to be taken care of when the generic iommu-based DMA API will be
+- * merged. Meanwhile, statically-addressed iommu-based firmware images should
+- * use RSC_DEVMEM resource entries to map their required @da to the physical
+- * address of their base CMA region (ouch, hacky!).
+- *
+- * Return: 0 on success, or an appropriate error code otherwise
+- */
+-static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+-			     int offset, int avail)
++static struct rproc_vdev *
++rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
+ {
+-	struct fw_rsc_vdev *rsc = ptr;
+-	struct device *dev = &rproc->dev;
+ 	struct rproc_vdev *rvdev;
+-	int i, ret;
++	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
+ 	char name[16];
+-
+-	/* make sure resource isn't truncated */
+-	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
+-			avail) {
+-		dev_err(dev, "vdev rsc is truncated\n");
+-		return -EINVAL;
+-	}
+-
+-	/* make sure reserved bytes are zeroes */
+-	if (rsc->reserved[0] || rsc->reserved[1]) {
+-		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
+-		return -EINVAL;
+-	}
+-
+-	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
+-		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
+-
+-	/* we currently support only two vrings per rvdev */
+-	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
+-		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
+-		return -EINVAL;
+-	}
++	int i, ret;
+ 
+ 	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
+ 	if (!rvdev)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	kref_init(&rvdev->refcount);
+ 
+-	rvdev->id = rsc->id;
++	rvdev->id = rvdev_data->id;
+ 	rvdev->rproc = rproc;
+-	rvdev->index = rproc->nb_vdev++;
++	rvdev->index = rvdev_data->index;
+ 
+ 	/* Initialise vdev subdevice */
+ 	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
+@@ -563,7 +512,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	ret = device_register(&rvdev->dev);
+ 	if (ret) {
+ 		put_device(&rvdev->dev);
+-		return ret;
++		return ERR_PTR(ret);
+ 	}
+ 
+ 	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
+@@ -576,7 +525,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
+ 					   dma_get_mask(rproc->dev.parent));
+ 	if (ret) {
+-		dev_warn(dev,
++		dev_warn(&rvdev->dev,
+ 			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
+ 			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
+ 	}
+@@ -589,7 +538,7 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 	}
+ 
+ 	/* remember the resource offset*/
+-	rvdev->rsc_offset = offset;
++	rvdev->rsc_offset = rvdev_data->rsc_offset;
+ 
+ 	/* allocate the vring resources */
+ 	for (i = 0; i < rsc->num_of_vrings; i++) {
+@@ -605,14 +554,14 @@ static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
+ 
+ 	rproc_add_subdev(rproc, &rvdev->subdev);
+ 
+-	return 0;
++	return rvdev;
+ 
+ unwind_vring_allocations:
+ 	for (i--; i >= 0; i--)
+ 		rproc_free_vring(&rvdev->vring[i]);
+ free_rvdev:
+ 	device_unregister(&rvdev->dev);
+-	return ret;
++	return ERR_PTR(ret);
+ }
+ 
+ void rproc_vdev_release(struct kref *ref)
+@@ -632,6 +581,76 @@ void rproc_vdev_release(struct kref *ref)
+ 	device_unregister(&rvdev->dev);
+ }
+ 
++/**
++ * rproc_handle_vdev() - handle a vdev fw resource
++ * @rproc: the remote processor
++ * @ptr: the vring resource descriptor
++ * @offset: offset of the resource entry
++ * @avail: size of available data (for sanity checking the image)
++ *
++ * This resource entry requests the host to statically register a virtio
++ * device (vdev), and setup everything needed to support it. It contains
++ * everything needed to make it possible: the virtio device id, virtio
++ * device features, vrings information, virtio config space, etc...
++ *
++ * Before registering the vdev, the vrings are allocated from non-cacheable
++ * physically contiguous memory. Currently we only support two vrings per
++ * remote processor (temporary limitation). We might also want to consider
++ * doing the vring allocation only later when ->find_vqs() is invoked, and
++ * then release them upon ->del_vqs().
++ *
++ * Note: @da is currently not really handled correctly: we dynamically
++ * allocate it using the DMA API, ignoring requested hard coded addresses,
++ * and we don't take care of any required IOMMU programming. This is all
++ * going to be taken care of when the generic iommu-based DMA API will be
++ * merged. Meanwhile, statically-addressed iommu-based firmware images should
++ * use RSC_DEVMEM resource entries to map their required @da to the physical
++ * address of their base CMA region (ouch, hacky!).
++ *
++ * Return: 0 on success, or an appropriate error code otherwise
++ */
++static int rproc_handle_vdev(struct rproc *rproc, void *ptr,
++			     int offset, int avail)
++{
++	struct fw_rsc_vdev *rsc = ptr;
++	struct device *dev = &rproc->dev;
++	struct rproc_vdev *rvdev;
++	struct rproc_vdev_data rvdev_data;
++
++	/* make sure resource isn't truncated */
++	if (struct_size(rsc, vring, rsc->num_of_vrings) + rsc->config_len >
++			avail) {
++		dev_err(dev, "vdev rsc is truncated\n");
++		return -EINVAL;
++	}
++
++	/* make sure reserved bytes are zeroes */
++	if (rsc->reserved[0] || rsc->reserved[1]) {
++		dev_err(dev, "vdev rsc has non zero reserved bytes\n");
++		return -EINVAL;
++	}
++
++	dev_dbg(dev, "vdev rsc: id %d, dfeatures 0x%x, cfg len %d, %d vrings\n",
++		rsc->id, rsc->dfeatures, rsc->config_len, rsc->num_of_vrings);
++
++	/* we currently support only two vrings per rvdev */
++	if (rsc->num_of_vrings > ARRAY_SIZE(rvdev->vring)) {
++		dev_err(dev, "too many vrings: %d\n", rsc->num_of_vrings);
++		return -EINVAL;
++	}
++
++	rvdev_data.id = rsc->id;
++	rvdev_data.index = rproc->nb_vdev++;
++	rvdev_data.rsc_offset = offset;
++	rvdev_data.rsc = rsc;
++
++	rvdev = rproc_rvdev_add_device(rproc, &rvdev_data);
++	if (IS_ERR(rvdev))
++		return PTR_ERR(rvdev);
++
++	return 0;
++}
++
+ /**
+  * rproc_handle_trace() - handle a shared trace buffer resource
+  * @rproc: the remote processor
+diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
+index 72d4d3d7d94d..07c503de0f95 100644
+--- a/drivers/remoteproc/remoteproc_internal.h
++++ b/drivers/remoteproc/remoteproc_internal.h
+@@ -24,6 +24,21 @@ struct rproc_debug_trace {
+ 	struct rproc_mem_entry trace_mem;
+ };
+ 
++/**
++ * struct rproc_vdev_data - remoteproc virtio device data
++ * @rsc_offset: offset of the vdev's resource entry
++ * @id: virtio device id (as in virtio_ids.h)
++ * @index: vdev position versus other vdev declared in resource table
++ * @rsc: pointer to the vdev resource entry. Valid only during vdev init as
++ *       the resource can be cached by rproc.
++ */
++struct rproc_vdev_data {
++	u32 rsc_offset;
++	unsigned int id;
++	u32 index;
++	struct fw_rsc_vdev *rsc;
++};
++
+ /* from remoteproc_core.c */
+ void rproc_release(struct kref *kref);
+ irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
 -- 
+2.24.3
 
