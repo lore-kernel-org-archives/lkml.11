@@ -2,95 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE131C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232944AbiGMIzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        id S234959AbiGMIzP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234838AbiGMIzJ (ORCPT
+        with ESMTP id S234715AbiGMIzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:55:09 -0400
+        Wed, 13 Jul 2022 04:55:10 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3BCF4AEF7D
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52404BA3A3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657702507;
+        s=mimecast20190719; t=1657702508;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=dI6YVPovohaWrafIFhdI1Cj4BYIDUe0+jr5w6UInkNw=;
-        b=XHgl9JAolFb5ov5uviDdtirTH15nYm9tTTSHHIovjTe0gAVBXEbbxMD3/4M+ShvSCnp2po
-        399DbwxrNMbO9J54XCoc8JnDgIhB+/s7tfUA4oCFjiseAZss+EKr9XdgGnwB8e4vqdTwL2
-        8UbvhyxNMQsbB37R2ERWekJrhLCQXOg=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H3fERHzEDfrpIpAaHxv/FCy1Dds4VbBEuXgTRXd5v5g=;
+        b=VPhlK9s0SyW8hABtWdXy3Y6mSmFT6Wwg6TRyrhg2YzQxkoxMzBJEkxmE3MaNGHGnnXlW3q
+        6Sb8yJXfdTbr9E6k1qRXNxYzBGxxxQXwgWMOHRKbaLVlSX2vtj4yThATpxIgq3p4PbBGwb
+        vhxo2+4MVsbvGv4yXCrifyssn1hZFuE=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-647-09_RxUvhNcO9UBSgY-1wqw-1; Wed, 13 Jul 2022 04:55:05 -0400
-X-MC-Unique: 09_RxUvhNcO9UBSgY-1wqw-1
-Received: by mail-ed1-f71.google.com with SMTP id f9-20020a056402354900b0043a902b7452so7885263edd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
+ us-mta-433-_wlwvWm8OnGH9kZFXRrHNw-1; Wed, 13 Jul 2022 04:55:06 -0400
+X-MC-Unique: _wlwvWm8OnGH9kZFXRrHNw-1
+Received: by mail-ed1-f70.google.com with SMTP id c9-20020a05640227c900b0043ad14b1fa0so5796360ede.1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dI6YVPovohaWrafIFhdI1Cj4BYIDUe0+jr5w6UInkNw=;
-        b=jMrlB0nNX1p25vQv+w6ytQD4mwQZ2uMhIMMksBv6xyfCosHfqDydkzaQdqTT/LlfmD
-         I/U/uMKc5XXxVIw8zR+OM8me1g76BwTFnRVCj5t064qM+COfQzd8yqrX0dtvMWexA8z1
-         vGbI+pb+cXrZKLCDFa9XCel4b5rJZ6MSbcTTuAFU4G1K0PhNorm1jkKSCYCJ1HNmvDcb
-         h1BxgID8YmgsqHjgfJcylZgrZhsXMW9mgN7gkKZV8ca1JZV65WbGQRqi2AOARfpqhO+T
-         I0y/32SOryJHSyfdGLlYI0pyuCZ5Pb8wr3G4FKUpm3/xegKRL/VQDxC84m54z6Vs0TZv
-         R8/w==
-X-Gm-Message-State: AJIora/vS2SUZzJUHPLgwQGuwqEqu4mxZgnwYEMP2KScjAKm/zyBmUAA
-        llws7Q/NGqxmEQzva6XsutOKOErZrXOuwGsJrRzFTAjQTp96U3KRX4TmViTiRMUmGa11l4sCrdm
-        wMS6+zXtEjVx56pzuqfPxmzmV
-X-Received: by 2002:a17:906:a0cf:b0:726:cbdd:466b with SMTP id bh15-20020a170906a0cf00b00726cbdd466bmr2304578ejb.410.1657702503917;
-        Wed, 13 Jul 2022 01:55:03 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t26IcZ7VFVC0piZNYs8yiLS0rqclevP1xbJGt8yW/60SZvrzRzMBVQayVzizXS5sVAhCcQqg==
-X-Received: by 2002:a17:906:a0cf:b0:726:cbdd:466b with SMTP id bh15-20020a170906a0cf00b00726cbdd466bmr2304561ejb.410.1657702503741;
-        Wed, 13 Jul 2022 01:55:03 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=H3fERHzEDfrpIpAaHxv/FCy1Dds4VbBEuXgTRXd5v5g=;
+        b=MVabH5ubFuGQ99h/g1+PorTgDU8dnMstktpTh0IJpfve7EA7OjHyWXXJd8nJzJon4P
+         NucrZp8arnwrVHdgkFfqL5b7jyOcMqdIlgiVmu43OpdvmZltxAqENt9BYjiWfmL+jzDZ
+         LYpUG3ENAQu6wV+eweDEl49tNcdv1Q7N6XM8yZqAhEb5sZ07sYY8qnLPHs79sroWvSHL
+         Znj7GHoBKW5YdiqiLMS5kvwTJQKHt9Kpow+bafGjVbrV7YRReoMCAaGgZBNZQpCpUevy
+         zma9B7qn883iqid/blW52uAjPB3sZILkGvXZO2HTejfJarWRp+a8W8FBhjpw6h/3l0SK
+         vMBg==
+X-Gm-Message-State: AJIora8C9t2AjLDDQJG80lDB4bK5FvW6b2ytnh28oUyV7I3PFP1rCUVl
+        ksAEPJGL6nH3yFdOF9NQ1/B7x1Vh1ozwh6mPvKOYLM3qlFB1Utc1aYABckP4dLfPaVP5B5hzKQa
+        Tk63V7h/UvjSOAV8ThDWiIopj
+X-Received: by 2002:a17:907:7ba2:b0:72b:57da:a76e with SMTP id ne34-20020a1709077ba200b0072b57daa76emr2335169ejc.210.1657702505820;
+        Wed, 13 Jul 2022 01:55:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uksIFx91JCqDk9omGQxTIKHtiTQi4JvUWD17uzFSAXXgmV3IwYsfa6uUC48C2qiTpru10riw==
+X-Received: by 2002:a17:907:7ba2:b0:72b:57da:a76e with SMTP id ne34-20020a1709077ba200b0072b57daa76emr2335162ejc.210.1657702505630;
+        Wed, 13 Jul 2022 01:55:05 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7547655edy.36.2022.07.13.01.55.02
+        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7547655edy.36.2022.07.13.01.55.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:55:03 -0700 (PDT)
+        Wed, 13 Jul 2022 01:55:05 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     emma@anholt.net, mripard@kernel.org, daniel@ffwll.ch,
         airlied@linux.ie
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH 0/3] drm/vc4: use drm managed resources
-Date:   Wed, 13 Jul 2022 10:54:57 +0200
-Message-Id: <20220713085500.1970589-1-dakr@redhat.com>
+Subject: [PATCH 2/3] drm/vc4: crtc: use drm managed resources
+Date:   Wed, 13 Jul 2022 10:54:59 +0200
+Message-Id: <20220713085500.1970589-3-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220713085500.1970589-1-dakr@redhat.com>
+References: <20220713085500.1970589-1-dakr@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series converts DRM modeset object allocations from devm_*()
-to drmm_*() memory allocators, or their corresponding convenience
-wrappers, respectively, in order to tie the release action to the
-underlaying struct drm_device.
+Allocate the crtc objects with drmm_kzalloc() in order to tie the release
+action to the underlying struct drm_device, where all the userspace
+visible stuff is attached to, rather than to struct device.
 
 This can prevent potential use-after free issues on driver unload or
 EPROBE_DEFERRED backoff.
 
-Danilo Krummrich (3):
-  drm/vc4: plane: use drm managed resources
-  drm/vc4: crtc: use drm managed resources
-  drm/vc4: encoder: use drm managed resources
+Signed-off-by: Danilo Krummrich <dakr@redhat.com>
+---
+ drivers/gpu/drm/vc4/vc4_crtc.c | 2 +-
+ drivers/gpu/drm/vc4/vc4_txp.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- drivers/gpu/drm/vc4/vc4_crtc.c  |  2 +-
- drivers/gpu/drm/vc4/vc4_dpi.c   | 11 ++++++-----
- drivers/gpu/drm/vc4/vc4_dsi.c   | 10 +++++-----
- drivers/gpu/drm/vc4/vc4_hdmi.c  | 10 ++++++----
- drivers/gpu/drm/vc4/vc4_plane.c | 19 +++++++------------
- drivers/gpu/drm/vc4/vc4_txp.c   |  2 +-
- drivers/gpu/drm/vc4/vc4_vec.c   | 11 ++++++-----
- 7 files changed, 32 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 9355213dc883..4b0c61cc3265 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -1273,7 +1273,7 @@ static int vc4_crtc_bind(struct device *dev, struct device *master, void *data)
+ 	struct drm_plane *destroy_plane, *temp;
+ 	int ret;
+ 
+-	vc4_crtc = devm_kzalloc(dev, sizeof(*vc4_crtc), GFP_KERNEL);
++	vc4_crtc = drmm_kzalloc(drm, sizeof(*vc4_crtc), GFP_KERNEL);
+ 	if (!vc4_crtc)
+ 		return -ENOMEM;
+ 	crtc = &vc4_crtc->base;
+diff --git a/drivers/gpu/drm/vc4/vc4_txp.c b/drivers/gpu/drm/vc4/vc4_txp.c
+index 3579d487402e..ae2193fe3b29 100644
+--- a/drivers/gpu/drm/vc4/vc4_txp.c
++++ b/drivers/gpu/drm/vc4/vc4_txp.c
+@@ -479,7 +479,7 @@ static int vc4_txp_bind(struct device *dev, struct device *master, void *data)
+ 	if (irq < 0)
+ 		return irq;
+ 
+-	txp = devm_kzalloc(dev, sizeof(*txp), GFP_KERNEL);
++	txp = drmm_kzalloc(drm, sizeof(*txp), GFP_KERNEL);
+ 	if (!txp)
+ 		return -ENOMEM;
+ 	vc4_crtc = &txp->base;
 -- 
 2.36.1
 
