@@ -2,98 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26EAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 00:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD11BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 00:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232029AbiGMAuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 20:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38388 "EHLO
+        id S232212AbiGMAuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 20:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230440AbiGMAt6 (ORCPT
+        with ESMTP id S232094AbiGMAuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 20:49:58 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250FEBD6B2
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 17:49:58 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10bf634bc50so12380426fac.3
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 17:49:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=/EtJDXI2fz8pm2wa/kg91uhQuEMJnLZy4xD2Ju9pYIk=;
-        b=s39mIbAI2ALNtOBYHbU/VkwT73TA80TaeGinWpvDDpg5H3a9LBgudo/v3+1ifSaEm5
-         shcfXZjErGnl/uDUS1oZNGTfzdalN26eaFp4zzyZZYAzlWpxt5La07ynkHXjaA0FIKtU
-         H9+YJ9qCCC93KqGRcZTJciCP/ummIwsp4+CLskjVdNJzcB+rzuKlMsxZTGxjYPGBXxMZ
-         TZzuslVwc00c+XxHr4mwN6e61+Vxc9OgDcS09N29D0RNxNL6DtXsVwDaMdpb20k2DluW
-         p5HMpYB1Xc1Wi1gugZR3rhE/upgrMpEL1SWcHh2JU7mdnVBVKPHlQFWFOuxQoYWy4aAg
-         QcDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=/EtJDXI2fz8pm2wa/kg91uhQuEMJnLZy4xD2Ju9pYIk=;
-        b=ZlHCLZatMQB8vNAPZa+dAAnkmzauuewqWO+QBr/wezblGPd4VzlKPxSaDamU9OZZEJ
-         zlBGgX+N76aIKVHYMP3ggtbd+4vgETnKHsU8JmRMrg0s1bsPDD6fOajJRa3NS7sE7ADt
-         L1ulzZJVb+ySp6SWnKNQ6m0Bj0ilg4g2vEqqUghwBL6/PeI0OlChVQvWqjykxl12P3vZ
-         edzFb7ydA2m9jmoIMzBo2FWCDMTo5lwPbJ6jIpFsdnmKW9VYcn4L5hw3M4FLep2Kld6V
-         nWzLXEdJRfJmxxqmZx+9QUMt/JuOznh5cir/VJZ9SyR2VBpY1C7+1s9hB5GWXsmRVF0y
-         1jQw==
-X-Gm-Message-State: AJIora/khVQwSu6ofuulzx/wTNNzPQQiw7OVMKwVf3p4yXlc2ynEUW5m
-        qFrFPWncA0WG1beHuln5v7rYJw==
-X-Google-Smtp-Source: AGRyM1t0fpQLal72HAql1XzV9CLiMdeHHv4podegGh1GBikvn7WR33caIu3r4SfrlgquDp+WfaiknA==
-X-Received: by 2002:a05:6870:a999:b0:10c:9df7:28ad with SMTP id ep25-20020a056870a99900b0010c9df728admr466405oab.119.1657673396720;
-        Tue, 12 Jul 2022 17:49:56 -0700 (PDT)
-Received: from ripple.attlocal.net (172-10-233-147.lightspeed.sntcca.sbcglobal.net. [172.10.233.147])
-        by smtp.gmail.com with ESMTPSA id l84-20020acabb57000000b003264a325ecdsm4789880oif.5.2022.07.12.17.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 17:49:56 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 17:49:40 -0700 (PDT)
-From:   Hugh Dickins <hughd@google.com>
-X-X-Sender: hugh@ripple.anvils
-To:     Nadav Amit <namit@vmware.com>
-cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Hugh Dickins <hughd@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        X86 ML <x86@kernel.org>, Linux MM <linux-mm@kvack.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>
-Subject: Re: [PATCH v2] x86/mm/tlb: ignore f->new_tlb_gen when zero
-In-Reply-To: <3DC1239B-FBE4-4EE0-B0D1-641B64697712@vmware.com>
-Message-ID: <b6bcd4c5-2311-451a-4792-6c2bc450b6@google.com>
-References: <20220710232837.3618-1-namit@vmware.com> <7672923F-D439-4867-9418-B1F44EE5CC44@vmware.com> <3DC1239B-FBE4-4EE0-B0D1-641B64697712@vmware.com>
+        Tue, 12 Jul 2022 20:50:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8BABD6B2;
+        Tue, 12 Jul 2022 17:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A9AEB81C95;
+        Wed, 13 Jul 2022 00:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DB0D4C341C8;
+        Wed, 13 Jul 2022 00:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657673412;
+        bh=FULydODn5+1GIYXvWDq1EJGhxG4JhV2sNKyWpfs2M5c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=hXia5bG6S/KfKzswMavDh2reXVXCChM3hWTJmWvVN3oel/rsnilbNDrwJ3hcI1U+D
+         E5v3jp2xzJBzBUc5vtc7vfaT6rH3gNa6PRDryeVn8+SUDz4KYxa56Y5YMNzqZmHZP1
+         lxkzokveLeAwIOlK7CfqEUV0mIKdoOndwLng9uU5YazHeDtQw7RlUpQJ70WyyGEpHp
+         m1LOIX03o8C4v6YNzK3v987gvj1Ny0i/cVRmJGkZZDQBHBusoMOYGGgYx4K5/K+Yze
+         mfseP2ZTWDT5yI6MjQdqu26an4LZMZIZ11RpVUiwJ+SFs6DxNWPDHE4JcSxOl8Z2gi
+         mPn7R4gzbRcFg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BE7DFE45224;
+        Wed, 13 Jul 2022 00:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] nfp: fix clang -Wformat warnings
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165767341277.27962.1180847720073982444.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 00:50:12 +0000
+References: <20220712000152.2292031-1-justinstitt@google.com>
+In-Reply-To: <20220712000152.2292031-1-justinstitt@google.com>
+To:     Justin Stitt <justinstitt@google.com>
+Cc:     simon.horman@corigine.com, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, kuba@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
+        fei.qin@corigine.com, yu.xiao@corigine.com,
+        yinjun.zhang@corigine.com, dirk.vandermerwe@netronome.com,
+        leon@kernel.org, oss-drivers@corigine.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022, Nadav Amit wrote:
-> On Jul 11, 2022, at 10:39 AM, Nadav Amit <namit@vmware.com> wrote:
-> > On Jul 10, 2022, at 4:28 PM, Nadav Amit <nadav.amit@gmail.com> wrote:
-> >> From: Nadav Amit <namit@vmware.com>
-> >> 
-> >> Commit aa44284960d5 ("x86/mm/tlb: Avoid reading mm_tlb_gen when
-> >> possible") introduced an optimization of skipping the flush if the TLB
-> >> generation that is flushed (as provided in flush_tlb_info) was already
-> >> flushed.
-> > 
-> > Dave,
-> > 
-> > Can you please review this patch today?
-> > 
-> > I feel bad (for a good reason) for breaking swap/migration.
-> > 
-> > Thanks,
-> > Nadav
-> 
-> Ping?
-> 
-> As you know, this really must go into 5.19 or otherwise aa44284960d5
-> reverted.
+Hello:
 
-No, aa44284960d5 is not in 5.19-rc: it's in linux-next heading for 5.20.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Hugh
+On Mon, 11 Jul 2022 17:01:52 -0700 you wrote:
+> When building with Clang we encounter these warnings:
+> | drivers/net/ethernet/netronome/nfp/nfp_app.c:233:99: error: format
+> | specifies type 'unsigned char' but the argument has underlying type
+> | 'unsigned int' [-Werror,-Wformat] nfp_err(pf->cpp, "unknown FW app ID
+> | 0x%02hhx, driver too old or support for FW not built in\n", id);
+> -
+> | drivers/net/ethernet/netronome/nfp/nfp_main.c:396:11: error: format
+> | specifies type 'unsigned char' but the argument has type 'int'
+> | [-Werror,-Wformat] serial, interface >> 8, interface & 0xff);
+> 
+> [...]
+
+Here is the summary with links:
+  - nfp: fix clang -Wformat warnings
+    https://git.kernel.org/netdev/net-next/c/ef2a95db8900
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
