@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC1AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BCE0CCA485
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237238AbiGMUqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
+        id S237277AbiGMUqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237197AbiGMUqi (ORCPT
+        with ESMTP id S237208AbiGMUql (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:46:38 -0400
+        Wed, 13 Jul 2022 16:46:41 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF51931375
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8325F3136C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
         from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=ETa1R8snflFHVr
-        rpwnW5JCL7u57vMzoNpLWO6TprPB8=; b=ttU4wW3wc+S/vURqy04+exCzIE4hL5
-        C0DHgMdxPx4jXC7h9XHez1Kf7XygHq2ibcz3GxLrtP8tkK3cOcMZlyStkDN9NN6d
-        lkglwMhYLoAh2QDoclASPPk0uovORMNiwkL2lOU4pt+NY4W7UhkDUNjHxXQv2iwo
-        knuP2Sp0Z2K3k=
-Received: (qmail 305636 invoked from network); 13 Jul 2022 22:46:34 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:34 +0200
-X-UD-Smtp-Session: l3s3148p1@kPNn4bXjlqYgAwDtxwdRAEXXn+yo/Rze
+        :mime-version:content-transfer-encoding; s=k1; bh=qVz6u1/TIUyHL0
+        YN1TPZEXt419yarlt7ZwURc+28Rfk=; b=HXJQsnsHOo7XsoS9orbeMVtmBEReJ+
+        AG87Vmi7VRukZqRUr/p6ebKyQ4JLidhgT831nibraDov1CUJH3H+b1fTpxoXNKPl
+        jXVRFzzlXGm8R45ct7w7L8ITnkVKfg5jKSx+a2G9ULyyI3r8Wlu4wGJWTqW6KcOg
+        CKnR/fMbO3orY=
+Received: (qmail 305728 invoked from network); 13 Jul 2022 22:46:36 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:36 +0200
+X-UD-Smtp-Session: l3s3148p1@bYaE4bXjpKYgAwDtxwdRAEXXn+yo/Rze
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-renesas-soc@vger.kernel.org
 Cc:     John Stultz <jstultz@google.com>,
@@ -32,9 +32,9 @@ Cc:     John Stultz <jstultz@google.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Stephen Boyd <sboyd@kernel.org>, Shuah Khan <shuah@kernel.org>,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 2/9] selftests: timers: fix declarations of main()
-Date:   Wed, 13 Jul 2022 22:46:14 +0200
-Message-Id: <20220713204623.5443-3-wsa+renesas@sang-engineering.com>
+Subject: [PATCH 4/9] selftests: timers: inconsistency-check: adapt to kselftest framework
+Date:   Wed, 13 Jul 2022 22:46:16 +0200
+Message-Id: <20220713204623.5443-5-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
 References: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
@@ -44,69 +44,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mixing up argc/argv went unnoticed because they were not used. Still,
-this is worth fixing.
+So we have proper counters at the end of a test, e.g.:
+  # Totals: pass:11 fail:0 xfail:0 xpass:0 skip:1 error:0
 
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 ---
- tools/testing/selftests/timers/adjtick.c          | 2 +-
- tools/testing/selftests/timers/change_skew.c      | 2 +-
- tools/testing/selftests/timers/raw_skew.c         | 2 +-
- tools/testing/selftests/timers/skew_consistency.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ .../selftests/timers/inconsistency-check.c    | 32 +++++++++++--------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/timers/adjtick.c b/tools/testing/selftests/timers/adjtick.c
-index 54d8d87f36b3..47e05fdc32c5 100644
---- a/tools/testing/selftests/timers/adjtick.c
-+++ b/tools/testing/selftests/timers/adjtick.c
-@@ -165,7 +165,7 @@ int check_tick_adj(long tickval)
- 	return  0;
- }
+diff --git a/tools/testing/selftests/timers/inconsistency-check.c b/tools/testing/selftests/timers/inconsistency-check.c
+index e6756d9c60a7..36a49fba6c9b 100644
+--- a/tools/testing/selftests/timers/inconsistency-check.c
++++ b/tools/testing/selftests/timers/inconsistency-check.c
+@@ -122,30 +122,28 @@ int consistency_test(int clock_type, unsigned long seconds)
+ 		if (inconsistent >= 0) {
+ 			unsigned long long delta;
  
--int main(int argv, char **argc)
-+int main(int argc, char **argv)
- {
- 	struct timespec raw;
- 	long tick, max, interval, err;
-diff --git a/tools/testing/selftests/timers/change_skew.c b/tools/testing/selftests/timers/change_skew.c
-index c4eab7124990..992a77f2a74c 100644
---- a/tools/testing/selftests/timers/change_skew.c
-+++ b/tools/testing/selftests/timers/change_skew.c
-@@ -55,7 +55,7 @@ int change_skew_test(int ppm)
- }
- 
- 
--int main(int argv, char **argc)
-+int main(int argc, char **argv)
- {
- 	struct timex tx;
- 	int i, ret;
-diff --git a/tools/testing/selftests/timers/raw_skew.c b/tools/testing/selftests/timers/raw_skew.c
-index b41d8dd0c40c..5beceeed0d11 100644
---- a/tools/testing/selftests/timers/raw_skew.c
-+++ b/tools/testing/selftests/timers/raw_skew.c
-@@ -89,7 +89,7 @@ void get_monotonic_and_raw(struct timespec *mon, struct timespec *raw)
+-			printf("\%s\n", start_str);
++			ksft_print_msg("\%s\n", start_str);
+ 			for (i = 0; i < CALLS_PER_LOOP; i++) {
+ 				if (i == inconsistent)
+-					printf("--------------------\n");
+-				printf("%lu:%lu\n", list[i].tv_sec,
++					ksft_print_msg("--------------------\n");
++				ksft_print_msg("%lu:%lu\n", list[i].tv_sec,
+ 							list[i].tv_nsec);
+ 				if (i == inconsistent + 1)
+-					printf("--------------------\n");
++					ksft_print_msg("--------------------\n");
+ 			}
+ 			delta = list[inconsistent].tv_sec * NSEC_PER_SEC;
+ 			delta += list[inconsistent].tv_nsec;
+ 			delta -= list[inconsistent+1].tv_sec * NSEC_PER_SEC;
+ 			delta -= list[inconsistent+1].tv_nsec;
+-			printf("Delta: %llu ns\n", delta);
++			ksft_print_msg("Delta: %llu ns\n", delta);
+ 			fflush(0);
+ 			/* timestamp inconsistency*/
+ 			t = time(0);
+-			printf("%s\n", ctime(&t));
+-			printf("[FAILED]\n");
++			ksft_print_msg("%s\n", ctime(&t));
+ 			return -1;
+ 		}
+ 		now = list[0].tv_sec;
  	}
+-	printf("[OK]\n");
+ 	return 0;
  }
  
--int main(int argv, char **argc)
-+int main(int argc, char **argv)
- {
- 	struct timespec mon, raw, start, end;
- 	long long delta1, delta2, interval, eppm, ppm;
-diff --git a/tools/testing/selftests/timers/skew_consistency.c b/tools/testing/selftests/timers/skew_consistency.c
-index 8066be9aff11..63913f75b384 100644
---- a/tools/testing/selftests/timers/skew_consistency.c
-+++ b/tools/testing/selftests/timers/skew_consistency.c
-@@ -38,7 +38,7 @@
+@@ -178,16 +176,22 @@ int main(int argc, char *argv[])
  
- #define NSEC_PER_SEC 1000000000LL
+ 	setbuf(stdout, NULL);
  
--int main(int argv, char **argc)
-+int main(int argc, char **argv)
- {
- 	struct timex tx;
- 	int ret, ppm;
++	ksft_print_header();
++	ksft_set_plan(maxclocks - userclock);
++
+ 	for (clockid = userclock; clockid < maxclocks; clockid++) {
+ 
+-		if (clockid == CLOCK_HWSPECIFIC)
++		if (clockid == CLOCK_HWSPECIFIC || clock_gettime(clockid, &ts)) {
++			ksft_test_result_skip("%-31s\n", clockstring(clockid));
+ 			continue;
++		}
+ 
+-		if (!clock_gettime(clockid, &ts)) {
+-			printf("Consistent %-30s ", clockstring(clockid));
+-			if (consistency_test(clockid, runtime))
+-				return ksft_exit_fail();
++		if (consistency_test(clockid, runtime)) {
++			ksft_test_result_fail("%-31s\n", clockstring(clockid));
++			ksft_exit_fail();
++		} else {
++			ksft_test_result_pass("%-31s\n", clockstring(clockid));
+ 		}
+ 	}
+-	return ksft_exit_pass();
++	ksft_exit_pass();
+ }
 -- 
 2.35.1
 
