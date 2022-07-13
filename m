@@ -2,98 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC163C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AC4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233952AbiGMFmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 01:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        id S234109AbiGMFoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 01:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234064AbiGMFlz (ORCPT
+        with ESMTP id S232040AbiGMFoF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 01:41:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D43B226C5;
-        Tue, 12 Jul 2022 22:40:39 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E2EAF1424;
-        Tue, 12 Jul 2022 22:40:39 -0700 (PDT)
-Received: from [10.162.42.9] (unknown [10.162.42.9])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CC5C73F70D;
-        Tue, 12 Jul 2022 22:40:34 -0700 (PDT)
-Message-ID: <ff1e0c31-488a-a054-ebc4-189eabf0b186@arm.com>
-Date:   Wed, 13 Jul 2022 11:10:32 +0530
+        Wed, 13 Jul 2022 01:44:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABC9233401
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:44:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657691043;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sogOu0Je2hI8kCeSkB7cNWVEmJuAsjifkkQViIo6h78=;
+        b=b0Z0dSW1durBSaZ7SutJDvSrLd2jeQdNNfZr2Lrc2bUy1e2tWOhqDf+KT20jXgECb16xAa
+        oKsg1+T+oQbG9xOezZ/ybDNRmQFrKqGyxQzxtug8+HMVo7A1pJrLrbVwAwterUzOUqWqdB
+        mCmpiloUv0O4k/N7BFWUg8smfdeI5hU=
+Received: from mail-pg1-f198.google.com (mail-pg1-f198.google.com
+ [209.85.215.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-414-PrLjoZApPq6WaZ8Mk-eqnw-1; Wed, 13 Jul 2022 01:44:02 -0400
+X-MC-Unique: PrLjoZApPq6WaZ8Mk-eqnw-1
+Received: by mail-pg1-f198.google.com with SMTP id v202-20020a6361d3000000b0041615ebed02so3307224pgb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:44:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sogOu0Je2hI8kCeSkB7cNWVEmJuAsjifkkQViIo6h78=;
+        b=SlUj5m7TtmU6oA7Eyh3h66H0BSkwkFJDbsmwP2cTub7vq+9ZOZysYScEyUjAj6Z8Qa
+         6R+bLs058DWIyecGd3OS1G/myH4fA+xgj7IFeDDOd9ym7ViSiFQNby+vBBzz91Um//L0
+         z+UUZfeLyG7oi3cc5o3A7LOnjobUCmbnZMrw09elubjrRIeIgxDybD+K870WyBoAgeyY
+         E+LYlZDwDKJyG76g1V6V3DyNIuo67ARlWyXyjN//FyGHBKjhx/+qeJSNs1F5RKDKp5L2
+         3W1FTcWwqXz/7mpxomyB3bdYOgZ8f0b/vnvg+wmXJYf8TXBexdcLDnCF5REFneXaSIvb
+         savA==
+X-Gm-Message-State: AJIora9UBoh4Q0nSmQvSrYrtJQGOQORa42U3tKH2AQUklFnu1r+0LTUt
+        ZT3G+gfnLB2B5fIlDEyUZQjmuR7t8REtPQnabENY1UGSRKlQ6I3KS0mu4fchqQBNjrk4ZwhQQ/9
+        Ieqbl5Eek1qbCnuI3Ky5k+1Z7
+X-Received: by 2002:a05:6a00:c95:b0:52b:e4c:19d5 with SMTP id a21-20020a056a000c9500b0052b0e4c19d5mr575691pfv.50.1657691041131;
+        Tue, 12 Jul 2022 22:44:01 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1syH+1nFx4fKmmG1nejbbinYoF6wkNNQaFi8/VZ2oi6PeG4TpUQIBxAubV7u0BXIAuFc5S89Q==
+X-Received: by 2002:a05:6a00:c95:b0:52b:e4c:19d5 with SMTP id a21-20020a056a000c9500b0052b0e4c19d5mr575672pfv.50.1657691040884;
+        Tue, 12 Jul 2022 22:44:00 -0700 (PDT)
+Received: from [10.72.12.200] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b21-20020aa79515000000b0052ac5e304ccsm6121714pfp.194.2022.07.12.22.43.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jul 2022 22:44:00 -0700 (PDT)
+Message-ID: <1106133f-ebd4-f6a8-83ab-19e995bcdba6@redhat.com>
+Date:   Wed, 13 Jul 2022 13:43:53 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH V6 0/8] perf: Expand perf_branch_entry
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH v2 1/5] vduse: Remove unnecessary spin lock protection
 Content-Language: en-US
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        peterz@infradead.org, alexander.shishkin@linux.intel.com,
-        jolsa@redhat.com, acme@kernel.org
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Suzuki Poulose <suzuki.poulose@arm.com>,
-        James Clark <james.clark@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220610035101.424112-1-anshuman.khandual@arm.com>
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-In-Reply-To: <20220610035101.424112-1-anshuman.khandual@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        xiaodong.liu@intel.com, maxime.coquelin@redhat.com,
+        stefanha@redhat.com
+Cc:     songmuchun@bytedance.com,
+        virtualization@lists.linux-foundation.org,
+        linux-kernel@vger.kernel.org
+References: <20220706050503.171-1-xieyongji@bytedance.com>
+ <20220706050503.171-2-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220706050503.171-2-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+在 2022/7/6 13:04, Xie Yongji 写道:
+> Taking iotlb lock to access bounce page in page fault
+> handler is meaningless since vduse_domain_free_bounce_pages()
+> would only be called during file release.
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>   drivers/vdpa/vdpa_user/iova_domain.c | 7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+> index 6daa3978d290..bca1f0b8850c 100644
+> --- a/drivers/vdpa/vdpa_user/iova_domain.c
+> +++ b/drivers/vdpa/vdpa_user/iova_domain.c
+> @@ -211,17 +211,14 @@ static struct page *
+>   vduse_domain_get_bounce_page(struct vduse_iova_domain *domain, u64 iova)
+>   {
+>   	struct vduse_bounce_map *map;
+> -	struct page *page = NULL;
+> +	struct page *page;
+>   
+> -	spin_lock(&domain->iotlb_lock);
+>   	map = &domain->bounce_maps[iova >> PAGE_SHIFT];
+>   	if (!map->bounce_page)
+> -		goto out;
+> +		return NULL;
 
-On 6/10/22 09:20, Anshuman Khandual wrote:
-> Branch Record Buffer Extension (BRBE) implementation on arm64 captures more
-> branch type classification which cannot be accommodated in the current perf
-> branch record format via perf_branch_entry.type element (4 bit field). Also
-> it captures privilege information which does not have a corresponding slot
-> in perf_branch_entry. This series expands struct perf_branch_entry, to meet
-> both these requirements without breaking the existing user space ABI for
-> perf tools.
-> 
-> All architecture specific branch types added via perf_branch_entry.new_type
-> field in [PATCH 3/4] will be used in BRBE implementation on arm64 platform
-> later on with the following map.
-> 
-> #ifdef CONFIG_ARM64
-> #define PERF_BR_FIQ		PERF_BR_NEW_ARCH_1
-> #define PERF_BR_DEBUG_HALT	PERF_BR_NEW_ARCH_2
-> #define PERF_BR_DEBUG_EXIT	PERF_BR_NEW_ARCH_3
-> #define PERF_BR_DEBUG_INST	PERF_BR_NEW_ARCH_4
-> #define PERF_BR_DEBUG_DATA	PERF_BR_NEW_ARCH_5
-> #endif
-> 
-> This series applies on v5.19-rc1
-> 
-> perf API
-> 
-> The series being applied
-> 
-> - Clean : tools/perf/check-headers.sh
-> - Clean : diff -u tools/include/uapi/linux/perf_event.h include/uapi/linux/perf_event.h
-> 
-> References
-> 
-> - BRBE captured branch record information
-> 
-> https://developer.arm.com/documentation/ddi0601/2021-12/AArch64-Registers/BRBINF-n--EL1--Branch-Record-Buffer-Information-Register--n-?lang=en
-> 
-> - BRBE based perf branch stack implementation on arm64 platform
-> 
-> https://lore.kernel.org/all/1642998653-21377-1-git-send-email-anshuman.khandual@arm.com/
-> 
-> Changes in V6:
-> 
-> - Process PERF_BR_EXTEND_ABI in perf tools and fetch from perf_branch_entry.new_type
-> - Modified the commit message for [PATCH 1/8]
 
-Any updates on this series ?
+Interesting, I wonder why we don't serialize with 
+vduse_domain_map_bounce_page() with iotlb_lock?
+
+Thanks
+
+
+>   
+>   	page = map->bounce_page;
+>   	get_page(page);
+> -out:
+> -	spin_unlock(&domain->iotlb_lock);
+>   
+>   	return page;
+>   }
+
