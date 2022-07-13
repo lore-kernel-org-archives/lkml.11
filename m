@@ -2,200 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75904C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:53:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E6A8CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234801AbiGMHxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        id S234812AbiGMHxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234812AbiGMHw5 (ORCPT
+        with ESMTP id S234297AbiGMHxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:52:57 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14DC3E7ACD;
-        Wed, 13 Jul 2022 00:52:54 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id 70so9572469pfx.1;
-        Wed, 13 Jul 2022 00:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/iTG0Znyy8dcxoJ240RfYELWXGLIYvTXqlX00eUFqRU=;
-        b=XFnuUh7pWfs6hqZpVLZW0mzy9uT4SQCOuwVQwFv2esdhnASBvDo6XHmJXrOBLXMNWF
-         kiQloL02tBWBUz2F0nKyABsg+QAgHTOUnRFJsn1NwoczD70ewWsNIY/YC/l6NbGHmnQX
-         EHUjN9dw9m6dazSxZrWnegtpEwunhqaeR4F4jIS4LUXvR0Hqb+2CBXj5fpCzsfEesYMy
-         K3nmcj8okqwqSQQFunuAemtyEpwIhWRf+b1YTx9DA2h/oXTHTW/I3OlGbRiX0V9egw74
-         15j1eeLtmhx+DaE+YkD/gHP3ZPBMb9CvmYAxvXF2i5LG8hDwfaQ+aBWQTKdIC0bIDYlA
-         /PXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/iTG0Znyy8dcxoJ240RfYELWXGLIYvTXqlX00eUFqRU=;
-        b=E023YXm2yt6+Qh3T2sLnHlarInv2ldMVFk+URYS+q3U3elFc584nbfIfz8iMrRslzt
-         Yy3YxuCFNgMJbkDl/nVsE9tLxWG8CkjjMxMAKV9FsCLD5d5URXhnS96i03y2rg6/Z5P7
-         pAD1K7t2MicUD63uKeNONX3xDpmW7hS9rZqmzJOEb1WoEk0KimqhtZSp4X0QS7cz/1Po
-         vn7yCeqqf2Y8bpdLZ4NXUfcypvxEZ5AKoOpsI+091b3QqHcQ9RnMQurUE4mRzhy2wTN6
-         WFGvZCx2AaznCpo0mKX69gh9sJ2wAMFJTiG4trd+WLutb+vIbp88MuTNEWs7albvjHC1
-         sM7A==
-X-Gm-Message-State: AJIora+X+/2O7MbKqzHNtQwWAbaBV/q70Ql+ct7TGHBCxSrN0bjt3J+K
-        HiW0/+DB44hpb4ziUkSjYjMjqh+xRXdo0SMEyhWtrGoZqtc=
-X-Google-Smtp-Source: AGRyM1t0G8qSuYZKwi/pJD6mvfU21cYcWr1VNiJ8de1QrHTdhFi7PcogfX5Do+I37VeRgjkS5vw59uKlHK9LXg92HLs=
-X-Received: by 2002:a63:1943:0:b0:411:5e12:4e4f with SMTP id
- 3-20020a631943000000b004115e124e4fmr1901430pgz.400.1657698774474; Wed, 13 Jul
- 2022 00:52:54 -0700 (PDT)
+        Wed, 13 Jul 2022 03:53:46 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4E394108C;
+        Wed, 13 Jul 2022 00:53:35 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 26D7rNhH5015400, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 26D7rNhH5015400
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 13 Jul 2022 15:53:23 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 13 Jul 2022 15:53:26 +0800
+Received: from localhost.localdomain (172.21.132.192) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Wed, 13 Jul 2022 15:53:25 +0800
+From:   <hildawu@realtek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <max.chou@realtek.com>, <alex_lu@realsil.com.cn>,
+        <kidman@realtek.com>
+Subject: [PATCH 3/5] Bluetooth: btusb: Add the support ID for Realtek RTL8852C
+Date:   Wed, 13 Jul 2022 15:53:16 +0800
+Message-ID: <20220713075318.18176-4-hildawu@realtek.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220713075318.18176-1-hildawu@realtek.com>
+References: <20220713075318.18176-1-hildawu@realtek.com>
 MIME-Version: 1.0
-References: <20220713074118.14733-1-frieder@fris.de> <20220713074118.14733-5-frieder@fris.de>
-In-Reply-To: <20220713074118.14733-5-frieder@fris.de>
-From:   Heiko Thiery <heiko.thiery@gmail.com>
-Date:   Wed, 13 Jul 2022 09:52:42 +0200
-Message-ID: <CAEyMn7a7S6UZOTsubM3pY95diY0oR0WNvhQpTUSmedjG59Qn9g@mail.gmail.com>
-Subject: Re: [PATCH 4/6] arm64: dts: imx8mm-kontron: Use upper case PMIC
- regulator names
-To:     Frieder Schrempf <frieder@fris.de>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Originating-IP: [172.21.132.192]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/13/2022 07:37:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzcvMTMgpFekyCAwNjowNjowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Frieder,
+From: Hilda Wu <hildawu@realtek.com>
 
-Am Mi., 13. Juli 2022 um 09:41 Uhr schrieb Frieder Schrempf <frieder@fris.de>:
->
-> From: Frieder Schrempf <frieder.schrempf@kontron.de>
->
-> Use upper case PMIC regulator names to comply with the bindings.
->
-> Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
-> ---
->  .../freescale/imx8mm-kontron-n801x-som.dtsi   | 22 +++++++++----------
->  1 file changed, 11 insertions(+), 11 deletions(-)
->
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-> index 2d0661cce89b..2e3d51bbf92e 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-> @@ -85,7 +85,7 @@ pca9450: pmic@25 {
->
->                 regulators {
->                         reg_vdd_soc: BUCK1 {
-> -                               regulator-name = "buck1";
-> +                               regulator-name = "BUCK1";
+Add the support ID(0x0CB8, 0xC558) to usb_device_id table for
+Realtek RTL8852C.
 
-Wouldn't it be better to use the real signal or voltage rail names
-used in the schematics?
+The device info from /sys/kernel/debug/usb/devices as below.
 
-Like it is done here as example:
-https://elixir.bootlin.com/linux/v5.19-rc6/source/arch/arm64/boot/dts/freescale/imx8mn-evk.dts#L44
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=0cb8 ProdID=c558 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
-Or use a name that includes both information (signal + PMIC out):
-https://elixir.bootlin.com/linux/v5.19-rc6/source/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi#L445
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+---
+ drivers/bluetooth/btusb.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
->                                 regulator-min-microvolt = <800000>;
->                                 regulator-max-microvolt = <850000>;
->                                 regulator-boot-on;
-> @@ -96,7 +96,7 @@ reg_vdd_soc: BUCK1 {
->                         };
->
->                         reg_vdd_arm: BUCK2 {
-> -                               regulator-name = "buck2";
-> +                               regulator-name = "BUCK2";
->                                 regulator-min-microvolt = <850000>;
->                                 regulator-max-microvolt = <950000>;
->                                 regulator-boot-on;
-> @@ -107,7 +107,7 @@ reg_vdd_arm: BUCK2 {
->                         };
->
->                         reg_vdd_dram: BUCK3 {
-> -                               regulator-name = "buck3";
-> +                               regulator-name = "BUCK3";
->                                 regulator-min-microvolt = <850000>;
->                                 regulator-max-microvolt = <950000>;
->                                 regulator-boot-on;
-> @@ -115,7 +115,7 @@ reg_vdd_dram: BUCK3 {
->                         };
->
->                         reg_vdd_3v3: BUCK4 {
-> -                               regulator-name = "buck4";
-> +                               regulator-name = "BUCK4";
->                                 regulator-min-microvolt = <3300000>;
->                                 regulator-max-microvolt = <3300000>;
->                                 regulator-boot-on;
-> @@ -123,7 +123,7 @@ reg_vdd_3v3: BUCK4 {
->                         };
->
->                         reg_vdd_1v8: BUCK5 {
-> -                               regulator-name = "buck5";
-> +                               regulator-name = "BUCK5";
->                                 regulator-min-microvolt = <1800000>;
->                                 regulator-max-microvolt = <1800000>;
->                                 regulator-boot-on;
-> @@ -131,7 +131,7 @@ reg_vdd_1v8: BUCK5 {
->                         };
->
->                         reg_nvcc_dram: BUCK6 {
-> -                               regulator-name = "buck6";
-> +                               regulator-name = "BUCK6";
->                                 regulator-min-microvolt = <1100000>;
->                                 regulator-max-microvolt = <1100000>;
->                                 regulator-boot-on;
-> @@ -139,7 +139,7 @@ reg_nvcc_dram: BUCK6 {
->                         };
->
->                         reg_nvcc_snvs: LDO1 {
-> -                               regulator-name = "ldo1";
-> +                               regulator-name = "LDO1";
->                                 regulator-min-microvolt = <1800000>;
->                                 regulator-max-microvolt = <1800000>;
->                                 regulator-boot-on;
-> @@ -147,7 +147,7 @@ reg_nvcc_snvs: LDO1 {
->                         };
->
->                         reg_vdd_snvs: LDO2 {
-> -                               regulator-name = "ldo2";
-> +                               regulator-name = "LDO2";
->                                 regulator-min-microvolt = <800000>;
->                                 regulator-max-microvolt = <900000>;
->                                 regulator-boot-on;
-> @@ -155,7 +155,7 @@ reg_vdd_snvs: LDO2 {
->                         };
->
->                         reg_vdda: LDO3 {
-> -                               regulator-name = "ldo3";
-> +                               regulator-name = "LDO3";
->                                 regulator-min-microvolt = <1800000>;
->                                 regulator-max-microvolt = <1800000>;
->                                 regulator-boot-on;
-> @@ -163,7 +163,7 @@ reg_vdda: LDO3 {
->                         };
->
->                         reg_vdd_phy: LDO4 {
-> -                               regulator-name = "ldo4";
-> +                               regulator-name = "LDO4";
->                                 regulator-min-microvolt = <900000>;
->                                 regulator-max-microvolt = <900000>;
->                                 regulator-boot-on;
-> @@ -171,7 +171,7 @@ reg_vdd_phy: LDO4 {
->                         };
->
->                         reg_nvcc_sd: LDO5 {
-> -                               regulator-name = "ldo5";
-> +                               regulator-name = "LDO5";
->                                 regulator-min-microvolt = <1800000>;
->                                 regulator-max-microvolt = <3300000>;
->                         };
-> --
-> 2.37.0
->
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index fe0434eeac78..50f2b0094cc7 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -432,6 +432,8 @@ static const struct usb_device_id blacklist_table[] = {
+ 						     BTUSB_WIDEBAND_SPEECH },
+ 	{ USB_DEVICE(0x04c5, 0x1675), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
++	{ USB_DEVICE(0x0cb8, 0xc558), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
+ 
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+-- 
+2.17.1
+
