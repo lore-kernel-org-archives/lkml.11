@@ -2,18 +2,18 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2228FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B468C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235025AbiGMIzT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35670 "EHLO
+        id S235505AbiGMIzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234775AbiGMIzL (ORCPT
+        with ESMTP id S234846AbiGMIzK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:55:11 -0400
+        Wed, 13 Jul 2022 04:55:10 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D35FBDB83
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D2F2BBD34
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1657702509;
@@ -21,48 +21,48 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fcVRbXz26cc5X8XJxCtVsg7MRei/k/v/fZBuSA3XpBc=;
-        b=SFDbQrYAisDGvA4KQ2+RIvFMv+RR7Ct8vmfaTVrrkK/FucVI8d+cW6VjCOacNFlwmFK8uy
-        aWgFUxCCJOhyFGTRz60NWWlSrCTCIDudimYWcZOCmLtlD9ehvgDESDl4xJPSnb3zjlFLW1
-        uRNeTHnYUikGO/TpRGVHCh1yLu9RnK0=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=WV1sbMysUWTQnUXeMzoIvswvu0vFM2B1lJ+VzkW+y6k=;
+        b=S9D55GZJ2OLWkFWmunxUDzlDMQXh7dK20gfO2uGVdpspuaYQZOS3+8WHRGRy6qB+u+BnLI
+        L+dzCWkQc31TvCJYKe920Rcnm2uaDQMOP9azg5z97B0kmfTTdX3IMPVZI0tVJ2yQWTVjHD
+        5Iq80AeOf770p/ypIl6n2Xf24xm9y1A=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-633-Krtnwj-gNK-fJitGwGaPHQ-1; Wed, 13 Jul 2022 04:55:07 -0400
-X-MC-Unique: Krtnwj-gNK-fJitGwGaPHQ-1
-Received: by mail-ed1-f69.google.com with SMTP id bs1-20020a056402304100b0043ad1e84611so5769698edb.15
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:07 -0700 (PDT)
+ us-mta-403-bHn4V4EWNaSrmv6yOGRjUw-1; Wed, 13 Jul 2022 04:55:05 -0400
+X-MC-Unique: bHn4V4EWNaSrmv6yOGRjUw-1
+Received: by mail-ej1-f72.google.com with SMTP id qa41-20020a17090786a900b00722f313a60eso3116186ejc.13
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fcVRbXz26cc5X8XJxCtVsg7MRei/k/v/fZBuSA3XpBc=;
-        b=qMXT/zLGLvRP+sy9YeGQy2Dg4tnXJP7DCk8gajJnXWlsmxD9fPUQB6B9SDsZABIfJO
-         equIO2o9oyi7UzKziZigQOFlLxKveUyGvWnoioi2m8E51yn4w/1KHJzntFOL31wu31tj
-         WgLR1lWuqWO3pgl4Dd1l+bu3vS2OFa8aMmUqlsZ9knxLoJKU+6MN1Uc6z7Mj4dCyYlnL
-         c1wZmQeLQt1eRruZMCvdaQWAX0gDg4LvKOLuQqh8LT2VPwTnlAw6CTLpjkEycPIyiPEr
-         y3o/AgOBhCApK2bgHB2bfvSFJHys1mTSn6d/bQFgX68lfBWaVQmrQHi8k/9UxQLdrnAD
-         fHrQ==
-X-Gm-Message-State: AJIora/3iHXG7QTQu4Q2MNlqk7P4zblxB31oI482enG1P8CP8+GGr59q
-        PGyH7J8Lcpqb7xJB72HGXQXns6J10HT5WF/FdsZHOIi0p3pYoQwk9wpbAyEKNy4o0p80eBEp/QI
-        pLHje/tVHbfQmRCSS0GNIM+xT
-X-Received: by 2002:a17:907:72d2:b0:72b:d238:4e81 with SMTP id du18-20020a17090772d200b0072bd2384e81mr1153075ejc.104.1657702506764;
-        Wed, 13 Jul 2022 01:55:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uoCj1NHIejTvVs44x4SYoVeNxil/sudDW06Xq1k+Q+zM7RVtGQZQIK/xwAFNGifNgvc+vypQ==
-X-Received: by 2002:a17:907:72d2:b0:72b:d238:4e81 with SMTP id du18-20020a17090772d200b0072bd2384e81mr1153057ejc.104.1657702506523;
-        Wed, 13 Jul 2022 01:55:06 -0700 (PDT)
+        bh=WV1sbMysUWTQnUXeMzoIvswvu0vFM2B1lJ+VzkW+y6k=;
+        b=tQ6wpFfR3cya8bkvpq0YtWiLNy+dHmsWzr+d+NPJI8mkDfxSjMu0dWAOTveE0jeJo7
+         iZiEiBKEQTyxDslNhJythYFSboZzeJAVwH+iXLdU+2pOfyh7xDUWBuhA4nQo7NtsJxC2
+         Mi/+pBgwy5N4KIc7GMVxX1vfQlnkyNbkuwZrIEqLUuSUiQPri4cgyUpbcxQrGOk8bEc6
+         QGyoZOLngmChg5MKAGW0cAvI7x3gw4R6Uj+N3YOnf3H1I4v5wpXMqcHh20gdzyQt8qJm
+         OwrCEUWxtKlJGQKldviI9XVuv3zC71vYeSFlgaIyRWm04rfwEAsqXmtMuyIIqgGubiWZ
+         qKJA==
+X-Gm-Message-State: AJIora/cR2R7duzwHBZM5M/nEBlbQVZ+KPx9GDzKcoK9jSiTHyeFEbNu
+        XRzVlfP7+yCtfVl011b0MNpAlEpG9CAjKEJQ0Ii4GCKV9iSovnydDeTNCpzKDc/Dm7OYFQLRI6D
+        UbztZFfiqwyVyOgBuQfeyUPcc
+X-Received: by 2002:a17:907:7631:b0:72b:3a31:6cb8 with SMTP id jy17-20020a170907763100b0072b3a316cb8mr2299322ejc.372.1657702504862;
+        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vHJQ1hmybqbUFHi9JfLGHPMl0bUlQL3+VPHCXCzTLWDo10p5guo24wdgNWCe9I5IOJ7jM9Pg==
+X-Received: by 2002:a17:907:7631:b0:72b:3a31:6cb8 with SMTP id jy17-20020a170907763100b0072b3a316cb8mr2299307ejc.372.1657702504715;
+        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
 Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7547655edy.36.2022.07.13.01.55.05
+        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7547655edy.36.2022.07.13.01.55.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:55:06 -0700 (PDT)
+        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
 From:   Danilo Krummrich <dakr@redhat.com>
 To:     emma@anholt.net, mripard@kernel.org, daniel@ffwll.ch,
         airlied@linux.ie
 Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH 3/3] drm/vc4: encoder: use drm managed resources
-Date:   Wed, 13 Jul 2022 10:55:00 +0200
-Message-Id: <20220713085500.1970589-4-dakr@redhat.com>
+Subject: [PATCH 1/3] drm/vc4: plane: use drm managed resources
+Date:   Wed, 13 Jul 2022 10:54:58 +0200
+Message-Id: <20220713085500.1970589-2-dakr@redhat.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220713085500.1970589-1-dakr@redhat.com>
 References: <20220713085500.1970589-1-dakr@redhat.com>
@@ -72,135 +72,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allocate the encoder objects with drmm_simple_encoder_alloc() in order to
-tie the release action to the underlying struct drm_device, where all the
-userspace visible stuff is attached to, rather than to struct device.
+Allocate the plane object with drmm_universal_plane_alloc() in order to
+tie the release action to the underlying struct drm_device, where all
+the userspace visible stuff is attached to, rather than to struct device.
 
 This can prevent potential use-after free issues on driver unload or
 EPROBE_DEFERRED backoff.
 
 Signed-off-by: Danilo Krummrich <dakr@redhat.com>
 ---
- drivers/gpu/drm/vc4/vc4_dpi.c  | 11 ++++++-----
- drivers/gpu/drm/vc4/vc4_dsi.c  | 10 +++++-----
- drivers/gpu/drm/vc4/vc4_hdmi.c | 10 ++++++----
- drivers/gpu/drm/vc4/vc4_vec.c  | 11 ++++++-----
- 4 files changed, 23 insertions(+), 19 deletions(-)
+ drivers/gpu/drm/vc4/vc4_plane.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_dpi.c b/drivers/gpu/drm/vc4/vc4_dpi.c
-index c180eb60bee8..7f1703a42060 100644
---- a/drivers/gpu/drm/vc4/vc4_dpi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dpi.c
-@@ -258,10 +258,12 @@ static int vc4_dpi_bind(struct device *dev, struct device *master, void *data)
- 	if (!dpi)
- 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
+index 1e866dc00ac3..0d88de31aa9c 100644
+--- a/drivers/gpu/drm/vc4/vc4_plane.c
++++ b/drivers/gpu/drm/vc4/vc4_plane.c
+@@ -1469,7 +1469,6 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
+ 	struct vc4_plane *vc4_plane;
+ 	u32 formats[ARRAY_SIZE(hvs_formats)];
+ 	int num_formats = 0;
+-	int ret = 0;
+ 	unsigned i;
+ 	static const uint64_t modifiers[] = {
+ 		DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED,
+@@ -1480,11 +1479,6 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
+ 		DRM_FORMAT_MOD_INVALID
+ 	};
  
--	vc4_dpi_encoder = devm_kzalloc(dev, sizeof(*vc4_dpi_encoder),
--				       GFP_KERNEL);
--	if (!vc4_dpi_encoder)
--		return -ENOMEM;
-+	vc4_dpi_encoder = drmm_simple_encoder_alloc(drm, struct vc4_dpi_encoder,
-+						    base.base,
-+						    DRM_MODE_ENCODER_DPI);
-+	if (IS_ERR(vc4_dpi_encoder))
-+		return PTR_ERR(vc4_dpi_encoder);
-+
- 	vc4_dpi_encoder->base.type = VC4_ENCODER_TYPE_DPI;
- 	vc4_dpi_encoder->dpi = dpi;
- 	dpi->encoder = &vc4_dpi_encoder->base.base;
-@@ -299,7 +301,6 @@ static int vc4_dpi_bind(struct device *dev, struct device *master, void *data)
- 	if (ret)
- 		DRM_ERROR("Failed to turn on core clock: %d\n", ret);
- 
--	drm_simple_encoder_init(drm, dpi->encoder, DRM_MODE_ENCODER_DPI);
- 	drm_encoder_helper_add(dpi->encoder, &vc4_dpi_encoder_helper_funcs);
- 
- 	ret = vc4_dpi_init_bridge(dpi);
-diff --git a/drivers/gpu/drm/vc4/vc4_dsi.c b/drivers/gpu/drm/vc4/vc4_dsi.c
-index 98308a17e4ed..8ca3b73e26dc 100644
---- a/drivers/gpu/drm/vc4/vc4_dsi.c
-+++ b/drivers/gpu/drm/vc4/vc4_dsi.c
-@@ -1498,10 +1498,11 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 
- 	dsi->variant = of_device_get_match_data(dev);
- 
--	vc4_dsi_encoder = devm_kzalloc(dev, sizeof(*vc4_dsi_encoder),
--				       GFP_KERNEL);
--	if (!vc4_dsi_encoder)
--		return -ENOMEM;
-+	vc4_dsi_encoder = drmm_simple_encoder_alloc(drm, struct vc4_dsi_encoder,
-+						    base.base,
-+						    DRM_MODE_ENCODER_DSI);
-+	if (IS_ERR(vc4_dsi_encoder))
-+		return PTR_ERR(vc4_dsi_encoder);
- 
- 	INIT_LIST_HEAD(&dsi->bridge_chain);
- 	vc4_dsi_encoder->base.type = VC4_ENCODER_TYPE_DSI1;
-@@ -1614,7 +1615,6 @@ static int vc4_dsi_bind(struct device *dev, struct device *master, void *data)
- 	if (ret)
- 		return ret;
- 
--	drm_simple_encoder_init(drm, dsi->encoder, DRM_MODE_ENCODER_DSI);
- 	drm_encoder_helper_add(dsi->encoder, &vc4_dsi_encoder_helper_funcs);
- 
- 	ret = drm_bridge_attach(dsi->encoder, dsi->bridge, NULL, 0);
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index ce9d16666d91..4657b09649f7 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -2834,9 +2834,12 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- 	struct device_node *ddc_node;
- 	int ret;
- 
--	vc4_hdmi = devm_kzalloc(dev, sizeof(*vc4_hdmi), GFP_KERNEL);
--	if (!vc4_hdmi)
--		return -ENOMEM;
-+	vc4_hdmi = drmm_simple_encoder_alloc(drm, struct vc4_hdmi,
-+					     encoder.base,
-+					     DRM_MODE_ENCODER_DSI);
-+	if (IS_ERR(vc4_hdmi))
-+		return PTR_ERR(vc4_hdmi);
-+
- 	mutex_init(&vc4_hdmi->mutex);
- 	spin_lock_init(&vc4_hdmi->hw_lock);
- 	INIT_DELAYED_WORK(&vc4_hdmi->scrambling_work, vc4_hdmi_scrambling_wq);
-@@ -2921,7 +2924,6 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- 		clk_prepare_enable(vc4_hdmi->pixel_bvb_clock);
+-	vc4_plane = devm_kzalloc(dev->dev, sizeof(*vc4_plane),
+-				 GFP_KERNEL);
+-	if (!vc4_plane)
+-		return ERR_PTR(-ENOMEM);
+-
+ 	for (i = 0; i < ARRAY_SIZE(hvs_formats); i++) {
+ 		if (!hvs_formats[i].hvs5_only || vc4->is_vc5) {
+ 			formats[num_formats] = hvs_formats[i].drm;
+@@ -1492,13 +1486,14 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
+ 		}
  	}
  
--	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
- 	drm_encoder_helper_add(encoder, &vc4_hdmi_encoder_helper_funcs);
- 
- 	ret = vc4_hdmi_connector_init(drm, vc4_hdmi);
-diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c
-index 11fc3d6f66b1..d6466f1ef490 100644
---- a/drivers/gpu/drm/vc4/vc4_vec.c
-+++ b/drivers/gpu/drm/vc4/vc4_vec.c
-@@ -546,10 +546,12 @@ static int vc4_vec_bind(struct device *dev, struct device *master, void *data)
- 	if (!vec)
- 		return -ENOMEM;
- 
--	vc4_vec_encoder = devm_kzalloc(dev, sizeof(*vc4_vec_encoder),
--				       GFP_KERNEL);
--	if (!vc4_vec_encoder)
--		return -ENOMEM;
-+	vc4_vec_encoder = drmm_simple_encoder_alloc(drm, struct vc4_vec_encoder,
-+						    base.base,
-+						    DRM_MODE_ENCODER_TVDAC);
-+	if (IS_ERR(vc4_vec_encoder))
-+		return PTR_ERR(vc4_vec_encoder);
++	vc4_plane = drmm_universal_plane_alloc(dev, struct vc4_plane, base, 0,
++					       &vc4_plane_funcs, formats,
++					       num_formats, modifiers, type,
++					       NULL);
++	if (!vc4_plane)
++		return ERR_CAST(vc4_plane);
 +
- 	vc4_vec_encoder->base.type = VC4_ENCODER_TYPE_VEC;
- 	vc4_vec_encoder->vec = vec;
- 	vec->encoder = &vc4_vec_encoder->base.base;
-@@ -574,7 +576,6 @@ static int vc4_vec_bind(struct device *dev, struct device *master, void *data)
+ 	plane = &vc4_plane->base;
+-	ret = drm_universal_plane_init(dev, plane, 0,
+-				       &vc4_plane_funcs,
+-				       formats, num_formats,
+-				       modifiers, type, NULL);
+-	if (ret)
+-		return ERR_PTR(ret);
  
- 	pm_runtime_enable(dev);
- 
--	drm_simple_encoder_init(drm, vec->encoder, DRM_MODE_ENCODER_TVDAC);
- 	drm_encoder_helper_add(vec->encoder, &vc4_vec_encoder_helper_funcs);
- 
- 	vec->connector = vc4_vec_connector_init(drm, vec);
+ 	if (vc4->is_vc5)
+ 		drm_plane_helper_add(plane, &vc5_plane_helper_funcs);
 -- 
 2.36.1
 
