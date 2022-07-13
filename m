@@ -2,83 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A20FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D873CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234831AbiGMHr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        id S234364AbiGMHsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:48:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234760AbiGMHrn (ORCPT
+        with ESMTP id S234869AbiGMHsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:47:43 -0400
-Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F13EE5DCA;
-        Wed, 13 Jul 2022 00:47:42 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id E9098C01D7;
-        Wed, 13 Jul 2022 09:41:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1657698105; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding:in-reply-to:references;
-        bh=bMoDlt4I17xyhnkDM2IHsZUlSwj4C71IEBwpW5llE1Q=;
-        b=BMhd2/g5T2iLcsP/VxrscWVak0FeYeTJapSqjgOzE1BZU4bdbVgTJyXbS6GPQsjcnNVaOw
-        dR0vYRypqJy6ify3kDaxDvHOXQSPvraGsyyKCW8lig4HUT8bQt6VYRKQ5C0HqnNokMKFUh
-        gcShAQ2r0KmGK/ULqbp9+CB3/YnvF9H0UksPQMhHs3JXdPk0xGkucDfl0ICjHKjS/Ft6TZ
-        hEcfEKkedRTiJPtytQpXFE/EORVgojlC52FUj8lF5MClYnKPQBjjAv58gkqsBkGWq7HJHq
-        Dq2ZHbFsS/XXaKcBoZsYYIyU8mm/TLa+mLBAOi0JYr7fe0FXWapjxXmViTUf6A==
-From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>
-Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Heiko Thiery <heiko.thiery@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-Subject: [PATCH 3/6] arm64: dts: imx8mm-kontron: Remove low DDRC operating point
-Date:   Wed, 13 Jul 2022 09:41:14 +0200
-Message-Id: <20220713074118.14733-4-frieder@fris.de>
-In-Reply-To: <20220713074118.14733-1-frieder@fris.de>
-References: <20220713074118.14733-1-frieder@fris.de>
+        Wed, 13 Jul 2022 03:48:18 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63417E5DF9;
+        Wed, 13 Jul 2022 00:48:05 -0700 (PDT)
+Received: from [192.168.87.140] (unknown [50.47.106.71])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 9B42E204DE8E;
+        Wed, 13 Jul 2022 00:48:04 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9B42E204DE8E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1657698485;
+        bh=KZ3W7Lm0ppPu0mxu7WcxzkIS3QqQzFKigKl1JQiFt2Y=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=P6+Zhlbq0DMsnVL+ep7Gw05EZe/vUerKqkJmmAvdzE0pSRyQXm6vhKjOFnTdc84dI
+         Wr5o/o68+rQ16YtPQgftXDkZ3oY7JvtHA9SjKygZ+43CrDgiRDmcJS/qnvQ8OjqHRv
+         Hs3mxf8ksl5o7PzzC4HWh10dRPhLpoAdGUpHVLUs=
+Message-ID: <e5c47d13-bbb9-e607-47cb-6bf4cf6bebd9@linux.microsoft.com>
+Date:   Wed, 13 Jul 2022 00:48:04 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Last-TLS-Session-Version: TLSv1.3
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v7 3/5] ARM: dts: aspeed: Add HACE device controller node
+Content-Language: en-US
+To:     Neal Liu <neal_liu@aspeedtech.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Dhananjay Phadke <dhphadke@microsoft.com>,
+        Johnny Huang <johnny_huang@aspeedtech.com>
+Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+        BMC-SW@aspeedtech.com, linux-kernel@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <20220705020936.1751771-1-neal_liu@aspeedtech.com>
+ <20220705020936.1751771-4-neal_liu@aspeedtech.com>
+From:   Dhananjay Phadke <dphadke@linux.microsoft.com>
+In-Reply-To: <20220705020936.1751771-4-neal_liu@aspeedtech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frieder Schrempf <frieder.schrempf@kontron.de>
+On 7/4/2022 7:09 PM, Neal Liu wrote:
+> Add hace node to device tree for AST2500/AST2600.
+> 
+> Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+> Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
+> ---
+>   arch/arm/boot/dts/aspeed-g5.dtsi | 8 ++++++++
+>   arch/arm/boot/dts/aspeed-g6.dtsi | 8 ++++++++
+>   2 files changed, 16 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
+> index c89092c3905b..04f98d1dbb97 100644
+> --- a/arch/arm/boot/dts/aspeed-g5.dtsi
+> +++ b/arch/arm/boot/dts/aspeed-g5.dtsi
+> @@ -262,6 +262,14 @@ rng: hwrng@1e6e2078 {
+>   				quality = <100>;
+>   			};
+>   
+> +			hace: crypto@1e6e3000 {
+> +				compatible = "aspeed,ast2500-hace";
+> +				reg = <0x1e6e3000 0x100>;
+> +				interrupts = <4>;
+> +				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
+> +				resets = <&syscon ASPEED_RESET_HACE>;
+> +			};
+> +
+>   			gfx: display@1e6e6000 {
+>   				compatible = "aspeed,ast2500-gfx", "syscon";
+>   				reg = <0x1e6e6000 0x1000>;
+> diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
+> index 6660564855ff..095cf8d03616 100644
+> --- a/arch/arm/boot/dts/aspeed-g6.dtsi
+> +++ b/arch/arm/boot/dts/aspeed-g6.dtsi
+> @@ -323,6 +323,14 @@ apb {
+>   			#size-cells = <1>;
+>   			ranges;
+>   
+> +			hace: crypto@1e6d0000 {
+> +				compatible = "aspeed,ast2600-hace";
+> +				reg = <0x1e6d0000 0x200>;
+> +				interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
+> +				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
+> +				resets = <&syscon ASPEED_RESET_HACE>;
+> +			};
+> +
 
-For some reason there is a problem with finding a DDR configuration
-that works on all operating points and all LPDDR4 types used on the
-SoM. Therefore the bootloader currently doesn't configure the lowest
-of the three operating points. Let's also skip this in the kernel
-devicetree to make sure it isn't used.
 
-Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
----
- arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi | 4 ----
- 1 file changed, 4 deletions(-)
+Thank you for addressing ast2500, for this patch -
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-index 77c074b491a6..2d0661cce89b 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
-@@ -46,10 +46,6 @@ &ddrc {
- 	ddrc_opp_table: opp-table {
- 		compatible = "operating-points-v2";
- 
--		opp-25M {
--			opp-hz = /bits/ 64 <25000000>;
--		};
--
- 		opp-100M {
- 			opp-hz = /bits/ 64 <100000000>;
- 		};
--- 
-2.37.0
-
+Reviewed-by: Dhananjay Phadke <dphadke@linux.microsoft.com>
