@@ -2,125 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC86C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235643AbiGMIfk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:35:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
+        id S235648AbiGMIgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235582AbiGMIfh (ORCPT
+        with ESMTP id S234858AbiGMIgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:35:37 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B51DA58D0;
-        Wed, 13 Jul 2022 01:35:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4B64B1FD4C;
-        Wed, 13 Jul 2022 08:35:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657701334;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CcsBBbemJwPnREj8tUcGtqYBeLDK85WV0Rb0buPzp3s=;
-        b=BJ/2pHkXbNnHfTFeBIIZK9+C7zTuLNqlfrU5AON0AgJDEBieZg/cptr5j4lSS/Tth2GZh5
-        uTTDK6JayWctFwZVWdAzcIMoe1cRbOEyqznFtt3Io4SkUf29BmMApL/9YZ4yawoXTVuWCf
-        erYJs5aGcZo5a/6X98xFnRLAQa4ADEA=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657701334;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CcsBBbemJwPnREj8tUcGtqYBeLDK85WV0Rb0buPzp3s=;
-        b=29egoYKkhz8DyFsT88GI2fB5xWVcR3WZlWzZxkJDRz32bg0P8E5Vfsut9piqSGhsjFOuvx
-        Z82YwHDwj+9CZZBQ==
-Received: from g78 (unknown [10.163.24.226])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4DBB22C141;
-        Wed, 13 Jul 2022 08:35:33 +0000 (UTC)
-References: <Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020> <87wncknkfe.fsf@suse.de>
- <CABGWkvqF9f4vOYUQeYuaDGT7yuB=8=h=yPpuG04VwicNP=wgMA@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 28.1
-From:   Richard Palethorpe <rpalethorpe@suse.de>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     kernel test robot <oliver.sang@intel.com>, lkp@intel.com,
-        lkp@lists.01.org, Jeroen Hofstee <jhofstee@victronenergy.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-can@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, ltp@lists.linux.it
-Subject: Re: [LTP] [can] c4e54b063f:
- BUG:sleeping_function_called_from_invalid_context_at_kernel/workqueue.c
-Date:   Wed, 13 Jul 2022 09:23:28 +0100
-Reply-To: rpalethorpe@suse.de
-In-reply-to: <CABGWkvqF9f4vOYUQeYuaDGT7yuB=8=h=yPpuG04VwicNP=wgMA@mail.gmail.com>
-Message-ID: <87v8s1l8a3.fsf@suse.de>
+        Wed, 13 Jul 2022 04:36:12 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D27A44CE
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:36:11 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBXqm-0003Pk-1F; Wed, 13 Jul 2022 10:36:04 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBXql-00058i-4Q; Wed, 13 Jul 2022 10:36:03 +0200
+Date:   Wed, 13 Jul 2022 10:36:03 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Frieder Schrempf <frieder@fris.de>
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, Marek Vasut <marex@denx.de>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Reinhold Mueller <reinhold.mueller@emtrion.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH 5/6] arm64: dts: Add support for Kontron SL/BL i.MX8MM
+ OSM-S
+Message-ID: <20220713083603.wjb3znctugrerep5@pengutronix.de>
+References: <20220713074118.14733-1-frieder@fris.de>
+ <20220713074118.14733-6-frieder@fris.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713074118.14733-6-frieder@fris.de>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hi Frieder,
 
-Dario Binacchi <dario.binacchi@amarulasolutions.com> writes:
+On 22-07-13, Frieder Schrempf wrote:
 
-> Hello,
->
-> On Mon, Jul 11, 2022 at 10:05 AM Richard Palethorpe <rpalethorpe@suse.de> wrote:
->>
->> Hello,
->>
->> kernel test robot <oliver.sang@intel.com> writes:
->>
->> > Greeting,
->> >
->> > FYI, we noticed the following commit (built with gcc-11):
->> >
->> > commit: c4e54b063f42f20a6b3ad1ffa61c574e631e0216 ("can: slcan: use CAN network device driver API")
->> > https://git.kernel.org/cgit/linux/kernel/git/next/linux-next.git
->> > master
->>
->> I guess the problem is this may sleep with soft irqs disabled.
->>
->> static int slc_close(struct net_device *dev)
->> {
->>         struct slcan *sl = netdev_priv(dev);
->>         int err;
->>
->>         spin_lock_bh(&sl->lock); <-- takes lock
->>         if (sl->tty) {
->>                 if (sl->can.bittiming.bitrate &&
->>                     sl->can.bittiming.bitrate != CAN_BITRATE_UNKNOWN) {
->>                         spin_unlock_bh(&sl->lock);
->>                         err = slcan_transmit_cmd(sl, "C\r");
->>                         spin_lock_bh(&sl->lock);
->>                         if (err)
->>                                 netdev_warn(dev,
->>                                             "failed to send close command 'C\\r'\n");
->>                 }
->>
->>                 /* TTY discipline is running. */
->>                 clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
->>         }
->>         netif_stop_queue(dev);
->>         close_candev(dev); <-- calls cancel_delayed_work_sync()
->>
->
-> I would try (since I am unable to replicate the test) to move the
-> spin_unlock_bh()
-> before calling close_candev().
 
-I haven't tried, but I think it should replicate every time with
-lockdep/lock debugging enabled.
+> +	aliases {
+> +		ethernet1 = &usbnet;
+> +	};
 
-> Can the patch be sent now or do I have to wait until the code is in
-> mainline?
+Out of curiosity, why do you prefer usbnet instead of the fec?
 
-IMO it *has* to be fixed before going into mainline :-p. I can't comment on
-the correctness of the proposed fix though.
-
--- 
-Thank you,
-Richard.
+Regards,
+  Marco
