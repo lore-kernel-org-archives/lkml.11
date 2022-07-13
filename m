@@ -2,114 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C38C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD89C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235442AbiGMIV6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52744 "EHLO
+        id S235209AbiGMIWK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:22:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235399AbiGMIVK (ORCPT
+        with ESMTP id S235283AbiGMIVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:21:10 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D513D87F69
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:17:40 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oBXYq-0008P4-DS; Wed, 13 Jul 2022 10:17:32 +0200
-Message-ID: <20ce8aae480ba224392ec86b279a72bd4cc0e573.camel@pengutronix.de>
-Subject: Re: [PATCH v14 05/17] PCI: imx6: Factor out ref clock disable to
- match enable
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
-        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Wed, 13 Jul 2022 10:17:31 +0200
-In-Reply-To: <1656645935-1370-6-git-send-email-hongxing.zhu@nxp.com>
-References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
-         <1656645935-1370-6-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 13 Jul 2022 04:21:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32F12C0505
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:17:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657700279;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Uu20DLcBo8IMgtAmd4TXW8QAm+Rrq9nhKztBRSghNtQ=;
+        b=byHTz0ITw1BM/tXoHEUWGldmkSHzEOjVrE+C0yk7vOfXE6nmWHHgr+45Nl+mE/ZNDM//7P
+        iWRU68GVhk9wpwYW5LGMfqMSut5LS6Jvs+NgDG1s+MEpFBT48q5tZUg3meQnGrRyvkqK7I
+        wy+SjFrZgRqzX5dQgpz3cKssA0KOxQA=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-464-juk-u4hjOCO4kzmU0fcvbw-1; Wed, 13 Jul 2022 04:17:58 -0400
+X-MC-Unique: juk-u4hjOCO4kzmU0fcvbw-1
+Received: by mail-ed1-f71.google.com with SMTP id b15-20020a056402278f00b0043acaf76f8dso6493577ede.21
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:17:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Uu20DLcBo8IMgtAmd4TXW8QAm+Rrq9nhKztBRSghNtQ=;
+        b=TVKQKkYTxFj+Ai9/cQFUsLWiMEcoltYXROXD1c/IIVfNdebWZvvyn+eraEFdIIbxHp
+         ndodxOH/u231MUjaK5mxzWGg9IWjYYn9mCMllDTwA6SjK/yzIPCwBdwGwWjJon8R/l6L
+         /T+vgKINq29Kq1kod9nVmb7MA5PKbH19Gu0L9P/PYgOK8uMeGN4whw8w5Dkfz9j5VjZc
+         a0h15Y0W7c7eIWZO5LUT+wMxk/XmKm7Y3l1/rLP1Nyxo3ly95wZb+gwGPxEL5hEVCWQk
+         DQ/0mB8w+3eEtySr+NmoKwjJmc4WR9xur8ruCSzLPuArKKHEIQY/ErdBFp26RSwNEZ2v
+         QrRw==
+X-Gm-Message-State: AJIora8ZF222bqsTRv5pwQFh82aW/vCXoHxeJr/z1YUjUvtAnNgKRFQB
+        fCbUex+dOE85g+ZzwbxunuKkxCN6FlRUpfZxHv3XyvE6060erq9ZjV6eoOv0acmXZirUSuLEc3l
+        ed8WDtND59mnk8nS4Iuj4ojkO
+X-Received: by 2002:a05:6402:2743:b0:43a:7f92:8e30 with SMTP id z3-20020a056402274300b0043a7f928e30mr3058375edd.168.1657700276861;
+        Wed, 13 Jul 2022 01:17:56 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vvDRpXirRM0iB6PQcdsyPrWgZ0lhMW3iiiISyYBlWepAh94KQ4/f62jliEYyvjsvyWAvo3wQ==
+X-Received: by 2002:a05:6402:2743:b0:43a:7f92:8e30 with SMTP id z3-20020a056402274300b0043a7f928e30mr3058362edd.168.1657700276616;
+        Wed, 13 Jul 2022 01:17:56 -0700 (PDT)
+Received: from localhost (nat-pool-brq-t.redhat.com. [213.175.37.10])
+        by smtp.gmail.com with ESMTPSA id ce14-20020a170906b24e00b0071cbc7487e0sm4684104ejb.71.2022.07.13.01.17.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 01:17:56 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 10:17:54 +0200
+From:   Igor Mammedov <imammedo@redhat.com>
+To:     Bruce Fields <bfields@fieldses.org>
+Cc:     Jeff Layton <jlayton@redhat.com>,
+        Chuck Lever III <chuck.lever@oracle.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        Ondrej Valousek <ondrej.valousek.xm@renesas.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [GIT PULL] nfsd changes for 5.18
+Message-ID: <20220713101754.50ad9bde@redhat.com>
+In-Reply-To: <20220712114211.GA29976@fieldses.org>
+References: <EF97E1F5-B70F-4F9F-AC6D-7B48336AE3E5@oracle.com>
+        <20220710124344.36dfd857@redhat.com>
+        <B62B3A57-A8F7-478B-BBAB-785D0C2EE51C@oracle.com>
+        <5268baed1650b4cba32978ad32d14a5ef00539f2.camel@redhat.com>
+        <20220711181941.GC14184@fieldses.org>
+        <20220712102746.5404e88a@redhat.com>
+        <20220712114211.GA29976@fieldses.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
-> From: Bjorn Helgaas <bhelgaas@google.com>
-> 
-> The PCIe ref clocks are specific to different variants.  The enables are
-> already split out into imx6_pcie_enable_ref_clk(), but the disables were
-> combined with the more generic bus/phy/pcie clock disables in
-> imx6_pcie_clk_disable().
-> 
-> Split out the variant-specific disables into imx6_pcie_disable_ref_clk() to
-> match imx6_pcie_enable_ref_clk().
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+On Tue, 12 Jul 2022 07:42:11 -0400
+Bruce Fields <bfields@fieldses.org> wrote:
 
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
-
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 16 ++++++++++------
->  1 file changed, 10 insertions(+), 6 deletions(-)
+> On Tue, Jul 12, 2022 at 10:27:46AM +0200, Igor Mammedov wrote:
+> > On Mon, 11 Jul 2022 14:19:41 -0400
+> > Bruce Fields <bfields@fieldses.org> wrote:
+> >   
+> > > On Mon, Jul 11, 2022 at 06:33:04AM -0400, Jeff Layton wrote:  
+> > > > On Sun, 2022-07-10 at 16:42 +0000, Chuck Lever III wrote:    
+> > > > > > This patch regressed clients that support TIME_CREATE attribute.
+> > > > > > Starting with this patch client might think that server supports
+> > > > > > TIME_CREATE and start sending this attribute in its requests.    
+> > > > > 
+> > > > > Indeed, e377a3e698fb ("nfsd: Add support for the birth time
+> > > > > attribute") does not include a change to nfsd4_decode_fattr4()
+> > > > > that decodes the birth time attribute.
+> > > > > 
+> > > > > I don't immediately see another storage protocol stack in our
+> > > > > kernel that supports a client setting the birth time, so NFSD
+> > > > > might have to ignore the client-provided value.
+> > > > >     
+> > > > 
+> > > > Cephfs allows this. My thinking at the time that I implemented it was
+> > > > that it should be settable for backup purposes, but this was possibly a
+> > > > mistake. On most filesystems, the btime seems to be equivalent to inode
+> > > > creation time and is read-only.    
+> > > 
+> > > So supporting it as read-only seems reasonable.
+> > > 
+> > > Clearly, failing to decode the setattr attempt isn't the right way to do
+> > > that.  I'm not sure what exactly it should be doing--some kind of
+> > > permission error on any setattr containing TIME_CREATE?  
+> > 
+> > erroring out on TIME_CREATE will break client that try to
+> > set this attribute (legitimately). That's what by chance 
+> > happening with current master (return error when TIME_CREATE
+> > is present).  
 > 
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index 38f208eea2d7..f458461880dc 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -580,12 +580,8 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
->  	return ret;
->  }
->  
-> -static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
-> +static void imx6_pcie_disable_ref_clk(struct imx6_pcie *imx6_pcie)
->  {
-> -	clk_disable_unprepare(imx6_pcie->pcie);
-> -	clk_disable_unprepare(imx6_pcie->pcie_phy);
-> -	clk_disable_unprepare(imx6_pcie->pcie_bus);
-> -
->  	switch (imx6_pcie->drvdata->variant) {
->  	case IMX6SX:
->  		clk_disable_unprepare(imx6_pcie->pcie_inbound_axi);
-> @@ -595,8 +591,8 @@ static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
->  				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL,
->  				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL);
->  		break;
-> -	case IMX8MQ:
->  	case IMX8MM:
-> +	case IMX8MQ:
->  		clk_disable_unprepare(imx6_pcie->pcie_aux);
->  		break;
->  	default:
-> @@ -604,6 +600,14 @@ static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
->  	}
->  }
->  
-> +static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
-> +{
-> +	clk_disable_unprepare(imx6_pcie->pcie);
-> +	clk_disable_unprepare(imx6_pcie->pcie_phy);
-> +	clk_disable_unprepare(imx6_pcie->pcie_bus);
-> +	imx6_pcie_disable_ref_clk(imx6_pcie);
-> +}
-> +
->  static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
->  {
->  	struct device *dev = imx6_pcie->pci->dev;
+> Hang on, now--our current server completely fails to decode any RPC
+> including a SETATTR that attempts to set TIME_CREATE, which means it
+> isn't able to return a useful error or tell the client which attribute
+> was the problem.
+> 
+> It's not too surprising that that would cause a problem for a client.
+> 
+> But failures to set supported attributes are completely normal, and if
+> mounts are failing completely because of that, something is really very
+> wrong with the client.
 
+returning unsupported attribute error might work, but as Chuck mentioned
+we do kind of support TIME_CREATE for some requests so client might be
+confused when server itself sends this attribute while errors out when
+client tries to send it.
+What I'm saying if we are to try returning error in this case
+it should be tested with variety of clients before committing
+to this approach. (meanwhile decoding and ignoring attribute
+with Chuck's patch fixes immediate issue).
+
+> Could you first retest with a server that's patched to at least decode
+> the attribute correctly?  I suspect that may be enough.  If not, then
+it does work with fixed decoding path:
+ (i.e. patched with https://lore.kernel.org/lkml/A4F0C111-B2EB-4325-AC6A-4A80BD19DA43@oracle.com/T/)
+
+> the client in question has a more interesting problem on its hands.
+> 
+> --b.
+> 
 
