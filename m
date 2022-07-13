@@ -2,107 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9375CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A529CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234793AbiGMJ0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40446 "EHLO
+        id S234664AbiGMJ2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:28:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234603AbiGMJ0c (ORCPT
+        with ESMTP id S230442AbiGMJ2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:26:32 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7913DF2700
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:26:30 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id c15so12839514ljr.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:26:30 -0700 (PDT)
+        Wed, 13 Jul 2022 05:28:22 -0400
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B057F2E27
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:28:21 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id u15so1883493lji.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OZFjfGPRJEW+XiqadcZTKJjaB0j0swaCsivThrUDMjU=;
-        b=FCq6yuxggtQBm0dxq0c7IwcN9P1nVA62ZuMomo1VhXktJb+Sd35ROgB0YAtDZn+KAx
-         ztIXecxk77fQfTuTU2FE7kDuGF0eFSy+kcNeFLyb9jdJeP4nQl0CvF5cvUAnIEaFu07o
-         ZNAc59DTx9DhmY0BPQ3Vo1AWzsisEqWKB+pKkqSwM0Qpty9YI1xHXiDqG65dc375evFf
-         uPnMKKwz0Aiz+KVRW+/lf2Ng0mF4QZj5M1kkTyZXZtscz4ASABAJ2efqmhG1/VCcCAnm
-         k+GOHSmkv5sVHk80Lrg7GD4GEs1b3dGa0uMQe5KEJ0pjKYC7j/mPNhbvo4NwQZgKwvzv
-         1Gkw==
+        bh=geaCj81ycceeJeyXEXcktsHsVE7AX6bBBwQNAJ0pr/A=;
+        b=S9UUOPTrazzxnheUfpX3I67Pd3ngtwGlwrZqkw4oH5mr1bKsYmCavkQel245szv62F
+         s4arzlvdOfTd1dbMTCq83Gkjozr6T/gW6c0Bw5IlktPUIaZ7rI1iPokcIVeMXPtWiwIR
+         VmTAC+OAIG/RcV9mR2slJm3AIYbKkL/ZsBD71sNqogZsTllb67OPGdJuu2OGH92Omn80
+         koRg5l6IlJB15f5Sr9jDO6nbOgMlNZnzMBTC/InVB3RLWD657uZgiQUPbTUIfRZMZVpu
+         BbOdV+n0fXDsbdzy89aVce+EJ6IdssfNbrzuK0kDY5q0+Jyzgap+HKZ9CnKNT2BVVstG
+         091w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=OZFjfGPRJEW+XiqadcZTKJjaB0j0swaCsivThrUDMjU=;
-        b=35kLPthGw7xmZBSmHKOVd8UyHoerkl+AWFvEv840pgcw0VzWBpjLqAS3YDrvmLD4pu
-         x5LO0kAYfIpQKIYuOHcbZ5s2RqqVJqotAKukL2ae8ktw3Ghh2mQzxYNZSQZ3QH53jhoe
-         BtmbYtcbWZAy5gNy+vn7BLISs8Cp8Lmi7saLr66Bk/PhJQ48+cE1u4MO6NtJ1CdCc/LP
-         8hkGNvjXtrZ2Cyw5JuVYk/eFc9wk50kEe7voMIkb+3f5r8KOJIx0Ym07wl5JGwUxu92S
-         N23143T5DjbN6uMaDhs4F2KCSrO0eFQ51+2ppW26IOmZ7VBlDVI6FRr3ZW7cUxTIMZeX
-         oGVQ==
-X-Gm-Message-State: AJIora9zhrqXuCX7PtDfu9HXiYBy3M1djEp8jjyKegflsFqJxfDIaqou
-        rE/36tvdo+UORnhkrKron5tBtA==
-X-Google-Smtp-Source: AGRyM1sQ+DurMXduxwN29r9TeaVTPcZRiz0hdxAFf3tJqkALw+WRbPHct7ZSENDmwyDn5R8afxflAg==
-X-Received: by 2002:a05:651c:1a1f:b0:25d:4517:faf with SMTP id by31-20020a05651c1a1f00b0025d45170fafmr1166257ljb.415.1657704388771;
-        Wed, 13 Jul 2022 02:26:28 -0700 (PDT)
+        bh=geaCj81ycceeJeyXEXcktsHsVE7AX6bBBwQNAJ0pr/A=;
+        b=sQGbrhPREdb88xo544JtlIpQRIezP8DpXj5eZgDyFklQ+XgolxA8MSb63hQUsUnmFI
+         FtCGui3AiMqI5aJZvYhsl44dCEOZWSnHw3nRw7YihrjIqT17iJtFYBf/iiMFAM00X7EZ
+         yZ4DE/6xo7LjNHOUGwbXNWaNd8mZYCq1n3rADmPU3x0QHv8Ld+Z4uTIelgHuAi/glx6o
+         PJokTxMoD9Cxtjt0DC9oLnunXjO1pZbEUS2FKsfSESwp1yLGJMcKBpt3pHsyDbeFrd+I
+         2vsB0vFMzyiiWhgBzwq2OPBcuUPiL/Xyq8vj/NidDoDE3PtbqE5rvpc0PoCSVibhNXRj
+         GboQ==
+X-Gm-Message-State: AJIora+s5bdnygGr4n0gbfpZlZMxkYXja9OyiFFtAQWYjfAgYJcFb32z
+        ipD//s9hCJXP82JTuvr3VOJASQ==
+X-Google-Smtp-Source: AGRyM1stmOMnrs7WjrVZAWSyI7MmKoT76g3H1/dYirwNw8pzpVrkFiBFzsSgP1oFmVuQx70bMEdPPw==
+X-Received: by 2002:a2e:a9a6:0:b0:25d:6062:91af with SMTP id x38-20020a2ea9a6000000b0025d606291afmr1187100ljq.144.1657704499441;
+        Wed, 13 Jul 2022 02:28:19 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id v6-20020a2ea606000000b0025a672e97a6sm3033273ljp.80.2022.07.13.02.26.26
+        by smtp.gmail.com with ESMTPSA id l26-20020a2e909a000000b0025d4d4b4edbsm2990436ljg.34.2022.07.13.02.28.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 02:26:27 -0700 (PDT)
-Message-ID: <6acbebb6-177c-c5b5-f9e8-a374b9276fc1@linaro.org>
-Date:   Wed, 13 Jul 2022 11:26:20 +0200
+        Wed, 13 Jul 2022 02:28:18 -0700 (PDT)
+Message-ID: <f9e1ad3b-d6ed-7392-2fd9-ca6ff0417b16@linaro.org>
+Date:   Wed, 13 Jul 2022 11:28:16 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH 3/7] pwm: dwc: add of/platform support
+Subject: Re: [PATCH v18 1/2] dt-bindings: usb: Add analogix anx7411 PD binding
 Content-Language: en-US
-To:     Ben Dooks <ben.dooks@sifive.com>, linux-pwm@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        William Salmon <william.salmon@sifive.com>,
-        Adnan Chowdhury <adnan.chowdhury@sifive.com>
-References: <20220712100113.569042-1-ben.dooks@sifive.com>
- <20220712100113.569042-4-ben.dooks@sifive.com>
- <fdef31b4-9c27-ddda-f1e5-ee881812aa4e@linaro.org>
- <3a1eea1f-b598-58ad-60a6-c76b77cb08c4@sifive.com>
+To:     Xin Ji <xji@analogixsemi.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, Rob Herring <robh@kernel.org>,
+        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220713084139.2810115-1-xji@analogixsemi.com>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <3a1eea1f-b598-58ad-60a6-c76b77cb08c4@sifive.com>
+In-Reply-To: <20220713084139.2810115-1-xji@analogixsemi.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/2022 11:21, Ben Dooks wrote:
-> On 12/07/2022 11:08, Krzysztof Kozlowski wrote:
->> On 12/07/2022 12:01, Ben Dooks wrote:
->>> The dwc pwm controller can be used in non-PCI systems, so allow
->>> either platform or OF based probing.
->>>
->>> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
->>> ---
->>>   .../devicetree/bindings/pwm/pwm-synposys.yaml | 40 ++++++++++++++
->>
->> Bindings must be a separate patch. Preferably first in the series. Use
->> proper subject prefix matching the subsystem.
->>
->> Best regards,
->> Krzysztof
+On 13/07/2022 10:41, Xin Ji wrote:
+> Add analogix PD chip anx7411 device binding
 > 
-> Thanks, seems counter-intuitive that one change is split up like that.
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> 
+> ---
+> v17 -> v18 : Change node name from "usb_typec" to "typec"
 
-Why? Bindings are not really related to driver implementation, they are
-shared with other projects. Binding reviewers usually care less about
-implementation, so combining it with drivers forces me to read carefully
-each one of 300 emails I receive...
-
-Anyway, that's the policy since years, so nothing new here.
+Node name was anx7411, not usb_typec. What are you changing here? The label?
 
 Best regards,
 Krzysztof
