@@ -2,99 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C98CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B7FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbiGMUmk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:42:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
+        id S237141AbiGMUns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:43:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237133AbiGMUmg (ORCPT
+        with ESMTP id S229959AbiGMUnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:42:36 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAAD831232
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:42:35 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id sz17so21916800ejc.9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:42:35 -0700 (PDT)
+        Wed, 13 Jul 2022 16:43:43 -0400
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4207565E2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:43:40 -0700 (PDT)
+Received: by mail-oi1-x22d.google.com with SMTP id bb16so1021357oib.11
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qj46Expkx0Fdl04B5r2M/IKERzYmwL8GKHgYErVEHPU=;
-        b=JHjdAbofUWwRVhvgVOiZ0qRn5y1paVSqD7wjLfExQOlWpAYCzmmWAhpXfp4DH25Pdr
-         S/tTZ8eXCpU0d90H66vv6uX6XEeZwDh9ex84anB39Nz7x206N5/LYRYEGJ0Zj7Tqooc1
-         T51wu8yoaY7wBIa8QoqJgSeDtn7JAEV6eEmjc=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KyGgu7C9+fRm2ADCAgt+Fbwrs6cnQcRAcXl1tzTw7kU=;
+        b=zf1H/tMruuyBeuv7h7OXqeAxgPP4r+iHG75l/BPPZFfh8inX46JOM10fCkKKhTSck3
+         ZXbXms33ifDCmgSAh7uFtobu0BZYnWA8V6Ae450q4kpbI5+z7fuM8SDS/FlC8t8l4/bo
+         n2HIk/Ywfs+ZCAYMV4b6kAIywECnydhEc1ExX4/OHtXV/IEzW8gab+W459UYcdgZV2da
+         vbrvN83OLXFch+16Tf0AM08lykoixTZ+W1SNq+aeCOC+7JDAWEWp7wTxacpz+Ug8cXSa
+         hqN1pJc7VMty6v0Jv3X8Ij1IlBug6Tn9PFwLrjN3lrNKEhoraoCzzEmwekFyHYvUOhiq
+         SV1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qj46Expkx0Fdl04B5r2M/IKERzYmwL8GKHgYErVEHPU=;
-        b=fYVT1v8S/a2BztGbcwLGP3Iw1rOQg/GtNLjRGo5fJxi25LrozB7x6QkBnamUqB5ksh
-         6K8HWBcO4LapfNdfTMdy7gY9wrt1ibVEJIiOrFf6EXreseRZMTOSKdzO3rTOP5V3+vHQ
-         3sg23Fx29ZodQbAr+f9v6ML2BSjRjea9aWpBCgXt70gpLJJEeCOdV2q8b30dLc9huHei
-         nulEB8E1RdLjRWa97myGkGXZHfZwh+2QYzSsNpc7EjCJ2zHN8KH11Xw6MzYgk6yr2avG
-         Tm4JJNXVvMagTcM06TbflD+I+zMuU9Ya68Qb6FWxOeNRpg0fWCAURAiVcqm7EcbIWkUF
-         x7kg==
-X-Gm-Message-State: AJIora9vbXfQGS6Uso4bZM/B8aexF199ZL4Ev+QGqJOiZi9rWVcFX0AR
-        G7zA/HdU0jt90XaZIHD9fQni0lKMyHaCO6r2o0M=
-X-Google-Smtp-Source: AGRyM1vB0RIuTLoqCq8KajenYUoi1yaHTzJQfEFnRKbuSLWquidV2NijemFg9a2DTSQhFUts6GuI4w==
-X-Received: by 2002:a17:906:5305:b0:712:388c:2bf5 with SMTP id h5-20020a170906530500b00712388c2bf5mr5152582ejo.559.1657744954111;
-        Wed, 13 Jul 2022 13:42:34 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id kz10-20020a17090777ca00b0072b40cb28a8sm4901415ejc.29.2022.07.13.13.42.32
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 13:42:32 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id z12so17116915wrq.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:42:32 -0700 (PDT)
-X-Received: by 2002:a05:6000:1a88:b0:21d:aa97:cb16 with SMTP id
- f8-20020a0560001a8800b0021daa97cb16mr5060151wry.97.1657744951699; Wed, 13 Jul
- 2022 13:42:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KyGgu7C9+fRm2ADCAgt+Fbwrs6cnQcRAcXl1tzTw7kU=;
+        b=XZv1KhSPs8444k57pUgS3du0lfixM6vW5vqC1jNbDn+3Ry9pfLRRUSQUaq/7LClH3c
+         oH0JHkTtVJNyzZBIZ1HZmrZFj5U1BBlVKzjLOnQrNt0DJBFCM7mBA0EarnEuf0/KQLaY
+         rNzHWyPgSYeinS1RaFmUNQewupqxnGkCl2AnnWB2ISni6X81YbINi5nC0IwtyYGgB/XT
+         6JrAZTxIaYNJdi2YxuBpVkR73TrRlMT+Jsy5fET+fhhdzG8SM+qutWIOv03qbd6/xoRA
+         tctBFvAtJZe94ZllIhxwEIf2wO1v75x712p5aY5L7z/evqngDE7jHYT/eiSlDJ7bWnbs
+         qLig==
+X-Gm-Message-State: AJIora9dmS/Que0pF4Ydu3KCquCkuT9j1GMK1XiTeIV+HcGE33OZB5R4
+        EkvrrIMkinUARlLiQWG91qSunQ==
+X-Google-Smtp-Source: AGRyM1tw2waAcoFmFyUJZc6NQdSIgEH/42t01G/WXEaFODPCZP9fl8aD/XxkiU0xnxwFtBvESa3lmQ==
+X-Received: by 2002:a05:6808:1444:b0:335:be7f:3466 with SMTP id x4-20020a056808144400b00335be7f3466mr6015025oiv.24.1657745019644;
+        Wed, 13 Jul 2022 13:43:39 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id w65-20020aca6244000000b00325cda1ff99sm5698831oib.24.2022.07.13.13.43.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 13:43:38 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 15:43:37 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Robert Marko <robimarko@gmail.com>
+Cc:     agross@kernel.org, konrad.dybcio@somainline.org,
+        jassisinghbrar@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        dmitry.baryshkov@linaro.org
+Subject: Re: [PATCH v6 1/4] mailbox: qcom-apcs-ipc: make regmap max_register
+ configurable
+Message-ID: <Ys8ueXn77ZjRTt25@builder.lan>
+References: <20220707173733.404947-1-robimarko@gmail.com>
 MIME-Version: 1.0
-References: <CAHk-=wgTmGaToVFdSdoFqT2sNkk7jg2rSWasUYv-tASUZ2j_0Q@mail.gmail.com>
- <20220713050724.GA2471738@roeck-us.net> <CAHk-=widUqghhXus_GCM9+FESa5vHqMb_pO3=0dGYH8C+yix2w@mail.gmail.com>
- <Ys8hqoiN5iWbslsM@shell.armlinux.org.uk> <CAHk-=wjNxyXQqn=k0KipzUPoBYWQhUwybxee8GTkF_Oz6RPVFw@mail.gmail.com>
- <e63e108b-c99c-9ab7-0638-367b72983b81@roeck-us.net>
-In-Reply-To: <e63e108b-c99c-9ab7-0638-367b72983b81@roeck-us.net>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 Jul 2022 13:42:15 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh-SE=s+bJq_jwuQ6zfnifaAwYdXikpXo8iZ4JbbNph4Q@mail.gmail.com>
-Message-ID: <CAHk-=wh-SE=s+bJq_jwuQ6zfnifaAwYdXikpXo8iZ4JbbNph4Q@mail.gmail.com>
-Subject: Re: Linux 5.19-rc6
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707173733.404947-1-robimarko@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 1:40 PM Guenter Roeck <linux@roeck-us.net> wrote:
->
-> That patch is (and has been) in linux-next for a long time,
-> as commit d2ca1fd2bc70, and with the following tags.
->
->      Fixes: 7719a68b2fa4 ("ARM: 9192/1: amba: fix memory leak in amba_device_try_add()")
->      Reported-by: Guenter Roeck <linux@roeck-us.net>
->      Tested-by: Guenter Roeck <linux@roeck-us.net>
->      Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->      Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
->
-> So, yes, it fixes the problem. I don't know where it is pulled from, though.
-> I thought that it is from Russell's tree, given his Signed-off-by:,
-> but I never really checked.
+On Thu 07 Jul 12:37 CDT 2022, Robert Marko wrote:
 
-Heh. Yeah, with that sign-off, I bet it's in Russell's queue, bit it
-just ended up in the "for next release" branch. Russell?
+> APCS register space in IPQ8074 is 0x6000 so regmap max_register needs to
+> be 0x5ffc.
+> 
+> Instead of making it global, make max_register configurable via match data.
+> 
+> Signed-off-by: Robert Marko <robimarko@gmail.com>
 
-                 Linus
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> ---
+>  drivers/mailbox/qcom-apcs-ipc-mailbox.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/mailbox/qcom-apcs-ipc-mailbox.c b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> index 80a54d81412e..c05f3276d02c 100644
+> --- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> +++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> @@ -27,6 +27,7 @@ struct qcom_apcs_ipc {
+>  struct qcom_apcs_ipc_data {
+>  	int offset;
+>  	char *clk_name;
+> +	unsigned int max_register;
+>  };
+>  
+>  static const struct qcom_apcs_ipc_data ipq6018_apcs_data = {
+> @@ -53,7 +54,7 @@ static const struct qcom_apcs_ipc_data sdx55_apcs_data = {
+>  	.offset = 0x1008, .clk_name = "qcom-sdx55-acps-clk"
+>  };
+>  
+> -static const struct regmap_config apcs_regmap_config = {
+> +static struct regmap_config apcs_regmap_config = {
+>  	.reg_bits = 32,
+>  	.reg_stride = 4,
+>  	.val_bits = 32,
+> @@ -91,12 +92,17 @@ static int qcom_apcs_ipc_probe(struct platform_device *pdev)
+>  	if (IS_ERR(base))
+>  		return PTR_ERR(base);
+>  
+> +	apcs_data = of_device_get_match_data(&pdev->dev);
+> +	if (!apcs_data)
+> +		return -ENODATA;
+> +
+> +	if (apcs_data->max_register)
+> +		apcs_regmap_config.max_register = apcs_data->max_register;
+> +
+>  	regmap = devm_regmap_init_mmio(&pdev->dev, base, &apcs_regmap_config);
+>  	if (IS_ERR(regmap))
+>  		return PTR_ERR(regmap);
+>  
+> -	apcs_data = of_device_get_match_data(&pdev->dev);
+> -
+>  	apcs->regmap = regmap;
+>  	apcs->offset = apcs_data->offset;
+>  
+> -- 
+> 2.36.1
+> 
