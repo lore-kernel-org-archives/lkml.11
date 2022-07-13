@@ -2,72 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8E4CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E72C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235178AbiGMKC6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56058 "EHLO
+        id S235207AbiGMKDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231169AbiGMKCy (ORCPT
+        with ESMTP id S234441AbiGMKDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:02:54 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D854F8949
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:02:53 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 784861424;
-        Wed, 13 Jul 2022 03:02:53 -0700 (PDT)
-Received: from [192.168.178.6] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 557343F792;
-        Wed, 13 Jul 2022 03:02:51 -0700 (PDT)
-Message-ID: <5f0d6bef-9e9e-7083-9657-ae5e6dd10d2a@arm.com>
-Date:   Wed, 13 Jul 2022 12:02:42 +0200
+        Wed, 13 Jul 2022 06:03:46 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41C66DF35;
+        Wed, 13 Jul 2022 03:03:45 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-31cac89d8d6so107319517b3.2;
+        Wed, 13 Jul 2022 03:03:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gYjk25BuMhDSQ35zmvHQJKfbRO8JKe4egdencUOB3Ng=;
+        b=K6551hRA1arH81z4Mjzun6igd2wv8HT1VBg/AzFdZF6dU+7eqyZfc37PVyV6TUOdJs
+         bW0VXOsA8whh1SYYSbZYKmN9Ft2rCLPjLHYgS2lq9/bhxNkXebtCZJDEoUs0RpHWKSbU
+         4zh1agO7a+1CR3XXpnPbUGoABxxypgKbWf6WCtKWvJTzn1JGUPZq5QvYqsSecwG0ver5
+         ZSXN/8N+B1C1wE00/gAEI/WBR8XI/kQUTfGzArkGQr7KoBQfYOwmxOR4po9ZkOvjEg8z
+         rgoa2Q3eMo2VVe0dfdRAVWLY+z490J3vNKnHxgYQfgc3mayHldiaDWjGZy7YICJRX1RT
+         AHsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gYjk25BuMhDSQ35zmvHQJKfbRO8JKe4egdencUOB3Ng=;
+        b=Qk1LyoulTkS+ulBiOjZsl4AKnm4IjfnESM4Q5MmXmCQWlRqcLhRjqyOBF4hrOCpzrE
+         mY6/ZXi/rvYu0KBwVu1TTlItXnrZk6NxZoO0x9HrrbwSXp4pQ4QXvhA2pSemfA1sq/nB
+         ElAx45/ru8ZCjLtUq4Ure/NoILLOMJXlSYKrKmBBsXW78TBEYEhCMTKjmDj0/PNgoj5v
+         ADZtdFJkL5HrvNxhioLL94VvbmO4meCkN6VvKXSTJi41lWU91L0LpcUOtgUl1Ctl9BgL
+         b83yzAMHqJbSVVPwFRs9go5XbuONfPJVrDUI96T+vjyb0QCYWHOpZH3qe0xFpXNjKRmZ
+         kArA==
+X-Gm-Message-State: AJIora8hoafJre6MupRq8nO1GUADEciEtUayZNzn9fFOLD0YLE/QWOOu
+        AJ3LjJqoLk6JTyXM6AZXzdEoSIYOzKSDmeTDaC0=
+X-Google-Smtp-Source: AGRyM1uvusCX++8mkox1YoQ1Be026yN/Kojzv9GRLfYzL+xX1/J/63uUNvmNo4TO5+YJHAUfIYc1qIPYtGmzmlgqpX8=
+X-Received: by 2002:a81:3984:0:b0:31c:b59e:a899 with SMTP id
+ g126-20020a813984000000b0031cb59ea899mr3215851ywa.195.1657706624450; Wed, 13
+ Jul 2022 03:03:44 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v6 2/2] sched/rt: Trying to push current task when target
- disable migrating
-Content-Language: en-US
-To:     Schspa Shi <schspa@gmail.com>, mingo@redhat.com,
-        peterz@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, rostedt@goodmis.org,
-        bsegall@google.com, mgorman@suse.de, bristot@redhat.com,
-        vschneid@redhat.com
-Cc:     linux-kernel@vger.kernel.org, zhaohui.shi@horizon.ai
-References: <20220712150506.632304-1-schspa@gmail.com>
- <20220712150506.632304-2-schspa@gmail.com>
-From:   Dietmar Eggemann <dietmar.eggemann@arm.com>
-In-Reply-To: <20220712150506.632304-2-schspa@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220713013721.68879-1-warthog618@gmail.com> <20220713013721.68879-7-warthog618@gmail.com>
+In-Reply-To: <20220713013721.68879-7-warthog618@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 13 Jul 2022 12:03:07 +0200
+Message-ID: <CAHp75Vd7je7U7qsoFDz+2jcNkwCzJHJOadsaSNwk6xD2_vgdpA@mail.gmail.com>
+Subject: Re: [PATCH 6/6] gpiolib: cdev: compile out HTE unless CONFIG_HTE selected
+To:     Kent Gibson <warthog618@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Dipen Patel <dipenp@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 17:05, Schspa Shi wrote:
+On Wed, Jul 13, 2022 at 3:39 AM Kent Gibson <warthog618@gmail.com> wrote:
+>
+> The majority of builds do not include HTE, so compile out hte
+> functionality unless CONFIG_HTE is selected.
 
-[...]
+...
 
-> diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-> index 7bd3e6ecbe45e..e2d7b085a93d9 100644
-> --- a/kernel/sched/rt.c
-> +++ b/kernel/sched/rt.c
-> @@ -2136,6 +2136,12 @@ static int push_rt_task(struct rq *rq, bool pull)
->  		 */
->  		task = pick_next_pushable_task(rq);
->  		if (task == next_task) {
-> +			/*
-> +			 * If next task has now disabled migrating, see if we
-> +			 * can push the current task.
-> +			 */
-> +			if (unlikely(is_migration_disabled(task)))
+> +#ifdef CONFIG_HTE
+>         /*
+>          * -- hte specific fields --
+>          */
 
-Doesn't this need a `put_task_struct(next_task)`?
+Now this comment seems useless to me and it takes 3 LoCs.
 
-> +				goto retry;
->  			/*
->  			 * The task hasn't migrated, and is still the next
->  			 * eligible task, but we failed to find a run-queue
+...
 
-Why not introduce in push_dl_task() as well?
+> +       else if (IS_ENABLED(CONFIG_HTE) &&
+> +                (test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)))
+
+Too many parentheses.
+
+...
+
+> +               if (!IS_ENABLED(CONFIG_HTE) ||
+> +                   !test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)) {
+
+if (!(x && y)) ?
+
+...
+
+> +       if (!IS_ENABLED(CONFIG_HTE) &&
+> +           (flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE))
+> +               return -EOPNOTSUPP;
+
+Ditto for consistency?
+
+-- 
+With Best Regards,
+Andy Shevchenko
