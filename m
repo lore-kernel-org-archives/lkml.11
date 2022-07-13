@@ -2,85 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E674C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:25:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D85FCC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbiGMLZV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49028 "EHLO
+        id S235358AbiGMLZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236101AbiGMLZN (ORCPT
+        with ESMTP id S229724AbiGMLZo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:25:13 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A905B102717;
-        Wed, 13 Jul 2022 04:25:10 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31cf1adbf92so109195677b3.4;
-        Wed, 13 Jul 2022 04:25:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zVsTRZ+KHVAlZ/Yd1qD9A+kSjJ/bpJiTUJw8KWJXUb4=;
-        b=hhUOvCL9G8gIcwEqLsONL+dYxWME5xylW5azzJVe8SIC8Q1Sa15cxrMdYRSaGFexS0
-         INQNO/z42XIiWGdHUf0nCSwvbZRAZqiOdn47tD+mibMkIGvp7bbPYb6CoJXHu3eDuT8Z
-         3CpeaZZCJyep8zZgLmbym9Q2i5/14I/FUUvpwlpxWQ9bF6VG5vNKJa6GEE1MYzI85wA+
-         7r5b0ssghr9NLUUv5bj6Ek2+Hjkp1yMhq7QdDHIIt8gHPX/K4tTi7Fcdl6hWWb2XqWva
-         Jg1x82mmspmPjBaowzbxQ8fs+5LP226V1Nj43Yt8iSfjy0b5t1RWnEcFw4C/NB6MPMrJ
-         6CJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zVsTRZ+KHVAlZ/Yd1qD9A+kSjJ/bpJiTUJw8KWJXUb4=;
-        b=EUuZGeruWqryo8iz4mlj5Ei6AVq6uAQH8kPV6hU6ZBa2eERx/i7O9ovOyP6QiQGGoS
-         eVWuI/Eq8RGJZ/WQDPuRLHQVA64pBdmg0VoWyG/ZiRJd0RszzWAytqLOrn5KKmuGLgMI
-         bKSBDRVZFQunzQNHzXNJ+Ftaf7/Jf/1lxZvOGpE9Fe1++Xv+htZJx1Q2jdm37pX0zHRo
-         r1AsOX8pu6/xNjRNfqSBPN5GXdo97J9ry0srr/DO8zW4a35QtIFhi/TMyo0lDSmi3yr8
-         LyakfkJ1mMSpUd1f6VwcuZH9wPUpEqhmFcPaKXpZskCB1b/Whs+qDq/PQGkyUwYx7p5d
-         buCQ==
-X-Gm-Message-State: AJIora+E1NZXhdQOEUdj11K/lOgLIXdxOvU0Qs6kMiTXKmy/T8o1BykS
-        mcoT3luMHqL9IownKOas3pnYasQGrLqlv1ujkrk=
-X-Google-Smtp-Source: AGRyM1sHfektbvTGawGrVDTdh8I9O3i+FHUJ6r1+OTP3JFit85WN3rs30yFgZW/AlLHUyKnHox1Xp8I+br72qnAN9ts=
-X-Received: by 2002:a81:108f:0:b0:31c:d7ae:9ff1 with SMTP id
- 137-20020a81108f000000b0031cd7ae9ff1mr3550642ywq.18.1657711509887; Wed, 13
- Jul 2022 04:25:09 -0700 (PDT)
+        Wed, 13 Jul 2022 07:25:44 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903F91014AC
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:25:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 457D520021;
+        Wed, 13 Jul 2022 11:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657711542; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2hCUwWlyM97iRIwu5t9bviH/71g+A0D69fnhpOcSMiY=;
+        b=BDyRyl3OUksILIGlSSVz+Rb34SY1wq1zsplYzhIIXijI5jBY+N3G1ZCRQ3Ah/Strt8gqCD
+        7oSaaopLIkiXnbpon5aQ7OdhK9bkxnfIcBeNN/z30+YUdn/tncux7+xjx+i6yingPHFLGf
+        Vwk72Csx3gXowEOm77YhMTC3J9A87q0=
+Received: from suse.cz (pathway.suse.cz [10.100.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id AA0532C145;
+        Wed, 13 Jul 2022 11:25:41 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 13:25:41 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Marco Elver <elver@google.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        linux-kernel@vger.kernel.org, kasan-dev@googlegroups.com,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Linux Kernel Functional Testing <lkft@linaro.org>
+Subject: Re: [PATCH -printk] printk, tracing: fix console tracepoint
+Message-ID: <20220713112541.GB2737@pathway.suse.cz>
+References: <20220503073844.4148944-1-elver@google.com>
+ <20220711182918.338f000f@gandalf.local.home>
+ <20220712002128.GQ1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220711205319.1aa0d875@gandalf.local.home>
+ <20220712025701.GS1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220712114954.GA3870114@paulmck-ThinkPad-P17-Gen-1>
+ <20220712093940.45012e47@gandalf.local.home>
+ <20220712134916.GT1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220712105353.08358450@gandalf.local.home>
+ <20220712151655.GU1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-References: <20220713013721.68879-1-warthog618@gmail.com> <20220713013721.68879-5-warthog618@gmail.com>
- <CAHp75VeRshC3Db8Q2J80fk7=UvLiRymrkoAbuWceOfncfzvr7A@mail.gmail.com> <20220713102710.GB113115@sol>
-In-Reply-To: <20220713102710.GB113115@sol>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Jul 2022 13:24:33 +0200
-Message-ID: <CAHp75VdL4Zy=1+m5e4gcNUM7uW-q4cfJb1xof3qiQx6ZWsMSPg@mail.gmail.com>
-Subject: Re: [PATCH 4/6] gpiolib: cdev: simplify line event identification
-To:     Kent Gibson <warthog618@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Dipen Patel <dipenp@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712151655.GU1790663@paulmck-ThinkPad-P17-Gen-1>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:27 PM Kent Gibson <warthog618@gmail.com> wrote:
-> On Wed, Jul 13, 2022 at 11:59:10AM +0200, Andy Shevchenko wrote:
-> > On Wed, Jul 13, 2022 at 3:39 AM Kent Gibson <warthog618@gmail.com> wrote:
+On Tue 2022-07-12 08:16:55, Paul E. McKenney wrote:
+> On Tue, Jul 12, 2022 at 10:53:53AM -0400, Steven Rostedt wrote:
+> > On Tue, 12 Jul 2022 06:49:16 -0700
+> > "Paul E. McKenney" <paulmck@kernel.org> wrote:
+> > 
+> > > > I guess the question is, can we have printk() in such a place? Because this
+> > > > tracepoint is attached to printk and where ever printk is done so is this
+> > > > tracepoint.  
+> > > 
+> > > As I understand it, code in such a place should be labeled noinstr.
+> > > Then the call to printk() would be complained about as an illegal
+> > > noinstr-to-non-noinstr call.
+> > > 
+> > > But where exactly is that printk()?
+> > 
+> > Perhaps the fix is to remove the _rcuidle() from trace_console_rcuidle().
+> > If printk() can never be called from noinstr (aka RCU not watching).
+> 
+> Maybe printk() is supposed to be invoked from noinstr.  It might be a
+> special case in the tooling.  I have no idea.  ;-)
 
-...
+I think that it is ok to do _not_ support printk() in noinstr parts.
 
-> > > +               le.id = level ? GPIO_V2_LINE_EVENT_RISING_EDGE :
-> > > +                               GPIO_V2_LINE_EVENT_FALLING_EDGE;
-> >
-> > It seems several times you are doing the same, perhaps a helper?
->
-> If by several times you mean twice, then yeah.
-> Not sure that reaches the threshold for a helper though.
+> However, the current SRCU read-side algorithm will tolerate being invoked
+> from noinstr as long as it is not also an NMI handler.  Much though
+> debugging tools might (or might not) complain.
+> 
+> Don't get me wrong, I can make SRCU tolerate being called while RCU is
+> not watching.  It is not even all that complicated.  The cost is that
+> architectures that have NMIs but do not have NMI-safe this_cpu*()
+> operations have an SRCU reader switch from explicit smp_mb() and
+> interrupt disabling to a cmpxchg() loop relying on the implicit barriers
+> in cmpxchg().
+> 
+> For arm64, this was reportedly a win.
 
-Up to you, then!
+IMHO, the tracepoint in printk() is not worth slowing down other
+important fast paths.
 
+The tracepoint was moved into vprintk_store() in 5.19-rc1. It used
+to be in console_unlock() before. The previous location was not
+reliable by definition. Old messages might be overridden by new
+ones before they reach console. Also messages in NMI context
+used to be stored in per-CPU buffers. There was even bigger
+risk that they would not reach the console.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Best Regards,
+Petr
