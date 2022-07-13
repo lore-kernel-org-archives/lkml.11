@@ -2,60 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71FAECCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:07:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB442CCA481
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:11:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237037AbiGMUHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:07:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        id S236821AbiGMULL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:11:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229955AbiGMUHV (ORCPT
+        with ESMTP id S232199AbiGMULH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:07:21 -0400
-Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D205930F4E;
-        Wed, 13 Jul 2022 13:07:19 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:281:8300:73::5f6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 8189B2DC;
-        Wed, 13 Jul 2022 20:07:19 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 8189B2DC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-        t=1657742839; bh=Gg0x3XgAR86RJogBY3e5HKNUB7GioqlXEzqUCv/sLD0=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=UkhcQCwhctMMn34ABbQ1G8480kJFTNxxxaZGGoMgkxYzyXxOS+43URD4cQq6CrkHA
-         R/JJETgcITMmYuPke++8blkcmRfdTxdQZ/q1CnDvYfqjwYBQvsW7FGZk3a+i6+yHbu
-         n9368RxHfv9M5SkU98wnsiAN4//KX1bmoGELObpMMgY4Eh3qWly52JjkdDILb9pCtp
-         gzGOX1rYFd2U90NggiEOLHZayfxad9fc3TJgrlxnKHza1gEeDgzZaJMDJyrAup6EN4
-         TKAJxDMGmcKXVs6paq78O2gRLWNn+v6SKkFZfnTKjhC0JRs0WErXkmIAd5dXVU6G7s
-         LRYItmm3+LoUA==
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Stephen Kitt <steve@sk2.org>
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephen Kitt <steve@sk2.org>
-Subject: Re: [PATCH 1/5] docs: sysctl: remove references to inode-max
-In-Reply-To: <20220712172619.359052-1-steve@sk2.org>
-References: <20220712172619.359052-1-steve@sk2.org>
-Date:   Wed, 13 Jul 2022 14:07:18 -0600
-Message-ID: <87y1ww3hft.fsf@meer.lwn.net>
+        Wed, 13 Jul 2022 16:11:07 -0400
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A282A701
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:11:05 -0700 (PDT)
+Received: from localhost.localdomain (abxj14.neoplus.adsl.tpnet.pl [83.9.3.14])
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 5FC843F7A0;
+        Wed, 13 Jul 2022 22:11:03 +0200 (CEST)
+From:   Konrad Dybcio <konrad.dybcio@somainline.org>
+To:     ~postmarketos/upstreaming@lists.sr.ht
+Cc:     martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/4] arm64: dts: qcom: sm8450: Adjust memory map
+Date:   Wed, 13 Jul 2022 22:10:45 +0200
+Message-Id: <20220713201047.1449786-2-konrad.dybcio@somainline.org>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220713201047.1449786-1-konrad.dybcio@somainline.org>
+References: <20220713201047.1449786-1-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Stephen Kitt <steve@sk2.org> writes:
+Fix up the camera region (cross-referenced different vendors' msm-5.10
+drops, 9f500000 is the default location for SM8450) and reserve the
+second chunk occupied by xbl_sc.
 
-> inode-max was removed in 2.3.20pre1, remove references to it in the
-> sysctl documentation.
->
-> Signed-off-by: Stephen Kitt <steve@sk2.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+---
+ arch/arm64/boot/dts/qcom/sm8450.dtsi | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-These patches look good to me, but I'd feel better if you would post the
-set, with a proper cover letter, to linux-fsdevel to get the attention
-of folks who know this stuff a bit better.
+diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+index 7d08fad76371..09e7587de0de 100644
+--- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
+@@ -436,11 +436,6 @@ cdsp_secure_heap: memory@80c00000 {
+ 			no-map;
+ 		};
+ 
+-		camera_mem: memory@85200000 {
+-			reg = <0x0 0x85200000 0x0 0x500000>;
+-			no-map;
+-		};
+-
+ 		video_mem: memory@85700000 {
+ 			reg = <0x0 0x85700000 0x0 0x700000>;
+ 			no-map;
+@@ -503,6 +498,11 @@ cvp_mem: memory@9ee00000 {
+ 			no-map;
+ 		};
+ 
++		camera_mem: memory@9f500000 {
++			reg = <0x0 0x9f500000 0x0 0x800000>;
++			no-map;
++		};
++
+ 		rmtfs_mem: memory@9fd00000 {
+ 			compatible = "qcom,rmtfs-mem";
+ 			reg = <0x0 0x9fd00000 0x0 0x280000>;
+@@ -512,6 +512,11 @@ rmtfs_mem: memory@9fd00000 {
+ 			qcom,vmid = <15>;
+ 		};
+ 
++		xbl_sc_mem2: memory@a6e00000 {
++			reg = <0x0 0xa6e00000 0x0 0x40000>;
++			no-map;
++		};
++
+ 		global_sync_mem: memory@a6f00000 {
+ 			reg = <0x0 0xa6f00000 0x0 0x100000>;
+ 			no-map;
+-- 
+2.37.0
 
-Thanks,
-
-jon
