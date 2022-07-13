@@ -2,134 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AF6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 17:55:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 17:55:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236453AbiGMRyu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 13:54:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41058 "EHLO
+        id S236528AbiGMRzM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 13:55:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231910AbiGMRy1 (ORCPT
+        with ESMTP id S230169AbiGMRzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 13:54:27 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA60255B5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 10:54:14 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 136E03200914;
-        Wed, 13 Jul 2022 13:54:10 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Wed, 13 Jul 2022 13:54:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm2; t=1657734850; x=1657821250; bh=74
-        oXSxFNn1MwBfyW3gXrhD6qD6ZzeAULMw+VqWVUwcI=; b=at0HztpjdQ7Z0JJat7
-        ppknirEUW+EpDw1XX7uAF1fPypvBro7wQBb5K4zYziXHJonvshHsbgNhdU7sVnKF
-        w5jf8LcF0PbduVXiBjndcGkD4QmLyJwVfwM8Do89KdovMJ8e3zedmsypfQpNUbgI
-        bmgOBRnfu5eEmf1pTdsNjZBBmnUxl4wFcornEaOyocToVN1i9StCeCPdlNDlCMkb
-        yX17C4wOCxYDvtktAyn542tdVbk3UbPBlzBcy9Uy7Y2hoHEawWCmIQ8i5h0/LkOd
-        4lFCSNFed6X97mjcRexAbXEoEyG26gZboF7SBR0BHoDFx7RelPaEd1iGF+mghR15
-        Dhdw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1657734850; x=1657821250; bh=74oXSxFNn1MwB
-        fyW3gXrhD6qD6ZzeAULMw+VqWVUwcI=; b=lcqzxLuHXa9ACXF6oRy9d8lCdlWrT
-        mm8TGuhGjcD114AIMOdKe0AP9jzRav5kr+vCIsSvU+bFoSjmYwGe2x9Y+Ci7OJ5e
-        RYLUHAQuv9RwzIzwSNBHcdlVCIetBRF6uLf1RDrht4fAQU4awodY5xNqDshwNrbG
-        hNDRsMIUwiYF9Zj2Y+KQ3kQFOwN35cES40OX9hUqNhbXgMHA2L3hkCbaEltr/wEm
-        kZtgmT92bRBSJ19BaXfzF8F6rUuXPlLfmFLvS5KL8DECHSmvUePd4FARzLd8v7P3
-        pekWkg2CsqgJRsmnEdiCf6U7tx9aP3/MCK0kOs9cpDGsE3uOEFRr66wJw==
-X-ME-Sender: <xms:wQbPYqAokUshw0fcv1zGmKbUEAtiVViznY45uM-cqLfTJReteD2yBg>
-    <xme:wQbPYkgoxBI9ZnjPRwd0PBPcxElLpYyvKKQ7BqZ5Ea-Gs_5s9bPEAV1SbtnSlzEMG
-    0ekSkniZZPGW4lV-gw>
-X-ME-Received: <xmr:wQbPYtkudsPrVkh-8peIppN0nXQBwH6C-PhGiyA1_5KS844T3FTYtlG3SYLHb0WECw6ziJ03>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedguddujecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefvhigt
-    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
-    frrghtthgvrhhnpedvgeffheelvdeljedvtefhgfeifeevvefhieegffffgfehgeeutdei
-    kedtieegueenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpehthigthhhosehthigthhhordhpihiiiigr
-X-ME-Proxy: <xmx:wQbPYoxUWApziLxECi4HJ6skkbe5dvfBdWnkFAsG29jft3ycIqYhHg>
-    <xmx:wQbPYvSL5Vj2ziuqMUMD7cp4N-F121m0ILrz0XPGZIOBJSE1I2JGFw>
-    <xmx:wQbPYjZrUDO09ce_LLAo8ACbR-dNNxT3XKknuVGvwB7kc0AtH9raAg>
-    <xmx:wgbPYqejkoqC5eu0ZXwMUeLOKz11VDNQAtrThUBocZAOFlmyIXZLww>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 13 Jul 2022 13:54:08 -0400 (EDT)
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     "Eric W . Biederman" <ebiederm@xmission.com>
-Cc:     Miklos Szeredi <miklos@szeredi.hu>, linux-kernel@vger.kernel.org,
-        Tycho Andersen <tycho@tycho.pizza>
-Subject: [PATCH] sched: __fatal_signal_pending() should also check PF_EXITING
-Date:   Wed, 13 Jul 2022 11:53:05 -0600
-Message-Id: <20220713175305.1327649-1-tycho@tycho.pizza>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <Ys2PwTS0qFmGNFqy@netflix>
-References: <Ys2PwTS0qFmGNFqy@netflix>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 13 Jul 2022 13:55:04 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6436620F75
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 10:55:03 -0700 (PDT)
+Received: from pps.filterd (m0134424.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DGVwII016560;
+        Wed, 13 Jul 2022 17:55:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id; s=pps0720;
+ bh=Vd5X4pebhPgRNBgsev16djsCScVsMJIg0cV3nu+BEjw=;
+ b=f2iDE7TmVZWwkwLnqggklBefPYe4ALRK359q9PfvtXOYT+dkSdNYciEqGEHLo6zU7u6m
+ oKTHlcaq2GNYPpYLaWrhu/bPsz1KPgn5eCAIBeTCQ+E4VYeJK6ue4GsjNYPt/zhUlW1r
+ 8g4a3ATgf6MMzLgP9Z8q3OZV8zTEgwX4niMtnHwPjdBVD1kEZaSTOkkwVsjjOKlcyMHj
+ ZLXBwdjrtqJu7Z4BnKJ+1TVJ1NNlFlpyZ4dWX7cOeFxyqV6+Ho+N9EdswUmiKAJZHVPH
+ LarAZPUby4Ju8mn9ZOjxOK8LxYhjcocUGBZm3XLFQtqyTRJGkSekHKZM/9lyLZGyhkuu 5A== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3h9yvksy5w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 17:54:59 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id E89F1D2CD;
+        Wed, 13 Jul 2022 17:54:58 +0000 (UTC)
+Received: from blofly.os1.tw (unknown [16.231.227.36])
+        by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTP id D2FBD802F38;
+        Wed, 13 Jul 2022 17:54:56 +0000 (UTC)
+From:   matt.hsiao@hpe.com
+To:     linux-kernel@vger.kernel.org
+Cc:     arnd@arndb.de, gregkh@linuxfoundation.org, jerry.hoemann@hpe.com,
+        scott.norton@hpe.com, camille.lu@hpe.com, geoffrey.ndu@hpe.com,
+        gustavo.knuppe@hpe.com, Matt Hsiao <matt.hsiao@hpe.com>
+Subject: [PATCH v2 0/1] misc: hpilo: switch .{read,write} ops to .{read,write}_iter
+Date:   Thu, 14 Jul 2022 01:54:51 +0800
+Message-Id: <20220713175452.4221-1-matt.hsiao@hpe.com>
+X-Mailer: git-send-email 2.16.6
+X-Proofpoint-GUID: W4M7nKSUv0FdQ88qbFpx9NL8rFGSlwc5
+X-Proofpoint-ORIG-GUID: W4M7nKSUv0FdQ88qbFpx9NL8rFGSlwc5
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-13_07,2022-07-13_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 mlxscore=0 adultscore=0 lowpriorityscore=0 clxscore=1015
+ bulkscore=0 impostorscore=0 spamscore=0 phishscore=0 mlxlogscore=858
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207130073
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The wait_* code uses signal_pending_state() to test whether a thread has
-been interrupted, which ultimately uses __fatal_signal_pending() to detect
-if there is a fatal signal.
+From: Matt Hsiao <matt.hsiao@hpe.com>
 
-When a pid ns dies, it does:
+This patch changes .{read,write} ops to their iter variants for
+dependent drivers to use hpilo through kernel_{read,write}.
 
-    group_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
+Changes since v1:
+- Fix the patch format so it could be applied cleanly.
 
-for all the tasks in the pid ns. That calls through:
+Matt Hsiao (1):
+  misc: hpilo: switch .{read,write} ops to .{read,write}_iter
 
-    group_send_sig_info() ->
-      do_send_sig_info() ->
-        send_signal_locked() ->
-          __send_signal_locked()
+ drivers/misc/hpilo.c | 31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
 
-which does:
-
-    pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
-
-which puts sigkill in the set of shared signals, but not the individual
-pending ones. When complete_signal() is called at the end of
-__send_signal_locked(), if the task already had PF_EXITING (i.e. was
-already waiting on something in its fd closing path like a fuse flush),
-complete_signal() will not wake up the thread, since wants_signal() checks
-PF_EXITING before testing for SIGKILL.
-
-If tasks are stuck in a killable wait (e.g. a fuse flush operation), they
-won't see this shared signal, and will hang forever, since TIF_SIGPENDING
-is set, but the fatal signal can't be detected. So, let's also look for
-PF_EXITING in __fatal_signal_pending().
-
-Signed-off-by: Tycho Andersen <tycho@tycho.pizza>
----
- include/linux/sched/signal.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/include/linux/sched/signal.h b/include/linux/sched/signal.h
-index cafbe03eed01..c20b7e1d89ef 100644
---- a/include/linux/sched/signal.h
-+++ b/include/linux/sched/signal.h
-@@ -402,7 +402,8 @@ static inline int signal_pending(struct task_struct *p)
- 
- static inline int __fatal_signal_pending(struct task_struct *p)
- {
--	return unlikely(sigismember(&p->pending.signal, SIGKILL));
-+	return unlikely(sigismember(&p->pending.signal, SIGKILL) ||
-+			p->flags & PF_EXITING);
- }
- 
- static inline int fatal_signal_pending(struct task_struct *p)
-
-base-commit: 32346491ddf24599decca06190ebca03ff9de7f8
 -- 
-2.34.1
+2.16.6
 
