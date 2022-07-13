@@ -2,111 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A498C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:54:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A32DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237073AbiGMPy1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:54:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
+        id S236377AbiGMPy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236837AbiGMPyW (ORCPT
+        with ESMTP id S231703AbiGMPyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:54:22 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4C62A717
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:54:21 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id j22so20636960ejs.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:54:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ijboKzjTSzsd+bJY8ZcuFW/Xbsztbht17nmFPJI6drg=;
-        b=BAIUjy11tSgwstQ6yLGA9n142er4g913SnNJP7srr8eNQuI5Syjw4vBaYQ3DPcV0S9
-         ZMFoSB9cQeO+Q8HUEUWWxOMpDv2x4HKLnc1U2DhzE+S7AGsI86d3PJRfM6fU2Imm2O3h
-         azTlWaUG47LcDLgRILUq0aSU1jcIjCwpwJGTJ3f43luwnKc1ndMHdDhhjp/O5zr0+Z3+
-         9QVKufP4jfnR9gsXnaE79hesIub45kOKPoofUhpfoKCesv1T9NFAMqgu0dGxD43wyohR
-         vJRBth3JGyq8TWcpIEkKeMjLxRmO4aaTMA+2pm7DP1YbphJSLYuzHdIBPfC9lR/4wozk
-         AI8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ijboKzjTSzsd+bJY8ZcuFW/Xbsztbht17nmFPJI6drg=;
-        b=ZwO0IbYA0+bP28sdJxiHM0t99JlkeEdvnUkvm0EfAZlnSvgHBCfm4TKDD/Q+XfF6ev
-         1FjtSULLZvVFH87Y/SD12zUqvH5k0N15Xq+M0oePIFOwWTwm8WBqajjkzbFLBrZLnrP+
-         L+dX4YnNwFspK+WYfIGCDQrZZgMcBdiDxriAac+MhLewBXt0FoDwobIi+yD9uEuCawqN
-         NdEk0VTUk2dDBHKCzKPgyAI108h+XMqAVoVduvKLawEv3bAfgv4i5rzM6G8xaQYY2K2L
-         pgG43wxPcxwOulxMOCCBNvue9ItXNNYsN9gFR7aeiN/q5iFI6qOjLlbofsNtMx5u0VAw
-         IV6A==
-X-Gm-Message-State: AJIora/Of8xhOcgg2ZjGQqmMqnr8Sy/K+6oeBvjAUXCYdjprK5p8zDoS
-        m1CUOahuO0ZMkVqZAzv8crW7Z+AS+P0=
-X-Google-Smtp-Source: AGRyM1v+EgyXmm+WIrwhqUTLys0FStOlDDH9tqmrDCD2QlygO0YDrLJOW0xQwcLtW4iugGwmqF1VrA==
-X-Received: by 2002:a17:906:8459:b0:72b:60c8:107d with SMTP id e25-20020a170906845900b0072b60c8107dmr4300159ejy.142.1657727660065;
-        Wed, 13 Jul 2022 08:54:20 -0700 (PDT)
-Received: from localhost.localdomain ([46.248.82.114])
-        by smtp.gmail.com with ESMTPSA id n2-20020a17090695c200b0072b21cab5a5sm5073688ejy.133.2022.07.13.08.54.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 08:54:19 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 2/2] ucount: Use atomic_long_try_cmpxchg in atomic_long_inc_below
-Date:   Wed, 13 Jul 2022 17:54:05 +0200
-Message-Id: <20220713155405.80663-3-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220713155405.80663-1-ubizjak@gmail.com>
-References: <20220713155405.80663-1-ubizjak@gmail.com>
+        Wed, 13 Jul 2022 11:54:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6164D4F0;
+        Wed, 13 Jul 2022 08:54:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B3792CE2311;
+        Wed, 13 Jul 2022 15:54:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA5BC34114;
+        Wed, 13 Jul 2022 15:54:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657727687;
+        bh=yzj2tQXkHXeXbrjacBMpqSpUwIv3NFm5hxQonwujK30=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GoRZ576TwxqW+bs/Qw6T/u3KWjC32ul69wVFyyN2sjCMau09dzsCAwPt67j20lA7F
+         hDgkyfQv8EH9FLHIB8v72eF63c6O3JKzwRCLvmApLBsNTOvyE7lVirpvNcNWChHrya
+         lzUJX0GWqTWp1o3mL6VWWHZd/eM+z9/S0XkchLRe1BATTZ0bZ0PcxDhjTePHslBksV
+         WArYwu3efGYaRctPpd/cVHtoXPv+ox1yfjzaLic/QzB40m3iTk6/8EVlnXtvs6Yx/U
+         WmXI3ty6vvIgIgpxhJ/4k/S1t0Jmnm6UHsbRPNSkCJyeFV1DUdUmt70isrLEPc1fCs
+         CLaSL/+zbljAQ==
+Date:   Wed, 13 Jul 2022 17:04:36 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
+ allocate() stage
+Message-ID: <20220713170436.32330fa6@jic23-huawei>
+In-Reply-To: <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
+        <20220604145955.2a1108ca@jic23-huawei>
+        <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use atomic_long_try_cmpxchg instead of
-atomic_long_cmpxchg (*ptr, old, new) == old in atomic_long_inc_below.
-x86 CMPXCHG instruction returns success in ZF flag, so this change saves
-a compare after cmpxchg (and related move instruction in front of cmpxchg).
+On Fri, 1 Jul 2022 11:59:59 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-Also, atomic_long_try_cmpxchg implicitly assigns old *ptr value to "old"
-when cmpxchg fails, enabling further code simplifications.
+> Hello Jonathan,
+> 
+> This patch has been on the mailing list for one month already, but no
+> comments from other IIO reviewers. What do you think we should do with it?
+> Is it a helpful change or not?
 
-No functional change intended.
+Given I'm way behind and timing in cycle, I'm probably going to kick this
+back to start of the next cycle. Sorry for delay,
 
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: "Eric W. Biederman" <ebiederm@xmission.com>
----
- kernel/ucount.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+Jonathan
 
-diff --git a/kernel/ucount.c b/kernel/ucount.c
-index 974ac1585009..5d980460104e 100644
---- a/kernel/ucount.c
-+++ b/kernel/ucount.c
-@@ -218,16 +218,14 @@ void put_ucounts(struct ucounts *ucounts)
- 
- static inline bool atomic_long_inc_below(atomic_long_t *v, long u)
- {
--	long c, old;
--	c = atomic_long_read(v);
--	for (;;) {
-+	long c = atomic_long_read(v);
-+
-+	do {
- 		if (unlikely(c >= u))
- 			return false;
--		old = atomic_long_cmpxchg(v, c, c+1);
--		if (likely(old == c))
--			return true;
--		c = old;
--	}
-+	} while (!atomic_long_try_cmpxchg(v, &c, c+1));
-+
-+	return true;
- }
- 
- struct ucounts *inc_ucount(struct user_namespace *ns, kuid_t uid,
--- 
-2.35.3
+> 
+> On Sat, Jun 04, 2022 at 02:59:55PM +0100, Jonathan Cameron wrote:
+> > On Wed, 1 Jun 2022 17:48:32 +0000
+> > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+> >   
+> > > To provide a new IIO trigger to the IIO core, usually driver executes the
+> > > following pipeline: allocate()/register()/get(). Before, IIO core assigned
+> > > trig->owner as a pointer to the module which registered this trigger at
+> > > the register() stage. But actually the trigger object is owned by the
+> > > module earlier, on the allocate() stage, when trigger object is
+> > > successfully allocated for the driver.
+> > > 
+> > > This patch moves trig->owner initialization from register()
+> > > stage of trigger initialization pipeline to allocate() stage to
+> > > eliminate all misunderstandings and time gaps between trigger object
+> > > creation and owner acquiring.
+> > > 
+> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>  
+> > 
+> > Hi Dmitry,
+> > 
+> > I 'think' this is fine, but its in the high risk category that I'd like
+> > to keep it on list for a few weeks before applying.
+> > 
+> > Note I'm still keen that in general we keep the flow such that
+> > we do allocate()/register()/get() as there is no guarantee that the get()
+> > will never do anything that requires the trigger to be registered, even
+> > though that is true today.  Which is another way of saying I'm still
+> > keen we fix up any cases that sneak in after your fix up set dealt with
+> > the current ones.
+> > 
+> > Thanks for following up on this!
+> > 
+> > Jonathan
+> >   
+> 
 
