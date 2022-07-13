@@ -2,145 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:28:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 291F7CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235188AbiGMJ2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42228 "EHLO
+        id S235314AbiGMJaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235422AbiGMJ2n (ORCPT
+        with ESMTP id S231936AbiGMJaW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:28:43 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B7515FE9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:28:41 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ef5380669cso106187187b3.9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:28:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YLa+B7g0k4vjWxV/5/J/yQw4cNuAt3dnRpzqWxr+dBM=;
-        b=WCXPC3m3TqqYyHJ+uDfaD+33LK+kR0QTRuUNWFbQ/yiL1aUJNetddXLM+3nxPGejsh
-         Ls/9+uJ8DBwyNtwZzS2bmCqOgmd64HDETf5lolZIerFBDUMyM10UXHSgqJRlGnaP6+Sr
-         7WQw0xRdGLsRdqbYhZtYiXHgC+f9Xsu3UhqrEzWn4Z1/CSbfHNbd8LkOBe5qRW4ixNbs
-         KyQ5sqcw9dz3EgF4DFFiG0BAHXiangGWZsG4iVmPViGONkbOq3wcpVyCIXBH+7zZmcO/
-         M08jelPQe0TpKZi1+GOuZgf4DLn4ormxvV2r8Qjs/MYHhlBjn3biZ9auY1KBNWeaQ5Ps
-         V8wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YLa+B7g0k4vjWxV/5/J/yQw4cNuAt3dnRpzqWxr+dBM=;
-        b=Qt3ZLVygtFkcWbCVAKxgWsP9URk70VvxQkghKxqCUvva0+wce4aX/IYW0Wr5HFsco3
-         vdXnHHiiRJugxgNWnHLFvQqEQNklaFWGSmBvgrOoNkxQvqZUEqH2Y8JEE28k58FcNLT7
-         JQTsVevciyYQ+g9OiqZo0PMLVvWEV9jmnxWhDdC4SGPjCdvQko7eb2OrglaRrSSy0bcE
-         yLyUWiekIWaO/b54oGc18VvvuM2p3YzVabpU+/UAPL0cwODdeTRN1YFziMEcR1IShMNw
-         Kke6dmWj/oMKen1G1z7pMmA3IwIOIEI0yY02K/08Hkd7qpA0OOmBPz9cIgfqE7toWCW3
-         rcqA==
-X-Gm-Message-State: AJIora+JrqoB0jf0nRT/havm2XAuajJkYbaQP2Rpjt5eakCPfOJgtew8
-        3uDj9wU0tU5AeRk7zxOsxxnFCZJtb39x+9emKCzNhA==
-X-Google-Smtp-Source: AGRyM1uhGuFtib7Qkw+eg+f4MeHVwIDAHRzhZCC99tpjAc0xrKFlrRMHg2i9KL2/AC4ul/k3MxgtlGExoxaQBzv8w5I=
-X-Received: by 2002:a81:5dd5:0:b0:31d:c5ac:e3c0 with SMTP id
- r204-20020a815dd5000000b0031dc5ace3c0mr667093ywb.264.1657704520206; Wed, 13
- Jul 2022 02:28:40 -0700 (PDT)
+        Wed, 13 Jul 2022 05:30:22 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE8DEA14B;
+        Wed, 13 Jul 2022 02:30:20 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 630BAC01E; Wed, 13 Jul 2022 11:30:19 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657704619; bh=XyyU3O64rDkO8/f2a3m3jX9KEixUXahN8Gy8KrqClvI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ywjF/D7wS9OjyHt7BVsHv8plzVxUgPhiLUbbuDrVr+l86vFhwsSdmzRN/n3MdDngr
+         Vs9r39e8bUveHcJQX4iZtN55K3A1EsjrBEJ3nDXTcZ2BibWxxDOdzhbqu3UODbw4tg
+         /xz0pHcBLid8jOx4xR9VyOG0hmUpkVsnKUL/pL59MXfYMGfosHxgeYZ9p3rg4KEscS
+         NmJqUkmYNVcOcOpbom8yF2GQYNeBwrudIVzmwWH/evM9enn9urkzvnbgmgVSAfQ6eh
+         F3Kun4ICWzmlDkQoQUZz1/d/NHyJ8PIkPBpPUleYgZkMFTPRSDzvflwF8XMT9ReyZF
+         EDMzPrt+SFtpA==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 95E8CC009;
+        Wed, 13 Jul 2022 11:30:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657704618; bh=XyyU3O64rDkO8/f2a3m3jX9KEixUXahN8Gy8KrqClvI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rYO8C5GjfkKJ+X/feO2QzbNu6ngje6EbwAFN1jEj21OCsmiZTu17br7qeEX2K8rSr
+         dcRZHU98JNDdp9rvwdMWHv7XSNd904sxppru0+k32zTMNCuV5fl2U9OT0gAIMAt1jo
+         XuczTc0MJNI+/IRRaaqEOSGmrhfPJsDiwscIWWMf6m+dvCA3VLsfigqdrsAlps+bHd
+         5cHU4p01321IodbGxBQO77L1yexoCKPU3YddWbWZxTFlNuBsEnTEq8udfTjXhmjOKy
+         yvxpDSl7fFoJZbL8xu//YxzMMYdMOH11W5BJ5oRmb+sXAo3bGwuEDM+N9EsgOLJ+q5
+         ZeXYvPbZFKyrQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id dd90f3c2;
+        Wed, 13 Jul 2022 09:30:12 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 18:29:57 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     Latchesar Ionkov <lucho@ionkov.net>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [V9fs-developer] [PATCH v5 11/11] net/9p: allocate appropriate
+ reduced message buffers
+Message-ID: <Ys6QlcShhji2sx9V@codewreck.org>
+References: <cover.1657636554.git.linux_oss@crudebyte.com>
+ <Ys3Mj+SgWLzhQGWK@codewreck.org>
+ <Ys3jjg52EIyITPua@codewreck.org>
+ <4284956.GYXQZuIPEp@silver>
 MIME-Version: 1.0
-References: <20220701142310.2188015-1-glider@google.com> <20220701142310.2188015-20-glider@google.com>
-In-Reply-To: <20220701142310.2188015-20-glider@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Wed, 13 Jul 2022 11:28:04 +0200
-Message-ID: <CANpmjNNmZpw5P4y9XLT-GsfNOegNcQD=fZLFagHW=XsDqF2fxQ@mail.gmail.com>
-Subject: Re: [PATCH v4 19/45] kmsan: unpoison @tlb in arch_tlb_gather_mmu()
-To:     Alexander Potapenko <glider@google.com>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Rientjes <rientjes@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Ingo Molnar <mingo@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Kees Cook <keescook@chromium.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Vegard Nossum <vegard.nossum@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, kasan-dev@googlegroups.com,
-        linux-mm@kvack.org, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <4284956.GYXQZuIPEp@silver>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 at 16:24, Alexander Potapenko <glider@google.com> wrote:
->
-> This is a hack to reduce stackdepot pressure.
+Christian Schoenebeck wrote on Wed, Jul 13, 2022 at 11:19:48AM +0200:
+> > - for this particular patch, we can still allocate smaller short buffers
+> > for requests, so we should probably keep tsize to 0.
+> > rsize there really isn't much we can do without a protocol change
+> > though...
+> 
+> Good to know! I don't have any RDMA setup here to test, so I rely on what you 
+> say and adjust this in v6 accordingly, along with the strcmp -> flag change of 
+> course.
 
-Will it cause false negatives or other issues? If not, I'd just call
-it an optimization and not a hack.
+Yeah... I've got a connect-x 3 (mlx4, got a cheap old one) card laying
+around, I need to find somewhere to plug it in and actually run some
+validation again at some point.
+Haven't used 9p/RDMA since I left my previous work in 2020...
 
-> struct mmu_gather contains 7 1-bit fields packed into a 32-bit unsigned
-> int value. The remaining 25 bits remain uninitialized and are never used,
-> but KMSAN updates the origin for them in zap_pXX_range() in mm/memory.c,
-> thus creating very long origin chains. This is technically correct, but
-> consumes too much memory.
->
-> Unpoisoning the whole structure will prevent creating such chains.
->
-> Signed-off-by: Alexander Potapenko <glider@google.com>
+I'll try to find time for that before the merge
 
-Acked-by: Marco Elver <elver@google.com>
 
-> ---
-> Link: https://linux-review.googlesource.com/id/I76abee411b8323acfdbc29bc3a60dca8cff2de77
-> ---
->  mm/mmu_gather.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
->
-> diff --git a/mm/mmu_gather.c b/mm/mmu_gather.c
-> index a71924bd38c0d..add4244e5790d 100644
-> --- a/mm/mmu_gather.c
-> +++ b/mm/mmu_gather.c
-> @@ -1,6 +1,7 @@
->  #include <linux/gfp.h>
->  #include <linux/highmem.h>
->  #include <linux/kernel.h>
-> +#include <linux/kmsan-checks.h>
->  #include <linux/mmdebug.h>
->  #include <linux/mm_types.h>
->  #include <linux/mm_inline.h>
-> @@ -265,6 +266,15 @@ void tlb_flush_mmu(struct mmu_gather *tlb)
->  static void __tlb_gather_mmu(struct mmu_gather *tlb, struct mm_struct *mm,
->                              bool fullmm)
->  {
-> +       /*
-> +        * struct mmu_gather contains 7 1-bit fields packed into a 32-bit
-> +        * unsigned int value. The remaining 25 bits remain uninitialized
-> +        * and are never used, but KMSAN updates the origin for them in
-> +        * zap_pXX_range() in mm/memory.c, thus creating very long origin
-> +        * chains. This is technically correct, but consumes too much memory.
-> +        * Unpoisoning the whole structure will prevent creating such chains.
-> +        */
-> +       kmsan_unpoison_memory(tlb, sizeof(*tlb));
->         tlb->mm = mm;
->         tlb->fullmm = fullmm;
->
-> --
-> 2.37.0.rc0.161.g10f37bed90-goog
->
+> As this flag is going to be very RDMA-transport specific, I'm still scratching 
+> my head for a good name though.
+
+The actual limitation is that receive buffers are pooled, so something
+to like pooled_rcv_buffers or shared_rcv_buffers or anything along that
+line?
+
+--
+Dominique
