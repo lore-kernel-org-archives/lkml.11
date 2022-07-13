@@ -2,176 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D137C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC905CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235293AbiGMIn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
+        id S235137AbiGMIom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:44:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235181AbiGMInR (ORCPT
+        with ESMTP id S234399AbiGMIol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:43:17 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541B9EA149;
-        Wed, 13 Jul 2022 01:43:10 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id z23so2057463eju.8;
-        Wed, 13 Jul 2022 01:43:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uWtRAmBLtsazF/pLmP45VTNHSNoFHCEzm5WXW96RpTE=;
-        b=HEMisfIyFpFrNW0h2/pTPWb3kvILB6Bc3/thWhhd0azh2fSvcAOKTDokiOQqFN/Etf
-         ch4Y811oJQAe+nMGWba6pnaxIRhG3K3as2beeHmc2T+tfa9HfKL3+kDjbggmEL/s+4Kg
-         R6HlWRDt+QHAaJX8TNCM5noXtMUa2tFPuddLnSYseMp7YFNECWFIFot+Q15rPawZYPbI
-         6lE6b+wHo9l+2QgibuFF/vCouYELhgTRXof41l4qLp/KYlAJt3x5BwNhCyE06dbh1QiS
-         e0cDvOFko0te1Avdoy0YeqlB6Tz0FV0mCLVOorF4pLltu4Z37ObiIuv2FTqKebLqorad
-         KQZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uWtRAmBLtsazF/pLmP45VTNHSNoFHCEzm5WXW96RpTE=;
-        b=iBeMLnSTll4WWe/WdMOQYpyhpg0e/FluMXKmqHGAnkI+FtyBOEY7T2GmFEBliPOAXx
-         zMaOZnApIMtehvVrIWcV4tOT53uSTQY1WdhTK5Y+ou6J1y2AFp7Rb4n4fwizPEMJwUH4
-         8I+js096+amxrnF43NuaAtq3FkVbhcM1HkUnEd2I9cB5AnwBSyIrLLarrW/C5T8qYEI4
-         ibR8UF6llaT8RE1As2H9SvtsHNNyhg8czY/ezxZsPINkSABzw9ogX7ZNeJf7VPypUGWw
-         AoLSPc8c9lFrzyeFpYQAY1Ptn80m85jPSZ/G70Q4SbrmKD9oqqXZFGO/2wk96VrknI+k
-         pPWQ==
-X-Gm-Message-State: AJIora8ftT9JvYaA+f2Q7sTxDH8RuH1K1da0drR90nV8fky5eYMJg13F
-        S1lVw8vOvCywf/vdStlhcDCm5kbpuVnfCATO
-X-Google-Smtp-Source: AGRyM1sp584MxHxw3c4ex/TlTzPwXtlgRFXh7RcT9gyKFbMJJoU7iLWVxz5I3RveFKfRzZOL+RMwSw==
-X-Received: by 2002:a17:907:3da0:b0:72b:47df:c1d7 with SMTP id he32-20020a1709073da000b0072b47dfc1d7mr2260949ejc.214.1657701788866;
-        Wed, 13 Jul 2022 01:43:08 -0700 (PDT)
-Received: from PCBABN.skidata.net ([2001:67c:2330:2014:7a45:c4ff:fe0f:c570])
-        by smtp.gmail.com with ESMTPSA id pv5-20020a170907208500b0072af4af2f46sm4690173ejb.74.2022.07.13.01.43.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:43:08 -0700 (PDT)
-From:   Benjamin Bara <bbara93@gmail.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Benjamin Bara <benjamin.bara@skidata.com>,
-        Richard Leitner <richard.leitner@skidata.com>
-Subject: [PATCH] Input: tsc2007 - enable GPIO chips that can sleep
-Date:   Wed, 13 Jul 2022 10:42:47 +0200
-Message-Id: <20220713084247.3090353-1-bbara93@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 13 Jul 2022 04:44:41 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70097.outbound.protection.outlook.com [40.107.7.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C4D804B2;
+        Wed, 13 Jul 2022 01:44:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Gd7+KKlfPx6xI9lIAvN69HZHu050HT6avpQwB22YYGBdQ7X9Ot3u+Gy3tS5K4x/4prxLstRxeAx1kZ8n5qC0nd8kMvbfHamMKPbECY1c6HbQA3c23zd9urb2FY1AHojeeR9T26VLhUaDzqTRzMSkG+1LfZjVyvNV74FP/KX6JHDvNczmOQhN7NLZjkk1FfuSJ/vWxhaB4SFE5UvsTMWfyWUGLunbnDlqLQbuzdtVd0R3WuhsuPAv6r69CNmIfTYhIvPyWP9edA0fPrlTMHGpFAII1mUGzpVwuVMAsjghTVLNsRWwnIT66NSUz64Y3q632To0AXwm0ii/Eo+ILJGAkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9xJlFBmvFp85Cpm45df+lDUQCQGACGv5q0qnlYDwTug=;
+ b=F9UbcGksiFWN1HqGrxmLKjnK/BBYDcEO5WGQp4ypN9aZNTa2Wux6zBcfMPgutELZJs/Ryh3DOrIV84QRgN7P1cchQnmJAYpH8oK0l0E7/oJxPRihj1gnVzYVCtlOCorKJVxutyMnb3iA57FBgEtSYEduPT8o629HRInFoLYqk49BMjEzLWwscRB7lSHOIPq/wEjAzwY94uplVZVCJ5xAAndw2ZiM8Eh7X9js2RBhf0hW1SDvTdc6MztTGhi+tRIXPAwbJ+B3SbSxTpItvPpxT2lAdP3tGZhw3xHVaDD4d2i70XBM/BVKgBgyrBEa26FPzJIszOGoLbxCQBfEa3t+2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=kontron.de; dmarc=pass action=none header.from=kontron.de;
+ dkim=pass header.d=kontron.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mysnt.onmicrosoft.com;
+ s=selector2-mysnt-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9xJlFBmvFp85Cpm45df+lDUQCQGACGv5q0qnlYDwTug=;
+ b=HCu2nGlDzXk+5g3y9anCaAx4BK3Yv8P2AKrtems/zS1TTyqCitXPnolxbRxOBJDc88X74z+9gWlht1EnEr3hSzuzvQTY3dhnwj7T/IGnX6CkFyOg3KGCrHy4xhLYxJ66a2LB/FC3mDFQnND5lUKggpxhE8Ux8iN8+WK6Ru+xvMc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=kontron.de;
+Received: from PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:263::10)
+ by AM5PR10MB1539.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:206:17::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.23; Wed, 13 Jul
+ 2022 08:44:37 +0000
+Received: from PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::35e3:b154:10cd:4ebd]) by PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::35e3:b154:10cd:4ebd%7]) with mapi id 15.20.5417.026; Wed, 13 Jul 2022
+ 08:44:37 +0000
+Message-ID: <5cd2bd6b-30e9-582f-5e28-74b49429103c@kontron.de>
+Date:   Wed, 13 Jul 2022 10:44:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 5/6] arm64: dts: Add support for Kontron SL/BL i.MX8MM
+ OSM-S
+Content-Language: en-US
+To:     Marco Felsch <m.felsch@pengutronix.de>,
+        Frieder Schrempf <frieder@fris.de>
+Cc:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, Marek Vasut <marex@denx.de>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Reinhold Mueller <reinhold.mueller@emtrion.com>,
+        Alex Marginean <alexandru.marginean@nxp.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Tim Harvey <tharvey@gateworks.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+References: <20220713074118.14733-1-frieder@fris.de>
+ <20220713074118.14733-6-frieder@fris.de>
+ <20220713083603.wjb3znctugrerep5@pengutronix.de>
+From:   Frieder Schrempf <frieder.schrempf@kontron.de>
+In-Reply-To: <20220713083603.wjb3znctugrerep5@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BE0P281CA0006.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:a::16) To PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:263::10)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a60d677c-45a7-490e-2a38-08da64abeb04
+X-MS-TrafficTypeDiagnostic: AM5PR10MB1539:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MX5modsuPqQjnpAKnlPgCpb7sx5QWsIsFr16HDe4E8MjO/D5DsyyuVLmJxNUuHkxp8WHk/ptLB+pQSgXTs4bwYSv+seyU36Yx4Lf1tnBnEtCHHSK0zk9WnQVZ7H4vei7A3mjZjV7gFaRjXhCeEBn5PZCRAlnUP4TA0zbtPIRbMBXy+cLBwvGXP/gtTU4xe9cEXA9ZA9chyhI1iS9AhLcSyKmkXWMpUivS3/CF+AJG37fodspFdGlX9hYh3hfeRQDRWHLIFl5yv/EPrkH78JjcQ4r6fpOGm8kafDaI5/32hj7sB3BY5I6H7iDH/JKPLyP86GCccnIi+JPt0wv/zuqn90Q5otG3lVoewzr+xJrwOMiLSGQYCfzDRyphFsnqq+sMqvEAYLsA67Yq2YqSmhzmTSLo7Y4gZqz/YdYsVuiPpC9ED9UOv8n9IGxeDsz8Pui7kQn7QdbaS4GehMSktW7jHrMEagWRkF0z2omVc+j0aAL9UJ/lVB11/Xf6fmQIf9g2qi+XPyk4E7AD5/lUIn/68xGdXDyrBmoodAytzZDexN6zcmEnq4wbrA9f1wkAHeecSFaA2e5+Bn/5c7GbTh5Na6iOMDr5FRME1qDuUp5QG0CRHhWTGDyfXnU9b+xuTJRzwHWdjAlQ44ftP3Xh4scSTPLgigDn/IPqT9cW56E3kBnRpWtLwORRgiPmcpWjMHvyx4gVwF6JNvuE0SenxyCu/i4ctLKartPxScnHRX3v8EAuvwgsbfT0FJ9k+EnNY9j886JKhnAmEnFIsejrN/zukck5tC24Fb+WcRo/G4hUK5b5vO4PYwPukhKH6WAhFH9oylqqNDiRuCLQeVfORO+z0Xm/Bl5gmZSPoc5jzMB274=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(366004)(376002)(39860400002)(396003)(110136005)(44832011)(6506007)(31686004)(8936002)(4744005)(36756003)(4326008)(38100700002)(6666004)(41300700001)(54906003)(2906002)(6512007)(66946007)(66476007)(66556008)(5660300002)(7416002)(6486002)(2616005)(8676002)(186003)(478600001)(31696002)(86362001)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V01HdGxpd0V1Y1lzcCtCdk5jZHVMNDdyS0xYSGxBUTZ2YTVISHA1MHlPQ1FM?=
+ =?utf-8?B?WWVObEhpNVNGRWZtODdyWHEwdkx3RTYxMXdzYytrbTNhTUNsWlhEK2JsSmVk?=
+ =?utf-8?B?Z25rV2dGdXJ5N3RscEoyS2ErTUtEMHJJT0VHdnU4cFRHcDJoUDNuVmszajF0?=
+ =?utf-8?B?QWpIZElkUnREdTc2bDEyUlZ6cnBQSG11eW1LRlBydnROaDBDMWpIZm1Sam5p?=
+ =?utf-8?B?SFIyeU01dXpVNjBnRXhFN2F0VEdGT1pZZVd2OS85alVVY24reXBRQzZ1L0JY?=
+ =?utf-8?B?TWZqSlZ1QzJkdEdxRFArT3FvUHRuU1ptNUlmd3p4dll2aTZZVnpoNTl4QW50?=
+ =?utf-8?B?aUdoSDhNT1EvbWVzMnViZFlidTc1SUhlbHRQV0pUUnVjMWZsU0NpYllGUlgy?=
+ =?utf-8?B?dStOcXlSL015K2JNODRlcWJhZGdWSnpQWkwydkV2R25LS1lUQUdia2g0Sy9D?=
+ =?utf-8?B?RlJ4OXBNVlpYQXpWdWpFNXJDMitYNFgrYk1mYThudlpTUm83YytWTi9oek1z?=
+ =?utf-8?B?Z1ZRYUFVSHhrVjlVaU9FQWwwM2NBczVXZWtSYXA5dGlPbS9QKzkyaXRGK1I2?=
+ =?utf-8?B?NGNOK2UrYXhvTmtmdlplY0FtcFhxN1N0M0tsbGNaSWJNMFBJU1pZcktYV1gw?=
+ =?utf-8?B?TGRJZlh4T2p0WUg2SlVDOUdZYWRtQ3pKdSs2YVhVaGVadi9SZkNBSkVYSzZr?=
+ =?utf-8?B?bWdUSjdjdFdRWUZRRUNNanY5VVZIYk9RK21OMSt4Qm1Hb0E3RUF6Y0xiNjhh?=
+ =?utf-8?B?aWFPQ2xCdjRQUUhxc1EyMi9jS3k2MG5rTHo1KzZKTWlZWHRnUzlUM0lkTExQ?=
+ =?utf-8?B?YTI0S0tvSldndVlLMGFWRkI2OGc1NzFaalYyT3hERGEvUU12bFhIU0Z2R0Ro?=
+ =?utf-8?B?bHV5UVBnd05yRGc5bDJpd3dFS0xHRlllZ2hYUmFFK3NIaEZlOU9rM1VsYWQ4?=
+ =?utf-8?B?bExxVkdMV09ramFBb1c0L3JWQ0hXWituUXhvZEZURDFUeENFaGx0WUJLbWE0?=
+ =?utf-8?B?MytmM1hxWVM0VXhXQ3NEZCtjaWpCR1p5MGN6eHN2NVVIc0MrR0F1YlBuYVRD?=
+ =?utf-8?B?V2pNL1pEQktXZ2dMZlVLTDBGc1M5TTVTTXhmbG5aai9NVzQ2c2FqR3NHRGtk?=
+ =?utf-8?B?TGdlT3NxYmJoV1ZuR01NSGpVNDBaWnBZNlJyK2M2N1IzbVJ6dmk5eVFvZ29G?=
+ =?utf-8?B?ZXNpQlFoOUtQQkNjT2FrZExYWDkrdytYMHN5MklpVkNQcmlUK0FPam1EZm9x?=
+ =?utf-8?B?Vml0dWJTbW5yYlZTdlVNWjREdGRKeFBLS21SSFVhRW11RlZiSjhILzVYZkdE?=
+ =?utf-8?B?Uk1iWGlwVDNlSWZKNWdjdHVvZW5BUkdXNjNFUHNLMnpIMVhpSlMrc0dGYnB1?=
+ =?utf-8?B?WlY0clAvQ3R1aEZMMmpmNkdpSWN2NTVpUUZmTk5ienhFL1N4RWM5eG13YzNL?=
+ =?utf-8?B?Vk55MG5tSm94Mm91ZkduVmtNRSttdFhvdWhDTG95eXZCRGlUYXArRGpMQk1m?=
+ =?utf-8?B?YUcrZGQ0VWMyR0x0UVF1TFgzZVJYdkd6cTgzTzBIMVFtT2NYY1ZYOWwxZGxp?=
+ =?utf-8?B?dVhsTEtUVzI0Z3RoSi9EdGo0UnRZUmJzNFlaT09tdnBpM1AxL1J6Mml2RjM3?=
+ =?utf-8?B?U1lCSUhaMWJUK05qbitxMmloOUY5YUFVaWFpSm9Oaml2cW5xRmRyMFlsUjMy?=
+ =?utf-8?B?d0FNbDh6MlBrcWFiOXZiVHZHVldndzJ3b0NGbTJRaUlMSjNoNGtwbS8zUUMy?=
+ =?utf-8?B?NnM2a3hTVmNUSG5OVGtrdGc4OXhhQmlZQzQ1dk02aDh3dWFEYW9UWGpJbWd1?=
+ =?utf-8?B?S3RYOXkxQW5HSWY5OHVnQjBBLzFzNkJOUVk0VkRSejNVMUdFU1FGNHg4eGph?=
+ =?utf-8?B?WGRKOFBTU3F6STRJQkVZWU5TcGVITytJSk5TbWY0UW1lc3J3cXJEMFh5eW9a?=
+ =?utf-8?B?U3Z3ZStKMWVKYjN1RUMxeHFmMmRoWUZRLzZoSk5jRWRUTG0vNWdDNGZFNVJp?=
+ =?utf-8?B?RERma0hndzlrRlpXSVc5VDU5WUR3NjY2ZWwyWGc2WFFiSlkzamJKei9GWC9K?=
+ =?utf-8?B?azRjUXZhdnM2U0hPK2x3S0VHVXBmY05CcFNCYXVpSm1QRERPM0srTUE1OENH?=
+ =?utf-8?B?WUR3QTZDSkxsY3BMSHRaTWdlOUdKeXB5T1hiclgvWGZZeGNWTTZKeFdjWGxo?=
+ =?utf-8?Q?icTY/1iD1QF6cFHKI4Qw9a5adjbuY56Qdz+OW/GO7yk1?=
+X-OriginatorOrg: kontron.de
+X-MS-Exchange-CrossTenant-Network-Message-Id: a60d677c-45a7-490e-2a38-08da64abeb04
+X-MS-Exchange-CrossTenant-AuthSource: PA4PR10MB5681.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 08:44:37.5823
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8c9d3c97-3fd9-41c8-a2b1-646f3942daf1
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1XceUXo/DbQ+9hARXMyyXxILCiYI1B7BIM066uvHgXpcCVvVgY6k9zqBvPCbvBkN6Q6fTHyIn1XdtT4OHP9LTC8Jg365lt/awIz0VThK95Y=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR10MB1539
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Bara <benjamin.bara@skidata.com>
+Hi Marco,
 
-This enables the usage of "can_sleep" GPIO chips as "pin up" GPIO.
-This might be the case if the GPIO chip is an expander behind i2c.
+Am 13.07.22 um 10:36 schrieb Marco Felsch:
+> Hi Frieder,
+> 
+> On 22-07-13, Frieder Schrempf wrote:
+> 
+> 
+>> +	aliases {
+>> +		ethernet1 = &usbnet;
+>> +	};
+> 
+> Out of curiosity, why do you prefer usbnet instead of the fec?
 
-Signed-off-by: Benjamin Bara <benjamin.bara@skidata.com>
-Signed-off-by: Richard Leitner <richard.leitner@skidata.com>
----
- drivers/input/touchscreen/tsc2007.h      |  1 +
- drivers/input/touchscreen/tsc2007_core.c | 38 ++++++++++++++++++++----
- 2 files changed, 34 insertions(+), 5 deletions(-)
+We don't. In imx8mm.dtsi there is:
 
-diff --git a/drivers/input/touchscreen/tsc2007.h b/drivers/input/touchscreen/tsc2007.h
-index 69b08dd6c8df..29bd1ff22c72 100644
---- a/drivers/input/touchscreen/tsc2007.h
-+++ b/drivers/input/touchscreen/tsc2007.h
-@@ -78,6 +78,7 @@ struct tsc2007 {
- 	bool			stopped;
- 
- 	int			(*get_pendown_state)(struct device *);
-+	int			(*get_pendown_state_cansleep)(struct device *);
- 	void			(*clear_penirq)(void);
- 
- 	struct mutex		mlock;
-diff --git a/drivers/input/touchscreen/tsc2007_core.c b/drivers/input/touchscreen/tsc2007_core.c
-index 3e871d182c40..0ad4c3c41297 100644
---- a/drivers/input/touchscreen/tsc2007_core.c
-+++ b/drivers/input/touchscreen/tsc2007_core.c
-@@ -20,6 +20,7 @@
- #include <linux/module.h>
- #include <linux/slab.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/gpio/driver.h>
- #include <linux/input.h>
- #include <linux/interrupt.h>
- #include <linux/i2c.h>
-@@ -108,6 +109,14 @@ bool tsc2007_is_pen_down(struct tsc2007 *ts)
- 	return ts->get_pendown_state(&ts->client->dev);
- }
- 
-+bool tsc2007_is_pen_down_cansleep(struct tsc2007 *ts)
-+{
-+	if (!ts->get_pendown_state_cansleep)
-+		return true;
-+
-+	return ts->get_pendown_state_cansleep(&ts->client->dev);
-+}
-+
- static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- {
- 	struct tsc2007 *ts = handle;
-@@ -115,7 +124,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 	struct ts_event tc;
- 	u32 rt;
- 
--	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
-+	while (!ts->stopped && tsc2007_is_pen_down_cansleep(ts)) {
- 
- 		/* pen is down, continue with the measurement */
- 
-@@ -125,7 +134,7 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 
- 		rt = tsc2007_calculate_resistance(ts, &tc);
- 
--		if (!rt && !ts->get_pendown_state) {
-+		if (!rt && !ts->get_pendown_state_cansleep) {
- 			/*
- 			 * If pressure reported is 0 and we don't have
- 			 * callback to check pendown state, we have to
-@@ -229,6 +238,14 @@ static int tsc2007_get_pendown_state_gpio(struct device *dev)
- 	return gpiod_get_value(ts->gpiod);
- }
- 
-+static int tsc2007_get_pendown_state_gpio_cansleep(struct device *dev)
-+{
-+	struct i2c_client *client = to_i2c_client(dev);
-+	struct tsc2007 *ts = i2c_get_clientdata(client);
-+
-+	return gpiod_get_value_cansleep(ts->gpiod);
-+}
-+
- static int tsc2007_probe_properties(struct device *dev, struct tsc2007 *ts)
- {
- 	u32 val32;
-@@ -264,10 +281,21 @@ static int tsc2007_probe_properties(struct device *dev, struct tsc2007 *ts)
- 	if (IS_ERR(ts->gpiod))
- 		return PTR_ERR(ts->gpiod);
- 
--	if (ts->gpiod)
--		ts->get_pendown_state = tsc2007_get_pendown_state_gpio;
--	else
-+	if (ts->gpiod) {
-+		/* to support detection during the hard IRQ, the GPIO chip is required to not sleep.
-+		 * this might be the case if the GPIO is e.g. behind an i2c-based GPIO expander.
-+		 * it is fine to sleep later in the soft IRQ, as it is threaded.
-+		 */
-+		ts->get_pendown_state_cansleep = tsc2007_get_pendown_state_gpio_cansleep;
-+		if (gpiod_to_chip(ts->gpiod) && !gpiod_to_chip(ts->gpiod)->can_sleep) {
-+			ts->get_pendown_state = tsc2007_get_pendown_state_gpio;
-+		} else {
-+			dev_dbg(dev, "Pen down GPIO chip can sleep\n");
-+		}
-+
-+	} else {
- 		dev_warn(dev, "Pen down GPIO is not specified in properties\n");
-+	}
- 
- 	return 0;
- }
--- 
-2.34.1
+ethernet0 = &fec1;
 
+We only assign the alias for the second ethernet, which is the USB adapter.
+
+Best regards
+Frieder
