@@ -2,94 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21AE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236364AbiGMNS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
+        id S234608AbiGMNUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236240AbiGMNSB (ORCPT
+        with ESMTP id S231569AbiGMNUi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:18:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253EE9590;
-        Wed, 13 Jul 2022 06:18:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFB6BB81F46;
-        Wed, 13 Jul 2022 13:17:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D96EC341C0;
-        Wed, 13 Jul 2022 13:17:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657718277;
-        bh=ypT31tttdamVrW0wkBqfoCyXu3GpzfgCFgVZIeiit8M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=sxjuT2RL8eWwPUUFkwcXBR6iPW+CXYxuTb8phCmAG/XWIEVVoU3NTdK/DmjxEcxjS
-         FZz88TSiXMfu6V9TYo8a0cZyoprp/+wkNyr1obzJdUrH7mEhDEttQN1VprcV9S3lFF
-         rIx63oSHN31Ra4GcRy45kgHRQOgglobVo3Cbp0IGXrV10/5loBeGnPc09ozLJDW+gl
-         3VGDKV6ErJ7C12Ig5ilEeTQ+ruuAtpg/gxPrDlRUltavIMDnzbt3tmKjkNWuyqbStx
-         nrmodDv0GLfvS8vCCS2/ywHkQSKblyRti+pkWE5gV02JiNBZaoA3FWxJnhYwmEM9+X
-         hfVZun/u63Z4g==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oBcFc-0007gE-V5; Wed, 13 Jul 2022 15:18:01 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Wesley Cheng <quic_wcheng@quicinc.com>,
-        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 0/7] usb: dwc3: add support for SC8280XP
-Date:   Wed, 13 Jul 2022 15:13:33 +0200
-Message-Id: <20220713131340.29401-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        Wed, 13 Jul 2022 09:20:38 -0400
+X-Greylist: delayed 1802 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 06:20:37 PDT
+Received: from miiqgakn.webtekhosting.com (miiqgakn.webtekhosting.com [45.158.9.203])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA8EAB5C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:20:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed/relaxed; s=dkim; d=webtekhosting.com;
+ h=Reply-To:From:To:Subject:Date:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding; i=zee.gra@webtekhosting.com;
+ bh=tOgW9rdwO3YPw30/Um3g7zgk4BM=;
+ b=MhL0nOLJNgEBVXzVYflSRoNYTkmT8wmdJOhEKhlIxlP2pEydZ3CbdLmKwSVkqhGpqSBeOIb4Wzi7
+   65vA8PtKrVZCe65K9Id309bztwQTIwr9dQMywOqwBLxIgYcuDgqAlpCZsNPaNH1d98UmXNTEbqiD
+   N0jyrchGibxxblRtHGano8y8ST8Tqkc1bSdNH9EBNX1JBL1mdAFt0paiTmvEE/cnifmcaQyQbNNH
+   tkPiYfGWmDlm3bnINDBCmwlj4YltqtydEctKKgYXFdDiG4GKB+Qb4Um8Cp8vNv56MbKUCyNgFZGa
+   zEdIgf321Vvg5y0YpY3mj8YrWkGwqG8TNpcloA==
+DomainKey-Signature: a=rsa-sha1; c=nofws; q=dns; s=dkim; d=webtekhosting.com;
+ b=Vj+YUuitV0c7Mw4Kpx3ol/gcP5C6n7SBgsuI5Wu0AxiAM3yKTydf6HAQSEw6uOpJf9WL2J4ufB11
+   0yJL7JqStRHkHjFa14IrO6Fyff9z2Qsepj2t69/S+rWUv8JrrDaT/4ALObFsnXX9kmO3blNROrBf
+   5BKi4N7sLFtzmOwlXCx1bVVXeoaRTNjstKuD2u/GO1UpF8R9nVCJ9iBkcCILfZ2bwqLB6C/sT0uS
+   fY3ihuzE6L7RSYScc1j4vnwEZRpVELnH4ijwBH7NvHLDse0KU8+QclGmuKpCgebvc+LHBcbg3hD4
+   RmDrDjgOXuMvAU9uwtousfsm+Puyu/D+t2cnBg==;
+Reply-To: georgenastu.llc@fgnla.com
+From:   George <zee.gra@webtekhosting.com>
+To:     linux-kernel@vger.kernel.org
+Subject: Long Bridge Grant.
+Date:   13 Jul 2022 05:50:30 -0700
+Message-ID: <20220713055030.DFED277115869A72@webtekhosting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds the missing devicetree binding for SC8280XP, clean up
-the current bindings somewhat and fixes a related driver warning when an
-optional wakeup interrupt is missing.
+Greetings. 
 
-The last four patches fix up the SC8280XP devicetree that's currently in
-Bjorn's tree and addresses some DT schema warnings in other Qualcomm
-devicetrees and are only included here for completeness.
+Do you have any attractive project? 
 
-The binding and driver updates are expected to go though the USB tree,
-while the devicetree updates can be picked up by Bjorn once the binding
-updates have been merged.
+Our investors are ready to invest in your region. We will be=20
+willing to inject up to $5 Billion and more into a viable=20
+project(s)  
 
-Johan
-
-
-Johan Hovold (7):
-  dt-bindings: usb: qcom,dwc3: add SC8280XP binding
-  dt-bindings: usb: qcom,dwc3: refine interrupt requirements
-  usb: dwc3: qcom: fix missing optional irq warnings
-  arm64: dts: qcom: sc8280xp: fix USB clock order
-  arm64: dts: qcom: sc8280xp: fix USB interrupts
-  arm64: dts: qcom: sc7280: reorder USB interrupts
-  arm64: dts: qcom: reorder USB interrupts
-
- .../devicetree/bindings/usb/qcom,dwc3.yaml    | 152 ++++++++++++++++--
- arch/arm/boot/dts/qcom-sdx65.dtsi             |  10 +-
- arch/arm64/boot/dts/qcom/sc7280.dtsi          |  15 +-
- arch/arm64/boot/dts/qcom/sc8280xp.dtsi        |  28 ++--
- arch/arm64/boot/dts/qcom/sm8250.dtsi          |  20 ++-
- arch/arm64/boot/dts/qcom/sm8350.dtsi          |  20 ++-
- drivers/usb/dwc3/dwc3-qcom.c                  |   4 +-
- 7 files changed, 194 insertions(+), 55 deletions(-)
-
--- 
-2.35.1
-
+If you have a viable project that needs funding, kindly revert=20
+with your business plan and executive summary for our review and=20
+possible funding.
