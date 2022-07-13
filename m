@@ -2,230 +2,224 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 634B8C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A83CFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236928AbiGMPGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:06:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
+        id S236921AbiGMPHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236822AbiGMPGL (ORCPT
+        with ESMTP id S236868AbiGMPH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:06:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75F0B4B0DE
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657724754;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=x0UmTYrq2S/VHwOSycsLo0cRojSIYW/yUnrHKsRvMME=;
-        b=F7Tx+vMPJRUxyPY9nLUv8COhcN1Sb3AMs+fV/QjxORfHg+PgSQhsBFdkpU26qqhtg6f7Xs
-        LTAuZqFHbQuPw2dilu8jeBf5W1HSxLwYHLb5tq9oO/MXSMx1M3shWNZgOas7itvKzLAlsK
-        0XzVC/XEAg6nTeIKJaQmMYMnSPivZUY=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-20-hUlrvdbzNniUsb0Ap3O0LA-1; Wed, 13 Jul 2022 11:05:49 -0400
-X-MC-Unique: hUlrvdbzNniUsb0Ap3O0LA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 486E638173E7;
-        Wed, 13 Jul 2022 15:05:36 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9C207492C3B;
-        Wed, 13 Jul 2022 15:05:34 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] KVM: x86: Hyper-V invariant TSC control
-Date:   Wed, 13 Jul 2022 17:05:30 +0200
-Message-Id: <20220713150532.1012466-2-vkuznets@redhat.com>
-In-Reply-To: <20220713150532.1012466-1-vkuznets@redhat.com>
-References: <20220713150532.1012466-1-vkuznets@redhat.com>
+        Wed, 13 Jul 2022 11:07:28 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF6834E86B;
+        Wed, 13 Jul 2022 08:06:42 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id e28so15954414lfj.4;
+        Wed, 13 Jul 2022 08:06:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=elIsK7TKydLbL37a1dHX3rQ4kE/AdcakLGrQyY48fMQ=;
+        b=K79+JVedEsBB4R64WdTQEUzq+4gB/P98GFaDFXwfhkDN1RS5cDYxJ55P51I2ZUUBdo
+         N8U+R9yfnf+4XPTrQz8ZRzcD1Lq5uSJs3lFJ10Fv66JIjwpjYpnWuObY2o08YsrFcMXf
+         rJjcZhLpu5n7ZGLBLv2metouxWgqY/wbV8/ygn/xf8MMFemxRLl+FrRJwWVS4nY+jgEW
+         0OXK0OTwFQBaeyAJWPoAe+FDD0BmmmG02ZN3xGYtqtDkIFkDqvH8HJPFLYQ/NVgI4WoA
+         mdo1Q8i9alDAhporhPVmaZWi4AC94H60AF8H4M4xmJJssky5R74YU7rRTh2FSdNlpQeb
+         xVuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=elIsK7TKydLbL37a1dHX3rQ4kE/AdcakLGrQyY48fMQ=;
+        b=VS2pM9ukG9VeOm69oICqvoMUG2zpEm1TpvEewFRVyZ/Af6YepT+h8ECaSuFwDTam+3
+         0jOYOt3sv+PkqNGqwA+oDD2fnsovQ6bOXyCsCpWHEf/8G4nsVrarP9UUURO/Ij2y7jPe
+         bNYTRTxw32o5p1VV7KaeOthZTrCKv5wzmFtFEbEZVhy51rEHeRSnWPi4tZLqWc0LTdMm
+         2pWR1IhxvqXwDU2xn8hSoSHZD02kJzLY8q2cFSW3qQJYWgGro/6Ls9+NmNu+DLkKkQgt
+         9rtmV4LbegNiD4Gd28n8WJ9ye7IWqL7j0JT/bqCgdk3UkhfETobI/DmYYuV4o4MUk6vP
+         y0Tg==
+X-Gm-Message-State: AJIora+iu2qqYVNaPLTMVQU2kPZgGGzPFkaHY6+BccMASQ0v/Jvcqnwo
+        Lmkdlk6l3Q7nDXsv/tV9MNrBwqK5nXa4sCpBM1A=
+X-Google-Smtp-Source: AGRyM1vRBUJbU9eA1YvfUVXJYlPoeqAtG6MSip66r3o3aAfc+uBD+Bfru3mtoOF9lj3r3WeIhyNPd1w+phpqrVWjZ94=
+X-Received: by 2002:ac2:4897:0:b0:489:f2ad:1191 with SMTP id
+ x23-20020ac24897000000b00489f2ad1191mr2179805lfc.25.1657724799507; Wed, 13
+ Jul 2022 08:06:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+References: <20220710102110.39748-1-tmaimon77@gmail.com> <20220710102110.39748-2-tmaimon77@gmail.com>
+ <8b1393e4-275b-6791-ad71-2edfeacd0a63@linaro.org> <CAP6Zq1iuMPD21dM7Gpg4AEfM1cqE1mFhnO5hhUWvDZvEz=rTqw@mail.gmail.com>
+ <4ffc1060-671e-cbec-a100-5e26f1957eeb@linaro.org> <CAP6Zq1igaQhM79sUqTLdiH3WZiEG52Pva9k0g_A-BibAJKfm=Q@mail.gmail.com>
+ <5dec7907-9cab-6735-4775-142aeede185e@linaro.org>
+In-Reply-To: <5dec7907-9cab-6735-4775-142aeede185e@linaro.org>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Wed, 13 Jul 2022 18:06:28 +0300
+Message-ID: <CAP6Zq1jvvUW6OL6diKQ3sW=sr7fsXiSCPd-zRrwpLp8-+Z62UQ@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] dt-binding: pinctrl: Add NPCM8XX pinctrl and GPIO documentation
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Normally, genuine Hyper-V doesn't expose architectural invariant TSC
-(CPUID.80000007H:EDX[8]) to its guests by default. A special PV MSR
-(HV_X64_MSR_TSC_INVARIANT_CONTROL, 0x40000118) and corresponding CPUID
-feature bit (CPUID.0x40000003.EAX[15]) were introduced. When bit 0 of the
-PV MSR is set, invariant TSC bit starts to show up in CPUID. When the
-feature is exposed to Hyper-V guests, reenlightenment becomes unneeded.
+Hi Krzysztof,
 
-Add the feature to KVM. Keep CPUID output intact when the feature
-wasn't exposed to L1 and implement the required logic for hiding
-invariant TSC when the feature was exposed and invariant TSC control
-MSR wasn't written to. Copy genuine Hyper-V behavior and forbid to
-disable the feature once it was enabled.
+Thanks for your clarifications.
 
-For the reference, for linux guests, support for the feature was added
-in commit dce7cd62754b ("x86/hyperv: Allow guests to enable InvariantTSC").
+On Tue, 12 Jul 2022 at 23:44, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 12/07/2022 20:44, Tomer Maimon wrote:
+> > Hi Krzysztof,
+> >
+> > Thanks for your clarifications.
+> >
+> > On Tue, 12 Jul 2022 at 16:45, Krzysztof Kozlowski
+> > <krzysztof.kozlowski@linaro.org> wrote:
+> >>
+> >> On 12/07/2022 15:29, Tomer Maimon wrote:
+> >>> Hi Krzysztof,
+> >>>
+> >>> Thanks for your comments.
+> >>>
+> >>> On Tue, 12 Jul 2022 at 12:48, Krzysztof Kozlowski
+> >>> <krzysztof.kozlowski@linaro.org> wrote:
+> >>>>
+> >>>> On 10/07/2022 12:21, Tomer Maimon wrote:
+> >>>>> Added device tree binding documentation for Nuvoton Arbel BMC NPCM8XX
+> >>>>> pinmux and GPIO controller.
+> >>>>>
+> >>>>> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+> >>>>> ---
+> >>>>>  .../pinctrl/nuvoton,npcm845-pinctrl.yaml      | 205 ++++++++++++++++++
+> >>>>>  1 file changed, 205 insertions(+)
+> >>>>>  create mode 100644 Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> >>>>>
+> >>>>> diff --git a/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> >>>>> new file mode 100644
+> >>>>> index 000000000000..6395ef2bf5b3
+> >>>>> --- /dev/null
+> >>>>> +++ b/Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> >>>>> @@ -0,0 +1,205 @@
+> >>>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> >>>>> +%YAML 1.2
+> >>>>> +---
+> >>>>> +$id: http://devicetree.org/schemas/pinctrl/nuvoton,npcm845-pinctrl.yaml#
+> >>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>>>> +
+> >>>>> +title: Nuvoton NPCM845 Pin Controller and GPIO
+> >>>>> +
+> >>>>> +maintainers:
+> >>>>> +  - Tomer Maimon <tmaimon77@gmail.com>
+> >>>>> +
+> >>>>> +description:
+> >>>>> +  The Nuvoton BMC NPCM8XX Pin Controller multi-function routed through
+> >>>>> +  the multiplexing block, Each pin supports GPIO functionality (GPIOx)
+> >>>>> +  and multiple functions that directly connect the pin to different
+> >>>>> +  hardware blocks.
+> >>>>> +
+> >>>>> +properties:
+> >>>>> +  compatible:
+> >>>>> +    const: nuvoton,npcm845-pinctrl
+> >>>>> +
+> >>>>> +  ranges:
+> >>>>> +    maxItems: 1
+> >>>>
+> >>>> ranges without reg? Does it even work? Did you test the bindings?
+> >>> The ranges related to GPIO node reg
+> >>
+> >> But you do not allow here a 'reg', do you? So how can you have an unit
+> >> address in pinctrl node?
+> > I allow the reg unit address in the GPIO node.
+> > This is why reg is in the GPIO node as follow:
+> >
+> >                 compatible = "nuvoton,npcm845-pinctrl";
+> >                 ranges = <0x0 0x0 0xf0010000 0x8000>;
+> >                 #address-cells = <1>;
+> >                 #size-cells = <1>;
+> >                 status = "okay";
+> >                 gpio0: gpio@f0010000 {
+> >                         gpio-controller;
+> >                         #gpio-cells = <2>;
+> >                         reg = <0x0 0xB0>;
+> >                         interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+> >                         gpio-ranges = <&pinctrl 0 0 32>;
+> >                 };
+> >                 gpio1: gpio@f0011000 {
+> >                         gpio-controller;
+> >                         #gpio-cells = <2>;
+> >                         reg = <0x1000 0xB0>;
+> >                         interrupts = <GIC_SPI 117 IRQ_TYPE_LEVEL_HIGH>;
+> >                         gpio-ranges = <&pinctrl 0 32 32>;
+> >                 };
+> >                 gpio2: gpio@f0012000 {
+> >                         gpio-controller;
+> >                         #gpio-cells = <2>;
+> >                         reg = <0x2000 0xB0>;
+> >                         interrupts = <GIC_SPI 118 IRQ_TYPE_LEVEL_HIGH>;
+> >                         gpio-ranges = <&pinctrl 0 64 32>;
+> >                 };
+> > ...
+> > Is it problematic?
+>
+>
+> It seems not, looks ok because of ranges, although it is a bit confusing
+> that your pinctrl unit address is 0xf0800000 but ranges is 0xf0010000.
+The reason the pinctrl address 0xf0800000 because the pin mux is
+handled by the GCR registers and the ranges related to the GPIO.
+>
+> >>
+> >>>
+> >>> I did test the pin controller document and it passed.
+> >>> bash-4.2$ make ARCH=arm64 dt_binding_check
+> >>> DT_SCHEMA_FILES=Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.yaml
+> >>>   LINT    Documentation/devicetree/bindings
+> >>>   CHKDT   Documentation/devicetree/bindings/processed-schema.json
+> >>>   SCHEMA  Documentation/devicetree/bindings/processed-schema.json
+> >>>   DTEX    Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.example.dts
+> >>>   DTC     Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.example.dtb
+> >>>   CHECK   Documentation/devicetree/bindings/pinctrl/nuvoton,npcm845-pinctrl.example.dtb
+> >>> Did I need to run anything else than dt_binding_check for testing the document?
+> >>
+> >> Indeed it will pass, because you do not have reg in pinctrl node. But
+> >> your dts won't pass make dtbs W=1
+> > After running make ARCH=arm64 dtbs W=1 I don't see warning related to pinctrl
+> > bash-4.2$ make ARCH=arm64 dtbs W=1
+> >   DTC     arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dtb
+> > arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi:69.7-183.5:
+> > Warning (unit_address_vs_reg): /ahb/apb: node has a reg or ranges
+> > property, but no unit name
+> > arch/arm64/boot/dts/nuvoton/nuvoton-npcm845-evb.dts:20.9-22.4: Warning
+> > (unit_address_vs_reg): /memory: node has a reg or ranges property, but
+> > no unit name
+> > arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi:69.7-183.5:
+> > Warning (simple_bus_reg): /ahb/apb: simple-bus unit address format
+> > error, expected "f0000000"
+> > arch/arm64/boot/dts/nuvoton/nuvoton-common-npcm8xx.dtsi:56.35-61.5:
+> > Warning (unique_unit_address): /ahb/reset-controller@f0801000:
+> > duplicate unit-address (also used in node
+> > /ahb/clock-controller@f0801000)
+> > I did got warning but it dont related to the pinctrl, Maybe I didn't
+> > run the test correct?
+>
+> Looks correct, indeed.
+>
+> Best regards,
+> Krzysztof
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/include/asm/kvm_host.h |  1 +
- arch/x86/kvm/cpuid.c            |  7 +++++++
- arch/x86/kvm/hyperv.c           | 19 +++++++++++++++++++
- arch/x86/kvm/hyperv.h           | 15 +++++++++++++++
- arch/x86/kvm/x86.c              |  4 +++-
- 5 files changed, 45 insertions(+), 1 deletion(-)
+Best regards,
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index de5a149d0971..88553f0b524c 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1022,6 +1022,7 @@ struct kvm_hv {
- 	u64 hv_reenlightenment_control;
- 	u64 hv_tsc_emulation_control;
- 	u64 hv_tsc_emulation_status;
-+	u64 hv_invtsc;
- 
- 	/* How many vCPUs have VP index != vCPU index */
- 	atomic_t num_mismatched_vp_indexes;
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index d47222ab8e6e..788df2eb1ec4 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -1404,6 +1404,13 @@ bool kvm_cpuid(struct kvm_vcpu *vcpu, u32 *eax, u32 *ebx,
- 			    (data & TSX_CTRL_CPUID_CLEAR))
- 				*ebx &= ~(F(RTM) | F(HLE));
- 		}
-+		/*
-+		 * Filter out invariant TSC (CPUID.80000007H:EDX[8]) for Hyper-V
-+		 * guests if needed.
-+		 */
-+		if (function == 0x80000007 && kvm_hv_invtsc_filtered(vcpu))
-+			*edx &= ~(1 << 8);
-+
- 	} else {
- 		*eax = *ebx = *ecx = *edx = 0;
- 		/*
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index e2e95a6fccfd..0d8e6526a839 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -991,6 +991,7 @@ static bool kvm_hv_msr_partition_wide(u32 msr)
- 	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_STATUS:
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
- 	case HV_X64_MSR_SYNDBG_OPTIONS:
- 	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
- 		r = true;
-@@ -1275,6 +1276,9 @@ static bool hv_check_msr_access(struct kvm_vcpu_hv *hv_vcpu, u32 msr)
- 	case HV_X64_MSR_TSC_EMULATION_STATUS:
- 		return hv_vcpu->cpuid_cache.features_eax &
- 			HV_ACCESS_REENLIGHTENMENT;
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-+		return hv_vcpu->cpuid_cache.features_eax &
-+			HV_ACCESS_TSC_INVARIANT;
- 	case HV_X64_MSR_CRASH_P0 ... HV_X64_MSR_CRASH_P4:
- 	case HV_X64_MSR_CRASH_CTL:
- 		return hv_vcpu->cpuid_cache.features_edx &
-@@ -1402,6 +1406,17 @@ static int kvm_hv_set_msr_pw(struct kvm_vcpu *vcpu, u32 msr, u64 data,
- 		if (!host)
- 			return 1;
- 		break;
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-+		/* Only bit 0 is supported */
-+		if (data & ~BIT_ULL(0))
-+			return 1;
-+
-+		/* The feature can't be disabled from the guest */
-+		if (!host && hv->hv_invtsc && !data)
-+			return 1;
-+
-+		hv->hv_invtsc = data;
-+		break;
- 	case HV_X64_MSR_SYNDBG_OPTIONS:
- 	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
- 		return syndbg_set_msr(vcpu, msr, data, host);
-@@ -1577,6 +1592,9 @@ static int kvm_hv_get_msr_pw(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata,
- 	case HV_X64_MSR_TSC_EMULATION_STATUS:
- 		data = hv->hv_tsc_emulation_status;
- 		break;
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
-+		data = hv->hv_invtsc;
-+		break;
- 	case HV_X64_MSR_SYNDBG_OPTIONS:
- 	case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
- 		return syndbg_get_msr(vcpu, msr, pdata, host);
-@@ -2497,6 +2515,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 			ent->eax |= HV_MSR_REFERENCE_TSC_AVAILABLE;
- 			ent->eax |= HV_ACCESS_FREQUENCY_MSRS;
- 			ent->eax |= HV_ACCESS_REENLIGHTENMENT;
-+			ent->eax |= HV_ACCESS_TSC_INVARIANT;
- 
- 			ent->ebx |= HV_POST_MESSAGES;
- 			ent->ebx |= HV_SIGNAL_EVENTS;
-diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
-index da2737f2a956..1a6316ab55eb 100644
---- a/arch/x86/kvm/hyperv.h
-+++ b/arch/x86/kvm/hyperv.h
-@@ -133,6 +133,21 @@ static inline bool kvm_hv_has_stimer_pending(struct kvm_vcpu *vcpu)
- 			     HV_SYNIC_STIMER_COUNT);
- }
- 
-+/*
-+ * With HV_ACCESS_TSC_INVARIANT feature, invariant TSC (CPUID.80000007H:EDX[8])
-+ * is only observed after HV_X64_MSR_TSC_INVARIANT_CONTROL was written to.
-+ */
-+static inline bool kvm_hv_invtsc_filtered(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	struct kvm_hv *hv = to_kvm_hv(vcpu->kvm);
-+
-+	if (hv_vcpu && hv_vcpu->cpuid_cache.features_eax & HV_ACCESS_TSC_INVARIANT)
-+		return !hv->hv_invtsc;
-+
-+	return false;
-+}
-+
- void kvm_hv_process_stimers(struct kvm_vcpu *vcpu);
- 
- void kvm_hv_setup_tsc_page(struct kvm *kvm,
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 567d13405445..322e0a544823 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1466,7 +1466,7 @@ static const u32 emulated_msrs_all[] = {
- 	HV_X64_MSR_STIMER0_CONFIG,
- 	HV_X64_MSR_VP_ASSIST_PAGE,
- 	HV_X64_MSR_REENLIGHTENMENT_CONTROL, HV_X64_MSR_TSC_EMULATION_CONTROL,
--	HV_X64_MSR_TSC_EMULATION_STATUS,
-+	HV_X64_MSR_TSC_EMULATION_STATUS, HV_X64_MSR_TSC_INVARIANT_CONTROL,
- 	HV_X64_MSR_SYNDBG_OPTIONS,
- 	HV_X64_MSR_SYNDBG_CONTROL, HV_X64_MSR_SYNDBG_STATUS,
- 	HV_X64_MSR_SYNDBG_SEND_BUFFER, HV_X64_MSR_SYNDBG_RECV_BUFFER,
-@@ -3769,6 +3769,7 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_STATUS:
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
- 		return kvm_hv_set_msr_common(vcpu, msr, data,
- 					     msr_info->host_initiated);
- 	case MSR_IA32_BBL_CR_CTL3:
-@@ -4139,6 +4140,7 @@ int kvm_get_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 	case HV_X64_MSR_REENLIGHTENMENT_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_CONTROL:
- 	case HV_X64_MSR_TSC_EMULATION_STATUS:
-+	case HV_X64_MSR_TSC_INVARIANT_CONTROL:
- 		return kvm_hv_get_msr_common(vcpu,
- 					     msr_info->index, &msr_info->data,
- 					     msr_info->host_initiated);
--- 
-2.35.3
-
+Tomer
