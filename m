@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71114C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EB0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235701AbiGMNjU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38352 "EHLO
+        id S236227AbiGMNj2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:39:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235567AbiGMNiq (ORCPT
+        with ESMTP id S235573AbiGMNiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 09:38:46 -0400
 Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABA665B9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392846582
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:38:45 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id B61A86601A43;
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 132556601A3F;
         Wed, 13 Jul 2022 14:38:43 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657719524;
-        bh=pC7awPtmZC2mFd+19i2l1IB+tj4ajR5y+F+FffFXf70=;
+        s=mail; t=1657719523;
+        bh=MjcvOf0vDzQBv8L9PWE+EuweTtTAL68jhBOjMGIS5/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eENa0HlmOE2bYpysdWfOu0JXSA4dc4rHgxYQgeSFirIzEHhI2rQj5YMjvTK5ZRM/E
-         aVQb0tXNjuiZDc2VI8YP+NWJVZkuYBXYv/cZzgWt5Car68qHFem2UtPMoa0B5vwZBs
-         oFsn1amUKSJSHnmCYZUuTFedl5ykMygB8kCoV2YjQhoqQes/Wc8opghkNiH3Xh5mZc
-         rP+F7GXh6VQAaAerlfadxcdRVCGyNqhMmLRwHF+lV7LHgBpzS6cS4RzduTN/3LVgKC
-         8zZzal98S/w0CyidXsNBxSpnZlOJJf0Y+P7x4mCdVziwx7JER0+ha4Fe5uGiJkYCF2
-         omxz5EStibk4w==
+        b=NBxa3dKzpn0swOp/aq/dWp6Jm6MmA6wiKmCmGAIwRdhIwGbv3Y6OIi4grMy4i+YEs
+         Ot66paKWdZYRIjPbryo7xwOYBT+OWWRfF5qYmFizAcYkXI4P4jEG8B9tW99FLviNAT
+         CAlDIJ7CfDRaOxfgzkDUSs5K9AHDtJNfVazUCJ+cpsfYSMFG9A7QweMW3EfDqPOxFw
+         zYHgskI1+3KPAdnD7Hv+UpIXz//vdPAOHeg71nL0zfeMnVoFR7OYT2hg2IgWl0GEi1
+         xC6ea30gY1s8itAmjAr2tZxNWAZxXjgFevBEKRdgUHYrNkO7LWxZHTian+6bl82bwW
+         RbaMqt3LkkAyA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,9 +44,9 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 7/8] drm/i915/gem: further fix mman selftest
-Date:   Wed, 13 Jul 2022 14:38:17 +0100
-Message-Id: <20220713133818.3699604-8-bob.beckett@collabora.com>
+Subject: [PATCH v4 6/8] drm/i915: allow volatile buffers to use ttm pool allocator
+Date:   Wed, 13 Jul 2022 14:38:16 +0100
+Message-Id: <20220713133818.3699604-7-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220713133818.3699604-1-bob.beckett@collabora.com>
 References: <20220713133818.3699604-1-bob.beckett@collabora.com>
@@ -56,70 +56,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In commit 450cede7f380 ("drm/i915/gem: Fix the mman selftest") we fixed up
-the mman selftest to allocate user buffers via smem only if we have lmem,
-otherwise it uses internal buffers.
-
-As the commit message asserts, we should only be using buffers that
-userland should be able to create.
-Internal buffers are not intended to be used by userland.
-
-Instead, fix the code to always create buffers from smem.
-In the case of integrated, this will create them from the shmem non-ttm
-backend, which is fine.
-
-This also fixes up the code to allow conversion of internal backend to
-ttm without breaking this test.
+Internal/volatile buffers should not be shmem backed.
+If a volatile buffer is requested, allow ttm to use the pool allocator
+to provide volatile pages as backing.
+Fix i915_ttm_shrink to handle !is_shmem volatile buffers by purging.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- .../gpu/drm/i915/gem/selftests/i915_gem_mman.c  | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-index 3ced9948a331..e529eb8461ff 100644
---- a/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c
-@@ -596,17 +596,12 @@ static enum i915_mmap_type default_mapping(struct drm_i915_private *i915)
- }
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index b6c3fc25d9d1..599ed2713359 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -291,7 +291,8 @@ static struct ttm_tt *i915_ttm_tt_create(struct ttm_buffer_object *bo,
+ 		page_flags |= TTM_TT_FLAG_ZERO_ALLOC;
  
- static struct drm_i915_gem_object *
--create_sys_or_internal(struct drm_i915_private *i915,
--		       unsigned long size)
-+create_sys(struct drm_i915_private *i915, unsigned long size)
- {
--	if (HAS_LMEM(i915)) {
--		struct intel_memory_region *sys_region =
--			i915->mm.regions[INTEL_REGION_SMEM];
-+	struct intel_memory_region *sys_region =
-+		i915->mm.regions[INTEL_REGION_SMEM];
+ 	caching = i915_ttm_select_tt_caching(obj);
+-	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached) {
++	if (i915_gem_object_is_shrinkable(obj) && caching == ttm_cached &&
++	    !i915_gem_object_is_volatile(obj)) {
+ 		page_flags |= TTM_TT_FLAG_EXTERNAL |
+ 			      TTM_TT_FLAG_EXTERNAL_MAPPABLE;
+ 		i915_tt->is_shmem = true;
+@@ -513,9 +514,9 @@ static int i915_ttm_shrink(struct drm_i915_gem_object *obj, unsigned int flags)
+ 	if (!bo->ttm || bo->resource->mem_type != TTM_PL_SYSTEM)
+ 		return 0;
  
--		return __i915_gem_object_create_user(i915, size, &sys_region, 1);
--	}
--
--	return i915_gem_object_create_internal(i915, size);
-+	return __i915_gem_object_create_user(i915, size, &sys_region, 1);
- }
+-	GEM_BUG_ON(!i915_tt->is_shmem);
++	GEM_BUG_ON(!i915_tt->is_shmem && obj->mm.madv != I915_MADV_DONTNEED);
  
- static bool assert_mmap_offset(struct drm_i915_private *i915,
-@@ -617,7 +612,7 @@ static bool assert_mmap_offset(struct drm_i915_private *i915,
- 	u64 offset;
- 	int ret;
+-	if (!i915_tt->filp)
++	if (i915_tt->is_shmem && !i915_tt->filp)
+ 		return 0;
  
--	obj = create_sys_or_internal(i915, size);
-+	obj = create_sys(i915, size);
- 	if (IS_ERR(obj))
- 		return expected && expected == PTR_ERR(obj);
- 
-@@ -719,7 +714,7 @@ static int igt_mmap_offset_exhaustion(void *arg)
- 	}
- 
- 	/* Fill the hole, further allocation attempts should then fail */
--	obj = create_sys_or_internal(i915, PAGE_SIZE);
-+	obj = create_sys(i915, PAGE_SIZE);
- 	if (IS_ERR(obj)) {
- 		err = PTR_ERR(obj);
- 		pr_err("Unable to create object for reclaimed hole\n");
+ 	ret = ttm_bo_wait_ctx(bo, &ctx);
 -- 
 2.25.1
 
