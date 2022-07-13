@@ -2,90 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A98CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 06:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 06:43:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233769AbiGMGmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 02:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41568 "EHLO
+        id S233984AbiGMGn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 02:43:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiGMGmR (ORCPT
+        with ESMTP id S229890AbiGMGnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 02:42:17 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124D8DE1A7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 23:42:17 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id g4so9662457pgc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 23:42:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=HzERyUX8r42O7EeoFdBNAgcejWeBbz5fOTEqqjH+TQQ=;
-        b=UT72qyLSZTrNN2pPbYlxDZHIt0TY7vGtUxtCTRLe5e0vEmuHSDaSboOiXm9eEcuiS7
-         s0WvG7aHhKjCHb/xn4qrj47u5jfgEJ7UFLbn1AYZgauI23jEN57NQMrG0lPl1zc3aclP
-         tmEhMqhfvyyjwBKZeAhk0SSb/HXSsE+GimnSqdEVNWToPnsaIKHP2Blz1jYDBKnSQmwZ
-         XpMu6F5XG9VeIcPNLW+mCccOi1omNDQAeSGYP7Jk+dJ3f9LX3scil2ZBDEituPlKJbUI
-         FwdqEXsUoCIWqKVlWHtV37m/BWrbUJt1cu0r+yU0g6LW6gILdkMLDiaYrbjlbK+wmtpF
-         UL3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=HzERyUX8r42O7EeoFdBNAgcejWeBbz5fOTEqqjH+TQQ=;
-        b=O8z7aAnShUqmpuTwOyoS8LKK5qDyE88UpijPhRY5HcOdh2BUFIfbr1VDyZUvVt6Opo
-         fnwTvo6DiddzVgH+/nNRJdazH+S8xP8Ps5lNTM0oezoi5NCSQ+M+oI5sWw5tugJPxTe8
-         LVwS9SlOv8csoNwXlSdzBoi5rxKHuq5BIuS+afzvN4zsX3XZ91TN9jJQEqJVh95c4dBF
-         PZJCPBGALWnZCO9f7rqh+/PsjQXltnLxA1znv06+PYzqZpbEGkpVCrMFe2LVA98xbpfw
-         nMP5MR1fBoDjcCAtmZr0ZSCEObCu9oG2f614nTVA4OaOLvKU4YUobXY+QUXMywI4YVnE
-         UKXw==
-X-Gm-Message-State: AJIora/MjjlrDJ8oP3CJnA7rRcuD2A5rKyFOogsIWWUjSB+AwuTHQnFf
-        TlGHPpkY5odxZqwJeTn2u0vsX8DLqljyRlGQ
-X-Google-Smtp-Source: AGRyM1s5JTP58vkFg4ZOzYsjyYwvU5vCEwBwoiCMvXMn+O/ixwKG0a5JqRypQMu37KDrrWbcxg9EWA==
-X-Received: by 2002:a63:d1e:0:b0:40d:379e:bff8 with SMTP id c30-20020a630d1e000000b0040d379ebff8mr1782207pgl.215.1657694536487;
-        Tue, 12 Jul 2022 23:42:16 -0700 (PDT)
-Received: from MBP ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id h27-20020aa79f5b000000b005251fff13dfsm7980873pfr.155.2022.07.12.23.42.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 23:42:15 -0700 (PDT)
-References: <20220707090501.55483-1-schspa@gmail.com>
- <Ys4zVkJCH04cnSGX@xsang-OptiPlex-9020>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Schspa Shi <schspa@gmail.com>
-To:     kernel test robot <oliver.sang@intel.com>
-Cc:     0day robot <lkp@intel.com>, LKML <linux-kernel@vger.kernel.org>,
-        lkp@lists.01.org, ying.huang@intel.com, feng.tang@intel.com,
-        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com,
-        guobing.chen@intel.com, ming.a.chen@intel.com, frank.du@intel.com,
-        Shuhua.Fan@intel.com, wangyang.guo@intel.com,
-        Wenhuan.Huang@intel.com, jessica.ji@intel.com, shan.kang@intel.com,
-        guangli.li@intel.com, tiejun.li@intel.com, yu.ma@intel.com,
-        dapeng1.mi@intel.com, jiebin.sun@intel.com, gengxin.xie@intel.com,
-        fan.zhao@intel.com, tj@kernel.org, jiangshanlai@gmail.com
-Subject: Re: [workqueue]  1a0a67f5ef:
- phoronix-test-suite.fio.SequentialRead.IO_uring.Yes.No.1MB.DefaultTestDirectory.mb_s
- -17.7% regression
-Date:   Wed, 13 Jul 2022 14:09:28 +0800
-In-reply-to: <Ys4zVkJCH04cnSGX@xsang-OptiPlex-9020>
-Message-ID: <m2bkttms3w.fsf@gmail.com>
+        Wed, 13 Jul 2022 02:43:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F14B1956;
+        Tue, 12 Jul 2022 23:43:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A979661CB1;
+        Wed, 13 Jul 2022 06:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16EACC34114;
+        Wed, 13 Jul 2022 06:43:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657694634;
+        bh=3rSvIgfrRGUff8uhqno+zIOUPvaxio6fZrEetbnQaq0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cnfjBIZYKdmuZTAQK7qTdkUzgd6Dps2mZ7MFzd5s2uhFw166I7t9+tXH0T+AxfUb7
+         PY6OzquFxA6ZW41gIYUl7R48tx7/11xGk16I2xs70RWjvxlVnEAqQqUhBILrx4lbml
+         OF3P74KKU+S3Xsphjs9BEU9WyBZfy7sxu+0NT/zhVVGv6DF+SuQ0OytcTmCAXchKed
+         Nz6BK5oTCH7UIkDe112vw8w2L1C4SwiQa5+yLDi9bvLzv7yEYNSlnojjY3Q1bvs3JM
+         9EkWgvx6IdDl+XkygDvhdotQU/YUyphrA6zQcppLKcdQRbntYipHQ567R85BEkRTem
+         DwbShDm5JOzRA==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oBW6G-0002GK-47; Wed, 13 Jul 2022 08:43:56 +0200
+Date:   Wed, 13 Jul 2022 08:43:56 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Jiang Jian <jiangjian@cdjrlc.com>
+Cc:     gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] USB: serial: cypress_m8: drop unexpected word "the" in
+ the comments
+Message-ID: <Ys5prITWZSfLcZjp@hovoldconsulting.com>
+References: <20220622104608.8871-1-jiangjian@cdjrlc.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220622104608.8871-1-jiangjian@cdjrlc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jun 22, 2022 at 06:46:08PM +0800, Jiang Jian wrote:
+> there is an unexpected word "the" in the comments that need to be dropped
+> 
+> file: drivers/usb/serial/cypress_m8.c
+> line: 259
+> 
+>      * chose to use the the general purpose firmware or not), if you
+> changed to:
+>      * chose to use the general purpose firmware or not), if you
+> 
+> Signed-off-by: Jiang Jian <jiangjian@cdjrlc.com>
+> ---
+>  drivers/usb/serial/cypress_m8.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/usb/serial/cypress_m8.c b/drivers/usb/serial/cypress_m8.c
+> index 6924fa95f6bd..da8913683104 100644
+> --- a/drivers/usb/serial/cypress_m8.c
+> +++ b/drivers/usb/serial/cypress_m8.c
+> @@ -256,7 +256,7 @@ static int analyze_baud_rate(struct usb_serial_port *port, speed_t new_rate)
+>  		/*
+>  		 * Mike Isely <isely@pobox.com> 2-Feb-2008: The
+>  		 * Cypress app note that describes this mechanism
+> -		 * states the the low-speed part can't handle more
+> +		 * states the low-speed part can't handle more
 
-kernel test robot <oliver.sang@intel.com> writes:
+I believe the first "the" should be replaced with "that" here.
 
-> Greeting,
->
-> FYI, we noticed a -17.7% regression of phoronix-test-suite.fio.SequentialRead.IO_uring.Yes.No.1MB.DefaultTestDirectory.mb_s due to commit:
->
+>  		 * than 800 bytes/sec, in which case 4800 baud is the
+>  		 * safest speed for a part like that.
+>  		 */
 
-This performance drop can be fixed by convert to wq_pool_attach_mutex
-to a rwsem, or add another lock for this. I will upload a new PATCH
-version for this.
+I've fixed up the above, merged this patch with the other one for
+mos7720 and amended the commit message.
 
--- 
-BRs
-Schspa Shi
+The result can be found here:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/johan/usb-serial.git/commit/?h=usb-next
+
+Johan
