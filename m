@@ -2,101 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDB5EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:22:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67AFC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbiGMIWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:22:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52858 "EHLO
+        id S235055AbiGMIWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235246AbiGMIVc (ORCPT
+        with ESMTP id S235459AbiGMIW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:21:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDE54C0521;
-        Wed, 13 Jul 2022 01:18:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91778B81D51;
-        Wed, 13 Jul 2022 08:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4654C34114;
-        Wed, 13 Jul 2022 08:17:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657700278;
-        bh=mtrH3InFG5+OdX9MDNFuhP8YVtLJH9iCPwP6kVSeQBA=;
+        Wed, 13 Jul 2022 04:22:27 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AF02E529C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:19:10 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id E9B37C01E; Wed, 13 Jul 2022 10:19:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657700347; bh=kFnzNWxCZBAtAzvncVijnyMsZ788g9J2zeGCrsvs2KI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RNw0ZPfZ4XDUFl1OU0KtYSNVoPrhimN9C8WUNOLkrEM2PDKIikAlXT5KtLyFvfoSj
-         52tMmv00wi+C7QtuJK/LpMjgBdl8KCdG98862SBFWl3pKon531kXteZtKduprdN6lN
-         xhC71mUFuMt2EDX4uTN05ViTYP2TeAELehwRG9yo=
-Date:   Wed, 13 Jul 2022 10:17:54 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: Re: [PATCH 5.18 34/61] objtool: Update Retpoline validation
-Message-ID: <Ys5/ssHL076y4niP@kroah.com>
-References: <20220712183236.931648980@linuxfoundation.org>
- <20220712183238.342232911@linuxfoundation.org>
- <63e23f80-033f-f64e-7522-2816debbc367@kernel.org>
- <509dd891-73cc-31b9-18ac-2e930084c02f@kernel.org>
+        b=U5XqbnKR+EvimpzEGpDEPJp5D0lsrEpWfLmqC3xXBboSBynhQtNmAYFHuFf1a2W5D
+         NQC5i4FGCZ4vkWf79CA1wFhdC3aHnItMmlX7+Z/Nr+J5hVUdSYWBKQXDstNGGVZF3x
+         HTHCCLbgL46LlnSFEk4p7s8Jl1m7urIrUpOlTQodcXAm9WBWkqPyBrRES1A/gyFCzP
+         LLyj6i3kAVNrD/jGT62RDICDWmDjCeZmyIS8lz5LhQjIb75BrzqSesKvADZgCPp8ty
+         zj9y3kSbA/WdKo1ddZ2T1us8IJKrDUGNC++4wkVNEGDL7WfhIGTgymZxwLw6KtQd9y
+         BlJza7Fad+2ug==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 6D7B5C009;
+        Wed, 13 Jul 2022 10:19:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657700346; bh=kFnzNWxCZBAtAzvncVijnyMsZ788g9J2zeGCrsvs2KI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cBwR0TywevLZkr1EL7yOuaBuNlvTBdDQSBNdh+oapLKhMxpeZ8PsQoEGT/L7yvd1K
+         ZY37kU+pzgrRAaN8i9f360QYnOgMEIwejeG2701D36Bwk6cfpeJBoYgkqUVl27Wx7L
+         9IZebPQP+KHecYEtZG2ktJ/K+3YeO1bBx+cVHYX+qYjcU0u1rZpHHofa5SSQOQbJ1C
+         mdfntXkpvEVTIj2lENnsbyWveLFLxdpz/LedOmOU0rgLlC0layS1UVVQ1FehgxEa57
+         7fiTM64NpJAGJ7wRdZvhe9snJSnap4h2DT+yoXJjBI2b7HjFLfS13l7ewCR+eMQIQL
+         ReaKexNDnB1sw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 88e820a3;
+        Wed, 13 Jul 2022 08:19:00 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 17:18:45 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
+        linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        Greg Kurz <groug@kaod.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Suren Baghdasaryan <surenb@google.com>
+Subject: Re: [RFC PATCH] 9p: forbid use of mempool for TFLUSH
+Message-ID: <Ys5/5RJCM6ur7oCc@codewreck.org>
+References: <12950409.o0bIpVV1Ut@silver>
+ <20220713041700.2502404-1-asmadeus@codewreck.org>
+ <0aa8323d-9461-a861-ac35-6952e7aeaf93@gmail.com>
+ <Ys5wRdSwtTeLF6nc@codewreck.org>
+ <a4d7f359-c430-6487-ec38-009bc2af2e97@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <509dd891-73cc-31b9-18ac-2e930084c02f@kernel.org>
+In-Reply-To: <a4d7f359-c430-6487-ec38-009bc2af2e97@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 09:54:01AM +0200, Jiri Slaby wrote:
-> On 13. 07. 22, 9:45, Jiri Slaby wrote:
-> > On 12. 07. 22, 20:39, Greg Kroah-Hartman wrote:
-> > > From: Peter Zijlstra <peterz@infradead.org>
-> > > 
-> > > commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
-> > > 
-> > > Update retpoline validation with the new CONFIG_RETPOLINE requirement of
-> > > not having bare naked RET instructions.
-> > 
-> > Hi,
-> > 
-> > this breaks compilation on i386:
-> >  > arch/x86/kernel/../../x86/xen/xen-head.S:35: Error: no such
-> > instruction: `annotate_unret_safe'
-> > 
-> > Config:
-> > https://raw.githubusercontent.com/openSUSE/kernel-source/stable/config/i386/pae
-> > 
-> > 
-> > And yeah, upstream¹⁾ is affected too.
-> > 
-> > ¹⁾I am at commit b047602d579b4fb028128a525f056bbdc890e7f0.
+Kent Overstreet wrote on Wed, Jul 13, 2022 at 03:40:10AM -0400:
+>> I don't think it really matters either way -- I'm much more worried
+>> about the two points I gave in the commit comment section: mempools not
+>> being shared leading to increased memory usage when many mostly-idle
+>> mounts (I know users who need that), and more importantly that the
+>> mempool waiting is uninterruptible/non-failible might be "nice" from the
+>> using mempool side but I'd really prefer users to be able to ^C out of
+>> a mount made on a bad server getting stuck in mempool_alloc at least.
 > 
-> A naive fix is:
-> --- a/arch/x86/kernel/head_32.S
-> +++ b/arch/x86/kernel/head_32.S
-> @@ -23,6 +23,7 @@
->  #include <asm/cpufeatures.h>
->  #include <asm/percpu.h>
->  #include <asm/nops.h>
-> +#include <asm/nospec-branch.h>
->  #include <asm/bootparam.h>
->  #include <asm/export.h>
->  #include <asm/pgtable_32.h>
+> We should never get stuck allocating memory - if that happens, game over,
+> system can no longer make forward progress.
+
+Well, that boils down to how much you want to trust your server.
+The qemu server has been working rather well but I just pulled out
+nfs-ganesha back from its grave for trans_fd tests earlier and got it to
+crash on fsstress in 5 minutes, because upstream hasn't had anyone
+working on the 9p side of things lately.
+
+In that particular case the socket closes and client gets out of
+requests, but if the server just stops replying you'll get requests
+stuck as 9p cannot get out of flushes -- another long standing bug, this
+one is even worse as it's unkillable.
+And as long as that waits it won't free up buffers.
+
+Even if that gets fixed, the buffers won't be freed until the server
+replies, which can be arbitrarily slow -- ^C on a process that waits
+for a free buffer must work.
+
+> > It looked good before I realized all the ways this could hang, but now I
+> > just think for something like 9p it makes more sense to fail the
+> > allocation and the IO than to bounce forever trying to allocate memory
+> > we don't have.
 > 
-> The question (I don't know answer to) is whether x86_32 should actually do
-> ANNOTATE_UNRET_SAFE.
+> A filesystem that randomly fails IOs is, fundamentally, not a filesystem
+> that _works_. This whole thing started because 9pfs failing IOs has been
+> breaking my xfstests runs - and 9pfs isn't the thing I'm trying to test!
 
-I doubt it should be doing that, but I'll let others answer more
-definitively.
+I can agree with that and I probably wasn't clear, what I'm talking
+about here is interruptability.
+If all works well I agree some amount of waiting makes sense, but for
+networked stuff some fallback also is important.
+(if I could be greedy, some timeout would also make sense to me, but we
+can agree to disagree on this one and I'll live without one)
 
-Your commit seems sane, for some reason I thought Boris tested i386
-builds, but maybe in the end something snuck in that broke it.
+> Local filesystems and the local IO stack have always had this understanding
+> - that IO needs to _just work_ and be able to make forward progress without
+> allocating additional memory, otherwise everything falls over because memory
+> reclaim requires doing IO. It's fundamentally no different with network
+> filesystems, the cultural expectation just hasn't been there historically
+> and not for any good technical reason - it's just that in -net land dropping
+> packets is generally a fine thing to do when you have to - but it's really
+> not in filesystem land, not if you want to make something that's reliable
+> under memory pressure!
 
-thanks,
+Well... I agree memory pressure isn't a good reason and am happy to
+spend some precious free time improving this, but while network
+reliability shouldn't be a problem (9p only works on reliable
+transports), I wouldn't be trusting 9p with too much.
+For virtio this isn't much of a problem but to give an example if the
+connection drops (server restart, or if over wan some stateful firewall
+restart) then the client gets lost and never recovers unless it's
+remounted.
+For this particular case, I know of a company that did an implementation
+to remember rebuild state (reopen fids etc) from the dentry paths but
+that was never made public nor would be applicable as is anyway.
 
-greg k-h
+Priorities also aren't the same for everyone: while it probably is
+perfectly acceptable to put aside 2MB of memory in your case (single
+mount, 4x2x256KB msize), I've seen a usecase which requires many mounts
+(three per user logged in on the machine, possibly dozens) with large
+RPCs for performance (msize=1MB); clogging up 24MB of memory per user
+for filesystems they might not even use doesn't seem right to me.
+
+
+Well, frankly I've just been advising to get away from 9p whenever I
+could, it's simple so it's nice for testing, but I'm always surprised it
+keeps getting new users... So I probably shouldn't be maintaining this :)
+
+
+Anyway, for qemu it's probably possible to improve things some more:
+
+> > Let's first see if you still see if you still see high order allocation
+> > failures when these are made much less likely with Chritisan's patch.
+> 
+> Which patch is that? Unless you're talking about my mempool patch?
+
+You'll need his 4 patches to apply cleanly, it's what we were talking
+about for not allocating such large buffers for all requests.
+
+aa32658b1ca1 net/9p: split message size argument into 't_size' and 'r_size' pair
+86b277a492be 9p: add P9_ERRMAX for 9p2000 and 9p2000.u
+17c59311f84d net/9p: add p9_msg_buf_size()
+4b9eca5829ed net/9p: allocate appropriate reduced message buffers
+
+The first three prepare and last one enables it. Most requests will
+allocate much smaller buffers, so if you have parallel IOs in particular
+it should be quite less likely to hit allocation failures.
+They'll still happen for the larger messages (read/readdir/write) if you
+can't allocate a single contiguous segment, but even these would only
+need one such buffer instead of the current two, so that still helps a
+bit.
+
+--
+Dominique
