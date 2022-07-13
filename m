@@ -2,124 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 23:52:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 23:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230047AbiGMXwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 19:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58746 "EHLO
+        id S231896AbiGMXw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 19:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiGMXwc (ORCPT
+        with ESMTP id S232096AbiGMXwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 19:52:32 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31ABE52DF2;
-        Wed, 13 Jul 2022 16:52:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657756351; x=1689292351;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=d4b95Nutiv+fVkeoTmmbeGdels6G19ALZ7QCpFCTTwc=;
-  b=ec0iUFs99XSrMBcTD4mfXpTGHIwEqAsiwpuU0GWzLKvYLXib/Azi8/Ly
-   9SiWuFCJyvAZfo7rLKu5nf79sZvP+XJ6uh10Bz4eaKKMTjP83DO/NRwwk
-   m2H19M4PddgwWJsAoRb8+MPNz4kFHILwnuhNGexn3kqyeiEwcLlDCXmaR
-   f/0qxuApQRvbaQdu1Pxx0cgYHtScpq0DVs3CUY6sQAG+li45pLMiuilKj
-   9aEC94fvRy0+sWgWzOfKcnrFNwVTXXH0vp4CRxjh+iFcQB6PrH+VabVvQ
-   mFbVzKYeTFIA9a93CFf+yAD4urjaNXi2VrlFY5v1J6eCWO7OiDlGD4o6Y
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="371685475"
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="371685475"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 16:52:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="593176855"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by orsmga007.jf.intel.com with ESMTP; 13 Jul 2022 16:52:20 -0700
-Date:   Thu, 14 Jul 2022 07:49:03 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 04/14] mm/shmem: Support memfile_notifier
-Message-ID: <20220713234903.GA2881285@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-5-chao.p.peng@linux.intel.com>
- <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
- <20220713074458.GB2831541@chaop.bj.intel.com>
- <74097857-1908-2ff2-1e54-bf7e658ea6c6@amd.com>
+        Wed, 13 Jul 2022 19:52:50 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A64A554641
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:52:48 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id x185so560453oig.1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=xlTQqbw7uDh4SuPsuMIuNWyY8gGG3CCpf0R5mOWG5uo=;
+        b=GmdSul5V0h0l9vx6e6MKTO5tR7iI4VBAnIruDdHRvVtsL+ZN9U0erJYaKhBmX31wxN
+         YJXKxJHDNRUvUZlxQaEVQ5WBdXsRH2CPxsnKx1NG1u/890cWUrlWSrBht9zPQIPh63kS
+         QZSuoffMnAwsyl0W4LDEnhfBH4Ajgxk51V3Xk=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=xlTQqbw7uDh4SuPsuMIuNWyY8gGG3CCpf0R5mOWG5uo=;
+        b=pQPgMmPZbblL4gIC0bA8H2lE2AwRWYtMxfmlQR0StFk5ssIhh5mUgLZaRnPhecP7iy
+         4KHNrnjOPzNBggEswIsLHFStNzTwGL9W6pEr/QFl4OVJNGfiwtkdmlTEJ2/RHVbI+9c8
+         4n0MuVralvbO8oWtcojNaYDDSXgm/RBl89XG12HEnmG+y6mvNft+11smoklM3upLou9k
+         UykkA8Cdi5fc70cu3VMFv+ePtcjYWxlVbuly/vYeXmwHcU1yY2TFXlZRuiDJGdtQHjel
+         blRzjcx99nr1iZ9dNp+Q/oNmKxUIXpyZHxBnKU7EMSaAbAg6JlakGNW8ZU0kZIJBAsQK
+         dmwA==
+X-Gm-Message-State: AJIora9+JNfKN/wZ+uzAEkyi3/3uhLfOtZk/I5B0p2LJWoG8xoEzn19S
+        H659SL5Yz0Pv4Lhd86WqB7QxfiLDiU9Nbg==
+X-Google-Smtp-Source: AGRyM1t8Oyx9JiN9pS02uZRL8cVCdFOv/rC2q7vL2hNTcSFUdc52uoNQSfKVpumlzFL3QKzMw1yZTg==
+X-Received: by 2002:a05:6808:1183:b0:2d4:5eeb:1ca3 with SMTP id j3-20020a056808118300b002d45eeb1ca3mr3002185oil.8.1657756367781;
+        Wed, 13 Jul 2022 16:52:47 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id o10-20020a056808124a00b0032f51af1999sm56286oiv.42.2022.07.13.16.52.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 16:52:47 -0700 (PDT)
+Subject: Re: [PATCH] selftests/kcmp: Make the test output consistent and clear
+To:     Gautam Menghani <gautammenghani201@gmail.com>, shuah@kernel.org
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220629192822.47577-1-gautammenghani201@gmail.com>
+ <YsuljDee9KGDPfsH@fedora>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <bdcac68c-e227-6376-9d71-aa667596c4e6@linuxfoundation.org>
+Date:   Wed, 13 Jul 2022 17:52:45 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <74097857-1908-2ff2-1e54-bf7e658ea6c6@amd.com>
+In-Reply-To: <YsuljDee9KGDPfsH@fedora>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:01:13PM +0200, Gupta, Pankaj wrote:
-> 
-> > > > +#ifdef CONFIG_MIGRATION
-> > > > +static int shmem_migrate_page(struct address_space *mapping,
-> > > > +			      struct page *newpage, struct page *page,
-> > > > +			      enum migrate_mode mode)
-> > > > +{
-> > > > +	struct inode *inode = mapping->host;
-> > > > +	struct shmem_inode_info *info = SHMEM_I(inode);
-> > > > +
-> > > > +	if (info->memfile_node.flags & MEMFILE_F_UNMOVABLE)
-> > > > +		return -EOPNOTSUPP;
-> > > > +	return migrate_page(mapping, newpage, page, mode);
-> > > 
-> > > Wondering how well page migrate would work for private pages
-> > > on shmem memfd based backend?
-> > 
-> >  From high level:
-> >    - KVM unset MEMFILE_F_UNMOVABLE bit to indicate it capable of
-> >      migrating a page.
-> >    - Introduce new 'migrate' callback(s) to memfile_notifier_ops for KVM
-> >      to register.
-> >    - The callback is hooked to migrate_page() here.
-> >    - Once page migration requested, shmem calls into the 'migrate'
-> >      callback(s) to perform additional steps for encrypted memory (For
-> >      TDX we will call TDH.MEM.PAGE.RELOCATE).
-> 
-> Yes, that would require additional (protocol specific) handling for private
-> pages. Was trying to find where "MEMFILE_F_UNMOVABLE" flag is set currently?
+On 7/10/22 10:22 PM, Gautam Menghani wrote:
+> Hi Shuah,
+> Please review this patch and let me know if any changes are required.
 
-It's set with memfile_register_notifier() in patch 13.
+Remember to bottom post.
 
-> 
-> Thanks,
-> Pankaj
+> On Thu, Jun 30, 2022 at 12:58:22AM +0530, Gautam Menghani wrote:
+>> Make the output format of this test consistent. Currently the output is
+>> as follows:
+>>
+
+Now what is inconsistent. It is not very clean from the output. Please
+add more information on how the current information is inconsistent and
+how you patch makes it consistent.
+
+>> +TAP version 13
+>> +1..1
+>> +# selftests: kcmp: kcmp_test
+>> +# pid1:  45814 pid2:  45815 FD:  1 FILES:  1 VM:  2 FS:  1 SIGHAND:  2
+>> +  IO:  0 SYSVSEM:  0 INV: -1
+>> +# PASS: 0 returned as expected
+>> +# PASS: 0 returned as expected
+>> +# PASS: 0 returned as expected
+>> +# # Planned tests != run tests (0 != 3)
+>> +# # Totals: pass:3 fail:0 xfail:0 xpass:0 skip:0 error:0
+>> +# # Planned tests != run tests (0 != 3)
+>> +# # Totals: pass:3 fail:0 xfail:0 xpass:0 skip:0 error:0
+>> +# # Totals: pass:0 fail:0 xfail:0 xpass:0 skip:0 error:0
+>> +ok 1 selftests: kcmp: kcmp_test
+>>
+>> With this patch applied the output is as follows:
+>>
+>> +TAP version 13
+>> +1..1
+>> +# selftests: kcmp: kcmp_test
+>> +# TAP version 13
+>> +# 1..3
+>> +# pid1:  46330 pid2:  46331 FD:  1 FILES:  2 VM:  2 FS:  2 SIGHAND:  1
+>> +  IO:  0 SYSVSEM:  0 INV: -1
+>> +# PASS: 0 returned as expected
+>> +# PASS: 0 returned as expected
+>> +# PASS: 0 returned as expected
+>> +# # Totals: pass:3 fail:0 xfail:0 xpass:0 skip:0 error:0
+>> +ok 1 selftests: kcmp: kcmp_test
+>>
+>>
+>> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
+>> ---
+
+thanks,
+-- Shuah
