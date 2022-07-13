@@ -2,127 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFC1C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:11:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF2BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236914AbiGMQLj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:11:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46980 "EHLO
+        id S237136AbiGMQLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:11:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiGMQLh (ORCPT
+        with ESMTP id S237146AbiGMQLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:11:37 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 584CF29C8F;
-        Wed, 13 Jul 2022 09:11:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657728696; x=1689264696;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MYSKoO4+JA1HLIxr6+ZiGU46DVwUCWwtwniY7flkkp4=;
-  b=aTzSBd44Q05EgMeRC11W9Xg2pTjAN5xZ6lvpvguTjW0/aP1cau3uXEkI
-   3+XcnsQSgrYgsitqLCPMCuEWK6Em4DDjgg9KTeV0hlPZ1rIq74xGWJVHA
-   eNluFRARFunYQ3fHqScjBOtYgeEpowrVBQMCqGOPTKX8vGOcW8dTTBtUA
-   7I+DN5G6SWvF6CGeFMe+btKvt+kxe9hvrb6pUrBuy+FvoIKdU/T0gMREB
-   pRNuzoLORybWebeqKpvZjXo9GmmZ5I14sGkYfmejj3RbmDL6f11HGYOQr
-   vkQY/oRuLxn8wdFvtuF42cjCxh8yf6KtsC5JihYIZyUCjB3XMA+BuZPSn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="268304430"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="268304430"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 09:11:35 -0700
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="545912368"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 09:11:33 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oBexW-001CSU-0Y;
-        Wed, 13 Jul 2022 19:11:30 +0300
-Date:   Wed, 13 Jul 2022 19:11:29 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Vamshi Gajjela <vamshigajjela@google.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Johan Hovold <johan@kernel.org>, linux-serial@vger.kernel.org,
-        linux-kernel@vger.kernel.org, manugautam@google.com
-Subject: Re: [PATCH v3] serial: 8250_dw: Avoid pslverr on reading empty
- receiver fifo
-Message-ID: <Ys7usW3W3kemtVc+@smile.fi.intel.com>
-References: <20220713131722.2316829-1-vamshigajjela@google.com>
+        Wed, 13 Jul 2022 12:11:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5444E501AF;
+        Wed, 13 Jul 2022 09:11:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9DE661AD5;
+        Wed, 13 Jul 2022 16:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30801C34114;
+        Wed, 13 Jul 2022 16:11:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657728705;
+        bh=xKgCGVq47wtNXtj8TX6Re2zKYRejln4t9WqBUbpnVhE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z4h44caKqvqkIvqs6HwQUOqADIwkLjFK//iczkKgVOJrp/Eas6LK4iyLCD4Ov5k2G
+         BqGD/3kXLf7rE5BaYi3JLXh9b15l1aCsvyyYQWwtQs33kMSVTTS0h9oSvqYhvZ/qVu
+         aMGgz2kWO5W/9QNWb0NnctlyYTVmDKuy/GhcbdEa8V9qdJftMCwIrWDzU/XRrB6IzY
+         dhN/9wTMVkywR+n7Uw5rZTYBi3ARAaMUMS3PqKhsYDGzwW+8dif2F8cbWziuzDhiVV
+         cHoPYWSwX9w7M+Xi7Cw+/yZrFzmCvosbIpXPPsZ/IHXCAyKej9PpFDNCNLEvTatqaL
+         Knll34e5QIt2Q==
+Date:   Wed, 13 Jul 2022 17:21:32 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <j.neuschaefer@gmx.net>,
+        <zhengbin13@huawei.com>, <openbmc@lists.ozlabs.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] iio: adc: npcm: Add NPCM8XX support
+Message-ID: <20220713172132.0bc5002d@jic23-huawei>
+In-Reply-To: <20220713132640.215916-3-tmaimon77@gmail.com>
+References: <20220713132640.215916-1-tmaimon77@gmail.com>
+        <20220713132640.215916-3-tmaimon77@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713131722.2316829-1-vamshigajjela@google.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 06:47:22PM +0530, Vamshi Gajjela wrote:
-> From: VAMSHI GAJJELA <vamshigajjela@google.com>
-> 
-> With PSLVERR_RESP_EN parameter set to 1, the device generates an error
-> response when an attempt to read an empty RBR with FIFO enabled.
-> 
-> This happens when LCR writes are ignored when UART is busy.
-> dw8250_check_lcr() in retries to update LCR, invokes dw8250_force_idle()
-> to clear and reset FIFO and eventually reads UART_RX causing the error.
-> 
-> Avoid this by not reading RBR/UART_RX when no data is available.
+On Wed, 13 Jul 2022 16:26:40 +0300
+Tomer Maimon <tmaimon77@gmail.com> wrote:
 
-From code perspective looks good,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Adding ADC NPCM8XX support to NPCM ADC driver.
+> ADC NPCM8XX uses a different resolution and voltage reference.
+> 
+> As part of adding NPCM8XX support:
+> - Add NPCM8XX specific compatible string.
+> - Add data to handle architecture-specific ADC parameters.
+> 
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+missing 
 
-but maybe Ilpo or others have something to add based on the practical use.
+#include <linux/property.h> 
 
-> Signed-off-by: VAMSHI GAJJELA <vamshigajjela@google.com>
+So in current IIO togreg tree this doesn't build.  I could fix it up
+but given we are very late in cycle and I'd like to give this a little
+more time on list for Andy to take another look if he wishes, chances
+are this won't make it in until early next cycle.
+
+Thanks,
+
+Jonathan
+
 > ---
-> v3:
-> - check lsr based on FIFO enablement
-> v2:
-> - update as per review comments (re-format comments, xmas tree ordering)
->  drivers/tty/serial/8250/8250_dw.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
+>  drivers/iio/adc/npcm_adc.c | 35 ++++++++++++++++++++++++++++-------
+>  1 file changed, 28 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-> index f57bbd32ef11..7573904579f6 100644
-> --- a/drivers/tty/serial/8250/8250_dw.c
-> +++ b/drivers/tty/serial/8250/8250_dw.c
-> @@ -82,8 +82,21 @@ static inline int dw8250_modify_msr(struct uart_port *p, int offset, int value)
->  static void dw8250_force_idle(struct uart_port *p)
->  {
->  	struct uart_8250_port *up = up_to_u8250p(p);
-> +	unsigned int lsr;
+> diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
+> index f7bc0bb7f112..4c7ebcd57b88 100644
+> --- a/drivers/iio/adc/npcm_adc.c
+> +++ b/drivers/iio/adc/npcm_adc.c
+> @@ -16,6 +16,12 @@
+>  #include <linux/uaccess.h>
+>  #include <linux/reset.h>
 >  
->  	serial8250_clear_and_reinit_fifos(up);
+> +struct npcm_adc_info {
+> +	u32 data_mask;
+> +	u32 internal_vref;
+> +	u32 res_bits;
+> +};
 > +
-> +	/*
-> +	 * With PSLVERR_RESP_EN parameter set to 1, the device generates an
-> +	 * error response when an attempt to read an empty RBR with FIFO
-> +	 * enabled.
-> +	 */
-> +	if (up->fcr & UART_FCR_ENABLE_FIFO) {
-> +		lsr = p->serial_in(p, UART_LSR);
-> +		if (!(lsr & UART_LSR_DR))
-> +			return;
-> +	}
+>  struct npcm_adc {
+>  	bool int_status;
+>  	u32 adc_sample_hz;
+> @@ -34,6 +40,7 @@ struct npcm_adc {
+>  	 * has finished.
+>  	 */
+>  	struct mutex lock;
+> +	const struct npcm_adc_info *data;
+>  };
+>  
+>  /* ADC registers */
+> @@ -52,13 +59,21 @@ struct npcm_adc {
+>  #define NPCM_ADCCON_CH(x)		((x) << 24)
+>  #define NPCM_ADCCON_DIV_SHIFT		1
+>  #define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
+> -#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
+>  
+>  #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
+>  
+>  /* ADC General Definition */
+> -#define NPCM_RESOLUTION_BITS		10
+> -#define NPCM_INT_VREF_MV		2000
+> +static const struct npcm_adc_info npxm7xx_adc_info = {
+> +	.data_mask = GENMASK(9, 0),
+> +	.internal_vref = 2048,
+> +	.res_bits = 10,
+> +};
 > +
->  	(void)p->serial_in(p, UART_RX);
+> +static const struct npcm_adc_info npxm8xx_adc_info = {
+> +	.data_mask = GENMASK(11, 0),
+> +	.internal_vref = 1229,
+> +	.res_bits = 12,
+> +};
+>  
+>  #define NPCM_ADC_CHAN(ch) {					\
+>  	.type = IIO_VOLTAGE,					\
+> @@ -129,7 +144,8 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
+> +	*val = ioread32(info->regs + NPCM_ADCDATA);
+> +	*val &= info->data->data_mask;
+>  
+>  	return 0;
 >  }
+> @@ -157,9 +173,9 @@ static int npcm_adc_read_raw(struct iio_dev *indio_dev,
+>  			vref_uv = regulator_get_voltage(info->vref);
+>  			*val = vref_uv / 1000;
+>  		} else {
+> -			*val = NPCM_INT_VREF_MV;
+> +			*val = info->data->internal_vref;
+>  		}
+> -		*val2 = NPCM_RESOLUTION_BITS;
+> +		*val2 = info->data->res_bits;
+>  		return IIO_VAL_FRACTIONAL_LOG2;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		*val = info->adc_sample_hz;
+> @@ -176,7 +192,8 @@ static const struct iio_info npcm_adc_iio_info = {
+>  };
 >  
-> -- 
-> 2.37.0.144.g8ac04bfd2-goog
-> 
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>  static const struct of_device_id npcm_adc_match[] = {
+> -	{ .compatible = "nuvoton,npcm750-adc", },
+> +	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
+> +	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
+>  	{ /* sentinel */ }
+>  };
+>  MODULE_DEVICE_TABLE(of, npcm_adc_match);
+> @@ -196,6 +213,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  	info = iio_priv(indio_dev);
+>  
+> +	info->data = device_get_match_data(dev);
+> +	if (!info->data)
+> +		return -EINVAL;
+> +
+>  	mutex_init(&info->lock);
+>  
+>  	info->dev = &pdev->dev;
 
