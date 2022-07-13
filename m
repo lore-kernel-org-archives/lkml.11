@@ -2,145 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 086D8CCA480
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DCDCCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230254AbiGMBxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:53:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53852 "EHLO
+        id S233879AbiGMBzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 21:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233299AbiGMBxm (ORCPT
+        with ESMTP id S229727AbiGMBzv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:53:42 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762CD26FF
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:53:37 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id u9so12759202oiv.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JJxXRTDP7RUQ5bHaHz0PPbxMaAGEn9NGGA9nzJ6F/Go=;
-        b=BSxncvGzrTeTmwnlOa64mzOy3FBoNxiHzfgHiY9G4ipi6R1vQdnH8P8m5AJnvKbKjw
-         QQbTEDUjXjYdgt8tDokulgM33YY5IVdlP5MRywtv0aoceonuRlDOX+IVneB2SKEFSoNh
-         H0beaNZhkyjkZYtcTFn10lSUvcB2QJaO6/sV3hr/iuDQQVP65hET+a6R1r8c/GGJ0uVN
-         8+sM95RhpQP8+aGV/lrkj5Q0Yn93IgwHVxTak084J9AL4KfLEvoqIC3QKX0vzwcFgiZ+
-         hbsvurEbcVDvCUy6I5jl8krEFwOu2LB5akpvwUWrBqbSESLLKvolxBdV/wGc3PxtTn5t
-         TUmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JJxXRTDP7RUQ5bHaHz0PPbxMaAGEn9NGGA9nzJ6F/Go=;
-        b=QqojCgpVS+/mKDRa9gIgzJAUQqLqZjexebYswIfRkXEv1DR+mbfSTZxS+M5qto8ygM
-         O2mYYTmKkSx6xOGHsABLgaWdg+wdL1Dz0EsaIlfoxkD6tTmJCHP2afI2nuMumFG+l3Jl
-         1cNORldycVTmaC046q61bixAzugAVY6eJuorN2pjWNf9iBY5qou5XAN4pIkZtFywPSQp
-         J7vHCcCM5OFGLwbmD4Jtggzsn7H3Z09YI0z690xVyjHUcZl8M9Us7Gd63vGoXMCCAyfO
-         0BiB6kAof20F4mmUTKNDptDGW8YGMp1TILwehvty8GCuiYpnESr47RD+SO7Rk+QTjBET
-         Kozw==
-X-Gm-Message-State: AJIora+RWJIxDdkG2hajzis25EOTaIW28wjwcdQBTjYkLJxkYMX/RpI6
-        K212fNHs03Db0zy2AVuRnwzvAA==
-X-Google-Smtp-Source: AGRyM1vDcdE+j8h7alSR0sASPksPrxZUmakTE59zww7W/SuTUE49jBv4y7HCPKShlzAFHmwxXnF+yQ==
-X-Received: by 2002:aca:5dc6:0:b0:33a:25e:8d51 with SMTP id r189-20020aca5dc6000000b0033a025e8d51mr616189oib.258.1657677216683;
-        Tue, 12 Jul 2022 18:53:36 -0700 (PDT)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id e15-20020a9d6e0f000000b0061c29a38b3bsm4343389otr.33.2022.07.12.18.53.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 18:53:36 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 20:53:34 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        manivannan.sadhasivam@linaro.org, linux-arm-msm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Add lost ranges for timer
-Message-ID: <Ys4lnuVncPiWkjbH@builder.lan>
-References: <20220707160858.3178771-1-bjorn.andersson@linaro.org>
- <Ysvlqw/+eMk5XLRY@hovoldconsulting.com>
- <YszcSgnSrbsncw0J@ripper>
- <Ys2K/BH/kAeTBz5t@hovoldconsulting.com>
+        Tue, 12 Jul 2022 21:55:51 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A3AC9207;
+        Tue, 12 Jul 2022 18:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657677350; x=1689213350;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=pKiiCVx6jGcmxHkWq3i93Q32ZqFOuHeXNvvGly92q1U=;
+  b=eDWQ+qFPk+rh9yr0IK2HosdxG2gxtFtmwpjtEWwfVsBwr57oQ0MXauxa
+   GWuEmiUDlqq0fUnPbtJftLjqvz6JiBftcf6ehYmslQWaaMIOki/zfsZk0
+   ykxW+LaTU8/IGTxUoDNj6CGzWoEmbV65/M/5LEh4gL7kfJJIF1lQSlnDa
+   2pvrqV3jETXOLtPFZZoCzycG5b68D7KkJoldeMaj+U/hTi0D5vaGrTgzU
+   +6ns/EK6CZcy+YZg4CIJqTkp800w7ozrn0VA969Sd36LArSwzyiqTWRif
+   15FZgVl0Bf8gWFXFkeCdMMbYhj3K60RjyudLPfkvMEiF6FIDQItu0h34n
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285110552"
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="285110552"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 18:55:50 -0700
+X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
+   d="scan'208";a="628113093"
+Received: from ifatima-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.1.196])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 18:55:48 -0700
+Message-ID: <e4604ad23788a6d2950c091d04b7b805684a1a01.camel@intel.com>
+Subject: Re: [PATCH v7 002/102] Partially revert "KVM: Pass kvm_init()'s
+ opaque param to additional arch funcs"
+From:   Kai Huang <kai.huang@intel.com>
+To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
+        Chao Gao <chao.gao@intel.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Anup Patel <anup@brainfault.org>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+Date:   Wed, 13 Jul 2022 13:55:46 +1200
+In-Reply-To: <4566737e3c57c5ab17c0bc29d6f4758744b6eed1.1656366337.git.isaku.yamahata@intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+         <4566737e3c57c5ab17c0bc29d6f4758744b6eed1.1656366337.git.isaku.yamahata@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys2K/BH/kAeTBz5t@hovoldconsulting.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue 12 Jul 09:53 CDT 2022, Johan Hovold wrote:
+On Mon, 2022-06-27 at 14:52 -0700, isaku.yamahata@intel.com wrote:
+> From: Chao Gao <chao.gao@intel.com>
+>=20
+> This partially reverts commit b99040853738 ("KVM: Pass kvm_init()'s opaqu=
+e
+> param to additional arch funcs") remove opaque from
+> kvm_arch_check_processor_compat because no one uses this opaque now.
+> Address conflicts for ARM (due to file movement) and manually handle RISC=
+-V
+> which comes after the commit.
+>=20
+> And changes about kvm_arch_hardware_setup() in original commit are still
+> needed so they are not reverted.
 
-> On Mon, Jul 11, 2022 at 07:28:26PM -0700, Bjorn Andersson wrote:
-> > On Mon 11 Jul 01:56 PDT 2022, Johan Hovold wrote:
-> > 
-> > > On Thu, Jul 07, 2022 at 09:08:58AM -0700, Bjorn Andersson wrote:
-> > > > The timer node needs ranges specified to map the 1-cell children to the
-> > > > 2-cell address range used in /soc. This addition never made it into the
-> > > > patch that was posted and merged, so add it now.
-> > > > 
-> > > > Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-> > > > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > > > ---
-> > > >  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > > 
-> > > > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > index 2bdb42c88311..37a4cd6f85b6 100644
-> > > > --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > > @@ -1667,6 +1667,7 @@ timer@17c20000 {
-> > > >  			reg = <0x0 0x17c20000 0x0 0x1000>;
-> > > >  			#address-cells = <1>;
-> > > >  			#size-cells = <1>;
-> > > > +			ranges = <0 0 0 0x20000000>;
-> > > 
-> > > While addressing the current issue, this looks odd to me. Why not use a
-> > > non-zero parent bus address here instead?
-> > > 
-> > 
-> > I guess we could express the frames relative the timer range, but that
-> > would imply that anyone porting downstream dts snippets would have to
-> > translate these addresses - or more likely would end up just copying the
-> > existing cases.
-> > 
-> > > And please use hex notation consistently for the addresses.
-> > 
-> > That seems like a reasonable ask, I can fix that up. But on both
-> > accounts this matches what I merged for all the other platforms in:
-> > 
-> > 458ebdbb8e5d ("arm64: dts: qcom: timer should use only 32-bit size")
-> > 
-> > 
-> > So I guess we'll also need to go back and fix up the style of all the
-> > other platforms - just because we're not allowed to express the frames
-> > in 64-bits according to the binding...
-> 
-> Would have been easier to just amend the binding. I don't think that
-> #size-cells = 1 constraint is set in stone as it was added when
-> converting to DT schema.
-> 
+I tried to dig the history to find out why we are doing this.
 
-Rob disagrees with this idea:
-https://lore.kernel.org/all/CAL_JsqJMMCBnukFZLJ8X14s1PwqT=VEwKjDVj8mm4h55pZpcuw@mail.gmail.com/
+IMHO it's better to give a reason why you need to revert the opaque.  I gue=
+ss no
+one uses this opaque now doesn't mean we need to remove it?
 
-> I also don't think you need to fixup the hex notation elsewhere, it's
-> quite inconsistent currently, but no need to make it worse.
-> 
+Perhaps you should mention this is a preparation to
+hardware_enable_all()/hardware_disable_all() during module loading time.=
+=20
+Instead of extending hardware_enable_all()/hardware_disable_all() to take t=
+he
+opaque and pass to kvm_arch_check_process_compat(), just remove the opaque.
 
-I'll prefix the 0s with some 0x in this case and we can care for the
-other platforms some other day...
+Or perhaps just merge this patch to next one?
 
-> But you probably should amend the commit message and mention that this
-> fixes time keeping. I had recently noticed that something was off
-> (journals rotating, and erratic cursor blinking) but didn't realise that
-> timers were broken until you posted this.
-> 
+>=20
+> Signed-off-by: Chao Gao <chao.gao@intel.com>
+> Reviewed-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> Acked-by: Anup Patel <anup@brainfault.org>
+> Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
+> Link: https://lore.kernel.org/r/20220216031528.92558-3-chao.gao@intel.com
+> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
+> ---
+>  arch/arm64/kvm/arm.c       |  2 +-
+>  arch/mips/kvm/mips.c       |  2 +-
+>  arch/powerpc/kvm/powerpc.c |  2 +-
+>  arch/riscv/kvm/main.c      |  2 +-
+>  arch/s390/kvm/kvm-s390.c   |  2 +-
+>  arch/x86/kvm/x86.c         |  2 +-
+>  include/linux/kvm_host.h   |  2 +-
+>  virt/kvm/kvm_main.c        | 16 +++-------------
+>  8 files changed, 10 insertions(+), 20 deletions(-)
+>=20
+> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
+> index a0188144a122..7588efbac6be 100644
+> --- a/arch/arm64/kvm/arm.c
+> +++ b/arch/arm64/kvm/arm.c
+> @@ -68,7 +68,7 @@ int kvm_arch_hardware_setup(void *opaque)
+>  	return 0;
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	return 0;
+>  }
+> diff --git a/arch/mips/kvm/mips.c b/arch/mips/kvm/mips.c
+> index a25e0b73ee70..092d09fb6a7e 100644
+> --- a/arch/mips/kvm/mips.c
+> +++ b/arch/mips/kvm/mips.c
+> @@ -140,7 +140,7 @@ int kvm_arch_hardware_setup(void *opaque)
+>  	return 0;
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	return 0;
+>  }
+> diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
+> index 191992fcb2c2..ca8ef51092c6 100644
+> --- a/arch/powerpc/kvm/powerpc.c
+> +++ b/arch/powerpc/kvm/powerpc.c
+> @@ -446,7 +446,7 @@ int kvm_arch_hardware_setup(void *opaque)
+>  	return 0;
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	return kvmppc_core_check_processor_compat();
+>  }
+> diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
+> index 1549205fe5fe..f8d6372d208f 100644
+> --- a/arch/riscv/kvm/main.c
+> +++ b/arch/riscv/kvm/main.c
+> @@ -20,7 +20,7 @@ long kvm_arch_dev_ioctl(struct file *filp,
+>  	return -EINVAL;
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	return 0;
+>  }
+> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+> index 72bd5c9b9617..a05493f1cacf 100644
+> --- a/arch/s390/kvm/kvm-s390.c
+> +++ b/arch/s390/kvm/kvm-s390.c
+> @@ -251,7 +251,7 @@ int kvm_arch_hardware_enable(void)
+>  	return 0;
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	return 0;
+>  }
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 3d9dbaf9828f..30af2bd0b4d5 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -11799,7 +11799,7 @@ void kvm_arch_hardware_unsetup(void)
+>  	static_call(kvm_x86_hardware_unsetup)();
+>  }
+> =20
+> -int kvm_arch_check_processor_compat(void *opaque)
+> +int kvm_arch_check_processor_compat(void)
+>  {
+>  	struct cpuinfo_x86 *c =3D &cpu_data(smp_processor_id());
+> =20
+> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+> index c20f2d55840c..d4f130a9f5c8 100644
+> --- a/include/linux/kvm_host.h
+> +++ b/include/linux/kvm_host.h
+> @@ -1442,7 +1442,7 @@ int kvm_arch_hardware_enable(void);
+>  void kvm_arch_hardware_disable(void);
+>  int kvm_arch_hardware_setup(void *opaque);
+>  void kvm_arch_hardware_unsetup(void);
+> -int kvm_arch_check_processor_compat(void *opaque);
+> +int kvm_arch_check_processor_compat(void);
+>  int kvm_arch_vcpu_runnable(struct kvm_vcpu *vcpu);
+>  bool kvm_arch_vcpu_in_kernel(struct kvm_vcpu *vcpu);
+>  int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu);
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index a67e996cbf7f..a5bada53f1fe 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -5697,22 +5697,14 @@ void kvm_unregister_perf_callbacks(void)
+>  }
+>  #endif
+> =20
+> -struct kvm_cpu_compat_check {
+> -	void *opaque;
+> -	int *ret;
+> -};
+> -
+> -static void check_processor_compat(void *data)
+> +static void check_processor_compat(void *rtn)
+>  {
+> -	struct kvm_cpu_compat_check *c =3D data;
+> -
+> -	*c->ret =3D kvm_arch_check_processor_compat(c->opaque);
+> +	*(int *)rtn =3D kvm_arch_check_processor_compat();
+>  }
+> =20
+>  int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
+>  		  struct module *module)
+>  {
+> -	struct kvm_cpu_compat_check c;
+>  	int r;
+>  	int cpu;
+> =20
+> @@ -5740,10 +5732,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, uns=
+igned vcpu_align,
+>  	if (r < 0)
+>  		goto out_free_1;
+> =20
+> -	c.ret =3D &r;
+> -	c.opaque =3D opaque;
+>  	for_each_online_cpu(cpu) {
+> -		smp_call_function_single(cpu, check_processor_compat, &c, 1);
+> +		smp_call_function_single(cpu, check_processor_compat, &r, 1);
+>  		if (r < 0)
+>  			goto out_free_2;
+>  	}
 
-That sounds like a good idea, thanks for the suggestion.
-
-Regards,
-Bjorn
