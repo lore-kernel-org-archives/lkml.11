@@ -2,97 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D5EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D27CCA487
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:57:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235839AbiGMI5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:57:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38186 "EHLO
+        id S235907AbiGMI53 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:57:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235804AbiGMI47 (ORCPT
+        with ESMTP id S235843AbiGMI5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:56:59 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC240EA149;
-        Wed, 13 Jul 2022 01:56:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=Nu1POy7YkuNyZuJHgCV5LHCqiHV9ZZ729P8AmcVEC4E=; b=muDkd3U1IcxZQCX+U/CQIBkpxt
-        ZU+gG6hyVSQXeQI8qgawE6oaFo3/0+Yf09PRRHlTBuTr3WDJrpc41F1R3S5fsfpl3CUyBW+mtKdur
-        f8BqCWCkPs5vWnF1ffZ+zv/iCehxrjyyGk5SbzQD/J1BgTRXVwb8QsuIK09DO9qM+K1wrmlY/8TJr
-        mo9Pb/LKje7h2TpmjXXJhPdRd10jf6xB7KxTqe2TL0wDvDwfzXX+aKHNMkiXQevS2C9vLRHMl/X5U
-        RufnnNoz2I/kVQtw3aYlQeHmKWbBm8DypgMi3WvHN9A5cQqnhjEB26ekFuramQJadpXZdAFwkjQRR
-        Y2yRtupuX2IN3yDJgk4iwZ8Kmk9PlbBFaqBI+sVFazLWGBYVyBo9GXdA9E6vCkzgCLK7/6xqM3hsF
-        jRKP8EAt2QwXVjcaqdxmujWBvdCQ/XG63ZQ1U2DYzx+NkpCV830tKiwC48Uq0+w/G/rA/XsbQiw+q
-        cdtKFjRalgmH2DqPo4lUGFBAcP8m69KAZR2NNwm3Jd4nQHLhrSEjkB+S2L7rC+EOCqTWAr7FprKQb
-        4RHcmhGXOyYGtKNcmC9DbJ7n2gnTjFdy4pN9uE4xUyhi2GmeRC5QrJyNSdS0uupIArgXayiRGvuUj
-        bEdoQt08cq7VRGsTM19JZemXVMpmvxnFiup4glWLE=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
-Subject: Re: [PATCH v5 00/11] remove msize limit in virtio transport
-Date:   Wed, 13 Jul 2022 10:54:47 +0200
-Message-ID: <7468612.NupLhYsxyy@silver>
-In-Reply-To: <Ys3j7KucZGdFkttA@codewreck.org>
-References: <cover.1657636554.git.linux_oss@crudebyte.com>
- <Ys3j7KucZGdFkttA@codewreck.org>
+        Wed, 13 Jul 2022 04:57:17 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7213CEE1DA;
+        Wed, 13 Jul 2022 01:57:15 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id d10so9673033pfd.9;
+        Wed, 13 Jul 2022 01:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TceMcUV+/l4WL/aDjeSG/t8FqTVXmRKi59JDreDyO4Y=;
+        b=YR/UIXngdQpbtO47p/B49pkTwIduq8++/5exxY/5NLK1C4BARqLnsubk4tY1++NqEO
+         ls+3wm0B21K6RIKR0/nBtyN7pGpL8T3LT2DmDuR/R6VkoZpEDwUQSv9qkAgqZ9APiIBI
+         /87jaCS63a2eQ//jGmiUocWT2cNVEIowHg/FJCYc+pG1HtrDp9MHC5vB972LJPz1eWds
+         2pbgGZVKV8kmpZ40Oq0/2oEn3h+eeiYMenyrh4upNTZJiYYAA2oSJQvuxG3l0QmfsmIs
+         vH4aNPePyNgeBAfTLT2rnKtcGb5evoKbMTWbJx8fnQM/p/9YVjkROnIg3tZaxalurIQx
+         3DfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TceMcUV+/l4WL/aDjeSG/t8FqTVXmRKi59JDreDyO4Y=;
+        b=LwuIsgw2sq1zISF7Tw83Obhe7tmfmSp8H1xyvSFxm1RIDBxQgGjybVPTBglcau67HR
+         G3nTnU0D+ooXYfhm8Fc38VoIL3sxQr5M7fkPPvj/EfDPH1Kwa100IhWiBJtwxhivrIfT
+         FJOwRyTIIenZ82pv+ygM5gsKKKe7YLf1Yv34pwUqYBG+o5NxghGvU5hG7IEYJ5reGYfb
+         eqGIA+MhMYfVfqRlzauKAx6pCnguydBusNf8qY5HND+SiMMMigIQcqJPCzg4Fndw7Ujl
+         KOdjXxriS19uELGAWddB4EzosOAe9+hElZr5RwaKZr6aGcM537n7auyuKuqHU15zhIUv
+         gpcw==
+X-Gm-Message-State: AJIora9uOALxWbtB6rFe/+d3mY8sdFWazUaF1Y+/9azDo0p9Em4b08j3
+        ikgAT0EeyzHfVkMF3EBR68Ywb/8lmor8Qg==
+X-Google-Smtp-Source: AGRyM1tsu1SxBk9EPNd+2+dGJgv7KO2elKPTAjyLJ2yuTvRLc4nOy0gSj01drJXgpzr9DvVr6YOkkw==
+X-Received: by 2002:a63:1a4c:0:b0:416:1821:733d with SMTP id a12-20020a631a4c000000b004161821733dmr2088509pgm.444.1657702634761;
+        Wed, 13 Jul 2022 01:57:14 -0700 (PDT)
+Received: from debian.me (subs09a-223-255-225-69.three.co.id. [223.255.225.69])
+        by smtp.gmail.com with ESMTPSA id r2-20020a170902e3c200b0016c0eb202a5sm8202527ple.225.2022.07.13.01.57.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 01:57:14 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 8A5DC103975; Wed, 13 Jul 2022 15:57:11 +0700 (WIB)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org, linux-next@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Adam Guerin <adam.guerin@intel.com>,
+        Tomasz Kowallik <tomaszx.kowalik@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND v2 2/2] Documentation: qat: rewrite description
+Date:   Wed, 13 Jul 2022 15:56:28 +0700
+Message-Id: <20220713085627.175604-3-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220713085627.175604-1-bagasdotme@gmail.com>
+References: <20220713085627.175604-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Dienstag, 12. Juli 2022 23:13:16 CEST Dominique Martinet wrote:
-> Alright; anything I didn't reply to looks good to me.
-> 
-> Christian Schoenebeck wrote on Tue, Jul 12, 2022 at 04:35:54PM +0200:
-> > OVERVIEW OF PATCHES:
-> > 
-> > * Patches 1..6 remove the msize limitation from the 'virtio' transport
-> > 
-> >   (i.e. the 9p 'virtio' transport itself actually supports >4MB now,
-> >   tested
-> >   successfully with an experimental QEMU version and some dirty 9p Linux
-> >   client hacks up to msize=128MB).
-> 
-> I have no problem with this except for the small nitpicks I gave, but
-> would be tempted to delay this part for one more cycle as it's really
-> independant -- what do you think?
+The sysfs description contains redundancy on returned and allowed values
+list, due to the described sysfs is read-write. Rewrite.
 
-Yes, I would also postpone the virtio patches towards subsequent release 
-cycle.
+Acked-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Cc: Adam Guerin <adam.guerin@intel.com>
+Cc: Tomasz Kowallik <tomaszx.kowalik@intel.com>
+Cc: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Cc: Wojciech Ziemba <wojciech.ziemba@intel.com>
+Cc: Fiona Trahe <fiona.trahe@intel.com>
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-driver-qat | 34 +++++++---------------
+ 1 file changed, 11 insertions(+), 23 deletions(-)
 
-> > * Patch 7 limits msize for all transports to 4 MB for now as >4MB would
-> > need> 
-> >   more work on 9p client level (see commit log of patch 7 for details).
-> > 
-> > * Patches 8..11 tremendously reduce unnecessarily huge 9p message sizes
-> > and
-> > 
-> >   therefore provide performance gain as well. So far, almost all 9p
-> >   messages
-> >   simply allocated message buffers exactly msize large, even for messages
-> >   that actually just needed few bytes. So these patches make sense by
-> >   themselves, independent of this overall series, however for this series
-> >   even more, because the larger msize, the more this issue would have hurt
-> >   otherwise.
-> 
-> time-wise we're getting close to the merge window already (probably in 2
-> weeks), how confident are you in this?
-> I can take patches 8..11 in -next now and probably find some time to
-> test over next weekend, are we good?
-
-Well, I have tested them thoroughly, but nevertheless IMO someone else than me 
-should review patch 10 as well, and review whether the calculations for the 
-individual message types are correct. That's a bit of spec dictionary lookup.
-
-Best regards,
-Christian Schoenebeck
-
+diff --git a/Documentation/ABI/testing/sysfs-driver-qat b/Documentation/ABI/testing/sysfs-driver-qat
+index 43e081ec22cc4a..185f81a2aab360 100644
+--- a/Documentation/ABI/testing/sysfs-driver-qat
++++ b/Documentation/ABI/testing/sysfs-driver-qat
+@@ -2,18 +2,14 @@ What:		/sys/bus/pci/devices/<BDF>/qat/state
+ Date:		June 2022
+ KernelVersion:	5.20
+ Contact:	qat-linux@intel.com
+-Description:	Reports the current state of the QAT device and allows to
+-		change it.
++Description:	(RW) Reports the current state of the QAT device. Write to
++		the file to start or stop the device.
+ 
+-		This attribute is RW.
++		The values are:
+ 
+-		Returned values:
+-			up: the device is up and running
+-			down: the device is down
++		* up: the device is up and running
++		* down: the device is down
+ 
+-		Allowed values:
+-			up: initialize and start the device
+-			down: stop the device and bring it down
+ 
+ 		It is possible to transition the device from up to down only
+ 		if the device is up and vice versa.
+@@ -24,22 +20,14 @@ What:		/sys/bus/pci/devices/<BDF>/qat/cfg_services
+ Date:		June 2022
+ KernelVersion:	5.20
+ Contact:	qat-linux@intel.com
+-Description:	Reports the current configuration of the QAT device and allows
+-		to change it.
++Description:	(RW) Reports the current configuration of the QAT device.
++		Write to the file to change the configured services.
+ 
+-		This attribute is RW.
++		The values are:
+ 
+-		Returned values:
+-			sym;asym:	the device is configured for running
+-					crypto services
+-			dc:		the device is configured for running
+-					compression services
+-
+-		Allowed values:
+-			sym;asym:	configure the device for running
+-					crypto services
+-			dc:		configure the device for running
+-					compression services
++		* sym;asym: the device is configured for running crypto
++		  services
++		* dc: the device is configured for running compression services
+ 
+ 		It is possible to set the configuration only if the device
+ 		is in the `down` state (see /sys/bus/pci/devices/<BDF>/qat/state)
+-- 
+An old man doll... just what I always wanted! - Clara
 
