@@ -2,73 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AECC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70B9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236554AbiGMOcr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:32:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38784 "EHLO
+        id S236556AbiGMOeC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:34:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231653AbiGMOcn (ORCPT
+        with ESMTP id S231653AbiGMOeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:32:43 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8883537FAA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:32:41 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 857AF221D4;
-        Wed, 13 Jul 2022 16:32:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657722759;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=duF3Y9Z02+1a67NZ+Hlfg5VSoW3ZmuWvDf5dQcHYzN8=;
-        b=FO+wQKwZIzWjF3oOb7rj19/1KM4CKVAWVtrpt2+C0ESOkyPvH8W/PhlpgDHFGCM4kM1yMH
-        5T8yBKYBC3J4iQzC+dUOLVh8KRWy+UHsC+a8zRU7iSpx8RXUk6oaEFsQVjFTqOO2SGyDps
-        Si5SbtFEho3nmREwOiMjvfDqKatBqj0=
+        Wed, 13 Jul 2022 10:34:01 -0400
+Received: from out28-171.mail.aliyun.com (out28-171.mail.aliyun.com [115.124.28.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DC213FAF;
+        Wed, 13 Jul 2022 07:33:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07781884|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.00565203-0.000234054-0.994114;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047193;MF=zhouyu@wanyeetech.com;NM=1;PH=DS;RN=9;RT=9;SR=0;TI=SMTPD_---.ORke3Uw_1657722824;
+Received: from 192.168.10.152(mailfrom:zhouyu@wanyeetech.com fp:SMTPD_---.ORke3Uw_1657722824)
+          by smtp.aliyun-inc.com;
+          Wed, 13 Jul 2022 22:33:45 +0800
+Subject: Re: [PATCH v4 07/11] ASoC: jz4740-i2s: Make the PLL clock name
+ SoC-specific
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        paul@crapouillou.net, lgirdwood@gmail.com, broonie@kernel.org,
+        perex@perex.cz, tiwai@suse.com
+Cc:     linux-mips@vger.kernel.org, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220708160244.21933-1-aidanmacdonald.0x0@gmail.com>
+ <20220708160244.21933-8-aidanmacdonald.0x0@gmail.com>
+From:   Zhou Yanjie <zhouyu@wanyeetech.com>
+Message-ID: <0269b850-f33a-7aa9-a3eb-83655bd4e19a@wanyeetech.com>
+Date:   Wed, 13 Jul 2022 22:33:44 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Wed, 13 Jul 2022 16:32:38 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Cc:     clg@kaod.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, p.yadav@ti.com,
-        quic_ggregory@quicinc.com, quic_jiles@quicinc.com,
-        tudor.ambarus@microchip.com
-Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
-In-Reply-To: <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
-References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
- <20220711095042.2095360-1-michael@walle.cc>
- <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
-X-Sender: michael@walle.cc
+In-Reply-To: <20220708160244.21933-8-aidanmacdonald.0x0@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Aidan,
 
-Am 2022-07-13 16:26, schrieb Jae Hyun Yoo:
->>> +	{ "w25q512nwq", INFO(0xef6020, 0, 64 * 1024, 1024)
->> 
->> Please use INFO(0xef6020, 0, 0, 0) and test wether it will still
->> work correctly. We will then be able to convert it to SNOR_ID3()
->> later.
-> 
-> Tested it but it doesn't work with INFO(0xef6020, 0, 0, 0). I'll keep
-> it as is.
+On 2022/7/9 上午12:02, Aidan MacDonald wrote:
+> On some Ingenic SoCs, such as the X1000, there is a programmable
+> divider used to generate the I2S system clock from a PLL, rather
+> than a fixed PLL/2 clock. It doesn't make much sense to call the
+> clock "pll half" on those SoCs, so the clock name should really be
+> a SoC-dependent value.
+>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>   sound/soc/jz4740/jz4740-i2s.c | 8 +++++++-
+>   1 file changed, 7 insertions(+), 1 deletion(-)
+>
+> diff --git a/sound/soc/jz4740/jz4740-i2s.c b/sound/soc/jz4740/jz4740-i2s.c
+> index 0dcc658b3784..a41398c24d0e 100644
+> --- a/sound/soc/jz4740/jz4740-i2s.c
+> +++ b/sound/soc/jz4740/jz4740-i2s.c
+> @@ -75,6 +75,8 @@ struct i2s_soc_info {
+>   	struct reg_field field_i2sdiv_capture;
+>   	struct reg_field field_i2sdiv_playback;
+>   
+> +	const char *pll_clk_name;
+> +
+>   	bool shared_fifo_flush;
+>   };
+>   
+> @@ -281,7 +283,7 @@ static int jz4740_i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+>   		clk_set_parent(i2s->clk_i2s, parent);
+>   		break;
+>   	case JZ4740_I2S_CLKSRC_PLL:
+> -		parent = clk_get(NULL, "pll half");
+> +		parent = clk_get(NULL, i2s->soc_info->pll_clk_name);
+>   		if (IS_ERR(parent))
+>   			return PTR_ERR(parent);
+>   		clk_set_parent(i2s->clk_i2s, parent);
+> @@ -400,6 +402,7 @@ static const struct i2s_soc_info jz4740_i2s_soc_info = {
+>   	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 8, 11),
+>   	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+>   	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.pll_clk_name		= "pll half",
+>   	.shared_fifo_flush	= true,
+>   };
+>   
+> @@ -409,6 +412,7 @@ static const struct i2s_soc_info jz4760_i2s_soc_info = {
+>   	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+>   	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+>   	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.pll_clk_name		= "pll half",
+>   };
 
-Can you please look into this? I'd expect this to work if the SFDP
-tables are correct because all this should come from the tables.
-You can look at /sys/kernel/debug/spi-nor/spi0.0/params and see
-what is changing there.
 
-Thanks,
--michael
+Since JZ4760, according to the description of the I2SCDR register,
+Ingenic SoCs no longer use PLL/2 clock, but directly use PLL clock,
+so it seems also inappropriate to use "pll half" for these SoCs.
+
+
+>   
+>   static struct snd_soc_dai_driver jz4770_i2s_dai = {
+> @@ -435,6 +439,7 @@ static const struct i2s_soc_info jz4770_i2s_soc_info = {
+>   	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+>   	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+>   	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.pll_clk_name		= "pll half",
+>   };
+
+
+Same here.
+
+
+>   
+>   static const struct i2s_soc_info jz4780_i2s_soc_info = {
+> @@ -443,6 +448,7 @@ static const struct i2s_soc_info jz4780_i2s_soc_info = {
+>   	.field_tx_fifo_thresh	= REG_FIELD(JZ_REG_AIC_CONF, 16, 20),
+>   	.field_i2sdiv_capture	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 8, 11),
+>   	.field_i2sdiv_playback	= REG_FIELD(JZ_REG_AIC_CLK_DIV, 0, 3),
+> +	.pll_clk_name		= "pll half",
+>   };
+>   
+
+
+Same here.
+
+
+Thanks and best regards!
+
+
+>   static const struct snd_soc_component_driver jz4740_i2s_component = {
