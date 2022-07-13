@@ -2,62 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7D37C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D4AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234817AbiGMIPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
+        id S235486AbiGMIPN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:15:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235083AbiGMIMm (ORCPT
+        with ESMTP id S235089AbiGMIMm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:42 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60982E95F8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:37 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83628EA16E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id E2D77CE1F18
+        by sin.source.kernel.org (Postfix) with ESMTPS id 90FE0CE1E78
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D7ADC341D9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 230F4C341D3;
         Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=cM9G0MOjjhx8LPxbc5xrR5jmZnKudFExd+QGPJMHw58=;
+        bh=891ODzFxtaIaukcP3khje0yCWAcvp3ViN+oLtx5T5AI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=utTlqGPlohgL+89pHzreF7oDyf1++cFRoyWGyyvhoW80OuY6DmdIx44Uo41/m5Lqm
-         45d9BqsYTnYqnDC5dWRp5H7oN7KKXY6FMu1OZwpknZuyT+5PpeMka6ny/jPsUf9ScH
-         bzIjPXW1p+5QMOS/ZVMlzrR4RYOQ460robxut9tBkilCcbqv6tVmKgdpwjmU/DvpS3
-         oTFsinoAhqa2dlkSD30GwyzuewlEfcDcz4IgMurMfNTmUT44PuRu/Yz3HFLOkFlvfd
-         orXoyXTMwSClhIet7rootxGIhz0Cb6PihyH1CluhKpks8PlhzbEboQNG0cxmQVNQtG
-         b1XAZmBMZuMrg==
+        b=G5rg0nky4D+N3R3jfJz5vlQvMUqaFWQ44W3wW4bvy11+fZcJNF4Kq+z2NDVQX+JJS
+         qHITqTyWgEsx9c8JLklQjtSnXKmdBcvZ32ZJHXFiSg+HG/gCcnbUH7Ea3Yxe+bqtAX
+         1t6NOWJEyZPbZk+NMGF4pg6kRRJtqHXB0r9G4TpiwjaJ876oyL1uIXRglubZ9Q4qok
+         O6kzeTos3fnDjMeHjcRg+M/f/wn1FUhevRZjcf/ZH6haXPLxAcPNx+G5mys6vHbJA/
+         VXOdyFPlyRVxx5bd4vxse7vtfvyekD2NIt+rpULEzdgkwOElv3SwaW6b0cHL06jKfJ
+         ET/a7P5JMGNjQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004zt5-I3;
+        id 1oBXTx-004zsw-GA;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?q?Micha=C5=82=20Winiarski?= <michal.winiarski@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Nirmoy Das <nirmoy.das@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 12/39] drm/i915: gem: add kernel-doc description for some function parameters
-Date:   Wed, 13 Jul 2022 09:12:00 +0100
-Message-Id: <7940f1767c5c6f70196ae599448b87d75ba46834.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 09/39] drm/i915: intel_wakeref.h: fix some kernel-doc markups
+Date:   Wed, 13 Jul 2022 09:11:57 +0100
+Message-Id: <781e207ffe403a21f67a3f8c3bd39725d229cf0e.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -68,10 +59,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are some parameters missing at the kernel-doc markups on
-some gem files. Some of those are trivial enough to be added.
+Two documented functions don't match the kernel-doc comments,
+as reported by kernel-doc:
 
-Document them.
+	drivers/gpu/drm/i915/intel_wakeref.h:117: warning: expecting prototype for intel_wakeref_get_if_in_use(). Prototype was for intel_wakeref_get_if_active() instead
+	drivers/gpu/drm/i915/intel_wakeref.h:149: warning: expecting prototype for intel_wakeref_put_flags(). Prototype was for __intel_wakeref_put() instead
+
+Fix them.
+
+Additionally, improve title for intel_wakeref_get_if_active().
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -79,55 +75,30 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gem/i915_gem_object.c   | 2 ++
- drivers/gpu/drm/i915/gem/i915_gem_ttm.h      | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 2 ++
- 3 files changed, 5 insertions(+)
+ drivers/gpu/drm/i915/intel_wakeref.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index ccec4055fde3..b5dd43405355 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -820,6 +820,8 @@ int i915_gem_object_wait_moving_fence(struct drm_i915_gem_object *obj,
-  * in an unknown_state. This means that userspace must NEVER be allowed to touch
-  * the pages, with either the GPU or CPU.
-  *
-+ * @obj: The object to check its state.
-+ *
-  * ONLY valid to be called after ensuring that all kernel fences have signalled
-  * (in particular the fence for moving/clearing the object).
-  */
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.h b/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-index e4842b4296fc..64151f40098f 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-@@ -30,6 +30,7 @@ void i915_ttm_bo_destroy(struct ttm_buffer_object *bo);
+diff --git a/drivers/gpu/drm/i915/intel_wakeref.h b/drivers/gpu/drm/i915/intel_wakeref.h
+index 4f4c2e15e736..63e539c9b1f3 100644
+--- a/drivers/gpu/drm/i915/intel_wakeref.h
++++ b/drivers/gpu/drm/i915/intel_wakeref.h
+@@ -104,7 +104,7 @@ __intel_wakeref_get(struct intel_wakeref *wf)
+ }
+ 
  /**
-  * i915_ttm_to_gem - Convert a struct ttm_buffer_object to an embedding
-  * struct drm_i915_gem_object.
-+ * @bo: The ttm buffer object.
+- * intel_wakeref_get_if_in_use: Acquire the wakeref
++ * intel_wakeref_get_if_active: Acquire the wakeref if active
+  * @wf: the wakeref
   *
-  * Return: Pointer to the embedding struct ttm_buffer_object, or NULL
-  * if the object was not an i915 ttm object.
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index 9a7e50534b84..56217d324a9b 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -237,6 +237,7 @@ static struct dma_fence *i915_ttm_accel_move(struct ttm_buffer_object *bo,
-  * @_src_iter: Storage space for the source kmap iterator.
-  * @dst_iter: Pointer to the destination kmap iterator.
-  * @src_iter: Pointer to the source kmap iterator.
-+ * @num_pages: Number of pages to copy or to be cleared.
-  * @clear: Whether to clear instead of copy.
-  * @src_rsgt: Refcounted scatter-gather list of source memory.
-  * @dst_rsgt: Refcounted scatter-gather list of destination memory.
-@@ -541,6 +542,7 @@ __i915_ttm_move(struct ttm_buffer_object *bo,
-  * i915_ttm_move - The TTM move callback used by i915.
-  * @bo: The buffer object.
-  * @evict: Whether this is an eviction.
-+ * @ctx: Pointer to a struct ttm_operation_ctx
-  * @dst_mem: The destination ttm resource.
-  * @hop: If we need multihop, what temporary memory type to move to.
+  * Acquire a hold on the wakeref, but only if the wakeref is already
+@@ -130,7 +130,7 @@ intel_wakeref_might_get(struct intel_wakeref *wf)
+ }
+ 
+ /**
+- * intel_wakeref_put_flags: Release the wakeref
++ * __intel_wakeref_put: Release the wakeref
+  * @wf: the wakeref
+  * @flags: control flags
   *
 -- 
 2.36.1
