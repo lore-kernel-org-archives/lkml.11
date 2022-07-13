@@ -2,129 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1F8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B50F4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233190AbiGMCsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 22:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        id S231330AbiGMCuL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 22:50:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbiGMCsB (ORCPT
+        with ESMTP id S229671AbiGMCuI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 22:48:01 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E755D4BD6;
-        Tue, 12 Jul 2022 19:48:00 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LjMQR5502zVfn4;
-        Wed, 13 Jul 2022 10:44:15 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 10:47:35 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Jul
- 2022 10:47:34 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-CC:     <conor.dooley@microchip.com>, <daire.mcnamara@microchip.com>,
-        <broonie@kernel.org>
-Subject: [PATCH -next v2 3/3] spi: microchip-core: switch to use dev_err_probe()
-Date:   Wed, 13 Jul 2022 10:56:57 +0800
-Message-ID: <20220713025657.3524506-4-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220713025657.3524506-1-yangyingliang@huawei.com>
-References: <20220713025657.3524506-1-yangyingliang@huawei.com>
+        Tue, 12 Jul 2022 22:50:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 25EADD216F
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 19:50:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657680604;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aRRaJtjNCuDIggYig77nuZAc2jFfrjbfbHSc4r6FyJI=;
+        b=gFbtWH6JhFQ7PFN3GcEt7fPiT9MizBO/i/LRLLvb3Brx9n8wfYspaJKAdXktmfI9aK4ASA
+        o5nH4wgAHoS7txKi8ZFMdmESiEBck+XbiGlueCp2zjlMmRemdBckoFOxp4QmV2OpTM62FM
+        YCaD9M3iyRaPxolw0WiS2WZGVrKUN5Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-139-Tn5LV_pxP8G6P0MjUDAlYw-1; Tue, 12 Jul 2022 22:49:59 -0400
+X-MC-Unique: Tn5LV_pxP8G6P0MjUDAlYw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DF94A38164C8;
+        Wed, 13 Jul 2022 02:49:58 +0000 (UTC)
+Received: from [10.22.10.179] (unknown [10.22.10.179])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7FC62C28100;
+        Wed, 13 Jul 2022 02:49:57 +0000 (UTC)
+Message-ID: <c1426573-92a7-9f0d-a6b8-aa612248b9a9@redhat.com>
+Date:   Tue, 12 Jul 2022 22:49:57 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] sched/schedutil: Fix deadlock between cpuset and cpu
+ hotplug when using schedutil
+Content-Language: en-US
+To:     Tejun Heo <tj@kernel.org>, Qais Yousef <qais.yousef@arm.com>
+Cc:     Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
+        ke.wang@unisoc.com, xuewyan@foxmail.com, linux-pm@vger.kernel.org
+References: <20220705123705.764-1-xuewen.yan@unisoc.com>
+ <20220711174629.uehfmqegcwn2lqzu@wubuntu> <YsyO9GM9mCydaybo@slm.duckdns.org>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <YsyO9GM9mCydaybo@slm.duckdns.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Switch to use dev_err_probe() to simpify error path.
 
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/spi/spi-microchip-core.c | 42 +++++++++++++-------------------
- 1 file changed, 17 insertions(+), 25 deletions(-)
+On 7/11/22 16:58, Tejun Heo wrote:
+> (cc'ing Waiman)
+>
+> On Mon, Jul 11, 2022 at 06:46:29PM +0100, Qais Yousef wrote:
+>> Have you tried running with PROVE_LOCKDEP enabled? It'll help print a useful
+>> output about the DEADLOCK. But your explanation was good and clear to me.
+> I don't think lockdep would be able to track CPU1 -> CPU2 dependency here
+> unfortunately.
 
-diff --git a/drivers/spi/spi-microchip-core.c b/drivers/spi/spi-microchip-core.c
-index 1a24e47f8305..ce4385330b19 100644
---- a/drivers/spi/spi-microchip-core.c
-+++ b/drivers/spi/spi-microchip-core.c
-@@ -539,48 +539,40 @@ static int mchp_corespi_probe(struct platform_device *pdev)
- 		return PTR_ERR(spi->regs);
- 
- 	spi->irq = platform_get_irq(pdev, 0);
--	if (spi->irq <= 0) {
--		dev_err(&pdev->dev, "invalid IRQ %d for SPI controller\n", spi->irq);
--		return -ENXIO;
--	}
-+	if (spi->irq <= 0)
-+		return dev_err_probe(&pdev->dev, -ENXIO,
-+				     "invalid IRQ %d for SPI controller\n",
-+				     spi->irq);
- 
- 	ret = devm_request_irq(&pdev->dev, spi->irq, mchp_corespi_interrupt,
- 			       IRQF_SHARED, dev_name(&pdev->dev), master);
--	if (ret) {
--		dev_err(&pdev->dev, "could not request irq: %d\n", ret);
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "could not request irq: %d\n", ret);
- 
- 	spi->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(spi->clk)) {
--		dev_err(&pdev->dev, "could not get clk: %d\n", ret);
--		return PTR_ERR(spi->clk);
--	}
-+	if (IS_ERR(spi->clk))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(spi->clk),
-+				     "could not get clk: %d\n", ret);
- 
- 	ret = clk_prepare_enable(spi->clk);
--	if (ret) {
--		dev_err(&pdev->dev, "failed to enable clock\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "failed to enable clock\n");
- 
- 	mchp_corespi_init(master, spi);
- 
- 	ret = devm_spi_register_master(&pdev->dev, master);
- 	if (ret) {
--		dev_err(&pdev->dev,
--			"unable to register master for SPI controller\n");
--		goto error_release_hardware;
-+		mchp_corespi_disable(spi);
-+		clk_disable_unprepare(spi->clk);
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "unable to register master for SPI controller\n");
- 	}
- 
- 	dev_info(&pdev->dev, "Registered SPI controller %d\n", master->bus_num);
- 
- 	return 0;
--
--error_release_hardware:
--	mchp_corespi_disable(spi);
--	clk_disable_unprepare(spi->clk);
--
--	return ret;
- }
- 
- static int mchp_corespi_remove(struct platform_device *pdev)
--- 
-2.25.1
+That is the case AFAIK. Lockdep only track individually the locks taken 
+by each task.
+
+
+>> AFAIU:
+>>
+>>
+>> CPU0                                     CPU1                                   CPU2
+>>
+>> // attach task to a different
+>> // cpuset cgroup via sysfs
+>> __acquire(cgroup_threadgroup_rwsem)
+>>
+>>                                           // pring up CPU2 online
+>>                                           __acquire(cpu_hotplug_lock)
+>>                                           // wait for CPU2 to come online
+>>                                                                                  // bringup cpu online
+>>                                                                                  // call cpufreq_online() which tries to create sugov kthread
+>> __acquire(cpu_hotplug_lock)                                                     copy_process()
+>>                                                                                     cgroup_can_fork()
+>>                                                                                        cgroup_css_set_fork()
+>>                                                                                        __acquire(cgroup_threadgroup_rwsem)
+>> // blocks forever                        // blocks forever                            // blocks forever
+>>
+>>
+>> Is this a correct summary of the problem?
+>>
+>> The locks are held in reverse order and we end up with a DEADLOCK.
+>>
+>> I believe the same happens on offline it's just the path to hold the
+>> cgroup_threadgroup_rwsem on CPU2 is different.
+>>
+>> This will be a tricky one. Your proposed patch might fix it for this case, but
+>> if there's anything else that creates a kthread when a cpu goes online/offline
+>> then we'll hit the same problem again.
+>>
+>> I haven't reviewed your patch to be honest, but I think worth seeing first if
+>> there's something that can be done at the 'right level' first.
+>>
+>> Needs head scratching from my side at least. This is the not the first type of
+>> locking issue between hotplug and cpuset :-/
+> Well, the only thing I can think of is always grabbing cpus_read_lock()
+> before grabbing threadgroup_rwsem. Waiman, what do you think?
+
+That is a possible solution as cpus_read_lock() is rather lightweight. 
+It is a good practice to acquire it first.
+
+Cheers,
+Longman
+
+>
+> Thanks.
+>
 
