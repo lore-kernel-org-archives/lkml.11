@@ -2,156 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D95C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E7ADC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236774AbiGMQr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54988 "EHLO
+        id S233749AbiGMQtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236688AbiGMQrw (ORCPT
+        with ESMTP id S229807AbiGMQta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:47:52 -0400
-Received: from relayaws-01.paragon-software.com (relayaws-01.paragon-software.com [35.157.23.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B312B2FFC0;
-        Wed, 13 Jul 2022 09:47:51 -0700 (PDT)
-Received: from relayfre-01.paragon-software.com (unknown [172.30.72.12])
-        by relayaws-01.paragon-software.com (Postfix) with ESMTPS id 1161E1DDC;
-        Wed, 13 Jul 2022 16:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1657730802;
-        bh=uzHNxd7dfVtO8sDJoVYoTuddxcGC53KhUNVKS77W3J0=;
-        h=Date:Subject:From:To:CC:References:In-Reply-To;
-        b=YOonUpH+axxRMOO52aSRGsF3Zgb0BA3kAz89srY2VBWouNhoMhXET3hE8X7saCQIX
-         YrnrZn16o0Sf5EbARTW0xIPJJ48J5bqGpEvB8yrR2fD1IkZzRfYoN82VH1L7BdpNuB
-         3KI6auNQ3g1YpoIbnxs6qhB9rNOXcGj21DoAfqio=
-Received: from dlg2.mail.paragon-software.com (vdlg-exch-02.paragon-software.com [172.30.1.105])
-        by relayfre-01.paragon-software.com (Postfix) with ESMTPS id 9316F213E;
-        Wed, 13 Jul 2022 16:47:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paragon-software.com; s=mail; t=1657730869;
-        bh=uzHNxd7dfVtO8sDJoVYoTuddxcGC53KhUNVKS77W3J0=;
-        h=Date:Subject:From:To:CC:References:In-Reply-To;
-        b=NkfYVRoSUZ+PooFsLHSf3tCEG1YmZ76zWJBU7PTyUzLtRkQgYIhcAZg+4L7sEC/hG
-         Cv7Y2/RaJDCk0UOSlLuWWXN8mwRcECpH1UDmwKRWpWCfmKR/TsAnmvau0DCStP/W/w
-         Q4VoF/VpmSd8d0HNXB7pzwn0mGTB0Fo1ns7uqqSw=
-Received: from [172.30.8.65] (172.30.8.65) by
- vdlg-exch-02.paragon-software.com (172.30.1.105) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Wed, 13 Jul 2022 19:47:49 +0300
-Message-ID: <8a2f659b-a73c-349d-5bf2-506b9084a28d@paragon-software.com>
-Date:   Wed, 13 Jul 2022 19:47:48 +0300
+        Wed, 13 Jul 2022 12:49:30 -0400
+X-Greylist: delayed 17347 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 09:49:28 PDT
+Received: from 14.mo550.mail-out.ovh.net (14.mo550.mail-out.ovh.net [178.32.97.215])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA7513F88
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:49:28 -0700 (PDT)
+Received: from player792.ha.ovh.net (unknown [10.110.171.131])
+        by mo550.mail-out.ovh.net (Postfix) with ESMTP id 6437D23D91
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 12:00:19 +0000 (UTC)
+Received: from RCM-web6.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player792.ha.ovh.net (Postfix) with ESMTPSA id 19EB52C978016;
+        Wed, 13 Jul 2022 12:00:07 +0000 (UTC)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: [PATCH 6/6] fs/ntfs3: Make ni_ins_new_attr return error
-Content-Language: en-US
-From:   Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
-To:     <ntfs3@lists.linux.dev>
-CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-References: <2101d95b-be41-6e6d-e019-bc70f816b2e8@paragon-software.com>
-In-Reply-To: <2101d95b-be41-6e6d-e019-bc70f816b2e8@paragon-software.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.30.8.65]
-X-ClientProxiedBy: vdlg-exch-02.paragon-software.com (172.30.1.105) To
- vdlg-exch-02.paragon-software.com (172.30.1.105)
+Date:   Wed, 13 Jul 2022 14:00:06 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        dan.beygelman@broadcom.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 3/3] arm64: dts: bcmbca: update bcm4808 board dts file
+In-Reply-To: <7cf0e9b7-4316-1a23-3484-03e5f0491393@linaro.org>
+References: <20220712021144.7068-1-william.zhang@broadcom.com>
+ <20220712021144.7068-4-william.zhang@broadcom.com>
+ <d93e55fa-3359-2609-aad5-c80eca78f380@linaro.org>
+ <900ac3ed-a77c-3cc0-f5ab-c45267a1a4ba@gmail.com>
+ <b350020eee4de0caf36f88f299e61930@milecki.pl>
+ <7cf0e9b7-4316-1a23-3484-03e5f0491393@linaro.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <b653ba68e070d00853367de9344abd81@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 12957700555834698715
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedggeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejledvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehhedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Function ni_ins_new_attr now returns ERR_PTR(err),
-so we check it now in other functions like ni_expand_mft_list
+On 2022-07-13 13:09, Krzysztof Kozlowski wrote:
+> On 13/07/2022 12:55, Rafał Miłecki wrote:
+>> On 2022-07-12 17:36, Florian Fainelli wrote:
+>>> On 7/12/22 00:47, Krzysztof Kozlowski wrote:
+>>>> On 12/07/2022 04:11, William Zhang wrote:
+>>>>> Update compatible string based on the new bcmbca binding rule
+>>>>> for BCM4908 famliy based boards
+>>>> 
+>>>> Typo - family
+>>>> 
+>>>> Please explain why breaking the ABI (and users of these DTS_ is
+>>>> acceptable.
+>>> 
+>>> This will be largely targeted towards Rafal who supports these kinds
+>>> of devices with an upstream kernel. My understanding is that this is
+>>> OK because we will always ship a DTB matching the Linux kernel, and I
+>>> believe this is true for both the way that William and his group
+>>> support these devices, as well as how OpenWrt, buildroot or other
+>>> build systems envision to support these devices.
+>>> 
+>>> Rafal, does that sound about right?
+>> 
+>> Right - in all cases I'm aware of - Linux gets shipped with DTB files.
+>> So such change won't actually break anything in real world.
+> 
+> We don't really talk here about Linux, but other projects, like
+> bootloaders or *BSD...
 
-Signed-off-by: Konstantin Komarov <almaz.alexandrovich@paragon-software.com>
----
-  fs/ntfs3/frecord.c | 29 ++++++++++++++++++++++++++---
-  1 file changed, 26 insertions(+), 3 deletions(-)
+Right, let me more specific.
 
-diff --git a/fs/ntfs3/frecord.c b/fs/ntfs3/frecord.c
-index bdc568053fae..381a38a06ec2 100644
---- a/fs/ntfs3/frecord.c
-+++ b/fs/ntfs3/frecord.c
-@@ -469,7 +469,7 @@ ni_ins_new_attr(struct ntfs_inode *ni, struct mft_inode *mi,
-  				&ref, &le);
-  		if (err) {
-  			/* No memory or no space. */
--			return NULL;
-+			return ERR_PTR(err);
-  		}
-  		le_added = true;
-  
-@@ -1011,6 +1011,8 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
-  				       name_off, svcn, ins_le);
-  		if (!attr)
-  			continue;
-+		if (IS_ERR(attr))
-+			return PTR_ERR(attr);
-  
-  		if (ins_attr)
-  			*ins_attr = attr;
-@@ -1032,8 +1034,15 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
-  
-  	attr = ni_ins_new_attr(ni, mi, le, type, name, name_len, asize,
-  			       name_off, svcn, ins_le);
--	if (!attr)
-+	if (!attr) {
-+		err = -EINVAL;
-  		goto out2;
-+	}
-+
-+	if (IS_ERR(attr)) {
-+		err = PTR_ERR(attr);
-+		goto out2;
-+	}
-  
-  	if (ins_attr)
-  		*ins_attr = attr;
-@@ -1045,7 +1054,6 @@ static int ni_ins_attr_ext(struct ntfs_inode *ni, struct ATTR_LIST_ENTRY *le,
-  out2:
-  	ni_remove_mi(ni, mi);
-  	mi_put(mi);
--	err = -EINVAL;
-  
-  out1:
-  	ntfs_mark_rec_free(sbi, rno, is_mft);
-@@ -1101,6 +1109,11 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
-  	if (asize <= free) {
-  		attr = ni_ins_new_attr(ni, &ni->mi, NULL, type, name, name_len,
-  				       asize, name_off, svcn, ins_le);
-+		if (IS_ERR(attr)) {
-+			err = PTR_ERR(attr);
-+			goto out;
-+		}
-+
-  		if (attr) {
-  			if (ins_attr)
-  				*ins_attr = attr;
-@@ -1198,6 +1211,11 @@ static int ni_insert_attr(struct ntfs_inode *ni, enum ATTR_TYPE type,
-  		goto out;
-  	}
-  
-+	if (IS_ERR(attr)) {
-+		err = PTR_ERR(attr);
-+		goto out;
-+	}
-+
-  	if (ins_attr)
-  		*ins_attr = attr;
-  	if (ins_mi)
-@@ -1313,6 +1331,11 @@ static int ni_expand_mft_list(struct ntfs_inode *ni)
-  		goto out;
-  	}
-  
-+	if (IS_ERR(attr)) {
-+		err = PTR_ERR(attr);
-+		goto out;
-+	}
-+
-  	attr->non_res = 1;
-  	attr->name_off = SIZEOF_NONRESIDENT_LE;
-  	attr->flags = 0;
--- 
-2.37.0
+BCM4908 uses pkgtb firmware images. Those images contain:
+1. bootfs (atf, u-boot, kernel, DTB files)
+2. rootfs (filesystem)
 
+So when you flash BCM4908 firmware it always contains:
+1. U-Boot and DTB for it
+2. Kernel and DTB for it
+(+ more stuff)
 
+There isn't any on-flash DTB file that doesn't get updated when flashing
+a new image.
