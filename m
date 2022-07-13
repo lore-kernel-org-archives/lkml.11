@@ -2,102 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D234ACCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236294AbiGMLjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:39:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        id S236179AbiGMLkN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236335AbiGMLjL (ORCPT
+        with ESMTP id S229594AbiGMLkL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:39:11 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28638357FE;
-        Wed, 13 Jul 2022 04:39:09 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31cf1adbf92so109542467b3.4;
-        Wed, 13 Jul 2022 04:39:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kYOcW9IOsSFEnSNVI3NabOAcHzwmMOPMhoi3vC/X7Hc=;
-        b=dfwZRxcxSwuilXXeR4b3QvFbxZjt/I6Tg7w6J53VQ+9j3eyYy6G+/dRqjASSaL7hL0
-         1W6c3cIeDRBmqFwsJqGMSjBAhzvEsZULBO6Uw9tObPOEqCAvrjFOPkEy9KAeI3Qkkrhf
-         zoGFBc3r8QeR0FSJmSM9hRG+Hg5DKmPKK79TylPGYxHUR9kN9/7n6kC2b/JNE6aFx4/B
-         I3KFTIjl2v/+F60H7z67h5AFpAKq4pEv9r9FeXhn9NTPLX1mzBh+x/agdfkobcUhL0bw
-         VC/T/JKSWq1QrqxlGUJdYybY5Kud928zjcgm7/hnuX3fdb2zM3tSb+nTjQM9tXPwXgh6
-         OZEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kYOcW9IOsSFEnSNVI3NabOAcHzwmMOPMhoi3vC/X7Hc=;
-        b=OrKmPMPlsVEbsgV6Kx15JiQM1ngrZr5fq2ik5Tx+b9a1kuoKw3C0iIU2hZqChld0d9
-         lkdUBySDIn5T8EOmaLYGLKWw7QK65ZCN+lqzB9MjzBbtxRz6oSj1ticHrHe9Go16+/jy
-         Qzmhd5Xfegnl08k8luTYffaiKoP3ABOQm5W7TKtY+TiXhwJB+baZLM5Cmw/cACXEK1IQ
-         uLmZQvcCV/zgNlG6i90/qZaQp2VjzC4jfeFeBhfvLnsAMfNPMyPNFpviEZ4gtxgI2OVN
-         l0oNsdPzCmqIuVz3bddDdlg+4JgFRexSxRgaJ70EBBbJP5TXXTKOvf6+RO0pqY2znRSJ
-         mnfg==
-X-Gm-Message-State: AJIora8mBRpyHM5mTbT4NAud5f8oUa9rWzu3b8azVFNVSbpis84g6+XR
-        KoezJ+Le3aBu2VokfxKKZSt8UY6j2hKlXMVEGIY=
-X-Google-Smtp-Source: AGRyM1uzHohqIj7ZTkoa06270nJ5xAK25DuTxZrQQd7rusScoT52Or0I7ljEBXlp2E/Wg/RbPubq5kFYRxEEa+wVIFM=
-X-Received: by 2002:a81:4bd7:0:b0:31c:91da:5a20 with SMTP id
- y206-20020a814bd7000000b0031c91da5a20mr3954784ywa.131.1657712348183; Wed, 13
- Jul 2022 04:39:08 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1657216200.git.william.gray@linaro.org> <6be749842a4ad629c8697101f170dc7e425ae082.1657216200.git.william.gray@linaro.org>
- <CACRpkdZn-PV6H+uBcoONt=SThGBAODy-YG=rkx5OX-rcpeE+aw@mail.gmail.com>
- <YszlP1+sBhxvz3Fo@fedora> <CAMRc=Mc0=nL_t9Fwmb1uNbsa_v4L4M5BJm2y-vZ8PV47Ryk+Sw@mail.gmail.com>
- <CAHp75Vd5QThEE9S+iL0e3rG+FHoPdts082R4H_beMv990ouGzQ@mail.gmail.com> <Ys6jMPk/6MsFCjv3@fedora>
-In-Reply-To: <Ys6jMPk/6MsFCjv3@fedora>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Jul 2022 13:38:31 +0200
-Message-ID: <CAHp75VeBszkr7igtwgve2REMjgN7+rOmwwZs0BsouyECZcckfg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] gpio: i8255: Introduce the i8255 module
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Wed, 13 Jul 2022 07:40:11 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97AFAF7894;
+        Wed, 13 Jul 2022 04:40:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=vOHzc0iNAJAyWdjUKS1wA/+wU9ZskbRu8pEYBEJ/SIw=; b=SzcYxdnGL7pR91/ks+09wj9cTy
+        1uKLqgNzuodQeTHkWqZ2sYqsTCYyU7HFzvbwdTmvA6xfCfbPypc+yqHI4M8hM1vFHj/aL0FQm4FfE
+        xFlTlizvOXXa8/Rqe9I97iKEKTqGYuMYV/PblZuqeEJQ2th+d1NfOGBeY7h1D5pzXkZ8QT9/5KvE9
+        m0ROYzNoMm07LnOq980QooeQoyx9EXu6WIPggS2eOKvjmS02RXyWASx+b7tqpybQOY48axg5g4GUD
+        vqfkHm42DjseEIcQ456aMWvF2G3BYK9TFrfN1T57DQAGHow8gD2zoTIHnXMK8IaBPL98szIStGOFI
+        fisg2pAg==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oBaiK-003Xye-M8; Wed, 13 Jul 2022 11:39:32 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id AEA17300238;
+        Wed, 13 Jul 2022 13:39:31 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 1FBF3201DA175; Wed, 13 Jul 2022 13:39:31 +0200 (CEST)
+Date:   Wed, 13 Jul 2022 13:39:31 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Adam Bratschi-Kaye <ark.email@gmail.com>,
+        Alex Gaynor <alex.gaynor@gmail.com>,
+        Antonio Terceiro <antonio.terceiro@linaro.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Boris-Chengbiao Zhou <bobo1239@web.de>,
+        Borislav Petkov <bp@suse.de>, Daniel Xu <dxu@dxuuu.xyz>,
+        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
+        David Gow <davidgow@google.com>,
+        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
+        Gary Guo <gary@garyguo.net>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Fred Eckert <Frede@cmslaser.com>,
-        John Hentges <jhentges@accesio.com>,
-        Jay Dolan <jay.dolan@accesio.com>
-Content-Type: text/plain; charset="UTF-8"
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Miguel Cano <macanroj@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Sven Van Asbroeck <thesven73@gmail.com>,
+        Wedson Almeida Filho <wedsonaf@google.com>
+Subject: Re: linux-next: manual merge of the rust tree with Linus' tree
+Message-ID: <Ys6u88DqQdgmkWWf@hirez.programming.kicks-ass.net>
+References: <20220713203409.559c5464@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713203409.559c5464@canb.auug.org.au>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:49 PM William Breathitt Gray
-<william.gray@linaro.org> wrote:
-> On Wed, Jul 13, 2022 at 12:10:51PM +0200, Andy Shevchenko wrote:
-> > On Wed, Jul 13, 2022 at 9:40 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> > > On Tue, Jul 12, 2022 at 5:06 AM William Breathitt Gray
-> > > <william.gray@linaro.org> wrote:
-> > > > On Mon, Jul 11, 2022 at 03:02:10PM +0200, Linus Walleij wrote:
+On Wed, Jul 13, 2022 at 08:34:09PM +1000, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the rust tree got a conflict in:
+> 
+>   arch/x86/Makefile
+> 
+> between commit:
+> 
+>   f43b9876e857 ("x86/retbleed: Add fine grained Kconfig knobs")
+> 
+> from Linus' tree and commit:
+> 
+>   0ea4b9a1bece ("Kbuild: add Rust support")
+> 
+> from the rust tree.
+> 
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+> 
+> -- 
+> Cheers,
+> Stephen Rothwell
+> 
+> diff --cc arch/x86/Makefile
+> index 1f40dad30d50,5ac9b324751d..000000000000
+> --- a/arch/x86/Makefile
+> +++ b/arch/x86/Makefile
+> @@@ -21,12 -21,8 +21,13 @@@ ifdef CONFIG_CC_IS_CLAN
+>   RETPOLINE_CFLAGS	:= -mretpoline-external-thunk
+>   RETPOLINE_VDSO_CFLAGS	:= -mretpoline
+>   endif
+> + RETPOLINE_RUSTFLAGS	:= -Ctarget-feature=+retpoline-external-thunk
+>   
+>  +ifdef CONFIG_RETHUNK
+>  +RETHUNK_CFLAGS		:= -mfunction-return=thunk-extern
+>  +RETPOLINE_CFLAGS	+= $(RETHUNK_CFLAGS)
+>  +endif
 
-...
+Does Rust have the equivalent of -mfunction-return=thunk-extern ?
 
-> > > > I think I'll move this to gpio/driver.h as per Andy Shevchenko's
-> > >
-> > > I don't think this is what Andy meant. I think he suggested moving
-> > > this header into drivers/gpio/ because it doesn't make sense for it to
-> > > be publicly accessible for anyone else than the GPIO drivers.
-> > >
-> > > Andy: correct me if I'm wrong.
-> >
-> > No, you are right. I was talking about localizing the header to drivers/gpio.
+Related, how does Rust deal with all the various CC_HAS_ Kconfig stuff?
+What if C has the relevant option but Rust does not; then we must not
+have the feature enabled or there will be a mis-match.
 
-> Sure, I can move it to drivers/gpio/i8255.h to keep it local to the GPIO
+Do we now have to litter everythign with RUSTC_HAS_ ?
 
-Please, keep it named in the same pattern as the C-file, but having .h
-extension. I believe it's gpio-i8255.h.
-
-> drivers. It'll be trivia to move this out if the need ever arrives in
-> the future so I have no problem with that.
-
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
