@@ -2,212 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5187CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54511C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:37:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236232AbiGMLgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:36:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
+        id S236320AbiGMLhG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236210AbiGMLgi (ORCPT
+        with ESMTP id S236301AbiGMLgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:36:38 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBCF6102917
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657712196;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yrCSuJaHzqqJrDzlPoHK3BCroMA+MPPreiwAH9qdrfA=;
-        b=JDcdVJFSnY3H8mKLTXNgmxEJzQ1kDPKnIpAOxkxsh4HEn/OGu+bz1Cre5/FbErriGM2fpu
-        nV0LkPs5wZj5wg4zENTvIY6RMkymPTZHkqAHwsGfiCaHW7rB6BOj59ZB6paP9H8nUMqvQP
-        SyumZ/4KerX1W63cYbngmMKCkUo7QDQ=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-498-3wyFYtXEO7CRInU0SyX7AA-1; Wed, 13 Jul 2022 07:36:35 -0400
-X-MC-Unique: 3wyFYtXEO7CRInU0SyX7AA-1
-Received: by mail-pj1-f71.google.com with SMTP id r23-20020a17090a941700b001f04239bebdso3395664pjo.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:36:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yrCSuJaHzqqJrDzlPoHK3BCroMA+MPPreiwAH9qdrfA=;
-        b=1MWgn4HAT+ey33tklpxZYsSDptjmOx6j7O16HPWdh5Zih2Q7qIvRSfFYUDQmUOEv/r
-         fP8m5b1LnHgbPppiMTz4uJ5691IsPgdFLMdnmZ6Rvt9gBU/044fYe+GqpnqWYkmQMdat
-         6pGXUEGQGIAUM0OwOr0PANG6TToMVeSr34ZkCnK27ajGgejsO8ZQtAU91F0U60b7P+XB
-         xP+jPr18yAXYKHGQzTX3BGIxkmKiVJG31nUqPi1OcXEV8rzL3orDC1TzTkOUl/jFJ0PP
-         p2ounCSmu3LJ2WRPGeMTsTpEATlbilr4kMjfJIFYJzmlbhsREnjb2NL+eP72xTCrTUnR
-         5eUA==
-X-Gm-Message-State: AJIora+Vx4V4PVK1aOOWJoi/Q8XYXatw+VKVScX7rzX0K9h+jdgI9anQ
-        WEj88Rvqq1oo1eTGt/TvVTFmO7P6oWGYQ0wn1H7Dms8VvDxNUn+8UyFgZEORScU4VAOTX17w9/k
-        NgzNptTyPveurWhJbRQc/KLh0Wn1Cv0AIrTnLOOhO
-X-Received: by 2002:a63:5b16:0:b0:416:1b3b:9562 with SMTP id p22-20020a635b16000000b004161b3b9562mr2640550pgb.146.1657712193986;
-        Wed, 13 Jul 2022 04:36:33 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tMvNaIU5RdJs8xFRKHMRkHgZ6gojSHT6mUC3bNG1PFZd6uvWCEzPNcBAqRmFF+sgNMHsiXK2QJJwUhF0wM9ws=
-X-Received: by 2002:a63:5b16:0:b0:416:1b3b:9562 with SMTP id
- p22-20020a635b16000000b004161b3b9562mr2640529pgb.146.1657712193703; Wed, 13
- Jul 2022 04:36:33 -0700 (PDT)
+        Wed, 13 Jul 2022 07:36:54 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F14D1034D4;
+        Wed, 13 Jul 2022 04:36:45 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26D8qRcj023844;
+        Wed, 13 Jul 2022 13:36:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=1amBkc4Xuz2fmeyUJfLVlnyVufATTFOqWnVjRswilgY=;
+ b=kxEXBMcfNpISdQVooIPL7Pg39q4ugSLor+HlQ8FtW+dtG4edd9CNEp2If00RVDWdThD0
+ 2XqHuB7q0DrB6ld1VnWebdmys2GRZmn2NFqYXZ77QON/z8MKv7KVHScrUAYJ9sz5enX7
+ BSbOH4DkjTW77QvWytyk1METmLkPl4BSRaX2kDj+85MrE+pIk/62QZIoJGgLe3Drc3C3
+ a4WYVJXa3u20VUxbg5PcrfGc2n+r6G2CjbSSKNhWrQ/g/hG4CzC9DZszscz8/IfelnvI
+ ycuDC+MDR0DaD1FfShPMty0eLgLTLQKubskLLsG9jau2uZtttOBS7g/KIG3TOrgxrKhK SA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h94gugp7h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 13:36:30 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 7850410002A;
+        Wed, 13 Jul 2022 13:36:28 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D76E021D386;
+        Wed, 13 Jul 2022 13:36:28 +0200 (CEST)
+Received: from localhost (10.75.127.48) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 13 Jul
+ 2022 13:36:28 +0200
+From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Stefano Stabellini <stefanos@xilinx.com>,
+        Bruce Ashfield <bruce.ashfield@xilinx.com>,
+        <arnaud.pouliquen@foss.st.com>
+Subject: [PATCH v7 2/4] remoteproc: core: Introduce rproc_add_rvdev function
+Date:   Wed, 13 Jul 2022 13:36:10 +0200
+Message-ID: <20220713113612.2117279-3-arnaud.pouliquen@foss.st.com>
+X-Mailer: git-send-email 2.24.3
+In-Reply-To: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
+References: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
-References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
- <20220712145850.599666-13-benjamin.tissoires@redhat.com> <668a2f86-9446-61de-494c-f2d2ee15f09e@isovalent.com>
-In-Reply-To: <668a2f86-9446-61de-494c-f2d2ee15f09e@isovalent.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Wed, 13 Jul 2022 13:36:22 +0200
-Message-ID: <CAO-hwJ+23HWjRHx8463uL5hA1HMYcmPD2=63Fv=J__x7zvmLjg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 12/23] HID: initial BPF implementation
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Pu Lehui <pulehui@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-12_14,2022-07-13_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 10:48 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> On 12/07/2022 15:58, Benjamin Tissoires wrote:
-[...]
-> > diff --git a/drivers/hid/bpf/entrypoints/Makefile b/drivers/hid/bpf/entrypoints/Makefile
-> > new file mode 100644
-> > index 000000000000..dd60a460c6c4
-> > --- /dev/null
-> > +++ b/drivers/hid/bpf/entrypoints/Makefile
-> > @@ -0,0 +1,88 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +OUTPUT := .output
-> > +abs_out := $(abspath $(OUTPUT))
-> > +
-> > +CLANG ?= clang
-> > +LLC ?= llc
-> > +LLVM_STRIP ?= llvm-strip
-> > +
-> > +TOOLS_PATH := $(abspath ../../../../tools)
-> > +BPFTOOL_SRC := $(TOOLS_PATH)/bpf/bpftool
-> > +BPFTOOL_OUTPUT := $(abs_out)/bpftool
-> > +DEFAULT_BPFTOOL := $(OUTPUT)/sbin/bpftool
-> > +BPFTOOL ?= $(DEFAULT_BPFTOOL)
-> > +
-> > +LIBBPF_SRC := $(TOOLS_PATH)/lib/bpf
-> > +LIBBPF_OUTPUT := $(abs_out)/libbpf
-> > +LIBBPF_DESTDIR := $(LIBBPF_OUTPUT)
-> > +LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)/include
-> > +BPFOBJ := $(LIBBPF_OUTPUT)/libbpf.a
-> > +
-> > +INCLUDES := -I$(OUTPUT) -I$(LIBBPF_INCLUDE) -I$(TOOLS_PATH)/include/uapi
-> > +CFLAGS := -g -Wall
-> > +
-> > +VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                         \
-> > +                  $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)    \
-> > +                  ../../../../vmlinux                                \
-> > +                  /sys/kernel/btf/vmlinux                            \
-> > +                  /boot/vmlinux-$(shell uname -r)
-> > +VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
-> > +ifeq ($(VMLINUX_BTF),)
-> > +$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)")
-> > +endif
-> > +
-> > +ifeq ($(V),1)
-> > +Q =
-> > +msg =
-> > +else
-> > +Q = @
-> > +msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
-> > +MAKEFLAGS += --no-print-directory
-> > +submake_extras := feature_display=0
-> > +endif
-> > +
-> > +.DELETE_ON_ERROR:
-> > +
-> > +.PHONY: all clean
-> > +
-> > +all: entrypoints.lskel.h
-> > +
-> > +clean:
-> > +     $(call msg,CLEAN)
-> > +     $(Q)rm -rf $(OUTPUT) entrypoints
-> > +
-> > +entrypoints.lskel.h: $(OUTPUT)/entrypoints.bpf.o | $(BPFTOOL)
-> > +     $(call msg,GEN-SKEL,$@)
-> > +     $(Q)$(BPFTOOL) gen skeleton -L $< > $@
-> > +
-> > +
-> > +$(OUTPUT)/entrypoints.bpf.o: entrypoints.bpf.c $(OUTPUT)/vmlinux.h $(BPFOBJ) | $(OUTPUT)
-> > +     $(call msg,BPF,$@)
-> > +     $(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)                           \
-> > +              -c $(filter %.c,$^) -o $@ &&                                 \
-> > +     $(LLVM_STRIP) -g $@
-> > +
-> > +$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF) $(BPFTOOL) | $(INCLUDE_DIR)
-> > +ifeq ($(VMLINUX_H),)
-> > +     $(call msg,GEN,,$@)
-> > +     $(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
-> > +else
-> > +     $(call msg,CP,,$@)
-> > +     $(Q)cp "$(VMLINUX_H)" $@
-> > +endif
-> > +
-> > +$(OUTPUT) $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
-> > +     $(call msg,MKDIR,$@)
-> > +     $(Q)mkdir -p $@
-> > +
-> > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OUTPUT)
-> > +     $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)                         \
-> > +                 OUTPUT=$(abspath $(dir $@))/ prefix=                       \
-> > +                 DESTDIR=$(LIBBPF_DESTDIR) $(abspath $@) install_headers
-> > +
-> > +$(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
-> > +     $(Q)$(MAKE) $(submake_extras) -C $(BPFTOOL_SRC)                        \
-> > +                 OUTPUT=$(BPFTOOL_OUTPUT)/                                  \
-> > +                 LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/                            \
-> > +                 LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/                          \
-> > +                 prefix= DESTDIR=$(abs_out)/ install-bin
->
-> Hi Benjamin,
->
-> Note that, at other locations where bpftool is needed to generate the
-> vmlinux.h or the skeletons, there is some work in progress to use only
-> the "bootstrap" version of bpftool (the intermediary bpftool binary used
-> to generate skeletons required for the final bpftool binary) [0]. This
-> is enough to generate these objects, it makes compiling the bpftool
-> binary faster, and solves some issues related to cross-compilation. It's
-> probably worth exploring in your case (or as a follow-up) as well.
->
+The rproc structure contains a list of registered rproc_vdev structure.
+To be able to move the management of the rproc_vdev structure in
+remoteproc_virtio.c (i.e rproc_rvdev_add_device function),
+introduce the rproc_add_rvdev and rproc_remove_rvdev functions.
 
-Hi Quentin,
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+---
+Update vs previous version
+- Fix commit message by removing rproc_rvdev_remove_device reference.
+---
+ drivers/remoteproc/remoteproc_core.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
-Indeed, I applied a similar patch to [1] (the 3/3 in the series you
-mentioned) and I have the exact same light skeleton.
-I have stashed the changes locally for a future revision (I doubt
-everything will go through in this version ;-P ).
-
-Cheers,
-Benjamin
-
-> Quentin
->
-> [0]
-> https://lore.kernel.org/all/20220712030813.865410-1-pulehui@huawei.com/t/#u
->
-[1] https://lore.kernel.org/all/20220712030813.865410-4-pulehui@huawei.com/
+diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+index f328d45d8376..13f0f8ef05a5 100644
+--- a/drivers/remoteproc/remoteproc_core.c
++++ b/drivers/remoteproc/remoteproc_core.c
+@@ -484,6 +484,18 @@ static int copy_dma_range_map(struct device *to, struct device *from)
+ 	return 0;
+ }
+ 
++static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
++{
++	if (rvdev && rproc)
++		list_add_tail(&rvdev->node, &rproc->rvdevs);
++}
++
++static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
++{
++	if (rvdev)
++		list_del(&rvdev->node);
++}
++
+ static struct rproc_vdev *
+ rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
+ {
+@@ -547,7 +559,7 @@ rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
+ 			goto unwind_vring_allocations;
+ 	}
+ 
+-	list_add_tail(&rvdev->node, &rproc->rvdevs);
++	rproc_add_rvdev(rproc, rvdev);
+ 
+ 	rvdev->subdev.start = rproc_vdev_do_start;
+ 	rvdev->subdev.stop = rproc_vdev_do_stop;
+@@ -577,7 +589,7 @@ void rproc_vdev_release(struct kref *ref)
+ 	}
+ 
+ 	rproc_remove_subdev(rproc, &rvdev->subdev);
+-	list_del(&rvdev->node);
++	rproc_remove_rvdev(rvdev);
+ 	device_unregister(&rvdev->dev);
+ }
+ 
+-- 
+2.24.3
 
