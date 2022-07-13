@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A329C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D5BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiGMNy3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:54:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58260 "EHLO
+        id S236367AbiGMNzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiGMNy1 (ORCPT
+        with ESMTP id S236377AbiGMNzs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:54:27 -0400
+        Wed, 13 Jul 2022 09:55:48 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA981240;
-        Wed, 13 Jul 2022 06:54:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C69612CDF7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:55:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 904DAB81F66;
-        Wed, 13 Jul 2022 13:54:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 051ECC34114;
-        Wed, 13 Jul 2022 13:54:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657720463;
-        bh=/tvxZwralFJ4cZXdPkXxJEQCgvBw9Ua4U7XdiklwROc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=NPugggpNWrapctlNOMvCLfTS/6nQRBp4qtBMpShlx6IuKz8VtqvV92KmfK6a055Tb
-         LiJm0Itggmfb7TuXYij4Qj6U/BGcO0EHimH0uvGiXoRZJ7NEHvEROtj1fYTQlSfPxK
-         R/tWGZ91pxAnfu7R8AQykRLoxbSlFGaVYImN/9d2g5A+SbMhW2DvPn9ogQ/BGfCmR9
-         Hvik6QiYCSrsweYDeehsB7cCqGeCVaf5oiWomt2MANb/k699X3JxZDTJXczafFUY/o
-         18S9t443e72R5l29VEEe9usJERuwbaF9WLxXASWJNiX/TKwYBa4SMiBkto4yLcAk0N
-         udxMjiowqC0vQ==
-Received: by pali.im (Postfix)
-        id 3B1619D9; Wed, 13 Jul 2022 15:54:20 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     linuxppc-dev@lists.ozlabs.org, devicetree@vger.kernel.org,
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74584B81FE6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:55:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF2CC34114;
+        Wed, 13 Jul 2022 13:55:43 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LpCif7I6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1657720541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=bawxo4wQSGz34zHaH54dBSzxxCoLrOF8mCeNb04Rm14=;
+        b=LpCif7I6a9KEjcnOn0R4l//g3IiGbLp/2ehMOTGzXhHWltiluo5tYN0mgszeUy3mQ84Ldg
+        R658zg4D3TizZSIv/KDx+sEOUDbS2Bhswc7ENI2rbK12NDoZQxZ7r66CqOymwebCrrREda
+        sX/Ve7oQDI2VhP/qlZGr+3Npjnm78+Q=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8cc883ad (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 13 Jul 2022 13:55:41 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     johannes@sipsolutions.net, linux-um@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] powerpc: dts: turris1x.dts: Add CPLD reboot node
-Date:   Wed, 13 Jul 2022 15:44:29 +0200
-Message-Id: <20220713134429.18748-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH] um: remove stray ) in macro expression
+Date:   Wed, 13 Jul 2022 15:55:39 +0200
+Message-Id: <20220713135539.919429-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,43 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CPLD firmware can reset board by writing value 0x01 at CPLD memory offset
-0x0d. Define syscon-reboot node for this reset support.
+A commit erroneously added a stray ), causing compile errors:
 
-Fixes: 54c15ec3b738 ("powerpc: dts: Add DTS file for CZ.NIC Turris 1.x routers")
-Signed-off-by: Pali Rohár <pali@kernel.org>
+In file included from /home/zx2c4/Projects/wireguard-linux/crypto/xor.c:17:
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c: In function ‘register_xor_blocks’:
+/home/zx2c4/Projects/wireguard-linux/arch/um/include/asm/xor.h:21:74: error: expected ‘;’ before ‘)’ token
+   21 |         (time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
+      |                                                                          ^
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c:66:27: note: in expansion of macro ‘XOR_SELECT_TEMPLATE’
+   66 |         active_template = XOR_SELECT_TEMPLATE(NULL);
+      |                           ^~~~~~~~~~~~~~~~~~~
+/home/zx2c4/Projects/wireguard-linux/arch/um/include/asm/xor.h:21:74: error: expected statement before ‘)’ token
+   21 |         (time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
+      |                                                                          ^
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c:66:27: note: in expansion of macro ‘XOR_SELECT_TEMPLATE’
+   66 |         active_template = XOR_SELECT_TEMPLATE(NULL);
+      |                           ^~~~~~~~~~~~~~~~~~~
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c: In function ‘calibrate_xor_blocks’:
+/home/zx2c4/Projects/wireguard-linux/arch/um/include/asm/xor.h:21:74: error: expected ‘;’ before ‘)’ token
+   21 |         (time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
+      |                                                                          ^
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c:124:19: note: in expansion of macro ‘XOR_SELECT_TEMPLATE’
+  124 |         fastest = XOR_SELECT_TEMPLATE(NULL);
+      |                   ^~~~~~~~~~~~~~~~~~~
+/home/zx2c4/Projects/wireguard-linux/arch/um/include/asm/xor.h:21:74: error: expected statement before ‘)’ token
+   21 |         (time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
+      |                                                                          ^
+/home/zx2c4/Projects/wireguard-linux/crypto/xor.c:124:19: note: in expansion of macro ‘XOR_SELECT_TEMPLATE’
+  124 |         fastest = XOR_SELECT_TEMPLATE(NULL);
+      |                   ^~~~~~~~~~~~~~~~~~~
+  CC      fs/namei.o
+make[3]: *** [/home/zx2c4/Projects/wireguard-linux/scripts/Makefile.build:249: crypto/xor.o] Error 1
+make[3]: *** Waiting for unfinished jobs....
+
+Fixes: e3a33af812c6 ("um: fix and optimize xor select template for CONFIG64 and timetravel mode")
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 ---
- arch/powerpc/boot/dts/turris1x.dts | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ arch/um/include/asm/xor.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/boot/dts/turris1x.dts b/arch/powerpc/boot/dts/turris1x.dts
-index c76b628cf026..12e08271e61f 100644
---- a/arch/powerpc/boot/dts/turris1x.dts
-+++ b/arch/powerpc/boot/dts/turris1x.dts
-@@ -332,7 +332,7 @@
- 			 * Turris CPLD firmware is open source and available at:
- 			 * https://gitlab.nic.cz/turris/hw/turris_cpld/-/blob/master/CZ_NIC_Router_CPLD.v
- 			 */
--			compatible = "cznic,turris1x-cpld", "fsl,p1021rdb-pc-cpld", "simple-bus";
-+			compatible = "cznic,turris1x-cpld", "fsl,p1021rdb-pc-cpld", "simple-bus", "syscon";
- 			reg = <0x3 0x0 0x30>;
- 			#address-cells = <1>;
- 			#size-cells = <1>;
-@@ -352,6 +352,14 @@
- 				gpios = <&gpio 11 GPIO_ACTIVE_LOW>;
- 			};
+diff --git a/arch/um/include/asm/xor.h b/arch/um/include/asm/xor.h
+index 22b39de73c24..647fae200c5d 100644
+--- a/arch/um/include/asm/xor.h
++++ b/arch/um/include/asm/xor.h
+@@ -18,7 +18,7 @@
+ #undef XOR_SELECT_TEMPLATE
+ /* pick an arbitrary one - measuring isn't possible with inf-cpu */
+ #define XOR_SELECT_TEMPLATE(x)	\
+-	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x))
++	(time_travel_mode == TT_MODE_INFCPU ? TT_CPU_INF_XOR_DEFAULT : x)
+ #endif
  
-+			reboot@d {
-+				compatible = "syscon-reboot";
-+				reg = <0x0d 0x01>;
-+				offset = <0x0d>;
-+				mask = <0x01>;
-+				value = <0x01>;
-+			};
-+
- 			led-controller@13 {
- 				/*
- 				 * LEDs are controlled by CPLD firmware.
+ #endif
 -- 
-2.20.1
+2.35.1
 
