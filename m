@@ -2,88 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FE5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 546E5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237363AbiGMUrP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        id S237306AbiGMUsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237242AbiGMUqx (ORCPT
+        with ESMTP id S237389AbiGMUrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:46:53 -0400
-Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D98D9313B2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-transfer-encoding; s=k1; bh=xvIxR6FH7FCp+c
-        HaoOPYWwQsjp4aowrl6rJOkVba5z0=; b=FntYzxFxekJhmB/kM1LZCdak3JPgYi
-        KZpNmM3OVGYUP1YX31NpFSWlfO3lYPZA3PRItsEx5B/Aijoez3Bt66QbndT+GBvj
-        vXUw+oBjF/t7rrdxllROerEH1Opo49pt8DeY9wQaqEV+BBlxfISYPjVACGTbGct+
-        VsBiB3oe471+s=
-Received: (qmail 305888 invoked from network); 13 Jul 2022 22:46:40 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:40 +0200
-X-UD-Smtp-Session: l3s3148p1@lRLB4bXjJqEgAwDtxwdRAEXXn+yo/Rze
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-renesas-soc@vger.kernel.org
-Cc:     John Stultz <jstultz@google.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 8/9] selftests: timers: clocksource-switch: add 'runtime' command line parameter
-Date:   Wed, 13 Jul 2022 22:46:20 +0200
-Message-Id: <20220713204623.5443-9-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
-References: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
+        Wed, 13 Jul 2022 16:47:45 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0C913190A;
+        Wed, 13 Jul 2022 13:47:18 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id ck6so12868427qtb.7;
+        Wed, 13 Jul 2022 13:47:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QxqplqseSWaS3T37CnGU50c0cuM5vlsIJtab1NxopUc=;
+        b=jhGbdskv1XZp9zg+RMpcunfdt/ThU42O3H/Z+2KL/DCbS+D8RrSrFh/Y1sobtPDv7Z
+         Tdv+LA5vjQ1iv0mJ/ogTQp17ON3e+09Fseq5mRzdP97xdMOVcrIjE0N2nYKAt/xcB7oT
+         yHTzTskKOeBqJ1H17ZRNV8lKRBLLHKWYwmVtd2sZHYEA+9Jq+diNzZ0vcOp9yGFXct4m
+         SwSmD7OfOBwiZjk64xXuQfBGitNQ2JIkZ48XcRkWPJ3l0Je9znTKzMxl+eDmhmRnCOQ0
+         cVuJgHGSs2Gul8e8Yeo0Mj9dmGljW4crYS2UhsotQfCJ/j2wOHe5PkoU0Qm/iFACK320
+         NQJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QxqplqseSWaS3T37CnGU50c0cuM5vlsIJtab1NxopUc=;
+        b=XpQEWldE+5jsJr4cOb4hJapq3O0XqAD8OST4td7dhIc0NUDZ6iq9+EpDkRJoupSsKT
+         mSNiHCrdn3OsrfSsxr1V7Aj5rf1Zn6xqTg8uY4TIfmTT5RqH+0acprh44+MbaEanHQ6A
+         xfeCtG9+6k6AKZdByGJ8mazxGJX88vjEkh8JvG03tFvET20uEzIqxZcu0mHRbplZMUON
+         8hLvQ69++QRho294xssrNZy0SDmPplTibcNAykTNKbvpcXsk9PmnXEVgZSfuVIHJ7coo
+         ux1qPwwXBF/A0WclqEjY85+u4avGuAy2T9IRTywTACI3u+36LlGhiOVbp2FX9pAN/VyP
+         zocQ==
+X-Gm-Message-State: AJIora/EgNCwKySwSEaxmZszrUEL2v1YOkMbQ+FeKMNiVhBydWXPsRm2
+        JrmfxztiOWJAsh+zjBQiIL/OYkzPymFV5KEYm3Y=
+X-Google-Smtp-Source: AGRyM1s3CBz7Bos23p6iO45MPRR3/nqp3k5HlInZUfT0rxzTuk0pjcjlEVmrOCSt199k0tcETah6lIbRqUqrNq7jsk0=
+X-Received: by 2002:a05:622a:178d:b0:31e:c386:510e with SMTP id
+ s13-20020a05622a178d00b0031ec386510emr5128025qtk.82.1657745237430; Wed, 13
+ Jul 2022 13:47:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220707173733.404947-1-robimarko@gmail.com> <20220707173733.404947-2-robimarko@gmail.com>
+ <Ys8ukbAbrxwLG0XH@builder.lan>
+In-Reply-To: <Ys8ukbAbrxwLG0XH@builder.lan>
+From:   Robert Marko <robimarko@gmail.com>
+Date:   Wed, 13 Jul 2022 22:47:06 +0200
+Message-ID: <CAOX2RU6YxjN3XCRSsih7cpO6H1JvXLMG7=PNmzrbk+_Ksx8x-g@mail.gmail.com>
+Subject: Re: [PATCH v6 2/4] mailbox: qcom-apcs-ipc: add IPQ8074 APSS clock
+ controller support
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-So the user can decide how long the test should run.
+On Wed, 13 Jul 2022 at 22:44, Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Thu 07 Jul 12:37 CDT 2022, Robert Marko wrote:
+>
+> > IPQ8074 has the APSS clock controller utilizing the same register space as
+> > the APCS, so provide access to the APSS utilizing a child device like
+> > IPQ6018 does as well, but just by utilizing the IPQ8074 specific APSS
+> > clock driver.
+> >
+> > Signed-off-by: Robert Marko <robimarko@gmail.com>
+>
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- tools/testing/selftests/timers/clocksource-switch.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+Bjorn, please ignore the v6 series, a way simplified and better
+support is in the v8 series.
+Which is mostly reviewed, only DTS is pending.
 
-diff --git a/tools/testing/selftests/timers/clocksource-switch.c b/tools/testing/selftests/timers/clocksource-switch.c
-index 5256e6215980..a1d0d33738b6 100644
---- a/tools/testing/selftests/timers/clocksource-switch.c
-+++ b/tools/testing/selftests/timers/clocksource-switch.c
-@@ -124,14 +124,18 @@ int main(int argc, char **argv)
- 	char orig_clk[512];
- 	int count, i, status, opt;
- 	int do_sanity_check = 1;
-+	int runtime = 60;
- 	pid_t pid;
- 
- 	/* Process arguments */
--	while ((opt = getopt(argc, argv, "s")) != -1) {
-+	while ((opt = getopt(argc, argv, "st:")) != -1) {
- 		switch (opt) {
- 		case 's':
- 			do_sanity_check = 0;
- 			break;
-+		case 't':
-+			runtime = atoi(optarg);
-+			break;
- 		default:
- 			printf("Usage: %s [-s]\n", argv[0]);
- 			printf("	-s: skip sanity checks\n");
-@@ -167,7 +171,7 @@ int main(int argc, char **argv)
- 	printf("Running Asynchronous Switching Tests...\n");
- 	pid = fork();
- 	if (!pid)
--		return run_tests(60);
-+		return run_tests(runtime);
- 
- 	while (pid != waitpid(pid, &status, WNOHANG))
- 		for (i = 0; i < count; i++)
--- 
-2.35.1
-
+Regards,
+Robert
+>
+> Regards,
+> Bjorn
+>
+> > ---
+> > Changes in v6:
+> > * Adjust max_register value using match data instead of globally
+> >
+> > Changes in v5:
+> > * Use lower case hex for max_register
+> > * Update the APSS clock name to match the new one without commas
+> > ---
+> >  drivers/mailbox/qcom-apcs-ipc-mailbox.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/mailbox/qcom-apcs-ipc-mailbox.c b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> > index c05f3276d02c..5d6b41fa6256 100644
+> > --- a/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> > +++ b/drivers/mailbox/qcom-apcs-ipc-mailbox.c
+> > @@ -34,6 +34,12 @@ static const struct qcom_apcs_ipc_data ipq6018_apcs_data = {
+> >       .offset = 8, .clk_name = "qcom,apss-ipq6018-clk"
+> >  };
+> >
+> > +static const struct qcom_apcs_ipc_data ipq8074_apcs_data = {
+> > +     .offset = 8,
+> > +     .max_register = 0x5ffc,
+> > +     .clk_name = "qcom-apss-ipq8074-clk"
+> > +};
+> > +
+> >  static const struct qcom_apcs_ipc_data msm8916_apcs_data = {
+> >       .offset = 8, .clk_name = "qcom-apcs-msm8916-clk"
+> >  };
+> > @@ -148,7 +154,7 @@ static int qcom_apcs_ipc_remove(struct platform_device *pdev)
+> >  /* .data is the offset of the ipc register within the global block */
+> >  static const struct of_device_id qcom_apcs_ipc_of_match[] = {
+> >       { .compatible = "qcom,ipq6018-apcs-apps-global", .data = &ipq6018_apcs_data },
+> > -     { .compatible = "qcom,ipq8074-apcs-apps-global", .data = &msm8994_apcs_data },
+> > +     { .compatible = "qcom,ipq8074-apcs-apps-global", .data = &ipq8074_apcs_data },
+> >       { .compatible = "qcom,msm8916-apcs-kpss-global", .data = &msm8916_apcs_data },
+> >       { .compatible = "qcom,msm8939-apcs-kpss-global", .data = &msm8916_apcs_data },
+> >       { .compatible = "qcom,msm8953-apcs-kpss-global", .data = &msm8994_apcs_data },
+> > --
+> > 2.36.1
+> >
