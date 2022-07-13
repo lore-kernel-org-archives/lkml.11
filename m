@@ -2,91 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE5EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235676AbiGMIYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
+        id S235139AbiGMIZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:25:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235790AbiGMIYV (ORCPT
+        with ESMTP id S235672AbiGMIYj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:24:21 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6C8F2E1A;
-        Wed, 13 Jul 2022 01:21:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657700513; x=1689236513;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/BVwHgKbbxWOqSuXtN/RD7Dtr4NeHdsRx9vnZHO82v4=;
-  b=l+pruWcJxMkZb8wXFfkpPIWJN8xlk4ryqSVkOENpIlJvFH1qzwQcoslf
-   fF3sCUpoN0AfmtBY8igWIp/t24msCYvx8kBnfVZ1iwO9wso0/TdF1lM5t
-   Wbx4BJKQtwamCAxfLwOLSx4eYN+Yq5rvuNbMN6OY4bhwwoBCjkjT1893k
-   VKfd09Gr0AXtlipAwJzAfSd7DgDJDl/EfGk+4NkptS30Ouw4pWRuWrYqJ
-   q9ZV+wz1Hwh9LB9rUeqKhtCJSzhNUsf2wZK/oYCX/haAyvbTuqtKCuqim
-   7fo8YqSaDROQxCSjtQBC1YVTXGPM06wRAV/SemoxcQfLMsc+Jz3+dJNvj
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285173583"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="285173583"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:21:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="653277737"
-Received: from dmi-pnp-i7.sh.intel.com ([10.239.159.145])
-  by fmsmga008.fm.intel.com with ESMTP; 13 Jul 2022 01:21:28 -0700
-From:   Dapeng Mi <dapeng1.mi@intel.com>
-To:     rafael@kernel.org, mst@redhat.com, arnd@arndb.de,
-        bvanassche@acm.org
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        Dapeng Mi <dapeng1.mi@intel.com>
-Subject: [PATCH] cpuidle: Move cpuidle driver forward before acpi driver in Makefile
-Date:   Wed, 13 Jul 2022 16:24:26 +0800
-Message-Id: <20220713082426.850911-1-dapeng1.mi@intel.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 13 Jul 2022 04:24:39 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20AC8E9217;
+        Wed, 13 Jul 2022 01:22:20 -0700 (PDT)
+X-UUID: a43b601f061e426a85f8b533d8140218-20220713
+X-CID-UNFAMILIAR: 1
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:60600421-3364-45f5-a5f9-953964b8a25a,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:54
+X-CID-INFO: VERSION:1.1.8,REQID:60600421-3364-45f5-a5f9-953964b8a25a,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_HamU,ACTI
+        ON:release,TS:54
+X-CID-META: VersionHash:0f94e32,CLOUDID:850e5dd7-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:1182dfb5da53,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: a43b601f061e426a85f8b533d8140218-20220713
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 253897115; Wed, 13 Jul 2022 16:22:16 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Wed, 13 Jul 2022 16:22:15 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Wed, 13 Jul 2022 16:22:15 +0800
+Message-ID: <6ba15d8532b726bd1a16cf2956140b2cba5d74f7.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Wed, 13 Jul 2022 16:22:15 +0800
+In-Reply-To: <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As long as Kconfig ACPI_PROCESSOR is enabled, ACPI_PROCESSOR would
-select ACPI_PROCESSOR_IDLE and acpi_idle driver is enabled. But
-in current driver loading order acpi_idle driver is always loaded
-before cpuidle_haltpoll driver. This leads to cpuidle_hatpoll driver
-has no chance to be loaded when it's enabled.
+Hi, Bo-Chen:
 
-Thus, move cpuidle driver forward before acpi driver and make
-cpuidle-hatpoll driver has a chance to be run when it's enabled.
+On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
+> 
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
+> 
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-Signed-off-by: Dapeng Mi <dapeng1.mi@intel.com>
----
- drivers/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+[snip]
 
-diff --git a/drivers/Makefile b/drivers/Makefile
-index 9a30842b22c5..921ed481b520 100644
---- a/drivers/Makefile
-+++ b/drivers/Makefile
-@@ -26,6 +26,7 @@ obj-y				+= idle/
- # IPMI must come before ACPI in order to provide IPMI opregion support
- obj-y				+= char/ipmi/
- 
-+obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
- obj-$(CONFIG_ACPI)		+= acpi/
- 
- # PnP must come after ACPI since it will eventually need to check if acpi
-@@ -126,7 +127,6 @@ obj-$(CONFIG_EDAC)		+= edac/
- obj-$(CONFIG_EISA)		+= eisa/
- obj-$(CONFIG_PM_OPP)		+= opp/
- obj-$(CONFIG_CPU_FREQ)		+= cpufreq/
--obj-$(CONFIG_CPU_IDLE)		+= cpuidle/
- obj-y				+= mmc/
- obj-y				+= ufs/
- obj-$(CONFIG_MEMSTICK)		+= memstick/
--- 
-2.30.2
+> +
+> +static int mtk_dp_bridge_atomic_check(struct drm_bridge *bridge,
+> +				      struct drm_bridge_state
+> *bridge_state,
+> +				      struct drm_crtc_state
+> *crtc_state,
+> +				      struct drm_connector_state
+> *conn_state)
+> +{
+> +	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
+> +	struct drm_crtc *crtc = conn_state->crtc;
+> +	unsigned int input_bus_format;
+> +
+> +	input_bus_format = bridge_state->input_bus_cfg.format;
+> +
+> +	dev_dbg(mtk_dp->dev, "input format 0x%04x, output format
+> 0x%04x\n",
+> +		bridge_state->input_bus_cfg.format,
+> +		 bridge_state->output_bus_cfg.format);
+> +
+> +	if (input_bus_format == MEDIA_BUS_FMT_YUYV8_1X16)
+> +		mtk_dp->info.format = DP_PIXELFORMAT_YUV422;
+> +	else
+> +		mtk_dp->info.format = DP_PIXELFORMAT_RGB;
+> +
+> +	if (!crtc) {
+> +		drm_err(mtk_dp->drm_dev,
+> +			"Can't enable bridge as connector state doesn't
+> have a crtc\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	mtk_dp_parse_drm_mode_timings(mtk_dp, &crtc_state-
+> >adjusted_mode);
+> +	if (mtk_dp_parse_capabilities(mtk_dp)) {
+
+mtk_dp_bridge_atomic_enable() would call mtk_dp_parse_capabilities(),
+so this is redundant.
+
+Regards,
+CK
+
+> +		drm_err(mtk_dp->drm_dev,
+> +			"Can't enable bridge as nothing is plugged
+> in\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
 
