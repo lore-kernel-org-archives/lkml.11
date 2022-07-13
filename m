@@ -2,32 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5AEC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB381C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232076AbiGMHa4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:30:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57448 "EHLO
+        id S234686AbiGMHa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231133AbiGMHar (ORCPT
+        with ESMTP id S234676AbiGMHaw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:30:47 -0400
-X-Greylist: delayed 1910 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 00:30:43 PDT
+        Wed, 13 Jul 2022 03:30:52 -0400
+X-Greylist: delayed 1423 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 00:30:49 PDT
 Received: from www.kot-begemot.co.uk (ivanoab7.miniserver.com [37.128.132.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CD7E43DF
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:30:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A964E4749
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:30:49 -0700 (PDT)
 Received: from [192.168.18.6] (helo=jain.kot-begemot.co.uk)
         by www.kot-begemot.co.uk with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1oBWKY-0001wQ-OF; Wed, 13 Jul 2022 06:58:46 +0000
+        (envelope-from <anton.ivanov@kot-begemot.co.uk>)
+        id 1oBWSZ-0001yh-IW; Wed, 13 Jul 2022 07:07:03 +0000
 Received: from madding.kot-begemot.co.uk ([192.168.3.98])
         by jain.kot-begemot.co.uk with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.94.2)
-        (envelope-from <anton.ivanov@cambridgegreys.com>)
-        id 1oBWKQ-003MQa-My; Wed, 13 Jul 2022 07:58:40 +0100
-Message-ID: <d20a629c-8c15-ca8a-c34a-c5c084dbee03@cambridgegreys.com>
-Date:   Wed, 13 Jul 2022 07:58:34 +0100
+        (envelope-from <anton.ivanov@kot-begemot.co.uk>)
+        id 1oBWSS-003Myb-Hs; Wed, 13 Jul 2022 08:06:57 +0100
+Message-ID: <0cef6aca-6e94-bc77-75a2-c017e6f87f7b@kot-begemot.co.uk>
+Date:   Wed, 13 Jul 2022 08:06:52 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.10.0
@@ -38,8 +38,7 @@ To:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
         johannes@sipsolutions.net
 Cc:     stable@vger.kernel.org
 References: <20220712232738.77737-1-Jason@zx2c4.com>
-From:   Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Organization: Cambridge Greys
+From:   Anton Ivanov <anton.ivanov@kot-begemot.co.uk>
 In-Reply-To: <20220712232738.77737-1-Jason@zx2c4.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
@@ -157,20 +156,8 @@ On 13/07/2022 00:27, Jason A. Donenfeld wrote:
 >    * UML helper threads must not handle SIGWINCH/INT/TERM
 >    */
 
-I am probably missing something here.
-
-IIRC UML RNG device reads directly from host.
-
-If you are using UMLs own /dev/random you are effectively using the host 
-one.
-
-So unless I am mistaken, you need extra randomness only if you do not 
-have UMLs /dev/random compiled in.
-
-Apologies for possible duplicates - I initially did not reply-all by 
-mistake.
+Acked-By: Anton Ivanov <anton.ivanov@cambridgegreys.com>
 
 -- 
 Anton R. Ivanov
-Cambridgegreys Limited. Registered in England. Company Number 10273661
-https://www.cambridgegreys.com/
+https://www.kot-begemot.co.uk/
