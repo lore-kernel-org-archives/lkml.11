@@ -2,121 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A81CCA47C
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 22:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3CACCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 22:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236977AbiGMWXP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 18:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57622 "EHLO
+        id S237381AbiGMWXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 18:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbiGMWXN (ORCPT
+        with ESMTP id S237380AbiGMWXU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 18:23:13 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2078.outbound.protection.outlook.com [40.107.243.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E914B0CF;
-        Wed, 13 Jul 2022 15:23:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SGyXgqXJdBU7oImO8s22LfomWWDNcOkmRcUM5NBnD0iqi0q9aUpl7K8ZwBHevc75EAGgVSPkTPBclh1s37tvaiW1O9uNrd7+JiDlIIfjWEOAvds44jejCgdzqNLqEwafZCttyOnCF1590vGZlQYXRj9NKXmz0uwhRCd18guPpBBWG7qtNQokkzj0EZLv5hoMWcsgt9bVnqGV0KLPgtad+I3XyBa2yGFTlpEH3eODLNmTZHHSECxVMZI3pTJABwEJP4/4+zs6iabZjE8i5qaYqiTWtS6BEEpogWlDNGukaQN+nD8qkdd5Fzu6wtEMTzcUbBIJgurk1n+LkhCM0tbLTg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IyDVF7++TsXEpLnS7TfWVZLisxH/8DLB/NoFGOjrCKE=;
- b=k2GY34UJZWrZKD77Nx1y34ebNH1vL0iV3yHl9O7QTPjfIHQSbGrn0G/Bm083bV1g2FdBiYt/AvNZaJN4h8vkfPvAjQbNYPl/ht3fcLlj0/8+SzT/Q0UDJgqnB2jzf587mgDn+98gxNEVKBuhbqtxzmYyOBXxUWVc9dAaf1cOS21zPL5XyO1YuAvHXBkQ52hPYKCU/KubjNPPKrjWjFR8P1kH4LPzPM6IWho0uJrvKM7NnPMB8HAZ1yK9oZPzzGbmr1S6vQQPEbFXo/h/bjkaJ2hWhrOxJAN6KwJBAh45s5UISsAOiRSzTJ0TWnaOx3RYuWxtufDK1jhUpW3Dq2/PCA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IyDVF7++TsXEpLnS7TfWVZLisxH/8DLB/NoFGOjrCKE=;
- b=CeSlA8+5cbrZY2eTsZLq2Bi49ho+EyQiO4Yx7oFk6x21r5Sc8d9Te5XLL/FE6rFM+ulPoT2q7n2WD1nOuXY700wvgCVaW2mKAlcNAah4QN2GmhS9s7cx2iywTN9jCDmgA+OfwRF1ZfMRgRiOVc+GDouh72bqmShuh4VaSzpeLArJdccA/R1JMxfeUKhXYVfiqgTAllqMeiHYB1TO0SjdSqPxERU77ivVOwadlEbbNV89xwVn2tNqyLR8ArI7wXGW808CAbI003egkA+gPlevh4cOLoCPDq5OtBbtL6lRDcPsFRBdDnN2xSyR0t5r0rWTY8YpZk8J7aUCteRYnrzHKA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by IA1PR12MB6161.namprd12.prod.outlook.com (2603:10b6:208:3eb::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Wed, 13 Jul
- 2022 22:23:10 +0000
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::900e:a8f9:4d99:1cb1]) by BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::900e:a8f9:4d99:1cb1%4]) with mapi id 15.20.5438.013; Wed, 13 Jul 2022
- 22:23:10 +0000
-Date:   Wed, 13 Jul 2022 15:23:08 -0700
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: Re: [PATCH] net/mlx5: Use the bitmap API to allocate bitmaps
-Message-ID: <20220713222308.6sqcsom4duvbe3pk@sx1>
-References: <ca036ba3d0c2ee307e1d8cc94aaaab1686ebf1c9.1657456513.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <ca036ba3d0c2ee307e1d8cc94aaaab1686ebf1c9.1657456513.git.christophe.jaillet@wanadoo.fr>
-X-ClientProxiedBy: SJ0PR03CA0389.namprd03.prod.outlook.com
- (2603:10b6:a03:3a1::34) To BY5PR12MB4209.namprd12.prod.outlook.com
- (2603:10b6:a03:20d::22)
+        Wed, 13 Jul 2022 18:23:20 -0400
+Received: from sonic310-22.consmr.mail.gq1.yahoo.com (sonic310-22.consmr.mail.gq1.yahoo.com [98.137.69.148])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB2804C634
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 15:23:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1657750996; bh=sW1ejgoubTLnwSxkyhbV7vGRBPUmBbNSxg5+MIbDhoU=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=mGODDA3bNe4GC1bDfrENgyLUL+UWOcwZnVlh5I04dnkev0wlbHWTRzyk4XL4AAUlA2UYTgh9Oggbze+72E0HoGpJ2jHKzxDod7kMhgbLK8gGjAyyY9ewn6+8nwlj7UpJVj51eylBEUyXhDi4WJuxjGX6pQBkT68RLPhbqdeR7p1y81JSIv5fN3Ga9/n/M47VGXIZJSSZPTBGwNiy5aUkIIvVhGY5lznn3Mdhu9vInTcJDv+sunq+4D4RgEW075qOwNBTJNm02KSh3GFx6QCfSmjDW3XyfhNBYnQWSfkr+8SCi0xqbwjae+5xGrMhkNvunTFIY/Qv7SgHpYssO8Z0Dw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1657750996; bh=7QbdE5+wXOXbTyIVA500cevfWolfwJKHWLEvx120ZfS=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=dC1VtJsQfJzJ850whGnEk4H6TprSmJfBW59oAgmhz1Y/zE/tbIdMyb0YN9H8dMVL38UN38YU2uzBbyFud8PosDH04TXekr+b6a2L+jZTF6OBjUR0oeQC7o+rmS8rLcsoD3t2o9tpRZ8ijvwA6qw2+JS2FZfspaKWt60nT4fDm0ixNxhiObCKPAqmlVtcYI0XBRZMod34jlHLoZ+lCHqld2jtB10jlqjKD5nI4XOoRE/NsVLIshXxyWWHClxrE2KHUxusToH+5KLzTkjy4VUOofIM+CIv7RSJ9shP9jQVW+mLS7j1ifCP5ht3pgtsYYdZ7rqCgRVW5IQY/vme+AYxQw==
+X-YMail-OSG: KNOgYQUVM1n2RjKzOe7Hc1pLGEFWIMp2pM7hEiX_E99y_3H6Q3_Ny4uz32kSH3G
+ hYHDfrTumNu5krn0d0Fh_rjTsebyvOa5fOEpnbkAPejPwkFsB3rohEztZkkWAQxvoQf0ibTuahVX
+ wR.uBdlZ8IfjYvVTW0aiKuxsaKpdv1D8lzq6aGwdDnptnoZI.zR2E8YH8EM7gR8NoSkPQpfCmLEr
+ Kj3Smc0LGf1Z2kvMvmwvZqRhjDXffBnSNS8C2y.NG23SFURkzRD0HYiBr56lFTWZ_NmLFx8E7SdQ
+ ySbVZ4LbZIqVkOVG.GTSwlQ9VYw.is3yUSF7Fw4DDL8dI8FmpDv01u5pMlaydiDhbaWdtX45_19i
+ UGY5IIilrxpsUpe6GvtnY7u5AWHz.WJK.NpwQQ7lbn9PsXhWKutB0FhxiOPGS58VYlVdjnF2iQKt
+ FIwxlfA7_wSlJygBEkNwFBWbaMZd0.lYDaTvsJq4pIVpTRWjmXgQZ0.HghbAEI_BZ4fl6_gz1hCU
+ e1nL0oakYqiBXNJ5.7c5uJGE6x4EYPUSxFlRibYeYeaDXEKM59CpdrjPnFIgyeHpnrpqT.wIdbGm
+ yHjCehGxTg8pEhjIOYm9cbUK1BO1LSCTvoTd68GDRyj.J9AxpeG2O3kB1.RSErrUp0fprpBfaROG
+ xy2ymm3JSDCYx.OADcmexujp0.0YJdfPHoA0np9lxJGq9CBYUO7ZwJAB6w.K87.IYm92r2EyM51X
+ bWqUUYcQMEJUqPot0Ov1_QvpTS62TkKYcQiTd3FpeHvntA29dHaFaFNWZ.VBltsp2oYa7fLNy4u7
+ 7Wy6Bh4dfCk68.6sgk2CdbdrPjx7A1ip1TYh_YAJi8fpAqlfyqs0Lc.yVJKY1XVbaRV2r3TSr2sw
+ UCW50eiryck0O2ER3fxnFfLAOA8QntgCPtF0H1xKBi2zfcxvP2EwO07MDQu_NVEOf.sfJD5mTnl0
+ e2z1qDEVa_y7QHhtKNiR4k1qqtp7nYVjM1W9OjQNakwDHyuMrrFvpHVsK9kbnp6O07f7BypUcj8K
+ ZVNmnUXjHnxvbrZzsqTVom8NkTfGFuuk5KtlcWbD05IdLRUgNvZH1vJ8Ead4_ofdL.nyOs6bvW.M
+ tQuOv_Ot7OW7qQqHjt4chTGW3NIT3fqtu02Nio7WE6bDrLwawBVerJQpq17UXYKWk0aGgJ8sLpU5
+ .3wucbPo2gePrjqggTm81q4fKD5OJGqyQPIdcLu2vY.TUcbdiMZr5DtnchB8wKvHOMWu25z2qMCm
+ uy49ap2TTcGi0S5_T3QRVcMAZQBoMGFTwfKhpFBDE2V8NvUDyvkycoWAJaEvHctTPWUxrb5_6fI4
+ B6KIZeVrDz5kEFE_wCNEGar3h4O_FoaI42F1BKx3EdDR34QbniohkM2rqIScVTtX2zDTys1eRpJT
+ 4py_LSSkkDHeigxNszvcAXMeoc90swpjvK6xBt7J.2TQefFDZjU36bP5X.lanG2zRwNq4oL9U4y2
+ q4kl8gnn11lep29qjae6PKS8HZDDTWSgtRTAHKnwQjqne8EKS_QK618jEFMft5Yqa_uLxHnhTT0J
+ 5Qfeh4gYDIfaY2ryfL3pct5LMe2JX7lm_RjQEuW73gcrRutrkDgjHImYB5PXOBklK2.vLCak88xW
+ i_DmMR74KfbrfSJGB1oQTsmjPQ.L5RPCuTZf_WMbaCJLEZsF8yAUDer7XsaeMm7K5yKhodluLlYm
+ 8JGP_n47da4ZP8zGW6fSoOmgR.XtM4P_uK1QIP3wkgbGb23.3R_l.WVAMStNpP3mQam8PAwfMEnF
+ pXUE4uSqhezLU4uFO_eMmy4HAQI_zuPitQnShyssJ25uqEJNBQWLi_NwbyrDSIUsktJ9qpHtff1b
+ stGhWoejsiviIhPk6.RhqTlDkwIG5fUzC4L7H7XMYoXzjV5HUg90VcXFXXPzUBm3OXfaeTd9CXfw
+ d4fY9UDl0Qof1Go6qBuOW1yvJ0AXTyfz4HONjwm_lrghkEiWYj8awLvg-
+X-Sonic-MF: <brchuckz@aim.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.gq1.yahoo.com with HTTP; Wed, 13 Jul 2022 22:23:16 +0000
+Received: by hermes--production-bf1-58957fb66f-88chf (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 89c21ab9e0ecbc439802f7109841f4ef;
+          Wed, 13 Jul 2022 22:12:39 +0000 (UTC)
+Message-ID: <ad32874c-9d82-6e8e-d069-615191f9591b@netscape.net>
+Date:   Wed, 13 Jul 2022 18:12:36 -0400
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1045b5f4-a6f6-4e0b-8943-08da651e44a7
-X-MS-TrafficTypeDiagnostic: IA1PR12MB6161:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MSqU4BbQu5i+kHiTQaJbbp5KtIu9Q8xKdtyIO2MrayKeUd+m0T+2UJNLbcmZPTPxfJw3Q6kLigORkqpwGnzuenAKDJK+xLTiDPfF2Oaa9yLZ3JZgaohWtQFU6N2keLpZxinVFGi5M23AdmolItgzTUAOEKQYc5B7nuB3fWvnMt94CBHYUqYM4kM1RhkknynyAbdjPPstX8fUaE8YaJRd7WNOQwyb0cI0SlRhOKAeQQdfZG/9Hi8QyfURDlZyFpw3047g9r7HfvcFXCW8sqWCzYbizo67S3HFi4nrVoW0ZVw0tkBrmI3lbIkn8q9GWKVKQBioaXdRbobK1Tjv/h39hnchIiNgJqlfDfm0AKuGy2p9AsHMeg3YlA9LB2rpIcPFVVe/M2T1rct1GbiSN5K6/2wUDN0Ix2eQPTocriZS6aGpxHNUdV7pUJoA5q9vnWQsP+ZOeRR7f5MPiAih+gQHwKOdYwKDaJvmJ0ZoVi7XWZb26c55nhog1/OgT+mtexiWEj+plcbjnGiYB7YiM1cVMf6ms2Tnj0S9HOPrCEQn1uMT4LdH5AKrpL8Fl1ocyQgvNS40THmFYM5X2HvNoLRtzfW1LrtU2WlJCWP8AhyIBWrImECCKyepUs77jXrGRLtAsvGz+ePJitwvWMIJn4gEYIKCowDI5ZN3RItaDNe4fs/koY2wgbh/YQ39e0Eipx8mq4jm4eadQ15ZzXqFhdf24Tlpbrcg0A6Yq/ACAuKb/80L4G1swvTv4SHF6ZOiSSAO0pl1UFAI2XEPg0PvhMFlpA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(4326008)(9686003)(8676002)(5660300002)(66476007)(186003)(6512007)(6916009)(7416002)(66946007)(26005)(33716001)(66556008)(2906002)(1076003)(558084003)(86362001)(6486002)(478600001)(6506007)(54906003)(316002)(41300700001)(38100700002)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nZBKQj8rr68xfFjYLrPFi973dluJPNzf0QkjGtdRi5gvAIAOcMv19V9lkuhf?=
- =?us-ascii?Q?KmJXJVdD1dIsPflu9u4Ums48Ae0NMZo17J3niEjOixCOSiYL7UouHoKwJGw9?=
- =?us-ascii?Q?MqWsy5zLFa9kcxdbLoQYn0ZAgI6UTrvY3zQL7MfyrCrPL/O6sEjOmWpKqGh2?=
- =?us-ascii?Q?Ebqz5uAiAvQDQKjrCsJ3TeNXCwjQVRWd6dgko8FTEOgMOppwUig+SsztYOxv?=
- =?us-ascii?Q?UGfLPk/fKecKYX+spw1cRmld6EMgB2SZucMVxmD/1R/IrxpD8IQCKofoirKF?=
- =?us-ascii?Q?L4BuyeHWJTX68Dk9rDu561OvSNJD6YypzOlsLlbmSPBQDlwsuy1/16dK6huK?=
- =?us-ascii?Q?jtloeh3SZdZxk6LX9cxkZg0NyRZPHcumJ1mgTvCzmRxlLl3BHbhY4/P4JSev?=
- =?us-ascii?Q?BzqQKGT56BSu3SkwvnwwWUGGQLG2sR3p+VLmqDrZ8xBYyXLRRvig8ZlmK9F6?=
- =?us-ascii?Q?4ImnqhxrQG74v4Lhj+b7GxZz8F7RsWawOveiverJ+UeEGrepLi6qghWLdWJo?=
- =?us-ascii?Q?ZFhl6spXz7qKumd6IHy/GHt+BE7Ndia6V+2n7xvQ/nPJJa5l/x341Kfj4m5H?=
- =?us-ascii?Q?BjkOLBI7CtBdYp3++EaqsUjb8mXZP1N33cbt4LjwleBJXHarsL0fU4ExaX7P?=
- =?us-ascii?Q?uy4wkt/fVNKHGvgJ4IPNEE8hxBcgnA6S2R/R3uDbTKKJKX1784aAdSuXyx+Y?=
- =?us-ascii?Q?3uqwjU1YVs3HREpb/+7zULpCj575d2TqHDbwTtyJNpADEifzEoaAjGOyKifa?=
- =?us-ascii?Q?jJISM53/JWI5XkfmlvWZ22GpGO7+naYzCNgR/uIV6+XJKIYRK/H2drcTBhsD?=
- =?us-ascii?Q?OyuRt3tCSyGxm+QBjTd9jRVXhFRLj6+m8b6YjWfy5kXlCP463Hz1anieaY2b?=
- =?us-ascii?Q?K8kcjQRmwP+jZ/W+HdBiDn9ag1IkYpuqoJXDVOqOMHLlvgA2J3u73qKm1pXJ?=
- =?us-ascii?Q?ViY3dKbun/haLsa4c7UB0KJqTFraWiVrTIU/YiIf/c6PmwjkG+mTotmCyA6B?=
- =?us-ascii?Q?IRmRpaI5PZzoJnoV8zebROJrbBRF9gJGK4kDEbLBfqR5nUIIZQsaDtvAn86P?=
- =?us-ascii?Q?xfBNkgIlbIri/oSbX+UYb1w5i+6XCmh/iv6hQqRhfy6PYiXqkJGBJxsFqO2/?=
- =?us-ascii?Q?RNjbbl0EziVhYA+ONcN2oo/OsMKzoJ4xqFfsOtg4DfBWghmJ7XP5vSY80fAS?=
- =?us-ascii?Q?lZNcy6soZjN9sSRJBmKFrV0V2C8cTOs4jLMR725X0RB/gO10lnKVnCobudTu?=
- =?us-ascii?Q?j4NjFnXTVb5W5gQk+mRvNsXYu8gQQjs+YsVRYYqjqWgi8MS1I/qyjenWDS4B?=
- =?us-ascii?Q?LFf4NHsUSS/We6nJkV+cXbortR4dVuXzyd7vMEnSbVgM/61ShZMYVfURJImZ?=
- =?us-ascii?Q?oA678u/k9ZOd3UiU+n7X1aV0qOn1Ag0eLiBifnqErxEm9xYDaBbc/xFuuJx7?=
- =?us-ascii?Q?MhlgYLUx3xiv/cuLplcW7LxpV1kFuP47o/S/cyBUQuruQbj2BT6j7v1HcTVE?=
- =?us-ascii?Q?hxu7PXhh4zaghpcSztBf5HvzW50KYep5bXP5lQtvN5Fz0dmCWu3iU+S/RJCu?=
- =?us-ascii?Q?xQxvpb21aIKkaPFHjUqIrzzvkUVg34udxTjaE0Tl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1045b5f4-a6f6-4e0b-8943-08da651e44a7
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:23:10.2382
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 27Ek/uKQjhz/IBYG37Cqy0h1VbC/KRvG4AFHLDfpRXhdtXkpRsIVp9b8xMosTq9nA5O5C3d1tNkMJhSKbRfMhw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6161
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] Subject: x86/PAT: Report PAT on CPUs that support PAT
+ without MTRR
+Content-Language: en-US
+To:     Juergen Gross <jgross@suse.com>, Jan Beulich <jbeulich@suse.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jane Chu <jane.chu@oracle.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        xen-devel@lists.xenproject.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz.ref@aol.com>
+ <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz@aol.com>
+ <e0faeb99-6c32-a836-3f6b-269318a6b5a6@suse.com>
+ <3d3f0766-2e06-428b-65bb-5d9f778a2baf@netscape.net>
+ <e15c0030-3270-f524-17e4-c482e971eb88@suse.com>
+ <775493aa-618c-676f-8aa4-d1667cf2ca78@netscape.net>
+ <c2ead659-d0aa-5b1f-0079-ce7c02970b35@netscape.net>
+ <1d06203b-97ff-e7eb-28ae-4cdbc7569218@suse.com>
+ <a8d0763f-7757-38ec-f9c1-5be6629ee6b2@suse.com>
+From:   Chuck Zmudzinski <brchuckz@netscape.net>
+In-Reply-To: <a8d0763f-7757-38ec-f9c1-5be6629ee6b2@suse.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20407 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 10 Jul 14:36, Christophe JAILLET wrote:
->Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+On 7/13/2022 9:45 AM, Juergen Gross wrote:
+> On 13.07.22 15:34, Jan Beulich wrote:
+> > On 13.07.2022 13:10, Chuck Zmudzinski wrote:
+> >> On 7/13/2022 6:36 AM, Chuck Zmudzinski wrote:
+> >>> On 7/13/2022 5:09 AM, Jan Beulich wrote:
+> >>>> On 13.07.2022 10:51, Chuck Zmudzinski wrote:
+> >>>>> On 7/13/22 2:18 AM, Jan Beulich wrote:
+> >>>>>> On 13.07.2022 03:36, Chuck Zmudzinski wrote:
+> >>>>>>> v2: *Add force_pat_disabled variable to fix "nopat" on Xen PV (Jan Beulich)
+> >>>>>>>      *Add the necessary code to incorporate the "nopat" fix
+> >>>>>>>      *void init_cache_modes(void) -> void __init init_cache_modes(void)
+> >>>>>>>      *Add Jan Beulich as Co-developer (Jan has not signed off yet)
+> >>>>>>>      *Expand the commit message to include relevant parts of the commit
+> >>>>>>>       message of Jan Beulich's proposed patch for this problem
+> >>>>>>>      *Fix 'else if ... {' placement and indentation
+> >>>>>>>      *Remove indication the backport to stable branches is only back to 5.17.y
+> >>>>>>>
+> >>>>>>> I think these changes address all the comments on the original patch
+> >>>>>>>
+> >>>>>>> I added Jan Beulich as a Co-developer because Juergen Gross asked me to
+> >>>>>>> include Jan's idea for fixing "nopat" that was missing from the first
+> >>>>>>> version of the patch.
+> >>>>>>
+> >>>>>> You've sufficiently altered this change to clearly no longer want my
+> >>>>>> S-o-b; unfortunately in fact I think you broke things:
+> >>>>>
+> >>>>> Well, I hope we can come to an agreement so I have
+> >>>>> your S-o-b. But that would probably require me to remove
+> >>>>> Juergen's R-b.
+> >>>>>
+> >>>>>>> @@ -292,7 +294,7 @@ void init_cache_modes(void)
+> >>>>>>>   		rdmsrl(MSR_IA32_CR_PAT, pat);
+> >>>>>>>   	}
+> >>>>>>>   
+> >>>>>>> -	if (!pat) {
+> >>>>>>> +	if (!pat || pat_force_disabled) {
+> >>>>>>
+> >>>>>> By checking the new variable here ...
+> >>>>>>
+> >>>>>>>   		/*
+> >>>>>>>   		 * No PAT. Emulate the PAT table that corresponds to the two
+> >>>>>>>   		 * cache bits, PWT (Write Through) and PCD (Cache Disable).
+> >>>>>>> @@ -313,6 +315,16 @@ void init_cache_modes(void)
+> >>>>>>>   		 */
+> >>>>>>>   		pat = PAT(0, WB) | PAT(1, WT) | PAT(2, UC_MINUS) | PAT(3, UC) |
+> >>>>>>>   		      PAT(4, WB) | PAT(5, WT) | PAT(6, UC_MINUS) | PAT(7, UC);
+> >>>>>>
+> >>>>>> ... you put in place a software view which doesn't match hardware. I
+> >>>>>> continue to think that ...
+> >>>>>>
+> >>>>>>> +	} else if (!pat_bp_enabled) {
+> >>>>>>
+> >>>>>> ... the variable wants checking here instead (at which point, yes,
+> >>>>>> this comes quite close to simply being a v2 of my original patch).
+> >>>>>>
+> >>>>>> By using !pat_bp_enabled here you actually broaden where the change
+> >>>>>> would take effect. Iirc Boris had asked to narrow things (besides
+> >>>>>> voicing opposition to this approach altogether). Even without that
+> >>>>>> request I wonder whether you aren't going to far with this.
+> >>>>>>
+> >>>>>> Jan
+> >>>>>
+> >>>>> I thought about checking for the administrator's "nopat"
+> >>>>> setting where you suggest which would limit the effect
+> >>>>> of "nopat" to not reporting PAT as enabled to device
+> >>>>> drivers who query for PAT availability using pat_enabled().
+> >>>>> The main reason I did not do that is that due to the fact
+> >>>>> that we cannot write to the PAT MSR, we cannot really
+> >>>>> disable PAT. But we come closer to respecting the wishes
+> >>>>> of the administrator by configuring the caching modes as
+> >>>>> if PAT is actually disabled by the hardware or firmware
+> >>>>> when in fact it is not.
+> >>>>>
+> >>>>> What would you propose logging as a message when
+> >>>>> we report PAT as disabled via pat_enabled()? The main
+> >>>>> reason I did not choose to check the new variable in the
+> >>>>> new 'else if' block is that I could not figure out what to
+> >>>>> tell the administrator in that case. I think we would have
+> >>>>> to log something like, "nopat is set, but we cannot disable
+> >>>>> PAT, doing our best to disable PAT by not reporting PAT
+> >>>>> as enabled via pat_enabled(), but that does not guarantee
+> >>>>> that kernel drivers and components cannot use PAT if they
+> >>>>> query for PAT support using boot_cpu_has(X86_FEATURE_PAT)
+> >>>>> instead of pat_enabled()." However, I acknowledge WC mappings
+> >>>>> would still be disabled because arch_can_pci_mmap_wc() will
+> >>>>> be false if pat_enabled() is false.
+> >>>>>
+> >>>>> Perhaps we also need to log something if we keep the
+> >>>>> check for "nopat" where I placed it. We could say something
+> >>>>> like: "nopat is set, but we cannot disable hardware/firmware
+> >>>>> PAT support, so we are emulating as if there is no PAT support
+> >>>>> which puts in place a software view that does not match
+> >>>>> hardware."
+> >>>>>
+> >>>>> No matter what, because we cannot write to PAT MSR in
+> >>>>> the Xen PV case, we probably need to log something to
+> >>>>> explain the problems associated with trying to honor the
+> >>>>> administrator's request. Also, what log level should it be.
+> >>>>> Should it be a pr_warn instead of a pr_info?
+> >>>>
+> >>>> I'm afraid I'm the wrong one to answer logging questions. As you
+> >>>> can see from my original patch, I didn't add any new logging (and
+> >>>> no addition was requested in the comments that I have got). I also
+> >>>> don't think "nopat" has ever meant "disable PAT", as the feature
+> >>>> is either there or not. Instead I think it was always seen as
+> >>>> "disable fiddling with PAT", which by implication means using
+> >>>> whatever is there (if the feature / MSR itself is available).
+> >>>
+> >>> IIRC, I do think I mentioned in the comments on your patch that
+> >>> it would be preferable to mention in the commit message that
+> >>> your patch would change the current behavior of "nopat" on
+> >>> Xen. The question is, how much do we want to change the
+> >>> current behavior of "nopat" on Xen. I think if we have to change
+> >>> the current behavior of "nopat" on Xen and if we are going
+> >>> to propagate that change to all current stable branches all
+> >>> the way back to 4.9.y,, we better make a lot of noise about
+> >>> what we are doing here.
+> >>>
+> >>> Chuck
+> >>
+> >> And in addition, if we are going to backport this patch to
+> >> all current stable branches, we better have a really, really,
+> >> good reason for changing the behavior of "nopat" on Xen.
+> >>
+> >> Does such a reason exist?
+> > 
+> > Well, the simple reason is: It doesn't work the same way under Xen
+> > and non-Xen (in turn because, before my patch or whatever equivalent
+> > work, things don't work properly anyway, PAT-wise). Yet it definitely
+> > ought to behave the same everywhere, imo.
 >
->It is less verbose and it improves the semantic.
->
->Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> There is Documentation/x86/pat.rst which rather clearly states, how
+> "nopat" is meant to work. It should not change the contents of the
+> PAT MSR and keep it just as it was set at boot time (the doc talks
+> about the "BIOS" setting of the MSR, and I guess in the Xen case
+> the hypervisor is kind of acting as the BIOS).
 
-applied to net-next-mlx5
+If that is the true meaning of "nopat", then the pat_enabled() test we
+currently have in the i915 driver is the wrong test for the capability
+of the
+CPU to use the fast WC type pages for video frames access because it is
+possible for pat_enabled() to be false and "nopat" set with its official
+meaning, and still have a CPU with WC cache mode capability.
+
+If we accept pat_enabled() as implied WC cache mode support, why not also
+accept (!pat_enabled && boot_cpu_has(X86_FEATURE_HYPERVISOR)) also
+as implied WC cache mode support? That is what Jan's patch effectively does.
+He just possibly places his patch in the wrong portion of the Linux tree
+to be consistent with the official meaning of "nopat" and pat_enabled().
+
+We could implement Jan's fix instead in the i915 driver instead if we need
+to be consistent with the official meaning of "nopat" and pat_enabled().
+
+I could make that a v3 of my patch - and try the i915 maintainers instead of
+the x86 maintainers to provide the fix. But before I do that, can someone
+on this list of 20 recipients tell me why none of you have fixed this nasty
+regression? I am new to trying to contribute to Linux and the whole
+experience is frustrating when all you get is stonewalling from the official
+maintainers. So why not just someone step up and do this fix?
+
+In the meantime, Juergen can start working on cleaning up the x86/PAT
+code so it can provide the i915 driver with a test not for PAT, but for the
+WC page caching mode support that works in all supported environments,
+including Xen. Currently there is no such test available. Juergen proposed
+one but it failed to accurately test for WC cache mode capability on my
+Xen workstation. Until the x86 subsystem developers can provide the rest
+of Linux with an accurate test for the WC caching mode, we have to
+settle for
+less than a pure and perfect solution if we are serious about following
+Linus' regression rule and accept a quick fix to a nasty regression while
+we wait for a better solution that will hopefully come later.
+
+Chuck
