@@ -2,162 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB93C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 259B9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236182AbiGMN1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52678 "EHLO
+        id S231969AbiGMN25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231625AbiGMN1H (ORCPT
+        with ESMTP id S230303AbiGMN24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:27:07 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E738E2B9;
-        Wed, 13 Jul 2022 06:27:05 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id 3A8901C8121E;
-        Wed, 13 Jul 2022 21:27:05 +0800 (CST)
-Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 13 Jul
- 2022 21:27:04 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
- (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Wed, 13 Jul
- 2022 21:27:04 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Wed, 13 Jul 2022 21:27:04 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 631E163A23; Wed, 13 Jul 2022 16:27:03 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <jic23@kernel.org>, <lars@metafoo.de>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <j.neuschaefer@gmx.net>, <zhengbin13@huawei.com>
-CC:     <openbmc@lists.ozlabs.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v3 2/2] iio: adc: npcm: Add NPCM8XX support
-Date:   Wed, 13 Jul 2022 16:26:40 +0300
-Message-ID: <20220713132640.215916-3-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220713132640.215916-1-tmaimon77@gmail.com>
-References: <20220713132640.215916-1-tmaimon77@gmail.com>
+        Wed, 13 Jul 2022 09:28:56 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F019511C2C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:28:55 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id w185so10248520pfb.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:28:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oS8l0DP9XOP7IcptwyyBF7p0o//V8/X4Uva/tnzgH+I=;
+        b=oli3pkWVLTc5myDwYPzIiLZfFnOebiBXTjssvr0eGGu9PTd+yVQ44s6tUWfe4KgE7U
+         8/uMxcr0/YMQZ8X9kTuj1FoR5P9WWia6Hl7C1j6HHb118NS8fAP54XhgyFMtj5S8DmC0
+         Flj2TlXVrAG6u7xd3cTmQjFlNT0Yl+fDhlEPVf6wNaICiSGweNBCwCaJSmXbqYA7a/q0
+         zf0nKN20vQLcoZ69uGScPMsgzXkyM9CmlUdfj3XsqxqgB5kfgqH4FekE385EI5IKvdo9
+         HB91dkQ9gJEnCqVQFSWfxgocFKDpB+DXrh7bdf/Kgg60JGQaJU7/+f+7ju/IMUc29QGs
+         xTMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oS8l0DP9XOP7IcptwyyBF7p0o//V8/X4Uva/tnzgH+I=;
+        b=hXtpieKF0zw91PjXPkFast/pPy2K3yINdzT2LouFWKvYJsRIxj1Usz1hNJIENdYhnx
+         3XDN0KdYhhxtNXiue+RumhgESYUb7uJX+fR+vh6Luvya6IqLCn9vNq1YCwkmMqgHbtov
+         rMncO08RhaXp/rIpQAdn+idDb8awhvsJyVHl161mxVIdKO1swmru6McqQ1/xHtgDIvlT
+         wx6tPUFpGixtHb4AXMcBE4rvvQiNVMvwKoBKBmlMG92i5qMFGwiHxkQQ3JpKOfP10iRj
+         K6rG/CSrTO6yG3PLvUwb1agYa/rugASCUQBv2FstC+0pFpBegZJ5UI37XEHrUKQlcqCP
+         HGjA==
+X-Gm-Message-State: AJIora+KWvHnp5SVzCHdXW53N9xsghTLrnLN0sv0PJWNshsTqI/mZF7z
+        OPXTOaxC/uNRnjguE96tWh5g2WlxgV0ObA==
+X-Google-Smtp-Source: AGRyM1ultb8zQEZlRq+nP410/QqzMmsDWQrnfoxi8ex5F23hOd6xjPtNRkRlwEmIa8il/m8/ojpeWg==
+X-Received: by 2002:a05:6a00:124b:b0:52a:c7de:c76 with SMTP id u11-20020a056a00124b00b0052ac7de0c76mr3348008pfi.5.1657718935475;
+        Wed, 13 Jul 2022 06:28:55 -0700 (PDT)
+Received: from alvinzhan-virtual-machine.localdomain (1-164-121-236.dynamic-ip.hinet.net. [1.164.121.236])
+        by smtp.gmail.com with ESMTPSA id kk18-20020a17090b4a1200b001ec9dce6f10sm1622316pjb.38.2022.07.13.06.28.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 06:28:54 -0700 (PDT)
+From:   alvinzhan1234@gmail.com
+To:     catalin.marinas@arm.com, will@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alvin Zhan <alvinzhan1234@gmail.com>
+Subject: [PATCH 1/1] arm64: Prevent offline CPU handling IRQs.
+Date:   Wed, 13 Jul 2022 21:28:43 +0800
+Message-Id: <20220713132843.49693-1-alvinzhan1234@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adding ADC NPCM8XX support to NPCM ADC driver.
-ADC NPCM8XX uses a different resolution and voltage reference.
+From: Alvin Zhan <alvinzhan1234@gmail.com>
 
-As part of adding NPCM8XX support:
-- Add NPCM8XX specific compatible string.
-- Add data to handle architecture-specific ADC parameters.
+Migrate all of the IRQs on this CPU after setting it offline may still cause the IRQs to be dispatched to this CPU.
+To prevent offline CPU handling IRQs, we should migrate the IRQs away from this CPU before it is powered off.
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Signed-off-by: Alvin Zhan <alvinzhan1234@gmail.com>
 ---
- drivers/iio/adc/npcm_adc.c | 35 ++++++++++++++++++++++++++++-------
- 1 file changed, 28 insertions(+), 7 deletions(-)
+ arch/arm64/kernel/smp.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-index f7bc0bb7f112..4c7ebcd57b88 100644
---- a/drivers/iio/adc/npcm_adc.c
-+++ b/drivers/iio/adc/npcm_adc.c
-@@ -16,6 +16,12 @@
- #include <linux/uaccess.h>
- #include <linux/reset.h>
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 62ed361a4..c4c3c5ed5 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -302,6 +302,11 @@ int __cpu_disable(void)
+ 	remove_cpu_topology(cpu);
+ 	numa_remove_cpu(cpu);
  
-+struct npcm_adc_info {
-+	u32 data_mask;
-+	u32 internal_vref;
-+	u32 res_bits;
-+};
++	/*
++	 * Migrate IRQs away from this CPU first.
++	 */
++	irq_migrate_all_off_this_cpu();
 +
- struct npcm_adc {
- 	bool int_status;
- 	u32 adc_sample_hz;
-@@ -34,6 +40,7 @@ struct npcm_adc {
- 	 * has finished.
- 	 */
- 	struct mutex lock;
-+	const struct npcm_adc_info *data;
- };
+ 	/*
+ 	 * Take this CPU offline.  Once we clear this, we can't return,
+ 	 * and we must not schedule until we're ready to give up the cpu.
+@@ -309,11 +314,6 @@ int __cpu_disable(void)
+ 	set_cpu_online(cpu, false);
+ 	ipi_teardown(cpu);
  
- /* ADC registers */
-@@ -52,13 +59,21 @@ struct npcm_adc {
- #define NPCM_ADCCON_CH(x)		((x) << 24)
- #define NPCM_ADCCON_DIV_SHIFT		1
- #define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
--#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
- 
- #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
- 
- /* ADC General Definition */
--#define NPCM_RESOLUTION_BITS		10
--#define NPCM_INT_VREF_MV		2000
-+static const struct npcm_adc_info npxm7xx_adc_info = {
-+	.data_mask = GENMASK(9, 0),
-+	.internal_vref = 2048,
-+	.res_bits = 10,
-+};
-+
-+static const struct npcm_adc_info npxm8xx_adc_info = {
-+	.data_mask = GENMASK(11, 0),
-+	.internal_vref = 1229,
-+	.res_bits = 12,
-+};
- 
- #define NPCM_ADC_CHAN(ch) {					\
- 	.type = IIO_VOLTAGE,					\
-@@ -129,7 +144,8 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
- 	if (ret < 0)
- 		return ret;
- 
--	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
-+	*val = ioread32(info->regs + NPCM_ADCDATA);
-+	*val &= info->data->data_mask;
- 
+-	/*
+-	 * OK - migrate IRQs away from this CPU
+-	 */
+-	irq_migrate_all_off_this_cpu();
+-
  	return 0;
  }
-@@ -157,9 +173,9 @@ static int npcm_adc_read_raw(struct iio_dev *indio_dev,
- 			vref_uv = regulator_get_voltage(info->vref);
- 			*val = vref_uv / 1000;
- 		} else {
--			*val = NPCM_INT_VREF_MV;
-+			*val = info->data->internal_vref;
- 		}
--		*val2 = NPCM_RESOLUTION_BITS;
-+		*val2 = info->data->res_bits;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		*val = info->adc_sample_hz;
-@@ -176,7 +192,8 @@ static const struct iio_info npcm_adc_iio_info = {
- };
  
- static const struct of_device_id npcm_adc_match[] = {
--	{ .compatible = "nuvoton,npcm750-adc", },
-+	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
-+	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, npcm_adc_match);
-@@ -196,6 +213,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	info = iio_priv(indio_dev);
- 
-+	info->data = device_get_match_data(dev);
-+	if (!info->data)
-+		return -EINVAL;
-+
- 	mutex_init(&info->lock);
- 
- 	info->dev = &pdev->dev;
 -- 
-2.33.0
+2.34.1
 
