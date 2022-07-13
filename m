@@ -2,73 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9879DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 980F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:10:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiGMBJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50544 "EHLO
+        id S232849AbiGMBKn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 21:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231404AbiGMBJS (ORCPT
+        with ESMTP id S230444AbiGMBKk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:09:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E240C9100;
-        Tue, 12 Jul 2022 18:09:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC017618CA;
-        Wed, 13 Jul 2022 01:09:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C12C5C3411E;
-        Wed, 13 Jul 2022 01:09:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657674556;
-        bh=VmntzbmKZNafnsvnBrCuHRRxUYzJnrYmUnQpuOsb25c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=flhpv2LdQeVnrTmtUCCwfApQkLHolqYRJRldzyCy3iflwjtwG3OsmK3ElrktCKc/N
-         Dtk6frRurVe1SRfPMwQyBHMEfUCutZZNBu3pk+sGXKvi3kHYAVT15NPwx7sT6+r3AK
-         s7Sdml5NrAU6echUu5aUd3NiHeb2Rf6RzroS4nMBOVCdAlOL9ouUXcrdr5XSpdAOR7
-         OABef5AYx/axL45gRGlb49CwOyHp0spdrDlaf4f8PTshaaTT7wso1NX9lfjvAW416u
-         VV5FA5qhZRmPUXuBNWgFjhNncey479kx9NyHu0hISHRjhLdxlrzUUroMxEdThG+6Hl
-         BaYCLctE/ixDw==
-Date:   Tue, 12 Jul 2022 18:09:06 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-Subject: Re: [PATCH v2,net-next] net/sched: remove return value of
- unregister_tcf_proto_ops
-Message-ID: <20220712180906.07bea7f8@kernel.org>
-In-Reply-To: <20220711080910.40270-1-shaozhengchao@huawei.com>
-References: <20220711080910.40270-1-shaozhengchao@huawei.com>
+        Tue, 12 Jul 2022 21:10:40 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAB41D0E07;
+        Tue, 12 Jul 2022 18:10:39 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-10bec750eedso12393729fac.8;
+        Tue, 12 Jul 2022 18:10:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RrX3peZWnGalBRHR5HZNG+F96F6AWO/ZiWH718+O+dA=;
+        b=LIDvWWeRQZTx/i2X47H61p2/5b0xtFm3GNtyXOO2qqIe73b8/IQH/9A2l+mGfBtK52
+         S3ZOG/LjzCIWzIcIE7e7/WXqyZa4Zcafr212YEoautFQw7Ne6FwelqZPQgYjvBXjzgRX
+         2OgdZpIDewP84Kn7FB4q0S1vfN9nYPWDpJsp+wdzvFmOo4t6eP+lU60en6T6rUjywoC1
+         IQCwjV2djvWMKtqXyYgbcaOOD6qKdtOb7qnEC0OnH4IPTRj2QCJShmFy8NIzgDdg8zTX
+         /hW9is4OTJ4puVf6s77EUuJETfJfe9oLOLEA1sYCTGMs5+ZPPbkIcGh7nKA56yKq9ZkR
+         IT2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RrX3peZWnGalBRHR5HZNG+F96F6AWO/ZiWH718+O+dA=;
+        b=h7MtH58OFbRS+bQOi9iX7yHc2JFp7hpncldHhsbOgooxsky0++KnNSIPvOUeVL2pHp
+         hVAwPc5HOyU1NeXBdc+45zoCarUUqmbOC5+xwf/CaxN/Myx+ZEZgB8/R2hk8xRz/WC+i
+         l/ao4XZe59vhm6bBI+wWr8gRNb1/UT2yZzDD+kC3f5vUMfroZxX4v2BQ1WSBvVJJF1BO
+         GnAsMKtt6kJmeh/JEoDEdXCgOXMBXe/W6JttzcZbHDf0h/Ftv+NKpwwdHe7AjWAsm8IZ
+         7oZaoNXus+Wte07sGgSQQqGU0iO7sYBxftSbx5T+zAt4wg2hkhMwOyofKBR8NUCYU6cD
+         neLQ==
+X-Gm-Message-State: AJIora/KKW0JXhD/xZ6deN3/UW2i92bx0J0WZtVOhwo2MVkkgRwEoQP6
+        G7O6YOf42JpDCTQLIpE09hAw3T9hu+sTSpDed7I=
+X-Google-Smtp-Source: AGRyM1tAL2bX6mdeZ3XMD3lZNiKAC8hU+Bm50hEa1wveXWLWssf8CLjAViJsn9EmQohWw/iJJhSn9Log4iP3HsMvT20=
+X-Received: by 2002:a05:6870:d0ce:b0:f3:3856:f552 with SMTP id
+ k14-20020a056870d0ce00b000f33856f552mr523604oaa.99.1657674639131; Tue, 12 Jul
+ 2022 18:10:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220706172814.169274-1-james.hilliard1@gmail.com>
+ <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com> <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
+ <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
+ <87v8s260j1.fsf@oracle.com> <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
+In-Reply-To: <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
+From:   James Hilliard <james.hilliard1@gmail.com>
+Date:   Tue, 12 Jul 2022 19:10:27 -0600
+Message-ID: <CADvTj4qqxckZmxvL=97e-2W5M4DgCCMDV8RCFDg23+cY2URjTA@mail.gmail.com>
+Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Jose E. Marchesi" <jose.marchesi@oracle.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 11 Jul 2022 16:09:10 +0800 Zhengchao Shao wrote:
-> Return value of unregister_tcf_proto_ops is unused, remove it.
+On Tue, Jul 12, 2022 at 10:48 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
+> <jose.marchesi@oracle.com> wrote:
+> >
+> >
+> > > CC Quentin as well
+> > >
+> > > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
+> > > <james.hilliard1@gmail.com> wrote:
+> > >>
+> > >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
+> > >> >
+> > >> >
+> > >> >
+> > >> > On 7/6/22 10:28 AM, James Hilliard wrote:
+> > >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
+> > >> > > correctly with gcc.
+> > >> > >
+> > >> > > GCC appears to required kernel helper funcs to have the following
+> > >> > > attribute set: __attribute__((kernel_helper(NUM)))
+> > >> > >
+> > >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
+> > >> > >
+> > >> > > This adds conditional blocks for GCC while leaving clang codepaths
+> > >> > > unchanged, for example:
+> > >> > >       #if __GNUC__ && !__clang__
+> > >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
+> > >> > > __attribute__((kernel_helper(1)));
+> > >> > >       #else
+> > >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
+> > >> > >       #endif
+> > >> >
+> > >> > It does look like that gcc kernel_helper attribute is better than
+> > >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
+> > >> > just for simplicity.
+> > >>
+> > >> Isn't the original style going to be needed for backwards compatibility with
+> > >> older clang versions for a while?
+> > >
+> > > I'm curious, is there any added benefit to having this special
+> > > kernel_helper attribute vs what we did in Clang for a long time?
+> > > Did GCC do it just to be different and require workarounds like this
+> > > or there was some technical benefit to this?
+> >
+> > We did it that way so we could make trouble and piss you off.
+> >
+> > Nah :)
+> >
+> > We did it that way because technically speaking the clang construction
+> > works relying on particular optimizations to happen to get correct
+> > compiled programs, which is not guaranteed to happen and _may_ break in
+> > the future.
+> >
+> > In fact, if you compile a call to such a function prototype with clang
+> > with -O0 the compiler will try to load the function's address in a
+> > register and then emit an invalid BPF instruction:
+> >
+> >   28:   8d 00 00 00 03 00 00 00         *unknown*
+> >
+> > On the other hand the kernel_helper attribute is bullet-proof: will work
+> > with any optimization level, with any version of the compiler, and in
+> > our opinion it is also more readable, more tidy and more correct.
+> >
+> > Note I'm not saying what you do in clang is not reasonable; it may be,
+> > obviously it works well enough for you in practice.  Only that we have
+> > good reasons for doing it differently in GCC.
+>
+> Not questioning the validity of the reasons, but they created
+> the unnecessary difference between compilers.
 
-> -int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
-> +void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
->  {
->  	struct tcf_proto_ops *t;
->  	int rc = -ENOENT;
-> @@ -214,7 +214,10 @@ int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
->  		}
->  	}
->  	write_unlock(&cls_mod_lock);
-> -	return rc;
-> +
+Sounds to me like clang is relying on an unreliable hack that may
+be difficult to implement in GCC, so let's see what's the best option
+moving forwards in terms of a migration path for both GCC and clang.
 
-> +	if (rc)
-> +		pr_warn("unregister tc filter kind(%s) failed\n", ops->kind);
+> We have to avoid forking.
 
-I was saying WARN, by which I meant:
+Avoiding having to maintain a separate libbpf fork for GCC compatibility
+is precisely the purpose of this patch.
 
-WARN(rc, "unregister tc filter kind(%s) failed %d\n", ops->kind, rc);
+> Meaning we're not going to work around that by ifdefs in
+> bpf_helper_defs.h
+> Because gcc community will not learn the lesson and will keep
+> the bad practice of unnecessary forks.
+
+Is there some background I'm missing here? What's your definition
+of an unnecessary fork?
+
+> The best path forward here is to support both (void *) 1 style
+> and kernel_helper attribute in both gcc and llvm.
+
+How about we use a guard like this:
+#if __has_attribute(kernel_helper)
+new kernel_helper variant macro
+#else
+legacy clang variant macro
+#endif
+
+> Moving forward the bpf_helper_defs.h will stay with (void *)1 style
+> and when both compilers support both options we will start
+> transitioning to the new kernel_helpers style.
+
+Or we can just feature detect kernel_helper and leave the (void *)1 style
+fallback in place until we drop support for clang variants that don't support
+kernel_helper. This would provide GCC compatibility and a better migration
+path for clang as well as clang will then automatically use the new variant
+whenever support for kernel_helper is introduced.
