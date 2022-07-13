@@ -2,133 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B468C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0AF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235505AbiGMIzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35702 "EHLO
+        id S230471AbiGMI4B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234846AbiGMIzK (ORCPT
+        with ESMTP id S234489AbiGMIz6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:55:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D2F2BBD34
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657702509;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WV1sbMysUWTQnUXeMzoIvswvu0vFM2B1lJ+VzkW+y6k=;
-        b=S9D55GZJ2OLWkFWmunxUDzlDMQXh7dK20gfO2uGVdpspuaYQZOS3+8WHRGRy6qB+u+BnLI
-        L+dzCWkQc31TvCJYKe920Rcnm2uaDQMOP9azg5z97B0kmfTTdX3IMPVZI0tVJ2yQWTVjHD
-        5Iq80AeOf770p/ypIl6n2Xf24xm9y1A=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-403-bHn4V4EWNaSrmv6yOGRjUw-1; Wed, 13 Jul 2022 04:55:05 -0400
-X-MC-Unique: bHn4V4EWNaSrmv6yOGRjUw-1
-Received: by mail-ej1-f72.google.com with SMTP id qa41-20020a17090786a900b00722f313a60eso3116186ejc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WV1sbMysUWTQnUXeMzoIvswvu0vFM2B1lJ+VzkW+y6k=;
-        b=tQ6wpFfR3cya8bkvpq0YtWiLNy+dHmsWzr+d+NPJI8mkDfxSjMu0dWAOTveE0jeJo7
-         iZiEiBKEQTyxDslNhJythYFSboZzeJAVwH+iXLdU+2pOfyh7xDUWBuhA4nQo7NtsJxC2
-         Mi/+pBgwy5N4KIc7GMVxX1vfQlnkyNbkuwZrIEqLUuSUiQPri4cgyUpbcxQrGOk8bEc6
-         QGyoZOLngmChg5MKAGW0cAvI7x3gw4R6Uj+N3YOnf3H1I4v5wpXMqcHh20gdzyQt8qJm
-         OwrCEUWxtKlJGQKldviI9XVuv3zC71vYeSFlgaIyRWm04rfwEAsqXmtMuyIIqgGubiWZ
-         qKJA==
-X-Gm-Message-State: AJIora/cR2R7duzwHBZM5M/nEBlbQVZ+KPx9GDzKcoK9jSiTHyeFEbNu
-        XRzVlfP7+yCtfVl011b0MNpAlEpG9CAjKEJQ0Ii4GCKV9iSovnydDeTNCpzKDc/Dm7OYFQLRI6D
-        UbztZFfiqwyVyOgBuQfeyUPcc
-X-Received: by 2002:a17:907:7631:b0:72b:3a31:6cb8 with SMTP id jy17-20020a170907763100b0072b3a316cb8mr2299322ejc.372.1657702504862;
-        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vHJQ1hmybqbUFHi9JfLGHPMl0bUlQL3+VPHCXCzTLWDo10p5guo24wdgNWCe9I5IOJ7jM9Pg==
-X-Received: by 2002:a17:907:7631:b0:72b:3a31:6cb8 with SMTP id jy17-20020a170907763100b0072b3a316cb8mr2299307ejc.372.1657702504715;
-        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
-Received: from pollux.redhat.com ([2a02:810d:4b40:2ee8:642:1aff:fe31:a15c])
-        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7547655edy.36.2022.07.13.01.55.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:55:04 -0700 (PDT)
-From:   Danilo Krummrich <dakr@redhat.com>
-To:     emma@anholt.net, mripard@kernel.org, daniel@ffwll.ch,
-        airlied@linux.ie
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Danilo Krummrich <dakr@redhat.com>
-Subject: [PATCH 1/3] drm/vc4: plane: use drm managed resources
-Date:   Wed, 13 Jul 2022 10:54:58 +0200
-Message-Id: <20220713085500.1970589-2-dakr@redhat.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220713085500.1970589-1-dakr@redhat.com>
-References: <20220713085500.1970589-1-dakr@redhat.com>
+        Wed, 13 Jul 2022 04:55:58 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E90CA58D1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:55:58 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBY9z-0006jp-Mi; Wed, 13 Jul 2022 10:55:55 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBY9x-0006Bp-PA; Wed, 13 Jul 2022 10:55:53 +0200
+Date:   Wed, 13 Jul 2022 10:55:53 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        linux-amarula@amarulasolutions.com,
+        Sascha Hauer <s.hauer@pengutronix.de>, stable@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        dmaengine@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 1/2] dmaengine: mxs: use platform_driver_register
+Message-ID: <20220713085553.yunfuvh6a4gn2phj@pengutronix.de>
+References: <20220712160909.2054141-1-dario.binacchi@amarulasolutions.com>
+ <20220713084036.ipcd6bhcdb574w7h@pengutronix.de>
+ <CABGWkvpJ5Hc8pQ-Rzu8z6Y_Cfa2pEC0C2ABT_FGp6r9Vyz-Gmw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABGWkvpJ5Hc8pQ-Rzu8z6Y_Cfa2pEC0C2ABT_FGp6r9Vyz-Gmw@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allocate the plane object with drmm_universal_plane_alloc() in order to
-tie the release action to the underlying struct drm_device, where all
-the userspace visible stuff is attached to, rather than to struct device.
+On 22-07-13, Dario Binacchi wrote:
+> Hi Marco,
+> 
+> On Wed, Jul 13, 2022 at 10:40 AM Marco Felsch <m.felsch@pengutronix.de> wrote:
+> >
+> > Hi Dario,
+> >
+> > On 22-07-12, Dario Binacchi wrote:
+> > > Driver registration fails on SOC imx8mn as its supplier, the clock
+> > > control module, is probed later than subsys initcall level. This driver
+> > > uses platform_driver_probe which is not compatible with deferred probing
+> > > and won't be probed again later if probe function fails due to clock not
+> > > being available at that time.
+> > >
+> > > This patch replaces the use of platform_driver_probe with
+> > > platform_driver_register which will allow probing the driver later again
+> > > when the clock control module will be available.
+> > >
+> > > Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
+> > > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > > Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> > > Cc: stable@vger.kernel.org
+> > >
+> > > ---
+> > >
+> > > Changes in v5:
+> > > - Update the commit message.
+> > > - Create a new patch to remove the warning generated by this patch.
+> >
+> > Please squash this new patch into this patch since you introduce the
+> > warning with this patch.
+> 
+> In version 4 I had only one patch, but Vinod told me to separate the
+> patches like
+> this. I also think like you, but I did what Vinod asked me to do.
+> So, can you agree and actually tell me what to do?
 
-This can prevent potential use-after free issues on driver unload or
-EPROBE_DEFERRED backoff.
+Sorry, I didn't wanted to step in here just saw the patch and it is a
+bit strange to fix something by a 2nd patch we introduce by the 1st
+patch within the same series. This also increase the probability that
+the 2nd patch isn't ported to stable. Anyway, if Vinod is fine with this
+as maintainer than it is fine.
 
-Signed-off-by: Danilo Krummrich <dakr@redhat.com>
----
- drivers/gpu/drm/vc4/vc4_plane.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+Regards,
+  Marco
 
-diff --git a/drivers/gpu/drm/vc4/vc4_plane.c b/drivers/gpu/drm/vc4/vc4_plane.c
-index 1e866dc00ac3..0d88de31aa9c 100644
---- a/drivers/gpu/drm/vc4/vc4_plane.c
-+++ b/drivers/gpu/drm/vc4/vc4_plane.c
-@@ -1469,7 +1469,6 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
- 	struct vc4_plane *vc4_plane;
- 	u32 formats[ARRAY_SIZE(hvs_formats)];
- 	int num_formats = 0;
--	int ret = 0;
- 	unsigned i;
- 	static const uint64_t modifiers[] = {
- 		DRM_FORMAT_MOD_BROADCOM_VC4_T_TILED,
-@@ -1480,11 +1479,6 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
- 		DRM_FORMAT_MOD_INVALID
- 	};
- 
--	vc4_plane = devm_kzalloc(dev->dev, sizeof(*vc4_plane),
--				 GFP_KERNEL);
--	if (!vc4_plane)
--		return ERR_PTR(-ENOMEM);
--
- 	for (i = 0; i < ARRAY_SIZE(hvs_formats); i++) {
- 		if (!hvs_formats[i].hvs5_only || vc4->is_vc5) {
- 			formats[num_formats] = hvs_formats[i].drm;
-@@ -1492,13 +1486,14 @@ struct drm_plane *vc4_plane_init(struct drm_device *dev,
- 		}
- 	}
- 
-+	vc4_plane = drmm_universal_plane_alloc(dev, struct vc4_plane, base, 0,
-+					       &vc4_plane_funcs, formats,
-+					       num_formats, modifiers, type,
-+					       NULL);
-+	if (!vc4_plane)
-+		return ERR_CAST(vc4_plane);
-+
- 	plane = &vc4_plane->base;
--	ret = drm_universal_plane_init(dev, plane, 0,
--				       &vc4_plane_funcs,
--				       formats, num_formats,
--				       modifiers, type, NULL);
--	if (ret)
--		return ERR_PTR(ret);
- 
- 	if (vc4->is_vc5)
- 		drm_plane_helper_add(plane, &vc5_plane_helper_funcs);
--- 
-2.36.1
-
+> Thanks and regards,
+> Dario
+> 
+> >
+> > Regards,
+> >   Marco
+> >
+> > > Changes in v4:
+> > > - Restore __init in front of mxs_dma_probe() definition.
+> > > - Rename the mxs_dma_driver variable to mxs_dma_driver_probe.
+> > > - Update the commit message.
+> > > - Use builtin_platform_driver() instead of module_platform_driver().
+> > >
+> > > Changes in v3:
+> > > - Restore __init in front of mxs_dma_init() definition.
+> > >
+> > > Changes in v2:
+> > > - Add the tag "Cc: stable@vger.kernel.org" in the sign-off area.
+> > >
+> > >  drivers/dma/mxs-dma.c | 8 ++------
+> > >  1 file changed, 2 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
+> > > index 994fc4d2aca4..18f8154b859b 100644
+> > > --- a/drivers/dma/mxs-dma.c
+> > > +++ b/drivers/dma/mxs-dma.c
+> > > @@ -839,10 +839,6 @@ static struct platform_driver mxs_dma_driver = {
+> > >               .name   = "mxs-dma",
+> > >               .of_match_table = mxs_dma_dt_ids,
+> > >       },
+> > > +     .probe = mxs_dma_probe,
+> > >  };
+> > > -
+> > > -static int __init mxs_dma_module_init(void)
+> > > -{
+> > > -     return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
+> > > -}
+> > > -subsys_initcall(mxs_dma_module_init);
+> > > +builtin_platform_driver(mxs_dma_driver);
+> > > --
+> > > 2.32.0
+> > >
+> > >
+> > >
+> 
+> 
+> 
+> -- 
+> 
+> Dario Binacchi
+> 
+> Embedded Linux Developer
+> 
+> dario.binacchi@amarulasolutions.com
+> 
+> __________________________________
+> 
+> 
+> Amarula Solutions SRL
+> 
+> Via Le Canevare 30, 31100 Treviso, Veneto, IT
+> 
+> T. +39 042 243 5310
+> info@amarulasolutions.com
+> 
+> www.amarulasolutions.com
+> 
