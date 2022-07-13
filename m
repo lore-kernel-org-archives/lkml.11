@@ -2,239 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1AE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1233C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235797AbiGMIk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:40:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49876 "EHLO
+        id S235035AbiGMIlD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:41:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235736AbiGMIkl (ORCPT
+        with ESMTP id S235737AbiGMIkl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:40:41 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A668E3045
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657701640; x=1689237640;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fGU5qVYnZ44PhRhKnwGKDPYjJ6o5iYYEzvHLjp7lw+k=;
-  b=VxMcHZ3PwQ7z+QL8cYdA1HrR0zWxuF5j3XMIbEVHNRWA4UWs9hmLCvRu
-   PWpDJJ0k/+Zaz6oHtyS1tKNNTPNgAx79uz5JoieMChGuExxBnNGOHgybN
-   NonKRPr+6/j2jL/qiA/X2lTdUHfYcHixxDkQSRkrL0dhxfInGCXlNTt2X
-   GrUKEVdFiHBqO952toqEVOXanyWMeX4MMGj37CoPKf9ZHgXj8uOiilaCv
-   AjbVwZgdZ7qLaJ/ktF3+t1bj5+FgP3sJR6mySOhSU61gk114BSE9KnkvT
-   YhonXIVsKO4dplhZB1BpFaIWalrFQYN2LdOez3NzxFJRL8ifZaVOKc9VU
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265563095"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="265563095"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:40:40 -0700
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="653284507"
-Received: from yijunwa1-mobl.ccr.corp.intel.com (HELO yhuang6-mobl1.ccr.corp.intel.com) ([10.254.215.54])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:40:36 -0700
-From:   Huang Ying <ying.huang@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Huang Ying <ying.huang@intel.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Rik van Riel <riel@surriel.com>,
-        Mel Gorman <mgorman@techsingularity.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
-        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
-        Shakeel Butt <shakeelb@google.com>,
-        Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
-Subject: [PATCH -V4 RESEND 3/3] memory tiering: adjust hot threshold automatically
-Date:   Wed, 13 Jul 2022 16:39:53 +0800
-Message-Id: <20220713083954.34196-4-ying.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220713083954.34196-1-ying.huang@intel.com>
-References: <20220713083954.34196-1-ying.huang@intel.com>
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87ED9E2A2A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:39 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBXvB-00046c-4O; Wed, 13 Jul 2022 10:40:37 +0200
+Received: from mfe by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1oBXvA-0005TM-Kx; Wed, 13 Jul 2022 10:40:36 +0200
+Date:   Wed, 13 Jul 2022 10:40:36 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        linux-amarula@amarulasolutions.com,
+        Sascha Hauer <s.hauer@pengutronix.de>, stable@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        dmaengine@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 1/2] dmaengine: mxs: use platform_driver_register
+Message-ID: <20220713084036.ipcd6bhcdb574w7h@pengutronix.de>
+References: <20220712160909.2054141-1-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712160909.2054141-1-dario.binacchi@amarulasolutions.com>
+User-Agent: NeoMutt/20180716
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The promotion hot threshold is workload and system configuration
-dependent.  So in this patch, a method to adjust the hot threshold
-automatically is implemented.  The basic idea is to control the number
-of the candidate promotion pages to match the promotion rate limit.
-If the hint page fault latency of a page is less than the hot
-threshold, we will try to promote the page, and the page is called the
-candidate promotion page.
+Hi Dario,
 
-If the number of the candidate promotion pages in the statistics
-interval is much more than the promotion rate limit, the hot threshold
-will be decreased to reduce the number of the candidate promotion
-pages.  Otherwise, the hot threshold will be increased to increase the
-number of the candidate promotion pages.
+On 22-07-12, Dario Binacchi wrote:
+> Driver registration fails on SOC imx8mn as its supplier, the clock
+> control module, is probed later than subsys initcall level. This driver
+> uses platform_driver_probe which is not compatible with deferred probing
+> and won't be probed again later if probe function fails due to clock not
+> being available at that time.
+> 
+> This patch replaces the use of platform_driver_probe with
+> platform_driver_register which will allow probing the driver later again
+> when the clock control module will be available.
+> 
+> Fixes: a580b8c5429a ("dmaengine: mxs-dma: add dma support for i.MX23/28")
+> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> Cc: stable@vger.kernel.org
+> 
+> ---
+> 
+> Changes in v5:
+> - Update the commit message.
+> - Create a new patch to remove the warning generated by this patch.
 
-To make the above method works, in each statistics interval, the total
-number of the pages to check (on which the hint page faults occur) and
-the hot/cold distribution need to be stable.  Because the page tables
-are scanned linearly in NUMA balancing, but the hot/cold distribution
-isn't uniform along the address usually, the statistics interval
-should be larger than the NUMA balancing scan period.  So in the
-patch, the max scan period is used as statistics interval and it works
-well in our tests.
+Please squash this new patch into this patch since you introduce the
+warning with this patch.
 
-Signed-off-by: "Huang, Ying" <ying.huang@intel.com>
-Reviewed-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Tested-by: Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Mel Gorman <mgorman@techsingularity.net>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Yang Shi <shy828301@gmail.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Wei Xu <weixugc@google.com>
-Cc: osalvador <osalvador@suse.de>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-mm@kvack.org
----
- include/linux/mmzone.h |  9 +++++++++
- kernel/sched/core.c    | 14 +++++++++++++
- kernel/sched/fair.c    | 46 +++++++++++++++++++++++++++++++++++++-----
- 3 files changed, 64 insertions(+), 5 deletions(-)
+Regards,
+  Marco
 
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index 994a0cd39595..33d875d23e9a 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -918,6 +918,15 @@ typedef struct pglist_data {
- 	unsigned int nbp_rl_start;
- 	/* number of promote candidate pages at start time of current rate limit period */
- 	unsigned long nbp_rl_nr_cand;
-+	/* promote threshold in ms */
-+	unsigned int nbp_threshold;
-+	/* start time in ms of current promote threshold adjustment period */
-+	unsigned int nbp_th_start;
-+	/*
-+	 * number of promote candidate pages at stat time of current promote
-+	 * threshold adjustment period
-+	 */
-+	unsigned long nbp_th_nr_cand;
- #endif
- 	/* Fields commonly accessed by the page reclaim scanner */
- 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index da0bf6fe9ecd..2183a368d4b0 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -4361,6 +4361,17 @@ void set_numabalancing_state(bool enabled)
- }
- 
- #ifdef CONFIG_PROC_SYSCTL
-+static void reset_memory_tiering(void)
-+{
-+	struct pglist_data *pgdat;
-+
-+	for_each_online_pgdat(pgdat) {
-+		pgdat->nbp_threshold = 0;
-+		pgdat->nbp_th_nr_cand = node_page_state(pgdat, PGPROMOTE_CANDIDATE);
-+		pgdat->nbp_th_start = jiffies_to_msecs(jiffies);
-+	}
-+}
-+
- int sysctl_numa_balancing(struct ctl_table *table, int write,
- 			  void *buffer, size_t *lenp, loff_t *ppos)
- {
-@@ -4377,6 +4388,9 @@ int sysctl_numa_balancing(struct ctl_table *table, int write,
- 	if (err < 0)
- 		return err;
- 	if (write) {
-+		if (!(sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING) &&
-+		    (state & NUMA_BALANCING_MEMORY_TIERING))
-+			reset_memory_tiering();
- 		sysctl_numa_balancing_mode = state;
- 		__set_numabalancing_state(state);
- 	}
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index d779a91a8ca0..cc5b26fefae8 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -1503,6 +1503,35 @@ static bool numa_promotion_rate_limit(struct pglist_data *pgdat,
- 	return false;
- }
- 
-+#define NUMA_MIGRATION_ADJUST_STEPS	16
-+
-+static void numa_promotion_adjust_threshold(struct pglist_data *pgdat,
-+					    unsigned long rate_limit,
-+					    unsigned int ref_th)
-+{
-+	unsigned int now, start, th_period, unit_th, th;
-+	unsigned long nr_cand, ref_cand, diff_cand;
-+
-+	now = jiffies_to_msecs(jiffies);
-+	th_period = sysctl_numa_balancing_scan_period_max;
-+	start = pgdat->nbp_th_start;
-+	if (now - start > th_period &&
-+	    cmpxchg(&pgdat->nbp_th_start, start, now) == start) {
-+		ref_cand = rate_limit *
-+			sysctl_numa_balancing_scan_period_max / MSEC_PER_SEC;
-+		nr_cand = node_page_state(pgdat, PGPROMOTE_CANDIDATE);
-+		diff_cand = nr_cand - pgdat->nbp_th_nr_cand;
-+		unit_th = ref_th * 2 / NUMA_MIGRATION_ADJUST_STEPS;
-+		th = pgdat->nbp_threshold ? : ref_th;
-+		if (diff_cand > ref_cand * 11 / 10)
-+			th = max(th - unit_th, unit_th);
-+		else if (diff_cand < ref_cand * 9 / 10)
-+			th = min(th + unit_th, ref_th * 2);
-+		pgdat->nbp_th_nr_cand = nr_cand;
-+		pgdat->nbp_threshold = th;
-+	}
-+}
-+
- bool should_numa_migrate_memory(struct task_struct *p, struct page * page,
- 				int src_nid, int dst_cpu)
- {
-@@ -1517,19 +1546,26 @@ bool should_numa_migrate_memory(struct task_struct *p, struct page * page,
- 	if (sysctl_numa_balancing_mode & NUMA_BALANCING_MEMORY_TIERING &&
- 	    !node_is_toptier(src_nid)) {
- 		struct pglist_data *pgdat;
--		unsigned long rate_limit, latency, th;
-+		unsigned long rate_limit;
-+		unsigned int latency, th, def_th;
- 
- 		pgdat = NODE_DATA(dst_nid);
--		if (pgdat_free_space_enough(pgdat))
-+		if (pgdat_free_space_enough(pgdat)) {
-+			/* workload changed, reset hot threshold */
-+			pgdat->nbp_threshold = 0;
- 			return true;
-+		}
-+
-+		def_th = sysctl_numa_balancing_hot_threshold;
-+		rate_limit = sysctl_numa_balancing_promote_rate_limit << \
-+			(20 - PAGE_SHIFT);
-+		numa_promotion_adjust_threshold(pgdat, rate_limit, def_th);
- 
--		th = sysctl_numa_balancing_hot_threshold;
-+		th = pgdat->nbp_threshold ? : def_th;
- 		latency = numa_hint_fault_latency(page);
- 		if (latency >= th)
- 			return false;
- 
--		rate_limit = sysctl_numa_balancing_promote_rate_limit << \
--			(20 - PAGE_SHIFT);
- 		return !numa_promotion_rate_limit(pgdat, rate_limit,
- 						  thp_nr_pages(page));
- 	}
--- 
-2.30.2
-
+> Changes in v4:
+> - Restore __init in front of mxs_dma_probe() definition.
+> - Rename the mxs_dma_driver variable to mxs_dma_driver_probe.
+> - Update the commit message.
+> - Use builtin_platform_driver() instead of module_platform_driver().
+> 
+> Changes in v3:
+> - Restore __init in front of mxs_dma_init() definition.
+> 
+> Changes in v2:
+> - Add the tag "Cc: stable@vger.kernel.org" in the sign-off area.
+> 
+>  drivers/dma/mxs-dma.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/dma/mxs-dma.c b/drivers/dma/mxs-dma.c
+> index 994fc4d2aca4..18f8154b859b 100644
+> --- a/drivers/dma/mxs-dma.c
+> +++ b/drivers/dma/mxs-dma.c
+> @@ -839,10 +839,6 @@ static struct platform_driver mxs_dma_driver = {
+>  		.name	= "mxs-dma",
+>  		.of_match_table = mxs_dma_dt_ids,
+>  	},
+> +	.probe = mxs_dma_probe,
+>  };
+> -
+> -static int __init mxs_dma_module_init(void)
+> -{
+> -	return platform_driver_probe(&mxs_dma_driver, mxs_dma_probe);
+> -}
+> -subsys_initcall(mxs_dma_module_init);
+> +builtin_platform_driver(mxs_dma_driver);
+> -- 
+> 2.32.0
+> 
+> 
+> 
