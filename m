@@ -2,103 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB88C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB56C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237190AbiGMQ1P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34188 "EHLO
+        id S237192AbiGMQ1m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:27:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237165AbiGMQ1L (ORCPT
+        with ESMTP id S234823AbiGMQ1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:27:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C4FB60FE;
-        Wed, 13 Jul 2022 09:27:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 7DB6ECE231F;
-        Wed, 13 Jul 2022 16:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BE32C34114;
-        Wed, 13 Jul 2022 16:27:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657729625;
-        bh=QsCvpn2gWQQ1jAoqmKwmo/Cv3eyEdtKIBceRVgAOtxA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=AZPtdVxsPialzeevmLca0Myws6u+ggFFxfdSyrByJNe/SP5gpXevDD1NpAM8cu8sC
-         BpDecMgFuJS7TdqW7J7+2GuZoBqeA+p0aZ5rz6xC6j+TPlqCBESwHEIuU9vQVg8ikJ
-         qzDNd3RNsCqqRR64oyz+o/dACayVru8aCSpxjbvOKKZuk0kGxSLMq2mApVn4lRTsmW
-         3sMjxNwZMNkmQkKWNE+YZ2b4J1yXbHzoKpGcyEcsBR0ThC4L9+JfbBl1OqpXLK4m8k
-         AmXW35S/ShAEifVdHrvvJzQxTASyBbNiw7N0IFsBWM+B5ndKuLoqe0daeHdKZlyBqY
-         OfEf5gs73l3GQ==
-Date:   Wed, 13 Jul 2022 09:27:03 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>, x86@kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v2] x86/speculation: Use DECLARE_PER_CPU for
- x86_spec_ctrl_current
-Message-ID: <Ys7yV0VGXyxX3VWj@dev-arch.thelio-3990X>
-References: <20220713152436.2294819-1-nathan@kernel.org>
- <Ys7xUVjpNyXY0nXf@hirez.programming.kicks-ass.net>
+        Wed, 13 Jul 2022 12:27:40 -0400
+X-Greylist: delayed 82505 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 09:27:39 PDT
+Received: from 19.mo581.mail-out.ovh.net (19.mo581.mail-out.ovh.net [178.33.251.118])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48160DE2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:27:39 -0700 (PDT)
+Received: from player759.ha.ovh.net (unknown [10.108.20.216])
+        by mo581.mail-out.ovh.net (Postfix) with ESMTP id 7A5192441A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:09:06 +0000 (UTC)
+Received: from sk2.org (82-65-25-201.subs.proxad.net [82.65.25.201])
+        (Authenticated sender: steve@sk2.org)
+        by player759.ha.ovh.net (Postfix) with ESMTPSA id 3AE122CA29113;
+        Wed, 13 Jul 2022 16:08:58 +0000 (UTC)
+Authentication-Results: garm.ovh; auth=pass (GARM-101G004d41d503d-8019-4142-ac48-19dc98630b84,
+                    E7234B73E98B8DBC7B685B4C32F27E263784F647) smtp.auth=steve@sk2.org
+X-OVh-ClientIp: 82.65.25.201
+From:   Stephen Kitt <steve@sk2.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     Stephen Kitt <steve@sk2.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] arch/x86/Kconfig: specify idle=poll instead of no-hlt
+Date:   Wed, 13 Jul 2022 18:08:40 +0200
+Message-Id: <20220713160840.1577569-1-steve@sk2.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys7xUVjpNyXY0nXf@hirez.programming.kicks-ass.net>
+Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 17159277531323926235
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedgleejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepufhtvghphhgvnhcumfhithhtuceoshhtvghvvgesshhkvddrohhrgheqnecuggftrfgrthhtvghrnhepleegteeujeffjeefjeevhfdtudefjefgteelgedtudekleeiledvvdetudevjedtnecukfhppedtrddtrddtrddtpdekvddrieehrddvhedrvddtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeehledrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehsthgvvhgvsehskhdvrdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehkedu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 06:22:41PM +0200, Peter Zijlstra wrote:
-> On Wed, Jul 13, 2022 at 08:24:37AM -0700, Nathan Chancellor wrote:
-> > Clang warns:
-> > 
-> >   arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
-> >   DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
-> >                       ^
-> >   arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
-> >   extern u64 x86_spec_ctrl_current;
-> >              ^
-> >   1 error generated.
-> > 
-> > The declaration should be using DECLARE_PER_CPU instead so all
-> > attributes stay in sync.
-> > 
-> > Cc: stable@vger.kernel.org
-> > Fixes: fc02735b14ff ("KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS")
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-> > ---
-> > 
-> > v1 -> v2: https://lore.kernel.org/20220713152222.1697913-1-nathan@kernel.org/
-> > 
-> > * Use asm/percpu.h instead of linux/percpu.h to avoid static call
-> >   include errors.
-> > 
-> >  arch/x86/include/asm/nospec-branch.h | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-> > index bb05ed4f46bd..10a3bfc1eb23 100644
-> > --- a/arch/x86/include/asm/nospec-branch.h
-> > +++ b/arch/x86/include/asm/nospec-branch.h
-> > @@ -11,6 +11,7 @@
-> >  #include <asm/cpufeatures.h>
-> >  #include <asm/msr-index.h>
-> >  #include <asm/unwind_hints.h>
-> > +#include <asm/percpu.h>
-> >  
-> >  #define RETPOLINE_THUNK_SIZE	32
-> >  
-> 
-> When I tried this earlier today I ran into cyclic headers, you sure this
-> works?
+Commit 27be45700021 ("x86 idle: remove 32-bit-only "no-hlt" parameter,
+hlt_works_ok flag") removed no-hlt, but CONFIG_APM still refers to
+it. Suggest "idle=poll" instead, based on the commit message:
 
-Yes, I did my regular set of x86 builds with clang and they all passed.
+> If a user wants to avoid HLT, then "idle=poll"
+> is much more useful, as it avoids invocation of HLT
+> in idle, while "no-hlt" failed to do so.
 
-Cheers,
-Nathan
+Signed-off-by: Stephen Kitt <steve@sk2.org>
+---
+ arch/x86/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index a293a30e4cdd..bb4fa31bec4d 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2517,7 +2517,7 @@ menuconfig APM
+ 
+ 	  1) make sure that you have enough swap space and that it is
+ 	  enabled.
+-	  2) pass the "no-hlt" option to the kernel
++	  2) pass the "idle=poll" option to the kernel
+ 	  3) switch on floating point emulation in the kernel and pass
+ 	  the "no387" option to the kernel
+ 	  4) pass the "floppy=nodma" option to the kernel
+
+base-commit: 50fd82b3a9a9335df5d50c7ddcb81c81d358c4fc
+-- 
+2.31.1
+
