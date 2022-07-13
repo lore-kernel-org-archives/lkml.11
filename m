@@ -2,90 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96742C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 17:51:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF74C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 17:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236319AbiGMRvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 13:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38566 "EHLO
+        id S234823AbiGMRx2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 13:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229795AbiGMRvc (ORCPT
+        with ESMTP id S231329AbiGMRx0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 13:51:32 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0068A2D1C0;
-        Wed, 13 Jul 2022 10:51:31 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id r3so20522820ybr.6;
-        Wed, 13 Jul 2022 10:51:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Yvxn6S29978hI/T6QCXVM0v4iM3QSPq55Yrl5aDYI6c=;
-        b=jnIlgLZ2fiKVP4qOrCjnBx+br4vJ+AmDf+BbxMlEqjvFesMThRdGWab3fDiIvvn2mB
-         CmBxUOCxy2LqsH2wGXitO5Lfd/xlKrNOJ4OOQk0CvE/4662285ihChr5BOeODFoM0Djj
-         TE1cAwEZU6cGC1W/hAkA24xyIRtxr7behpzhdScSTAeWzsJV1sS6Jx8NNufcYoq63jKO
-         pGMki2J1eHtPAzKT4giZiZsud0sWt3ExHfRjMt0lCsErtHjFsp6AGxka7B8AOPetDhgd
-         7YUl2ki7MQVY5/xeiiIRbA7zz3FECmqWo801qtV5C6QC7rpc1fmgRNLwBRzUUndQdpYi
-         sAbw==
+        Wed, 13 Jul 2022 13:53:26 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274E62D1C9;
+        Wed, 13 Jul 2022 10:53:25 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id r3so20531451ybr.6;
+        Wed, 13 Jul 2022 10:53:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Yvxn6S29978hI/T6QCXVM0v4iM3QSPq55Yrl5aDYI6c=;
-        b=WNXo4iJN85IHgaDmDtwrD9mVZID/3ioFpFiasBQAg/d77jodd+4AJ4rmGZxRWmdihF
-         X82oCDfQXnEfY8hWuTV9K+7cPYg1qB9OoZZerr9eoEaTrRNJUqyERXr0chYrC5xgJr1L
-         UlvNyOKNOlpXWl8dskAyt6dUhuAAspfOW9uFSwvWtYTALJjfmLQywiO1MAm+jVvsgQtu
-         SS6GkvMYeQaU64Uh3kcfbXjgYBp0C6UGDygV7aZfX2KCIvn7nXhM7gsxHWowdbtR8gsb
-         Jv+TOevDP/sjqNhFIAJCGE3+sitYz06NB6ffykUFLqgzb3ROGZXTKurmeY0FZxFpCObT
-         8UYA==
-X-Gm-Message-State: AJIora/E9ZHD6voTIIR6s45WvbXi94neLwhsF3GqlqWHVuiFWzrbU6o9
-        yHT05cLUAMdDzvFAk43+/sKXQdkU5pwLwMtIg+f6aPovQkWwgg==
-X-Google-Smtp-Source: AGRyM1tc3NLn7Lq5FqcnSNwh12uwTn1m7HqDTESwOhZ9axw2eDvlOUPo/cX8YrMrSaelLE8rqb6sZoX6+2Z9hNYexbo=
-X-Received: by 2002:a25:df97:0:b0:66f:6e7c:b3c0 with SMTP id
- w145-20020a25df97000000b0066f6e7cb3c0mr4738839ybg.93.1657734690911; Wed, 13
- Jul 2022 10:51:30 -0700 (PDT)
+        bh=eWJYVhIsSaOySNu/uWyUWms8khqO/2XtexmfoLNvV70=;
+        b=wWomImL7HRJ8U5gV94PFrbJ5LovvWw4n1B17yPtaFC2UCbj3L+U3kUKJB+klh0RmeV
+         JB9QoQTJw8h70zfOwCrj2TnrQz8yimNLoaapK00txxD9rY2Ozc0PD06rVEg7Ov2Ur5V3
+         U6CY9eyw8ydrEAZAXcrYpIlUp8lw5YjBqgGZNXb+Kj3Ahp3sk6GFpD1m6qpeZE4c3ljU
+         rf3THJlDSw+/9nVGMOdrn8npYM5IldZr8L+BZBKYNwSmdbQEFc/+kL+5mOzIwLH3yEde
+         ZFVubpCZ+OOEDwM41CF+xcuFA5S4LyPlZcqeoqnQxPL6sgWhrxOpYRmYoWHqwbUs5s1n
+         /vWQ==
+X-Gm-Message-State: AJIora/PJMlJ002lDmxvZAK/GXDOG+tcorgPusvmRiOsslNXG1Vi13cS
+        1vrop1GmA9EsLa6e0G/qPse4xtDZvO1l5AVGLv0=
+X-Google-Smtp-Source: AGRyM1stj7HNu+Gwe80jnYn/KS7CMpoCF+eOJmC+kNikMigejw5Yf5InTmPNR76zSdmzBxS209OilDeV+DULcZs+3bc=
+X-Received: by 2002:a25:d714:0:b0:66f:5898:9eb1 with SMTP id
+ o20-20020a25d714000000b0066f58989eb1mr4809209ybg.633.1657734804438; Wed, 13
+ Jul 2022 10:53:24 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220713105910.931983-1-lewis.hanly@microchip.com>
- <20220713105910.931983-2-lewis.hanly@microchip.com> <CAHp75VfGTd02jKYsFq94BF_Gqro2trk3iyyALBatS1Bps3HYhw@mail.gmail.com>
- <debb6cf6-65f8-53d2-d8d7-3ed1c3d5a8c7@microchip.com>
-In-Reply-To: <debb6cf6-65f8-53d2-d8d7-3ed1c3d5a8c7@microchip.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Jul 2022 19:50:54 +0200
-Message-ID: <CAHp75VcoiCVrdEMDrDC8qVZZwYgLTdi50tBxB4BQk=tWQWyOBA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] gpio: mpfs: add polarfire soc gpio support
-To:     Conor.Dooley@microchip.com
-Cc:     Lewis.Hanly@microchip.com,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+References: <20220713082426.850911-1-dapeng1.mi@intel.com>
+In-Reply-To: <20220713082426.850911-1-dapeng1.mi@intel.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Wed, 13 Jul 2022 19:53:13 +0200
+Message-ID: <CAJZ5v0gsHPav5Ax6+9OMmeApqn7qdJPQmo5MMh=ba6Rtj5NnQA@mail.gmail.com>
+Subject: Re: [PATCH] cpuidle: Move cpuidle driver forward before acpi driver
+ in Makefile
+To:     Dapeng Mi <dapeng1.mi@intel.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Bart Van Assche <bvanassche@acm.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Marc Zyngier <maz@kernel.org>, Daire.McNamara@microchip.com
+        Linux PM <linux-pm@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 7:44 PM <Conor.Dooley@microchip.com> wrote:
-> On 13/07/2022 12:59, Andy Shevchenko wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-
-...
-
-> >> +#define BYTE_BOUNDARY                  0x04
-> >
-> > Without namespace?
+On Wed, Jul 13, 2022 at 10:21 AM Dapeng Mi <dapeng1.mi@intel.com> wrote:
 >
-> Does byte_boundary even need to be defined?
-> is incrementing an address by 0x4 not kinda obvious on its own
-> as to what it is doing?
+> As long as Kconfig ACPI_PROCESSOR is enabled, ACPI_PROCESSOR would
+> select ACPI_PROCESSOR_IDLE and acpi_idle driver is enabled. But
+> in current driver loading order acpi_idle driver is always loaded
+> before cpuidle_haltpoll driver. This leads to cpuidle_hatpoll driver
+> has no chance to be loaded when it's enabled.
+>
+> Thus, move cpuidle driver forward before acpi driver and make
+> cpuidle-hatpoll driver has a chance to be run when it's enabled.
+>
+> Signed-off-by: Dapeng Mi <dapeng1.mi@intel.com>
+> ---
+>  drivers/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/Makefile b/drivers/Makefile
+> index 9a30842b22c5..921ed481b520 100644
+> --- a/drivers/Makefile
+> +++ b/drivers/Makefile
+> @@ -26,6 +26,7 @@ obj-y                         += idle/
+>  # IPMI must come before ACPI in order to provide IPMI opregion support
+>  obj-y                          += char/ipmi/
+>
+> +obj-$(CONFIG_CPU_IDLE)         += cpuidle/
+>  obj-$(CONFIG_ACPI)             += acpi/
+>
+>  # PnP must come after ACPI since it will eventually need to check if acpi
+> @@ -126,7 +127,6 @@ obj-$(CONFIG_EDAC)          += edac/
+>  obj-$(CONFIG_EISA)             += eisa/
+>  obj-$(CONFIG_PM_OPP)           += opp/
+>  obj-$(CONFIG_CPU_FREQ)         += cpufreq/
+> -obj-$(CONFIG_CPU_IDLE)         += cpuidle/
+>  obj-y                          += mmc/
+>  obj-y                          += ufs/
+>  obj-$(CONFIG_MEMSTICK)         += memstick/
+> --
 
-The less magic is the better.
+Well, this change doesn't guarantee loading haltpoll before ACPI idle.
 
-Btw, have you considered gpio-regmap? Can it be utilized here?
-
--- 
-With Best Regards,
-Andy Shevchenko
+Also what if haltpoll is enabled, but the user wants ACPI idle?
