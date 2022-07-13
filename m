@@ -2,60 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B97C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE103C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235615AbiGMJab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43742 "EHLO
+        id S235665AbiGMJaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235271AbiGMJaY (ORCPT
+        with ESMTP id S235294AbiGMJaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 05:30:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D546BEE1F8
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D542CEA14B
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:30:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7229861CAE
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41D2161C5E
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:30:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A02C341D9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A05C341D3;
         Wed, 13 Jul 2022 09:30:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657704622;
-        bh=numqK226xRmWDfGwHz4d5UBb1H2QKPgM+SkFWYMj/wI=;
+        bh=d7Ye7f/yZMeD0fzLWJnDFqz2oIBKUGw1N39MIHO+bsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SAbvoxeX0Ggt9W/GCv9SVYOeovlGpOZD7jsBImb7PhuMpPL2NV8AhwQ++WOQu4lrB
-         SUFyClvGEs4Jh5lWKYfxQh10iKBOLOeePFezzCpaFRTjbNYFrfs1Hk1hfPScgpx01h
-         U8CkhvAz/xu6hzblOMsgFz0qlGbul9WvQZjHYE3/1RpfcMB1Qlr+P02h3BFpKqcjHS
-         sS20FeC369U3qu6cIZ6Dgj4d1dEaOEH60H2bj5eHrKshkRYqww6UBRRXQOn1GXeKyr
-         Eyf4Z9cki4QvvUYKZtXqo8fxAGZXuhkmnP5p4jUvpuEuQAuv9m7PFCVY4bfaWGQw+k
-         FPVMJi2zh3RpQ==
+        b=Yp/pZSEkoUvsGlC4rq7mlKo7cz2NpoAbkOwvGR8oKgWgtsy9Y0PYmJlYtjLh1w3iL
+         Mh1wKOxxtP+OtWLAcjPRrPFjDKJDFr69KeSIN9wh+XG0JFNv66PSzS3wOZCNLYa2di
+         hJ1AhfNhbgm2tMw5M4tBNjhTlL0b4LqziQhCSLpKcj68m9fshW+z26XHaSX0NWlr1z
+         JY7+6wDu1u9TBhJwhEcBY+4W3w/BjiThWWS1FxilJIYUXJmyhNUr3T/hL3hZEuqCNr
+         8jZvfKp22fAha3A/Q8/IXLsURheYzJs/LvP4XE6dpAMFOq7h3mUtmLUgzthQAii3a7
+         e8v6uoFpP5ddA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBYhH-0050Lg-PO;
+        id 1oBYhH-0050Lx-ST;
         Wed, 13 Jul 2022 10:30:19 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>,
+Cc:     Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 11/21] drm/i915/guc: document the TLB invalidation struct members
-Date:   Wed, 13 Jul 2022 10:30:08 +0100
-Message-Id: <b2475a1e10f643124c2bd60747051eb319fa15b4.1657703926.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org,
+        Niranjana Vishwanathapura <niranjana.vishwanathapura@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Subject: [PATCH 15/21] drm/i915: Add platform macro for selective tlb flush
+Date:   Wed, 13 Jul 2022 10:30:12 +0100
+Message-Id: <62c27558f7add68cc60fcf765e591f8886a195f9.1657703926.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657703926.git.mchehab@kernel.org>
 References: <cover.1657703926.git.mchehab@kernel.org>
@@ -66,46 +61,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation for the 3 new members of struct intel_guc
-that are used to handle TLB cache invalidation logic.
+From: Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>
 
+Add support for selective TLB invalidation, which is a platform
+feature supported on XeHP.
+
+Signed-off-by: Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>
+Cc: Niranjana Vishwanathapura <niranjana.vishwanathapura@intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 See [PATCH 00/21] at: https://lore.kernel.org/all/cover.1657703926.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gt/uc/intel_guc.h | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/i915/i915_drv.h          | 3 +++
+ drivers/gpu/drm/i915/i915_pci.c          | 1 +
+ drivers/gpu/drm/i915/intel_device_info.h | 1 +
+ 3 files changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc.h b/drivers/gpu/drm/i915/gt/uc/intel_guc.h
-index f82a121b0838..73c46d405dc4 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc.h
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc.h
-@@ -76,11 +76,23 @@ struct intel_guc {
- 	 */
- 	atomic_t outstanding_submission_g2h;
+diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
+index f1f70257dbe0..73494960a3a8 100644
+--- a/drivers/gpu/drm/i915/i915_drv.h
++++ b/drivers/gpu/drm/i915/i915_drv.h
+@@ -1312,6 +1312,9 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
  
--	/** @interrupts: pointers to GuC interrupt-managing functions. */
-+	/**
-+	 * @tlb_lookup: TLB cache invalidation lookup table.
-+	 */
- 	struct xarray tlb_lookup;
-+
-+	/**
-+	 * @serial_slot: index to the latest allocated element at the
-+	 * @tlb_lookup xarray.
-+	 */
- 	u32 serial_slot;
-+
-+	/**
-+	 * @next_seqno: next index to be allocated at the @tlb_lookup xarray.
-+	 */
- 	u32 next_seqno;
+ #define HAS_GT_UC(dev_priv)	(INTEL_INFO(dev_priv)->has_gt_uc)
  
-+	/** @interrupts: pointers to GuC interrupt-managing functions. */
- 	struct {
- 		void (*reset)(struct intel_guc *guc);
- 		void (*enable)(struct intel_guc *guc);
++#define HAS_SELECTIVE_TLB_INVALIDATION(dev_priv) \
++	(INTEL_INFO(dev_priv)->has_selective_tlb_invalidation)
++
+ #define HAS_POOLED_EU(dev_priv)	(INTEL_INFO(dev_priv)->has_pooled_eu)
+ 
+ #define HAS_GLOBAL_MOCS_REGISTERS(dev_priv)	(INTEL_INFO(dev_priv)->has_global_mocs)
+diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
+index aacc10f2e73f..30d945fe384b 100644
+--- a/drivers/gpu/drm/i915/i915_pci.c
++++ b/drivers/gpu/drm/i915/i915_pci.c
+@@ -1022,6 +1022,7 @@ static const struct intel_device_info adl_p_info = {
+ 	.has_reset_engine = 1, \
+ 	.has_rps = 1, \
+ 	.has_runtime_pm = 1, \
++	.has_selective_tlb_invalidation = 1, \
+ 	.ppgtt_size = 48, \
+ 	.ppgtt_type = INTEL_PPGTT_FULL
+ 
+diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
+index 23bf230aa104..92a38b8f7c47 100644
+--- a/drivers/gpu/drm/i915/intel_device_info.h
++++ b/drivers/gpu/drm/i915/intel_device_info.h
+@@ -170,6 +170,7 @@ enum intel_ppgtt_type {
+ 	func(has_rc6p); \
+ 	func(has_rps); \
+ 	func(has_runtime_pm); \
++	func(has_selective_tlb_invalidation); \
+ 	func(has_snoop); \
+ 	func(has_coherent_ggtt); \
+ 	func(unfenced_needs_alignment); \
 -- 
 2.36.1
 
