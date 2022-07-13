@@ -2,60 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B71C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D71ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:05:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236842AbiGMPFk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:05:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
+        id S236853AbiGMPFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236775AbiGMPF2 (ORCPT
+        with ESMTP id S236782AbiGMPF2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 11:05:28 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB3F422D9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:05:17 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id i204-20020a1c3bd5000000b003a2fa488efdso1046712wma.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:05:17 -0700 (PDT)
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F75422E7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:05:19 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id j29-20020a05600c1c1d00b003a2fdafdefbso824378wms.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:05:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ROC0BgtK/N+kzsuCvrmnTVmfs20tFROFRODZongU+to=;
-        b=Pi5HkNDEePtwLENMxhS57celmg+tdd/mSPqrqoqtqKqgFR47zmJL43321HVoJsC1wh
-         2Ud7XZDrDnroE7O/HvJ1dACw+i1hu1/QPVKbng4G4R2fl4M27TBuUik/krIn28kowmyq
-         RxPEwPE1Z2f1MhfozV+mXVDeTPKpjt9zECO7A=
+        bh=SFLYTnxGltOS1OadQL4iHNlIKerC7uXMw8HZbX2h5Bw=;
+        b=pWJ2mDStBxvqxqXEyUi5/wzW/gakcUiJFUflrpQlBba7NBb0yWb2gWSnqUtp+ydGEU
+         lB04w2koWZ60Yk8CW6v3QYjPG8phb1dnMYAmCYKbZEeJaU1mKQH6T9p83F/TgRhO0mIf
+         YeczGts5Bz8QQS1mUT3srd6mT2h+fDzbYFvN4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ROC0BgtK/N+kzsuCvrmnTVmfs20tFROFRODZongU+to=;
-        b=L6Coa/ju2dvo/K05Gp0Z/FVBHGTVls2iWRllTjICNXBGsjGo1kPBZjepKjxKjly0+/
-         uSOcGsgnGpP6zMALHRD/f6S0MTpkAjo2qoQaiDmb0OtZ77USK3yjbQZRopZ3R7tvOn8Z
-         i82lov3Y/OCfFil5Jo/bLOMoeM6lsu0tD05WyO/xKNKTNlPTl6E7lY0bbBvei77k8fYD
-         YiYAOkojPppV4ooiBznORwg32BByyaIoz6K+DWDaG2C2MKEjo3HBjDsTDNUJ5PZY4KLb
-         cGHiv8zs+S+CO5sJgKymbR9fhq7KUBbEXstO41A8MUjn3WNRBNGWDDRgFNo2BXzoR+zW
-         4JUw==
-X-Gm-Message-State: AJIora/w4ADLF3q/eoh15eeElefG7ZQKpzr6f9+0Hl2mjyKBBj4lhWK6
-        fBBDwNfIDcO4MwIuwvqEvUfv/Q==
-X-Google-Smtp-Source: AGRyM1uDpBa2YqrIh4DfrwnpIykVgeyNgM9u34R9X0eMAUH4W9M6X2Y9ZFxHZ4e6GiheLd84Xvyhaw==
-X-Received: by 2002:a05:600c:a187:b0:3a2:eb3e:f1d4 with SMTP id id7-20020a05600ca18700b003a2eb3ef1d4mr10115330wmb.174.1657724715931;
-        Wed, 13 Jul 2022 08:05:15 -0700 (PDT)
+        bh=SFLYTnxGltOS1OadQL4iHNlIKerC7uXMw8HZbX2h5Bw=;
+        b=BnPrQ2oC5u9w/21jjJa/Y3mDmvcU5KxLymaZgFt4CAKQJu1lcuUzyXoZCn3rza8/i8
+         HhtqXbKLyao6j3F/5Yvq8HXhlzwic9YxP+nlrSgOY2IEJFZN8CAkRUEkYhhQ3DW8Ixfm
+         YPkWWUkOwm0JagkykMVgXZ+3TYNmd3c/Wg4o1bVd20cN2cUwcM/0tFnLV7G3D4XItOrb
+         m2W1AV/qXZLWSasOaANMWSS0rSSNdYJxRCLl03ffhhqoKKNxuZ34RlTlsMmhRH8rGfhw
+         vs+laIhSRSRo3Ug55EEDlkoTWIZiFqWH0XXDv5oUBc2Xc2V2Q3feh7YTw/8ek9zkz4FW
+         F/nA==
+X-Gm-Message-State: AJIora+qvGArNyvgrE0WtD507TogHEFiLay+EIskPBrRhmz5CKN+2y8E
+        nGGv9sr6iVv/yhpk8rodbu4FsQ==
+X-Google-Smtp-Source: AGRyM1vKDLV5XMD/EiFbzgEkFckN+SUKqhPWdZjReQCFv4hhO6CPOuc3kfklirPAo3JWhXvjEuI3KQ==
+X-Received: by 2002:a1c:a1c7:0:b0:3a2:f171:8d68 with SMTP id k190-20020a1ca1c7000000b003a2f1718d68mr4139777wme.111.1657724718777;
+        Wed, 13 Jul 2022 08:05:18 -0700 (PDT)
 Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-51-7.cust.vodafonedsl.it. [188.217.51.7])
-        by smtp.gmail.com with ESMTPSA id f17-20020a05600c4e9100b003a2d87aea57sm1465537wmq.10.2022.07.13.08.05.15
+        by smtp.gmail.com with ESMTPSA id f17-20020a05600c4e9100b003a2d87aea57sm1465537wmq.10.2022.07.13.08.05.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 08:05:15 -0700 (PDT)
+        Wed, 13 Jul 2022 08:05:18 -0700 (PDT)
 From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 To:     tommaso.merciai@amarulasolutions.com
 Cc:     linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
         quentin.schulz@theobroma-systems.com,
-        Jacopo Mondi <jacopo@jmondi.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Daniel Scally <djrscally@gmail.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 4/6] media: ov5693: add support for acpi clock-frequency prop
-Date:   Wed, 13 Jul 2022 17:05:04 +0200
-Message-Id: <20220713150506.2085214-5-tommaso.merciai@amarulasolutions.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v7 5/6] media: dt-bindings: ov5693: document YAML binding
+Date:   Wed, 13 Jul 2022 17:05:05 +0200
+Message-Id: <20220713150506.2085214-6-tommaso.merciai@amarulasolutions.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220713150506.2085214-1-tommaso.merciai@amarulasolutions.com>
 References: <20220713150506.2085214-1-tommaso.merciai@amarulasolutions.com>
@@ -65,69 +68,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for ACPI-based platforms that specify the clock frequency by
-using the "clock-frequency" property instead of specifying a clock
-provider reference
+Add documentation of device tree in YAML schema for the OV5693
+CMOS image sensor from Omnivision
 
 Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
+Changes since v1:
+ - Fix allOf position as suggested by Krzysztof
+ - Remove port description as suggested by Krzysztof
+ - Fix EOF as suggested by Krzysztof
+
 Changes since v2:
- - Fix commit body as suggested by Sakari, Jacopo
- - Add details to commit body as suggested by Jacopo
- - Move ov5693_check_hwcfg into ov5693_hwcfg
- - Fix xvclk_rate position as suggested by Jacopo
- - Use devm_clk_get_optional instead of devm_clk_get as suggested Jacopo
+ - Fix commit body as suggested by Krzysztof
 
 Changes since v3:
- - Fix commit body as suggested by Jacopo
  - Add reviewed-by tags, suggested by Jacopo, Krzysztof
 
 Changes since v4:
  - Remove wrong Sakari reviewed-by tag, suggested by Krzysztof, Sakari
- - Revert ov5693_check_hwcfg function changes. Keep clk init on probe function
-as suggested by Sakari
- - Fix commit body
- - Fix commit msg
 
- drivers/media/i2c/ov5693.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+Changes since v5:
+ - Remove dovdd-supply, avdd-supply, dvdd-supply from required properties
+as suggested by Jacopo
 
-diff --git a/drivers/media/i2c/ov5693.c b/drivers/media/i2c/ov5693.c
-index d2adc5513a21..701468267f20 100644
---- a/drivers/media/i2c/ov5693.c
-+++ b/drivers/media/i2c/ov5693.c
-@@ -1408,13 +1408,25 @@ static int ov5693_probe(struct i2c_client *client)
- 
- 	v4l2_i2c_subdev_init(&ov5693->sd, client, &ov5693_ops);
- 
--	ov5693->xvclk = devm_clk_get(&client->dev, "xvclk");
--	if (IS_ERR(ov5693->xvclk)) {
--		dev_err(&client->dev, "Error getting clock\n");
--		return PTR_ERR(ov5693->xvclk);
-+	ov5693->xvclk = devm_clk_get_optional(&client->dev, "xvclk");
-+	if (IS_ERR(ov5693->xvclk))
-+		return dev_err_probe(&client->dev, PTR_ERR(ov5693->xvclk),
-+				     "failed to get xvclk: %ld\n",
-+				     PTR_ERR(ov5693->xvclk));
+Changes since v6:
+ - Add missing port node as suggested by Sakari, Rob bot
+
+ .../bindings/media/i2c/ovti,ov5693.yaml       | 124 ++++++++++++++++++
+ MAINTAINERS                                   |   1 +
+ 2 files changed, 125 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+
+diff --git a/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml b/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+new file mode 100644
+index 000000000000..359dc08440a8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+@@ -0,0 +1,124 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (c) 2022 Amarulasolutions
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/media/i2c/ovti,ov5693.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	if (ov5693->xvclk) {
-+		xvclk_rate = clk_get_rate(ov5693->xvclk);
-+	} else {
-+		ret = fwnode_property_read_u32(dev_fwnode(&client->dev),
-+				     "clock-frequency",
-+				     &xvclk_rate);
++title: Omnivision OV5693 CMOS Sensor
 +
-+		if (ret) {
-+			dev_err(&client->dev, "can't get clock frequency");
-+			return ret;
-+		}
- 	}
++maintainers:
++  - Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
++
++description: |
++  The Omnivision OV5693 is a high performance, 1/4-inch, 5 megapixel, CMOS
++  image sensor that delivers 2592x1944 at 30fps. It provides full-frame,
++  sub-sampled, and windowed 10-bit MIPI images in various formats via the
++  Serial Camera Control Bus (SCCB) interface.
++
++  OV5693 is controlled via I2C and two-wire Serial Camera Control Bus (SCCB).
++  The sensor output is available via CSI-2 serial data output (up to 2-lane).
++
++allOf:
++  - $ref: /schemas/media/video-interface-devices.yaml#
++
++properties:
++  compatible:
++    const: ovti,ov5693
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    description:
++      System input clock (aka XVCLK). From 6 to 27 MHz.
++    maxItems: 1
++
++  dovdd-supply:
++    description:
++      Digital I/O voltage supply, 1.8V.
++
++  avdd-supply:
++    description:
++      Analog voltage supply, 2.8V.
++
++  dvdd-supply:
++    description:
++      Digital core voltage supply, 1.2V.
++
++  reset-gpios:
++    description:
++      The phandle and specifier for the GPIO that controls sensor reset.
++      This corresponds to the hardware pin XSHUTDN which is physically
++      active low.
++    maxItems: 1
++
++  port:
++    description: MIPI CSI-2 transmitter port
++    $ref: /schemas/graph.yaml#/$defs/port-base
++    additionalProperties: false
++
++    properties:
++      endpoint:
++        $ref: /schemas/media/video-interfaces.yaml#
++        unevaluatedProperties: false
++
++        properties:
++          link-frequencies: true
++
++          data-lanes:
++            minItems: 1
++            maxItems: 2
++
++        required:
++          - data-lanes
++          - link-frequencies
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - port
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/px30-cru.h>
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/pinctrl/rockchip.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        ov5693: camera@36 {
++            compatible = "ovti,ov5693";
++            reg = <0x36>;
++
++            reset-gpios = <&gpio2 RK_PB1 GPIO_ACTIVE_LOW>;
++            pinctrl-names = "default";
++            pinctrl-0 = <&cif_clkout_m0>;
++
++            clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clocks = <&cru SCLK_CIF_OUT>;
++            assigned-clock-rates = <19200000>;
++
++            avdd-supply = <&vcc_1v8>;
++            dvdd-supply = <&vcc_1v2>;
++            dovdd-supply = <&vcc_2v8>;
++
++            rotation = <90>;
++            orientation = <0>;
++
++            port {
++                ucam_out: endpoint {
++                    remote-endpoint = <&mipi_in_ucam>;
++                    data-lanes = <1 2>;
++                    link-frequencies = /bits/ 64 <450000000>;
++                };
++            };
++        };
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f679152bdbad..61c2d28aff4f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14838,6 +14838,7 @@ M:	Daniel Scally <djrscally@gmail.com>
+ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ T:	git git://linuxtv.org/media_tree.git
++F:	Documentation/devicetree/bindings/media/i2c/ovti,ov5693.yaml
+ F:	drivers/media/i2c/ov5693.c
  
--	xvclk_rate = clk_get_rate(ov5693->xvclk);
- 	if (xvclk_rate != OV5693_XVCLK_FREQ)
- 		dev_warn(&client->dev, "Found clk freq %u, expected %u\n",
- 			 xvclk_rate, OV5693_XVCLK_FREQ);
+ OMNIVISION OV5695 SENSOR DRIVER
 -- 
 2.25.1
 
