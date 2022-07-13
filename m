@@ -2,53 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBFBC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C80BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:25:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235996AbiGMLZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:25:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48530 "EHLO
+        id S235245AbiGMLZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231513AbiGMLY6 (ORCPT
+        with ESMTP id S234439AbiGMLY6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 07:24:58 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA47E7CCE
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82E71014AC
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:24:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1657711497; x=1689247497;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=x2z96YWffgva57e/5SCnO/eg4fgCYmVKHGKY6tfFCw8=;
-  b=FbMufuyRf04N4dP5XOEb3Ut4dngu7WWf3eiVsbk1FFIIkhvhSf21o+gy
-   ig2NmDMgZonkyh+c8lQ8MpWux42MV2uva32cHeiAy2rHNKvAayJWaXw9m
-   y5JPiwY4zFhpoUSMihzPJwsThmpi+blQBvOUIRaG9Dv/n7nQ9+czON1yP
-   Nwc9VGLZDS6aTW5B5CfU3zAWha6j6NtnFCZIFez3xE4WUABw6TqTeAGzS
-   rc397h9UXmAXo+FAGy+XeX+8SE++scOGmUYxDT9FU/7JfL0UEnybvyIuM
-   qseolRw14fSRRS+3E0Cp5z1pVzN0HGbmVrFSVRDHykevP4Q3wMNDsVp1u
+  bh=xA6De5du1h40WQGQhyOrLijvhmThcZKzStWUuRAh97k=;
+  b=DbLYpd8p6MCD5wdNKHtkJzkuXMmsPEnrQOjxhvp6v3YCoInjaFikYvWg
+   5XZuXPEaQsWNa7QJ8Jzz7VbXPdHOF2NEHuUw80uAPJk99ivXW6zl11pDH
+   ZXS+UQFhIlI/VH3ZAqUkzKk0p2HtU4MpUbnxnrafoKqkEU3zLqXc8ifqT
+   U2VK5AGd++ZnYSsZiUty7bitm5OFZB/76P81jD55k0QwxKRQNJQM6zENL
+   E7QDnjuG5abPbcPRWYJ+0rksT+W0fK/+QzvdcQJgvI4+oV70+AAOBa8hV
+   u6JvFqMRMFiCtR973qQfrxP1+t6wPnZSKvvQouB9ERyEGiPYZT5DTr0Qg
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="283939006"
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="371497259"
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="283939006"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:24:57 -0700
+   d="scan'208";a="371497259"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:24:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="663322624"
+   d="scan'208";a="737841061"
 Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Jul 2022 04:24:56 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 13 Jul 2022 04:24:56 -0700
 Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1oBaUB-0003Pj-PA;
+        id 1oBaUB-0003Pl-PZ;
         Wed, 13 Jul 2022 11:24:55 +0000
-Date:   Wed, 13 Jul 2022 19:24:33 +0800
+Date:   Wed, 13 Jul 2022 19:24:23 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     kbuild-all@lists.01.org, Daniel Borkmann <daniel@iogearbox.net>,
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
         linux-kernel@vger.kernel.org
-Subject: [cilium:pr/meta5 4/4] include/net/sch_generic.h:819: undefined
- reference to `__qdisc_calculate_pkt_len'
-Message-ID: <202207131955.CE8BXrij-lkp@intel.com>
+Subject: [cilium:pr/meta5 4/4] kernel/bpf/net.c:52:28: warning: variable
+ 'peer' is uninitialized when used here
+Message-ID: <202207131933.oKjzatHd-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -59,8 +60,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   https://github.com/cilium/linux.git pr/meta5
 head:   3dd186e5096ad47e2a3e6a5d00dd9d67513a95e5
 commit: 3dd186e5096ad47e2a3e6a5d00dd9d67513a95e5 [4/4] bpf: Add fd-based API to attach tc BPF programs
-config: arc-buildonly-randconfig-r005-20220712 (https://download.01.org/0day-ci/archive/20220713/202207131955.CE8BXrij-lkp@intel.com/config)
-compiler: arc-elf-gcc (GCC) 11.3.0
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220713/202207131933.oKjzatHd-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project e60b4fb2b777118c0ff664a6347851df14fcf75b)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -70,38 +71,96 @@ reproduce (this is a W=1 build):
         git checkout 3dd186e5096ad47e2a3e6a5d00dd9d67513a95e5
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/bpf/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
+All warnings (new ones prefixed by >>):
 
-   arc-elf-ld: net/core/dev.o: in function `__dev_xmit_skb':
->> include/net/sch_generic.h:819: undefined reference to `__qdisc_calculate_pkt_len'
->> arc-elf-ld: include/net/sch_generic.h:819: undefined reference to `__qdisc_calculate_pkt_len'
+>> kernel/bpf/net.c:52:28: warning: variable 'peer' is uninitialized when used here [-Wuninitialized]
+                                   dev_sch_entry_prio_set(peer, prio, nprog);
+                                                          ^~~~
+   kernel/bpf/net.c:33:32: note: initialize the variable 'peer' to silence this warning
+           struct sch_entry *entry, *peer;
+                                         ^
+                                          = NULL
+   1 warning generated.
 
 
-vim +819 include/net/sch_generic.h
+vim +/peer +52 kernel/bpf/net.c
 
-378a2f090f7a47 Jarek Poplawski 2008-08-04  811  
-a2da570d62fcb9 Eric Dumazet    2011-01-20  812  static inline void qdisc_calculate_pkt_len(struct sk_buff *skb,
-a2da570d62fcb9 Eric Dumazet    2011-01-20  813  					   const struct Qdisc *sch)
-5f86173bdf1598 Jussi Kivilinna 2008-07-20  814  {
-3dd186e5096ad4 Daniel Borkmann 2022-06-13  815  #ifdef CONFIG_NET_XGRESS
-a2da570d62fcb9 Eric Dumazet    2011-01-20  816  	struct qdisc_size_table *stab = rcu_dereference_bh(sch->stab);
-a2da570d62fcb9 Eric Dumazet    2011-01-20  817  
-a2da570d62fcb9 Eric Dumazet    2011-01-20  818  	if (stab)
-a2da570d62fcb9 Eric Dumazet    2011-01-20 @819  		__qdisc_calculate_pkt_len(skb, stab);
-3a682fbd732d3d David S. Miller 2008-07-20  820  #endif
-a2da570d62fcb9 Eric Dumazet    2011-01-20  821  }
-a2da570d62fcb9 Eric Dumazet    2011-01-20  822  
-
-:::::: The code at line 819 was first introduced by commit
-:::::: a2da570d62fcb9e8816f6920e1ec02c706b289fa net_sched: RCU conversion of stab
-
-:::::: TO: Eric Dumazet <eric.dumazet@gmail.com>
-:::::: CC: David S. Miller <davem@davemloft.net>
+    28	
+    29	static int __sch_prog_attach(struct net_device *dev, bool ingress, u32 limit,
+    30				     struct bpf_prog *nprog, u32 prio, u32 flags)
+    31	{
+    32		struct bpf_prog_array_item *item, *tmp;
+    33		struct sch_entry *entry, *peer;
+    34		struct bpf_prog *oprog;
+    35		bool created;
+    36		int i, j;
+    37	
+    38		entry = dev_sch_entry_fetch(dev, ingress, &created);
+    39		if (!entry)
+    40			return -ENOMEM;
+    41		for (i = 0; i < limit; i++) {
+    42			item = &entry->items[i];
+    43			oprog = item->prog;
+    44			if (!oprog)
+    45				break;
+    46			if (item->bpf_priority == prio) {
+    47				if (flags & BPF_F_REPLACE) {
+    48					/* Pairs with READ_ONCE() in sch_run_progs(). */
+    49					WRITE_ONCE(item->prog, nprog);
+    50					if (sch_prog_refcounted(oprog))
+    51						bpf_prog_put(oprog);
+  > 52					dev_sch_entry_prio_set(peer, prio, nprog);
+    53					return prio;
+    54				}
+    55				return -EBUSY;
+    56			}
+    57		}
+    58		if (dev_sch_entry_total(entry) >= limit)
+    59			return -ENOSPC;
+    60		prio = dev_sch_entry_prio_new(entry, prio, nprog);
+    61		if (prio < 0) {
+    62			if (created)
+    63				dev_sch_entry_free(entry);
+    64			return -ENOMEM;
+    65		}
+    66		peer = dev_sch_entry_peer(entry);
+    67		dev_sch_entry_clear(peer);
+    68		for (i = 0, j = 0; i < limit; i++, j++) {
+    69			item = &entry->items[i];
+    70			tmp = &peer->items[j];
+    71			oprog = item->prog;
+    72			if (!oprog) {
+    73				if (i == j) {
+    74					tmp->prog = nprog;
+    75					tmp->bpf_priority = prio;
+    76				}
+    77				break;
+    78			} else if (item->bpf_priority < prio) {
+    79				tmp->prog = oprog;
+    80				tmp->bpf_priority = item->bpf_priority;
+    81			} else if (item->bpf_priority > prio) {
+    82				if (i == j) {
+    83					tmp->prog = nprog;
+    84					tmp->bpf_priority = prio;
+    85					tmp = &peer->items[++j];
+    86				}
+    87				tmp->prog = oprog;
+    88				tmp->bpf_priority = item->bpf_priority;
+    89			}
+    90		}
+    91		dev_sch_entry_update(dev, peer, ingress);
+    92		if (ingress)
+    93			net_inc_ingress_queue();
+    94		else
+    95			net_inc_egress_queue();
+    96		return prio;
+    97	}
+    98	
 
 -- 
 0-DAY CI Kernel Test Service
