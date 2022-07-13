@@ -2,98 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB527C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A76AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234546AbiGMIlK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:41:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49912 "EHLO
+        id S235523AbiGMImR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235745AbiGMIkn (ORCPT
+        with ESMTP id S235740AbiGMIlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:40:43 -0400
+        Wed, 13 Jul 2022 04:41:35 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE44BDF639
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:38 -0700 (PDT)
-Received: from dude02.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::28])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oBXvB-00046d-6h; Wed, 13 Jul 2022 10:40:37 +0200
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Subject: [PATCH] Revert "reset: microchip-sparx5: allow building as a module"
-Date:   Wed, 13 Jul 2022 10:40:10 +0200
-Message-Id: <20220713084010.168720-1-p.zabel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25321EB01E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:41:19 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oBXvg-0004GD-PG; Wed, 13 Jul 2022 10:41:08 +0200
+Message-ID: <2cfe481fdbd074ef6ff7e95bf32b5c99e6a26aca.camel@pengutronix.de>
+Subject: Re: [PATCH v14 11/17] PCI: imx6: Move regulator enable out of
+ imx6_pcie_deassert_core_reset()
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
+        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Wed, 13 Jul 2022 10:41:07 +0200
+In-Reply-To: <1656645935-1370-12-git-send-email-hongxing.zhu@nxp.com>
+References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
+         <1656645935-1370-12-git-send-email-hongxing.zhu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:1101:1d::28
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit b6b9585876da018bdde2d5f15d206a689c0d70f3.
+Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
+> Move regulator enable out of imx6_pcie_deassert_core_reset(), since the
+> regulator_enable() has nothing to do in with
+> imx6_pcie_deassert_core_reset().
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
 
-This breaks MDIO on kswitch-d10, presumably because the global switch
-reset is not released early enough anymore.
+Ah, so you are doing things in two steps. Disregard my first comment on
+the last patch then.
 
-Reported-by: Michael Walle <michael@walle.cc>
-Cc: Clément Léger <clement.leger@bootlin.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
----
- drivers/reset/Kconfig                  | 2 +-
- drivers/reset/reset-microchip-sparx5.c | 8 ++++++--
- 2 files changed, 7 insertions(+), 3 deletions(-)
+> ---
+>  drivers/pci/controller/dwc/pci-imx6.c | 36 ++++++++++++---------------
+>  1 file changed, 16 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index f72eb609769b..0b168f0d57b8 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -712,19 +712,10 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+>  	struct device *dev = pci->dev;
+>  	int ret;
+>  
+> -	if (imx6_pcie->vpcie) {
+> -		ret = regulator_enable(imx6_pcie->vpcie);
+> -		if (ret) {
+> -			dev_err(dev, "failed to enable vpcie regulator: %d\n",
+> -				ret);
+> -			return ret;
+> -		}
+> -	}
+> -
+>  	ret = imx6_pcie_clk_enable(imx6_pcie);
+>  	if (ret) {
+>  		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
+> -		goto err_clks;
+> +		return ret;
+>  	}
+>  
+>  	switch (imx6_pcie->drvdata->variant) {
+> @@ -783,15 +774,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+>  	}
+>  
+>  	return 0;
+> -
+> -err_clks:
+> -	if (imx6_pcie->vpcie) {
+> -		ret = regulator_disable(imx6_pcie->vpcie);
+> -		if (ret)
+> -			dev_err(dev, "failed to disable vpcie regulator: %d\n",
+> -				ret);
+> -	}
+> -	return ret;
+>  }
+>  
+>  static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
+> @@ -916,15 +898,29 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
+>  
+>  	imx6_pcie_assert_core_reset(imx6_pcie);
+>  	imx6_pcie_init_phy(imx6_pcie);
+> +	if (imx6_pcie->vpcie) {
+> +		ret = regulator_enable(imx6_pcie->vpcie);
+> +		if (ret) {
+> +			dev_err(dev, "failed to enable vpcie regulator: %d\n",
+> +				ret);
+> +			return ret;
 
-diff --git a/drivers/reset/Kconfig b/drivers/reset/Kconfig
-index d9a08ec343e2..f9a7cee01659 100644
---- a/drivers/reset/Kconfig
-+++ b/drivers/reset/Kconfig
-@@ -115,7 +115,7 @@ config RESET_LPC18XX
- 	  This enables the reset controller driver for NXP LPC18xx/43xx SoCs.
- 
- config RESET_MCHP_SPARX5
--	tristate "Microchip Sparx5 reset driver"
-+	bool "Microchip Sparx5 reset driver"
- 	depends on ARCH_SPARX5 || SOC_LAN966 || COMPILE_TEST
- 	default y if SPARX5_SWITCH
- 	select MFD_SYSCON
-diff --git a/drivers/reset/reset-microchip-sparx5.c b/drivers/reset/reset-microchip-sparx5.c
-index 3d54dda3593e..00b612a0effa 100644
---- a/drivers/reset/reset-microchip-sparx5.c
-+++ b/drivers/reset/reset-microchip-sparx5.c
-@@ -149,7 +149,6 @@ static const struct of_device_id mchp_sparx5_reset_of_match[] = {
- 	},
- 	{ }
- };
--MODULE_DEVICE_TABLE(of, mchp_sparx5_reset_of_match);
- 
- static struct platform_driver mchp_sparx5_reset_driver = {
- 	.probe = mchp_sparx5_reset_probe,
-@@ -159,7 +158,12 @@ static struct platform_driver mchp_sparx5_reset_driver = {
- 	},
- };
- 
--module_platform_driver(mchp_sparx5_reset_driver);
-+static int __init mchp_sparx5_reset_init(void)
-+{
-+	return platform_driver_register(&mchp_sparx5_reset_driver);
-+}
-+
-+postcore_initcall(mchp_sparx5_reset_init);
- 
- MODULE_DESCRIPTION("Microchip Sparx5 switch reset driver");
- MODULE_AUTHOR("Steen Hegelund <steen.hegelund@microchip.com>");
--- 
-2.30.2
+If the regulator enable fails, you don't roll back the PHY init and
+core reset. This seems harmless now, but might have unintended
+consequences if the PHY code changes. I think it should be safe to move
+the regulator enable before the PHY init and core reset assert to avoid
+introducing more failure cleanup paths here.
+
+Regards,
+Lucas
+
+> +		}
+> +	}
+> +
+>  	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
+>  	if (ret < 0) {
+>  		dev_err(dev, "pcie deassert core reset failed: %d\n", ret);
+> -		return ret;
+> +		goto err_reg_disable;
+>  	}
+>  
+>  	imx6_setup_phy_mpll(imx6_pcie);
+>  
+>  	return 0;
+> +
+> +err_reg_disable:
+> +	if (imx6_pcie->vpcie)
+> +		regulator_disable(imx6_pcie->vpcie);
+> +	return ret;
+>  }
+>  
+>  static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
+
 
