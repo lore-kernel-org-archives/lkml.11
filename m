@@ -2,96 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86DB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5187CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:36:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236103AbiGMLf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:35:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57440 "EHLO
+        id S236232AbiGMLgl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:36:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiGMLf4 (ORCPT
+        with ESMTP id S236210AbiGMLgi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:35:56 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E9A83F2F;
-        Wed, 13 Jul 2022 04:35:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=U1F/5wzv0m7wpoKemUgjlptyrRXhgHhVMVcmpHAB8AE=; b=ouXY6Sii0FO9X18TUWdXujmX+l
-        nT8Tesdc6ekDaNHh/OnAGW3bI55SeuvzZZVYS9MxYlzg4sI6H1GGQFGL5lik9ww4fMhpzGjHfO4VO
-        tXl4pgnvLC3CPa3Ld8gEkDvGyQyJVS9wD3ckp2EQfi+TeQ6yCcbyF0BtQzjvpWGT+U1RTo2Sen9XJ
-        jG/XiI+PcUpX7nge8bsfjndRNavOnJQ1vdkd/gtNcTCq1zyBYo9zJrMIUEBBwWzAlSGcR6V97ht49
-        ZV4gee4B9sXAeIBajt9QNvvT3FjLL6wBQyUNvOMBDyAf/PoNa8BpLu5iaMBsLc6CKEF2HxQHUuWaa
-        xx8Rn2gg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBaeL-003XvT-8O; Wed, 13 Jul 2022 11:35:25 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 7297C300238;
-        Wed, 13 Jul 2022 13:35:22 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 57578201ECFBD; Wed, 13 Jul 2022 13:35:22 +0200 (CEST)
-Date:   Wed, 13 Jul 2022 13:35:22 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Josh Poimboeuf <jpoimboe@kernel.org>, Borislav Petkov <bp@suse.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: mainline build failure due to fc02735b14ff ("KVM: VMX: Prevent
- guest RSB poisoning attacks with eIBRS")
-Message-ID: <Ys6t+q4/y4DTjLQh@hirez.programming.kicks-ass.net>
-References: <Ys6sZj6KYthnDppq@debian>
+        Wed, 13 Jul 2022 07:36:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBCF6102917
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657712196;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yrCSuJaHzqqJrDzlPoHK3BCroMA+MPPreiwAH9qdrfA=;
+        b=JDcdVJFSnY3H8mKLTXNgmxEJzQ1kDPKnIpAOxkxsh4HEn/OGu+bz1Cre5/FbErriGM2fpu
+        nV0LkPs5wZj5wg4zENTvIY6RMkymPTZHkqAHwsGfiCaHW7rB6BOj59ZB6paP9H8nUMqvQP
+        SyumZ/4KerX1W63cYbngmMKCkUo7QDQ=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-498-3wyFYtXEO7CRInU0SyX7AA-1; Wed, 13 Jul 2022 07:36:35 -0400
+X-MC-Unique: 3wyFYtXEO7CRInU0SyX7AA-1
+Received: by mail-pj1-f71.google.com with SMTP id r23-20020a17090a941700b001f04239bebdso3395664pjo.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:36:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yrCSuJaHzqqJrDzlPoHK3BCroMA+MPPreiwAH9qdrfA=;
+        b=1MWgn4HAT+ey33tklpxZYsSDptjmOx6j7O16HPWdh5Zih2Q7qIvRSfFYUDQmUOEv/r
+         fP8m5b1LnHgbPppiMTz4uJ5691IsPgdFLMdnmZ6Rvt9gBU/044fYe+GqpnqWYkmQMdat
+         6pGXUEGQGIAUM0OwOr0PANG6TToMVeSr34ZkCnK27ajGgejsO8ZQtAU91F0U60b7P+XB
+         xP+jPr18yAXYKHGQzTX3BGIxkmKiVJG31nUqPi1OcXEV8rzL3orDC1TzTkOUl/jFJ0PP
+         p2ounCSmu3LJ2WRPGeMTsTpEATlbilr4kMjfJIFYJzmlbhsREnjb2NL+eP72xTCrTUnR
+         5eUA==
+X-Gm-Message-State: AJIora+Vx4V4PVK1aOOWJoi/Q8XYXatw+VKVScX7rzX0K9h+jdgI9anQ
+        WEj88Rvqq1oo1eTGt/TvVTFmO7P6oWGYQ0wn1H7Dms8VvDxNUn+8UyFgZEORScU4VAOTX17w9/k
+        NgzNptTyPveurWhJbRQc/KLh0Wn1Cv0AIrTnLOOhO
+X-Received: by 2002:a63:5b16:0:b0:416:1b3b:9562 with SMTP id p22-20020a635b16000000b004161b3b9562mr2640550pgb.146.1657712193986;
+        Wed, 13 Jul 2022 04:36:33 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tMvNaIU5RdJs8xFRKHMRkHgZ6gojSHT6mUC3bNG1PFZd6uvWCEzPNcBAqRmFF+sgNMHsiXK2QJJwUhF0wM9ws=
+X-Received: by 2002:a63:5b16:0:b0:416:1b3b:9562 with SMTP id
+ p22-20020a635b16000000b004161b3b9562mr2640529pgb.146.1657712193703; Wed, 13
+ Jul 2022 04:36:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys6sZj6KYthnDppq@debian>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-13-benjamin.tissoires@redhat.com> <668a2f86-9446-61de-494c-f2d2ee15f09e@isovalent.com>
+In-Reply-To: <668a2f86-9446-61de-494c-f2d2ee15f09e@isovalent.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Wed, 13 Jul 2022 13:36:22 +0200
+Message-ID: <CAO-hwJ+23HWjRHx8463uL5hA1HMYcmPD2=63Fv=J__x7zvmLjg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 12/23] HID: initial BPF implementation
+To:     Quentin Monnet <quentin@isovalent.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Pu Lehui <pulehui@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:28:38PM +0100, Sudip Mukherjee (Codethink) wrote:
-> Hi All,
-> 
-> The latest mainline kernel branch fails to build for x86_64 allmodconfig
-> with clang and the error is:
-> 
-> arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
-> DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
->                     ^
-> ./arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
-> extern u64 x86_spec_ctrl_current;
-> 
-> 
-> git bisect pointed to fc02735b14ff ("KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS")
-> 
-> I will be happy to test any patch or provide any extra log if needed.
+On Wed, Jul 13, 2022 at 10:48 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>
+> On 12/07/2022 15:58, Benjamin Tissoires wrote:
+[...]
+> > diff --git a/drivers/hid/bpf/entrypoints/Makefile b/drivers/hid/bpf/entrypoints/Makefile
+> > new file mode 100644
+> > index 000000000000..dd60a460c6c4
+> > --- /dev/null
+> > +++ b/drivers/hid/bpf/entrypoints/Makefile
+> > @@ -0,0 +1,88 @@
+> > +# SPDX-License-Identifier: GPL-2.0
+> > +OUTPUT := .output
+> > +abs_out := $(abspath $(OUTPUT))
+> > +
+> > +CLANG ?= clang
+> > +LLC ?= llc
+> > +LLVM_STRIP ?= llvm-strip
+> > +
+> > +TOOLS_PATH := $(abspath ../../../../tools)
+> > +BPFTOOL_SRC := $(TOOLS_PATH)/bpf/bpftool
+> > +BPFTOOL_OUTPUT := $(abs_out)/bpftool
+> > +DEFAULT_BPFTOOL := $(OUTPUT)/sbin/bpftool
+> > +BPFTOOL ?= $(DEFAULT_BPFTOOL)
+> > +
+> > +LIBBPF_SRC := $(TOOLS_PATH)/lib/bpf
+> > +LIBBPF_OUTPUT := $(abs_out)/libbpf
+> > +LIBBPF_DESTDIR := $(LIBBPF_OUTPUT)
+> > +LIBBPF_INCLUDE := $(LIBBPF_DESTDIR)/include
+> > +BPFOBJ := $(LIBBPF_OUTPUT)/libbpf.a
+> > +
+> > +INCLUDES := -I$(OUTPUT) -I$(LIBBPF_INCLUDE) -I$(TOOLS_PATH)/include/uapi
+> > +CFLAGS := -g -Wall
+> > +
+> > +VMLINUX_BTF_PATHS ?= $(if $(O),$(O)/vmlinux)                         \
+> > +                  $(if $(KBUILD_OUTPUT),$(KBUILD_OUTPUT)/vmlinux)    \
+> > +                  ../../../../vmlinux                                \
+> > +                  /sys/kernel/btf/vmlinux                            \
+> > +                  /boot/vmlinux-$(shell uname -r)
+> > +VMLINUX_BTF ?= $(abspath $(firstword $(wildcard $(VMLINUX_BTF_PATHS))))
+> > +ifeq ($(VMLINUX_BTF),)
+> > +$(error Cannot find a vmlinux for VMLINUX_BTF at any of "$(VMLINUX_BTF_PATHS)")
+> > +endif
+> > +
+> > +ifeq ($(V),1)
+> > +Q =
+> > +msg =
+> > +else
+> > +Q = @
+> > +msg = @printf '  %-8s %s%s\n' "$(1)" "$(notdir $(2))" "$(if $(3), $(3))";
+> > +MAKEFLAGS += --no-print-directory
+> > +submake_extras := feature_display=0
+> > +endif
+> > +
+> > +.DELETE_ON_ERROR:
+> > +
+> > +.PHONY: all clean
+> > +
+> > +all: entrypoints.lskel.h
+> > +
+> > +clean:
+> > +     $(call msg,CLEAN)
+> > +     $(Q)rm -rf $(OUTPUT) entrypoints
+> > +
+> > +entrypoints.lskel.h: $(OUTPUT)/entrypoints.bpf.o | $(BPFTOOL)
+> > +     $(call msg,GEN-SKEL,$@)
+> > +     $(Q)$(BPFTOOL) gen skeleton -L $< > $@
+> > +
+> > +
+> > +$(OUTPUT)/entrypoints.bpf.o: entrypoints.bpf.c $(OUTPUT)/vmlinux.h $(BPFOBJ) | $(OUTPUT)
+> > +     $(call msg,BPF,$@)
+> > +     $(Q)$(CLANG) -g -O2 -target bpf $(INCLUDES)                           \
+> > +              -c $(filter %.c,$^) -o $@ &&                                 \
+> > +     $(LLVM_STRIP) -g $@
+> > +
+> > +$(OUTPUT)/vmlinux.h: $(VMLINUX_BTF) $(BPFTOOL) | $(INCLUDE_DIR)
+> > +ifeq ($(VMLINUX_H),)
+> > +     $(call msg,GEN,,$@)
+> > +     $(Q)$(BPFTOOL) btf dump file $(VMLINUX_BTF) format c > $@
+> > +else
+> > +     $(call msg,CP,,$@)
+> > +     $(Q)cp "$(VMLINUX_H)" $@
+> > +endif
+> > +
+> > +$(OUTPUT) $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+> > +     $(call msg,MKDIR,$@)
+> > +     $(Q)mkdir -p $@
+> > +
+> > +$(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OUTPUT)
+> > +     $(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC)                         \
+> > +                 OUTPUT=$(abspath $(dir $@))/ prefix=                       \
+> > +                 DESTDIR=$(LIBBPF_DESTDIR) $(abspath $@) install_headers
+> > +
+> > +$(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
+> > +     $(Q)$(MAKE) $(submake_extras) -C $(BPFTOOL_SRC)                        \
+> > +                 OUTPUT=$(BPFTOOL_OUTPUT)/                                  \
+> > +                 LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/                            \
+> > +                 LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/                          \
+> > +                 prefix= DESTDIR=$(abs_out)/ install-bin
+>
+> Hi Benjamin,
+>
+> Note that, at other locations where bpftool is needed to generate the
+> vmlinux.h or the skeletons, there is some work in progress to use only
+> the "bootstrap" version of bpftool (the intermediary bpftool binary used
+> to generate skeletons required for the final bpftool binary) [0]. This
+> is enough to generate these objects, it makes compiling the bpftool
+> binary faster, and solves some issues related to cross-compilation. It's
+> probably worth exploring in your case (or as a follow-up) as well.
+>
 
-I suspect something like this will do.
+Hi Quentin,
 
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index bb05ed4f46bd..6398d39e66b0 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -280,7 +280,7 @@ static inline void indirect_branch_prediction_barrier(void)
- 
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern u64 x86_spec_ctrl_current;
-+DECLARE_PER_CPU(u64, x86_spec_ctrl_current);
- extern void write_spec_ctrl_current(u64 val, bool force);
- extern u64 spec_ctrl_current(void);
- 
+Indeed, I applied a similar patch to [1] (the 3/3 in the series you
+mentioned) and I have the exact same light skeleton.
+I have stashed the changes locally for a future revision (I doubt
+everything will go through in this version ;-P ).
+
+Cheers,
+Benjamin
+
+> Quentin
+>
+> [0]
+> https://lore.kernel.org/all/20220712030813.865410-1-pulehui@huawei.com/t/#u
+>
+[1] https://lore.kernel.org/all/20220712030813.865410-4-pulehui@huawei.com/
+
