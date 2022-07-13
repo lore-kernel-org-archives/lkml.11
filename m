@@ -2,75 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EDE7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF6AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234530AbiGMMuK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:50:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36788 "EHLO
+        id S234178AbiGMMuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbiGMMuH (ORCPT
+        with ESMTP id S234462AbiGMMuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:50:07 -0400
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8DFB2F386;
-        Wed, 13 Jul 2022 05:50:06 -0700 (PDT)
-Received: by mail-pj1-f48.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso3507544pjc.1;
-        Wed, 13 Jul 2022 05:50:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YqtkMT3tnVRyNCa8MEyOXmJg3Zr2qGjezMRiYj7Y9QI=;
-        b=dDM4HsDx9mnqDE+h2z60x9SFy/DSNyg2QjQV8K0VT/cZ8Xu00oM63IQrOUUNfg8oeC
-         WBTB8PKxTPML4eZq+bg3FmL0AMhXj4pVuUTZWkG1DWPONhZ9ouKBibgshKQFrxl5Qtgx
-         CDKKu/1MKDNOP1gagGYjTGKnamrGQnWQiWVuXzJcSQ3szV+JCPGcAwH7bKL9r7vQhfjI
-         I//lnbwHstOtij/jJgnULfZd2NTNphDgEYJOBp/zhyz+k8oLaFL+CZaWEvb1MKlqXOwD
-         y7aAJhI3biAS3/DEzLXZckKINqYqhag3pwDgk9hKTN9svxttsyR0XkeTM9tThPzlSbPy
-         3Edw==
-X-Gm-Message-State: AJIora+CxSW6xU7AxWSFf1BLgHQ3U0vgQ4er81zzxoEFeI996cyO2ncs
-        4bxKdRvO7z2oQ9LhwyMN586NwgFurmwujw==
-X-Google-Smtp-Source: AGRyM1s7zReI3CqF80QFnw1pL7SRC7OTF0TLvrTzuQOJVWaf09jZ7Xqab3WrqTgqRl49JsEzapXhUA==
-X-Received: by 2002:a17:90b:33d2:b0:1f0:3a40:982d with SMTP id lk18-20020a17090b33d200b001f03a40982dmr3728981pjb.60.1657716606028;
-        Wed, 13 Jul 2022 05:50:06 -0700 (PDT)
-Received: from localhost.localdomain ([211.49.23.9])
-        by smtp.gmail.com with ESMTPSA id gf17-20020a17090ac7d100b001ef87123615sm1521303pjb.37.2022.07.13.05.50.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 05:50:05 -0700 (PDT)
-From:   Namjae Jeon <linkinjeon@kernel.org>
-To:     linux-cifs@vger.kernel.org
-Cc:     smfrench@gmail.com, linux-kernel@vger.kernel.org,
-        Namjae Jeon <linkinjeon@kernel.org>
-Subject: [PATCH] MAINTAINERS: ksmbd: add entry for documentation
-Date:   Wed, 13 Jul 2022 21:49:40 +0900
-Message-Id: <20220713124940.6591-1-linkinjeon@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        Wed, 13 Jul 2022 08:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FEB32EF5;
+        Wed, 13 Jul 2022 05:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 666BC61BA0;
+        Wed, 13 Jul 2022 12:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C6FE9C34114;
+        Wed, 13 Jul 2022 12:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657716613;
+        bh=UAZQ3e11PSqREtLGLj03rvjjOONs6n0YC5OE9U7jODA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Ho2K6e9pGVhRcfOJasRfj3M6CKTbxH2C5X6FxlUsIevHT1mrNUhfaHY4w7XI/vFsZ
+         IOLRI46YzYhQpZLzuue0yFdujqk2hW5N2tjKXYG+AU5X/FdXfJm9wnzj+SJmfxwUHf
+         Of+i5ATKzohiVEFgqzTHHQJgrLsckKuCR9ro77ndksM1MLtLBTCqmuNY3jm8E4IRUX
+         iBXkX+9Y22I1n7LB3e9X4u3Ngo5YAbzuT+jFOu2ybH3j2NGWCGXcZIv8z/0eiG+7a8
+         s/trbq9GOkvkOxdk6IykwUxYVWnlO6h3tQIxIX5ASty/44CXKsfoKbqaMxG/9BpRfN
+         VTgd/6ghaqjkQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8886E45223;
+        Wed, 13 Jul 2022 12:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCH v2] octeontx2-af: Skip CGX/RPM probe incase of zero
+ lmac count
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165771661368.8674.11632704817904156772.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 12:50:13 +0000
+References: <20220712064250.29903-1-gakula@marvell.com>
+In-Reply-To: <20220712064250.29903-1-gakula@marvell.com>
+To:     Geetha sowjanya <gakula@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, sgoutham@marvell.com, hkelam@marvell.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include Documentation/filesystems/cifs/ksmbd.rst in the ksmbd maintainers
-file entry.
+Hello:
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fe5daf141501..ae1aa7380265 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10813,6 +10813,7 @@ R:	Sergey Senozhatsky <senozhatsky@chromium.org>
- L:	linux-cifs@vger.kernel.org
- S:	Maintained
- T:	git git://git.samba.org/ksmbd.git
-+F:	Documentation/filesystems/cifs/ksmbd.rst
- F:	fs/ksmbd/
- F:	fs/smbfs_common/
- 
+On Tue, 12 Jul 2022 12:12:50 +0530 you wrote:
+> From: Hariprasad Kelam <hkelam@marvell.com>
+> 
+> In few error cases MAC(CGX/RPM) block is having 0 lmacs.
+> AF driver uses MAC block with lmac pair to get firmware
+> data etc. These commands will fail as there is no LMAC
+> associated with MAC block.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2] octeontx2-af: Skip CGX/RPM probe incase of zero lmac count
+    https://git.kernel.org/netdev/net-next/c/3e35d198cee6
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
