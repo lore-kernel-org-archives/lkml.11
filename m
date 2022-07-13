@@ -2,137 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ABBC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEF8FC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235977AbiGMLPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
+        id S236285AbiGMLQK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236012AbiGMLPN (ORCPT
+        with ESMTP id S236277AbiGMLPt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:15:13 -0400
-X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 04:14:55 PDT
-Received: from 3.mo560.mail-out.ovh.net (3.mo560.mail-out.ovh.net [46.105.58.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015E4100CF8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:14:53 -0700 (PDT)
-Received: from player792.ha.ovh.net (unknown [10.109.156.133])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id C7BCF241CC
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 10:58:33 +0000 (UTC)
-Received: from RCM-web6.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player792.ha.ovh.net (Postfix) with ESMTPSA id 177F12C96E135;
-        Wed, 13 Jul 2022 10:58:21 +0000 (UTC)
+        Wed, 13 Jul 2022 07:15:49 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ED1101483;
+        Wed, 13 Jul 2022 04:15:19 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id DDE1D66019C5;
+        Wed, 13 Jul 2022 12:15:16 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657710917;
+        bh=B3pFqcpJL4uwSDHR2Pb8ZpJXQWecgKAmffWdGwqPWmw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=i+41z0e13diW6eFHtsCimC6PSbECS2XIIbU2wvuzy/1wbayHdEOfKVgNWd2oNg0qj
+         qv2v4xUtxiienjybifjfLlGfLhdWHJOrvSk8vgNeMUiQhbEBWxpyCXxu3H5KtSha9T
+         fPZp4YHYxxME11uwfIcrzdYRPmoutuQ/wZk3lhmUOynLZyQMhxMVJiJa2srXcbD0Jv
+         LglwMPdn195bx+c3Mzae9vS7RsNSrddsBlQJXJs+F+yATDaQFpkFB9Av393nSQ89GS
+         eTQMZvUZGbyN/zqFHhxoTca0FDqgBesefKUifU3hKJtAvU+gAbLchho3UAcqA64S/N
+         z+DU3NNXVLobA==
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+To:     myungjoo.ham@samsung.com
+Cc:     kyungmin.park@samsung.com, cw00.choi@samsung.com,
+        matthias.bgg@gmail.com, lgirdwood@gmail.com, broonie@kernel.org,
+        jia-wei.chang@mediatek.com, johnson.wang@mediatek.com,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Subject: [PATCH] PM / devfreq: mtk-cci: Handle sram regulator probe deferral
+Date:   Wed, 13 Jul 2022 13:15:11 +0200
+Message-Id: <20220713111511.115007-1-angelogioacchino.delregno@collabora.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Date:   Wed, 13 Jul 2022 12:58:20 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        kursad.oney@broadcom.com, anand.gore@broadcom.com,
-        dan.beygelman@broadcom.com, f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        joel.peshkin@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/3] dt-bindings: arm64: bcmbca: Merge BCM4908 into
- BCMBCA
-In-Reply-To: <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
-References: <20220712021144.7068-1-william.zhang@broadcom.com>
- <20220712021144.7068-2-william.zhang@broadcom.com>
- <ca8c3003-1bcb-6658-592c-566609fd7bd2@linaro.org>
- <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
- <c40f20c7-59ee-99f4-9a11-e928b41eda9f@linaro.org>
- <6efb1cfe-6129-276a-eeb3-44147304d211@broadcom.com>
- <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <85219d59e2906534409fc24ad2e5e4c9@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 11914554292197501915
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedgfeegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejledvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehiedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-13 12:50, Rafał Miłecki wrote:
-> On 2022-07-13 02:57, William Zhang wrote:
->> On 7/12/22 11:18, Krzysztof Kozlowski wrote:
->>> On 12/07/2022 19:37, William Zhang wrote:
->>>>>> +      - description: BCM4908 Family based boards
->>>>>> +        items:
->>>>>> +          - enum:
->>>>>> +              # BCM4908 SoC based boards
->>>>>> +              - brcm,bcm94908
->>>>>> +              - asus,gt-ac5300
->>>>>> +              - netgear,raxe500
->>>>>> +              # BCM4906 SoC based boards
->>>>>> +              - brcm,bcm94906
->>>>>> +              - netgear,r8000p
->>>>>> +              - tplink,archer-c2300-v1
->>>>>> +          - enum:
->>>>>> +              - brcm,bcm4908
->>>>>> +              - brcm,bcm4906
->>>>>> +              - brcm,bcm49408
->>>>> 
->>>>> This is wrong.  brcm,bcm94908 followed by brcm,bcm4906 does not 
->>>>> look
->>>>> like valid list of compatibles.
->>>>> 
->>>> For 4908 board variant, it will need to be followed by 4908 chip. 
->>>> Sorry
->>>> for the basic question but is there any requirement to enforce this 
->>>> kind
->>>> of rule?  I would assume dts writer know what he/she is doing and 
->>>> select
->>>> the right combination.
->>> 
->>> The entire point of DT schema is to validate DTS. Combination like 
->>> above
->>> prevents that goal.
->>> 
->>> Best regards,
->>> Krzysztof
->> Understand the DT schema purpose. But items property allows multiple
->> enums in the list which gives a lot of flexibility but make it hard to
->> validate. I am not familiar with DT schema, is there any directive to
->> specify one enum value depending on another so dts validation tool can
->> report error if combination is wrong?
->> 
->> This is our preferred format of all bcmbca compatible string
->> especially when we could have more than 10 chip variants for the same
->> chip family and we really want to work on the chip family id.  We will
->> make sure they are in the right combination in our own patch and patch
->> from other contributors. Would this work? If not, I will probably have
->> to revert the change of 4908(maybe append brcm,bcmbca as this chip
->> belongs to the same bca group) and use "enum board variant", "const
->> main chip id", "brcm,bca" for all other chips as our secondary choice.
-> 
-> I'm not sure why I didn't even receive 1/3 and half of discussion
-> e-mails.
-> 
-> You can't just put all strings into a single bag and allow mixing them
-> in any combos. Please check how it's properly handled in the current
-> existing binding:
-> Documentation/devicetree/bindings/arm/bcm/brcm,bcm4908.yaml
-> 
-> Above binding enforces that non-matching compatible strings are not 
-> used
-> together.
+If the regulator_get_optional()	call for the SRAM regulator returns
+a probe deferral, we must bail out and retry probing later: failing
+to do this will	produce	unstabilities on platforms requiring the
+handling for this regulator.
 
-I just noticed you're actually removing brcm,bcm4908.yaml in the 2/3 so
-you must be aware of that file.
+Fixes: b615b00c42da ("PM / devfreq: mediatek: Introduce MediaTek CCI devfreq driver")
+Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+---
+ drivers/devfreq/mtk-cci-devfreq.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-So you see a cleanly working binding in the brcm,bcm4908.yaml but
-instead copying it you decided to wrote your own one from scratch.
-Incorrectly.
+diff --git a/drivers/devfreq/mtk-cci-devfreq.c b/drivers/devfreq/mtk-cci-devfreq.c
+index 71abb3fbd042..e5458ada5197 100644
+--- a/drivers/devfreq/mtk-cci-devfreq.c
++++ b/drivers/devfreq/mtk-cci-devfreq.c
+@@ -291,9 +291,13 @@ static int mtk_ccifreq_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	drv->sram_reg = devm_regulator_get_optional(dev, "sram");
+-	if (IS_ERR(drv->sram_reg))
++	if (IS_ERR(drv->sram_reg)) {
++		ret = PTR_ERR(drv->sram_reg);
++		if (ret == -EPROBE_DEFER)
++			goto out_free_resources;
++
+ 		drv->sram_reg = NULL;
+-	else {
++	} else {
+ 		ret = regulator_enable(drv->sram_reg);
+ 		if (ret) {
+ 			dev_err(dev, "failed to enable sram regulator\n");
+-- 
+2.35.1
 
-This smells of NIH (not invented here). Please just use that binding I
-wrote and move if it needed.
