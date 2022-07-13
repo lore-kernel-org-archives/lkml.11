@@ -2,194 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25EBBCCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD15CCA47C
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237107AbiGMUlO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35234 "EHLO
+        id S237129AbiGMUmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:42:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiGMUlM (ORCPT
+        with ESMTP id S230026AbiGMUmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:41:12 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AED131223;
-        Wed, 13 Jul 2022 13:41:10 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id w185so18473pfb.4;
-        Wed, 13 Jul 2022 13:41:10 -0700 (PDT)
+        Wed, 13 Jul 2022 16:42:20 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE29D3121C;
+        Wed, 13 Jul 2022 13:42:19 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id f14so9576126qkm.0;
+        Wed, 13 Jul 2022 13:42:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v1DRyPsBFuh6aftETcwer1yzmkqbB6fixXL4Ircd/Lc=;
-        b=aVxai1dokJtxwXIP4M+Y3N2uoNHX5DBWKCxHOJcBiCTZ7W5YxUtk6vTyJ2oKHChLDM
-         /jwl5jFCvb4O1K0H37RGwyI/Lq24jmrS5DWGUZPZsLG00Bkx1arOkEKrQvChzjPv7xAB
-         zlju+oDLpNln5AKTxJRahDGvnLARAyPmLnceh4qWucyT82Rtstj3biKkZhjhy4sJaniV
-         I1dQleww4FG/B5eooLtQWmDiElSGGABMhcEjqwBsyiHRQ9yx+v11puhmJBVILbZ4COFI
-         /oBKd5Lmo8ppa7eVWYR+ejOcnwGpMgKfuFfQK311YXhHnv7i+m5Pzd9nq7Ndd7bJo4G6
-         arAg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=EgA3xZH3t9Zi9zRLOrZeaQRW5jyanhvvZI8yTDXgSs4=;
+        b=e3pT9sVk4ebu5rxOkVvi3A5vzXF3/bx9rOT9OycSA2cJYBt0jTTnMtcmx66L1h8f3K
+         HgERgnUfpUdtrTCrL5qNcQm2LccwN85lIvfgA0H8jmjV9qPJlelJn995PeGUUNhZLHbV
+         yAZ5NMYOrjY73ZZwlPTBbuw/49518KwjQx1mwAVnBgVR5uZi6w8RRD3RKnXlSjSJoxbZ
+         PdYzpYTrxHm3q7zwOiSFisCq4AIuWwktIaZFDkXHaZO/YvcLaBjFiqtcEBxanSMt4h9s
+         UK9CvmS6OOZNcnJPNFpXhtKERK1US62God8WWgp294lvESo3sP+0hEpqkdnLot/0KZtp
+         g8jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=v1DRyPsBFuh6aftETcwer1yzmkqbB6fixXL4Ircd/Lc=;
-        b=hzN6J7jMRToGQ0kEcS3AJ4SrzhTlr1OFu9wBvkiOJaAXb2lsJdsn0L4o2Btt93qSob
-         fo3b2/5KkMaqqUYZoMaf2T9AUy2i+5DzN/AAQvRzCtgKW4j7lUnX7TFV0y0HW6uxlawb
-         d7Vo9Gu3kFjsL+Xek9hYhfrcyj056P2X2qEOpF+dHjdE4HgzmfxQcJHuAAvr3rQwHmMZ
-         iEs0L36UxeRyCuToLlqFFAqR0MEaALwHBSgsOjbg62ZdT8J7MtrNxI0bVrnv3i86gE1O
-         KNKYEyULqxJ2A20u3YxMd//UDk/u++5mvj2dYxNO4XfZN9DHrC2AdV2o755/ljqgdeD0
-         S96Q==
-X-Gm-Message-State: AJIora9Nu94FY+UmwY4yycryJzvF2f1J2aJ6u6gb5OifTm27TJAHLwQD
-        dfC4pAnISMw6sokwEr2C2JtUC20YUw==
-X-Google-Smtp-Source: AGRyM1uQmusJsYXogPbDN8YI6ptYmN0gTrlR3DZFnf7x0Xebi7KCvIPMpeRHm2pOkJWSDRCdlX64Vg==
-X-Received: by 2002:a65:5207:0:b0:3fb:c00f:f6e4 with SMTP id o7-20020a655207000000b003fbc00ff6e4mr4427783pgp.415.1657744869763;
-        Wed, 13 Jul 2022 13:41:09 -0700 (PDT)
-Received: from bytedance.bytedance.net ([4.7.18.210])
-        by smtp.gmail.com with ESMTPSA id c204-20020a624ed5000000b00528c4c770c5sm9217825pfb.77.2022.07.13.13.41.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=EgA3xZH3t9Zi9zRLOrZeaQRW5jyanhvvZI8yTDXgSs4=;
+        b=GgAVxYJKH7pnTeu1Ugd4jtCVORCGzxhBN1ME9l45VyzvTMdGRGZRbq/pRe5Cs9U1ds
+         7+Kdfqx00QVvl7eQFs3PXiOTlg68oiBekpc2ThAwqHpw6zEiEEW7/z1gL+5i4Ra/aGwl
+         zy+VepSvAM75iA8p7H9afZMxqF+id2socF9mQzFSHhUAFd6lWT7T/iSWTkYOJnjGFaXK
+         jVLYhd1GBTb4PqWyLCCtfNfCZe8szfqW/fkkwg7+2S13gF/ubO3zAFC9rFk8ImT4tx8W
+         wPFFF8xOOWbCqDdWv5waxrvCUkrclCfcQhmkOSe/HoD++w+WhQ7quWSvbukiNHNCUleh
+         6tvw==
+X-Gm-Message-State: AJIora9lBstuyyvkuXEbOjZkNL8Xq0MGCwe2aTglgHnQqAN8488O3nJk
+        37VtzqmPVQPEsHb3aXMpeRw=
+X-Google-Smtp-Source: AGRyM1v52gaCFcbVPmIqwbN58q5YtVm3AqVJBDc6aU4aFpenuHjRPorXmWi30FmHMGI23odMN4w6eQ==
+X-Received: by 2002:a37:806:0:b0:6b5:c19d:bbfc with SMTP id 6-20020a370806000000b006b5c19dbbfcmr90053qki.155.1657744938660;
+        Wed, 13 Jul 2022 13:42:18 -0700 (PDT)
+Received: from localhost ([2601:4c1:c100:1230:7360:5d5d:6684:e04b])
+        by smtp.gmail.com with ESMTPSA id m6-20020ac807c6000000b00315a5fa4bf6sm10194336qth.7.2022.07.13.13.42.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 13:41:09 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH net-next] net/sched: sch_cbq: Delete unused delay_timer
-Date:   Wed, 13 Jul 2022 13:40:51 -0700
-Message-Id: <20220713204051.32551-1-yepeilin.cs@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 13 Jul 2022 13:42:18 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 13:42:17 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>, knaerzche@gmail.com,
+        Collabora Kernel ML <kernel@collabora.com>,
+        bob.beckett@collabora.com,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-staging@lists.linux.dev, nicolas.dufresne@collabora.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: Re: [PATCH 3/6] bitops: bitmap helper to set variable length values
+Message-ID: <Ys8uKUKErpoWL873@yury-laptop>
+References: <20220713163201.136202-1-sebastian.fricke@collabora.com>
+ <Ys8Txuq9/u/EL6sj@yury-laptop>
+ <CAHp75VeOLfKw4-+Dpn54yy6j=tdiBNA_2Kvhj7mUUjTD-M_vYA@mail.gmail.com>
+ <Ys8gpl3m+vvEM7Sy@yury-laptop>
+ <CAHp75VeGSWoq-a10nA9NLKBEX7L_eiL0zPMJHUbX=c64wG8hkg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VeGSWoq-a10nA9NLKBEX7L_eiL0zPMJHUbX=c64wG8hkg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+On Wed, Jul 13, 2022 at 10:14:24PM +0200, Andy Shevchenko wrote:
+> On Wed, Jul 13, 2022 at 9:44 PM Yury Norov <yury.norov@gmail.com> wrote:
+> > On Wed, Jul 13, 2022 at 09:10:33PM +0200, Andy Shevchenko wrote:
+> > > On Wed, Jul 13, 2022 at 8:56 PM Yury Norov <yury.norov@gmail.com> wrote:
+> > > > On Wed, Jul 13, 2022 at 06:31:59PM +0200, Sebastian Fricke wrote:
+> > >
+> > > ...
+> > >
+> > > > I'd suggest you to try implementing
+> > > >         bitmap_copy_from(dst, src, dst_off, len)
+> > > > or even
+> > > >         bitmap_copy_from(dst, dst_off, src, src_off, len)
+> > > > if you expect that you'll need more flexibility in the future.
+> > >
+> > > Do you think it would be useful?
+> > >
+> > > We have bitmap_replace() & bitmap_remap(). Wouldn't that be enough?
+> >
+> > bitmap_replace and bitmap_remap have no an 'offset' parameter.
+> 
+> True.
+> 
+> But then it's a bit too generic to have this src_off, no?
 
-delay_timer has been unused since commit c3498d34dd36 ("cbq: remove
-TCA_CBQ_OVL_STRATEGY support").  Delete it.
+That's why I said:
 
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/sched/sch_cbq.c | 79 ---------------------------------------------
- 1 file changed, 79 deletions(-)
+> > > > if you expect that you'll need more flexibility in the future.
 
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 02d9f0dfe356..599e26fc2fa8 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -149,7 +149,6 @@ struct cbq_sched_data {
- 	psched_time_t		now;		/* Cached timestamp */
- 	unsigned int		pmask;
- 
--	struct hrtimer		delay_timer;
- 	struct qdisc_watchdog	watchdog;	/* Watchdog timer,
- 						   started when CBQ has
- 						   backlog, but cannot
-@@ -441,81 +440,6 @@ static void cbq_overlimit(struct cbq_class *cl)
- 	}
- }
- 
--static psched_tdiff_t cbq_undelay_prio(struct cbq_sched_data *q, int prio,
--				       psched_time_t now)
--{
--	struct cbq_class *cl;
--	struct cbq_class *cl_prev = q->active[prio];
--	psched_time_t sched = now;
--
--	if (cl_prev == NULL)
--		return 0;
--
--	do {
--		cl = cl_prev->next_alive;
--		if (now - cl->penalized > 0) {
--			cl_prev->next_alive = cl->next_alive;
--			cl->next_alive = NULL;
--			cl->cpriority = cl->priority;
--			cl->delayed = 0;
--			cbq_activate_class(cl);
--
--			if (cl == q->active[prio]) {
--				q->active[prio] = cl_prev;
--				if (cl == q->active[prio]) {
--					q->active[prio] = NULL;
--					return 0;
--				}
--			}
--
--			cl = cl_prev->next_alive;
--		} else if (sched - cl->penalized > 0)
--			sched = cl->penalized;
--	} while ((cl_prev = cl) != q->active[prio]);
--
--	return sched - now;
--}
--
--static enum hrtimer_restart cbq_undelay(struct hrtimer *timer)
--{
--	struct cbq_sched_data *q = container_of(timer, struct cbq_sched_data,
--						delay_timer);
--	struct Qdisc *sch = q->watchdog.qdisc;
--	psched_time_t now;
--	psched_tdiff_t delay = 0;
--	unsigned int pmask;
--
--	now = psched_get_time();
--
--	pmask = q->pmask;
--	q->pmask = 0;
--
--	while (pmask) {
--		int prio = ffz(~pmask);
--		psched_tdiff_t tmp;
--
--		pmask &= ~(1<<prio);
--
--		tmp = cbq_undelay_prio(q, prio, now);
--		if (tmp > 0) {
--			q->pmask |= 1<<prio;
--			if (tmp < delay || delay == 0)
--				delay = tmp;
--		}
--	}
--
--	if (delay) {
--		ktime_t time;
--
--		time = 0;
--		time = ktime_add_ns(time, PSCHED_TICKS2NS(now + delay));
--		hrtimer_start(&q->delay_timer, time, HRTIMER_MODE_ABS_PINNED);
--	}
--
--	__netif_schedule(qdisc_root(sch));
--	return HRTIMER_NORESTART;
--}
--
- /*
-  * It is mission critical procedure.
-  *
-@@ -1034,7 +958,6 @@ cbq_reset(struct Qdisc *sch)
- 	q->tx_class = NULL;
- 	q->tx_borrowed = NULL;
- 	qdisc_watchdog_cancel(&q->watchdog);
--	hrtimer_cancel(&q->delay_timer);
- 	q->toplevel = TC_CBQ_MAXLEVEL;
- 	q->now = psched_get_time();
- 
-@@ -1162,8 +1085,6 @@ static int cbq_init(struct Qdisc *sch, struct nlattr *opt,
- 	int err;
- 
- 	qdisc_watchdog_init(&q->watchdog, sch);
--	hrtimer_init(&q->delay_timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS_PINNED);
--	q->delay_timer.function = cbq_undelay;
- 
- 	err = cbq_opt_parse(tb, opt, extack);
- 	if (err < 0)
--- 
-2.20.1
+My preferred option is bitmap_copy_from(dst, src, dst_off, len).
 
+> I would rather expect for asymmetrical bitmaps that the other side
+> will be either one of the fixed width types (it makes sense to have
+> for 32- or 64-bit arguments.
+
+Look at patch #6 - it copies 1,4,5,9,10,32,37... - pretty much a random
+number number of bits.
+ 
+> When you have a source bitmap of x bits and  you would like to copy it
+> into a y-bit one, I would think that either you have a small amount of
+> bits in x anyway, or x is a full-sized bitmap (same order as y).
+
+It sounds like a speculation to me. Why shouldn't we let people to
+copy with an offset any number of bits? 
+
+> Also
+> keep in mind that granularity is long, so less than long it makes no
+> sense.
+> 
+>   bitmap_copy_from_T(unsigned long *map, start, len, T src),
+> 
+> where T is type, start is the offset in map, len is the amount of bits
+> from src starting from 0. That's what is required in most of the cases
+> I believe.
+
+But not in Sebastian's case, according to patch #6.
+
+Thanks,
+Yury
