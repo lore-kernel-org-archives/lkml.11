@@ -2,92 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF64CCA483
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237127AbiGMQPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:15:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50698 "EHLO
+        id S236388AbiGMQTD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236207AbiGMQO5 (ORCPT
+        with ESMTP id S236087AbiGMQS6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:14:57 -0400
+        Wed, 13 Jul 2022 12:18:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B94650046;
-        Wed, 13 Jul 2022 09:14:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787A36408;
+        Wed, 13 Jul 2022 09:18:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC3CB61B13;
-        Wed, 13 Jul 2022 16:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F714C341C0;
-        Wed, 13 Jul 2022 16:14:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AF196193B;
+        Wed, 13 Jul 2022 16:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27939C34114;
+        Wed, 13 Jul 2022 16:18:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657728896;
-        bh=gQk38Tovd/97VewdZYhK8DXuDAR70xdR3qj+gN5TMgI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QcH0BYnPExpm1LS39IcYTOWfPoGQDLY/XvzXyaDrIE/SzvAh5dCB5YlBvT4H1mX8q
-         ScvN6XEYtq6z7Q3Y7ZXnaB7gxKNUelkWZ3/Dm+++oSxTdU3nyhNNDpH2Odp58Rw0u2
-         6HXeKb0i0j2jjS6FpSxBE8L4MWFAyYnnjy7nySUVg0C597PL4/6u+qH5dCm+iRSsuV
-         JXcLqIW2OCxNmF8XlvfR7x9ingo/AgR6OOAdCiaabfExl7LHvy9QYm+h3NFeifto1b
-         Dr/RmoTBG+vCMbYFn0ANtk84KvtwxaZcBT9sLsWtxlBA5EcTWJ/8kF46DaNdAY5rOM
-         kXoicS1/TPpDw==
-Date:   Wed, 13 Jul 2022 17:24:43 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Francesco Dolcini <francesco.dolcini@toradex.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        s=k20201202; t=1657729136;
+        bh=QTzzGeFgwUf/BHfBON8kDgs4IpA+E1xpHy9xRVCxvPU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=JKFFejtEj/Q5ofWJdtnnOCVk+/PHVXRT8+zg+qiRNBfnbUI5Aep2guRis8pcsQScp
+         CSWG+sdeOMSBd0HZKXCo8xhhGTshj883BJh3oYsoDb8VI4uNNNPXpZplgOvtpryZ1P
+         bZHLH+REw/9O8KKH5ifyyNf5grZgc1NSJKnRSgS+hzMXeCtxvjWdbXYO1kkKK4BNYE
+         d2tntqFY6zddJJpyXMuiqvGH0z4e2WNBTk7dtY+7y+Ss73FbT5nQRN3ByzRu57TBCb
+         oK5kv95sq4MUOCnaZFFreLCkGIa9dAMR8i49BGRqRnJcziNeIpWEoPkBd2ASqBuoTe
+         BZFcMwcazN6oQ==
+Date:   Wed, 13 Jul 2022 11:18:54 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-input@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] dt-bindings: iio: adc: stmpe: Remove node name
- requirement
-Message-ID: <20220713172443.00ab80b2@jic23-huawei>
-In-Reply-To: <20220712163345.445811-5-francesco.dolcini@toradex.com>
-References: <20220712163345.445811-1-francesco.dolcini@toradex.com>
-        <20220712163345.445811-5-francesco.dolcini@toradex.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 01/10] dt-bindings: PCI: qcom: Fix reset conditional
+Message-ID: <20220713161854.GA828851@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220629141000.18111-2-johan+linaro@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 18:33:44 +0200
-Francesco Dolcini <francesco.dolcini@toradex.com> wrote:
-
-> STMPE driver does not require a specific node name anymore, only the
-> compatible is checked, update binding according to this.
+On Wed, Jun 29, 2022 at 04:09:51PM +0200, Johan Hovold wrote:
+> Fix the reset conditional which always evaluated to true due to a
+> misspelled property name ("compatibles" in plural).
 > 
-> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
-I'm assuming this will go through mfd (or at least some tree that isn't
-IIO :)  Shout if I should pick this up in the IIO tree.
+> Fixes: 6700a9b00f0a ("dt-bindings: PCI: qcom: Do not require resets on msm8996 platforms")
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+I applied this patch to pci/ctrl/qcom-pending for v5.20, thanks!
+
+I'd like to see an ack from Stanimir (per get_maintainers.pl) for the
+rest.
 
 > ---
->  Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  Documentation/devicetree/bindings/pci/qcom,pcie.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
-> index 9049c699152f..333744a2159c 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
-> @@ -13,8 +13,7 @@ description:
->    This ADC forms part of an ST microelectronics STMPE multifunction device .
->    The ADC is shared with the STMPE touchscreen. As a result some ADC related
->    settings are specified in the parent node.
-> -  The node name myst be stmpe_adc and should be a child node of the stmpe node
-> -  to which it belongs.
-> +  The node should be a child node of the stmpe node to which it belongs.
->  
->  properties:
->    compatible:
-
+> diff --git a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> index 7e84063afe25..ed9f9462a758 100644
+> --- a/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/qcom,pcie.yaml
+> @@ -615,7 +615,7 @@ allOf:
+>    - if:
+>        not:
+>          properties:
+> -          compatibles:
+> +          compatible:
+>              contains:
+>                enum:
+>                  - qcom,pcie-msm8996
+> -- 
+> 2.35.1
+> 
