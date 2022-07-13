@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4A8CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03AF1C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:39:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiGMNi6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
+        id S236183AbiGMNjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233865AbiGMNio (ORCPT
+        with ESMTP id S234001AbiGMNio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 09:38:44 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132A85FBA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:38:40 -0700 (PDT)
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448BA6445
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:38:43 -0700 (PDT)
 Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
         (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1F38C66019BF;
-        Wed, 13 Jul 2022 14:38:39 +0100 (BST)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2532366019C5;
+        Wed, 13 Jul 2022 14:38:41 +0100 (BST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657719519;
-        bh=CsNQhhmN7tfVGf4HN1uv8HbRGJrZrAmt/638xemnBMo=;
+        s=mail; t=1657719521;
+        bh=5MPDE6PLauo4xeTXuzQqjxRuaatIiJJgaRF7Azzw0o0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U3jpirrge5r19VPek6bsVlH82O/2qiPOBpGuh5J5wPQSiX+nV2d21Kt2IjKo9YV7f
-         I1YkmjtkibkRJ1gv+B/bPfZUtShl8LuZJabDchWDrpK7kz84knef5yqEGpfVxl9uZg
-         W+PfOr6V/GyyUwswgKHaLt3wRRobcJP2DUAXbQVTkxPvc0HNOP8gykzFgctAF9GAQ1
-         YIkihsVeJEZZxd+RtvTL++EycJd99mdtwrEqVDJFdTt01f+36EK81K/nbHSJDZoxQ2
-         IH+sXcN+CZeWOFcCFsW49w8buzH0zGf0pOGUzhICd+PSAzn6qdSmZZJezvxLG5Fn0x
-         6j03uVjDL1wIA==
+        b=fEmBV92DTmAxhUcy73wR4rSi/rg1nPCZyXUE5o2+TmN6KaxS3kIYj/e5XIFnAyBOx
+         oHVxY/754MrEjw2nIL7q/tTM/kAeMYYJzJYms7z7gzcTBucVvH4zzOULDbG3tb/Ngr
+         +bOKljnG97lDg+SE8kMn51Olj0rNBz0E/HXiVnecfa9W7REPoRoarOrMFNRW7//xKJ
+         ArURia99XXqHlb41YhvOTSewyF8HPXzBblL9FcYr8nLRJcuVssiwo6jbSd6Y+DrHTp
+         2SDmbWfVTghCEBC3lAwk+0ya7UX0MJGQmWx7xON9KK3oReRXUrh1fWVpTSexM2fq6B
+         7SwKcm1H1eP/A==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         Jani Nikula <jani.nikula@linux.intel.com>,
@@ -44,97 +44,92 @@ Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
         Matthew Auld <matthew.auld@intel.com>,
         =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
         <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/8] drm/i915/ttm: dont trample cache_level overrides during ttm move
-Date:   Wed, 13 Jul 2022 14:38:11 +0100
-Message-Id: <20220713133818.3699604-2-bob.beckett@collabora.com>
+Subject: [PATCH v4 4/8] drm/i915: add gen6 ppgtt dummy creation function
+Date:   Wed, 13 Jul 2022 14:38:14 +0100
+Message-Id: <20220713133818.3699604-5-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220713133818.3699604-1-bob.beckett@collabora.com>
 References: <20220713133818.3699604-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Various places within the driver override the default chosen cache_level.
-Before ttm, these overrides were permanent until explicitly changed again
-or for the lifetime of the buffer.
-
-TTM movement code came along and decided that it could make that
-decision at that time, which is usually well after object creation, so
-overrode the cache_level decision and reverted it back to its default
-decision.
-
-Add logic to indicate whether the caching mode has been set by anything
-other than the move logic. If so, assume that the code that overrode the
-defaults knows best and keep it.
+Internal gem objects will soon just be volatile system memory region
+objects.
+To enable this, create a separate dummy object creation function
+for gen6 ppgtt. The object only exists as a fake object pointing to ggtt
+and gains no benefit in going via the internal backend.
+Instead, create a dummy gem object and avoid having to maintain a custom
+ops api in the internal backend, which makes later refactoring easier.
 
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
- drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
- 4 files changed, 9 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gt/gen6_ppgtt.c | 43 ++++++++++++++++++++++++++--
+ 1 file changed, 40 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-index ccec4055fde3..966ac2d778d5 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
-@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
- 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
+diff --git a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+index 1bb766c79dcb..f3b660cfeb7f 100644
+--- a/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
++++ b/drivers/gpu/drm/i915/gt/gen6_ppgtt.c
+@@ -372,6 +372,45 @@ static const struct drm_i915_gem_object_ops pd_dummy_obj_ops = {
+ 	.put_pages = pd_dummy_obj_put_pages,
+ };
  
- 	obj->cache_level = cache_level;
-+	obj->ttm.cache_level_override = true;
++static struct drm_i915_gem_object *
++i915_gem_object_create_dummy(struct drm_i915_private *i915, phys_addr_t size)
++{
++	static struct lock_class_key lock_class;
++	struct drm_i915_gem_object *obj;
++	unsigned int cache_level;
++
++	GEM_BUG_ON(!size);
++	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
++
++	if (overflows_type(size, obj->base.size))
++		return ERR_PTR(-E2BIG);
++
++	obj = i915_gem_object_alloc();
++	if (!obj)
++		return ERR_PTR(-ENOMEM);
++
++	drm_gem_private_object_init(&i915->drm, &obj->base, size);
++	i915_gem_object_init(obj, &pd_dummy_obj_ops, &lock_class, 0);
++	obj->mem_flags |= I915_BO_FLAG_STRUCT_PAGE;
++
++	/*
++	 * Mark the object as volatile, such that the pages are marked as
++	 * dontneed whilst they are still pinned. As soon as they are unpinned
++	 * they are allowed to be reaped by the shrinker, and the caller is
++	 * expected to repopulate - the contents of this object are only valid
++	 * whilst active and pinned.
++	 */
++	i915_gem_object_set_volatile(obj);
++
++	obj->read_domains = I915_GEM_DOMAIN_CPU;
++	obj->write_domain = I915_GEM_DOMAIN_CPU;
++
++	cache_level = HAS_LLC(i915) ? I915_CACHE_LLC : I915_CACHE_NONE;
++	i915_gem_object_set_cache_coherency(obj, cache_level);
++
++	return obj;
++}
++
+ static struct i915_page_directory *
+ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ {
+@@ -383,9 +422,7 @@ gen6_alloc_top_pd(struct gen6_ppgtt *ppgtt)
+ 	if (unlikely(!pd))
+ 		return ERR_PTR(-ENOMEM);
  
- 	if (cache_level != I915_CACHE_NONE)
- 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 5cf36a130061..14937cf1daaa 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -623,6 +623,7 @@ struct drm_i915_gem_object {
- 		struct i915_gem_object_page_iter get_io_page;
- 		struct drm_i915_gem_object *backup;
- 		bool created:1;
-+		bool cache_level_override:1;
- 	} ttm;
- 
- 	/*
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 053b0022ddd0..b6c3fc25d9d1 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1253,6 +1253,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	i915_gem_object_init_memory_region(obj, mem);
- 	i915_ttm_adjust_domains_after_move(obj);
- 	i915_ttm_adjust_gem_after_move(obj);
-+	obj->ttm.cache_level_override = false;
- 	i915_gem_object_unlock(obj);
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-index 9a7e50534b84..042c2237e287 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-@@ -129,9 +129,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
- 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
- 		I915_BO_FLAG_STRUCT_PAGE;
- 
--	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
--					   bo->ttm);
--	i915_gem_object_set_cache_coherency(obj, cache_level);
-+	if (!obj->ttm.cache_level_override) {
-+		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
-+						   bo->resource, bo->ttm);
-+		i915_gem_object_set_cache_coherency(obj, cache_level);
-+		obj->ttm.cache_level_override = false;
-+	}
- }
- 
- /**
+-	pd->pt.base = __i915_gem_object_create_internal(ppgtt->base.vm.gt->i915,
+-							&pd_dummy_obj_ops,
+-							I915_PDES * SZ_4K);
++	pd->pt.base = i915_gem_object_create_dummy(ppgtt->base.vm.gt->i915, I915_PDES * SZ_4K);
+ 	if (IS_ERR(pd->pt.base)) {
+ 		err = PTR_ERR(pd->pt.base);
+ 		pd->pt.base = NULL;
 -- 
 2.25.1
 
