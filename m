@@ -2,196 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6341C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF72C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237236AbiGMQcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
+        id S230114AbiGMQcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiGMQcr (ORCPT
+        with ESMTP id S237239AbiGMQcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:32:47 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8597C2CDEA;
-        Wed, 13 Jul 2022 09:32:45 -0700 (PDT)
-Received: from localhost (dynamic-002-247-252-243.2.247.pool.telefonica.de [2.247.252.243])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sebastianfricke)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id EA4F9660191C;
-        Wed, 13 Jul 2022 17:32:43 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657729964;
-        bh=CtMDQU5Rl7w4k3vdufuEIThSkeTfJG6tKC5YQsVp1HE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l7X7PfDkc+hZ1f2XHto4cpy0UH89XxDdmLj0Ti7BFrkFWH7znIArv+eo2ik6wBNpW
-         VhhxOdz3d+/YoqzFpVunEMwhiJ4O/3cYJWLKc+Z3sBGYa72C/rc6W1kRetOAPWUL8L
-         u0JOjtV/5s2GSGuiAJR20gCc4l2KmLxeOxfqPsmeW30U2XElck3j5VtOMV3urbPUwJ
-         hDf0Uz6VUKIXMezm5vuFfkKPBgEsHJPLKyvuK1jSwwu8PV+WRlomO0bKXUCfNVTsSK
-         n8YgUnRFPACdDgCJun8CLB26pYKIWDWoK1ovC9eqBU0cj45A5rLOcDB68+m9t+pFxA
-         /sfdRBCY8Y15g==
-From:   Sebastian Fricke <sebastian.fricke@collabora.com>
-To:     linux-media@vger.kernel.org
-Cc:     jernej.skrabec@gmail.com, knaerzche@gmail.com,
-        kernel@collabora.com, bob.beckett@collabora.com,
-        ezequiel@vanguardiasur.com.ar, mchehab@kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
-        nicolas.dufresne@collabora.com,
-        Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: [PATCH 4/6] staging: media: rkvdec: Add valid pixel format check
-Date:   Wed, 13 Jul 2022 18:32:01 +0200
-Message-Id: <20220713163201.136202-2-sebastian.fricke@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220713163201.136202-1-sebastian.fricke@collabora.com>
-References: <20220713163201.136202-1-sebastian.fricke@collabora.com>
+        Wed, 13 Jul 2022 12:32:51 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 618662CDF2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:32:50 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 55F6615A1;
+        Wed, 13 Jul 2022 09:32:50 -0700 (PDT)
+Received: from FVFF77S0Q05N.cambridge.arm.com (FVFF77S0Q05N.cambridge.arm.com [10.1.38.131])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1B3873F792;
+        Wed, 13 Jul 2022 09:32:48 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 17:32:42 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     alvinzhan1234@gmail.com
+Cc:     catalin.marinas@arm.com, will@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] arm64: Prevent offline CPU handling IRQs.
+Message-ID: <Ys7zqo4pWbfoUr6R@FVFF77S0Q05N.cambridge.arm.com>
+References: <20220713132843.49693-1-alvinzhan1234@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713132843.49693-1-alvinzhan1234@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide a callback for codec variant drivers to indicate the correct
-output pixel-format after receiving the SPS of the byte-stream, on the
-initial s_ctrl ioctl call from user-space.
+On Wed, Jul 13, 2022 at 09:28:43PM +0800, alvinzhan1234@gmail.com wrote:
+> From: Alvin Zhan <alvinzhan1234@gmail.com>
+> 
+> Migrate all of the IRQs on this CPU after setting it offline may still cause
+> the IRQs to be dispatched to this CPU.
 
-Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
----
- drivers/staging/media/rkvdec/TODO     |  2 ++
- drivers/staging/media/rkvdec/rkvdec.c | 45 +++++++++++++++++++++++----
- drivers/staging/media/rkvdec/rkvdec.h |  2 ++
- 3 files changed, 43 insertions(+), 6 deletions(-)
+I was under the impression that __cpu_disable() was called with interrupts
+masked, since it's called via stop_machine_cpuslocked(), and hence interrupts
+cannot be taken here (ignoring pseudo-NMIs for the moment).
 
-diff --git a/drivers/staging/media/rkvdec/TODO b/drivers/staging/media/rkvdec/TODO
-index 2c0779383276..44e1e06ee6e4 100644
---- a/drivers/staging/media/rkvdec/TODO
-+++ b/drivers/staging/media/rkvdec/TODO
-@@ -9,3 +9,5 @@
-   code in rkvdec_request_validate and cedrus_request_validate.
-   The helper needs to the driver private data associated with
-   the videobuf2 queue, from a media request.
-+
-+* Implement the valid_fmt callback for H264 and VP9
-diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
-index 7bab7586918c..2625e0a736f4 100644
---- a/drivers/staging/media/rkvdec/rkvdec.c
-+++ b/drivers/staging/media/rkvdec/rkvdec.c
-@@ -27,6 +27,23 @@
- #include "rkvdec.h"
- #include "rkvdec-regs.h"
- 
-+/*
-+ * Fetch the optimal pixel-format directly from the codec variation. If the
-+ * valid_fmt callback is not implemented, then the context variable valid_fmt
-+ * will be unset.
-+ * When the `valid_fmt` variable is not set, the default pixel_format (the first
-+ * entry of the decoded_fmts) is used and `enum_capture_fmt` will return all
-+ * available formats for the current coded format.
-+ */
-+static int rkvdec_get_valid_fmt(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
-+{
-+	const struct rkvdec_coded_fmt_desc *coded_desc = ctx->coded_fmt_desc;
-+
-+	if (coded_desc->ops->valid_fmt)
-+		return coded_desc->ops->valid_fmt(ctx, ctrl);
-+	return 0;
-+}
-+
- static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
- {
- 	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
-@@ -35,6 +52,9 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
- 	if (desc->ops->try_ctrl)
- 		return desc->ops->try_ctrl(ctx, ctrl);
- 
-+	if (ctx->valid_fmt && ctx->valid_fmt != rkvdec_get_valid_fmt(ctx, ctrl))
-+		/* Only allow the current valid format */
-+		return -EINVAL;
- 	return 0;
- }
- 
-@@ -190,6 +210,7 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
- {
- 	struct v4l2_format *f = &ctx->decoded_fmt;
- 
-+	ctx->valid_fmt = 0;
- 	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
- 	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
- 	v4l2_fill_pixfmt_mp(&f->fmt.pix_mp,
-@@ -249,14 +270,17 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
- 	if (WARN_ON(!coded_desc))
- 		return -EINVAL;
- 
--	for (i = 0; i < coded_desc->num_decoded_fmts; i++) {
--		if (coded_desc->decoded_fmts[i] == pix_mp->pixelformat)
--			break;
-+	if (ctx->valid_fmt) {
-+		pix_mp->pixelformat = ctx->valid_fmt;
-+	} else {
-+		for (i = 0; i < coded_desc->num_decoded_fmts; i++) {
-+			if (coded_desc->decoded_fmts[i] == pix_mp->pixelformat)
-+				break;
-+		}
-+		if (i == coded_desc->num_decoded_fmts)
-+			pix_mp->pixelformat = coded_desc->decoded_fmts[0];
- 	}
- 
--	if (i == coded_desc->num_decoded_fmts)
--		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
--
- 	/* Always apply the frmsize constraint of the coded end. */
- 	pix_mp->width = max(pix_mp->width, ctx->coded_fmt.fmt.pix_mp.width);
- 	pix_mp->height = max(pix_mp->height, ctx->coded_fmt.fmt.pix_mp.height);
-@@ -325,6 +349,7 @@ static int rkvdec_s_capture_fmt(struct file *file, void *priv,
- 		return ret;
- 
- 	ctx->decoded_fmt = *f;
-+	ctx->valid_fmt = f->fmt.pix_mp.pixelformat;
- 	return 0;
- }
- 
-@@ -428,6 +453,14 @@ static int rkvdec_enum_capture_fmt(struct file *file, void *priv,
- 	if (WARN_ON(!ctx->coded_fmt_desc))
- 		return -EINVAL;
- 
-+	if (ctx->valid_fmt) {
-+		if (f->index)
-+			return -EINVAL;
-+
-+		f->pixelformat = ctx->valid_fmt;
-+		return 0;
-+	}
-+
- 	if (f->index >= ctx->coded_fmt_desc->num_decoded_fmts)
- 		return -EINVAL;
- 
-diff --git a/drivers/staging/media/rkvdec/rkvdec.h b/drivers/staging/media/rkvdec/rkvdec.h
-index 633335ebb9c4..b9e219438bc9 100644
---- a/drivers/staging/media/rkvdec/rkvdec.h
-+++ b/drivers/staging/media/rkvdec/rkvdec.h
-@@ -66,6 +66,7 @@ vb2_to_rkvdec_decoded_buf(struct vb2_buffer *buf)
- struct rkvdec_coded_fmt_ops {
- 	int (*adjust_fmt)(struct rkvdec_ctx *ctx,
- 			  struct v4l2_format *f);
-+	u32 (*valid_fmt)(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl);
- 	int (*start)(struct rkvdec_ctx *ctx);
- 	void (*stop)(struct rkvdec_ctx *ctx);
- 	int (*run)(struct rkvdec_ctx *ctx);
-@@ -101,6 +102,7 @@ struct rkvdec_ctx {
- 	struct v4l2_fh fh;
- 	struct v4l2_format coded_fmt;
- 	struct v4l2_format decoded_fmt;
-+	u32 valid_fmt;
- 	const struct rkvdec_coded_fmt_desc *coded_fmt_desc;
- 	struct v4l2_ctrl_handler ctrl_hdl;
- 	struct rkvdec_dev *dev;
--- 
-2.25.1
+Have you ever seen that actually happen?
 
+Mark.
+
+> To prevent offline CPU handling IRQs, we should migrate the IRQs away from
+> this CPU before it is powered off.
+> 
+> Signed-off-by: Alvin Zhan <alvinzhan1234@gmail.com>
+> ---
+>  arch/arm64/kernel/smp.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+> index 62ed361a4..c4c3c5ed5 100644
+> --- a/arch/arm64/kernel/smp.c
+> +++ b/arch/arm64/kernel/smp.c
+> @@ -302,6 +302,11 @@ int __cpu_disable(void)
+>  	remove_cpu_topology(cpu);
+>  	numa_remove_cpu(cpu);
+>  
+> +	/*
+> +	 * Migrate IRQs away from this CPU first.
+> +	 */
+> +	irq_migrate_all_off_this_cpu();
+> +
+>  	/*
+>  	 * Take this CPU offline.  Once we clear this, we can't return,
+>  	 * and we must not schedule until we're ready to give up the cpu.
+> @@ -309,11 +314,6 @@ int __cpu_disable(void)
+>  	set_cpu_online(cpu, false);
+>  	ipi_teardown(cpu);
+>  
+> -	/*
+> -	 * OK - migrate IRQs away from this CPU
+> -	 */
+> -	irq_migrate_all_off_this_cpu();
+> -
+>  	return 0;
+>  }
+>  
+> -- 
+> 2.34.1
+> 
