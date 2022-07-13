@@ -2,111 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A70C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:20:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5D4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234663AbiGMPUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        id S236917AbiGMPUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:20:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236873AbiGMPUP (ORCPT
+        with ESMTP id S236892AbiGMPUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:20:15 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18A145F5C
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:20:14 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10bec750eedso14414143fac.8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LKNJ81XHX1rVWPGtQSPsv7xkRycDjY6KgGLmlaN+gNY=;
-        b=UGv5W4X0AgNs0e90Jxbuk8yoqkf1YIvPuG32cxJaOFdhOKMYtLT3UzjNMyJo3NmCSB
-         h/K0iglgBA1TRNjZsaY3WPDnmRX23YpSMViygd9NRIhPlSo9yiPb+fbPadGOwbmeYz9x
-         0j6tumQO78ZJbjdyG1XX+ZjluB6BIV4JYujzA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=LKNJ81XHX1rVWPGtQSPsv7xkRycDjY6KgGLmlaN+gNY=;
-        b=HyZBLu1H2CMNGSvzUe2B5uHcVHQp0NEL2fRdeWAEbnBamkUBiU5nV+wNDKmzeHY5ND
-         9vtglEhLWTgim2T7C8c7mQaYwh19h4TSLj8KDn6bl0C4l8DLZOAbHuYAc4GRE/bzzCTv
-         BLY8T0tsNcIRvUF9fKY4L6IWZLqtHtHwRcuUownUa6RbccdCXRqdYXixtIqnp/7czltF
-         iruom7x2jkyXOlQSq1dN9kT3CtFOTaRWtnoYxDOYDPpXoR9qCpBxS5Yh7+T8WF2jT/LW
-         e/nj03gtD3VVkYNdvsBFo0Xu03UnApUu4nUJtD4UGFUTWOHU15KB6aN83fTr7SOjs6L8
-         Wfyw==
-X-Gm-Message-State: AJIora/Xc6wcSaYDbJTAhuTAPs0nCsePya+zDKIRs5ZBB4u3kfaPoizs
-        yD3a1HMz7OHSBxJBpUPQS4zqzsUg77oTVvmC
-X-Google-Smtp-Source: AGRyM1usHml13CDD+aHqFlxY8s5H+Eng7j9UX5kgdAqCwghIPyT60PRhwo1GRoZ8vA6nrb+/q/6Bdg==
-X-Received: by 2002:a05:6871:60c:b0:10b:ee7c:2e28 with SMTP id w12-20020a056871060c00b0010bee7c2e28mr4774059oan.21.1657725613728;
-        Wed, 13 Jul 2022 08:20:13 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.pdxnet.pdxeng.ch (host-80-182-13-224.pool80182.interbusiness.it. [80.182.13.224])
-        by smtp.gmail.com with ESMTPSA id x24-20020a4a3f58000000b00432ac97ad09sm4895477ooe.26.2022.07.13.08.20.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 08:20:12 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Richard Palethorpe <rpalethorpe@suse.de>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        kernel test robot <oliver.sang@intel.com>, lkp@intel.com,
-        lkp@lists.01.org, ltp@lists.linux.it,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH] can: slcan: do not sleep with a spin lock held
-Date:   Wed, 13 Jul 2022 17:19:47 +0200
-Message-Id: <20220713151947.56379-1-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 13 Jul 2022 11:20:22 -0400
+Received: from relay-us1.mymailcheap.com (relay-us1.mymailcheap.com [51.81.35.219])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0740148E81
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:20:21 -0700 (PDT)
+Received: from relay5.mymailcheap.com (relay5.mymailcheap.com [159.100.241.64])
+        by relay-us1.mymailcheap.com (Postfix) with ESMTPS id 1611220308
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 15:20:20 +0000 (UTC)
+Received: from relay4.mymailcheap.com (relay4.mymailcheap.com [137.74.80.155])
+        by relay5.mymailcheap.com (Postfix) with ESMTPS id E4F41200FE;
+        Wed, 13 Jul 2022 15:20:15 +0000 (UTC)
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay4.mymailcheap.com (Postfix) with ESMTPS id 582762002B;
+        Wed, 13 Jul 2022 15:20:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id A7FD62A37A;
+        Wed, 13 Jul 2022 15:20:12 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Mjtnp9Yh_b5A; Wed, 13 Jul 2022 15:20:11 +0000 (UTC)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Wed, 13 Jul 2022 15:20:11 +0000 (UTC)
+Received: from edelgard.icenowy.me (unknown [59.41.163.162])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 0FC58401DE;
+        Wed, 13 Jul 2022 15:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1657725611; bh=+yBjiaaM+sNFe9mQaPmsE4kvOTzDSDgxYxxc0Iq+MY8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=LCrc1mO5Ay1rRkF9QUGl4hQizZ5rOnedJWUoAOdi3X+2wmQ49ho4zjByDepWWvL/M
+         m9R+2QlpsED2A+6C+02bn6FrwdibSyylTreJ3D/F8rSQBjEfds807pLbIz4fSLr33P
+         /HCg4HifkboydGfuh0ZYDWtag6yqzgYqTUy306ns=
+Message-ID: <c4b4ecdff302879fa73feab6038a8fe863f4e51b.camel@aosc.io>
+Subject: Re: [PATCH v1 2/2] riscv: dts: starfive: add the missing monitor
+ core
+From:   Icenowy Zheng <icenowy@aosc.io>
+To:     Conor.Dooley@microchip.com, kernel@esmil.dk, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, paul.walmsley@sifive.com,
+        palmer@dabbelt.com, aou@eecs.berkeley.edu, anup@brainfault.org
+Cc:     devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Wed, 13 Jul 2022 23:20:03 +0800
+In-Reply-To: <224a7ec2-62ca-a8a5-ff36-37de4186e05e@microchip.com>
+References: <20220711184325.1367393-1-mail@conchuod.ie>
+         <20220711184325.1367393-3-mail@conchuod.ie>
+         <2303fc91e5110f22fc9ea6008fa4bbc77c1bdb13.camel@aosc.io>
+         <224a7ec2-62ca-a8a5-ff36-37de4186e05e@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can't call close_candev() with a spin lock held, so release the lock
-before calling it.
+在 2022-07-13星期三的 15:16 +0000，Conor.Dooley@microchip.com写道：
+> On 13/07/2022 16:15, Icenowy Zheng wrote:
+> > 在 2022-07-11星期一的 19:43 +0100，Conor Dooley写道：
+> > > From: Conor Dooley <conor.dooley@microchip.com>
+> > > 
+> > > The JH7100 has a 32 bit monitor core that is missing from the
+> > > device
+> > > tree. Add it (and its cpu-map entry) to more accurately reflect
+> > > the
+> > > actual topology of the SoC.
+> > > 
+> > > Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> > > ---
+> > >  arch/riscv/boot/dts/starfive/jh7100.dtsi | 21
+> > > +++++++++++++++++++++
+> > >  1 file changed, 21 insertions(+)
+> > > 
+> > > diff --git a/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > > b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > > index c617a61e26e2..92fce5b66d3d 100644
+> > > --- a/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > > +++ b/arch/riscv/boot/dts/starfive/jh7100.dtsi
+> > > @@ -67,6 +67,23 @@ cpu1_intc: interrupt-controller {
+> > >                         };
+> > >                 };
+> > >  
+> > > +               E24: cpu@2 {
+> > > +                       compatible = "sifive,e24", "riscv";
+> > 
+> > Oh, by the way "sifive,e24" is not a documented compatible in the
+> > DT
+> > binding.
+> > 
+> > If you really want to add it here, you need to add the compatible
+> > string to the DT binding first.
+> 
+> Check patch 1/2.
 
-Fixes: c4e54b063f42f ("can: slcan: use CAN network device driver API")
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Link: https://lore.kernel.org/linux-kernel/Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020/
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Oh sorry I forgot this.
 
----
+Nevermind.
 
- drivers/net/can/slcan/slcan-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> > 
+> > > +                       reg = <2>;
+> > > +                       device_type = "cpu";
+> > > +                       i-cache-block-size = <32>;
+> > > +                       i-cache-sets = <256>;
+> > > +                       i-cache-size = <16384>;
+> > > +                       riscv,isa = "rv32imafc";
+> > > +                       status = "disabled";
+> > > +
+> > > +                       cpu2_intc: interrupt-controller {
+> > > +                               compatible = "riscv,cpu-intc";
+> > > +                               interrupt-controller;
+> > > +                               #interrupt-cells = <1>;
+> > > +                       };
+> > > +               };
+> > > +
+> > >                 cpu-map {
+> > >                         cluster0 {
+> > >                                 core0 {
+> > > @@ -76,6 +93,10 @@ core0 {
+> > >                                 core1 {
+> > >                                         cpu = <&U74_1>;
+> > >                                 };
+> > > +
+> > > +                               core2 {
+> > > +                                       cpu = <&E24>;
+> > > +                               };
+> > >                         };
+> > >                 };
+> > >         };
+> > 
+> > 
 
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 54d29a410ad5..6aaf2986effc 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -688,6 +688,7 @@ static int slc_close(struct net_device *dev)
- 		/* TTY discipline is running. */
- 		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
- 	}
-+	spin_unlock_bh(&sl->lock);
- 	netif_stop_queue(dev);
- 	close_candev(dev);
- 	sl->can.state = CAN_STATE_STOPPED;
-@@ -696,7 +697,6 @@ static int slc_close(struct net_device *dev)
- 
- 	sl->rcount   = 0;
- 	sl->xleft    = 0;
--	spin_unlock_bh(&sl->lock);
- 
- 	return 0;
- }
--- 
-2.32.0
 
