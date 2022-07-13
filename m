@@ -2,125 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FEDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:32:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80791C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237064AbiGMVcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 17:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
+        id S237530AbiGMVcx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 17:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237516AbiGMVcc (ORCPT
+        with ESMTP id S237529AbiGMVcs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 17:32:32 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E596237E5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:32:31 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id z23so5565043eju.8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:32:31 -0700 (PDT)
+        Wed, 13 Jul 2022 17:32:48 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C04833E16
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:32:46 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id f62-20020a9d03c4000000b0061c2c94ab8dso9279384otf.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:32:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=eiO9zeEKuffwwO1qFa2qtw+jOEgErpUu7Im0rIo+TAI=;
-        b=HSdqrPacMhIs7Xx4ZvJuUh0uqgC/8AgZmNQWYOOs0tQjPr2+ACT1nhPCLzwsATVSE8
-         EXmBrgxKI05sSa8T7/qexXyv5guVcihHfiCO7XsvDyyOLF/pOdbggNoSUChkPDiWHbHT
-         MyhV2onY3BoW4S1IzBpt84ZnGOF1d5CHKpBeg=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=KMcZaOI1pkMPzYIua3VuB4fL4UqUR3gQmB+xGyPu7QM=;
+        b=EgJHs96mxk4tNDPUW3eCN/fvFCRBhPOzRXy6DAY0v+0GdsJseQ8CgMTxM7fCZYt73w
+         BOI38G2Dn+JUoNK8C+UshRHgMS09ajx3F+gCN1kLJCot8clpn+7B/D9mKFFHeWj6gVyf
+         vkJRPIcEZUfVDWBuZzRIHyd0neo6xM5XFYBXPn7slT7yXMyZJp1RaslAeoY+/Hp1/5JO
+         Z5nI9TSKNxnzpo4+3oxuSUFfQsJZYgly2IUp9sPm1a6tDJZqG8oGp4KzOVrdDbIx09TQ
+         TeiSBJ4ZsB10pY41WmA+t0accVkpA3iPhTZ4vSka+f2Q6MppAyjc1JQffSUY9TEW/ty5
+         AVeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=eiO9zeEKuffwwO1qFa2qtw+jOEgErpUu7Im0rIo+TAI=;
-        b=gp8GpZJ1idEZorLznNouYIYuZZ8/vu54QgllHHb7hGuXNz9VqdqAqkvL3qHQc23cxw
-         XYKGYa/GtgIFQxoFjA5X0nRSfVsqNGXah0cP5AfkpFGHGyr8QeGAyVPHWdtLfnr2ABO+
-         pdbUl2lJlTHjB+iF9SMr3TkZ7OhTohcpq0Ousz5xk53z0vLHxkLu6mm9iibdpds7SIjr
-         8OB/+TJrsUPoB7o3f3rflI6ZD+4WPXx92bqcW9Bbr+Ey/1zSjzVi8ou5c4g5PH+Ck4Yb
-         3k24vwr1kLXVjb2RbrjD/JjWg8/u9kNhd1RpaeoAvWAf9dSZIDV8LHTYyy1IHoO5+T6x
-         Pl0g==
-X-Gm-Message-State: AJIora93kgmNGIUM1P66Svyn75tN1R2eHd0lKEMLmHfl+OvCzrOG8FQS
-        Nl2kAU+/WKhZJyaQtQtVBW+2lVJ/cTFpnrPtC0Y=
-X-Google-Smtp-Source: AGRyM1vaH4W3v+/cn57a8eeilUL+1sI/k/mqDxFOmx9Yq3QFRauXsYGRSJtGbmgp7XBLUAAbISbt0A==
-X-Received: by 2002:a17:907:2bc5:b0:72b:2e3f:3581 with SMTP id gv5-20020a1709072bc500b0072b2e3f3581mr5403482ejc.211.1657747949698;
-        Wed, 13 Jul 2022 14:32:29 -0700 (PDT)
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com. [209.85.221.51])
-        by smtp.gmail.com with ESMTPSA id r11-20020a170906a20b00b0072b2378027csm5333780ejy.26.2022.07.13.14.32.26
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 14:32:27 -0700 (PDT)
-Received: by mail-wr1-f51.google.com with SMTP id z12so17288208wrq.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:32:26 -0700 (PDT)
-X-Received: by 2002:a05:6000:1f8c:b0:21d:7e98:51ba with SMTP id
- bw12-20020a0560001f8c00b0021d7e9851bamr4964406wrb.442.1657747945994; Wed, 13
- Jul 2022 14:32:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=KMcZaOI1pkMPzYIua3VuB4fL4UqUR3gQmB+xGyPu7QM=;
+        b=oYYtk8XO3bxGS6kFHXEnzNzBmmJIsgKHdHSzg8mO7c63Q/MNEcHTI6CPb0wZhudLVo
+         zYpOnJeRq1UNA6V7T+R3VmMX/BaUmFRPO4pisM6XyGXPDk/PDYfkjhsqOiUDOQMsmJIN
+         t/NNvuFWcyMjQlfN4WXuS9XjS+tp7qGJyeeptFa6/MPypO+Z3X7jzu9nsB11GTV5GBHH
+         2gWEde72CGNkYndPBS8rMmd1PrvYgxOfhyzNTpwJD5F6VQ/QMb30zLUiORWNwMmxpmDw
+         Qf27zwFqQxDH8pHjHw1GEnfH7elGRL3j+vHxlF7yjK9M2xHR9e/HkO3+HA660dJ02wDF
+         oztQ==
+X-Gm-Message-State: AJIora+E+wXJBkLVTXs5T/a9PHD/lerP/L2O58y+hKCDoO4kaSe1t8x8
+        0y3AHQa+F035BIIftFFZENP9xQ==
+X-Google-Smtp-Source: AGRyM1tdI/BVkfAWRhAGpOWIOiePCL5uX9PVHFsgBKsefi693i/n4CRhg9lEq6x/dmREF/ZscHgi1w==
+X-Received: by 2002:a9d:19c9:0:b0:618:ce28:bcf7 with SMTP id k67-20020a9d19c9000000b00618ce28bcf7mr2108300otk.285.1657747965648;
+        Wed, 13 Jul 2022 14:32:45 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id v37-20020a05687070a500b000f342119f41sm6559223oae.42.2022.07.13.14.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 14:32:45 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 16:32:43 -0500
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/6] clk: qcom: msm8996-cpu: Cleanup and migrate to
+ parent_data
+Message-ID: <Ys85+7rYjQOSPvD/@builder.lan>
+References: <20220621160621.24415-1-y.oudjana@protonmail.com>
 MIME-Version: 1.0
-References: <CAHk-=wgTmGaToVFdSdoFqT2sNkk7jg2rSWasUYv-tASUZ2j_0Q@mail.gmail.com>
- <20220713050724.GA2471738@roeck-us.net> <CAHk-=widUqghhXus_GCM9+FESa5vHqMb_pO3=0dGYH8C+yix2w@mail.gmail.com>
- <a804b76e-159f-dbc2-f8dc-62a58552e88d@roeck-us.net> <CADnq5_O6Tp2QPXyDCvpWuRXhDr6H1PM50Ow5YG2WeukqUd-GnQ@mail.gmail.com>
-In-Reply-To: <CADnq5_O6Tp2QPXyDCvpWuRXhDr6H1PM50Ow5YG2WeukqUd-GnQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 13 Jul 2022 14:32:09 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj4+BSj2SPMRUr-TZ4Qg2o9HGOBWiJQE336YcF_U1sVNQ@mail.gmail.com>
-Message-ID: <CAHk-=wj4+BSj2SPMRUr-TZ4Qg2o9HGOBWiJQE336YcF_U1sVNQ@mail.gmail.com>
-Subject: Re: Linux 5.19-rc6
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621160621.24415-1-y.oudjana@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 2:01 PM Alex Deucher <alexdeucher@gmail.com> wrote:
->
-> If you want to apply Guenter's patch original patch:
-> https://patchwork.freedesktop.org/patch/490184/
-> That's fine with me.
+On Tue 21 Jun 11:06 CDT 2022, Yassine Oudjana wrote:
 
-Honestly, by this time I feel that it's too little, too late.
+> This series includes some cleanup of the MSM8996 CPU clock driver, as well as
+> migration from parent_names to parent_data for all of its clocks. The DT schema
+> is also fixed in this series to show the actual clocks consumed by the clock
+> controller and pass checks.
 
-The ppc people apparently didn't care at all about the fact that this
-driver didn't compile.
+This series looks almost ready to be merged, could you (or Dmitry?)
+update the two outstanding items?
 
-At least Michael Ellerman and Daniel Axtens were cc'd on that thread
-with the proposed fix originally.
+Thanks,
+Bjorn
 
-I don't see any replies from ppc people as to why it happened, even
-though apparently a bog-standard "make allmodconfig" just doesn't
-build.
-
-I'd try it myself, since I do have a cross-build environment for some
-earlier cross-build verification I did.
-
-But since my upgrade to F36 it now uses gcc-12, and possibly due to
-that I get hundreds of errors long before I get to any drm drivers:
-
-  Cannot find symbol for section 19: .text.create_section_mapping.
-  arch/powerpc/mm/mem.o: failed
-  ...
-  Cannot find symbol for section 19: .text.cpu_show_meltdown.
-  drivers/base/cpu.o: failed
-  Error: External symbol 'memset' referenced from prom_init.c
-
-this cross environment used to work for me, but something changed (I
-mention gcc-12, but honestly, that's based on nothing at all, except
-for the few problems it caused on x86-64. It could be something
-entirely unrelated, but it does look like some bad interaction with
--ffunction-sections).
-
-So considering that the ppc people ignored this whole issue since the
-merge window, I think it's entirely unreasonable to then apply a
-ppc-specific patch for this at this time, when people literally asked
-"why is this needed", and there was no reply from the powerpc side.
-
-Does any of that sound like "we should support this driver on powerpc" to you?
-
-                 Linus
+> 
+> Yassine Oudjana (6):
+>   clk: qcom: msm8996-cpu: Rename DIV_2_INDEX to SMUX_INDEX
+>   clk: qcom: msm8996-cpu: Statically define PLL dividers
+>   clk: qcom: msm8996-cpu: Unify cluster order
+>   clk: qcom: msm8996-cpu: Convert secondary muxes to clk_regmap_mux
+>   dt-bindings: clock: qcom,msm8996-apcc: Fix clocks
+>   clk: qcom: msm8996-cpu: Use parent_data for all clocks
+> 
+>  .../bindings/clock/qcom,msm8996-apcc.yaml     |  15 +-
+>  drivers/clk/qcom/clk-cpu-8996.c               | 235 ++++++++++--------
+>  2 files changed, 140 insertions(+), 110 deletions(-)
+> 
+> -- 
+> 2.36.1
+> 
