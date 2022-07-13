@@ -2,80 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A2EC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02EEEC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236454AbiGMOAl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
+        id S236552AbiGMOBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236463AbiGMOAU (ORCPT
+        with ESMTP id S236549AbiGMOB3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:00:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EB72CCB4;
-        Wed, 13 Jul 2022 07:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F31A4B81FE8;
-        Wed, 13 Jul 2022 14:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A286FC341C6;
-        Wed, 13 Jul 2022 14:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657720815;
-        bh=z3m7WKJkw2LX/rJrpJTb7cBVDXPsvYOEJCXBlGdMguw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=V/gooNRD7NU68XPkOhWqS8WJ2VdGxh+PkAIEaCCSDwTHWmB22Xe+uqEVKW83QwII2
-         eN2ZcCFCq/Yn5csOGrIfZFkyEx+asqWAxsyj3eDtHBX6AoSRVje16inIAax84zWWL8
-         KpytrmG3RzT1Koqa9dN1PVThAk9qJ3lho6qTpN1JPbuHFfcU7w+Wtd96oLjajK/AAq
-         wlY1LFOirHwlRTIdqlvI263+fHZ6Wd4/sMeREVmy60Kh6tci1lrYxTqTFaP7PsWQwd
-         FIya3M1tNL/bnu/tCdZ66VxnGegR8UiFlP+JoT609vliTmywcDXIGkbPjBhUtjZbV5
-         1ipj3XlC7fG0A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 869DEE45223;
-        Wed, 13 Jul 2022 14:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 13 Jul 2022 10:01:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 060BE2ED40
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:01:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657720872;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9KGqf/qeI+POrrn3TKUE5pxqC/C4LValvbrjKc6vdrc=;
+        b=A7L44shEIPWrKzHiA3jX07oVBUHTZ3DcrUDroLqPIINmq2yURySaihjcjwrYQTKqn5XJyG
+        hu8A+Vu9j3NaVSiEIeaCvr1u6fE0g4Qq3MM0bCZ6k2U6Y9rcE/WnSLJoEiLR0IjvVn1ZoD
+        SoVguAtMMvU6bkNX7IgD3hWdp3YWQJ4=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-147-d2vSy4s3OZuk7caKbD9P9w-1; Wed, 13 Jul 2022 10:01:03 -0400
+X-MC-Unique: d2vSy4s3OZuk7caKbD9P9w-1
+Received: by mail-ej1-f71.google.com with SMTP id l2-20020a170906078200b006fed42bfeacso3485606ejc.16
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:01:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:organization:subject
+         :in-reply-to:content-transfer-encoding;
+        bh=9KGqf/qeI+POrrn3TKUE5pxqC/C4LValvbrjKc6vdrc=;
+        b=KDYAPZH5IQpnE21Qkv07rODPqyfg3fsE9PVRK/JoR55chC+lj2s96bTQcw98hcqAJx
+         sDpy159B6yJ3Hx2jpj0a4q0dOPNDc7VHTBUua1dcGeemN+eNkDMTf0gqVEH2i97ABBBM
+         UIl7scO+/IHIzVjdBQ5w3EbLelWLMHdq/6lM5nPEivlsyeS+7XGUHC3+iFK5Bh+CllDn
+         sn2rOSVZa1GAQ7Cg4jO4vLGxUxq4S3fRIS7Bt4QLxrDVqLRy0/nKb1/UgX3zPIXV6hOV
+         ZiFiuyIcAw+tK9ehkJqN+uSy5zShVnGwgXFRHa9zR9Pd7811na7anv8bugAfFDonZsWj
+         jlSw==
+X-Gm-Message-State: AJIora/3EMutjBnKa7UhLB6LAuVfhDwYTbyOlrbEUfsjzWxv5nRu9fb+
+        Zzou72dIwCU+0Bxj8B+G9vPBIupN3JaEwXlP3B+Ukqs2CY+FJVELxIcEgX/OdQvoUm8hWUaB+zO
+        2wRGaMu4jnOUvubDhi/kvDDyv
+X-Received: by 2002:a05:6402:194d:b0:43a:82da:b0f3 with SMTP id f13-20020a056402194d00b0043a82dab0f3mr5153367edz.104.1657720862043;
+        Wed, 13 Jul 2022 07:01:02 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1tfg+NQpq62PNkTi+9zGICpZjxIA1/V35s1b3D7GuzEpMEmnElvJd01BSGXkYV7V6mf4wtNGg==
+X-Received: by 2002:a05:6402:194d:b0:43a:82da:b0f3 with SMTP id f13-20020a056402194d00b0043a82dab0f3mr5153326edz.104.1657720861765;
+        Wed, 13 Jul 2022 07:01:01 -0700 (PDT)
+Received: from ?IPV6:2003:cb:c707:5800:5009:e8d0:d95e:544d? (p200300cbc70758005009e8d0d95e544d.dip0.t-ipconnect.de. [2003:cb:c707:5800:5009:e8d0:d95e:544d])
+        by smtp.gmail.com with ESMTPSA id e2-20020a056402088200b0042dcbc3f302sm7975139edy.36.2022.07.13.07.01.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 07:01:01 -0700 (PDT)
+Message-ID: <397f3cb2-1351-afcf-cd87-e8f9fb482059@redhat.com>
+Date:   Wed, 13 Jul 2022 16:00:59 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next] octeontx2-af: returning uninitialized variable
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165772081554.13863.1993473674203093729.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Jul 2022 14:00:15 +0000
-References: <20220713073858.42015-1-mailmesebin00@gmail.com>
-In-Reply-To: <20220713073858.42015-1-mailmesebin00@gmail.com>
-To:     Sebin Sebastian <mailmesebin00@gmail.com>
-Cc:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        jerinj@marvell.com, hkelam@marvell.com, sbhatta@marvell.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Khalid Aziz <khalid.aziz@oracle.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     willy@infradead.org, aneesh.kumar@linux.ibm.com, arnd@arndb.de,
+        21cnbao@gmail.com, corbet@lwn.net, dave.hansen@linux.intel.com,
+        ebiederm@xmission.com, hagen@jauu.net, jack@suse.cz,
+        keescook@chromium.org, kirill@shutemov.name, kucharsk@gmail.com,
+        linkinjeon@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        longpeng2@huawei.com, luto@kernel.org, markhemm@googlemail.com,
+        pcc@google.com, rppt@kernel.org, sieberf@amazon.com,
+        sjpark@amazon.de, surenb@google.com, tst@schoebel-theuer.de,
+        yzaikin@google.com
+References: <cover.1656531090.git.khalid.aziz@oracle.com>
+ <20220701212403.77ab8139b6e1aca87fae119e@linux-foundation.org>
+ <0864a811-53c8-a87b-a32d-d6f4c7945caa@redhat.com>
+ <357da99d-d096-a790-31d7-ee477e37c705@oracle.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat
+Subject: Re: [PATCH v2 0/9] Add support for shared PTEs across processes
+In-Reply-To: <357da99d-d096-a790-31d7-ee477e37c705@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Wed, 13 Jul 2022 13:08:58 +0530 you wrote:
-> Fix coverity error 'use of uninitialized variable'. err is uninitialized
-> and is returned which can lead to unintended results. err has been replaced
-> with -einval.
-> Coverity issue: 1518921 (uninitialized scalar variable)
+On 08.07.22 21:36, Khalid Aziz wrote:
+> On 7/8/22 05:47, David Hildenbrand wrote:
+>> On 02.07.22 06:24, Andrew Morton wrote:
+>>> On Wed, 29 Jun 2022 16:53:51 -0600 Khalid Aziz <khalid.aziz@oracle.com> wrote:
+>>>
+>>>> This patch series implements a mechanism in kernel to allow
+>>>> userspace processes to opt into sharing PTEs. It adds a new
+>>>> in-memory filesystem - msharefs.
+>>>
+>>> Dumb question: why do we need a new filesystem for this?  Is it not
+>>> feasible to permit PTE sharing for mmaps of tmpfs/xfs/ext4/etc files?
+>>>
+>>
+>> IIRC, the general opinion at LSF/MM was that this approach at hand is
+>> makes people nervous and I at least am not convinced that we really want
+>> to have this upstream.
 > 
-> Signed-off-by: Sebin Sebastian <mailmesebin00@gmail.com>
+> Hi David,
+
+Hi Khalid,
+
 > 
-> [...]
+> You are right that sharing page tables across processes feels scary, but at the same time threads already share PTEs and 
+> this just extends that concept to processes.
 
-Here is the summary with links:
-  - [-next] octeontx2-af: returning uninitialized variable
-    https://git.kernel.org/netdev/net-next/c/6a605eb1d71e
+They share a *mm* including a consistent virtual memory layout (VMA
+list). Page table sharing is just a side product of that. You could even
+call page tables just an implementation detail to produce that
+consistent virtual memory layout -- described for that MM via a
+different data structure.
 
-You are awesome, thank you!
+> A number of people have commented on potential usefulness of this concept 
+> and implementation.
+
+... and a lot of people raised concerns. Yes, page table sharing to
+reduce memory consumption/tlb misses/... is something reasonable to
+have. But that doesn't require mshare, as hugetlb has proven.
+
+The design might be useful for a handful of corner (!) cases, but as the
+cover letter only talks about memory consumption of page tables, I'll
+not care about those. Once these corner cases are explained and deemed
+important, we might want to think of possible alternatives to explore
+the solution space.
+
+> There were concerns raised about being able to make this safe and reliable.
+> I had agreed to send a 
+> second version of the patch incorporating feedback from last review and LSF/MM, and that is what v2 patch is about. The 
+
+Okay, most of the changes I saw are related to the user interface, not
+to any of the actual dirty implementation-detail concerns. And the cover
+letter is not really clear what's actually happening under the hood and
+what the (IMHO) weird semantics of the design imply (as can be seen from
+Andrews reply).
+
+> suggestion to extend hugetlb PMD sharing was discussed briefly. Conclusion from that discussion and earlier discussion 
+> on mailing list was hugetlb PMD sharing is built with special case code in too many places in the kernel and it is 
+> better to replace it with something more general purpose than build even more on it. Mike can correct me if I got that 
+> wrong.
+
+Yes, I pushed for the removal of that yet-another-hugetlb-special-stuff,
+and asked the honest question if we can just remove it and replace it by
+something generic in the future. And as I learned, we most probably
+cannot rip that out without affecting existing user space. Even
+replacing it by mshare() would degrade existing user space.
+
+So the natural thing to reduce page table consumption (again, what this
+cover letter talks about) for user space (semi- ?)automatically for
+MAP_SHARED files is to factor out what hugetlb has, and teach generic MM
+code to cache and reuse page tables (PTE and PMD tables should be
+sufficient) where suitable.
+
+For reasonably aligned mappings and mapping sizes, it shouldn't be too
+hard (I know, locking ...), to cache and reuse page tables attached to
+files -- similar to what hugetlb does, just in a generic way. We might
+want a mechanism to enable/disable this for specific processes and/or
+VMAs, but these are minor details.
+
+And that could come for free for existing user space, because page
+tables, and how they are handled, would just be an implementation detail.
+
+
+I'd be really interested into what the major roadblocks/downsides
+file-based page table sharing has. Because I am not convinced that a
+mechanism like mshare() -- that has to be explicitly implemented+used by
+user space -- is required for that.
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks,
 
+David / dhildenb
 
