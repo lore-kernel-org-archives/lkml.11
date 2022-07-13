@@ -2,326 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 357A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 445F3C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235804AbiGMMAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
+        id S236237AbiGMMA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235669AbiGMMAK (ORCPT
+        with ESMTP id S236104AbiGMMAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:00:10 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A4FF54CD;
-        Wed, 13 Jul 2022 05:00:09 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ef5380669cso109754427b3.9;
-        Wed, 13 Jul 2022 05:00:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QqFcQmgGQGc7DUvpJqUQSaobZTRakvVtcLc5e1986Vg=;
-        b=KhrYSrsfk8B9x/UWggXcmUu32sbl1kCbFRyaN1DN5TzUwr96/dDlMsHnUkApLAl2/v
-         DRGra9Hj2Ww4eMIz2rOWnyKZUXh3lVVEQsMxP1R2+c4rHwOWvySRfl1b7g1X+MizOaep
-         /ieaGTJW0zRzov/nWOTU3ihjS9RqB4YvnhAGNWMqWrYYNNezRh8MM/bWxLXYHUiWxtr/
-         RK0JDk+rDbIU7z/WaARg1Jzg6XEjAeceLGBjNZgihUKHOy9wcwNPxdku5770oTw8NR+a
-         Olz8IVAUeC90C27gzlIptJK7gr/FVa4YSj1HBPZtgEgjw9L0PqTGhBWarpTxlZV0IFa2
-         wfiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QqFcQmgGQGc7DUvpJqUQSaobZTRakvVtcLc5e1986Vg=;
-        b=tdwCMgLrr0Bh5Q8JzYpHx+fKfNj1LL/h2d4CmX/POImjGMd1JsV7sSGIlcLCXCeDXt
-         Y2m8B8JPwGZl3UFDKKAe8qGCo2sa2KUac2zQ/FQxFgCmH0JPuETR15RdUg3+yi67csDs
-         dV77Q75+4i4DTvxcpt7OEGEAwV1pmj41S5nEhZr4/x17ArbnMHEVhlHkChjGVACpqii9
-         yFl16WKckptY8/riwUrH1Xf/MeIpatFsZvR+M+yHiOKxEPUOor7CyT7Z3TWOobaRL8Nv
-         TruXXTEQI4jhNkPSn7qwgOZGbGF30vW4BvYE5IGrV/ESo9vnuCLi1FsMjeJeyBQs3lsT
-         yUsw==
-X-Gm-Message-State: AJIora/XZY4iF4nrQsOmh6PggNJMoMHY26GYvYrnHnLUN7XF/e4OLw4s
-        JD34dVvARwwETNMfQjreHA78IVOdmKc1gth6LuE=
-X-Google-Smtp-Source: AGRyM1syQeK/8RcImkP0kJZa5KTMfWyLkuNxadGq7hNXN7TJYZiJaCWins20mzbQKrVOPZN5cWibsrXT/1Ly2VM5GmA=
-X-Received: by 2002:a81:4986:0:b0:31d:388b:d08d with SMTP id
- w128-20020a814986000000b0031d388bd08dmr3630269ywa.185.1657713608712; Wed, 13
- Jul 2022 05:00:08 -0700 (PDT)
+        Wed, 13 Jul 2022 08:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB12410400E;
+        Wed, 13 Jul 2022 05:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB08FB81D07;
+        Wed, 13 Jul 2022 12:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7EF60C3411E;
+        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657713614;
+        bh=7ZQv/4gcKwMxrWQ3R8K+5GmEoZGtx+9WTQW4h7AZojo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=cNbCcC9IopFfBuw7A3T2mCSim7+evprYZO/9ddqN3WbI0UxVCBjsCRxcTmciyL1Ht
+         75f85sBaZ1xWAilvt6v9GzewmGAZ8+CkFL26gjUGzYABjPIuPvb7bLL4szRHTDliOl
+         T4ujPozUJcBPAe9J+XKiqlv9Kb9MHed+zRqtuzGzigq5Z23OZfc+bv/63m2w5XLg/G
+         kXJx6k8PQPAHWtPsGslzIEv+ojuTvjaCqF9eHJ1KfyFYS3MlVzqU/2A28fLvagje0k
+         +YiisZSVowUtJd7roVoEjOuHWvH1ZyfrVIY8CFHruawN6SpAqOE1bVvArF8z5vFKjp
+         j7jOKHvfjtF1Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 51DCBE45223;
+        Wed, 13 Jul 2022 12:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220713105910.931983-1-lewis.hanly@microchip.com> <20220713105910.931983-2-lewis.hanly@microchip.com>
-In-Reply-To: <20220713105910.931983-2-lewis.hanly@microchip.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Jul 2022 13:59:32 +0200
-Message-ID: <CAHp75VfGTd02jKYsFq94BF_Gqro2trk3iyyALBatS1Bps3HYhw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] gpio: mpfs: add polarfire soc gpio support
-To:     lewis.hanly@microchip.com
-Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Marc Zyngier <maz@kernel.org>, conor.dooley@microchip.com,
-        daire.mcnamara@microchip.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 0/2] net: prestera: add support for port range
+ filters
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165771361432.14728.4361651412076279677.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jul 2022 12:00:14 +0000
+References: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
+In-Reply-To: <20220711150908.1030650-1-maksym.glubokiy@plvision.eu>
+To:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, louis.peens@corigine.com, elic@nvidia.com,
+        simon.horman@corigine.com, baowen.zheng@corigine.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 1:00 PM <lewis.hanly@microchip.com> wrote:
->
-> From: Lewis Hanly <lewis.hanly@microchip.com>
->
-> Add a driver to support the Polarfire SoC gpio controller.
-
-GPIO
-
-...
-
-Below my comments, I have tried hard not to duplicate what Conor
-already mentioned. So consider this as additional part.
-
-...
-
-> +config GPIO_POLARFIRE_SOC
-> +       bool "Microchip FPGA GPIO support"
-
-Why not tristate?
-
-> +       depends on OF_GPIO
-
-Why?
-
-> +       select GPIOLIB_IRQCHIP
-> +       select IRQ_DOMAIN_HIERARCHY
-
-More naturally this line looks if put before GPIOLB_IRQCHIP one.
-
-> +       select GPIO_GENERIC
-> +       help
-> +         Say yes here to support the GPIO device on Microchip FPGAs.
-
-When allowing it to be a module, add a text that tells how the driver
-will be called.
-
-...
-
-> +/*
-> + * Microchip PolarFire SoC (MPFS) GPIO controller driver
-> + *
-> + * Copyright (c) 2018-2022 Microchip Technology Inc. and its subsidiaries
-> + *
-> + * Author: Lewis Hanly <lewis.hanly@microchip.com>
-
-> + *
-
-This line is not needed.
-
-> + */
-
-...
-
-> +#include <linux/of.h>
-> +#include <linux/of_irq.h>
-
-Why?
-
-Also don't forget mod_devicetable.h.
-
-...
-
-> +#define NUM_GPIO                       32
-> +#define BYTE_BOUNDARY                  0x04
-
-Without namespace?
-
-...
-
-> +       gpio_cfg = readl(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY));
-
-> +
-
-Unneeded line.
-
-> +       if (gpio_cfg & MPFS_GPIO_EN_IN)
-> +               return 1;
-> +
-> +       return 0;
-
-Don't we have specific definitions for the directions?
-
-...
-
-> +       struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
-> +       int gpio_index = irqd_to_hwirq(data);
-> +       u32 interrupt_type;
-
-> +       struct mpfs_gpio_chip *mpfs_gpio = gpiochip_get_data(gc);
-
-This line naturally looks better before interrupt_type definition.
-Try to keep the "longest line first" everywhere in the driver.
-
-> +       u32 gpio_cfg;
-> +       unsigned long flags;
-
-...
-
-> +       switch (type) {
-> +       case IRQ_TYPE_EDGE_BOTH:
-> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_BOTH;
-> +               break;
-
-> +
-
-Unneeded line here and everywhere in the similar cases in the entire code.
-
-> +       case IRQ_TYPE_EDGE_FALLING:
-> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_NEG;
-> +               break;
-> +
-> +       case IRQ_TYPE_EDGE_RISING:
-> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_POS;
-> +               break;
-> +
-> +       case IRQ_TYPE_LEVEL_HIGH:
-> +               interrupt_type = MPFS_GPIO_TYPE_INT_LEVEL_HIGH;
-> +               break;
-> +
-> +       case IRQ_TYPE_LEVEL_LOW:
-> +               interrupt_type = MPFS_GPIO_TYPE_INT_LEVEL_LOW;
-> +               break;
-> +       }
-
-...
-
-> +       mpfs_gpio_assign_bit(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY),
-> +                            MPFS_GPIO_EN_INT, 1);
-
-Too many parentheses.
-
-...
-
-> +       mpfs_gpio_assign_bit(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY),
-> +                            MPFS_GPIO_EN_INT, 0);
-
-Ditto.
-
-...
-
-> +static int mpfs_gpio_irq_set_affinity(struct irq_data *data,
-> +                                     const struct cpumask *dest,
-> +                                     bool force)
-> +{
-
-> +       if (data->parent_data)
-
-> +               return irq_chip_set_affinity_parent(data, dest, force);
-> +
-> +       return -EINVAL;
-> +}
-
-Why do you need this? Isn't it taken care of by the IRQ chip core?
-
-...
-
-> +       struct clk *clk;
-> +       struct device *dev = &pdev->dev;
-
-> +       struct device_node *node = pdev->dev.of_node;
-> +       struct device_node *irq_parent;
-
-Why do you need these?
-
-> +       struct gpio_irq_chip *girq;
-> +       struct irq_domain *parent;
-> +       struct mpfs_gpio_chip *mpfs_gpio;
-> +       int i, ret, ngpio;
-
-...
-
-> +       clk = devm_clk_get(&pdev->dev, NULL);
-> +       if (IS_ERR(clk)) {
-> +               dev_err(&pdev->dev, "devm_clk_get failed\n");
-> +               return PTR_ERR(clk);
-> +       }
-
-return dev_err_probe(...);
-
-It's not only convenient, but here it fixes a bug.
-
-> +       ret = clk_prepare_enable(clk);
-> +       if (ret) {
-> +               dev_err(&pdev->dev, "failed to enable clock\n");
-> +               return ret;
-
-return dev_err_probe(...);
-
-> +       }
-
-Make it managed as well in addition to gpiochip_add_data(), otherwise
-you will have wrong ordering.
-
-...
-
-> +       ngpio = of_irq_count(node);
-> +       if (ngpio > NUM_GPIO) {
-
-> +               dev_err(dev, "Too many GPIO interrupts (max=%d)\n",
-> +                       NUM_GPIO);
-> +               ret = -ENXIO;
-> +               goto cleanup_clock;
-
-return dev_err_probe(...);
-
-> +       }
-> +
-> +       irq_parent = of_irq_find_parent(node);
-> +       if (!irq_parent) {
-> +               dev_err(dev, "no IRQ parent node\n");
-> +               ret = -ENODEV;
-> +               goto cleanup_clock;
-
-Ditto.
-
-> +       }
-> +       parent = irq_find_host(irq_parent);
-> +       if (!parent) {
-> +               dev_err(dev, "no IRQ parent domain\n");
-> +               ret = -ENODEV;
-> +               goto cleanup_clock;
-
-Ditto.
-
-> +       }
-
-Why do you need all these? Seems a copy'n'paste from gpio-sifive,
-which is the only GPIO driver using this pattern.
-
-...
-
-> +               mpfs_gpio_assign_bit(mpfs_gpio->base + (i * BYTE_BOUNDARY),
-> +                                    MPFS_GPIO_EN_INT, 0);
-
-Too many parentheses.
-
-
-> +       girq->fwnode = of_node_to_fwnode(node);
-
-This is an interesting way of
-
-    ...->fwnode = dev_fwnode(dev);
-
-
-...
-
-> +       dev_info(dev, "Microchip MPFS GPIO registered, ngpio=%d\n", ngpio);
-
-Noise.
-
-...
-
-> +               .of_match_table = of_match_ptr(mpfs_gpio_match),
-
-Please, avoid using of_match_ptr(). It brings more harm than usefulness.
-
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Mon, 11 Jul 2022 18:09:06 +0300 you wrote:
+> This adds support for port-range rules in Marvel Prestera driver:
+> 
+>   $ tc qdisc add ... clsact
+>   $ tc filter add ... flower ... src_port <PMIN>-<PMAX> ...
+> 
+> Maksym Glubokiy (2):
+>   net: extract port range fields from fl_flow_key
+>   net: prestera: add support for port range filters
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v2,1/2] net: extract port range fields from fl_flow_key
+    https://git.kernel.org/netdev/net-next/c/83d85bb06915
+  - [net-next,v2,2/2] net: prestera: add support for port range filters
+    https://git.kernel.org/netdev/net-next/c/551871bfc82c
+
+You are awesome, thank you!
 -- 
-With Best Regards,
-Andy Shevchenko
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
