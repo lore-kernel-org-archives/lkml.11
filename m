@@ -2,90 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91472C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3F7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233951AbiGMCOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 22:14:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
+        id S234033AbiGMCOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 22:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGMCOS (ORCPT
+        with ESMTP id S233956AbiGMCO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 22:14:18 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E67BF4B0CC;
-        Tue, 12 Jul 2022 19:14:17 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LjLgZ3tNlzVfjb;
-        Wed, 13 Jul 2022 10:10:34 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 10:14:08 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 10:14:07 +0800
-Subject: Re: [PATCH -next 2/2] spi: microchip-core: switch to use
- devm_spi_alloc_master()
-To:     <Conor.Dooley@microchip.com>
-CC:     <Daire.McNamara@microchip.com>, <broonie@kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-riscv@lists.infradead.org>
-References: <20220712135357.918997-1-yangyingliang@huawei.com>
- <20220712135357.918997-2-yangyingliang@huawei.com>
- <87581e76-ceb7-9efa-d6dd-5ad4fe66111a@microchip.com>
- <687d4652-c231-bfa5-f76f-ac826ab1fe98@microchip.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <35cfbaa3-d21a-f75c-7f89-3624e7b43f33@huawei.com>
-Date:   Wed, 13 Jul 2022 10:14:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Tue, 12 Jul 2022 22:14:26 -0400
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABEC14F659
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 19:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ikHA2
+        7jOWrf1Qm3cFev3aWzpCFTLu3KuD8nMhC9QKso=; b=dhfVW77WPi/zA9iuSew0M
+        jWT1+ue2JcM4dFd0/rmTdVZTql2IZ2L3OLwmptdJMavqTru2yPc0wbsrA6u7ZqjQ
+        reVSeGjejtOh502m7w970L2WyKAcpZK3eZxDmdPKjVwfUr7DmRXdYQcvOZATF27H
+        4v7WbDGvXPMwenl6HdYQKM=
+Received: from localhost.localdomain (unknown [111.48.58.12])
+        by smtp13 (Coremail) with SMTP id EcCowADXQZ9AKs5iAfn3NA--.40687S2;
+        Wed, 13 Jul 2022 10:13:22 +0800 (CST)
+From:   huhai <15815827059@163.com>
+To:     linux@armlinux.org.uk, dietmar.eggemann@arm.com, mingo@kernel.org
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        huhai <huhai@kylinos.cn>
+Subject: [PATCH] ARM, sched/topology: fix possible memory allocation failure
+Date:   Wed, 13 Jul 2022 10:11:29 +0800
+Message-Id: <20220713021129.103155-1-15815827059@163.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <687d4652-c231-bfa5-f76f-ac826ab1fe98@microchip.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowADXQZ9AKs5iAfn3NA--.40687S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7tr1rAFyUXw1DZF1rur13twb_yoW8ZrW3pw
+        40krW7tw4fWFZ7J397Xw1xZrykKr9rXw17GayUJ3y5J3W3Ar1xGFZav3yaqry7uryFqr1f
+        tr4Uta4DWFZ2v37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jzuWdUUUUU=
+X-Originating-IP: [111.48.58.12]
+X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/1tbiqwM9hVUMemdMkQAAsJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: huhai <huhai@kylinos.cn>
 
-On 2022/7/13 4:50, Conor.Dooley@microchip.com wrote:
-> On 12/07/2022 15:03, Conor.Dooley@microchip.com wrote:
->> On 12/07/2022 14:53, Yang Yingliang wrote:
->>> [Some people who received this message don't often get email from yangyingliang@huawei.com. Learn why this is important at https://aka.ms/LearnAboutSenderIdentification ]
->>>
->>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
->>>
->>> Switch to use devm_spi_alloc_master() to simpify error path.
->> Hey Yang,
->> Thanks for trying to fix my mistakes!
->>
->> Forgive my innocence here, but why is it okay to remove the
->> spi_master_put() in remove() but not the one in the error path of
->> the probe function?
->>
->> If the devm_add_action_or_reset() in devm_spi_register_controller()
->> fails won't the same thing apply to the probe error path?
->>
->> IOW, I think this patch needs a fixes tag too b/c it also fixes a
->> refcount underflow. Please correct me if I am misunderstanding.
-> Ahh, I just saw your revert of 59ebbe40fb51 ("spi: simplify
-> devm_spi register_controller"). With that, this makes a lot more
-> sense.
->
->> One other comment below.
-> This comment still applies for this patch. dev_err_probe would be
-> nice.
-OK.
+When kcalloc in parse_dt_topology() fails and it will lead to a null
+pointer access.
 
-Thanks,
-Yang
->
-> Thanks,
-> Conor.
+Considering update_cpu_capacity() also uses __cpu_capacity, and refer to
+the implementation of parse_dt_topology() in drivers/base/arch_topology.c,
+use global variables to store capacity in this patch.
+
+Signed-off-by: huhai <huhai@kylinos.cn>
+---
+ arch/arm/kernel/topology.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm/kernel/topology.c b/arch/arm/kernel/topology.c
+index ef0058de432b..383eaac1dbd2 100644
+--- a/arch/arm/kernel/topology.c
++++ b/arch/arm/kernel/topology.c
+@@ -68,8 +68,7 @@ static const struct cpu_efficiency table_efficiency[] = {
+ 	{NULL, },
+ };
+ 
+-static unsigned long *__cpu_capacity;
+-#define cpu_capacity(cpu)	__cpu_capacity[cpu]
++static unsigned long cpu_capacity[NR_CPUS];
+ 
+ static unsigned long middle_capacity = 1;
+ static bool cap_from_dt = true;
+@@ -91,9 +90,6 @@ static void __init parse_dt_topology(void)
+ 	unsigned long capacity = 0;
+ 	int cpu = 0;
+ 
+-	__cpu_capacity = kcalloc(nr_cpu_ids, sizeof(*__cpu_capacity),
+-				 GFP_NOWAIT);
+-
+ 	for_each_possible_cpu(cpu) {
+ 		const __be32 *rate;
+ 		int len;
+@@ -135,7 +131,7 @@ static void __init parse_dt_topology(void)
+ 		if (capacity > max_capacity)
+ 			max_capacity = capacity;
+ 
+-		cpu_capacity(cpu) = capacity;
++		cpu_capacity[cpu] = capacity;
+ 	}
+ 
+ 	/* If min and max capacities are equals, we bypass the update of the
+@@ -163,10 +159,10 @@ static void __init parse_dt_topology(void)
+  */
+ static void update_cpu_capacity(unsigned int cpu)
+ {
+-	if (!cpu_capacity(cpu) || cap_from_dt)
++	if (!cpu_capacity[cpu] || cap_from_dt)
+ 		return;
+ 
+-	topology_set_cpu_scale(cpu, cpu_capacity(cpu) / middle_capacity);
++	topology_set_cpu_scale(cpu, cpu_capacity[cpu] / middle_capacity);
+ 
+ 	pr_info("CPU%u: update cpu_capacity %lu\n",
+ 		cpu, topology_get_cpu_scale(cpu));
+-- 
+2.27.0
+
