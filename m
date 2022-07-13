@@ -2,92 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 291F7CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B593C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235314AbiGMJaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43702 "EHLO
+        id S235489AbiGMJa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231936AbiGMJaW (ORCPT
+        with ESMTP id S235096AbiGMJaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:30:22 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE8DEA14B;
-        Wed, 13 Jul 2022 02:30:20 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 630BAC01E; Wed, 13 Jul 2022 11:30:19 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657704619; bh=XyyU3O64rDkO8/f2a3m3jX9KEixUXahN8Gy8KrqClvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ywjF/D7wS9OjyHt7BVsHv8plzVxUgPhiLUbbuDrVr+l86vFhwsSdmzRN/n3MdDngr
-         Vs9r39e8bUveHcJQX4iZtN55K3A1EsjrBEJ3nDXTcZ2BibWxxDOdzhbqu3UODbw4tg
-         /xz0pHcBLid8jOx4xR9VyOG0hmUpkVsnKUL/pL59MXfYMGfosHxgeYZ9p3rg4KEscS
-         NmJqUkmYNVcOcOpbom8yF2GQYNeBwrudIVzmwWH/evM9enn9urkzvnbgmgVSAfQ6eh
-         F3Kun4ICWzmlDkQoQUZz1/d/NHyJ8PIkPBpPUleYgZkMFTPRSDzvflwF8XMT9ReyZF
-         EDMzPrt+SFtpA==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 95E8CC009;
-        Wed, 13 Jul 2022 11:30:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657704618; bh=XyyU3O64rDkO8/f2a3m3jX9KEixUXahN8Gy8KrqClvI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rYO8C5GjfkKJ+X/feO2QzbNu6ngje6EbwAFN1jEj21OCsmiZTu17br7qeEX2K8rSr
-         dcRZHU98JNDdp9rvwdMWHv7XSNd904sxppru0+k32zTMNCuV5fl2U9OT0gAIMAt1jo
-         XuczTc0MJNI+/IRRaaqEOSGmrhfPJsDiwscIWWMf6m+dvCA3VLsfigqdrsAlps+bHd
-         5cHU4p01321IodbGxBQO77L1yexoCKPU3YddWbWZxTFlNuBsEnTEq8udfTjXhmjOKy
-         yvxpDSl7fFoJZbL8xu//YxzMMYdMOH11W5BJ5oRmb+sXAo3bGwuEDM+N9EsgOLJ+q5
-         ZeXYvPbZFKyrQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id dd90f3c2;
-        Wed, 13 Jul 2022 09:30:12 +0000 (UTC)
-Date:   Wed, 13 Jul 2022 18:29:57 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     Latchesar Ionkov <lucho@ionkov.net>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        Nikolay Kichukov <nikolay@oldum.net>
-Subject: Re: [V9fs-developer] [PATCH v5 11/11] net/9p: allocate appropriate
- reduced message buffers
-Message-ID: <Ys6QlcShhji2sx9V@codewreck.org>
-References: <cover.1657636554.git.linux_oss@crudebyte.com>
- <Ys3Mj+SgWLzhQGWK@codewreck.org>
- <Ys3jjg52EIyITPua@codewreck.org>
- <4284956.GYXQZuIPEp@silver>
+        Wed, 13 Jul 2022 05:30:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A67F2E0D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:30:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C1961CA1
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7D05C341C0;
+        Wed, 13 Jul 2022 09:30:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657704621;
+        bh=oMqR086Sh4/11DEbRL1QYHjCa4npxyd592GKCoYy7dA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=OgEhUNPjQ6hv/NsRUJVgEJP4P8zctXjwJ7IsMcn8R6KW67CXZpEX0jKlUTwKqp0JS
+         tciXxSP/G1wxho/bwQ7rMbRvSPmpUMFYYDEDg0fdE6AVvxl9Va7CMkP/muPH7cDfpt
+         HwKQW2kntXRpUYZYG8EZAS0lIbPzI7cc5Xb/+uB5YdtRkn+8Y1ju7riT8VTAv21rQZ
+         3VxqsY700jJAwuLy/AonV1jz+DhCgmmxX05KBhnC5DcT74zI6ZCu5UfnDqbPeeqVaB
+         oJl7PZFDWBhrXF462nvFRujzYXeEp5bb9CllQp5YQWqAwmE3kLZiG8tYIsHH9pITGZ
+         M+qgLV+iXacdg==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oBYhH-0050LF-IC;
+        Wed, 13 Jul 2022 10:30:19 +0100
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        John Harrison <John.C.Harrison@Intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Matthew Brost <matthew.brost@intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 02/21] drm/i915/gt: document with_intel_gt_pm_if_awake()
+Date:   Wed, 13 Jul 2022 10:29:59 +0100
+Message-Id: <e9bea6ef2c3ea37440b6b50794ed9785f8ea0acd.1657703926.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1657703926.git.mchehab@kernel.org>
+References: <cover.1657703926.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4284956.GYXQZuIPEp@silver>
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christian Schoenebeck wrote on Wed, Jul 13, 2022 at 11:19:48AM +0200:
-> > - for this particular patch, we can still allocate smaller short buffers
-> > for requests, so we should probably keep tsize to 0.
-> > rsize there really isn't much we can do without a protocol change
-> > though...
-> 
-> Good to know! I don't have any RDMA setup here to test, so I rely on what you 
-> say and adjust this in v6 accordingly, along with the strcmp -> flag change of 
-> course.
+Add a kernel-doc markup to document this new macro.
 
-Yeah... I've got a connect-x 3 (mlx4, got a cheap old one) card laying
-around, I need to find somewhere to plug it in and actually run some
-validation again at some point.
-Haven't used 9p/RDMA since I left my previous work in 2020...
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
 
-I'll try to find time for that before the merge
+See [PATCH 00/21] at: https://lore.kernel.org/all/cover.1657703926.git.mchehab@kernel.org/
 
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-> As this flag is going to be very RDMA-transport specific, I'm still scratching 
-> my head for a good name though.
+diff --git a/drivers/gpu/drm/i915/gt/intel_gt_pm.h b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
+index a334787a4939..4d4caf612fdc 100644
+--- a/drivers/gpu/drm/i915/gt/intel_gt_pm.h
++++ b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
+@@ -55,6 +55,13 @@ static inline void intel_gt_pm_might_put(struct intel_gt *gt)
+ 	for (tmp = 1, intel_gt_pm_get(gt); tmp; \
+ 	     intel_gt_pm_put(gt), tmp = 0)
+ 
++/**
++ * with_intel_gt_pm_if_awake - if GT is PM awake, get a reference to prevent
++ *	it to sleep, run some code and then put the reference away.
++ *
++ * @gt: pointer to the gt
++ * @wf: pointer to a temporary wakeref.
++ */
+ #define with_intel_gt_pm_if_awake(gt, wf) \
+ 	for (wf = intel_gt_pm_get_if_awake(gt); wf; intel_gt_pm_put_async(gt), wf = 0)
+ 
+-- 
+2.36.1
 
-The actual limitation is that receive buffers are pooled, so something
-to like pooled_rcv_buffers or shared_rcv_buffers or anything along that
-line?
-
---
-Dominique
