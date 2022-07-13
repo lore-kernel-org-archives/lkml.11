@@ -2,129 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63533C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD57EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235038AbiGMKeg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:34:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
+        id S235965AbiGMKfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236104AbiGMKe0 (ORCPT
+        with ESMTP id S231936AbiGMKfG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:34:26 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED56BEDB61;
-        Wed, 13 Jul 2022 03:34:21 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LjYrh52rWz4xZD;
-        Wed, 13 Jul 2022 20:34:12 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657708456;
-        bh=Ey1jE8nSC7Mk66Rrk+OsUh80n2ZIXqpzMWY/OJsmnM4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Lr3eOkAzon04P8+sEfsVemBd0ioqKwrx/1I8f1cUV+IYTY1SqqjHj34/haJScbiXn
-         wqgqa2+/udEWoVMTg5Qw8I8SHHqCUDH4kHuo3uFX7joX9k+PCPDCfNGAZZSwNOLJ4u
-         Vee7iCOObS/8M53ocFYykNpHuA5+WgBxe/fT6DoDEio0z7KnAceYXe9iFtIOCJnY4O
-         UznFh+CXeYfP6bux5/+muFGMSD9GntuA1zMJuWl149Qs+dttQbnaRQD6s78PsHO821
-         PhNXVWbjmq2jIGnzw9CLCSmQj99w8Bh7Uzeb2BALFf/7MdRRl553jvqz0jqRw+alJ4
-         kAHJOekMOA+NQ==
-Date:   Wed, 13 Jul 2022 20:34:09 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Borislav Petkov <bp@suse.de>, Daniel Xu <dxu@dxuuu.xyz>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        David Gow <davidgow@google.com>,
-        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
-        Gary Guo <gary@garyguo.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Cano <macanroj@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Subject: linux-next: manual merge of the rust tree with Linus' tree
-Message-ID: <20220713203409.559c5464@canb.auug.org.au>
+        Wed, 13 Jul 2022 06:35:06 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE96BEDB55;
+        Wed, 13 Jul 2022 03:35:04 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LjYph2G0tz1L8ZL;
+        Wed, 13 Jul 2022 18:32:28 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Jul 2022 18:35:02 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.66) by
+ dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Jul 2022 18:35:02 +0800
+From:   Zheng Yejian <zhengyejian1@huawei.com>
+To:     <rostedt@goodmis.org>
+CC:     <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
+        <stable@vger.kernel.org>, <tom.zanussi@linux.intel.com>,
+        <trix@redhat.com>, <zhangjinhao2@huawei.com>,
+        <zhengyejian1@huawei.com>
+Subject: Re: [PATCH] tracing/histograms: Simplify create_hist_fields()
+Date:   Wed, 13 Jul 2022 18:32:35 +0800
+Message-ID: <20220713103235.129358-1-zhengyejian1@huawei.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220712134956.4acb90a3@gandalf.local.home>
+References: <20220712134956.4acb90a3@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/fNNaP+bU4aiB=S243ECecbo";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.66]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/fNNaP+bU4aiB=S243ECecbo
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 12 Jul 2022 13:49:56 -0400
+Steven Rostedt <rostedt@goodmis.org> wrote:
+> On Thu, 30 Jun 2022 09:31:52 +0800
+> Zheng Yejian <zhengyejian1@huawei.com> wrote:
+> 
+> > When I look into implements of create_hist_fields(), I think there can be
+> > following two simplifications:
+> >   1. If something wrong happened in parse_var_defs(), free_var_defs() would
+> >      have been called in it, so no need goto free again after calling it;
+> >   2. After calling create_key_fields(), regardless of the value of 'ret', it
+> >      then always runs into 'out: ', so the judge of 'ret' is redundant.
+> > 
+> > No functional changes.
+> 
+> I applied this but removed the "No functional changes" because it is a
+> functional change. The end result may be the same, but the flow is
+> different, and that means it changed functionally.
+> 
+> The only time "No functional changes" should be stated is if you move code
+> around or change #ifdefs to perform the same action. IOW, if the assembly
+> produced by the compiler is the same before and after your change, you can
+> say "No functional changes", otherwise don't ever say that.
+> 
+> This is important, because if a bisect lands on this, people may think the
+> bisect is incorrect, when in reality it could be the cause of the bug (I
+> just had this happen to me with another commit that had "No functional
+> changes" :-p )
 
-Hi all,
+I learn it now and share it with my colleagues in the neighborhood.
+Thanks for your patience :)
 
-Today's linux-next merge of the rust tree got a conflict in:
-
-  arch/x86/Makefile
-
-between commit:
-
-  f43b9876e857 ("x86/retbleed: Add fine grained Kconfig knobs")
-
-from Linus' tree and commit:
-
-  0ea4b9a1bece ("Kbuild: add Rust support")
-
-from the rust tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/x86/Makefile
-index 1f40dad30d50,5ac9b324751d..000000000000
---- a/arch/x86/Makefile
-+++ b/arch/x86/Makefile
-@@@ -21,12 -21,8 +21,13 @@@ ifdef CONFIG_CC_IS_CLAN
-  RETPOLINE_CFLAGS	:=3D -mretpoline-external-thunk
-  RETPOLINE_VDSO_CFLAGS	:=3D -mretpoline
-  endif
-+ RETPOLINE_RUSTFLAGS	:=3D -Ctarget-feature=3D+retpoline-external-thunk
- =20
- +ifdef CONFIG_RETHUNK
- +RETHUNK_CFLAGS		:=3D -mfunction-return=3Dthunk-extern
- +RETPOLINE_CFLAGS	+=3D $(RETHUNK_CFLAGS)
- +endif
- +
-  export RETPOLINE_CFLAGS
-  export RETPOLINE_VDSO_CFLAGS
- =20
-
---Sig_/fNNaP+bU4aiB=S243ECecbo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLOn6EACgkQAVBC80lX
-0GxWbggApRFxsIZ5bbLd57tMBcT91GmCHHxjQXU+QhS6MfV8XfB1CHB7x8r/FhKh
-3cPu9tusxUqBJ0cxzCWaNVGn3KoxtONylfQYaSWrGFYV142d8V7T5c/MAoCBmSX/
-4JTkzLFVfipaB8k0CWk6XhQCtSQA6O1xlCkG230HU7k28I6Gmd7W/+FgkpD1GG11
-qcPQSu8jaoXNNiX3Zed1zcIkpp1tOXx8CEj77Wk/pfmOUsPuZZwZJNByhR5gpxaY
-fVhD0RJAnzXTl5ooGd+xj1NkH9Qi+dO8CufScGdBPdS1fZmwxYx0OQcZmQzerMgj
-ewtxpiZBgEafxg8KKCYYF10EXXR+Gw==
-=I9eX
------END PGP SIGNATURE-----
-
---Sig_/fNNaP+bU4aiB=S243ECecbo--
+> 
+> -- Steve
+> 
+> 
+> > 
+> > Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
