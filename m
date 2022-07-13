@@ -2,111 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D176C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:01:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230386AbiGMIA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59166 "EHLO
+        id S234902AbiGMIB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234729AbiGMIA0 (ORCPT
+        with ESMTP id S231664AbiGMIBZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:00:26 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4FF2E0249;
-        Wed, 13 Jul 2022 01:00:24 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so2303159pjf.2;
-        Wed, 13 Jul 2022 01:00:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UoKkbTCGppE1RjnxJhiFSTs25wxtlVXgMJ54CPVb2mk=;
-        b=C//LZB2o5gZfRHuzi3bO0tBHyBOV56+mmRQD83HreBx7UgZ6b+k9lJpEFTKvL48jfZ
-         PZ8AGMsGxDIcB9uB1JpbgcvvbXWS43SkHxcnjzRx6WnrfLiDcXwfxsDaI1I0/yQF5/Ic
-         7i/5v5OeaHzG4pmSiOzilSEPMXv3wxJWikuZWtwWpeKbJ9swAGxczj+HZNkcOAmbHE+/
-         PKdvUQCHHHE5C+VszPrXYYqXQ4mqSCuwNkNHwbZVd5e4rqYr3bnSgPpWthOx458ygKfZ
-         BQNWvcJUNp0+VMaqd8pmcWribUA8A3OuXaCOt4AWlijsUdXMjn6vOw+iXjmaHKnt8xTh
-         6XzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UoKkbTCGppE1RjnxJhiFSTs25wxtlVXgMJ54CPVb2mk=;
-        b=B0zcZIC+3OqDkZbJgFhFmWl22Hzqf3U2KEGP7VKSuIeQgUmis1OuWSWpLsnXzxbRcy
-         Nzz3OCyAz2BlB1Wir7nAzEV884+Ci/vz+XEkgN/q5SK759p8vEmQK71XWoVtlrp1lblM
-         MwFvtAy6TH44vx+WvfXXUZC1ezaQJXFyoPaWucUWqK8A7LTLH+Jz1+FNTwpwpGZvaXjE
-         2gR94aRCaAZk5zpIY4YKYd5JhcVHls0ijWm+V8kDAnVK/W9XU31tJTpyDwWCEGfOR8vb
-         hVDLlsRjvlu1L2zezRxjQfcnf224Fz2uJBzpPzsHvbDxvX0IJPujRKYn13v7XZE/E2yS
-         Gk/w==
-X-Gm-Message-State: AJIora/82cBdvfunOifjNyib0lR1qLH0TODPHxLmbE0RC90G8HBdJ4NI
-        XmkxZh//pXcC1VRWWMd8RQYBnfS5N3RzDw==
-X-Google-Smtp-Source: AGRyM1vVTSqvvqV5eXj6we2txPZJMsjJKBNk7FSArmTJ7QPZDu8ST+LhD4F1yFmWUObwyhLSmkFHSg==
-X-Received: by 2002:a17:90b:4f82:b0:1f0:95d:c029 with SMTP id qe2-20020a17090b4f8200b001f0095dc029mr2547730pjb.66.1657699223980;
-        Wed, 13 Jul 2022 01:00:23 -0700 (PDT)
-Received: from cloud-MacBookPro ([2601:646:8201:c2e0:5ee1:7060:fe1d:88a2])
-        by smtp.gmail.com with ESMTPSA id z27-20020aa79f9b000000b0052089e1b88esm8187747pfr.192.2022.07.13.01.00.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 01:00:23 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 01:00:23 -0700
-From:   Binyi Han <dantengknight@gmail.com>
-To:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>
-Cc:     netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/2] staging: qlge: Avoid multiplication while keep the
- same logic
-Message-ID: <31fe21bf4a9e8f13cf27bd50073e9d5d197654ea.1657697683.git.dantengknight@gmail.com>
-References: <cover.1657697683.git.dantengknight@gmail.com>
+        Wed, 13 Jul 2022 04:01:25 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED1FE024B;
+        Wed, 13 Jul 2022 01:01:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657699284; x=1689235284;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=7ENYqPqKTk0ESIJ/QoNgf3KZMY16w1kA6fyDKtIJ5rs=;
+  b=kNCjkJ85qfjLYK9qXQSQByNS+v9xJRKUpuzu8lH80gStYi9Iozs7Rl0h
+   0HWCpUEP5oZSEvmpeWEXVAV+YKETkCaOUeZ3C7XOuk59dNVJkhoQKYaEI
+   GiPmRlpQ8wZQPNJDZokx6u0l3H9jYr7KtOsoh0Dwl96MjgUuJBz++qjsh
+   kqkF32AcVYSyINx5VEzI0vbCScmCr08tsJaZJ4tMhc+b6DZ6c8Rp6xi4C
+   /RCaXDMVFL9tbZ+xIJdK2hij6L3q9l23+m8Kt8u3D76xOALO4b1TytUNh
+   VIeD9HjgOzaIS2Tf8JHtjjtaePuqrlqN41IOwCDb860KmKZJPxx2d0s75
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="286277206"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="286277206"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:01:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="685071104"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 01:00:56 -0700
+Date:   Wed, 13 Jul 2022 15:57:38 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
+ guest private memory
+Message-ID: <20220713075738.GC2831541@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <b1c12a4b-46f7-081b-242f-005a8824aad1@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1657697683.git.dantengknight@gmail.com>
+In-Reply-To: <b1c12a4b-46f7-081b-242f-005a8824aad1@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoid the more expensive multiplication while keep the same logic.
+On Wed, Jul 13, 2022 at 05:58:32AM +0200, Gupta, Pankaj wrote:
+> 
+> > This is the v7 of this series which tries to implement the fd-based KVM
+> > guest private memory. The patches are based on latest kvm/queue branch
+> > commit:
+> > 
+> >    b9b71f43683a (kvm/queue) KVM: x86/mmu: Buffer nested MMU
+> > split_desc_cache only by default capacity
+> > 
+> > Introduction
+> > ------------
+> > In general this patch series introduce fd-based memslot which provides
+> > guest memory through memory file descriptor fd[offset,size] instead of
+> > hva/size. The fd can be created from a supported memory filesystem
+> > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
+> 
+> Thinking a bit, As host side fd on tmpfs or shmem will store memory on host
+> page cache instead of mapping pages into userspace address space. Can we hit
+> double (un-coordinated) page cache problem with this when guest page cache
+> is also used?
 
-Signed-off-by: Binyi Han <dantengknight@gmail.com>
----
- drivers/staging/qlge/qlge_main.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+This is my understanding: in host it will be indeed in page cache (in
+current shmem implementation) but that's just the way it allocates and
+provides the physical memory for the guest. In guest, guest OS will not
+see this fd (absolutely), it only sees guest memory, on top of which it
+can build its own page cache system for its own file-mapped content but
+that is unrelated to host page cache.
 
-diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-index 5209456edc39..4b166c66cfc5 100644
---- a/drivers/staging/qlge/qlge_main.c
-+++ b/drivers/staging/qlge/qlge_main.c
-@@ -3009,9 +3009,10 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
--		     page_entries++)
--			base_indirect_ptr[page_entries] =
--				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+		     page_entries++) {
-+			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
-+			tmp += DB_PAGE_SIZE;
-+		}
- 		cqicb->lbq_addr = cpu_to_le64(rx_ring->lbq.base_indirect_dma);
- 		cqicb->lbq_buf_size =
- 			cpu_to_le16(QLGE_FIT16(qdev->lbq_buf_size));
-@@ -3025,9 +3026,10 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
- 
- 		for (page_entries = 0;
- 		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
--		     page_entries++)
--			base_indirect_ptr[page_entries] =
--				cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-+		     page_entries++) {
-+			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
-+			tmp += DB_PAGE_SIZE;
-+		}
- 		cqicb->sbq_addr =
- 			cpu_to_le64(rx_ring->sbq.base_indirect_dma);
- 		cqicb->sbq_buf_size = cpu_to_le16(SMALL_BUFFER_SIZE);
--- 
-2.25.1
-
+Chao
+> 
+> Thanks,
+> Pankaj
+> 
