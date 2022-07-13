@@ -2,225 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26E6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACD6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236217AbiGMLDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:03:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
+        id S235909AbiGMLEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:04:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236141AbiGMLC4 (ORCPT
+        with ESMTP id S235418AbiGMLE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:02:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA93FFE2F;
-        Wed, 13 Jul 2022 04:02:55 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LjZRy6MGSzlVsD;
-        Wed, 13 Jul 2022 19:01:18 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 19:02:53 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.174) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 19:02:52 +0800
-From:   Li Huafei <lihuafei1@huawei.com>
-To:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
-        <ardb@kernel.org>, <will@kernel.org>, <broonie@kernel.org>
-CC:     <mark.rutland@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
-        <linus.walleij@linaro.org>, <rostedt@goodmis.org>,
-        <nick.hawkins@hpe.com>, <john@phrozen.org>, <mhiramat@kernel.org>,
-        <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <lihuafei1@huawei.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-Subject: [PATCH v2 5/5] ARM: stacktrace: Convert stacktrace to generic ARCH_STACKWALK
-Date:   Wed, 13 Jul 2022 19:00:20 +0800
-Message-ID: <20220713110020.85511-6-lihuafei1@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220713110020.85511-1-lihuafei1@huawei.com>
-References: <20220713110020.85511-1-lihuafei1@huawei.com>
+        Wed, 13 Jul 2022 07:04:29 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFA32DCC
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:04:26 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id bp15so8942055ejb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:04:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H2vdEBeueCC46NEWMBS7OX+jq1Oi+DQhvA6z4iqsUEA=;
+        b=DNDAHNKEieUFuTtZbUpAgzPTvaU9lShge8WP4TdpH1/bnKSW8AbZU2J525O6YlOb9m
+         m0lzulZG0vQt8+Bl+68l04hrV3SS1kqsnQ9FrxWI+P1zN8TKS/2gCQBEOfph8EypdSN0
+         W4VDX2EBJ8aJ9WrLsvZRCqyYQwseX+UAqXn1dzDLrTrv/7cBzegBwueApqcQjEDwlZrh
+         6rLT/RyXjfcihoM/k6HEwUvbnQ7McrD/3nWKx4XcldetGFZLKA/izPR98oMslejGz+s/
+         CsCJD7jDiIR1OMRuidWoKJG2mBhGwyHztJNgln111Uh1SMvcb7t3Dqp7/djGiOJ8B70g
+         QF4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H2vdEBeueCC46NEWMBS7OX+jq1Oi+DQhvA6z4iqsUEA=;
+        b=r56B2eHpU5HvmUMNJ16sdR9/0ZBcXz7Eu7Y+CUbzFgURIqFvd/mhq4cWPMNchuBjN8
+         H5H7HNGzDZeQl1C0mrGq9rh98KfxLAmiFQreGwd+RYdVLDmETMi/+W26Q3eVXirRR3LD
+         o6+U3hPAc4oMA5tYTguZ3lJAtY1Xx7lPLQmxjinuGWaMmd7hxmRxMAIzVku9D8z2TIgV
+         VWS6Pu3Gg5RLv1ZvfKLFVagtNWQKpiev9puvB1/YpTbw137NfWtR0q1+8TRxNd5Y4FNM
+         Lt/m1YffwlNUa19qsPZjKXCFW/anbpTtmknrlkhaeHx3O4x6Lc7aFd3MO7K7S96GyNZB
+         L+7g==
+X-Gm-Message-State: AJIora8BMfqcSFlL451UD/LZLsWd6d4KG6qg5Y0HnkErkLg6dyW/g6OY
+        4nL+OR0IRMRJULX3DwGlTOeSrg==
+X-Google-Smtp-Source: AGRyM1siCcodgLk2eqCklipBMPlX8f7MouuAxxO8N52rGtleY3n6Ljnokw4lELEJvxBEQlLbcxH1nQ==
+X-Received: by 2002:a17:906:9bef:b0:72b:40d1:4276 with SMTP id de47-20020a1709069bef00b0072b40d14276mr2760266ejc.360.1657710264871;
+        Wed, 13 Jul 2022 04:04:24 -0700 (PDT)
+Received: from localhost.localdomain ([195.24.90.54])
+        by smtp.gmail.com with ESMTPSA id c9-20020aa7d609000000b0043a75f62155sm7801152edr.86.2022.07.13.04.04.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 04:04:24 -0700 (PDT)
+From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
+To:     linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Subject: [PATCH 0/2] FIx compile-testing of Venus
+Date:   Wed, 13 Jul 2022 14:03:49 +0300
+Message-Id: <20220713110351.827446-1-stanimir.varbanov@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.174]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Historically architectures have had duplicated code in their stack trace
-implementations for filtering what gets traced. In order to avoid this
-duplication some generic code has been provided using a new interface
-arch_stack_walk(), enabled by selecting ARCH_STACKWALK in Kconfig, which
-factors all this out into the generic stack trace code. Convert ARM to
-use this common infrastructure.
+Hello,
 
-When initializing the stack frame of the current task, arm64 uses
-__builtin_frame_address(1) to initialize the frame pointer, skipping
-arch_stack_walk(), see the commit c607ab4f916d ("arm64: stacktrace:
-don't trace arch_ stack_walk()"). Since __builtin_frame_address(1) does
-not work on ARM, unwind_frame() is used to unwind the stack one layer
-forward before calling walk_stackframe().
+Here are two patches to fix COMPILE_TEST testing of Venus
+driver on x86.
 
-Signed-off-by: Li Huafei <lihuafei1@huawei.com>
----
- arch/arm/Kconfig             |   1 +
- arch/arm/kernel/stacktrace.c | 114 ++++++++++-------------------------
- 2 files changed, 33 insertions(+), 82 deletions(-)
+The first one is fixing Venus compilation. The second patch is
+fixing unmet dependencies seen on QCOM smem driver when
+dependent driver (like Venus) is enabled.
 
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7630ba9cb6cc..8da192853562 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -18,6 +18,7 @@ config ARM
- 	select ARCH_HAS_PHYS_TO_DMA
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SET_MEMORY
-+	select ARCH_STACKWALK
- 	select ARCH_HAS_STRICT_KERNEL_RWX if MMU && !XIP_KERNEL
- 	select ARCH_HAS_STRICT_MODULE_RWX if MMU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if SWIOTLB || !MMU
-diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
-index ec0ca3192775..1b9c91e14d2e 100644
---- a/arch/arm/kernel/stacktrace.c
-+++ b/arch/arm/kernel/stacktrace.c
-@@ -136,98 +136,48 @@ void notrace walk_stackframe(struct stackframe *frame,
- EXPORT_SYMBOL(walk_stackframe);
- 
- #ifdef CONFIG_STACKTRACE
--struct stack_trace_data {
--	struct stack_trace *trace;
--	unsigned int no_sched_functions;
--	unsigned int skip;
--};
--
--static bool save_trace(void *d, unsigned long addr)
--{
--	struct stack_trace_data *data = d;
--	struct stack_trace *trace = data->trace;
--
--	if (data->no_sched_functions && in_sched_functions(addr))
--		return true;
--	if (data->skip) {
--		data->skip--;
--		return true;
--	}
--
--	trace->entries[trace->nr_entries++] = addr;
--	return trace->nr_entries < trace->max_entries;
--}
--
--/* This must be noinline to so that our skip calculation works correctly */
--static noinline void __save_stack_trace(struct task_struct *tsk,
--	struct stack_trace *trace, unsigned int nosched)
-+static void start_stack_trace(struct stackframe *frame, struct task_struct *task,
-+			      unsigned long fp, unsigned long sp,
-+			      unsigned long lr, unsigned long pc)
- {
--	struct stack_trace_data data;
--	struct stackframe frame;
--
--	data.trace = trace;
--	data.skip = trace->skip;
--	data.no_sched_functions = nosched;
--
--	if (tsk != current) {
--		/* task blocked in __switch_to */
--		frame.fp = thread_saved_fp(tsk);
--		frame.sp = thread_saved_sp(tsk);
--		frame.lr = 0;		/* recovered from the stack */
--		frame.pc = thread_saved_pc(tsk);
--	} else {
--		/* We don't want this function nor the caller */
--		data.skip += 2;
--		frame.fp = (unsigned long)__builtin_frame_address(0);
--		frame.sp = current_stack_pointer;
--		frame.lr = (unsigned long)__builtin_return_address(0);
--here:
--		frame.pc = (unsigned long)&&here;
--	}
-+	frame->fp = fp;
-+	frame->sp = sp;
-+	frame->lr = lr;
-+	frame->pc = pc;
- #ifdef CONFIG_KRETPROBES
--	frame.kr_cur = NULL;
--	frame.tsk = tsk;
-+	frame->kr_cur = NULL;
-+	frame->tsk = task;
- #endif
- #ifdef CONFIG_UNWINDER_FRAME_POINTER
--	frame.ex_frame = false;
-+	frame->ex_frame = in_entry_text(frame->pc) ? true : false;
- #endif
--
--	walk_stackframe(&frame, save_trace, &data);
- }
- 
--void save_stack_trace_regs(struct pt_regs *regs, struct stack_trace *trace)
-+void arch_stack_walk(stack_trace_consume_fn consume_entry, void *cookie,
-+		     struct task_struct *task, struct pt_regs *regs)
- {
--	struct stack_trace_data data;
- 	struct stackframe frame;
- 
--	data.trace = trace;
--	data.skip = trace->skip;
--	data.no_sched_functions = 0;
--
--	frame.fp = regs->ARM_fp;
--	frame.sp = regs->ARM_sp;
--	frame.lr = regs->ARM_lr;
--	frame.pc = regs->ARM_pc;
--#ifdef CONFIG_KRETPROBES
--	frame.kr_cur = NULL;
--	frame.tsk = current;
--#endif
--#ifdef CONFIG_UNWINDER_FRAME_POINTER
--	frame.ex_frame = in_entry_text(frame.pc) ? true : false;
--#endif
--
--	walk_stackframe(&frame, save_trace, &data);
--}
--
--void save_stack_trace_tsk(struct task_struct *tsk, struct stack_trace *trace)
--{
--	__save_stack_trace(tsk, trace, 1);
--}
--EXPORT_SYMBOL(save_stack_trace_tsk);
-+	if (regs) {
-+		start_stack_trace(&frame, NULL, regs->ARM_fp, regs->ARM_sp,
-+				  regs->ARM_lr, regs->ARM_pc);
-+	} else if (task != current) {
-+		/* task blocked in __switch_to */
-+		start_stack_trace(&frame, task, thread_saved_fp(task),
-+				  thread_saved_sp(task), 0,
-+				  thread_saved_pc(task));
-+	} else {
-+here:
-+		start_stack_trace(&frame, task,
-+				  (unsigned long)__builtin_frame_address(0),
-+				  current_stack_pointer,
-+				  (unsigned long)__builtin_return_address(0),
-+				  (unsigned long)&&here);
-+		/* skip this function */
-+		if (unwind_frame(&frame))
-+			return;
-+	}
- 
--void save_stack_trace(struct stack_trace *trace)
--{
--	__save_stack_trace(current, trace, 0);
-+	walk_stackframe(&frame, consume_entry, cookie);
- }
--EXPORT_SYMBOL_GPL(save_stack_trace);
- #endif
+Comments are welcome!
+
+regards,
+Stan
+
+Stanimir Varbanov (2):
+  venus: kconfig: Fix compile-testing on x86 platforms
+  soc: qcom: smem: Fix compile-testing on dependent drivers
+
+ drivers/media/platform/qcom/venus/Kconfig | 4 +++-
+ drivers/soc/qcom/Kconfig                  | 2 +-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
 -- 
-2.17.1
+2.25.1
 
