@@ -2,57 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3C4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:12:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C996C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235147AbiGMIMu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
+        id S235153AbiGMIMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234375AbiGMIMe (ORCPT
+        with ESMTP id S234736AbiGMIMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:12:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1EBBE95F6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:33 -0700 (PDT)
+        Wed, 13 Jul 2022 04:12:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4700CE95E9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CEC0619E8
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 713CE619FA
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15FF4C341CD;
-        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203E7C385A5;
+        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=yAgmeyAxqS0EcUuu/GWUo/Bto3NomZ1v5WXFoUCWkH4=;
+        bh=pMNi1ayauvZyE2hTTFtqz2aomeuBB+Si8/98xbKOU7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J+tywVVfa0yg+WLWvTYYnUDVAjQOJNqjcLsVUISTqT04FIbr/7jXzt9hDgw3eb9gi
-         Bi4Cw8eK+82mElILruz9ow38++ESt73z+M229eKhcLjxUJrYe7OHS50rpkJgwpjySa
-         2b88NcaOagz8GZiTcxT1mMZhc4tsURSNdcvUQgeD6UjhD6mMvkm70NAi1TqSGBEkJr
-         bqPsyBWNK3lCmE/UVf5mId4Xn2Lt1YGTSZ0eBmUwnmozi89jwJstOvAFfh4Xz9n7Jw
-         mTelJB7hfgWBhnB51v4rz5E5wzb45B7bvpD7IE6itP19NbRZeJjLt0vxOaEzcaWDmc
-         VN10U+O6SXQsg==
+        b=JA+OgdF31PhwaS1YOCRdIVQLb2X8X482C5ZsYll0jnQo2MgvsEotWh9vyg4ZRzZhs
+         QlIXZ5MMmKT9OJ0NSxhFT4fJS1lu7ZSg7tSa4u3acRI6ZuP1AKgFh0/WCA+91U4Wbn
+         yv8xGamrvTeF+88ib22sX5IFggoU04sVgKYJK2+d9PvalOiN1Ms5f+PNpUER21bvjr
+         nSVKgP4W13+tj9dZrrX1ibKIIIHn6WZSMId+UZ0Pi4avLRsgGtCW+zHMGgTF4FFC+j
+         ZuwJelLuQwjJtU4S8AsV4mXuzwVaoL4N//Myx7WeNXNGXzVtjd7NSyNzuGZhEZBvR+
+         RjVaO9fLZVDog==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004zse-Bc;
+        id 1oBXTx-004ztR-LH;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>, Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
+        Imre Deak <imre.deak@intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        Manasi Navare <manasi.d.navare@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Zhi Wang <zhi.a.wang@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-gvt-dev@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH v2 03/39] drm/i915/gvt: Fix kernel-doc for intel_vgpu_*_resource()
-Date:   Wed, 13 Jul 2022 09:11:51 +0100
-Message-Id: <4801d75e6c43c83fd5bba13bea3885da7b66fa9c.1657699522.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 17/39] drm/i915: skl_scaler: fix return value kernel-doc markup
+Date:   Wed, 13 Jul 2022 09:12:05 +0100
+Message-Id: <58fa90350ac1fc4f2b37a50179bdb38613d5fa5d.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -63,52 +65,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+The way it is, it produces this warning:
 
-Fix the following W=1 kernel warnings:
+	Documentation/gpu/i915:150: ./drivers/gpu/drm/i915/display/skl_scaler.c:213: WARNING: Block quote ends without a blank line; unexpected unindent.
 
-drivers/gpu/drm/i915/gvt/aperture_gm.c:308: warning: expecting prototype
-for inte_gvt_free_vgpu_resource(). Prototype was for
-intel_vgpu_free_resource() instead.
+Use list markups to suppress the warning.
 
-drivers/gpu/drm/i915/gvt/aperture_gm.c:344: warning: expecting prototype
-for intel_alloc_vgpu_resource(). Prototype was for
-intel_vgpu_alloc_resource() instead.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gvt/aperture_gm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/display/skl_scaler.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gvt/aperture_gm.c b/drivers/gpu/drm/i915/gvt/aperture_gm.c
-index 557f3314291a..3b81a6d35a7b 100644
---- a/drivers/gpu/drm/i915/gvt/aperture_gm.c
-+++ b/drivers/gpu/drm/i915/gvt/aperture_gm.c
-@@ -298,7 +298,7 @@ static int alloc_resource(struct intel_vgpu *vgpu,
- }
- 
- /**
-- * inte_gvt_free_vgpu_resource - free HW resource owned by a vGPU
-+ * intel_vgpu_free_resource() - free HW resource owned by a vGPU
-  * @vgpu: a vGPU
+diff --git a/drivers/gpu/drm/i915/display/skl_scaler.c b/drivers/gpu/drm/i915/display/skl_scaler.c
+index 4092679be21e..59099f793d3e 100644
+--- a/drivers/gpu/drm/i915/display/skl_scaler.c
++++ b/drivers/gpu/drm/i915/display/skl_scaler.c
+@@ -208,9 +208,9 @@ int skl_update_scaler_crtc(struct intel_crtc_state *crtc_state)
+  * @crtc_state: crtc's scaler state
+  * @plane_state: atomic plane state to update
   *
-  * This function is used to free the HW resource owned by a vGPU.
-@@ -328,7 +328,7 @@ void intel_vgpu_reset_resource(struct intel_vgpu *vgpu)
- }
- 
- /**
-- * intel_alloc_vgpu_resource - allocate HW resource for a vGPU
-+ * intel_vgpu_alloc_resource() - allocate HW resource for a vGPU
-  * @vgpu: vGPU
-  * @param: vGPU creation params
-  *
+- * Return
+- *     0 - scaler_usage updated successfully
+- *    error - requested scaling cannot be supported or other error condition
++ * Return:
++ * * 0 - scaler_usage updated successfully
++ * * error - requested scaling cannot be supported or other error condition
+  */
+ int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
+ 			    struct intel_plane_state *plane_state)
 -- 
 2.36.1
 
