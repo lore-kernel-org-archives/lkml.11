@@ -2,84 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C712BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:02:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F80C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:03:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237111AbiGMQCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:02:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39208 "EHLO
+        id S237120AbiGMQDP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:03:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237124AbiGMQCj (ORCPT
+        with ESMTP id S236062AbiGMQDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:02:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF2F850181;
-        Wed, 13 Jul 2022 09:02:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62047B820D6;
-        Wed, 13 Jul 2022 16:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB411C34114;
-        Wed, 13 Jul 2022 16:02:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657728155;
-        bh=0x7la21sx0eXpWEyHVI4LAHH8EFkUPLyeiwrINqKQwI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i0rDRvXCD2agdvFTtmYpi2THI4Nae0zbbA+hI6/F0lLe6dDQuxOP06s/qRXSTUlpJ
-         ZQKK/s/DUnJzUBOJ0/CCzyJSCi3G52ztdC9MsP2WI1J3tbZb1wdmhdgVvB/KbKQMKh
-         pHu9/9arqbvertIappvNpaFz3FC2YrptGirOAOLQTaq7J3jy4Bp1r5ln9tvC5diYSs
-         yhWrds+OTMwVsegDB6TZAWZEMe2vjDb5cdYKmRNtS+hUy0F9FSWAlXMG7vi2TMkKsa
-         q5e/HfE//IrBeP6/TY7UvT2iUh38ebMfmeqaZ2KCWmyEC/ZAYuKyvdZ8yzoGoRGWAU
-         +sE9afk3Ll04g==
-Date:   Wed, 13 Jul 2022 17:12:23 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Michal Simek <michal.simek@amd.com>,
-        Conall O'Griofa <conall.o'griofa@xilinx.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michal Simek <michal.simek@xilinx.com>
-Subject: Re: [PATCH v1 1/2] iio: adc: xilinx-xadc: Make use of device
- properties
-Message-ID: <20220713171223.01005ca7@jic23-huawei>
-In-Reply-To: <YsMSvSJdc/eVqnYU@smile.fi.intel.com>
-References: <20220531141118.64540-1-andriy.shevchenko@linux.intel.com>
-        <20220603183224.540b3808@jic23-huawei>
-        <e2efcf6d-ed85-dc6e-64e1-f0efedd4a673@amd.com>
-        <YsBYvPKfZRLygCyz@smile.fi.intel.com>
-        <1d6eba67-5a63-e1b2-c9cd-583b950ddca6@amd.com>
-        <YsMSvSJdc/eVqnYU@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Wed, 13 Jul 2022 12:03:13 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C0A5007A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:03:12 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id h13-20020a63e14d000000b0040df75eaa2eso5486204pgk.21
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 09:03:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=wQFf5DtzT/85726aL6fYNeFoAW7JfAnPXxyXMxrgKiQ=;
+        b=a9/zMiTHcqWMd+J3C257IhXNuu5PxPM5fDb6TU3PHWOB1kgt3Lm39dhnU2VIu7xHgn
+         uwIP7Xa89qJOVQLs1H7NqaHGH8civvoBQ9K3MDohaRkvS1R87zi5oxCv2rXb+VCwTS18
+         MYO+kIwk1DIEKegBGOk3UIG/w9ElHvgQR0HS/0ybAIQtEx4A68l1BUOothu89sBs39cj
+         WlV9FXlzcw/8r97hVav6900fw2Syu8qYMY/68N4XOtzI22NW5ftg5Xj9A9QPfTb690AF
+         pmu3yVc8+iF/IAGSUNKn1fpqTYZSZ1+d0TfRagV12IUaJSt4H89mZvtRfzrXSC9F6FO3
+         MZpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=wQFf5DtzT/85726aL6fYNeFoAW7JfAnPXxyXMxrgKiQ=;
+        b=QmBXU6OD6kF01lkl0mfilZ0nzMHsLF9otSlFxshwYhyW0fxpcoPaakKwIpjMCaQc92
+         Ru79nftAoFlCZj7TaNcEWXXb+EntsqkSsrARPvWoWrR1rwm/uKmGe8NSqd+4oZozr8RU
+         hYqR826jxHd2r/k1vMW0AwBMx/dvw46gjD9ykrsrIDXMk1OhIMLbbpGPbH6zK4UtSL1c
+         g1+2QErbNKljrLL1ndT2e2R9pJAS/vvthMfCtIeqM+SS67LbJnP7xX8Dj+GsvCPak481
+         1h5HSWQWiKOEey1tZEXbldKIvoz0wkwy/ZFYiloqcIFpvsfuSI6Hh8t1uVXvA+M1mH0m
+         xDeQ==
+X-Gm-Message-State: AJIora/YNpQdVOlhmM7msgVxqHWNXD0sUwbCqbOapWwlHiN+wY3yt/Yo
+        giCKXHIdHcGRD8dp+S/5mHqaFZk=
+X-Google-Smtp-Source: AGRyM1v1WK0jGrCJMEUKVpJExOzA2zo4Sy0PuOQgCBFakMKx7sRoLxDnrQNYqJ3WwE+GQGCvOdzvH3w=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a05:6a00:ad0:b0:4e1:2d96:2ab0 with SMTP id
+ c16-20020a056a000ad000b004e12d962ab0mr4006442pfl.3.1657728192181; Wed, 13 Jul
+ 2022 09:03:12 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 09:03:10 -0700
+In-Reply-To: <4411407.LvFx2qVVIh@pwmachine>
+Message-Id: <Ys7svh29R5jA6QAr@google.com>
+Mime-Version: 1.0
+References: <20220713144439.19738-1-flaniel@linux.microsoft.com>
+ <20220713144439.19738-2-flaniel@linux.microsoft.com> <CAADnVQLVSoetPd5d1_tf=KkGou9iUWkt3ovgi8eeCWtbJtRUiw@mail.gmail.com>
+ <4411407.LvFx2qVVIh@pwmachine>
+Subject: Re: [PATCH v3 1/1] bpftool: Align dumped file generated header with skeletons.
+From:   sdf@google.com
+To:     Francis Laniel <flaniel@linux.microsoft.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022 19:18:05 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> On Mon, Jul 04, 2022 at 12:43:26PM +0200, Michal Simek wrote:
-> > On 7/2/22 16:39, Andy Shevchenko wrote:  
-> > > On Mon, Jun 20, 2022 at 04:58:04PM +0200, Michal Simek wrote:  
-> 
-> ...
-> 
-> > > Hmm... No news?  
-> > 
-> > Anand unfortunately left the company. I have asked testing team to test this
-> > patch and they can't see any issue.
-> > That's why:
-> > Acked-by: Michal Simek <michal.simek@amd.com>  
-> 
-> Ah, thanks! Jonathan, I guess we are set to apply now.
-> 
-
-Applied to the togreg branch of iio.git and pushed out as testing for all the
-normal reasons.
-
-Thanks,
-
-Jonathan
+T24gMDcvMTMsIEZyYW5jaXMgTGFuaWVsIHdyb3RlOg0KPiBMZSBtZXJjcmVkaSAxMyBqdWlsbGV0
+IDIwMjIsIDE2OjQ3OjE3IENFU1QgQWxleGVpIFN0YXJvdm9pdG92IGEg77+9Y3JpdCA6DQo+ID4g
+T24gV2VkLCBKdWwgMTMsIDIwMjIgYXQgNzo0NSBBTSBGcmFuY2lzIExhbmllbA0KPiA+DQo+ID4g
+PGZsYW5pZWxAbGludXgubWljcm9zb2Z0LmNvbT4gd3JvdGU6DQo+ID4gPiBUaGlzIGNvbW1pdCBh
+ZGRzIHRoZSBmb2xsb3dpbmcgbGluZXMgdG8gZmlsZSBnZW5lcmF0ZWQgYnkgZHVtcDoNCj4gPiA+
+IC8qIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiAoTEdQTC0yLjEgT1IgQlNELTItQ2xhdXNlKSAq
+Lw0KPiA+ID4gLyogVEhJUyBGSUxFIElTIEFVVE9HRU5FUkFURUQgQlkgQlBGVE9PTCEgKi8NCj4g
+PiA+IEhlbmNlLCB0aGUgZHVtcGVkIGZpbGUgaGVhZGVycyBmb2xsb3dzIHRoYXQgb2Ygc2tlbGV0
+b25zLg0KPiA+ID4NCj4gPiA+IFNpZ25lZC1vZmYtYnk6IEZyYW5jaXMgTGFuaWVsIDxmbGFuaWVs
+QGxpbnV4Lm1pY3Jvc29mdC5jb20+DQo+ID4gPiAtLS0NCj4gPiA+DQo+ID4gPiAgdG9vbHMvYnBm
+L2JwZnRvb2wvYnRmLmMgfCAyICsrDQo+ID4gPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9u
+cygrKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS90b29scy9icGYvYnBmdG9vbC9idGYuYyBi
+L3Rvb2xzL2JwZi9icGZ0b29sL2J0Zi5jDQo+ID4gPiBpbmRleCA3ZTZhY2NiOWQ5ZjcuLjA2NmEw
+YWNkMGVjZCAxMDA2NDQNCj4gPiA+IC0tLSBhL3Rvb2xzL2JwZi9icGZ0b29sL2J0Zi5jDQo+ID4g
+PiArKysgYi90b29scy9icGYvYnBmdG9vbC9idGYuYw0KPiA+ID4gQEAgLTQyNSw2ICs0MjUsOCBA
+QCBzdGF0aWMgaW50IGR1bXBfYnRmX2MoY29uc3Qgc3RydWN0IGJ0ZiAqYnRmLA0KPiA+ID4NCj4g
+PiA+ICAgICAgICAgaWYgKGVycikNCj4gPiA+DQo+ID4gPiAgICAgICAgICAgICAgICAgcmV0dXJu
+IGVycjsNCj4gPiA+DQo+ID4gPiArICAgICAgIHByaW50ZigiLyogU1BEWC1MaWNlbnNlLUlkZW50
+aWZpZXI6IChMR1BMLTIuMSBPUiBCU0QtMi1DbGF1c2UpDQo+ID4gPiAqL1xuIik7DQo+ID4gVGhp
+cyB3YXMgZGlzY3Vzc2VkIGVhcmxpZXIuIEl0J3MgaW5jb3JyZWN0IGFuZCB3ZSBjYW5ub3QgYWRk
+IGp1c3QgaGVhZGVyDQo+ID4gdG8gdm1saW51eC5oDQoNCj4gT29wcyBzb3JyeSwgSSB3aWxsIHNl
+bmQgYSB2NCBkcm9wcGluZyBpdC4NCj4gTm9uZXRoZWxlc3MgY2FuIHlvdSBwbGVhc2Ugc2VuZCBt
+ZSBhIGxpbmsgZm9yIGEgZGlzY3Vzc2lvbiBhYm91dCB0aGlzPw0KDQorMSwgR29vZ2xlIG9ubHkg
+Z2l2ZXMgbWUgdGhlIGZvbGxvd2luZzoNCg0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvYnBmLzg3
+Y3ptd2UyNmMuZnNmQHRva2UuZGsvVC8NCg0KKHdoaWNoIGlzIHNvbWV3aGF0IGluY29uY2x1c2l2
+ZT8pDQo=
