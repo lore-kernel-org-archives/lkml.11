@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C996C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52901C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235153AbiGMIMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41642 "EHLO
+        id S235175AbiGMIM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234736AbiGMIMf (ORCPT
+        with ESMTP id S234737AbiGMIMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:35 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4700CE95E9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4768DE95F2
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 713CE619FA
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F803619F9
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 203E7C385A5;
-        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A57BC341D7;
+        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=pMNi1ayauvZyE2hTTFtqz2aomeuBB+Si8/98xbKOU7g=;
+        bh=XHVdLY91hJyhxc9rQko5XV9oeLHtBy2npWeICKEo4Mw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JA+OgdF31PhwaS1YOCRdIVQLb2X8X482C5ZsYll0jnQo2MgvsEotWh9vyg4ZRzZhs
-         QlIXZ5MMmKT9OJ0NSxhFT4fJS1lu7ZSg7tSa4u3acRI6ZuP1AKgFh0/WCA+91U4Wbn
-         yv8xGamrvTeF+88ib22sX5IFggoU04sVgKYJK2+d9PvalOiN1Ms5f+PNpUER21bvjr
-         nSVKgP4W13+tj9dZrrX1ibKIIIHn6WZSMId+UZ0Pi4avLRsgGtCW+zHMGgTF4FFC+j
-         ZuwJelLuQwjJtU4S8AsV4mXuzwVaoL4N//Myx7WeNXNGXzVtjd7NSyNzuGZhEZBvR+
-         RjVaO9fLZVDog==
+        b=HYxXuisDPJyuOaCaGN4bCEGCezzknJJGCA/MVDHKdQmm87fsoV96WRrzq/TAPw4sE
+         5dIWnfUmYYsO7m4HwaQqy9nEeMbGKtbPeJ3VxVeobZAWBQiLK9idf70GmbslvTVBh+
+         AFrOWk1npnzJSlRVvbwMBxlmibCOuddnHcLQPHEZp1j103r/QjpP87HssMaQ7+lq7s
+         2EIeXr/d0QfnPYFG6lyMhwhR3YJZd4/U/pPNEowRtcycSOFB9dZY6LLa/mbTkYreX7
+         /zUXyr1FFNcNV0tTcmevaBMdoEz+Wfb71ITesVjVtiRw1Xd1PK97PJp7G33+hvrvQC
+         cb+3+9jEm5Sog==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004ztR-LH;
+        id 1oBXTx-004zsz-Gl;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Imre Deak <imre.deak@intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Juha-Pekka Heikkila <juhapekka.heikkila@gmail.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Nirmoy Das <nirmoy.das@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Stanislav Lisovskiy <stanislav.lisovskiy@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 17/39] drm/i915: skl_scaler: fix return value kernel-doc markup
-Date:   Wed, 13 Jul 2022 09:12:05 +0100
-Message-Id: <58fa90350ac1fc4f2b37a50179bdb38613d5fa5d.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 10/39] drm/i915: i915_gem_ttm: fix a kernel-doc markup
+Date:   Wed, 13 Jul 2022 09:11:58 +0100
+Message-Id: <836c640e6c65cb2b444d4072b93eaae1e9636897.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -65,38 +64,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The way it is, it produces this warning:
+Two new fields were added to __i915_gem_ttm_object_init() without
+their corresponding documentation.
 
-	Documentation/gpu/i915:150: ./drivers/gpu/drm/i915/display/skl_scaler.c:213: WARNING: Block quote ends without a blank line; unexpected unindent.
+Document them.
 
-Use list markups to suppress the warning.
-
+Fixes: 9b78b5dade2d ("drm/i915: add i915_gem_object_create_region_at()")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/display/skl_scaler.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/display/skl_scaler.c b/drivers/gpu/drm/i915/display/skl_scaler.c
-index 4092679be21e..59099f793d3e 100644
---- a/drivers/gpu/drm/i915/display/skl_scaler.c
-+++ b/drivers/gpu/drm/i915/display/skl_scaler.c
-@@ -208,9 +208,9 @@ int skl_update_scaler_crtc(struct intel_crtc_state *crtc_state)
-  * @crtc_state: crtc's scaler state
-  * @plane_state: atomic plane state to update
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 053b0022ddd0..e8cfb47b5f5a 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1187,7 +1187,9 @@ void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
+  * __i915_gem_ttm_object_init - Initialize a ttm-backed i915 gem object
+  * @mem: The initial memory region for the object.
+  * @obj: The gem object.
++ * @offset: The range start.
+  * @size: Object size in bytes.
++ * @page_size: The requested page size in bytes for this object.
+  * @flags: gem object flags.
   *
-- * Return
-- *     0 - scaler_usage updated successfully
-- *    error - requested scaling cannot be supported or other error condition
-+ * Return:
-+ * * 0 - scaler_usage updated successfully
-+ * * error - requested scaling cannot be supported or other error condition
-  */
- int skl_update_scaler_plane(struct intel_crtc_state *crtc_state,
- 			    struct intel_plane_state *plane_state)
+  * Return: 0 on success, negative error code on failure.
 -- 
 2.36.1
 
