@@ -2,99 +2,283 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16629CCA485
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD503C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiGMFbK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 01:31:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43210 "EHLO
+        id S234455AbiGMFbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 01:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234305AbiGMFaa (ORCPT
+        with ESMTP id S234311AbiGMFab (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 01:30:30 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D82D053D2C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:37 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id g4so9541876pgc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mIKNUqGIZ9Qcs/aIEKfbb45zWwyQ7ymHQgJEzGuRfmY=;
-        b=Ny8rhS1WZKQMuXVGjP+3D5R7oWYDMe916j3R1gOjKLQ0uNcPLnRsXXTJ8aJ6zhZFMs
-         rDLokRXUEOIpoWENgB3XswNHOHfvZ5skLPosEfWp57e3Q8YP11IJDqp07+73sNtbwLn7
-         n6oaXuYJRmojFkeXUYCpZpJZBTUBjmigVSXHD8izxH1M+Vo2x98/MNSbpSQV4IBrR7E9
-         zNozXCMeMBmxuWeMrNYy6N7I062K5Y/qPoHuodNTT5d6CdrcGIi3BMihJrXpFCLxFR/E
-         ROd0OsHcxjwqkHcyV8hnHYbYdUmcKVxwq5Fm6+VFDCHtWDhUCp7jNvcgfSXSQrrBCWpK
-         cYaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mIKNUqGIZ9Qcs/aIEKfbb45zWwyQ7ymHQgJEzGuRfmY=;
-        b=X8PLUt/yFHGUFt99VOpqhzMCKvUTPwHHoXAyRqiBiKY/0r4K/4JBmYGlRDyajpUCUP
-         2BTqaygw8Cvy9MZISSiDMYa5LaOwsMPCwNxzWvD5IsP8es2WA1KPtz1alRez7fE9hG02
-         etsNWncHFIBKlRNnEl8LhrbH5loHoBBd7Aj6xACu17baGlDKzfzmBDZxOMbjO4rEQq7G
-         2XD6Q8Bu0eGdWOb62ozJc03jxj5qDbQam7iEGbh6DEna+QpTe0NkL6ac+xPsFZa+PMN/
-         skBanNMt6F/ILt2wzOUa35Elsb3qVNy65qubo46tGYrTgt4tMKg8hwnp2Oxx+fGyLzrx
-         cGPA==
-X-Gm-Message-State: AJIora9LzQ8L0n86O685BpTPF6Vpip5C+Je6RHjArFKLQ3ICJDxEClyF
-        sjbMKQMzclD4lKstx6sSQfjdOcDb0ypjyw==
-X-Google-Smtp-Source: AGRyM1vwYLqbhaAA03Mv+i80sYx6T4NMLgMu73ZRb+nLgx+7PT4COnSsBifwZ3Z9fx92oFlYFbznkw==
-X-Received: by 2002:a63:1c4c:0:b0:412:6eef:f91a with SMTP id c12-20020a631c4c000000b004126eeff91amr1520167pgm.361.1657690176550;
+        Wed, 13 Jul 2022 01:30:31 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2F62F4F19B;
         Tue, 12 Jul 2022 22:29:36 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id p23-20020a170902a41700b0016a71196150sm7777872plq.135.2022.07.12.22.29.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 22:29:35 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 10:59:31 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Perry Yuan <Perry.Yuan@amd.com>
-Cc:     rafael.j.wysocki@intel.com, Ray.Huang@amd.com,
-        Deepak.Sharma@amd.com, Mario.Limonciello@amd.com,
-        Nathan.Fontenot@amd.com, Alexander.Deucher@amd.com,
-        Jinzhou.Su@amd.com, Xinmei.Huang@amd.com, Xiaojian.Du@amd.com,
-        Li.Meng@amd.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v3 12/13] arch_topology: remove the acpi_disabled check
-Message-ID: <20220713052931.hifhtonr7rkg3r2d@vireshk-i7>
-References: <cover.1657638462.git.Perry.Yuan@amd.com>
- <c31b9c213e7c3b344b299abdbef87b7d1bc29d57.1657638462.git.Perry.Yuan@amd.com>
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id EFEF616AC;
+        Wed, 13 Jul 2022 08:31:22 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com EFEF616AC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1657690282;
+        bh=MsGCYuH4hth07vE45hdKdzDWXH/lqfjSFMGO2xICtoI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=cAolDRa8/nIPmMItmppDc4aUBdj+AfPLmrM2uHbPAaf0XM3CJ3rH+boWesBwnHB/O
+         iQ0y2yFn+xiN15d/Nu2YiPwCjydXUMYVLXsPp9O8W3JhlowKFbkPm6JpHcv3KbUjtP
+         O/fSBOtFbtUtRHj3KrgorPwLIM+z4HzKgkGl700Y=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 13 Jul 2022 08:29:27 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v5 07/23] ata: libahci_platform: Convert to using devm bulk clocks API
+Date:   Wed, 13 Jul 2022 08:29:00 +0300
+Message-ID: <20220713052917.27036-8-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220713052917.27036-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220713052917.27036-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c31b9c213e7c3b344b299abdbef87b7d1bc29d57.1657638462.git.Perry.Yuan@amd.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12-07-22, 11:43, Perry Yuan wrote:
-> "acpi_cpc_valid" function already includes the acpi_disabled check and we can
-> remove the duplicated check here
-> 
-> Signed-off-by: Perry Yuan <Perry.Yuan@amd.com>
-> ---
->  drivers/base/arch_topology.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
-> index 579c851a2bd7..73a8cb31529d 100644
-> --- a/drivers/base/arch_topology.c
-> +++ b/drivers/base/arch_topology.c
-> @@ -352,7 +352,7 @@ void topology_init_cpu_capacity_cppc(void)
->  	struct cppc_perf_caps perf_caps;
->  	int cpu;
->  
-> -	if (likely(acpi_disabled || !acpi_cpc_valid()))
-> +	if (likely(!acpi_cpc_valid()))
->  		return;
->  
->  	raw_capacity = kcalloc(num_possible_cpus(), sizeof(*raw_capacity),
+In order to simplify the clock-related code there is a way to convert the
+current fixed clocks array into using the common bulk clocks kernel API
+with dynamic set of the clock handlers and device-managed clock-resource
+tracking. It's a bit tricky due to the complication coming from the
+requirement to support the platforms (da850, spear13xx) with the
+non-OF-based clock source, but still doable.
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Before this modification there are two methods have been used to get the
+clocks connected to an AHCI device: clk_get() - to get the very first
+clock in the list and of_clk_get() - to get the rest of them. Basically
+the platforms with non-OF-based clocks definition could specify only a
+single reference clock source. The platforms with OF-hw clocks have been
+luckier and could setup up to AHCI_MAX_CLKS clocks. Such semantic can be
+retained with using devm_clk_bulk_get_all() to retrieve the clocks defined
+via the DT firmware and devm_clk_get_optional() otherwise. In both cases
+using the device-managed version of the methods will cause the automatic
+resources deallocation on the AHCI device removal event. The only
+complicated part in the suggested approach is the explicit allocation and
+initialization of the clk_bulk_data structure instance for the non-OF
+reference clocks. It's required in order to use the Bulk Clocks API for
+the both denoted cases of the clocks definition.
 
+Note aside with the clock-related code reduction and natural
+simplification, there are several bonuses the suggested modification
+provides. First of all the limitation of having no greater than
+AHCI_MAX_CLKS clocks is now removed, since the devm_clk_bulk_get_all()
+method will allocate as many reference clocks data descriptors as there
+are clocks specified for the device. Secondly the clock names are
+auto-detected. So the LLDD (glue) drivers can make sure that the required
+clocks are specified just by checking the clock IDs in the clk_bulk_data
+array.  Thirdly using the handy Bulk Clocks kernel API improves the
+clocks-handling code readability. And the last but not least this
+modification implements a true optional clocks support to the
+ahci_platform_get_resources() method. Indeed the previous clocks getting
+procedure just stopped getting the clocks on any errors (aside from
+non-critical -EPROBE_DEFER) in a way so the callee wasn't even informed
+about abnormal loop termination. The new implementation lacks of such
+problem. The ahci_platform_get_resources() will return an error code if
+the corresponding clocks getting method ends execution abnormally.
+
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
+
+---
+
+Changelog v2:
+- Convert to checking the error-case first in the devm_clk_bulk_get_all()
+  method invocation. (@Damien)
+- Fix some grammar mistakes in the comments.
+---
+ drivers/ata/ahci.h             |  4 +-
+ drivers/ata/libahci_platform.c | 84 ++++++++++++++++------------------
+ 2 files changed, 41 insertions(+), 47 deletions(-)
+
+diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
+index ad11a4c52fbe..c3770a19781b 100644
+--- a/drivers/ata/ahci.h
++++ b/drivers/ata/ahci.h
+@@ -38,7 +38,6 @@
+ 
+ enum {
+ 	AHCI_MAX_PORTS		= 32,
+-	AHCI_MAX_CLKS		= 5,
+ 	AHCI_MAX_SG		= 168, /* hardware max is 64K */
+ 	AHCI_DMA_BOUNDARY	= 0xffffffff,
+ 	AHCI_MAX_CMDS		= 32,
+@@ -339,7 +338,8 @@ struct ahci_host_priv {
+ 	u32			em_msg_type;	/* EM message type */
+ 	u32			remapped_nvme;	/* NVMe remapped device count */
+ 	bool			got_runtime_pm; /* Did we do pm_runtime_get? */
+-	struct clk		*clks[AHCI_MAX_CLKS]; /* Optional */
++	unsigned int		n_clks;
++	struct clk_bulk_data	*clks;		/* Optional */
+ 	struct reset_control	*rsts;		/* Optional */
+ 	struct regulator	**target_pwrs;	/* Optional */
+ 	struct regulator	*ahci_regulator;/* Optional */
+diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+index 1e9e825d6cc5..814804582d1d 100644
+--- a/drivers/ata/libahci_platform.c
++++ b/drivers/ata/libahci_platform.c
+@@ -8,6 +8,7 @@
+  *   Anton Vorontsov <avorontsov@ru.mvista.com>
+  */
+ 
++#include <linux/clk-provider.h>
+ #include <linux/clk.h>
+ #include <linux/kernel.h>
+ #include <linux/gfp.h>
+@@ -97,28 +98,14 @@ EXPORT_SYMBOL_GPL(ahci_platform_disable_phys);
+  * ahci_platform_enable_clks - Enable platform clocks
+  * @hpriv: host private area to store config values
+  *
+- * This function enables all the clks found in hpriv->clks, starting at
+- * index 0. If any clk fails to enable it disables all the clks already
+- * enabled in reverse order, and then returns an error.
++ * This function enables all the clks found for the AHCI device.
+  *
+  * RETURNS:
+  * 0 on success otherwise a negative error code
+  */
+ int ahci_platform_enable_clks(struct ahci_host_priv *hpriv)
+ {
+-	int c, rc;
+-
+-	for (c = 0; c < AHCI_MAX_CLKS && hpriv->clks[c]; c++) {
+-		rc = clk_prepare_enable(hpriv->clks[c]);
+-		if (rc)
+-			goto disable_unprepare_clk;
+-	}
+-	return 0;
+-
+-disable_unprepare_clk:
+-	while (--c >= 0)
+-		clk_disable_unprepare(hpriv->clks[c]);
+-	return rc;
++	return clk_bulk_prepare_enable(hpriv->n_clks, hpriv->clks);
+ }
+ EXPORT_SYMBOL_GPL(ahci_platform_enable_clks);
+ 
+@@ -126,16 +113,13 @@ EXPORT_SYMBOL_GPL(ahci_platform_enable_clks);
+  * ahci_platform_disable_clks - Disable platform clocks
+  * @hpriv: host private area to store config values
+  *
+- * This function disables all the clks found in hpriv->clks, in reverse
+- * order of ahci_platform_enable_clks (starting at the end of the array).
++ * This function disables all the clocks enabled before
++ * (bulk-clocks-disable function is supposed to do that in reverse
++ * from the enabling procedure order).
+  */
+ void ahci_platform_disable_clks(struct ahci_host_priv *hpriv)
+ {
+-	int c;
+-
+-	for (c = AHCI_MAX_CLKS - 1; c >= 0; c--)
+-		if (hpriv->clks[c])
+-			clk_disable_unprepare(hpriv->clks[c]);
++	clk_bulk_disable_unprepare(hpriv->n_clks, hpriv->clks);
+ }
+ EXPORT_SYMBOL_GPL(ahci_platform_disable_clks);
+ 
+@@ -292,8 +276,6 @@ static void ahci_platform_put_resources(struct device *dev, void *res)
+ 		pm_runtime_disable(dev);
+ 	}
+ 
+-	for (c = 0; c < AHCI_MAX_CLKS && hpriv->clks[c]; c++)
+-		clk_put(hpriv->clks[c]);
+ 	/*
+ 	 * The regulators are tied to child node device and not to the
+ 	 * SATA device itself. So we can't use devm for automatically
+@@ -374,8 +356,8 @@ static int ahci_platform_get_regulator(struct ahci_host_priv *hpriv, u32 port,
+  * 1) mmio registers (IORESOURCE_MEM 0, mandatory)
+  * 2) regulator for controlling the targets power (optional)
+  *    regulator for controlling the AHCI controller (optional)
+- * 3) 0 - AHCI_MAX_CLKS clocks, as specified in the devs devicetree node,
+- *    or for non devicetree enabled platforms a single clock
++ * 3) all clocks specified in the devicetree node, or a single
++ *    clock for non-OF platforms (optional)
+  * 4) resets, if flags has AHCI_PLATFORM_GET_RESETS (optional)
+  * 5) phys (optional)
+  *
+@@ -385,11 +367,10 @@ static int ahci_platform_get_regulator(struct ahci_host_priv *hpriv, u32 port,
+ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 						   unsigned int flags)
+ {
++	int child_nodes, rc = -ENOMEM, enabled_ports = 0;
+ 	struct device *dev = &pdev->dev;
+ 	struct ahci_host_priv *hpriv;
+-	struct clk *clk;
+ 	struct device_node *child;
+-	int i, enabled_ports = 0, rc = -ENOMEM, child_nodes;
+ 	u32 mask_port_map = 0;
+ 
+ 	if (!devres_open_group(dev, NULL, GFP_KERNEL))
+@@ -415,25 +396,38 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 		goto err_out;
+ 	}
+ 
+-	for (i = 0; i < AHCI_MAX_CLKS; i++) {
++	/*
++	 * Bulk clocks getting procedure can fail to find any clock due to
++	 * running on a non-OF platform or due to the clocks being defined in
++	 * bypass of the DT firmware (like da850, spear13xx). In that case we
++	 * fallback to getting a single clock source right from the dev clocks
++	 * list.
++	 */
++	rc = devm_clk_bulk_get_all(dev, &hpriv->clks);
++	if (rc < 0)
++		goto err_out;
++
++	if (rc > 0) {
++		/* Got clocks in bulk */
++		hpriv->n_clks = rc;
++	} else {
+ 		/*
+-		 * For now we must use clk_get(dev, NULL) for the first clock,
+-		 * because some platforms (da850, spear13xx) are not yet
+-		 * converted to use devicetree for clocks.  For new platforms
+-		 * this is equivalent to of_clk_get(dev->of_node, 0).
++		 * No clock bulk found: fallback to manually getting
++		 * the optional clock.
+ 		 */
+-		if (i == 0)
+-			clk = clk_get(dev, NULL);
+-		else
+-			clk = of_clk_get(dev->of_node, i);
+-
+-		if (IS_ERR(clk)) {
+-			rc = PTR_ERR(clk);
+-			if (rc == -EPROBE_DEFER)
+-				goto err_out;
+-			break;
++		hpriv->clks = devm_kzalloc(dev, sizeof(*hpriv->clks), GFP_KERNEL);
++		if (!hpriv->clks) {
++			rc = -ENOMEM;
++			goto err_out;
++		}
++		hpriv->clks->clk = devm_clk_get_optional(dev, NULL);
++		if (IS_ERR(hpriv->clks->clk)) {
++			rc = PTR_ERR(hpriv->clks->clk);
++			goto err_out;
++		} else if (hpriv->clks->clk) {
++			hpriv->clks->id = __clk_get_name(hpriv->clks->clk);
++			hpriv->n_clks = 1;
+ 		}
+-		hpriv->clks[i] = clk;
+ 	}
+ 
+ 	hpriv->ahci_regulator = devm_regulator_get(dev, "ahci");
 -- 
-viresh
+2.35.1
+
