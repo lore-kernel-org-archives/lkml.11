@@ -2,121 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B507C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:12:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57ABBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:15:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235857AbiGMLMe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36112 "EHLO
+        id S235977AbiGMLPv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGMLMb (ORCPT
+        with ESMTP id S236012AbiGMLPN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:12:31 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142F0100CC0;
-        Wed, 13 Jul 2022 04:12:30 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso3094511pjc.1;
-        Wed, 13 Jul 2022 04:12:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R3j6t7oPeXFLjhrbi+QAqbOvyaU9gHal8+lBJxi7A/4=;
-        b=WZwjyI7V5QGyVjGhnpjZJcakRO0bgyFXIRVKSQPFMQ+/4ujxfOCeaMdZbfMAv+pxKy
-         5hZ3f9/miomMaMtKILEMVP1rPwhy56itokbXK/CCaZWWNC2DTqxVntJA1bpAlxSPlNsT
-         HSKSgllRXQpnZdwO3lPQc9O3fR+dbJADkzIX8L28VzuCihBlx3jLWO50p1Ol3vN1Ztor
-         mva7UUaBeb5ACXPXuF3JNGiBjwEY0fCvsxcEJQwpkqlz8KJW5SsBlKT0GMg4LOYxWBVQ
-         dcCvTJUD6Nndm5D77TM066auV9OWHY5QX9ZCe8weSi8/CK2Z6xMiIFSiaH9JwhQs7nBF
-         NySg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=R3j6t7oPeXFLjhrbi+QAqbOvyaU9gHal8+lBJxi7A/4=;
-        b=ZM9iTim788tBtXv5uZ2zvLWrDc1no5vRF3AIeFYtJMEmKOZ13BsIu27v6pkGgYlpsI
-         9CV02RKvKUl/AyV3WlEW9XVmr8Fbg5xcEdZ0Q8KOK1GX1depi/YBmqqT7Mzh5OiAzMk4
-         q+5h3q7d21XLOl3GG9TqR47/1rCmPvOflef+85kc+1MShqtoHI0FOXAlON1k2Bb0XZrK
-         6APYm0Sa+uaU3EuFv4sAH+FjdCJUoq+OFHZUbbyBJNek+mVufGYTXpIESaB9OmPUnON6
-         r9jQ1GJ1w+g5zMxMshpERRkp3BlMrRRVERaYN/EkTdzIP0lt+1Q+yl64OHScmSy9AINQ
-         1Zpw==
-X-Gm-Message-State: AJIora8mUS197Fc0hnNlcybC9jNkmYHh25ddOo4Cnq1f8yo3/vyFPjpy
-        whHYMM6GqKTEG9HF8A7gN2w=
-X-Google-Smtp-Source: AGRyM1tY6oR3MZL8vQQ11xnmuuzvLUVVQCbxnmjeU5BC+SCjRmiiucPVNo/U9YLkCQvSKmfBPij1cQ==
-X-Received: by 2002:a17:902:cec2:b0:16c:3deb:a062 with SMTP id d2-20020a170902cec200b0016c3deba062mr3044222plg.136.1657710749524;
-        Wed, 13 Jul 2022 04:12:29 -0700 (PDT)
-Received: from localhost (220-135-95-34.hinet-ip.hinet.net. [220.135.95.34])
-        by smtp.gmail.com with ESMTPSA id c5-20020a170902b68500b0016bdea07b8asm8560123pls.236.2022.07.13.04.12.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 04:12:29 -0700 (PDT)
-Sender: AceLan Kao <acelan@gmail.com>
-From:   AceLan Kao <acelan.kao@canonical.com>
-To:     Igor Russkikh <irusskikh@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Manuel Ullmann <labre@posteo.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] net: atlantic: remove aq_nic_deinit() when resume
-Date:   Wed, 13 Jul 2022 19:12:24 +0800
-Message-Id: <20220713111224.1535938-2-acelan.kao@canonical.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220713111224.1535938-1-acelan.kao@canonical.com>
-References: <20220713111224.1535938-1-acelan.kao@canonical.com>
+        Wed, 13 Jul 2022 07:15:13 -0400
+X-Greylist: delayed 602 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 04:14:55 PDT
+Received: from 3.mo560.mail-out.ovh.net (3.mo560.mail-out.ovh.net [46.105.58.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015E4100CF8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:14:53 -0700 (PDT)
+Received: from player792.ha.ovh.net (unknown [10.109.156.133])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id C7BCF241CC
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 10:58:33 +0000 (UTC)
+Received: from RCM-web6.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player792.ha.ovh.net (Postfix) with ESMTPSA id 177F12C96E135;
+        Wed, 13 Jul 2022 10:58:21 +0000 (UTC)
 MIME-Version: 1.0
+Date:   Wed, 13 Jul 2022 12:58:20 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        kursad.oney@broadcom.com, anand.gore@broadcom.com,
+        dan.beygelman@broadcom.com, f.fainelli@gmail.com,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH 1/3] dt-bindings: arm64: bcmbca: Merge BCM4908 into
+ BCMBCA
+In-Reply-To: <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
+References: <20220712021144.7068-1-william.zhang@broadcom.com>
+ <20220712021144.7068-2-william.zhang@broadcom.com>
+ <ca8c3003-1bcb-6658-592c-566609fd7bd2@linaro.org>
+ <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
+ <c40f20c7-59ee-99f4-9a11-e928b41eda9f@linaro.org>
+ <6efb1cfe-6129-276a-eeb3-44147304d211@broadcom.com>
+ <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <85219d59e2906534409fc24ad2e5e4c9@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
+X-Ovh-Tracer-Id: 11914554292197501915
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedgfeegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepggffhffvvefujghffgfkgihitgfgsehtkehjtddtreejnecuhfhrohhmpeftrghfrghlpgfoihhlvggtkhhiuceorhgrfhgrlhesmhhilhgvtghkihdrphhlqeenucggtffrrghtthgvrhhnpeevjefhffffveeludejfedtvdfftdekgffghfegieeliedvfeeigfejteejjeekfeenucfkpheptddrtddrtddrtddpudelgedrudekjedrjeegrddvfeefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdphhgvlhhopehplhgrhigvrhejledvrdhhrgdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomheprhgrfhgrlhesmhhilhgvtghkihdrphhlpdhnsggprhgtphhtthhopedupdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdfovfetjfhoshhtpehmohehiedt
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>
+On 2022-07-13 12:50, Rafał Miłecki wrote:
+> On 2022-07-13 02:57, William Zhang wrote:
+>> On 7/12/22 11:18, Krzysztof Kozlowski wrote:
+>>> On 12/07/2022 19:37, William Zhang wrote:
+>>>>>> +      - description: BCM4908 Family based boards
+>>>>>> +        items:
+>>>>>> +          - enum:
+>>>>>> +              # BCM4908 SoC based boards
+>>>>>> +              - brcm,bcm94908
+>>>>>> +              - asus,gt-ac5300
+>>>>>> +              - netgear,raxe500
+>>>>>> +              # BCM4906 SoC based boards
+>>>>>> +              - brcm,bcm94906
+>>>>>> +              - netgear,r8000p
+>>>>>> +              - tplink,archer-c2300-v1
+>>>>>> +          - enum:
+>>>>>> +              - brcm,bcm4908
+>>>>>> +              - brcm,bcm4906
+>>>>>> +              - brcm,bcm49408
+>>>>> 
+>>>>> This is wrong.  brcm,bcm94908 followed by brcm,bcm4906 does not 
+>>>>> look
+>>>>> like valid list of compatibles.
+>>>>> 
+>>>> For 4908 board variant, it will need to be followed by 4908 chip. 
+>>>> Sorry
+>>>> for the basic question but is there any requirement to enforce this 
+>>>> kind
+>>>> of rule?  I would assume dts writer know what he/she is doing and 
+>>>> select
+>>>> the right combination.
+>>> 
+>>> The entire point of DT schema is to validate DTS. Combination like 
+>>> above
+>>> prevents that goal.
+>>> 
+>>> Best regards,
+>>> Krzysztof
+>> Understand the DT schema purpose. But items property allows multiple
+>> enums in the list which gives a lot of flexibility but make it hard to
+>> validate. I am not familiar with DT schema, is there any directive to
+>> specify one enum value depending on another so dts validation tool can
+>> report error if combination is wrong?
+>> 
+>> This is our preferred format of all bcmbca compatible string
+>> especially when we could have more than 10 chip variants for the same
+>> chip family and we really want to work on the chip family id.  We will
+>> make sure they are in the right combination in our own patch and patch
+>> from other contributors. Would this work? If not, I will probably have
+>> to revert the change of 4908(maybe append brcm,bcmbca as this chip
+>> belongs to the same bca group) and use "enum board variant", "const
+>> main chip id", "brcm,bca" for all other chips as our secondary choice.
+> 
+> I'm not sure why I didn't even receive 1/3 and half of discussion
+> e-mails.
+> 
+> You can't just put all strings into a single bag and allow mixing them
+> in any combos. Please check how it's properly handled in the current
+> existing binding:
+> Documentation/devicetree/bindings/arm/bcm/brcm,bcm4908.yaml
+> 
+> Above binding enforces that non-matching compatible strings are not 
+> used
+> together.
 
-aq_nic_deinit() has been called while suspending, so we don't have to call
-it again on resume.
-Actually, call it again leads to another hang issue when resuming from
-S3.
+I just noticed you're actually removing brcm,bcm4908.yaml in the 2/3 so
+you must be aware of that file.
 
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992345] Call Trace:
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992346] <TASK>
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992348] aq_nic_deinit+0xb4/0xd0 [atlantic]
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992356] aq_pm_thaw+0x7f/0x100 [atlantic]
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992362] pci_pm_resume+0x5c/0x90
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992366] ? pci_pm_thaw+0x80/0x80
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992368] dpm_run_callback+0x4e/0x120
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992371] device_resume+0xad/0x200
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992373] async_resume+0x1e/0x40
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992374] async_run_entry_fn+0x33/0x120
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992377] process_one_work+0x220/0x3c0
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992380] worker_thread+0x4d/0x3f0
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992382] ? process_one_work+0x3c0/0x3c0
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992384] kthread+0x12a/0x150
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992386] ? set_kthread_struct+0x40/0x40
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992387] ret_from_fork+0x22/0x30
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992391] </TASK>
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992392] ---[ end trace 1ec8c79604ed5e0d ]---
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992394] PM: dpm_run_callback(): pci_pm_resume+0x0/0x90 returns -110
-Jul 8 03:09:44 u-Precision-7865-Tower kernel: [ 5910.992397] atlantic 0000:02:00.0: PM: failed to resume async: error -110
+So you see a cleanly working binding in the brcm,bcm4908.yaml but
+instead copying it you decided to wrote your own one from scratch.
+Incorrectly.
 
-Fixes: 1809c30b6e5a ("net: atlantic: always deep reset on pm op, fixing up my null deref regression")
-Signed-off-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index dbd5263130f9..8647125d60ae 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -413,9 +413,6 @@ static int atl_resume_common(struct device *dev)
- 	pci_set_power_state(pdev, PCI_D0);
- 	pci_restore_state(pdev);
- 
--	/* Reinitialize Nic/Vecs objects */
--	aq_nic_deinit(nic, !nic->aq_hw->aq_nic_cfg->wol);
--
- 	if (netif_running(nic->ndev)) {
- 		ret = aq_nic_init(nic);
- 		if (ret)
--- 
-2.25.1
-
+This smells of NIH (not invented here). Please just use that binding I
+wrote and move if it needed.
