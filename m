@@ -2,115 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93782C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C873CCA480
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235148AbiGMNDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49728 "EHLO
+        id S235725AbiGMNER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230184AbiGMND2 (ORCPT
+        with ESMTP id S235802AbiGMNEM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:03:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1142D6479;
-        Wed, 13 Jul 2022 06:03:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 13 Jul 2022 09:04:12 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E11B109;
+        Wed, 13 Jul 2022 06:04:11 -0700 (PDT)
+Received: from [192.168.0.24] (86.166.5.84.rev.sfr.net [84.5.166.86])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C87061C0D;
-        Wed, 13 Jul 2022 13:03:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7582CC34114;
-        Wed, 13 Jul 2022 13:03:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657717407;
-        bh=U8MYRqSlDlnXbvCd2fQeD4DFnO1nFiqGvy0p3/e/5ss=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1ObPix5W0gjk8JhRZ/8y31jfLfdgQxY+XXvp4ydIP/z+dY/jtz3DDZiWPiO9SlWIj
-         YaNL4PJ9mNSb2zq2kgFUWEb2QemJsTWjCAtFDFJBmgJX7Z5BHyoa/Ri3frXDl5n5JN
-         WZwSPxAeZVZCrv3adp/xKcHze2J45SbEZPaPYRhs=
-Date:   Wed, 13 Jul 2022 15:03:23 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     kvm list <kvm@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: [PATCH 5.18 00/61] 5.18.12-rc1 review
-Message-ID: <Ys7Cm17ShWUOXkRw@kroah.com>
-References: <20220712183236.931648980@linuxfoundation.org>
- <CA+G9fYvRQ9gzee8pjRmsyedz6oGyh5pzSYEPkuDoKEE+X2RZDg@mail.gmail.com>
+        (Authenticated sender: gtucker)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E71D766019BF;
+        Wed, 13 Jul 2022 14:04:08 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657717449;
+        bh=DJ+Ifi8q1WZKJgWhlUSNwAnvaUire0QYSjxk5nepsmo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=P4hVcmUIXP6LG161pXraZZktponzCwBMPKtf3oM1oGGKt2yogmLj6r/ZcUlJsjO8k
+         gE6ArqhETBVaxuy+ZmSNQtM0PdTKuV0pgotE94ZTROKe8ekKNXRx90N05s1JseLABv
+         h9XlVjq8QZZGJxUpFaRfB/iBZ6mBuD2huvPQq/SyN3PjQ2CQOPwsrxXoxnc9173czn
+         Tb0GZ2fB0v++AozwwI58NAGAuiUVT93FN0DZM/9bwmvZBt2gyHvUhVdUpkUJPyKM0o
+         T/+8bVpHZRQx7NRKeK6fWALNamuh0kEblrur2na9mAXxTZ6gwhowMN6iB4tIuKV+Rc
+         PydcKPiXgXTvA==
+Message-ID: <b2a7c23e-88be-4b44-d98b-a8555131f1a7@collabora.com>
+Date:   Wed, 13 Jul 2022 15:04:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+G9fYvRQ9gzee8pjRmsyedz6oGyh5pzSYEPkuDoKEE+X2RZDg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 4/4] Makefile: add headers to kselftest targets
+Content-Language: en-US
+To:     Nicolas Schier <nicolas@fjasle.eu>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Anders Roxell <anders.roxell@linaro.org>, Tim.Bird@sony.com,
+        kernel@collabora.com, linux-kbuild@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+References: <cover.1657614127.git.guillaume.tucker@collabora.com>
+ <745d1921a4d048ea25d262e33b40aad5ee470614.1657614127.git.guillaume.tucker@collabora.com>
+ <Ys6LsqvQC+h3eM46@bergen.fjasle.eu>
+From:   Guillaume Tucker <guillaume.tucker@collabora.com>
+In-Reply-To: <Ys6LsqvQC+h3eM46@bergen.fjasle.eu>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 04:33:24PM +0530, Naresh Kamboju wrote:
-> On Wed, 13 Jul 2022 at 00:21, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > This is the start of the stable review cycle for the 5.18.12 release.
-> > There are 61 patches in this series, all will be posted as a response
-> > to this one.  If anyone has any issues with these being applied, please
-> > let me know.
-> >
-> > Responses should be made by Thu, 14 Jul 2022 18:32:19 +0000.
-> > Anything received after that time might be too late.
-> >
-> > The whole patch series can be found in one patch at:
-> >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.12-rc1.gz
-> > or in the git tree and branch at:
-> >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
-> > and the diffstat can be found below.
-> >
-> > thanks,
-> >
-> > greg k-h
-> 
-> 
-> Results from Linaro’s test farm.
-> Regressions on x86_64 (and still validating results)
-> 
-> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> 
-> 1) kernel panic on x86_64 while running kvm-unit-tests.
->    - APIC base relocation is unsupported by KVM
+On 13/07/2022 11:09, Nicolas Schier wrote:
+> On Tue, 12 Jul 2022 09:29 +0100 Guillaume Tucker wrote:
+>> Add headers as a dependency to kselftest targets so that they can be
+>> run directly from the top of the tree.  The kselftest Makefile used to
+>> try to call headers_install "backwards" but failed due to the relative
+>> path not being consistent.
+>>
+>> Now we can either run this directly:
+>>
+>>   $ make O=build kselftest-all
+>>
+>> or this:
+>>
+>>   $ make O=build headers
+>>   $ make O=build -C tools/testing/selftests all
+>>
+>> The same commands work as well when building directly in the source
+>> tree (no O=) or any arbitrary path (relative or absolute).
+>>
+>> Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
+>> ---
+> You might want to add the 'Reported-by: as you did in 
+> https://lore.kernel.org/linux-kbuild/a7af58feaa6ae6d3b0c8c55972a470cec62341e5.1657693952.git.guillaume.tucker@collabora.com/ 
 
-Seems others are hitting this too:
-	https://lore.kernel.org/r/CAMGffEm9y0wnn8LNS9Qo3obPhs0GD5iJZ0WejFzC4baGPDsYTw@mail.gmail.com
+Except I don't know who reported the issue, I think it was just
+very well known.  KernelCI builds have been working around it for
+a couple of years.
 
-Does this also happen right now on Linus's tree?
+The Reported-by in the other patch was about using "headers"
+rather than "headers_install", as a follow-up improvement on top
+of this patch.
 
-> 2) qemu_x86_64 boot warning
->    - WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c:558
-> apply_returns+0x19c/0x1d0
+> Tested-by: Nicolas Schier <nicolas@fjasle.eu>
 
-Warning, but does everything still work?
+Thank you!
 
-And again, still on Linus's tree?
-
-> 3) New warnings noticed while building perf
->    - Warning: Kernel ABI header at
-> 'tools/arch/x86/include/asm/disabled-features.h' differs from latest
-> version at 'arch/x86/include/asm/disabled-features.h'
-
-Ick, I'll wait for that to get synced in Linus's tree.
-
-thanks,
-
-greg k-h
+Guillaume
