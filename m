@@ -2,89 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2557C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:52:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234859AbiGMKuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
+        id S234846AbiGMKwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:52:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232641AbiGMKuR (ORCPT
+        with ESMTP id S230177AbiGMKwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:50:17 -0400
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7BFAF54D1;
-        Wed, 13 Jul 2022 03:50:16 -0700 (PDT)
-Received: by mail-io1-xd32.google.com with SMTP id y3so10459706iof.4;
-        Wed, 13 Jul 2022 03:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2RqjFJExuIYZwBX8Yxs9/9nbKJpcdKItijbRYCGkX2s=;
-        b=dnoDadG8MXcw9eHxsc3hJ9Qg7TVGOlZpaqIGW7EjMfC5YAySdk8Sfsy+BCTZvZfHZF
-         6F5R3PUs6xVBMX8U4fOF+ehi7Oa0jipiRTmN4z2NJdOM0S6oEt0QJLGbKF9hkzdm1RTi
-         Jtnl9M19+rpFpUB+7C6VN8qgoKXjP/whBMnjyeMZSVhCNNxv2aTRfAfS38W/eiQ8HF/9
-         82/mvP1xm5qOgigqfCQDtyQnUAyh1ErBP8A4lBYeqR3nwtYEubEYIuukvkjnMOw+r51p
-         8A+iV6isn/7vbJzCkCcB2w33+5OX+ZHgphMXBnEnsZn9M4Li6b8YgmNMwu6fplvljF8j
-         lu7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2RqjFJExuIYZwBX8Yxs9/9nbKJpcdKItijbRYCGkX2s=;
-        b=npP6UU2jgwGqPh/vIyeAkUTJNjmB4zKwkNf2nei/qfxzCRw0lQLYOkxPq02NUi9vwu
-         vbmHy+rLqEHc1DgZL4y7LbziCSaOFh2TyAdbagdjUGLwbcRdLxUw0+d4toT5Pl5Hkc3k
-         FCwp1uMhYJgaVw/8vmMjwDMzer8j9oUunAN9axlMqMtv4R7Y+tjb0rfB7zTGR+jxMjo+
-         szZM52DR8rGr47KKlALk/oVT881aT7c03nNQPj82+8r2cAPh4wJU53uGHabGeSjt3kn0
-         eCwkyy5knucTgJibCiOipXwObItsYhCqKSNjJo+8ccFrCAupTA2pYKVNOEUDowgM2IIp
-         NmvQ==
-X-Gm-Message-State: AJIora+DvrOaZmjsripjbWC57oPplBRHjoMRC7eBwC3t7cp7nyi5xrZd
-        SWqLedL6mjh4uozG2dIeQQfRHr5yNKhTYytUI1c=
-X-Google-Smtp-Source: AGRyM1sF37Py8y1nJDd5RhUQ4GVwZ7NBf4NQmFJl+cV2BICHgfELgLuTa4XQ32p3GSml8jKytJUg0LflnFPRWfpBWM4=
-X-Received: by 2002:a05:6638:25d3:b0:33f:3c9b:24fb with SMTP id
- u19-20020a05663825d300b0033f3c9b24fbmr1546316jat.308.1657709416265; Wed, 13
- Jul 2022 03:50:16 -0700 (PDT)
+        Wed, 13 Jul 2022 06:52:14 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79FFEF6829;
+        Wed, 13 Jul 2022 03:52:13 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 10:52:10 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657709531;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=M7xyNCWV08xgCjBtfOWIb6vnWXw98ni8zhJW1q5WDB8=;
+        b=GxpMmIzbJCwZreatIxF91xeR5FERIo1nhbMFScLRuYBnQ2g7eIGJPgyvnAnpNuGhnf/8iH
+        ff9dQx3j0YE3XIYjvQSAmSqWGfeEenDn7xzT6KANQNqcBwuxJCgPmQusqWgTA/H+Ae1/63
+        rAuJvBD1lC3KmEg2IftTSD1mzab+L3BKenowDs4vi9EwOlxT0wOWmD+OkDrhXz/4Nr1NfA
+        t2+Sk7ICpRPXUub1JsBfbjFIryZc6Osl9Ri5DRp0nBcph8Uh2BTMzJnZ5X1ZdFqQu5Zl3P
+        3ml+O+nO5ssbf/0xutSw6RanQvsdr+vVqBlIYMQbSjyhNRiQdZoCwxmUZvpZug==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657709531;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=M7xyNCWV08xgCjBtfOWIb6vnWXw98ni8zhJW1q5WDB8=;
+        b=AwSK8xobYYCI+d8gV0XS0lc4x3Il6qRlfhFlwI32y6Y+ZiP2eQAg1AGS7JxTwpfLJ/B72C
+        f7oovuX+1/jUQzAA==
+From:   "tip-bot2 for Juergen Gross" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/pat: Fix x86_has_pat_wp()
+Cc:     Juergen Gross <jgross@suse.com>, Borislav Petkov <bp@suse.de>,
+        <stable@vger.kernel.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220503132207.17234-1-jgross@suse.com>
+References: <20220503132207.17234-1-jgross@suse.com>
 MIME-Version: 1.0
-References: <20220713203409.559c5464@canb.auug.org.au>
-In-Reply-To: <20220713203409.559c5464@canb.auug.org.au>
-From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Date:   Wed, 13 Jul 2022 12:50:05 +0200
-Message-ID: <CANiq72kGpadW4o8QPc9khGiGmJgirT6BgzTKoF=px9YQQN-ojw@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the rust tree with Linus' tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Adam Bratschi-Kaye <ark.email@gmail.com>,
-        Alex Gaynor <alex.gaynor@gmail.com>,
-        Antonio Terceiro <antonio.terceiro@linaro.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Boris-Chengbiao Zhou <bobo1239@web.de>,
-        Borislav Petkov <bp@suse.de>, Daniel Xu <dxu@dxuuu.xyz>,
-        Dariusz Sosnowski <dsosnowski@dsosnowski.pl>,
-        David Gow <davidgow@google.com>,
-        Douglas Su <d0u9.su@outlook.com>, Finn Behrens <me@kloenk.de>,
-        Gary Guo <gary@garyguo.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Miguel Cano <macanroj@gmail.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sven Van Asbroeck <thesven73@gmail.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <165770953023.15455.12477223338024740459.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Stephen,
+The following commit has been merged into the x86/urgent branch of tip:
 
-On Wed, Jul 13, 2022 at 12:34 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Today's linux-next merge of the rust tree got a conflict in:
->
->   arch/x86/Makefile
+Commit-ID:     230ec83d4299b30c51a1c133b4f2a669972cc08a
+Gitweb:        https://git.kernel.org/tip/230ec83d4299b30c51a1c133b4f2a669972cc08a
+Author:        Juergen Gross <jgross@suse.com>
+AuthorDate:    Fri, 08 Jul 2022 15:14:56 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Wed, 13 Jul 2022 12:44:04 +02:00
 
-Thank you, looks good to me.
+x86/pat: Fix x86_has_pat_wp()
 
-Cheers,
-Miguel
+x86_has_pat_wp() is using a wrong test, as it relies on the normal
+PAT configuration used by the kernel. In case the PAT MSR has been
+setup by another entity (e.g. Xen hypervisor) it might return false
+even if the PAT configuration is allowing WP mappings. This due to the
+fact that when running as Xen PV guest the PAT MSR is setup by the
+hypervisor and cannot be changed by the guest. This results in the WP
+related entry to be at a different position when running as Xen PV
+guest compared to the bare metal or fully virtualized case.
+
+The correct way to test for WP support is:
+
+1. Get the PTE protection bits needed to select WP mode by reading
+   __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP] (depending on the PAT MSR
+   setting this might return protection bits for a stronger mode, e.g.
+   UC-)
+2. Translate those bits back into the real cache mode selected by those
+   PTE bits by reading __pte2cachemode_tbl[__pte2cm_idx(prot)]
+3. Test for the cache mode to be _PAGE_CACHE_MODE_WP
+
+Fixes: f88a68facd9a ("x86/mm: Extend early_memremap() support with additional attrs")
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Cc: <stable@vger.kernel.org> # 4.14
+Link: https://lore.kernel.org/r/20220503132207.17234-1-jgross@suse.com
+---
+ arch/x86/mm/init.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/mm/init.c b/arch/x86/mm/init.c
+index d8cfce2..57ba550 100644
+--- a/arch/x86/mm/init.c
++++ b/arch/x86/mm/init.c
+@@ -77,10 +77,20 @@ static uint8_t __pte2cachemode_tbl[8] = {
+ 	[__pte2cm_idx(_PAGE_PWT | _PAGE_PCD | _PAGE_PAT)] = _PAGE_CACHE_MODE_UC,
+ };
+ 
+-/* Check that the write-protect PAT entry is set for write-protect */
++/*
++ * Check that the write-protect PAT entry is set for write-protect.
++ * To do this without making assumptions how PAT has been set up (Xen has
++ * another layout than the kernel), translate the _PAGE_CACHE_MODE_WP cache
++ * mode via the __cachemode2pte_tbl[] into protection bits (those protection
++ * bits will select a cache mode of WP or better), and then translate the
++ * protection bits back into the cache mode using __pte2cm_idx() and the
++ * __pte2cachemode_tbl[] array. This will return the really used cache mode.
++ */
+ bool x86_has_pat_wp(void)
+ {
+-	return __pte2cachemode_tbl[_PAGE_CACHE_MODE_WP] == _PAGE_CACHE_MODE_WP;
++	uint16_t prot = __cachemode2pte_tbl[_PAGE_CACHE_MODE_WP];
++
++	return __pte2cachemode_tbl[__pte2cm_idx(prot)] == _PAGE_CACHE_MODE_WP;
+ }
+ 
+ enum page_cache_mode pgprot2cachemode(pgprot_t pgprot)
