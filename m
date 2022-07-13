@@ -2,367 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C561C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 06:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DABA2CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 06:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234180AbiGMGrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 02:47:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
+        id S234242AbiGMGsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 02:48:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiGMGrG (ORCPT
+        with ESMTP id S231358AbiGMGsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 02:47:06 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1B6DF610
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 23:47:05 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id s21so10702153pjq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 23:47:05 -0700 (PDT)
+        Wed, 13 Jul 2022 02:48:31 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2111.outbound.protection.outlook.com [40.107.95.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAD9DF3BD;
+        Tue, 12 Jul 2022 23:48:28 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nOJOfCP1fI3RFAW8PFmrNTornExrqp1H+u9CXySaASqdqz1+niA1JM05rFnL6YfzkPKmKkDdy2/3kA5ZfZMgQjYC2S2cr1M6z225oZ6APPg2o5du2FyFP8nXATaEpf9RISqlrU8dZ4WAhE1A+5dQQUo1gR6A/U8mmbCpDM0htzlpQUHTfGPxtmNr2g/0hruZmiLUd2TCCEy4+A1pW2bIdm5K7gxPYdy4T0GrFGk6IKiDtQdjkxgRLH32eibqsq0fRpDOSweWtnm89LxIbKOSQaiQMa2SyZeMojz8z2SHWNPcZam415fm1JMkpyese4k5gfp+VwlNoN3RL6sU/FEldg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9bP9LvpJKMefbhjqFTryKuXNe5ZZSgZzKqWEu87wKTU=;
+ b=dqOT5IGMlFI69tsXBtPpYPztlZqHfsY00kRagReGosTva6MY9RcAvdGdebvL2tEEZmPrCOiNllqmcuqHtyDSHISN+f9Ww0kAivC1fsQXS4Au2E9b2669JgWsa/1OXaDCb0E2iL3TkdHYnAPeoMbftX3abXNrgg/7DXbjbEicTZHc61SdJ80PdS2jQ9KsceUcbhGYvdH/sqMgBQt6zcDKikMXkPoVkHe9kNwpR+aIZC2AE/KYrCTFIiCJ5NxRqxHQLGzjmLFnfQ/DopYwPRsYpv1H/rbFtRx8pOi5yItqHtdP7g2o8oFq4biJnhHE1RBFPRinCi+p6loFTbOwa3lKYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
+ header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H0SWPCgf/Jpq2p/PI6IvYiR4l2hD+7hoqcGNI7rQjCY=;
-        b=M7Fe3+k9DnTzPkguIzx8HZAovDx68XaTvrr413ySsdIT5qoe3tGBjSbYnHUV8h0KO/
-         UEMKMO2TuJuZD5rq6wdKoSTXuPNYukcZ0hY8YXF4aOeT5lrrNXncH5ZiI30fEDAhBlI7
-         K0+bBjCcqW6nULAxuanYo759NBZqF3RwSO7wY4tqixLg8bTcUntPUtZ/TlUV1A8AEydr
-         jwvAunOHePmPKBr+FxA/EW+5q0dK1x+3obMdVVQsdz3Pl7Xuov0gE9nXh3MNnehSdLvA
-         5mdYIEZqXlgQncD4cShN2HaZZAw0BFkNRLaRQg4mtY5dCepJrsYYjA6IqG7coxxWYTRO
-         sTEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H0SWPCgf/Jpq2p/PI6IvYiR4l2hD+7hoqcGNI7rQjCY=;
-        b=Dk5VXETagKDO0lg6/mAbiFPN320R5NDTA5NTvvwdq4v6OQfabuZAUU4uO/kNs+8aT2
-         GlTVdnZP4cCuKcZCxfc+3VH6Key0zbOYwJJ2KGGc4l1YaSM6MRFlkhbA2Mb/CgDtfiHL
-         Q8QJaoCrKlir7Szm5eLwvPCl5KMchLQaaE4Nin5DG3PmplqnlEUMFw5Ese6+yRzb4Vji
-         OeNpCv9+4umUK5dGc+xwqqv5NW7lcwPm4hmrzTCH3tPy8riVcLa1Y+2Mhm6k1Mah9USt
-         MB1V6EgSYw5ZZbeFdiAmzL/TSdsklOUfWBpfpn4x05PRIwqE7NL2jRUE3w6VU1OXBglG
-         R/+A==
-X-Gm-Message-State: AJIora97NhdXLM0RPTDodU4uNPqpI8BrpfSMve0/WDJV7eCKwNpJKwTZ
-        hPpE0m6npm668XxrARJkqu9OPxiYqHs2DZHEkaniuQ==
-X-Google-Smtp-Source: AGRyM1sDOqshiEZ/601rCQj9iPH1BxPCnBUkjNAg8b4N7i6tiL8pYaRbtYQIYlhgg6P67y5phurZZh1jJnYytsHl/go=
-X-Received: by 2002:a17:90b:896:b0:1ef:935c:f326 with SMTP id
- bj22-20020a17090b089600b001ef935cf326mr2158146pjb.193.1657694824580; Tue, 12
- Jul 2022 23:47:04 -0700 (PDT)
+ d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9bP9LvpJKMefbhjqFTryKuXNe5ZZSgZzKqWEu87wKTU=;
+ b=QUW+Y1io4C141GLf8NRMErQnAFKRvpbmWm2nXwsKz677P/3jgioU+KQ4HZflp2U0GmzIBJJqHRAFF1WskXD8oWGZc8VFBGoQKh1tUBKHofl5NRq8kLhMvcY74WffKM6KeLjqt5Vvygy6d2BMQivjwurinBSPEJnewvhCXhq7wJc=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=analogixsemi.com;
+Received: from CH2PR04MB6741.namprd04.prod.outlook.com (2603:10b6:610:96::19)
+ by SN6PR04MB4688.namprd04.prod.outlook.com (2603:10b6:805:ab::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Wed, 13 Jul
+ 2022 06:48:25 +0000
+Received: from CH2PR04MB6741.namprd04.prod.outlook.com
+ ([fe80::5400:a1a0:be8f:34bc]) by CH2PR04MB6741.namprd04.prod.outlook.com
+ ([fe80::5400:a1a0:be8f:34bc%7]) with mapi id 15.20.5417.026; Wed, 13 Jul 2022
+ 06:48:25 +0000
+Date:   Wed, 13 Jul 2022 14:48:18 +0800
+From:   Xin Ji <xji@analogixsemi.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v16 1/3] usb: typec: tcpci: move tcpci.h to
+ include/linux/usb/
+Message-ID: <20220713064818.GA2789090@anxtwsw-Precision-3640-Tower>
+References: <20220712090534.2783494-1-xji@analogixsemi.com>
+ <0bd85140-f006-8b29-0a43-500733f1654c@roeck-us.net>
+ <Ys16lEvhVSSSRMP7@kroah.com>
+ <20220713062845.GB2788915@anxtwsw-Precision-3640-Tower>
+ <Ys5oBTeIcLjf7gnX@kroah.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys5oBTeIcLjf7gnX@kroah.com>
+X-ClientProxiedBy: TYCPR01CA0191.jpnprd01.prod.outlook.com
+ (2603:1096:400:2b0::16) To CH2PR04MB6741.namprd04.prod.outlook.com
+ (2603:10b6:610:96::19)
 MIME-Version: 1.0
-References: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
- <87r130b2rh.fsf@yhuang6-desk2.ccr.corp.intel.com> <60e97fa2-0b89-cf42-5307-5a57c956f741@linux.ibm.com>
- <87r12r5dwu.fsf@yhuang6-desk2.ccr.corp.intel.com> <0a55e48a-b4b7-4477-a72f-73644b5fc4cb@linux.ibm.com>
- <87mtde6cla.fsf@yhuang6-desk2.ccr.corp.intel.com> <fef35622-0bd4-f220-26bd-37d8e0112c4d@linux.ibm.com>
- <87ilo267jl.fsf@yhuang6-desk2.ccr.corp.intel.com> <ad4b095b-bb85-b01f-5d69-383219384c29@linux.ibm.com>
- <87edyp67m1.fsf@yhuang6-desk2.ccr.corp.intel.com>
-In-Reply-To: <87edyp67m1.fsf@yhuang6-desk2.ccr.corp.intel.com>
-From:   Wei Xu <weixugc@google.com>
-Date:   Tue, 12 Jul 2022 23:46:53 -0700
-Message-ID: <CAAPL-u8pH1f+x+e5vSqq_m1zb+rPe0F-FH4GeJPu8-MrRS4mjQ@mail.gmail.com>
-Subject: Re: [PATCH v8 00/12] mm/demotion: Memory tiers and demotion
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>, jvgediya.oss@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6f22c135-1304-4a7d-5552-08da649baf12
+X-MS-TrafficTypeDiagnostic: SN6PR04MB4688:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kKNiywvwG3KkcosNM3MS34KlxVcMBIpSyAorbepfu0c2JLnwTR8UKZODaJpJl5jnG6bgJaGO9q3Zhj+A5CK21rzQLuMLEXmhMLXWx+nza9Lz8IJPDRaeARK5Bh1gwot7tRJyVwM7aNgK94cPjQuLr8Fl//gNPVennFXEc1HsHpo4JFrSg2FsDkCg614tqncX1HsWmgyIBiR/GU6Tl1h1MjBrQ6z9JvehorLP+BLoebqIp7lxeLd3ViI80Cgn4nkMqMFxUs53rxtg4LJbUeglRDGiUZWaLPjulEOC5YryHRvTo0sUTSft5aj+jX8SDhyB17E6GIjkpcqxLVPyxBNVRrJPrJgjwg38hLV10N1WFhBzOzqxkNV8MWZIjlVEwvxcbZ7h3TxKbiz2O0FwBYhk5lxA+2ooYyedtiwc9KbrgrtmvfnbFCd00VlMW2E2dX0DClBuWWpqBRHqusFWjywVSPRj/fvdbhW23hShyGcjfDoRIzLZ1oplWcL3yFU+6Khx4vW10xUf28eTHz4WNdRa/628sltMh/ZaljchhZ7yqcn8Nyjut82tZ8L2wi4Mfj7tyr+Zr+y3gr1o1xF9/DyYxcJw+QETZ6LFccnCfgmQtsv3zxIs1vH41TJk1HYfMdss/0U+Qe9cxWSPuu5AITWBrmHI5ul1/TG0JdOzVyqtUbJrpVIfqnumLaC8V4D2XZxTGB5n09x2OuC9KQrJBnmXuMWV+nj5/NI8AeMyudDJ8QxeAW26/GXbr8EByFb87M9zuOhk/scTjHSsfpZLdTql+jTuGiolakJP3dpE2lpTCEZCrV1bcGIx5lfti2AHWAan
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR04MB6741.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39850400004)(136003)(366004)(346002)(376002)(396003)(6486002)(54906003)(6916009)(4326008)(38350700002)(41300700001)(8676002)(52116002)(55236004)(66946007)(478600001)(66556008)(86362001)(26005)(33656002)(186003)(9686003)(53546011)(316002)(66476007)(1076003)(38100700002)(6666004)(5660300002)(2906002)(8936002)(6506007)(83380400001)(6512007)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cYDSTZhPOxnAXY0OoPiEO10a3eYxT/l7yRo+otku/8ViaDcVoggDwl1BIdnU?=
+ =?us-ascii?Q?rIWHyjwl4impQ42bA603IwaYu9idqy9c9BOY8KqOXWdnZ+mHfqrcuW35lxVE?=
+ =?us-ascii?Q?3qX3SyOsUKMgaybvtnM+QE58f4oJKlRwZJZZa/j4w94agKJ9yJ9bEXNihnmU?=
+ =?us-ascii?Q?FqLittPLF22KZKGsYKD3cEWTiCkn7NbgxJQ/uu4kpgSXUE7IkCIo8hipFJPI?=
+ =?us-ascii?Q?xMwT0oJoVRPLS/7VPUHo52PBxS0zFNHPqSiPI7ubA+K3tkLqkWSSq0RflXxZ?=
+ =?us-ascii?Q?Puzs4gbFHNTbA4ee+5B9xgyI/S5vD62tGgXoYN0cisKG4y9ukTBLIcHAq1Cu?=
+ =?us-ascii?Q?c6usUj3kcxP0ksc/Rkr2WHjuYyi8xjuCJcyfn0uPcEGmAAV/BMWe0Jp05nQX?=
+ =?us-ascii?Q?gdQPKBqqa7DpLXMGOzQ2meKKy08LzeJNuca9c+h0TZsExf3V0IUClCD2rxFO?=
+ =?us-ascii?Q?/Yuh8fZ411eyLr4QNgPgiUvBizzxoKLhm6/AywQTlWWL8Un5JFp63vasuRiP?=
+ =?us-ascii?Q?3BDugCO+6Gx9IkUGU2+uY44RrnnimFD6c1exglliBORdrz9wnrlj1C55LB/5?=
+ =?us-ascii?Q?fJI7nR8UIbF5JtHIdXfJp+i+rZN7EIgI+EXFEGoF55rrtiM9H3yyAHwkBc/Q?=
+ =?us-ascii?Q?OmyPEv3XqNWQYv21YLRckxn5rAF5eoGL6dKJh3NqWQ5NT1W1JTUtq/MDIKmF?=
+ =?us-ascii?Q?H5NDbDydN8u3LlgzgAd89buUSgyBEih/mCoP8o32YGpB8JVCq/efpUD8uSka?=
+ =?us-ascii?Q?L+FZeZr9bebvuKZKjf5EnhvRye5Un1YQjctM5A2BRH8yK5ryMWdC50oRXJig?=
+ =?us-ascii?Q?7MbQk9GAzpD91tt3sAHF/pl7O8ELuniweUsy+XwhmU2W1ldpb1/nGJfCJIZR?=
+ =?us-ascii?Q?4aIxBMWMYD/vL3X1m07PzDhS8lVcJAlH9hK1LgeqvWx9yJOqMREH9OJZM9+e?=
+ =?us-ascii?Q?llxZC58Ue2AsA4NSb5STYlqh2NAu45kUoGsXgDa4R03doWgYRGVacubWs53a?=
+ =?us-ascii?Q?c8YsTFwVhR3aNOir+ltAdLGIhlkitdehioY5zJ/3E46NcjrdJuHg9H+FoMR4?=
+ =?us-ascii?Q?X0qH7DXNfmuea8Vnd26qaM+cttLV8wQUAcpLvOF72frXKO23kx1u1InMH9Ut?=
+ =?us-ascii?Q?pzknbUtgYeCQ4GskRrjlMXb0+tQ3DoR936ClJ9JM/81kCs8XcDHYW22/Sfzj?=
+ =?us-ascii?Q?wwcsawTwOTqGV82eZrTr4L7I5LPh2WumOC/LATGM7zramHI+6v3K+eqRoMAk?=
+ =?us-ascii?Q?RBLbYznvxSMEMglvS+SjTtR1nYOHwEMb3gJc6M6dG6Nct1qtvMIeplJiuO+9?=
+ =?us-ascii?Q?Egxvg4JaoBz+1NJ29+3l8Lmr4nFXMhSCVBDTbjoaTs7oTBRNPJgS5RggY5aV?=
+ =?us-ascii?Q?ju6G36QnjbWYizrjmnUaeOOyPYw26/dXlffW0KyL/07BNRT3Nh2dwjPd8+g/?=
+ =?us-ascii?Q?rd4nMvA1O3fgl0VjqguHh/ChbvOKoaP9wNrAb0Kf31TG2rR189Qt4e+0Uv/n?=
+ =?us-ascii?Q?We1KHtcEkSkP9hIOSyB/KnMKQc4KFV6dfDflJkCMEz+V1pw08RLoM6shZFTH?=
+ =?us-ascii?Q?1Tif0dHR15NUk9oFAw0LcP0dGunIDAYLaKc/Aybc?=
+X-OriginatorOrg: analogixsemi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6f22c135-1304-4a7d-5552-08da649baf12
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR04MB6741.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 06:48:25.1269
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2JMMM777g6XAYDVxSYOILS1wz1LxndYz2Hnhl7c7DDQLKHTdS7+5FzR07meGjLkp9PttypuMZDNh6UhUMwSqXQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR04MB4688
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 8:03 PM Huang, Ying <ying.huang@intel.com> wrote:
->
-> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
->
-> > On 7/12/22 2:18 PM, Huang, Ying wrote:
-> >> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
-> >>
-> >>> On 7/12/22 12:29 PM, Huang, Ying wrote:
-> >>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
-> >>>>
-> >>>>> On 7/12/22 6:46 AM, Huang, Ying wrote:
-> >>>>>> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
-> >>>>>>
-> >>>>>>> On 7/5/22 9:59 AM, Huang, Ying wrote:
-> >>>>>>>> Hi, Aneesh,
-> >>>>>>>>
-> >>>>>>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
-> >>>>>>>>
-> >>>>>>>>> The current kernel has the basic memory tiering support: Inactive
-> >>>>>>>>> pages on a higher tier NUMA node can be migrated (demoted) to a lower
-> >>>>>>>>> tier NUMA node to make room for new allocations on the higher tier
-> >>>>>>>>> NUMA node.  Frequently accessed pages on a lower tier NUMA node can be
-> >>>>>>>>> migrated (promoted) to a higher tier NUMA node to improve the
-> >>>>>>>>> performance.
-> >>>>>>>>>
-> >>>>>>>>> In the current kernel, memory tiers are defined implicitly via a
-> >>>>>>>>> demotion path relationship between NUMA nodes, which is created during
-> >>>>>>>>> the kernel initialization and updated when a NUMA node is hot-added or
-> >>>>>>>>> hot-removed.  The current implementation puts all nodes with CPU into
-> >>>>>>>>> the top tier, and builds the tier hierarchy tier-by-tier by establishing
-> >>>>>>>>> the per-node demotion targets based on the distances between nodes.
-> >>>>>>>>>
-> >>>>>>>>> This current memory tier kernel interface needs to be improved for
-> >>>>>>>>> several important use cases:
-> >>>>>>>>>
-> >>>>>>>>> * The current tier initialization code always initializes
-> >>>>>>>>>   each memory-only NUMA node into a lower tier.  But a memory-only
-> >>>>>>>>>   NUMA node may have a high performance memory device (e.g. a DRAM
-> >>>>>>>>>   device attached via CXL.mem or a DRAM-backed memory-only node on
-> >>>>>>>>>   a virtual machine) and should be put into a higher tier.
-> >>>>>>>>>
-> >>>>>>>>> * The current tier hierarchy always puts CPU nodes into the top
-> >>>>>>>>>   tier. But on a system with HBM (e.g. GPU memory) devices, these
-> >>>>>>>>>   memory-only HBM NUMA nodes should be in the top tier, and DRAM nodes
-> >>>>>>>>>   with CPUs are better to be placed into the next lower tier.
-> >>>>>>>>>
-> >>>>>>>>> * Also because the current tier hierarchy always puts CPU nodes
-> >>>>>>>>>   into the top tier, when a CPU is hot-added (or hot-removed) and
-> >>>>>>>>>   triggers a memory node from CPU-less into a CPU node (or vice
-> >>>>>>>>>   versa), the memory tier hierarchy gets changed, even though no
-> >>>>>>>>>   memory node is added or removed.  This can make the tier
-> >>>>>>>>>   hierarchy unstable and make it difficult to support tier-based
-> >>>>>>>>>   memory accounting.
-> >>>>>>>>>
-> >>>>>>>>> * A higher tier node can only be demoted to selected nodes on the
-> >>>>>>>>>   next lower tier as defined by the demotion path, not any other
-> >>>>>>>>>   node from any lower tier.  This strict, hard-coded demotion order
-> >>>>>>>>>   does not work in all use cases (e.g. some use cases may want to
-> >>>>>>>>>   allow cross-socket demotion to another node in the same demotion
-> >>>>>>>>>   tier as a fallback when the preferred demotion node is out of
-> >>>>>>>>>   space), and has resulted in the feature request for an interface to
-> >>>>>>>>>   override the system-wide, per-node demotion order from the
-> >>>>>>>>>   userspace.  This demotion order is also inconsistent with the page
-> >>>>>>>>>   allocation fallback order when all the nodes in a higher tier are
-> >>>>>>>>>   out of space: The page allocation can fall back to any node from
-> >>>>>>>>>   any lower tier, whereas the demotion order doesn't allow that.
-> >>>>>>>>>
-> >>>>>>>>> * There are no interfaces for the userspace to learn about the memory
-> >>>>>>>>>   tier hierarchy in order to optimize its memory allocations.
-> >>>>>>>>>
-> >>>>>>>>> This patch series make the creation of memory tiers explicit under
-> >>>>>>>>> the control of userspace or device driver.
-> >>>>>>>>>
-> >>>>>>>>> Memory Tier Initialization
-> >>>>>>>>> ==========================
-> >>>>>>>>>
-> >>>>>>>>> By default, all memory nodes are assigned to the default tier with
-> >>>>>>>>> tier ID value 200.
-> >>>>>>>>>
-> >>>>>>>>> A device driver can move up or down its memory nodes from the default
-> >>>>>>>>> tier.  For example, PMEM can move down its memory nodes below the
-> >>>>>>>>> default tier, whereas GPU can move up its memory nodes above the
-> >>>>>>>>> default tier.
-> >>>>>>>>>
-> >>>>>>>>> The kernel initialization code makes the decision on which exact tier
-> >>>>>>>>> a memory node should be assigned to based on the requests from the
-> >>>>>>>>> device drivers as well as the memory device hardware information
-> >>>>>>>>> provided by the firmware.
-> >>>>>>>>>
-> >>>>>>>>> Hot-adding/removing CPUs doesn't affect memory tier hierarchy.
-> >>>>>>>>>
-> >>>>>>>>> Memory Allocation for Demotion
-> >>>>>>>>> ==============================
-> >>>>>>>>> This patch series keep the demotion target page allocation logic same.
-> >>>>>>>>> The demotion page allocation pick the closest NUMA node in the
-> >>>>>>>>> next lower tier to the current NUMA node allocating pages from.
-> >>>>>>>>>
-> >>>>>>>>> This will be later improved to use the same page allocation strategy
-> >>>>>>>>> using fallback list.
-> >>>>>>>>>
-> >>>>>>>>> Sysfs Interface:
-> >>>>>>>>> -------------
-> >>>>>>>>> Listing current list of memory tiers details:
-> >>>>>>>>>
-> >>>>>>>>> :/sys/devices/system/memtier$ ls
-> >>>>>>>>> default_tier max_tier  memtier1  power  uevent
-> >>>>>>>>> :/sys/devices/system/memtier$ cat default_tier
-> >>>>>>>>> memtier200
-> >>>>>>>>> :/sys/devices/system/memtier$ cat max_tier
-> >>>>>>>>> 400
-> >>>>>>>>> :/sys/devices/system/memtier$
-> >>>>>>>>>
-> >>>>>>>>> Per node memory tier details:
-> >>>>>>>>>
-> >>>>>>>>> For a cpu only NUMA node:
-> >>>>>>>>>
-> >>>>>>>>> :/sys/devices/system/node# cat node0/memtier
-> >>>>>>>>> :/sys/devices/system/node# echo 1 > node0/memtier
-> >>>>>>>>> :/sys/devices/system/node# cat node0/memtier
-> >>>>>>>>> :/sys/devices/system/node#
-> >>>>>>>>>
-> >>>>>>>>> For a NUMA node with memory:
-> >>>>>>>>> :/sys/devices/system/node# cat node1/memtier
-> >>>>>>>>> 1
-> >>>>>>>>> :/sys/devices/system/node# ls ../memtier/
-> >>>>>>>>> default_tier  max_tier  memtier1  power  uevent
-> >>>>>>>>> :/sys/devices/system/node# echo 2 > node1/memtier
-> >>>>>>>>> :/sys/devices/system/node#
-> >>>>>>>>> :/sys/devices/system/node# ls ../memtier/
-> >>>>>>>>> default_tier  max_tier  memtier1  memtier2  power  uevent
-> >>>>>>>>> :/sys/devices/system/node# cat node1/memtier
-> >>>>>>>>> 2
-> >>>>>>>>> :/sys/devices/system/node#
-> >>>>>>>>>
-> >>>>>>>>> Removing a memory tier
-> >>>>>>>>> :/sys/devices/system/node# cat node1/memtier
-> >>>>>>>>> 2
-> >>>>>>>>> :/sys/devices/system/node# echo 1 > node1/memtier
-> >>>>>>>>
-> >>>>>>>> Thanks a lot for your patchset.
-> >>>>>>>>
-> >>>>>>>> Per my understanding, we haven't reach consensus on
-> >>>>>>>>
-> >>>>>>>> - how to create the default memory tiers in kernel (via abstract
-> >>>>>>>>   distance provided by drivers?  Or use SLIT as the first step?)
-> >>>>>>>>
-> >>>>>>>> - how to override the default memory tiers from user space
-> >>>>>>>>
-> >>>>>>>> As in the following thread and email,
-> >>>>>>>>
-> >>>>>>>> https://lore.kernel.org/lkml/YqjZyP11O0yCMmiO@cmpxchg.org/
-> >>>>>>>>
-> >>>>>>>> I think that we need to finalized on that firstly?
-> >>>>>>>
-> >>>>>>> I did list the proposal here
-> >>>>>>>
-> >>>>>>> https://lore.kernel.org/linux-mm/7b72ccf4-f4ae-cb4e-f411-74d055482026@linux.ibm.com
-> >>>>>>>
-> >>>>>>> So both the kernel default and driver-specific default tiers now become kernel parameters that can be updated
-> >>>>>>> if the user wants a different tier topology.
-> >>>>>>>
-> >>>>>>> All memory that is not managed by a driver gets added to default_memory_tier which got a default value of 200
-> >>>>>>>
-> >>>>>>> For now, the only driver that is updated is dax kmem, which adds the memory it manages to memory tier 100.
-> >>>>>>> Later as we learn more about the device attributes (HMAT or something similar) that we might want to use
-> >>>>>>> to control the tier assignment this can be a range of memory tiers.
-> >>>>>>>
-> >>>>>>> Based on the above, I guess we can merge what is posted in this series and later fine-tune/update
-> >>>>>>> the memory tier assignment based on device attributes.
-> >>>>>>
-> >>>>>> Sorry for late reply.
-> >>>>>>
-> >>>>>> As the first step, it may be better to skip the parts that we haven't
-> >>>>>> reached consensus yet, for example, the user space interface to override
-> >>>>>> the default memory tiers.  And we can use 0, 1, 2 as the default memory
-> >>>>>> tier IDs.  We can refine/revise the in-kernel implementation, but we
-> >>>>>> cannot change the user space ABI.
-> >>>>>>
-> >>>>>
-> >>>>> Can you help list the use case that will be broken by using tierID as outlined in this series?
-> >>>>> One of the details that were mentioned earlier was the need to track top-tier memory usage in a
-> >>>>> memcg and IIUC the patchset posted https://lore.kernel.org/linux-mm/cover.1655242024.git.tim.c.chen@linux.intel.com
-> >>>>> can work with tier IDs too. Let me know if you think otherwise. So at this point
-> >>>>> I am not sure which area we are still debating w.r.t the userspace interface.
-> >>>>
-> >>>> In
-> >>>>
-> >>>> https://lore.kernel.org/lkml/YqjZyP11O0yCMmiO@cmpxchg.org/
-> >>>>
-> >>>> per my understanding, Johannes suggested to override the kernel default
-> >>>> memory tiers with "abstract distance" via drivers implementing memory
-> >>>> devices.  As you said in another email, that is related to [7/12] of the
-> >>>> series.  And we can table it for future.
-> >>>>
-> >>>> And per my understanding, he also suggested to make memory tier IDs
-> >>>> dynamic.  For example, after the "abstract distance" of a driver is
-> >>>> overridden by users, the total number of memory tiers may be changed,
-> >>>> and the memory tier ID of some nodes may be changed too.  This will make
-> >>>> memory tier ID easier to be understood, but more unstable.  For example,
-> >>>> this will make it harder to specify the per-memory-tier memory partition
-> >>>> for a cgroup.
-> >>>>
-> >>>
-> >>> With all the approaches we discussed so far, a memory tier of a numa node can be changed.
-> >>> ie, pgdat->memtier can change anytime. The per memcg top tier mem usage tracking patches
-> >>> posted here
-> >>> https://lore.kernel.org/linux-mm/cefeb63173fa0fac7543315a2abbd4b5a1b25af8.1655242024.git.tim.c.chen@linux.intel.com/
-> >>> doesn't consider the node movement from one memory tier to another. If we need
-> >>> a stable pgdat->memtier we will have to prevent a node memory tier reassignment
-> >>> while we have pages from the memory tier charged to a cgroup. This patchset should not
-> >>> prevent such a restriction.
-> >>
-> >> Absolute stableness doesn't exist even in "rank" based solution.  But
-> >> "rank" can improve the stableness at some degree.  For example, if we
-> >> move the tier of HBM nodes (from below DRAM to above DRAM), the DRAM
-> >> nodes can keep its memory tier ID stable.  This may be not a real issue
-> >> finally.  But we need to discuss that.
-> >>
-> >
-> > I agree that using ranks gives us the flexibility to change demotion order
-> > without being blocked by cgroup usage. But how frequently do we expect the
-> > tier assignment to change? My expectation was these reassignments are going
-> > to be rare and won't happen frequently after a system is up and running?
-> > Hence using tierID for demotion order won't prevent a node reassignment
-> > much because we don't expect to change the node tierID during runtime. In
-> > the rare case we do, we will have to make sure there is no cgroup usage from
-> > the specific memory tier.
-> >
-> > Even if we use ranks, we will have to avoid a rank update, if such
-> > an update can change the meaning of top tier? ie, if a rank update
-> > can result in a node being moved from top tier to non top tier.
-> >
-> >> Tim has suggested to use top-tier(s) memory partition among cgroups.
-> >> But I don't think that has been finalized.  We may use per-memory-tier
-> >> memory partition among cgroups.  I don't know whether Wei will use that
-> >> (may be implemented in the user space).
-> >>
-> >> And, if we thought stableness between nodes and memory tier ID isn't
-> >> important.  Why should we use sparse memory device IDs (that is, 100,
-> >> 200, 300)?  Why not just 0, 1, 2, ...?  That looks more natural.
-> >>
-> >
-> >
-> > The range allows us to use memtier ID for demotion order. ie, as we start initializing
-> > devices with different attributes via dax kmem, there will be a desire to
-> > assign them to different tierIDs. Having default memtier ID (DRAM) at 200 enables
-> > us to put these devices in the range [0 - 200) without updating the node to memtier
-> > mapping of existing NUMA nodes (ie, without updating default memtier).
->
-> I believe that sparse memory tier IDs can make memory tier more stable
-> in some cases.  But this is different from the system suggested by
-> Johannes.  Per my understanding, with Johannes' system, we will
->
-> - one driver may online different memory types (such as kmem_dax may
->   online HBM, PMEM, etc.)
->
-> - one memory type manages several memory nodes (NUMA nodes)
->
-> - one "abstract distance" for each memory type
->
-> - the "abstract distance" can be offset by user space override knob
->
-> - memory tiers generated dynamic from different memory types according
->   "abstract distance" and overridden "offset"
->
-> - the granularity to group several memory types into one memory tier can
->   be overridden via user space knob
->
-> In this way, the memory tiers may be changed totally after user space
-> overridden.  It may be hard to link memory tiers before/after the
-> overridden.  So we may need to reset all per-memory-tier configuration,
-> such as cgroup paritation limit or interleave weight, etc.
->
-> Personally, I think the system above makes sense.  But I think we need
-> to make sure whether it satisfies the requirements.
->
-> Best Regards,
-> Huang, Ying
->
+On Wed, Jul 13, 2022 at 08:36:53AM +0200, Greg Kroah-Hartman wrote:
+> On Wed, Jul 13, 2022 at 02:28:45PM +0800, Xin Ji wrote:
+> > On Tue, Jul 12, 2022 at 03:43:48PM +0200, Greg Kroah-Hartman wrote:
+> > > On Tue, Jul 12, 2022 at 06:31:22AM -0700, Guenter Roeck wrote:
+> > > > On 7/12/22 02:05, Xin Ji wrote:
+> > > > > USB PD controllers which consisting of a microcontroller (acting as the TCPM)
+> > > > > and a port controller (TCPC) - may require that the driver for the PD
+> > > > > controller accesses directly also the on-chip port controller in some cases.
+> > > > > 
+> > > > > Move tcpci.h to include/linux/usb/ is convenience access TCPC registers.
+> > > > > 
+> > > > > Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+> > > > > Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+> > > > > Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> > > > > 
+> > > > > ---
+> > > > > V9 -> V10: Rebase on the latest code
+> > > > > V8 -> V9 : Add more commit message
+> > > > > V7 -> V8 : Fix Guanter's comment, remove unnecessary explain
+> > > > 
+> > > > We are now at v16. The change log has not been updated since v10,
+> > > > making it all but worthless.
+> > > 
+> > > It's also already in my tree for a while, so I have no idea what this is
+> > > being generated against :(
+> > Hi all, I'm little confused, do I need update change log from v11 to
+> > v16? There is no changes since v10.
+> 
+> I'm confused, why are you sending a patch over that is already in my
+> tree and in linux-next?  You got an email saying it was merged, see
+> commit 7963d4d71011 ("usb: typec: tcpci: move tcpci.h to
+> include/linux/usb/").
+> 
+> thanks,
+> 
+> greg k-h
+Hi greg k-h, sorry for that, this serial has 3 patches, so I just think
+need update all 3 patches in each upstream.
 
-Th "memory type" and "abstract distance" concepts sound to me similar
-to the memory tier "rank" idea.
+I'll only update the 2 patches next time.
 
-We can have some well-defined type/distance/rank values, e.g. HBM,
-DRAM, CXL_DRAM, PMEM, CXL_PMEM, which a device can register with.  The
-memory tiers will build from these values.  It can be configurable to
-whether/how to collapse several values into a single tier.
+Thanks,
+Xin
 
-Wei
