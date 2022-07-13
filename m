@@ -2,80 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A324C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57585C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:32:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237072AbiGMU11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        id S236622AbiGMUcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiGMU1Z (ORCPT
+        with ESMTP id S229604AbiGMUcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:27:25 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65602D1E8;
-        Wed, 13 Jul 2022 13:27:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=aMwCqCZv7KMm7FPwRBaOPDqNH5Xzn53rKrd3wy7Qd0w=; b=dbi9CHnMFf07cd9TO0b63y6NJ/
-        EFhxQwRZ5INwn4lK+g3Xz52wZ1Ufh6bit0UjcgJ+ztc/Ic7AFmYpzlaC1rFNuplCSZ9FyeIc3FSXv
-        /4HhcZz6vPKRNDsfkskAQk73c0dCn9m2f/szsziEdotI2rgMKhqvCwQ/hFO26QJf0Tb9M6Ah7mZES
-        S7RHI2AGYAb+v8ebY/6QeatcDMl0i1Hz8UWulpNU0uTHHyrSMTmGxAIwQ7OmYz7F0OvLHwpwU7HHT
-        Gf6+HN8T0OGeF6o9/M5cjr/Ou6QOdPGH6eOvtD2YaVjxbDS2H6SKg+TKN7P75ztpBqrfbWyfIqC1f
-        dAVn1iXg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBiwR-003er4-6q; Wed, 13 Jul 2022 20:26:39 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 50F5D980082; Wed, 13 Jul 2022 22:26:37 +0200 (CEST)
-Date:   Wed, 13 Jul 2022 22:26:37 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "anil.s.keshavamurthy@intel.com" <anil.s.keshavamurthy@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "hch@infradead.org" <hch@infradead.org>,
-        "dave@stgolabs.net" <dave@stgolabs.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Subject: Re: [PATCH bpf-next 1/3] mm/vmalloc: introduce vmalloc_exec which
- allocates RO+X memory
-Message-ID: <Ys8qfRwkTbUYwmKM@worktop.programming.kicks-ass.net>
-References: <20220713071846.3286727-1-song@kernel.org>
- <20220713071846.3286727-2-song@kernel.org>
- <Ys6cWUMHO8XwyYgr@hirez.programming.kicks-ass.net>
- <7C927986-3665-4BD6-A339-D3FE4A71E3D4@fb.com>
+        Wed, 13 Jul 2022 16:32:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DC32B25E;
+        Wed, 13 Jul 2022 13:32:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA66761E46;
+        Wed, 13 Jul 2022 20:32:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB074C34114;
+        Wed, 13 Jul 2022 20:32:01 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 16:32:00 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
+Subject: Re: [PATCH] rtla: Fix Makefile when called from -C tools/
+Message-ID: <20220713163200.1fdf505a@gandalf.local.home>
+In-Reply-To: <CA+icZUUKiODjF0gZ1MaHPgVZS8zKEweR-1NkjHcegsLoRNUQ9w@mail.gmail.com>
+References: <9154d66961804027b1bdc26f1ff08012bb7f9df8.1657269675.git.bristot@kernel.org>
+        <CA+icZUUKiODjF0gZ1MaHPgVZS8zKEweR-1NkjHcegsLoRNUQ9w@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7C927986-3665-4BD6-A339-D3FE4A71E3D4@fb.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 03:48:35PM +0000, Song Liu wrote:
+On Sun, 10 Jul 2022 10:40:47 +0200
+Sedat Dilek <sedat.dilek@gmail.com> wrote:
 
-> > So how about instead we separate them? Then much of the problem goes
-> > away, you don't need to track these 2M chunks at all.
+> On Fri, Jul 8, 2022 at 2:17 PM Daniel Bristot de Oliveira
+> <bristot@kernel.org> wrote:
+> >
+> > Sedat Dilek reported an error on rtla Makefile when running:
+> >  
 > 
-> If we manage the memory in < 2MiB granularity, either 4kB or smaller, 
-> we still need some way to track which parts are being used, no? I mean
-> the bitmap.  
+> Hi Daniel,
+> 
+> Thanks for the patch.
+> 
+> >     $ make -C tools/  
+> 
+> No, that was with...
+> 
+> $ make -C tools/ clean
+> 
+> >     [...]
+> >     make[2]: Entering directory
+> >     '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
+> >     [...]
+> >     '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
+> >     /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
+> >     rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
+> >     make[2]: *** [Makefile:120: clean] Error 1
+> >     make[2]: Leaving directory
+> >
+> > This occurred because the rtla calls kernel's Makefile to get the
+> > version in silence mode, e.g.,
+> >
+> >     $ make -sC ../../.. kernelversion
+> >     5.19.0-rc4
+> >
+> > But the -s is being ignored when rtla's makefile is called from indirectly,
+> > so the output looks like:
+> >
+> >     $ make -C ../../.. kernelversion
+> >     make: Entering directory '/root/linux'
+> >     5.19.0-rc4
+> >     make: Leaving directory '/root/linux'
+> >
+> > 'grep -v make' to avoid this problem, e.g.,
+> >  
+> 
+> Missing word at the beginning soething like:
+> 
+> Use 'grep -v make' to avoid this problem ...
+> 
+> >     $ make -C ../../.. kernelversion | grep -v make
+> >     5.19.0-rc4
+> >  
+> 
+> Shouldn't that be:
+> 
+> $ make -sC ... (missing "s")
 
-I was thinking the vmalloc vmap_area tree could help out there.
+
+Hi Daniel,
+
+Any response to Sedat's comments? I'm holding off sending the rtla branch
+to Linus waiting for an update to this patch.
+
+-- Steve
