@@ -2,97 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C77C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 03:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BE6C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 03:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232716AbiGMDds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 23:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
+        id S231634AbiGMDgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 23:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232693AbiGMDdl (ORCPT
+        with ESMTP id S229915AbiGMDgQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 23:33:41 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE8E2672;
-        Tue, 12 Jul 2022 20:33:35 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id t5-20020a17090a6a0500b001ef965b262eso1457428pjj.5;
-        Tue, 12 Jul 2022 20:33:35 -0700 (PDT)
+        Tue, 12 Jul 2022 23:36:16 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 340F4D7B98;
+        Tue, 12 Jul 2022 20:36:16 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id o18so9322953pgu.9;
+        Tue, 12 Jul 2022 20:36:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=iRBwqOO6cKGAh5e+2I9BxcznEBEGg6GBtbTmrmZAD5s=;
-        b=m/9mOSPBXNMkaE1X0mHG4cbeDfBiVmCdjCqVPr0gxgae4rsPPH5ZsGmelWEsO9pvyk
-         JYMbWC60s74OqbY/ftiH11cWhoVlhqEG9CsMxuBw091hGfMZQ2NoJM+1OKwG9+GlBvkF
-         /jrLizyswJWILyj+5WQqn3lPl0cmJaaTlnNlTJCBoz9bwDAgr3MAwMkHcKnqrkLjPVr+
-         lM6HXuQSe5saGzMFNmenltA53yQ689Yh+3DdZrEfuEMB2Pfy2cS2bc7h6Wi7+bAcEl1l
-         W+sMUcccr4pvX/J+8cCNUcrwVLVHGroO1e0JSkxoWCVwIXaOe2neW62B6q7/e6Lkhmir
-         D9Jg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=yVeFSkEmO64ENxp6OwJH9yQxRclVRPX/S8GoXnifoJs=;
+        b=Jp0EIuguvIfT6nTpvibnF455o2Z/zMNJF/YU9QGMqMtctxixq8+XSHucyOjWjqQB2n
+         +zECdCdWCb+zQZSX8jz+e/vw+FTo+VrqRYmVjVszWH2e5U++Uyc5tT/ddZHYvdX8yhI6
+         IPsonz+WmHSp0VL5xz2/J53mTXgp7AQtDuatWLTmNUTevQ8iIPaAvxceyqqHEraHqFYu
+         sdbODjltqC7KaZw0Y1ZMT8y1ouyEsFMX1Xp7mGCe/hHWxB66b1/HyoCR6P0TME1HMhOw
+         ReR/1DVExuDOruoz/R95CTcbQucfR5VY4zyn3ByTFzTMICA8F/+3yPnU04W2qOVPKPRb
+         UC2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :mime-version:content-disposition;
-        bh=iRBwqOO6cKGAh5e+2I9BxcznEBEGg6GBtbTmrmZAD5s=;
-        b=bdx2bT7QQl3J2brDMyaXBOjX/HQSXqhs5wlkqJQ8Tchmxb6MgsvwBkGTqdL60W0GFX
-         Hs1vemirlg4D7fAPsT+vvVhg2M4HWMFPUr81Tw/xwvJfNWwZoHZCbxP0oPKqC/+72gL/
-         /i8MTWN7fFclKdZCQjpqtBkkPT6GiuQflcvXNVDLivE3zZxEU54xAlwbKNlNysvm/dtr
-         jZRK82ddoQUvHXp9EHtYAF9cZGCLePsHtT51jW16zCw0Dvwx9diUaEVZgYhiX+KB2jnP
-         HHmDLRj5wLE6NHSTnD0fsxosbav7NT4Q9ldTQDfz3Pg6kQn3R4t5WfMCSFAFRxqk4Fh2
-         4mtA==
-X-Gm-Message-State: AJIora+ZFHTyfJUv5OzZ/UEznC+TocJeoqg84l8J3XhrZDjLuRjcn8SB
-        a0juTHDaUbd5hVuvGs13Hjk=
-X-Google-Smtp-Source: AGRyM1t/+ymA6+67OQC06ND+tMlzHGyAwOtEuhA4dqJg6WYDjadEgMx7jMvxfW/9+kAbccBiHG9jRA==
-X-Received: by 2002:a17:902:e952:b0:16a:74b7:57eb with SMTP id b18-20020a170902e95200b0016a74b757ebmr1146350pll.13.1657683214592;
-        Tue, 12 Jul 2022 20:33:34 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:9b46])
-        by smtp.gmail.com with ESMTPSA id s16-20020a170902ea1000b0016c1efb9195sm7662055plg.298.2022.07.12.20.33.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=yVeFSkEmO64ENxp6OwJH9yQxRclVRPX/S8GoXnifoJs=;
+        b=OC0LqYucS4iWe5bsrWc+mJl/So/kRhTk59i4gqa9m49ogXXi2KuKV5gCodZ1yAjYhZ
+         SKfiLMAyljUO+qd82/gThfod9ZT5KjFtvVoBkY+HOmVVA3UbdVfeL0wQD2JTqhqgx6Ar
+         ld90s9OTabV6CLa1en9oJcteIQU1hnoksOA4EJ1+WHunHQ5+Q9GhGed8KLY9JQuWuel7
+         cMS1Hm3hIkBkRAZ8lU3+jGRkPZZSMLvcRKrQdja/2c5g3ORliwP1MVTu5b/1TGQVcvHT
+         007icQ4djbLnr0X3EXH0jnI4u+JVG1PdEY1i2YV0a3Thynu5Jymuwp17jMHIWCL2BafE
+         LRkQ==
+X-Gm-Message-State: AJIora/Bnux7dMzIYvMZSYvFxpI9xro8WHcQCP0xpbdF1zv6wx9jbCBd
+        o7KZRRuA5Q5xchJ58x9pX3s=
+X-Google-Smtp-Source: AGRyM1vI+wluVcFYvR2WTFV2uiw4Hura3WhTgF/TWxJ+8Q2pOc6qb1PHNWWn2zoSTl80hHPro3mVwg==
+X-Received: by 2002:a63:d1e:0:b0:40d:379e:bff8 with SMTP id c30-20020a630d1e000000b0040d379ebff8mr1289986pgl.215.1657683375679;
+        Tue, 12 Jul 2022 20:36:15 -0700 (PDT)
+Received: from localhost.localdomain ([136.175.179.221])
+        by smtp.gmail.com with ESMTPSA id c5-20020a170902d48500b001638a171558sm7634084plg.202.2022.07.12.20.36.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 20:33:33 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 12 Jul 2022 17:33:31 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Subject: [GIT PULL] cgroup fixes for v5.19-rc6
-Message-ID: <Ys49Cxqd1YOHpipB@slm.duckdns.org>
+        Tue, 12 Jul 2022 20:36:15 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     dan.carpenter@oracle.com
+Cc:     18801353760@163.com, andrii@kernel.org, ast@kernel.org,
+        borisp@nvidia.com, bpf@vger.kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, dsahern@kernel.org, edumazet@google.com,
+        guwen@linux.alibaba.com, john.fastabend@gmail.com, kafai@fb.com,
+        kgraul@linux.ibm.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, paskripkin@gmail.com, skhan@linuxfoundation.org,
+        songliubraving@fb.com,
+        syzbot+5f26f85569bd179c18ce@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com, yin31149@gmail.com,
+        yoshfuji@linux-ipv6.org
+Subject: Re: [PATCH] smc: fix refcount bug in sk_psock_get (2)
+Date:   Wed, 13 Jul 2022 11:35:51 +0800
+Message-Id: <20220713033551.59355-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220712094745.GM2338@kadam>
+References: <20220712094745.GM2338@kadam>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following changes since commit 48a23ec6ff2b2a5effe8d3ae5f17fc6b7f35df65:
+On Tue, 12 Jul 2022 at 17:48, Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> On Sat, Jul 09, 2022 at 10:46:59AM +0800, Hawkins Jiawei wrote:
+> > From: hawk <18801353760@163.com>
+>
+> Please use your legal name like you would for signing a legal document.
 
-  Merge tag 'net-5.19-rc3' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-06-16 11:51:32 -0700)
+Thanks, I will pay attention to it in the future.
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/tj/cgroup.git/ tags/cgroup-for-5.19-rc6-fixes
-
-for you to fetch changes up to 07fd5b6cdf3cc30bfde8fe0f644771688be04447:
-
-  cgroup: Use separate src/dst nodes when preloading css_sets for migration (2022-06-16 09:37:02 -1000)
-
-----------------------------------------------------------------
-cgroup fixes for v5.19-rc6
-
-This pull request contains the fix for an old and subtle bug in the
-migration path. css_sets are used to track tasks and migrations are tasks
-moving from a group of css_sets to another group of css_sets. The migration
-path pins all source and destination css_sets in the prep stage.
-Unfortunately, it was overloading the same list_head entry to track sources
-and destinations, which got confused for migrations which are partially
-identity leading to use-after-frees. Fixed by using dedicated list_heads for
-tracking sources and destinations.
-
-----------------------------------------------------------------
-Tejun Heo (1):
-      cgroup: Use separate src/dst nodes when preloading css_sets for migration
-
- include/linux/cgroup-defs.h |  3 ++-
- kernel/cgroup/cgroup.c      | 37 +++++++++++++++++++++++--------------
- 2 files changed, 25 insertions(+), 15 deletions(-)
-
--- 
-tejun
+>
+> regards,
+> dan carpenter
+>
