@@ -2,1174 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1DAC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E90C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236442AbiGMNvd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:51:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53560 "EHLO
+        id S236395AbiGMNxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236312AbiGMNuv (ORCPT
+        with ESMTP id S236452AbiGMNwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:50:51 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B20424BEB
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:50:49 -0700 (PDT)
-Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 633EF66019D2;
-        Wed, 13 Jul 2022 14:50:47 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657720247;
-        bh=xOtqxRxUsBiHCK7ZAo7R8rQ+uKohUNdXsbWpHZvHQqQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IFtlqp6bZiCQMQ11IlLCZvIcTVJMScL1DeAIMXtoDZUbwOlvH9laTrGqPpRgoWmZ7
-         5WoCSvVcJyKd2lm0UC+S+KEoqTTVrn9wt/rEwJ8SkG8f5ZWImkhn8TVJlMt301U5/3
-         n79obBtLWdQLWJKTMJeplXryKv7nnJEldah9QX6ricOrj5bI9sw+vM4K7DKomU6nN1
-         1BpDPYiab0lraXZFJYkmN/0HxS/14hwTnIlpsENFoY9wQ9UvzRPT1KyGtoGYu1OQpY
-         VFDQLIzpOn0ifLEl2xbFc2iIPsSPYnbXdBDpq8jhTbzQjoQcULmpxUbkOms3mVWERv
-         qrO6MeEhQxAMg==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v11 10/10] drm/i915: stolen memory use ttm backend
-Date:   Wed, 13 Jul 2022 14:50:22 +0100
-Message-Id: <20220713135022.3710682-11-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220713135022.3710682-1-bob.beckett@collabora.com>
-References: <20220713135022.3710682-1-bob.beckett@collabora.com>
-MIME-Version: 1.0
+        Wed, 13 Jul 2022 09:52:45 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2042.outbound.protection.outlook.com [40.107.20.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0CDB2C12D;
+        Wed, 13 Jul 2022 06:52:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QsgpC7RkIM1A3AKlznaSkFJIGndkEpACUZZVF16voyeaqBVGFAT59IJdk/qcGY3C/bw00gkWrjzTw9gD6czyF5koA0JssQSCDrfdW7Pjr3aXeEpcOnQyOjlCMZS6NLibwGK3L/yanvagHrfNjYOyrLUgd24HAzQxhkM24JFiRmj/KezQCpKgdIwipBF/jkaWi2Nq/behvNlQmlfSBviANLcqxETBuOV5FkycvWAyxoU+aXdUjT7OFjHN6orIWaVqp6x68+Z4MQwXscjnnEjBZIU9l5l7tVdnDDxBfb2eDfDmoP8AK125fz3dzNVOwnRfzlmkvlVaxx1TEdFcwRCSwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yF24IXqYWvWlZbD6zmFf1dRj9zustWalBNss3N4AFag=;
+ b=ELMn2ctXs0dYLWi9MdTwsdB0qebfDWeKlOnFAqLNgn4x3fXu6Rqbvj9NDpRfD+3/g/bzefK5iH/3ltDXs9sMWKIi/zyW9tgv3BPsVvziretaRgBL9OwvSBlDmA1GtP7B5ttBS3PuEYgIpvC7KBqdvWX3T8+ns8DI7+0ug90nxbMimoC7Mi5Pc4M3JB0qpAQ5QWKrUXUSlT8PS4XJzRHB+8PVjnHSeWdv5Ce9VyTJ6Kz9TnKquLGv/zCuoOKtDrGaMFfPD+gLl8MnMU51Mp8SWE8s51mFZSaCQbA00cck8szc9tgHg1pYBHK/Ywpaj7TknzUDsof/jmfmFKgG6Z5zdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
+ dkim=pass header.d=suse.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yF24IXqYWvWlZbD6zmFf1dRj9zustWalBNss3N4AFag=;
+ b=vQFcNxyYBe3QkvKmKAt8TatLuiUCzZgdrPsQpWdOh3v9PUhTtJ9UafSliwrGuecHrU8fW899Zq7KP8c5zQYA78Sa12GoB5ulzAzKGlVqpsWbpK5HGaIV1fsccRFPRRGXKqU3/N16bucDDdMdTSCqBw/hFrExeN0VOd43rTJ/oYUjdXJYwoYH4DsE7wPv2SVayMYT5yE9l1SHPcU/UFx08UiOFVZB/7wnGqXlDd9Ti+PvGc/6PoyuBUod24RUS2YHnrTXglSjAlhOUVPKAg/s8QTOPcV5GtoLY5hv4Ida8ASdJuXy2ujqB++gQrd/BErhSOe8mIUrR7oNmr6ngKP+Hw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=suse.com;
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com (2603:10a6:803:122::25)
+ by AM6PR04MB6040.eurprd04.prod.outlook.com (2603:10a6:20b:bb::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Wed, 13 Jul
+ 2022 13:52:04 +0000
+Received: from VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::60ad:4d78:a28a:7df4]) by VE1PR04MB6560.eurprd04.prod.outlook.com
+ ([fe80::60ad:4d78:a28a:7df4%4]) with mapi id 15.20.5417.025; Wed, 13 Jul 2022
+ 13:52:04 +0000
+Message-ID: <dbfd3a14-781e-c66e-b11c-e21ba4134067@suse.com>
+Date:   Wed, 13 Jul 2022 15:52:01 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] Subject: x86/PAT: Report PAT on CPUs that support PAT
+ without MTRR
+Content-Language: en-US
+To:     Chuck Zmudzinski <brchuckz@netscape.net>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jane Chu <jane.chu@oracle.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        xen-devel@lists.xenproject.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz.ref@aol.com>
+ <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz@aol.com>
+ <e0faeb99-6c32-a836-3f6b-269318a6b5a6@suse.com>
+ <3d3f0766-2e06-428b-65bb-5d9f778a2baf@netscape.net>
+ <e15c0030-3270-f524-17e4-c482e971eb88@suse.com>
+ <775493aa-618c-676f-8aa4-d1667cf2ca78@netscape.net>
+ <c2ead659-d0aa-5b1f-0079-ce7c02970b35@netscape.net>
+ <1d06203b-97ff-e7eb-28ae-4cdbc7569218@suse.com>
+ <62e32913-cfcb-e0b0-2bbe-75cc8597951d@netscape.net>
+From:   Jan Beulich <jbeulich@suse.com>
+In-Reply-To: <62e32913-cfcb-e0b0-2bbe-75cc8597951d@netscape.net>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AS9PR04CA0178.eurprd04.prod.outlook.com
+ (2603:10a6:20b:530::23) To VE1PR04MB6560.eurprd04.prod.outlook.com
+ (2603:10a6:803:122::25)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d43b685f-0701-4c70-cf9c-08da64d6de3f
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6040:EE_
+X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TA2Bqkv1iGE3wbf8K0Bs/JPizFxpFQTkuyWdv4P+GTbX2LYwoYsOzu23WXuRl8Z1f9zwlTJohfUCkJST1lflUZMrQLyS119W5Gll/3EVUucT2rdFD9M+G5DNNsg3v+RdV9pOA2jgrBTjt890vxoN4VoHFz2tReQJ03lC3lvujtoxqncGN4fClTBGJxohRJNUgK3mI5l5f/k5c04IuDPczQnSr1U6NtQ1fRJr2gVoaLIkTRsasuTaPRnizH1kFIkXYDV6Lquc+OO5gfg+eDWvc2pMN5pSJAgzGs2jzAH3GX3UOLISivKOga/uSoO558qTpJn69sygRjCqIlt/53UsePLf/T8eokrTlJRIpBEzA2CxcXrj4ylNaS1O8Z9Nb9yCDSbYl+dUiSqwGC7vR9rOTirXIXjO0vlR41nZUexla41wzxgA23+thEH8Sj6CTFEk+s7TXQth/0svPduHHbYA8w8po3JhNo0lKugc2zP4SF4lEOW27fNrwLLuDZ+tQlaGV012jVYREPo+Ul5fcQEZgaRJwVtLb5sOA3xt9M5HS2MuXx1C1EYmrIhJDyYOPPFxFSPRh/gfHdSAFTQJlsa6QSMAOy9O0pxgUbUxfRwsl4IV8U9XSgeqDNB1gcMdxmnc/Apt4KlTOcG9gVlRY1cdGHN2xy9tU58bo+ojQeXdmcokIj84bqFBy1/hMsVBHNXpwvOt8S3xPjWCf65KJFhfwc1OP/GUNqpdd1axahIIUv2zzJzBZGsVfACOPzX6KmjIdaT0F1OBy6LUtdEfWit42xAydpYaVTtMoWvLyJgcp1yaOGkif2qcWWLIO05eGaig2PLQiLJEzOPR1uPoWoLaHeXgnVfoMPymol+d8k1Kkbc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6560.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(376002)(396003)(39860400002)(366004)(136003)(83380400001)(5660300002)(66476007)(8676002)(7416002)(31696002)(6916009)(66556008)(316002)(54906003)(66946007)(6486002)(478600001)(86362001)(2616005)(36756003)(4326008)(6506007)(26005)(6666004)(41300700001)(53546011)(6512007)(186003)(8936002)(2906002)(38100700002)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YTRFUVNwdEYwSnFic2swMXpnRUdES1hYdFRCemFzaWpsWmRBTmtyTi9FSUhV?=
+ =?utf-8?B?WGlzMzFaVFdkRmVab1VQSXVOYjJpR1hKcjJnV1JkMmltcXVEeUpPMmkxNXg3?=
+ =?utf-8?B?ZTBCUm9VckNqVWc5dGJvQWI2WWt6TTRyQUlHYlJMZWZEK1VnNUR3V0ZhUlBk?=
+ =?utf-8?B?ZzJveVM1dFFlWXdDbWh5SGZaZW5xSENzaEs1NndhWHFQcEV2dFVrSmNoTDRH?=
+ =?utf-8?B?RlFhWW04bDNvYWowMnBCc0JaTUdIclFKZ3BxcS95U3BQTEVwckNUQVZtdHo1?=
+ =?utf-8?B?TkszZFVRL3VkUzNGcFlHS2xnZDNlZGxzOUNhbTZZaGRMUFQ5VGtzSzhxR0VO?=
+ =?utf-8?B?OXRQeDhBamV2MzBDVzdJUEdjaytzZnkrRnJmUFl3b0tiaXhRS2lnRFRibTVj?=
+ =?utf-8?B?U3pSdWVFV2NwN09ZWXhmeVFwbElZbzNzbFhxK00ydFNibml2UEZ6SVUzZDBM?=
+ =?utf-8?B?bjd1NUxaMElzVEFiWVdONURqSVJFVUREZkFGR1Z3bk1ZOHlvUlNoZWZ4Mm95?=
+ =?utf-8?B?WnlIbGhPdDNNaTVNVEZjbTE5Y2dOUkFxelZva2F4WGwwamhVUEtXelNNY2la?=
+ =?utf-8?B?ckRwdExkbWNoRC81d0sxMGwzSDdmTXgzd2xaSlkwdTJ3dWozSk1naFJTMmhY?=
+ =?utf-8?B?TW1meXVFZytXZ1UzMmdZNkwzV1R4OTNUMlRGQVZsVEtnNW03bDd5UnBMd21M?=
+ =?utf-8?B?M2g4c2pvT0R0Rk1sU0pnNVl3ZS91RkVVWUNiQ2RQYTd0eUlwbmF2OUNEWXpB?=
+ =?utf-8?B?YmFOamMxMHV4ZWFwYXAwVVNDbkxVS3JJcGJFaG15bitMWHFRelFpMC9DZDZL?=
+ =?utf-8?B?cmpkRDJ0MzFZWU4yQzEwbi9hTUdFeS9UcmtsTWpFK294ZDFRU25NbXE5Z2JP?=
+ =?utf-8?B?eGJWSHNuODQ2RkQ3aEpURkxXYXFkNEhGdDdKSkJaQWJaYjdhdW9HRVBRYzNs?=
+ =?utf-8?B?eUtxMGJ1K1Z4eHlkMnBIYTFmZ1hyTitXZi9jYXFyU2ExQ0xTTExyMTBsMno1?=
+ =?utf-8?B?NmRrSUNTamZsbFVzWU1wOXNCbmZSQzMveW9yN0E5bTByaExvdG1rSkdIKzcw?=
+ =?utf-8?B?WEdFZDNUMmtRNGJoMDV3clV3bmxoRlhUR2paQkQveGpVS0xQUmVwd1FsMlpG?=
+ =?utf-8?B?eDhaTWxIbFBSRkllMXk1Uk1DS3Q5TzAwQStaRnpDR2huWkZCRk9lY3p2dUIy?=
+ =?utf-8?B?MFVBSmFPbmhUYWh2VXE4ck94eVptQStuR29hOXl4ODI2T3Z2bjB2S3dJV0gw?=
+ =?utf-8?B?cGZMandrRDdkVVUvc0lGUkYrb1l6L0g1SHFNU1RUT3JnNFdNcyt1TFV3RHNW?=
+ =?utf-8?B?S24rRmFLTndyUmc2cEdQaTJiNFZlbHUwa1NjeWd1cklrM2pKZERrNmRJL2dz?=
+ =?utf-8?B?WlU3dC80aDJvL2VpWGkwSEc0ZUZTOGp1SFN3QXZNdkNZMm1TWUowQkk1Tm9G?=
+ =?utf-8?B?N1IzcWpUNFBmbE4yUWFLNW5rc0ZwQjRsclJYSXVYRjFmVkR2UytVeUlmZ0Yv?=
+ =?utf-8?B?Z1o4Nk8zOW5aKzN1R1NLc1FjVGp3R0RvNkRPM1l0VXo0bktkTXc3eU5UN0cv?=
+ =?utf-8?B?MmJUNTdwNGJmMk9wRlEzRkZ3dHJOSmdEcTdXWU8yU0VhMVBOZXdiWkl1Tzdt?=
+ =?utf-8?B?SnN1ajB0M3k3cUxOdW9qbzc0M1FxUk9IQ0UrY1ZjV3hZV0VqL3J6Qk1KYVFU?=
+ =?utf-8?B?Qi8xcnZCSXRwTmhDY1J1WTFOUG92NHFhcmNoTnVuMFdyTEpYTWNzeUQ0Z21z?=
+ =?utf-8?B?TFp0Lzl1OHhQd3VBSnJuckJuMVdpNW5lenkxL25leWRBdEF3YjZUSC9IbzRs?=
+ =?utf-8?B?d0FXVE1GaE1xSVY5aEw2YlU2VURXQXJxc09ySTJjVmo3ZnVnbFg1ZzNkYU8y?=
+ =?utf-8?B?V0E3L1FjTElOK05jbWZEblVhaDJscm1TZW5VV09SVVVzTUxHYjV1RWlEVXl4?=
+ =?utf-8?B?a3JTanRWWUVGL24xbUovS1BVQXBHQVVla2Vmc2hvVm8za29TOGxVQ3RvajUy?=
+ =?utf-8?B?cW52eFNKUDFXZU1xYlNYK0VDOUlwRXpJQW44cmpVcklZbjFlbW0reE93REtF?=
+ =?utf-8?B?bVI4ajdMYjNvNEVEOGNJZ2JNZk9sWWg2WC95ZHBrRVY5N21BYkcrVWdHQ0hE?=
+ =?utf-8?Q?BBXqE6/A2Vz3xlyvZnJDVaqB0?=
+X-OriginatorOrg: suse.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d43b685f-0701-4c70-cf9c-08da64d6de3f
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6560.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 13:52:04.2255
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NXnMhclZSUYYkdh36X8UyTMVtmJR38FfisCAgS90E/kjqVarrlR7bCje2iFk+cIvh6ICQVnHOV52nCL2aXmE+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6040
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-refactor stolen memory region to use ttm.
-this necessitates using ttm resources to track reserved stolen regions
-instead of drm_mm_nodes.
+On 13.07.2022 15:49, Chuck Zmudzinski wrote:
+> On 7/13/2022 9:34 AM, Jan Beulich wrote:
+>> On 13.07.2022 13:10, Chuck Zmudzinski wrote:
+>>> On 7/13/2022 6:36 AM, Chuck Zmudzinski wrote:
+>>>> On 7/13/2022 5:09 AM, Jan Beulich wrote:
+>>>>> On 13.07.2022 10:51, Chuck Zmudzinski wrote:
+>>>>>> On 7/13/22 2:18 AM, Jan Beulich wrote:
+>>>>>>> On 13.07.2022 03:36, Chuck Zmudzinski wrote:
+>>>>>>>> v2: *Add force_pat_disabled variable to fix "nopat" on Xen PV (Jan Beulich)
+>>>>>>>>     *Add the necessary code to incorporate the "nopat" fix
+>>>>>>>>     *void init_cache_modes(void) -> void __init init_cache_modes(void)
+>>>>>>>>     *Add Jan Beulich as Co-developer (Jan has not signed off yet)
+>>>>>>>>     *Expand the commit message to include relevant parts of the commit
+>>>>>>>>      message of Jan Beulich's proposed patch for this problem
+>>>>>>>>     *Fix 'else if ... {' placement and indentation
+>>>>>>>>     *Remove indication the backport to stable branches is only back to 5.17.y
+>>>>>>>>
+>>>>>>>> I think these changes address all the comments on the original patch
+>>>>>>>>
+>>>>>>>> I added Jan Beulich as a Co-developer because Juergen Gross asked me to
+>>>>>>>> include Jan's idea for fixing "nopat" that was missing from the first
+>>>>>>>> version of the patch.
+>>>>>>>
+>>>>>>> You've sufficiently altered this change to clearly no longer want my
+>>>>>>> S-o-b; unfortunately in fact I think you broke things:
+>>>>>>
+>>>>>> Well, I hope we can come to an agreement so I have
+>>>>>> your S-o-b. But that would probably require me to remove
+>>>>>> Juergen's R-b.
+>>>>>>
+>>>>>>>> @@ -292,7 +294,7 @@ void init_cache_modes(void)
+>>>>>>>>  		rdmsrl(MSR_IA32_CR_PAT, pat);
+>>>>>>>>  	}
+>>>>>>>>  
+>>>>>>>> -	if (!pat) {
+>>>>>>>> +	if (!pat || pat_force_disabled) {
+>>>>>>>
+>>>>>>> By checking the new variable here ...
+>>>>>>>
+>>>>>>>>  		/*
+>>>>>>>>  		 * No PAT. Emulate the PAT table that corresponds to the two
+>>>>>>>>  		 * cache bits, PWT (Write Through) and PCD (Cache Disable).
+>>>>>>>> @@ -313,6 +315,16 @@ void init_cache_modes(void)
+>>>>>>>>  		 */
+>>>>>>>>  		pat = PAT(0, WB) | PAT(1, WT) | PAT(2, UC_MINUS) | PAT(3, UC) |
+>>>>>>>>  		      PAT(4, WB) | PAT(5, WT) | PAT(6, UC_MINUS) | PAT(7, UC);
+>>>>>>>
+>>>>>>> ... you put in place a software view which doesn't match hardware. I
+>>>>>>> continue to think that ...
+>>>>>>>
+>>>>>>>> +	} else if (!pat_bp_enabled) {
+>>>>>>>
+>>>>>>> ... the variable wants checking here instead (at which point, yes,
+>>>>>>> this comes quite close to simply being a v2 of my original patch).
+>>>>>>>
+>>>>>>> By using !pat_bp_enabled here you actually broaden where the change
+>>>>>>> would take effect. Iirc Boris had asked to narrow things (besides
+>>>>>>> voicing opposition to this approach altogether). Even without that
+>>>>>>> request I wonder whether you aren't going to far with this.
+>>>>>>>
+>>>>>>> Jan
+>>>>>>
+>>>>>> I thought about checking for the administrator's "nopat"
+>>>>>> setting where you suggest which would limit the effect
+>>>>>> of "nopat" to not reporting PAT as enabled to device
+>>>>>> drivers who query for PAT availability using pat_enabled().
+>>>>>> The main reason I did not do that is that due to the fact
+>>>>>> that we cannot write to the PAT MSR, we cannot really
+>>>>>> disable PAT. But we come closer to respecting the wishes
+>>>>>> of the administrator by configuring the caching modes as
+>>>>>> if PAT is actually disabled by the hardware or firmware
+>>>>>> when in fact it is not.
+>>>>>>
+>>>>>> What would you propose logging as a message when
+>>>>>> we report PAT as disabled via pat_enabled()? The main
+>>>>>> reason I did not choose to check the new variable in the
+>>>>>> new 'else if' block is that I could not figure out what to
+>>>>>> tell the administrator in that case. I think we would have
+>>>>>> to log something like, "nopat is set, but we cannot disable
+>>>>>> PAT, doing our best to disable PAT by not reporting PAT
+>>>>>> as enabled via pat_enabled(), but that does not guarantee
+>>>>>> that kernel drivers and components cannot use PAT if they
+>>>>>> query for PAT support using boot_cpu_has(X86_FEATURE_PAT)
+>>>>>> instead of pat_enabled()." However, I acknowledge WC mappings
+>>>>>> would still be disabled because arch_can_pci_mmap_wc() will
+>>>>>> be false if pat_enabled() is false.
+>>>>>>
+>>>>>> Perhaps we also need to log something if we keep the
+>>>>>> check for "nopat" where I placed it. We could say something
+>>>>>> like: "nopat is set, but we cannot disable hardware/firmware
+>>>>>> PAT support, so we are emulating as if there is no PAT support
+>>>>>> which puts in place a software view that does not match
+>>>>>> hardware."
+>>>>>>
+>>>>>> No matter what, because we cannot write to PAT MSR in
+>>>>>> the Xen PV case, we probably need to log something to
+>>>>>> explain the problems associated with trying to honor the
+>>>>>> administrator's request. Also, what log level should it be.
+>>>>>> Should it be a pr_warn instead of a pr_info?
+>>>>>
+>>>>> I'm afraid I'm the wrong one to answer logging questions. As you
+>>>>> can see from my original patch, I didn't add any new logging (and
+>>>>> no addition was requested in the comments that I have got). I also
+>>>>> don't think "nopat" has ever meant "disable PAT", as the feature
+>>>>> is either there or not. Instead I think it was always seen as
+>>>>> "disable fiddling with PAT", which by implication means using
+>>>>> whatever is there (if the feature / MSR itself is available).
+>>>>
+>>>> IIRC, I do think I mentioned in the comments on your patch that
+>>>> it would be preferable to mention in the commit message that
+>>>> your patch would change the current behavior of "nopat" on
+>>>> Xen. The question is, how much do we want to change the
+>>>> current behavior of "nopat" on Xen. I think if we have to change
+>>>> the current behavior of "nopat" on Xen and if we are going
+>>>> to propagate that change to all current stable branches all
+>>>> the way back to 4.9.y,, we better make a lot of noise about
+>>>> what we are doing here.
+>>>>
+>>>> Chuck
+>>>
+>>> And in addition, if we are going to backport this patch to
+>>> all current stable branches, we better have a really, really,
+>>> good reason for changing the behavior of "nopat" on Xen.
+>>>
+>>> Does such a reason exist?
+>>
+>> Well, the simple reason is: It doesn't work the same way under Xen
+>> and non-Xen (in turn because, before my patch or whatever equivalent
+>> work, things don't work properly anyway, PAT-wise). Yet it definitely
+>> ought to behave the same everywhere, imo.
+>>
+>> Jan
+> 
+> IOW, you are saying PAT has been broken on Xen for a
+> long time, and it is necessary to fix it now not only on
+> master, but also on all the stable branches.
+> 
+> Why is it necessary to do it on all the stable branches?
 
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
----
- drivers/gpu/drm/i915/display/intel_fbc.c      |  78 ++--
- .../gpu/drm/i915/gem/i915_gem_object_types.h  |   2 -
- drivers/gpu/drm/i915/gem/i915_gem_stolen.c    | 425 ++++++------------
- drivers/gpu/drm/i915/gem/i915_gem_stolen.h    |  21 +-
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c       |   3 +-
- drivers/gpu/drm/i915/gem/i915_gem_ttm.h       |   7 +
- drivers/gpu/drm/i915/gt/intel_rc6.c           |   4 +-
- drivers/gpu/drm/i915/gt/selftest_reset.c      |  16 +-
- drivers/gpu/drm/i915/i915_debugfs.c           |   7 +-
- drivers/gpu/drm/i915/i915_drv.h               |   6 +-
- drivers/gpu/drm/i915/intel_region_ttm.c       |  42 +-
- drivers/gpu/drm/i915/intel_region_ttm.h       |   8 +-
- drivers/gpu/drm/i915/selftests/mock_region.c  |  12 +-
- 13 files changed, 280 insertions(+), 351 deletions(-)
+I'm not saying that's _necessary_ (but I think it would make sense),
+and I'm not the one to decide whether or how far to backport this.
 
-diff --git a/drivers/gpu/drm/i915/display/intel_fbc.c b/drivers/gpu/drm/i915/display/intel_fbc.c
-index 16537830ccf0..7dd42b11f4b8 100644
---- a/drivers/gpu/drm/i915/display/intel_fbc.c
-+++ b/drivers/gpu/drm/i915/display/intel_fbc.c
-@@ -38,6 +38,7 @@
-  * forcibly disable it to allow proper screen updates.
-  */
- 
-+#include "gem/i915_gem_stolen.h"
- #include <linux/string_helpers.h>
- 
- #include <drm/drm_blend.h>
-@@ -52,6 +53,7 @@
- #include "intel_display_types.h"
- #include "intel_fbc.h"
- #include "intel_frontbuffer.h"
-+#include "gem/i915_gem_region.h"
- 
- #define for_each_fbc_id(__dev_priv, __fbc_id) \
- 	for ((__fbc_id) = INTEL_FBC_A; (__fbc_id) < I915_MAX_FBCS; (__fbc_id)++) \
-@@ -93,8 +95,8 @@ struct intel_fbc {
- 	struct mutex lock;
- 	unsigned int busy_bits;
- 
--	struct drm_mm_node compressed_fb;
--	struct drm_mm_node compressed_llb;
-+	struct ttm_resource *compressed_fb;
-+	struct ttm_resource *compressed_llb;
- 
- 	enum intel_fbc_id id;
- 
-@@ -332,16 +334,20 @@ static void i8xx_fbc_nuke(struct intel_fbc *fbc)
- static void i8xx_fbc_program_cfb(struct intel_fbc *fbc)
- {
- 	struct drm_i915_private *i915 = fbc->i915;
-+	u64 fb_offset = i915_gem_stolen_reserve_offset(fbc->compressed_fb);
-+	u64 llb_offset = i915_gem_stolen_reserve_offset(fbc->compressed_llb);
- 
-+	GEM_BUG_ON(fb_offset == I915_BO_INVALID_OFFSET);
-+	GEM_BUG_ON(llb_offset == I915_BO_INVALID_OFFSET);
- 	GEM_BUG_ON(range_overflows_end_t(u64, i915->dsm.start,
--					 fbc->compressed_fb.start, U32_MAX));
-+					 fb_offset, U32_MAX));
- 	GEM_BUG_ON(range_overflows_end_t(u64, i915->dsm.start,
--					 fbc->compressed_llb.start, U32_MAX));
-+					 llb_offset, U32_MAX));
- 
- 	intel_de_write(i915, FBC_CFB_BASE,
--		       i915->dsm.start + fbc->compressed_fb.start);
-+		       i915->dsm.start + fb_offset);
- 	intel_de_write(i915, FBC_LL_BASE,
--		       i915->dsm.start + fbc->compressed_llb.start);
-+		       i915->dsm.start + llb_offset);
- }
- 
- static const struct intel_fbc_funcs i8xx_fbc_funcs = {
-@@ -449,8 +455,10 @@ static bool g4x_fbc_is_compressing(struct intel_fbc *fbc)
- static void g4x_fbc_program_cfb(struct intel_fbc *fbc)
- {
- 	struct drm_i915_private *i915 = fbc->i915;
-+	u64 fb_offset = i915_gem_stolen_reserve_offset(fbc->compressed_fb);
- 
--	intel_de_write(i915, DPFC_CB_BASE, fbc->compressed_fb.start);
-+	GEM_BUG_ON(fb_offset == I915_BO_INVALID_OFFSET);
-+	intel_de_write(i915, DPFC_CB_BASE, fb_offset);
- }
- 
- static const struct intel_fbc_funcs g4x_fbc_funcs = {
-@@ -500,8 +508,10 @@ static bool ilk_fbc_is_compressing(struct intel_fbc *fbc)
- static void ilk_fbc_program_cfb(struct intel_fbc *fbc)
- {
- 	struct drm_i915_private *i915 = fbc->i915;
-+	u64 fb_offset = i915_gem_stolen_reserve_offset(fbc->compressed_fb);
- 
--	intel_de_write(i915, ILK_DPFC_CB_BASE(fbc->id), fbc->compressed_fb.start);
-+	GEM_BUG_ON(fb_offset == I915_BO_INVALID_OFFSET);
-+	intel_de_write(i915, ILK_DPFC_CB_BASE(fbc->id), fb_offset);
- }
- 
- static const struct intel_fbc_funcs ilk_fbc_funcs = {
-@@ -745,21 +755,24 @@ static int find_compression_limit(struct intel_fbc *fbc,
- {
- 	struct drm_i915_private *i915 = fbc->i915;
- 	u64 end = intel_fbc_stolen_end(i915);
--	int ret, limit = min_limit;
-+	int limit = min_limit;
-+	struct ttm_resource *res;
- 
- 	size /= limit;
- 
- 	/* Try to over-allocate to reduce reallocations and fragmentation. */
--	ret = i915_gem_stolen_insert_node_in_range(i915, &fbc->compressed_fb,
--						   size <<= 1, 4096, 0, end);
--	if (ret == 0)
-+	res = i915_gem_stolen_reserve_range(i915, size <<= 1, 0, end);
-+	if (!IS_ERR(res)) {
-+		fbc->compressed_fb = res;
- 		return limit;
-+	}
- 
- 	for (; limit <= intel_fbc_max_limit(i915); limit <<= 1) {
--		ret = i915_gem_stolen_insert_node_in_range(i915, &fbc->compressed_fb,
--							   size >>= 1, 4096, 0, end);
--		if (ret == 0)
-+		res = i915_gem_stolen_reserve_range(i915, size >>= 1, 0, end);
-+		if (!IS_ERR(res)) {
-+			fbc->compressed_fb = res;
- 			return limit;
-+		}
- 	}
- 
- 	return 0;
-@@ -770,17 +783,18 @@ static int intel_fbc_alloc_cfb(struct intel_fbc *fbc,
- {
- 	struct drm_i915_private *i915 = fbc->i915;
- 	int ret;
-+	struct ttm_resource *res;
- 
--	drm_WARN_ON(&i915->drm,
--		    drm_mm_node_allocated(&fbc->compressed_fb));
--	drm_WARN_ON(&i915->drm,
--		    drm_mm_node_allocated(&fbc->compressed_llb));
-+	drm_WARN_ON(&i915->drm, fbc->compressed_fb);
-+	drm_WARN_ON(&i915->drm, fbc->compressed_llb);
- 
- 	if (DISPLAY_VER(i915) < 5 && !IS_G4X(i915)) {
--		ret = i915_gem_stolen_insert_node(i915, &fbc->compressed_llb,
--						  4096, 4096);
--		if (ret)
-+		res = i915_gem_stolen_reserve_range(i915, 4096, I915_GEM_STOLEN_BIAS, 0);
-+		if (IS_ERR(res)) {
-+			ret = PTR_ERR(res);
- 			goto err;
-+		}
-+		fbc->compressed_llb = res;
- 	}
- 
- 	ret = find_compression_limit(fbc, size, min_limit);
-@@ -794,15 +808,14 @@ static int intel_fbc_alloc_cfb(struct intel_fbc *fbc,
- 
- 	drm_dbg_kms(&i915->drm,
- 		    "reserved %llu bytes of contiguous stolen space for FBC, limit: %d\n",
--		    fbc->compressed_fb.size, fbc->limit);
-+		    i915_gem_stolen_reserve_size(fbc->compressed_fb), fbc->limit);
- 
- 	return 0;
- 
- err_llb:
--	if (drm_mm_node_allocated(&fbc->compressed_llb))
--		i915_gem_stolen_remove_node(i915, &fbc->compressed_llb);
-+	i915_gem_stolen_release_range(i915, fetch_and_zero(&fbc->compressed_llb));
- err:
--	if (drm_mm_initialized(&i915->mm.stolen))
-+	if (IS_ERR(res) && (PTR_ERR(res) == -ENOMEM || PTR_ERR(res) == -ENXIO))
- 		drm_info_once(&i915->drm, "not enough stolen space for compressed buffer (need %d more bytes), disabling. Hint: you may be able to increase stolen memory size in the BIOS to avoid this.\n", size);
- 	return -ENOSPC;
- }
-@@ -827,10 +840,10 @@ static void __intel_fbc_cleanup_cfb(struct intel_fbc *fbc)
- 	if (WARN_ON(intel_fbc_hw_is_active(fbc)))
- 		return;
- 
--	if (drm_mm_node_allocated(&fbc->compressed_llb))
--		i915_gem_stolen_remove_node(i915, &fbc->compressed_llb);
--	if (drm_mm_node_allocated(&fbc->compressed_fb))
--		i915_gem_stolen_remove_node(i915, &fbc->compressed_fb);
-+	if (fbc->compressed_llb)
-+		i915_gem_stolen_release_range(i915, fetch_and_zero(&fbc->compressed_llb));
-+	if (fbc->compressed_fb)
-+		i915_gem_stolen_release_range(i915, fetch_and_zero(&fbc->compressed_fb));
- }
- 
- void intel_fbc_cleanup(struct drm_i915_private *i915)
-@@ -1035,9 +1048,10 @@ static bool intel_fbc_is_cfb_ok(const struct intel_plane_state *plane_state)
- {
- 	struct intel_plane *plane = to_intel_plane(plane_state->uapi.plane);
- 	struct intel_fbc *fbc = plane->fbc;
-+	u64 fb_size = i915_gem_stolen_reserve_size(fbc->compressed_fb);
- 
- 	return intel_fbc_min_limit(plane_state) <= fbc->limit &&
--		intel_fbc_cfb_size(plane_state) <= fbc->compressed_fb.size * fbc->limit;
-+		intel_fbc_cfb_size(plane_state) <= fb_size * fbc->limit;
- }
- 
- static bool intel_fbc_is_ok(const struct intel_plane_state *plane_state)
-@@ -1703,7 +1717,7 @@ void intel_fbc_init(struct drm_i915_private *i915)
- {
- 	enum intel_fbc_id fbc_id;
- 
--	if (!drm_mm_initialized(&i915->mm.stolen))
-+	if (!i915->mm.stolen_region)
- 		mkwrite_device_info(i915)->display.fbc_mask = 0;
- 
- 	if (need_fbc_vtd_wa(i915))
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-index 283a4b84971a..9671fedc0d75 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
-@@ -651,8 +651,6 @@ struct drm_i915_gem_object {
- 		} userptr;
- #endif
- 
--		struct drm_mm_node *stolen;
--
- 		resource_size_t bo_offset;
- 
- 		unsigned long scratch;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_stolen.c b/drivers/gpu/drm/i915/gem/i915_gem_stolen.c
-index 166d0a4b9e8c..cb72cf244ba4 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_stolen.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_stolen.c
-@@ -4,10 +4,11 @@
-  * Copyright © 2008-2012 Intel Corporation
-  */
- 
-+#include "drm/ttm/ttm_placement.h"
-+#include "gem/i915_gem_object_types.h"
- #include <linux/errno.h>
- #include <linux/mutex.h>
- 
--#include <drm/drm_mm.h>
- #include <drm/i915_drm.h>
- 
- #include "gem/i915_gem_lmem.h"
-@@ -16,65 +17,90 @@
- #include "gt/intel_gt_mcr.h"
- #include "gt/intel_gt_regs.h"
- #include "gt/intel_region_lmem.h"
-+#include "gem/i915_gem_ttm.h"
- #include "i915_drv.h"
- #include "i915_gem_stolen.h"
- #include "i915_reg.h"
- #include "i915_utils.h"
- #include "i915_vgpu.h"
- #include "intel_mchbar_regs.h"
--
--/*
-- * The BIOS typically reserves some of the system's memory for the exclusive
-- * use of the integrated graphics. This memory is no longer available for
-- * use by the OS and so the user finds that his system has less memory
-- * available than he put in. We refer to this memory as stolen.
-+#include "intel_region_ttm.h"
-+
-+/**
-+ * i915_gem_stolen_reserve_range - reserve a region of space in a given range
-+ * @i915: i915 device instance
-+ * @size: size of region to reserve
-+ * @start: start of search area
-+ * @end: end of search area
-  *
-- * The BIOS will allocate its framebuffer from the stolen memory. Our
-- * goal is try to reuse that object for our own fbcon which must always
-- * be available for panics. Anything else we can reuse the stolen memory
-- * for is a boon.
-+ * Search for @size amount of free space within the region delimeted by @start and @end.
-+ * If found reserve it from future use until later release with @i915_gem_stolen_release_range.
-+ *
-+ * Return: pointer to resource tracking structure on success, ERR_PTR otherwise
-  */
--
--int i915_gem_stolen_insert_node_in_range(struct drm_i915_private *i915,
--					 struct drm_mm_node *node, u64 size,
--					 unsigned alignment, u64 start, u64 end)
-+struct ttm_resource *
-+i915_gem_stolen_reserve_range(struct drm_i915_private *i915,
-+			      resource_size_t size,
-+			      u64 start, u64 end)
- {
--	int ret;
-+	struct intel_memory_region *mem = i915->mm.stolen_region;
- 
--	if (!drm_mm_initialized(&i915->mm.stolen))
--		return -ENODEV;
--
--	/* WaSkipStolenMemoryFirstPage:bdw+ */
--	if (GRAPHICS_VER(i915) >= 8 && start < 4096)
--		start = 4096;
--
--	mutex_lock(&i915->mm.stolen_lock);
--	ret = drm_mm_insert_node_in_range(&i915->mm.stolen, node,
--					  size, alignment, 0,
--					  start, end, DRM_MM_INSERT_BEST);
--	mutex_unlock(&i915->mm.stolen_lock);
-+	if (!mem)
-+		return ERR_PTR(-ENODEV);
-+	return intel_region_ttm_resource_alloc(mem, size, start, end, I915_BO_ALLOC_CONTIGUOUS);
-+}
- 
--	return ret;
-+/**
-+ * i915_gem_stolen_reserve_offset - return the offset of the reserved space
-+ * @res: pointer to resource tracking structure to check
-+ *
-+ * Return: The offset of the reserved resource, or I915_BO_INVALID_OFFSET on error
-+ */
-+u64 i915_gem_stolen_reserve_offset(struct ttm_resource *res)
-+{
-+	if (!res)
-+		return I915_BO_INVALID_OFFSET;
-+	return PFN_PHYS(res->start);
- }
- 
--int i915_gem_stolen_insert_node(struct drm_i915_private *i915,
--				struct drm_mm_node *node, u64 size,
--				unsigned alignment)
-+/**
-+ * i915_gem_stolen_reserve_size - return the reserved size of the reserved space
-+ * @res: pointer to resource tracking structure to check
-+ *
-+ * Return: The size of the reserved resource, or I915_BO_INVALID_OFFSET on error
-+ */
-+u64 i915_gem_stolen_reserve_size(struct ttm_resource *res)
- {
--	return i915_gem_stolen_insert_node_in_range(i915, node,
--						    size, alignment,
--						    I915_GEM_STOLEN_BIAS,
--						    U64_MAX);
-+	if (!res)
-+		return I915_BO_INVALID_OFFSET;
-+	return PFN_PHYS(res->num_pages);
- }
- 
--void i915_gem_stolen_remove_node(struct drm_i915_private *i915,
--				 struct drm_mm_node *node)
-+/**
-+ * i915_gem_stolen_release_range - release the reserved area to be free for allocation again
-+ * @i915: i915 device instance
-+ * @res: pointer to resource tracking structure allocated via @i915_gem_stolen_reserve_range
-+ */
-+void i915_gem_stolen_release_range(struct drm_i915_private *i915,
-+				   struct ttm_resource *res)
- {
--	mutex_lock(&i915->mm.stolen_lock);
--	drm_mm_remove_node(node);
--	mutex_unlock(&i915->mm.stolen_lock);
-+	struct intel_memory_region *mem = i915->mm.stolen_region;
-+
-+	intel_region_ttm_resource_free(mem, res);
- }
- 
-+/*
-+ * The BIOS typically reserves some of the system's memory for the exclusive
-+ * use of the integrated graphics. This memory is no longer available for
-+ * use by the OS and so the user finds that his system has less memory
-+ * available than he put in. We refer to this memory as stolen.
-+ *
-+ * The BIOS will allocate its framebuffer from the stolen memory. Our
-+ * goal is try to reuse that object for our own fbcon which must always
-+ * be available for panics. Anything else we can reuse the stolen memory
-+ * for is a boon.
-+ */
-+
- static int i915_adjust_stolen(struct drm_i915_private *i915,
- 			      struct resource *dsm)
- {
-@@ -175,14 +201,6 @@ static int i915_adjust_stolen(struct drm_i915_private *i915,
- 	return 0;
- }
- 
--static void i915_gem_cleanup_stolen(struct drm_i915_private *i915)
--{
--	if (!drm_mm_initialized(&i915->mm.stolen))
--		return;
--
--	drm_mm_takedown(&i915->mm.stolen);
--}
--
- static void g4x_get_stolen_reserved(struct drm_i915_private *i915,
- 				    struct intel_uncore *uncore,
- 				    resource_size_t *base,
-@@ -396,8 +414,8 @@ static int i915_gem_init_stolen(struct intel_memory_region *mem)
- 	struct intel_uncore *uncore = &i915->uncore;
- 	resource_size_t reserved_base, stolen_top;
- 	resource_size_t reserved_total, reserved_size;
--
--	mutex_init(&i915->mm.stolen_lock);
-+	struct ttm_resource *resvd;
-+	int ret;
- 
- 	if (intel_vgpu_active(i915)) {
- 		drm_notice(&i915->drm,
-@@ -515,229 +533,28 @@ static int i915_gem_init_stolen(struct intel_memory_region *mem)
- 		return 0;
- 
- 	/* Basic memrange allocator for stolen space. */
--	drm_mm_init(&i915->mm.stolen, 0, i915->stolen_usable_size);
--
--	return 0;
--}
--
--static void dbg_poison(struct i915_ggtt *ggtt,
--		       dma_addr_t addr, resource_size_t size,
--		       u8 x)
--{
--#if IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM)
--	if (!drm_mm_node_allocated(&ggtt->error_capture))
--		return;
--
--	if (ggtt->vm.bind_async_flags & I915_VMA_GLOBAL_BIND)
--		return; /* beware stop_machine() inversion */
--
--	GEM_BUG_ON(!IS_ALIGNED(size, PAGE_SIZE));
--
--	mutex_lock(&ggtt->error_mutex);
--	while (size) {
--		void __iomem *s;
--
--		ggtt->vm.insert_page(&ggtt->vm, addr,
--				     ggtt->error_capture.start,
--				     I915_CACHE_NONE, 0);
--		mb();
--
--		s = io_mapping_map_wc(&ggtt->iomap,
--				      ggtt->error_capture.start,
--				      PAGE_SIZE);
--		memset_io(s, x, PAGE_SIZE);
--		io_mapping_unmap(s);
--
--		addr += PAGE_SIZE;
--		size -= PAGE_SIZE;
--	}
--	mb();
--	ggtt->vm.clear_range(&ggtt->vm, ggtt->error_capture.start, PAGE_SIZE);
--	mutex_unlock(&ggtt->error_mutex);
--#endif
--}
--
--static struct sg_table *
--i915_pages_create_for_stolen(struct drm_device *dev,
--			     resource_size_t offset, resource_size_t size)
--{
--	struct drm_i915_private *i915 = to_i915(dev);
--	struct sg_table *st;
--	struct scatterlist *sg;
--
--	GEM_BUG_ON(range_overflows(offset, size, resource_size(&i915->dsm)));
--
--	/* We hide that we have no struct page backing our stolen object
--	 * by wrapping the contiguous physical allocation with a fake
--	 * dma mapping in a single scatterlist.
--	 */
--
--	st = kmalloc(sizeof(*st), GFP_KERNEL);
--	if (st == NULL)
--		return ERR_PTR(-ENOMEM);
--
--	if (sg_alloc_table(st, 1, GFP_KERNEL)) {
--		kfree(st);
--		return ERR_PTR(-ENOMEM);
--	}
--
--	sg = st->sgl;
--	sg->offset = 0;
--	sg->length = size;
--
--	sg_dma_address(sg) = (dma_addr_t)i915->dsm.start + offset;
--	sg_dma_len(sg) = size;
--
--	return st;
--}
--
--static int i915_gem_object_get_pages_stolen(struct drm_i915_gem_object *obj)
--{
--	struct drm_i915_private *i915 = to_i915(obj->base.dev);
--	struct sg_table *pages =
--		i915_pages_create_for_stolen(obj->base.dev,
--					     obj->stolen->start,
--					     obj->stolen->size);
--	if (IS_ERR(pages))
--		return PTR_ERR(pages);
--
--	dbg_poison(to_gt(i915)->ggtt,
--		   sg_dma_address(pages->sgl),
--		   sg_dma_len(pages->sgl),
--		   POISON_INUSE);
--
--	__i915_gem_object_set_pages(obj, pages, obj->stolen->size);
--
--	return 0;
--}
--
--static void i915_gem_object_put_pages_stolen(struct drm_i915_gem_object *obj,
--					     struct sg_table *pages)
--{
--	struct drm_i915_private *i915 = to_i915(obj->base.dev);
--	/* Should only be called from i915_gem_object_release_stolen() */
--
--	dbg_poison(to_gt(i915)->ggtt,
--		   sg_dma_address(pages->sgl),
--		   sg_dma_len(pages->sgl),
--		   POISON_FREE);
--
--	sg_free_table(pages);
--	kfree(pages);
--}
--
--static void
--i915_gem_object_release_stolen(struct drm_i915_gem_object *obj)
--{
--	struct drm_i915_private *i915 = to_i915(obj->base.dev);
--	struct drm_mm_node *stolen = fetch_and_zero(&obj->stolen);
--
--	GEM_BUG_ON(!stolen);
--	i915_gem_stolen_remove_node(i915, stolen);
--	kfree(stolen);
--
--	i915_gem_object_release_memory_region(obj);
--}
--
--static const struct drm_i915_gem_object_ops i915_gem_object_stolen_ops = {
--	.name = "i915_gem_object_stolen",
--	.get_pages = i915_gem_object_get_pages_stolen,
--	.put_pages = i915_gem_object_put_pages_stolen,
--	.release = i915_gem_object_release_stolen,
--};
--
--static int __i915_gem_object_create_stolen(struct intel_memory_region *mem,
--					   struct drm_i915_gem_object *obj,
--					   struct drm_mm_node *stolen)
--{
--	static struct lock_class_key lock_class;
--	unsigned int cache_level;
--	unsigned int flags;
--	int err;
--
--	/*
--	 * Stolen objects are always physically contiguous since we just
--	 * allocate one big block underneath using the drm_mm range allocator.
--	 */
--	flags = I915_BO_ALLOC_CONTIGUOUS;
--
--	drm_gem_private_object_init(&mem->i915->drm, &obj->base, stolen->size);
--	i915_gem_object_init(obj, &i915_gem_object_stolen_ops, &lock_class, flags);
--
--	obj->stolen = stolen;
--	obj->read_domains = I915_GEM_DOMAIN_CPU | I915_GEM_DOMAIN_GTT;
--	cache_level = HAS_LLC(mem->i915) ? I915_CACHE_LLC : I915_CACHE_NONE;
--	i915_gem_object_set_cache_coherency(obj, cache_level);
--
--	if (WARN_ON(!i915_gem_object_trylock(obj, NULL)))
--		return -EBUSY;
--
--	i915_gem_object_init_memory_region(obj, mem);
--
--	err = i915_gem_object_pin_pages(obj);
--	if (err)
--		i915_gem_object_release_memory_region(obj);
--	i915_gem_object_unlock(obj);
--
--	return err;
--}
--
--static int _i915_gem_object_stolen_init(struct intel_memory_region *mem,
--					struct drm_i915_gem_object *obj,
--					resource_size_t offset,
--					resource_size_t size,
--					resource_size_t page_size,
--					unsigned int flags)
--{
--	struct drm_i915_private *i915 = mem->i915;
--	struct drm_mm_node *stolen;
--	int ret;
--
--	if (!drm_mm_initialized(&i915->mm.stolen))
--		return -ENODEV;
--
--	if (size == 0)
--		return -EINVAL;
-+	ret = intel_region_ttm_init(mem);
-+	if (ret)
-+		return ret;
- 
- 	/*
--	 * With discrete devices, where we lack a mappable aperture there is no
--	 * possible way to ever access this memory on the CPU side.
-+	 * Reserve the bias area. Nothing should be allocating that region.
-+	 * Also covers WaSkipStolenMemoryFirstPage:bdw+
- 	 */
--	if (mem->type == INTEL_MEMORY_STOLEN_LOCAL && !mem->io_size &&
--	    !(flags & I915_BO_ALLOC_GPU_ONLY))
--		return -ENOSPC;
--
--	stolen = kzalloc(sizeof(*stolen), GFP_KERNEL);
--	if (!stolen)
--		return -ENOMEM;
--
--	if (offset != I915_BO_INVALID_OFFSET) {
--		drm_dbg(&i915->drm,
--			"creating preallocated stolen object: stolen_offset=%pa, size=%pa\n",
--			&offset, &size);
--
--		stolen->start = offset;
--		stolen->size = size;
--		mutex_lock(&i915->mm.stolen_lock);
--		ret = drm_mm_reserve_node(&i915->mm.stolen, stolen);
--		mutex_unlock(&i915->mm.stolen_lock);
--	} else {
--		ret = i915_gem_stolen_insert_node(i915, stolen, size,
--						  mem->min_page_size);
-+	resvd = intel_region_ttm_resource_alloc(mem, I915_GEM_STOLEN_BIAS,
-+						0, I915_GEM_STOLEN_BIAS, 0);
-+	if (IS_ERR(resvd)) {
-+		ret = PTR_ERR(resvd);
-+		goto err_no_reserve;
- 	}
--	if (ret)
--		goto err_free;
- 
--	ret = __i915_gem_object_create_stolen(mem, obj, stolen);
--	if (ret)
--		goto err_remove;
-+	i915->bias_reserved = resvd;
- 
--	return 0;
-+	return ret;
-+
-+err_no_reserve:
-+	intel_region_ttm_fini(mem);
- 
--err_remove:
--	i915_gem_stolen_remove_node(i915, stolen);
--err_free:
--	kfree(stolen);
- 	return ret;
- }
- 
-@@ -745,7 +562,8 @@ struct drm_i915_gem_object *
- i915_gem_object_create_stolen(struct drm_i915_private *i915,
- 			      resource_size_t size)
- {
--	return i915_gem_object_create_region(i915->mm.stolen_region, size, 0, 0);
-+	return i915_gem_object_create_region(i915->mm.stolen_region, size, 0,
-+					     I915_BO_ALLOC_CONTIGUOUS | I915_BO_ALLOC_PINNED);
- }
- 
- static int init_stolen_smem(struct intel_memory_region *mem)
-@@ -757,16 +575,36 @@ static int init_stolen_smem(struct intel_memory_region *mem)
- 	return i915_gem_init_stolen(mem);
- }
- 
--static int release_stolen_smem(struct intel_memory_region *mem)
-+static int release_stolen(struct intel_memory_region *mem)
- {
--	i915_gem_cleanup_stolen(mem->i915);
--	return 0;
-+	if (mem->i915->bias_reserved)
-+		intel_region_ttm_resource_free(mem, mem->i915->bias_reserved);
-+
-+	return intel_region_ttm_fini(mem);
-+}
-+
-+static int stolen_object_init(struct intel_memory_region *mem,
-+			      struct drm_i915_gem_object *obj,
-+			      resource_size_t offset,
-+			      resource_size_t size,
-+			      resource_size_t page_size,
-+			      unsigned int flags)
-+{
-+	if (!mem->region_private)
-+		return -ENODEV;
-+
-+	if (size == 0)
-+		return -EINVAL;
-+
-+	/* default range manager relies on page_size for alignment */
-+	page_size = max(page_size, mem->min_page_size);
-+	return __i915_gem_ttm_object_init(mem, obj, offset, size, page_size, flags);
- }
- 
- static const struct intel_memory_region_ops i915_region_stolen_smem_ops = {
- 	.init = init_stolen_smem,
--	.release = release_stolen_smem,
--	.init_object = _i915_gem_object_stolen_init,
-+	.release = release_stolen,
-+	.init_object = stolen_object_init,
- };
- 
- static int init_stolen_lmem(struct intel_memory_region *mem)
-@@ -795,7 +633,7 @@ static int init_stolen_lmem(struct intel_memory_region *mem)
- 	return 0;
- 
- err_cleanup:
--	i915_gem_cleanup_stolen(mem->i915);
-+	intel_region_ttm_fini(mem);
- 	return err;
- }
- 
-@@ -803,14 +641,13 @@ static int release_stolen_lmem(struct intel_memory_region *mem)
- {
- 	if (mem->io_size)
- 		io_mapping_fini(&mem->iomap);
--	i915_gem_cleanup_stolen(mem->i915);
--	return 0;
-+	return release_stolen(mem);
- }
- 
- static const struct intel_memory_region_ops i915_region_stolen_lmem_ops = {
- 	.init = init_stolen_lmem,
- 	.release = release_stolen_lmem,
--	.init_object = _i915_gem_object_stolen_init,
-+	.init_object = stolen_object_init,
- };
- 
- struct intel_memory_region *
-@@ -898,7 +735,37 @@ i915_gem_stolen_smem_setup(struct drm_i915_private *i915, u16 type,
- 	return mem;
- }
- 
--bool i915_gem_object_is_stolen(const struct drm_i915_gem_object *obj)
-+/**
-+ * i915_gem_object_stolen_offset - return offset from start of stolen region
-+ * @obj: the object to return the offset of
-+ *
-+ * Get the offset from stolen region if this object is currently placed in stolen memory.
-+ *
-+ * Return: offset from stolen if successful, I915_BO_INVALID_OFFSET otherwise
-+ */
-+u64 i915_gem_object_stolen_offset(struct drm_i915_gem_object *obj)
-+{
-+	struct ttm_buffer_object *ttm_obj;
-+
-+	if (!obj || !i915_gem_object_is_stolen(obj))
-+		return I915_BO_INVALID_OFFSET;
-+
-+	ttm_obj = i915_gem_to_ttm(obj);
-+	if (ttm_obj->resource->mem_type != I915_PL_STOLEN)
-+		return I915_BO_INVALID_OFFSET;
-+
-+	return PFN_PHYS(ttm_obj->resource->start);
-+}
-+
-+bool i915_gem_object_is_stolen(struct drm_i915_gem_object *obj)
- {
--	return obj->ops == &i915_gem_object_stolen_ops;
-+	struct intel_memory_region *mr = READ_ONCE(obj->mm.region);
-+
-+#ifdef CONFIG_LOCKDEP
-+	if (i915_gem_object_migratable(obj) &&
-+	    i915_gem_object_evictable(obj))
-+		assert_object_held(obj);
-+#endif
-+	return mr && (mr->type == INTEL_MEMORY_STOLEN_SYSTEM ||
-+		      mr->type == INTEL_MEMORY_STOLEN_LOCAL);
- }
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_stolen.h b/drivers/gpu/drm/i915/gem/i915_gem_stolen.h
-index d5005a39d130..b39cb6e6c768 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_stolen.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_stolen.h
-@@ -10,17 +10,9 @@
- 
- struct drm_i915_private;
- struct drm_mm_node;
-+struct ttm_resource;
- struct drm_i915_gem_object;
- 
--int i915_gem_stolen_insert_node(struct drm_i915_private *dev_priv,
--				struct drm_mm_node *node, u64 size,
--				unsigned alignment);
--int i915_gem_stolen_insert_node_in_range(struct drm_i915_private *dev_priv,
--					 struct drm_mm_node *node, u64 size,
--					 unsigned alignment, u64 start,
--					 u64 end);
--void i915_gem_stolen_remove_node(struct drm_i915_private *dev_priv,
--				 struct drm_mm_node *node);
- struct intel_memory_region *
- i915_gem_stolen_smem_setup(struct drm_i915_private *i915, u16 type,
- 			   u16 instance);
-@@ -32,7 +24,16 @@ struct drm_i915_gem_object *
- i915_gem_object_create_stolen(struct drm_i915_private *dev_priv,
- 			      resource_size_t size);
- 
--bool i915_gem_object_is_stolen(const struct drm_i915_gem_object *obj);
-+u64 i915_gem_object_stolen_offset(struct drm_i915_gem_object *obj);
-+bool i915_gem_object_is_stolen(struct drm_i915_gem_object *obj);
-+struct ttm_resource *
-+i915_gem_stolen_reserve_range(struct drm_i915_private *i915,
-+			      resource_size_t size,
-+			      u64 start, u64 end);
-+u64 i915_gem_stolen_reserve_offset(struct ttm_resource *res);
-+u64 i915_gem_stolen_reserve_size(struct ttm_resource *res);
-+void i915_gem_stolen_release_range(struct drm_i915_private *i915,
-+				   struct ttm_resource *res);
- 
- #define I915_GEM_STOLEN_BIAS SZ_128K
- 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index d34ebe9fcff8..9bc093dff273 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -1216,6 +1216,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	struct ttm_place _place;
- 	struct ttm_placement _placement;
- 	struct ttm_placement *placement;
-+	bool is_stolen = intel_region_to_ttm_type(mem) == I915_PL_STOLEN;
- 	int ret;
- 
- 	drm_gem_private_object_init(&i915->drm, &obj->base, size);
-@@ -1235,7 +1236,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 	obj->base.vma_node.driver_private = i915_gem_to_ttm(obj);
- 
- 	/* Forcing the page size is kernel internal only */
--	GEM_BUG_ON(page_size && obj->mm.n_placements);
-+	GEM_BUG_ON(page_size && obj->mm.n_placements && !is_stolen);
- 
- 	/*
- 	 * Keep an extra shrink pin to prevent the object from being made
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.h b/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-index e4842b4296fc..30528fcdb916 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.h
-@@ -49,6 +49,13 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
- 			       resource_size_t size,
- 			       resource_size_t page_size,
- 			       unsigned int flags);
-+int i915_gem_ttm_object_init_in_place(struct intel_memory_region *mem,
-+				      struct drm_i915_gem_object *obj,
-+				      resource_size_t size,
-+				      resource_size_t page_size,
-+				      unsigned int flags,
-+				      u64 start,
-+				      u64 end);
- 
- /* Internal I915 TTM declarations and definitions below. */
- 
-diff --git a/drivers/gpu/drm/i915/gt/intel_rc6.c b/drivers/gpu/drm/i915/gt/intel_rc6.c
-index f8d0523f4c18..846eef898f7e 100644
---- a/drivers/gpu/drm/i915/gt/intel_rc6.c
-+++ b/drivers/gpu/drm/i915/gt/intel_rc6.c
-@@ -355,9 +355,9 @@ static int vlv_rc6_init(struct intel_rc6 *rc6)
- 
- 	GEM_BUG_ON(range_overflows_end_t(u64,
- 					 i915->dsm.start,
--					 pctx->stolen->start,
-+					 i915_gem_object_stolen_offset(pctx),
- 					 U32_MAX));
--	pctx_paddr = i915->dsm.start + pctx->stolen->start;
-+	pctx_paddr = i915->dsm.start + i915_gem_object_stolen_offset(pctx);
- 	intel_uncore_write(uncore, VLV_PCBR, pctx_paddr);
- 
- out:
-diff --git a/drivers/gpu/drm/i915/gt/selftest_reset.c b/drivers/gpu/drm/i915/gt/selftest_reset.c
-index ba536e8a2e32..680203a280d9 100644
---- a/drivers/gpu/drm/i915/gt/selftest_reset.c
-+++ b/drivers/gpu/drm/i915/gt/selftest_reset.c
-@@ -7,6 +7,7 @@
- 
- #include "gem/i915_gem_stolen.h"
- #include "gt/intel_gt.h"
-+#include "intel_region_ttm.h"
- 
- #include "i915_memcpy.h"
- #include "i915_selftest.h"
-@@ -85,6 +86,7 @@ __igt_reset_stolen(struct intel_gt *gt,
- 		dma_addr_t dma = (dma_addr_t)dsm->start + (page << PAGE_SHIFT);
- 		void __iomem *s;
- 		void *in;
-+		bool busy;
- 
- 		ggtt->vm.insert_page(&ggtt->vm, dma,
- 				     ggtt->error_capture.start,
-@@ -95,9 +97,9 @@ __igt_reset_stolen(struct intel_gt *gt,
- 				      ggtt->error_capture.start,
- 				      PAGE_SIZE);
- 
--		if (!__drm_mm_interval_first(&gt->i915->mm.stolen,
--					     page << PAGE_SHIFT,
--					     ((page + 1) << PAGE_SHIFT) - 1))
-+		busy = intel_region_ttm_range_busy(gt->i915->mm.stolen_region,
-+						   PFN_PHYS(page), PAGE_SIZE);
-+		if (!busy)
- 			memset_io(s, STACK_MAGIC, PAGE_SIZE);
- 
- 		in = (void __force *)s;
-@@ -126,6 +128,7 @@ __igt_reset_stolen(struct intel_gt *gt,
- 		void __iomem *s;
- 		void *in;
- 		u32 x;
-+		bool busy;
- 
- 		ggtt->vm.insert_page(&ggtt->vm, dma,
- 				     ggtt->error_capture.start,
-@@ -141,10 +144,9 @@ __igt_reset_stolen(struct intel_gt *gt,
- 			in = tmp;
- 		x = crc32_le(0, in, PAGE_SIZE);
- 
--		if (x != crc[page] &&
--		    !__drm_mm_interval_first(&gt->i915->mm.stolen,
--					     page << PAGE_SHIFT,
--					     ((page + 1) << PAGE_SHIFT) - 1)) {
-+		busy = intel_region_ttm_range_busy(gt->i915->mm.stolen_region,
-+						   PFN_PHYS(page), PAGE_SIZE);
-+		if (x != crc[page] && !busy) {
- 			pr_debug("unused stolen page %pa modified by GPU reset\n",
- 				 &page);
- 			if (count++ == 0)
-diff --git a/drivers/gpu/drm/i915/i915_debugfs.c b/drivers/gpu/drm/i915/i915_debugfs.c
-index 94e5c29d2ee3..e538b8f71dcc 100644
---- a/drivers/gpu/drm/i915/i915_debugfs.c
-+++ b/drivers/gpu/drm/i915/i915_debugfs.c
-@@ -32,6 +32,7 @@
- 
- #include <drm/drm_debugfs.h>
- 
-+#include "gem/i915_gem_region.h"
- #include "gem/i915_gem_context.h"
- #include "gt/intel_gt.h"
- #include "gt/intel_gt_buffer_pool.h"
-@@ -157,6 +158,7 @@ i915_debugfs_describe_obj(struct seq_file *m, struct drm_i915_gem_object *obj)
- 	struct drm_i915_private *dev_priv = to_i915(obj->base.dev);
- 	struct i915_vma *vma;
- 	int pin_count = 0;
-+	u64 offset;
- 
- 	seq_printf(m, "%pK: %c%c%c %8zdKiB %02x %02x %s%s%s",
- 		   &obj->base,
-@@ -241,8 +243,9 @@ i915_debugfs_describe_obj(struct seq_file *m, struct drm_i915_gem_object *obj)
- 	spin_unlock(&obj->vma.lock);
- 
- 	seq_printf(m, " (pinned x %d)", pin_count);
--	if (i915_gem_object_is_stolen(obj))
--		seq_printf(m, " (stolen: %08llx)", obj->stolen->start);
-+	offset = i915_gem_object_stolen_offset(obj);
-+	if (offset != I915_BO_INVALID_OFFSET)
-+		seq_printf(m, " (stolen: %08llx)", offset);
- 	if (i915_gem_object_is_framebuffer(obj))
- 		seq_printf(m, " (fb)");
- }
-diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index d25647be25d1..edd0f53a42ff 100644
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -224,11 +224,6 @@ struct i915_gem_mm {
- 	 * support stolen.
- 	 */
- 	struct intel_memory_region *stolen_region;
--	/** Memory allocator for GTT stolen memory */
--	struct drm_mm stolen;
--	/** Protects the usage of the GTT stolen memory allocator. This is
--	 * always the inner lock when overlapping with struct_mutex. */
--	struct mutex stolen_lock;
- 
- 	/* Protects bound_list/unbound_list and #drm_i915_gem_object.mm.link */
- 	spinlock_t obj_lock;
-@@ -396,6 +391,7 @@ struct drm_i915_private {
- 	 * Reseved portion of Data Stolen Memory
- 	 */
- 	struct resource dsm_reserved;
-+	struct ttm_resource *bias_reserved;
- 
- 	/*
- 	 * Stolen memory is segmented in hardware with different portions
-diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
-index caac110a0a2c..74c6bab88d5f 100644
---- a/drivers/gpu/drm/i915/intel_region_ttm.c
-+++ b/drivers/gpu/drm/i915/intel_region_ttm.c
-@@ -198,11 +198,12 @@ intel_region_ttm_resource_to_rsgt(struct intel_memory_region *mem,
- 	}
- }
- 
--#ifdef CONFIG_DRM_I915_SELFTEST
- /**
-  * intel_region_ttm_resource_alloc - Allocate memory resources from a region
-  * @mem: The memory region,
-  * @size: The requested size in bytes
-+ * @start: start of allowed range
-+ * @end: end of allowed range
-  * @flags: Allocation flags
-  *
-  * This functionality is provided only for callers that need to allocate
-@@ -216,8 +217,9 @@ intel_region_ttm_resource_to_rsgt(struct intel_memory_region *mem,
-  */
- struct ttm_resource *
- intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
--				resource_size_t offset,
- 				resource_size_t size,
-+				u64 start,
-+				u64 end,
- 				unsigned int flags)
- {
- 	struct ttm_resource_manager *man = mem->region_private;
-@@ -226,11 +228,14 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
- 	struct ttm_resource *res;
- 	int ret;
- 
-+	if (!man)
-+		return ERR_PTR(-ENODEV);
-+
- 	if (flags & I915_BO_ALLOC_CONTIGUOUS)
- 		place.flags |= TTM_PL_FLAG_CONTIGUOUS;
--	if (offset != I915_BO_INVALID_OFFSET) {
--		place.fpfn = offset >> PAGE_SHIFT;
--		place.lpfn = place.fpfn + (size >> PAGE_SHIFT);
-+	if (start || end) {
-+		place.fpfn = PFN_DOWN(start);
-+		place.lpfn = PFN_UP(end);
- 	} else if (mem->io_size && mem->io_size < mem->total) {
- 		if (flags & I915_BO_ALLOC_GPU_ONLY) {
- 			place.flags |= TTM_PL_FLAG_TOPDOWN;
-@@ -251,8 +256,6 @@ intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
- 	return ret ? ERR_PTR(ret) : res;
- }
- 
--#endif
--
- /**
-  * intel_region_ttm_resource_free - Free a resource allocated from a resource manager
-  * @mem: The region the resource was allocated from.
-@@ -264,9 +267,34 @@ void intel_region_ttm_resource_free(struct intel_memory_region *mem,
- 	struct ttm_resource_manager *man = mem->region_private;
- 	struct ttm_buffer_object mock_bo = {};
- 
-+	if (!man)
-+		return;
-+
- 	mock_bo.base.size = res->num_pages << PAGE_SHIFT;
- 	mock_bo.bdev = &mem->i915->bdev;
- 	res->bo = &mock_bo;
- 
- 	man->func->free(man, res);
- }
-+
-+/**
-+ * intel_region_ttm_range_busy - check whether range has any allocations
-+ * @mem: The region to check
-+ * @start: the start of the range to check
-+ * @size: size of the range to check
-+ *
-+ * Return: true if something is alloceted within the region, false otherwise.
-+ */
-+bool intel_region_ttm_range_busy(struct intel_memory_region *mem,
-+				 u64 start, u64 size)
-+{
-+	struct ttm_resource *dummy;
-+
-+	dummy = intel_region_ttm_resource_alloc(mem, size, start, start + size,
-+						I915_BO_ALLOC_CONTIGUOUS);
-+	if (IS_ERR(dummy))
-+		return true;
-+
-+	intel_region_ttm_resource_free(mem, dummy);
-+	return false;
-+}
-diff --git a/drivers/gpu/drm/i915/intel_region_ttm.h b/drivers/gpu/drm/i915/intel_region_ttm.h
-index 98fba5155619..ac89fa75c2df 100644
---- a/drivers/gpu/drm/i915/intel_region_ttm.h
-+++ b/drivers/gpu/drm/i915/intel_region_ttm.h
-@@ -30,15 +30,17 @@ intel_region_ttm_resource_to_rsgt(struct intel_memory_region *mem,
- void intel_region_ttm_resource_free(struct intel_memory_region *mem,
- 				    struct ttm_resource *res);
- 
-+bool intel_region_ttm_range_busy(struct intel_memory_region *mem,
-+				 u64 start, u64 size);
-+
- int intel_region_to_ttm_type(const struct intel_memory_region *mem);
- 
- struct ttm_device_funcs *i915_ttm_driver(void);
- 
--#ifdef CONFIG_DRM_I915_SELFTEST
- struct ttm_resource *
- intel_region_ttm_resource_alloc(struct intel_memory_region *mem,
--				resource_size_t offset,
- 				resource_size_t size,
-+				u64 start,
-+				u64 end,
- 				unsigned int flags);
--#endif
- #endif /* _INTEL_REGION_TTM_H_ */
-diff --git a/drivers/gpu/drm/i915/selftests/mock_region.c b/drivers/gpu/drm/i915/selftests/mock_region.c
-index bac21fe84ca5..e43a22bcd31c 100644
---- a/drivers/gpu/drm/i915/selftests/mock_region.c
-+++ b/drivers/gpu/drm/i915/selftests/mock_region.c
-@@ -24,10 +24,20 @@ static int mock_region_get_pages(struct drm_i915_gem_object *obj)
- {
- 	struct sg_table *pages;
- 	int err;
-+	u64 start, end;
-+
-+	if (obj->bo_offset == I915_BO_INVALID_OFFSET) {
-+		start = 0;
-+		end = 0;
-+	} else {
-+		start = obj->bo_offset;
-+		end = obj->bo_offset + obj->base.size;
-+	}
- 
- 	obj->mm.res = intel_region_ttm_resource_alloc(obj->mm.region,
--						      obj->bo_offset,
- 						      obj->base.size,
-+						      start,
-+						      end,
- 						      obj->flags);
- 	if (IS_ERR(obj->mm.res))
- 		return PTR_ERR(obj->mm.res);
--- 
-2.25.1
-
+Jan
