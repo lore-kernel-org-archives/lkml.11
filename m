@@ -2,91 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BB02C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231840AbiGMMms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
+        id S231861AbiGMMsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229968AbiGMMmr (ORCPT
+        with ESMTP id S229774AbiGMMsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:42:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DB36DC88A;
-        Wed, 13 Jul 2022 05:42:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 385F761B7D;
-        Wed, 13 Jul 2022 12:42:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B61E1C34114;
-        Wed, 13 Jul 2022 12:42:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657716165;
-        bh=zgu01rK9c5SNFhNzhkt3VGhcrNp7QNRsnRzbqsQTjPw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GmV9Pk7hfKqsst9MzMnyCOTYa7Fqr5fbLUqQgBAms71txwFRHOCc/oScENOZFoRN/
-         Axbaf6+La3Ucvw7ykvcJ0NKbykeyF7SRcVt0++SlhdcKUefZAkv7jtl4R1wT1cKcRn
-         mEkpQTyxdj5As3pKtKUNHGbsT1WZpmibYcfv5+vBfuDsaFXRuG1MHJ1/HWblXC5OEK
-         cCbO2QnP3uat4FImhwijjmkdGEydHMqFgQXusNofkP0iF+yumdQdoz2rKZuQPnDMex
-         exi7wfxclaBZtHTzpxGQbc7kkn2xSOp9H4+pAPEcqdze7aXOPFQeDsthjx+wcQG94Q
-         Nn4aMdyl24syQ==
-Date:   Wed, 13 Jul 2022 13:42:41 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: Re: [PATCH] Revert "spi: simplify devm_spi_register_controller"
-Message-ID: <Ys69wVhUih0dXdQc@sirena.org.uk>
-References: <20220712135504.1055688-1-yangyingliang@huawei.com>
+        Wed, 13 Jul 2022 08:48:13 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75882224;
+        Wed, 13 Jul 2022 05:48:11 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LjcmG5Tvnz1L96G;
+        Wed, 13 Jul 2022 20:45:34 +0800 (CST)
+Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 13 Jul 2022 20:48:07 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600013.china.huawei.com
+ (7.193.23.68) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Jul
+ 2022 20:48:06 +0800
+From:   Zhihao Cheng <chengzhihao1@huawei.com>
+To:     <ebiederm@xmission.com>, <willy@infradead.org>, <bhe@redhat.com>,
+        <bfoster@redhat.com>, <akpm@linux-foundation.org>,
+        <kaleshsingh@google.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <chengzhihao1@huawei.com>, <yukuai3@huawei.com>
+Subject: [PATCH v5] proc: Fix a dentry lock race between release_task and lookup
+Date:   Wed, 13 Jul 2022 21:00:29 +0800
+Message-ID: <20220713130029.4133533-1-chengzhihao1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DrIIh0QSaaF4ll/Y"
-Content-Disposition: inline
-In-Reply-To: <20220712135504.1055688-1-yangyingliang@huawei.com>
-X-Cookie: Positively no smoking.
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600013.china.huawei.com (7.193.23.68)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Commit 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
+moved proc_flush_task() behind __exit_signal(). Then, process systemd
+can take long period high cpu usage during releasing task in following
+concurrent processes:
 
---DrIIh0QSaaF4ll/Y
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  systemd                                 ps
+kernel_waitid                 stat(/proc/tgid)
+  do_wait                       filename_lookup
+    wait_consider_task            lookup_fast
+      release_task
+        __exit_signal
+          __unhash_process
+            detach_pid
+              __change_pid // remove task->pid_links
+                                     d_revalidate -> pid_revalidate  // 0
+                                     d_invalidate(/proc/tgid)
+                                       shrink_dcache_parent(/proc/tgid)
+                                         d_walk(/proc/tgid)
+                                           spin_lock_nested(/proc/tgid/fd)
+                                           // iterating opened fd
+        proc_flush_pid                                    |
+           d_invalidate (/proc/tgid/fd)                   |
+              shrink_dcache_parent(/proc/tgid/fd)         |
+                shrink_dentry_list(subdirs)               ↓
+                  shrink_lock_dentry(/proc/tgid/fd) --> race on dentry lock
 
-On Tue, Jul 12, 2022 at 09:55:04PM +0800, Yang Yingliang wrote:
-> This reverts commit 59ebbe40fb51e307032ae7f63b2749fad2d4635a.
->=20
-> If devm_add_action() fails in devm_add_action_or_reset(),
-> devm_spi_unregister() will be called, it decreases the
+Function d_invalidate() will remove dentry from hash firstly, but why does
+proc_flush_pid() process dentry '/proc/tgid/fd' before dentry '/proc/tgid'?
+That's because proc_pid_make_inode() adds proc inode in reverse order by
+invoking hlist_add_head_rcu(). But proc should not add any inodes under
+'/proc/tgid' except '/proc/tgid/task/pid', fix it by adding inode into
+'pid->inodes' only if the inode is /proc/tgid or /proc/tgid/task/pid.
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
+Performance regression:
+Create 200 tasks, each task open one file for 50,000 times. Kill all
+tasks when opened files exceed 10,000,000 (cat /proc/sys/fs/file-nr).
 
-Please include human readable descriptions of things like commits and
-issues being discussed in e-mail in your mails, this makes them much
-easier for humans to read especially when they have no internet access.
-I do frequently catch up on my mail on flights or while otherwise
-travelling so this is even more pressing for me than just being about
-making things a bit easier to read.
+Before fix:
+$ time killall -wq aa
+  real    4m40.946s   # During this period, we can see 'ps' and 'systemd'
+			taking high cpu usage.
 
---DrIIh0QSaaF4ll/Y
-Content-Type: application/pgp-signature; name="signature.asc"
+After fix:
+$ time killall -wq aa
+  real    1m20.732s   # During this period, we can see 'systemd' taking
+			high cpu usage.
 
------BEGIN PGP SIGNATURE-----
+Fixes: 7bc3e6e55acf06 ("proc: Use a list of inodes to flush from proc")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216054
+Signed-off-by: Zhihao Cheng <chengzhihao1@huawei.com>
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Suggested-by: Brian Foster <bfoster@redhat.com>
+---
+ v1->v2: Add new helper proc_pid_make_base_inode that performs the extra
+	 work of adding to the pid->list.
+ v2->v3: Add performance regression in commit message.
+ v3->v4: Make proc_pid_make_base_inode() static
+ v4->v5: Add notes to explain what proc_pid_make_base_inode() does
+ fs/proc/base.c | 46 ++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 38 insertions(+), 8 deletions(-)
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLOvcAACgkQJNaLcl1U
-h9BQNwf/R8wBjNGVA/XwCXWS0laSWOFE2OQ+OrkUV/2VuwiUhHnaLxXs8hmsQgYe
-XMnBiM/8JF7xNLrV5hGWMOihSetjWnKXMTimZc/22HamSInwF+dZIFyLaNMOLzkf
-R9yB8JBlpCInl6RsAIWru3udTL6XXNTgYf+2mampM74hIqt32d/xQaeIUiPPBYRF
-bAPXPRO40ZbjYymmTl/Qti09lCtTSc+vlOp9S6uoKjYuG0ekkGGZbFQUlozXx9lQ
-dtYVdktqdOp4ujXGAXMwv3zIapzVniw6S9lanFzNgP7u7ZyRZHc9LSVaH900mNNB
-O7rqRNmeRpYa8BofNMxEHRKaayuLUQ==
-=9ei7
------END PGP SIGNATURE-----
+diff --git a/fs/proc/base.c b/fs/proc/base.c
+index 8dfa36a99c74..93f7e3d971e4 100644
+--- a/fs/proc/base.c
++++ b/fs/proc/base.c
+@@ -1885,7 +1885,7 @@ void proc_pid_evict_inode(struct proc_inode *ei)
+ 	put_pid(pid);
+ }
+ 
+-struct inode *proc_pid_make_inode(struct super_block * sb,
++struct inode *proc_pid_make_inode(struct super_block *sb,
+ 				  struct task_struct *task, umode_t mode)
+ {
+ 	struct inode * inode;
+@@ -1914,11 +1914,6 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
+ 
+ 	/* Let the pid remember us for quick removal */
+ 	ei->pid = pid;
+-	if (S_ISDIR(mode)) {
+-		spin_lock(&pid->lock);
+-		hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
+-		spin_unlock(&pid->lock);
+-	}
+ 
+ 	task_dump_owner(task, 0, &inode->i_uid, &inode->i_gid);
+ 	security_task_to_inode(task, inode);
+@@ -1931,6 +1926,39 @@ struct inode *proc_pid_make_inode(struct super_block * sb,
+ 	return NULL;
+ }
+ 
++/*
++ * Generating an inode and adding it into @pid->inodes, so that task will
++ * invalidate inode's dentry before being released.
++ *
++ * This helper is used for creating dir-type entries under '/proc' and
++ * '/proc/<tgid>/task'. Other entries(eg. fd, stat) under '/proc/<tgid>'
++ * can be released by invalidating '/proc/<tgid>' dentry.
++ * In theory, dentries under '/proc/<tgid>/task' can also be released by
++ * invalidating '/proc/<tgid>' dentry, we reserve it to handle single
++ * thread exiting situation: Any one of threads should invalidate its
++ * '/proc/<tgid>/task/<pid>' dentry before released.
++ */
++static struct inode *proc_pid_make_base_inode(struct super_block *sb,
++				struct task_struct *task, umode_t mode)
++{
++	struct inode *inode;
++	struct proc_inode *ei;
++	struct pid *pid;
++
++	inode = proc_pid_make_inode(sb, task, mode);
++	if (!inode)
++		return NULL;
++
++	/* Let proc_flush_pid find this directory inode */
++	ei = PROC_I(inode);
++	pid = ei->pid;
++	spin_lock(&pid->lock);
++	hlist_add_head_rcu(&ei->sibling_inodes, &pid->inodes);
++	spin_unlock(&pid->lock);
++
++	return inode;
++}
++
+ int pid_getattr(struct user_namespace *mnt_userns, const struct path *path,
+ 		struct kstat *stat, u32 request_mask, unsigned int query_flags)
+ {
+@@ -3369,7 +3397,8 @@ static struct dentry *proc_pid_instantiate(struct dentry * dentry,
+ {
+ 	struct inode *inode;
+ 
+-	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
++	inode = proc_pid_make_base_inode(dentry->d_sb, task,
++					 S_IFDIR | S_IRUGO | S_IXUGO);
+ 	if (!inode)
+ 		return ERR_PTR(-ENOENT);
+ 
+@@ -3671,7 +3700,8 @@ static struct dentry *proc_task_instantiate(struct dentry *dentry,
+ 	struct task_struct *task, const void *ptr)
+ {
+ 	struct inode *inode;
+-	inode = proc_pid_make_inode(dentry->d_sb, task, S_IFDIR | S_IRUGO | S_IXUGO);
++	inode = proc_pid_make_base_inode(dentry->d_sb, task,
++					 S_IFDIR | S_IRUGO | S_IXUGO);
+ 	if (!inode)
+ 		return ERR_PTR(-ENOENT);
+ 
+-- 
+2.31.1
 
---DrIIh0QSaaF4ll/Y--
