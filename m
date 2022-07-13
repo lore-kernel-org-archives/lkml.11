@@ -2,57 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B4FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F468C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234659AbiGMINB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S232106AbiGMINH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234742AbiGMIMf (ORCPT
+        with ESMTP id S234755AbiGMIMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0014EE95C6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:33 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B63E95E8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 698CE619EB
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C96619E4
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C063C341D0;
-        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246C1C341D6;
+        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=Zk31CqpmVIn7N/6Nky4ybxnpIzhnNLoZYEdUmnMx2Bk=;
+        bh=/PaxiN5HkOwyVUhkxftwWgzAT/MNna5OTFK/g/W4MZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rgWIr8h3syhppSGbpTaPyZeOh2+/FRGdgJ5D2hew/LljELkZdXwG+wOGbtNbP9LWb
-         EKItn8/SptNcOLtV5b37VJTiJXp7SBvDhjHmLJPeTBIxKhhhxt1PocfkVzz4Pxac55
-         KJgg8CmBsY0tbDkonXpW0I4MigOQoOlhPXs+1KRsWzhgeDVO/ILsIU+byIoCHpWlPD
-         X8rrmBr4XMW9p6cwTa0BhHsdI49zsGd4URiYVZmdkeu2XKTugEGnYFmpz/lgqL/2lr
-         mZfKvBpkALM/76LDVHL30xmCfzhlMooJDMIreM9C9zbMot+dW+AgVJ38lfue7ui4b0
-         17gWJrB1rGuew==
+        b=CDQV9r8nsXMzoxcsN2XYoy0zq28ACHNPKzcmwl5m7WDPHyiUuBguSvUgr9IdIMb2m
+         mtfMj3DdVN2XmuU4zuT5CT5ChlyIZ6ytP3XNwPY0gp/BWHdX9yYJZ0k82oWR1pGCpy
+         LWE2UBASspK+VXFNAw6xyG26AzySLDoR2+Ua/yMTYIEtMjOSU96RwheQR3A+DkAbWy
+         09iMETIr6imFYPa5ufYfZGGy/TFRZsYFQuONCR9G/jVj+Uib6sVspw2rHuIthw/+Ro
+         piOtNteUKj+8/FZtic1AvDx1Q7kXC/12YJuThuvoFEoT8zx2InI9Us3dspUQgW80Cm
+         IgdDyAk2QK1Yg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004ztH-K5;
+        id 1oBXTx-004ztd-NH;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
-        <ville.syrjala@linux.intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Imre Deak <imre.deak@intel.com>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lee Shawn C <shawn.c.lee@intel.com>,
-        Manasi Navare <manasi.d.navare@intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 15/39] drm/i915: intel_dp_link_training.c: fix kernel-doc markup
-Date:   Wed, 13 Jul 2022 09:12:03 +0100
-Message-Id: <0fac471eb7f6d365e9a7544071114292e08aa5ad.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 20/39] drm/i915: i915_gem_wait.c: fix a kernel-doc markup
+Date:   Wed, 13 Jul 2022 09:12:08 +0100
+Message-Id: <7506a4fc57d2bf064f6a35d70c8cd7885082863e.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -63,13 +65,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return code table is not properly marked, causing warnings
-and being badly parsed by Sphinx:
-
-    Documentation/gpu/i915:130: ./drivers/gpu/drm/i915/display/intel_dp_link_training.c:183: WARNING: Block quote ends without a blank line; unexpected unindent.
-    Documentation/gpu/i915:130: ./drivers/gpu/drm/i915/display/intel_dp_link_training.c:186: WARNING: Definition list ends without a blank line; unexpected unindent.
-
-Use table markups to fix it.
+The return codes for i915_gem_wait_ioctl() have identation issues,
+and will be displayed on a very confusing way. Use lists to improve
+its output.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -77,28 +75,50 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/display/intel_dp_link_training.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/i915/gem/i915_gem_wait.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp_link_training.c b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
-index 9feaf1a589f3..23a269fcf6ca 100644
---- a/drivers/gpu/drm/i915/display/intel_dp_link_training.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp_link_training.c
-@@ -177,12 +177,14 @@ static int intel_dp_init_lttpr(struct intel_dp *intel_dp, const u8 dpcd[DP_RECEI
-  * transparent mode link training mode.
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_wait.c b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+index 4a33ad2d122b..1fd5cff552ed 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_wait.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
+@@ -210,23 +210,25 @@ static unsigned long to_wait_timeout(s64 timeout_ns)
+  * @data: ioctl data blob
+  * @file: drm file pointer
   *
-  * Returns:
-+ * ====  =====================================================================
-  *   >0  if LTTPRs were detected and the non-transparent LT mode was set. The
-  *       DPRX capabilities are read out.
-  *    0  if no LTTPRs or more than 8 LTTPRs were detected or in case of a
-  *       detection failure and the transparent LT mode was set. The DPRX
-  *       capabilities are read out.
-  *   <0  Reading out the DPRX capabilities failed.
-+ * ====  =====================================================================
+- * Returns 0 if successful, else an error is returned with the remaining time in
+- * the timeout parameter.
+- *  -ETIME: object is still busy after timeout
+- *  -ERESTARTSYS: signal interrupted the wait
+- *  -ENONENT: object doesn't exist
+- * Also possible, but rare:
+- *  -EAGAIN: incomplete, restart syscall
+- *  -ENOMEM: damn
+- *  -ENODEV: Internal IRQ fail
+- *  -E?: The add request failed
+- *
+  * The wait ioctl with a timeout of 0 reimplements the busy ioctl. With any
+  * non-zero timeout parameter the wait ioctl will wait for the given number of
+  * nanoseconds on an object becoming unbusy. Since the wait itself does so
+  * without holding struct_mutex the object may become re-busied before this
+  * function completes. A similar but shorter * race condition exists in the busy
+  * ioctl
++ *
++ * Returns:
++ * 0 if successful, else an error is returned with the remaining time in
++ * the timeout parameter.
++ * * -ETIME: object is still busy after timeout
++ * * -ERESTARTSYS: signal interrupted the wait
++ * * -ENONENT: object doesn't exist
++ *
++ * Also possible, but rare:
++ * * -EAGAIN: incomplete, restart syscall
++ * * -ENOMEM: damn
++ * * -ENODEV: Internal IRQ fail
++ * * -E?: The add request failed
   */
- int intel_dp_init_lttpr_and_dprx_caps(struct intel_dp *intel_dp)
- {
+ int
+ i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
 -- 
 2.36.1
 
