@@ -2,59 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F468C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ED4C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiGMINH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41644 "EHLO
+        id S235203AbiGMINJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:13:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234755AbiGMIMf (ORCPT
+        with ESMTP id S234870AbiGMIMf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00B63E95E8
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9254BE95F6
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69C96619E4
+        by ams.source.kernel.org (Postfix) with ESMTPS id 40852B81D51
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246C1C341D6;
-        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB11AC34114;
+        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=/PaxiN5HkOwyVUhkxftwWgzAT/MNna5OTFK/g/W4MZw=;
+        bh=UE5bMB/I8eWX1xHZMDai5CItggo59EnrC/VAbWT3ySc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CDQV9r8nsXMzoxcsN2XYoy0zq28ACHNPKzcmwl5m7WDPHyiUuBguSvUgr9IdIMb2m
-         mtfMj3DdVN2XmuU4zuT5CT5ChlyIZ6ytP3XNwPY0gp/BWHdX9yYJZ0k82oWR1pGCpy
-         LWE2UBASspK+VXFNAw6xyG26AzySLDoR2+Ua/yMTYIEtMjOSU96RwheQR3A+DkAbWy
-         09iMETIr6imFYPa5ufYfZGGy/TFRZsYFQuONCR9G/jVj+Uib6sVspw2rHuIthw/+Ro
-         piOtNteUKj+8/FZtic1AvDx1Q7kXC/12YJuThuvoFEoT8zx2InI9Us3dspUQgW80Cm
-         IgdDyAk2QK1Yg==
+        b=cFsCfTGZRujn9BkLgJg4JoUR1y/p4ixxOm3EW5RkQpwrGTB+ycmxkgmRUQpYzqkJk
+         FEadDaLPhTvw3YMNgZeM2KWK1EYCr6wX9FOKswO2Kl+rqkBSeGQa88lWYC7a9NcuJ/
+         PZP6j+rcOgtS/lPZBGkToKKEcNfKjWLyQx2mVz/dXdeX0kcH72Z1fmWuEKf1RhNfOx
+         csFhuwyzX8nbP1ecnxsxqGGzJJAZWhwiPTs011TxlL3fqp70/cGDspA7hvvsgKn1O1
+         /yLAv17Y81eksVtnuMNF90s2OyoI9F756zOFgUX9ubLpDfu9TESTUp1DD1SzA60dJ1
+         WjWejoQntPQpA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004ztd-NH;
+        id 1oBXTx-004zt9-Il;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
+        Alan Previn <alan.previn.teres.alexis@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 20/39] drm/i915: i915_gem_wait.c: fix a kernel-doc markup
-Date:   Wed, 13 Jul 2022 09:12:08 +0100
-Message-Id: <7506a4fc57d2bf064f6a35d70c8cd7885082863e.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 13/39] drm/i915: i915_gpu_error.c: document dump_flags
+Date:   Wed, 13 Jul 2022 09:12:01 +0100
+Message-Id: <bbebefd789a7038661783ceb13fad8fdbd440f54.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -65,60 +62,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The return codes for i915_gem_wait_ioctl() have identation issues,
-and will be displayed on a very confusing way. Use lists to improve
-its output.
+Kernel-doc dump_flags parameter is missing at i915_capture_error_state().
+Document it.
 
+Fixes: a6f0f9cf330a ("drm/i915/guc: Plumb GuC-capture into gpu_coredump")
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gem/i915_gem_wait.c | 24 +++++++++++++-----------
- 1 file changed, 13 insertions(+), 11 deletions(-)
+ drivers/gpu/drm/i915/i915_gpu_error.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_wait.c b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-index 4a33ad2d122b..1fd5cff552ed 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_wait.c
-@@ -210,23 +210,25 @@ static unsigned long to_wait_timeout(s64 timeout_ns)
-  * @data: ioctl data blob
-  * @file: drm file pointer
-  *
-- * Returns 0 if successful, else an error is returned with the remaining time in
-- * the timeout parameter.
-- *  -ETIME: object is still busy after timeout
-- *  -ERESTARTSYS: signal interrupted the wait
-- *  -ENONENT: object doesn't exist
-- * Also possible, but rare:
-- *  -EAGAIN: incomplete, restart syscall
-- *  -ENOMEM: damn
-- *  -ENODEV: Internal IRQ fail
-- *  -E?: The add request failed
+diff --git a/drivers/gpu/drm/i915/i915_gpu_error.c b/drivers/gpu/drm/i915/i915_gpu_error.c
+index 32e92651ef7c..7790f97b26db 100644
+--- a/drivers/gpu/drm/i915/i915_gpu_error.c
++++ b/drivers/gpu/drm/i915/i915_gpu_error.c
+@@ -2096,7 +2096,8 @@ void i915_error_state_store(struct i915_gpu_coredump *error)
+  * i915_capture_error_state - capture an error record for later analysis
+  * @gt: intel_gt which originated the hang
+  * @engine_mask: hung engines
 - *
-  * The wait ioctl with a timeout of 0 reimplements the busy ioctl. With any
-  * non-zero timeout parameter the wait ioctl will wait for the given number of
-  * nanoseconds on an object becoming unbusy. Since the wait itself does so
-  * without holding struct_mutex the object may become re-busied before this
-  * function completes. A similar but shorter * race condition exists in the busy
-  * ioctl
-+ *
-+ * Returns:
-+ * 0 if successful, else an error is returned with the remaining time in
-+ * the timeout parameter.
-+ * * -ETIME: object is still busy after timeout
-+ * * -ERESTARTSYS: signal interrupted the wait
-+ * * -ENONENT: object doesn't exist
-+ *
-+ * Also possible, but rare:
-+ * * -EAGAIN: incomplete, restart syscall
-+ * * -ENOMEM: damn
-+ * * -ENODEV: Internal IRQ fail
-+ * * -E?: The add request failed
-  */
- int
- i915_gem_wait_ioctl(struct drm_device *dev, void *data, struct drm_file *file)
++ * @dump_flags: bitmap flags. When %CORE_DUMP_FLAG_IS_GUC_CAPTURE is used,
++ *	dump engine record registers and execlists.
+  *
+  * Should be called when an error is detected (either a hang or an error
+  * interrupt) to capture error state from the time of the error.  Fills
 -- 
 2.36.1
 
