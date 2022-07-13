@@ -2,89 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A68C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43C6DCCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233466AbiGMBZu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:25:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60794 "EHLO
+        id S233461AbiGMB05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 21:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233270AbiGMBZm (ORCPT
+        with ESMTP id S232959AbiGMB0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:25:42 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAABAF740;
-        Tue, 12 Jul 2022 18:25:40 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id n18so15053011lfq.1;
-        Tue, 12 Jul 2022 18:25:40 -0700 (PDT)
+        Tue, 12 Jul 2022 21:26:55 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C66DB657B
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:26:53 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31cac89d8d6so98858137b3.2
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:26:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=atishpatra.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kWrmSNqw7RNUpJXET/KeaD+M/fKJ2fs4iPsVi56Xzlc=;
-        b=KJ3WTtZWy/gaqWn5D68477Fqo5MTFflVAPExDGJhWAAeEJMYFNc2SyuM0LGzFB/cLO
-         0vjPZ6x6LzBaY/dZgdEMDDqbsdh9TAmR+HpPDzdZ1NqUlbKJF7lsDIDe3LSKpzg6ahXI
-         exkNkhZxFM8EiZCBA0+pbOXL3XiG/3FiJFdZH1ZBuoot1+osh5ZOUoMa42Q8i1JL5GPg
-         yufCSzOk7sgthAFQERz2yIRBc7ta1U3r9a1XpfY9AUruOk1PWPgTAcHCKQaHEbNhd8JA
-         MGC+lPnA9pSD5g4B6Nkp61nZ7+8MJ4cjp05K2I4tv2I/JyZkrzsf+ALiCZJjJAd24lvo
-         ygow==
+        bh=0Dy+Rmcjm8hkXGU4nfEHBrtA1yQ8VRvv++C+zBI3stA=;
+        b=AGQh/f2q3qa6iXyE58orKUemPvszcwkcBLBJaMXz97hOSpcp+xbP7A3WISXnxCsi8J
+         qmti94NwVRMdkhLPb7Z519Z0uOxjAs5mZNcLNPJvbRUUe/1d1SNmD9qM8pguS+3NHhry
+         JpctM7lg5p9sbx/qoRaUQlI3PyLT5G7Eckt1U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kWrmSNqw7RNUpJXET/KeaD+M/fKJ2fs4iPsVi56Xzlc=;
-        b=MNuwSCDAFB5xC+LpbntzfFyV6wN9z6BrYTn9eb8SHZkf0rShsMibl1wO6+hrtJXbR1
-         Nw+yJ+5UzOMxkZpsBwfgEv3owO4519IDR4+SfNSvDNDr+XkVl7+TGw6zQ8LLngmVAdCM
-         Dg1N9mBEg6pzYQe2JIOH3fiaeM36zylnjkN8c1Cm2l29zrjE6+xI9u1l+4GHab8E0ISz
-         D8FOs984bn6w23mgT55wvDgw09gcirnr0/vuZ0QfkU4AaS9AJSqjhHCRK3KscP6TLDtQ
-         wL2C1CbBH0fKABYRqZpYJirMhWH3YchTXPVTRBW42inBOiGEx4C2z7bhBu+tmAfamWL1
-         VaUQ==
-X-Gm-Message-State: AJIora8WWiOm4Bq+DAaPNnFs6PyAExtKmx9vlQi5flI0XrlrseGVHt2S
-        CeINbsvd4WhuxZYGz+LDheyieuqp/KF1ey13Pjt5n+/NAQWxuAaU
-X-Google-Smtp-Source: AGRyM1v5acsNboqgbK0uyTTlYszlcwZd4ryktxElVqCtXMMl6OJMeNv1mTDGlBeanoLf1mqWAwLyRJRsTHm2/WJJWQw=
-X-Received: by 2002:a05:6512:398e:b0:481:154b:a92 with SMTP id
- j14-20020a056512398e00b00481154b0a92mr564768lfu.110.1657675538590; Tue, 12
- Jul 2022 18:25:38 -0700 (PDT)
+        bh=0Dy+Rmcjm8hkXGU4nfEHBrtA1yQ8VRvv++C+zBI3stA=;
+        b=jzk2lxEsSZIhu+JXUbyJX8bu0ARr6egzx29B0JJ9gmXG5gVkIauKous12Yx0+LvpY+
+         dEG//xOixwlBwDusl2y9GSaMhMlHeNCylbLQW14xWnrxLWC5f+sB3enWC/xfdaTvc0qt
+         UrtIFjP8GHi61fJ96cJqxtor9nUTd8osBIqMB8lb2Z0gkJ9iPHA1s1Jw+LsRQZ0M0Qw5
+         LbUygcQs/9SpMgE3AdOwrh/z/R+NjDtd582MMWs/q92f35qiX9YD5WE5A0JhOrTmzbAA
+         8XFBH0tEGL2L2ruQ96SgDGGJNor0uX4RKV9aODW7D3i753YToAnhCjVdCkschJt3F3fV
+         PGDQ==
+X-Gm-Message-State: AJIora9kAFHJniq4FQQtqAovS/dgmk2TvJzwiMl8ihv81komuTuLp0RN
+        E5xILkm4jrm5ZqIM/gxJo9IrH5NFUFYTMYl1R4p1
+X-Google-Smtp-Source: AGRyM1v39Ct4gOMX9HbMyTm32hNI7oUAX2ibL1Ztp+G3+AyDL2If/7+ku58GCT5aQ/SwsU7B4sIB2VVl18XrQB/dNRc=
+X-Received: by 2002:a81:653:0:b0:31d:2a21:734 with SMTP id 80-20020a810653000000b0031d2a210734mr1435894ywg.14.1657675612674;
+ Tue, 12 Jul 2022 18:26:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220712145139.9473-1-mollysophia379@gmail.com> <3a0d3e52-a403-36c5-fc39-f45dce94c1f8@linaro.org>
-In-Reply-To: <3a0d3e52-a403-36c5-fc39-f45dce94c1f8@linaro.org>
-From:   Molly Sophia <mollysophia379@gmail.com>
-Date:   Wed, 13 Jul 2022 09:25:26 +0800
-Message-ID: <CAK0UmJAdiSER0qUj3162ys4nxnni+6onY9-uVaq_=EdSnaC=CA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] dt-bindings: arm: qcom: Add Xiaomi Mi Mix2s bindings
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+References: <20220707145248.458771-1-apatel@ventanamicro.com> <20220707145248.458771-4-apatel@ventanamicro.com>
+In-Reply-To: <20220707145248.458771-4-apatel@ventanamicro.com>
+From:   Atish Patra <atishp@atishpatra.org>
+Date:   Tue, 12 Jul 2022 18:26:41 -0700
+Message-ID: <CAOnJCU++MsxgPyGqumWMLrB7ihDk3UmzwwD_voW0Rfnf-BVPWQ@mail.gmail.com>
+Subject: Re: [PATCH 3/5] RISC-V: KVM: Add G-stage ioremap() and iounmap() functions
+To:     Anup Patel <apatel@ventanamicro.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Alistair Francis <Alistair.Francis@wdc.com>,
+        Anup Patel <anup@brainfault.org>,
+        KVM General <kvm@vger.kernel.org>,
+        "open list:KERNEL VIRTUAL MACHINE FOR RISC-V (KVM/riscv)" 
+        <kvm-riscv@lists.infradead.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof,
-I will read that carefully. Sincerely apologize for the mistakes I have made.
+On Thu, Jul 7, 2022 at 7:53 AM Anup Patel <apatel@ventanamicro.com> wrote:
+>
+> The in-kernel AIA IMSIC support requires on-demand mapping / unmapping
+> of Guest IMSIC address to Host IMSIC guest files. To help achieve this,
+> we add kvm_riscv_stage2_ioremap() and kvm_riscv_stage2_iounmap()
+> functions. These new functions for updating G-stage page table mappings
+> will be called in atomic context so we have special "in_atomic" parameter
+> for this purpose.
+>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> ---
+>  arch/riscv/include/asm/kvm_host.h |  5 +++++
+>  arch/riscv/kvm/mmu.c              | 18 ++++++++++++++----
+>  2 files changed, 19 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+> index 59a0cf2ca7b9..60c517e4d576 100644
+> --- a/arch/riscv/include/asm/kvm_host.h
+> +++ b/arch/riscv/include/asm/kvm_host.h
+> @@ -284,6 +284,11 @@ void kvm_riscv_hfence_vvma_gva(struct kvm *kvm,
+>  void kvm_riscv_hfence_vvma_all(struct kvm *kvm,
+>                                unsigned long hbase, unsigned long hmask);
+>
+> +int kvm_riscv_gstage_ioremap(struct kvm *kvm, gpa_t gpa,
+> +                            phys_addr_t hpa, unsigned long size,
+> +                            bool writable, bool in_atomic);
+> +void kvm_riscv_gstage_iounmap(struct kvm *kvm, gpa_t gpa,
+> +                             unsigned long size);
+>  int kvm_riscv_gstage_map(struct kvm_vcpu *vcpu,
+>                          struct kvm_memory_slot *memslot,
+>                          gpa_t gpa, unsigned long hva, bool is_write);
+> diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+> index b75d4e200064..f7862ca4c4c6 100644
+> --- a/arch/riscv/kvm/mmu.c
+> +++ b/arch/riscv/kvm/mmu.c
+> @@ -343,8 +343,9 @@ static void gstage_wp_memory_region(struct kvm *kvm, int slot)
+>         kvm_flush_remote_tlbs(kvm);
+>  }
+>
+> -static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+> -                         unsigned long size, bool writable)
+> +int kvm_riscv_gstage_ioremap(struct kvm *kvm, gpa_t gpa,
+> +                            phys_addr_t hpa, unsigned long size,
+> +                            bool writable, bool in_atomic)
+>  {
+>         pte_t pte;
+>         int ret = 0;
+> @@ -353,6 +354,7 @@ static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+>         struct kvm_mmu_memory_cache pcache;
+>
+>         memset(&pcache, 0, sizeof(pcache));
+> +       pcache.gfp_custom = (in_atomic) ? GFP_ATOMIC | __GFP_ACCOUNT : 0;
+>         pcache.gfp_zero = __GFP_ZERO;
+>
+>         end = (gpa + size + PAGE_SIZE - 1) & PAGE_MASK;
+> @@ -382,6 +384,13 @@ static int gstage_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+>         return ret;
+>  }
+>
+> +void kvm_riscv_gstage_iounmap(struct kvm *kvm, gpa_t gpa, unsigned long size)
+> +{
+> +       spin_lock(&kvm->mmu_lock);
+> +       gstage_unmap_range(kvm, gpa, size, false);
+> +       spin_unlock(&kvm->mmu_lock);
+> +}
+> +
+>  void kvm_arch_mmu_enable_log_dirty_pt_masked(struct kvm *kvm,
+>                                              struct kvm_memory_slot *slot,
+>                                              gfn_t gfn_offset,
+> @@ -517,8 +526,9 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
+>                                 goto out;
+>                         }
+>
+> -                       ret = gstage_ioremap(kvm, gpa, pa,
+> -                                            vm_end - vm_start, writable);
+> +                       ret = kvm_riscv_gstage_ioremap(kvm, gpa, pa,
+> +                                                      vm_end - vm_start,
+> +                                                      writable, false);
+>                         if (ret)
+>                                 break;
+>                 }
+> --
+> 2.34.1
+>
 
-Molly
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
 
-On Tue, Jul 12, 2022 at 11:05 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 12/07/2022 16:51, Molly Sophia wrote:
-> > Add documentation for "xiaomi,polaris" device.
-> >
-> > Signed-off-by: Molly Sophia <mollysophia379@gmail.com>
->
-> This is v6 and still not changelog. No cover letter either, which would
->  describe any dependencies.
->
-> Sorry, you need to follow our process:
-> https://elixir.bootlin.com/linux/v5.18-rc4/source/Documentation/process/submitting-patches.rst
->
->
-> Best regards,
-> Krzysztof
+-- 
+Regards,
+Atish
