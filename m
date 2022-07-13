@@ -2,183 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F3ABC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4478C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235099AbiGMKBk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55230 "EHLO
+        id S235115AbiGMKC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229863AbiGMKBg (ORCPT
+        with ESMTP id S229863AbiGMKCx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:01:36 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2085.outbound.protection.outlook.com [40.107.92.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C7F7F5108;
-        Wed, 13 Jul 2022 03:01:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LZnh1uxqY7HOwk2h45UhYc246JlrucnzuYiSzxH8Vh/xzvy+lW4forapn355Z75SRz2YSNG3O6sIskGOqWxxakDEeaOkOpaTRJRe0YQkHgGcuE9c/VXyp5gCT/7uXfK6zHsgJ9kXxZgX1rLUSbgJLSfSLCAKqoJBJGkHp+K4xelXktPR7I/iNimhtDwiD9b6PWvXAVOplr4NMCHR+JeMU1jE+uMjbF0way7t+FY5eFMxjm7nivU9uYAD/pnuH9FkmVFRd/T7/lF3PGRRfxoaeyyZN2J7885FcN3jY0Qono9TMYHmViFnXOf2bALjISKSk9vHVOLg5ESo1WuZeR4DUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=QKkNn4yCn6jWjDZ2AaAoCNnexKJ0ZZixIDCorZhMGYE=;
- b=GQwr5+VFB2oerK1M5RwkDjMwb68OenPMk2d/tlkI/AdXbzpb6Fu/nc0u0bXJtqRDyiNOoEs3xBGqdFY4rBfVOjYH84nqc88inBFKGVA2Qz3O3alUJteF0MhM0FdDIgWzvVit7Ahu//491bGyG3puLkqK/WpmujM1xFt5c09cqzH3lpcFKIlM9YpN/pChwjp44ohG/zOLQD81lp03b7PeJmEO9JLrgtpQH1jWEy+ROOx2hlqMhET+tkOICTpDZY+ZXC/FbhtXnBckAHO94WOcCJgAB2cgjkIFfxArPAJ3kv+RW6ZxWiO/YLbL9ZAk4LfPB5D7Lkk/yNkibK4bJ/EIpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=QKkNn4yCn6jWjDZ2AaAoCNnexKJ0ZZixIDCorZhMGYE=;
- b=ltDZWXhClq1GLwcEgwluN1mPsArFn21a+j6bVwB/nVswdji3gQOXyXD8mnLwEmjNtkADou/Xa2J+/XS2JyGtXpOStJ3Twa4u0rs/+NxgLWkzrEkIvLR3xBr9e8AEHawn2pX1QIJhrm5TjgnvujEcYaUWFNFuJ++rvWYIq1/f/4g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from CY4PR1201MB0181.namprd12.prod.outlook.com
- (2603:10b6:910:1f::11) by BN7PR12MB2609.namprd12.prod.outlook.com
- (2603:10b6:408:28::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Wed, 13 Jul
- 2022 10:01:31 +0000
-Received: from CY4PR1201MB0181.namprd12.prod.outlook.com
- ([fe80::1001:3c79:9504:8d6a]) by CY4PR1201MB0181.namprd12.prod.outlook.com
- ([fe80::1001:3c79:9504:8d6a%10]) with mapi id 15.20.5417.026; Wed, 13 Jul
- 2022 10:01:30 +0000
-Message-ID: <74097857-1908-2ff2-1e54-bf7e658ea6c6@amd.com>
-Date:   Wed, 13 Jul 2022 12:01:13 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v7 04/14] mm/shmem: Support memfile_notifier
-Content-Language: en-US
-To:     Chao Peng <chao.p.peng@linux.intel.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-5-chao.p.peng@linux.intel.com>
- <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
- <20220713074458.GB2831541@chaop.bj.intel.com>
-From:   "Gupta, Pankaj" <pankaj.gupta@amd.com>
-In-Reply-To: <20220713074458.GB2831541@chaop.bj.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS9PR01CA0005.eurprd01.prod.exchangelabs.com
- (2603:10a6:20b:540::15) To CY4PR1201MB0181.namprd12.prod.outlook.com
- (2603:10b6:910:1f::11)
+        Wed, 13 Jul 2022 06:02:53 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E11A6F5108
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:02:51 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id y11so11706054lfs.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=FcdZtxlfGHBvxGWnTjaxeALMraCtTgZBf+0Hn+oyr0g=;
+        b=lodQZaMJNoMosnJp42At8SzsOtgrrUlTOd8JN7tdVpOBYvXaSYY78W+ln7IEr6UDWd
+         eLCDXxnebWeP699RvQlkzrcr4Wus+5VDDYUxuxRhBrFY4j6+OVzwxct5sa9a4+N092ku
+         TyV5AN5hmk+QplcVcLSfsuZmWbg2CTR/TJ79mOTkF5juXA1aP70h88cPhB2sCLAXiF38
+         5GEnOLtj2wnjSm6kMloeqbFim0OVVwkmg15pjHvcE6Yul+SUo9P7ON8pIsPI1jy9QDpL
+         IEqfB7nJjDy/r0zseZ5yl5RN9DtDWvM5eT+HCSDNBKrAX81WLWUSXaEbxCwAzEjg6i9I
+         H0Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=FcdZtxlfGHBvxGWnTjaxeALMraCtTgZBf+0Hn+oyr0g=;
+        b=fACfjyrxueN7jKeodb3KMBLEwQqXhyDp/6o1A0/i9gNUncg2qQ9PunPhsy+VolTdq8
+         Q5Faon/O+NINunVoRIkrqCubvqbmK3tcuCuzT+NfyWcA0Cd6e8Pbka7G0aRoR1R0ofa5
+         bD5T/F343m402X9rh4224ZJQfK4OLRVIfLRRqJII9Bao2xHzCXfda5rGOGU2MJsDSM7M
+         ceIOVoUvAnIcYgbLBH5KWbpf8v2NkOomzvYoiFOnypalyl9mUJEfNr7JAkiBEZE4+28A
+         snzHHaP5HKJOh8hSSL89xvtRrqdUOJdNSM5QQGUxghCZagsWDakxRoh4ad/meYpgGCAC
+         qsjg==
+X-Gm-Message-State: AJIora/ixKicRg01X+B5DwoHrdQ0QqbjCHMI5yEgTf0xi1IniwSciNOW
+        zNveJ/gCUn2BXOLqw78X0B8=
+X-Google-Smtp-Source: AGRyM1sWwi9TMsCvKkJm95EXKR9I4T/O9hHNhU5AjMUb26SZrYxsIyiCuW7ia3MLSecqLZ/ftTfF8A==
+X-Received: by 2002:a19:670e:0:b0:489:f69c:3a2d with SMTP id b14-20020a19670e000000b00489f69c3a2dmr1503697lfc.51.1657706568830;
+        Wed, 13 Jul 2022 03:02:48 -0700 (PDT)
+Received: from [192.168.1.2] (broadband-188-32-106-30.ip.moscow.rt.ru. [188.32.106.30])
+        by smtp.gmail.com with ESMTPSA id v16-20020a056512349000b00489d1896c06sm2322895lfr.125.2022.07.13.03.02.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 03:02:48 -0700 (PDT)
+Message-ID: <999057a9-d209-323b-90eb-5756b7c0e91e@gmail.com>
+Date:   Wed, 13 Jul 2022 13:02:47 +0300
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 530bae94-740a-49ed-af99-08da64b6a87d
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2609:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B3XxLXJdQVnd3va2xwDUYYu9RsJUZxL9bKZtVe5xx6wJ7c80kncyBrkqRWrCPz3fDZObZYRG3FsJNR58H61t41RGjqUKd2ZAZiBN0qnhVPHYsBpe3pK8xqA9AjLlrj5cy/XmpEcpQbj6/oZU14ZA0VVf6VK9D/tdBRHI3AXXSICfyd2CPy2p5AgR+YqP7s6qPKYPoqAuFq0J9npHZdSUsygU6zzl2P+n3BQhMHxUPj7ocHj3Va/syFoM7uLwhQJIgIOOhzrcQdJ6suIRjD6AoP+vClYBLSCQmctkHDvkzQh22KcTMS0MDRSpiqwYEC7CDixps20t30560qBYVuNwApyKzT/DRu6fvFn98dpqsSC3t8+KcbbNdR9tk2HbXKgB6zkSHJz9+aQgtFu9pKZoXQz3Bdb9WMxWHwsBN425EeaO+TPU/H1qth99CZRgf6LLRdwukrdL6Q7UxCx/CblS4LElud1uz37xuS9gzEVIdnX+hHHsxPN8BGkc2WXBz7X693zn6NAZ2/jUjGOBGyem0q7goUqtZLx47T2zV0mcQoj9TrAcpY+uU05K4EQcwtS63jcgW0XOwIOPo1V9C0auLeDZGapphuuKvwqK03PKXWkHGewA56gG7c2ypRiFC0VBJB2fXUvNKI0wZff53o/E94VYkeaGrUzWTnO5u319ARG1UEzZFHV1kBUMUaBv3bv52iCcrVBQ4uAlhrIagBqaU8U/4EI4HGQZid4fNUcrOJ2EfEInrmrcVGshyjysSoLg16Z+Kt+Xr2U7g6ipwzgpgsaMxEAQAEHHXBI6hA+RamxoS6uoIdiM2TGmzjXAhCGFIpqUZBOIzKttFemoVIhT6w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1201MB0181.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(136003)(376002)(346002)(478600001)(6486002)(36756003)(38100700002)(66946007)(6506007)(31686004)(26005)(41300700001)(6512007)(6916009)(4326008)(54906003)(316002)(8676002)(66476007)(2616005)(66556008)(186003)(2906002)(8936002)(6666004)(31696002)(5660300002)(7416002)(7406005)(83380400001)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?a0RvUWpqa2JKZ1E0NmduZlVVVFhQa05ITHY4T2EralFtMHo3a3ozOXdpMm1D?=
- =?utf-8?B?VUZMMmRNYVpOTXRUd01RK3FlakxPaVFCUUd5azhHejNEMDlRZUpvSnI5Z1ZG?=
- =?utf-8?B?citPK25pMTh1andxaDJuSkZqUkltYkN4d21nZ3J3azUzaUhvZmQvRitaT1g5?=
- =?utf-8?B?QkIwYjJEWnhBRDJLNGhTTXIzRmhTL0dBVXhKR1cyVXBIMUk2eVFVNWk1WXBR?=
- =?utf-8?B?MW1JazEwUUZWUFc5VmlCdGF0bFJoOEJramhSeHp6Nkw3TGV1SFVuZzQxdFFC?=
- =?utf-8?B?NCtJVFNCSURZZFFlaFFxRHVJMTJqa3hMeC9jVGZnc253V0ozUm92QXdkSklV?=
- =?utf-8?B?V0psanFCOVY0YUhwTHVJMlpQMmVheFl4bDI0TzQ1UGNwODNFeUxHTVkwTFRx?=
- =?utf-8?B?czNIN1k0a01udHE0SE9RelhQb1FOK3dUbk0vcTVwUUJGRkRQU0x4Um9YVWxX?=
- =?utf-8?B?TmdxUW9tejZrdnl4ak9YZHdEZ01hVFJka01Bd3RSeThNaHc0a3V6MmQyRVQ5?=
- =?utf-8?B?T2txY2xFUG1MWVNmanU2SXB6aml5VFQ4clo5ekl0MGZCM2FMMVA5aG1SdTZr?=
- =?utf-8?B?c2ZJekdPK3lRUHdBN1dlakY0ZlJHcUlPaFZGVXV0TCtIOG9iQkV0clA3S3lG?=
- =?utf-8?B?QnE3amFnTDJuZHFOL3BjNVVrb3lidHpuN2pKbG9wRkZ5eEJEdm5SR3lUZmE5?=
- =?utf-8?B?OEt1anJvdG5zS3d1cnRjM05jZTc0cFdGaUZBeE5MYmFPU29jOTEzT1duQk52?=
- =?utf-8?B?QitJd3pjT1VmZzlZam9BRzNaT2tKVnF3WGVyN0FjOTY2M000aE5ha3U0OTRX?=
- =?utf-8?B?dDZZUmNVSWovS1M5aTJGWkd2a05xdjBGY01CZWhhZEtlV0o1YStIc25wUjh6?=
- =?utf-8?B?K1Njcm05RDY3TzM4bXdqOEI3YXQvUHhzVnNOc1dUVFFKenFadjJHMWptdmIw?=
- =?utf-8?B?RmhIRTdUTW9ZVkFYTE1vbnl6SmJMaWtMSXE4MElCYTA5eEpTMS9qcFMxYlJX?=
- =?utf-8?B?aWR5Rkt4VzJSY1Y5aUt3K2YwRUVIVndpMlBudHN2OVkvUXdDTm1zMFhDazdU?=
- =?utf-8?B?MTZqUVJPd0FYOEQwY243N2IwbjVya2lHaStoRjROSGwzeEdJTmhpZVN6UjBG?=
- =?utf-8?B?cHp1N0o1SEdyVkFlWGxlWmhEVExOUVNuZ011OVhreWhMckQ2VzIrNTk5M01k?=
- =?utf-8?B?MnZoejNid05UcWovaTRRTmJoQnNUSmZPOEg0dld4ZHNpZXl4dzg5c0dNVEhx?=
- =?utf-8?B?Zys3MjBqL2ovRk1oQ29KM2hGK0haRlFZRGFadnpoUU0xU2tQOTV0cnFhRUFy?=
- =?utf-8?B?TnlOclNIMnNVSzhLYzFMekZ3ZEFiMlNxOFBnS1RCUUt3dTgzUWZzWHdHMzRY?=
- =?utf-8?B?dlgrYU0vdlJWdU04aXY2akl2NkwwM3E1TTl2NmVwQnRCc2RLRUUrbm5KVWIr?=
- =?utf-8?B?WFZzVFpRWGZWQ3IzVGdDV1pZbzlwMDNMN2d5Qi9KV2JPRG9kSEtrajhEQUFq?=
- =?utf-8?B?MG9uaW84c0ZrUXhpNFN1V0dNK2o2MUhOMXh2SmhYYyswTzVUaXZRYVRMSytG?=
- =?utf-8?B?VXdKbHVKc1NjZ1AxVEVFdm5GVksyT1BmVTVhd2ZDUE9LQUY1Qk82MEV5WUVK?=
- =?utf-8?B?clc2TUduSSt2ODdMZVptSU9CNTQ5bzZDam1ybHlxKzl2YlJCTWZ1YUxuYnBK?=
- =?utf-8?B?bjZNS01oNzM1U3krcUdjYXZWNlBWVHNzMUZCRmdicEQvUFJwbnVSbU1GazFS?=
- =?utf-8?B?cmhDNkVXZ0xBVW5MWFdSM2FvUUVBWWE0V3p3eGZkNERlZkFTVVcvdlVNellW?=
- =?utf-8?B?OUFycEtkaWhRblloMm5vdUpBeWpNY09RZTRLdWh2Z0Uwbk5nbVplYlZMZjhj?=
- =?utf-8?B?c1ovUjBpTllteEpoUmpLSUtPeXF2QWloL2hRVTQvenJJY3h5d25lU2dUcEZ6?=
- =?utf-8?B?R1hyaTdERElZc3M0R253WlZzMHhIMVVFelRlcnQyTUpGNm81WElISTBiQnFP?=
- =?utf-8?B?d1oxSUtoRFhZT01IZkUxV0lRbGVqT2ZCZ0FlTFdPWko5TEt6WmJabnJmcXBW?=
- =?utf-8?B?MlM3NzExc3B2NnRxN3h1STJMMmJWMUpIVTNRN1BEVGhWdWRSR09tQU40a01h?=
- =?utf-8?Q?LzjU4LsyKXVcuqLQadn5GqonK?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 530bae94-740a-49ed-af99-08da64b6a87d
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR1201MB0181.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 10:01:30.3574
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PDRfPbd2TRvp62qw61pMdhwCXijA/oQKIucxq6sliafHQr5kYlryFFSrdmQrYydPN06IqJogN0D5LFXM5C7yiQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2609
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 2/2] lib/string.c: Optimize memchr()
+Content-Language: en-US
+From:   Andrey Semashev <andrey.semashev@gmail.com>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Yu-Jen Chang' <arthurchang09@gmail.com>
+Cc:     "andy@kernel.org" <andy@kernel.org>,
+        "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
+        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220710142822.52539-1-arthurchang09@gmail.com>
+ <20220710142822.52539-3-arthurchang09@gmail.com>
+ <3a1b50d2-a7aa-3e89-56fe-5d14ef9da22f@gmail.com>
+ <CAD4RrFPihC+8LScC1RJ5GfOsLs4kze0QwALS1ykNH_m89Z1NGg@mail.gmail.com>
+ <48db247e-f6fd-cb4b-7cc5-455bf26bb153@gmail.com>
+ <CAD4RrFPfwu4Ascj5tdz8qq2Qgnu5GN2eHjVwMW5AqUa1H7JapA@mail.gmail.com>
+ <49a8be9269ee47de9fc2d0d7f09eb0b1@AcuMS.aculab.com>
+ <5d14cf64-46b7-dc37-bbb8-dd6be82d06af@gmail.com>
+In-Reply-To: <5d14cf64-46b7-dc37-bbb8-dd6be82d06af@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
->>> +#ifdef CONFIG_MIGRATION
->>> +static int shmem_migrate_page(struct address_space *mapping,
->>> +			      struct page *newpage, struct page *page,
->>> +			      enum migrate_mode mode)
->>> +{
->>> +	struct inode *inode = mapping->host;
->>> +	struct shmem_inode_info *info = SHMEM_I(inode);
->>> +
->>> +	if (info->memfile_node.flags & MEMFILE_F_UNMOVABLE)
->>> +		return -EOPNOTSUPP;
->>> +	return migrate_page(mapping, newpage, page, mode);
+On 7/13/22 12:49, Andrey Semashev wrote:
+> On 7/13/22 12:39, David Laight wrote:
+>> From: Yu-Jen Chang
+>>> Sent: 12 July 2022 15:59
+>> ...
+>>>> I think you're missing the point. Loads at unaligned addresses may not
+>>>> be allowed by hardware using conventional load instructions or may be
+>>>> inefficient. Given that this memchr implementation is used as a fallback
+>>>> when no hardware-specific version is available, you should be
+>>>> conservative wrt. hardware capabilities and behavior. You should
+>>>> probably have a pre-alignment loop.
+>>>
+>>> Got it. I add  pre-alignment loop. It aligns the address to 8 or 4bytes.
 >>
->> Wondering how well page migrate would work for private pages
->> on shmem memfd based backend?
+>> That should be predicated on !HAS_EFFICIENT_UNALIGNED_ACCESS.
+>>
+>> ...
+>>>         for (; p <= end - 8; p += 8) {
+>>>             val = *(u64*)p ^ mask;
+>>>             if ((val + 0xfefefefefefefeffull)
+>>> & (~val & 0x8080808080808080ull))
+>>>                 break;
+>>
+>> I would add a couple of comments, like:
+>> 	// Convert to check for zero byte.
+>> 	// Standard check for a zero byte in a word.
+>> (But not the big 4 line explanation you had.
+>>
+>> It is also worth looking at how that code compiles
+>> on 32bit arch that don't have a carry flag.
+>> That is everything based on MIPS, including riscv.
 > 
->  From high level:
->    - KVM unset MEMFILE_F_UNMOVABLE bit to indicate it capable of
->      migrating a page.
->    - Introduce new 'migrate' callback(s) to memfile_notifier_ops for KVM
->      to register.
->    - The callback is hooked to migrate_page() here.
->    - Once page migration requested, shmem calls into the 'migrate'
->      callback(s) to perform additional steps for encrypted memory (For
->      TDX we will call TDH.MEM.PAGE.RELOCATE).
+> It may be worth looking at how glibc does it:
+> 
+> https://sourceware.org/git/?p=glibc.git;a=blob;f=string/memchr.c;h=422bcd0cd646ea46711a57fa3cbdb8a3329fc302;hb=refs/heads/release/2.35/master#l46
+> 
+> They do use 32-bit words on 32-bit targets and 64-bit on 64-bit ones. I
+> think memchr in the kernel should follow this.
 
-Yes, that would require additional (protocol specific) handling for 
-private pages. Was trying to find where "MEMFILE_F_UNMOVABLE" flag is 
-set currently?
-
-Thanks,
-Pankaj
+Also, if by chance this optimization is aimed for x86-64, it may be
+worth adding an arch-specific version that uses ERMS.
