@@ -2,148 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8717CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235538AbiGMM5I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43284 "EHLO
+        id S229724AbiGMM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234672AbiGMM4z (ORCPT
+        with ESMTP id S231492AbiGMM6P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:56:55 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD6A7436F;
-        Wed, 13 Jul 2022 05:56:53 -0700 (PDT)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DCR2xR016034;
-        Wed, 13 Jul 2022 12:56:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=HcTnAKVtvZ+4Z50bhM2SkI8yE39Mlq0zg6GRn5DhjJI=;
- b=bse9GI4zmc3EaKW0+iTiPCKlfhDBRkhcZrzuBpQlEL+FQpuzArZmW+8+dbRDKiS7XnOw
- g8+mdaY4mjJRZiNNkoOLnM1G5SXrSZm1MESby4ENBsgxi7Io1GxdaxXfGkr/4uoUhCd8
- vWhL2k9ekIMSeuOk1MlizOs+hG8TjCMdpzhcLBKZ5IhvIRKY/Eq57ahmoXPMHA+Y0Og2
- i1NGvbTmNwjT3tUVU62CXeJgAy+xDyz85Bk0egpuGSZlMfGh9GqbRD4u7raYYoNHTF5Q
- nwZWj+YAnKdShroayYvWszPjUHeQIYstyWvZ5w3d2Bui+aVvyKjFi78n2++m74UEKLi6 uQ== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9x2n0upx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 12:56:51 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26DCo5q2010324;
-        Wed, 13 Jul 2022 12:56:49 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3h8rrn2kpu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 12:56:48 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26DCuuKN23724346
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Jul 2022 12:56:56 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CE412A4054;
-        Wed, 13 Jul 2022 12:56:45 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7B7CEA405C;
-        Wed, 13 Jul 2022 12:56:45 +0000 (GMT)
-Received: from a46lp73.lnxne.boe (unknown [9.152.108.100])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Jul 2022 12:56:45 +0000 (GMT)
-From:   Steffen Eiden <seiden@linux.ibm.com>
-To:     Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Cc:     nrb@linux.ibm.com
-Subject: [PATCH v2 3/3] s390/uvdevice: autoload module based on CPU facility
-Date:   Wed, 13 Jul 2022 14:56:44 +0200
-Message-Id: <20220713125644.16121-4-seiden@linux.ibm.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220713125644.16121-1-seiden@linux.ibm.com>
-References: <20220713125644.16121-1-seiden@linux.ibm.com>
+        Wed, 13 Jul 2022 08:58:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEBCD74791
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:58:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657717093;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iYC8Yec1GTbUtaYK7RYva4XXz/xl1ExjZYRMzojC8yQ=;
+        b=L8Y2U5FFfXvBLvZ0piQufktp3doNmsC2UCEjTpIsr+X915Ip6KGs8+mi3Izz0vWY9oVht7
+        URrVz3IpVGvbQtQ2/WlzEztZV87ac4MHWrEh2EpJtVirKnHt31pQNoxKmt4x0isLoa6+lV
+        8GQq/UAjqE7Nj4/uRlPsl2vCx7BvVRM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-407-y1PoGr-KObSmF7vKk7zy-g-1; Wed, 13 Jul 2022 08:58:12 -0400
+X-MC-Unique: y1PoGr-KObSmF7vKk7zy-g-1
+Received: by mail-wm1-f70.google.com with SMTP id c17-20020a7bc011000000b003a2bfaf8d3dso5526993wmb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:58:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iYC8Yec1GTbUtaYK7RYva4XXz/xl1ExjZYRMzojC8yQ=;
+        b=6h4bUoxkuynX6dUN0l7a+80zFpktLh9VLn4Hn4EJypMY0ITqNEgAk2IbmZYiH8Sxik
+         qFM6QDU50BC6zXtp0iO/w2ykZ2GYSWtD5jhck4KSzs9RYjr6WsioLDcivn5Z0Mxw/AXv
+         oj9E4/OXi7+eQSDGFF3TT0NgYWWj/4BwFGiVIsY40qP8JHkibaxdWvIcLOKszCmVjJKV
+         E9rwLDGSkOBumXThu1OmAlKa8I9u/JR5kbaOUe+y4zbzsiG/LaQJU5wxwSY3NUT7B+A3
+         iTpSBApy1lVkulKr7jqXg/Tzf/1w/K2OSeQ/HIE+6HaFbPWZ0TuDc6DpkwpaOLQIUjgM
+         vJVA==
+X-Gm-Message-State: AJIora8O7ghpS8rmvWHGfexT/k2lNq3cTioijkdBKXOCeq1K601pcJQW
+        KafMn+H/z6k7QuTyMXJoMJh6lZ42eHCof8H42L8NeYhOEKX+8ihVIALu6poYOVOiIhanTh4TRwB
+        GBy7MGz+fK6I2ZpQarrTwmizI
+X-Received: by 2002:a1c:7910:0:b0:3a2:e033:cdbc with SMTP id l16-20020a1c7910000000b003a2e033cdbcmr9660887wme.122.1657717091470;
+        Wed, 13 Jul 2022 05:58:11 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sRsnqWu8rRP2FIUsaOp6/GcdlWCvwK0G1/Y1QaiEpMZI2+dk3VkUEbOS2ulOuht+mJNcB7qA==
+X-Received: by 2002:a1c:7910:0:b0:3a2:e033:cdbc with SMTP id l16-20020a1c7910000000b003a2e033cdbcmr9660859wme.122.1657717091160;
+        Wed, 13 Jul 2022 05:58:11 -0700 (PDT)
+Received: from localhost.localdomain ([151.29.54.26])
+        by smtp.gmail.com with ESMTPSA id p2-20020a1c7402000000b003a2fdde48d1sm944864wmc.25.2022.07.13.05.58.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 05:58:10 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 14:58:08 +0200
+From:   Juri Lelli <juri.lelli@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users <linux-rt-users@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>
+Subject: Re: [PATCH] sched/deadline: Fix BUG_ON condition for deboosted tasks
+Message-ID: <Ys7BYCvlgphAwQ+Y@localhost.localdomain>
+References: <20220713075014.411739-1-juri.lelli@redhat.com>
+ <Ys6wgxiZbdjxyh8C@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: _4uEH6_S2yyggBRIYf2E7KPkjyDpuvhO
-X-Proofpoint-ORIG-GUID: _4uEH6_S2yyggBRIYf2E7KPkjyDpuvhO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-13_01,2022-07-13_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 adultscore=0 clxscore=1015 impostorscore=0 phishscore=0
- bulkscore=0 spamscore=0 priorityscore=1501 malwarescore=0 mlxscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207130050
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys6wgxiZbdjxyh8C@hirez.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make sure the uvdevice driver will be automatically loaded when
-facility 158 is available.
+On 13/07/22 13:46, Peter Zijlstra wrote:
+> On Wed, Jul 13, 2022 at 09:50:14AM +0200, Juri Lelli wrote:
+> > Tasks the are being deboosted from SCHED_DEADLINE might enter
+> > enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
+> > since they are not boosted anymore, the if (is_dl_boosted()) branch is
+> > not taken, but the else if (!dl_prio) is and inside this one we
+> > BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
+> > otherwise we had entered the if branch above. Long story short, the
+> > current condition doesn't make sense and always leads to triggering of a
+> > BUG.
+> > 
+> > Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
+> > to be present, but additional flags are not a problem.
+> > 
+> > Fixes: 2279f540ea7d ("sched/deadline: Fix priority inheritance with multiple scheduling classes")
+> > Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+> > ---
+> >  kernel/sched/deadline.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+> > index 5867e186c39a..0447d46f4718 100644
+> > --- a/kernel/sched/deadline.c
+> > +++ b/kernel/sched/deadline.c
+> > @@ -1703,7 +1703,7 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags)
+> >  		 * the throttle.
+> >  		 */
+> >  		p->dl.dl_throttled = 0;
+> > -		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
+> > +		BUG_ON(!(flags & ENQUEUE_REPLENISH));
+> 
+> While there, can we perhaps make it less fatal? 
 
-Signed-off-by: Steffen Eiden <seiden@linux.ibm.com>
-Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
----
- arch/s390/include/asm/cpufeature.h | 1 +
- arch/s390/kernel/cpufeature.c      | 1 +
- drivers/s390/char/uvdevice.c       | 5 ++---
- 3 files changed, 4 insertions(+), 3 deletions(-)
+Yep. On it. Thanks!
 
-diff --git a/arch/s390/include/asm/cpufeature.h b/arch/s390/include/asm/cpufeature.h
-index 771caf5281e5..931204613753 100644
---- a/arch/s390/include/asm/cpufeature.h
-+++ b/arch/s390/include/asm/cpufeature.h
-@@ -12,6 +12,7 @@
- enum {
- 	S390_CPU_FEATURE_MSA,
- 	S390_CPU_FEATURE_VXRS,
-+	S390_CPU_FEATURE_UV,
- 	MAX_CPU_FEATURES
- };
- 
-diff --git a/arch/s390/kernel/cpufeature.c b/arch/s390/kernel/cpufeature.c
-index 170894730fcc..5c69be58a057 100644
---- a/arch/s390/kernel/cpufeature.c
-+++ b/arch/s390/kernel/cpufeature.c
-@@ -19,6 +19,7 @@ struct s390_cpu_feature {
- static struct s390_cpu_feature s390_cpu_features[MAX_CPU_FEATURES] = {
- 	[S390_CPU_FEATURE_MSA]		= {.type = TYPE_HWCAP, .num = HWCAP_NR_MSA},
- 	[S390_CPU_FEATURE_VXRS]		= {.type = TYPE_HWCAP, .num = HWCAP_NR_VXRS},
-+	[S390_CPU_FEATURE_UV]		= {.type = TYPE_FACILITY, .num = 158},
- };
- 
- /*
-diff --git a/drivers/s390/char/uvdevice.c b/drivers/s390/char/uvdevice.c
-index 66505d7166a6..1d40457c7b10 100644
---- a/drivers/s390/char/uvdevice.c
-+++ b/drivers/s390/char/uvdevice.c
-@@ -27,6 +27,7 @@
- #include <linux/stddef.h>
- #include <linux/vmalloc.h>
- #include <linux/slab.h>
-+#include <linux/cpufeature.h>
- 
- #include <asm/uvdevice.h>
- #include <asm/uv.h>
-@@ -244,12 +245,10 @@ static void __exit uvio_dev_exit(void)
- 
- static int __init uvio_dev_init(void)
- {
--	if (!test_facility(158))
--		return -ENXIO;
- 	return misc_register(&uvio_dev_miscdev);
- }
- 
--module_init(uvio_dev_init);
-+module_cpu_feature_match(S390_CPU_FEATURE_UV, uvio_dev_init);
- module_exit(uvio_dev_exit);
- 
- MODULE_AUTHOR("IBM Corporation");
--- 
-2.35.3
+Juri
 
