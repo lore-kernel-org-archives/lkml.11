@@ -2,195 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 954C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 19:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A3ECCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 19:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236802AbiGMThs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 15:37:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        id S236412AbiGMTiY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 15:38:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229959AbiGMThq (ORCPT
+        with ESMTP id S236763AbiGMTiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 15:37:46 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBAB2B1AA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 12:37:45 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id z3so7312799ilz.5
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 12:37:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Gyhic3YuQiWkPXDh0dmo06Ni34a0PcNp5aOOqF+1Mjw=;
-        b=VIw/8Z+9ZhhO4bJAqBbvaM7zPVvdy1IQgZGCRmgtr5Aq26ZvIlE7Z67BWWe5q9ByUy
-         V2esw9YZX71visThXT4lgTc1w/CfK5vK6nI7D7pbIg7y0W/aIakF/9GH7aYce4BztRMp
-         f3i1ov6YWHKM68q3hwvBOz5oE/YTGQwuqzNe6IE/Kk0F3R9uv1pifGMVqnTaYDYpKSz5
-         9rCGfqnUD1pph/DE6WJ407G3VUa8zJw/5X0+jez+ldOEKo48vBeEzapyFafBwSmEn1ty
-         3EXzz2XXnflms4RvIv70Rl7gpIUWyZHiSuA/e/QoJzNIfQPhvrBuSp127QKWZxJdxql+
-         F/Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Gyhic3YuQiWkPXDh0dmo06Ni34a0PcNp5aOOqF+1Mjw=;
-        b=gXDz0kAQC/e+LDSWR0smdeH5y5f5B595Mx343anNIyk4TkmOhOsKYmiOywCo5A29J5
-         8wJL11Wp9Ql2Vm61brmoeSxOBEHBE1Z/qGNo3q9+L9Gw5ukdbTBejcKueUZC9Vus7ujf
-         2xGr34JJ48B9heswsbMTzPQZ1SCNYnZ0X0GPm4VpbcO/ababkyOLUWhk8lc3QYKuDsqK
-         V76GhFEx+WRTdefH2yUxIaPTN3WGDi7MzqvKI1ARj3Kx9Ca3FZgqujLOwEGlwZOmQ/Iz
-         3064TK1uZu9EaDwZ7o/DOhMwXWMu6K+fYEKlIfShyj2Vl9gCIOdhOxpAWA7WC/EeDNeS
-         0Q8Q==
-X-Gm-Message-State: AJIora+5ZAyQLBrGzY72XGRfUboAP/IRljpzEN5vG9JSG7PR5EEzmwsC
-        0J5yibgEP3GAEogslPMq7zr6kWn84khXmb6zZ+LYegmQ9xMDcA==
-X-Google-Smtp-Source: AGRyM1tSM88aI26QD2eN5zKANOb2j7OphvM37pvnVUc6F5wy/zwYA2RWDnkIqVZyuaBVnpzte3Mowk1flf8HDLFRBSI=
-X-Received: by 2002:a05:6e02:194b:b0:2dc:a05f:d911 with SMTP id
- x11-20020a056e02194b00b002dca05fd911mr2755279ilu.92.1657741064394; Wed, 13
- Jul 2022 12:37:44 -0700 (PDT)
+        Wed, 13 Jul 2022 15:38:22 -0400
+Received: from sonic306-20.consmr.mail.gq1.yahoo.com (sonic306-20.consmr.mail.gq1.yahoo.com [98.137.68.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A222B1AA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 12:38:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=netscape.net; s=a2048; t=1657741101; bh=gvegsbKA0Ugq9G0OL2YHhHKrmsIiT+j/cAd/AQ6k6Xs=; h=Date:Subject:From:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=MZQFw9/JPmpuroD8LpVy2xa3dQDRMBFdA1RTqyTtfXGmJdjhwswFVzyIiTtrjeVLke4h9R6vpbhZrwclrfloBGOp2L+wHCFozHHxshm96MpC8KnvxjrbCxDHjQlpRIUpJr3OANhsOqTkaEeDDjVqPyjjcXAeyvNV5NU3tZXVKTLiEK/0j7m1/p13hezk70gaMuusWCA4JRaa2p0Jzse6r7VoUMRvivNOpBOcUWfv/kgTPfpCaZHSyerdo5KS/z7T6qpy9go7S/K1gkEUopfNCmdCWHS4IDEM6Mgm4KYZ0+hLIe52QXhqSu9Uw1QPPkIk8YBYeUMNc2FU2q5el6C0KQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1657741101; bh=gZ+FnmKOj2zVRAIddN3HlDPLO1hF3KTuu1g/XWWOSUs=; h=X-Sonic-MF:Date:Subject:From:To:From:Subject; b=a2pkxJoMqAMjHRNepy+Lww/IxC/RE0FTJRCwDDn/wY4E0LE8qCmiLkebT84SXNo+TlgHg11MluHHmltYfW7+EFlikPZ0urlzkyhtpPIYnT6NBiEKkEIrkJ5o2w4NJKVADJI7/18sg/UjKFESFH+RP6AYTYe1iExKtTUIDxtME5cTWF1ITBkUd+qnpyaT8NMqsZHgdMNbLrpBrJDldNKFgg9Zzpn0s/q6EMtoxgdHUy+mvasB13AiPzduJ9m04jq7bK/mbIgapg9+LTqtVnZf/Vhl5Gjt/5aLDz9bMDVv/+DDIUctfWPI3NckNk1ChAZ+i9BgzS9+VYZuS4pRfNSbeg==
+X-YMail-OSG: 6luG7AYVM1ncjX7nkCvm9bLVe10whawpCglcbiYMUxQ2vlNaWqmz.Z9bEDOn_49
+ iRTUpxQz7K2qvaNS2J2y8psq2P0rEXp5vqGKyN11aM77RStL50FoqtrPJ6j0bdro7hg3IcsH09JN
+ ne3T8aDhdkdYjDnOAxG0TmPRA4l7CQlxppszvaPxaSWGEXoEQydR9VpICDcRUf7Q6fDXGSbrNB_0
+ Q572vxdxIFATyMSkoluEbUneSV3IRw.dOKEdOVreZTJOYaWtmd6mp8juh1i6BTSAU6HhiNGAlCOY
+ UJnkfjbe5CWsZ5zDBlI8Qvhp8HKy0d9SEZZrNp4ZbtrWZEzaDi.o3Ij7rkk9ADsdFrVldnY.psmh
+ knlFFmuqF6mXn_04ZRXKcTCX8829w.r.ah1gNITohjd8JqSnEEgfuqI2rnDOSogBGCGR.ojSthf1
+ 9cwixTxmGffEbuyyKVnf0x1MvLirnTSUrVAeWE2CL7louDYGEpd03wPfoAbs4rnb4l11Y3k21XcW
+ Lbt1W2p4yGRVwKOIwthaq12o74hdGxUinST.2p4ZS2HgDgeQhMWD2SB7vFCrR.ZyWhmG0juDZr_y
+ lFueayb9GF8.WkWzvPIeV7T6lfG73MnfrhAbz.PTbByim89nFkpHGRB46D_LIGQPYBk4gIsgml5F
+ UaCBrtqWwDjWaRyxNqlCr7SfT5XlP7Xoyqgiqqq7LBD2f6fOD0qHtebvJGZccgMk8eOd0ECXRRPa
+ 7l7rNL5juqI99YtXBU4dRG.uP_Tw_T3R20JxGBs.2HXiMA3GB8f16_9rZdCk86nBXJqcGwa2VJV6
+ yRjwbC7UHKGmlkqDcWYRIqYrj_aaeokYD7yAwntlrAkjo1HLlcIvyT2uQOQS6wSKfB5HjgpRGS0R
+ 9UhoLIsYxVvpwC6v2HWTOvlHC70DFJyk04G69oizXdeBicJGz_eH.InuYvclXJQcX44_EYXtSF80
+ Xmc5ReIFPw6o4Nvw2a0nmOkwNd67hhv_6vcyGfURwyUHsuys17jHmXyKDsKkY.Bonqyx2H15AQ9b
+ 3tokiGn3Y4nPWzGgnviaD6LXI3DyRu00uv8oB.gzfDuHeDhSETaPelKXMmF2nImaT.tKktPDAocD
+ 4zNoYSG_xPqWm5cksbgvpXA5tR8OqpcZN6djOiIKVLu5Dyx4H6rI0Pu3oOFE17HmEZdZVmVk9lUG
+ rgNtz52CKxTbNdgMmTLJBehtHFw6pansJH296wx0y26C8wZkjpFAU1J8BtiYqjNbTjOX6qNfASio
+ chc.zRQCDGkLV78hS9Z4Jp9fByWtFyJ3DEhF.tco3rXB9la83ONyM2dklm9YQtcofpccVVtMZf6M
+ rFuSmRQVxGQ7mpRiScTlS2dM_PU7XQO3crjWzhZAPSKYnHKwUvDse4tBUGqkgTyv2LxlEtF2p1rE
+ nXzD4O54dQAj7GOH7LZJBB4y.N4VJD0c71jg_zfwoT8PIdvByLHQ2Q1J6CiGDBItchWsci_mkpsZ
+ F.BvZUFLlmGv5SE2r0wFRAIRedSB1LcaiF2w.5T2dDq6c8ntVjv7WJdyViKxF4PoXjQM0MGv.zPt
+ IVFuiiRtW3OxU15KT2btrB7iriw17eCDKzd7JaqBvZujjeCV05DkTGEyVqYDJdN9Z.oCduNyunYC
+ LyW2kuwf0w.KJPt6J2_8s0aQzv11v76SuPMMhUMpPRWFVRnxEDeCTWiVuF4m.XqaRAonA7idjTMk
+ 54s80Vdyra0rFJylo9njYUS7qP4Y.2gdNBO6WXa7w8lh3bNZDsRHChZQPMRPgE48w7zAE9lzrVoY
+ 2vcFB__DJE.MEB8_a43uDr1Wd4HaM8FYe0RCu7YgdcCzjYdmZkKNkQofUpvhtMtN6E_SRxrrtOpr
+ 5OURJ9WfoKOATbcUcbSSOcOrExivbbAGtL0JiQEqYJ47Qlu5QF.WhGdXRUCslRUGq7c9U3Ai_oHo
+ FYRfLsYLhqfxSEzuq6g3.1FFZHFypkQhNncDQ4gU.UZIKvUyFWGBTbjYrV5qS8Wk.qyU1Q1Vedfv
+ umnFJk_NU1qEn.aUiv_.fihm.ivkRppWG0H_a.yp0cuWcELo1hd.W6jKtaIAToVmuxLc.PjczmGD
+ _9tuqHljtG6g92DYqhD.6WkVzlar2mMaD0RmSt3MQvM1eUp6vZ7m1AkYrquTAHudbRlCVO.AIvWI
+ dnc_HFSnf6_NX0xYI.hq.laqyMvQ99CXMuLBFAlCoIczXGGRgwwRynI4OedIYZj95bLfbVasiHgZ
+ WNt2WUQ--
+X-Sonic-MF: <brchuckz@aim.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.gq1.yahoo.com with HTTP; Wed, 13 Jul 2022 19:38:21 +0000
+Received: by hermes--production-bf1-58957fb66f-p6kcj (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 564882263554cd3ca01f52971e669fd2;
+          Wed, 13 Jul 2022 19:38:17 +0000 (UTC)
+Message-ID: <9c97d8b4-ae1d-efd0-8414-91a50d22cf12@netscape.net>
+Date:   Wed, 13 Jul 2022 15:38:16 -0400
 MIME-Version: 1.0
-References: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
- <Ys1g8PH4M2W7Z50U@sirena.org.uk>
-In-Reply-To: <Ys1g8PH4M2W7Z50U@sirena.org.uk>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 14 Jul 2022 01:07:32 +0530
-Message-ID: <CA+G9fYu7mJ6X3_xhboODP_cjABE4QTJCON_NMduQ60x4Z7N78Q@mail.gmail.com>
-Subject: Re: FVP: kernel BUG at arch/arm64/kernel/traps.c:497 - Internal
- error: Oops - BUG: 0
-To:     Mark Brown <broonie@kernel.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Aishwarya TCV <Aishwarya.TCV@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] Subject: x86/PAT: Report PAT on CPUs that support PAT
+ without MTRR
+Content-Language: en-US
+From:   Chuck Zmudzinski <brchuckz@netscape.net>
+To:     Juergen Gross <jgross@suse.com>, Jan Beulich <jbeulich@suse.com>
+Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Jane Chu <jane.chu@oracle.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        xen-devel@lists.xenproject.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+References: <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz.ref@aol.com>
+ <9d5070ae4f3e956a95d3f50e24f1a93488b9ff52.1657671676.git.brchuckz@aol.com>
+ <e0faeb99-6c32-a836-3f6b-269318a6b5a6@suse.com>
+ <3d3f0766-2e06-428b-65bb-5d9f778a2baf@netscape.net>
+ <e15c0030-3270-f524-17e4-c482e971eb88@suse.com>
+ <775493aa-618c-676f-8aa4-d1667cf2ca78@netscape.net>
+ <c2ead659-d0aa-5b1f-0079-ce7c02970b35@netscape.net>
+ <1d06203b-97ff-e7eb-28ae-4cdbc7569218@suse.com>
+ <a8d0763f-7757-38ec-f9c1-5be6629ee6b2@suse.com>
+ <56a304ad-606f-6d33-bd2b-8c614fcdb666@netscape.net>
+ <4e74aae6-7d8c-15ed-c571-b797239374cb@netscape.net>
+In-Reply-To: <4e74aae6-7d8c-15ed-c571-b797239374cb@netscape.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20407 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.aol
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 at 17:24, Mark Brown <broonie@kernel.org> wrote:
->
-> On Tue, Jul 12, 2022 at 03:27:09PM +0530, Naresh Kamboju wrote:
->
-> > FVP boot failed with linux next 20220712.
->
-> I can't reproduce this, including with your kernel binary, which
-> suggests that this an issue with your FVP usage and firmware.
->
-> > Boot log:
-> > Starting kernel ...
+On 7/13/2022 3:22 PM, Chuck Zmudzinski wrote:
+> On 7/13/2022 3:07 PM, Chuck Zmudzinski wrote:
+> > On 7/13/2022 9:45 AM, Juergen Gross wrote:
+> > > >> On 7/13/2022 6:36 AM, Chuck Zmudzinski wrote:
+> > > >> And in addition, if we are going to backport this patch to
+> > > >> all current stable branches, we better have a really, really,
+> > > >> good reason for changing the behavior of "nopat" on Xen.
+> > > >>
+> > > >> Does such a reason exist?
+> > > > 
+> > > > Well, the simple reason is: It doesn't work the same way under Xen
+> > > > and non-Xen (in turn because, before my patch or whatever equivalent
+> > > > work, things don't work properly anyway, PAT-wise). Yet it definitely
+> > > > ought to behave the same everywhere, imo.
+> > >
+> > > There is Documentation/x86/pat.rst which rather clearly states, how
+> > > "nopat" is meant to work. It should not change the contents of the
+> > > PAT MSR and keep it just as it was set at boot time (the doc talks
+> > > about the "BIOS" setting of the MSR, and I guess in the Xen case
+> > > the hypervisor is kind of acting as the BIOS).
+> > >
+> > > The question is, whether "nopat" needs to be translated to
+> > > pat_enabled() returning "false".
 > >
-> > [    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd0f0]
-> > [    0.000000] Linux version 5.19.0-rc6-next-20220711
+> > When I started working on a re-factoring effort of the logic
+> > surrounding pat_enabled(), I noticed there are five different
+> > reasons in the current code for setting pat_disabled to true,
+> > which IMO is what should be a redundant variable that should
+> > always be equal !pat_enabled() and !pat_bp_enabled, but that
+> > unfortunately is not the case. The five reasons for setting
+> > pat_disabled to true are given as message strings:
+> >
+> > 1. "MTRRs disabled, skipping PAT initialization too."
+> > 2. "PAT support disabled because CONFIG_MTRR is disabled in the kernel."
+> > 3. "PAT support disabled via boot option."
+> > 4. "PAT not supported by the CPU."
+> > 5. "PAT support disabled by the firmware."
+> >
+> > The only effect of setting pat_disabled to true is to inhibit
+> > the execution of pat_init(), but it does not inhibit the execution
+> > of init_cache_modes(), which is for handling all these cases
+> > when pat_init() was skipped. The Xen case is one of those
+> > cases, so in the Xen case, pat_disabled will be true yet the
+> > only way to fix the current regression and the five-year-old
+> > commit is by setting pat_bp_enabled to true so pat_enabled()
+> > will return true. So to fix the five-year-old commit, we must have
+> >
+> > pat_enabled() != pat_disabled
+> >
+> > Something is wrong with this logic, that is why I wanted to precede
+> > my fix with some re-factoring that will change some variable
+> > and function names and modify some comments before trying
+> > to fix the five-year-old commit, so that we will never have a situation
+> > when pat_enabled() != pat_disabled.
+> >
+> > Chuck
+> Sorry, I meant to say,
 >
-> How are you invoking the FVP, what firmware are you using and how is it
-> configured?
+> To fix the five-year-old commit, we must have
 >
-> > [    0.500709] kernel BUG at arch/arm64/kernel/traps.c:497!
+> pat_enabled() != !pat_disabled or pat_enabled() == pat_disabled,
 >
-> This is an undefined instruction, my first thought there would be that
-> you have some feature enabled for the kernel which requires enablement
-> at EL3 but your EL3 firmware is not configured to enable it.
-
-Thanks for investigating the reported issue and providing details.
-We will do the needful to update / configure EL3 firmware.
-
-
+> and there is something wrong with that logic.
 >
-> > [    0.503562]  el1_undef+0x30/0x60
-> > [    0.503709]  el1h_64_sync_handler+0x84/0xd0
-> > [    0.503811]  el1h_64_sync+0x64/0x68
-> > [    0.503909]  net_sysctl_init+0x8/0x7c
->
-> This is where the undef came from.
+> Chuck
 
-Here I am providing the available data.
-Let me know what I am missing here, so that I will update my setup.
-Thanks in advance.
+So to summarize, I think this means that to be comfortable
+fixing the five-year-old commit and the current regression
+by artificially setting pat_bp_enabled and pat_enabled() to
+true, something which both my patch and Jan's patch does,
+we need to come to a new understanding of what the
+static boolean variable pat_disabled in
+arch/x86/mm/pat/memtype.c in the code really means.
 
-Fast Models 11.17.21 (Feb 16 2022)
+The fact is, we have a regression and the only fix we
+can find is to try to make pat_enabled() == pat_disabled
 
-https://storage.tuxboot.com/fvp-aemva/tf-bl1.bin
-https://storage.tuxboot.com/fvp-aemva/fvp-base-revc.dtb
-https://storage.tuxboot.com/fvp-aemva/fip-uboot.bin
-https://builds.tuxbuild.com/2BnQMpJj3kDTJXoCwd2pY5gW9CN/Image.gz
-https://builds.tuxbuild.com/2BnQMpJj3kDTJXoCwd2pY5gW9CN/modules.tar.xz
+I need to stop thinking about this for a while. It is time
+for those who have authority to fix this regression to
+make some comments about how they think this should
+be fixed.
 
-
-docker run
-  --rm
-  --interactive
-  --tty
-  --hostname lava
-  --name tuxrun-r4_1075p-lava-1
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/url-repo-action-3=
-h1oa_zl/url_repo/https___storage.tuxboot.com_test-definitions_2022.01.tar:/=
-tuxrun-r4_1075p-lava-1/https___storage.tuxboot.com_test-definitions_2022.01=
-.tar
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/bl1/tf-bl1.bin:/tuxrun-r4_1075p-lava-1/tf-bl1.bin
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/dtb/fvp-base-revc.dtb:/tuxrun-r4_1075p-lava-1/fvp-base-revc.dtb
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/fip/fip-uboot.bin:/tuxrun-r4_1075p-lava-1/fip-uboot.bin
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/kernel/Image:/tuxrun-r4_1075p-lava-1/Image
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/rootfs/https___storage.lkft.org_rootfs_oe-sumo_20220219_juno_rpb-console=
--image-lkft-juno-20220219023239.rootfs.ext4:/tuxrun-r4_1075p-lava-1/https__=
-_storage.lkft.org_rootfs_oe-sumo_20220219_juno_rpb-console-image-lkft-juno-=
-20220219023239.rootfs.ext4
-  --volume /var/lib/lava/dispatcher/tmp/tuxrun-r4_1075p-1/fvp-deploy-w_qt5q=
-gt/rootfs.modules/modules.tar:/tuxrun-r4_1075p-lava-1/modules.tar
-fvp:aemva-11.17.21
-
-
-
-/opt/model/FVP_AEMvA/models/Linux64_GCC-9.3/FVP_Base_RevC-2xAEMvA
-  --plugin /opt/model/FVP_AEMvA/plugins/Linux64_GCC-9.3/ScalableVectorExten=
-sion.so
-  --data cluster0.cpu0=3D/tuxrun-r4_1075p-lava-1/fvp-base-revc.dtb@0x860000=
-00
-  --data cluster0.cpu0=3D/tuxrun-r4_1075p-lava-1/Image@0x80080000
-   -C pctl.startup=3D0.0.0.0
-   -C bp.secure_memory=3D0
-   -C cluster0.NUM_CORES=3D4
-   -C cluster1.NUM_CORES=3D4
-   -C cache_state_modelled=3D0
-   -C bp.smsc_91c111.enabled=3Dtrue
-   -C bp.pl011_uart0.untimed_fifos=3D1
-   -C bp.pl011_uart0.unbuffered_output=3D1
-   -C bp.secureflashloader.fname=3D'/tuxrun-r4_1075p-lava-1/tf-bl1.bin'
-   -C bp.flashloader0.fname=3D'/tuxrun-r4_1075p-lava-1/fip-uboot.bin'
-   -C bp.ve_sysregs.mmbSiteDefault=3D0
-   -C bp.ve_sysregs.exit_on_shutdown=3D1
-   -C bp.virtioblockdevice.image_path=3D'/tuxrun-r4_1075p-lava-1/https___st=
-orage.lkft.org_rootfs_oe-sumo_20220219_juno_rpb-console-image-lkft-juno-202=
-20219023239.rootfs.ext4'
-   -C pci.pcidevice0.bus=3D0xFF
-   -C pci.pcidevice1.bus=3D0xFF
-   -C cluster0.has_large_system_ext=3D1
-   -C cluster1.has_large_system_ext=3D1
-   -C cluster0.has_16k_granule=3D1
-   -C cluster1.has_16k_granule=3D1
-   -C cluster0.has_branch_target_exception=3D1
-   -C cluster1.has_branch_target_exception=3D1
-   -C cluster0.has_rndr=3D1
-   -C cluster1.has_rndr=3D1
-   -C cluster0.has_arm_v8-1=3D1
-   -C cluster1.has_arm_v8-1=3D1
-   -C cluster0.has_arm_v8-2=3D1
-   -C cluster1.has_arm_v8-2=3D1
-   -C cluster0.has_arm_v8-3=3D1
-   -C cluster1.has_arm_v8-3=3D1
-   -C cluster0.has_arm_v8-4=3D1
-   -C cluster1.has_arm_v8-4=3D1
-   -C cluster0.has_arm_v8-5=3D1
-   -C cluster1.has_arm_v8-5=3D1
-   -C cluster0.has_arm_v8-6=3D1
-   -C cluster1.has_arm_v8-6=3D1
-
-- Naresh
+Chuck
