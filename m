@@ -2,268 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1437C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 170A8C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:23:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235852AbiGMKWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:22:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        id S235890AbiGMKXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:23:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiGMKWk (ORCPT
+        with ESMTP id S235858AbiGMKXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:22:40 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE88F6B93;
-        Wed, 13 Jul 2022 03:22:39 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LjYXn1BjJzkWfV;
-        Wed, 13 Jul 2022 18:20:25 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500021.china.huawei.com (7.185.36.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 18:22:37 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.66) by
- dggpeml100012.china.huawei.com (7.185.36.121) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 13 Jul 2022 18:22:37 +0800
-From:   Zheng Yejian <zhengyejian1@huawei.com>
-To:     <stable@vger.kernel.org>
-CC:     <paulmck@linux.vnet.ibm.com>, <josh@joshtriplett.org>,
-        <rostedt@goodmis.org>, <mathieu.desnoyers@efficios.com>,
-        <jiangshanlai@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <peterz@infradead.org>, <xukuohai@huawei.com>
-Subject: [PATCH 4.19] rcu/tree: Mark functions as notrace
-Date:   Wed, 13 Jul 2022 18:20:09 +0800
-Message-ID: <20220713102009.126339-1-zhengyejian1@huawei.com>
-X-Mailer: git-send-email 2.32.0
+        Wed, 13 Jul 2022 06:23:04 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6B5FAC85
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:23:01 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id sz17so19020998ejc.9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:23:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2ghhMZwLPASGJo/4zIq1AHGruJYFCLTXZf7ncy6Y8Vw=;
+        b=uet/jPhBv+OrSsv/vv8hJZte3e7YiVEOCeXy8TbjqUfF98wkLPYMBkxhwwiSb9eT1z
+         ep9tCQcY0bOa5JhirD335tVWAZ8BZrz830OfbxxIx9SNk8UF1A2Pcm5EPXR4NRi9//3k
+         kIxn3EvG9zpA7KfDV+1CG2zxQl5VeaFKDPciKFCzhqTXJm+RDyQ5I/YQUcBDpsCMoxAZ
+         G+VIKl5KqhEzodUuOa0btZWFd7lGtj0uGQwD8jB3AFWGQmG7i5mjyjHXDHZGL7k8pMuF
+         oJZ/944fCDKXIFlr1e3lrhOlaVpTpQ0guGA6VOZ+/YKxf6WVKk0q2LJvKPunYu8aJ2mH
+         DXew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2ghhMZwLPASGJo/4zIq1AHGruJYFCLTXZf7ncy6Y8Vw=;
+        b=1EXQfW3cVjb8SYqHyI7wrEmo2zJf0XZE8A/08UbRCENKdqlQ2FGGrNbBuYLWUynwBo
+         Jovd68eM9e9iFis0OoRrO+cD8LsaC5ZykD5tGbnleBresw/WjyvypjFGD9N8AoSW3gwO
+         0bKZrU7ZbCSZz8Q83N/2KVWoPufyXuns1x5P1z4wYg309mwhJc3Fq0kmnGcAvIXRsocG
+         J+pbVpSQTNCxWhqN1A/1fnIJtOu0YHIxBYaqJGqk/o95YFK74Uy/yF+kV9qAC+bo0/Y2
+         h1tzYQd3O+M6s1QJSkar0UDqAfDMgxZnRToypBRpdgPVAImarZAPTRvFRcwzHtMbbJFj
+         s0Ow==
+X-Gm-Message-State: AJIora8hRC1ogNbqkLZ19Ta3Pwg2mH1g43CAW8wBVCuXQy3OYUnMVn2h
+        k6sDrBbyOqsoEd6Shf4u9Fe06g==
+X-Google-Smtp-Source: AGRyM1tkTf1aX3JWK8/nbEcTYKSGdHwGMGV6YE9Nk/ezbDHXIbvoWv7A551InxQPc5Qz2zSU0QlwmA==
+X-Received: by 2002:a17:907:8a04:b0:72b:9173:2fef with SMTP id sc4-20020a1709078a0400b0072b91732fefmr2683477ejc.346.1657707780040;
+        Wed, 13 Jul 2022 03:23:00 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id j21-20020aa7c415000000b0043589eba83bsm7669255edq.58.2022.07.13.03.22.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 03:22:59 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 12:22:58 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vikas Gupta <vikas.gupta@broadcom.com>
+Cc:     Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, dsahern@kernel.org,
+        stephen@networkplumber.org, Eric Dumazet <edumazet@google.com>,
+        pabeni@redhat.com, ast@kernel.org, leon@kernel.org,
+        linux-doc@vger.kernel.org, corbet@lwn.net,
+        Michael Chan <michael.chan@broadcom.com>,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>
+Subject: Re: [PATCH net-next v2 1/3] devlink: introduce framework for
+ selftests
+Message-ID: <Ys6dAq2o6h5wYaed@nanopsycho>
+References: <20220707182950.29348-1-vikas.gupta@broadcom.com>
+ <20220707182950.29348-2-vikas.gupta@broadcom.com>
+ <YswaKcUs6nOndU2V@nanopsycho>
+ <CAHLZf_t9ihOQPvcQa8cZsDDVUX1wisrBjC30tHG_-Dz13zg=qQ@mail.gmail.com>
+ <Ys0UpFtcOGWjK/sZ@nanopsycho>
+ <CAHLZf_s7s4rqBkDnB+KH-YJRDBDzeZB6VhKMMndk+dxxY11h3g@mail.gmail.com>
+ <Ys24l4O1M/8Kf4/o@nanopsycho>
+ <CAHLZf_tzpG9J=_orUsD9xto_Q818S-YqOTFvWchFjRkR3LXhvA@mail.gmail.com>
+ <Ys50DGXCi5lPaRBB@nanopsycho>
+ <CAHLZf_uw-WtT3ztY=U5M1isxvpvUhPpPXYi2jk2UJxtsWMtBkQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.66]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHLZf_uw-WtT3ztY=U5M1isxvpvUhPpPXYi2jk2UJxtsWMtBkQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch and problem analysis is based on v4.19 LTS, but v5.4 LTS
-and below seem to be involved.
+Wed, Jul 13, 2022 at 12:16:03PM CEST, vikas.gupta@broadcom.com wrote:
+>Hi Jiri,
+>
+>On Wed, Jul 13, 2022 at 12:58 PM Jiri Pirko <jiri@nvidia.com> wrote:
+>>
+>> Wed, Jul 13, 2022 at 08:40:50AM CEST, vikas.gupta@broadcom.com wrote:
+>> >Hi Jiri,
+>> >
+>> >On Tue, Jul 12, 2022 at 11:38 PM Jiri Pirko <jiri@resnulli.us> wrote:
+>> >>
+>> >> Tue, Jul 12, 2022 at 06:41:49PM CEST, vikas.gupta@broadcom.com wrote:
+>> >> >Hi Jiri,
+>> >> >
+>> >> >On Tue, Jul 12, 2022 at 11:58 AM Jiri Pirko <jiri@nvidia.com> wrote:
+>> >> >>
+>> >> >> Tue, Jul 12, 2022 at 08:16:11AM CEST, vikas.gupta@broadcom.com wrote:
+>> >> >> >Hi Jiri,
+>> >> >> >
+>> >> >> >On Mon, Jul 11, 2022 at 6:10 PM Jiri Pirko <jiri@nvidia.com> wrote:
+>> >> >> >
+>> >> >> >> Thu, Jul 07, 2022 at 08:29:48PM CEST, vikas.gupta@broadcom.com wrote:
+>> >>
+>> >> [...]
+>> >>
+>> >>
+>> >> >> >> >  * enum devlink_trap_action - Packet trap action.
+>> >> >> >> >  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy
+>> >> >> >> is not
+>> >> >> >> >@@ -576,6 +598,10 @@ enum devlink_attr {
+>> >> >> >> >       DEVLINK_ATTR_LINECARD_TYPE,             /* string */
+>> >> >> >> >       DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,  /* nested */
+>> >> >> >> >
+>> >> >> >> >+      DEVLINK_ATTR_SELFTESTS_MASK,            /* u32 */
+>> >> >> >>
+>> >> >> >> I don't see why this is u32 bitset. Just have one attr per test
+>> >> >> >> (NLA_FLAG) in a nested attr instead.
+>> >> >> >>
+>> >> >> >
+>> >> >> >As per your suggestion, for an example it should be like as below
+>> >> >> >
+>> >> >> >        DEVLINK_ATTR_SELFTESTS,                 /* nested */
+>> >> >> >
+>> >> >> >        DEVLINK_ATTR_SELFTESTS_SOMETEST1            /* flag */
+>> >> >> >
+>> >> >> >        DEVLINK_ATTR_SELFTESTS_SOMETEST2           /* flag */
+>> >> >>
+>> >> >> Yeah, but have the flags in separate enum, no need to pullute the
+>> >> >> devlink_attr enum by them.
+>> >> >>
+>> >> >>
+>> >> >> >
+>> >> >> >....    <SOME MORE TESTS>
+>> >> >> >
+>> >> >> >.....
+>> >> >> >
+>> >> >> >        DEVLINK_ATTR_SLEFTESTS_RESULT_VAL,      /* u8 */
+>> >> >> >
+>> >> >> >
+>> >> >> >
+>> >> >> > If we have this way then we need to have a mapping (probably a function)
+>> >> >> >for drivers to tell them what tests need to be executed based on the flags
+>> >> >> >that are set.
+>> >> >> > Does this look OK?
+>> >> >> >  The rationale behind choosing a mask is that we could directly pass the
+>> >> >> >mask-value to the drivers.
+>> >> >>
+>> >> >> If you have separate enum, you can use the attrs as bits internally in
+>> >> >> kernel. Add a helper that would help the driver to work with it.
+>> >> >> Pass a struct containing u32 (or u8) not to drivers. Once there are more
+>> >> >> tests than that, this structure can be easily extended and the helpers
+>> >> >> changed. This would make this scalable. No need for UAPI change or even
+>> >> >> internel driver api change.
+>> >> >
+>> >> >As per your suggestion, selftest attributes can be declared in separate
+>> >> >enum as below
+>> >> >
+>> >> >enum {
+>> >> >
+>> >> >        DEVLINK_SELFTEST_SOMETEST,         /* flag */
+>> >> >
+>> >> >        DEVLINK_SELFTEST_SOMETEST1,
+>> >> >
+>> >> >        DEVLINK_SELFTEST_SOMETEST2,
+>> >> >
+>> >> >....
+>> >> >
+>> >> >......
+>> >> >
+>> >> >        __DEVLINK_SELFTEST_MAX,
+>> >> >
+>> >> >        DEVLINK_SELFTEST_MAX = __DEVLINK_SELFTEST_MAX - 1
+>> >> >
+>> >> >};
+>> >> >Below  examples could be the flow of parameters/data from user to
+>> >> >kernel and vice-versa
+>> >> >
+>> >> >
+>> >> >Kernel to user for show command . Users can know what all tests are
+>> >> >supported by the driver. A return from kernel to user.
+>> >> >______
+>> >> >|NEST |
+>> >> >|_____ |TEST1|TEST4|TEST7|...
+>> >> >
+>> >> >
+>> >> >User to kernel to execute test: If user wants to execute test4, test8, test1...
+>> >> >______
+>> >> >|NEST |
+>> >> >|_____ |TEST4|TEST8|TEST1|...
+>> >> >
+>> >> >
+>> >> >Result Kernel to user execute test RES(u8)
+>> >> >______
+>> >> >|NEST |
+>> >> >|_____ |RES4|RES8|RES1|...
+>> >>
+>> >> Hmm, I think it is not good idea to rely on the order, a netlink library
+>> >> can perhaps reorder it? Not sure here.
+>> >>
+>> >> >
+>> >> >Results are populated in the same order as the user passed the TESTs
+>> >> >flags. Does the above result format from kernel to user look OK ?
+>> >> >Else we need to have below way to form a result format, a nest should
+>> >> >be made for <test_flag,
+>> >> >result> but since test flags are in different enum other than
+>> >> >devlink_attr and RES being part of devlink_attr, I believe it's not
+>> >> >good practice to make the below structure.
+>> >>
+>> >> Not a structure, no. Have it as another nest (could be the same attr as
+>> >> the parent nest:
+>> >>
+>> >> ______
+>> >> |NEST |
+>> >> |_____ |NEST|       |NEST|       |NEST|
+>> >>         TEST4,RES4   TEST8,RES8   TEST1, RES1
+>> >>
+>> >> also, it is flexible to add another attr if needed (like maybe result
+>> >> message string containing error message? IDK).
+>> >
+>> >For above nesting we can have the attributes defined as below
+>> >
+>> >Attribute in  devlink_attr
+>> >enum devlink_attr {
+>> >  ....
+>> >  ....
+>> >        DEVLINK_SELFTESTS_INFO, /* nested */
+>> >  ...
+>> >...
+>> >}
+>> >
+>> >enum devlink_selftests {
+>> >        DEVLINK_SELFTESTS_SOMETEST0,   /* flag */
+>> >        DEVLINK_SELFTESTS_SOMETEST1,
+>> >        DEVLINK_SELFTESTS_SOMETEST2,
+>> >        ...
+>> >        ...
+>> >}
+>> >
+>> >enum devlink_selftest_result {
+>>
+>> for attrs, have "attr" in the name of the enum and "ATTR" in name of the
+>> value.
+>>
+>> >        DEVLINK_SELFTESTS_RESULT,       /* nested */
+>> >        DEVLINK_SELFTESTS_TESTNUM,      /* u32  indicating the test
+>>
+>> You can have 1 enum, containing both these and the test flags from
+>> above.
+> I think it's better to keep enum devlink_selftests_attr (containing
+>flags) and devlink_selftest_result_attr separately as it will have an
+>advantage.
+> For example, for show commands the kernel can iterate through and
+>check with the driver if it supports a particular test.
+>
+>    for (i = 0; i < DEVLINK_SELFTEST_ATTR_MAX, i++) {
+>                   if (devlink->ops->selftest_info(devlink, i,
+>extack)) {  // supports selftest or not
+>                         nla_put_flag(msg, i);
+>                }
+>        }
+>      Also flags in devlink_selftests_attr can be used as bitwise, if required.
+>      Let me know what you think.
 
-Hulk Robot reports a softlockup problem, see following logs:
-  [   41.463870] watchdog: BUG: soft lockup - CPU#0 stuck for 22s!  [ksoftirqd/0:9]
-  [   41.509763] Modules linked in:
-  [   41.512295] CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 4.19.90 #13
-  [   41.516134] Hardware name: linux,dummy-virt (DT)
-  [   41.519182] pstate: 80c00005 (Nzcv daif +PAN +UAO)
-  [   41.522415] pc : perf_trace_buf_alloc+0x138/0x238
-  [   41.525583] lr : perf_trace_buf_alloc+0x138/0x238
-  [   41.528656] sp : ffff8000c137e880
-  [   41.531050] x29: ffff8000c137e880 x28: ffff20000850ced0
-  [   41.534759] x27: 0000000000000000 x26: ffff8000c137e9c0
-  [   41.538456] x25: ffff8000ce5c2ae0 x24: ffff200008358b08
-  [   41.542151] x23: 0000000000000000 x22: ffff2000084a50ac
-  [   41.545834] x21: ffff8000c137e880 x20: 000000000000001c
-  [   41.549516] x19: ffff7dffbfdf88e8 x18: 0000000000000000
-  [   41.553202] x17: 0000000000000000 x16: 0000000000000000
-  [   41.556892] x15: 1ffff00036e07805 x14: 0000000000000000
-  [   41.560592] x13: 0000000000000004 x12: 0000000000000000
-  [   41.564315] x11: 1fffefbff7fbf120 x10: ffff0fbff7fbf120
-  [   41.568003] x9 : dfff200000000000 x8 : ffff7dffbfdf8904
-  [   41.571699] x7 : 0000000000000000 x6 : ffff0fbff7fbf121
-  [   41.575398] x5 : ffff0fbff7fbf121 x4 : ffff0fbff7fbf121
-  [   41.579086] x3 : ffff20000850cdc8 x2 : 0000000000000008
-  [   41.582773] x1 : ffff8000c1376000 x0 : 0000000000000100
-  [   41.586495] Call trace:
-  [   41.588922]  perf_trace_buf_alloc+0x138/0x238
-  [   41.591912]  perf_ftrace_function_call+0x1ac/0x248
-  [   41.595123]  ftrace_ops_no_ops+0x3a4/0x488
-  [   41.597998]  ftrace_graph_call+0x0/0xc
-  [   41.600715]  rcu_dynticks_curr_cpu_in_eqs+0x14/0x70
-  [   41.603962]  rcu_is_watching+0xc/0x20
-  [   41.606635]  ftrace_ops_no_ops+0x240/0x488
-  [   41.609530]  ftrace_graph_call+0x0/0xc
-  [   41.612249]  __read_once_size_nocheck.constprop.0+0x1c/0x38
-  [   41.615905]  unwind_frame+0x140/0x358
-  [   41.618597]  walk_stackframe+0x34/0x60
-  [   41.621359]  __save_stack_trace+0x204/0x3b8
-  [   41.624328]  save_stack_trace+0x2c/0x38
-  [   41.627112]  __kasan_slab_free+0x120/0x228
-  [   41.630018]  kasan_slab_free+0x10/0x18
-  [   41.632752]  kfree+0x84/0x250
-  [   41.635107]  skb_free_head+0x70/0xb0
-  [   41.637772]  skb_release_data+0x3f8/0x730
-  [   41.640626]  skb_release_all+0x50/0x68
-  [   41.643350]  kfree_skb+0x84/0x278
-  [   41.645890]  kfree_skb_list+0x4c/0x78
-  [   41.648595]  __dev_queue_xmit+0x1a4c/0x23a0
-  [   41.651541]  dev_queue_xmit+0x28/0x38
-  [   41.654254]  ip6_finish_output2+0xeb0/0x1630
-  [   41.657261]  ip6_finish_output+0x2d8/0x7f8
-  [   41.660174]  ip6_output+0x19c/0x348
-  [   41.663850]  mld_sendpack+0x560/0x9e0
-  [   41.666564]  mld_ifc_timer_expire+0x484/0x8a8
-  [   41.669624]  call_timer_fn+0x68/0x4b0
-  [   41.672355]  expire_timers+0x168/0x498
-  [   41.675126]  run_timer_softirq+0x230/0x7a8
-  [   41.678052]  __do_softirq+0x2d0/0xba0
-  [   41.680763]  run_ksoftirqd+0x110/0x1a0
-  [   41.683512]  smpboot_thread_fn+0x31c/0x620
-  [   41.686429]  kthread+0x2c8/0x348
-  [   41.688927]  ret_from_fork+0x10/0x18
+Okay.
 
-Look into above call stack, there is a recursive call in
-'ftrace_graph_call', and the direct cause of above recursion is that
-'rcu_dynticks_curr_cpu_in_eqs' is traced, see following snippet:
-    __read_once_size_nocheck.constprop.0
-      ftrace_graph_call    <-- 1. first call
-        ......
-          rcu_dynticks_curr_cpu_in_eqs
-            ftrace_graph_call    <-- 2. recursive call here!!!
 
-Comparing with mainline kernel, commit ff5c4f5cad33 ("rcu/tree:
-Mark the idle relevant functions noinstr") mark related functions as
-'noinstr' which implies notrace, noinline and sticks things in the
-.noinstr.text section.
-Link: https://lore.kernel.org/all/20200416114706.625340212@infradead.org/
+>
+>Thanks,
+>Vikas
+>
+>>
+>>
+>> >number in devlink_selftests enum */
+>> >        DEVLINK_SELFTESTS_RESULT_VAL,   /* u8  skip, pass, fail.. */
+>>
+>> Put enum name in the comment, instead of list possible values.
+>>
+>>
+>> >        ...some future attrr...
+>> >
+>> >}
+>> >enums in devlink_selftest_result can be put in devlink_attr though.
+>>
+>> You can have them separate, I think it is about the time we try to put
+>> new attrs what does not have potencial to be re-used to a separate enum.
+>>
+>>
+>> >
+>> >Does this look OK?
+>> >
+>> >Thanks,
+>> >Vikas
+>> >
+>> >>
+>> >>
+>> >>
+>> >> >______
+>> >> >|NEST |
+>> >> >|_____ | TEST4, RES4|TEST8,RES8|TEST1,RES1|...
+>> >> >
+>> >> >Let me know if my understanding is correct.
+>> >>
+>> >> [...]
+>>
+>>
 
-But we cannot directly backport that commit, because there seems to be
-many prepatches. Instead, marking the functions as 'notrace' where it is
-'noinstr' in that commit and mark 'rcu_dynticks_curr_cpu_in_eqs' as
-inline look like it resolves the problem.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
----
- kernel/rcu/tree.c        | 22 +++++++++++-----------
- kernel/rcu/tree_plugin.h |  4 ++--
- 2 files changed, 13 insertions(+), 13 deletions(-)
-
-diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
-index f7e89c989df7..01bc3c1f93f9 100644
---- a/kernel/rcu/tree.c
-+++ b/kernel/rcu/tree.c
-@@ -275,7 +275,7 @@ static DEFINE_PER_CPU(struct rcu_dynticks, rcu_dynticks) = {
-  * Record entry into an extended quiescent state.  This is only to be
-  * called when not already in an extended quiescent state.
-  */
--static void rcu_dynticks_eqs_enter(void)
-+static notrace void rcu_dynticks_eqs_enter(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 	int seq;
-@@ -298,7 +298,7 @@ static void rcu_dynticks_eqs_enter(void)
-  * Record exit from an extended quiescent state.  This is only to be
-  * called from an extended quiescent state.
-  */
--static void rcu_dynticks_eqs_exit(void)
-+static notrace void rcu_dynticks_eqs_exit(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 	int seq;
-@@ -343,7 +343,7 @@ static void rcu_dynticks_eqs_online(void)
-  *
-  * No ordering, as we are sampling CPU-local information.
-  */
--bool rcu_dynticks_curr_cpu_in_eqs(void)
-+static __always_inline bool rcu_dynticks_curr_cpu_in_eqs(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 
-@@ -706,7 +706,7 @@ static struct rcu_node *rcu_get_root(struct rcu_state *rsp)
-  * the possibility of usermode upcalls having messed up our count
-  * of interrupt nesting level during the prior busy period.
-  */
--static void rcu_eqs_enter(bool user)
-+static notrace void rcu_eqs_enter(bool user)
- {
- 	struct rcu_state *rsp;
- 	struct rcu_data *rdp;
-@@ -763,7 +763,7 @@ void rcu_idle_enter(void)
-  * If you add or remove a call to rcu_user_enter(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_user_enter(void)
-+notrace void rcu_user_enter(void)
- {
- 	lockdep_assert_irqs_disabled();
- 	rcu_eqs_enter(true);
-@@ -781,7 +781,7 @@ void rcu_user_enter(void)
-  * If you add or remove a call to rcu_nmi_exit(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_nmi_exit(void)
-+notrace void rcu_nmi_exit(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 
-@@ -829,7 +829,7 @@ void rcu_nmi_exit(void)
-  * If you add or remove a call to rcu_irq_exit(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_irq_exit(void)
-+notrace void rcu_irq_exit(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 
-@@ -864,7 +864,7 @@ void rcu_irq_exit_irqson(void)
-  * allow for the possibility of usermode upcalls messing up our count of
-  * interrupt nesting level during the busy period that is just now starting.
-  */
--static void rcu_eqs_exit(bool user)
-+static notrace void rcu_eqs_exit(bool user)
- {
- 	struct rcu_dynticks *rdtp;
- 	long oldval;
-@@ -914,7 +914,7 @@ void rcu_idle_exit(void)
-  * If you add or remove a call to rcu_user_exit(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_user_exit(void)
-+void notrace rcu_user_exit(void)
- {
- 	rcu_eqs_exit(1);
- }
-@@ -932,7 +932,7 @@ void rcu_user_exit(void)
-  * If you add or remove a call to rcu_nmi_enter(), be sure to test
-  * with CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_nmi_enter(void)
-+notrace void rcu_nmi_enter(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 	long incby = 2;
-@@ -982,7 +982,7 @@ void rcu_nmi_enter(void)
-  * If you add or remove a call to rcu_irq_enter(), be sure to test with
-  * CONFIG_RCU_EQS_DEBUG=y.
-  */
--void rcu_irq_enter(void)
-+notrace void rcu_irq_enter(void)
- {
- 	struct rcu_dynticks *rdtp = this_cpu_ptr(&rcu_dynticks);
- 
-diff --git a/kernel/rcu/tree_plugin.h b/kernel/rcu/tree_plugin.h
-index 5f6de49dc78e..568818bef28f 100644
---- a/kernel/rcu/tree_plugin.h
-+++ b/kernel/rcu/tree_plugin.h
-@@ -2677,7 +2677,7 @@ static void rcu_bind_gp_kthread(void)
- }
- 
- /* Record the current task on dyntick-idle entry. */
--static void rcu_dynticks_task_enter(void)
-+static notrace void rcu_dynticks_task_enter(void)
- {
- #if defined(CONFIG_TASKS_RCU) && defined(CONFIG_NO_HZ_FULL)
- 	WRITE_ONCE(current->rcu_tasks_idle_cpu, smp_processor_id());
-@@ -2685,7 +2685,7 @@ static void rcu_dynticks_task_enter(void)
- }
- 
- /* Record no current task on dyntick-idle exit. */
--static void rcu_dynticks_task_exit(void)
-+static notrace void rcu_dynticks_task_exit(void)
- {
- #if defined(CONFIG_TASKS_RCU) && defined(CONFIG_NO_HZ_FULL)
- 	WRITE_ONCE(current->rcu_tasks_idle_cpu, -1);
--- 
-2.32.0
 
