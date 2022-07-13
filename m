@@ -2,74 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBF6C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74611C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 03:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiGMC6L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 22:58:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60944 "EHLO
+        id S231553AbiGMDA7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 23:00:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231149AbiGMC6I (ORCPT
+        with ESMTP id S229814AbiGMDA5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 22:58:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1334B23F9
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 19:58:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CC53619E9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:58:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3E3CC3411C;
-        Wed, 13 Jul 2022 02:58:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657681086;
-        bh=ppGPQRz71SyIIbpVVd2z7ECwSLRj01ZGyLWURlj+GMk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eteu4NCCWfn+jiUzOIs19qru53PJJ87Bxq+f2JvAP/5JrNd9VG2tONn7NsH6d/WpZ
-         G1oEWQOFSwV4KuhaKZiEgkhUerBhycdNCuwO9faN2XpUm5WIE8HkOnbpmVc/HnL16Q
-         7G9Ma7xtC3pJhhCEG2l3t6u8He3TqCgu3bGciGhWV9Auia7N5XG1x0ZRddUqnfhayW
-         wvBSpZMiDl0F8uymLhgiL60tFA8TwvClk4MRVuVieTUBwkynEo09jWpV37/fluQMYe
-         sDa/yAMnGFJnF22ok3ZWdFAeW+4HtxcOPu4TKqkJwj8MW9kDnCzH+O6ImeUWfwwQ/u
-         hVagCi1Dg+DFg==
-Date:   Wed, 13 Jul 2022 02:58:03 +0000
-From:   Tzung-Bi Shih <tzungbi@kernel.org>
-To:     Tim Van Patten <timvp@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, rrangel@chromium.org,
-        robbarnes@google.com, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev
-Subject: Re: [PATCH v2] platform/chrome: cros_ec: Send host event for
- prepare/complete
-Message-ID: <Ys40uw4QIe4fQKA/@google.com>
-References: <20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid>
+        Tue, 12 Jul 2022 23:00:57 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0099D64E2;
+        Tue, 12 Jul 2022 20:00:55 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso1451643pjo.0;
+        Tue, 12 Jul 2022 20:00:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uu7yfJwTmGgJzlT0USq6IvgcHtE1wUeXRQtFy2CZjgI=;
+        b=P0+NrwkARt5qtH2d9Ftq9LknLWfeKG5UnhqMbtA4um7o/hgsygqMQA6A1xAKK+L6ZG
+         B5dyGjHOt8pWLtlHmWjhWIF7yo4/tcfwbsAO1e1cnP2g7TYDrKCqQeG0aKr9OrVs4kFk
+         +zQOr6QcBq0ZMZYUWlH+Xd1eEntXeznrPBJx9GXc6BcPKSAYHgYa1aFzpib43xXG0TrO
+         zj+Z8+/XWaXinJ27B8fBwhPikw0rlxiK2dJc3SyQlIxotA8GbQ7f1bMko14coy4TkT+u
+         xQR4o7vY0HJ9goahSmCIqoT+KE4jNfTKAgoJpM30oyrmUro8cVuSP9haOOPk5/rzedmb
+         pLQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=uu7yfJwTmGgJzlT0USq6IvgcHtE1wUeXRQtFy2CZjgI=;
+        b=qTjVpKVlmbVk/EHqp/sdfDVrhk5g5HQbHIMoXe83sZBY9iXtA1EOnk3RCioiJdduOX
+         MXq4AyTRPwlLO889GFcNXh6NnKCFeFAJeKAe3QXsTlxNVLUk7kfbspuT7RmdWfejogTB
+         6p5e7ybr/iwCpEKNg8Bs/WT+8/796MPEyneb5hqfUPpG3ATVfI2Cfb169qO1FlzNdzlm
+         p8WkIrbDhN8cqICsT3H1yEkbi1FmnU1YQf3OLML5c+Dz8aWMPrtJI6nKkmzoUdgvKPyQ
+         m++TI2BDyf42T0k+g/QYzpihk6oQ9DeRh0JJy6d7B0nnLLIO4t2ZtZR2QYeuql7xH7Fm
+         O35g==
+X-Gm-Message-State: AJIora+hzz/Sa1V78K77crYndUF71yebbQtzbXObF3mRCFQYMAA7NCeS
+        ZT7eMrEFR/NsJn4CVNfJG+g=
+X-Google-Smtp-Source: AGRyM1uqTVb6wB6NK+9TJ1fvF12+cIqKGyxPVg39t0hqb8TYaYBust/7uKzyGR11Fr5EY5/VM86dMA==
+X-Received: by 2002:a17:902:ec8a:b0:16c:4baa:a50c with SMTP id x10-20020a170902ec8a00b0016c4baaa50cmr1109912plg.62.1657681255327;
+        Tue, 12 Jul 2022 20:00:55 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:9b46])
+        by smtp.gmail.com with ESMTPSA id a8-20020aa795a8000000b0051c49fb62b7sm7520173pfk.165.2022.07.12.20.00.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jul 2022 20:00:54 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 12 Jul 2022 17:00:52 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Qais Yousef <qais.yousef@arm.com>,
+        Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+        mgorman@suse.de, bristot@redhat.com, linux-kernel@vger.kernel.org,
+        ke.wang@unisoc.com, xuewyan@foxmail.com, linux-pm@vger.kernel.org
+Subject: Re: [PATCH] sched/schedutil: Fix deadlock between cpuset and cpu
+ hotplug when using schedutil
+Message-ID: <Ys41ZF5TmSnLLNRB@slm.duckdns.org>
+References: <20220705123705.764-1-xuewen.yan@unisoc.com>
+ <20220711174629.uehfmqegcwn2lqzu@wubuntu>
+ <YsyO9GM9mCydaybo@slm.duckdns.org>
+ <c1426573-92a7-9f0d-a6b8-aa612248b9a9@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid>
+In-Reply-To: <c1426573-92a7-9f0d-a6b8-aa612248b9a9@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 08:51:39PM -0600, Tim Van Patten wrote:
-> Update cros_ec_lpc_pm_ops to call cros_ec_lpc_suspend() during PM
-> .prepare() and cros_ec_lpc_resume() during .complete. This allows the
-> EC to log entry/exit of AP's suspend/resume more accurately.
+On Tue, Jul 12, 2022 at 10:49:57PM -0400, Waiman Long wrote:
+> > Well, the only thing I can think of is always grabbing cpus_read_lock()
+> > before grabbing threadgroup_rwsem. Waiman, what do you think?
+> 
+> That is a possible solution as cpus_read_lock() is rather lightweight. It is
+> a good practice to acquire it first.
 
-Please be consistent.  Either way:
-- .prepare and .complete.
-- .prepare() and .complete().
+On a similar note, I think we probably should re-enable percpu operations on
+threadgroup_rwsem too by default and allow users who are affected by slower
+write path operations to opt-in. After the new CLONE_INTO_CGROUP which
+doesn't need the rwsem, we have far fewer write lockers after all.
 
-The patch doesn't allow EC to log anything.  It makes AP emit more logs.
+Thanks.
 
-On the related note, the commit subject is confusing.  The patch doesn't
-send "host event".  "host event" is a terminology when EC wants to notify
-AP something.  Also, s/cros_ec/cros_ec_lpcs/.
-
-> Changes in v2:
-> - Include cros_ec_resume() return value in dev_info() output.
-> - Guard setting .prepare/.complete with #ifdef CONFIG_PM_SLEEP.
-
-I didn't see concerns in [1] have been addressed.
-
-[1]: https://patchwork.kernel.org/project/chrome-platform/patch/20220701095421.1.I78ded92e416b55de31975686d34b2058d4761c07@changeid/#24920824
+-- 
+tejun
