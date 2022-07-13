@@ -2,80 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D1BCCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:46:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4C6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237216AbiGMUql (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:46:41 -0400
+        id S237230AbiGMUqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 16:46:44 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237185AbiGMUqh (ORCPT
+        with ESMTP id S237199AbiGMUqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:46:37 -0400
+        Wed, 13 Jul 2022 16:46:38 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADCA3136C
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7491E3137F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:46:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version:content-type
-        :content-transfer-encoding; s=k1; bh=vca7nd1WLODw18YJlNvBePUslvp
-        lVqYhcHwVyGI3iSk=; b=QijN5/1vuNqnQeF9AXCPgoHYZGZngr6L1ZMRsc2e+GH
-        06ISyUOVXAQhr60jpQM/OqoCft5f23/I2xvy6MjzTR/M+YTPO/NPpHNDXD6cF4Ig
-        8yTLi2itq56j0s4U+bstBRzZlbmEDFcGmU+HGi3rsWok7RsJdsQdBfFhb45gXbdI
-        =
-Received: (qmail 305555 invoked from network); 13 Jul 2022 22:46:32 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:32 +0200
-X-UD-Smtp-Session: l3s3148p1@LOkJ4bXj5qQgAwDtxwdRAEXXn+yo/Rze
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=k1; bh=3DHgH0YDdgidkq
+        pYHCfoQogXzuM602W5w4oRJJj7FIQ=; b=Fxtv1zI9ggX3Jea90viReeoWIciXaN
+        tzftQcURhg6LxwDEnIaH4YVfkaz+/dcv5ji4ttjSQByT1R+0JrjAZ3K/oGLvnN/N
+        g4MApO0px6158gfan+h/F03sJZ9Rh2asMDK6KdVEzOJX9eQH3T+40D8q0DMV1vHJ
+        vO6tbNdou2DJ4=
+Received: (qmail 305684 invoked from network); 13 Jul 2022 22:46:35 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Jul 2022 22:46:35 +0200
+X-UD-Smtp-Session: l3s3148p1@Z+p14bXjmKYgAwDtxwdRAEXXn+yo/Rze
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-renesas-soc@vger.kernel.org
 Cc:     John Stultz <jstultz@google.com>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>, Shuah Khan <shuah@kernel.org>,
         linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH 0/9] selftests: timers: fixes and improvements
-Date:   Wed, 13 Jul 2022 22:46:12 +0200
-Message-Id: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
+Subject: [PATCH 3/9] selftests: timers: nanosleep: adapt to kselftest framework
+Date:   Wed, 13 Jul 2022 22:46:15 +0200
+Message-Id: <20220713204623.5443-4-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
+References: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The timer selftests are quite useful for me when enabling timers on new
-SoCs, e.g. like now with the CMT timer on a Renesas R-Car S4-8. During
-development, I needed these fixes and additions to make full use of
-the tests. I think they make all sense upstream, so here they are.
+So we have proper counters at the end of a test, e.g.:
+  # Totals: pass:4 fail:0 xfail:0 xpass:0 skip:8 error:0
 
-Patches are based on v5.19-rc1. Looking forward to comments.
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ tools/testing/selftests/timers/nanosleep.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-Happy hacking,
-
-   Wolfram
-
-
-Wolfram Sang (9):
-  selftests: timers: valid-adjtimex: build fix for newer toolchains
-  selftests: timers: fix declarations of main()
-  selftests: timers: nanosleep: adapt to kselftest framework
-  selftests: timers: inconsistency-check: adapt to kselftest framework
-  selftests: timers: clocksource-switch: fix passing errors from child
-  selftests: timers: clocksource-switch: sort includes
-  selftests: timers: clocksource-switch: add command line switch to skip
-    sanity check
-  selftests: timers: clocksource-switch: add 'runtime' command line
-    parameter
-  selftests: timers: clocksource-switch: adapt to kselftest framework
-
- tools/testing/selftests/timers/adjtick.c      |  2 +-
- tools/testing/selftests/timers/change_skew.c  |  2 +-
- .../selftests/timers/clocksource-switch.c     | 70 ++++++++++++-------
- .../selftests/timers/inconsistency-check.c    | 32 +++++----
- tools/testing/selftests/timers/nanosleep.c    | 18 +++--
- tools/testing/selftests/timers/raw_skew.c     |  2 +-
- .../selftests/timers/skew_consistency.c       |  2 +-
- .../testing/selftests/timers/valid-adjtimex.c |  2 +-
- 8 files changed, 80 insertions(+), 50 deletions(-)
-
+diff --git a/tools/testing/selftests/timers/nanosleep.c b/tools/testing/selftests/timers/nanosleep.c
+index 71b5441c2fd9..df1d03516e7b 100644
+--- a/tools/testing/selftests/timers/nanosleep.c
++++ b/tools/testing/selftests/timers/nanosleep.c
+@@ -133,33 +133,37 @@ int main(int argc, char **argv)
+ 	long long length;
+ 	int clockid, ret;
+ 
++	ksft_print_header();
++	ksft_set_plan(NR_CLOCKIDS);
++
+ 	for (clockid = CLOCK_REALTIME; clockid < NR_CLOCKIDS; clockid++) {
+ 
+ 		/* Skip cputime clockids since nanosleep won't increment cputime */
+ 		if (clockid == CLOCK_PROCESS_CPUTIME_ID ||
+ 				clockid == CLOCK_THREAD_CPUTIME_ID ||
+-				clockid == CLOCK_HWSPECIFIC)
++				clockid == CLOCK_HWSPECIFIC) {
++			ksft_test_result_skip("%-31s\n", clockstring(clockid));
+ 			continue;
++		}
+ 
+-		printf("Nanosleep %-31s ", clockstring(clockid));
+ 		fflush(stdout);
+ 
+ 		length = 10;
+ 		while (length <= (NSEC_PER_SEC * 10)) {
+ 			ret = nanosleep_test(clockid, length);
+ 			if (ret == UNSUPPORTED) {
+-				printf("[UNSUPPORTED]\n");
++				ksft_test_result_skip("%-31s\n", clockstring(clockid));
+ 				goto next;
+ 			}
+ 			if (ret < 0) {
+-				printf("[FAILED]\n");
+-				return ksft_exit_fail();
++				ksft_test_result_fail("%-31s\n", clockstring(clockid));
++				ksft_exit_fail();
+ 			}
+ 			length *= 100;
+ 		}
+-		printf("[OK]\n");
++		ksft_test_result_pass("%-31s\n", clockstring(clockid));
+ next:
+ 		ret = 0;
+ 	}
+-	return ksft_exit_pass();
++	ksft_exit_pass();
+ }
 -- 
 2.35.1
 
