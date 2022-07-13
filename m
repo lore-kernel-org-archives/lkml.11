@@ -2,50 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3904DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A093AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236274AbiGMNuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52694 "EHLO
+        id S236276AbiGMNup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:50:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234827AbiGMNuG (ORCPT
+        with ESMTP id S229918AbiGMNum (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:50:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BAE6279;
-        Wed, 13 Jul 2022 06:49:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 13 Jul 2022 09:50:42 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9393101D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:50:41 -0700 (PDT)
+Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1174B81F66;
-        Wed, 13 Jul 2022 13:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 232F1C34114;
-        Wed, 13 Jul 2022 13:49:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657720193;
-        bh=uIidrf8JNbWFgPVnSI+DFZj1DjuxN/aNnNA0F19nvjs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UE8mtWb314Qvhtzf1BUHZAjIsS3q6dSDCniTFnAP/dDhrUKTheLkczwpxunz5Q9kb
-         SsTa47m/MXJzvZH9y1Q2459FZI2hlHo4t+zkRKSmpbXdaWwtzau+NT2g4mibq44y+P
-         sZWdksuZshWHnT5QFKsYXg3m+L+PZ1Br8zE29O832gmwoT/95n5Y3xRgBDDHB+VQzo
-         F2Gjp5hsBQ5S3DUzBawFw1s552ce+mHxtCVLxQ+cz4Dh91VoQuzkbAlg6vSZG5AI5K
-         Y+CO63icAMkqpRc5+VXAl1mHigCmUv/+JQjHlUC1bKEFfPA4jI9nvAful/e/i0Dg8N
-         br7mpKYrQrDIA==
-Received: by pali.im (Postfix)
-        id ED9649D9; Wed, 13 Jul 2022 15:49:49 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: marvell: Fix compatible strings for Armada 3720 boards
-Date:   Wed, 13 Jul 2022 14:56:44 +0200
-Message-Id: <20220713125644.3117-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        (Authenticated sender: bbeckett)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 3926A66019BF;
+        Wed, 13 Jul 2022 14:50:40 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657720240;
+        bh=CsNQhhmN7tfVGf4HN1uv8HbRGJrZrAmt/638xemnBMo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DXwj3YfPj+jwEGaaCJ/oOqrV2ZdTkRKiyqip2q8qzArc3DJDnGCcZIcoBW861sBnP
+         1AQMJPS9yXEwIgCwpHig2lZRQT56VZ1ZI3UHBpmbmggLg90r3VPmeJcsCqsDf6gdmj
+         i3OK5F5HpwEnSedmeUJe1R7kZyndUL090IffUUU7dMUSCAS/GjitI2UluXRI7n9kGL
+         5x0OpJOpqbp9zls4jPtbHOLIfHxL7WjZG+lFlX8g3z7QkJQ+lQO2pc79cSoWSGpf5A
+         iT3ZSOLf1ijDpCxfJ6ELok/v69Ucnc5LQL18j5lolVovU2Asmf2gqNAqgdIgjuQcfp
+         Oz6cBjVUdLUCw==
+From:   Robert Beckett <bob.beckett@collabora.com>
+To:     dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH v11 01/10] drm/i915/ttm: dont trample cache_level overrides during ttm move
+Date:   Wed, 13 Jul 2022 14:50:13 +0100
+Message-Id: <20220713135022.3710682-2-bob.beckett@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220713135022.3710682-1-bob.beckett@collabora.com>
+References: <20220713135022.3710682-1-bob.beckett@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -53,129 +57,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All Armada 3720 boards have Armada 3720 processor which is of Armada 3700
-family and do not have Armada 3710 processor. So none of them should have
-compatible string for Armada 3710 processor.
+Various places within the driver override the default chosen cache_level.
+Before ttm, these overrides were permanent until explicitly changed again
+or for the lifetime of the buffer.
 
-Fix compatible string for all these boards by removing wrong processor
-string "marvell,armada3710" and adding family string "marvell,armada3700"
-as the last one. (Note that this is same way how are defined Armada 3710
-DTS files).
+TTM movement code came along and decided that it could make that
+decision at that time, which is usually well after object creation, so
+overrode the cache_level decision and reverted it back to its default
+decision.
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
+Add logic to indicate whether the caching mode has been set by anything
+other than the move logic. If so, assume that the code that overrode the
+defaults knows best and keep it.
+
+Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+Reviewed-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
 ---
- arch/arm64/boot/dts/marvell/armada-3720-db.dts                  | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-emmc.dts    | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts   | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7-emmc.dts | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7.dts      | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts         | 2 +-
- arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts          | 2 +-
- arch/arm64/boot/dts/marvell/armada-372x.dtsi                    | 2 +-
- 8 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_object.c       | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_object_types.h | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm.c          | 1 +
+ drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c     | 9 ++++++---
+ 4 files changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-db.dts b/arch/arm64/boot/dts/marvell/armada-3720-db.dts
-index bd4e61d5448e..0cfb38492021 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-db.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-db.dts
-@@ -18,7 +18,7 @@
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object.c b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+index ccec4055fde3..966ac2d778d5 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object.c
+@@ -125,6 +125,7 @@ void i915_gem_object_set_cache_coherency(struct drm_i915_gem_object *obj,
+ 	struct drm_i915_private *i915 = to_i915(obj->base.dev);
  
- / {
- 	model = "Marvell Armada 3720 Development Board DB-88F3720-DDR3";
--	compatible = "marvell,armada-3720-db", "marvell,armada3720", "marvell,armada3710";
-+	compatible = "marvell,armada-3720-db", "marvell,armada3720", "marvell,armada3700";
+ 	obj->cache_level = cache_level;
++	obj->ttm.cache_level_override = true;
  
- 	chosen {
- 		stdout-path = "serial0:115200n8";
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-emmc.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-emmc.dts
-index 5c4d8f379704..6715a19c1483 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-emmc.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-emmc.dts
-@@ -18,7 +18,7 @@
- / {
- 	model = "Globalscale Marvell ESPRESSOBin Board (eMMC)";
- 	compatible = "globalscale,espressobin-emmc", "globalscale,espressobin",
--		     "marvell,armada3720", "marvell,armada3710";
-+		     "marvell,armada3720", "marvell,armada3700";
- };
+ 	if (cache_level != I915_CACHE_NONE)
+ 		obj->cache_coherent = (I915_BO_CACHE_COHERENT_FOR_READ |
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+index 5cf36a130061..14937cf1daaa 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_object_types.h
+@@ -623,6 +623,7 @@ struct drm_i915_gem_object {
+ 		struct i915_gem_object_page_iter get_io_page;
+ 		struct drm_i915_gem_object *backup;
+ 		bool created:1;
++		bool cache_level_override:1;
+ 	} ttm;
  
- &sdhci0 {
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-index 070725b81be5..447760b69850 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-ultra.dts
-@@ -13,7 +13,7 @@
- / {
- 	model = "Globalscale Marvell ESPRESSOBin Ultra Board";
- 	compatible = "globalscale,espressobin-ultra", "marvell,armada3720",
--		     "marvell,armada3710";
-+		     "marvell,armada3700";
+ 	/*
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+index 053b0022ddd0..b6c3fc25d9d1 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
+@@ -1253,6 +1253,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
+ 	i915_gem_object_init_memory_region(obj, mem);
+ 	i915_ttm_adjust_domains_after_move(obj);
+ 	i915_ttm_adjust_gem_after_move(obj);
++	obj->ttm.cache_level_override = false;
+ 	i915_gem_object_unlock(obj);
  
- 	aliases {
- 		/* ethernet1 is WAN port */
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7-emmc.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7-emmc.dts
-index 75401eab4d42..2a8aa3901a9f 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7-emmc.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7-emmc.dts
-@@ -19,7 +19,7 @@
- 	model = "Globalscale Marvell ESPRESSOBin Board V7 (eMMC)";
- 	compatible = "globalscale,espressobin-v7-emmc", "globalscale,espressobin-v7",
- 		     "globalscale,espressobin", "marvell,armada3720",
--		     "marvell,armada3710";
-+		     "marvell,armada3700";
+ 	return 0;
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+index 9a7e50534b84..042c2237e287 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
+@@ -129,9 +129,12 @@ void i915_ttm_adjust_gem_after_move(struct drm_i915_gem_object *obj)
+ 	obj->mem_flags |= i915_ttm_cpu_maps_iomem(bo->resource) ? I915_BO_FLAG_IOMEM :
+ 		I915_BO_FLAG_STRUCT_PAGE;
  
- 	aliases {
- 		/* ethernet1 is wan port */
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7.dts
-index 48a7f50fb427..b03af87611a9 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin-v7.dts
-@@ -18,7 +18,7 @@
- / {
- 	model = "Globalscale Marvell ESPRESSOBin Board V7";
- 	compatible = "globalscale,espressobin-v7", "globalscale,espressobin",
--		     "marvell,armada3720", "marvell,armada3710";
-+		     "marvell,armada3720", "marvell,armada3700";
+-	cache_level = i915_ttm_cache_level(to_i915(bo->base.dev), bo->resource,
+-					   bo->ttm);
+-	i915_gem_object_set_cache_coherency(obj, cache_level);
++	if (!obj->ttm.cache_level_override) {
++		cache_level = i915_ttm_cache_level(to_i915(bo->base.dev),
++						   bo->resource, bo->ttm);
++		i915_gem_object_set_cache_coherency(obj, cache_level);
++		obj->ttm.cache_level_override = false;
++	}
+ }
  
- 	aliases {
- 		/* ethernet1 is wan port */
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-index 1542d836c090..c5a834b33b77 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-espressobin.dts
-@@ -16,5 +16,5 @@
- 
- / {
- 	model = "Globalscale Marvell ESPRESSOBin Board";
--	compatible = "globalscale,espressobin", "marvell,armada3720", "marvell,armada3710";
-+	compatible = "globalscale,espressobin", "marvell,armada3720", "marvell,armada3700";
- };
-diff --git a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-index caf9c8529fca..5840ed129309 100644
---- a/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-+++ b/arch/arm64/boot/dts/marvell/armada-3720-turris-mox.dts
-@@ -14,7 +14,7 @@
- / {
- 	model = "CZ.NIC Turris Mox Board";
- 	compatible = "cznic,turris-mox", "marvell,armada3720",
--		     "marvell,armada3710";
-+		     "marvell,armada3700";
- 
- 	aliases {
- 		spi0 = &spi0;
-diff --git a/arch/arm64/boot/dts/marvell/armada-372x.dtsi b/arch/arm64/boot/dts/marvell/armada-372x.dtsi
-index 5ce55bdbb995..02ae1e153288 100644
---- a/arch/arm64/boot/dts/marvell/armada-372x.dtsi
-+++ b/arch/arm64/boot/dts/marvell/armada-372x.dtsi
-@@ -13,7 +13,7 @@
- 
- / {
- 	model = "Marvell Armada 3720 SoC";
--	compatible = "marvell,armada3720", "marvell,armada3710";
-+	compatible = "marvell,armada3720", "marvell,armada3700";
- 
- 	cpus {
- 		cpu1: cpu@1 {
+ /**
 -- 
-2.20.1
+2.25.1
 
