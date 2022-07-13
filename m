@@ -2,128 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388EECCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:10:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2396AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235121AbiGMJKI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55450 "EHLO
+        id S235283AbiGMJK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231801AbiGMJKG (ORCPT
+        with ESMTP id S231801AbiGMJK4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:10:06 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144C3DA0FC;
-        Wed, 13 Jul 2022 02:09:57 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.97.215]) by mrelayeu.kundenserver.de
- (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1MSLhm-1o0eHI3HDM-00SdqD; Wed, 13 Jul 2022 11:09:12 +0200
-Received: from localhost.fjasle.eu (bergen.fjasle.eu [IPv6:fdda:8718:be81:0:6f0:21ff:fe91:394])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by leknes.fjasle.eu (Postfix) with ESMTPS id A2AC83C09F;
-        Wed, 13 Jul 2022 11:09:10 +0200 (CEST)
-Authentication-Results: leknes.fjasle.eu; dkim=none; dkim-atps=neutral
-Received: by localhost.fjasle.eu (Postfix, from userid 1000)
-        id 50C39ACD; Wed, 13 Jul 2022 11:09:06 +0200 (CEST)
-Date:   Wed, 13 Jul 2022 11:09:06 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Guillaume Tucker <guillaume.tucker@collabora.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Anders Roxell <anders.roxell@linaro.org>, Tim.Bird@sony.com,
-        kernel@collabora.com, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] Makefile: add headers to kselftest targets
-Message-ID: <Ys6LsqvQC+h3eM46@bergen.fjasle.eu>
-References: <cover.1657614127.git.guillaume.tucker@collabora.com>
- <745d1921a4d048ea25d262e33b40aad5ee470614.1657614127.git.guillaume.tucker@collabora.com>
+        Wed, 13 Jul 2022 05:10:56 -0400
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79559DA598
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:10:55 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id C43023200A57;
+        Wed, 13 Jul 2022 05:10:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 13 Jul 2022 05:10:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1657703452; x=1657789852; bh=okns6jiIM9
+        XMivJMPpMS7+QvSgaHtDbUEIZqiJ2D/5I=; b=DaKT9GgEnrqyGCGxR8QQGlzM5+
+        RUtSdNYsfWo1RyOF5lUdgJ3baKCalH0eB4mTFGCqmwwhRUPhd8If6wmvQhwxIr6y
+        TpUEePlxPMNdM7wydaVH5Sj1atENecXmGFUZamsEC0TuzTH6BiML4+pN5ZdN+D8O
+        pF8Nf2nlQx7eGiWxHW154ksZO6LHQAkmJfPU3TwAq1YeHEgLO+pex4uXC8JyRnsb
+        0ml7GvSadSbjlFVNJLWUl4hJhVstZomX0Jyx9HtIqoKynrR0W8t9lgx+5XecUrTh
+        WJwoS9KAXn5/5D9bYZtJblOXZuytlyazqHfCBhC1uaBdSN5o24zz+xDJOy4g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1657703452; x=1657789852; bh=okns6jiIM9XMivJMPpMS7+QvSgaH
+        tDbUEIZqiJ2D/5I=; b=trwf2Ljow+jlw4aJUJn7iMvIIXIo1MrLk1ZnWYepMVAx
+        igd3v7MrdGTiYbJUH/iA0QLehkucWgQKVERELB0QumD3wmKtf2/6z/zoHVPRID54
+        OWL9im4f9Aj2y7/jaUwT/p/7kA2gAB494PnkTRFB7SOBeKfrBqV9snYicYDGrgZj
+        2Te0ur7WFmNbXTHYA+jfjjk1R0b8JFS3oBVrs91hj3OasH254M2btyYpnjeFYMFn
+        JQR0D5j9E6qLugQlhf0upQcP03yf1j5urLKAbaIfJSTLKzGuFRM3AlE4vYPKD8/m
+        AjhL8tZ0Sv9+6HV6PtuEZBcji20YI2zLseo1vGEstw==
+X-ME-Sender: <xms:HIzOYmd8JlZaPi2RmsDhxKlkwxkGuwUX75e7giq_GBKwY-JaOxqg8Q>
+    <xme:HIzOYgOeEYvMfPf5NXXUXMVTSMw4oXUdF-kh0Gt3Rbw1rA5PKFxlf2KcBuqkj7kpJ
+    zZwUzzzv3yVHMAuZuk>
+X-ME-Received: <xmr:HIzOYnhRm0aAcd_vPZjVqi548YDhNQSrnA8SWF0SkEpl5gTTMgevWuk0xkyGo6tekzy6dfWyCe7wpH6vvHaTRDPYlBomjU28JLBJkjs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedgudduucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihi
+    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
+    htthgvrhhnpedtleekjeeiudefvdfhieffteelhfeivdeliefgieeugffhvdelieffjeei
+    geetjeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggt
+    hh
+X-ME-Proxy: <xmx:HIzOYj_s1gqGgGbHAdCCjPUKZF0Ap1tDAL6gnRBHnGJBujvfwmZHTg>
+    <xmx:HIzOYiv1Gl7P59I_Ibyn9954ei1nA1WXEmjLAHPnnPZT_EBdB2LHlw>
+    <xmx:HIzOYqGhSRgv21gmlxLid4R4jRPTPg4Q2gkPK7RLJ6Z_d2XJBt95oA>
+    <xmx:HIzOYkKHLqDwaOlrWPXrxyBZat2knudGiJpuW179UUzBwPOn77owgg>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 13 Jul 2022 05:10:51 -0400 (EDT)
+Date:   Wed, 13 Jul 2022 11:10:49 +0200
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Danilo Krummrich <dakr@redhat.com>
+Cc:     emma@anholt.net, daniel@ffwll.ch, airlied@linux.ie,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] drm/vc4: use drm managed resources
+Message-ID: <20220713091049.qy4t3j3hh5jgtqum@houat>
+References: <20220713085500.1970589-1-dakr@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="y6sjhfw424vcozzy"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <745d1921a4d048ea25d262e33b40aad5ee470614.1657614127.git.guillaume.tucker@collabora.com>
-Jabber-ID: nicolas@jabber.no
-X-Operating-System: Debian GNU/Linux bookworm/sid
-X-Provags-ID: V03:K1:623t/4l5SVDnwrpO8+8WDgkZZ9iYHqLEZ8zhDzgcMHqriwXRBjl
- 7NRW/7Rv9O9PM8fsCx+g7OAVRNEds0IbN1WusDd1xO+VaRd8obo34+XhLlYpMe9PQHxWAGR
- wsA1qRPteXpxNlKSS7drRd0srLu0ZlPsbFIJ+mTduY8VOdrP8Bory9TWDOaETZwDTZ+h7tl
- kmMcAr/CVy6KBb3MqtHbQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:G904bOaoY5I=:CzHp39EbGa7Vw0N21TnTPF
- 6Zl+4CLeQ7dWBN2Gz5yKj+y46R7wilWqZtojOH60AUjAyVFSGXx18rv8MERDEAOJARtegpli4
- tHQ/k2x67gefPxSNlQKrHiuMO2Zeu/Isc3hB6J6u3/iPq0nHTHdx8Dh/xPBhl2o2lSutQZ/yD
- n094Y32TghARn7ZvPMQPlmwsN0Nixo5050ptHukFB1ZZMRFSSF6zb0vLUMiVuxzvnF70OhQZF
- mHLUAUNLNUAOIuK4mxS5ReAcQax4x4e1OzLdyro1Ng5/NXM/CjmchdsC2WGKwg0Zu9VXHG+np
- /TH11Ipvu3X6Kgcrq1Gyr34Ydez6WMe05IZkDWP57nnaa1OVFcRMP0DWXpTa2+paDv4nM+Tjb
- CmhiUkStRLJC/6PrDT0Yd7rH3bYlPpwXYQAMBOwO9/Qq9T7uED/l1Dp7bCGIjsEKR7l57/nX5
- MCF9BZlPufJ3Hxj78wJIe5URNNdYxFWsMn2veCHTyv8fAZwg/11I97iTMyC2JPfM+RXuzjsDL
- 47tvLfzxg4MSYI5p2a3w5snqxcBP7tNCRlukhZr/6vTwy3wWb5AwfD3ywT7IyAFi94ONAsWW3
- OFaxCnx6aJj1HECATsKxDLCQyDKKo9P4z921sJZuhCK80Sbtui0VZ8jZToApLWMHzE1FEtnIL
- rQX82merJpt+sLOJRnyqasyFfXL3l3R4bSl6/SkyadPZihUffslW/hB1F/nEOzXGdAemg6h2k
- /sN2TTqcAyidCemm1BQssHPPiF7EPMpGPKG+8A==
+In-Reply-To: <20220713085500.1970589-1-dakr@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 09:29 +0100 Guillaume Tucker wrote:
-> Add headers as a dependency to kselftest targets so that they can be
-> run directly from the top of the tree.  The kselftest Makefile used to
-> try to call headers_install "backwards" but failed due to the relative
-> path not being consistent.
-> 
-> Now we can either run this directly:
-> 
->   $ make O=build kselftest-all
-> 
-> or this:
-> 
->   $ make O=build headers
->   $ make O=build -C tools/testing/selftests all
-> 
-> The same commands work as well when building directly in the source
-> tree (no O=) or any arbitrary path (relative or absolute).
-> 
-> Signed-off-by: Guillaume Tucker <guillaume.tucker@collabora.com>
-> ---
 
-You might want to add the 'Reported-by: as you did in 
-https://lore.kernel.org/linux-kbuild/a7af58feaa6ae6d3b0c8c55972a470cec62341e5.1657693952.git.guillaume.tucker@collabora.com/ 
-?
+--y6sjhfw424vcozzy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Nicolas Schier <nicolas@fjasle.eu>
+Hi Danilo,
 
-> 
-> Notes:
->     v2: replace headers_install with headers
-> 
->  Makefile | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index 1a6678d817bd..02502cc4ced5 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1347,10 +1347,10 @@ tools/%: FORCE
->  # Kernel selftest
->  
->  PHONY += kselftest
-> -kselftest:
-> +kselftest: headers
->  	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests run_tests
->  
-> -kselftest-%: FORCE
-> +kselftest-%: headers FORCE
->  	$(Q)$(MAKE) -C $(srctree)/tools/testing/selftests $*
->  
->  PHONY += kselftest-merge
-> -- 
-> 2.30.2
+On Wed, Jul 13, 2022 at 10:54:57AM +0200, Danilo Krummrich wrote:
+> This patch series converts DRM modeset object allocations from devm_*()
+> to drmm_*() memory allocators, or their corresponding convenience
+> wrappers, respectively, in order to tie the release action to the
+> underlaying struct drm_device.
+>=20
+> This can prevent potential use-after free issues on driver unload or
+> EPROBE_DEFERRED backoff.
 
--- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+Yeah, the driver had a lot of this kind of issues.
+
+As it turns out, at the moment you sent it, I was applying a larger
+series (hopefully) addressing all of them:
+https://lore.kernel.org/all/20220711173939.1132294-1-maxime@cerno.tech/
+
+Maxime
+
+--y6sjhfw424vcozzy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYs6MGQAKCRDj7w1vZxhR
+xV4RAQDCppbyA6im9Xueg9td+P9gvsqPNJOcFq1JWDW0YbDcDAD/elvnok9QdFTd
+xVLGTke67JLDU7YOna+ORGGc8891gw0=
+=jDoO
+-----END PGP SIGNATURE-----
+
+--y6sjhfw424vcozzy--
