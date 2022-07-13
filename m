@@ -2,268 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75913C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7591C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:26:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233459AbiGMEZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 00:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57554 "EHLO
+        id S233670AbiGME0Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 00:26:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230013AbiGMEZz (ORCPT
+        with ESMTP id S230013AbiGME0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 00:25:55 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272AA4506E;
-        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso1678943pjo.0;
-        Tue, 12 Jul 2022 21:25:54 -0700 (PDT)
+        Wed, 13 Jul 2022 00:26:23 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D174506E;
+        Tue, 12 Jul 2022 21:26:22 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id g126so9222644pfb.3;
+        Tue, 12 Jul 2022 21:26:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
-        b=ABfb0rNSZ2TR5dRBsJ0xrkkxMAwSh4EmmJtx205q+k9wcvQiq9H5D8qVacW42Z8vka
-         Za1l9DY7v8VSiU9o/K6H4DW5LoPWI+7Q5yi4LMJ7Ufq22dIUV4RWtW9C+7E8hA2BIAqt
-         u2MRX27wnScWVmlI9KyNah4SX5qBTYg5n4hili8eTXUJymco/6PRVPB3O07+8CFHUnG7
-         4QkfxQc2lyRsYJf9D//gvyo0Nem3uQlG7YNASr6iz4jPriA6RUYpQjlfDbEY/AZE2JVd
-         lP4Wit1ln6emmVBwFrOlRZno7whBDhFhY+FbK8mLyPX221eskMJ7coT5mz8PTV6U3Eyj
-         oZtA==
+        h=from:to:cc:subject:date:message-id;
+        bh=D0mrlc97WLTC35mVQPNg2FDISePVldO90IQe9NCWQAo=;
+        b=W97Ks1uhm0iaddeK597krnrP5r/ntXt3VMZuBwrAXItNSw8uvYScVJ2CVtUKL79osk
+         /FUHk9jyvUbz5opAwYkp+fPl92LKef1YHjW83Dh2t5UnLHf7dahkZI6cOHqAJ4ydoxp8
+         sfpyTxjp3dn8/WQ6aRrKBwWZ+ayKElTRx8oCbcdNVWBZW925zHYgo0HKfU1GvkePtDYm
+         0j8tzYNTjyD4wLD735Chx0BpxOF0AZ30GGZ6LCqwjJ37coCWBXI6KWM+qalNFM67BWrX
+         2YAjQw1cwXUu2ZsXh86ffvEByHSRrvUXeQvGIP3UaKAVGee7n2GAP0w3JsbgI8z4IGLa
+         LGHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nMGzjqDUW6SdVGyuTZy6wI3JH0wU7GZTzrC52WE7cc0=;
-        b=vSXLpAAXZbH2xFI2coK0EGpFJqWkoiEjB6L/lGFAt4aTEGLjFf3aw1aMvs4shZiXgC
-         GMdjVuHFIN2Nr/4HYsSMezkwUDzSgax9VMpGtHj5a5S6kXbC+/bF6wOq7smdy5BbKHmr
-         a0scCLypXSCgZ0EgP6hmp01hAn+hvtZaqaS3r9ALNKcm6J6stWbBavtT/Q17627/vcsu
-         F/JsNdSs2ws4ceAbqcpn4ywDwsyiKK4XGh/Cz3CwtQV0RpGEsoGSIJhgwaCD/HUhixoQ
-         ItJXdIMYUhZnwHfWWTaZJzKv3YytYeE6xTVaOjVv1IvWQ3zzF5fJ7DDnA/FVS6CPe5Wg
-         W8nw==
-X-Gm-Message-State: AJIora/kbGCEHhJcOR7TtDiGUwWyqwSWIai6WXqVQe+Wh1sWNp7jL8Kl
-        g+hxc7WN1s9wdZTNR9kYiXw=
-X-Google-Smtp-Source: AGRyM1syYHQhPr7RhT9rFmN72PJ2fPdHbWvXbIqYCV2V7Z2PlYl6loSQ1/6Fo3O8xuydFUf85LKmKw==
-X-Received: by 2002:a17:90b:3890:b0:1f0:2abb:e7d1 with SMTP id mu16-20020a17090b389000b001f02abbe7d1mr8212824pjb.158.1657686353312;
-        Tue, 12 Jul 2022 21:25:53 -0700 (PDT)
-Received: from macbook-pro-3.dhcp.thefacebook.com ([2620:10d:c090:400::5:580c])
-        by smtp.gmail.com with ESMTPSA id h11-20020a170902680b00b0016a11750b50sm7640118plk.16.2022.07.12.21.25.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 21:25:52 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 21:25:49 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     James Hilliard <james.hilliard1@gmail.com>
-Cc:     "Jose E. Marchesi" <jose.marchesi@oracle.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-Message-ID: <20220713042549.uljgrp4lffianxyj@macbook-pro-3.dhcp.thefacebook.com>
-References: <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com>
- <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
- <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
- <87v8s260j1.fsf@oracle.com>
- <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
- <CADvTj4qqxckZmxvL=97e-2W5M4DgCCMDV8RCFDg23+cY2URjTA@mail.gmail.com>
- <20220713011851.4a2tnqhdd5f5iwak@macbook-pro-3.dhcp.thefacebook.com>
- <CADvTj4o7z7J=4BOtKM9dthZyfFogV6hL5zKBwiBq7vs+bNhUHA@mail.gmail.com>
- <CAADnVQJAz7BcZjrBwu-8MjQprh86Z_UpWGMSQtFnowZTc4d6Vw@mail.gmail.com>
- <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADvTj4qtCfmsu=dMZx9LtaDMOSNsOxGVSa1g3USEWroA1AfTJA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=D0mrlc97WLTC35mVQPNg2FDISePVldO90IQe9NCWQAo=;
+        b=XbNCU8mkeixMLW2/1XvBvEI03fW6Kr+/OPJwEdeEqupXavhJhWr/ZN0JeOHvDmc8lt
+         Z2iEbbImRA6ZMsbzpDaJgQtkWPiVEkP6/IOy/TOcOa0mmRVkeLZSFJ+UdS2ME01Oo2Za
+         2xwVIkU0tcMq2QhtOjMiiDCjHiNf4iFf5SS8gCBK+lFaa03i6KgtESbhumAm2koqqQZj
+         ioo1DE5ZMHFEN2zd0YlbRpTAr1BiLF/ebCRVY5bvaYWuVdNyTKxUmBmhHAm2Wu7xvQcS
+         XzK8tJ6gAcgSzpllrsHw+ApKXe7ZeIPh4RAaGhyXaVxbUNqNUNveD4JFd4IDXJbAM4xN
+         z9eQ==
+X-Gm-Message-State: AJIora/YMt5rag0CXy1Ii1Tq5e1yybzW1idFU5DKEqHyoJxd5bkv+3e+
+        aXnhvEk6fWgmKm8ujw6AJMk=
+X-Google-Smtp-Source: AGRyM1tutc7Pb5nj/14ZEkSaVmwH8TaXMbi/NefGgjUMAy61m8czG480gBF8+UcDwCzZeBYJxyBXyw==
+X-Received: by 2002:aa7:9ae3:0:b0:528:d881:9ff with SMTP id y3-20020aa79ae3000000b00528d88109ffmr1464421pfp.66.1657686382239;
+        Tue, 12 Jul 2022 21:26:22 -0700 (PDT)
+Received: from linux-l9pv.suse (123-194-153-158.dynamic.kbronet.com.tw. [123.194.153.158])
+        by smtp.gmail.com with ESMTPSA id e7-20020a17090301c700b0016c4f006603sm4732513plh.54.2022.07.12.21.26.19
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Jul 2022 21:26:21 -0700 (PDT)
+From:   "Lee, Chun-Yi" <joeyli.kernel@gmail.com>
+X-Google-Original-From: "Lee, Chun-Yi" <jlee@suse.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ben Boeckel <me@benboeckel.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Malte Gell <malte.gell@gmx.de>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Mimi Zohar <zohar@linux.ibm.com>, keyrings@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Lee, Chun-Yi" <jlee@suse.com>
+Subject: [PATCH v9 0/4] Check codeSigning extended key usage extension
+Date:   Wed, 13 Jul 2022 12:24:17 +0800
+Message-Id: <20220713042421.21680-1-jlee@suse.com>
+X-Mailer: git-send-email 2.12.3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 08:56:35PM -0600, James Hilliard wrote:
-> On Tue, Jul 12, 2022 at 7:45 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Tue, Jul 12, 2022 at 6:29 PM James Hilliard
-> > <james.hilliard1@gmail.com> wrote:
-> > >
-> > > On Tue, Jul 12, 2022 at 7:18 PM Alexei Starovoitov
-> > > <alexei.starovoitov@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jul 12, 2022 at 07:10:27PM -0600, James Hilliard wrote:
-> > > > > On Tue, Jul 12, 2022 at 10:48 AM Alexei Starovoitov
-> > > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > > >
-> > > > > > On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
-> > > > > > <jose.marchesi@oracle.com> wrote:
-> > > > > > >
-> > > > > > >
-> > > > > > > > CC Quentin as well
-> > > > > > > >
-> > > > > > > > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
-> > > > > > > > <james.hilliard1@gmail.com> wrote:
-> > > > > > > >>
-> > > > > > > >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > > > >> >
-> > > > > > > >> >
-> > > > > > > >> >
-> > > > > > > >> > On 7/6/22 10:28 AM, James Hilliard wrote:
-> > > > > > > >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> > > > > > > >> > > correctly with gcc.
-> > > > > > > >> > >
-> > > > > > > >> > > GCC appears to required kernel helper funcs to have the following
-> > > > > > > >> > > attribute set: __attribute__((kernel_helper(NUM)))
-> > > > > > > >> > >
-> > > > > > > >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> > > > > > > >> > >
-> > > > > > > >> > > This adds conditional blocks for GCC while leaving clang codepaths
-> > > > > > > >> > > unchanged, for example:
-> > > > > > > >> > >       #if __GNUC__ && !__clang__
-> > > > > > > >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
-> > > > > > > >> > > __attribute__((kernel_helper(1)));
-> > > > > > > >> > >       #else
-> > > > > > > >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> > > > > > > >> > >       #endif
-> > > > > > > >> >
-> > > > > > > >> > It does look like that gcc kernel_helper attribute is better than
-> > > > > > > >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
-> > > > > > > >> > just for simplicity.
-> > > > > > > >>
-> > > > > > > >> Isn't the original style going to be needed for backwards compatibility with
-> > > > > > > >> older clang versions for a while?
-> > > > > > > >
-> > > > > > > > I'm curious, is there any added benefit to having this special
-> > > > > > > > kernel_helper attribute vs what we did in Clang for a long time?
-> > > > > > > > Did GCC do it just to be different and require workarounds like this
-> > > > > > > > or there was some technical benefit to this?
-> > > > > > >
-> > > > > > > We did it that way so we could make trouble and piss you off.
-> > > > > > >
-> > > > > > > Nah :)
-> > > > > > >
-> > > > > > > We did it that way because technically speaking the clang construction
-> > > > > > > works relying on particular optimizations to happen to get correct
-> > > > > > > compiled programs, which is not guaranteed to happen and _may_ break in
-> > > > > > > the future.
-> > > > > > >
-> > > > > > > In fact, if you compile a call to such a function prototype with clang
-> > > > > > > with -O0 the compiler will try to load the function's address in a
-> > > > > > > register and then emit an invalid BPF instruction:
-> > > > > > >
-> > > > > > >   28:   8d 00 00 00 03 00 00 00         *unknown*
-> > > > > > >
-> > > > > > > On the other hand the kernel_helper attribute is bullet-proof: will work
-> > > > > > > with any optimization level, with any version of the compiler, and in
-> > > > > > > our opinion it is also more readable, more tidy and more correct.
-> > > > > > >
-> > > > > > > Note I'm not saying what you do in clang is not reasonable; it may be,
-> > > > > > > obviously it works well enough for you in practice.  Only that we have
-> > > > > > > good reasons for doing it differently in GCC.
-> > > > > >
-> > > > > > Not questioning the validity of the reasons, but they created
-> > > > > > the unnecessary difference between compilers.
-> > > > >
-> > > > > Sounds to me like clang is relying on an unreliable hack that may
-> > > > > be difficult to implement in GCC, so let's see what's the best option
-> > > > > moving forwards in terms of a migration path for both GCC and clang.
-> > > >
-> > > > The following is a valid C code:
-> > > > static long (*foo) (void) = (void *) 1234;
-> > > > foo();
-> > > >
-> > > > and GCC has to generate correct assembly assuming it runs at -O1 or higher.
-> > >
-> > > Providing -O1 or higher with gcc-bpf does not seem to work at the moment.
-> >
-> > Let's fix gcc first.
-> 
-> If the intention is to migrate to kernel_helper for clang as well it
-> seems kind of
-> redundant, is there a real world use case for supporting the '(void *)
-> 1' style in
-> GCC rather than just adding feature detection+kernel_helper support to libbpf?
-> 
-> My assumption is that kernel helpers are in practice always used via libbpf
-> which appears to be sufficient in terms of being able to provide a compatibility
-> layer via feature detection. Or is there some use case I'm missing here?
+NIAP PP_OS certification requests that OS need to validate the
+CodeSigning extended key usage extension field for integrity
+verifiction of exectable code:
 
-static long (*foo) (void) = (void *) 1234;
-is not about calling into "kernel helpers".
-There is no concept of "kernel" in BPF ISA.
-'call 1234' insn means call a function with that absolute address.
-The gcc named that attribute incorrectly.
-It should be renamed to something like __attribute__((fixed_address(1234))).
+    https://www.niap-ccevs.org/MMO/PP/-442-/
+        FIA_X509_EXT.1.1
 
-It's a linux kernel abi choice to interpret 'call abs_addr' as a call to a kernel
-provided function at that address. 1,2,3,... are addresses of functions.
+This patchset adds the logic for parsing the codeSigning EKU extension
+field in X.509. And checking the CodeSigning EKU when verifying
+signature of kernel module or kexec PE binary in PKCS#7.
 
-> >
-> > > > There is no indirect call insn defined in BPF ISA yet,
-> > > > so the -O0 behavior is undefined.
-> > >
-> > > Well GCC at least seems to be able to compile BPF programs with -O0 using
-> > > kernel_helper. I assume -O0 is probably just targeting the minimum BPF ISA
-> > > optimization level or something like that which avoids indirect calls.
-> >
-> > There are other reasons why -O0 compiled progs will
-> > fail in the verifier.
-> 
-> Why would -O0 generate code that isn't compatible with the selected
-> target BPF ISA?
+v9:
+- Rename the eku element in public_key structure to ext_key_usage.
+- Fix selftest.c
 
-llvm has no issue producing valid BPF code with -O0.
-It's the kernel verifier that doesn't understand such code.
-For the following code:
-static long (*foo) (void) = (void *) 1234;
-long bar(void)
-{
-    return foo();
-}
+v8:
+- Fixed the bug of is_key_on_revocation_list() when
+  CONFIG_SYSTEM_REVOCATION_LIST is not set.
 
-With -O[12] llvm will generate
-  call 1234
-  exit
-With -O0
-  r1 = foo ll
-  r1 = *(u64 *)(r1 + 0)
-  callx r1
-  exit
+v7:
+- Fixed the broken function call in is_key_on_revocation_list().
+  (be found by kernel test robot)
+- Use a general name check_eku_by_usage() instead of check_codesign_eku().
 
-Both codes are valid and equivalent.
-'callx' here is a reserved insn. The kernel verifier doesn't know about it yet,
-but llvm was generting such code for 8+ years.
+v6:
+- Add more length checking when parsing extKeyUsage and EKU's OID blob.
+- Add 'usage' parameter to the comment of pkcs7_validate_trust function.
 
-> > Assuming that kernel_helper attr is actually necessary
-> > we have to add its support to clang as well.
-> 
-> I mean, I'd argue there's a difference between something being arguably a better
-> alternative(optional) and actually being necessary(non-optional).
+v5:
+Fixed the wording in module-signing.rst.
 
-gcc's attribute is not better.
-It's just a different way to tell compiler about fixed function address.
+v4:
+Fixed the wording in patch description.
 
-> > gcc-bpf is a niche. If gcc devs want it to become a real
-> > alternative to clang they have to always aim for feature parity
-> > instead of inventing their own ways of doing things.
-> 
-> What's ultimately going to help the most in regards to helping gcc-bpf reach
-> feature parity with clang is getting it minimally usable in the real
-> world, because
-> that's how you're going to get more people testing+fixing bugs so that all these
-> differences/incompatibilities can be worked though/fixed.
+v3:
+- Add codeSigning EKU to x509.genkey key generation config.
+- Add openssl command option example for generating CodeSign EKU to
+  module-signing.rst document.
 
-Can gcc-bpf compile all of selftests/bpf ?
-How many of compiled programs will pass the verifier ?
+v2:
+Changed the help wording in the Kconfig.
 
-> If nobody can compile a real world BPF program with gcc-bpf it's likely going to
-> lag further behind.
+Lee, Chun-Yi (4):
+  X.509: Add CodeSigning extended key usage parsing
+  PKCS#7: Check codeSigning EKU for kernel module and kexec pe
+    verification
+  modsign: Add codeSigning EKU when generating X.509 key generation
+    config
+  Documentation/admin-guide/module-signing.rst: add openssl command
+    option example for CodeSign EKU
 
-selftest/bpf is a first milestone that gcc-bpf has to pass before talking about
-'real world' bpf progs.
+ Documentation/admin-guide/module-signing.rst |  6 +++
+ certs/blacklist.c                            |  5 ++-
+ certs/default_x509.genkey                    |  1 +
+ certs/system_keyring.c                       |  4 +-
+ crypto/asymmetric_keys/Kconfig               |  9 ++++
+ crypto/asymmetric_keys/pkcs7_trust.c         | 43 ++++++++++++++++++--
+ crypto/asymmetric_keys/selftest.c            |  2 +-
+ crypto/asymmetric_keys/x509_cert_parser.c    | 25 ++++++++++++
+ include/crypto/pkcs7.h                       |  4 +-
+ include/crypto/public_key.h                  |  1 +
+ include/keys/system_keyring.h                |  7 +++-
+ include/linux/oid_registry.h                 |  5 +++
+ 12 files changed, 101 insertions(+), 11 deletions(-)
+
+-- 
+2.26.2
+
