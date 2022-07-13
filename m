@@ -2,132 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9448DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:40:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E5C9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234745AbiGMHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S233813AbiGMHm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234255AbiGMHki (ORCPT
+        with ESMTP id S230304AbiGMHmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:40:38 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AB6E587D;
-        Wed, 13 Jul 2022 00:40:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657698034; x=1689234034;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=p6S9d0eoOccrcr2x6G9e4hJJ9OVvTKahjywxJ3zVPng=;
-  b=XF5ri1fOs/6Jvmk8nzWU+eFMmyngz64N+h0AiMmI15I/JOvtRZbKjjok
-   gAjBaVh8D315dLNQg3r4/oAEGav2tx+LRsFG8K7dRQNxtqHLLx63SMfZN
-   zbYURaW0u1rCbJXHuT+LhTeSrunTciBeHObNuFX5BVn6JjX3zDNkhCNK+
-   w7rU0nFpU7FrEqOGs95tMBukML2Jw7vIJHqpmbLJSAgPYBl43GtFj2waL
-   DAusmCTdsd5/eHiVGSB/3/AM3uuIf7dlAxq0bnZZZebYYnZgdSk7T2gSs
-   MROEGaPjwmQILxySVhuocg9D6JGOL0aSNbpMU0zs9UCfwS57yqeFrYo0x
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265549705"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="265549705"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:40:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="685065350"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 00:40:25 -0700
-Date:   Wed, 13 Jul 2022 15:37:07 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>
-Cc:     Chao Gao <chao.gao@intel.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>, chao.p.peng@intel.com
-Subject: Re: [PATCH v7 000/102] KVM TDX basic feature support
-Message-ID: <20220713073707.GA2831541@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <20220711151701.GA1375147@ls.amr.corp.intel.com>
- <20220712050714.GA26573@gao-cwp>
- <20220712105419.GB2805143@chaop.bj.intel.com>
- <20220712172250.GJ1379820@ls.amr.corp.intel.com>
+        Wed, 13 Jul 2022 03:42:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A0AE477A;
+        Wed, 13 Jul 2022 00:42:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0EF24CE1DFF;
+        Wed, 13 Jul 2022 07:42:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07023C34114;
+        Wed, 13 Jul 2022 07:42:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657698140;
+        bh=mHJcwUWhMboDxIfJdmt9WJ6y+0j5+D86+p+eDlzLAzY=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=GN09hmSRP/B7nNVf0Mq8WBcOW2iy/ywNO4lGPBWDa68dFXLauSqn0skWjsDZNhJ9Z
+         LEt+LDWNkqcD2sd4M4T2qygvXGl+wnXfWiuSNeLpsPPOqQhyXQZRE1Wr+K0ayZU2mY
+         o96svKncLM5hoY7AR0VBgTW8mJQDH3o3JkOrCqtwuRjtbYBFaOyAM6hfplG/OdRDVL
+         4mh1r9xgQoFg2bc0HjHnL5ibYrmjXCY7kHvSsAZRXELHMN/Alh+mat9t1wMGnoex9z
+         JOhYWjWyGy3EjyOxfBiNSBbuViapOuYhn041DpYlWoYuhGzAPmKlfi5I/1WP8cSh0V
+         9cyu+ySS3tKqw==
+Message-ID: <3190164d-dcdb-6dd8-37c8-e1bb1128ef56@kernel.org>
+Date:   Wed, 13 Jul 2022 09:42:12 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712172250.GJ1379820@ls.amr.corp.intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/4] Add Samsung system manager and secure service
+Content-Language: en-US
+To:     dj76.yang@samsung.com,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>
+Cc:     "javierm@redhat.com" <javierm@redhat.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Wangseok Lee <wangseok.lee@samsung.com>
+References: <CGME20220713045143epcms1p5483300a3cf9ed97308a1bcfe5b889a02@epcms1p5>
+ <20220713045143epcms1p5483300a3cf9ed97308a1bcfe5b889a02@epcms1p5>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220713045143epcms1p5483300a3cf9ed97308a1bcfe5b889a02@epcms1p5>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 10:22:50AM -0700, Isaku Yamahata wrote:
-> On Tue, Jul 12, 2022 at 06:54:19PM +0800,
-> Chao Peng <chao.p.peng@linux.intel.com> wrote:
+On 13/07/2022 06:51, Dongjin Yang wrote:
+> Add Samsung System manager driver and Secure Service code.
+> Samsung System manager is for SoCs produced by Samsung Foundry
+> to provide system read/write request by System Manager API.
+> Samsung Secure service is for SoCs produced by Samsung Foundry
+> to provide secure monitor service using Trusted Foundations.
 > 
-> > On Tue, Jul 12, 2022 at 01:07:20PM +0800, Chao Gao wrote:
-> > > On Mon, Jul 11, 2022 at 08:17:01AM -0700, Isaku Yamahata wrote:
-> > > >Hi. Because my description on large page support was terse, I wrote up more
-> > > >detailed one.  Any feedback/thoughts on large page support?
-> > > >
-> > > >TDP MMU large page support design
-> > > >
-> > > >Two main discussion points
-> > > >* how to track page status. private vs shared, no-largepage vs can-be-largepage
-> > > 
-> > > ...
-> > > 
-> > > >
-> > > >Tracking private/shared and large page mappable
-> > > >-----------------------------------------------
-> > > >VMM needs to track that page is mapped as private or shared at 4KB granularity.
-> > > >For efficiency of EPT violation path (****), at 2MB and 1GB level, VMM should
-> > > >track the page can be mapped as a large page (regarding private/shared).  VMM
-> > > >updates it on MapGPA and references it on the EPT violation path. (****)
-> > > 
-> > > Isaku,
-> > > 
-> > > + Peng Chao
-> > > 
-> > > Doesn't UPM guarantee that 2MB/1GB large page in CR3 should be either all
-> > > private or all shared?
-> > > 
-> > > KVM always retrieves the mapping level in CR3 and enforces that EPT's
-> > > page level is not greater than that in CR3. My point is if UPM already enforces
-> > > no mixed pages in a large page, then KVM needn't do that again (UPM can
-> > > be trusted).
-> > 
-> > The backing store in the UMP can tell KVM which page level it can
-> > support for a given private gpa, similar to host_pfn_mapping_level() for
-> > shared address.
-> >
-> > However, this solely represents the backing store's capability, KVM
-> > still needs additional info to decide whether that can be safely mapped
-> > as 2M/1G, e.g. all the following pages in the 2M/1G range should be all
-> > private, currently this is not something backing store can tell.
-> 
-> This argument applies to shared GPA.  The shared pages is backed by normal file
-> mapping with UPM.  When KVM is mapping shared GPA, the same check is needed.  So
-> I think KVM has to track all private or all shared or no-largepage at 2MB/1GB
-> level.  If UPM tracks shared-or-private at 4KB level, probably KVM may not need to
-> track it at 4KB level.
 
-Right, the same also applies to shared memory. All the info we need is
-whether pages of a 2M range is all private/shared but not mixed. UPM v7
-has code tracking that in KVM and previously versions we track that in
-the backing store which has been discussed not a good idea.
+1. You need to provide users of these drivers. For the
+syscon-regmap-export driver (better name than manager which does not
+manager anything), having a user would answer the question why such
+weird driver is needed. Since there is no user and driver's behavior
+breaks design choices, it has to be NAKed.
 
-Chao
-> 
-> 
-> > Actually, in UPM v7 we let KVM record this info so one possible solution
-> > is making use of it.
-> > 
-> >   https://lkml.org/lkml/2022/7/6/259
-> > 
-> > Then to map a page as 2M, KVM needs to check:
-> >   - Memory backing store support that level
-> >   - All pages in 2M range are private as we recorded through
-> >     KVM_MEMORY_ENCRYPT_{UN,}REG_REGION
-> >   - No existing partial 4K map(s) in 2M range
-> -- 
-> Isaku Yamahata <isaku.yamahata@gmail.com>
+2. Thread your submissions properly. Git send email does it
+automatically for you. You can use other tools, but then be sure your
+patches are properly threaded. This patchset was not which makes review
+more difficult than it should.
+
+Best regards,
+Krzysztof
