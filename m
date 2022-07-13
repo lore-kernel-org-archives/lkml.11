@@ -2,84 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D98FCCCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:33:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04744C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 16:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236789AbiGMQdK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 12:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
+        id S237257AbiGMQdR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 12:33:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237262AbiGMQdH (ORCPT
+        with ESMTP id S237238AbiGMQdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 12:33:07 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE6C2E68A;
-        Wed, 13 Jul 2022 09:33:04 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id j1-20020a17090aeb0100b001ef777a7befso4281027pjz.0;
-        Wed, 13 Jul 2022 09:33:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=5SHUSXsqONgSGFWlMLIGNgVlfzO3WUzoSZ9tGmnf1gM=;
-        b=UMX7GgiubFUfdB2GgsC6G7qmW5+linWqzt9GFgwiO63t21MLxiiyHE7ktOCygPAQoA
-         kQr/RFT7/ToX66v7K+iamosjBVb0bHccmwhFRRYYmfgpsgrSaUE087wUaDf1EaPlTX5N
-         yeQD8sFr3kOvciTG7xvLtCSIkNQn5V5AIKj3KJP1YE16LooAueC9ZfbebCIjxQwuZsRz
-         P+gqBpkIxr/vI/0VTI3DdFZm+aE/IrFO6SeYMdVjOBehC8VYZKV+/Yqdjqwxvheo9aMI
-         Kmc4NueUyZwOPJF2Qewp/928bTrlETRN7C1v3viblztCM6P8US6ezOIAVwMOGP+q153s
-         kklw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=5SHUSXsqONgSGFWlMLIGNgVlfzO3WUzoSZ9tGmnf1gM=;
-        b=UCr5VTEQHupwGn1Xlz/R8uQWirukbP+QFlzjdpmSsIFo5lduU+WU/svlGNlFcAQEiZ
-         AM63tJpb/LTu8FO/Dfl/rQiZ6eq4PXU0JJHfj+LH1a7ixgvCKB52Zq3OK8QhJpI+iZXu
-         1jcLza/pigDZ4uO9qxyWpf1zQvPcgEbpj+sSjioZwEOGI0jtngW9n2WMz81j8ywYnjA3
-         YKxatRgL3Y7Oyl5TU3T3P2HxI4foy9zlNWyW71fkLUcuvQ+nuQ9y6w4hNYwEFQXdT7DW
-         SlhZRY9QX13EdG8PQrCRpZwfUYi4i/5gShGmc3oO5zUxVtWCTd6/9UmSNffLaJdg+byA
-         595A==
-X-Gm-Message-State: AJIora/s51RJi6uIBV1UjrjMytcXOjX4Xx6urVViJpwNyHaHU+l6f+ew
-        Gv6JMK+3ngrdDMOvekgyo6c0b4d+WBQ=
-X-Google-Smtp-Source: AGRyM1uNEtM2WrZzw5jgWAmfRBGong/l1Yg0WCFLKxsTPrXPsLV6Ivv9EMR6UhL/nC1yKcFs9Nxavw==
-X-Received: by 2002:a17:902:e552:b0:16c:571d:fc08 with SMTP id n18-20020a170902e55200b0016c571dfc08mr3824427plf.151.1657729983755;
-        Wed, 13 Jul 2022 09:33:03 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id b17-20020a17090ae39100b001efbc3ad105sm1795316pjz.54.2022.07.13.09.33.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 09:33:03 -0700 (PDT)
-Message-ID: <b0d4e5ee-7862-e873-33da-2da2cbb33fbb@gmail.com>
-Date:   Wed, 13 Jul 2022 09:33:01 -0700
+        Wed, 13 Jul 2022 12:33:15 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C63A2CE3D;
+        Wed, 13 Jul 2022 09:33:13 -0700 (PDT)
+Received: from localhost (dynamic-002-247-252-243.2.247.pool.telefonica.de [2.247.252.243])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sebastianfricke)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2C3D46601926;
+        Wed, 13 Jul 2022 17:33:12 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657729992;
+        bh=H45vKIVxYSOqYRL43Uz5XTwJe8yBD2CscZqG1frIUiY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DVP/8OabOAVdwWtbUamryVmHMiU9imIDdQD/mdYFbP8mAUCazpTc1qPjmeSrtqx8n
+         jvq9kx5xIFzHL0H/6OXZYYq/GRnrRpR+JTL6f3ZKEoEiV4JjwFmlV1P3NpHfTP8iR4
+         5k4qcpDN4g4Xp5sTt4ajt8Z6i4t4ex7Iq2RqgD7wpBf5wY9Y0SzpqGDSSMuu28shk6
+         QgdZop99S4uetfY/+iAuSL/kt5tUpgR8Ndzfn0F/hMr5bTyz/qSRBzdk/X9cv7kkPd
+         54G4ehGJLgUHFJx/pNLCXkdzEBdlgWTqNUpswi11hLSwTz5kSS1XuG1OIarDAE5iAi
+         qi1IxfylXDNcw==
+From:   Sebastian Fricke <sebastian.fricke@collabora.com>
+To:     linux-media@vger.kernel.org
+Cc:     jernej.skrabec@gmail.com, knaerzche@gmail.com,
+        kernel@collabora.com, bob.beckett@collabora.com,
+        ezequiel@vanguardiasur.com.ar, mchehab@kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-rockchip@lists.infradead.org, linux-staging@lists.linux.dev,
+        nicolas.dufresne@collabora.com,
+        Sebastian Fricke <sebastian.fricke@collabora.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Subject: [PATCH 5/6] staging: media: rkvdec: Enable S_CTRL IOCTL
+Date:   Wed, 13 Jul 2022 18:32:03 +0200
+Message-Id: <20220713163201.136202-3-sebastian.fricke@collabora.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220713163201.136202-1-sebastian.fricke@collabora.com>
+References: <20220713163201.136202-1-sebastian.fricke@collabora.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 3/3] clk: bcm: rpi: Show clock id limit in error case
-Content-Language: en-US
-To:     Stefan Wahren <stefan.wahren@i2se.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>
-Cc:     bcm-kernel-feedback-list@broadcom.com,
-        Maxime Ripard <maxime@cerno.tech>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220713154953.3336-1-stefan.wahren@i2se.com>
- <20220713154953.3336-4-stefan.wahren@i2se.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220713154953.3336-4-stefan.wahren@i2se.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/13/22 08:49, Stefan Wahren wrote:
-> The clock id limit will be extended in the future, so it would be
-> helpful to see the actual clock id limit in case the firmware
-> response has been rejected.
-> 
-> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+Enable user-space to set the SPS of the current byte-stream on the
+decoder. This action will trigger the decoder to pick the optimal
+pixel-format for the capture queue.
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
+Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
+---
+ drivers/staging/media/rkvdec/rkvdec.c | 60 ++++++++++++++++++++-------
+ 1 file changed, 46 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/staging/media/rkvdec/rkvdec.c b/drivers/staging/media/rkvdec/rkvdec.c
+index 2625e0a736f4..f84579f764ab 100644
+--- a/drivers/staging/media/rkvdec/rkvdec.c
++++ b/drivers/staging/media/rkvdec/rkvdec.c
+@@ -27,6 +27,17 @@
+ #include "rkvdec.h"
+ #include "rkvdec-regs.h"
+ 
++static void rkvdec_fill_decoded_pixfmt(struct rkvdec_ctx *ctx,
++				       struct v4l2_pix_format_mplane *pix_mp)
++{
++	v4l2_fill_pixfmt_mp(pix_mp, pix_mp->pixelformat,
++			    pix_mp->width, pix_mp->height);
++	pix_mp->plane_fmt[0].sizeimage += 128 *
++		DIV_ROUND_UP(pix_mp->width, 16) *
++		DIV_ROUND_UP(pix_mp->height, 16);
++	pix_mp->field = V4L2_FIELD_NONE;
++}
++
+ /*
+  * Fetch the optimal pixel-format directly from the codec variation. If the
+  * valid_fmt callback is not implemented, then the context variable valid_fmt
+@@ -44,6 +55,27 @@ static int rkvdec_get_valid_fmt(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
+ 	return 0;
+ }
+ 
++static int rkvdec_set_valid_fmt(struct rkvdec_ctx *ctx, struct v4l2_ctrl *ctrl)
++{
++	struct v4l2_pix_format_mplane *pix_mp;
++
++	switch (ctrl->id) {
++	case V4L2_CID_STATELESS_H264_SPS:
++	case V4L2_CID_STATELESS_VP9_FRAME:
++	case V4L2_CID_STATELESS_HEVC_SPS:
++		ctx->valid_fmt = rkvdec_get_valid_fmt(ctx, ctrl);
++
++		pix_mp = &ctx->decoded_fmt.fmt.pix_mp;
++		pix_mp->pixelformat = ctx->valid_fmt;
++		rkvdec_fill_decoded_pixfmt(ctx, pix_mp);
++		break;
++	default:
++		dev_err(ctx->dev->dev, "Unsupported stateless control ID: %x\n", ctrl->id);
++		return -EINVAL;
++	};
++	return 0;
++}
++
+ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
+ {
+ 	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
+@@ -58,8 +90,18 @@ static int rkvdec_try_ctrl(struct v4l2_ctrl *ctrl)
+ 	return 0;
+ }
+ 
++static int rkvdec_s_ctrl(struct v4l2_ctrl *ctrl)
++{
++	struct rkvdec_ctx *ctx = container_of(ctrl->handler, struct rkvdec_ctx, ctrl_hdl);
++
++	if (!ctx->valid_fmt)
++		return rkvdec_set_valid_fmt(ctx, ctrl);
++	return 0;
++}
++
+ static const struct v4l2_ctrl_ops rkvdec_ctrl_ops = {
+ 	.try_ctrl = rkvdec_try_ctrl,
++	.s_ctrl = rkvdec_s_ctrl,
+ };
+ 
+ static const struct rkvdec_ctrl_desc rkvdec_h264_ctrl_descs[] = {
+@@ -213,13 +255,9 @@ static void rkvdec_reset_decoded_fmt(struct rkvdec_ctx *ctx)
+ 	ctx->valid_fmt = 0;
+ 	rkvdec_reset_fmt(ctx, f, ctx->coded_fmt_desc->decoded_fmts[0]);
+ 	f->type = V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE;
+-	v4l2_fill_pixfmt_mp(&f->fmt.pix_mp,
+-			    ctx->coded_fmt_desc->decoded_fmts[0],
+-			    ctx->coded_fmt.fmt.pix_mp.width,
+-			    ctx->coded_fmt.fmt.pix_mp.height);
+-	f->fmt.pix_mp.plane_fmt[0].sizeimage += 128 *
+-		DIV_ROUND_UP(f->fmt.pix_mp.width, 16) *
+-		DIV_ROUND_UP(f->fmt.pix_mp.height, 16);
++	f->fmt.pix_mp.width = ctx->coded_fmt.fmt.pix_mp.width;
++	f->fmt.pix_mp.height = ctx->coded_fmt.fmt.pix_mp.height;
++	rkvdec_fill_decoded_pixfmt(ctx, &f->fmt.pix_mp);
+ }
+ 
+ static int rkvdec_enum_framesizes(struct file *file, void *priv,
+@@ -288,13 +326,7 @@ static int rkvdec_try_capture_fmt(struct file *file, void *priv,
+ 				       &pix_mp->height,
+ 				       &coded_desc->frmsize);
+ 
+-	v4l2_fill_pixfmt_mp(pix_mp, pix_mp->pixelformat,
+-			    pix_mp->width, pix_mp->height);
+-	pix_mp->plane_fmt[0].sizeimage +=
+-		128 *
+-		DIV_ROUND_UP(pix_mp->width, 16) *
+-		DIV_ROUND_UP(pix_mp->height, 16);
+-	pix_mp->field = V4L2_FIELD_NONE;
++	rkvdec_fill_decoded_pixfmt(ctx, pix_mp);
+ 
+ 	return 0;
+ }
 -- 
-Florian
+2.25.1
+
