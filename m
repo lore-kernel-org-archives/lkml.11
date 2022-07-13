@@ -2,199 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76565C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:19:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B033C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:19:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237151AbiGMVT1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 17:19:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38976 "EHLO
+        id S237445AbiGMVTa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 17:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237455AbiGMVSv (ORCPT
+        with ESMTP id S237424AbiGMVSw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 17:18:51 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6388A62D8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:18:36 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id q5-20020a17090a304500b001efcc885cc4so162769pjl.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:18:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=kvmBdvQg/8Gn5GQ6ktKwyk40airFB+prdhQxh8nJVNk=;
-        b=MK1MDSnTj2CTaHexfUNMmag9cCZXdmf5weL/rz2GyjxeNfnihO/vyOyT/J65swUz2Q
-         D/sJuMaua1GG412SFdfLHkl4rZPSkZeMhhOHLCA7vdvJX8Duuu8+ukuAqJdgMS4Tj5QS
-         0l/u0JDkoeDYtp+GonY9rA0lP0raEMwKwrYA6d/qSmAvD2HcAT1HSqyHxx6e55uTMaIp
-         YzzowDbrStxkYKOxI0s8P7NdNE6ZkByfLA3ogvn35r5Ly18XVHt+NoLXe4vGtO0bhmfm
-         b6r3mK0CjooeFEtwcL98eHdI2xjq/ellSfJrJJs8Jp+pbUIUZ3t68BDoz7/pvjwSZYht
-         NnPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=kvmBdvQg/8Gn5GQ6ktKwyk40airFB+prdhQxh8nJVNk=;
-        b=2ToqbQigKOdlE5AS88TLgUswx1K+7kqGcAzYRD8Aj5Jgy0SQJUPDr22Il/VOnMrxkA
-         vEVuic+4x/0u62nG0E9+dAIWXNfOv5WI3GDVRjCspD9XVEgLPkWFYjoEu1VtHvsvFp6R
-         e2oO2mjHmZ+tgSnKF80IY2vFRquLj1Oj0ey0R/G3FwxhFZh2w55uqXXmM38IVNDp/k4s
-         Kok3aY0Vvmer0n9xbUx6hUTH5B5bwoO0Hmc6nPtfPgicE/oToQx2naYIZoyAV/V7522a
-         Zj+QhyOQCP39q5+Dp82PcfpLzgiuKt7IrN4hGMkRSwcW8TGahivQiu0sc86jY4i+lj1W
-         Igpw==
-X-Gm-Message-State: AJIora+87V5jSn+vM7OKs9oWj/xOjB0Us/WzmHvogKbhrwuvBzoSF9Uq
-        py60le9TzSvD3IGEeCMR1lZCArZC+6WOdw==
-X-Google-Smtp-Source: AGRyM1s93V9EN4nLCXOZbSYMcv810nnAfRKKMN9dC4VHdMKPxZv9TkjMfhbK5NDZ3maARd+j2KB6Mg==
-X-Received: by 2002:a17:902:9a07:b0:16c:39bc:876 with SMTP id v7-20020a1709029a0700b0016c39bc0876mr4931225plp.42.1657747115831;
-        Wed, 13 Jul 2022 14:18:35 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id rm8-20020a17090b3ec800b001eff36b1f2asm2104283pjb.0.2022.07.13.14.18.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 14:18:34 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <6a026c9a-c4ee-deba-e028-4c0f478c1911@roeck-us.net>
-Date:   Wed, 13 Jul 2022 14:18:33 -0700
+        Wed, 13 Jul 2022 17:18:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAE26399;
+        Wed, 13 Jul 2022 14:18:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7974761EB4;
+        Wed, 13 Jul 2022 21:18:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 880D4C341C6;
+        Wed, 13 Jul 2022 21:18:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657747119;
+        bh=bgbWAqzuhbU82y5y3YZ+B+ycI7oJ5SO7ZSRwsLhFgDw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UI0GvjlSBj2Cut5Sh/AoNtnjd9x2aPcregB7wbMq2qmXH9bmC5kk2XksA4QF4wJS7
+         HR/yb8b28Mu0WOZ7uCqUR7CPIfpqsUaj0JsvzEaejLm4vLc0LZO1AvkzfmejAvGFsI
+         eAdNtYuDro2a3Mb2z4VYAJ08MNHfFgQMy1IvGMadPRjAHD2KaMJndt5t6fD1HFio2C
+         ApYIHgPNIZCrspff4eCFWre2srA3EoLOPjPMFOuQ1VcF21HSpAVfbmO47vZ3+/o0Vq
+         lbXVasCpSldY1RHMxGES2ArL2ca2D96RqIH3pxbh+DWhlr5nSMesVUQZ/bTV8mPbti
+         ibLE6RyIU0NaA==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V5 10/16] Documentation/rv: Add deterministic automata monitor synthesis documentation
+Date:   Wed, 13 Jul 2022 23:17:26 +0200
+Message-Id: <73a398227dcfa827ce8a116a7a4a479ddfe07f08.1657745645.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1657745645.git.bristot@kernel.org>
+References: <cover.1657745645.git.bristot@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Alex Deucher <alexdeucher@gmail.com>,
-        Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
-Cc:     Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
-        Daniel Axtens <dja@axtens.net>
-References: <20220618232737.2036722-1-linux@roeck-us.net>
- <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
- <CADnq5_NkVWqcxwLMBeskqpcSEYCEjUAK0hqvA_PAo7ACHKL2cA@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH] drm/amd/display: Add missing hard-float compile flags for
- PPC64 builds
-In-Reply-To: <CADnq5_NkVWqcxwLMBeskqpcSEYCEjUAK0hqvA_PAo7ACHKL2cA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/13/22 13:57, Alex Deucher wrote:
-> On Thu, Jun 30, 2022 at 5:01 PM Rodrigo Siqueira Jordao
-> <Rodrigo.Siqueira@amd.com> wrote:
->>
->>
->>
->> On 2022-06-18 19:27, Guenter Roeck wrote:
->>> ppc:allmodconfig builds fail with the following error.
->>>
->>> powerpc64-linux-ld:
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
->>>                uses hard float,
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
->>>                uses soft float
->>> powerpc64-linux-ld:
->>>        failed to merge target specific data of file
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
->>> powerpc64-linux-ld:
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
->>>                uses hard float,
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
->>>                uses soft float
->>> powerpc64-linux-ld:
->>>        failed to merge target specific data of
->>>        file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
->>> powerpc64-linux-ld:
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
->>>                uses hard float,
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
->>>                uses soft float
->>> powerpc64-linux-ld:
->>>        failed to merge target specific data of file
->>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
->>>
->>> The problem was introduced with commit 41b7a347bf14 ("powerpc: Book3S
->>> 64-bit outline-only KASAN support") which adds support for KASAN. This
->>> commit in turn enables DRM_AMD_DC_DCN because KCOV_INSTRUMENT_ALL and
->>> KCOV_ENABLE_COMPARISONS are no longer enabled. As result, new files are
->>> compiled which lack the selection of hard-float.
->>>
->>> Fixes: 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
->>> Cc: Michael Ellerman <mpe@ellerman.id.au>
->>> Cc: Daniel Axtens <dja@axtens.net>
->>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
->>> ---
->>>    drivers/gpu/drm/amd/display/dc/dcn31/Makefile  | 4 ++++
->>>    drivers/gpu/drm/amd/display/dc/dcn315/Makefile | 4 ++++
->>>    drivers/gpu/drm/amd/display/dc/dcn316/Makefile | 4 ++++
->>>    3 files changed, 12 insertions(+)
->>>
->>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
->>> index ec041e3cda30..74be02114ae4 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
->>> +++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
->>> @@ -15,6 +15,10 @@ DCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o
->>>        dcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \
->>>        dcn31_afmt.o dcn31_vpg.o
->>>
->>> +ifdef CONFIG_PPC64
->>> +CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o := -mhard-float -maltivec
->>> +endif
->>> +
->>>    AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
->>>
->>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
->>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
->>> index 59381d24800b..1395c1ced8c5 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
->>> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
->>> @@ -25,6 +25,10 @@
->>>
->>>    DCN315 = dcn315_resource.o
->>>
->>> +ifdef CONFIG_PPC64
->>> +CFLAGS_$(AMDDALPATH)/dc/dcn315/dcn315_resource.o := -mhard-float -maltivec
->>> +endif
->>> +
->>>    AMD_DAL_DCN315 = $(addprefix $(AMDDALPATH)/dc/dcn315/,$(DCN315))
->>>
->>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN315)
->>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
->>> index 819d44a9439b..c3d2dd78f1e2 100644
->>> --- a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
->>> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
->>> @@ -25,6 +25,10 @@
->>>
->>>    DCN316 = dcn316_resource.o
->>>
->>> +ifdef CONFIG_PPC64
->>> +CFLAGS_$(AMDDALPATH)/dc/dcn316/dcn316_resource.o := -mhard-float -maltivec
->>> +endif
->>> +
->>>    AMD_DAL_DCN316 = $(addprefix $(AMDDALPATH)/dc/dcn316/,$(DCN316))
->>>
->>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN316)
->>
->> Hi,
->>
->> I don't want to re-introduce those FPU flags for DCN31/DCN314/DCN316
->> since we fully isolate FPU operations for those ASICs inside the DML
-> 
-> I don't understand why we don't need to add the hard-float flags back
-> on the other DCN blocks.  Did we miss something in the DML cleanup for
-> DCN 3.1.x?  Anyway, at this point, the patch is:
-> Acked-by: Alex Deucher <alexander.deucher@amd.com>
-> We can sort the rest out for 5.20.
-> 
+Add the da_monitor_synthesis.rst introduces some concepts behind the
+Deterministic Automata (DA) monitor synthesis and interface.
 
-The problem is not the FPU operations, but the fact that soft-float
-and hard-float compiled code is linked together. The soft-float and
-hard-float ABIs on powerpc are not compatible, so one ends up with
-an object file which is partially soft-float and partially hard-float
-compiled and thus uses different ABIs. That can only create chaos,
-so the linker complains about it.
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Tao Zhou <tao.zhou@linux.dev>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ .../trace/rv/da_monitor_synthesis.rst         | 147 ++++++++++++++++++
+ Documentation/trace/rv/index.rst              |   1 +
+ include/rv/da_monitor.h                       |   3 +
+ tools/verification/dot2/dot2k                 |   3 +
+ tools/verification/dot2/dot2k.py              |   3 +
+ 5 files changed, 157 insertions(+)
+ create mode 100644 Documentation/trace/rv/da_monitor_synthesis.rst
 
-Guenter
+diff --git a/Documentation/trace/rv/da_monitor_synthesis.rst b/Documentation/trace/rv/da_monitor_synthesis.rst
+new file mode 100644
+index 000000000000..427ed4f4729b
+--- /dev/null
++++ b/Documentation/trace/rv/da_monitor_synthesis.rst
+@@ -0,0 +1,147 @@
++Deterministic Automata Monitor Synthesis
++========================================
++
++The starting point for the application of runtime verification (RV) technics
++is the *specification* or *modeling* of the desired (or undesired) behavior
++of the system under scrutiny.
++
++The formal representation needs to be then *synthesized* into a *monitor*
++that can then be used in the analysis of the trace of the system. The
++*monitor* connects to the system via an *instrumentation* that converts
++the events from the *system* to the events of the *specification*.
++
++
++In Linux terms, the runtime verification monitors are encapsulated inside
++the *RV monitor* abstraction. The RV monitor includes a set of instances
++of the monitor (per-cpu monitor, per-task monitor, and so on), the helper
++functions that glue the monitor to the system reference model, and the
++trace output as a reaction to event parsing and exceptions, as depicted
++below::
++
++ Linux  +----- RV Monitor ----------------------------------+ Formal
++  Realm |                                                   |  Realm
++  +-------------------+     +----------------+     +-----------------+
++  |   Linux kernel    |     |     Monitor    |     |     Reference   |
++  |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
++  | (instrumentation) |     | (verification) |     | (specification) |
++  +-------------------+     +----------------+     +-----------------+
++         |                          |                       |
++         |                          V                       |
++         |                     +----------+                 |
++         |                     | Reaction |                 |
++         |                     +--+--+--+-+                 |
++         |                        |  |  |                   |
++         |                        |  |  +-> trace output ?  |
++         +------------------------|--|----------------------+
++                                  |  +----> panic ?
++                                  +-------> <user-specified>
++
++DA monitor synthesis
++--------------------
++
++The synthesis of automata-based models into the Linux *RV monitor* abstraction
++is automated by the dot2k tool and the rv/da_monitor.h header file that
++contains a set of macros that automatically generate the monitor's code.
++
++dot2k
++-----
++
++The dot2k utility leverages dot2c by converting an automaton model in
++the DOT format into the C representation [1] and creating the skeleton of
++a kernel monitor in C.
++
++For example, it is possible to transform the wip.dot model present in
++[1] into a per-cpu monitor with the following command::
++
++  $ dot2k -d wip.dot -t per_cpu
++
++This will create a directory named wip/ with the following files:
++
++- wip.h: the wip model in C
++- wip.c: the RV monitor
++
++The wip.c file contains the monitor declaration and the starting point for
++the system instrumentation.
++
++Monitor macros
++--------------
++
++The rv/da_monitor.h enables automatic code generation for the *Monitor
++Instance(s)* using C macros.
++
++The benefits of the usage of macro for monitor synthesis are 3-fold as it:
++
++- Reduces the code duplication;
++- Facilitates the bug fix/improvement;
++- Avoids the case of developers changing the core of the monitor code
++  to manipulate the model in a (let's say) non-standard way.
++
++This initial implementation presents three different types of monitor instances:
++
++- ``#define DECLARE_DA_MON_GLOBAL(name, type)``
++- ``#define DECLARE_DA_MON_PER_CPU(name, type)``
++- ``#define DECLARE_DA_MON_PER_TASK(name, type)``
++
++The first declares the functions for a global deterministic automata monitor,
++the second for monitors with per-cpu instances, and the third with per-task
++instances.
++
++In all cases, the 'name' argument is a string that identifies the monitor, and
++the 'type' argument is the data type used by dot2k on the representation of
++the model in C.
++
++For example, the wip model with two states and three events can be
++stored in an 'unsigned char' type. Considering that the preemption control
++is a per-cpu behavior, the monitor declaration in the 'wip.c' file is::
++
++  DECLARE_DA_MON_PER_CPU(wip, unsigned char);
++
++The monitor is executed by sending events to be processed via the functions
++presented below::
++
++  da_handle_event_$(MONITOR_NAME)($(event from event enum));
++  da_handle_init_event_$(MONITOR_NAME)($(event from event enum));
++  da_handle_init_run_event_$(MONITOR_NAME)($(event from event enum));
++
++The function ``da_handle_event_$(MONITOR_NAME)()`` is the regular case where
++the event will be processed if the monitor is processing events.
++
++When a monitor is enabled, it is placed in the initial state of the automata.
++However, the monitor does not know if the system is in the *initial state*.
++
++The ``da_handle_init_event_$(MONITOR_NAME)()`` function is used to notify the
++monitor that the system is returning to the initial state, so the monitor can
++start monitoring the next event.
++
++The ``da_handle_init_run_event_$(MONITOR_NAME)()`` function is used to notify
++the monitor that the system is known to be in the initial state, so the
++monitor can start monitoring and monitor the current event.
++
++Using the wip model as example, the events "preempt_disable" and
++"sched_waking" should be sent to monitor, respectively, via [2]::
++
++  da_handle_event_wip(preempt_disable_wip);
++  da_handle_event_wip(sched_waking_wip);
++
++While the event "preempt_enabled" will use::
++
++  da_handle_init_event_wip(preempt_enable_wip);
++
++To notify the monitor that the system will be returning to the initial state,
++so the system and the monitor should be in sync.
++
++Final remarks
++-------------
++
++With the monitor synthesis in place using the rv/da_monitor.h and
++dot2k, the developer's work should be limited to the instrumentation
++of the system, increasing the confidence in the overall approach.
++
++[1] For details about deterministic automata format and the translation
++from one representation to another, see::
++
++  Documentation/trace/rv/deterministic_automata.rst
++
++[2] dot2k appends the monitor's name suffix to the events enums to
++avoid conflicting variables when exporting the global vmlinux.h
++use by BPF programs.
+diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
+index 013a41a410cf..46d47f33052c 100644
+--- a/Documentation/trace/rv/index.rst
++++ b/Documentation/trace/rv/index.rst
+@@ -8,3 +8,4 @@ Runtime Verification
+ 
+    runtime-verification.rst
+    deterministic_automata.rst
++   da_monitor_synthesis.rst
+diff --git a/include/rv/da_monitor.h b/include/rv/da_monitor.h
+index d21045e6c5fc..7a1e6fcd642e 100644
+--- a/include/rv/da_monitor.h
++++ b/include/rv/da_monitor.h
+@@ -6,6 +6,9 @@
+  * with automata models in C generated by the dot2k tool.
+  *
+  * The dot2k tool is available at tools/verification/dot2k/
++ *
++ * For further information, see:
++ *   Documentation/trace/rv/da_monitor_synthesis.rst
+  */
+ 
+ #include <rv/automata.h>
+diff --git a/tools/verification/dot2/dot2k b/tools/verification/dot2/dot2k
+index 69106f4b7682..9dcd38abe20a 100644
+--- a/tools/verification/dot2/dot2k
++++ b/tools/verification/dot2/dot2k
+@@ -4,6 +4,9 @@
+ # Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
+ #
+ # dot2k: transform dot files into a monitor for the Linux kernel.
++#
++# For further information, see:
++#   Documentation/trace/rv/da_monitor_synthesis.rst
+ 
+ if __name__ == '__main__':
+     from dot2.dot2k import dot2k
+diff --git a/tools/verification/dot2/dot2k.py b/tools/verification/dot2/dot2k.py
+index 4eecd69c2568..2856e1ce1259 100644
+--- a/tools/verification/dot2/dot2k.py
++++ b/tools/verification/dot2/dot2k.py
+@@ -4,6 +4,9 @@
+ # Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
+ #
+ # dot2k: transform dot files into a monitor for the Linux kernel.
++#
++# For further information, see:
++#   Documentation/trace/rv/da_monitor_synthesis.rst
+ 
+ from dot2.dot2c import Dot2c
+ import platform
+-- 
+2.35.1
+
