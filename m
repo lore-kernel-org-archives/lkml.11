@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DE9CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40259C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235299AbiGMINj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
+        id S230106AbiGMINp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234963AbiGMIMg (ORCPT
+        with ESMTP id S234991AbiGMIMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D426FE95FC
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB7EEA143;
+        Wed, 13 Jul 2022 01:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76085B81D5B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 070B7C385A2;
-        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CED5E61A51;
+        Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508C2C36AEC;
+        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=bME4oJz6dR2dL+exdw8ZiepOjromIutAKbYd7CbWH1Q=;
+        bh=NGoFV+XEZz1AEK80xsrPTYnST06m5w8suHzIjN1TXLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i0Ok75E1qOpSqD7A+Pl6xuMC5wXKTvxjMQUDYRMkuCPvxHd6xy+KSfcITt5p45Luy
-         Iki8Zobqq25c91WZeLhbg7F2DEdB2mQla4e6mbuTaRY1WP4cWIifKQbOZpAgXYsv1s
-         faElSYNBCaFtSnJognOL3HUhOI0yW1hEKdhL+F60mbpl6z47B/zcu6Gi7Ydd2s0ZtA
-         TzSFr4KDeiBD5G2k14XixU+6AEmn7Ep3HoZcRiwTS3c8JehaVgydMjLFaPwMLoe+Gu
-         ByAySK5ipHqr3wE1Z75dtio1CThV5TaOSTb91D4DINhuPBFSr95kwLNWKmqvEx5Y5A
-         34+bkAKYeS57g==
+        b=cbUrNe6uWcxuzBp+/Z4L0Q8+2yXsy+bgXUTT5LfdHo7xYiuUPk2y3DOWfPoSEYgPe
+         obNgdcxxmFAqqs14rJfc0LXc4VnCtb9kl1Y4p/tFGktP00AHWF58lrMKs0axc9AiDM
+         t2FimThIjjrc7qjzljsR0LhHhUOK/QM6u8PlIcZNx3xngD+nOLHYlQyIIihmEj3Thu
+         CbjEaQkoXziFLZphz13iWRWEF1rKSnIXCsR3EqkoMG8vvmsEHwc4LcMZNv0co4R4Ey
+         NcANxAh2btb+kJT2VgTBHJauOeqAakwxbTe3GGL+vHnciPPhr1l2SEnWN8hs5b3ToC
+         hsnUbaZ9rZwNQ==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004ztY-Mb;
+        id 1oBXTx-004zuH-U6;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Nirmoy Das <nirmoy.das@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 19/39] drm/i915: i915_gem_region.h: fix i915_gem_apply_to_region_ops doc
-Date:   Wed, 13 Jul 2022 09:12:07 +0100
-Message-Id: <f197e0eccbde017dccbd31e72c892a102543cb90.1657699522.git.mchehab@kernel.org>
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 30/39] docs: gpu: i915.rst: gt: add more kernel-doc markups
+Date:   Wed, 13 Jul 2022 09:12:18 +0100
+Message-Id: <d7d1f6d6516eb3a82041af1d5f40c2f550de40db.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -63,16 +63,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel-doc markup for i915_gem_apply_to_region_ops() has some
-issues:
-
-1. The field should be marked as @process_obj;
-2. The callback parameters aren't document properly, as sphinx
-   will consider them to be placed at the wrong place.
-
-Fix (1) and change the way the parameters are described, using
-a list, in order for it to be properly parsed during documentation
-build time.
+There are several documented GT kAPI that aren't currently part
+of the docs. Add them, as this allows identifying issues with
+badly-formatted tags.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -80,28 +73,70 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gem/i915_gem_region.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ Documentation/gpu/i915.rst | 43 +++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 42 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_region.h b/drivers/gpu/drm/i915/gem/i915_gem_region.h
-index 2dfcc41c0170..b0134bf4b1b7 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_region.h
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_region.h
-@@ -22,9 +22,11 @@ struct i915_gem_apply_to_region;
-  */
- struct i915_gem_apply_to_region_ops {
- 	/**
--	 * process_obj - Process the current object
--	 * @apply: Embed this for private data.
--	 * @obj: The current object.
-+	 * @process_obj: Callback function to process the current object
-+	 * it requires two arguments:
-+	 *
-+	 * - @apply: Embed this for private data.
-+	 * - @obj: The current object.
- 	 *
- 	 * Note that if this function is part of a ww transaction, and
- 	 * if returns -EDEADLK for one of the objects, it may be
+diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
+index 2ad7941a79f2..afd8c0e3c689 100644
+--- a/Documentation/gpu/i915.rst
++++ b/Documentation/gpu/i915.rst
+@@ -149,7 +149,6 @@ Misc display functions
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/display/skl_scaler.c
+ 
+-
+ Plane Configuration
+ -------------------
+ 
+@@ -308,6 +307,48 @@ Multicast/Replicated (MCR) Registers
+ .. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gt_mcr.c
+    :internal:
+ 
++GT engine
++---------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_types.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_cs.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_pm.c
++
++GT context
++----------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_context.h
++
++Graphics Translation Tables
++---------------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_ggtt.c
++
++Other GT functionality
++----------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gsc.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_migrate.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_mocs.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rc6.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_reset.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps_types.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_sseu.c
++
+ Memory Management and Command Submission
+ ========================================
+ 
 -- 
 2.36.1
 
