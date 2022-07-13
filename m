@@ -2,126 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 583C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:58:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F79CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:58:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236693AbiGMO6U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32902 "EHLO
+        id S236701AbiGMO6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236660AbiGMO6Q (ORCPT
+        with ESMTP id S236661AbiGMO6S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:58:16 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2089.outbound.protection.outlook.com [40.107.223.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE953ED6C;
-        Wed, 13 Jul 2022 07:58:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kEdSssu+hwuZWem6NAbds1rweQ8IHuYgLi3pgTp/syhzmr2AZBbTWYAi/qE3ufStTeiwy8g81CUYzUO68SvGX+EUyKhQzuLDvR46atedeTKJ6Mhn3YqOvzgCcvCmVLkt6xM94cAVlaIRnla0FK840vaHYA+GH4L3g9CkQ8qekR89dpC7NnJS7pPXeDZMyiaP2Tt5TZOdseDfI3I2jb6TXoKh43Z2k6I4V++csM1mHXxFPKNgYubUad3kO0TPYMyWm+l38ODhVbf2cUycHUqz4V5ZUvuiPfhtRDd0/0WAjgUW3VTonwD/1AHhivBOtYAbUQkUdZ9iwUik/SoRVB16MA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vsMYZT9ZGage1XOGx8Qbmm4a9oY0jhH71JzfXIWycu8=;
- b=bCFx5xs+T3a1UeE+IHw0WSzG1UWmf2+I7etFYOU80vU+CyaeIdqdy0ZhUOQYO0KawwuUffyRKgJonQAB/o0N75wJIKN8TizLIEQ7LjyVGVo5OS9yQcajBduYuuo49IKIE8NNwHRo2kqSNCkMkaqkbJ6tRm4/uoxWg4gzjJLkIMEABxBjkcMbpyHCPEJCKlyyF/+6YaFrdwsnSeVMUKVJAr7vzJjrLH546vnSS66EKYI4hMydCs7F4AfJbcLkMHEz6awG5LZL3Rgu6o/asMXBOkmJZOPfUIIcuT9e6VFXKyCtJsOvxBEJ+gkKRfOJZYm7n2nlx+/m/A3w0Be7e5zXxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=linaro.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vsMYZT9ZGage1XOGx8Qbmm4a9oY0jhH71JzfXIWycu8=;
- b=WnjPomL7v+3Upfn16hmFAiEDZHYvzxcPnOq0ngOScroKn6HU7MdZGkD2hqw58snIY0JYenB4FPXPN0VuEnSCo2SLGolSwZbaxF2AU29Bol2SXpcprMzsIV2FWRGWLPdfJQ4iCgG4F9BJvwycvHzXHZemRJ1aHzZYWGMNz8BbZwQ=
-Received: from DS7PR03CA0185.namprd03.prod.outlook.com (2603:10b6:5:3b6::10)
- by DS7PR12MB6119.namprd12.prod.outlook.com (2603:10b6:8:99::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5417.25; Wed, 13 Jul 2022 14:58:07 +0000
-Received: from DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b6:cafe::61) by DS7PR03CA0185.outlook.office365.com
- (2603:10b6:5:3b6::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20 via Frontend
- Transport; Wed, 13 Jul 2022 14:58:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT036.mail.protection.outlook.com (10.13.172.64) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 14:58:07 +0000
-Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
- SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Wed, 13 Jul 2022 09:58:06 -0500
-From:   Carlos Bilbao <carlos.bilbao@amd.com>
-To:     <bjorn.andersson@linaro.org>, <amitk@kernel.org>,
-        <thara.gopinath@gmail.com>, <konrad.dybcio@somainline.org>
-CC:     <agross@kernel.org>, <david.brown@linaro.org>,
-        <linux-pm@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bilbao@vt.edu>,
-        Carlos Bilbao <carlos.bilbao@amd.com>
-Subject: [PATCH 3/4] thermal/drivers/qcom: Simplify function calibrate_8960()
-Date:   Wed, 13 Jul 2022 09:56:58 -0500
-Message-ID: <20220713145655.3844109-4-carlos.bilbao@amd.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220713145655.3844109-1-carlos.bilbao@amd.com>
-References: <20220713145655.3844109-1-carlos.bilbao@amd.com>
+        Wed, 13 Jul 2022 10:58:18 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97DD63FA22;
+        Wed, 13 Jul 2022 07:58:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657724293; x=1689260293;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=lTmAVQlD6Vx1Np35GsT5xt5v+z7aHOSMCs6G1835MVM=;
+  b=OwA7VLKJdaEZAMYMkRUHBRyuNGDTJt622C03J5gcMLG50KLkxVfBSTB1
+   JpRsE25y7yOvEDerF1OKP+7zdSk0bbzRSeYeAhEMLSXKJOMkcTWC2CJFI
+   cSu5I48Pt0vPDAt54v0NnD9eE69Gv7DxngpmxykDv+8m+/NAlC7/MePb7
+   NdRufhSz7v2YsbaB3/22CGGON0LY5vMSerWbOTzwcKtOkcZlYAAP0y6aX
+   2321t+OCyX0/t00QggUwcuG6LAaJx3lIBpKzihas1HQVAV7sxPanMY1nA
+   haDQlr1MkXV0pRtjQ2ONRHqe2quXhmppREdUhTKfl1yTZk78oQcH8ns9m
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="265020324"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="265020324"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 07:58:13 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="593017443"
+Received: from melanief-mobl.amr.corp.intel.com (HELO [10.212.10.37]) ([10.212.10.37])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 07:58:11 -0700
+Message-ID: <726124ab-53e4-5f3c-b0bb-124d129d3028@linux.intel.com>
+Date:   Wed, 13 Jul 2022 09:58:10 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dbe2d4d9-4791-436e-0f81-08da64e018cf
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6119:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Mp5DqeG5H8XYu+qtcEvTXWadadC2AIrfiU0zv8D+MOx8PYvaTxBfnVaFhMjLlVXWSR83MB+ZRiiqC4RU6t1ZhVBapvMGUXs11DDlkyxCVZUO5LRBs40StZBOrewO/Z9gE0Q0on8+s0Aa67M7CMexm/2JnaSI+8DQ39kFiKSTq3nLULbftQM7kSuPdIvc+lh/POmvZ8E9a924xDBQvSpbSTBGQB0GfwuzcgofSkP/b/uofFIWJ9d53gNcvqrKML2g1dTASLseoW97e33fy0ii+PldikowaiwBBy6eFmuJ/KZqK/woHz9SWlEF3CZkt2GpLgX0DYBuhAuIJQp6IVNhik4rIxul5nb5slD04wMlHRRGnhoQgU9vGHJY4qKoEU0IefZYYW6XLRDqSvWWFXRxJNHDDFFlpOdhlTwVnekKOVU3Z6G/kWayE9PARL2HaV3HFh3S9s7SX5oM6GjDAoh/0JsPVqoWDvkBpVw/3ANCU6PfhGeulkE2dfmWL9vXK55AatZk3mLEO+jYsED4p1+LKHcsQVDynG7FyUP8lrfDEuyn0wQHEi1bTtvTrHdnoFTRoftIwjaDpUmgPSagqq+DHrBYNx1NL6lGAaQrHTOyp8yzQFGnxjHtLzIK++Mwg2+gPBqNa2/dC0ktydXlrKK26Vh0RiLGEG4AB3FDYd124HJ2TQERElfhjGSjT4sfxEuB3t2Yki4W6aC8PZZDzMWZvECphUEkraJusoa42wZgmpIZpW6b3vlRm7MHbIDYI0fYkvMm4I4srLooLF4wEny+ZaXst23qkQix0aN2G3x07QhXeI3xFyo4Jp1iwrXcCBCZWvly/U5VP2fhv0qFA4q/N3japuLjVbFq/hV90L5X4r0=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(376002)(396003)(346002)(136003)(39860400002)(46966006)(36840700001)(40470700004)(83380400001)(478600001)(4744005)(86362001)(16526019)(356005)(36756003)(44832011)(336012)(2616005)(70206006)(4326008)(54906003)(82740400003)(316002)(8676002)(70586007)(47076005)(426003)(186003)(36860700001)(82310400005)(81166007)(110136005)(41300700001)(2906002)(26005)(40480700001)(8936002)(1076003)(5660300002)(40460700003)(7416002)(7696005)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 14:58:07.6927
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: dbe2d4d9-4791-436e-0f81-08da64e018cf
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT036.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6119
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.10.0
+Subject: Re: [PATCH v2] soundwire: qcom: Update error prints to debug prints
+Content-Language: en-US
+To:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
+        vkoul@kernel.org, agross@kernel.org, bjorn.andersson@linaro.org,
+        lgirdwood@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        quic_plai@quicinc.com, bgoswami@quicinc.com, perex@perex.cz,
+        tiwai@suse.com, srinivas.kandagatla@linaro.org,
+        quic_rohkumar@quicinc.com, linux-arm-msm@vger.kernel.org,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, swboyd@chromium.org,
+        judyhsiao@chromium.org
+References: <1657724067-19004-1-git-send-email-quic_srivasam@quicinc.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <1657724067-19004-1-git-send-email-quic_srivasam@quicinc.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simply function calibrate_8960() so a second check to IS_ERR(data) may be
-avoided.
 
-Signed-off-by: Carlos Bilbao <carlos.bilbao@amd.com>
----
- drivers/thermal/qcom/tsens-8960.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/thermal/qcom/tsens-8960.c b/drivers/thermal/qcom/tsens-8960.c
-index f4fc8a1c161e..b41ff164e67a 100644
---- a/drivers/thermal/qcom/tsens-8960.c
-+++ b/drivers/thermal/qcom/tsens-8960.c
-@@ -205,10 +205,11 @@ static int calibrate_8960(struct tsens_priv *priv)
- 	struct tsens_sensor *s = priv->sensor;
- 
- 	data = qfprom_read(priv->dev, "calib");
--	if (IS_ERR(data))
-+	if (IS_ERR(data)) {
- 		data = qfprom_read(priv->dev, "calib_backup");
--	if (IS_ERR(data))
--		return PTR_ERR(data);
-+		if (IS_ERR(data))
-+			return PTR_ERR(data);
-+	}
- 
- 	for (i = 0; i < num_read; i++, s++)
- 		s->offset = data[i];
--- 
-2.31.1
+On 7/13/22 09:54, Srinivasa Rao Mandadapu wrote:
+> Update error prints to debug prints to avoid redundant logging in kernel
+> boot time, as these prints are informative prints in irq handler.
+> 
+> Signed-off-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
 
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+
+> ---
+> Changes since v1:
+>     -- Remove redundant __func__ argument.
+>     -- Replace dev_dbg with dev_dbg_ratelimited.
+> 
+>  drivers/soundwire/qcom.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
+> index 9df970e..976ae75 100644
+> --- a/drivers/soundwire/qcom.c
+> +++ b/drivers/soundwire/qcom.c
+> @@ -573,11 +573,10 @@ static irqreturn_t qcom_swrm_irq_handler(int irq, void *dev_id)
+>  				break;
+>  			case SWRM_INTERRUPT_STATUS_NEW_SLAVE_ATTACHED:
+>  			case SWRM_INTERRUPT_STATUS_CHANGE_ENUM_SLAVE_STATUS:
+> -				dev_err_ratelimited(swrm->dev, "%s: SWR new slave attached\n",
+> -					__func__);
+> +				dev_dbg_ratelimited(swrm->dev, "SWR new slave attached\n");
+>  				swrm->reg_read(swrm, SWRM_MCP_SLV_STATUS, &slave_status);
+>  				if (swrm->slave_status == slave_status) {
+> -					dev_err(swrm->dev, "Slave status not changed %x\n",
+> +					dev_dbg(swrm->dev, "Slave status not changed %x\n",
+>  						slave_status);
+>  				} else {
+>  					qcom_swrm_get_device_status(swrm);
