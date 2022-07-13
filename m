@@ -2,104 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 783ABC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83B2C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:45:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234720AbiGMHpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40874 "EHLO
+        id S234770AbiGMHpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:45:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiGMHpH (ORCPT
+        with ESMTP id S234227AbiGMHpa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:45:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E33AECC7B4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:45:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657698306;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=OeJ+iFREKEPDGzZIidEw0qYmCZVogFXpaPgElmJEdn4=;
-        b=Q3bidCWhVnCNoblXxC5POphG+9H2xaTaIEdrQTOuZvoSKS/iFgym1WkJHxDBIY/ro0X+Sg
-        2TAuxmRerJTlpp93uihGD4Aw4VchPN71YXL4eOxjrj4bb2mRlfOboAa9mFBKMKj/uHLjJG
-        caLDZU9zSZDNE/3cSDqTnOxOMqKiJFQ=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-169-PEH9Gn3lPNGTIfk0sXQkCQ-1; Wed, 13 Jul 2022 03:45:01 -0400
-X-MC-Unique: PEH9Gn3lPNGTIfk0sXQkCQ-1
-Received: by mail-ed1-f71.google.com with SMTP id j6-20020a05640211c600b0043a8ea2c138so7768382edw.2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:45:01 -0700 (PDT)
+        Wed, 13 Jul 2022 03:45:30 -0400
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93433E5860;
+        Wed, 13 Jul 2022 00:45:29 -0700 (PDT)
+Received: by mail-ej1-f43.google.com with SMTP id z23so1829994eju.8;
+        Wed, 13 Jul 2022 00:45:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=OeJ+iFREKEPDGzZIidEw0qYmCZVogFXpaPgElmJEdn4=;
-        b=oIL6mmgRY5EJLX1fFVzGuHSt/BhTwrt75ET9DrZsLt4s+f30POuQqztY+Shq9A9FNa
-         Q86owHE7FVbb9EuPM3WtzF7Hx3mjEe68oFlqF1f8b78aZFS5fMJPARDUM1lt/WgFQ83j
-         X0WrQrye8/bOxTOv5R2ayhqLOYe5oAGXyCseMfFQnNTMb4VUbM2IakPIFC6I1JnnUvWp
-         ARYpmHETrvXfIRnzaPuPq2YFq/l0AV6rudUmSeDxDd/p5oDL82jnTVeAu8Tm4l9v7hPT
-         INq7kRYPH2wGE/L68LINeDiAvxlwnFROywG6t3d1A6MrHhB+wNbAjHGlFhH3xb4G5eZ5
-         EHVw==
-X-Gm-Message-State: AJIora/j5fsweK5rj9W/SFxVpp3zz2lRCBxbpAzlg7dx/3bxGKWblB5F
-        El1x/EumICClNBoWBbMWCYI/gYc52KblKXRYXlxgunh+Pq5qCBjoHkOYswQ/H0KVaLOi3pleZoE
-        3ix7JHAYJ1kWc6Vxie8ybVPye
-X-Received: by 2002:a17:907:2723:b0:72b:5af3:5a11 with SMTP id d3-20020a170907272300b0072b5af35a11mr2069776ejl.584.1657698300816;
-        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u0i5rjFfrpSqjEmGzpTqwuvm4Y57W/o6n5JXE6u+yShz8Ylot177o6FwB5C48121akrJRf7Q==
-X-Received: by 2002:a17:907:2723:b0:72b:5af3:5a11 with SMTP id d3-20020a170907272300b0072b5af35a11mr2069757ejl.584.1657698300651;
-        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id e24-20020a50ec98000000b0043a6a7048absm7339793edr.95.2022.07.13.00.44.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 00:45:00 -0700 (PDT)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Dongli Zhang <dongli.zhang@oracle.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Subject: Re: [PATCH] KVM: nVMX: Always enable TSC scaling for L2 when it was
- enabled for L1
-In-Reply-To: <ed923f16-86a7-1f87-f192-c935371dc48c@oracle.com>
-References: <20220712135009.952805-1-vkuznets@redhat.com>
- <ed923f16-86a7-1f87-f192-c935371dc48c@oracle.com>
-Date:   Wed, 13 Jul 2022 09:44:59 +0200
-Message-ID: <87y1wxo3r8.fsf@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=L9TobJTZebR8oOcj6p3GEvPrGcR5qIWjptoMGu+nIhc=;
+        b=vTaAYRGYgexS6BvBRELeSzfIo/Dx+Ai7WrS7fFPFxwS9YQYsihvLCD+t0B702ftScZ
+         wJHCTqsOlGL4txp01yaSN7FQ4Q8t6blNbvv9yIPPQeFvfmJeisaN5jm4eqGtXQa++izF
+         gBpPOEG1FM8Xy4FlbegW0S5aIZbyOzDc5x6hs0MVNqhTh1tgsdMBv8la3CQ09Yo1iFLW
+         kRqIStogmv+ysHUSe2GQeBzHrpdi2er+4vqJD80inWwgfKnWIKFQuwMxk5LJ/RXDQH1A
+         bbYTBRrUgGDESe8KihTLAg9Mp9pZxodA7HcpWmsqAXEvhlL0rat9n6dZvxUKkOQPa3Da
+         VdOQ==
+X-Gm-Message-State: AJIora9Kqa0F0+ysg6MeJ46idVh3QUYzosl2tkVNMwphIPDwx+NDo24/
+        R5FIX17+37XPx5K8d2pFg0zVEz33SDU=
+X-Google-Smtp-Source: AGRyM1u6SS8+hSjquiNB8ZCGeVqo86Pg8szzNu/ZzyIElA1BCe6ITzcgSckDsQjA9gw56HiK3w030g==
+X-Received: by 2002:a17:907:94c3:b0:72b:335f:6f02 with SMTP id dn3-20020a17090794c300b0072b335f6f02mr2059166ejc.40.1657698328167;
+        Wed, 13 Jul 2022 00:45:28 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id m6-20020aa7c486000000b0043a1255bc68sm7392391edq.94.2022.07.13.00.45.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 00:45:27 -0700 (PDT)
+Message-ID: <63e23f80-033f-f64e-7522-2816debbc367@kernel.org>
+Date:   Wed, 13 Jul 2022 09:45:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 5.18 34/61] objtool: Update Retpoline validation
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+References: <20220712183236.931648980@linuxfoundation.org>
+ <20220712183238.342232911@linuxfoundation.org>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <20220712183238.342232911@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dongli Zhang <dongli.zhang@oracle.com> writes:
+On 12. 07. 22, 20:39, Greg Kroah-Hartman wrote:
+> From: Peter Zijlstra <peterz@infradead.org>
+> 
+> commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
+> 
+> Update retpoline validation with the new CONFIG_RETPOLINE requirement of
+> not having bare naked RET instructions.
 
-> Hi Vitaly,
->
-> On 7/12/22 6:50 AM, Vitaly Kuznetsov wrote:
->> Windows 10/11 guests with Hyper-V role (WSL2) enabled are observed to
->> hang upon boot or shortly after when a non-default TSC frequency was
->> set for L1. The issue is observed on a host where TSC scaling is
->
-> Would you mind helping clarify if it is L1 or L2 that hangs?
->
-> The commit message "Windows 10/11 guests with Hyper-V role (WSL2)" confuses me
-> if it is L1 or L2 (perhaps due to my lack of knowledge on hyper-v) that hangs.
->
+Hi,
 
-I think it's L2 but I'm not sure: there's no easy way to interract with
-L1 (Hyper-V) directly, all the interfaces (UI, network,..) are handled
-by L2 (Windows). Prior to the observed 'hang' Hyper-V (L1) programms
-synthetic timer in KVM too far in the future but my guess is that it's
-doing that on Windows' (L2) behalf, basically just relaying the
-request. The issue only shows up with 'hv-reenlightenment' +
-'hv-frequencies' (in QEMU's terms) features as in this case both Hyper-V
-(L1) and Windows (L2) trust the information about TSC frequency from KVM
-but the information turns out to be incorrect for Windows (L2).
+this breaks compilation on i386:
+ > arch/x86/kernel/../../x86/xen/xen-head.S:35: Error: no such 
+instruction: `annotate_unret_safe'
+
+Config:
+https://raw.githubusercontent.com/openSUSE/kernel-source/stable/config/i386/pae
+
+And yeah, upstream¹⁾ is affected too.
+
+¹⁾I am at commit b047602d579b4fb028128a525f056bbdc890e7f0.
+
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> Signed-off-by: Borislav Petkov <bp@suse.de>
+> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>   arch/x86/include/asm/nospec-branch.h |    6 ++++++
+>   arch/x86/mm/mem_encrypt_boot.S       |    2 ++
+>   arch/x86/xen/xen-head.S              |    1 +
+>   tools/objtool/check.c                |   19 +++++++++++++------
+>   4 files changed, 22 insertions(+), 6 deletions(-)
+> 
+> --- a/arch/x86/include/asm/nospec-branch.h
+> +++ b/arch/x86/include/asm/nospec-branch.h
+> @@ -76,6 +76,12 @@
+>   .endm
+>   
+>   /*
+> + * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
+> + * vs RETBleed validation.
+> + */
+> +#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
+> +
+> +/*
+>    * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
+>    * indirect jmp/call which may be susceptible to the Spectre variant 2
+>    * attack.
+> --- a/arch/x86/mm/mem_encrypt_boot.S
+> +++ b/arch/x86/mm/mem_encrypt_boot.S
+> @@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
+>   	pop	%rbp
+>   
+>   	/* Offset to __x86_return_thunk would be wrong here */
+> +	ANNOTATE_UNRET_SAFE
+>   	ret
+>   	int3
+>   SYM_FUNC_END(sme_encrypt_execute)
+> @@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
+>   	pop	%r15
+>   
+>   	/* Offset to __x86_return_thunk would be wrong here */
+> +	ANNOTATE_UNRET_SAFE
+>   	ret
+>   	int3
+>   .L__enc_copy_end:
+> --- a/arch/x86/xen/xen-head.S
+> +++ b/arch/x86/xen/xen-head.S
+> @@ -26,6 +26,7 @@ SYM_CODE_START(hypercall_page)
+>   	.rept (PAGE_SIZE / 32)
+>   		UNWIND_HINT_FUNC
+>   		ANNOTATE_NOENDBR
+> +		ANNOTATE_UNRET_SAFE
+>   		ret
+>   		/*
+>   		 * Xen will write the hypercall page, and sort out ENDBR.
+> --- a/tools/objtool/check.c
+> +++ b/tools/objtool/check.c
+> @@ -2114,8 +2114,9 @@ static int read_retpoline_hints(struct o
+>   		}
+>   
+>   		if (insn->type != INSN_JUMP_DYNAMIC &&
+> -		    insn->type != INSN_CALL_DYNAMIC) {
+> -			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
+> +		    insn->type != INSN_CALL_DYNAMIC &&
+> +		    insn->type != INSN_RETURN) {
+> +			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
+>   				  insn->sec, insn->offset);
+>   			return -1;
+>   		}
+> @@ -3648,7 +3649,8 @@ static int validate_retpoline(struct obj
+>   
+>   	for_each_insn(file, insn) {
+>   		if (insn->type != INSN_JUMP_DYNAMIC &&
+> -		    insn->type != INSN_CALL_DYNAMIC)
+> +		    insn->type != INSN_CALL_DYNAMIC &&
+> +		    insn->type != INSN_RETURN)
+>   			continue;
+>   
+>   		if (insn->retpoline_safe)
+> @@ -3663,9 +3665,14 @@ static int validate_retpoline(struct obj
+>   		if (!strcmp(insn->sec->name, ".init.text") && !module)
+>   			continue;
+>   
+> -		WARN_FUNC("indirect %s found in RETPOLINE build",
+> -			  insn->sec, insn->offset,
+> -			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
+> +		if (insn->type == INSN_RETURN) {
+> +			WARN_FUNC("'naked' return found in RETPOLINE build",
+> +				  insn->sec, insn->offset);
+> +		} else {
+> +			WARN_FUNC("indirect %s found in RETPOLINE build",
+> +				  insn->sec, insn->offset,
+> +				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
+> +		}
+>   
+>   		warnings++;
+>   	}
+> 
+> 
+
 
 -- 
-Vitaly
-
+js
+suse labs
