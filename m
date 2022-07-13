@@ -2,145 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A76AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FD0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiGMImR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:42:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51174 "EHLO
+        id S234722AbiGMImz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:42:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235740AbiGMIlf (ORCPT
+        with ESMTP id S231169AbiGMImw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:41:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25321EB01E
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:41:19 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <l.stach@pengutronix.de>)
-        id 1oBXvg-0004GD-PG; Wed, 13 Jul 2022 10:41:08 +0200
-Message-ID: <2cfe481fdbd074ef6ff7e95bf32b5c99e6a26aca.camel@pengutronix.de>
-Subject: Re: [PATCH v14 11/17] PCI: imx6: Move regulator enable out of
- imx6_pcie_deassert_core_reset()
-From:   Lucas Stach <l.stach@pengutronix.de>
-To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
-        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
-        festevam@gmail.com, francesco.dolcini@toradex.com
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        linux-imx@nxp.com
-Date:   Wed, 13 Jul 2022 10:41:07 +0200
-In-Reply-To: <1656645935-1370-12-git-send-email-hongxing.zhu@nxp.com>
-References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
-         <1656645935-1370-12-git-send-email-hongxing.zhu@nxp.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+        Wed, 13 Jul 2022 04:42:52 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5A9BDF639
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657701771; x=1689237771;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yU5zgyQcalCKx3f1uNTpJxvReddjKxaKURPv3zJdOtY=;
+  b=oDOA+4NZvNEN1uGmxHgv/w4ZwyXxgCS12o7UWGf3jqcNjMMTxv1ZIcnL
+   jdeAv0XMNqpF+KtHg8A0eoXNjLqDbnRXemYFnBwmSooEw10Yl23I3zoVb
+   jMdA+xzgZTP/iIDdmXRfn6vYuBSe2ZDnJC7Y9eIJSMnHXsIp2fwruHLYX
+   v/XYY8GPgiSFI09boV3LR8K4JjaPL0vL7i6/HvGy8VkcqE3Wv/eElUbIM
+   hkAoHnsHM6+0Lwu7xB878fL9sIg8jtqBBju4uFz+vr4PH0t7oXEaEpZaO
+   Wj5z5ivV2LjRalDBwJH1GtrIOFGvxFkQqRu1s6LNeu56x8GoXTbzYAnjc
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="286286881"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="286286881"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:42:51 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="685083290"
+Received: from nirmoyda-mobl.ger.corp.intel.com (HELO [10.252.18.234]) ([10.252.18.234])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:42:47 -0700
+Message-ID: <43192086-b9a6-387c-4a29-ea28aa65a3b4@linux.intel.com>
+Date:   Wed, 13 Jul 2022 10:42:45 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] drm/syncobj: Fix sync syncobj issue
+Content-Language: en-US
+To:     =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+        jie1zhan <jesse.zhang@amd.com>, broonie@kernel.org,
+        dri-devel-bounces@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Cc:     Vijendar.Mukunda@amd.com, Basavaraj.Hiregoudar@amd.com,
+        Sunil-kumar.Dommati@amd.com, ajitkumar.pandey@amd.com,
+        lucas.demarchi@intel.com, lionel.g.landwerlin@intel.com,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220707102953.769684-1-jesse.zhang@amd.com>
+ <22a21338-305d-bdf7-0079-df67fb030fc7@amd.com>
+From:   "Das, Nirmoy" <nirmoy.das@linux.intel.com>
+In-Reply-To: <22a21338-305d-bdf7-0079-df67fb030fc7@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
-> Move regulator enable out of imx6_pcie_deassert_core_reset(), since the
-> regulator_enable() has nothing to do in with
-> imx6_pcie_deassert_core_reset().
-> 
-> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Hi Christian,
 
-Ah, so you are doing things in two steps. Disregard my first comment on
-the last patch then.
+On 7/12/2022 12:26 PM, Christian König wrote:
+> Ping to the Intel guys here. Especially Lucas/Nirmoy/Lionel.
+>
+> IIRC you stumbled over that problem as well, have you found any solution?
 
-> ---
->  drivers/pci/controller/dwc/pci-imx6.c | 36 ++++++++++++---------------
->  1 file changed, 16 insertions(+), 20 deletions(-)
-> 
-> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-> index f72eb609769b..0b168f0d57b8 100644
-> --- a/drivers/pci/controller/dwc/pci-imx6.c
-> +++ b/drivers/pci/controller/dwc/pci-imx6.c
-> @@ -712,19 +712,10 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
->  	struct device *dev = pci->dev;
->  	int ret;
->  
-> -	if (imx6_pcie->vpcie) {
-> -		ret = regulator_enable(imx6_pcie->vpcie);
-> -		if (ret) {
-> -			dev_err(dev, "failed to enable vpcie regulator: %d\n",
-> -				ret);
-> -			return ret;
-> -		}
-> -	}
-> -
->  	ret = imx6_pcie_clk_enable(imx6_pcie);
->  	if (ret) {
->  		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
-> -		goto err_clks;
-> +		return ret;
->  	}
->  
->  	switch (imx6_pcie->drvdata->variant) {
-> @@ -783,15 +774,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
->  	}
->  
->  	return 0;
-> -
-> -err_clks:
-> -	if (imx6_pcie->vpcie) {
-> -		ret = regulator_disable(imx6_pcie->vpcie);
-> -		if (ret)
-> -			dev_err(dev, "failed to disable vpcie regulator: %d\n",
-> -				ret);
-> -	}
-> -	return ret;
->  }
->  
->  static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
-> @@ -916,15 +898,29 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
->  
->  	imx6_pcie_assert_core_reset(imx6_pcie);
->  	imx6_pcie_init_phy(imx6_pcie);
-> +	if (imx6_pcie->vpcie) {
-> +		ret = regulator_enable(imx6_pcie->vpcie);
-> +		if (ret) {
-> +			dev_err(dev, "failed to enable vpcie regulator: %d\n",
-> +				ret);
-> +			return ret;
+I might be wrong but  I think you are talking about 
+igt@syncobj_timeline@transfer-timeline-point testcase which seems to be
 
-If the regulator enable fails, you don't roll back the PHY init and
-core reset. This seems harmless now, but might have unintended
-consequences if the PHY code changes. I think it should be safe to move
-the regulator enable before the PHY init and core reset assert to avoid
-introducing more failure cleanup paths here.
+green in CI now 
+https://intel-gfx-ci.01.org/tree/drm-tip/igt@syncobj_timeline@transfer-timeline-point.html
+
+Lucas found out that the issues got fixed after ec8d985ff26f ("drm: use 
+dma_fence_unwrap_merge() in drm_syncobj")
+
 
 Regards,
-Lucas
 
-> +		}
-> +	}
-> +
->  	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
->  	if (ret < 0) {
->  		dev_err(dev, "pcie deassert core reset failed: %d\n", ret);
-> -		return ret;
-> +		goto err_reg_disable;
->  	}
->  
->  	imx6_setup_phy_mpll(imx6_pcie);
->  
->  	return 0;
-> +
-> +err_reg_disable:
-> +	if (imx6_pcie->vpcie)
-> +		regulator_disable(imx6_pcie->vpcie);
-> +	return ret;
->  }
->  
->  static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
+Nirmoy
 
-
+>
+> Regards,
+> Christian.
+>
+> Am 07.07.22 um 12:29 schrieb jie1zhan:
+>> enable signaling after flatten dma_fence_chains on transfer
+>>
+>> Signed-off-by: jie1zhan <jesse.zhang@amd.com>
+>> ---
+>>   drivers/gpu/drm/drm_syncobj.c | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/drivers/gpu/drm/drm_syncobj.c 
+>> b/drivers/gpu/drm/drm_syncobj.c
+>> index 7e48dcd1bee4..0d9d3577325f 100644
+>> --- a/drivers/gpu/drm/drm_syncobj.c
+>> +++ b/drivers/gpu/drm/drm_syncobj.c
+>> @@ -920,6 +920,7 @@ static int 
+>> drm_syncobj_transfer_to_timeline(struct drm_file *file_private,
+>>       if (ret)
+>>           goto err_free_fence;
+>>   +    dma_fence_enable_sw_signaling(fence);
+>>       chain = dma_fence_chain_alloc();
+>>       if (!chain) {
+>>           ret = -ENOMEM;
+>
