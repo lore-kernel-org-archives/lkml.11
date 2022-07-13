@@ -2,105 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7880C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 23:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A26AC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 23:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230156AbiGMXJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 19:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33382 "EHLO
+        id S230260AbiGMXJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 19:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiGMXJV (ORCPT
+        with ESMTP id S230142AbiGMXJz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 19:09:21 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE73119292
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:09:20 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id q82so11774406pgq.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:09:20 -0700 (PDT)
+        Wed, 13 Jul 2022 19:09:55 -0400
+Received: from mail-il1-x12d.google.com (mail-il1-x12d.google.com [IPv6:2607:f8b0:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2CF73AB0D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:09:54 -0700 (PDT)
+Received: by mail-il1-x12d.google.com with SMTP id z3so64402ilz.5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 16:09:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j+8RK9v8gWGa5a91FxFwYr8BWqBvGM+/s21xcS2xt8M=;
-        b=iA7WMNFyc+2XPTgeCCgE9e/euFNEX10zqaFS1iIgoVZCInr/5Sb6xcueFpO3imu4iG
-         enBbTqueyvLuuPDOVSAzW2/AbYP8h+2TBN58ChG2YJb/EpEU2Mf5kxQxA+0Tv2ra+sg8
-         Lnq6gWbxojeU68uDvp3yCP888hp9nsLwZ4zMKGlYRkb9XfyqSGJAvNpRg97TH0kmb825
-         qtiyXzCD6cVYRC7/tj/WNz0DbR5MLgVz6NsTLYhVOLpqLMRk1yRlcvFcGA2pAQNjHNz1
-         7QMOph3xxPFAPDnRNUeJyLHrnFw/VjPeJswM9sSXayWF7HWPVCF1vOD0tuz9G0Hu63EN
-         8SGg==
+        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0U8OihvUY0SUbsVhJMk93wvVq/MDQBMWuuGkfgcpJNI=;
+        b=ri0V2YOeCjfvOqrmWJm+IrvBhxy7ZpYljxqJxXFDrx+TLfSH2ULzrf1+YpV7n5U0em
+         iwMXY/EZbIj5OVlzxT7/CWWsbBMsnXkqnAi9+GmaO/Jb1t37ykdOPGzL3oHsf+VZC81X
+         NujbuvTTmvMr+fnAyRNLtx2BqbZA1LZyjylj+08U1bUReZxdzWeJR9NiTV8334QPFxE8
+         6mbHS2Hl1YrEOOJukegyUiMPtzhqY6BUMJxCklmEp0Fdp7K4V889RhPtoRKpk4OY54kf
+         VG703BPqtRDoZL1Dznu644MPt9bY3soG++Ly7F62P3S7jaAN3S8DAGOHn0e6asgo10ab
+         M7Zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=j+8RK9v8gWGa5a91FxFwYr8BWqBvGM+/s21xcS2xt8M=;
-        b=Hl7EbbuzR5d9QIgUP58KG0qqD0ZvEc8179irOTlhp10kVfSuVjI3yWsQJvadnEzyH+
-         kQcqb6iCpYUPY2vrwcd1Zls6QoQ7R1X3eyX70viOmmUj+G6R5isf6hrARjL8bDotEjOV
-         hdO+wGws5fAFswAc4NBEPNNeHh642Bz3V2KyGypfAV7Px9K/FTfLoEXh2egpBjyDz0FQ
-         ZdGrdn0vzxp7WpxjmyqZ6xpWFo6lvk5tPsy81hDMK6BggC1w6TIjyJ/E5YbyGnvdvpCi
-         vd6pBUuTpPC+EF4O//VGV86I0IMgeD4lPbwnufqMCGKnwecnXoN1KVYxcmFATxqMAKry
-         jc5g==
-X-Gm-Message-State: AJIora+k9MRuA5ZM1QYYImxkyr23tFZ5XScOSmREKfRjWykuWJK6xu9z
-        ItI9aVtwiaF6fWO4k2cqKR6Otzg97hFqiQ==
-X-Google-Smtp-Source: AGRyM1sbZBfhPjfNH4IFyitf+1xGqss1Qja+bIDVjylaz/VxJhz5dXPtuOpvzJN6BZkHP1Y5/Smlug==
-X-Received: by 2002:a65:464d:0:b0:412:6e9f:a4e7 with SMTP id k13-20020a65464d000000b004126e9fa4e7mr4709555pgr.104.1657753760197;
-        Wed, 13 Jul 2022 16:09:20 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id d1-20020a62f801000000b00528c26c84a3sm84399pfh.64.2022.07.13.16.09.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 16:09:18 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Wed, 13 Jul 2022 16:09:17 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Alex Deucher <alexdeucher@gmail.com>
-Cc:     Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Daniel Axtens <dja@axtens.net>
-Subject: Re: [PATCH] drm/amd/display: Add missing hard-float compile flags
- for PPC64 builds
-Message-ID: <20220713230917.GE32544@roeck-us.net>
-References: <20220618232737.2036722-1-linux@roeck-us.net>
- <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
- <CADnq5_NkVWqcxwLMBeskqpcSEYCEjUAK0hqvA_PAo7ACHKL2cA@mail.gmail.com>
- <6a026c9a-c4ee-deba-e028-4c0f478c1911@roeck-us.net>
- <CADnq5_OrxMMkazXEPHeZXp_bV890=r21DRx2QsqLXUFj4t8aYg@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0U8OihvUY0SUbsVhJMk93wvVq/MDQBMWuuGkfgcpJNI=;
+        b=g0/N+PJ9DmPPQKsyxreZvlhiejIRPwFt47o3bvRAllhqMC4nHeYGrx9gHboJLvFakk
+         ZcaGl08LWqaNp/puX66cqN7RNOHvy3od7LlrsaL+3T+FrB6n9CI7moxhRA2uhNz4j/Dv
+         /4FCrBIht8bPJp4kzzm7RgkUJnJL7Vfk3jWfpTfGkz3SMusgcqMcKShnqJI8q09+MJ27
+         0zCIoZRSgUvXjE9QPiMrpYOdnSDq55Zl59QtQBElULKUVWBqrrPbCZ66vAroFnjQOEPO
+         HE++Rkz/ZN5wl3D9iAtkM9wTf1/Bt+c9Ug3q4RgVuWCVEse3w3+Tvp5fdbFPoE/QQpzD
+         fOWg==
+X-Gm-Message-State: AJIora97uF/ApPmlNZkYgHR01NeJ1u74/d4dI3zBGsCn20K1R5AlLAhL
+        ayAutMROhxtXvHvCRtea5EgUUBEXiR6qivR53roi9Q==
+X-Google-Smtp-Source: AGRyM1sCXX1XB9VLVVGYYAYQMVYbA92oX/a1DOBsoCiqzI3zDdpGUemzbG6CEYUj+XfriHOeJgnVRqezKEXiJuswAOw=
+X-Received: by 2002:a92:cda2:0:b0:2dc:7060:ef14 with SMTP id
+ g2-20020a92cda2000000b002dc7060ef14mr3104693ild.56.1657753794115; Wed, 13 Jul
+ 2022 16:09:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CADnq5_OrxMMkazXEPHeZXp_bV890=r21DRx2QsqLXUFj4t8aYg@mail.gmail.com>
+References: <20220713225151.1476041-1-robert.marko@sartura.hr>
+ <20220713225151.1476041-2-robert.marko@sartura.hr> <Ys+xTubC2iwetqYS@COLIN-DESKTOP1.localdomain>
+In-Reply-To: <Ys+xTubC2iwetqYS@COLIN-DESKTOP1.localdomain>
+From:   Robert Marko <robert.marko@sartura.hr>
+Date:   Thu, 14 Jul 2022 01:09:43 +0200
+Message-ID: <CA+HBbNGyA_+KqBWTpz+NMKs__UkB7Td-_w3aafQfYqnpW8N18g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pinctrl: ocelot: fix pinconf
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 05:20:40PM -0400, Alex Deucher wrote:
+On Thu, Jul 14, 2022 at 1:01 AM Colin Foster
+<colin.foster@in-advantage.com> wrote:
+>
+> Hi Robert,
+>
+> On Thu, Jul 14, 2022 at 12:51:51AM +0200, Robert Marko wrote:
+> > Commit "pinctrl: ocelot: convert pinctrl to regmap" moved to using
+> > regmap_read/write, however it neglected to also carry out alignment
+> > to register stride of 4.
 > >
-> > The problem is not the FPU operations, but the fact that soft-float
-> > and hard-float compiled code is linked together. The soft-float and
-> > hard-float ABIs on powerpc are not compatible, so one ends up with
-> > an object file which is partially soft-float and partially hard-float
-> > compiled and thus uses different ABIs. That can only create chaos,
-> > so the linker complains about it.
-> 
-> I get that, I just don't see why only DCN 3.1.x files have this
-> problem.  The DCN 2.x files should as well.
-> 
+> > This would cause the following error:
+> > [    1.720873] pinctrl-ocelot 6110101e0.pinctrl: pin_config_set op failed for pin 34
+> > [    1.728110] sdhci-sparx5 600800000.mmc: Error applying setting, reverse things back
+> >
+> > So, regmap_read would return -EINVAL as it was being passed address
+> > of the pin without stride, so for example pin 34 would end up being
+> > 0x22 in hex.
+> >
+> > Fix this by accouting for the stride in register address.
+>
+> Sorry for the bug. Horaitu found this as well and recently submitted
+> patches:
+>
+> https://patchwork.ozlabs.org/project/linux-gpio/patch/20220713193750.4079621-3-horatiu.vultur@microchip.com/
+>
+> The second patch in his set fixes both of these issues (reg_stride and
+> max_register).
 
-Seen in drivers/gpu/drm/amd/display/dc/clk_mgr/Makefile:
+Yeah, I noticed his patch only after sending this.
+Sorry for the noise.
 
-# prevent build errors regarding soft-float vs hard-float FP ABI tags
-# this code is currently unused on ppc64, as it applies to Renoir APUs only
-ifdef CONFIG_PPC64
-CFLAGS_$(AMDDALPATH)/dc/clk_mgr/dcn21/rn_clk_mgr.o := $(call cc-option,-mno-gnu-attribute)
-endif
+Regards,
+Robert
+>
+> >
+> > Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
+> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> > ---
+> >  drivers/pinctrl/pinctrl-ocelot.c | 12 +++++++++---
+> >  1 file changed, 9 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+> > index 84bfbe649b67..a71145367b15 100644
+> > --- a/drivers/pinctrl/pinctrl-ocelot.c
+> > +++ b/drivers/pinctrl/pinctrl-ocelot.c
+> > @@ -1327,7 +1327,9 @@ static int ocelot_hw_get_value(struct ocelot_pinctrl *info,
+> >       if (info->pincfg) {
+> >               u32 regcfg;
+> >
+> > -             ret = regmap_read(info->pincfg, pin, &regcfg);
+> > +             ret = regmap_read(info->pincfg,
+> > +                               pin * regmap_get_reg_stride(info->pincfg),
+> > +                               &regcfg);
+> >               if (ret)
+> >                       return ret;
+> >
+> > @@ -1359,14 +1361,18 @@ static int ocelot_pincfg_clrsetbits(struct ocelot_pinctrl *info, u32 regaddr,
+> >       u32 val;
+> >       int ret;
+> >
+> > -     ret = regmap_read(info->pincfg, regaddr, &val);
+> > +     ret = regmap_read(info->pincfg,
+> > +                       regaddr * regmap_get_reg_stride(info->pincfg),
+> > +                       &val);
+> >       if (ret)
+> >               return ret;
+> >
+> >       val &= ~clrbits;
+> >       val |= setbits;
+> >
+> > -     ret = regmap_write(info->pincfg, regaddr, val);
+> > +     ret = regmap_write(info->pincfg,
+> > +                        regaddr * regmap_get_reg_stride(info->pincfg),
+> > +                        val);
+> >
+> >       return ret;
+> >  }
+> > --
+> > 2.36.1
+> >
 
-Does that explain it ?
 
-Guenter
+
+-- 
+Robert Marko
+Staff Embedded Linux Engineer
+Sartura Ltd.
+Lendavska ulica 16a
+10000 Zagreb, Croatia
+Email: robert.marko@sartura.hr
+Web: www.sartura.hr
