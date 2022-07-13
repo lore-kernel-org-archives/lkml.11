@@ -2,525 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D548DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A56C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236417AbiGMOWe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:22:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55076 "EHLO
+        id S235206AbiGMOXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:23:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235637AbiGMOWU (ORCPT
+        with ESMTP id S230436AbiGMOXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:22:20 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A811532EDF;
-        Wed, 13 Jul 2022 07:22:17 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DAO3cZ003160;
-        Wed, 13 Jul 2022 16:21:59 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=7H7xANk7GrD+3i08MsffXmfpiF29YbYdx57mtUoXFxc=;
- b=t79myy2fUN4TAZRNP+RMNLqMm8T8WNeJcQqq/o6M4HTkkMqHwF5/7SJ0rb0sm4mxsu5a
- yjdU43TtIqwliOBoKuNxTWFAajik5tf8Wo0LKAaI6CKv7A3PG8hPpIFF6pNGLOxj8cz5
- 4Hd087RgTtkQU4AkGDrS/M/yXpB4axj5a3HSeOzBBHfzAykr8ZrXJSp6Vq32dcYlMZO+
- xuh9TGWrXLQ2+1RaeURIwGOdc0vAeNsykfcpBi/55PpEens88FbMqrDJtPPEJvwV2kVu
- hFhsC5Y99/9TqcEIoMqeRdTc0glBdAcFXg0TU5C+r5nXFUjG28efmvTf3tp2JgHzkkqh yA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3h9173tmmg-1
+        Wed, 13 Jul 2022 10:23:21 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E7632EC3;
+        Wed, 13 Jul 2022 07:23:20 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DDDQ4d005014;
+        Wed, 13 Jul 2022 14:22:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Heo0uLNDfOaFW8OcuQM/pabI+QakNuds5f6WntEJKOE=;
+ b=R5t16WcyQA3oQwpcUYRt0LQTwIPMZtwjTFwSN78lP95TyPL0mjZVZAuS4Ede6eYFWWzz
+ QPB3SrkIlT/TJTm4qQRTuz9coGD5LRKzbe2at3erhXxykJqWLQqRZ1eiC5Xr8YVKRgIs
+ 3hnIOc86oDWqxanPsGgBV/HF+QPTsCYaz46QKpiHjP9pCAvVyguOXcNYHv9wT62R7KSd
+ Nuoxd2X30atOfFn8ZOQFbbaHt3l/iSqd4COzzxHZEmfUkPDxPT4r7rRqglK2oYjEW0RP
+ EjmDkDeizLCYxiBsac9oGjpNuvUP/VfUznlV5HWwzExwbuP+q65MWyA+x2bYYVdxEs9J DA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9w6acn7v-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 16:21:59 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C6830100034;
-        Wed, 13 Jul 2022 16:21:58 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C1BE1226FC7;
-        Wed, 13 Jul 2022 16:21:58 +0200 (CEST)
-Received: from localhost (10.75.127.45) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Wed, 13 Jul
- 2022 16:21:55 +0200
-From:   Amelie Delaunay <amelie.delaunay@foss.st.com>
-To:     Jonathan Corbet <corbet@lwn.net>, Vinod Koul <vkoul@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
-CC:     <linux-doc@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Marek Vasut <marex@denx.de>,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>
-Subject: [PATCH v2 1/4] docs: arm: stm32: introduce STM32 DMA-MDMA chaining feature
-Date:   Wed, 13 Jul 2022 16:21:45 +0200
-Message-ID: <20220713142148.239253-2-amelie.delaunay@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220713142148.239253-1-amelie.delaunay@foss.st.com>
-References: <20220713142148.239253-1-amelie.delaunay@foss.st.com>
+        Wed, 13 Jul 2022 14:22:54 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26DEMsi1014224;
+        Wed, 13 Jul 2022 14:22:54 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9w6acn6f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 14:22:54 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26DELkxL018854;
+        Wed, 13 Jul 2022 14:22:51 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma04ams.nl.ibm.com with ESMTP id 3h8rrn2py5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jul 2022 14:22:51 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26DEMnBm19792306
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Jul 2022 14:22:49 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2C5F7AE04D;
+        Wed, 13 Jul 2022 14:22:49 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CCC5AAE045;
+        Wed, 13 Jul 2022 14:22:48 +0000 (GMT)
+Received: from [9.145.2.121] (unknown [9.145.2.121])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 13 Jul 2022 14:22:48 +0000 (GMT)
+Message-ID: <c14bb788-f5ab-2233-93bd-702983982d80@linux.ibm.com>
+Date:   Wed, 13 Jul 2022 16:22:48 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0.1
+Subject: Re: [PATCH v3 4/4] pseries/mobility: set NMI watchdog factor during
+ LPM
+Content-Language: fr
+From:   Laurent Dufour <ldufour@linux.ibm.com>
+To:     Nicholas Piggin <npiggin@gmail.com>, nathanl@linux.ibm.com
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        paulus@samba.org, linux@roeck-us.net, wim@linux-watchdog.org,
+        linuxppc-dev@lists.ozlabs.org, haren@linux.vnet.ibm.com
+References: <20220627135347.32624-1-ldufour@linux.ibm.com>
+ <20220627135347.32624-5-ldufour@linux.ibm.com>
+ <1657590189.b3s2aqv3sj.astroid@bobo.none>
+ <91d24dcb-c7b6-b0d2-2522-c8177b80094d@linux.ibm.com>
+In-Reply-To: <91d24dcb-c7b6-b0d2-2522-c8177b80094d@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: g_KImgFJpySzZBFEX4vx4ME1Adxu0fYj
+X-Proofpoint-ORIG-GUID: HGQgRuxRIqY95VflTpVa7PBfUNIq7TnG
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-13_03,2022-07-13_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 spamscore=0
+ phishscore=0 mlxlogscore=999 impostorscore=0 mlxscore=0 bulkscore=0
+ clxscore=1015 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207130055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-STM32 DMA-MDMA chaining feature is available on STM32 SoCs which embed
-STM32 DMAMUX, DMA and MDMA controllers. It is the case on STM32MP1 SoCs but
-also on STM32H7 SoCs. But focus is on STM32MP1 SoCs, using DDR.
-This documentation aims to explain how to use STM32 DMA-MDMA chaining
-feature in drivers of STM32 peripheral having request lines on STM32 DMA.
+Le 12/07/2022 à 11:47, Laurent Dufour a écrit :
+> Le 12/07/2022 à 03:46, Nicholas Piggin a écrit :
+>> Excerpts from Laurent Dufour's message of June 27, 2022 11:53 pm:
+>>> During a LPM, while the memory transfer is in progress on the arrival side,
+>>> some latencies is generated when accessing not yet transferred pages on the
+>>> arrival side. Thus, the NMI watchdog may be triggered too frequently, which
+>>> increases the risk to hit a NMI interrupt in a bad place in the kernel,
+>>> leading to a kernel panic.
+>>>
+>>> Disabling the Hard Lockup Watchdog until the memory transfer could be a too
+>>> strong work around, some users would want this timeout to be eventually
+>>> triggered if the system is hanging even during LPM.
+>>>
+>>> Introduce a new sysctl variable nmi_watchdog_factor. It allows to apply
+>>> a factor to the NMI watchdog timeout during a LPM. Just before the CPU are
+>>> stopped for the switchover sequence, the NMI watchdog timer is set to
+>>>  watchdog_tresh + factor%
+>>>
+>>> A value of 0 has no effect. The default value is 200, meaning that the NMI
+>>> watchdog is set to 30s during LPM (based on a 10s watchdog_tresh value).
+>>> Once the memory transfer is achieved, the factor is reset to 0.
+>>>
+>>> Setting this value to a high number is like disabling the NMI watchdog
+>>> during a LPM.
+>>>
+>>> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+>>> ---
+>>>  Documentation/admin-guide/sysctl/kernel.rst | 12 ++++++
+>>>  arch/powerpc/platforms/pseries/mobility.c   | 43 +++++++++++++++++++++
+>>>  2 files changed, 55 insertions(+)
+>>>
+>>> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
+>>> index ddccd1077462..0bb0b7f27e96 100644
+>>> --- a/Documentation/admin-guide/sysctl/kernel.rst
+>>> +++ b/Documentation/admin-guide/sysctl/kernel.rst
+>>> @@ -592,6 +592,18 @@ to the guest kernel command line (see
+>>>  Documentation/admin-guide/kernel-parameters.rst).
+>>>  
+>>>  
+>>> +nmi_watchdog_factor (PPC only)
+>>> +==================================
+>>> +
+>>> +Factor apply to to the NMI watchdog timeout (only when ``nmi_watchdog`` is
+>>> +set to 1). This factor represents the percentage added to
+>>> +``watchdog_thresh`` when calculating the NMI watchdog timeout during a
+>>> +LPM. The soft lockup timeout is not impacted.
+>>
+>> Could "LPM" or "mobility" be a bit more prominent in the parameter name
+>> and documentation? Something else might want to add a factor as well,
+>> one day.
+> 
+> In the V2 version, Nathan suggested "making the user-visible
+> name more generic (e.g. "nmi_watchdog_factor") in case it makes sense to
+> apply this to other contexts in the future."
+> 
+> So I made the change to a more generic name. I think this is a good option
+> since the documentation is explicit about the LPM particular case.
+> If in the future this factor needs to apply during an other operation that
+> name will be generic enough.
+> 
+> Do you agree ?
 
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
----
-Changes in v2:
-- wrap to 80-column limit
-- add an entry in index.rst
-- use simple table instead of csv-table
----
- Documentation/arm/index.rst                   |   1 +
- .../arm/stm32/stm32-dma-mdma-chaining.rst     | 415 ++++++++++++++++++
- 2 files changed, 416 insertions(+)
- create mode 100644 Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
+Nick and I discussed that.
+Nick prefers to have LPM in the tunable names, and thinks we can add a new
+tunable if a separate user came up which required it.
 
-diff --git a/Documentation/arm/index.rst b/Documentation/arm/index.rst
-index 2bda5461a80b..83bd01d55345 100644
---- a/Documentation/arm/index.rst
-+++ b/Documentation/arm/index.rst
-@@ -57,6 +57,7 @@ SoC-specific documents
-    stm32/stm32f429-overview
-    stm32/stm32mp13-overview
-    stm32/stm32mp157-overview
-+   stm32/stm32-dma-mdma-chaining
- 
-    sunxi
- 
-diff --git a/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst b/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
-new file mode 100644
-index 000000000000..2945e0e33104
---- /dev/null
-+++ b/Documentation/arm/stm32/stm32-dma-mdma-chaining.rst
-@@ -0,0 +1,415 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=======================
-+STM32 DMA-MDMA chaining
-+=======================
-+
-+
-+Introduction
-+------------
-+
-+  This document describes the STM32 DMA-MDMA chaining feature. But before going
-+  further, let's introduce the peripherals involved.
-+
-+  To offload data transfers from the CPU, STM32 microprocessors (MPUs) embed
-+  direct memory access controllers (DMA).
-+
-+  STM32MP1 SoCs embed both STM32 DMA and STM32 MDMA controllers. STM32 DMA
-+  request routing capabilities are enhanced by a DMA request multiplexer
-+  (STM32 DMAMUX).
-+
-+  **STM32 DMAMUX**
-+
-+  STM32 DMAMUX routes any DMA request from a given peripheral to any STM32 DMA
-+  controller (STM32MP1 counts two STM32 DMA controllers) channels.
-+
-+  **STM32 DMA**
-+
-+  STM32 DMA is mainly used to implement central data buffer storage (usually in
-+  the system SRAM) for different peripheral. It can access external RAMs but
-+  without the ability to generate convenient burst transfer ensuring the best
-+  load of the AXI.
-+
-+  **STM32 MDMA**
-+
-+  STM32 MDMA (Master DMA) is mainly used to manage direct data transfers between
-+  RAM data buffers without CPU intervention. It can also be used in a
-+  hierarchical structure that uses STM32 DMA as first level data buffer
-+  interfaces for AHB peripherals, while the STM32 MDMA acts as a second level
-+  DMA with better performance. As a AXI/AHB master, STM32 MDMA can take control
-+  of the AXI/AHB bus.
-+
-+
-+Principles
-+----------
-+
-+  STM32 DMA-MDMA chaining feature relies on the strengths of STM32 DMA and
-+  STM32 MDMA controllers.
-+
-+  STM32 DMA has a circular Double Buffer Mode (DBM). At each end of transaction
-+  (when DMA data counter - DMA_SxNDTR - reaches 0), the memory pointers
-+  (configured with DMA_SxSM0AR and DMA_SxM1AR) are swapped and the DMA data
-+  counter is automatically reloaded. This allows the SW or the STM32 MDMA to
-+  process one memory area while the second memory area is being filled/used by
-+  the STM32 DMA transfer.
-+
-+  With STM32 MDMA linked-list mode, a single request initiates the data array
-+  (collection of nodes) to be transferred until the linked-list pointer for the
-+  channel is null. The channel transfer complete of the last node is the end of
-+  transfer, unless first and last nodes are linked to each other, in such a
-+  case, the linked-list loops on to create a circular MDMA transfer.
-+
-+  STM32 MDMA has direct connections with STM32 DMA. This enables autonomous
-+  communication and synchronization between peripherals, thus saving CPU
-+  resources and bus congestion. Transfer Complete signal of STM32 DMA channel
-+  can triggers STM32 MDMA transfer. STM32 MDMA can clear the request generated
-+  by the STM32 DMA by writing to its Interrupt Clear register (whose address is
-+  stored in MDMA_CxMAR, and bit mask in MDMA_CxMDR).
-+
-+  .. table:: STM32 MDMA interconnect table with STM32 DMA
-+
-+    +--------------+----------------+-----------+------------+
-+    | STM32 DMAMUX | STM32 DMA      | STM32 DMA | STM32 MDMA |
-+    | channels     | channels       | Transfer  | request    |
-+    |              |                | complete  |            |
-+    |              |                | signal    |            |
-+    +==============+================+===========+============+
-+    | Channel *0*  | DMA1 channel 0 | dma1_tcf0 | *0x00*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *1*  | DMA1 channel 1 | dma1_tcf1 | *0x01*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *2*  | DMA1 channel 2 | dma1_tcf2 | *0x02*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *3*  | DMA1 channel 3 | dma1_tcf3 | *0x03*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *4*  | DMA1 channel 4 | dma1_tcf4 | *0x04*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *5*  | DMA1 channel 5 | dma1_tcf5 | *0x05*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *6*  | DMA1 channel 6 | dma1_tcf6 | *0x06*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *7*  | DMA1 channel 7 | dma1_tcf7 | *0x07*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *8*  | DMA2 channel 0 | dma2_tcf0 | *0x08*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *9*  | DMA2 channel 1 | dma2_tcf1 | *0x09*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *10* | DMA2 channel 2 | dma2_tcf2 | *0x0A*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *11* | DMA2 channel 3 | dma2_tcf3 | *0x0B*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *12* | DMA2 channel 4 | dma2_tcf4 | *0x0C*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *13* | DMA2 channel 5 | dma2_tcf5 | *0x0D*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *14* | DMA2 channel 6 | dma2_tcf6 | *0x0E*     |
-+    +--------------+----------------+-----------+------------+
-+    | Channel *15* | DMA2 channel 7 | dma2_tcf7 | *0x0F*     |
-+    +--------------+----------------+-----------+------------+
-+
-+  STM32 DMA-MDMA chaining feature then uses a SRAM buffer. STM32MP1 SoCs embed
-+  three fast access static internal RAMs of various size, used for data storage.
-+  Due to STM32 DMA legacy (within microcontrollers), STM32 DMA performances are
-+  bad with DDR, while they are optimal with SRAM. Hence the SRAM buffer used
-+  between STM32 DMA and STM32 MDMA. This buffer is split in two equal periods
-+  and STM32 DMA uses one period while STM32 MDMA uses the other period
-+  simultaneously.
-+  ::
-+
-+                    dma[1:2]-tcf[0:7]
-+                   .----------------.
-+     ____________ '    _________     V____________
-+    | STM32 DMA  |    /  __|>_  \    | STM32 MDMA |
-+    |------------|   |  /     \  |   |------------|
-+    | DMA_SxM0AR |<=>| | SRAM  | |<=>| []-[]...[] |
-+    | DMA_SxM1AR |   |  \_____/  |   |            |
-+    |____________|    \___<|____/    |____________|
-+
-+  STM32 DMA-MDMA chaining uses (struct dma_slave_config).peripheral_config to
-+  exchange the parameters needed to configure MDMA. These parameters are
-+  gathered into a u32 array with three values:
-+
-+  * the STM32 MDMA request (which is actually the DMAMUX channel ID),
-+  * the address of the STM32 DMA register to clear the Transfer Complete
-+    interrupt flag,
-+  * the mask of the Transfer Complete interrupt flag of the STM32 DMA channel.
-+
-+Device Tree updates for STM32 DMA-MDMA chaining support
-+-------------------------------------------------------
-+
-+  **1. Allocate a SRAM buffer**
-+
-+    SRAM device tree node is defined in SoC device tree. You can refer to it in
-+    your board device tree to define your SRAM pool.
-+    ::
-+
-+          &sram {
-+                  my_foo_device_dma_pool: dma-sram@0 {
-+                          reg = <0x0 0x1000>;
-+                  };
-+          };
-+
-+    Be careful of the start index, in case there are other SRAM consumers.
-+    Define your pool size strategically: to optimise chaining, the idea is that
-+    STM32 DMA and STM32 MDMA can work simultaneously, on each buffer of the
-+    SRAM.
-+    If the SRAM period is greater than the expected DMA transfer, then STM32 DMA
-+    and STM32 MDMA will work sequentially instead of simultaneously. It is not a
-+    functional issue but it is not optimal.
-+
-+    Don't forget to refer to your SRAM pool in your device node. You need to
-+    define a new property.
-+    ::
-+
-+          &my_foo_device {
-+                  ...
-+                  my_dma_pool = &my_foo_device_dma_pool;
-+          };
-+
-+    Then get this SRAM pool in your foo driver and allocate your SRAM buffer.
-+
-+  **2. Allocate a STM32 DMA channel and a STM32 MDMA channel**
-+
-+    You need to define an extra channel in your device tree node, in addition to
-+    the one you should already have for "classic" DMA operation.
-+
-+    This new channel must be taken from STM32 MDMA channels, so, the phandle of
-+    the DMA controller to use is the MDMA controller's one.
-+    ::
-+
-+          &my_foo_device {
-+                  [...]
-+                  my_dma_pool = &my_foo_device_dma_pool;
-+                  dmas = <&dmamux1 ...>,                // STM32 DMA channel
-+                         <&mdma1 0 0x3 0x1200000a 0 0>; // + STM32 MDMA channel
-+          };
-+
-+    Concerning STM32 MDMA bindings:
-+
-+    1. The request line number : whatever the value here, it will be overwritten
-+    by MDMA driver with the STM32 DMAMUX channel ID passed through
-+    (struct dma_slave_config).peripheral_config
-+
-+    2. The priority level : choose Very High (0x3) so that your channel will
-+    take priority other the other during request arbitration
-+
-+    3. A 32bit mask specifying the DMA channel configuration : source and
-+    destination address increment, block transfer with 128 bytes per single
-+    transfer
-+
-+    4. The 32bit value specifying the register to be used to acknowledge the
-+    request: it will be overwritten by MDMA driver, with the DMA channel
-+    interrupt flag clear register address passed through
-+    (struct dma_slave_config).peripheral_config
-+
-+    5. The 32bit mask specifying the value to be written to acknowledge the
-+    request: it will be overwritten by MDMA driver, with the DMA channel
-+    Transfer Complete flag passed through
-+    (struct dma_slave_config).peripheral_config
-+
-+Driver updates for STM32 DMA-MDMA chaining support in foo driver
-+----------------------------------------------------------------
-+
-+  **0. (optional) Refactor the original sg_table if dmaengine_prep_slave_sg()**
-+
-+    In case of dmaengine_prep_slave_sg(), the original sg_table can't be used as
-+    is. Two new sg_tables must be created from the original one. One for
-+    STM32 DMA transfer (where memory address targets now the SRAM buffer instead
-+    of DDR buffer) and one for STM32 MDMA transfer (where memory address targets
-+    the DDR buffer).
-+
-+    The new sg_list items must fit SRAM period length. Here is an example for
-+    DMA_DEV_TO_MEM:
-+    ::
-+
-+      /*
-+        * Assuming sgl and nents, respectively the initial scatterlist and its
-+        * length.
-+        * Assuming sram_dma_buf and sram_period, respectively the memory
-+        * allocated from the pool for DMA usage, and the length of the period,
-+        * which is half of the sram_buf size.
-+        */
-+      struct sg_table new_dma_sgt, new_mdma_sgt;
-+      struct scatterlist *s, *_sgl;
-+      dma_addr_t ddr_dma_buf;
-+      u32 new_nents = 0, len;
-+      int i;
-+
-+      /* Count the number of entries needed */
-+      for_each_sg(sgl, s, nents, i)
-+              if (sg_dma_len(s) > sram_period)
-+                      new_nents += DIV_ROUND_UP(sg_dma_len(s), sram_period);
-+              else
-+                      new_nents++;
-+
-+      /* Create sg table for STM32 DMA channel */
-+      ret = sg_alloc_table(&new_dma_sgt, new_nents, GFP_ATOMIC);
-+      if (ret)
-+              dev_err(dev, "DMA sg table alloc failed\n");
-+
-+      for_each_sg(new_dma_sgt.sgl, s, new_dma_sgt.nents, i) {
-+              _sgl = sgl;
-+              sg_dma_len(s) = min(sg_dma_len(_sgl), sram_period);
-+              /* Targets the beginning = first half of the sram_buf */
-+              s->dma_address = sram_buf;
-+              /*
-+                * Targets the second half of the sram_buf
-+                * for odd indexes of the item of the sg_list
-+                */
-+              if (i & 1)
-+                      s->dma_address += sram_period;
-+      }
-+
-+      /* Create sg table for STM32 MDMA channel */
-+      ret = sg_alloc_table(&new_mdma_sgt, new_nents, GFP_ATOMIC);
-+      if (ret)
-+              dev_err(dev, "MDMA sg_table alloc failed\n");
-+
-+      _sgl = sgl;
-+      len = sg_dma_len(sgl);
-+      ddr_dma_buf = sg_dma_address(sgl);
-+      for_each_sg(mdma_sgt.sgl, s, mdma_sgt.nents, i) {
-+              size_t bytes = min_t(size_t, len, sram_period);
-+
-+              sg_dma_len(s) = bytes;
-+              sg_dma_address(s) = ddr_dma_buf;
-+              len -= bytes;
-+
-+              if (!len && sg_next(_sgl)) {
-+                      _sgl = sg_next(_sgl);
-+                      len = sg_dma_len(_sgl);
-+                      ddr_dma_buf = sg_dma_address(_sgl);
-+              } else {
-+                      ddr_dma_buf += bytes;
-+              }
-+      }
-+
-+    Don't forget to release these new sg_tables after getting the descriptors
-+    with dmaengine_prep_slave_sg().
-+
-+  **1. Set controller specific parameters**
-+
-+    First, use dmaengine_slave_config() with a struct dma_slave_config to
-+    configure STM32 DMA channel. You just have to take care of DMA addresses,
-+    the memory address (depending on the transfer direction) must point on your
-+    SRAM buffer, and set (struct dma_slave_config).peripheral_size != 0.
-+
-+    STM32 DMA driver will check (struct dma_slave_config).peripheral_size to
-+    determine if chaining is being used or not. If it is used, then STM32 DMA
-+    driver fills (struct dma_slave_config).peripheral_config with an array of
-+    three u32 : the first one containing STM32 DMAMUX channel ID, the second one
-+    the channel interrupt flag clear register address, and the third one the
-+    channel Transfer Complete flag mask.
-+
-+    Then, use dmaengine_slave_config with another struct dma_slave_config to
-+    configure STM32 MDMA channel. Take care of DMA addresses, the device address
-+    (depending on the transfer direction) must point on your SRAM buffer, and
-+    the memory address must point to the buffer originally used for "classic"
-+    DMA operation. Use the previous (struct dma_slave_config).peripheral_size
-+    and .peripheral_config that have been updated by STM32 DMA driver, to set
-+    (struct dma_slave_config).peripheral_size and .peripheral_config of the
-+    struct dma_slave_config to configure STM32 MDMA channel.
-+    ::
-+
-+      struct dma_slave_config dma_conf;
-+      struct dma_slave_config mdma_conf;
-+
-+      memset(&dma_conf, 0, sizeof(dma_conf));
-+      [...]
-+      config.direction = DMA_DEV_TO_MEM;
-+      config.dst_addr = sram_dma_buf;        // SRAM buffer
-+      config.peripheral_size = 1;            // peripheral_size != 0 => chaining
-+
-+      dmaengine_slave_config(dma_chan, &dma_config);
-+
-+      memset(&mdma_conf, 0, sizeof(mdma_conf));
-+      config.direction = DMA_DEV_TO_MEM;
-+      mdma_conf.src_addr = sram_dma_buf;     // SRAM buffer
-+      mdma_conf.dst_addr = rx_dma_buf;       // original memory buffer
-+      mdma_conf.peripheral_size = dma_conf.peripheral_size;       // <- dma_conf
-+      mdma_conf.peripheral_config = dma_config.peripheral_config; // <- dma_conf
-+
-+      dmaengine_slave_config(mdma_chan, &mdma_conf);
-+
-+  **2. Get a descriptor for STM32 DMA channel transaction**
-+
-+    In the same way you get your descriptor for your "classic" DMA operation,
-+    you just have to replace the original sg_list (in case of
-+    dmaengine_prep_slave_sg()) with the new sg_list using SRAM buffer, or to
-+    replace the original buffer address, length and period (in case of
-+    dmaengine_prep_dma_cyclic()) with the new SRAM buffer.
-+
-+  **3. Get a descriptor for STM32 MDMA channel transaction**
-+
-+    If you previously get descriptor (for STM32 DMA) with
-+
-+    * dmaengine_prep_slave_sg(), then use dmaengine_prep_slave_sg() for
-+      STM32 MDMA;
-+    * dmaengine_prep_dma_cyclic(), then use dmaengine_prep_dma_cyclic() for
-+      STM32 MDMA.
-+
-+    Use the new sg_list using SRAM buffer (in case of dmaengine_prep_slave_sg())
-+    or, depending on the transfer direction, either the original DDR buffer (in
-+    case of DMA_DEV_TO_MEM) or the SRAM buffer (in case of DMA_MEM_TO_DEV), the
-+    source address being previously set with dmaengine_slave_config().
-+
-+  **4. Submit both transactions**
-+
-+    Before submitting your transactions, you may need to define on which
-+    descriptor you want a callback to be called at the end of the transfer
-+    (dmaengine_prep_slave_sg()) or the period (dmaengine_prep_dma_cyclic()).
-+    Depending on the direction, set the callback on the descriptor that finishes
-+    the overal transfer:
-+
-+    * DMA_DEV_TO_MEM: set the callback on the "MDMA" descriptor
-+    * DMA_MEM_TO_DEV: set the callback on the "DMA" descriptor
-+
-+    Then, submit the descriptors whatever the order, with dmaengine_tx_submit().
-+
-+  **5. Issue pending requests (and wait for callback notification)**
-+
-+  As STM32 MDMA channel transfer is triggered by STM32 DMA, you must issue
-+  STM32 MDMA channel before STM32 DMA channel.
-+
-+  If any, your callback will be called to warn you about the end of the overal
-+  transfer or the period completion.
-+
-+  Don't forget to terminate both channels. STM32 DMA channel is configured in
-+  cyclic Double-Buffer mode so it won't be disabled by HW, you need to terminate
-+  it. STM32 MDMA channel will be stopped by HW in case of sg transfer, but not
-+  in case of cyclic transfer. You can terminate it whatever the kind of transfer.
-+
-+  **STM32 DMA-MDMA chaining DMA_MEM_TO_DEV special case**
-+
-+  STM32 DMA-MDMA chaining in DMA_MEM_TO_DEV is a special case. Indeed, the
-+  STM32 MDMA feeds the SRAM buffer with the DDR data, and the STM32 DMA reads
-+  data from SRAM buffer. So some data (the first period) have to be copied in
-+  SRAM buffer when the STM32 DMA starts to read.
-+
-+  A trick could be pausing the STM32 DMA channel (that will raise a Transfer
-+  Complete signal, triggering the STM32 MDMA channel), but the first data read
-+  by the STM32 DMA could be "wrong". The proper way is to prepare the first SRAM
-+  period with dmaengine_prep_dma_memcpy(). Then this first period should be
-+  "removed" from the sg or the cyclic transfer.
-+
-+  Due to this complexity, rather use the STM32 DMA-MDMA chaining for
-+  DMA_DEV_TO_MEM and keep the "classic" DMA usage for DMA_MEM_TO_DEV, unless
-+  you're not afraid.
-+
-+Resources
-+---------
-+
-+  Application note, datasheet and reference manual are available on ST website
-+  (STM32MP1_).
-+
-+  Dedicated focus on three application notes (AN5224_, AN4031_ & AN5001_)
-+  dealing with STM32 DMAMUX, STM32 DMA and STM32 MDMA.
-+
-+.. _STM32MP1: https://www.st.com/en/microcontrollers-microprocessors/stm32mp1-series.html
-+.. _AN5224: https://www.st.com/resource/en/application_note/an5224-stm32-dmamux-the-dma-request-router-stmicroelectronics.pdf
-+.. _AN4031: https://www.st.com/resource/en/application_note/dm00046011-using-the-stm32f2-stm32f4-and-stm32f7-series-dma-controller-stmicroelectronics.pdf
-+.. _AN5001: https://www.st.com/resource/en/application_note/an5001-stm32cube-expansion-package-for-stm32h7-series-mdma-stmicroelectronics.pdf
-+
-+:Authors:
-+
-+- Amelie Delaunay <amelie.delaunay@foss.st.com>
-\ No newline at end of file
--- 
-2.25.1
+We agree that 'nmi_wd_lpm_factor' is a good name.
+I'll send a v5 updating that name.
+
+>>
+>> Otherwise the code looks okay.
+>>
+>> Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
+>>
+>>> +
+>>> +A value of 0 means no change. The default value is 200 meaning the NMI
+>>> +watchdog is set to 30s (based on ``watchdog_thresh`` equal to 10).
+>>> +
+>>> +
+>>>  numa_balancing
+>>>  ==============
+>>>  
+>>> diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/platforms/pseries/mobility.c
+>>> index 907a779074d6..649155faafc2 100644
+>>> --- a/arch/powerpc/platforms/pseries/mobility.c
+>>> +++ b/arch/powerpc/platforms/pseries/mobility.c
+>>> @@ -48,6 +48,39 @@ struct update_props_workarea {
+>>>  #define MIGRATION_SCOPE	(1)
+>>>  #define PRRN_SCOPE -2
+>>>  
+>>> +#ifdef CONFIG_PPC_WATCHDOG
+>>> +static unsigned int nmi_wd_factor = 200;
+>>> +
+>>> +#ifdef CONFIG_SYSCTL
+>>> +static struct ctl_table nmi_wd_factor_ctl_table[] = {
+>>> +	{
+>>> +		.procname	= "nmi_watchdog_factor",
+>>> +		.data		= &nmi_wd_factor,
+>>> +		.maxlen		= sizeof(int),
+>>> +		.mode		= 0644,
+>>> +		.proc_handler	= proc_douintvec_minmax,
+>>> +	},
+>>> +	{}
+>>> +};
+>>> +static struct ctl_table nmi_wd_factor_sysctl_root[] = {
+>>> +	{
+>>> +		.procname       = "kernel",
+>>> +		.mode           = 0555,
+>>> +		.child          = nmi_wd_factor_ctl_table,
+>>> +	},
+>>> +	{}
+>>> +};
+>>> +
+>>> +static int __init register_nmi_wd_factor_sysctl(void)
+>>> +{
+>>> +	register_sysctl_table(nmi_wd_factor_sysctl_root);
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +device_initcall(register_nmi_wd_factor_sysctl);
+>>> +#endif /* CONFIG_SYSCTL */
+>>> +#endif /* CONFIG_PPC_WATCHDOG */
+>>> +
+>>>  static int mobility_rtas_call(int token, char *buf, s32 scope)
+>>>  {
+>>>  	int rc;
+>>> @@ -702,13 +735,20 @@ static int pseries_suspend(u64 handle)
+>>>  static int pseries_migrate_partition(u64 handle)
+>>>  {
+>>>  	int ret;
+>>> +	unsigned int factor = 0;
+>>>  
+>>> +#ifdef CONFIG_PPC_WATCHDOG
+>>> +	factor = nmi_wd_factor;
+>>> +#endif
+>>>  	ret = wait_for_vasi_session_suspending(handle);
+>>>  	if (ret)
+>>>  		return ret;
+>>>  
+>>>  	vas_migration_handler(VAS_SUSPEND);
+>>>  
+>>> +	if (factor)
+>>> +		watchdog_nmi_set_lpm_factor(factor);
+>>> +
+>>>  	ret = pseries_suspend(handle);
+>>>  	if (ret == 0) {
+>>>  		post_mobility_fixup();
+>>> @@ -716,6 +756,9 @@ static int pseries_migrate_partition(u64 handle)
+>>>  	} else
+>>>  		pseries_cancel_migration(handle, ret);
+>>>  
+>>> +	if (factor)
+>>> +		watchdog_nmi_set_lpm_factor(0);
+>>> +
+>>>  	vas_migration_handler(VAS_RESUME);
+>>>  
+>>>  	return ret;
+>>> -- 
+>>> 2.36.1
+>>>
+>>>
+> 
 
