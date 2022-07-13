@@ -2,112 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9E2AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D900CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236032AbiGMNqA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
+        id S236014AbiGMNrL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:47:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231435AbiGMNpz (ORCPT
+        with ESMTP id S231274AbiGMNrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:45:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 739F4D41
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:45:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657719950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FVrKbANdCl2uTQnD6+EajsfE/aId+mnisf9oBHzf9wQ=;
-        b=fiBafRxLJvPLf9ovct9vGycGTUkZ6vh/5ErOw/nc+TjJPZRvs4MiXy4ADu2Z55AXW+8ztp
-        SklEm/iaMwFHwToVRUfiK3ZDFIOP7uN5ag+jRYhFyEfu735xXAmT4tXsrFhzHTCNsTJx2G
-        127FLlTCJb5NiIyEgyrU3wjPrgwY4tY=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-561-2o0gadQRPJyROXsSets1aw-1; Wed, 13 Jul 2022 09:45:47 -0400
-X-MC-Unique: 2o0gadQRPJyROXsSets1aw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0667C85A581;
-        Wed, 13 Jul 2022 13:45:47 +0000 (UTC)
-Received: from pauld.bos.com (dhcp-17-237.bos.redhat.com [10.18.17.237])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 85EF140CFD05;
-        Wed, 13 Jul 2022 13:45:46 +0000 (UTC)
-From:   Phil Auld <pauld@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Tian Tao <tiantao6@hisilicon.com>
-Subject: [PATCH v2] drivers/base/node.c: fix userspace break from using bin_attributes for cpumap and cpulist
-Date:   Wed, 13 Jul 2022 09:45:45 -0400
-Message-Id: <20220713134545.1382367-1-pauld@redhat.com>
+        Wed, 13 Jul 2022 09:47:07 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3A5010BE;
+        Wed, 13 Jul 2022 06:47:06 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so3716724pjf.2;
+        Wed, 13 Jul 2022 06:47:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=E8QifYFp/lwvfFzsp4TOKlqipcqLOhcpZBS/KtNX/OI=;
+        b=YlJyOu2QRsl7m3bd5cIDXtw46d/GAajRopQjQ6XtV0d1SHK8UzrD60XhTw7SQbMFe1
+         gVbbQ05p1X1lFbtnPlkJGbiHW/YGAsYZq48F76SAAvEqQlezVOUy1uXlCm9djS0E12d4
+         0QqbGIOC6sTyMPrOnQJOHieC47LH2tELObQmUEAGV/2k9YfvOpy5lmxWh6gRu1ZzUzmT
+         UxKkCqWfCojQs+kPGKpNczq1pVpOHYwCUbTZ9lzEOI/+80maehBcw6cjH/CkrA2fxNd4
+         kI66VOaUDpsnTPo8CMIg7K54hVEDUwNASEKwmbexON19ClSoRKylwdOhYpCTCyLLAPGG
+         mj7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to;
+        bh=E8QifYFp/lwvfFzsp4TOKlqipcqLOhcpZBS/KtNX/OI=;
+        b=KvOQmBFZrPXIxcTkcCnKgUNt+Mkc2G8C5w52/YrGgO4oopAXoLMf1ahUQBH2n3qyZY
+         f0WP5eOF2GxHBKlH/Ap62gJE+endI7o8AZcgVS80KcfP7wsDy6iF5RMoeqvT0jXSs1ki
+         Bk/ChiVnSurjVlYptXU2kDSIeF2Z6LrOVlTLCdl68/4+38Jj9EEtoo9wiFK9NxJslc17
+         1+ZjVA57IKeYWvQEm/JVJm7n56xG7epn6RzoYF2DruxwAbWFXmqfR4gWIK50qq15OAm2
+         2W8NAhYdLblhgrPhIc5Jmam34pfE0/I523wvqCbbW6QyEw6fEPBnZ2a/Dqmel6CCMJm8
+         TImg==
+X-Gm-Message-State: AJIora/3XqhBglrJaxLlbUIt4amOQ6OUHW5F7zHCgYa4aNfiYk5JuVFf
+        F4EKwOYYwKdnPnqzD/8jRl5fhvQeE0Rrlw==
+X-Google-Smtp-Source: AGRyM1tz+UvkD3ZH6hSSZJrft9mTXRXEtOVy7QebAZGY+GZZWMAcmCXDgroD4uzU5TCTQIkRGTHWOA==
+X-Received: by 2002:a17:90b:1807:b0:1f0:5875:9751 with SMTP id lw7-20020a17090b180700b001f058759751mr4044679pjb.25.1657720026209;
+        Wed, 13 Jul 2022 06:47:06 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id k10-20020a170902d58a00b0015e8d4eb1d5sm8826990plh.31.2022.07.13.06.46.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 06:47:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Wed, 13 Jul 2022 06:46:57 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Eugene Shalygin <eugene.shalygin@gmail.com>
+Cc:     Urs Schroffenegger <nabajour@lampshade.ch>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-hwmon@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] hwmon: (asus-ec-sensors) add definitions for ROG
+ ZENITH II EXTREME
+Message-ID: <20220713134657.GA3799892@roeck-us.net>
+References: <20220710202639.1812058-1-eugene.shalygin@gmail.com>
+ <20220710202639.1812058-2-eugene.shalygin@gmail.com>
 MIME-Version: 1.0
-Content-type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <20220710202639.1812058-2-eugene.shalygin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
-This breaks userspace code that retrieves the size before reading the file. Rather
-than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
-limitation of cpumap ABI") let's put in a size value at compile time. Use direct
-comparison and a worst-case maximum to ensure compile time constants. For cpulist the
-max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
-(8192 * 5). In order to get near that you'd need a system with every other CPU on one
-node or something similar. e.g. (0,2,4,... 1024,1026...). To simplify the math and
-support larger NR_CPUS we are using NR_CPUS * 6. We also set it to a min of PAGE_SIZE
-to retain the older behavior for smaller NR_CPUS. The cpumap file wants to be something
-like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using NR_CPUS/2.
+On Sun, Jul 10, 2022 at 10:26:39PM +0200, Eugene Shalygin wrote:
+> From: Urs Schroffenegger <nabajour@lampshade.ch>
+> 
+> Add definitions for ROG ZENITH II EXTREME and some unknown yet
+> temperature sensors in the second EC bank. Details are available at
+> [1, 2].
+> 
+> [1] https://github.com/zeule/asus-ec-sensors/pull/26
+> [2] https://github.com/zeule/asus-ec-sensors/issues/16
+> 
+> Signed-off-by: Urs Schroffenegger <nabajour@lampshade.ch>
+> Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
 
-On an 80 cpu 4-node sytem (NR_CPUS == 8192)
+Applied.
 
-before:
-
--r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
--r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
-
-after:
-
--r--r--r--. 1 root root 49152 Jul 13 09:26 /sys/devices/system/node/node0/cpulist
--r--r--r--. 1 root root  4096 Jul 13 09:24 /sys/devices/system/node/node0/cpumap
-
-Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Signed-off-by: Phil Auld <pauld@redhat.com>
----
- drivers/base/node.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/base/node.c b/drivers/base/node.c
-index 0ac6376ef7a1..3577f4eb4ac6 100644
---- a/drivers/base/node.c
-+++ b/drivers/base/node.c
-@@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
- 	return n;
- }
- 
--static BIN_ATTR_RO(cpumap, 0);
-+static BIN_ATTR_RO(cpumap, (((NR_CPUS>>1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE));
- 
- static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
- 				   struct bin_attribute *attr, char *buf,
-@@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
- 	return n;
- }
- 
--static BIN_ATTR_RO(cpulist, 0);
-+static BIN_ATTR_RO(cpulist, (((NR_CPUS * 6) > PAGE_SIZE) ? NR_CPUS *6 : PAGE_SIZE));
- 
- /**
-  * struct node_access_nodes - Access class device to hold user visible
--- 
-2.31.1
-
+Thanks,
+Guenter
+> ---
+>  Documentation/hwmon/asus_ec_sensors.rst |  1 +
+>  drivers/hwmon/asus-ec-sensors.c         | 47 +++++++++++++++++++++++++
+>  2 files changed, 48 insertions(+)
+> 
+> diff --git a/Documentation/hwmon/asus_ec_sensors.rst b/Documentation/hwmon/asus_ec_sensors.rst
+> index 1e40c123db77..02f4ad314a1e 100644
+> --- a/Documentation/hwmon/asus_ec_sensors.rst
+> +++ b/Documentation/hwmon/asus_ec_sensors.rst
+> @@ -22,6 +22,7 @@ Supported boards:
+>   * ROG STRIX X570-F GAMING
+>   * ROG STRIX X570-I GAMING
+>   * ROG STRIX Z690-A GAMING WIFI D4
+> + * ROG ZENITH II EXTREME
+>  
+>  Authors:
+>      - Eugene Shalygin <eugene.shalygin@gmail.com>
+> diff --git a/drivers/hwmon/asus-ec-sensors.c b/drivers/hwmon/asus-ec-sensors.c
+> index 625c2baa35ec..3049537130be 100644
+> --- a/drivers/hwmon/asus-ec-sensors.c
+> +++ b/drivers/hwmon/asus-ec-sensors.c
+> @@ -56,6 +56,8 @@ static char *mutex_path_override;
+>  
+>  #define ASUS_HW_ACCESS_MUTEX_RMTW_ASMX	"\\RMTW.ASMX"
+>  
+> +#define ASUS_HW_ACCESS_MUTEX_SB_PCI0_SBRG_SIO1_MUT0 "\\_SB_.PCI0.SBRG.SIO1.MUT0"
+> +
+>  #define MAX_IDENTICAL_BOARD_VARIATIONS	3
+>  
+>  /* Moniker for the ACPI global lock (':' is not allowed in ASL identifiers) */
+> @@ -121,6 +123,18 @@ enum ec_sensors {
+>  	ec_sensor_temp_water_in,
+>  	/* "Water_Out" temperature sensor reading [℃] */
+>  	ec_sensor_temp_water_out,
+> +	/* "Water_Block_In" temperature sensor reading [℃] */
+> +	ec_sensor_temp_water_block_in,
+> +	/* "Water_Block_Out" temperature sensor reading [℃] */
+> +	ec_sensor_temp_water_block_out,
+> +	/* "T_sensor_2" temperature sensor reading [℃] */
+> +	ec_sensor_temp_t_sensor_2,
+> +	/* "Extra_1" temperature sensor reading [℃] */
+> +	ec_sensor_temp_sensor_extra_1,
+> +	/* "Extra_2" temperature sensor reading [℃] */
+> +	ec_sensor_temp_sensor_extra_2,
+> +	/* "Extra_3" temperature sensor reading [℃] */
+> +	ec_sensor_temp_sensor_extra_3,
+>  };
+>  
+>  #define SENSOR_TEMP_CHIPSET BIT(ec_sensor_temp_chipset)
+> @@ -136,6 +150,12 @@ enum ec_sensors {
+>  #define SENSOR_CURR_CPU BIT(ec_sensor_curr_cpu)
+>  #define SENSOR_TEMP_WATER_IN BIT(ec_sensor_temp_water_in)
+>  #define SENSOR_TEMP_WATER_OUT BIT(ec_sensor_temp_water_out)
+> +#define SENSOR_TEMP_WATER_BLOCK_IN BIT(ec_sensor_temp_water_block_in)
+> +#define SENSOR_TEMP_WATER_BLOCK_OUT BIT(ec_sensor_temp_water_block_out)
+> +#define SENSOR_TEMP_T_SENSOR_2 BIT(ec_sensor_temp_t_sensor_2)
+> +#define SENSOR_TEMP_SENSOR_EXTRA_1 BIT(ec_sensor_temp_sensor_extra_1)
+> +#define SENSOR_TEMP_SENSOR_EXTRA_2 BIT(ec_sensor_temp_sensor_extra_2)
+> +#define SENSOR_TEMP_SENSOR_EXTRA_3 BIT(ec_sensor_temp_sensor_extra_3)
+>  
+>  enum board_family {
+>  	family_unknown,
+> @@ -199,6 +219,18 @@ static const struct ec_sensor_info sensors_family_amd_500[] = {
+>  		EC_SENSOR("Water_In", hwmon_temp, 1, 0x01, 0x00),
+>  	[ec_sensor_temp_water_out] =
+>  		EC_SENSOR("Water_Out", hwmon_temp, 1, 0x01, 0x01),
+> +	[ec_sensor_temp_water_block_in] =
+> +		EC_SENSOR("Water_Block_In", hwmon_temp, 1, 0x01, 0x02),
+> +	[ec_sensor_temp_water_block_out] =
+> +		EC_SENSOR("Water_Block_Out", hwmon_temp, 1, 0x01, 0x03),
+> +	[ec_sensor_temp_sensor_extra_1] =
+> +		EC_SENSOR("Extra_1", hwmon_temp, 1, 0x01, 0x09),
+> +	[ec_sensor_temp_t_sensor_2] =
+> +		EC_SENSOR("T_sensor_2", hwmon_temp, 1, 0x01, 0x0a),
+> +	[ec_sensor_temp_sensor_extra_2] =
+> +		EC_SENSOR("Extra_2", hwmon_temp, 1, 0x01, 0x0b),
+> +	[ec_sensor_temp_sensor_extra_3] =
+> +		EC_SENSOR("Extra_3", hwmon_temp, 1, 0x01, 0x0c),
+>  };
+>  
+>  static const struct ec_sensor_info sensors_family_intel_300[] = {
+> @@ -231,6 +263,9 @@ static const struct ec_sensor_info sensors_family_intel_600[] = {
+>  #define SENSOR_SET_TEMP_CHIPSET_CPU_MB                                         \
+>  	(SENSOR_TEMP_CHIPSET | SENSOR_TEMP_CPU | SENSOR_TEMP_MB)
+>  #define SENSOR_SET_TEMP_WATER (SENSOR_TEMP_WATER_IN | SENSOR_TEMP_WATER_OUT)
+> +#define SENSOR_SET_WATER_BLOCK                                                 \
+> +	(SENSOR_TEMP_WATER_BLOCK_IN | SENSOR_TEMP_WATER_BLOCK_OUT)
+> +
+>  
+>  struct ec_board_info {
+>  	const char *board_names[MAX_IDENTICAL_BOARD_VARIATIONS];
+> @@ -378,6 +413,18 @@ static const struct ec_board_info board_info[] = {
+>  		.mutex_path = ASUS_HW_ACCESS_MUTEX_RMTW_ASMX,
+>  		.family = family_intel_600_series,
+>  	},
+> +	{
+> +		.board_names = {"ROG ZENITH II EXTREME"},
+> +		.sensors = SENSOR_SET_TEMP_CHIPSET_CPU_MB | SENSOR_TEMP_T_SENSOR |
+> +			SENSOR_TEMP_VRM | SENSOR_SET_TEMP_WATER |
+> +			SENSOR_FAN_CPU_OPT | SENSOR_FAN_CHIPSET | SENSOR_FAN_VRM_HS |
+> +			SENSOR_FAN_WATER_FLOW | SENSOR_CURR_CPU | SENSOR_IN_CPU_CORE |
+> +			SENSOR_SET_WATER_BLOCK |
+> +			SENSOR_TEMP_T_SENSOR_2 | SENSOR_TEMP_SENSOR_EXTRA_1 |
+> +			SENSOR_TEMP_SENSOR_EXTRA_2 | SENSOR_TEMP_SENSOR_EXTRA_3,
+> +		.mutex_path = ASUS_HW_ACCESS_MUTEX_SB_PCI0_SBRG_SIO1_MUT0,
+> +		.family = family_amd_500_series,
+> +	},
+>  	{}
+>  };
+>  
