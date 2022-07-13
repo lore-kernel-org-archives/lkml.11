@@ -2,98 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F572C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FD5CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234520AbiGMFcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 01:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44764 "EHLO
+        id S234528AbiGMFct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 01:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234411AbiGMFbG (ORCPT
+        with ESMTP id S234109AbiGMFbH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 01:31:06 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC52B9DAD
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:49 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso1874035pjc.1
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:49 -0700 (PDT)
+        Wed, 13 Jul 2022 01:31:07 -0400
+Received: from mail.baikalelectronics.com (mail.baikalelectronics.com [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3F05EB96B8;
+        Tue, 12 Jul 2022 22:29:48 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id E1A5416CA;
+        Wed, 13 Jul 2022 08:31:32 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com E1A5416CA
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=73CbFZyz5/Oh4NJ0Bvz1lGW0c6O6K5fxXQrseozXHcw=;
-        b=Rbrcne9hJO5zFt0sQ2gZynRRzzWRe5SVR1wRHlRMHAKMVaSR6X+f7wxY71QYwDLec5
-         s1z9K4AKE3ujnTmHO73UkxpIQcmIopjo41Z9xVevoud6Y6vZagu0xcBbMD8l4JZtcqYA
-         eidITirbBSI0SmJx9c5CY2c3yzVBlDgFSPxAkbPnxz8wdCsVE3EBxJRs17Ih9ca1Jk/1
-         7sGzaQqZEthak1timNppoSF+bPzgKtq3FSNQHLZk8mJoxTEwWDvitnTP5Kcac0JeTYEY
-         BBN32x3b30jEKItgp+Seb0c+QCGKPsdYwz4eOjF2zQD8xoA55OtPd7ycjv6siuOA/KIK
-         t/cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=73CbFZyz5/Oh4NJ0Bvz1lGW0c6O6K5fxXQrseozXHcw=;
-        b=t/mLykSLcQWYsipQsH77L2USpZ2zg80t2XS6PAm6rZ4Hespdj60EnsbcFmWt0Mg/8z
-         ysQCer0DwTt8/E1T9WrIblLv2FloAzAHhyvoH0Ui8AUa6nmgRgkWbcQO32wShnR218FL
-         LN1zu29WRYVz33LLEUcd9dd+/rGWs4YF7ybsd3zwtQp2e1Fx8rjg7I3C3OKBZb18HXqW
-         meupjKWpkXZ55QnqyJ9qA1YXKEhpfwpPBRRgd6Tv4bsZpUwXGFoFzbzLdbF52XzON4aL
-         HTb8EXkoNJCdVYiE5KpytBGKr2sGHMOtEiLn4zd5wXbl0OB1gaxIho8s9urdz4f9jdMO
-         aBDA==
-X-Gm-Message-State: AJIora/usPbTvobxHQtw+wuxWgYw4kUzNGJwvjEGE9QCx3F7XyKg4dsE
-        boLKx6y8ikm3X82n7OIsbtKdig==
-X-Google-Smtp-Source: AGRyM1suN/HlXdQcKewriih20qhQdaYhuVcOHxFq9ixS+8B1rNZ4ZjRmQjrryfvQPl5jijyUwIbL5Q==
-X-Received: by 2002:a17:90b:4c8c:b0:1ef:bff6:c964 with SMTP id my12-20020a17090b4c8c00b001efbff6c964mr1892390pjb.36.1657690188493;
-        Tue, 12 Jul 2022 22:29:48 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id m17-20020a170902bb9100b0016a1e2d148csm7809072pls.32.2022.07.12.22.29.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 22:29:48 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 10:59:44 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     Perry Yuan <Perry.Yuan@amd.com>
-Cc:     rafael.j.wysocki@intel.com, Ray.Huang@amd.com,
-        Deepak.Sharma@amd.com, Mario.Limonciello@amd.com,
-        Nathan.Fontenot@amd.com, Alexander.Deucher@amd.com,
-        Jinzhou.Su@amd.com, Xinmei.Huang@amd.com, Xiaojian.Du@amd.com,
-        Li.Meng@amd.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v3 13/13] cpufreq: CPPC: remove the acpi_disabled check
-Message-ID: <20220713052944.xpk4fi7nuj6rmekd@vireshk-i7>
-References: <cover.1657638462.git.Perry.Yuan@amd.com>
- <d36d38953cf819d89eb9be4d1a2baa5b5feeb52a.1657638462.git.Perry.Yuan@amd.com>
+        d=baikalelectronics.ru; s=mail; t=1657690292;
+        bh=ygMX+bu6gc/yMuo4QKjk1bUpr5VLHBbRrZJps6eSGfc=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=jSKLdH1HfeUXinxvMbACTsI5hGLrRPYMnA1uP6hbaJlynSV4R5O5hqyhG+zq/pC/D
+         YMKWmJQ++p9d3ajx56lWfNBuqvzFfVGUCn+VpQebI+VnDnKUP7cIpmggXW40Sh4klA
+         EZJxiWLFtH7J1lRhcBlInCMV5+ztdSzTv5SgSEDM=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 13 Jul 2022 08:29:37 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v5 15/23] ata: ahci: Convert __ahci_port_base to accepting hpriv as arguments
+Date:   Wed, 13 Jul 2022 08:29:08 +0300
+Message-ID: <20220713052917.27036-16-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220713052917.27036-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220713052917.27036-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d36d38953cf819d89eb9be4d1a2baa5b5feeb52a.1657638462.git.Perry.Yuan@amd.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12-07-22, 11:43, Perry Yuan wrote:
-> "acpi_cpc_valid" function already includes the acpi_disabled check and we can
-> remove the duplicated check here
-> 
-> Signed-off-by: Perry Yuan <Perry.Yuan@amd.com>
-> ---
->  drivers/cpufreq/cppc_cpufreq.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-> index 24eaf0ec344d..9adb7612993e 100644
-> --- a/drivers/cpufreq/cppc_cpufreq.c
-> +++ b/drivers/cpufreq/cppc_cpufreq.c
-> @@ -947,7 +947,7 @@ static int __init cppc_cpufreq_init(void)
->  {
->  	int ret;
->  
-> -	if ((acpi_disabled) || !acpi_cpc_valid())
-> +	if (!acpi_cpc_valid())
->  		return -ENODEV;
->  
->  	cppc_check_hisi_workaround();
+The port base address may be required even before the ata_host instance is
+initialized and activated, for instance in the ahci_save_initial_config()
+method which we are about to update (consider this modification as a
+preparation for that one). Seeing the __ahci_port_base() function isn't
+used much it's the best candidate to provide the required functionality.
+So let's convert it to accepting the ahci_host_priv structure pointer.
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
+---
+
+Changelog v5:
+- Fix some grammar notes in the patchlog. (@Damien)
+---
+ drivers/ata/ahci.c | 2 +-
+ drivers/ata/ahci.h | 7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
+index bacb597a0d32..51c0c1dd91ea 100644
+--- a/drivers/ata/ahci.c
++++ b/drivers/ata/ahci.c
+@@ -690,7 +690,7 @@ static void ahci_pci_init_controller(struct ata_host *host)
+ 			mv = 2;
+ 		else
+ 			mv = 4;
+-		port_mmio = __ahci_port_base(host, mv);
++		port_mmio = __ahci_port_base(hpriv, mv);
+ 
+ 		writel(0, port_mmio + PORT_IRQ_MASK);
+ 
+diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
+index cc4f40e6c924..5d9db5e7476c 100644
+--- a/drivers/ata/ahci.h
++++ b/drivers/ata/ahci.h
+@@ -432,10 +432,9 @@ int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
+ void ahci_error_handler(struct ata_port *ap);
+ u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
+ 
+-static inline void __iomem *__ahci_port_base(struct ata_host *host,
++static inline void __iomem *__ahci_port_base(struct ahci_host_priv *hpriv,
+ 					     unsigned int port_no)
+ {
+-	struct ahci_host_priv *hpriv = host->private_data;
+ 	void __iomem *mmio = hpriv->mmio;
+ 
+ 	return mmio + 0x100 + (port_no * 0x80);
+@@ -443,7 +442,9 @@ static inline void __iomem *__ahci_port_base(struct ata_host *host,
+ 
+ static inline void __iomem *ahci_port_base(struct ata_port *ap)
+ {
+-	return __ahci_port_base(ap->host, ap->port_no);
++	struct ahci_host_priv *hpriv = ap->host->private_data;
++
++	return __ahci_port_base(hpriv, ap->port_no);
+ }
+ 
+ static inline int ahci_nr_ports(u32 cap)
 -- 
-viresh
+2.35.1
+
