@@ -2,80 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E283CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE90CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236474AbiGMOMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46778 "EHLO
+        id S235794AbiGMONn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231151AbiGMOMt (ORCPT
+        with ESMTP id S229770AbiGMONh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:12:49 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A1F032EC9;
-        Wed, 13 Jul 2022 07:12:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=wGRPtxM9zwJmyc5jc5elK4XE4EFRYrearKDZedH3sTg=; b=Z4A+w2PH9rZGkZa1+jFMumRm4R
-        8JDguw6Sbit9O1V65ZDAPzRELm91U/PbJsV4AFPD30IdPTRL56sLpWv8e7fhuABFvOHUeAWWOTUJw
-        FjLUI77YIqr8N7i6FOBGsVo6tti6QRrIatCQhIRjtWLVc6oUNaWaWi3ve3kCXzmvN/id8m3Sq3H5W
-        FXsqV8L9L+fRNVtMlLo4KgpZgIky2yGzVByls6IqBSGkpZqRbGx+Z+ehGgSc8pR+YCEN4JwjPAk34
-        WQp4hzRkmIffrCel9ogdZtu2uzQ+U78SOXT2HKTyMMqly1sIuxoPrd4Z2JDE/Uzz+QIZHZMlm2oO5
-        uIDJS7nA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBd68-003aDZ-Ui; Wed, 13 Jul 2022 14:12:17 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id C3B25300238;
-        Wed, 13 Jul 2022 16:12:13 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AD62A20595D02; Wed, 13 Jul 2022 16:12:13 +0200 (CEST)
-Date:   Wed, 13 Jul 2022 16:12:13 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
+        Wed, 13 Jul 2022 10:13:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9CDAA2AC3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657721615;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=16fe0zG+Df80Kw/yiUxFcqE0wkKzreKjMLbVHAylSVs=;
+        b=XEIAvEbqe2WmnngYIdejpMstSw2gdIPnN6YBImU/w/+n2aIFILogFSLBSSTcBsHx/Zl7wO
+        Vyw58IonxRGrkbW4ZrbX7p9cTC1BxcyOtEHNHjCRed/hQerUiZaMv40GrMbCDvL+ZO/kxy
+        kHlXze8WNY6mbt/W/847gO81YN2HF8E=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-271-2JqrfoevOESecsRjA0hvJQ-1; Wed, 13 Jul 2022 10:13:31 -0400
+X-MC-Unique: 2JqrfoevOESecsRjA0hvJQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CF853811E76;
+        Wed, 13 Jul 2022 14:13:30 +0000 (UTC)
+Received: from lorien.usersys.redhat.com (unknown [10.22.32.177])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 146842026D64;
+        Wed, 13 Jul 2022 14:13:30 +0000 (UTC)
+Date:   Wed, 13 Jul 2022 10:13:28 -0400
+From:   Phil Auld <pauld@redhat.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        kvm list <kvm@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>
-Subject: Re: [PATCH 5.18 00/61] 5.18.12-rc1 review
-Message-ID: <Ys7Sved3UZOtzJLf@hirez.programming.kicks-ass.net>
-References: <20220712183236.931648980@linuxfoundation.org>
- <CA+G9fYvRQ9gzee8pjRmsyedz6oGyh5pzSYEPkuDoKEE+X2RZDg@mail.gmail.com>
- <Ys7Cm17ShWUOXkRw@kroah.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Tian Tao <tiantao6@hisilicon.com>
+Subject: Re: [PATCH v2] drivers/base/node.c: fix userspace break from using
+ bin_attributes for cpumap and cpulist
+Message-ID: <Ys7TCFoGIk3hlCpB@lorien.usersys.redhat.com>
+References: <20220713134545.1382367-1-pauld@redhat.com>
+ <Ys7Pkxqzrz75gCiN@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Ys7Cm17ShWUOXkRw@kroah.com>
+In-Reply-To: <Ys7Pkxqzrz75gCiN@kroah.com>
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 03:03:23PM +0200, Greg Kroah-Hartman wrote:
-
-> > 2) qemu_x86_64 boot warning
-> >    - WARNING: CPU: 0 PID: 0 at arch/x86/kernel/alternative.c:558
-> > apply_returns+0x19c/0x1d0
+On Wed, Jul 13, 2022 at 03:58:43PM +0200 Greg Kroah-Hartman wrote:
+> On Wed, Jul 13, 2022 at 09:45:45AM -0400, Phil Auld wrote:
+> > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
+> > This breaks userspace code that retrieves the size before reading the file. Rather
+> > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
+> > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
+> > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
+> > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
+> > (8192 * 5). In order to get near that you'd need a system with every other CPU on one
+> > node or something similar. e.g. (0,2,4,... 1024,1026...). To simplify the math and
+> > support larger NR_CPUS we are using NR_CPUS * 6. We also set it to a min of PAGE_SIZE
+> > to retain the older behavior for smaller NR_CPUS. The cpumap file wants to be something
+> > like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using NR_CPUS/2.
+> > 
+> > On an 80 cpu 4-node sytem (NR_CPUS == 8192)
+> > 
+> > before:
+> > 
+> > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
+> > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
+> > 
+> > after:
+> > 
+> > -r--r--r--. 1 root root 49152 Jul 13 09:26 /sys/devices/system/node/node0/cpulist
+> > -r--r--r--. 1 root root  4096 Jul 13 09:24 /sys/devices/system/node/node0/cpumap
+> > 
+> > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
+> > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > Signed-off-by: Phil Auld <pauld@redhat.com>
+> > ---
+> >  drivers/base/node.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/base/node.c b/drivers/base/node.c
+> > index 0ac6376ef7a1..3577f4eb4ac6 100644
+> > --- a/drivers/base/node.c
+> > +++ b/drivers/base/node.c
+> > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
+> >  	return n;
+> >  }
+> >  
+> > -static BIN_ATTR_RO(cpumap, 0);
+> > +static BIN_ATTR_RO(cpumap, (((NR_CPUS>>1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE));
 > 
-> Warning, but does everything still work?
-> 
-> And again, still on Linus's tree?
+> Why not just PAGE_SIZE?
+>
 
-Working on it: https://lkml.kernel.org/r/Ys66hwtFcGbYmoiZ@hirez.programming.kicks-ass.net
+This one is likely to grow beyond page size if NR_CPUS is larger than 8192. It's about 2300 bytes
+at 8192 if my math is right.
+
+Let me ask again before I write the comments... what values of NR_CPUS are you seeing? Are people
+using an order of magnitude above 8192? Two orders?  This patch (with the 6 below) handles about 1
+order more.
+
+> If not, a HUGE comment explaining what you are doing here is going to be
+> required.
+
+Sure, will do. See above :)
+
+> 
+> >  
+> >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> >  				   struct bin_attribute *attr, char *buf,
+> > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> >  	return n;
+> >  }
+> >  
+> > -static BIN_ATTR_RO(cpulist, 0);
+> > +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 6) > PAGE_SIZE) ? NR_CPUS *6 : PAGE_SIZE));
+> 
+> "* 6" in both places here?
+>
+
+It's compile time so it's cheap. But yes, 6 in both places.  That's to support NR_CPUS=100000.
+
+> And again, we need a huge comment explaining this so that we can
+> understand it in a few weeks, and in 10 years...
+
+Will do.
+
+
+Thanks,
+Phil
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
+
+-- 
+
