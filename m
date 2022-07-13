@@ -2,129 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B45ACC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:25:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27563C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:25:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234656AbiGMOZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:25:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
+        id S235690AbiGMOZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiGMOZf (ORCPT
+        with ESMTP id S234245AbiGMOZj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:25:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F4730572
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:25:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99BD761DCD
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:25:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63EB6C34114;
-        Wed, 13 Jul 2022 14:25:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657722334;
-        bh=GqcKhLMme2XRMten/jm7ZOrt21JXJHyJD21A4eNiL7g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=keEgJhqaweRJnjFlZaWt/kdMX9uj0iaMueByIac72DC7Hpzk/0n1LXJf40FSr6THR
-         0ROaeFqhWLAVK2RI/8J3JEPgL9XrDcDRlvEQa7uwNHO0nGPEoQq1bNvLDcwCTpjZAk
-         C+aOUWi1G+i3caxugd+mvXLGQILWxcmIJLyWinQ0=
-Date:   Wed, 13 Jul 2022 16:25:30 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Tian Tao <tiantao6@hisilicon.com>
-Subject: Re: [PATCH v2] drivers/base/node.c: fix userspace break from using
- bin_attributes for cpumap and cpulist
-Message-ID: <Ys7V2oW82qW75x6X@kroah.com>
-References: <20220713134545.1382367-1-pauld@redhat.com>
- <Ys7Pkxqzrz75gCiN@kroah.com>
- <Ys7TCFoGIk3hlCpB@lorien.usersys.redhat.com>
+        Wed, 13 Jul 2022 10:25:39 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EE8333341
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:25:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657722339; x=1689258339;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2Y8BF1Rg345QyJ8e8eE55+o9RRvwy3FhDzVO20P6JmI=;
+  b=NxI4/4qJH8SoAawKMkknSSJu4cXYAQlkLQrdOzIp9WATE4Z/tgc5voI8
+   oQC4TNv4IHvC+nD1u3BHng8YwYtCaUoXhNAj8PuZcQD6yBE1dK/ztn/u5
+   6OyiLs0QQ5hUkZ4cwTPk/LIN9Bj5ETHtdl2Z2xQIl25kfmQV+hTK54wFF
+   W8trJBGM2oUp9YuvMOo1Ywr1t0xaW/fxSEf9rK0zwmMsKEHMDuR2aFfA/
+   Pq55ta+QMJ2Y231vLzwR+OzabeOZ3sDPafPBibjQApjs/9klIv8/puhiz
+   uxgT83n4qs119d6bBhuIpwVePYraKxD8R12nVkUs67YlU8Nn3DmTSSi91
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="285968182"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="285968182"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 07:25:38 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="570643748"
+Received: from bard-ubuntu.sh.intel.com ([10.239.185.57])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 07:25:37 -0700
+From:   Bard Liao <yung-chuan.liao@linux.intel.com>
+To:     alsa-devel@alsa-project.org, vkoul@kernel.org
+Cc:     vinod.koul@linaro.org, linux-kernel@vger.kernel.org,
+        pierre-louis.bossart@linux.intel.com, bard.liao@intel.com
+Subject: [PATCH 0/3] soundwire: allocate device_number with IDA
+Date:   Wed, 13 Jul 2022 22:25:26 +0800
+Message-Id: <20220713142529.17323-1-yung-chuan.liao@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys7TCFoGIk3hlCpB@lorien.usersys.redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 10:13:28AM -0400, Phil Auld wrote:
-> On Wed, Jul 13, 2022 at 03:58:43PM +0200 Greg Kroah-Hartman wrote:
-> > On Wed, Jul 13, 2022 at 09:45:45AM -0400, Phil Auld wrote:
-> > > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
-> > > This breaks userspace code that retrieves the size before reading the file. Rather
-> > > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
-> > > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
-> > > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
-> > > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
-> > > (8192 * 5). In order to get near that you'd need a system with every other CPU on one
-> > > node or something similar. e.g. (0,2,4,... 1024,1026...). To simplify the math and
-> > > support larger NR_CPUS we are using NR_CPUS * 6. We also set it to a min of PAGE_SIZE
-> > > to retain the older behavior for smaller NR_CPUS. The cpumap file wants to be something
-> > > like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using NR_CPUS/2.
-> > > 
-> > > On an 80 cpu 4-node sytem (NR_CPUS == 8192)
-> > > 
-> > > before:
-> > > 
-> > > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
-> > > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
-> > > 
-> > > after:
-> > > 
-> > > -r--r--r--. 1 root root 49152 Jul 13 09:26 /sys/devices/system/node/node0/cpulist
-> > > -r--r--r--. 1 root root  4096 Jul 13 09:24 /sys/devices/system/node/node0/cpumap
-> > > 
-> > > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
-> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> > > Signed-off-by: Phil Auld <pauld@redhat.com>
-> > > ---
-> > >  drivers/base/node.c | 4 ++--
-> > >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/base/node.c b/drivers/base/node.c
-> > > index 0ac6376ef7a1..3577f4eb4ac6 100644
-> > > --- a/drivers/base/node.c
-> > > +++ b/drivers/base/node.c
-> > > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
-> > >  	return n;
-> > >  }
-> > >  
-> > > -static BIN_ATTR_RO(cpumap, 0);
-> > > +static BIN_ATTR_RO(cpumap, (((NR_CPUS>>1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE));
-> > 
-> > Why not just PAGE_SIZE?
-> >
-> 
-> This one is likely to grow beyond page size if NR_CPUS is larger than 8192. It's about 2300 bytes
-> at 8192 if my math is right.
-> 
-> Let me ask again before I write the comments... what values of NR_CPUS are you seeing? Are people
-> using an order of magnitude above 8192? Two orders?  This patch (with the 6 below) handles about 1
-> order more.
+The device_number is currently allocated in the scope of each bus and does
+not need to be unique at the system level.
+This leads e.g. on Dell devices with three or four Device1 on different
+bus segments. To make the device_number unique at the system level, and
+unified with the HDaudio/iDISP SDI values, this PRs allocates the
+dev_number with an IDA restricted between 4 and 11 (inclusive).
 
-One order for now that we know of, probably larger that we don't :)
+Pierre-Louis Bossart (3):
+  soundwire: bus: rename sdw_ida as sdw_bus_ida
+  soundwire: bus: allow device number to be unique at system level
+  soundwire: intel: set dev_num_ida_min
 
-> > >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
-> > >  				   struct bin_attribute *attr, char *buf,
-> > > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
-> > >  	return n;
-> > >  }
-> > >  
-> > > -static BIN_ATTR_RO(cpulist, 0);
-> > > +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 6) > PAGE_SIZE) ? NR_CPUS *6 : PAGE_SIZE));
-> > 
-> > "* 6" in both places here?
-> >
-> 
-> It's compile time so it's cheap. But yes, 6 in both places.  That's to support NR_CPUS=100000.
+ drivers/soundwire/bus.c       | 29 ++++++++++++++++++++---------
+ drivers/soundwire/intel.c     |  4 ++++
+ include/linux/soundwire/sdw.h |  4 ++++
+ 3 files changed, 28 insertions(+), 9 deletions(-)
 
-Sorry, I was trying to point out to use a " " before the "6" in both
-places.  Not questioning the math.
+-- 
+2.25.1
 
-thanks,
-
-greg k-h
