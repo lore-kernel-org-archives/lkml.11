@@ -2,91 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41FDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E73C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236865AbiGMPUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:20:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
+        id S236859AbiGMPUN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236820AbiGMPUA (ORCPT
+        with ESMTP id S236820AbiGMPUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:20:00 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 990463C8CF
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:19:59 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so615514wmj.1
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:19:59 -0700 (PDT)
+        Wed, 13 Jul 2022 11:20:11 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3487845071;
+        Wed, 13 Jul 2022 08:20:11 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id p9so12479795pjd.3;
+        Wed, 13 Jul 2022 08:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=x6cQzIVXOIBGsoXiuif7G7saQrxwRpZyrgHwFA3owXw=;
-        b=UbfTqu9UK6HYMNNZQE81zT8rSE22hs7tx/XmkR6naxIYHSRGj6AEx6AltM1hsmzR4F
-         4bXiETy55+RlwNvk1IjEOCCbrBKWjYwh8FJes5Nj5Gtm0KJ0htpOIJcD7Hqwk2zDs7Iq
-         TdthzJ+MRMfxWgMott1HwM2DG2cj/Ltjf6j/wAqI5snSDTfKrvkC9XrwI0qTjTRcvv+c
-         5LWJTTUyjFR99MZfzZv0TGCrJP0PiIujZlTZZ4o1r1cfo8P2cE8WuqC3pSDEs4JlOAeL
-         YWJ0AJHbxRcc0zRWjx++Lf/SLw0q11YGW/x+ml0SCKTD9TzAh2NljacWhysNuOeW9n9o
-         irzw==
+        bh=sfcwLMN8Ewi+9XLJ414pnukT/pEOQ51tGjnru+yDZWI=;
+        b=Q6pScKlpaBVzK+JhActGi643lCDIiwN0l+n2gIcAtZx5pBGqUzKfxOz0UjVpEkdLyR
+         JXSoXaySG7xX6nsyKKQEldFXS5iIXnQf9dHBxzhz6HIa23M+4gm5b8DIdlkt5stEMGk7
+         e53fdGWomOfTKAaoihiYCWx5GC3T/WApV1sN6MxqMvFkizFpIO8NwGGdzH1f679cQ1xm
+         Pv5nr92Yf9f7K4Qj5BAY5jImxaamdo9DEwbIbX4v+SLvJwU09unPsPdRN9rWR3h2+MfZ
+         oUMfXU2SkzbvM5jIqsXz81pHGDhak32fDYg9CkWaSPv5GmXTQ0bkUtqSs6bCCNMCezL9
+         Qjcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=x6cQzIVXOIBGsoXiuif7G7saQrxwRpZyrgHwFA3owXw=;
-        b=CdQ2BS2aTu60nOrAp+/36gAAe3F/BdoWJjdkwHrsEWyTOpegBXejP1L78JsXKLsVSJ
-         x4s65oWPBx1wE2DbtaCDBawT49CnLCq22a28mXKnsthlhHAjCITPrHWkuiH1z9PcxLmS
-         5mnxER8YlAoW46c4vEF5MwBQtthXy+tPkXvVu/68xrz1vsjtWJoNFWyLCrTDoYCBcMjB
-         5HXYzoJ0L1kR1/WIXmV3soB61LzRF8Ch9cvgJlTIHU9SQq80HrtX+XiIfXyz3n4vAJGt
-         QUiV+izIYjKFrl0ycwvf65maIBgFm0XjFz26n08TY7LqtzXO+TRV5v60lWdq3BTwaxFr
-         I/Bw==
-X-Gm-Message-State: AJIora8w8tGbXpdAA1ZkhWn88A49FSEWevdQKF7uTUG00W+rpIkKEa9s
-        1OQonsTR0cinZ3SyydqheqI=
-X-Google-Smtp-Source: AGRyM1vdjvXKJQAC8aIpaLRCPxjr+/igY107IqJbiR9fjfmShIfWeDr52ubwhRVrPyxEKfoziD1OXw==
-X-Received: by 2002:a05:600c:1e20:b0:3a2:e540:17ad with SMTP id ay32-20020a05600c1e2000b003a2e54017admr4151536wmb.205.1657725598094;
-        Wed, 13 Jul 2022 08:19:58 -0700 (PDT)
-Received: from localhost.localdomain ([46.248.82.114])
-        by smtp.gmail.com with ESMTPSA id i16-20020a05600c355000b003a2f88b2559sm2329150wmq.44.2022.07.13.08.19.57
+        bh=sfcwLMN8Ewi+9XLJ414pnukT/pEOQ51tGjnru+yDZWI=;
+        b=1rlu3j0XQy49jTtfTKDPmM/VDTabLMn70lTFbvoKkHVFL1WntASxkJsLo7yQkVhfw2
+         PsE1JTithbYdQ9INtcRx2I1WdS/oZiR2qA0YpGXv3uZiiTHb0p1v0dBfW4tNNkkbPufX
+         wHfpsrEOotp+FiaPpFlgdlvEqKGD/5bPsYmxFdj0gWi5G0GEmxCVWRoMckx4FW/GCfB0
+         IJnpUfn4pXOxLcFRhrlNPUfz0lnMV16pY+mqW/BeCkF2Avu4Wrk0Z53VUBUenweCsGd5
+         14syENBY/ZL2fuyLeKE8skOKEyqVgBBFBSvKw9hs91zGKuqYx9vSthhpIRe/q4WQncUW
+         G9gQ==
+X-Gm-Message-State: AJIora+YJcyn5v5vLdXHHsWaZ4jh5CVkjEGCN142roffN6LoRGPRMzwH
+        4yYT9HPutOfLMhuzXOGiFiY=
+X-Google-Smtp-Source: AGRyM1t2S8VoCUJrWmORCeo5mfBdRIAcU+wdvHCqqj7G7C9PJ54IKMLzXkyUHrvKhpv+pg3WS+nwFQ==
+X-Received: by 2002:a17:90b:17c9:b0:1f0:5678:5142 with SMTP id me9-20020a17090b17c900b001f056785142mr4418118pjb.205.1657725610103;
+        Wed, 13 Jul 2022 08:20:10 -0700 (PDT)
+Received: from localhost.localdomain ([136.185.227.196])
+        by smtp.googlemail.com with ESMTPSA id pi4-20020a17090b1e4400b001df264610c4sm6891758pjb.0.2022.07.13.08.20.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 08:19:57 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>, Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH] ALSA: usb-audio: Use atomic_try_cmpxchg in ep_state_update
-Date:   Wed, 13 Jul 2022 17:19:46 +0200
-Message-Id: <20220713151946.4743-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 13 Jul 2022 08:20:09 -0700 (PDT)
+From:   sumadhurakalyan <sumadhurakalyan@gmail.com>
+Cc:     sumadhurakalyan <sumadhurakalyan@gmail.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-rtc@vger.kernel.org (open list:REAL TIME CLOCK (RTC) SUBSYSTEM),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] Subject: Fix 'void function return statements are not generally useful' warning
+Date:   Wed, 13 Jul 2022 20:49:52 +0530
+Message-Id: <20220713151953.9547-1-sumadhurakalyan@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use atomic_try_cmpxchg instead of atomic_cmpxchg (*ptr, old, new) == old in
-ep_state_update. x86 CMPXCHG instruction returns success in ZF flag,
-so this change saves a compare after cmpxchg (and related move instruction
-in front of cmpxchg).
-
-No functional change intended.
-
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Takashi Iwai <tiwai@suse.de>
+Fix 'void function return statements are not generally useful' warning
 ---
- sound/usb/endpoint.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/rtc/rtc-as3722.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/sound/usb/endpoint.c b/sound/usb/endpoint.c
-index f9c921683948..0d7b73bf7945 100644
---- a/sound/usb/endpoint.c
-+++ b/sound/usb/endpoint.c
-@@ -133,7 +133,7 @@ static inline bool ep_state_running(struct snd_usb_endpoint *ep)
- 
- static inline bool ep_state_update(struct snd_usb_endpoint *ep, int old, int new)
- {
--	return atomic_cmpxchg(&ep->state, old, new) == old;
-+	return atomic_try_cmpxchg(&ep->state, &old, new);
+diff --git a/drivers/rtc/rtc-as3722.c b/drivers/rtc/rtc-as3722.c
+index 0f21af27f4cf..e19a68e4d128 100644
+--- a/drivers/rtc/rtc-as3722.c
++++ b/drivers/rtc/rtc-as3722.c
+@@ -48,7 +48,6 @@ static void as3722_reg_to_time(u8 *rbuff, struct rtc_time *tm)
+ 	tm->tm_mday = bcd2bin(rbuff[3] & 0x3F);
+ 	tm->tm_mon = bcd2bin(rbuff[4] & 0x1F) - 1;
+ 	tm->tm_year = (AS3722_RTC_START_YEAR - 1900) + bcd2bin(rbuff[5] & 0x7F);
+-	return;
  }
  
- /**
+ static int as3722_rtc_read_time(struct device *dev, struct rtc_time *tm)
 -- 
-2.35.3
+2.25.1
 
