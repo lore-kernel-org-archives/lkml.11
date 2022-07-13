@@ -2,177 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510E9CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:53:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38CB7CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:54:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbiGMJxX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:53:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47704 "EHLO
+        id S235007AbiGMJya (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:54:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235776AbiGMJxS (ORCPT
+        with ESMTP id S235741AbiGMJyJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:53:18 -0400
-X-Greylist: delayed 1190 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 02:53:15 PDT
-Received: from dggsgout12.his.huawei.com (unknown [45.249.212.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714F5F9937;
-        Wed, 13 Jul 2022 02:53:15 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.143])
-        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LjXTN0K6Nz6PCRS;
-        Wed, 13 Jul 2022 17:32:24 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP3 (Coremail) with SMTP id _Ch0CgB32mlhkc5iALXVAg--.35543S4;
-        Wed, 13 Jul 2022 17:33:23 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yukuai3@huawei.com, zhangwensheng5@huawei.com, yi.zhang@huawei.com
-Subject: [PATCH -next] [RFC] scsi: ses: fix slab-out-of-bounds in ses_enclosure_data_process
-Date:   Wed, 13 Jul 2022 17:45:48 +0800
-Message-Id: <20220713094548.3958915-1-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
+        Wed, 13 Jul 2022 05:54:09 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9CD814A7;
+        Wed, 13 Jul 2022 02:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=cRqnvJDsfN6fhCEHJ9PA7nMRlfBPVLCY2LI3JbYP3BI=; b=YizJ1nYTaKqOQYxSGU2ehyP50d
+        iVe2FTsNk4GY/Y5qCdgE2T0lMkg+t+xKiyngyFnNq6rTdsWCLs/DrAxcJV1XwgTxlUYx+wUe13Jmn
+        y3dv6uuBBl8ZaG52YxvIVD4bVJpM9t2r7x4o1mskPjtdZxapuwN3QscxPm1aBAzf320XZjXxqXe1P
+        HT9AlQkbrx8QnCvUcQC0RLGPrUl2LFLuar0qF6RQRZapypgjcUQIr6D3waGaKwINKoRgPnnusFQcH
+        WOpKOcuzrqJl6nDZmT61RLifjjMYp0Byex1NUmEt9oG9rAFk/exRv3jsSWzyZK/tOzIBl1y68qPrg
+        iQQ4mkIA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=noisy.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oBZ3X-003WS6-4A; Wed, 13 Jul 2022 09:53:19 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 85606300110;
+        Wed, 13 Jul 2022 11:53:15 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 6E4B6201ECFBD; Wed, 13 Jul 2022 11:53:15 +0200 (CEST)
+Date:   Wed, 13 Jul 2022 11:53:15 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Song Liu <song@kernel.org>
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-modules@vger.kernel.org,
+        mcgrof@kernel.org, rostedt@goodmis.org, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, mhiramat@kernel.org,
+        naveen.n.rao@linux.ibm.com, davem@davemloft.net,
+        anil.s.keshavamurthy@intel.com, keescook@chromium.org,
+        hch@infradead.org, dave@stgolabs.net, daniel@iogearbox.net,
+        kernel-team@fb.com, x86@kernel.org, dave.hansen@linux.intel.com,
+        rick.p.edgecombe@intel.com, akpm@linux-foundation.org
+Subject: Re: [PATCH bpf-next 1/3] mm/vmalloc: introduce vmalloc_exec which
+ allocates RO+X memory
+Message-ID: <Ys6WCwU0VlTe2zIf@hirez.programming.kicks-ass.net>
+References: <20220713071846.3286727-1-song@kernel.org>
+ <20220713071846.3286727-2-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgB32mlhkc5iALXVAg--.35543S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3AF1UAFykGr15Kw1UZFW7CFg_yoWxGFy3pF
-        sxGayxGr48J34UJF47Cr1kXF97ZF4DAa1UJryfWr15Z3W8Gw1xtryDJrWUGr17Krn5A3W7
-        JwnrZ340qw18J3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyjb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
-        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
-        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
-        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-        Cjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCj
-        c4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4
-        CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1x
-        MIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6r
-        W3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUv
-        cSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713071846.3286727-2-song@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Wensheng <zhangwensheng5@huawei.com>
+On Wed, Jul 13, 2022 at 12:18:44AM -0700, Song Liu wrote:
+> +/**
+> + * vmalloc_exec - allocate RO+X memory in kernel text space
+> + * @size:	allocation size
+> + *
+> + * Allocate @size of RO+X memory in kernel text space. This memory can be
+> + * used to serve dynamic kernel text, such as BPF programs.
+> + *
+> + * The memory allocated is filled illegal instructions.
+> + *
+> + * Return: pointer to the allocated memory or %NULL on error
+> + */
+> +void *vmalloc_exec(size_t size)
+> +{
+> +	return vmalloc_exec_pack_alloc(size);
+> +}
+> +EXPORT_SYMBOL_GPL(vmalloc_exec);
 
-Kasan report a bug like below:
-[  494.865170] ==================================================================
-[  494.901335] BUG: KASAN: slab-out-of-bounds in ses_enclosure_data_process+0x234/0x6f0 [ses]
-[  494.901347] Write of size 1 at addr ffff8882f3181a70 by task systemd-udevd/1704
-[  494.931929] i801_smbus 0000:00:1f.4: SPD Write Disable is set
-
-[  494.944092] CPU: 12 PID: 1704 Comm: systemd-udevd Tainted: G
-[  494.944101] Hardware name: Huawei 2288H V5/BC11SPSCB0, BIOS 7.01 11/13/2019
-[  494.964003] i801_smbus 0000:00:1f.4: SMBus using PCI interrupt
-[  494.978532] Call Trace:
-[  494.978544]  dump_stack+0xbe/0xf9
-[  494.978558]  print_address_description.constprop.0+0x19/0x130
-[  495.092838]  ? ses_enclosure_data_process+0x234/0x6f0 [ses]
-[  495.092846]  __kasan_report.cold+0x68/0x80
-[  495.092855]  ? __kasan_kmalloc.constprop.0+0x71/0xd0
-[  495.092862]  ? ses_enclosure_data_process+0x234/0x6f0 [ses]
-[  495.092868]  kasan_report+0x3a/0x50
-[  495.092875]  ses_enclosure_data_process+0x234/0x6f0 [ses]
-[  495.092882]  ? mutex_unlock+0x1d/0x40
-[  495.092889]  ses_intf_add+0x57f/0x910 [ses]
-[  495.092900]  class_interface_register+0x26d/0x290
-[  495.092906]  ? class_destroy+0xd0/0xd0
-[  495.092912]  ? 0xffffffffc0bf8000
-[  495.092919]  ses_init+0x18/0x1000 [ses]
-[  495.092927]  do_one_initcall+0xcb/0x370
-[  495.092934]  ? initcall_blacklisted+0x1b0/0x1b0
-[  495.092942]  ? create_object.isra.0+0x330/0x3a0
-[  495.092950]  ? kasan_unpoison_shadow+0x33/0x40
-[  495.092957]  ? kasan_unpoison_shadow+0x33/0x40
-[  495.092966]  do_init_module+0xe4/0x3a0
-[  495.092972]  load_module+0xd0a/0xdd0
-[  495.092980]  ? layout_and_allocate+0x300/0x300
-[  495.092989]  ? seccomp_run_filters+0x1d6/0x2c0
-[  495.092999]  ? kernel_read_file_from_fd+0xb3/0xe0
-[  495.093006]  __se_sys_finit_module+0x11b/0x1b0
-[  495.093012]  ? __ia32_sys_init_module+0x40/0x40
-[  495.093023]  ? __audit_syscall_entry+0x226/0x290
-[  495.093032]  do_syscall_64+0x33/0x40
-[  495.093041]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  495.093046] RIP: 0033:0x7f39c3376089
-[  495.093054] Code: 00 48 81 c4 80 00 00 00 89 f0 c3 66 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e7 dd 0b 00 f7 d8 64 89 01 48
-[  495.093058] RSP: 002b:00007ffdc6009e18 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[  495.093068] RAX: ffffffffffffffda RBX: 000055d4192801c0 RCX: 00007f39c3376089
-[  495.093072] RDX: 0000000000000000 RSI: 00007f39c2fae99d RDI: 000000000000000f
-[  495.093076] RBP: 00007f39c2fae99d R08: 0000000000000000 R09: 0000000000000001
-[  495.093080] R10: 000000000000000f R11: 0000000000000246 R12: 0000000000000000
-[  495.093084] R13: 000055d419282e00 R14: 0000000000020000 R15: 000055d41927f1f0
-
-[  495.093091] Allocated by task 1704:
-[  495.093098]  kasan_save_stack+0x1b/0x40
-[  495.093105]  __kasan_kmalloc.constprop.0+0xc2/0xd0
-[  495.093111]  ses_enclosure_data_process+0x65d/0x6f0 [ses]
-[  495.093117]  ses_intf_add+0x57f/0x910 [ses]
-[  495.093123]  class_interface_register+0x26d/0x290
-[  495.093129]  ses_init+0x18/0x1000 [ses]
-[  495.093134]  do_one_initcall+0xcb/0x370
-[  495.093139]  do_init_module+0xe4/0x3a0
-[  495.093144]  load_module+0xd0a/0xdd0
-[  495.093150]  __se_sys_finit_module+0x11b/0x1b0
-[  495.093155]  do_syscall_64+0x33/0x40
-[  495.093162]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-[  495.093168] The buggy address belongs to the object at ffff8882f3181a40
-                which belongs to the cache kmalloc-64 of size 64
-[  495.093173] The buggy address is located 48 bytes inside of
-                64-byte region [ffff8882f3181a40, ffff8882f3181a80)
-[  495.093175] The buggy address belongs to the page:
-[  495.093181] page:ffffea000bcc6000 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x2f3180
-[  495.093186] head:ffffea000bcc6000 order:2 compound_mapcount:0 compound_pincount:0
-[  495.093194] flags: 0x17ffe0000010200(slab|head|node=0|zone=2|lastcpupid=0x3fff)
-[  495.093204] raw: 017ffe0000010200 ffffea0016e5fb08 ffffea0016921508 ffff888100050e00
-[  495.093211] raw: 0000000000000000 0000000000200020 00000001ffffffff 0000000000000000
-[  495.093213] page dumped because: kasan: bad access detected
-
-[  495.093216] Memory state around the buggy address:
-[  495.093222]  ffff8882f3181900: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  495.093227]  ffff8882f3181980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  495.093231] >ffff8882f3181a00: fc fc fc fc fc fc fc fc 00 00 00 00 01 fc fc fc
-[  495.093234]                                                              ^
-[  495.093239]  ffff8882f3181a80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  495.093244]  ffff8882f3181b00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[  495.093246] ==================================================================
-
-After analysis on vmcore, it was found that the line "desc_ptr[len] =
-'\0';" has slab-out-of-bounds problem in ses_enclosure_data_process.
-In ses_enclosure_data_process, "desc_ptr" point to "buf", so it have
-to be limited in the memory of "buf", however. although there is
-"desc_ptr >= buf + page7_len" judgment, it does not work because
-"desc_ptr + 4 + len" may bigger than "buf + page7_len", which will
-lead to slab-out-of-bounds problem.
-
-Fix it by using judging desc_ptr cross the border or not after
-"desc_ptr += 4".
-
-Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
----
- drivers/scsi/ses.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/scsi/ses.c b/drivers/scsi/ses.c
-index 0a1734f34587..981e6e950adc 100644
---- a/drivers/scsi/ses.c
-+++ b/drivers/scsi/ses.c
-@@ -559,11 +559,11 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
- 			struct enclosure_component *ecomp;
- 
- 			if (desc_ptr) {
-+				len = (desc_ptr[2] << 8) + desc_ptr[3];
-+				desc_ptr += 4;
- 				if (desc_ptr >= buf + page7_len) {
- 					desc_ptr = NULL;
- 				} else {
--					len = (desc_ptr[2] << 8) + desc_ptr[3];
--					desc_ptr += 4;
- 					/* Add trailing zero - pushes into
- 					 * reserved space */
- 					desc_ptr[len] = '\0';
--- 
-2.31.1
+NAK! modules do *NOT* get to allocate text.
 
