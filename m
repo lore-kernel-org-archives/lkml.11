@@ -2,91 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3981C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:50:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DFF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbiGMBuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51606 "EHLO
+        id S230470AbiGMBxG convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 21:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiGMBuN (ORCPT
+        with ESMTP id S230052AbiGMBxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:50:13 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331430F5F;
-        Tue, 12 Jul 2022 18:50:12 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LjL940v1GzhYp8;
-        Wed, 13 Jul 2022 09:47:36 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 13 Jul
- 2022 09:50:10 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH v3,net-next] net/sched: remove return value of unregister_tcf_proto_ops
-Date:   Wed, 13 Jul 2022 09:54:38 +0800
-Message-ID: <20220713015438.87005-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Tue, 12 Jul 2022 21:53:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8520D4469
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:53:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DE24618E2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF779C3411C;
+        Wed, 13 Jul 2022 01:53:00 +0000 (UTC)
+Date:   Tue, 12 Jul 2022 21:52:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: schedstat false counting of domain load_balance() tried to move one
+ or more tasks failed
+Message-ID: <20220712215259.6cb28bed@gandalf.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return value of unregister_tcf_proto_ops is unused, remove it.
+I've been tasked to analyze the /proc/schedstat file to determine
+appropriate metrics to look after in production. So I'm looking at both the
+documentation and the code that generates it.
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- include/net/pkt_cls.h | 2 +-
- net/sched/cls_api.c   | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+From the documentation at https://docs.kernel.org/scheduler/sched-stats.html
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 8cf001aed858..d9d90e6925e1 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -23,7 +23,7 @@ struct tcf_walker {
- };
+(and Documentation/scheduler/sched-stats.rst for those of you that are
+allergic to html)
+
+   Domain statistics
+   -----------------
+   One of these is produced per domain for each cpu described. (Note that if
+   CONFIG_SMP is not defined, *no* domains are utilized and these lines
+   will not appear in the output.)
+
+   domain<N> <cpumask> 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
+
+   The first field is a bit mask indicating what cpus this domain operates over.
+
+   The next 24 are a variety of load_balance() statistics in grouped into types
+   of idleness (idle, busy, and newly idle):
+
+       1)  # of times in this domain load_balance() was called when the
+           cpu was idle
+       2)  # of times in this domain load_balance() checked but found
+           the load did not require balancing when the cpu was idle
+       3)  # of times in this domain load_balance() tried to move one or
+           more tasks and failed, when the cpu was idle
+
+I was looking at this #3 (which is also #11 and #19 for CPU_BUSY and
+CPU_NEW_IDLE respectively). It states that it gets incremented when one or
+more tasks were tried to be moved but failed. I found this is not always
+the case.
+
+We have:
+
+	ld_moved = 0;
+	/* Clear this flag as soon as we find a pullable task */
+	env.flags |= LBF_ALL_PINNED;
+	if (busiest->nr_running > 1) {
+[..]
+	}
+
+	if (!ld_moved) {
+		schedstat_inc(sd->lb_failed[idle]);
+
+Where the lb_failed[] is that counter. I added the following code:
+
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 77b2048a9326..4835ea4d9d01 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -9865,6 +9865,7 @@ static int load_balance(int this_cpu, struct rq *this_rq,
+ 	struct rq *busiest;
+ 	struct rq_flags rf;
+ 	struct cpumask *cpus = this_cpu_cpumask_var_ptr(load_balance_mask);
++	bool redo = false;
  
- int register_tcf_proto_ops(struct tcf_proto_ops *ops);
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops);
- 
- struct tcf_block_ext_info {
- 	enum flow_block_binder_type binder_type;
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 9bb4d3dcc994..c7a240232b8d 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -194,7 +194,7 @@ EXPORT_SYMBOL(register_tcf_proto_ops);
- 
- static struct workqueue_struct *tc_filter_wq;
- 
--int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
-+void unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
- {
- 	struct tcf_proto_ops *t;
- 	int rc = -ENOENT;
-@@ -214,7 +214,8 @@ int unregister_tcf_proto_ops(struct tcf_proto_ops *ops)
+ 	struct lb_env env = {
+ 		.sd		= sd,
+@@ -10012,11 +10013,13 @@ static int load_balance(int this_cpu, struct rq *this_rq,
+ 			if (!cpumask_subset(cpus, env.dst_grpmask)) {
+ 				env.loop = 0;
+ 				env.loop_break = sched_nr_migrate_break;
++				redo = true;
+ 				goto redo;
+ 			}
+ 			goto out_all_pinned;
  		}
- 	}
- 	write_unlock(&cls_mod_lock);
--	return rc;
-+
-+	WARN(rc, "unregister tc filter kind(%s) failed %d\n", ops->kind, rc);
- }
- EXPORT_SYMBOL(unregister_tcf_proto_ops);
+-	}
++	} else if (!redo)
++		trace_printk("Did not try to move! %d\n", idle);
  
--- 
-2.17.1
+ 	if (!ld_moved) {
+ 		schedstat_inc(sd->lb_failed[idle]);
+
+
+And sure enough that triggers on CPU_IDLE and CPU_NEW_IDLE calls (I haven't
+seen it for CPU_BUSY yet, but I didn't try).
+
+Thus, if we get to that check for (busiest->nr_running > 1) and fail, then
+we will increment that counter incorrectly.
+
+Do we care? Should it be fixed? Should it be documented?
+
+Thoughts?
+
+-- Steve
 
