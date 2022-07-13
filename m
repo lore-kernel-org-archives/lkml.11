@@ -2,41 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 617E6CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AFEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236333AbiGMMKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59318 "EHLO
+        id S236358AbiGMMLt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236276AbiGMMKV (ORCPT
+        with ESMTP id S231236AbiGMMLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:10:21 -0400
-Received: from out199-15.us.a.mail.aliyun.com (out199-15.us.a.mail.aliyun.com [47.90.199.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3A5F5D6F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:10:19 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0VJDq.BW_1657714212;
-Received: from 30.240.98.52(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0VJDq.BW_1657714212)
-          by smtp.aliyun-inc.com;
-          Wed, 13 Jul 2022 20:10:14 +0800
-Message-ID: <a97e0e17-e4cc-8cc8-673d-28966b95a42b@linux.alibaba.com>
-Date:   Wed, 13 Jul 2022 20:10:12 +0800
+        Wed, 13 Jul 2022 08:11:47 -0400
+Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC4CF8940;
+        Wed, 13 Jul 2022 05:11:46 -0700 (PDT)
+Received: by mail-qt1-x82f.google.com with SMTP id x11so561734qtv.9;
+        Wed, 13 Jul 2022 05:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=mQ/hcGr/I/V5gOxH9+3HtKc0WRnaD95esCjmTcO4bQ0=;
+        b=FojwuT6sStHpE+uVYaLsaIIQad4I8HewXV7sDZTXbpuvLEXufIWG1ufnuRB4cMYyrz
+         kPOha1HctNi444O/CECbg2EoAhrjZmGgxNVFHD7lVLdK/PjolGofJE+qgGrOlW1woIlQ
+         JYGpYoVSxSjDrFE5ImvMQW+sEj+hNdRAYU6+/EU7ibVtPwJOake8jcjZ5xTfPSsdChIZ
+         rfKZQzXtJzQlYU821MXv/QWkkZhUhL5xT/bTMvVhfQeeO9MCgoXK8WnblnnfdxOagYex
+         G8U5s7/vMXpdFqGlPBx6CZMa0+adjTZHfVn/kHN+8qI4SM8geqkQmo8uZnFT0urSGFo/
+         XVMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mQ/hcGr/I/V5gOxH9+3HtKc0WRnaD95esCjmTcO4bQ0=;
+        b=kf7yp358dOyBP8VJ7S129L2zvY0KlXQ9gypSqUKXkpHGdwFPPgfpC474bDGypjXTeJ
+         lFFGxOPOwkZ/N4N7ngf+T8zJk0m9BGxxfffNV4JUR91iImfDxbQxE4kNyWbDYoLNcwql
+         VAV1DVpKgS11bEmQeZwYkEaGbbA64R9lG9Vw07Wpkr6Cfq06/m+xJj2pbTHuyG+s/pNP
+         VYN46ooJZ0yuFxfwOPZe9La0e8CGXM2fQ5EiJn/u3uIIVDKnvwV9S0MwIMfFDT+ZXA3a
+         FgV9M2nQYTifhZLAUVQ2cG75cxltkkgP7t+FkB7VESc7rylIE6JVB6u5eISkEKfxWa8a
+         j0ow==
+X-Gm-Message-State: AJIora9McBVIO5ul3NNsBxgjM0ZYCm7PCOkFbPqmBuA23FIm7pKHTCUY
+        7Fp0MxANbhDvhjoSFqzCe3A=
+X-Google-Smtp-Source: AGRyM1tQvQdoyjFYZfS1liJSgb+wrsI4bYFX7V+tmV4z8j3UvfsmISCnmKU2aLt9KbpEZgAIYIuBuQ==
+X-Received: by 2002:ac8:5cd3:0:b0:316:f772:f0b8 with SMTP id s19-20020ac85cd3000000b00316f772f0b8mr2587700qta.162.1657714305566;
+        Wed, 13 Jul 2022 05:11:45 -0700 (PDT)
+Received: from [192.168.43.228] ([193.86.92.180])
+        by smtp.gmail.com with ESMTPSA id h13-20020a05620a400d00b006b5bbd8cb92sm630846qko.55.2022.07.13.05.11.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 05:11:44 -0700 (PDT)
+Message-ID: <c8fdfa7b-f4eb-8308-4064-b868ce945e3a@gmail.com>
+Date:   Wed, 13 Jul 2022 14:11:39 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:103.0)
- Gecko/20100101 Thunderbird/103.0
-Subject: Re: [PATCH v2 1/3] mm/slub: fix the race between validate_slab and
- slab_free
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net v4 1/3] stmmac: dwmac-mediatek: fix clock issue
 Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc:     akpm@linux-foundation.org, vbabka@suse.cz,
-        roman.gushchin@linux.dev, iamjoonsoo.kim@lge.com,
-        rientjes@google.com, penberg@kernel.org, cl@gentwo.de,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Feng Tang <feng.tang@intel.com>
-References: <20220712022807.44113-1-rongwei.wang@linux.alibaba.com>
- <Ys6cymrtnHNlCDG9@ip-172-31-24-42.ap-northeast-1.compute.internal>
-From:   Rongwei Wang <rongwei.wang@linux.alibaba.com>
-In-Reply-To: <Ys6cymrtnHNlCDG9@ip-172-31-24-42.ap-northeast-1.compute.internal>
+To:     Biao Huang <biao.huang@mediatek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, macpaul.lin@mediatek.com,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+References: <20220713101002.10970-1-biao.huang@mediatek.com>
+ <20220713101002.10970-2-biao.huang@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <20220713101002.10970-2-biao.huang@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -45,161 +84,117 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 7/13/22 6:22 PM, Hyeonggon Yoo wrote:
-> On Tue, Jul 12, 2022 at 10:28:05AM +0800, Rongwei Wang wrote:
->> In use cases where allocating and freeing slab frequently, some
->> error messages, such as "Left Redzone overwritten", "First byte
->> 0xbb instead of 0xcc" would be printed when validating slabs.
->> That's because an object has been filled with SLAB_RED_INACTIVE,
->> but has not been added to slab's freelist. And between these
->> two states, the behaviour of validating slab is likely to occur.
->>
->> Actually, it doesn't mean the slab can not work stably. But, these
->> confusing messages will disturb slab debugging more or less.
->>
->> Signed-off-by: Rongwei Wang <rongwei.wang@linux.alibaba.com>
->> ---
->>   mm/slub.c | 43 +++++++++++++++++++++++++------------------
->>   1 file changed, 25 insertions(+), 18 deletions(-)
->>
+On 13/07/2022 12:10, Biao Huang wrote:
+> The pm_runtime takes care of the clock handling in current
+> stmmac drivers, and dwmac-mediatek implement the
+> mediatek_dwmac_clks_config() as the callback for pm_runtime.
 > 
-> This makes the code more complex.
+> Then, stripping duplicated clocks handling in old init()/exit()
+> to fix clock issue in suspend/resume test.
 > 
-> A part of me says it may be more pleasant to split implementation
-> allocating from caches for debugging. That would make it simpler.
+> As to clocks in probe/remove, vendor need symmetric handling to
+> ensure clocks balance.
 > 
-> something like:
+> Test pass, including suspend/resume and ko insertion/remove.
 > 
-> __slab_alloc() {
-> 	if (kmem_cache_debug(s))
-> 		slab_alloc_debug()
-> 	else
-> 		___slab_alloc()
-> }
+> Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level clocks management")
+> Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+> ---
+>   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 49 ++++++++-----------
+>   1 file changed, 21 insertions(+), 28 deletions(-)
 > 
-> slab_free() {
-> 	if (kmem_cache_debug(s))
-> 		slab_free_debug()
-> 	else
-> 		__do_slab_free()
-> }
-Oh, I also have same idea, but not sure whether it is accepted because 
-of it needs more changes than now. Since you agree with this way, I can
-rewrite this code.
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> index 6ff88df58767..ca8ab290013c 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+> @@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
+>   		}
+>   	}
+>   
+> -	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+> -	if (ret) {
+> -		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = clk_prepare_enable(plat->rmii_internal_clk);
+> -	if (ret) {
+> -		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
+> -		goto err_clk;
+> -	}
+> -
+>   	return 0;
+> -
+> -err_clk:
+> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+> -	return ret;
+> -}
+> -
+> -static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+> -{
+> -	struct mediatek_dwmac_plat_data *plat = priv;
+> -	const struct mediatek_dwmac_variant *variant = plat->variant;
+> -
+> -	clk_disable_unprepare(plat->rmii_internal_clk);
+> -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+>   }
+>   
+>   static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+> @@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
+>   	plat->addr64 = priv_plat->variant->dma_bit_mask;
+>   	plat->bsp_priv = priv_plat;
+>   	plat->init = mediatek_dwmac_init;
+> -	plat->exit = mediatek_dwmac_exit;
+>   	plat->clks_config = mediatek_dwmac_clks_config;
+>   	if (priv_plat->variant->dwmac_fix_mac_speed)
+>   		plat->fix_mac_speed = priv_plat->variant->dwmac_fix_mac_speed;
+> @@ -712,13 +686,32 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+>   	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
+>   	mediatek_dwmac_init(pdev, priv_plat);
+>   
+> +	ret = mediatek_dwmac_clks_config(priv_plat, true);
+> +	if (ret)
+> +		return ret;
+> +
+>   	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+>   	if (ret) {
+>   		stmmac_remove_config_dt(pdev, plat_dat);
+> -		return ret;
+> +		goto err_drv_probe;
+>   	}
+>   
+>   	return 0;
+> +
+> +err_drv_probe:
+> +	mediatek_dwmac_clks_config(priv_plat, false);
+> +	return ret;
+> +}
+> +
+> +static int mediatek_dwmac_remove(struct platform_device *pdev)
+> +{
+> +	struct mediatek_dwmac_plat_data *priv_plat = get_stmmac_bsp_priv(&pdev->dev);
+> +	int ret;
+> +
+> +	ret = stmmac_pltfr_remove(pdev);
+> +	mediatek_dwmac_clks_config(priv_plat, false);
+> +
 
-Thanks.
-> 
-> See also:
-> 	https://lore.kernel.org/lkml/faf416b9-f46c-8534-7fb7-557c046a564d@suse.cz/
-Thanks, it seems that I had missed it.
-> 
->> diff --git a/mm/slub.c b/mm/slub.c
->> index b1281b8654bd..e950d8df8380 100644
->> --- a/mm/slub.c
->> +++ b/mm/slub.c
->> @@ -1391,18 +1391,16 @@ static noinline int free_debug_processing(
->>   	void *head, void *tail, int bulk_cnt,
->>   	unsigned long addr)
->>   {
->> -	struct kmem_cache_node *n = get_node(s, slab_nid(slab));
->>   	void *object = head;
->>   	int cnt = 0;
->> -	unsigned long flags, flags2;
->> +	unsigned long flags;
->>   	int ret = 0;
->>   	depot_stack_handle_t handle = 0;
->>   
->>   	if (s->flags & SLAB_STORE_USER)
->>   		handle = set_track_prepare();
->>   
->> -	spin_lock_irqsave(&n->list_lock, flags);
->> -	slab_lock(slab, &flags2);
->> +	slab_lock(slab, &flags);
->>   
->>   	if (s->flags & SLAB_CONSISTENCY_CHECKS) {
->>   		if (!check_slab(s, slab))
->> @@ -1435,8 +1433,7 @@ static noinline int free_debug_processing(
->>   		slab_err(s, slab, "Bulk freelist count(%d) invalid(%d)\n",
->>   			 bulk_cnt, cnt);
->>   
->> -	slab_unlock(slab, &flags2);
->> -	spin_unlock_irqrestore(&n->list_lock, flags);
->> +	slab_unlock(slab, &flags);
->>   	if (!ret)
->>   		slab_fix(s, "Object at 0x%p not freed", object);
->>   	return ret;
->> @@ -3330,7 +3327,7 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
->>   
->>   {
->>   	void *prior;
->> -	int was_frozen;
->> +	int was_frozen, to_take_off = 0;
->>   	struct slab new;
->>   	unsigned long counters;
->>   	struct kmem_cache_node *n = NULL;
->> @@ -3341,14 +3338,23 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
->>   	if (kfence_free(head))
->>   		return;
->>   
->> -	if (kmem_cache_debug(s) &&
->> -	    !free_debug_processing(s, slab, head, tail, cnt, addr))
->> -		return;
->> +	n = get_node(s, slab_nid(slab));
->> +	if (kmem_cache_debug(s)) {
->> +		int ret;
->>   
->> -	do {
->> -		if (unlikely(n)) {
->> +		spin_lock_irqsave(&n->list_lock, flags);
->> +		ret = free_debug_processing(s, slab, head, tail, cnt, addr);
->> +		if (!ret) {
->>   			spin_unlock_irqrestore(&n->list_lock, flags);
->> -			n = NULL;
->> +			return;
->> +		}
->> +	}
->> +
->> +	do {
->> +		if (unlikely(to_take_off)) {
->> +			if (!kmem_cache_debug(s))
->> +				spin_unlock_irqrestore(&n->list_lock, flags);
->> +			to_take_off = 0;
->>   		}
->>   		prior = slab->freelist;
->>   		counters = slab->counters;
->> @@ -3369,8 +3375,6 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
->>   				new.frozen = 1;
->>   
->>   			} else { /* Needs to be taken off a list */
->> -
->> -				n = get_node(s, slab_nid(slab));
->>   				/*
->>   				 * Speculatively acquire the list_lock.
->>   				 * If the cmpxchg does not succeed then we may
->> @@ -3379,8 +3383,10 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
->>   				 * Otherwise the list_lock will synchronize with
->>   				 * other processors updating the list of slabs.
->>   				 */
->> -				spin_lock_irqsave(&n->list_lock, flags);
->> +				if (!kmem_cache_debug(s))
->> +					spin_lock_irqsave(&n->list_lock, flags);
->>   
->> +				to_take_off = 1;
->>   			}
->>   		}
->>   
->> @@ -3389,8 +3395,9 @@ static void __slab_free(struct kmem_cache *s, struct slab *slab,
->>   		head, new.counters,
->>   		"__slab_free"));
->>   
->> -	if (likely(!n)) {
->> -
->> +	if (likely(!to_take_off)) {
->> +		if (kmem_cache_debug(s))
->> +			spin_unlock_irqrestore(&n->list_lock, flags);
->>   		if (likely(was_frozen)) {
->>   			/*
->>   			 * The list lock was not taken therefore no list
->> -- 
->> 2.27.0
->>
+We enalbe the clocks after calling stmmac_probe_config_dt(), so we should 
+disable them before calling stmmac_pltfr_remove(), correct?
+
+Other then that:
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+
+> +	return ret;
+>   }
+>   
+>   static const struct of_device_id mediatek_dwmac_match[] = {
+> @@ -733,7 +726,7 @@ MODULE_DEVICE_TABLE(of, mediatek_dwmac_match);
+>   
+>   static struct platform_driver mediatek_dwmac_driver = {
+>   	.probe  = mediatek_dwmac_probe,
+> -	.remove = stmmac_pltfr_remove,
+> +	.remove = mediatek_dwmac_remove,
+>   	.driver = {
+>   		.name           = "dwmac-mediatek",
+>   		.pm		= &stmmac_pltfr_pm_ops,
