@@ -2,175 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B27C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:57:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 845EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236121AbiGML5F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:57:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47864 "EHLO
+        id S234946AbiGML7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:59:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235579AbiGML5C (ORCPT
+        with ESMTP id S229723AbiGML7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:57:02 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9054B1034F4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:56:58 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z12so15167822wrq.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:56:58 -0700 (PDT)
+        Wed, 13 Jul 2022 07:59:49 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45351F32F6;
+        Wed, 13 Jul 2022 04:59:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qxcQt+R1BQvmSe81l8pzxUpsvc5Hyp+NVDBvjQReI90=;
-        b=ON7C9i7WOOVBRXKaAud5rrqEbU/g7AYTogs8RVrkq6VdFMNXxFOM4TVG7EvX26yTpf
-         5bWyg8bOVguB1IgWsxEzjHJHIsLJlcwSMa0EUGLKDQfDj6xaXi9NZrI0F0C0dh8SuNjH
-         UaW5VxA0s2M7e/H4hQqXHJ2ALmm3m8Q1PeNHcwCa41tzR2mRwUE3aYZZ9GDW7NFG/z+j
-         lxUfVKANakXLyxEit6MtAqCiGcbMBr1mvM2gkmvtKFhw/tWypq/tC7wxv7D5iLSWwHFV
-         AEFOSqHE13YRwE/ieEl02mHKEkovXbB900aiC5zI5A1Fk9JfWa0ViblCjWnNP0aS35kG
-         E/Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qxcQt+R1BQvmSe81l8pzxUpsvc5Hyp+NVDBvjQReI90=;
-        b=jeiVnWGuBz8fy1lJ5sQCojFMLCIInWARNsrMpcwB4i6Shj/gJezCeF5ToS0zeTvzL+
-         YP2rk6VYhD3cBk1MzvljaTZMdUhxIs9EQdRZJcQXgoAYnn1YxtirGfC0oe73o+97B+rw
-         EnfOmYbRMZsAWQ13K1JfBEoxCELUMJeIyE148lZvpAFdfk1nWgqwXPk6cfMQnCasvPRu
-         BuDCwo0E8/fxJFMV30QGjJedin6x6YBLFeISZJp2bMAllfZPlZCJggk+fWVih672PAxs
-         vHfHKievWV5Fbe0TcDpN0b43H7HUshJ3qrMqoJ289d1lUHzHTLY9a5p7q8uDs9F+ZNKk
-         uHhw==
-X-Gm-Message-State: AJIora+8jwzDn+lcyEr/uwDCbW4Qnivp1RGoEKvO6Ttfznem59tgTcQu
-        6M9dCs7xdsAC0nfb1PztnjRC6nUIvB6pSA==
-X-Google-Smtp-Source: AGRyM1uBP9gd3wmaygD60IXxI6xdqVBlMdxdPX5CyGEgDY02YRkMmPcOJuBUbid86a+KEk70Qvz55Q==
-X-Received: by 2002:adf:efd1:0:b0:21d:6731:221e with SMTP id i17-20020adfefd1000000b0021d6731221emr3028637wrp.404.1657713417102;
-        Wed, 13 Jul 2022 04:56:57 -0700 (PDT)
-Received: from [192.168.0.17] (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net. [86.15.83.122])
-        by smtp.gmail.com with ESMTPSA id s14-20020a5d424e000000b0021d4d6355efsm10772676wrr.109.2022.07.13.04.56.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 04:56:56 -0700 (PDT)
-Message-ID: <feaacf44-f9a8-b892-d8ba-8a396b49d56b@sifive.com>
-Date:   Wed, 13 Jul 2022 12:56:55 +0100
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657713588; x=1689249588;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=dgsaYpf/vsoYhmP9tn9UVNlFtNHTVqtvjpcLY3JOMKg=;
+  b=HLT9GzbW3lIG81rd4rN7FHI2ROF9sEIG7qRmflNuKxYWMQc1+0rJrBao
+   9VUfxwRbKmrs6ICgZYZS2uuwhESyPtESTmuHN1bbnsf/vNmpWDIoqokCz
+   8edx+Lv3ZIm9+V5VLoMkIjoMOi7gVSEtth9AXd7bpB486S+BUcV/xdqqz
+   w=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jul 2022 04:59:48 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:59:48 -0700
+Received: from hu-vgarodia-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 13 Jul 2022 04:59:45 -0700
+From:   Vikash Garodia <quic_vgarodia@quicinc.com>
+To:     <stanimir.varbanov@linaro.org>, <linux-media@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <frkoenig@chromium.org>, <quic_dikshita@quicinc.com>,
+        <quic_vgarodia@quicinc.com>
+Subject: [PATCH v3] media: venus: set ubwc configuration on specific video hardware
+Date:   Wed, 13 Jul 2022 17:29:36 +0530
+Message-ID: <1657713576-21525-1-git-send-email-quic_vgarodia@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 3/7] pwm: dwc: add of/platform support
-Content-Language: en-GB
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        u.kleine-koenig@pengutronix.de,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
-        Sudip Mukherjee <sudip.mukherjee@sifive.com>,
-        William Salmon <william.salmon@sifive.com>,
-        Adnan Chowdhury <adnan.chowdhury@sifive.com>
-References: <20220712100113.569042-1-ben.dooks@sifive.com>
- <20220712100113.569042-4-ben.dooks@sifive.com>
- <20220712221715.GT1823936-robh@kernel.org>
-From:   Ben Dooks <ben.dooks@sifive.com>
-In-Reply-To: <20220712221715.GT1823936-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/2022 23:17, Rob Herring wrote:
-> On Tue, Jul 12, 2022 at 11:01:09AM +0100, Ben Dooks wrote:
->> The dwc pwm controller can be used in non-PCI systems, so allow
->> either platform or OF based probing.
->>
->> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
->> ---
->>   .../devicetree/bindings/pwm/pwm-synposys.yaml | 40 ++++++++++++++
-> 
-> Use compatible string for filename.
+UBWC configuration parameters would vary across video hardware
+generations. At the same time, driver is expected to configure these
+parameters, without relying on video firmware to use the default
+configurations.
+Setting the configuration parameters for sc7280.
 
-ok, will fix.
+Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
+---
+Change since v2:
 
->>   drivers/pwm/Kconfig                           |  5 +-
->>   drivers/pwm/pwm-dwc.c                         | 53 +++++++++++++++++++
->>   3 files changed, 96 insertions(+), 2 deletions(-)
->>   create mode 100644 Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
->> new file mode 100644
->> index 000000000000..38ac0da75272
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-synposys.yaml
->> @@ -0,0 +1,40 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +# Copyright (C) 2022 SiFive, Inc.
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/pwm/pwm-synposys.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Synopsys PWM controller
->> +
->> +maintainers:
->> +   - Ben Dooks <ben.dooks@sifive.com>
->> +
->> +properties:
->> +  "#pwm-cells":
->> +    description: |
->> +      See pwm.yaml in this directory for a description of the cells format.
-> 
-> pwm.yaml doesn't define how many cells. You need to. And you don't need
-> generic descriptions.
+ Review comments addressed(from Stanimir)
 
-  "#pwm-cells":
-     const: 1
+ drivers/media/platform/qcom/venus/core.c       |  5 +++++
+ drivers/media/platform/qcom/venus/core.h       |  2 ++
+ drivers/media/platform/qcom/venus/hfi_cmds.c   |  9 +++++++++
+ drivers/media/platform/qcom/venus/hfi_cmds.h   |  1 +
+ drivers/media/platform/qcom/venus/hfi_helper.h | 20 ++++++++++++++++++++
+ drivers/media/platform/qcom/venus/hfi_venus.c  | 26 ++++++++++++++++++++++++++
+ 6 files changed, 63 insertions(+)
 
-should be sufficient then?
-
->> +
->> +  clocks:
->> +    items:
->> +      - description: Interface bus clock
->> +      - description: PWM reference clock
->> +
->> +  clock-names:
->> +    items:
->> +      - const: bus
->> +      - const: timer
->> +
->> +  compatible:
-> 
-> Convention is compatible comes first in the list.
-
-ok, fixed.
-
-
->> +    oneOf:
->> +      - items:
->> +        - const: snps,pwm
-> 
-> Don't need oneOf or items. Just 'const: snps,pwm'.
-
-ok, fixed.
-
-
-> That's pretty generic for a compatible. There's only 1 version of the IP
-> or is the version discoverable?
-
-This IP block doesn't seem to have evolved much since being included so
-I don't think so at this point, most of the revision list is for the
-internal options and cleanup.
-
-I will go through and check if all the compile-time properties are deal
-with, but that'll be adding more properiteis if they are needed.
-
->> +
->> +required:
->> +  - "#pwm-cells"
->> +  - compatible
->> +  - reg
->> +  - clocks
->> +  - clock-names
->> +
->> +additionalProperties: false
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index 877eca1..b08b98e 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -832,6 +832,10 @@ static const struct reg_val sm7280_reg_preset[] = {
+ 	{ 0xb0088, 0 },
+ };
+ 
++static const struct hfi_ubwc_config sc7280_ubwc_config = {
++	0, 0, {1, 1, 1, 0, 0, 0}, 8, 32, 14, 0, 0, {0, 0}
++};
++
+ static const struct venus_resources sc7280_res = {
+ 	.freq_tbl = sc7280_freq_table,
+ 	.freq_tbl_size = ARRAY_SIZE(sc7280_freq_table),
+@@ -841,6 +845,7 @@ static const struct venus_resources sc7280_res = {
+ 	.bw_tbl_enc_size = ARRAY_SIZE(sc7280_bw_table_enc),
+ 	.bw_tbl_dec = sc7280_bw_table_dec,
+ 	.bw_tbl_dec_size = ARRAY_SIZE(sc7280_bw_table_dec),
++	.ubwc_conf = &sc7280_ubwc_config,
+ 	.clks = {"core", "bus", "iface"},
+ 	.clks_num = 3,
+ 	.vcodec0_clks = {"vcodec_core", "vcodec_bus"},
+diff --git a/drivers/media/platform/qcom/venus/core.h b/drivers/media/platform/qcom/venus/core.h
+index d338255..32551c2 100644
+--- a/drivers/media/platform/qcom/venus/core.h
++++ b/drivers/media/platform/qcom/venus/core.h
+@@ -16,6 +16,7 @@
+ #include "dbgfs.h"
+ #include "hfi.h"
+ #include "hfi_platform.h"
++#include "hfi_helper.h"
+ 
+ #define VDBGL	"VenusLow : "
+ #define VDBGM	"VenusMed : "
+@@ -57,6 +58,7 @@ struct venus_resources {
+ 	unsigned int bw_tbl_dec_size;
+ 	const struct reg_val *reg_tbl;
+ 	unsigned int reg_tbl_size;
++	const struct hfi_ubwc_config *ubwc_conf;
+ 	const char * const clks[VIDC_CLKS_NUM_MAX];
+ 	unsigned int clks_num;
+ 	const char * const vcodec0_clks[VIDC_VCODEC_CLKS_NUM_MAX];
+diff --git a/drivers/media/platform/qcom/venus/hfi_cmds.c b/drivers/media/platform/qcom/venus/hfi_cmds.c
+index 4ecd444..930b743 100644
+--- a/drivers/media/platform/qcom/venus/hfi_cmds.c
++++ b/drivers/media/platform/qcom/venus/hfi_cmds.c
+@@ -58,6 +58,15 @@ void pkt_sys_coverage_config(struct hfi_sys_set_property_pkt *pkt, u32 mode)
+ 	pkt->data[1] = mode;
+ }
+ 
++void pkt_sys_ubwc_config(struct hfi_sys_set_property_pkt *pkt, const struct hfi_ubwc_config *hfi)
++{
++	pkt->hdr.size = struct_size(pkt, data, 1) + sizeof(*hfi);
++	pkt->hdr.pkt_type = HFI_CMD_SYS_SET_PROPERTY;
++	pkt->num_properties = 1;
++	pkt->data[0] = HFI_PROPERTY_SYS_UBWC_CONFIG;
++	memcpy(&pkt->data[1], hfi, sizeof(*hfi));
++}
++
+ int pkt_sys_set_resource(struct hfi_sys_set_resource_pkt *pkt, u32 id, u32 size,
+ 			 u32 addr, void *cookie)
+ {
+diff --git a/drivers/media/platform/qcom/venus/hfi_cmds.h b/drivers/media/platform/qcom/venus/hfi_cmds.h
+index 327ed90..99bc0b6 100644
+--- a/drivers/media/platform/qcom/venus/hfi_cmds.h
++++ b/drivers/media/platform/qcom/venus/hfi_cmds.h
+@@ -256,6 +256,7 @@ void pkt_sys_init(struct hfi_sys_init_pkt *pkt, u32 arch_type);
+ void pkt_sys_pc_prep(struct hfi_sys_pc_prep_pkt *pkt);
+ void pkt_sys_idle_indicator(struct hfi_sys_set_property_pkt *pkt, u32 enable);
+ void pkt_sys_power_control(struct hfi_sys_set_property_pkt *pkt, u32 enable);
++void pkt_sys_ubwc_config(struct hfi_sys_set_property_pkt *pkt, const struct hfi_ubwc_config *hfi);
+ int pkt_sys_set_resource(struct hfi_sys_set_resource_pkt *pkt, u32 id, u32 size,
+ 			 u32 addr, void *cookie);
+ int pkt_sys_unset_resource(struct hfi_sys_release_resource_pkt *pkt, u32 id,
+diff --git a/drivers/media/platform/qcom/venus/hfi_helper.h b/drivers/media/platform/qcom/venus/hfi_helper.h
+index 2daa88e..d2d6719 100644
+--- a/drivers/media/platform/qcom/venus/hfi_helper.h
++++ b/drivers/media/platform/qcom/venus/hfi_helper.h
+@@ -427,6 +427,7 @@
+ #define HFI_PROPERTY_SYS_CODEC_POWER_PLANE_CTRL			0x5
+ #define HFI_PROPERTY_SYS_IMAGE_VERSION				0x6
+ #define HFI_PROPERTY_SYS_CONFIG_COVERAGE			0x7
++#define HFI_PROPERTY_SYS_UBWC_CONFIG				0x8
+ 
+ /*
+  * HFI_PROPERTY_PARAM_COMMON_START
+@@ -626,6 +627,25 @@ struct hfi_debug_config {
+ 	u32 mode;
+ };
+ 
++struct hfi_ubwc_config {
++	u32 size;
++	u32 packet_type;
++	struct {
++		u32 max_channel_override : 1;
++		u32 mal_length_override : 1;
++		u32 hb_override : 1;
++		u32 bank_swzl_level_override : 1;
++		u32 bank_spreading_override : 1;
++		u32 reserved : 27;
++		} override_bit_info;
++	u32 max_channels;
++	u32 mal_length;
++	u32 highest_bank_bit;
++	u32 bank_swzl_level;
++	u32 bank_spreading;
++	u32 reserved[2];
++};
++
+ struct hfi_enable {
+ 	u32 enable;
+ };
+diff --git a/drivers/media/platform/qcom/venus/hfi_venus.c b/drivers/media/platform/qcom/venus/hfi_venus.c
+index 9a34662..2ad40b3 100644
+--- a/drivers/media/platform/qcom/venus/hfi_venus.c
++++ b/drivers/media/platform/qcom/venus/hfi_venus.c
+@@ -904,6 +904,24 @@ static int venus_sys_set_power_control(struct venus_hfi_device *hdev,
+ 	return 0;
+ }
+ 
++static int venus_sys_set_ubwc_config(struct venus_hfi_device *hdev)
++{
++	struct hfi_sys_set_property_pkt *pkt;
++	u8 packet[IFACEQ_VAR_SMALL_PKT_SIZE];
++	const struct venus_resources *res = hdev->core->res;
++	int ret;
++
++	pkt = (struct hfi_sys_set_property_pkt *)packet;
++
++	pkt_sys_ubwc_config(pkt, res->ubwc_conf);
++
++	ret = venus_iface_cmdq_write(hdev, pkt, false);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
+ static int venus_get_queue_size(struct venus_hfi_device *hdev,
+ 				unsigned int index)
+ {
+@@ -922,6 +940,7 @@ static int venus_get_queue_size(struct venus_hfi_device *hdev,
+ static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
+ {
+ 	struct device *dev = hdev->core->dev;
++	const struct venus_resources *res = hdev->core->res;
+ 	int ret;
+ 
+ 	ret = venus_sys_set_debug(hdev, venus_fw_debug);
+@@ -945,6 +964,13 @@ static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
+ 		dev_warn(dev, "setting hw power collapse ON failed (%d)\n",
+ 			 ret);
+ 
++	/* For specific venus core, it is mandatory to set the UBWC configuration */
++	if (res->ubwc_conf) {
++		ret = venus_sys_set_ubwc_config(hdev);
++		if (ret)
++			dev_warn(dev, "setting ubwc config failed (%d)\n", ret);
++	}
++
+ 	return ret;
+ }
+ 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
