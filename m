@@ -2,61 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E82CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 362B6C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235841AbiGMI7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:59:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41814 "EHLO
+        id S235847AbiGMI7i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:59:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235288AbiGMI64 (ORCPT
+        with ESMTP id S235243AbiGMI7h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:58:56 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EA42AC79;
-        Wed, 13 Jul 2022 01:58:53 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657702718; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=KSE9rX+6s1NM/wQkA/Q5L1JMp6dgNudMlxphCAGCMsSo9IbU68YG329KkgXj+WMO/hfQyzgbYQyALnOuzQB4L0r2RB/Qp+IYmw2xMrPadNhIT0pEpakCRrCtnlkpnhjyReXboDyosAWHh0n/RcdQG0BvSvLffr1sjH90cHIC/QY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1657702718; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=AC/hjKF1VPu1YX1L60ydQLw3GJ+ZgbFwpNxSQpnhjbk=; 
-        b=ZSc9lddKjWGjjMW2uH46gRy/iS5s+a6YiZtsQNs59uWQbDAy230xvtabnBsAVD0ieTptXLswhZvRAvXqbxL6rXPxIeCpYt7icCx9cj6UuzpAb1E0wYLGDOdSrW87WTrM49/Vd84wI/jr+VDqa/sBc6kkyhiI6MfDDVF2Ea0hoBg=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657702718;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=AC/hjKF1VPu1YX1L60ydQLw3GJ+ZgbFwpNxSQpnhjbk=;
-        b=Bda0A+xwDEXGKcMHm0ENk6vBhR+RhC9Ta20GvHekEg5yNM4Jc4q1OYfDnv/oFKZg
-        8JClN7nx58b9CEg4q98VsafEjtBmo8abMENMwId4J6x+X/Lo0lr8Cc3D7xuheKXVt+L
-        VJ++pApq5PhnG8KoCiolXwImTYCJqdT9yTaZVZy0=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1657702706807202.27227209622697; Wed, 13 Jul 2022 14:28:26 +0530 (IST)
-Date:   Wed, 13 Jul 2022 14:28:26 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "syzbot+7a942657a255a9d9b18a" 
-        <syzbot+7a942657a255a9d9b18a@syzkaller.appspotmail.com>
-Cc:     "davem" <davem@davemloft.net>,
-        "johannes" <johannes@sipsolutions.net>, "kuba" <kuba@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "netdev" <netdev@vger.kernel.org>,
-        "syzkaller-bugs" <syzkaller-bugs@googlegroups.com>
-Message-ID: <181f6c7ee61.6fd1462c198214.9029235269763018181@siddh.me>
-In-Reply-To: <20220713085643.9148-1-code@siddh.me>
-References: <000000000000f632ba05c3cb12c2@google.com> <20220713085643.9148-1-code@siddh.me>
-Subject: Re: [syzbot] memory leak in cfg80211_inform_single_bss_frame_data
-MIME-Version: 1.0
+        Wed, 13 Jul 2022 04:59:37 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C5AEB9DBF
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:59:36 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oBYDQ-0007UX-8v; Wed, 13 Jul 2022 10:59:28 +0200
+Message-ID: <775a3b0f9ceb26297565c5513cf41a5938817e8b.camel@pengutronix.de>
+Subject: Re: [PATCH v14 15/17] PCI: imx6: Disable clocks in reverse order of
+ enable
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
+        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Wed, 13 Jul 2022 10:59:27 +0200
+In-Reply-To: <1656645935-1370-16-git-send-email-hongxing.zhu@nxp.com>
+References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
+         <1656645935-1370-16-git-send-email-hongxing.zhu@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> imx6_pcie_clk_enable() enables clocks in the order:
+> 
+>   pcie_phy
+>   pcie_bus
+>   pcie
+>   imx6_pcie_enable_ref_clk
+> 
+> Change imx6_pcie_clk_disable() to disable them in the reverse order.
+> 
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+> Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+
+> ---
+>  drivers/pci/controller/dwc/pci-imx6.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index 0b2a5256fb0d..79a05e190016 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -655,10 +655,10 @@ static int imx6_pcie_clk_enable(struct imx6_pcie *imx6_pcie)
+>  
+>  static void imx6_pcie_clk_disable(struct imx6_pcie *imx6_pcie)
+>  {
+> +	imx6_pcie_disable_ref_clk(imx6_pcie);
+>  	clk_disable_unprepare(imx6_pcie->pcie);
+> -	clk_disable_unprepare(imx6_pcie->pcie_phy);
+>  	clk_disable_unprepare(imx6_pcie->pcie_bus);
+> -	imx6_pcie_disable_ref_clk(imx6_pcie);
+> +	clk_disable_unprepare(imx6_pcie->pcie_phy);
+>  }
+>  
+>  static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
+
+
