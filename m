@@ -2,67 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7044CC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C19B7C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232918AbiGMHE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:04:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        id S234270AbiGMHFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:05:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGMHEy (ORCPT
+        with ESMTP id S233074AbiGMHE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:04:54 -0400
-X-Greylist: delayed 938 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 00:04:53 PDT
-Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AA988CEA
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:04:53 -0700 (PDT)
-Received: from player691.ha.ovh.net (unknown [10.108.16.31])
-        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 7435223CF0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:49:14 +0000 (UTC)
-Received: from RCM-web5.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player691.ha.ovh.net (Postfix) with ESMTPSA id 5562B2CA7D90B;
-        Wed, 13 Jul 2022 06:49:06 +0000 (UTC)
+        Wed, 13 Jul 2022 03:04:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC16BD39F;
+        Wed, 13 Jul 2022 00:04:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D7F5B81D43;
+        Wed, 13 Jul 2022 07:04:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25950C34114;
+        Wed, 13 Jul 2022 07:04:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657695894;
+        bh=4hvIqPkLZHlf/Zli4Xt0SSiNQfDfOXa81PyHxoExwXU=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=pwHTkt2sGRghejHc455UUcXoVbBf6B7PFBs1Fb9f2WnHvneqzF/P10xLeunYzas4e
+         8H+FaCShzTnvzNQUz1a959qSryqs+d/wVi4qG51Wv07J/fQkfdBFmxncp8+IzB/zvF
+         wxf14MpaXV9vg+YgWT/EeVE9xMtQNWq5BDm/66bVq2kreBCVkAovX/iNGNp1f89XxV
+         P2Q9zfeMUe8Y4nUBGiatu8suVqWxknpVzVObhQOoj8KFMVlYrteB9CQ0aoKd81BGss
+         HI2SCtQy3+wP0Pt+/RxECXWtKpKGPIuTUDuPA5shHOaIuWcb/Va40Lvpad+7V2NmR3
+         bHkaYK+kUPy0g==
+Message-ID: <c403edcf-0c33-225c-8bbd-3a49e90a9a73@kernel.org>
+Date:   Wed, 13 Jul 2022 09:04:45 +0200
 MIME-Version: 1.0
-Date:   Wed, 13 Jul 2022 08:49:06 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] arm64: dts: broadcom: bcm4908: Fix timer node for
- BCM4906 SoC
-In-Reply-To: <20220708182507.23542-1-william.zhang@broadcom.com>
-References: <20220708182507.23542-1-william.zhang@broadcom.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <50bd9abda381ebdcaea41d116b4baa9c@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/4] dt-bindings: firmware: Add bindings for Samsung smc
+Content-Language: en-US
+To:     dj76.yang@samsung.com,
+        "jesper.nilsson@axis.com" <jesper.nilsson@axis.com>,
+        "lars.persson@axis.com" <lars.persson@axis.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzk+dt@kernel.org" <krzk+dt@kernel.org>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>
+Cc:     "javierm@redhat.com" <javierm@redhat.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "linux-arm-kernel@axis.com" <linux-arm-kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Moon-Ki Jun <moonki.jun@samsung.com>,
+        Sang Min Kim <hypmean.kim@samsung.com>,
+        Wangseok Lee <wangseok.lee@samsung.com>
+References: <CGME20220713045357epcms1p8ccfe1c489edfd066d0e41ff928c0af71@epcms1p8>
+ <20220713045357epcms1p8ccfe1c489edfd066d0e41ff928c0af71@epcms1p8>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220713045357epcms1p8ccfe1c489edfd066d0e41ff928c0af71@epcms1p8>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Ovh-Tracer-Id: 7703970116579929051
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejiedgudduhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvfevufgjfhgfkfigihgtgfesthejjhdttdervdenucfhrhhomheptfgrfhgrlhgpofhilhgvtghkihcuoehrrghfrghlsehmihhlvggtkhhirdhplheqnecuggftrfgrthhtvghrnhepgedvffejledvgeegteehgeevjeeiteegieeigfegleevjeffheeikefhudeulefhnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-08 20:25, William Zhang wrote:
-> The cpu mask value in interrupt property inherits from bcm4908.dtsi
-> which sets to four cpus. Correct the value to two cpus for dual core
-> BCM4906 SoC.
+On 13/07/2022 06:53, Dongjin Yang wrote:
+> Add an devicetree bindings for Samsung secure monitor call service.
+> This driver is used for SoCs produced by Samsung Foundry to provide
+> SMC call. This patch supports register read/write request to secure
+> monitor. Also, SMC call request which uses shared memory to exchange
+> the data between kernel and secure monitor.
 > 
-> Fixes: c8b404fb05dc ("arm64: dts: broadcom: bcm4908: add BCM4906
-> Netgear R8000P DTS files")
+> Signed-off-by: Dongjin Yang <dj76.yang@samsung.com>
+> ---
+>  .../bindings/firmware/samsung,smccc-svc.yaml       | 31 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 32 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/firmware/samsung,smccc-svc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/firmware/samsung,smccc-svc.yaml b/Documentation/devicetree/bindings/firmware/samsung,smccc-svc.yaml
+> new file mode 100644
+> index 000000000000..427c42a6cd75
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/firmware/samsung,smccc-svc.yaml
+> @@ -0,0 +1,31 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/firmware/samsung,smccc-svc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Samsung Secure Monitor call service
+> +
+> +maintainers:
+> +  - Jesper Nilsson <jesper.nilsson@axis.com>
+> +
+> +description: |
+> +  The file documents device tree bindings of Samsung secure monitor
+> +  call service.
+> +
+> +properties:
+> +  compatible:
 
-Well, one note. You shouldn't line break Fixes: line.
+Please add SoC comaptible followed by generic samsung,smccc-svc (so you
+need items with an enum and const).
+
+> +    const: samsung,smccc-svc
+> +
+> +required:
+> +  - compatible
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +
+
+No need for blank line.
+
+> +    samsung-svc {
+
+Generic node names, e.g. smc.
+
+> +        compatible = "samsung,smccc-svc";
+> +    };
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 20133dcd8ce9..6763746c349f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1862,6 +1862,7 @@ M:	Jesper Nilsson <jesper.nilsson@axis.com>
+>  M:	Lars Persson <lars.persson@axis.com>
+>  L:	linux-arm-kernel@axis.com
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/firmware/samsung,smccc-svc.yaml
+
+Does not look related to Artpec. Shouldn't this be under Samsung Exynos?
+
+>  F:	Documentation/devicetree/bindings/pinctrl/axis,artpec6-pinctrl.txt
+>  F:	arch/arm/boot/dts/artpec6*
+>  F:	arch/arm/mach-artpec
 
 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Best regards,
+Krzysztof
