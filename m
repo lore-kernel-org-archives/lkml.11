@@ -2,85 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B41C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98B0C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:34:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235204AbiGMKaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
+        id S236024AbiGMKeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:34:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236018AbiGMKau (ORCPT
+        with ESMTP id S235740AbiGMKeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:30:50 -0400
-X-Greylist: delayed 410 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 03:30:49 PDT
-Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37390FC9A4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:30:49 -0700 (PDT)
-HMM_SOURCE_IP: 172.18.0.188:55882.729471011
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-10.133.8.199 (unknown [172.18.0.188])
-        by chinatelecom.cn (HERMES) with SMTP id 479A82800C5;
-        Wed, 13 Jul 2022 18:23:55 +0800 (CST)
-X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
-Received: from  ([172.18.0.188])
-        by app0023 with ESMTP id 8281e15f9b554ce79754ed296a5cd601 for viro@zeniv.linux.org.uk;
-        Wed, 13 Jul 2022 18:23:57 CST
-X-Transaction-ID: 8281e15f9b554ce79754ed296a5cd601
-X-Real-From: liuxp11@chinatelecom.cn
-X-Receive-IP: 172.18.0.188
-X-MEDUSA-Status: 0
-Sender: liuxp11@chinatelecom.cn
-From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
-To:     viro@zeniv.linux.org.uk
-Cc:     linux-kernel@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>
-Subject: [PATCH] iov_iter: Fix repeated minus operation
-Date:   Wed, 13 Jul 2022 18:23:40 +0800
-Message-Id: <1657707820-124858-1-git-send-email-liuxp11@chinatelecom.cn>
-X-Mailer: git-send-email 1.8.3.1
+        Wed, 13 Jul 2022 06:34:09 -0400
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A0DE1920
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:34:08 -0700 (PDT)
+Received: by mail-yb1-xb33.google.com with SMTP id n74so18532971yba.3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:34:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PD3ohJ/EmhNYKgVuLh+1SqFmgLy6OdvncR7q74oGJgI=;
+        b=SFkRptQv/fARrJEXyjgdl3GI/SNI8s22WPYtvUrVhQI7uqGJl1eG7kDJG9WCzpi/oS
+         vbOs8s7fLxxgZipbGnE+yg2GJbqhEOAof8pKtlWJO3Nv40SHvj+Ok+9BDj4FJRxH7+p1
+         FNdVIuTsM+3E0KR+CwyzKwWY3lbJAsKTDJP9YJ17aKY0UajdUFkZGa5EkGCYtUUfm+jj
+         UjFKgWFRFTer4Hkq1JP2TkX4prE8+mpUkTbipb78wRzGnvCjsX995BzgRk/BswHHsiS2
+         X5bDvWUo/+QLB8d2JenM7ZAiK6VfHNsNnB01WX5kJluNt0tuqVJCjSFBQlEplHVJk62w
+         jBEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PD3ohJ/EmhNYKgVuLh+1SqFmgLy6OdvncR7q74oGJgI=;
+        b=d9vsJxdcc2pgiYL0mzgjLO2VeOuJ3w7UvYMZT+AMmpjxyelVaCpoaYN4r+FqVBt/i/
+         I1lZTIpaNuFuw8nkn53+FZwCQiwm5XykBzRl4TpciiiZKZ9a0nq5qgetw14hx0+MlZ+T
+         Zx6bdVH7aEan8PDhNt+5iObYRFC0P0FgiZyrlZdbFW/Tpb+mshik7LwrEpEnlBTtNoCm
+         /gBXgKgqlxzsqbg4Aw6SDLit0lhtwHBbkU2ea2j5zrJCDYhjp54E6FScVf9r5hCePxPc
+         PvIqzBGvk1nUg9yVUF6cIKhw58sAFUW+0lmIb2b483cxgoqTlOCwsBJ/TYKpOhPkWMmu
+         b3Cg==
+X-Gm-Message-State: AJIora+pE6jqtZ0p0LVtZ30Tm2KfLD877wDVhozmo9NRj9ueXEOTNLB7
+        8tf4xpJCyKHKTd4PIXThTgs6cXCtR1JSNgp5z7NvRw==
+X-Google-Smtp-Source: AGRyM1vA9+p0W0ZH+zrwNUqogn3p1vap0TQyU6ssDzvta9TdLjk0Bu4O0HaJelNrRS0933ZUZYhceElQHXKy5uIogzE=
+X-Received: by 2002:a25:abc5:0:b0:66e:3983:3ca7 with SMTP id
+ v63-20020a25abc5000000b0066e39833ca7mr2939658ybi.168.1657708447835; Wed, 13
+ Jul 2022 03:34:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com> <20220712133946.307181-17-42.hyeyoo@gmail.com>
+ <alpine.DEB.2.22.394.2207121701070.57893@gentwo.de> <Ys6Pp6ZPwJTdJvpk@ip-172-31-24-42.ap-northeast-1.compute.internal>
+ <alpine.DEB.2.22.394.2207131205590.112646@gentwo.de>
+In-Reply-To: <alpine.DEB.2.22.394.2207131205590.112646@gentwo.de>
+From:   Marco Elver <elver@google.com>
+Date:   Wed, 13 Jul 2022 12:33:31 +0200
+Message-ID: <CANpmjNPbbugrbCFADy1C7PgaU-4PMd9UK90QiHKS-Md0ocqa3w@mail.gmail.com>
+Subject: Re: [PATCH 16/16] mm/sl[au]b: check if large object is valid in __ksize()
+To:     Christoph Lameter <cl@gentwo.de>
+Cc:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After executing command 'cat /proc/cpuinfo', got a message:
+On Wed, 13 Jul 2022 at 12:07, Christoph Lameter <cl@gentwo.de> wrote:
+>
+> On Wed, 13 Jul 2022, Hyeonggon Yoo wrote:
+>
+> > > Why return 0 if there is an error and why bother the callers with these
+> > > checks. BUG()?
+> >
+> > I thought BUG should be used when there is no other solution.
+>
+> Spurios returns of 0 that the caller has to check for is a solution?
 
-[    6.909745] ------------[ cut here ]------------
-[    6.910267] WARNING: CPU: 0 PID: 76 at lib/iov_iter.c:1026
-iov_iter_pipe+0x34/0x40
-[    6.910951] Modules linked in:
-[    6.911584] CPU: 0 PID: 76 Comm: cat Not tainted 5.19.0-rc6-next-20220711 #9
-[    6.911916] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
-[    6.912668] RIP: 0010:iov_iter_pipe+0x34/0x40
-[    6.913062] Code: 72 54 39 72 5c 76 23 48 c7 07 00 00 00 00 48 c7 47 08 00 00
-00 00 c6 07 03 48 89 4f 10 48 89 57 18 89 47 20 89 47 24 c3 0f 0b <0f> 7
-[    6.914341] RSP: 0018:ffffc900001c7d48 EFLAGS: 00000246
-[    6.914647] RAX: 0000000000000010 RBX: ffff888004988700 RCX: 0000000000000000
-[    6.914893] RDX: ffff88800490bc00 RSI: 0000000000000010 RDI: ffffc900001c7d58
-[    6.915302] RBP: ffffc900001c7e00 R08: 0000000000000000 R09: ffff888004cafad8
-[    6.915609] R10: 0000000000020000 R11: 0000000000001000 R12: ffff88800490bc00
-[    6.915856] R13: ffffc900001c7e48 R14: 00000000000002d5 R15: ffff88800490bc00
-[    6.916352] FS:  00000000016df8c0(0000) GS:ffff88800f600000(0000)
+It's never really been about the caller checking for 0, see below.
 
-Checking the code, need to delete the duplicate minus in a loop.
+> > > I guess this is an error since the order-0 page cannot come from slab
+> > > allocations.
+> >
+> > comment in ksize() says:
+> >       "The caller must guarantee that objp points to a valid object
+> >       previously allocated with either kmalloc() or kmem_cache_alloc()."
+> >
+> > It should not be used on order-0 page that is not allocated from slab. No?
+>
+> I guess we would need to check. Code could exist that does this.
+>
+> Getting a 0 size would be surprising too here. BUG()? Or WARN() and return
+> PAGE_SIZE.
 
-Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
----
- lib/iov_iter.c | 1 -
- 1 file changed, 1 deletion(-)
+We shouldn't crash, so it should be WARN(), but also returning
+PAGE_SIZE is bad. The intuition behind returning 0 is to try and make
+the buggy code cause less harm to the rest of the kernel.
 
-diff --git a/lib/iov_iter.c b/lib/iov_iter.c
-index 4a3451e..642841ce 100644
---- a/lib/iov_iter.c
-+++ b/lib/iov_iter.c
-@@ -472,7 +472,6 @@ static size_t copy_pipe_to_iter(const void *addr, size_t bytes,
- 			break;
- 		memcpy_to_page(page, off, addr, chunk);
- 		addr += chunk;
--		n -= chunk;
- 	}
- 	return bytes;
- }
--- 
-1.8.3.1
+From [1]:
 
+> Similarly, if you are able to tell if the passed pointer is not a
+> valid object some other way, you can do something better - namely,
+> return 0. The intuition here is that the caller has a pointer to an
+> invalid object, and wants to use ksize() to determine its size, and
+> most likely access all those bytes. Arguably, at that point the kernel
+> is already in a degrading state. But we can try to not let things get
+> worse by having ksize() return 0, in the hopes that it will stop
+> corrupting more memory. It won't work in all cases, but should avoid
+> things like "s = ksize(obj); touch_all_bytes(obj, s)" where the size
+> bounds the memory accessed corrupting random memory.
+
+[1] https://lore.kernel.org/all/CANpmjNNYt9AG8RrGF0pq2dPbFc=vw2kaOnL2k5+8kfJeEMGuwg@mail.gmail.com/
+
+Thanks,
+-- Marco
