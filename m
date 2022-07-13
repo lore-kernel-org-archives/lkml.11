@@ -2,165 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B23C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:29:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC50C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:29:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234744AbiGMN3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55362 "EHLO
+        id S235220AbiGMN33 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230303AbiGMN3D (ORCPT
+        with ESMTP id S231748AbiGMN3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:29:03 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63596120B6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:29:02 -0700 (PDT)
+        Wed, 13 Jul 2022 09:29:25 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E9613D3C;
+        Wed, 13 Jul 2022 06:29:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657718942; x=1689254942;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=4uGDfWc/PlNv0ZILiK6BkAbZajsOITq318v9NwJ1Nxk=;
-  b=SYbrQ30liHvUaUZKoGL+27g9ESqjI5zYypxYOlRQErWTE9ypMmcM1Gz6
-   0FJYyuZK8pvkEs82bp0zWqyaJbUUhOCRh8OXtFehH55XHpRhCGUJVewFt
-   OLEt/DTS4uKGIhSZYNKXVO/x7N+tuO7q2GPFKoavIESLCCxCeNWoTuuEl
-   2gt0kNXvZQO1FuxegvXqUn3mVxoIdLjPBwu9wnYfcwx7KtQ0LIRO66Xt+
-   vEyf7ihdH+uvhsZSqfJc81XWGJCHLMogdhSlHiUgWOVC/9W+bwH9PwaN+
-   41HyktanlsoZcz5nTNzzQZKwTeI1EaPPLtFhvIJB7x4qSfTM7Fqlor39m
+  t=1657718965; x=1689254965;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=L4CProI6gki3JdTLeUa3J0QD35v7lRC9rLkvXYbbm7s=;
+  b=lV/hhsEbkyd+L7t3ZQqw6MWnR9E18g8YfiL4VeXmzltRn/Wl5Ld0w8Ij
+   WvydpqY+Vn4rAmnoF/9KGGv00GIsL6Hgq1w7JbQtmIjwmPcZObUu1mV1Q
+   jv0gzWQpunN3QYPiyka3BNhDJ9gTGmKKp5k+NQ3yKOjdBylBs+0URuc3k
+   BYr+vkRarW+wj09oOSwn0TaOVdoEC6CWSTOx5Pw2JJk/FxJCw6UcK9Dox
+   7EV66XKD+4kB/RLeOvbJbJwNzkLfmzg5cG5I3ZAnksE7IUlOGFVJ+oEkD
+   yQqnaeg/8by2xkD+qlGyzTOWwT7md43TXq6e9uV7vUJctEyuyo5qDgQ6I
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285235131"
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="346891062"
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="285235131"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 06:29:02 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="346891062"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 06:29:24 -0700
 X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="545838454"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jul 2022 06:29:00 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBcQG-0003YV-2f;
-        Wed, 13 Jul 2022 13:29:00 +0000
-Date:   Wed, 13 Jul 2022 21:28:07 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: include/linux/compiler_types.h:352:45: error: call to
- '__compiletime_assert_402' declared with attribute error: BUILD_BUG_ON
- failed: sizeof(cmd_a64_entry_t) != 64
-Message-ID: <202207132140.qUP8tBhr-lkp@intel.com>
+   d="scan'208";a="622940542"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.51.236])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 06:29:22 -0700
+Message-ID: <0c1da7b8-1be0-76a9-f613-ef307bac4e36@intel.com>
+Date:   Wed, 13 Jul 2022 16:29:18 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.9.1
+Subject: Re: [PATCH] scsi: ufs: ufs-pci: default clock frequency for Intel's
+ UFS controller
+Content-Language: en-US
+To:     Daniil Lunev <dlunev@chromium.org>
+Cc:     Avri Altman <avri.altman@wdc.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Bean Huo <beanhuo@micron.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
+References: <20220708141612.1.Ice2e8173bd0937c7c4898b112350120063572269@changeid>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220708141612.1.Ice2e8173bd0937c7c4898b112350120063572269@changeid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b047602d579b4fb028128a525f056bbdc890e7f0
-commit: 7036440eab3e2d47a775d4616909f8235488d714 ARM: omap1: enable multiplatform
-date:   6 weeks ago
-config: arm-randconfig-s031-20220712 (https://download.01.org/0day-ci/archive/20220713/202207132140.qUP8tBhr-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7036440eab3e2d47a775d4616909f8235488d714
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 7036440eab3e2d47a775d4616909f8235488d714
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm SHELL=/bin/bash drivers/scsi/qla2xxx/
+On 8/07/22 07:17, Daniil Lunev wrote:
+> ARM platforms rely on 'ref_clk' of a UFS controller's node in DTS to set
+> up the proper bRefClkFreq for the UFS storage device. The facility is
+> not available on x86. To circumvene that, default the parameter,
+> responsible for carrying the value to the UFS storage device
+> initialization, to the one that Intel's controllers support. This is
+> required to support provisioning of UFS storage devices from userspace,
+> without relying on FW and/or bootloader to make the necessary
+> preparations.
+> 
+> Signed-off-by: Daniil Lunev <dlunev@chromium.org>
+> ---
+> 
+>  drivers/ufs/host/ufshcd-pci.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/ufs/host/ufshcd-pci.c b/drivers/ufs/host/ufshcd-pci.c
+> index 04166bda41daa..a6f9222cbea74 100644
+> --- a/drivers/ufs/host/ufshcd-pci.c
+> +++ b/drivers/ufs/host/ufshcd-pci.c
+> @@ -336,6 +336,7 @@ static int ufs_intel_common_init(struct ufs_hba *hba)
+>  	struct intel_host *host;
+>  
+>  	hba->caps |= UFSHCD_CAP_RPM_AUTOSUSPEND;
+> +	hba->dev_ref_clk_freq = REF_CLK_FREQ_19_2_MHZ;
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+I have seen requirement documents saying 19.2 or 38.4, so this is would
+be a problem since it overwrites the value even if it has been set correctly
+to something other than 19.2 MHz.
 
-All errors (new ones prefixed by >>):
+>  
+>  	host = devm_kzalloc(hba->dev, sizeof(*host), GFP_KERNEL);
+>  	if (!host)
 
-   In file included from <command-line>:
-   drivers/scsi/qla2xxx/qla_os.c: In function 'qla2x00_module_init':
->> include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_402' declared with attribute error: BUILD_BUG_ON failed: sizeof(cmd_a64_entry_t) != 64
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:333:25: note: in definition of macro '__compiletime_assert'
-     333 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   drivers/scsi/qla2xxx/qla_os.c:8032:9: note: in expansion of macro 'BUILD_BUG_ON'
-    8032 |         BUILD_BUG_ON(sizeof(cmd_a64_entry_t) != 64);
-         |         ^~~~~~~~~~~~
---
-   In file included from include/linux/string.h:253,
-                    from include/linux/bitmap.h:11,
-                    from include/linux/cpumask.h:12,
-                    from include/linux/mm_types_task.h:14,
-                    from include/linux/mm_types.h:5,
-                    from include/linux/buildid.h:5,
-                    from include/linux/module.h:14,
-                    from drivers/scsi/qla2xxx/qla_target.c:17:
-   In function 'fortify_memcpy_chk',
-       inlined from 'qla24xx_post_nack_work' at drivers/scsi/qla2xxx/qla_target.c:555:2:
-   include/linux/fortify-string.h:344:25: warning: call to '__write_overflow_field' declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-     344 |                         __write_overflow_field(p_size_field, size);
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   In file included from <command-line>:
-   drivers/scsi/qla2xxx/qla_target.c: In function 'qlt_init':
->> include/linux/compiler_types.h:352:45: error: call to '__compiletime_assert_325' declared with attribute error: BUILD_BUG_ON failed: sizeof(struct ctio7_to_24xx) != 64
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |                                             ^
-   include/linux/compiler_types.h:333:25: note: in definition of macro '__compiletime_assert'
-     333 |                         prefix ## suffix();                             \
-         |                         ^~~~~~
-   include/linux/compiler_types.h:352:9: note: in expansion of macro '_compiletime_assert'
-     352 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-         |         ^~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-         |                                     ^~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-         |         ^~~~~~~~~~~~~~~~
-   drivers/scsi/qla2xxx/qla_target.c:7414:9: note: in expansion of macro 'BUILD_BUG_ON'
-    7414 |         BUILD_BUG_ON(sizeof(struct ctio7_to_24xx) != 64);
-         |         ^~~~~~~~~~~~
-
-
-vim +/__compiletime_assert_402 +352 include/linux/compiler_types.h
-
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  338  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  339  #define _compiletime_assert(condition, msg, prefix, suffix) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  340  	__compiletime_assert(condition, msg, prefix, suffix)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  341  
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  342  /**
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  343   * compiletime_assert - break build and emit msg if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  344   * @condition: a compile-time constant condition to check
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  345   * @msg:       a message to emit if condition is false
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  346   *
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  347   * In tradition of POSIX assert, this macro will break the build if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  348   * supplied condition is *false*, emitting the supplied error message if the
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  349   * compiler has support to do so.
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  350   */
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  351  #define compiletime_assert(condition, msg) \
-eb5c2d4b45e3d2d Will Deacon 2020-07-21 @352  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-eb5c2d4b45e3d2d Will Deacon 2020-07-21  353  
-
-:::::: The code at line 352 was first introduced by commit
-:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
-
-:::::: TO: Will Deacon <will@kernel.org>
-:::::: CC: Will Deacon <will@kernel.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
