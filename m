@@ -2,126 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 802EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 04:05:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbiGMEEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 00:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42924 "EHLO
+        id S231964AbiGMEFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 00:05:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiGMEEt (ORCPT
+        with ESMTP id S230267AbiGMEE4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 00:04:49 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF0970E6B
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 21:04:47 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id y9so9159336pff.12
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 21:04:47 -0700 (PDT)
+        Wed, 13 Jul 2022 00:04:56 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C3DD64C8
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 21:04:55 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id 70so9196728pfx.1
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 21:04:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qgjcEjE3qyjBt01uSVEDKZhUeCo8bM3RPgetRXn0YyE=;
-        b=OKhjTFM1loP2I8iyw4sA8L2IkS1HN0JVoQM4Yu9JR06IswXbgy6ixCVN38kDHb3crK
-         nVNsH6pjB/muL9gkxt0cb1h+RJciy5tsSy0yKXOhIqRM2fdsz+neGHIKEyHVNzh/7/3X
-         EMP6seOQvFfWZ46zzjpl7MGCgzMok+1dmUH8gW412Y++33B6mxDC9oTQCB4i+Ubf2xNG
-         Zm47BzrPmOgwE0Q0uQN9n/01k1FeiUrpDZO1nNIcF5ZsyaP/yo9/PgK8f0B9iarqUYaW
-         AC3wxnFeekZpVrfPyomV3xTK7VfYX/riZQk3x1ewjd0UBtR8y+uZxO5pAKZKB8SF8Ij0
-         kYig==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Vg/rD7f/1C4oNvLsimwrfDYgxuV3BFNN+d4ntZIDLzY=;
+        b=0OkYiRQcM2tsK6c4iFLMtlJk4grq+xf9P7uHjvY0HpXJw9Z+6wQZrtWtgAEGWBqRmc
+         RNlbkTDqlPAAQbJQwzOE7xf3oxJpndk+F5MwxZlkIU026vGVTQknVGxQ3EB8P7QbWEmR
+         8RDxw/DaW5CBIsb+1SwQWYzzlSHVW1wM/9MfuD+2yRRozI7B5Wbf2f5PMsxAbuxFbhaO
+         2LuquutiZhKwi11GKzWytTF+RLixHUdTqFwSqYNa/4GEPfwxwDI0/wOLC0ZLDx+pHKqI
+         NkPPdsOoGiEP3WhA+bLcbtPKETbIc/SpjmYKmZWdKycshKu5Q6jwEZyokWoskcGpvK7X
+         OIJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qgjcEjE3qyjBt01uSVEDKZhUeCo8bM3RPgetRXn0YyE=;
-        b=eQQL/3DhWURcU+3FCiaG2YIKx5rcVrc3Ox6JmIqULDXUpWuHtJnJjpT122G04xN8PP
-         UzjUGcjjE8ZLfBx4RrwX7Q+SXvndj1pn6xAKUPFhVGzCTz/hZJhJDofk59vYfEs5/HjP
-         by1mcAdWszaxp+mzD81KtFnFPPybC15c6lvNFuWvb6kC/oLfAr2mRRoLE7Z0fBsAQkBz
-         +VEUmlr0Vxhe3NfaTJnRjnQ1vxI9OEIpS7t2CMDIrmXHPXKqNlH1vfk6wHzMBItLDsQA
-         huBOVd2a/7sBseG97ummiNxxD59nPh2Zl1HHC+44Gxu6zzxDGtP4ix/AV/XOnG9DF6eN
-         6FYQ==
-X-Gm-Message-State: AJIora81TfMKiVFJaHfGmdd8T9bQiEGiPZxHzAbz94t4Yel9JL15qNeX
-        1+KkToLkA+WUiL1Z3Nq4TrJnGA==
-X-Google-Smtp-Source: AGRyM1sPaNzffXj2pdycEM+phJAboBg/I1p0SGFzYS8l3dwTHHXtxaZvHsPYFo1MvflmricRzWU5Mw==
-X-Received: by 2002:a63:65c2:0:b0:419:8146:b1a7 with SMTP id z185-20020a6365c2000000b004198146b1a7mr1360642pgb.210.1657685087090;
-        Tue, 12 Jul 2022 21:04:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Vg/rD7f/1C4oNvLsimwrfDYgxuV3BFNN+d4ntZIDLzY=;
+        b=IkGVpzNilRIHUYpM7tv8wZoooYpJBYW8vqMShT13nNQyK7AbWixhfIL+7iRXpxHJ3/
+         kUBHRxaEGAd7VhT/B9JOgQeNmQG1fS6dRYB17zOkUwUoMAfKN/tg9WS2i8XYKUvmb3s8
+         5CE0k5e0h5sKc7jjVClZYgKtvxO+E+TO7d+4IuPfy4iY1Pi2OPjETxRR2rAerVnIUkFX
+         a7jUHXLO7T1ImcJdcVghTIXxVBe9huUB7+toKWyqe/xmwhZVmzJKMzyB2vcpZIdvCUTk
+         uy1cOXy6/KJ2vBbVe0vrkJOjpmweKS7+U3k75FYovYqSDUd4eWhTfYS/VTHwSQtyIKtg
+         0J8Q==
+X-Gm-Message-State: AJIora8HIrbCJ+7/qZW0SNA6gxkoeiryZE5aXc9DNd29hS8ygaYlLMgF
+        c7Nep/FqNnKJ8d+kBlxYujtVXQ==
+X-Google-Smtp-Source: AGRyM1sI7WviC5J80C7YtsyhMRvwRB9SSFayK/ibyCplmayk2wZF1tFO92/sW7OBJ7KnKE4cdSyyDw==
+X-Received: by 2002:a63:34b:0:b0:412:b164:7a45 with SMTP id 72-20020a63034b000000b00412b1647a45mr1351233pgd.31.1657685094767;
+        Tue, 12 Jul 2022 21:04:54 -0700 (PDT)
 Received: from localhost.localdomain ([139.177.225.235])
-        by smtp.gmail.com with ESMTPSA id y12-20020a17090322cc00b0016bd16f8acbsm6858942plg.114.2022.07.12.21.04.43
+        by smtp.gmail.com with ESMTPSA id y12-20020a17090322cc00b0016bd16f8acbsm6858942plg.114.2022.07.12.21.04.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 21:04:46 -0700 (PDT)
+        Tue, 12 Jul 2022 21:04:54 -0700 (PDT)
 From:   Chengming Zhou <zhouchengming@bytedance.com>
 To:     mingo@redhat.com, peterz@infradead.org, vincent.guittot@linaro.org,
         dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
         vschneid@redhat.com
 Cc:     linux-kernel@vger.kernel.org,
         Chengming Zhou <zhouchengming@bytedance.com>
-Subject: [PATCH v2 00/10] sched: task load tracking optimization and cleanup
-Date:   Wed, 13 Jul 2022 12:04:20 +0800
-Message-Id: <20220713040430.25778-1-zhouchengming@bytedance.com>
+Subject: [PATCH v2 02/10] sched/fair: update comments in enqueue/dequeue_entity()
+Date:   Wed, 13 Jul 2022 12:04:22 +0800
+Message-Id: <20220713040430.25778-3-zhouchengming@bytedance.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220713040430.25778-1-zhouchengming@bytedance.com>
+References: <20220713040430.25778-1-zhouchengming@bytedance.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+When reading the sched_avg related code, I found the comments in
+enqueue/dequeue_entity() are not updated with the current code.
 
-This patch series is optimization and cleanup for task load tracking
-when task migrate CPU/cgroup or switched_from/to_fair().
+We don't add/subtract entity's runnable_avg from cfs_rq->runnable_avg
+during enqueue/dequeue_entity(), those are done only for attach/detach.
 
-There are three types of detach/attach_entity_load_avg (except fork and
-exit case) for a fair task:
-1. task migrate CPU (on_rq migrate or wake_up migrate)
-2. task migrate cgroup (detach then attach)
-3. task switched_from/to_fair (detach later attach)
+This patch updates the comments to reflect the current code working.
 
-patch1 optimize the on_rq migrate CPU case by combine detach into dequeue,
-so we don't need to do detach_entity_cfs_rq() in migrate_task_rq_fair()
-any more.
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Acked-by: Vincent Guittot <vincent.guittot@linaro.org>
+---
+ kernel/sched/fair.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-patch3-4 cleanup the migrate cgroup case by remove cpu_cgrp_subsys->fork(),
-since we already do the same thing in sched_cgroup_fork().
-
-patch1-4 have been reviewed earlier, but conflicts with the current tip
-tree, so include them here as a patchset. Sorry for the inconvenience.
-
-patch6-7 use update_load_avg() to do attach/detach after check sched_avg
-last_update_time, is preparation patch for the following patches.
-
-patch8-9 fix load tracking for new forked !fair task and when task
-switched_from_fair().
-
-After these changes, the task sched_avg last_update_time is reset to 0
-when migrate from CPU/cgroup or switched_from_fair(), to save updated
-sched_avg for next attach.
-
-Thanks.
-
-Changes in v2:
- - split task se depth maintainence into a separate patch3, suggested
-   by Peter.
- - reorder patch6-7 before patch8-9, since we need update_load_avg()
-   to do conditional attach/detach to avoid corner cases like twice
-   attach problem.
-
-Chengming Zhou (10):
-  sched/fair: combine detach into dequeue when migrating task
-  sched/fair: update comments in enqueue/dequeue_entity()
-  sched/fair: maintain task se depth in set_task_rq()
-  sched/fair: remove redundant cpu_cgrp_subsys->fork()
-  sched/fair: reset sched_avg last_update_time before set_task_rq()
-  sched/fair: delete superfluous SKIP_AGE_LOAD
-  sched/fair: use update_load_avg() to attach/detach entity load_avg
-  sched/fair: fix load tracking for new forked !fair task
-  sched/fair: stop load tracking when task switched_from_fair()
-  sched/fair: delete superfluous set_task_rq_fair()
-
- kernel/sched/core.c     |  27 ++------
- kernel/sched/fair.c     | 144 ++++++++++------------------------------
- kernel/sched/features.h |   1 -
- kernel/sched/sched.h    |  14 +---
- 4 files changed, 41 insertions(+), 145 deletions(-)
-
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 0689b94ed70b..2a3e12ead144 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -4443,7 +4443,8 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	/*
+ 	 * When enqueuing a sched_entity, we must:
+ 	 *   - Update loads to have both entity and cfs_rq synced with now.
+-	 *   - Add its load to cfs_rq->runnable_avg
++	 *   - For group_entity, update its runnable_weight to reflect the new
++	 *     h_nr_running of its group cfs_rq.
+ 	 *   - For group_entity, update its weight to reflect the new share of
+ 	 *     its group cfs_rq
+ 	 *   - Add its new weight to cfs_rq->load.weight
+@@ -4533,7 +4534,8 @@ dequeue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
+ 	/*
+ 	 * When dequeuing a sched_entity, we must:
+ 	 *   - Update loads to have both entity and cfs_rq synced with now.
+-	 *   - Subtract its load from the cfs_rq->runnable_avg.
++	 *   - For group_entity, update its runnable_weight to reflect the new
++	 *     h_nr_running of its group cfs_rq.
+ 	 *   - Subtract its previous weight from cfs_rq->load.weight.
+ 	 *   - For group entity, update its weight to reflect the new share
+ 	 *     of its group cfs_rq.
 -- 
 2.36.1
 
