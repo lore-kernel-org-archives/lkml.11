@@ -2,109 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D873CC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:48:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80453C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:48:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234364AbiGMHsb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:48:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S234840AbiGMHsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234869AbiGMHsS (ORCPT
+        with ESMTP id S234860AbiGMHs3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:48:18 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 63417E5DF9;
-        Wed, 13 Jul 2022 00:48:05 -0700 (PDT)
-Received: from [192.168.87.140] (unknown [50.47.106.71])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 9B42E204DE8E;
-        Wed, 13 Jul 2022 00:48:04 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9B42E204DE8E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1657698485;
-        bh=KZ3W7Lm0ppPu0mxu7WcxzkIS3QqQzFKigKl1JQiFt2Y=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=P6+Zhlbq0DMsnVL+ep7Gw05EZe/vUerKqkJmmAvdzE0pSRyQXm6vhKjOFnTdc84dI
-         Wr5o/o68+rQ16YtPQgftXDkZ3oY7JvtHA9SjKygZ+43CrDgiRDmcJS/qnvQ8OjqHRv
-         Hs3mxf8ksl5o7PzzC4HWh10dRPhLpoAdGUpHVLUs=
-Message-ID: <e5c47d13-bbb9-e607-47cb-6bf4cf6bebd9@linux.microsoft.com>
-Date:   Wed, 13 Jul 2022 00:48:04 -0700
+        Wed, 13 Jul 2022 03:48:29 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B524BE6332;
+        Wed, 13 Jul 2022 00:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657698506; x=1689234506;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=nUfcHt/iaf3oMSfMyzHxGwWsSmqpbvlJ2JFwYR1oe/M=;
+  b=C4cP7E864jxiXG8f7VB1bNxdXYNG12yHhsNZlDN4+uGv70+0xztfKFhO
+   ukHKXBXu1kiraU7YIGFaenCfBQGF12+KplTVGTDE5pjFlrAu2bDNCandl
+   T8Gh5bxOsB80l3NLxqG6z6o9q05NfddgX+xdoHTH0wbzeRopuEji/FJ9O
+   MwxqbvPhvp/R0Aa9j5ooO1/+8VEZcN8BFz79RyuF1bCjNSfbolylaS6ak
+   3jek3LsAlr7oCc3JOixWVJ2yp1nVSNT/Z744IJKJtHKlCR9BADxTEcqGY
+   aWaRfqH/L7MwQmC9R5lpqwIhG9Z7JXfVNTLoRxoejPMuwEDoiR1ICVjeX
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="264928758"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="264928758"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:48:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="685067167"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 00:48:16 -0700
+Date:   Wed, 13 Jul 2022 15:44:58 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 04/14] mm/shmem: Support memfile_notifier
+Message-ID: <20220713074458.GB2831541@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-5-chao.p.peng@linux.intel.com>
+ <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v7 3/5] ARM: dts: aspeed: Add HACE device controller node
-Content-Language: en-US
-To:     Neal Liu <neal_liu@aspeedtech.com>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Dhananjay Phadke <dhphadke@microsoft.com>,
-        Johnny Huang <johnny_huang@aspeedtech.com>
-Cc:     devicetree@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        BMC-SW@aspeedtech.com, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-References: <20220705020936.1751771-1-neal_liu@aspeedtech.com>
- <20220705020936.1751771-4-neal_liu@aspeedtech.com>
-From:   Dhananjay Phadke <dphadke@linux.microsoft.com>
-In-Reply-To: <20220705020936.1751771-4-neal_liu@aspeedtech.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/4/2022 7:09 PM, Neal Liu wrote:
-> Add hace node to device tree for AST2500/AST2600.
+On Tue, Jul 12, 2022 at 08:02:34PM +0200, Gupta, Pankaj wrote:
+> On 7/6/2022 10:20 AM, Chao Peng wrote:
+> > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+> > 
+> > Implement shmem as a memfile_notifier backing store. Essentially it
+> > interacts with the memfile_notifier feature flags for userspace
+> > access/page migration/page reclaiming and implements the necessary
+> > memfile_backing_store callbacks.
+> > 
+> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > ---
+> >   include/linux/shmem_fs.h |   2 +
+> >   mm/shmem.c               | 109 ++++++++++++++++++++++++++++++++++++++-
+> >   2 files changed, 110 insertions(+), 1 deletion(-)
+...
+
+> > +#ifdef CONFIG_MIGRATION
+> > +static int shmem_migrate_page(struct address_space *mapping,
+> > +			      struct page *newpage, struct page *page,
+> > +			      enum migrate_mode mode)
+> > +{
+> > +	struct inode *inode = mapping->host;
+> > +	struct shmem_inode_info *info = SHMEM_I(inode);
+> > +
+> > +	if (info->memfile_node.flags & MEMFILE_F_UNMOVABLE)
+> > +		return -EOPNOTSUPP;
+> > +	return migrate_page(mapping, newpage, page, mode);
 > 
-> Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-> Signed-off-by: Johnny Huang <johnny_huang@aspeedtech.com>
-> ---
->   arch/arm/boot/dts/aspeed-g5.dtsi | 8 ++++++++
->   arch/arm/boot/dts/aspeed-g6.dtsi | 8 ++++++++
->   2 files changed, 16 insertions(+)
+> Wondering how well page migrate would work for private pages
+> on shmem memfd based backend?
+
+From high level:
+  - KVM unset MEMFILE_F_UNMOVABLE bit to indicate it capable of
+    migrating a page.
+  - Introduce new 'migrate' callback(s) to memfile_notifier_ops for KVM
+    to register.
+  - The callback is hooked to migrate_page() here.
+  - Once page migration requested, shmem calls into the 'migrate'
+    callback(s) to perform additional steps for encrypted memory (For
+    TDX we will call TDH.MEM.PAGE.RELOCATE).
+
+Chao
 > 
-> diff --git a/arch/arm/boot/dts/aspeed-g5.dtsi b/arch/arm/boot/dts/aspeed-g5.dtsi
-> index c89092c3905b..04f98d1dbb97 100644
-> --- a/arch/arm/boot/dts/aspeed-g5.dtsi
-> +++ b/arch/arm/boot/dts/aspeed-g5.dtsi
-> @@ -262,6 +262,14 @@ rng: hwrng@1e6e2078 {
->   				quality = <100>;
->   			};
->   
-> +			hace: crypto@1e6e3000 {
-> +				compatible = "aspeed,ast2500-hace";
-> +				reg = <0x1e6e3000 0x100>;
-> +				interrupts = <4>;
-> +				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
-> +				resets = <&syscon ASPEED_RESET_HACE>;
-> +			};
-> +
->   			gfx: display@1e6e6000 {
->   				compatible = "aspeed,ast2500-gfx", "syscon";
->   				reg = <0x1e6e6000 0x1000>;
-> diff --git a/arch/arm/boot/dts/aspeed-g6.dtsi b/arch/arm/boot/dts/aspeed-g6.dtsi
-> index 6660564855ff..095cf8d03616 100644
-> --- a/arch/arm/boot/dts/aspeed-g6.dtsi
-> +++ b/arch/arm/boot/dts/aspeed-g6.dtsi
-> @@ -323,6 +323,14 @@ apb {
->   			#size-cells = <1>;
->   			ranges;
->   
-> +			hace: crypto@1e6d0000 {
-> +				compatible = "aspeed,ast2600-hace";
-> +				reg = <0x1e6d0000 0x200>;
-> +				interrupts = <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>;
-> +				clocks = <&syscon ASPEED_CLK_GATE_YCLK>;
-> +				resets = <&syscon ASPEED_RESET_HACE>;
-> +			};
-> +
-
-
-Thank you for addressing ast2500, for this patch -
-
-Reviewed-by: Dhananjay Phadke <dphadke@linux.microsoft.com>
+> > +}
+> > +#endif
+> > +
+> >   const struct address_space_operations shmem_aops = {
+> >   	.writepage	= shmem_writepage,
+> >   	.dirty_folio	= noop_dirty_folio,
+> > @@ -3814,7 +3872,7 @@ const struct address_space_operations shmem_aops = {
+> >   	.write_end	= shmem_write_end,
+> >   #endif
+> >   #ifdef CONFIG_MIGRATION
+> > -	.migratepage	= migrate_page,
+> > +	.migratepage	= shmem_migrate_page,
+> >   #endif
+> >   	.error_remove_page = shmem_error_remove_page,
+> >   };
+> > @@ -3931,6 +3989,51 @@ static struct file_system_type shmem_fs_type = {
+> >   	.fs_flags	= FS_USERNS_MOUNT,
+> >   };
+ 
