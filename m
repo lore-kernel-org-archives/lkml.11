@@ -2,109 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3F7C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CF5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:15:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234033AbiGMCOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 22:14:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
+        id S233956AbiGMCPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 22:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233956AbiGMCO0 (ORCPT
+        with ESMTP id S230200AbiGMCPA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 22:14:26 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABEC14F659
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 19:14:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ikHA2
-        7jOWrf1Qm3cFev3aWzpCFTLu3KuD8nMhC9QKso=; b=dhfVW77WPi/zA9iuSew0M
-        jWT1+ue2JcM4dFd0/rmTdVZTql2IZ2L3OLwmptdJMavqTru2yPc0wbsrA6u7ZqjQ
-        reVSeGjejtOh502m7w970L2WyKAcpZK3eZxDmdPKjVwfUr7DmRXdYQcvOZATF27H
-        4v7WbDGvXPMwenl6HdYQKM=
-Received: from localhost.localdomain (unknown [111.48.58.12])
-        by smtp13 (Coremail) with SMTP id EcCowADXQZ9AKs5iAfn3NA--.40687S2;
-        Wed, 13 Jul 2022 10:13:22 +0800 (CST)
-From:   huhai <15815827059@163.com>
-To:     linux@armlinux.org.uk, dietmar.eggemann@arm.com, mingo@kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        huhai <huhai@kylinos.cn>
-Subject: [PATCH] ARM, sched/topology: fix possible memory allocation failure
-Date:   Wed, 13 Jul 2022 10:11:29 +0800
-Message-Id: <20220713021129.103155-1-15815827059@163.com>
-X-Mailer: git-send-email 2.27.0
+        Tue, 12 Jul 2022 22:15:00 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1773761D72;
+        Tue, 12 Jul 2022 19:14:59 -0700 (PDT)
+Date:   Tue, 12 Jul 2022 19:13:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657678497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d3ZWU/BSJQ8KaUrQyBtjftgf/8Wn3DQWN5MEjZ2mDVs=;
+        b=Tck2SANcnLqLDykX8OugLEEXRUSNr75MjIrc5U1/4fbr2atgS5nKAB0ycOzOYHMEjJG8vh
+        g+VrB4n0kR8v1/qvZeaoXBJSTYVZhcA0jKYPuhBe7yCnx109y4DIYa8Uw/ALWYmFfFGZrF
+        3JRVjjLe5NAy3xFuit9ZvrLSGPPN1NU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Shakeel Butt <shakeelb@google.com>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2] bpf: reparent bpf maps on memcg offlining
+Message-ID: <Ys4qYsCozq0zF9n/@castle>
+References: <20220711162827.184743-1-roman.gushchin@linux.dev>
+ <CAADnVQ+2Az23WLHj_1pQWYXdd8CbeKooCLrkT_GnzKXV7Yp8hw@mail.gmail.com>
+ <CALvZod5uPV9cNKCMjs3HmadVnF--fum5BgG-Zcv1vTM_Bak8hw@mail.gmail.com>
+ <CAADnVQJPm13Mu_XMyzsYk40eW-4CPKWF52LkwwJTJhA6OyJT+g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowADXQZ9AKs5iAfn3NA--.40687S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7tr1rAFyUXw1DZF1rur13twb_yoW8ZrW3pw
-        40krW7tw4fWFZ7J397Xw1xZrykKr9rXw17GayUJ3y5J3W3Ar1xGFZav3yaqry7uryFqr1f
-        tr4Uta4DWFZ2v37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jzuWdUUUUU=
-X-Originating-IP: [111.48.58.12]
-X-CM-SenderInfo: rprvmiivyslimvzbiqqrwthudrp/1tbiqwM9hVUMemdMkQAAsJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQJPm13Mu_XMyzsYk40eW-4CPKWF52LkwwJTJhA6OyJT+g@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: huhai <huhai@kylinos.cn>
+On Tue, Jul 12, 2022 at 03:15:27PM -0700, Alexei Starovoitov wrote:
+> On Tue, Jul 12, 2022 at 3:11 PM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Tue, Jul 12, 2022 at 2:49 PM Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com> wrote:
+> > >
+> > > On Mon, Jul 11, 2022 at 9:28 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
+> > > >
+> > > > The memory consumed by a mpf map is always accounted to the memory
+> > > > cgroup of the process which created the map. The map can outlive
+> > > > the memory cgroup if it's used by processes in other cgroups or
+> > > > is pinned on bpffs. In this case the map pins the original cgroup
+> > > > in the dying state.
+> > > >
+> > > > For other types of objects (slab objects, non-slab kernel allocations,
+> > > > percpu objects and recently LRU pages) there is a reparenting process
+> > > > implemented: on cgroup offlining charged objects are getting
+> > > > reassigned to the parent cgroup. Because all charges and statistics
+> > > > are fully recursive it's a fairly cheap operation.
+> > > >
+> > > > For efficiency and consistency with other types of objects, let's do
+> > > > the same for bpf maps. Fortunately thanks to the objcg API, the
+> > > > required changes are minimal.
+> > > >
+> > > > Please, note that individual allocations (slabs, percpu and large
+> > > > kmallocs) already have the reparenting mechanism. This commit adds
+> > > > it to the saved map->memcg pointer by replacing it to map->objcg.
+> > > > Because dying cgroups are not visible for a user and all charges are
+> > > > recursive, this commit doesn't bring any behavior changes for a user.
+> > > >
+> > > > v2:
+> > > >   added a missing const qualifier
+> > > >
+> > > > Signed-off-by: Roman Gushchin <roman.gushchin@linux.dev>
+> > > > Reviewed-by: Shakeel Butt <shakeelb@google.com>
+> > > > ---
+> > > >  include/linux/bpf.h  |  2 +-
+> > > >  kernel/bpf/syscall.c | 35 +++++++++++++++++++++++++++--------
+> > > >  2 files changed, 28 insertions(+), 9 deletions(-)
+> > > >
+> > > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > > > index 2b21f2a3452f..85a4db3e0536 100644
+> > > > --- a/include/linux/bpf.h
+> > > > +++ b/include/linux/bpf.h
+> > > > @@ -221,7 +221,7 @@ struct bpf_map {
+> > > >         u32 btf_vmlinux_value_type_id;
+> > > >         struct btf *btf;
+> > > >  #ifdef CONFIG_MEMCG_KMEM
+> > > > -       struct mem_cgroup *memcg;
+> > > > +       struct obj_cgroup *objcg;
+> > > >  #endif
+> > > >         char name[BPF_OBJ_NAME_LEN];
+> > > >         struct bpf_map_off_arr *off_arr;
+> > > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > > index ab688d85b2c6..ef60dbc21b17 100644
+> > > > --- a/kernel/bpf/syscall.c
+> > > > +++ b/kernel/bpf/syscall.c
+> > > > @@ -419,35 +419,52 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
+> > > >  #ifdef CONFIG_MEMCG_KMEM
+> > > >  static void bpf_map_save_memcg(struct bpf_map *map)
+> > > >  {
+> > > > -       map->memcg = get_mem_cgroup_from_mm(current->mm);
+> > > > +       /* Currently if a map is created by a process belonging to the root
+> > > > +        * memory cgroup, get_obj_cgroup_from_current() will return NULL.
+> > > > +        * So we have to check map->objcg for being NULL each time it's
+> > > > +        * being used.
+> > > > +        */
+> > > > +       map->objcg = get_obj_cgroup_from_current();
+> > > >  }
+> > > >
+> > > >  static void bpf_map_release_memcg(struct bpf_map *map)
+> > > >  {
+> > > > -       mem_cgroup_put(map->memcg);
+> > > > +       if (map->objcg)
+> > > > +               obj_cgroup_put(map->objcg);
+> > > > +}
+> > > > +
+> > > > +static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map) {
+> > > > +       if (map->objcg)
+> > > > +               return get_mem_cgroup_from_objcg(map->objcg);
+> > > > +
+> > > > +       return root_mem_cgroup;
+> > > >  }
+> > > >
+> > > >  void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
+> > > >                            int node)
+> > > >  {
+> > > > -       struct mem_cgroup *old_memcg;
+> > > > +       struct mem_cgroup *memcg, *old_memcg;
+> > > >         void *ptr;
+> > > >
+> > > > -       old_memcg = set_active_memcg(map->memcg);
+> > > > +       memcg = bpf_map_get_memcg(map);
+> > > > +       old_memcg = set_active_memcg(memcg);
+> > > >         ptr = kmalloc_node(size, flags | __GFP_ACCOUNT, node);
+> > > >         set_active_memcg(old_memcg);
+> > > > +       mem_cgroup_put(memcg);
+> > >
+> > > Here we might css_put root_mem_cgroup.
+> > > Should we css_get it when returning or
+> > > it's marked as CSS_NO_REF ?
+> > > But mem_cgroup_alloc() doesn't seem to be doing that marking.
+> > > I'm lost at that code.
+> >
+> > CSS_NO_REF is set for root_mem_cgroup in cgroup_init_subsys().
 
-When kcalloc in parse_dt_topology() fails and it will lead to a null
-pointer access.
+Yeah, the root cgroups can't be deleted so we save on the refcounting.
+> 
+> Ahh. I see that
+> css = ss->css_alloc(NULL); css->flags |= CSS_NO_REF; now.
+> Thanks.
 
-Considering update_cpu_capacity() also uses __cpu_capacity, and refer to
-the implementation of parse_dt_topology() in drivers/base/arch_topology.c,
-use global variables to store capacity in this patch.
-
-Signed-off-by: huhai <huhai@kylinos.cn>
----
- arch/arm/kernel/topology.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm/kernel/topology.c b/arch/arm/kernel/topology.c
-index ef0058de432b..383eaac1dbd2 100644
---- a/arch/arm/kernel/topology.c
-+++ b/arch/arm/kernel/topology.c
-@@ -68,8 +68,7 @@ static const struct cpu_efficiency table_efficiency[] = {
- 	{NULL, },
- };
- 
--static unsigned long *__cpu_capacity;
--#define cpu_capacity(cpu)	__cpu_capacity[cpu]
-+static unsigned long cpu_capacity[NR_CPUS];
- 
- static unsigned long middle_capacity = 1;
- static bool cap_from_dt = true;
-@@ -91,9 +90,6 @@ static void __init parse_dt_topology(void)
- 	unsigned long capacity = 0;
- 	int cpu = 0;
- 
--	__cpu_capacity = kcalloc(nr_cpu_ids, sizeof(*__cpu_capacity),
--				 GFP_NOWAIT);
--
- 	for_each_possible_cpu(cpu) {
- 		const __be32 *rate;
- 		int len;
-@@ -135,7 +131,7 @@ static void __init parse_dt_topology(void)
- 		if (capacity > max_capacity)
- 			max_capacity = capacity;
- 
--		cpu_capacity(cpu) = capacity;
-+		cpu_capacity[cpu] = capacity;
- 	}
- 
- 	/* If min and max capacities are equals, we bypass the update of the
-@@ -163,10 +159,10 @@ static void __init parse_dt_topology(void)
-  */
- static void update_cpu_capacity(unsigned int cpu)
- {
--	if (!cpu_capacity(cpu) || cap_from_dt)
-+	if (!cpu_capacity[cpu] || cap_from_dt)
- 		return;
- 
--	topology_set_cpu_scale(cpu, cpu_capacity(cpu) / middle_capacity);
-+	topology_set_cpu_scale(cpu, cpu_capacity[cpu] / middle_capacity);
- 
- 	pr_info("CPU%u: update cpu_capacity %lu\n",
- 		cpu, topology_get_cpu_scale(cpu));
--- 
-2.27.0
-
+Thanks for applying the patch!
