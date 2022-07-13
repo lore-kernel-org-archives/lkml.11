@@ -2,113 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C72C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0297FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:09:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234308AbiGMLI5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:08:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32816 "EHLO
+        id S235081AbiGMLJk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:09:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGMLIz (ORCPT
+        with ESMTP id S229579AbiGMLJj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:08:55 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B8852529D
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:08:54 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id b11so19186503eju.10
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:08:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=lJvpiSOQRpps7ywZWOpMZ0fV9KTgjPhhMacpKKuKlpc=;
-        b=gooZU2UNAzr+ekmSNuvUfmAtNk41a5lzyKio83+PtxdQhaDpirWIqI4gKrh6tMdugO
-         VDygYM8jm6Ax0w63VXe0VvAn5ff4MvuoNQydY8GBfd6wiUYj9flKTLfhscd39iuP8yvy
-         wFcvGQgmMz8uCnFSivzXseEnfxJ4aWw4AlHpWlp54pKUQOiGOzO1yRxB7AS6qbNvVRGp
-         wYQtqYmHAPBT4WHKJHud45k/z2tb/ZI6fgmG1pdOnINbHuFvDOfr1k7jYyyeLA9iUUTQ
-         gB5Y6cQcjigsTwgAtD+pfOl4xAWh9ufxCwDclsT6fN+IZoLorvzas4hEhGJ+KKe5UYAe
-         3Krg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=lJvpiSOQRpps7ywZWOpMZ0fV9KTgjPhhMacpKKuKlpc=;
-        b=osFxtM1eLc8r6Pw/d62cjYIniouo7NewvLUh4xHjrov0xzaRNuq/K8OlXBXy8o167z
-         gmycBwI21kVt6RsQkPmeqJmJcdWU4kx9vrL4gy1bP3XMjSFA43aIKJt3ZujPDU38HjYS
-         Q1Oua8Rszep6X5wSzzNCbiSZqh462wz0MZ9ZQ0adDghSJYoAD9MzIM+DxYmSv5Mhe+VI
-         NCDjbITJbxzhm+/Le+PRR4nibwpsjd+HTu1XiR7/2EgqLXb4ISUgOJJmEZwc/sWx58GM
-         Bcit6Koxi+aq8ShI6qUR7ncMrjP9AiXZlFkHkD8ubouvYF0ZMJpAP7XA2uCQ1ZAgCoPc
-         6Z/Q==
-X-Gm-Message-State: AJIora+XVWoSvYOTm0eWvQtWOYlwpdLrxSyw1FcUBAkchpluTnuLdo8n
-        dfTOqhgqJhTSECNMZnuSOH+S6SfYj0+njA+cwqxi
-X-Google-Smtp-Source: AGRyM1tMajvdaUW3g0GchHdyscPm64iC1ebSNxBBjRwvlKSl0dgXAwdIWpiaj+/d3AjQmepPUxddGr9vaz46P5t23Ak=
-X-Received: by 2002:a17:906:5055:b0:6ff:1dfb:1e2c with SMTP id
- e21-20020a170906505500b006ff1dfb1e2cmr2977364ejk.200.1657710532643; Wed, 13
- Jul 2022 04:08:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220706050503.171-1-xieyongji@bytedance.com> <20220706050503.171-2-xieyongji@bytedance.com>
- <1106133f-ebd4-f6a8-83ab-19e995bcdba6@redhat.com>
-In-Reply-To: <1106133f-ebd4-f6a8-83ab-19e995bcdba6@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 13 Jul 2022 19:08:42 +0800
-Message-ID: <CACycT3sNt_PcPQ__KVSqV6xd=+z5+gbMqWhu6H3vcj_fTGzUsw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] vduse: Remove unnecessary spin lock protection
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+        Wed, 13 Jul 2022 07:09:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB9BECB88;
+        Wed, 13 Jul 2022 04:09:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657710577; x=1689246577;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=mluzyxZAImsv355695EcParOvoSEmCd7NTEboqAuATQ=;
+  b=S1OZ1tH6c4XNbWkIUwmEYJmxtXV6n3OOQM1pfOpgStuIOweoj/gk2AWT
+   inbOjwn9bq/Led7z3Pn1fmJ4uGZOOOAYMVC+hwglB8lRv5BGYVZI9NF9h
+   BPjYRzwstJY9rF/UjN7kBqHomYwg+lyZBjApWUuHbkxCRm0CL6K24kpuJ
+   P0zHcR5+2A/54OHNK2kIiSchHkwSBtTXqT/uJc1Bat9KqYOTQwC/LH7y3
+   kMJGnS7aRvK9yZf4KetNG4mZWRqydpWKroghM9HYqDzai7UZv5wjeNutV
+   xpgRPH3yR4PxHo5TrSL3iJfU/cR2KkR0Y0Kt9X1rXg7f9lDRTX/3k634K
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="264969301"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="264969301"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:09:34 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="622899198"
+Received: from ifatima-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.1.196])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:09:29 -0700
+Message-ID: <173b20166a77012669fdc2c600556fca0623d0b1.camel@intel.com>
+Subject: Re: [PATCH v5 02/22] cc_platform: Add new attribute to prevent ACPI
+ CPU hotplug
+From:   Kai Huang <kai.huang@intel.com>
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org
+Cc:     linux-acpi@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
+        len.brown@intel.com, tony.luck@intel.com,
+        rafael.j.wysocki@intel.com, reinette.chatre@intel.com,
+        dan.j.williams@intel.com, peterz@infradead.org, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com,
+        isaku.yamahata@intel.com, thomas.lendacky@amd.com,
+        Tianyu.Lan@microsoft.com, rdunlap@infradead.org, Jason@zx2c4.com,
+        juri.lelli@redhat.com, mark.rutland@arm.com, frederic@kernel.org,
+        yuehaibing@huawei.com, dongli.zhang@oracle.com
+Date:   Wed, 13 Jul 2022 23:09:27 +1200
+In-Reply-To: <5ebd7c3cfb3ab9d77a2577c4864befcffe5359d4.camel@intel.com>
+References: <cover.1655894131.git.kai.huang@intel.com>
+         <f4bff93d83814ea1f54494f51ce3e5d954cf0f5b.1655894131.git.kai.huang@intel.com>
+         <43a67bfe-9707-33e0-2574-1e6eca6aa24b@intel.com>
+         <5ebd7c3cfb3ab9d77a2577c4864befcffe5359d4.camel@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 1:44 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> =E5=9C=A8 2022/7/6 13:04, Xie Yongji =E5=86=99=E9=81=93:
-> > Taking iotlb lock to access bounce page in page fault
-> > handler is meaningless since vduse_domain_free_bounce_pages()
-> > would only be called during file release.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > ---
-> >   drivers/vdpa/vdpa_user/iova_domain.c | 7 ++-----
-> >   1 file changed, 2 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_u=
-ser/iova_domain.c
-> > index 6daa3978d290..bca1f0b8850c 100644
-> > --- a/drivers/vdpa/vdpa_user/iova_domain.c
-> > +++ b/drivers/vdpa/vdpa_user/iova_domain.c
-> > @@ -211,17 +211,14 @@ static struct page *
-> >   vduse_domain_get_bounce_page(struct vduse_iova_domain *domain, u64 io=
-va)
-> >   {
-> >       struct vduse_bounce_map *map;
-> > -     struct page *page =3D NULL;
-> > +     struct page *page;
-> >
-> > -     spin_lock(&domain->iotlb_lock);
-> >       map =3D &domain->bounce_maps[iova >> PAGE_SHIFT];
-> >       if (!map->bounce_page)
-> > -             goto out;
-> > +             return NULL;
->
->
-> Interesting, I wonder why we don't serialize with
-> vduse_domain_map_bounce_page() with iotlb_lock?
->
+On Mon, 2022-06-27 at 17:05 +1200, Kai Huang wrote:
+> On Fri, 2022-06-24 at 11:57 -0700, Dave Hansen wrote:
+> > On 6/22/22 04:15, Kai Huang wrote:
+> > > Platforms with confidential computing technology may not support ACPI
+> > > CPU hotplug when such technology is enabled by the BIOS.  Examples
+> > > include Intel platforms which support Intel Trust Domain Extensions
+> > > (TDX).
+> > >=20
+> > > If the kernel ever receives ACPI CPU hotplug event, it is likely a BI=
+OS
+> > > bug.  For ACPI CPU hot-add, the kernel should speak out this is a BIO=
+S
+> > > bug and reject the new CPU.  For hot-removal, for simplicity just ass=
+ume
+> > > the kernel cannot continue to work normally, and BUG().
+> >=20
+> > So, the kernel is now declaring ACPI CPU hotplug and TDX to be
+> > incompatible and even BUG()'ing if we see them together.  Has anyone
+> > told the firmware guys about this?  Is this in a spec somewhere?  When
+> > the kernel goes boom, are the firmware folks going to cry "Kernel bug!!=
+"?
+> >=20
+> > This doesn't seem like something the kernel should be doing unilaterall=
+y.
+>=20
+> TDX doesn't support ACPI CPU hotplug (both hot-add and hot-removal) is an
+> architectural behaviour.  The public specs doesn't explicitly say  it, bu=
+t it is
+> implied:
+>=20
+> 1) During platform boot MCHECK verifies all logical CPUs on all packages =
+that
+> they are TDX compatible, and it keeps some information, such as total CPU
+> packages and total logical cpus at some location of SEAMRR so it can late=
+r be
+> used by P-SEAMLDR and TDX module.  Please see "3.4 SEAMLDR_SEAMINFO" in t=
+he P-
+> SEAMLDR spec:
+>=20
+> https://cdrdv2.intel.com/v1/dl/getContent/733584
+>=20
+> 2) Also some SEAMCALLs must be called on all logical CPUs or CPU packages=
+ that
+> the platform has (such as such as TDH.SYS.INIT.LP and TDH.SYS.KEY.CONFIG)=
+,
+> otherwise the further step of TDX module initialization will fail.
+>=20
+> Unfortunately there's no public spec mentioning what's the behaviour of A=
+CPI CPU
+> hotplug on TDX enabled platform.  For instance, whether BIOS will ever ge=
+t the
+> ACPI CPU hot-plug event, or if BIOS gets the event, will it suppress it. =
+ What I
+> got from Intel internally is a non-buggy BIOS should never report such ev=
+ent to
+> the kernel, so if kernel receives such event, it should be fair enough to=
+ treat
+> it as BIOS bug.
+>=20
+> But theoretically, the BIOS isn't in TDX's TCB, and can be from 3rd party=
+..
+>=20
+> Also, I was told "CPU hot-plug is a system feature, not a CPU feature or =
+Intel
+> architecture feature", so Intel doesn't have an architectural specificati=
+on for
+> CPU hot-plug.=20
+>=20
+> At the meantime, I am pushing Intel internally to add some statements reg=
+arding
+> to the TDX and CPU hotplug interaction to the BIOS write guide and make i=
+t
+> public.  I guess this is the best thing we can do.
+>=20
+> Regarding to the code change, I agree the BUG() isn't good.  I used it be=
+cause:
+> 1) this basically on a theoretical problem and shouldn't happen in practi=
+ce; 2)
+> because there's no architectural specification regarding to the behaviour=
+ of TDX
+> when CPU hot-removal, so I just used BUG() in assumption that TDX isn't s=
+afe to
+> use anymore.
 
-Userspace should only access the bounce page after we set up the dma
-mapping, so we don't need serialization from the iotlb_lock in this
-case. And vduse_domain_map_bounce_page() only sets the
-map->bounce_page rather than clears the map->bounce_page, we would not
-have any problem without the lock protection.
+Hi Dave,
 
+Trying to close how to handle ACPI CPU hotplug for TDX.  Could you give som=
+e
+suggestion?
+
+After discussion with TDX guys, they have agreed they will add below to eit=
+her
+the TDX module spec or TDX whitepaper:
+
+"TDX doesn=E2=80=99t support adding or removing CPUs from TDX security peri=
+meter. The
+BIOS should prevent CPUs from being hot-added or hot-removed after platform
+boots."
+
+This means if TDX is enabled in BIOS, a non-buggy BIOS should never deliver=
+ ACPI
+CPU hotplug event to kernel, otherwise it is a BIOS bug.  And this is only
+related to whether TDX is enabled in BIOS, no matter whether the TDX module=
+ has
+been loaded/initialized or not.
+
+So I think the proper way to handle is: we still have code to detect whethe=
+r TDX
+is enabled by BIOS (patch 01 in this series), and when ACPI CPU hotplug hap=
+pens
+on TDX enabled platform, we print out error message saying it is a BIOS bug=
+.
+
+Specifically, for CPU hot-add, we can print error message and reject the ne=
+w
+CPU.  For CPU hot-removal, when the kernel receives this event, the CPU hot=
+-
+removal has already handled by BIOS so the kernel cannot reject it.  So I t=
+hink
+we can either BUG(), or say "TDX is broken and please reboot the machine".
+
+I guess BUG() would catch a lot of eyeball, so how about choose the latter,=
+ like
+below?
+
+--- a/arch/x86/kernel/acpi/boot.c
++++ b/arch/x86/kernel/acpi/boot.c
+@@ -799,6 +799,7 @@ static void __init acpi_set_irq_model_ioapic(void)
+  */
+ #ifdef CONFIG_ACPI_HOTPLUG_CPU
+ #include <acpi/processor.h>
++#include <asm/tdx.h>
+=20
+ static int acpi_map_cpu2node(acpi_handle handle, int cpu, int physid)
+ {
+@@ -819,6 +820,12 @@ int acpi_map_cpu(acpi_handle handle, phys_cpuid_t phys=
+id,
+u32 acpi_id,
+ {
+        int cpu;
+=20
++       if (platform_tdx_enabled()) {
++               pr_err("BIOS bug: CPU (physid %u) hot-added on TDX enabled
+platform. Reject it.\n",
++                               physid);
++               return -EINVAL;
++       }
++
+        cpu =3D acpi_register_lapic(physid, acpi_id, ACPI_MADT_ENABLED);
+        if (cpu < 0) {
+                pr_info("Unable to map lapic to logical cpu number\n");
+@@ -835,6 +842,10 @@ EXPORT_SYMBOL(acpi_map_cpu);
+=20
+ int acpi_unmap_cpu(int cpu)
+ {
++       if (platform_tdx_enabled())
++               pr_err("BIOS bug: CPU %d hot-removed on TDX enabled platfor=
+m.
+TDX is broken. Please reboot the machine.\n",
++                               cpu);
++
+ #ifdef CONFIG_ACPI_NUMA
+        set_apicid_to_node(per_cpu(x86_cpu_to_apicid, cpu), NUMA_NO_NODE);
+ #endif
+
+
+--=20
 Thanks,
-Yongji
+-Kai
+
+
