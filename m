@@ -2,120 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D176C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43E7AC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:02:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234902AbiGMIB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59916 "EHLO
+        id S234712AbiGMICZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231664AbiGMIBZ (ORCPT
+        with ESMTP id S231664AbiGMICV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:01:25 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ED1FE024B;
-        Wed, 13 Jul 2022 01:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657699284; x=1689235284;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=7ENYqPqKTk0ESIJ/QoNgf3KZMY16w1kA6fyDKtIJ5rs=;
-  b=kNCjkJ85qfjLYK9qXQSQByNS+v9xJRKUpuzu8lH80gStYi9Iozs7Rl0h
-   0HWCpUEP5oZSEvmpeWEXVAV+YKETkCaOUeZ3C7XOuk59dNVJkhoQKYaEI
-   GiPmRlpQ8wZQPNJDZokx6u0l3H9jYr7KtOsoh0Dwl96MjgUuJBz++qjsh
-   kqkF32AcVYSyINx5VEzI0vbCScmCr08tsJaZJ4tMhc+b6DZ6c8Rp6xi4C
-   /RCaXDMVFL9tbZ+xIJdK2hij6L3q9l23+m8Kt8u3D76xOALO4b1TytUNh
-   VIeD9HjgOzaIS2Tf8JHtjjtaePuqrlqN41IOwCDb860KmKZJPxx2d0s75
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="286277206"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="286277206"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:01:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="685071104"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 01:00:56 -0700
-Date:   Wed, 13 Jul 2022 15:57:38 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 00/14] KVM: mm: fd-based approach for supporting KVM
- guest private memory
-Message-ID: <20220713075738.GC2831541@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <b1c12a4b-46f7-081b-242f-005a8824aad1@amd.com>
+        Wed, 13 Jul 2022 04:02:21 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2074.outbound.protection.outlook.com [40.107.237.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAAC5E9210
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:02:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i3KDqahJunePWYUaU0RRo3bH9SYq/cFKeJBlnFAR3urJgoandLon1lFBCtVq5/MmsfdvqHfyKQf540zz8rvFQpvhVt2qEhQBSLcEBE00YGVMJ24BFBW7FWWk/d/Tdv6w7Wgoh/2wE9ccsO2hp7qK5oxiq08GUqnPa5ylsevHYtOJ+TGhwpi6VLyKnXWdWUPLSwxG7yswmIoChzI9fgAx7t/UaKMMhq3zeOFGIDflbVJuhghsHKA5nBwHiVyX1CxNvIlMaW9MW9BF32uriUX2lAlK6N1cdFXc7x+p20Dhn+9XIeGOQvt968ojFgp/OtSmp1Imtx7WwhymtjCrEZjzkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9zKh+qB/xQDNGCSJY/M6arJLgMgQXgnr50yUdAClRqA=;
+ b=fwTlmMuLbNRBDBuE11Hrx/w5daO7ksI7IVw0Umx7x9h9qfmHQxYpCvl4825afcTjJNoa48tLoWf1AR2j3KiDd5KEKUVGI6+GdIFhRh8Qovs/Xp5Yg779uVXaAQrcpMSZb083kq6OLmqEV4jLgBB2PjIH3oUxb5K9guXx3ieI3wwPKZS4eulMh/fHn3us3gIs///JZev6aVIN+HoBCCDfJ+2cuBhYdqDwsfOyFHxGg2ffxCX9KXScFS9GaC3f6c6Fexpoa9UcXrKD6vL6gUqfL+JuHSppDnLBl1T5+F35aeclPRiL/q9F+LwmLGIxfXjhjNU+/JfKDqLkajptsEXNjQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9zKh+qB/xQDNGCSJY/M6arJLgMgQXgnr50yUdAClRqA=;
+ b=tGMy+P/uaZTWv3/asGlmiDIhnqoV4vAHx11GhEGfhpLpf9YYV7RyHpjRSrr0xIqmYY7GcYnlPb8HmkSRB5XzhvJFQEVzNA+yWoJ9QBQDiPDfwtBBMIpW6z4w6455SDSLGAd8Nspw/W3YwBNVJPQScBNZgIh5+fXJ4UIdAW1IKWM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com (2603:10b6:408:43::13)
+ by DM6PR12MB4140.namprd12.prod.outlook.com (2603:10b6:5:221::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.20; Wed, 13 Jul
+ 2022 08:02:19 +0000
+Received: from BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39]) by BN8PR12MB3587.namprd12.prod.outlook.com
+ ([fe80::905:1701:3b51:7e39%2]) with mapi id 15.20.5438.013; Wed, 13 Jul 2022
+ 08:02:19 +0000
+Message-ID: <f63c0955-47df-cb4e-ac19-ec04019dcc06@amd.com>
+Date:   Wed, 13 Jul 2022 10:02:12 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [RFC][PATCH 2/3] drm: vgem: Enable SYNCOBJ and SYNCOBJ_TIMELINE
+ on vgem driver
+Content-Language: en-US
+To:     John Stultz <jstultz@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jason Ekstrand <jason@jlekstrand.net>,
+        Lionel Landwerlin <lionel.g.landwerlin@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org
+References: <20220712042258.293010-1-jstultz@google.com>
+ <20220712042258.293010-2-jstultz@google.com>
+ <6e490429-e34c-fa51-c6d9-3315c4639d9d@amd.com>
+ <CANDhNCo1WAUC9DhGfT19Smq2Z5duruAAwOs6AWUWUvNAjZqgAg@mail.gmail.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+In-Reply-To: <CANDhNCo1WAUC9DhGfT19Smq2Z5duruAAwOs6AWUWUvNAjZqgAg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: AM6PR0502CA0043.eurprd05.prod.outlook.com
+ (2603:10a6:20b:56::20) To BN8PR12MB3587.namprd12.prod.outlook.com
+ (2603:10b6:408:43::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b1c12a4b-46f7-081b-242f-005a8824aad1@amd.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c83c21a1-be22-46db-ac34-08da64a60216
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4140:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VNMkZlqDfRsGvaGNJ05T+4p3XAtdB+rP2A+3cUdCUL7QhAwx/MI/RGILCDNruy01Hncik4zncxtPvH80i/pOf+zBZbPMUDknboXaz94nkvKDdUcnWJyv5s4gBcrqPJdkXkx7fctNVWl8GtFL2GYjt2pK9JEyeiN5LUr+PrcLh4THh16wMxnG/eUd7W9ZZsGL9x2VjRhcWbkNd6k6AVbMwXkFoc/itrucwHdfkkgpVeBtN9okmxRYTKyo+UewNSA7/qAGIjOd+i2MD1rBEj6Si/3OhlSszBwMmwGhK499BJz+Og1RHQgoDwXKiWBjpcuZClLYHn7wVBDGDji2cSGfC/st1Cn12l08zReo2Fddsy7RxiU2K5T3ylST3Humq4z2ySQCAuK3JF7fIsdNaYX02W1YUMDF96fC1sjTkT6GnqbYCSl6jdmLBSa3FhRdy4bkhdkcYfXupGKsI+4oVCb20CPrPOrguH0eOmYVLDhVoe9kk70HyaDotmGa6sLwzV/ywVmr+ysgUz9eO/k0KyVaYp082M6B4czt360Th1msNEe3Niw+26S1qAU2V8jD5geDrrnQeHv+DLWzO0Kyo1EFiSVYUY/y3kTkM8b3w7CoXS9jN2gstQFjGmW+DprmXWAqm5o30i6ZJf8TJRXbAUtIoqxXdgPDBOigDNOnIA0oxFX79b1H1m00j0pNtYHvo6v0Fd4QpgyKqHgYG2KdifrEQTZ4K3LavTITijDh8OXOdtztV9GJbKZ13DVSCcnomlL1YTS+uBNJ/rLvFp4QVlxLMKCoVBTe90k1rToiTHOX9eINvKcZLz81itWjAz/ajkNo+j2XIPU88E1ggtJw9hNOBWrHv/+ERGLzOOq/qzw4d58=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR12MB3587.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(376002)(396003)(136003)(366004)(6512007)(8936002)(53546011)(38100700002)(2906002)(31686004)(5660300002)(7416002)(6506007)(83380400001)(36756003)(66556008)(66946007)(4326008)(54906003)(66574015)(186003)(2616005)(6916009)(8676002)(66476007)(86362001)(6486002)(316002)(31696002)(41300700001)(478600001)(6666004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?empPc2pmeWRoOUZxUEVDaGxoTmxDMzNjVEtvQmlDaHIvQU96VTl6SHI2SUVS?=
+ =?utf-8?B?NndFQXJaM3lObzFoU0Y3ejNxZlpCeFRmT05naVFOZDlPdlRsZEgydWxha3pC?=
+ =?utf-8?B?eHZGaHZaYnljVUM4TTdHYk0yOHJDeUl4VzJkVTBKdDR4K0s4M25uWTluVHcz?=
+ =?utf-8?B?VmViNmNLUk1OeEdaZmFZY3N2Vm5xejhrTHJ6TUpibFhDQ1FUTXk4VUR1U3Zr?=
+ =?utf-8?B?QXIrSDc2Zi9Xd1NRUlFsbW5tajcwdVo5NlVSTGFEL01ON0s4aGFqcTh3SHh3?=
+ =?utf-8?B?cWkzbnVscE9OT2VIeThiRFVveDhpSFVCVWpjaGk5dUNEWUFBMUZEb21BblRV?=
+ =?utf-8?B?b2lMOVBMMTJHdjBnOEVGNDFjWVIwQjRXMDlIRnMwN3p4QSt3Y3hWeVBtMXN1?=
+ =?utf-8?B?Q1M4WWs1UGZpcHliMzZuUmt3YTFqeU42ajNHa1FNM0hQUUY4aVpwS2Zaa01S?=
+ =?utf-8?B?RmVYcDFYT1JBREtBK01UYUx6bDRkY3lYUnVwL0UzeFhaOGF1QTFaUTJjMUZY?=
+ =?utf-8?B?bmxIZXNHaVBBMnA5OTJJMUFyZDRZWVVBRzduWk1iclZvNmhnMjYwVUJLUHdu?=
+ =?utf-8?B?dmhtMXlia25uS0Z3ZXJjYXJUcERzY29kNG8vSy9meUp3RG1kSElKeGVtb1R6?=
+ =?utf-8?B?d1RTcjJETTVqRXJGcC80dmxUMVVXL1hCWXF6bURhT0l4QUp6WEcxaUN5d25C?=
+ =?utf-8?B?TFNFTGFvYVcvRzA4YTQzYzRMM29BSFZCRGNQUUZnMm9TbkVnai9vb1M0Mll5?=
+ =?utf-8?B?Rm84TVJmeXF1OWV4dTVDY0ZkUC80YWdId1plR2dOcGVQYTFtbFJrOUl5eGZE?=
+ =?utf-8?B?bVIwNlV6QVJRbjBiNmYvN2grekU4U21DUktDUlNCQVFNWU5YNlNORjdUWFhz?=
+ =?utf-8?B?RW1XK0ZqYnJjY29mWjAwSmZqRWwzK0lFSHduVmYySjdyWnI3YzAvNkJMTVlF?=
+ =?utf-8?B?SXZLRVBKTkQvend4K0xGSFUzWUNOaHhmbjgraWNiYUVMMWJCUHAxd2w4WlMy?=
+ =?utf-8?B?VmdVbWN2RnFwZEcyWlR5TjFNbXRuZTBmMDlWRHBCWVlUanE3S3M3d2dkeDYz?=
+ =?utf-8?B?UVcrUjRJalB2N2dHcndtclJqa0k5U3Y3T2p0QnFIcTYzMDF5TllNeTU3S2JB?=
+ =?utf-8?B?VXdncmtOODdsY3MvaWNTdHFxdGxvMDFYZ2xMZmlxRU5mZCtIUnozZ0JLNkVs?=
+ =?utf-8?B?RlpveVUwM3UyaEd2UEZOeU1qWlZLTjA4VTJzRVA4VUwzR3lkNTJoR0xSUFRy?=
+ =?utf-8?B?ajY1TVc2VW1ZZ1BGQ291UkhQSGxXTVpjZ2k4blBBdWM2NDlDZ0d4NWU5bDBW?=
+ =?utf-8?B?SG0xdCtNMTU2NFBwT1luVlBPc0huL2VyRGtiQVN3VDRYekdnWU0razZleDY1?=
+ =?utf-8?B?VWp0cHFYNTFOZXc1S0ozNmU4Q3hVclRTZGF4RVdQcUxTR2M3N0F4MUpCdEdt?=
+ =?utf-8?B?aHp6TjJ3anRzaGhuV0FXYk1qa2VlZlhRSVM2eEZOdVQ4UVRoUWJnR2h0Q2NS?=
+ =?utf-8?B?Ym5Na0FqSWhLeVlucHNnVGxUbitQSnlWQ1Fac0ZNVC9BbllNTGtOVWVocG16?=
+ =?utf-8?B?TFBpaUJ0MC9RVVRMK0ZXcy9PTHVQTjZTNm5mV3FUd2tPSGVyam10RkRTWktH?=
+ =?utf-8?B?OXZMdWJWU0ZyODBNV242b01ZTVUvOFN5ZFh0QzZaM2FnYmFUWllaemdlazI2?=
+ =?utf-8?B?cWZHVFdhUysvNi9aOFJqWk9Fa1ptNE1CK0h3NkVSbGxOaVVXbFpMaTBhMHZi?=
+ =?utf-8?B?MXpWMmRreG9KbUd2WjR4clBFUU01STR2cUxzV0FLbEFuUHJIUFJ3bmR3MXdI?=
+ =?utf-8?B?c0JQL3VrNlF0bit2ekt1Wnlka1l6cFQ0RlhUTVRXQ3pQbTBZM2trZ3ZtUVFp?=
+ =?utf-8?B?eWo3aERNL1BNcG1uUUtGT08vaWpHdlN1R0NoZ3l3WEZVbUwySFVrRXN2bHN6?=
+ =?utf-8?B?Y3ROOEpxenZLeVRwRFhMb3V2UUoyOUxFVFZuazRJdUVzdHlkdjlhQWVxUFlG?=
+ =?utf-8?B?dHkxR1pVdjd3MkJZdnBxQjhOR2dYUG1wRlVEUkdNT2pQanpOaW12WEJYeE5w?=
+ =?utf-8?B?RzdvRDNtc0MweFR1TW5rbHM5MVBWZHBjc0ZXOXlCQUlsK29yNDN6TlhCR21z?=
+ =?utf-8?B?YlFjTkhlTTVUajR5TWtZQnZmb1RmM2Z0bHlEeDRhdWVzcmE3WndMaTc3K0tr?=
+ =?utf-8?Q?Cas8B1pCV7lQdnT7dhjh0/OeOzZuhbbEJekiMK6uYuv7?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c83c21a1-be22-46db-ac34-08da64a60216
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR12MB3587.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 08:02:19.0297
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: u2QsDpEwI+KilDzkhz+Xo43AQLHZ6megCyWJbPfc8xW+arU6e/0Un7UaGPaHfOak
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4140
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 05:58:32AM +0200, Gupta, Pankaj wrote:
-> 
-> > This is the v7 of this series which tries to implement the fd-based KVM
-> > guest private memory. The patches are based on latest kvm/queue branch
-> > commit:
-> > 
-> >    b9b71f43683a (kvm/queue) KVM: x86/mmu: Buffer nested MMU
-> > split_desc_cache only by default capacity
-> > 
-> > Introduction
-> > ------------
-> > In general this patch series introduce fd-based memslot which provides
-> > guest memory through memory file descriptor fd[offset,size] instead of
-> > hva/size. The fd can be created from a supported memory filesystem
-> > like tmpfs/hugetlbfs etc. which we refer as memory backing store. KVM
-> 
-> Thinking a bit, As host side fd on tmpfs or shmem will store memory on host
-> page cache instead of mapping pages into userspace address space. Can we hit
-> double (un-coordinated) page cache problem with this when guest page cache
-> is also used?
+Am 12.07.22 um 18:50 schrieb John Stultz:
+> On Tue, Jul 12, 2022 at 12:46 AM Christian König
+> <christian.koenig@amd.com> wrote:
+>> Am 12.07.22 um 06:22 schrieb John Stultz:
+>>> Allows for basic SYNCOBJ api testing, in environments
+>>> like VMs where there may not be a supported drm driver.
+>>>
+>>> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+>>> Cc: Maxime Ripard <mripard@kernel.org>
+>>> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+>>> Cc: Jason Ekstrand <jason@jlekstrand.net>
+>>> Cc: Christian König <christian.koenig@amd.com>
+>>> Cc: Lionel Landwerlin <lionel.g.landwerlin@intel.com>
+>>> Cc: Chunming Zhou <david1.zhou@amd.com>
+>>> Cc: David Airlie <airlied@linux.ie>
+>>> Cc: Daniel Vetter <daniel@ffwll.ch>
+>>> Cc: dri-devel@lists.freedesktop.org
+>>> Signed-off-by: John Stultz <jstultz@google.com>
+>>> ---
+>>>    drivers/gpu/drm/vgem/vgem_drv.c | 3 ++-
+>>>    1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/gpu/drm/vgem/vgem_drv.c b/drivers/gpu/drm/vgem/vgem_drv.c
+>>> index c5e3e5457737..e5427d7399da 100644
+>>> --- a/drivers/gpu/drm/vgem/vgem_drv.c
+>>> +++ b/drivers/gpu/drm/vgem/vgem_drv.c
+>>> @@ -109,7 +109,8 @@ static struct drm_gem_object *vgem_gem_create_object(struct drm_device *dev, siz
+>>>    }
+>>>
+>>>    static const struct drm_driver vgem_driver = {
+>>> -     .driver_features                = DRIVER_GEM | DRIVER_RENDER,
+>>> +     .driver_features                = DRIVER_GEM | DRIVER_RENDER |
+>>> +                                       DRIVER_SYNCOBJ | DRIVER_SYNCOBJ_TIMELINE,
+>> Well that's rather surprising. I'm not an export on VGEM, but AFAIK you
+>> need to adjust the CS interface to support that stuff as well.
+> Apologies, could you clarify a bit more what you mean here?  This was
+> just helpful to enable the generic userland ioctls for the example
+> test tool in this series.
+>
+> Are you proposing to add interfaces so the vgem driver can
+> attach/signal syncobjs similar to the
+> DRM_IOCTL_VGEM_FENCE_ATTACH/DRM_IOCTL_VGEM_FENCE_SIGNAL calls?
 
-This is my understanding: in host it will be indeed in page cache (in
-current shmem implementation) but that's just the way it allocates and
-provides the physical memory for the guest. In guest, guest OS will not
-see this fd (absolutely), it only sees guest memory, on top of which it
-can build its own page cache system for its own file-mapped content but
-that is unrelated to host page cache.
+Yes, exactly that. I don't see how it would be useful otherwise.
 
-Chao
-> 
-> Thanks,
-> Pankaj
-> 
+Christian.
+
+>
+> thanks
+> -john
+
