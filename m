@@ -2,115 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7377C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B41C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbiGMKa3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
+        id S235204AbiGMKaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:30:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236038AbiGMKaW (ORCPT
+        with ESMTP id S236018AbiGMKau (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:30:22 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E45FC989;
-        Wed, 13 Jul 2022 03:30:20 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id w185so9860993pfb.4;
-        Wed, 13 Jul 2022 03:30:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZlfFL39/OpL1t+nNlUxyQQyjvtZqYGz+VAIcGIn5k7U=;
-        b=Tg+JVr0gejtT6Gtt0QalhJ5sXABI5Fo4TmY+SNlaviNZINAV6b0vmpjgeS5UzyMBFd
-         P5C5tDmhBJHrbr/lUgWzOoVoLNPXZbMMtYJJvfBYZf3XLxHAdsPkc60FlYsfqBLOc4M5
-         28y+Q1rYWI+gdbZHGBHkRN3RB3WuZ3Q8OJ2bh+89OqWydhOHF7p3qqf60YyqR8Kldxpl
-         nh3rKBJuSChntx8JQvrkRT6l9Sa/SU5cXKBVNN4HNCn09cVjgPHIPxPYpRadoA59MD0j
-         dd5r+g9t75HmXrYmPvjCDoG2rgAfkjy1hZlwlMe5xiJiVU8yy8gWiPnsiZ8mSmdufplo
-         Usrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZlfFL39/OpL1t+nNlUxyQQyjvtZqYGz+VAIcGIn5k7U=;
-        b=lqKXokatn1TkQIEdGFW5clZdDxHBdM0RAGVOFqH1faEm7QgBUayInVYxMPIlzkAqcw
-         MsXBVSSXfurKh2eWDipubLyu3GmqR/C8HBZlIMyzQp+0dgWROmlgKi0920HnjyZv3PyK
-         nMod7OxtC7PEKChZO9T69s+SHfOfyx49HHblmKwLwgwaNvL+OlgP7rfGr/6psi8FGBak
-         uQ3WbOlGxltlc66WpwlmBo7elYkTQ6s6BI826rEu64x0yjLiTK4vtwmajcvG47TzwFR7
-         NGS8cQwMRwnpjmSOHE8tjqeuImqj0s34LeVDxuYJFQQweHQdlEJV6PGv9npcSgRcqm8L
-         aIxg==
-X-Gm-Message-State: AJIora+sI7ez6wVDiB0Ws0Gfc8n03GGRXwEyrdy24N/RGp+ZtrebV8fs
-        Q0maRUf7SQ3MtPybwQLFHq+N3zkAHsM=
-X-Google-Smtp-Source: AGRyM1uZwJyvbRdQMh+DANXB9i75JHJcaiqFxe4tp2/f1L+eEhVuTFXKKcn37hBBLaA8lfYhF3693Q==
-X-Received: by 2002:a63:5a1e:0:b0:411:f24a:a78 with SMTP id o30-20020a635a1e000000b00411f24a0a78mr2360910pgb.519.1657708219905;
-        Wed, 13 Jul 2022 03:30:19 -0700 (PDT)
-Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
-        by smtp.gmail.com with ESMTPSA id u10-20020a17090341ca00b00163e06e1a99sm8609114ple.120.2022.07.13.03.30.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 03:30:19 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 18:30:14 +0800
-From:   Kent Gibson <warthog618@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Dipen Patel <dipenp@nvidia.com>
-Subject: Re: [PATCH 6/6] gpiolib: cdev: compile out HTE unless CONFIG_HTE
- selected
-Message-ID: <20220713103014.GC113115@sol>
-References: <20220713013721.68879-1-warthog618@gmail.com>
- <20220713013721.68879-7-warthog618@gmail.com>
- <CAHp75Vd7je7U7qsoFDz+2jcNkwCzJHJOadsaSNwk6xD2_vgdpA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vd7je7U7qsoFDz+2jcNkwCzJHJOadsaSNwk6xD2_vgdpA@mail.gmail.com>
+        Wed, 13 Jul 2022 06:30:50 -0400
+X-Greylist: delayed 410 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 03:30:49 PDT
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37390FC9A4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:30:49 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.188:55882.729471011
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.8.199 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id 479A82800C5;
+        Wed, 13 Jul 2022 18:23:55 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id 8281e15f9b554ce79754ed296a5cd601 for viro@zeniv.linux.org.uk;
+        Wed, 13 Jul 2022 18:23:57 CST
+X-Transaction-ID: 8281e15f9b554ce79754ed296a5cd601
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     viro@zeniv.linux.org.uk
+Cc:     linux-kernel@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH] iov_iter: Fix repeated minus operation
+Date:   Wed, 13 Jul 2022 18:23:40 +0800
+Message-Id: <1657707820-124858-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 12:03:07PM +0200, Andy Shevchenko wrote:
-> On Wed, Jul 13, 2022 at 3:39 AM Kent Gibson <warthog618@gmail.com> wrote:
-> >
-> > The majority of builds do not include HTE, so compile out hte
-> > functionality unless CONFIG_HTE is selected.
-> 
-> ...
-> 
-> > +#ifdef CONFIG_HTE
-> >         /*
-> >          * -- hte specific fields --
-> >          */
-> 
-> Now this comment seems useless to me and it takes 3 LoCs.
-> 
-> ...
-> 
-> > +       else if (IS_ENABLED(CONFIG_HTE) &&
-> > +                (test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)))
-> 
-> Too many parentheses.
-> 
-> ...
-> 
-> > +               if (!IS_ENABLED(CONFIG_HTE) ||
-> > +                   !test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)) {
-> 
-> if (!(x && y)) ?
-> 
-> ...
-> 
-> > +       if (!IS_ENABLED(CONFIG_HTE) &&
-> > +           (flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE))
-> > +               return -EOPNOTSUPP;
-> 
-> Ditto for consistency?
-> 
+After executing command 'cat /proc/cpuinfo', got a message:
 
-Those all make sense - will do.
+[    6.909745] ------------[ cut here ]------------
+[    6.910267] WARNING: CPU: 0 PID: 76 at lib/iov_iter.c:1026
+iov_iter_pipe+0x34/0x40
+[    6.910951] Modules linked in:
+[    6.911584] CPU: 0 PID: 76 Comm: cat Not tainted 5.19.0-rc6-next-20220711 #9
+[    6.911916] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+[    6.912668] RIP: 0010:iov_iter_pipe+0x34/0x40
+[    6.913062] Code: 72 54 39 72 5c 76 23 48 c7 07 00 00 00 00 48 c7 47 08 00 00
+00 00 c6 07 03 48 89 4f 10 48 89 57 18 89 47 20 89 47 24 c3 0f 0b <0f> 7
+[    6.914341] RSP: 0018:ffffc900001c7d48 EFLAGS: 00000246
+[    6.914647] RAX: 0000000000000010 RBX: ffff888004988700 RCX: 0000000000000000
+[    6.914893] RDX: ffff88800490bc00 RSI: 0000000000000010 RDI: ffffc900001c7d58
+[    6.915302] RBP: ffffc900001c7e00 R08: 0000000000000000 R09: ffff888004cafad8
+[    6.915609] R10: 0000000000020000 R11: 0000000000001000 R12: ffff88800490bc00
+[    6.915856] R13: ffffc900001c7e48 R14: 00000000000002d5 R15: ffff88800490bc00
+[    6.916352] FS:  00000000016df8c0(0000) GS:ffff88800f600000(0000)
 
-Thanks for the prompt review.
+Checking the code, need to delete the duplicate minus in a loop.
 
-Cheers,
-Kent.
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+---
+ lib/iov_iter.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/lib/iov_iter.c b/lib/iov_iter.c
+index 4a3451e..642841ce 100644
+--- a/lib/iov_iter.c
++++ b/lib/iov_iter.c
+@@ -472,7 +472,6 @@ static size_t copy_pipe_to_iter(const void *addr, size_t bytes,
+ 			break;
+ 		memcpy_to_page(page, off, addr, chunk);
+ 		addr += chunk;
+-		n -= chunk;
+ 	}
+ 	return bytes;
+ }
+-- 
+1.8.3.1
+
