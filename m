@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88112C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 05:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233188AbiGMF3X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 01:29:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42650 "EHLO
+        id S233227AbiGMF3Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 01:29:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232841AbiGMF2u (ORCPT
+        with ESMTP id S233658AbiGMF3F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 01:28:50 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1175E0D7
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:28:44 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so1814332pjl.5
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:28:44 -0700 (PDT)
+        Wed, 13 Jul 2022 01:29:05 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A11E2C669
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:04 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id 72so9560159pge.0
+        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 22:29:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=wBDDOn3da9vCDzF6d+13O6shNTvgGuS119y+7OCvFQY=;
-        b=g6MvlMZ34ZM8Ba1107yZ01iF8OzzD/YEfOrW7OyPc0pvxWNTzrpIR5Fmfm6b5b2RCl
-         /qKEFeZUMkeyPsM7a8UC8dUAp9z4P7OMQ1xHCV5jn0qYw/lWUml2p5zh6FqIgzDJSheF
-         /dYJkFqKOCU74ksw5Qa3T1jbaENOCD9gNOXSXHl+fe86q21uPBDAqy4qPvGmP4LErdND
-         QBpPNH91SUDth4e33uA0t8L0XlPf/cI0BaEI5BgnCVQp3ZOxibJIr/entwlEPXGVncdF
-         p1OdU84kyDsovGgqJsBVBQyeWixlCYmCk8ZFjjqOZd73irIXyHHqoSResCEfhlNW7QoD
-         XwdQ==
+        bh=dR8o1Tq91jZw3MLfFu5c8vDuW/4Jm/kOBk1Udw3FPCc=;
+        b=wVobnWtioTWzhTkgptNc/fvBk1Z6nRHmsU4jMUhB6MkKOYPjxQiSYFMtZ+9wdBjnEq
+         ZRtkx3GsLj4+uegFy8BszHdnfWYDWPixOros1UY3VNtKr7tukMlgnqJm7CCHvDL95Ajv
+         EBZce62eSv954MhqOgznf5sBc7ruV2BTyeKdmc9hOPyt2srR7VmdVCwoiu4jkcuRihWa
+         UWJ/hbMH5kruYQ89kpuKSKHIpC1i8T3Xal9Y6mr5tOoU1unvsVXilqK8bPvGlXLbcJ7H
+         8PBUFXKtOfkDEfhneAWE2ZGfXKqwmNQNPv3bJvGWYiUG/NvyUg0lVV1ORmS0UHvCs9sf
+         g9DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=wBDDOn3da9vCDzF6d+13O6shNTvgGuS119y+7OCvFQY=;
-        b=zL1YphKzMMpbvspredkkt0FKbLAolOipO5AuUDbKdejOdVVl06A8YLAle9beP/nLab
-         CYCoRpIHkPLH+hh+qesVWJzSrvpDohmumVYp/Or0axufctxxRvOWnGMLFvy9yY6sQQLG
-         KChsFcyOI+QYK5VNpu23CDbB7a0AdlwUa4SMWnS7UERbsBIJRXhydKS6aS15Nww0lEP5
-         onnGgZ6RpmqxY8FXFvWjWy9IBvzaPiGZIoSOlgSPHweJdGpVDGYnqgVvuIY/ATN+dRL8
-         Qp3QfydjdKqRUnD9aO9EknJlkBPCJoPv+G+xfF6+4eEdCgjmF4aO04uKjGmdoMs+N7Y3
-         7iwg==
-X-Gm-Message-State: AJIora9tokvbPIYqGrCiWO0UaNrdf1TO0VvvHI/BgeSUDQHPpdZpqJ7D
-        AFYx7Aqv6eRZhab1bkAqdq00ww==
-X-Google-Smtp-Source: AGRyM1tGl4R970THpmGe8F0G/zSyYr1GGyWarOzfLRHBAndJN/1Q/QSkmL1djlW3zwlQbXpyZRn9eg==
-X-Received: by 2002:a17:903:245:b0:16b:9b6d:20bc with SMTP id j5-20020a170903024500b0016b9b6d20bcmr1497275plh.14.1657690123752;
-        Tue, 12 Jul 2022 22:28:43 -0700 (PDT)
+        bh=dR8o1Tq91jZw3MLfFu5c8vDuW/4Jm/kOBk1Udw3FPCc=;
+        b=fbWSY/n/PfksEsGx/37e9eqYzAYpQqyjB2wuMbDqAfxaddVh1ZM6TWa7bc/JWcRL/j
+         CNbV3Fr3JK+l0NDokm2nEcrf1eHJ6pFlOjtDtMrWe3cCpwqjAszg6l2rSGTyeJLifIrq
+         O6RWiIWFIylwdYXy7CznC20CMTEIOgE8PaaFhoLlPpsdrXnQ6h8R5hz7fY0LNoj0qxEu
+         bj0oxX+jze7xoBVMoZHZo/+U3mdYibRTMOwDZjUYxn1BpzloLoYLuRatbsLDF8R3rh6P
+         vALZhsve9pR0UiGU7sGL7y33an20sbHUMhoUgXlL0JkpQDeCEHc81+LlelG1QLrZ5NL8
+         Ql6g==
+X-Gm-Message-State: AJIora8h3M0xRUEz6bdClhCLE+oe1KTPPJmK8JdlavunihqFF51H1xo6
+        +Sr+dQCBtCkCBs3L73UZTRiwgA==
+X-Google-Smtp-Source: AGRyM1tnQrU+Y5Q5QxBJogDJF3nwdH4hqn8kuct8RyCF7wZ1DVA8DHamudeI/KQwnHzH64GQxndF1A==
+X-Received: by 2002:a05:6a00:21c8:b0:4fd:f89f:ec0e with SMTP id t8-20020a056a0021c800b004fdf89fec0emr1457247pfj.83.1657690143805;
+        Tue, 12 Jul 2022 22:29:03 -0700 (PDT)
 Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id a21-20020aa794b5000000b00525b61f4792sm7810057pfl.109.2022.07.12.22.28.42
+        by smtp.gmail.com with ESMTPSA id d10-20020a621d0a000000b005289f594326sm7732688pfd.69.2022.07.12.22.29.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jul 2022 22:28:43 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 10:58:39 +0530
+        Tue, 12 Jul 2022 22:29:03 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 10:58:59 +0530
 From:   Viresh Kumar <viresh.kumar@linaro.org>
 To:     Perry Yuan <Perry.Yuan@amd.com>
 Cc:     rafael.j.wysocki@intel.com, Ray.Huang@amd.com,
@@ -58,49 +58,41 @@ Cc:     rafael.j.wysocki@intel.com, Ray.Huang@amd.com,
         Li.Meng@amd.com, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v3 08/13] cpufreq: amd-pstate: fix white-space
-Message-ID: <20220713052839.525epx5eurgsetaj@vireshk-i7>
+Subject: Re: [PATCH v3 09/13] cpufreq: amd-pstate: update pstate frequency
+ transition delay time
+Message-ID: <20220713052859.7h7uaddpyvqaty2v@vireshk-i7>
 References: <cover.1657638462.git.Perry.Yuan@amd.com>
- <79c21c72c13a25aea0fe9b6eb3d3072c757f1017.1657638462.git.Perry.Yuan@amd.com>
+ <eeb86584fabe92859b9b33c40442bada2e46df2a.1657638462.git.Perry.Yuan@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <79c21c72c13a25aea0fe9b6eb3d3072c757f1017.1657638462.git.Perry.Yuan@amd.com>
+In-Reply-To: <eeb86584fabe92859b9b33c40442bada2e46df2a.1657638462.git.Perry.Yuan@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12-07-22, 11:41, Perry Yuan wrote:
-> Remove the white space and correct mixed-up indentation
+On 12-07-22, 11:42, Perry Yuan wrote:
+> change the default transition latency to be 20ms that is more
+> reasonable transition delay for AMD processors in non-EPP driver mode.
 > 
 > Signed-off-by: Perry Yuan <Perry.Yuan@amd.com>
 > ---
->  drivers/cpufreq/amd-pstate.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/cpufreq/amd-pstate.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
 > diff --git a/drivers/cpufreq/amd-pstate.c b/drivers/cpufreq/amd-pstate.c
-> index f359b1b20140..312ccef62f58 100644
+> index 312ccef62f58..1e5ca4897b7e 100644
 > --- a/drivers/cpufreq/amd-pstate.c
 > +++ b/drivers/cpufreq/amd-pstate.c
-> @@ -115,7 +115,7 @@ struct amd_cpudata {
->  	struct amd_aperf_mperf cur;
->  	struct amd_aperf_mperf prev;
+> @@ -41,7 +41,7 @@
+>  #include <asm/msr.h>
+>  #include "amd-pstate-trace.h"
 >  
-> -	u64 freq;
-> +	u64 	freq;
->  	bool	boost_supported;
->  	u64 	cppc_hw_conf_cached;
->  };
-> @@ -671,7 +671,7 @@ static struct cpufreq_driver amd_pstate_driver = {
->  	.resume		= amd_pstate_cpu_resume,
->  	.set_boost	= amd_pstate_set_boost,
->  	.name		= "amd-pstate",
-> -	.attr           = amd_pstate_attr,
-> +	.attr		= amd_pstate_attr,
->  };
+> -#define AMD_PSTATE_TRANSITION_LATENCY	0x20000
+> +#define AMD_PSTATE_TRANSITION_LATENCY	20000
+>  #define AMD_PSTATE_TRANSITION_DELAY	500
 >  
->  static int __init amd_pstate_init(void)
-> -- 
+>  /*
 
 Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
 
