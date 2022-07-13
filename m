@@ -2,129 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 336A0C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8178C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 10:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235280AbiGMKH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 06:07:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
+        id S235000AbiGMKH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 06:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235807AbiGMKHJ (ORCPT
+        with ESMTP id S235507AbiGMKHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 06:07:09 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D480DFA1DA;
-        Wed, 13 Jul 2022 03:07:02 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31cf1adbf92so107353457b3.4;
-        Wed, 13 Jul 2022 03:07:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Skl3AJqxVqBRBtNdQLqw384nQnqBsdrM8rXpTLPVNPk=;
-        b=Jv4eQ+8cc20+aUJs8W3OaHqJZXGCnh+zd0IRmmbnlMu4rMMcr8dbFqDU0pniKyUowb
-         QO8QHTNS7xEat/gKTTmSGb4OGLLNLWS822FH5NHN+7dXY6muB+7kCEHrTyOFD2N0QJ8q
-         E1RqyCMDi8ARZ4E42bhmpXRVHjwIhIKbm0cvIcfxDirP5usJrbwVNFEIKKRdtAusTGr8
-         B31k4jjwLrdu3Duy7WmcZO61iA39Krb8brGBJSn+p0FbFL/np+iulZwW6D3eEcMqwj0b
-         z5WxHaZZmWVXqXqnBLPNvBUr9pnzQeUnOpLGkCwBr73pQWOo1wNDNW0DIIDtq6ShF9Qe
-         I//A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Skl3AJqxVqBRBtNdQLqw384nQnqBsdrM8rXpTLPVNPk=;
-        b=qEV8GfGJwo6jOLvICCKhnpSZ3XUjJqV8ZXNpCgHsu0BA0mk+96i72qzNLZDk7Kyiwt
-         9EZQJJhO7d2STDgqPFzhVTjxMDoS8VZVawIyPasKnztB8s+69i2cfrjxkQYl639/KDKN
-         MvaxLEXUvjONTO8GfP6tu4cGHMgDANWNCCJkSaOXjl/etEECTYg1e9mIFRFxGjkG1T8O
-         BBaJUGRjDA3AB5+RwzPJGWu7u9YjHes+6K8qPFzIviDme8CPWlxkdyGsWP+FThHHR1fi
-         qs39f/UymCEeydhJU/FXGDusodNu61yp1lTWJV6sGRiVRHa+CbLX+zUWZpg6+M4WbN7F
-         m83g==
-X-Gm-Message-State: AJIora8tZFDalJ6vcnws8QzZ0lAMB0mWFRZbXtChbJdv/fXBsTwYDDf2
-        nqQs71rtFQX3LzEtOGZb05NPvpx23Fu7kBvYo5VvMMdy
-X-Google-Smtp-Source: AGRyM1vlcI4zMzfW9RYypp1pFmYqzjSHPsEhNWBrn2g51ND62KM3VHZdpmxlI+YwVT1lr8PcMP72+bpFu+NoZSPUR90=
-X-Received: by 2002:a81:bc8:0:b0:31c:9c04:26a3 with SMTP id
- 191-20020a810bc8000000b0031c9c0426a3mr3193215ywl.335.1657706822036; Wed, 13
- Jul 2022 03:07:02 -0700 (PDT)
+        Wed, 13 Jul 2022 06:07:44 -0400
+X-Greylist: delayed 68035 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 03:07:41 PDT
+Received: from gentwo.de (gentwo.de [161.97.139.209])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCC3EF23D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 03:07:41 -0700 (PDT)
+Received: by gentwo.de (Postfix, from userid 1001)
+        id CB054B00418; Wed, 13 Jul 2022 12:07:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gentwo.de; s=default;
+        t=1657706859; bh=SeRKe3yf26MO72QyT8L5XOyRs4a5maEIynSyHOtqHmI=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=KfjqqhlJ+qL4z2DVAzkCyK3gUGScWGTsPAWcs3B+248mSEHsLroKOpBYT58vskshA
+         HhDD8TPqp5LgUL7hh9w0lxfU6BdzJiaLFQuGF/Uk8dvqVPKr++46gU1OwJ8X6+9+8o
+         3llasYq85WgGUZZaprYp0qBiYZ5Vt8Blt+AWJKK5Wuhd3AGRiEh2D2tOOGc6POyAFg
+         JJPvvxUmvPWLo0Cp7ZFMTMvzzwdSsPrmtUW7HIQ/y+999X5Arba1dZZQlmHcDXmCEY
+         oBbRbph2PYTXaaVhIZRjem5Jil5RUErOMQFc5CH0LOZkSlDgtQKYeiImI6nKf7HDtQ
+         UbwnKwniLgl8g==
+Received: from localhost (localhost [127.0.0.1])
+        by gentwo.de (Postfix) with ESMTP id C88D1B00149;
+        Wed, 13 Jul 2022 12:07:39 +0200 (CEST)
+Date:   Wed, 13 Jul 2022 12:07:39 +0200 (CEST)
+From:   Christoph Lameter <cl@gentwo.de>
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>
+cc:     Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Marco Elver <elver@google.com>
+Subject: Re: [PATCH 16/16] mm/sl[au]b: check if large object is valid in
+ __ksize()
+In-Reply-To: <Ys6Pp6ZPwJTdJvpk@ip-172-31-24-42.ap-northeast-1.compute.internal>
+Message-ID: <alpine.DEB.2.22.394.2207131205590.112646@gentwo.de>
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com> <20220712133946.307181-17-42.hyeyoo@gmail.com> <alpine.DEB.2.22.394.2207121701070.57893@gentwo.de> <Ys6Pp6ZPwJTdJvpk@ip-172-31-24-42.ap-northeast-1.compute.internal>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-References: <CAKXUXMy2WfsRj+nJuNCV4bPNYTvDySLOq3HgpK+gWJSpWS81Kg@mail.gmail.com>
- <1dc0ab09-2cfd-a310-d1da-ef7d3cc47a71@leemhuis.info>
-In-Reply-To: <1dc0ab09-2cfd-a310-d1da-ef7d3cc47a71@leemhuis.info>
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Date:   Wed, 13 Jul 2022 12:06:51 +0200
-Message-ID: <CAKXUXMy4oW-m_-NQDk6DcoyRE5QprwvaCXa0QF6_FLZ7zL-d4w@mail.gmail.com>
-Subject: Re: Update "If something goes wrong" in Documentation/admin-guide/README.rst
-To:     Thorsten Leemhuis <linux@leemhuis.info>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:41 AM Thorsten Leemhuis <linux@leemhuis.info> wrote:
->
-> Hi! Lukas, thx for bringing this up.
->
-> On 13.07.22 09:26, Lukas Bulwahn wrote:
-> >
-> > During some other unrelated clean-up work, I stumbled upon the section
-> > 'If something goes wrong' in Documentation/admin-guide/README.rst
-> > (https://www.kernel.org/doc/html/latest/admin-guide/README.html).
-> > README.rst is---as it seems---the intended first summary page of the
-> > documentation for any user of the kernel (the kernel's release notes
-> > document).
-> >
-> > The section 'If something goes wrong' describes what to do when
-> > encountering a bug and how to report it. The second sentence in that
-> > section is especially historic and probably just discouraging for most
-> > bug reporters ( ..."the second best thing is to mail them to me
-> > (torvalds@linux-foundation.org)"...).
->
-> Ha, yeah, guess so :-D
->
-> > Some random user (potentially
-> > even unknown to the community) sending an email to Linus is most
-> > probably the last best thing to do and is most likely just ignored,
-> > right?
->
-> I'd say it depends on the report and would guess Linus in quite a few
-> cases will act on it if the report at least somewhat good -- or about
-> something important, like a bisected regression.
->
-> > Probably this section in README.rst needs a rewrite (summarizing
-> > Thorsten's reporting-issues.rst, or just copying the summary from
-> > there) and should then refer to reporting-issues.rst for more details.
->
-> Well, any new summary sounds a bit like 'similar code paths for doing
-> the same thing'. Sometimes that is necessary when coding, but often it's
-> best avoided for known reasons. I think it's not that different for docs.
->
-> Maybe just copying the "short guide" from the top of
-> reporting-issues.rst might be the most elegant solution for README.rst
-> while adding the link your mentioned (maybe while adding a comment to
-> reporting-issues.rst saying something like 'if you update this section,
-> update the copy over there, too'). But I'm not sure myself right now if
-> that's really the best way forward; maybe a few modifications might be
-> good here. Let's see what Jonathan says.
->
-> Note, the section in README.rst you mentioned also contains a few
-> aspects that reporting-issues.rst despite it's size doesn't cover. :-/
-> But some of that stuff looks outdated anyway.
->
-> > Thorsten, do you have time to prepare a change to that document that
-> > gives a short summary on how to report potential issues and
-> > regressions? Otherwise, I will happily put that on my todo list and
-> > probably can suggest some RFC patch in a week or two.
->
-> Then go for it. Normally I'd be interested, but I'm short on time
-> currently, as I'm working a lot on bugzilla integration for regzbot,
-> have a vacation coming up, and need to prepare talks for two conferences
-> (Kernel Summit and Open Source Summit).
->
+On Wed, 13 Jul 2022, Hyeonggon Yoo wrote:
 
-Then, I will take the points you mentioned as guidance and prepare a
-RFC patch and we can discuss what specific changes are needed beyond
-my first attempt.
+> > Why return 0 if there is an error and why bother the callers with these
+> > checks. BUG()?
+>
+> I thought BUG should be used when there is no other solution.
 
-Lukas
+Spurios returns of 0 that the caller has to check for is a solution?
+
+> > I guess this is an error since the order-0 page cannot come from slab
+> > allocations.
+>
+> comment in ksize() says:
+> 	"The caller must guarantee that objp points to a valid object
+> 	previously allocated with either kmalloc() or kmem_cache_alloc()."
+>
+> It should not be used on order-0 page that is not allocated from slab. No?
+
+I guess we would need to check. Code could exist that does this.
+
+Getting a 0 size would be surprising too here. BUG()? Or WARN() and return
+PAGE_SIZE.
+
+
