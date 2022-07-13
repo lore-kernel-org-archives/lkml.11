@@ -2,79 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF6AC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:50:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C205C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234178AbiGMMuR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:50:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36954 "EHLO
+        id S229594AbiGMMvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234462AbiGMMuP (ORCPT
+        with ESMTP id S231305AbiGMMvC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:50:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FEB32EF5;
-        Wed, 13 Jul 2022 05:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 666BC61BA0;
-        Wed, 13 Jul 2022 12:50:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C6FE9C34114;
-        Wed, 13 Jul 2022 12:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657716613;
-        bh=UAZQ3e11PSqREtLGLj03rvjjOONs6n0YC5OE9U7jODA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ho2K6e9pGVhRcfOJasRfj3M6CKTbxH2C5X6FxlUsIevHT1mrNUhfaHY4w7XI/vFsZ
-         IOLRI46YzYhQpZLzuue0yFdujqk2hW5N2tjKXYG+AU5X/FdXfJm9wnzj+SJmfxwUHf
-         Of+i5ATKzohiVEFgqzTHHQJgrLsckKuCR9ro77ndksM1MLtLBTCqmuNY3jm8E4IRUX
-         iBXkX+9Y22I1n7LB3e9X4u3Ngo5YAbzuT+jFOu2ybH3j2NGWCGXcZIv8z/0eiG+7a8
-         s/trbq9GOkvkOxdk6IykwUxYVWnlO6h3tQIxIX5ASty/44CXKsfoKbqaMxG/9BpRfN
-         VTgd/6ghaqjkQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A8886E45223;
-        Wed, 13 Jul 2022 12:50:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Wed, 13 Jul 2022 08:51:02 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854FE31386
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:01 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-31c9b70c382so111473107b3.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:51:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b0grnpTAwlaIA0e8SLaBby96qs6xR+aChbOJ/uTi3A4=;
+        b=EfRefKrOjKXxikCldDewqAT41aS64zCoD7Zz54Wva9PBRRaY7EUDUG/CwDUw8iczrm
+         nmofFIXfZ2pOSJ9kSkrCctyGWSOWymWPdyXxt59R5qd3nYqCJKr3W+QhCTyoPa8TtoTX
+         mMbZb1Yfen1/Y1CmuLGmSdwEzZfLhSXCMMjwH67jdx0PFGcPrLfvuamPad18PGUhSgUI
+         BVajtjA/H9aEbYqdbR2A2APH/wdxhyUYluLt4RtygDQwuLoxBs8nLyJzXNo0PHru0u5Z
+         uZN8K195CmE5aTb/XFkrL7fty+QKyousat4seQ55WDQR8MlKdf6Bfe3QANIqfRgJvZmP
+         VBPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b0grnpTAwlaIA0e8SLaBby96qs6xR+aChbOJ/uTi3A4=;
+        b=ROgCFpjtQYFsyk4JnYOya5wWpJkWTrMvwQUGkgXa7asvpyJV9xyMZqpJsLymYLouMV
+         8dMnmbn7xT/LHyemaw/qNTWeqH2cICGp+Pa0c7o1a7REoFkgGaE+T6U7HW0QgbaNGCrp
+         3aSS/K4+b1C/WHrl9dEETdnTReoUn0Bsv2NkxOlvCyFStmpeSNmr2galwliZlrkr2yTe
+         k6/frUlA9q3UFgaEpYonjdOzHcwXLALrIK7kFoUBqKuaUiC5C0rBSYqYyqElH2iETQSb
+         WIGb5TlGsj63HcxhqSmGpwWIXeRWvWF8GO45VKyrm50hy2EbOaOwPPY4mJX/ZZlRnqwC
+         tlyQ==
+X-Gm-Message-State: AJIora9lfO+G7JHT3ggyW7w6HKsnmgiCFBf63kc5y3GrKjo6Ady+2HnD
+        Ee+PRdyyLg4/MswvkJ3WHzJwRHcDLuDiHANsjzgUIw==
+X-Google-Smtp-Source: AGRyM1uCxrl4b8/cqlwBnDIW63xTxY1B1jCHgyPVGm1mF5cpMxB2nJWl+tZXIfab3jt/MY0dwr1W/SfDW6exFcdycyQ=
+X-Received: by 2002:a0d:dd09:0:b0:31c:e3b9:7442 with SMTP id
+ g9-20020a0ddd09000000b0031ce3b97442mr4030906ywe.47.1657716660533; Wed, 13 Jul
+ 2022 05:51:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next PATCH v2] octeontx2-af: Skip CGX/RPM probe incase of zero
- lmac count
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165771661368.8674.11632704817904156772.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Jul 2022 12:50:13 +0000
-References: <20220712064250.29903-1-gakula@marvell.com>
-In-Reply-To: <20220712064250.29903-1-gakula@marvell.com>
-To:     Geetha sowjanya <gakula@marvell.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, sgoutham@marvell.com, hkelam@marvell.com
+References: <20220712181456.3398-1-olek2@wp.pl>
+In-Reply-To: <20220712181456.3398-1-olek2@wp.pl>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 13 Jul 2022 14:50:48 +0200
+Message-ID: <CANn89iLbFYaV9MhYMHAzZOKM=ZKaAPOAuuXec_t9G5s4ypnY6A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: lantiq_xrx200: use skb cache
+To:     Aleksander Jan Bajkowski <olek2@wp.pl>
+Cc:     hauke@hauke-m.de, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Tue, Jul 12, 2022 at 8:15 PM Aleksander Jan Bajkowski <olek2@wp.pl> wrote:
+>
+> napi_build_skb() reuses NAPI skbuff_head cache in order to save some
+> cycles on freeing/allocating skbuff_heads on every new Rx or completed
+> Tx.
+> Use napi_consume_skb() to feed the cache with skbuff_heads of completed
+> Tx. The budget parameter is added to indicate NAPI context, as a value
+> of zero can be passed in the case of netpoll.
+>
+> NAT performance results on BT Home Hub 5A (kernel 5.15.45, mtu 1500):
+>
+> Fast path (Software Flow Offload):
+>         Up      Down
+> Before  702.4   719.3
+> After   707.3   739.9
+>
+> Slow path:
+>         Up      Down
+> Before  91.8    184.1
+> After   92.0    185.7
+>
+> Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+> ---
+>  drivers/net/ethernet/lantiq_xrx200.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+> index 5edb68a8aab1..83e07404803f 100644
+> --- a/drivers/net/ethernet/lantiq_xrx200.c
+> +++ b/drivers/net/ethernet/lantiq_xrx200.c
+> @@ -238,7 +238,7 @@ static int xrx200_hw_receive(struct xrx200_chan *ch)
+>                 return ret;
+>         }
+>
+> -       skb = build_skb(buf, priv->rx_skb_size);
+> +       skb = napi_build_skb(buf, priv->rx_skb_size);
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+If you are changing this code path, what about adding proper error recovery ?
 
-On Tue, 12 Jul 2022 12:12:50 +0530 you wrote:
-> From: Hariprasad Kelam <hkelam@marvell.com>
-> 
-> In few error cases MAC(CGX/RPM) block is having 0 lmacs.
-> AF driver uses MAC block with lmac pair to get firmware
-> data etc. These commands will fail as there is no LMAC
-> associated with MAC block.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2] octeontx2-af: Skip CGX/RPM probe incase of zero lmac count
-    https://git.kernel.org/netdev/net-next/c/3e35d198cee6
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+skb can be NULL at this point :/
 
 
+>         skb_reserve(skb, NET_SKB_PAD);
+>         skb_put(skb, len);
+>
+> @@ -321,7 +321,7 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
+>                         pkts++;
+>                         bytes += skb->len;
+>                         ch->skb[ch->tx_free] = NULL;
+> -                       consume_skb(skb);
+> +                       napi_consume_skb(skb, budget);
+>                         memset(&ch->dma.desc_base[ch->tx_free], 0,
+>                                sizeof(struct ltq_dma_desc));
+>                         ch->tx_free++;
+> --
+> 2.30.2
+>
