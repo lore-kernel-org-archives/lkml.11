@@ -2,106 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D76ACC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73601C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:24:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235260AbiGMLXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:23:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47302 "EHLO
+        id S236117AbiGMLYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 07:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235415AbiGMLXt (ORCPT
+        with ESMTP id S235996AbiGMLXy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:23:49 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318C012D26
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:23:47 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so3196623pjn.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:23:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mBv65ePymP8BrvBqJEccHdic2EPa2EXBPtUssXzhwOg=;
-        b=WJAHzNZPHYaBkOnHpUQsHsNvlMG0D7+q0blC0hb3ey7VLNCE6BhnhWgLR5TKOl4CVy
-         KlBzLf6ICrSJyRZiQ3Jfb13yrTfH4mY8+LQhzMKRdp9948RtdB8bjg0dYdKTNlridZpL
-         x1XKBhSYeYAFLvts3J4JXpPcQeGtNvuJu3ZocsMTzZklY/vRr6OEBwF0luD3QTpjxDI1
-         0gd2HF+OXqxmKU0e5YvHukDOUKKZl1Dslaut8KNfBnWoyLRGEtci8Oe6f7nMFXSL+xhH
-         Gx78N5kAO/ESczBNpyuKdpcUP2QQ+fCpS/ntuX+IWdzTHPCFi1FJlBufX8AEVTn4LR5L
-         gqqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mBv65ePymP8BrvBqJEccHdic2EPa2EXBPtUssXzhwOg=;
-        b=TkH3txy1RX9MRL4xvnDkU1YrKadIKzSKpOcMRtkH4sgrHpbStaAU7Otib93PmlWymP
-         ad+JUfaoRvQKypeeZ2zU6tk+W9/6Tj4rCzisyQxBwMbBr0jWDOmgUIuhE2YIt/nFafKi
-         +jD6NCRwsRtw0VkunRuZBt37XXOR+43LUbFReg6HrcVgYXVO2lxEItFGdKFP32KFrQb1
-         dXMmbwfzYlb77f3uQUQUwR5HUWwQSXQ7zP7iEh65gJnBMYA9zwBywP0sq+U0jSd9Tcfp
-         t8Yy4zrtj7GKYt9mWZWTr/HNeTjUwsGkN4wglrdSAMM6RbIS54rd6FObYBeC0Q1sryaJ
-         2iSg==
-X-Gm-Message-State: AJIora//vYNiGN4/3rFpKvdAo+IcBcGKZgeX5VMR1usOOzXTkaCjxRsi
-        mdWuaSWhDSbGv8XYM73NFb+q0Q==
-X-Google-Smtp-Source: AGRyM1vma2fRTzKqlFqr8JzUoIhx2aJdRjOGe9vLEj93pDZb3OCTdhl1QJ6TIZS+hluNNhT9C8eGSA==
-X-Received: by 2002:a17:90b:4a08:b0:1ef:f36b:18e1 with SMTP id kk8-20020a17090b4a0800b001eff36b18e1mr9731642pjb.246.1657711426680;
-        Wed, 13 Jul 2022 04:23:46 -0700 (PDT)
-Received: from localhost ([122.171.18.80])
-        by smtp.gmail.com with ESMTPSA id 200-20020a6219d1000000b00528d7d27211sm8754024pfz.178.2022.07.13.04.23.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 04:23:46 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 16:53:44 +0530
-From:   Viresh Kumar <viresh.kumar@linaro.org>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     rafael@kernel.org, lgirdwood@gmail.com, broonie@kernel.org,
-        matthias.bgg@gmail.com, rex-bc.chen@mediatek.com,
-        jia-wei.chang@mediatek.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH] cpufreq: mediatek: Handle sram regulator probe deferral
-Message-ID: <20220713112344.ye4xgjlqbhyvb46h@vireshk-i7>
-References: <20220713111536.115097-1-angelogioacchino.delregno@collabora.com>
+        Wed, 13 Jul 2022 07:23:54 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7375926F
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 04:23:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=jPpk/pEiVupb47vyGqtd0ROkKLt8OSpqCTatt4CV4y8=; b=4Y5onEIPjbxcELiGeVmlz3DAuf
+        pGP/8pfZEw0rAFP7V8vyaRl6rzAxv10eMIn/gf2hRo+GUa2E39oUPRnYHvOMfXD3K1frFC5zbEhjn
+        zouKFm9wl3OI4QBSOt3ga2Y/cCFbjLV6W9Trgru1yxXA4VJHIbAR1C4Zk9MlwlVdPJhZ4mY3iW27h
+        0hx1EdJ7+9is/n5PHZqf6vLCjYcqeY+pQ5yYltGT4o5pqyomIOfIwj2l2T4rlfF4SVminHkT6hfpR
+        P+N5661twENgxxaj4FgRKc7seJoZgMnli4/Mk6/kU97EgCAHthDYKD6NiSUQIiyfEhcgPTHgtkR4g
+        hbwKQPag==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oBaT3-0035U0-Pv; Wed, 13 Jul 2022 11:23:45 +0000
+Date:   Wed, 13 Jul 2022 04:23:45 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Tianyu Lan <ltykernel@gmail.com>
+Cc:     hch@infradead.org, m.szyprowski@samsung.com, robin.murphy@arm.com,
+        Tianyu Lan <tiala@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] swiotlb: Check nslabs after initialization in the
+ swiotlb_init_remap()
+Message-ID: <Ys6rQbLaUKYXtWMP@infradead.org>
+References: <20220713082454.700487-1-ltykernel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220713111536.115097-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220713082454.700487-1-ltykernel@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13-07-22, 13:15, AngeloGioacchino Del Regno wrote:
-> If the regulator_get_optional() call for the SRAM regulator returns
-> a probe deferral, we must bail out and retry probing later: failing
-> to do this will produce unstabilities on platforms requiring the
-> handling for this regulator.
-> 
-> Fixes: ffa7bdf7f344 ("cpufreq: mediatek: Make sram regulator optional")
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  drivers/cpufreq/mediatek-cpufreq.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/cpufreq/mediatek-cpufreq.c b/drivers/cpufreq/mediatek-cpufreq.c
-> index 3a2be4552020..7f2680bc9a0f 100644
-> --- a/drivers/cpufreq/mediatek-cpufreq.c
-> +++ b/drivers/cpufreq/mediatek-cpufreq.c
-> @@ -439,9 +439,13 @@ static int mtk_cpu_dvfs_info_init(struct mtk_cpu_dvfs_info *info, int cpu)
->  
->  	/* Both presence and absence of sram regulator are valid cases. */
->  	info->sram_reg = regulator_get_optional(cpu_dev, "sram");
-> -	if (IS_ERR(info->sram_reg))
-> +	if (IS_ERR(info->sram_reg)) {
-> +		ret = PTR_ERR(info->sram_reg);
-> +		if (ret == -EPROBE_DEFER)
-> +			goto out_free_resources;
-> +
->  		info->sram_reg = NULL;
-> -	else {
-> +	} else {
->  		ret = regulator_enable(info->sram_reg);
->  		if (ret) {
->  			dev_warn(cpu_dev, "cpu%d: failed to enable vsram\n", cpu);
-
-Applied. Thanks.
-
--- 
-viresh
+Thanks, I've folded this in.
