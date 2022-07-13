@@ -2,150 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80453C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:48:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E48BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:49:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiGMHsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
+        id S234839AbiGMHtG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:49:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234860AbiGMHs3 (ORCPT
+        with ESMTP id S234906AbiGMHsa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:48:29 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B524BE6332;
-        Wed, 13 Jul 2022 00:48:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657698506; x=1689234506;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=nUfcHt/iaf3oMSfMyzHxGwWsSmqpbvlJ2JFwYR1oe/M=;
-  b=C4cP7E864jxiXG8f7VB1bNxdXYNG12yHhsNZlDN4+uGv70+0xztfKFhO
-   ukHKXBXu1kiraU7YIGFaenCfBQGF12+KplTVGTDE5pjFlrAu2bDNCandl
-   T8Gh5bxOsB80l3NLxqG6z6o9q05NfddgX+xdoHTH0wbzeRopuEji/FJ9O
-   MwxqbvPhvp/R0Aa9j5ooO1/+8VEZcN8BFz79RyuF1bCjNSfbolylaS6ak
-   3jek3LsAlr7oCc3JOixWVJ2yp1nVSNT/Z744IJKJtHKlCR9BADxTEcqGY
-   aWaRfqH/L7MwQmC9R5lpqwIhG9Z7JXfVNTLoRxoejPMuwEDoiR1ICVjeX
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="264928758"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="264928758"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:48:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="685067167"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 00:48:16 -0700
-Date:   Wed, 13 Jul 2022 15:44:58 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
-        ddutile@redhat.com, dhildenb@redhat.com,
-        Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 04/14] mm/shmem: Support memfile_notifier
-Message-ID: <20220713074458.GB2831541@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-5-chao.p.peng@linux.intel.com>
- <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
+        Wed, 13 Jul 2022 03:48:30 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B882E6336
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:48:28 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4A5DB1FF64;
+        Wed, 13 Jul 2022 07:48:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1657698507; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=0CGUbRqbAXCelWKPuWFUYe6GAN1O07JgHKbKoC7xYHQ=;
+        b=Y3ZpLT2lCpW1dP6yPmM2DmZPeTqeyduPSIW9j7irvcpEF7hscExLoibMTUTOBjlVYa6RAN
+        MAaMEJuj4PpJQ4LNdRt3ptF4g7VnicAhhhBm76Zc3eTHt/e4GiPFYnOVq6BvrNbHoVFjJD
+        0e6RHrT4QQt2etZ/ByOKjGOcAQDVyeM=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EC05313AAD;
+        Wed, 13 Jul 2022 07:48:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id ueYpOMp4zmKUJQAAMHmgww
+        (envelope-from <jgross@suse.com>); Wed, 13 Jul 2022 07:48:26 +0000
+From:   Juergen Gross <jgross@suse.com>
+To:     xen-devel@lists.xenproject.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Juergen Gross <jgross@suse.com>, Wei Liu <wei.liu@kernel.org>,
+        Paul Durrant <paul@xen.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH] xen/netback: handle empty rx queue in xenvif_rx_next_skb()
+Date:   Wed, 13 Jul 2022 09:48:23 +0200
+Message-Id: <20220713074823.5679-1-jgross@suse.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c4112b84-9359-d4c8-1852-0057c074607c@amd.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 08:02:34PM +0200, Gupta, Pankaj wrote:
-> On 7/6/2022 10:20 AM, Chao Peng wrote:
-> > From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-> > 
-> > Implement shmem as a memfile_notifier backing store. Essentially it
-> > interacts with the memfile_notifier feature flags for userspace
-> > access/page migration/page reclaiming and implements the necessary
-> > memfile_backing_store callbacks.
-> > 
-> > Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >   include/linux/shmem_fs.h |   2 +
-> >   mm/shmem.c               | 109 ++++++++++++++++++++++++++++++++++++++-
-> >   2 files changed, 110 insertions(+), 1 deletion(-)
-...
+xenvif_rx_next_skb() is expecting the rx queue not being empty, but
+in case the loop in xenvif_rx_action() is doing multiple iterations,
+the availability of another skb in the rx queue is not being checked.
 
-> > +#ifdef CONFIG_MIGRATION
-> > +static int shmem_migrate_page(struct address_space *mapping,
-> > +			      struct page *newpage, struct page *page,
-> > +			      enum migrate_mode mode)
-> > +{
-> > +	struct inode *inode = mapping->host;
-> > +	struct shmem_inode_info *info = SHMEM_I(inode);
-> > +
-> > +	if (info->memfile_node.flags & MEMFILE_F_UNMOVABLE)
-> > +		return -EOPNOTSUPP;
-> > +	return migrate_page(mapping, newpage, page, mode);
-> 
-> Wondering how well page migrate would work for private pages
-> on shmem memfd based backend?
+This can lead to crashes:
 
-From high level:
-  - KVM unset MEMFILE_F_UNMOVABLE bit to indicate it capable of
-    migrating a page.
-  - Introduce new 'migrate' callback(s) to memfile_notifier_ops for KVM
-    to register.
-  - The callback is hooked to migrate_page() here.
-  - Once page migration requested, shmem calls into the 'migrate'
-    callback(s) to perform additional steps for encrypted memory (For
-    TDX we will call TDH.MEM.PAGE.RELOCATE).
+[40072.537261] BUG: unable to handle kernel NULL pointer dereference at 0000000000000080
+[40072.537407] IP: xenvif_rx_skb+0x23/0x590 [xen_netback]
+[40072.537534] PGD 0 P4D 0
+[40072.537644] Oops: 0000 [#1] SMP NOPTI
+[40072.537749] CPU: 0 PID: 12505 Comm: v1-c40247-q2-gu Not tainted 4.12.14-122.121-default #1 SLE12-SP5
+[40072.537867] Hardware name: HP ProLiant DL580 Gen9/ProLiant DL580 Gen9, BIOS U17 11/23/2021
+[40072.537999] task: ffff880433b38100 task.stack: ffffc90043d40000
+[40072.538112] RIP: e030:xenvif_rx_skb+0x23/0x590 [xen_netback]
+[40072.538217] RSP: e02b:ffffc90043d43de0 EFLAGS: 00010246
+[40072.538319] RAX: 0000000000000000 RBX: ffffc90043cd7cd0 RCX: 00000000000000f7
+[40072.538430] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffc90043d43df8
+[40072.538531] RBP: 000000000000003f R08: 000077ff80000000 R09: 0000000000000008
+[40072.538644] R10: 0000000000007ff0 R11: 00000000000008f6 R12: ffffc90043ce2708
+[40072.538745] R13: 0000000000000000 R14: ffffc90043d43ed0 R15: ffff88043ea748c0
+[40072.538861] FS: 0000000000000000(0000) GS:ffff880484600000(0000) knlGS:0000000000000000
+[40072.538988] CS: e033 DS: 0000 ES: 0000 CR0: 0000000080050033
+[40072.539088] CR2: 0000000000000080 CR3: 0000000407ac8000 CR4: 0000000000040660
+[40072.539211] Call Trace:
+[40072.539319] xenvif_rx_action+0x71/0x90 [xen_netback]
+[40072.539429] xenvif_kthread_guest_rx+0x14a/0x29c [xen_netback]
 
-Chao
-> 
-> > +}
-> > +#endif
-> > +
-> >   const struct address_space_operations shmem_aops = {
-> >   	.writepage	= shmem_writepage,
-> >   	.dirty_folio	= noop_dirty_folio,
-> > @@ -3814,7 +3872,7 @@ const struct address_space_operations shmem_aops = {
-> >   	.write_end	= shmem_write_end,
-> >   #endif
-> >   #ifdef CONFIG_MIGRATION
-> > -	.migratepage	= migrate_page,
-> > +	.migratepage	= shmem_migrate_page,
-> >   #endif
-> >   	.error_remove_page = shmem_error_remove_page,
-> >   };
-> > @@ -3931,6 +3989,51 @@ static struct file_system_type shmem_fs_type = {
-> >   	.fs_flags	= FS_USERNS_MOUNT,
-> >   };
+Fix that by stopping the loop in case the rx queue becomes empty.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+---
+ drivers/net/xen-netback/rx.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/net/xen-netback/rx.c b/drivers/net/xen-netback/rx.c
+index dbac4c03d21a..a0335407be42 100644
+--- a/drivers/net/xen-netback/rx.c
++++ b/drivers/net/xen-netback/rx.c
+@@ -495,6 +495,7 @@ void xenvif_rx_action(struct xenvif_queue *queue)
+ 	queue->rx_copy.completed = &completed_skbs;
  
+ 	while (xenvif_rx_ring_slots_available(queue) &&
++	       !skb_queue_empty(&queue->rx_queue) &&
+ 	       work_done < RX_BATCH_SIZE) {
+ 		xenvif_rx_skb(queue);
+ 		work_done++;
+-- 
+2.35.3
+
