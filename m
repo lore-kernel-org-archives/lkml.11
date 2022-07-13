@@ -2,90 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C72C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB37C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:13:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236781AbiGMPL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:11:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48542 "EHLO
+        id S236754AbiGMPNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbiGMPL1 (ORCPT
+        with ESMTP id S230284AbiGMPNC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:11:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41599422D1;
-        Wed, 13 Jul 2022 08:11:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2E91609FB;
-        Wed, 13 Jul 2022 15:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2CBC34114;
-        Wed, 13 Jul 2022 15:11:25 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="Rffq3UVZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1657725083;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ILStSx2CfJNQPjxxNEfvJuMlLS2qINdHOClU8pmeiTg=;
-        b=Rffq3UVZZW4ivY0NLyk2p1BZtAn5ouHfzgklZHCHwepYiktIPPoZBMRfEyZvXUOAiTN51x
-        IdgAz+UE8RDCjysX41Fv789WXF88qEBU3+VO+F5ushD0zRXKVz1hfH0GIGLFB9BUUeQHFA
-        UFhDyFmFcazLGCBNgNpfQsZY/9FUtD4=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1c16bce5 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Wed, 13 Jul 2022 15:11:23 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     vladimir.murzin@arm.com, linux-kernel@vger.kernel.org
-Cc:     linux-crypto@vger.kernel.org, ebiggers@google.com, tytso@mit.edu,
-        torvalds@linux-foundation.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] random: cap jitter samples per bit to factor of HZ
-Date:   Wed, 13 Jul 2022 17:11:15 +0200
-Message-Id: <20220713151115.1014188-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9rrQVm72P6cLL4dUnSw+9nnXszDbQXRd3epRaQgKTy8BQ@mail.gmail.com>
-References: <CAHmME9rrQVm72P6cLL4dUnSw+9nnXszDbQXRd3epRaQgKTy8BQ@mail.gmail.com>
+        Wed, 13 Jul 2022 11:13:02 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E389D422DE;
+        Wed, 13 Jul 2022 08:13:01 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id a5so15935366wrx.12;
+        Wed, 13 Jul 2022 08:13:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4vzuaiK89mNNh/nwqD4oUWzJWJJr65XkB3GW5Tnocj4=;
+        b=UA0PoymRNkksCuxZWYAv/ZRkiyikwrb59uXLO7ECaQLMB75pVwdcP2Uwhr1Co8/MnK
+         W5w97d5R8xPf3p8tzs6fSD8viPNDRAzsxFYoFd9YjkxqIhbRXPLbQ8b3WhcNChdzf4p3
+         pHEAXIJtgHtPainiVhY4g9c2vgyY05cnc6WxXkFKPIAn3qjtjBcG2ohku7ygBfyFpwFr
+         nQ72aRqjTyHvPCcltm8n4nZ5ZDaHiJ3pdrx9hVX7cAxSec6/SurU9YLyQ6CGsVTur1yy
+         mzwywtFzYg1mbtlwkiDlvmeD3RxhRF7/PvHYlBNHwpo+QgToy7VUhl3Yczi7ad/Dm8xX
+         7yMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4vzuaiK89mNNh/nwqD4oUWzJWJJr65XkB3GW5Tnocj4=;
+        b=8QPJQgVfRIFPzftclexpLKqDh4EGFWZg3ML3JZuPVbc3vPbMUGqcBINLskkZt35ZSH
+         FoaEfxW/sBWitGQmfOvPPKHcHGIytMeJxdmr/sQi7iop0djQoBS6MZIi+3ncGI+qqaA0
+         ENcSjqiE7t11XgUv5LN5jwpBKso4xgx37mxxLGQQWzRGS2x9kaCDYK2Tj8HcGyVo1okb
+         q4SqtnhBHZfLImsSJEOToGIcnHhepFYUQh5rsp2B3aml827AASlsUJzlFVXe3rcYl3GX
+         qySEl19Z5YrQSkCGbbHuEk3F6Zo4GxOKKtjDxCHGH3KCfTORkS8r+A+hC4Ycg4eglYY1
+         H+0Q==
+X-Gm-Message-State: AJIora8ItCB6B0eEVIZ2r6h7VAZrsWhZMqjotvlvkWUN0x9pK9K8cM3d
+        jkmghJkcxV1N1ODXKFLlKZTegicf5eKyyeNE1k8=
+X-Google-Smtp-Source: AGRyM1u1dYq++U5gRPxzwe9IKoYGV8+QeF4OBIj+0JqXO9OtXN3I1de0ITCObBR+9R6nUhHbJ0essZ0XTlKd+H3HHvg=
+X-Received: by 2002:a5d:5703:0:b0:21d:6c55:4986 with SMTP id
+ a3-20020a5d5703000000b0021d6c554986mr3770543wrv.455.1657725180321; Wed, 13
+ Jul 2022 08:13:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220713150143.147537-1-mlombard@redhat.com>
+In-Reply-To: <20220713150143.147537-1-mlombard@redhat.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 13 Jul 2022 08:12:49 -0700
+Message-ID: <CAKgT0Uet==0v3bFV8KcnXLxB9BoC8qyMRkeH-X5sfWE7Bm7ikg@mail.gmail.com>
+Subject: Re: [PATCH V2] mm: prevent page_frag_alloc() from corrupting the memory
+To:     Maurizio Lombardi <mlombard@redhat.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Netdev <netdev@vger.kernel.org>, Chen Lin <chen45464546@163.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently the jitter mechanism will require two timer ticks per
-iteration, and it requires N iterations per bit. This N is determined
-with a small measurement, and if it's too big, it won't waste time with
-jitter entropy because it'd take too long or not have sufficient entropy
-anyway.
+On Wed, Jul 13, 2022 at 8:01 AM Maurizio Lombardi <mlombard@redhat.com> wrote:
+>
+> A number of drivers call page_frag_alloc() with a
+> fragment's size > PAGE_SIZE.
+> In low memory conditions, __page_frag_cache_refill() may fail the order 3
+> cache allocation and fall back to order 0;
+> In this case, the cache will be smaller than the fragment, causing
+> memory corruptions.
+>
+> Prevent this from happening by checking if the newly allocated cache
+> is large enough for the fragment; if not, the allocation will fail
+> and page_frag_alloc() will return NULL.
+>
+> V2: do not free the cache page because this could make memory pressure
+> even worse, just return NULL.
+>
+> Signed-off-by: Maurizio Lombardi <mlombard@redhat.com>
+> ---
+>  mm/page_alloc.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> index e008a3df0485..b1407254a826 100644
+> --- a/mm/page_alloc.c
+> +++ b/mm/page_alloc.c
+> @@ -5617,6 +5617,8 @@ void *page_frag_alloc_align(struct page_frag_cache *nc,
+>                 /* reset page count bias and offset to start of new frag */
+>                 nc->pagecnt_bias = PAGE_FRAG_CACHE_MAX_SIZE + 1;
+>                 offset = size - fragsz;
+> +               if (unlikely(offset < 0))
+> +                       return NULL;
+>         }
+>
+>         nc->pagecnt_bias--;
 
-With the current max N of 32, there are large timeouts on systems with a
-small CONFIG_HZ. Rather than set that maximum to 32, instead choose a
-factor of CONFIG_HZ. In this case, 1/30 seems to yield sane values for
-different configurations of CONFIG_HZ.
+This works for me. If I am not mistaken it should be only adding one
+conditional jump that isn't taken to the fast path based on a
+calculation we were already doing.
 
-Reported-by: Vladimir Murzin <vladimir.murzin@arm.com>
-Fixes: 78c768e619fb ("random: vary jitter iterations based on cycle counter speed")
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
-Vladimir - Can you let me know if this appears to fix the issue you're
-seeing? -Jason
-
- drivers/char/random.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index e3dd1dd3dd22..a1af90bacc9f 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -1174,7 +1174,7 @@ static void __cold entropy_timer(struct timer_list *timer)
-  */
- static void __cold try_to_generate_entropy(void)
- {
--	enum { NUM_TRIAL_SAMPLES = 8192, MAX_SAMPLES_PER_BIT = 32 };
-+	enum { NUM_TRIAL_SAMPLES = 8192, MAX_SAMPLES_PER_BIT = HZ / 30 };
- 	struct entropy_timer_state stack;
- 	unsigned int i, num_different = 0;
- 	unsigned long last = random_get_entropy();
--- 
-2.35.1
-
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
