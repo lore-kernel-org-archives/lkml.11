@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDE4C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236381AbiGMNSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40920 "EHLO
+        id S236364AbiGMNS2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236257AbiGMNSC (ORCPT
+        with ESMTP id S236240AbiGMNSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:18:02 -0400
+        Wed, 13 Jul 2022 09:18:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78FF0219A;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253EE9590;
         Wed, 13 Jul 2022 06:18:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2077B81F4A;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFB6BB81F46;
         Wed, 13 Jul 2022 13:17:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9188AC385A9;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D96EC341C0;
         Wed, 13 Jul 2022 13:17:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657718277;
-        bh=v2rWwBR0NCKPMGfpi9exx5JseAaw+qcoUF0daZnzPGY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tOSwwI6kvtQiLm/8VEcsLYKGjIQXWthamXQaSyVmOptXDI6gNujo3rjAQ+YiYBCPG
-         /zARuEkrEFN5J4aEVYR2eur9ro7+EeATQvb9Cgd35cH8XYDvKxs+t0ZTX4HjybEFpF
-         yQn68HjEunONOQhtcPyZAtBU93CK997mVaSzvqyywCyV7S99T+0Zztv0u+GvEnf0Gz
-         D1zZqOw0XyuRlw/CZ3LtXXWV3fz6cUX7vX4asP9LoyppA+fH9fIdqzp/VjkVeSzT9e
-         kz3hX4h6yG/D++eWdM/x+EDc/l+BoidOkQ6xZE9fsS/U06hNHFrH5tfXlCJShVXW+V
-         2yGxxQLEXs7Xg==
+        bh=ypT31tttdamVrW0wkBqfoCyXu3GpzfgCFgVZIeiit8M=;
+        h=From:To:Cc:Subject:Date:From;
+        b=sxjuT2RL8eWwPUUFkwcXBR6iPW+CXYxuTb8phCmAG/XWIEVVoU3NTdK/DmjxEcxjS
+         FZz88TSiXMfu6V9TYo8a0cZyoprp/+wkNyr1obzJdUrH7mEhDEttQN1VprcV9S3lFF
+         rIx63oSHN31Ra4GcRy45kgHRQOgglobVo3Cbp0IGXrV10/5loBeGnPc09ozLJDW+gl
+         3VGDKV6ErJ7C12Ig5ilEeTQ+ruuAtpg/gxPrDlRUltavIMDnzbt3tmKjkNWuyqbStx
+         nrmodDv0GLfvS8vCCS2/ywHkQSKblyRti+pkWE5gV02JiNBZaoA3FWxJnhYwmEM9+X
+         hfVZun/u63Z4g==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oBcFd-0007gM-C2; Wed, 13 Jul 2022 15:18:01 +0200
+        id 1oBcFc-0007gE-V5; Wed, 13 Jul 2022 15:18:01 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -47,79 +47,49 @@ Cc:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH 4/7] arm64: dts: qcom: sc8280xp: fix USB clock order
-Date:   Wed, 13 Jul 2022 15:13:37 +0200
-Message-Id: <20220713131340.29401-5-johan+linaro@kernel.org>
+Subject: [PATCH 0/7] usb: dwc3: add support for SC8280XP
+Date:   Wed, 13 Jul 2022 15:13:33 +0200
+Message-Id: <20220713131340.29401-1-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220713131340.29401-1-johan+linaro@kernel.org>
-References: <20220713131340.29401-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix the USB controller clock order and naming so that they match the
-devicetree binding.
+This series adds the missing devicetree binding for SC8280XP, clean up
+the current bindings somewhat and fixes a related driver warning when an
+optional wakeup interrupt is missing.
 
-Note that the driver currently simply enables all clocks in the order
-that they are specified in the devicetree. Reordering the clocks as per
-the binding means that the only explicit ordering constraint found in
-the vendor driver, that cfg_noc should be enabled before the core_clk,
-is now honoured.
+The last four patches fix up the SC8280XP devicetree that's currently in
+Bjorn's tree and addresses some DT schema warnings in other Qualcomm
+devicetrees and are only included here for completeness.
 
-Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+The binding and driver updates are expected to go though the USB tree,
+while the devicetree updates can be picked up by Bjorn once the binding
+updates have been merged.
 
-diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-index 285a9828c250..45cc7d714fd2 100644
---- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-@@ -1855,16 +1855,16 @@ usb_0: usb@a6f8800 {
- 			#size-cells = <2>;
- 			ranges;
- 
--			clocks = <&gcc GCC_USB30_PRIM_MASTER_CLK>,
--				 <&gcc GCC_CFG_NOC_USB3_PRIM_AXI_CLK>,
-+			clocks = <&gcc GCC_CFG_NOC_USB3_PRIM_AXI_CLK>,
-+				 <&gcc GCC_USB30_PRIM_MASTER_CLK>,
- 				 <&gcc GCC_AGGRE_USB3_PRIM_AXI_CLK>,
--				 <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
- 				 <&gcc GCC_USB30_PRIM_SLEEP_CLK>,
-+				 <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_AXI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_NORTH_AXI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_SOUTH_AXI_CLK>,
- 				 <&gcc GCC_SYS_NOC_USB_AXI_CLK>;
--			clock-names = "core", "iface", "bus_aggr", "utmi", "sleep",
-+			clock-names = "cfg_noc", "core", "iface", "sleep", "mock_utmi",
- 				      "noc_aggr", "noc_aggr_north", "noc_aggr_south", "noc_sys";
- 
- 			assigned-clocks = <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
-@@ -1905,16 +1905,16 @@ usb_1: usb@a8f8800 {
- 			#size-cells = <2>;
- 			ranges;
- 
--			clocks = <&gcc GCC_USB30_SEC_MASTER_CLK>,
--				 <&gcc GCC_CFG_NOC_USB3_SEC_AXI_CLK>,
-+			clocks = <&gcc GCC_CFG_NOC_USB3_SEC_AXI_CLK>,
-+				 <&gcc GCC_USB30_SEC_MASTER_CLK>,
- 				 <&gcc GCC_AGGRE_USB3_SEC_AXI_CLK>,
--				 <&gcc GCC_USB30_SEC_MOCK_UTMI_CLK>,
- 				 <&gcc GCC_USB30_SEC_SLEEP_CLK>,
-+				 <&gcc GCC_USB30_SEC_MOCK_UTMI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_AXI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_NORTH_AXI_CLK>,
- 				 <&gcc GCC_AGGRE_USB_NOC_SOUTH_AXI_CLK>,
- 				 <&gcc GCC_SYS_NOC_USB_AXI_CLK>;
--			clock-names = "core", "iface", "bus_aggr", "utmi", "sleep",
-+			clock-names = "cfg_noc", "core", "iface", "sleep", "mock_utmi",
- 				      "noc_aggr", "noc_aggr_north", "noc_aggr_south", "noc_sys";
- 
- 			assigned-clocks = <&gcc GCC_USB30_SEC_MOCK_UTMI_CLK>,
+Johan
+
+
+Johan Hovold (7):
+  dt-bindings: usb: qcom,dwc3: add SC8280XP binding
+  dt-bindings: usb: qcom,dwc3: refine interrupt requirements
+  usb: dwc3: qcom: fix missing optional irq warnings
+  arm64: dts: qcom: sc8280xp: fix USB clock order
+  arm64: dts: qcom: sc8280xp: fix USB interrupts
+  arm64: dts: qcom: sc7280: reorder USB interrupts
+  arm64: dts: qcom: reorder USB interrupts
+
+ .../devicetree/bindings/usb/qcom,dwc3.yaml    | 152 ++++++++++++++++--
+ arch/arm/boot/dts/qcom-sdx65.dtsi             |  10 +-
+ arch/arm64/boot/dts/qcom/sc7280.dtsi          |  15 +-
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi        |  28 ++--
+ arch/arm64/boot/dts/qcom/sm8250.dtsi          |  20 ++-
+ arch/arm64/boot/dts/qcom/sm8350.dtsi          |  20 ++-
+ drivers/usb/dwc3/dwc3-qcom.c                  |   4 +-
+ 7 files changed, 194 insertions(+), 55 deletions(-)
+
 -- 
 2.35.1
 
