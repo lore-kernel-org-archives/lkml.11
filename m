@@ -2,60 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF610C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DE9CCA482
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235172AbiGMINf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        id S235299AbiGMINj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:13:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230522AbiGMIMg (ORCPT
+        with ESMTP id S234963AbiGMIMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D88E95F7
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D426FE95FC
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D50D619F4
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76085B81D5B
         for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383F1C341DC;
-        Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 070B7C385A2;
+        Wed, 13 Jul 2022 08:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=tHkOaTugHLUdkYUmtojMIw2O+RhRJDtIfYm1j+P0E4w=;
+        bh=bME4oJz6dR2dL+exdw8ZiepOjromIutAKbYd7CbWH1Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghn10S8HCAwuRxpKa3vn21ji+wSVCBWs2CJjnhuR6Scp6Tuh7XUoMAa39AYpKYm3w
-         oFxcyFWjAxhkqbhJ6SuoDA9/poPPRcu1rVNcxwm46pK5YPx1fKw+sdbKI5wzf37obg
-         /H8Z7cg20gcfejbfzicSwyGTZRQGPp5gXbCjbZZpJbktlytJqOnSa+mwmSMbLZ5C5X
-         7OA8pN8jKLGfHSXmMNWmxsorKXe9ref9RhFExWbTmCV7fy7nvFVlgcCqqtGZRHp9T1
-         xxzKRp4oQvCvt8FzKmin8pk7tbb0UwqTdq6T64DP6ZGi/LYoTz7QvBySdAmAYkPwPE
-         UQLVCLEy1Jthg==
+        b=i0Ok75E1qOpSqD7A+Pl6xuMC5wXKTvxjMQUDYRMkuCPvxHd6xy+KSfcITt5p45Luy
+         Iki8Zobqq25c91WZeLhbg7F2DEdB2mQla4e6mbuTaRY1WP4cWIifKQbOZpAgXYsv1s
+         faElSYNBCaFtSnJognOL3HUhOI0yW1hEKdhL+F60mbpl6z47B/zcu6Gi7Ydd2s0ZtA
+         TzSFr4KDeiBD5G2k14XixU+6AEmn7Ep3HoZcRiwTS3c8JehaVgydMjLFaPwMLoe+Gu
+         ByAySK5ipHqr3wE1Z75dtio1CThV5TaOSTb91D4DINhuPBFSr95kwLNWKmqvEx5Y5A
+         34+bkAKYeS57g==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004ztD-JQ;
+        id 1oBXTx-004ztY-Mb;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Balasubramani Vivekanandan <balasubramani.vivekanandan@intel.com>,
+        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
+        <thomas.hellstrom@linux.intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Jordan Justen <jordan.l.justen@intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Nirmoy Das <nirmoy.das@linux.intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Umesh Nerlige Ramappa <umesh.nerlige.ramappa@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/39] drm/i915: document kernel-doc trivial issues
-Date:   Wed, 13 Jul 2022 09:12:02 +0100
-Message-Id: <6eca50ad78a54cadaf8e4deecec2309400c24164.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 19/39] drm/i915: i915_gem_region.h: fix i915_gem_apply_to_region_ops doc
+Date:   Wed, 13 Jul 2022 09:12:07 +0100
+Message-Id: <f197e0eccbde017dccbd31e72c892a102543cb90.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -66,18 +63,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix those kernel-doc warnings:
-	drivers/gpu/drm/i915/intel_region_ttm.c:199: warning: Function parameter or member 'offset' not described in 'intel_region_ttm_resource_alloc'
-	drivers/gpu/drm/i915/i915_vma_resource.h:123: warning: Function parameter or member 'wakeref' not described in 'i915_vma_resource'
-	drivers/gpu/drm/i915/i915_vma.c:1703: warning: Function parameter or member 'vma' not described in 'i915_vma_destroy_locked'
-	drivers/gpu/drm/i915/i915_vma.c:751: warning: Function parameter or member 'ww' not described in 'i915_vma_insert'
-	drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c:159: warning: Function parameter or member 'gt' not described in 'intel_gt_fini_hwconfig'
-	drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c:146: warning: Function parameter or member 'gt' not described in 'intel_gt_init_hwconfig'
-	drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c:113: warning: expecting prototype for intel_guc_hwconfig_init(). Prototype was for guc_hwconfig_init() instead
-	drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c:113: warning: Function parameter or member 'gt' not described in 'guc_hwconfig_init'
-	drivers/gpu/drm/i915/gt/intel_engine_types.h:276: warning: Function parameter or member 'preempt_hang' not described in 'intel_engine_execlists'
+The kernel-doc markup for i915_gem_apply_to_region_ops() has some
+issues:
 
-That are due undocumented parameters.
+1. The field should be marked as @process_obj;
+2. The callback parameters aren't document properly, as sphinx
+   will consider them to be placed at the wrong place.
+
+Fix (1) and change the way the parameters are described, using
+a list, in order for it to be properly parsed during documentation
+build time.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -85,101 +80,28 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gt/intel_engine_types.h    | 1 +
- drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c | 5 ++++-
- drivers/gpu/drm/i915/i915_vma.c                 | 2 ++
- drivers/gpu/drm/i915/i915_vma_resource.h        | 1 +
- drivers/gpu/drm/i915/intel_region_ttm.c         | 3 ++-
- 5 files changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_region.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_engine_types.h b/drivers/gpu/drm/i915/gt/intel_engine_types.h
-index 633a7e5dba3b..7c5ad9071fe7 100644
---- a/drivers/gpu/drm/i915/gt/intel_engine_types.h
-+++ b/drivers/gpu/drm/i915/gt/intel_engine_types.h
-@@ -271,6 +271,7 @@ struct intel_engine_execlists {
- 	 */
- 	u8 csb_head;
- 
-+	/* private: Used only in selftests */
- 	I915_SELFTEST_DECLARE(struct st_preempt_hang preempt_hang;)
- };
- 
-diff --git a/drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c b/drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c
-index 4781fccc2687..76f7447302a6 100644
---- a/drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c
-+++ b/drivers/gpu/drm/i915/gt/uc/intel_guc_hwconfig.c
-@@ -103,7 +103,8 @@ static bool has_table(struct drm_i915_private *i915)
- }
- 
- /**
-- * intel_guc_hwconfig_init - Initialize the HWConfig
-+ * guc_hwconfig_init - Initialize the HWConfig
-+ * @gt: GT structure
-  *
-  * Retrieve the HWConfig table from the GuC and save it locally.
-  * It can then be queried on demand by other users later on.
-@@ -138,6 +139,7 @@ static int guc_hwconfig_init(struct intel_gt *gt)
- 
- /**
-  * intel_gt_init_hwconfig - Initialize the HWConfig if available
-+ * @gt: GT structure
-  *
-  * Retrieve the HWConfig table if available on the current platform.
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_region.h b/drivers/gpu/drm/i915/gem/i915_gem_region.h
+index 2dfcc41c0170..b0134bf4b1b7 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_region.h
++++ b/drivers/gpu/drm/i915/gem/i915_gem_region.h
+@@ -22,9 +22,11 @@ struct i915_gem_apply_to_region;
   */
-@@ -151,6 +153,7 @@ int intel_gt_init_hwconfig(struct intel_gt *gt)
- 
- /**
-  * intel_gt_fini_hwconfig - Finalize the HWConfig
-+ * @gt: GT structure
-  *
-  * Free up the memory allocation holding the table.
-  */
-diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index ef3b04c7e153..ddf348c597b0 100644
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -733,6 +733,7 @@ bool i915_gem_valid_gtt_space(struct i915_vma *vma, unsigned long color)
- /**
-  * i915_vma_insert - finds a slot for the vma in its address space
-  * @vma: the vma
-+ * @ww: An optional struct i915_gem_ww_ctx
-  * @size: requested size in bytes (can be larger than the VMA)
-  * @alignment: required alignment
-  * @flags: mask of PIN_* flags to use
-@@ -1675,6 +1676,7 @@ static void release_references(struct i915_vma *vma, struct intel_gt *gt,
- /**
-  * i915_vma_destroy_locked - Remove all weak reference to the vma and put
-  * the initial reference.
-+ * @vma: VMA to destroy
-  *
-  * This function should be called when it's decided the vma isn't needed
-  * anymore. The caller must assure that it doesn't race with another lookup
-diff --git a/drivers/gpu/drm/i915/i915_vma_resource.h b/drivers/gpu/drm/i915/i915_vma_resource.h
-index 14a0327b2080..a15271d96b7e 100644
---- a/drivers/gpu/drm/i915/i915_vma_resource.h
-+++ b/drivers/gpu/drm/i915/i915_vma_resource.h
-@@ -49,6 +49,7 @@ struct i915_page_sizes {
-  * @__subtree_last: Interval tree private member.
-  * @vm: non-refcounted pointer to the vm. This is for internal use only and
-  * this member is cleared after vm_resource unbind.
-+ * @wakeref: wakeref used for runtime PM reference.
-  * @mr: The memory region of the object pointed to by the vma.
-  * @ops: Pointer to the backend i915_vma_ops.
-  * @private: Bind backend private info.
-diff --git a/drivers/gpu/drm/i915/intel_region_ttm.c b/drivers/gpu/drm/i915/intel_region_ttm.c
-index 6873808a7015..471a70c50b2c 100644
---- a/drivers/gpu/drm/i915/intel_region_ttm.c
-+++ b/drivers/gpu/drm/i915/intel_region_ttm.c
-@@ -181,7 +181,8 @@ intel_region_ttm_resource_to_rsgt(struct intel_memory_region *mem,
- #ifdef CONFIG_DRM_I915_SELFTEST
- /**
-  * intel_region_ttm_resource_alloc - Allocate memory resources from a region
-- * @mem: The memory region,
-+ * @mem: The memory region
-+ * @offset: The range start
-  * @size: The requested size in bytes
-  * @flags: Allocation flags
-  *
+ struct i915_gem_apply_to_region_ops {
+ 	/**
+-	 * process_obj - Process the current object
+-	 * @apply: Embed this for private data.
+-	 * @obj: The current object.
++	 * @process_obj: Callback function to process the current object
++	 * it requires two arguments:
++	 *
++	 * - @apply: Embed this for private data.
++	 * - @obj: The current object.
+ 	 *
+ 	 * Note that if this function is part of a ww transaction, and
+ 	 * if returns -EDEADLK for one of the objects, it may be
 -- 
 2.36.1
 
