@@ -2,81 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45959CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3996C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233231AbiGMHFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:05:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60660 "EHLO
+        id S234116AbiGMHGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:06:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231782AbiGMHF3 (ORCPT
+        with ESMTP id S234587AbiGMHGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:05:29 -0400
-Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18B30E193F;
-        Wed, 13 Jul 2022 00:05:24 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id D3F6C1C80504;
-        Wed, 13 Jul 2022 15:05:22 +0800 (CST)
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.7; Wed, 13 Jul
- 2022 15:05:22 +0800
-Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
- (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Wed, 13 Jul 2022 15:05:22 +0800
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id C99A263A4C; Wed, 13 Jul 2022 10:05:20 +0300 (IDT)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <jic23@kernel.org>, <lars@metafoo.de>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <j.neuschaefer@gmx.net>, <zhengbin13@huawei.com>
-CC:     <openbmc@lists.ozlabs.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 1/2] dt-bindings: iio: adc: npcm: Add npcm845 compatible string
-Date:   Wed, 13 Jul 2022 10:05:16 +0300
-Message-ID: <20220713070517.172852-2-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220713070517.172852-1-tmaimon77@gmail.com>
-References: <20220713070517.172852-1-tmaimon77@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+        Wed, 13 Jul 2022 03:06:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7E8BD680
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:06:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B584C612D7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:06:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0157AC34114;
+        Wed, 13 Jul 2022 07:06:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657695961;
+        bh=il/VUoRRK8tAkt4DY/I12EVvlEk0AWNjjZ+AkvPGREY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C3sCQk3F5wKR1xGe06jgExzccla0ZvHUVpVfRXeNhEmUto/4q3vTS2KuLglP4UK89
+         QMiyoL1oeHfh+6phDdZmGAGJ+5rnfIo7rW8BBvAcIkRLOOGMxG9rO9GhGBp/XYGXTU
+         CzzeYO++MNVVJhIdTm47YKmK5UTWEA5jgnBSfgt0yGWRLDc03TGkGPauR+DwqjmTq4
+         zm7e2cdqE779ww3ckraYbmcOfhiXCR8PwMffqIlGCwJnjyCS/iHmC2cEaYzUGcHYhX
+         PezGnqFnubIIhkjZ9LR/iFQ0TMqW8U16Iop5XoMN2DFaW8n4jULNj7VdElxRrNqPar
+         BzvrWKhYHM8PQ==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oBWRa-0078mQ-An;
+        Wed, 13 Jul 2022 08:05:58 +0100
+Date:   Wed, 13 Jul 2022 08:05:46 +0100
+Message-ID: <87bkttlcfp.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Konrad Dybcio <konrad.dybcio@somainline.org>
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] irqchip/apple-aic: Add support for A7-A11 SoCs
+In-Reply-To: <acd89b38-89e1-f6d6-2f98-01d94d9984bb@somainline.org>
+References: <20220712160919.740878-1-konrad.dybcio@somainline.org>
+        <20220712160919.740878-2-konrad.dybcio@somainline.org>
+        <87a69e16x1.wl-maz@kernel.org>
+        <acd89b38-89e1-f6d6-2f98-01d94d9984bb@somainline.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: konrad.dybcio@somainline.org, ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org, angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org, jamipkettunen@somainline.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, tglx@linutronix.de, linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a compatible string for Nuvoton BMC NPCM845 ADC.
+On Tue, 12 Jul 2022 20:23:31 +0100,
+Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
+> 
+> 
+> 
+> On 12.07.2022 21:12, Marc Zyngier wrote:
+> > Hi Konrad,
+> > 
+> > Please add a cover letter when sending more than a single patch.
+> > 
+> > On Tue, 12 Jul 2022 17:09:19 +0100,
+> > Konrad Dybcio <konrad.dybcio@somainline.org> wrote:
+> >>
+> >> Add support for A7-A11 SoCs by if-ing out some features only present on
+> >> A12 & newer (UNCORE2 registers) or M1 & newer (EL2 registers - the
+> >> older SoCs don't implement EL2).
+> >>
+> >> Also, annotate IPI regs support (A11 and newer*) so that the driver can
+> >> tell whether the SoC supports these (they are written to even if fast
+> >> IPI is disabled, when the registers are there of course).
+> >>
+> >> *A11 is supposed to use this feature, but it is currently not working.
+> >> That said, it is not yet necessary, especially with only one core up,
+> >> and it works a-ok using the same featureset as earlier SoCs.
+> >>
+> >> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> >> ---
+> >>  drivers/irqchip/irq-apple-aic.c | 54 +++++++++++++++++++++++----------
+> >>  1 file changed, 38 insertions(+), 16 deletions(-)
+> >>
+> >> diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
+> >> index 12dd48727a15..36f4b52addc2 100644
+> >> --- a/drivers/irqchip/irq-apple-aic.c
+> >> +++ b/drivers/irqchip/irq-apple-aic.c
+> >> @@ -245,7 +245,10 @@ struct aic_info {
+> >>  	u32 die_stride;
+> >>  
+> >>  	/* Features */
+> >> +	bool el2_regs;
+> >>  	bool fast_ipi;
+> >> +	bool ipi_regs;
+> >> +	bool uncore2_regs;
+> >>  };
+> >>  
+> >>  static const struct aic_info aic1_info = {
+> >> @@ -261,7 +264,10 @@ static const struct aic_info aic1_fipi_info = {
+> >>  	.event		= AIC_EVENT,
+> >>  	.target_cpu	= AIC_TARGET_CPU,
+> >>  
+> >> +	.el2_regs	= true,
+> >>  	.fast_ipi	= true,
+> >> +	.ipi_regs	= true,
+> >> +	.uncore2_regs	= true,
+> >>  };
+> >>  
+> >>  static const struct aic_info aic2_info = {
+> >> @@ -269,7 +275,10 @@ static const struct aic_info aic2_info = {
+> >>  
+> >>  	.irq_cfg	= AIC2_IRQ_CFG,
+> >>  
+> >> +	.el2_regs	= true,
+> >>  	.fast_ipi	= true,
+> >> +	.ipi_regs	= true,
+> >> +	.uncore2_regs	= true,
+> > 
+> > So to sum it up, all recent cores have all the cool features, and the
+> > older ones have none of them. Surely we can do better than adding 3
+> > fields that have the same value. Turn 'fast_ipi' into something that
+> > means 'full_fat', and key everything on that.
+> > 
+> > And if this is meant to evolve into a more differentiated set of
+> > features, the usual idiom is to have a set of flags as part of an
+> > unsigned long instead of a set of booleans.
+> The latter would be true if a bootrom exploit or any equivalent means
+> of booting Linux would be found for A12 (M1 is family with A14 for context).
+> 
+> We can think of 4 feature levels, I think:
+> 
+> A7-A10: 'nothing fancy'
+> A11: fast_ipi (broken currently, need to investigate)
+> A12: A11 + UNCORE2 regs
+> M1+: A12 + EL2
+> 
+> We *could* squash the A12-A14 case into M1, but then if a means of booting
+> Linux appears, this would have to be untangled again..
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- .../devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml   | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+We don't add code for systems that could only hypothetically run
+Linux. If and when this becomes possible, we'll add support for
+them. In the meantime, I suggest you focus on supporting what actually
+works.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-index 001cf263b7d5..fede2aa64092 100644
---- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-@@ -10,11 +10,14 @@ maintainers:
-   - Tomer Maimon <tmaimon77@gmail.com>
- 
- description:
--  The NPCM ADC is a 10-bit converter for eight channel inputs.
-+  The NPCM7XX ADC is a 10-bit converter and NPCM8XX ADC is a 12-bit converter,
-+  both have eight channel inputs.
- 
- properties:
-   compatible:
--    const: nuvoton,npcm750-adc
-+    enum:
-+      - nuvoton,npcm750-adc
-+      - nuvoton,npcm845-adc
- 
-   reg:
-     maxItems: 1
+>
+> > 
+> >>  };
+> >>  
+> >>  static const struct of_device_id aic_info_match[] = {
+> >> @@ -452,6 +461,9 @@ static unsigned long aic_fiq_get_idx(struct irq_data *d)
+> >>  
+> >>  static void aic_fiq_set_mask(struct irq_data *d)
+> >>  {
+> >> +	if (!aic_irqc->info.el2_regs)
+> >> +		return;
+> > 
+> > Why? AIC_TMR_EL02_PHYS is defined as the interrupt that fires in the
+> > context of a guest. There is no guest here (no EL2 either), so what
+> > you should have as interrupt number is AIC_TMR_EL0_{PHYS,VIRT}, and
+> > this change becomes irrelevant (nothing to mask). Which is also what
+> > happens when running an M1 under the m1n1 hypervisor.
+> This func accesses impl-defined regs that are not present on earlier SoCs.
+
+You're missing my point. Why are you encoding your timer interrupts
+with a hwirq that requires you to skip existing code? If you used the
+interrupt number that represent a bare-metal interrupt, you'd be just
+fine. Specially considering that the interrupt numbers in the DT are
+nothing but made-up numbers, as there is no interrupt controller to
+speak of.
+
+> >> @@ -676,7 +695,8 @@ static int aic_irq_domain_translate(struct irq_domain *id,
+> >>  				break;
+> >>  			case AIC_TMR_HV_PHYS:
+> >>  			case AIC_TMR_HV_VIRT:
+> >> -				return -ENOENT;
+> >> +				if (aic_irqc->info.el2_regs)
+> >> +					return -ENOENT;
+> > 
+> > See my comment above about the use of these interrupt numbers.
+> `if (!is_kernel_in_hyp_mode()) {` always evaluates to true, since there's
+> no EL2. Hence, accessing AIC_TMR_HV_{VIRT,PHYS} makes this return ENOENT,
+> which means timer can't probe and that's no bueno.
+
+Again, you have the wrong end of the stick, and this is about changing
+your DT rather than the driver.
+
+> 
+> 
+> > 
+> >>  			default:
+> >>  				break;
+> >>  			}
+> >> @@ -944,7 +964,8 @@ static int aic_init_cpu(unsigned int cpu)
+> >>  	/* Mask all hard-wired per-CPU IRQ/FIQ sources */
+> >>  
+> >>  	/* Pending Fast IPI FIQs */
+> >> -	write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
+> >> +	if (aic_irqc->info.ipi_regs)
+> >> +		write_sysreg_s(IPI_SR_PENDING, SYS_IMP_APL_IPI_SR_EL1);
+> >>  
+> >>  	/* Timer FIQs */
+> >>  	sysreg_clear_set(cntp_ctl_el0, 0, ARCH_TIMER_CTRL_IT_MASK);
+> >> @@ -965,8 +986,9 @@ static int aic_init_cpu(unsigned int cpu)
+> >>  			   FIELD_PREP(PMCR0_IMODE, PMCR0_IMODE_OFF));
+> >>  
+> >>  	/* Uncore PMC FIQ */
+> >> -	sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
+> >> -			   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
+> >> +	if (aic_irqc->info.uncore2_regs)
+> >> +		sysreg_clear_set_s(SYS_IMP_APL_UPMCR0_EL1, UPMCR0_IMODE,
+> >> +				   FIELD_PREP(UPMCR0_IMODE, UPMCR0_IMODE_OFF));
+> >>  
+> >>  	/* Commit all of the above */
+> >>  	isb();
+> > 
+> > I must be missing something though. Where is the code that actually
+> > enables support for the SoCs mentioned in $SUBJECT?
+> In this peculiar case, enabling support means stripping away the so-called
+> 'features', otherwise the interrupt controller won't budge.
+
+What I would like to see is a different compatibility string that
+makes the support for a given IP explicit instead of making everything
+implicit.
+
+	M.
+
 -- 
-2.33.0
-
+Without deviation from the norm, progress is not possible.
