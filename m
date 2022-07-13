@@ -2,244 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DCDCCA47F
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DB9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 02:07:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233879AbiGMBzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55206 "EHLO
+        id S233553AbiGMCHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 22:07:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229727AbiGMBzv (ORCPT
+        with ESMTP id S229501AbiGMCHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:55:51 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A3AC9207;
-        Tue, 12 Jul 2022 18:55:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657677350; x=1689213350;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=pKiiCVx6jGcmxHkWq3i93Q32ZqFOuHeXNvvGly92q1U=;
-  b=eDWQ+qFPk+rh9yr0IK2HosdxG2gxtFtmwpjtEWwfVsBwr57oQ0MXauxa
-   GWuEmiUDlqq0fUnPbtJftLjqvz6JiBftcf6ehYmslQWaaMIOki/zfsZk0
-   ykxW+LaTU8/IGTxUoDNj6CGzWoEmbV65/M/5LEh4gL7kfJJIF1lQSlnDa
-   2pvrqV3jETXOLtPFZZoCzycG5b68D7KkJoldeMaj+U/hTi0D5vaGrTgzU
-   +6ns/EK6CZcy+YZg4CIJqTkp800w7ozrn0VA969Sd36LArSwzyiqTWRif
-   15FZgVl0Bf8gWFXFkeCdMMbYhj3K60RjyudLPfkvMEiF6FIDQItu0h34n
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="285110552"
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="285110552"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 18:55:50 -0700
-X-IronPort-AV: E=Sophos;i="5.92,266,1650956400"; 
-   d="scan'208";a="628113093"
-Received: from ifatima-mobl1.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.1.196])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jul 2022 18:55:48 -0700
-Message-ID: <e4604ad23788a6d2950c091d04b7b805684a1a01.camel@intel.com>
-Subject: Re: [PATCH v7 002/102] Partially revert "KVM: Pass kvm_init()'s
- opaque param to additional arch funcs"
-From:   Kai Huang <kai.huang@intel.com>
-To:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>,
-        Chao Gao <chao.gao@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Anup Patel <anup@brainfault.org>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>
-Date:   Wed, 13 Jul 2022 13:55:46 +1200
-In-Reply-To: <4566737e3c57c5ab17c0bc29d6f4758744b6eed1.1656366337.git.isaku.yamahata@intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
-         <4566737e3c57c5ab17c0bc29d6f4758744b6eed1.1656366337.git.isaku.yamahata@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Tue, 12 Jul 2022 22:07:09 -0400
+X-Greylist: delayed 496 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Jul 2022 19:07:08 PDT
+Received: from mta02.start.ca (mta02.start.ca [162.250.196.96])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36AA4C1676;
+        Tue, 12 Jul 2022 19:07:08 -0700 (PDT)
+Received: from mta02.start.ca (localhost [127.0.0.1])
+        by mta02.start.ca (Postfix) with ESMTP id 9A5693FF60;
+        Tue, 12 Jul 2022 21:58:50 -0400 (EDT)
+Received: from localhost (dhcp-24-53-241-20.cable.user.start.ca [24.53.241.20])
+        by mta02.start.ca (Postfix) with ESMTPS id 7178C3FD48;
+        Tue, 12 Jul 2022 21:58:50 -0400 (EDT)
+From:   Nick Bowler <nbowler@draconx.ca>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: sunhme: output link status with a single print.
+Date:   Tue, 12 Jul 2022 21:58:35 -0400
+Message-Id: <20220713015835.23580-1-nbowler@draconx.ca>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-06-27 at 14:52 -0700, isaku.yamahata@intel.com wrote:
-> From: Chao Gao <chao.gao@intel.com>
->=20
-> This partially reverts commit b99040853738 ("KVM: Pass kvm_init()'s opaqu=
-e
-> param to additional arch funcs") remove opaque from
-> kvm_arch_check_processor_compat because no one uses this opaque now.
-> Address conflicts for ARM (due to file movement) and manually handle RISC=
--V
-> which comes after the commit.
->=20
-> And changes about kvm_arch_hardware_setup() in original commit are still
-> needed so they are not reverted.
+This driver currently prints the link status using four separate
+printk calls, which these days gets presented to the user as four
+distinct messages, not exactly ideal:
 
-I tried to dig the history to find out why we are doing this.
+  [   32.582778] eth0: Link is up using
+  [   32.582828] internal
+  [   32.582837] transceiver at
+  [   32.582888] 100Mb/s, Full Duplex.
 
-IMHO it's better to give a reason why you need to revert the opaque.  I gue=
-ss no
-one uses this opaque now doesn't mean we need to remove it?
+Restructure the display_link_mode function to use a single netdev_info
+call to present all this information as a single message, which is much
+nicer:
 
-Perhaps you should mention this is a preparation to
-hardware_enable_all()/hardware_disable_all() during module loading time.=
-=20
-Instead of extending hardware_enable_all()/hardware_disable_all() to take t=
-he
-opaque and pass to kvm_arch_check_process_compat(), just remove the opaque.
+  [   33.640143] hme 0000:00:01.1 eth0: Link is up using internal transceiver at 100Mb/s, Full Duplex.
 
-Or perhaps just merge this patch to next one?
+The display_forced_link_mode function has a similar structure, so adjust
+it in a similar fashion.
 
->=20
-> Signed-off-by: Chao Gao <chao.gao@intel.com>
-> Reviewed-by: Sean Christopherson <seanjc@google.com>
-> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Acked-by: Anup Patel <anup@brainfault.org>
-> Acked-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
-> Link: https://lore.kernel.org/r/20220216031528.92558-3-chao.gao@intel.com
-> Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-> ---
->  arch/arm64/kvm/arm.c       |  2 +-
->  arch/mips/kvm/mips.c       |  2 +-
->  arch/powerpc/kvm/powerpc.c |  2 +-
->  arch/riscv/kvm/main.c      |  2 +-
->  arch/s390/kvm/kvm-s390.c   |  2 +-
->  arch/x86/kvm/x86.c         |  2 +-
->  include/linux/kvm_host.h   |  2 +-
->  virt/kvm/kvm_main.c        | 16 +++-------------
->  8 files changed, 10 insertions(+), 20 deletions(-)
->=20
-> diff --git a/arch/arm64/kvm/arm.c b/arch/arm64/kvm/arm.c
-> index a0188144a122..7588efbac6be 100644
-> --- a/arch/arm64/kvm/arm.c
-> +++ b/arch/arm64/kvm/arm.c
-> @@ -68,7 +68,7 @@ int kvm_arch_hardware_setup(void *opaque)
->  	return 0;
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	return 0;
->  }
-> diff --git a/arch/mips/kvm/mips.c b/arch/mips/kvm/mips.c
-> index a25e0b73ee70..092d09fb6a7e 100644
-> --- a/arch/mips/kvm/mips.c
-> +++ b/arch/mips/kvm/mips.c
-> @@ -140,7 +140,7 @@ int kvm_arch_hardware_setup(void *opaque)
->  	return 0;
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	return 0;
->  }
-> diff --git a/arch/powerpc/kvm/powerpc.c b/arch/powerpc/kvm/powerpc.c
-> index 191992fcb2c2..ca8ef51092c6 100644
-> --- a/arch/powerpc/kvm/powerpc.c
-> +++ b/arch/powerpc/kvm/powerpc.c
-> @@ -446,7 +446,7 @@ int kvm_arch_hardware_setup(void *opaque)
->  	return 0;
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	return kvmppc_core_check_processor_compat();
->  }
-> diff --git a/arch/riscv/kvm/main.c b/arch/riscv/kvm/main.c
-> index 1549205fe5fe..f8d6372d208f 100644
-> --- a/arch/riscv/kvm/main.c
-> +++ b/arch/riscv/kvm/main.c
-> @@ -20,7 +20,7 @@ long kvm_arch_dev_ioctl(struct file *filp,
->  	return -EINVAL;
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	return 0;
->  }
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index 72bd5c9b9617..a05493f1cacf 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -251,7 +251,7 @@ int kvm_arch_hardware_enable(void)
->  	return 0;
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	return 0;
->  }
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 3d9dbaf9828f..30af2bd0b4d5 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -11799,7 +11799,7 @@ void kvm_arch_hardware_unsetup(void)
->  	static_call(kvm_x86_hardware_unsetup)();
->  }
-> =20
-> -int kvm_arch_check_processor_compat(void *opaque)
-> +int kvm_arch_check_processor_compat(void)
->  {
->  	struct cpuinfo_x86 *c =3D &cpu_data(smp_processor_id());
-> =20
-> diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-> index c20f2d55840c..d4f130a9f5c8 100644
-> --- a/include/linux/kvm_host.h
-> +++ b/include/linux/kvm_host.h
-> @@ -1442,7 +1442,7 @@ int kvm_arch_hardware_enable(void);
->  void kvm_arch_hardware_disable(void);
->  int kvm_arch_hardware_setup(void *opaque);
->  void kvm_arch_hardware_unsetup(void);
-> -int kvm_arch_check_processor_compat(void *opaque);
-> +int kvm_arch_check_processor_compat(void);
->  int kvm_arch_vcpu_runnable(struct kvm_vcpu *vcpu);
->  bool kvm_arch_vcpu_in_kernel(struct kvm_vcpu *vcpu);
->  int kvm_arch_vcpu_should_kick(struct kvm_vcpu *vcpu);
-> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> index a67e996cbf7f..a5bada53f1fe 100644
-> --- a/virt/kvm/kvm_main.c
-> +++ b/virt/kvm/kvm_main.c
-> @@ -5697,22 +5697,14 @@ void kvm_unregister_perf_callbacks(void)
->  }
->  #endif
-> =20
-> -struct kvm_cpu_compat_check {
-> -	void *opaque;
-> -	int *ret;
-> -};
-> -
-> -static void check_processor_compat(void *data)
-> +static void check_processor_compat(void *rtn)
->  {
-> -	struct kvm_cpu_compat_check *c =3D data;
-> -
-> -	*c->ret =3D kvm_arch_check_processor_compat(c->opaque);
-> +	*(int *)rtn =3D kvm_arch_check_processor_compat();
->  }
-> =20
->  int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,
->  		  struct module *module)
->  {
-> -	struct kvm_cpu_compat_check c;
->  	int r;
->  	int cpu;
-> =20
-> @@ -5740,10 +5732,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, uns=
-igned vcpu_align,
->  	if (r < 0)
->  		goto out_free_1;
-> =20
-> -	c.ret =3D &r;
-> -	c.opaque =3D opaque;
->  	for_each_online_cpu(cpu) {
-> -		smp_call_function_single(cpu, check_processor_compat, &c, 1);
-> +		smp_call_function_single(cpu, check_processor_compat, &r, 1);
->  		if (r < 0)
->  			goto out_free_2;
->  	}
+Signed-off-by: Nick Bowler <nbowler@draconx.ca>
+---
+ drivers/net/ethernet/sun/sunhme.c | 43 +++++++++----------------------
+ 1 file changed, 12 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/net/ethernet/sun/sunhme.c b/drivers/net/ethernet/sun/sunhme.c
+index 77e5dffb558f..8594ee839628 100644
+--- a/drivers/net/ethernet/sun/sunhme.c
++++ b/drivers/net/ethernet/sun/sunhme.c
+@@ -545,43 +545,24 @@ static int try_next_permutation(struct happy_meal *hp, void __iomem *tregs)
+ 
+ static void display_link_mode(struct happy_meal *hp, void __iomem *tregs)
+ {
+-	printk(KERN_INFO "%s: Link is up using ", hp->dev->name);
+-	if (hp->tcvr_type == external)
+-		printk("external ");
+-	else
+-		printk("internal ");
+-	printk("transceiver at ");
+ 	hp->sw_lpa = happy_meal_tcvr_read(hp, tregs, MII_LPA);
+-	if (hp->sw_lpa & (LPA_100HALF | LPA_100FULL)) {
+-		if (hp->sw_lpa & LPA_100FULL)
+-			printk("100Mb/s, Full Duplex.\n");
+-		else
+-			printk("100Mb/s, Half Duplex.\n");
+-	} else {
+-		if (hp->sw_lpa & LPA_10FULL)
+-			printk("10Mb/s, Full Duplex.\n");
+-		else
+-			printk("10Mb/s, Half Duplex.\n");
+-	}
++
++	netdev_info(hp->dev,
++		    "Link is up using %s transceiver at %dMb/s, %s Duplex.\n",
++		    hp->tcvr_type == external ? "external" : "internal",
++		    hp->sw_lpa & (LPA_100HALF | LPA_100FULL) ? 100 : 10,
++		    hp->sw_lpa & (LPA_100FULL | LPA_10FULL) ? "Full" : "Half");
+ }
+ 
+ static void display_forced_link_mode(struct happy_meal *hp, void __iomem *tregs)
+ {
+-	printk(KERN_INFO "%s: Link has been forced up using ", hp->dev->name);
+-	if (hp->tcvr_type == external)
+-		printk("external ");
+-	else
+-		printk("internal ");
+-	printk("transceiver at ");
+ 	hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+-	if (hp->sw_bmcr & BMCR_SPEED100)
+-		printk("100Mb/s, ");
+-	else
+-		printk("10Mb/s, ");
+-	if (hp->sw_bmcr & BMCR_FULLDPLX)
+-		printk("Full Duplex.\n");
+-	else
+-		printk("Half Duplex.\n");
++
++	netdev_info(hp->dev,
++		    "Link has been forced up using %s transceiver at %dMb/s, %s Duplex.\n",
++		    hp->tcvr_type == external ? "external" : "internal",
++		    hp->sw_bmcr & BMCR_SPEED100 ? 100 : 10,
++		    hp->sw_bmcr & BMCR_FULLDPLX ? "Full" : "Half");
+ }
+ 
+ static int set_happy_link_modes(struct happy_meal *hp, void __iomem *tregs)
+-- 
+2.35.1
 
