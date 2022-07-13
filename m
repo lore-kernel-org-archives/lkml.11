@@ -2,149 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79366C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:40:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:40:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235724AbiGMIkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49270 "EHLO
+        id S235713AbiGMIkj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:40:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235702AbiGMIkM (ORCPT
+        with ESMTP id S235716AbiGMIka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:40:12 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31115E3C3F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:11 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id p6so9874581ljc.8
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rFBl54go6bbp895f6CpJo/cJgp+SQIq2apGuPfKEw8I=;
-        b=HJy70qwl9lN8HnV2r/htxl8ByNBeHMo2DaIIq8mk7an1rDp/Hy4hkXfktfvmdxUaxv
-         3A8sUvjtVkw53mw340DrAJeHLmOzxTyLbalQEkV/XibwwFuwinmbY8O4rPtYpX5yrLiy
-         JCufh3uEsQSrI+YvGbyX9Y+722Yi/OGL4EsdeTD0EdSrLJ29gdu6g6g4kPCs/WNN/s56
-         Ok1r003S2vR+FcsNad/mJW0vO/uHVdrcEbuS7mChc7ssvfhznEANrqB0zDNs+h4LpO7Z
-         +re5NfTf0wvT6R8Qp16Ggu7kuyCNhK8MTP9WtoFIw6A9JRGk4YAt/6tiRiaJDLitsXUv
-         FA8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rFBl54go6bbp895f6CpJo/cJgp+SQIq2apGuPfKEw8I=;
-        b=SWsSvX76WjdCD4lIsjGcHDh81yWIDcZGrC6XAC/IhwZBfYrhjsgGe2FcD78UkVgs1b
-         vCRrjtKoVXn7Br3aaSmkPu5AaboekjO+SJFlFRm4M7sVpDuLtiFLxhXVZdBrk3jU+ApN
-         krUBzaAgCtg7Ie34lzkiWYy9OSbUVWFZMSNTOL+wgootoxfzpiEVOr5WlisBVPJdBNYA
-         JxoKrBZSa/fmXSwrIz/MQpor+4lJvGi5NM/6N0rZgT+3FXwRjQSSU8udQ7JxQPSL4ejF
-         MSfNtMfTgSq8O9ATMWIPI95Ob747LTb6bQHjeeZ3U/LtZxQFtEzT3bxavb+ExTLZpr7k
-         uPYA==
-X-Gm-Message-State: AJIora9Xa+e05jB8xmj8yVn1T1xU+LeX1NLvdbponDt7PBxuCU8iac53
-        PvvNUpnWGw9cOldCMftwAoZkBQBrK+hedQ==
-X-Google-Smtp-Source: AGRyM1vqC3mk/Y63Y88qA3IPGzsb8ZUXDS2zCGPmro0xfJGvd0YSbgfDR3MJrICvvK8L1MwmkoFzRw==
-X-Received: by 2002:a05:651c:1038:b0:25d:53cb:ba22 with SMTP id w24-20020a05651c103800b0025d53cbba22mr1104823ljm.407.1657701609473;
-        Wed, 13 Jul 2022 01:40:09 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id 11-20020a05651c128b00b0025d6ecbc897sm1720865ljc.46.2022.07.13.01.40.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 01:40:08 -0700 (PDT)
-Message-ID: <0131e1d6-09c0-31a4-5b9d-0e2fc49d61ac@linaro.org>
-Date:   Wed, 13 Jul 2022 10:40:05 +0200
+        Wed, 13 Jul 2022 04:40:30 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E52E193A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657701629; x=1689237629;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=O3XlJdFKMMXZ/3uT7ErsQxlftSciCG/DfbQ0W2TTX/o=;
+  b=ZKXLpEou6xznJFqGW0VbbNoeJPLGWtqUDLgHtp5NN4/zrEl4cySDVPxi
+   5xaL56kR1/bZoK0KHYlWtZnHzokQGuZpJANVg5j2Fs1VFTsJlr/FfNrIV
+   94u4wGIK+fmhhhQuYr3i2z0qQbej/PBFGRGNIYuUz9eQQk2Z1DO3ERmcW
+   WJ+o6jpu3gaRu9k/dnDB1qTcrfhVGLwm4f0OF8eWWd+SE3hNEj/Q7kN0F
+   vrBRa1R+qp7tp6tzxx43ga0Z3cjOVi2e/+NJQJRgJrA6y++tksWl1dNWy
+   2Pg0SMauhkPKSxnOJXzNA9tUlFBIVHLo/YrOtkolCCt3uCbr+6BvOs22f
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265563051"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="265563051"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:40:28 -0700
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="653284442"
+Received: from yijunwa1-mobl.ccr.corp.intel.com (HELO yhuang6-mobl1.ccr.corp.intel.com) ([10.254.215.54])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 01:40:25 -0700
+From:   Huang Ying <ying.huang@intel.com>
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Huang Ying <ying.huang@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@suse.com>,
+        Rik van Riel <riel@surriel.com>,
+        Mel Gorman <mgorman@techsingularity.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Yang Shi <shy828301@gmail.com>, Zi Yan <ziy@nvidia.com>,
+        Wei Xu <weixugc@google.com>, osalvador <osalvador@suse.de>,
+        Shakeel Butt <shakeelb@google.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Zhong Jiang <zhongjiang-ali@linux.alibaba.com>
+Subject: [PATCH -V4 RESEND 0/3] memory tiering: hot page selection
+Date:   Wed, 13 Jul 2022 16:39:50 +0800
+Message-Id: <20220713083954.34196-1-ying.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] arm64: Kconfig.platforms: Re-organized Broadcom menu
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        william.zhang@broadcom.com, anand.gore@broadcom.com,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Wei Xu <xuwei5@hisilicon.com>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-References: <20220712164235.40293-1-f.fainelli@gmail.com>
- <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/2022 10:25, Arnd Bergmann wrote:
-> On Tue, Jul 12, 2022 at 6:42 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->>
->> There are now multiple Broadcom SoCs supported so group them under their
->> own menu such that the selection is visually more appealing and we can
->> easily add new platforms there in the future. This allows us to move
->> ARCH_BRCMSTB back to its siblings.
->>
->> No functional changes introduced.
->>
->> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
->> ---
->>
->> Note this is based on "arm64: bcmbca: add arch bcmbca machine entry"
-> 
-> Hi Florian,
-> 
-> So far, we have tried to keep the Kconfig.platforms file rather coarse-grained,
-> mainly limiting it to company names and high-level families, but avoiding
-> sub-menus or adding too many sub-families.
-> 
-> If we add per-vendor submenus, we should probably first decide how we
-> want to structure this across vendors. I've added maintainers and lists to
-> Cc for a couple of the ones that are in a similar situation.
-> 
-> I can see a couple of ways we can do this:
-> 
-> a) keep the list of platforms as short as possible, combining related
->   SoC families from a single vendor wherever possible, but no sub-menus
->   (same as today)
-> 
-> b) Always use sub-menus when there is more than one family, but
->    keep relatively coarse platform selection.
-> 
-> c) Use sub-menus and also move to a more fine-grained SoC
->     selection, similar to what we have on 32-bit arm.
-> 
-> I would not really want to go to c), but a) and b) both make sense to
-> me as long as do it consistently across all platforms.
-> 
-> Any other ideas or opinions?
+To optimize page placement in a memory tiering system with NUMA
+balancing, the hot pages in the slow memory nodes need to be
+identified.  Essentially, the original NUMA balancing implementation
+selects the mostly recently accessed (MRU) pages to promote.  But this
+isn't a perfect algorithm to identify the hot pages.  Because the
+pages with quite low access frequency may be accessed eventually given
+the NUMA balancing page table scanning period could be quite long
+(e.g. 60 seconds).  So in this patchset, we implement a new hot page
+identification algorithm based on the latency between NUMA balancing
+page table scanning and hint page fault.  Which is a kind of mostly
+frequently accessed (MFU) algorithm.
 
-Whatever we decide here, the SoC can override in drivers/soc, just like
-Renesas did. I think Renesas chose option c), but made it in
-drivers/soc. I would vote to have consistent policy, so if arch/arm64 is
-a) or b), sub-archs should not redefine it in drivers/soc.
+In NUMA balancing memory tiering mode, if there are hot pages in slow
+memory node and cold pages in fast memory node, we need to
+promote/demote hot/cold pages between the fast and cold memory nodes.
 
-Or we could choose d)
-d) keep arch/arm64 list of platforms as short as possible, but sub-archs
-can do whatever they like on drivers/soc.
+A choice is to promote/demote as fast as possible.  But the CPU cycles
+and memory bandwidth consumed by the high promoting/demoting
+throughput will hurt the latency of some workload because of accessing
+inflating and slow memory bandwidth contention.
 
-Personally, I find fine-grained SoC selection a bit ridiculous
-optimization, like compiling kernel, Glibc and userspace with -O3,
--funroll-loops and many other flags. One gets smaller size but looses
-multi-platform and ability to test one kernel on different boards.
-Therefore I would vote for b) with disallowing drivers/soc defining more
-ARCH_ and more SOC_.
+A way to resolve this issue is to restrict the max promoting/demoting
+throughput.  It will take longer to finish the promoting/demoting.
+But the workload latency will be better.  This is implemented in this
+patchset as the page promotion rate limit mechanism.
 
-Best regards,
-Krzysztof
+The promotion hot threshold is workload and system configuration
+dependent.  So in this patchset, a method to adjust the hot threshold
+automatically is implemented.  The basic idea is to control the number
+of the candidate promotion pages to match the promotion rate limit.
+
+We used the pmbench memory accessing benchmark tested the patchset on
+a 2-socket server system with DRAM and PMEM installed.  The test
+results are as follows,
+
+		pmbench score		promote rate
+		 (accesses/s)			MB/s
+		-------------		------------
+base		  146887704.1		       725.6
+hot selection     165695601.2		       544.0
+rate limit	  162814569.8		       165.2
+auto adjustment	  170495294.0                  136.9
+
+From the results above,
+
+With hot page selection patch [1/3], the pmbench score increases about
+12.8%, and promote rate (overhead) decreases about 25.0%, compared with
+base kernel.
+
+With rate limit patch [2/3], pmbench score decreases about 1.7%, and
+promote rate decreases about 69.6%, compared with hot page selection
+patch.
+
+With threshold auto adjustment patch [3/3], pmbench score increases
+about 4.7%, and promote rate decrease about 17.1%, compared with rate
+limit patch.
+
+Baolin helped to test the patchset with MySQL on a machine which
+contains 1 DRAM node (30G) and 1 PMEM node (126G).
+
+sysbench /usr/share/sysbench/oltp_read_write.lua \
+......
+--tables=200 \
+--table-size=1000000 \
+--report-interval=10 \
+--threads=16 \
+--time=120
+
+The tps can be improved about 5%.
+
+Changelogs:
+
+v4:
+
+- Rebased on v5.19-rc3
+
+- Collected reviewed-by and tested-by.
+
+v3:
+
+- Rebased on v5.19-rc1
+
+- Renamed newly-added fields in struct pglist_data.
+
+v2:
+
+- Added ABI document for promote rate limit per Andrew's comments.  Thanks!
+
+- Added function comments when necessary per Andrew's comments.
+
+- Address other comments from Andrew Morton.
+
+Best Regards,
+Huang, Ying
