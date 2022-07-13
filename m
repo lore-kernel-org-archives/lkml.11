@@ -2,192 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D183C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:07:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A00C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:07:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbiGMNHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:07:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
+        id S235836AbiGMNHu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiGMNHj (ORCPT
+        with ESMTP id S235051AbiGMNHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:07:39 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71363C7C;
+        Wed, 13 Jul 2022 09:07:47 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4D6637D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:07:40 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id q9so15431537wrd.8
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ZDp5NtLIxNT/y/y4TV28JKQZE5KPsmeDwau7U2nvfbI=;
+        b=ykcE/L76OyKjfmB6gW/9PEIXPb7KX9wbY5QZt6rzoJ7cx+NshQnf3zYFk9CJJmZ/WM
+         Yjn5tpbDrFkjNkWS+WFrkqjSfGYuauzrhkLnPgPWJ+ijDPIFajS1TTDtmC2uQEI2eXJq
+         v/PjSpgG/525Lm1jJ94ez4EFFEytapEdMWKLq79xQRBWSawK2YgrGJjhf+6mviSVU3q3
+         kOx9C54FFQzStrBSdTBuFlQdgkenCIZH2XWgb8DLkaqKQZ3XbPUtvaJN7A3d1aNdPv+L
+         MOY47XiJ+MoxEz7XvBmRhEiBH0MhBUFHBMZQFzRyd4+1IQ/e0LRFMgzPqoPQQ++2EeCE
+         bFRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZDp5NtLIxNT/y/y4TV28JKQZE5KPsmeDwau7U2nvfbI=;
+        b=6EsJQZRYVT7eM2qSK4S3Q0/W/FqkvjrDJrbYy4aTsoAXgFLQOGxr5OOdGfV1PtQKyP
+         PFEhvtvmoGQx9TA8GAwSNzzbRcr/xQGTLqvg0lTuu4WyLINd7qyHklkBI2LtbkK2SlNI
+         4CkQUGwZqUp+A5UHFA2TsAYHvAHdcffTpTCqUg3RqbDjhU/Zr6EuU847DO6g0iQw6ihk
+         F0qZVGaKWjsNYylDBzG69htZR4A8Jwl5ABgpCDeYaYKMbiHsJ4ELBxqRZqXhozBygvAi
+         mv+9+5OBsmfv/gOW+JWr48yloPneh7rvrQkPE1ZGpBNleuZ+Fw6Z0VFKfN6IWHHeUblt
+         kh4g==
+X-Gm-Message-State: AJIora9+eemf7YoR6zmBo6sb6SDnP1uadnbtNvx36bCZPDfbSwqElPps
+        5a5doSl33hQOHvy530qhFWQ6Eg==
+X-Google-Smtp-Source: AGRyM1v3Wejcmcef1+JLx2OGnt8FIDdBIQxbNYoMtF21Qn+Urzq7T2tg4YCX+P2hq8vPNX2sKjEQ7Q==
+X-Received: by 2002:a5d:5747:0:b0:21d:65e9:be07 with SMTP id q7-20020a5d5747000000b0021d65e9be07mr3162978wrw.215.1657717658781;
         Wed, 13 Jul 2022 06:07:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657717658; x=1689253658;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=haP6Lue6eVNR6wMmuzcn6w4p0UNCT0G+a/I04GM2UjI=;
-  b=EBhLhk9pJ6m7E7UUxn9CtxyoPvIfvsk+bAhcXmiwWTdyl4wNH31ThmFM
-   APiIAcTxKMYJ0WCgp/oP03xwtWqutGUzxlZVVm/ox6It6du4ZR4ZnMUeV
-   f8xnzviG1EjWuyx8GHUggSvbRSg9FDuHHiuEsjXxV7OAFnFlj2zkqdMHq
-   4kuUEK5jvbgN9WxXbYiPaTU3kalmxc2ZxAK3qfnpGWdZ/QtPH78Z24pGZ
-   TgJ1w2TEYyih2FcP5ls/mMUPEPqvlYZjHUcRimjX7QA7q7XhkevytSnh7
-   HPl9vOddPF95rbDgpxzXKNY6ifcu4pQ9zr7DPRv7OHjPrk5mqFKKyuqK4
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="282757862"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="282757862"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 06:07:38 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="922623351"
-Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
-  by fmsmga005.fm.intel.com with ESMTP; 13 Jul 2022 06:07:35 -0700
-From:   Tianfei Zhang <tianfei.zhang@intel.com>
-To:     ssantosh@kernel.org, krzysztof.kozlowski@linaro.org
-Cc:     trix@redhat.com, yilun.xu@intel.com, russell.h.weight@intel.com,
-        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
-        matthew.gerlach@linux.intel.com,
-        Debarati Biswas <debaratix.biswas@intel.com>,
-        Tianfei Zhang <tianfei.zhang@intel.com>
-Subject: [PATCH v2] memory: dfl-emif: Update the dfl emif driver support revision 1
-Date:   Wed, 13 Jul 2022 09:03:55 -0400
-Message-Id: <20220713130355.196115-1-tianfei.zhang@intel.com>
-X-Mailer: git-send-email 2.26.2
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id l29-20020a05600c1d1d00b0039749b01ea7sm2628398wms.32.2022.07.13.06.07.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 06:07:38 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 14:07:35 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Alice Chen <alice_chen@richtek.com>,
+        cy_huang <cy_huang@richtek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
+        szuni chen <szunichen@gmail.com>
+Subject: Re: [PATCH v4 13/13] video: backlight: mt6370: Add Mediatek MT6370
+ support
+Message-ID: <Ys7Dl1oApfww27MJ@google.com>
+References: <20220704053901.728-1-peterwu.pub@gmail.com>
+ <20220704053901.728-14-peterwu.pub@gmail.com>
+ <CAHp75VdwEc9AW1w8ejsxkw+sBTF1dumd99QyzTY9BZaXiViRWQ@mail.gmail.com>
+ <CABtFH5K-2+2hbpvpq2nPE5AsznkQxZF2r3MVC64Q39DJhVuUtA@mail.gmail.com>
+ <CAHp75VevDwdAKLYEWJgnMDvzuPuFibLuVqH-GKazEOT76wM6_A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VevDwdAKLYEWJgnMDvzuPuFibLuVqH-GKazEOT76wM6_A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Debarati Biswas <debaratix.biswas@intel.com>
+On Wed, 13 Jul 2022, Andy Shevchenko wrote:
 
-The next generation (revision 1) of the DFL EMIF feature device requires
-support for more than 4 memory banks. It does not support the selective
-clearing of memory banks. A capability register replaces the previous
-control register, and contains a bitmask to indicate the presence of each
-memory bank. This bitmask aligns with the previous control register
-bitmask that served the same purpose. The control and capability
-registers are treated like a C Union structure in order to support both
-the new and old revisions of the EMIF device.
+> On Wed, Jul 13, 2022 at 12:53 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+> > Andy Shevchenko <andy.shevchenko@gmail.com> 於 2022年7月5日 週二 清晨5:14寫道：
+> > > On Mon, Jul 4, 2022 at 7:43 AM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+> 
+> Please, remove unneeded context when replying!
+> 
+> ...
+> 
+> > > > +               brightness_val[0] = (brightness - 1) & MT6370_BL_DIM2_MASK;
+> > > > +               brightness_val[1] = (brightness - 1)
+> > > > +                                   >> fls(MT6370_BL_DIM2_MASK);
+> > >
+> > > Bad indentation. One line?
+> >
+> > Well... if indent to one line, it will be over 80 characters(or called columns?)
+> > From my understanding, it is not allowed, right??
+> 
+> It's allowed to some extent.Use your common sense.
+> Here it's obviously broken indentation.
 
-Signed-off-by: Debarati Biswas <debaratix.biswas@intel.com>
-Signed-off-by: Russ Weight <russell.h.weight@intel.com>
-Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
----
-v2: no code change, just rebased to v5.19-rc6.
----
- drivers/memory/dfl-emif.c | 62 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 57 insertions(+), 5 deletions(-)
+Refrain from going crazy though - hard limit is 100 chars.
 
-diff --git a/drivers/memory/dfl-emif.c b/drivers/memory/dfl-emif.c
-index 3f719816771d..da06cd30a016 100644
---- a/drivers/memory/dfl-emif.c
-+++ b/drivers/memory/dfl-emif.c
-@@ -24,11 +24,24 @@
- #define EMIF_STAT_CLEAR_BUSY_SFT	16
- #define EMIF_CTRL			0x10
- #define EMIF_CTRL_CLEAR_EN_SFT		0
--#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(3, 0)
-+#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(7, 0)
- 
- #define EMIF_POLL_INVL			10000 /* us */
- #define EMIF_POLL_TIMEOUT		5000000 /* us */
- 
-+/*
-+ * The Capability Register replaces the Control Register (at the same
-+ * offset) for EMIF feature revisions > 0. The bitmask that indicates
-+ * the presence of memory channels exists in both the Capability Register
-+ * and Control Register definitions. These can be thought of as a C union.
-+ * The Capability Register definitions are used to check for the existence
-+ * of a memory channel, and the Control Register definitions are used for
-+ * managing the memory-clear functionality in revision 0.
-+ */
-+#define EMIF_CAPABILITY_BASE		0x10
-+#define EMIF_CAPABILITY_CHN_MSK_V0	GENMASK_ULL(3, 0)
-+#define EMIF_CAPABILITY_CHN_MSK		GENMASK_ULL(7, 0)
-+
- struct dfl_emif {
- 	struct device *dev;
- 	void __iomem *base;
-@@ -106,16 +119,30 @@ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 0);
- emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 1);
- emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 2);
- emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 3);
-+emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 4);
-+emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 5);
-+emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 6);
-+emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 7);
- 
- emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 0);
- emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 1);
- emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 2);
- emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 3);
-+emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 4);
-+emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 5);
-+emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 6);
-+emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 7);
-+
- 
- emif_clear_attr(0);
- emif_clear_attr(1);
- emif_clear_attr(2);
- emif_clear_attr(3);
-+emif_clear_attr(4);
-+emif_clear_attr(5);
-+emif_clear_attr(6);
-+emif_clear_attr(7);
-+
- 
- static struct attribute *dfl_emif_attrs[] = {
- 	&emif_attr_inf0_init_done.attr.attr,
-@@ -134,6 +161,22 @@ static struct attribute *dfl_emif_attrs[] = {
- 	&emif_attr_inf3_cal_fail.attr.attr,
- 	&emif_attr_inf3_clear.attr.attr,
- 
-+	&emif_attr_inf4_init_done.attr.attr,
-+	&emif_attr_inf4_cal_fail.attr.attr,
-+	&emif_attr_inf4_clear.attr.attr,
-+
-+	&emif_attr_inf5_init_done.attr.attr,
-+	&emif_attr_inf5_cal_fail.attr.attr,
-+	&emif_attr_inf5_clear.attr.attr,
-+
-+	&emif_attr_inf6_init_done.attr.attr,
-+	&emif_attr_inf6_cal_fail.attr.attr,
-+	&emif_attr_inf6_clear.attr.attr,
-+
-+	&emif_attr_inf7_init_done.attr.attr,
-+	&emif_attr_inf7_cal_fail.attr.attr,
-+	&emif_attr_inf7_clear.attr.attr,
-+
- 	NULL,
- };
- 
-@@ -143,15 +186,24 @@ static umode_t dfl_emif_visible(struct kobject *kobj,
- 	struct dfl_emif *de = dev_get_drvdata(kobj_to_dev(kobj));
- 	struct emif_attr *eattr = container_of(attr, struct emif_attr,
- 					       attr.attr);
-+	struct dfl_device *ddev = to_dfl_dev(de->dev);
- 	u64 val;
- 
- 	/*
--	 * This device supports upto 4 memory interfaces, but not all
-+	 * This device supports up to 8 memory interfaces, but not all
- 	 * interfaces are used on different platforms. The read out value of
--	 * CLEAN_EN field (which is a bitmap) could tell how many interfaces
--	 * are available.
-+	 * CAPABILITY_CHN_MSK field (which is a bitmap) indicates which
-+	 * interfaces are available.
- 	 */
--	val = FIELD_GET(EMIF_CTRL_CLEAR_EN_MSK, readq(de->base + EMIF_CTRL));
-+	if (ddev->revision > 0 && strstr(attr->name, "_clear"))
-+		return 0;
-+
-+	if (ddev->revision == 0)
-+		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK_V0,
-+				readq(de->base + EMIF_CAPABILITY_BASE));
-+	else
-+		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK,
-+				readq(de->base + EMIF_CAPABILITY_BASE));
- 
- 	return (val & BIT_ULL(eattr->index)) ? attr->mode : 0;
- }
 -- 
-2.26.2
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
