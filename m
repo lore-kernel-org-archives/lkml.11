@@ -2,181 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D6A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DE5C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237513AbiGMVVt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 17:21:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
+        id S237564AbiGMVV4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 17:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237335AbiGMVVW (ORCPT
+        with ESMTP id S237458AbiGMVVX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 17:21:22 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50833B1D3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:20:47 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-10c0e6dd55eso141244fac.7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:20:47 -0700 (PDT)
+        Wed, 13 Jul 2022 17:21:23 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29768E03E
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:20:54 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id j22so22094013ejs.2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:20:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jDIsFRxXwtCqxyONdxF5c1K9paBtFr3+08L7z2qU5vA=;
-        b=j6cOJrctkCf7KseVBRdjSV7xlcfNt+7koxFBfEzD+TqfkyzpEbWiMDN5+d1JFAlUR1
-         4UWAlA7Y7QVimCdgfMGCV5T5leqdGRaLoe8ws+Uj9fgqQwS4b8SOpsIZtuehvXuI+xQo
-         UFJKWvgemXRzSTOEgy/A+jHJpgXoPOrnxi+IEalxaNKcrp0DgtDTmzaU9N6aQ+abSW1S
-         IilnnvVXk0xNL9DD52vVgrih36f14uWbKP9rFimyB5zdAH32DVassCoYu35wrNoqLNi7
-         lk9demUWCLl4bQ8ke7GM5ZQOmqIJbWNNbduoF8eLZRDgNLeyQB3Ohsx8x5GSTbEkfbnL
-         uufw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=K1bJUmmTrVDRGEbygJ1lyIJ3nFniytzpL0oelw3tmno=;
+        b=I3ZDdYVWtVBT1OSPDYC8/kySJQmls+2J13dZplXCWH7RblLr+tzs9e1lGC5+IPPSk/
+         Ir6IQSFBTYlC1CGSh6H2OpjjjeOdrOljpSJMxdP1OpaCiRkCqJ7JX1dASIOpa++eFtlI
+         0hxXI+asTIeVcEFUNKrLjcWtHHcQWju6Il2qbJKozpu3qon4Yujq3r0lfCzMRY+BzQHX
+         bQoZp4ScntrtQyJZCzeupFeD0ziREeqH3Wb5ugKj2lxbH7Cg8zbM/KctdEbiNzsbthNI
+         TgyIihJ9J8unW2/SsAtDrXT+kdrA62HK6SFcsYJQjmQlCFKoDWNH6L5oxGQPlN44A6cP
+         d3dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jDIsFRxXwtCqxyONdxF5c1K9paBtFr3+08L7z2qU5vA=;
-        b=CRs9mxDIO7TaoqnXV0bIhDnr8vqlqUN+yUr9tX1SgeIx0XzrdK9ptZxU6KqU8mezLC
-         bRS0fSd5tnmSGOuit6EV5M8Mn6kFbCicLOA2Hudatw/x3md19C9nzIKWLHWx4A10uAcD
-         svl1ctt/zbXHyp34z8F5G4444rYJ3vbPptbDYMRzkICukPRYgae66pvAjIN4OzmoseVb
-         6o0yKzjg8dMdHefpU5PgrXKwfnnYUFA80aJsUPnvJFW7tAviAuco6dXXqWxxh5uHR9dr
-         GQ72RnADg6VBzF2Kc9hF0aijl3ES7aGkZWN0i42EURCRxgl3wQMlFZnzsYsQzAUd2CSe
-         lhWQ==
-X-Gm-Message-State: AJIora9b4Y2KWOc3qzOpU5+NoAGnih2E3IY8OhZcvO0XB7H8BDLuFZxi
-        tIj8Kwn2g777avwNfZ1PsSPrdA==
-X-Google-Smtp-Source: AGRyM1tJqqpZcbdmf0IjLs3JPzHYVSJn1XpT0FPSi1cB/Be9qVNnpyy+gRwJUYwTuBP+IukgYZYe8w==
-X-Received: by 2002:a05:6870:41ca:b0:101:d588:6241 with SMTP id z10-20020a05687041ca00b00101d5886241mr5611485oac.175.1657747246489;
-        Wed, 13 Jul 2022 14:20:46 -0700 (PDT)
-Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id i19-20020a056871029300b0010c17e6c699sm6647897oae.47.2022.07.13.14.20.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 14:20:45 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc:     Luca Weiss <luca@z3ntu.xyz>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] ARM: dts: qcom: msm8974-sony: Enable LPG
-Date:   Wed, 13 Jul 2022 14:23:09 -0700
-Message-Id: <20220713212309.130230-3-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220713212309.130230-1-bjorn.andersson@linaro.org>
-References: <20220713212309.130230-1-bjorn.andersson@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=K1bJUmmTrVDRGEbygJ1lyIJ3nFniytzpL0oelw3tmno=;
+        b=kI+E555UqFUMR+HsZRPsb7e/roFTku4xNvKQBoEuvvmU+RwE280HeKIb60V3g+eSdM
+         SysGPUvHNLljQXSmeWtmuYh/fCr+ibLd2KefmSNmUpyDYOCMhWPo3GY3VYiLIZvI70KD
+         hg9eTWpyxRfPw2uTNowIKfGKCJxDVc0wmQ7jLY8ineH5hbYpcmkJ+Rh9FZPfor0bgutZ
+         u8Zt49tI+BdXxIciJY5/Av1wpGY/KNOExNgSnnjqNFvrGcr1TVCbicem0MF+4dqY6sXr
+         +grBmjWjV+JnNR+6swf1fGDlh3H3NInUnQ6pzf3Y7QSGGywhV7zefQ7iuF4TPjI16rCF
+         uWTw==
+X-Gm-Message-State: AJIora9EiCwByw6A3pUp/WzEiODfjKcDywgOB0Bo47GpqXJCIJV86o0q
+        a+XAEBsS5Z3d6p9Eby9IvC1DbWDGSVgX2gVSLBM=
+X-Google-Smtp-Source: AGRyM1toLknDPYbOmwvfivbwws5lJo4wsjZWXqnrNSdga/ddY5HDEUxX71H72568OXwwkujvZCF8Ign2JwsA/RuDpQg=
+X-Received: by 2002:a17:906:5d0b:b0:726:a043:fcb4 with SMTP id
+ g11-20020a1709065d0b00b00726a043fcb4mr5282475ejt.508.1657747252690; Wed, 13
+ Jul 2022 14:20:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220618232737.2036722-1-linux@roeck-us.net> <584fc348-7a60-26a2-af61-9edc4f4830e4@amd.com>
+ <CADnq5_NkVWqcxwLMBeskqpcSEYCEjUAK0hqvA_PAo7ACHKL2cA@mail.gmail.com> <6a026c9a-c4ee-deba-e028-4c0f478c1911@roeck-us.net>
+In-Reply-To: <6a026c9a-c4ee-deba-e028-4c0f478c1911@roeck-us.net>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Wed, 13 Jul 2022 17:20:40 -0400
+Message-ID: <CADnq5_OrxMMkazXEPHeZXp_bV890=r21DRx2QsqLXUFj4t8aYg@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display: Add missing hard-float compile flags for
+ PPC64 builds
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Daniel Axtens <dja@axtens.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Both Castor and Honami has RGB LEDs driven by the PM8941 LPG, define
-these.
+On Wed, Jul 13, 2022 at 5:18 PM Guenter Roeck <linux@roeck-us.net> wrote:
+>
+> On 7/13/22 13:57, Alex Deucher wrote:
+> > On Thu, Jun 30, 2022 at 5:01 PM Rodrigo Siqueira Jordao
+> > <Rodrigo.Siqueira@amd.com> wrote:
+> >>
+> >>
+> >>
+> >> On 2022-06-18 19:27, Guenter Roeck wrote:
+> >>> ppc:allmodconfig builds fail with the following error.
+> >>>
+> >>> powerpc64-linux-ld:
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> >>>                uses hard float,
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+> >>>                uses soft float
+> >>> powerpc64-linux-ld:
+> >>>        failed to merge target specific data of file
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_resource.o
+> >>> powerpc64-linux-ld:
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> >>>                uses hard float,
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+> >>>                uses soft float
+> >>> powerpc64-linux-ld:
+> >>>        failed to merge target specific data of
+> >>>        file drivers/gpu/drm/amd/amdgpu/../display/dc/dcn315/dcn315_resource.o
+> >>> powerpc64-linux-ld:
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dml/display_mode_lib.o
+> >>>                uses hard float,
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+> >>>                uses soft float
+> >>> powerpc64-linux-ld:
+> >>>        failed to merge target specific data of file
+> >>>        drivers/gpu/drm/amd/amdgpu/../display/dc/dcn316/dcn316_resource.o
+> >>>
+> >>> The problem was introduced with commit 41b7a347bf14 ("powerpc: Book3S
+> >>> 64-bit outline-only KASAN support") which adds support for KASAN. This
+> >>> commit in turn enables DRM_AMD_DC_DCN because KCOV_INSTRUMENT_ALL and
+> >>> KCOV_ENABLE_COMPARISONS are no longer enabled. As result, new files are
+> >>> compiled which lack the selection of hard-float.
+> >>>
+> >>> Fixes: 41b7a347bf14 ("powerpc: Book3S 64-bit outline-only KASAN support")
+> >>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> >>> Cc: Daniel Axtens <dja@axtens.net>
+> >>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> >>> ---
+> >>>    drivers/gpu/drm/amd/display/dc/dcn31/Makefile  | 4 ++++
+> >>>    drivers/gpu/drm/amd/display/dc/dcn315/Makefile | 4 ++++
+> >>>    drivers/gpu/drm/amd/display/dc/dcn316/Makefile | 4 ++++
+> >>>    3 files changed, 12 insertions(+)
+> >>>
+> >>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> >>> index ec041e3cda30..74be02114ae4 100644
+> >>> --- a/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> >>> +++ b/drivers/gpu/drm/amd/display/dc/dcn31/Makefile
+> >>> @@ -15,6 +15,10 @@ DCN31 = dcn31_resource.o dcn31_hubbub.o dcn31_hwseq.o dcn31_init.o dcn31_hubp.o
+> >>>        dcn31_apg.o dcn31_hpo_dp_stream_encoder.o dcn31_hpo_dp_link_encoder.o \
+> >>>        dcn31_afmt.o dcn31_vpg.o
+> >>>
+> >>> +ifdef CONFIG_PPC64
+> >>> +CFLAGS_$(AMDDALPATH)/dc/dcn31/dcn31_resource.o := -mhard-float -maltivec
+> >>> +endif
+> >>> +
+> >>>    AMD_DAL_DCN31 = $(addprefix $(AMDDALPATH)/dc/dcn31/,$(DCN31))
+> >>>
+> >>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN31)
+> >>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> >>> index 59381d24800b..1395c1ced8c5 100644
+> >>> --- a/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> >>> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/Makefile
+> >>> @@ -25,6 +25,10 @@
+> >>>
+> >>>    DCN315 = dcn315_resource.o
+> >>>
+> >>> +ifdef CONFIG_PPC64
+> >>> +CFLAGS_$(AMDDALPATH)/dc/dcn315/dcn315_resource.o := -mhard-float -maltivec
+> >>> +endif
+> >>> +
+> >>>    AMD_DAL_DCN315 = $(addprefix $(AMDDALPATH)/dc/dcn315/,$(DCN315))
+> >>>
+> >>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN315)
+> >>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> >>> index 819d44a9439b..c3d2dd78f1e2 100644
+> >>> --- a/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> >>> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/Makefile
+> >>> @@ -25,6 +25,10 @@
+> >>>
+> >>>    DCN316 = dcn316_resource.o
+> >>>
+> >>> +ifdef CONFIG_PPC64
+> >>> +CFLAGS_$(AMDDALPATH)/dc/dcn316/dcn316_resource.o := -mhard-float -maltivec
+> >>> +endif
+> >>> +
+> >>>    AMD_DAL_DCN316 = $(addprefix $(AMDDALPATH)/dc/dcn316/,$(DCN316))
+> >>>
+> >>>    AMD_DISPLAY_FILES += $(AMD_DAL_DCN316)
+> >>
+> >> Hi,
+> >>
+> >> I don't want to re-introduce those FPU flags for DCN31/DCN314/DCN316
+> >> since we fully isolate FPU operations for those ASICs inside the DML
+> >
+> > I don't understand why we don't need to add the hard-float flags back
+> > on the other DCN blocks.  Did we miss something in the DML cleanup for
+> > DCN 3.1.x?  Anyway, at this point, the patch is:
+> > Acked-by: Alex Deucher <alexander.deucher@amd.com>
+> > We can sort the rest out for 5.20.
+> >
+>
+> The problem is not the FPU operations, but the fact that soft-float
+> and hard-float compiled code is linked together. The soft-float and
+> hard-float ABIs on powerpc are not compatible, so one ends up with
+> an object file which is partially soft-float and partially hard-float
+> compiled and thus uses different ABIs. That can only create chaos,
+> so the linker complains about it.
 
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
+I get that, I just don't see why only DCN 3.1.x files have this
+problem.  The DCN 2.x files should as well.
 
-Changes since v1:
-- Corrected unit addresses and sort order of channels
-
- .../dts/qcom-msm8974-sony-xperia-rhine.dtsi   | 30 +++++++++++++++++++
- ...-msm8974pro-sony-xperia-shinano-castor.dts | 30 +++++++++++++++++++
- 2 files changed, 60 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-index d42b85bda33a..5a70683d9103 100644
---- a/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8974-sony-xperia-rhine.dtsi
-@@ -3,6 +3,7 @@
- #include "qcom-pm8841.dtsi"
- #include "qcom-pm8941.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- 
- / {
-@@ -172,6 +173,35 @@ gpio_keys_pin_a: gpio-keys-active-state {
- 	};
- };
- 
-+&pm8941_lpg {
-+	status = "okay";
-+
-+	qcom,power-source = <1>;
-+
-+	rgb-led {
-+		color = <LED_COLOR_ID_RGB>;
-+		function = LED_FUNCTION_STATUS;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		led@5 {
-+			reg = <5>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+
-+		led@6 {
-+			reg = <6>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		led@7 {
-+			reg = <7>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+	};
-+};
-+
- &pm8941_wled {
- 	status = "okay";
- 
-diff --git a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-index 9fc696a7399a..3f45f5c5d37b 100644
---- a/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-+++ b/arch/arm/boot/dts/qcom-msm8974pro-sony-xperia-shinano-castor.dts
-@@ -3,6 +3,7 @@
- #include "qcom-pm8841.dtsi"
- #include "qcom-pm8941.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
- 
- / {
-@@ -288,6 +289,35 @@ lcd_dcdc_en_pin_a: lcd-dcdc-en-active-state {
- 
- };
- 
-+&pm8941_lpg {
-+	status = "okay";
-+
-+	qcom,power-source = <1>;
-+
-+	rgb-led {
-+		color = <LED_COLOR_ID_RGB>;
-+		function = LED_FUNCTION_STATUS;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		led@5 {
-+			reg = <5>;
-+			color = <LED_COLOR_ID_BLUE>;
-+		};
-+
-+		led@6 {
-+			reg = <6>;
-+			color = <LED_COLOR_ID_GREEN>;
-+		};
-+
-+		led@7 {
-+			reg = <7>;
-+			color = <LED_COLOR_ID_RED>;
-+		};
-+	};
-+};
-+
- &rpm_requests {
- 	pm8941-regulators {
- 		compatible = "qcom,rpm-pm8941-regulators";
--- 
-2.35.1
-
+Alex
