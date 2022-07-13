@@ -2,116 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3689C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:55:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58298CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237067AbiGMPzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        id S236668AbiGMPzu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237075AbiGMPzR (ORCPT
+        with ESMTP id S235766AbiGMPzs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:55:17 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E944E852
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:55:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657727716; x=1689263716;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=OJYgszKDoNAcc0vzhgDLq9HJwqVYguHdW9WNBKVVEU4=;
-  b=h3c1LbjOIQV1Zy5Cf0GGvMDcMonSH1MYOeEkTzjORJY3BPpTQ5xLVsM4
-   oaHhOJVtwl62p/5OWW53VxKy5reiQYE9AA7WuSMuK5i8iBfjm+FmYhhxi
-   phIWB9QwsmWpsy5bzHJE5U9LkngV6X6x7PR+UB3C7CXXnBnSU9HoN8grs
-   6dN4fofyeGX4N0GJ5f3EEiWkHPiCwPTwAn4+CL56Rq5HYrnrigJ0qHUWi
-   HEdc0M7VK1aSEn0hYO7HuF0IWGF6ncvTUQovXz3hcu30FDKJqsG2kBMal
-   vnegTXMJYezY9DoE0z/XBU+atEwOSyrzz4YHDBexF/oNWpgliiryh05w+
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="268297325"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="268297325"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 08:49:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="545903814"
-Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jul 2022 08:49:02 -0700
-Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBebm-0003dP-6X;
-        Wed, 13 Jul 2022 15:49:02 +0000
-Date:   Wed, 13 Jul 2022 23:48:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Brian Vazquez <brianvv@google.com>
-Subject: net/core/dev.c:10290:18: sparse: sparse: cast removes address space
- '__percpu' of expression
-Message-ID: <202207132315.QFxcZZNI-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+        Wed, 13 Jul 2022 11:55:48 -0400
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66BC04E852
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:55:47 -0700 (PDT)
+Received: by mail-pg1-x549.google.com with SMTP id o10-20020a655bca000000b00412787983b3so5433887pgr.12
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:55:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=piRb7uQECeW9RYchBFA8MO5mKI1hZWhBSuPsCcsEFoc=;
+        b=TjHjMkxHdrjtTtLaLLkPMs792kod3mIYtSimCy6NVweAsJU75rtvhot4VpXsblBqly
+         qHRf5/L3tn7yMu364MBoudvFOE15V1qz4sWU7IX1ZmSnyAtwoN3kNYw02DuKnsDO5gjp
+         M7RQmANYsVuNDbgNtkXvd3a8DnuUQH+hZV3ikimvffMZd8joeIgwo7GaoFBX8DFrddDF
+         llsAFJQV9aU6qv7H1VvM3a3PUKiZyeNUhvRUKDT5CnUoj9OxYRKgWhY0+MNYPlyo3vp0
+         JKfjLrkj60y7DnOnKgIUy/4L8UmsN/TA25iA1sJPVSruP4sBdSbj5QDwOKoVzrQcwL4a
+         C7Kw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=piRb7uQECeW9RYchBFA8MO5mKI1hZWhBSuPsCcsEFoc=;
+        b=6xpwqTiVy4x4Y05AFn1ILHGNMOg6MA3CciQcAaQJpibyhUgJ2NJJdJizFPUbnYJmsH
+         Qle4x69KnnSHx3RP/UiMZiuU7rIOOWDRlRLRvVUJFic4V8fqBCm8vJ+BQBCoXjgqTHGh
+         lpAmBquxyI1k01K3CHRBkn2tIFr7Ayk1t7XQnAP8p1F1dX0Un4y628NB9hx8ApoqCdRC
+         itqVTrotHHmzJAKETGDFzPDpWe9xoUP04uBwsVbIki7ZkfdXWoCUXt4+DWh3Cta0DNet
+         DrO8r/qce2e5SxQ+Uwczmv082EUbDovCF4eyPW0zyN0DWKeoYVxa9qDCICy2dhUQgBWw
+         1Qmw==
+X-Gm-Message-State: AJIora+2QQHenyNA2Za5OIyQkVXMTl/6ryfrz2keAWQuNlnuVJe9y6Zg
+        2oWH/xF5AW0jrAHbvX4lI3bHz80=
+X-Google-Smtp-Source: AGRyM1vCSrU7O6O9FOIV8kUv1lP2Lkoiv9Ln98VM/44THqm2zXjHACWzfrfMXWhmXMTgZeZAsBg2f70=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:db02:b0:16c:5568:d740 with SMTP id
+ m2-20020a170902db0200b0016c5568d740mr3785558plx.100.1657727746774; Wed, 13
+ Jul 2022 08:55:46 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 08:55:45 -0700
+In-Reply-To: <20220713011000.29090-1-xiaolinkui@kylinos.cn>
+Message-Id: <Ys7rAaRKbTEzvjFY@google.com>
+Mime-Version: 1.0
+References: <20220713011000.29090-1-xiaolinkui@kylinos.cn>
+Subject: Re: [PATCH] selftests/bpf: Return true/false (not 1/0) from bool functions
+From:   sdf@google.com
+To:     xiaolinkui <xiaolinkui@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
+        yhs@fb.com, kpsingh@kernel.org, haoluo@google.com,
+        jolsa@kernel.org, mykolal@fb.com, shuah@kernel.org,
+        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
+        xiaolinkui@kylinos.cn, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   b047602d579b4fb028128a525f056bbdc890e7f0
-commit: 625788b5844511cf4c30cffa7fa0bc3a69cebc82 net: add per-cpu storage and net->core_stats
-date:   4 months ago
-config: riscv-randconfig-s032-20220713 (https://download.01.org/0day-ci/archive/20220713/202207132315.QFxcZZNI-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=625788b5844511cf4c30cffa7fa0bc3a69cebc82
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 625788b5844511cf4c30cffa7fa0bc3a69cebc82
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash net/core/
+On 07/13, xiaolinkui wrote:
+> From: Linkui Xiao<xiaolinkui@kylinos.cn>
+                    ^ space here?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Return boolean values ("true" or "false") instead of 1 or 0 from bool
+> functions.  This fixes the following warnings from coccicheck:
 
+> tools/testing/selftests/bpf/progs/test_xdp_noinline.c:407:9-10: WARNING:
+> return of 0/1 in function 'decap_v4' with return type bool
+> tools/testing/selftests/bpf/progs/test_xdp_noinline.c:389:9-10: WARNING:
+> return of 0/1 in function 'decap_v6' with return type bool
+> tools/testing/selftests/bpf/progs/test_xdp_noinline.c:290:9-10: WARNING:
+> return of 0/1 in function 'encap_v6' with return type bool
+> tools/testing/selftests/bpf/progs/test_xdp_noinline.c:264:9-10: WARNING:
+> return of 0/1 in function 'parse_tcp' with return type bool
+> tools/testing/selftests/bpf/progs/test_xdp_noinline.c:242:9-10: WARNING:
+> return of 0/1 in function 'parse_udp' with return type bool
 
-sparse warnings: (new ones prefixed by >>)
-   net/core/dev.c:3254:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
-   net/core/dev.c:3254:23: sparse:     expected restricted __wsum [usertype] csum
-   net/core/dev.c:3254:23: sparse:     got unsigned int
-   net/core/dev.c:3254:23: sparse: sparse: cast from restricted __wsum
->> net/core/dev.c:10290:18: sparse: sparse: cast removes address space '__percpu' of expression
-   net/core/dev.c:3759:17: sparse: sparse: context imbalance in '__dev_queue_xmit' - different lock contexts for basic block
-   net/core/dev.c:4961:17: sparse: sparse: context imbalance in 'net_tx_action' - different lock contexts for basic block
+> Generated by: scripts/coccinelle/misc/boolreturn.cocci
 
-vim +/__percpu +10290 net/core/dev.c
+> Signed-off-by: Linkui Xiao<xiaolinkui@kylinos.cn>
 
- 10282	
- 10283	struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
- 10284	{
- 10285		struct net_device_core_stats __percpu *p;
- 10286	
- 10287		p = alloc_percpu_gfp(struct net_device_core_stats,
- 10288				     GFP_ATOMIC | __GFP_NOWARN);
- 10289	
- 10290		if (p && cmpxchg(&dev->core_stats, NULL, p))
- 10291			free_percpu(p);
- 10292	
- 10293		/* This READ_ONCE() pairs with the cmpxchg() above */
- 10294		p = READ_ONCE(dev->core_stats);
- 10295		if (!p)
- 10296			return NULL;
- 10297	
- 10298		return this_cpu_ptr(p);
- 10299	}
- 10300	EXPORT_SYMBOL(netdev_core_stats_alloc);
- 10301	
+This patch likely needs a resend with proper [PATCH bpf] or
+[PATCH bpf-next] subject to end up in patchwork and to be picked up.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Take a look at Documentation/bpf/bpf_devel_QA.rst section "Q: How do I
+indicate which tree (bpf vs. bpf-next) my patch should be applied to?".
+
+Since that's a cleanup, you most likely want to target bpf-next.
+
+> ---
+>   .../selftests/bpf/progs/test_xdp_noinline.c   | 30 +++++++++----------
+>   1 file changed, 15 insertions(+), 15 deletions(-)
+
+> diff --git a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c  
+> b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> index 125d872d7981..ba48fcb98ab2 100644
+> --- a/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> +++ b/tools/testing/selftests/bpf/progs/test_xdp_noinline.c
+> @@ -239,7 +239,7 @@ bool parse_udp(void *data, void *data_end,
+>   	udp = data + off;
+
+>   	if (udp + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	if (!is_icmp) {
+>   		pckt->flow.port16[0] = udp->source;
+>   		pckt->flow.port16[1] = udp->dest;
+> @@ -247,7 +247,7 @@ bool parse_udp(void *data, void *data_end,
+>   		pckt->flow.port16[0] = udp->dest;
+>   		pckt->flow.port16[1] = udp->source;
+>   	}
+> -	return 1;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> @@ -261,7 +261,7 @@ bool parse_tcp(void *data, void *data_end,
+
+>   	tcp = data + off;
+>   	if (tcp + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	if (tcp->syn)
+>   		pckt->flags |= (1 << 1);
+>   	if (!is_icmp) {
+> @@ -271,7 +271,7 @@ bool parse_tcp(void *data, void *data_end,
+>   		pckt->flow.port16[0] = tcp->dest;
+>   		pckt->flow.port16[1] = tcp->source;
+>   	}
+> -	return 1;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> @@ -287,7 +287,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   	void *data;
+
+>   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct ipv6hdr)))
+> -		return 0;
+> +		return false;
+>   	data = (void *)(long)xdp->data;
+>   	data_end = (void *)(long)xdp->data_end;
+>   	new_eth = data;
+> @@ -295,7 +295,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   	old_eth = data + sizeof(struct ipv6hdr);
+>   	if (new_eth + 1 > data_end ||
+>   	    old_eth + 1 > data_end || ip6h + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	memcpy(new_eth->eth_dest, cval->mac, 6);
+>   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 56710;
+> @@ -314,7 +314,7 @@ bool encap_v6(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   	ip6h->saddr.in6_u.u6_addr32[2] = 3;
+>   	ip6h->saddr.in6_u.u6_addr32[3] = ip_suffix;
+>   	memcpy(ip6h->daddr.in6_u.u6_addr32, dst->dstv6, 16);
+> -	return 1;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> @@ -335,7 +335,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   	ip_suffix <<= 15;
+>   	ip_suffix ^= pckt->flow.src;
+>   	if (bpf_xdp_adjust_head(xdp, 0 - (int)sizeof(struct iphdr)))
+> -		return 0;
+> +		return false;
+>   	data = (void *)(long)xdp->data;
+>   	data_end = (void *)(long)xdp->data_end;
+>   	new_eth = data;
+> @@ -343,7 +343,7 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   	old_eth = data + sizeof(struct iphdr);
+>   	if (new_eth + 1 > data_end ||
+>   	    old_eth + 1 > data_end || iph + 1 > data_end)
+> -		return 0;
+> +		return false;
+>   	memcpy(new_eth->eth_dest, cval->mac, 6);
+>   	memcpy(new_eth->eth_source, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 8;
+> @@ -367,8 +367,8 @@ bool encap_v4(struct xdp_md *xdp, struct ctl_value  
+> *cval,
+>   		csum += *next_iph_u16++;
+>   	iph->check = ~((csum & 0xffff) + (csum >> 16));
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+> -		return 0;
+> -	return 1;
+> +		return false;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> @@ -386,10 +386,10 @@ bool decap_v6(struct xdp_md *xdp, void **data, void  
+> **data_end, bool inner_v4)
+>   	else
+>   		new_eth->eth_proto = 56710;
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct ipv6hdr)))
+> -		return 0;
+> +		return false;
+>   	*data = (void *)(long)xdp->data;
+>   	*data_end = (void *)(long)xdp->data_end;
+> -	return 1;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> @@ -404,10 +404,10 @@ bool decap_v4(struct xdp_md *xdp, void **data, void  
+> **data_end)
+>   	memcpy(new_eth->eth_dest, old_eth->eth_dest, 6);
+>   	new_eth->eth_proto = 8;
+>   	if (bpf_xdp_adjust_head(xdp, (int)sizeof(struct iphdr)))
+> -		return 0;
+> +		return false;
+>   	*data = (void *)(long)xdp->data;
+>   	*data_end = (void *)(long)xdp->data_end;
+> -	return 1;
+> +	return true;
+>   }
+
+>   static __attribute__ ((noinline))
+> --
+> 2.17.1
+
