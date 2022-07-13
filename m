@@ -2,121 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9558DC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D2E9C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235696AbiGMI1R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59524 "EHLO
+        id S235742AbiGMI10 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:27:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234979AbiGMI0r (ORCPT
+        with ESMTP id S235587AbiGMI0u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 04:26:47 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED51B4A6;
-        Wed, 13 Jul 2022 01:26:05 -0700 (PDT)
-Received: from mail-yb1-f172.google.com ([209.85.219.172]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MiJIk-1neypJ3S10-00fSLI; Wed, 13 Jul 2022 10:26:04 +0200
-Received: by mail-yb1-f172.google.com with SMTP id e69so18098168ybh.2;
-        Wed, 13 Jul 2022 01:26:03 -0700 (PDT)
-X-Gm-Message-State: AJIora+pN1pO7uIsnDEvVXEo+Gv3tBS8I58kXoCVCabu5m+z9dP3BxR6
-        sPFKUK4u9rMqqNudKzjazfqUW4yMdZFffFCAISg=
-X-Google-Smtp-Source: AGRyM1s5ctXDWESPghTwunvKDjAPfvsYu2kacgrA/MPXviowltYXdPpskedj7zs4LJm1sUX08EXGIUpvgkI0AhSfMmA=
-X-Received: by 2002:a5b:b47:0:b0:66e:3617:d262 with SMTP id
- b7-20020a5b0b47000000b0066e3617d262mr2405858ybr.106.1657700762384; Wed, 13
- Jul 2022 01:26:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220712164235.40293-1-f.fainelli@gmail.com>
-In-Reply-To: <20220712164235.40293-1-f.fainelli@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 13 Jul 2022 10:25:45 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
-Message-ID: <CAK8P3a2QrYbWOqV+CG-W0ZkzW6ORgw8R6Dv-L3o2ZAtJs-B3Kw@mail.gmail.com>
-Subject: Re: [PATCH] arm64: Kconfig.platforms: Re-organized Broadcom menu
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        SoC Team <soc@kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        william.zhang@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        anand.gore@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Wei Xu <xuwei5@hisilicon.com>, Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        "moderated list:ARM/Mediatek SoC..." 
-        <linux-mediatek@lists.infradead.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Matthias Brugger <mbrugger@suse.com>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
+        Wed, 13 Jul 2022 04:26:50 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9280620194
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:26:14 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <l.stach@pengutronix.de>)
+        id 1oBXh6-0001Xl-MY; Wed, 13 Jul 2022 10:26:04 +0200
+Message-ID: <29492f419daf4334546826c54b206ccb2858063d.camel@pengutronix.de>
+Subject: Re: [PATCH v14 09/17] PCI: imx6: Call host init function directly
+ in resume
+From:   Lucas Stach <l.stach@pengutronix.de>
+To:     Richard Zhu <hongxing.zhu@nxp.com>, bhelgaas@google.com,
+        robh+dt@kernel.org, broonie@kernel.org, lorenzo.pieralisi@arm.com,
+        festevam@gmail.com, francesco.dolcini@toradex.com
+Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
+        linux-imx@nxp.com
+Date:   Wed, 13 Jul 2022 10:26:03 +0200
+In-Reply-To: <1656645935-1370-10-git-send-email-hongxing.zhu@nxp.com>
+References: <1656645935-1370-1-git-send-email-hongxing.zhu@nxp.com>
+         <1656645935-1370-10-git-send-email-hongxing.zhu@nxp.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:HeyXD8e/HaOaOGqEfNvCOVkZGJNjOMpMO6jAn5G7kFAUNXa3fdV
- hhmnoWd7mVgdNSxv2wv1tjqzk53qm19wVY8I0ImRpGD1HlDEAkdgY/V/bkg44wLPCpSQdnJ
- 1yUTDg4lH+HGhlAqWm/TO4QJKlA0c0rfGbIXcVHLXIcaDPiI3Q4FJ5oymRWzIl9F3OltS0r
- lJiMhqV3mjuiI5uWu2XwQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:jmpPnYOmdD4=:IHFlISKYwMj9oc4o14PJOl
- JBe3oope5jInhkHXNjXQ+b6NNdchAapeA8Bh17yT2DzThtZYLweoX1ILblUzppI7eWHaLV/+C
- 4C3d4WpxluvEMNc8asGzUbtx5yarCUmPUhf7skTxSP14Uftuh7yWwygFJFH2WLthgm/+b7CTL
- EDjzl50QbLMx+ODk5TXraMZ6swz1iY7LO3N1fzL1RqbdYpShUww/vHMTSLdO2OQQmiSq9h3rI
- Qaa4rcX/sqNzdprzB4FZ0Mxd3kNBP9ym53rvgZK0NFVLNYFKjJSDslUgdW/qAUsPiZIs398Qu
- 0CuN5NNC0dYgMDBGE4dcsEdm7BGlKwjXHHFWkeyzVeH5KTJjUJYCuyNMq4q481BgMinhqA1bL
- qx9rWMtoQHF6wZPuRozvdsvK9bO2/NlLV5rppuDp3+2R660nMAulrNLNHJMct7TeARilNLbYC
- SYg89ZGdNJisrd0ash+z/Ybnjoco4E1UKB0e7r8ZD2dvQdFykxwx6VEPdC7B5PP68Mcgi0DjQ
- wVSC9GV5ylatR5GIOk56Yk1CzfqVSnYIcaC4K8+d/jmOpNGP4CySTdGmrnfueMmH48j71g2he
- AeFCOKZN5Qbry788kkRzAXIsomp8pAU0eX/aCsN8Faw5NUdlcIKhkuIGHApsMuWZT2ED+srDl
- mrbm4UKqBAGxeTh5CKj+giYVR0FXfYifqlT7rqho7Zn/0T6m4yn5HH1iZhFjlA4/JWAmdioqC
- xS1Bd40hj4k5+Mq21XF32LXvtZlBQBwp6BiKIw==
+User-Agent: Evolution 3.40.4 (3.40.4-1.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: l.stach@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 6:42 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> There are now multiple Broadcom SoCs supported so group them under their
-> own menu such that the selection is visually more appealing and we can
-> easily add new platforms there in the future. This allows us to move
-> ARCH_BRCMSTB back to its siblings.
->
-> No functional changes introduced.
->
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Am Freitag, dem 01.07.2022 um 11:25 +0800 schrieb Richard Zhu:
+> Call imx6_pcie_host_init() instead of duplicating codes in resume.
+> 
+> Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+
+So this isn't strictly a de-duplication, as imx6_pcie_host_init also
+does the MPLL setup again on i.MX6SX. Which I believe is absolutely the
+right thing to do in resume, even though I'm not aware of any system
+that would be affected by this change.
+
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+
 > ---
->
-> Note this is based on "arm64: bcmbca: add arch bcmbca machine entry"
+>  drivers/pci/controller/dwc/pci-imx6.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+> index eaae144db4f3..2b42c37f1617 100644
+> --- a/drivers/pci/controller/dwc/pci-imx6.c
+> +++ b/drivers/pci/controller/dwc/pci-imx6.c
+> @@ -1034,9 +1034,9 @@ static int imx6_pcie_resume_noirq(struct device *dev)
+>  	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_SUPPORTS_SUSPEND))
+>  		return 0;
+>  
+> -	imx6_pcie_assert_core_reset(imx6_pcie);
+> -	imx6_pcie_init_phy(imx6_pcie);
+> -	imx6_pcie_deassert_core_reset(imx6_pcie);
+> +	ret = imx6_pcie_host_init(pp);
+> +	if (ret)
+> +		return ret;
+>  	dw_pcie_setup_rc(pp);
+>  
+>  	ret = imx6_pcie_start_link(imx6_pcie->pci);
 
-Hi Florian,
 
-So far, we have tried to keep the Kconfig.platforms file rather coarse-grained,
-mainly limiting it to company names and high-level families, but avoiding
-sub-menus or adding too many sub-families.
-
-If we add per-vendor submenus, we should probably first decide how we
-want to structure this across vendors. I've added maintainers and lists to
-Cc for a couple of the ones that are in a similar situation.
-
-I can see a couple of ways we can do this:
-
-a) keep the list of platforms as short as possible, combining related
-  SoC families from a single vendor wherever possible, but no sub-menus
-  (same as today)
-
-b) Always use sub-menus when there is more than one family, but
-   keep relatively coarse platform selection.
-
-c) Use sub-menus and also move to a more fine-grained SoC
-    selection, similar to what we have on 32-bit arm.
-
-I would not really want to go to c), but a) and b) both make sense to
-me as long as do it consistently across all platforms.
-
-Any other ideas or opinions?
-
-        Arnd
