@@ -2,87 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18305C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4100C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:40:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235681AbiGMJj7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:39:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
+        id S236158AbiGMJkW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236101AbiGMJj5 (ORCPT
+        with ESMTP id S234719AbiGMJkT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:39:57 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E0E6F54F3
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:39:54 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-220-jNhFV5uvMoyY8ZVNPGX1qw-1; Wed, 13 Jul 2022 10:39:48 +0100
-X-MC-Unique: jNhFV5uvMoyY8ZVNPGX1qw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Wed, 13 Jul 2022 10:39:43 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Wed, 13 Jul 2022 10:39:43 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Yu-Jen Chang' <arthurchang09@gmail.com>,
-        Andrey Semashev <andrey.semashev@gmail.com>
-CC:     "andy@kernel.org" <andy@kernel.org>,
-        "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
-        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 2/2] lib/string.c: Optimize memchr()
-Thread-Topic: [PATCH 2/2] lib/string.c: Optimize memchr()
-Thread-Index: AQHYlf/m+SYzYfFyd0Sny8eSVHr68K18Ceug
-Date:   Wed, 13 Jul 2022 09:39:43 +0000
-Message-ID: <49a8be9269ee47de9fc2d0d7f09eb0b1@AcuMS.aculab.com>
-References: <20220710142822.52539-1-arthurchang09@gmail.com>
- <20220710142822.52539-3-arthurchang09@gmail.com>
- <3a1b50d2-a7aa-3e89-56fe-5d14ef9da22f@gmail.com>
- <CAD4RrFPihC+8LScC1RJ5GfOsLs4kze0QwALS1ykNH_m89Z1NGg@mail.gmail.com>
- <48db247e-f6fd-cb4b-7cc5-455bf26bb153@gmail.com>
- <CAD4RrFPfwu4Ascj5tdz8qq2Qgnu5GN2eHjVwMW5AqUa1H7JapA@mail.gmail.com>
-In-Reply-To: <CAD4RrFPfwu4Ascj5tdz8qq2Qgnu5GN2eHjVwMW5AqUa1H7JapA@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 13 Jul 2022 05:40:19 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38990F54F3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:40:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657705218; x=1689241218;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=815LDDHeJET7o6zA0V9+5kqIbTL0axArBicw5uHazm0=;
+  b=QF1TwcBya4ain1vu+q4OwDCcWbGL8kVbaduTSB3XGPYqtcFnnCfPnN7M
+   c/2FwCvHcJfpCS+Mo+iT1Ge2koRZBlStdaKiAZ4lu4Sg3AkovOc6BSpBb
+   b74zzYx7ZECkjTmjj20On297C1XaGS7tPhyLbnTfnWYVjSCr0hMaRrrJz
+   TN2lmvAvwNNAaw/jQfvQEJ7u0kmZHzRMfSrZ3OwevADJD6ECdUafXGIYH
+   nctgSFv5W2p9T7Cg8y3hhh/GsHwrj/5Sfd10yEFAawxd9kosGql2iCMY6
+   GJi4wmxJAw/yFbHH8Ad0LFtpXx03wHFLHgtc3v1sMfOisx6/TPXXqdEMT
+   A==;
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="164520175"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 Jul 2022 02:40:17 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 13 Jul 2022 02:40:17 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 13 Jul 2022 02:40:15 -0700
+Message-ID: <ba905391f3258c2d780677e09e4f89192df7bc31.camel@microchip.com>
+Subject: Re: [PATCH] Revert "reset: microchip-sparx5: allow building as a
+ module"
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Michael Walle <michael@walle.cc>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+CC:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        =?ISO-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>,
+        Kavyasree Kotagiri <kavyasree.kotagiri@microchip.com>
+Date:   Wed, 13 Jul 2022 11:40:14 +0200
+In-Reply-To: <73dc6fcedebcae098751bd093fe2d028@walle.cc>
+References: <20220713084010.168720-1-p.zabel@pengutronix.de>
+         <73dc6fcedebcae098751bd093fe2d028@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogWXUtSmVuIENoYW5nDQo+IFNlbnQ6IDEyIEp1bHkgMjAyMiAxNTo1OQ0KLi4uDQo+ID4g
-SSB0aGluayB5b3UncmUgbWlzc2luZyB0aGUgcG9pbnQuIExvYWRzIGF0IHVuYWxpZ25lZCBhZGRy
-ZXNzZXMgbWF5IG5vdA0KPiA+IGJlIGFsbG93ZWQgYnkgaGFyZHdhcmUgdXNpbmcgY29udmVudGlv
-bmFsIGxvYWQgaW5zdHJ1Y3Rpb25zIG9yIG1heSBiZQ0KPiA+IGluZWZmaWNpZW50LiBHaXZlbiB0
-aGF0IHRoaXMgbWVtY2hyIGltcGxlbWVudGF0aW9uIGlzIHVzZWQgYXMgYSBmYWxsYmFjaw0KPiA+
-IHdoZW4gbm8gaGFyZHdhcmUtc3BlY2lmaWMgdmVyc2lvbiBpcyBhdmFpbGFibGUsIHlvdSBzaG91
-bGQgYmUNCj4gPiBjb25zZXJ2YXRpdmUgd3J0LiBoYXJkd2FyZSBjYXBhYmlsaXRpZXMgYW5kIGJl
-aGF2aW9yLiBZb3Ugc2hvdWxkDQo+ID4gcHJvYmFibHkgaGF2ZSBhIHByZS1hbGlnbm1lbnQgbG9v
-cC4NCj4gDQo+IEdvdCBpdC4gSSBhZGQgIHByZS1hbGlnbm1lbnQgbG9vcC4gSXQgYWxpZ25zIHRo
-ZSBhZGRyZXNzIHRvIDggb3IgNGJ5dGVzLg0KDQpUaGF0IHNob3VsZCBiZSBwcmVkaWNhdGVkIG9u
-ICFIQVNfRUZGSUNJRU5UX1VOQUxJR05FRF9BQ0NFU1MuDQoNCi4uLg0KPiAgICAgICAgIGZvciAo
-OyBwIDw9IGVuZCAtIDg7IHAgKz0gOCkgew0KPiAgICAgICAgICAgICB2YWwgPSAqKHU2NCopcCBe
-IG1hc2s7DQo+ICAgICAgICAgICAgIGlmICgodmFsICsgMHhmZWZlZmVmZWZlZmVmZWZmdWxsKQ0K
-PiAmICh+dmFsICYgMHg4MDgwODA4MDgwODA4MDgwdWxsKSkNCj4gICAgICAgICAgICAgICAgIGJy
-ZWFrOw0KDQpJIHdvdWxkIGFkZCBhIGNvdXBsZSBvZiBjb21tZW50cywgbGlrZToNCgkvLyBDb252
-ZXJ0IHRvIGNoZWNrIGZvciB6ZXJvIGJ5dGUuDQoJLy8gU3RhbmRhcmQgY2hlY2sgZm9yIGEgemVy
-byBieXRlIGluIGEgd29yZC4NCihCdXQgbm90IHRoZSBiaWcgNCBsaW5lIGV4cGxhbmF0aW9uIHlv
-dSBoYWQuDQoNCkl0IGlzIGFsc28gd29ydGggbG9va2luZyBhdCBob3cgdGhhdCBjb2RlIGNvbXBp
-bGVzDQpvbiAzMmJpdCBhcmNoIHRoYXQgZG9uJ3QgaGF2ZSBhIGNhcnJ5IGZsYWcuDQpUaGF0IGlz
-IGV2ZXJ5dGhpbmcgYmFzZWQgb24gTUlQUywgaW5jbHVkaW5nIHJpc2N2Lg0KDQoJRGF2aWQNCg0K
-LQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0s
-IE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdh
-bGVzKQ0K
+Hi Michael,
+
+I am afraid that the exact list of affected modules is not available, so us=
+ing the
+RESET_PROT_STAT.SYS_RST_PROT_VCORE bit is the best known way of resetting a=
+s much as possible, and
+still continue execution.
+
+This is what the Sparx5 datasheet has to say about the SYS_RST_PROT_VCORE p=
+rotect bit:
+
+The device can be soft-reset by writing SOFT_RST.SOFT_CHIP_RST. The VCore s=
+ystem and CPU can be
+protected from a device soft-reset by writing RESET_PROT_STAT.SYS_RST_PROT_=
+VCORE =3D 1 before
+initiating soft-reset.=C2=A0
+
+In this case, a chip-level soft reset is applied to all other blocks except=
+ the VCore system and the
+VCore CPU. When protecting the VCore system and CPU from a soft reset, the =
+frame DMA must be
+disabled prior to a chip-level soft reset. The SERDES and PLL blocks can be=
+ protected from reset by
+writing to SOFT_RST.SOFT_SWC_RST instead of SOFT_CHIP_RST.
+
+The VCore general purpose registers (CPU::GPR) and GPIO alternate modes (DE=
+VCPU_GCB::GPIO_ALT) are
+not affected by a soft-reset. These registers are only reset when an extern=
+al reset is asserted.
+
+BR
+Steen
+
+On Wed, 2022-07-13 at 11:03 +0200, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e content is safe
+>=20
+> [+ Claudiu, Kavyasree ]
+> Am 2022-07-13 10:40, schrieb Philipp Zabel:
+> > This reverts commit b6b9585876da018bdde2d5f15d206a689c0d70f3.
+> >=20
+> > This breaks MDIO on kswitch-d10, presumably because the global switch
+> > reset is not released early enough anymore.
+> >=20
+> > Reported-by: Michael Walle <michael@walle.cc>
+> > Cc: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> > Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+>=20
+> Thanks!
+>=20
+> Tested-by: Michael Walle <michael@walle.cc>
+>=20
+> And maybe Microchip can chime in here and tell us what
+> subsystems in the SoC will actually be reset by this.
+> I fear this reset will affect almost every part of the
+> SoC. So it would have to be bound to every single
+> device? Or maybe adding that reset to the switch driver
+> was a mistake in the first place?
+>=20
+> I mean, if it wouldn't be for the guard bit, it would
+> also reset the CPU core..
+>=20
+> -michael
 
