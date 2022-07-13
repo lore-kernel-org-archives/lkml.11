@@ -2,172 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04628C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 20:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94700C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 21:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbiGMU72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 16:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53126 "EHLO
+        id S237063AbiGMVBI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 17:01:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236702AbiGMU7Y (ORCPT
+        with ESMTP id S231348AbiGMVBG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 16:59:24 -0400
-Received: from 19.mo550.mail-out.ovh.net (19.mo550.mail-out.ovh.net [178.32.97.206])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAAD31234
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:59:20 -0700 (PDT)
-Received: from player732.ha.ovh.net (unknown [10.109.146.211])
-        by mo550.mail-out.ovh.net (Postfix) with ESMTP id F3CA923D5B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 20:23:19 +0000 (UTC)
-Received: from RCM-web6.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
-        (Authenticated sender: rafal@milecki.pl)
-        by player732.ha.ovh.net (Postfix) with ESMTPSA id A1DDB1EC2A408;
-        Wed, 13 Jul 2022 20:23:07 +0000 (UTC)
+        Wed, 13 Jul 2022 17:01:06 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B7A31349
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:01:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657746063; x=1689282063;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=LhXI5ldx+R/isqL5mJTcb3Kqhseql2na+Zu9Y+5xW08=;
+  b=QI+7ydfC8JjS5pwjUzfLRLuNgh+gRoNEeBhAfrV2QynETZ9TswMd+3fN
+   8PZFvXt0GfCoks+dPwsq1ZQAD+2sfxsFKunNTQA2Pt8A/Sc1ozyclCSax
+   iloMpV7ebfc1bwHAaoLtIupmqorxI4eLy8gk63bczygm7swkQovZY14wF
+   g=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Jul 2022 14:01:03 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 14:01:03 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 13 Jul 2022 14:01:02 -0700
+Received: from [10.110.120.249] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 13 Jul
+ 2022 14:01:01 -0700
+Message-ID: <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
+Date:   Wed, 13 Jul 2022 14:01:00 -0700
 MIME-Version: 1.0
-Date:   Wed, 13 Jul 2022 22:23:07 +0200
-From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        kursad.oney@broadcom.com, anand.gore@broadcom.com,
-        dan.beygelman@broadcom.com, f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        joel.peshkin@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 1/3] dt-bindings: arm64: bcmbca: Merge BCM4908 into
- BCMBCA
-In-Reply-To: <147bc812-3971-9832-fb39-5545e280f562@broadcom.com>
-References: <20220712021144.7068-1-william.zhang@broadcom.com>
- <20220712021144.7068-2-william.zhang@broadcom.com>
- <ca8c3003-1bcb-6658-592c-566609fd7bd2@linaro.org>
- <94b0ab39-279d-d3c2-98a4-054c10ad041c@broadcom.com>
- <c40f20c7-59ee-99f4-9a11-e928b41eda9f@linaro.org>
- <6efb1cfe-6129-276a-eeb3-44147304d211@broadcom.com>
- <e4356c5e89492eb690e3dc863ba281bd@milecki.pl>
- <85219d59e2906534409fc24ad2e5e4c9@milecki.pl>
- <147bc812-3971-9832-fb39-5545e280f562@broadcom.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <a2007e2b7bcac30bdd6f6b03ee9cf61b@milecki.pl>
-X-Sender: rafal@milecki.pl
-X-Originating-IP: 194.187.74.233
-X-Webmail-UserID: rafal@milecki.pl
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>
+CC:     <clg@kaod.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mtd@lists.infradead.org>, <p.yadav@ti.com>,
+        <quic_ggregory@quicinc.com>, <quic_jiles@quicinc.com>,
+        <tudor.ambarus@microchip.com>
+References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
+ <20220711095042.2095360-1-michael@walle.cc>
+ <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
+ <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
+From:   Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+In-Reply-To: <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Ovh-Tracer-Id: 3005871276369751003
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejjedgudeglecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvfevufgjfhgfkfigihgtgfesthekjhdttderjeenucfhrhhomheptfgrfhgrlhgpofhilhgvtghkihcuoehrrghfrghlsehmihhlvggtkhhirdhplheqnecuggftrfgrthhtvghrnhepveejhfffffevledujeeftddvffdtkefggffhgeeileeivdefiefgjeetjeejkeefnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrjeefvddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheehtd
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-13 20:37, William Zhang wrote:
-> Hi Rafal,
+Hi Michael,
+
+On 7/13/2022 7:32 AM, Michael Walle wrote:
+> Hi,
 > 
-> On 7/13/22 03:58, Rafał Miłecki wrote:
->> On 2022-07-13 12:50, Rafał Miłecki wrote:
->>> On 2022-07-13 02:57, William Zhang wrote:
->>>> On 7/12/22 11:18, Krzysztof Kozlowski wrote:
->>>>> On 12/07/2022 19:37, William Zhang wrote:
->>>>>>>> +      - description: BCM4908 Family based boards
->>>>>>>> +        items:
->>>>>>>> +          - enum:
->>>>>>>> +              # BCM4908 SoC based boards
->>>>>>>> +              - brcm,bcm94908
->>>>>>>> +              - asus,gt-ac5300
->>>>>>>> +              - netgear,raxe500
->>>>>>>> +              # BCM4906 SoC based boards
->>>>>>>> +              - brcm,bcm94906
->>>>>>>> +              - netgear,r8000p
->>>>>>>> +              - tplink,archer-c2300-v1
->>>>>>>> +          - enum:
->>>>>>>> +              - brcm,bcm4908
->>>>>>>> +              - brcm,bcm4906
->>>>>>>> +              - brcm,bcm49408
->>>>>>> 
->>>>>>> This is wrong.  brcm,bcm94908 followed by brcm,bcm4906 does not 
->>>>>>> look
->>>>>>> like valid list of compatibles.
->>>>>>> 
->>>>>> For 4908 board variant, it will need to be followed by 4908 chip. 
->>>>>> Sorry
->>>>>> for the basic question but is there any requirement to enforce 
->>>>>> this kind
->>>>>> of rule?  I would assume dts writer know what he/she is doing and 
->>>>>> select
->>>>>> the right combination.
->>>>> 
->>>>> The entire point of DT schema is to validate DTS. Combination like 
->>>>> above
->>>>> prevents that goal.
->>>>> 
->>>>> Best regards,
->>>>> Krzysztof
->>>> Understand the DT schema purpose. But items property allows multiple
->>>> enums in the list which gives a lot of flexibility but make it hard 
->>>> to
->>>> validate. I am not familiar with DT schema, is there any directive 
->>>> to
->>>> specify one enum value depending on another so dts validation tool 
->>>> can
->>>> report error if combination is wrong?
->>>> 
->>>> This is our preferred format of all bcmbca compatible string
->>>> especially when we could have more than 10 chip variants for the 
->>>> same
->>>> chip family and we really want to work on the chip family id.  We 
->>>> will
->>>> make sure they are in the right combination in our own patch and 
->>>> patch
->>>> from other contributors. Would this work? If not, I will probably 
->>>> have
->>>> to revert the change of 4908(maybe append brcm,bcmbca as this chip
->>>> belongs to the same bca group) and use "enum board variant", "const
->>>> main chip id", "brcm,bca" for all other chips as our secondary 
->>>> choice.
->>> 
->>> I'm not sure why I didn't even receive 1/3 and half of discussion
->>> e-mails.
->>> 
->>> You can't just put all strings into a single bag and allow mixing 
->>> them
->>> in any combos. Please check how it's properly handled in the current
->>> existing binding:
->>> Documentation/devicetree/bindings/arm/bcm/brcm,bcm4908.yaml
->>> 
->>> Above binding enforces that non-matching compatible strings are not 
->>> used
->>> together.
->> 
->> I just noticed you're actually removing brcm,bcm4908.yaml in the 2/3 
->> so
->> you must be aware of that file.
->> 
->> So you see a cleanly working binding in the brcm,bcm4908.yaml but
->> instead copying it you decided to wrote your own one from scratch.
->> Incorrectly.
->> 
->> This smells of NIH (not invented here). Please just use that binding I
->> wrote and move if it needed.
+> Am 2022-07-13 16:26, schrieb Jae Hyun Yoo:
+>>>> +    { "w25q512nwq", INFO(0xef6020, 0, 64 * 1024, 1024)
+>>>
+>>> Please use INFO(0xef6020, 0, 0, 0) and test wether it will still
+>>> work correctly. We will then be able to convert it to SNOR_ID3()
+>>> later.
+>>
+>> Tested it but it doesn't work with INFO(0xef6020, 0, 0, 0). I'll keep
+>> it as is.
 > 
-> Not mean to discredit any of your work and I did copy over your
-> binding and combine them into one SoC entry to the new bcmbca.yaml and
-> add you as one of the maintainer to this file. As this change would
-> certainly concern you, that's why I sent RFC first.  As I explained in
-> the cover letter, the purpose of the change is to reduce the number of
-> compatible strings and keep one entry for one chip family due to
-> possible large number of chip variants.  But since there is no way to
-> validate the combination, I will copy the existing 4908 bindings as
-> they are now
+> Can you please look into this? I'd expect this to work if the SFDP
+> tables are correct because all this should come from the tables.
+> You can look at /sys/kernel/debug/spi-nor/spi0.0/params and see
+> what is changing there.
 
-Right. I believe we need that.
+I tested it again but result is still the same. I can check the parsed
+info like below if I use INFO(0xef6020, 0, 64 * 1024, 1024) but I can't
+even check the debugfs info if I use INFO(0xef6020, 0, 0, 0) since it
+doesn't boot at all. I think, this patch should go as is and the size
+parsing issue could be fixed using a separate fix.
 
+Thanks,
+Jae
 
-> but I would propose to append "brcm, bcmbca" as it is
-> part of bcmbca chip. And for the other chips, we would just use enum
-> "board variant", const "main chip id", const "brcm,bca".  Does that
-> sound good to you?
+$ cat /sys/kernel/debug/spi-nor/spi0.0/capabilities
+Supported read modes by the flash
+  1S-1S-1S
+   opcode        0x13
+   mode cycles   0
+   dummy cycles  0
+  1S-1S-1S (fast read)
+   opcode        0x0c
+   mode cycles   0
+   dummy cycles  8
+  1S-1S-2S
+   opcode        0x3c
+   mode cycles   0
+   dummy cycles  8
+  1S-2S-2S
+   opcode        0xbc
+   mode cycles   2
+   dummy cycles  2
+  1S-1S-4S
+   opcode        0x6c
+   mode cycles   0
+   dummy cycles  8
+  1S-4S-4S
+   opcode        0xec
+   mode cycles   2
+   dummy cycles  4
+  4S-4S-4S
+   opcode        0xec
+   mode cycles   2
+   dummy cycles  0
 
-Nitpicking: you meant "brcm,bcmbca" (typo) but sounds absolutely fine!
+Supported page program modes by the flash
+  1S-1S-1S
+   opcode        0x12
+  1S-1S-4S
+   opcode        0x34
+$ cat /sys/kernel/debug/spi-nor/spi0.0/params
+name            w25q512nwq
+id              ef 60 20
+size            64.0 MiB
+write size      1
+page size       256
+address width   4
+flags           4B_OPCODES | HAS_4BAIT | HAS_16BIT_SR | SOFT_RESET
+
+opcodes
+  read           0x6c
+   dummy cycles  8
+  erase          0xdc
+  program        0x12
+  8D extension   none
+
+protocols
+  read           1S-1S-4S
+  write          1S-1S-1S
+  register       1S-1S-1S
+
+erase commands
+  21 (4.00 KiB) [1]
+  dc (64.0 KiB) [3]
+  c7 (64.0 MiB)
+
+sector map
+  region (in hex)   | erase mask | flags
+  ------------------+------------+----------
+  00000000-03ffffff |     [ 123] |
+
+> Thanks,
+> -michael
