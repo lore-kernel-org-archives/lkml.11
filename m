@@ -2,257 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0A56C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E26C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:24:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235206AbiGMOXX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:23:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
+        id S233322AbiGMOYO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:24:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230436AbiGMOXV (ORCPT
+        with ESMTP id S231576AbiGMOYI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:23:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E7632EC3;
-        Wed, 13 Jul 2022 07:23:20 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DDDQ4d005014;
-        Wed, 13 Jul 2022 14:22:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Heo0uLNDfOaFW8OcuQM/pabI+QakNuds5f6WntEJKOE=;
- b=R5t16WcyQA3oQwpcUYRt0LQTwIPMZtwjTFwSN78lP95TyPL0mjZVZAuS4Ede6eYFWWzz
- QPB3SrkIlT/TJTm4qQRTuz9coGD5LRKzbe2at3erhXxykJqWLQqRZ1eiC5Xr8YVKRgIs
- 3hnIOc86oDWqxanPsGgBV/HF+QPTsCYaz46QKpiHjP9pCAvVyguOXcNYHv9wT62R7KSd
- Nuoxd2X30atOfFn8ZOQFbbaHt3l/iSqd4COzzxHZEmfUkPDxPT4r7rRqglK2oYjEW0RP
- EjmDkDeizLCYxiBsac9oGjpNuvUP/VfUznlV5HWwzExwbuP+q65MWyA+x2bYYVdxEs9J DA== 
+        Wed, 13 Jul 2022 10:24:08 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E048023160;
+        Wed, 13 Jul 2022 07:24:07 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DEEgor004515;
+        Wed, 13 Jul 2022 14:23:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Kqd8S3YsVTupeYDsw/0CEjgSPyDSJBms6hyW9oBAQeM=;
+ b=QswoJDCWPAwTxoZHbdQEOYKJFNMNTb2KFlnGbq7oimxzEtYekgdpSiRH/HNBsveUdi/f
+ 1c4OgdZzQ7WLvfp5Gh+2GZ/LXRW8hApTxw75mJZhcsPDNNgnlyJ+Z89sKRqwNHEooqX+
+ czJ8NIQEa4koGb3HjCFShmMwZeEIocw9bWmvbkNOizW6cHrfWrta+3DFONOUT42z6MFV
+ u9nj5WHC2ENWupHa+kNzIwpjhdmcuVdSiuKRm7clv7Lfh9eh9b1idBzuyd7gxRNzD9hg
+ pQELC3clUGyVOLTRv8+FgiKBwKBoqzTxWvwdIrSC7/cs8xZ0bppXs2d8s5idEtkUeH9E Ng== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9w6acn7v-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9ymvratk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 14:22:54 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26DEMsi1014224;
-        Wed, 13 Jul 2022 14:22:54 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9w6acn6f-1
+        Wed, 13 Jul 2022 14:23:45 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26DEFSXF013891;
+        Wed, 13 Jul 2022 14:23:44 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3h9ymvrasc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 14:22:54 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26DELkxL018854;
-        Wed, 13 Jul 2022 14:22:51 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma04ams.nl.ibm.com with ESMTP id 3h8rrn2py5-1
+        Wed, 13 Jul 2022 14:23:44 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26DEKPjp000304;
+        Wed, 13 Jul 2022 14:23:42 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3h71a8w2sf-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 14:22:51 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26DEMnBm19792306
+        Wed, 13 Jul 2022 14:23:41 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26DENdG921365098
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Jul 2022 14:22:49 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2C5F7AE04D;
-        Wed, 13 Jul 2022 14:22:49 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CCC5AAE045;
-        Wed, 13 Jul 2022 14:22:48 +0000 (GMT)
-Received: from [9.145.2.121] (unknown [9.145.2.121])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Jul 2022 14:22:48 +0000 (GMT)
-Message-ID: <c14bb788-f5ab-2233-93bd-702983982d80@linux.ibm.com>
-Date:   Wed, 13 Jul 2022 16:22:48 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.1
-Subject: Re: [PATCH v3 4/4] pseries/mobility: set NMI watchdog factor during
- LPM
-Content-Language: fr
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-To:     Nicholas Piggin <npiggin@gmail.com>, nathanl@linux.ibm.com
-Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
-        paulus@samba.org, linux@roeck-us.net, wim@linux-watchdog.org,
-        linuxppc-dev@lists.ozlabs.org, haren@linux.vnet.ibm.com
-References: <20220627135347.32624-1-ldufour@linux.ibm.com>
- <20220627135347.32624-5-ldufour@linux.ibm.com>
- <1657590189.b3s2aqv3sj.astroid@bobo.none>
- <91d24dcb-c7b6-b0d2-2522-c8177b80094d@linux.ibm.com>
-In-Reply-To: <91d24dcb-c7b6-b0d2-2522-c8177b80094d@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Wed, 13 Jul 2022 14:23:39 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4C5D52051;
+        Wed, 13 Jul 2022 14:23:39 +0000 (GMT)
+Received: from li-f45666cc-3089-11b2-a85c-c57d1a57929f.ibm.com (unknown [9.211.111.228])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 883BE5204F;
+        Wed, 13 Jul 2022 14:23:36 +0000 (GMT)
+Message-ID: <8bea9e61be96e0358a43e320f9b89b742e8ca992.camel@linux.ibm.com>
+Subject: Re: [PATCH v2] ima: force signature verification when
+ CONFIG_KEXEC_SIG is configured
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Coiby Xu <coxu@redhat.com>, linux-integrity@vger.kernel.org
+Cc:     kexec@lists.infradead.org, Baoquan He <bhe@redhat.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>, Jiri Bohac <jbohac@suse.cz>,
+        David Howells <dhowells@redhat.com>,
+        Matthew Garrett <mjg59@google.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:SECURITY SUBSYSTEM" 
+        <linux-security-module@vger.kernel.org>
+Date:   Wed, 13 Jul 2022 10:23:35 -0400
+In-Reply-To: <20220713072111.230333-1-coxu@redhat.com>
+References: <20220712093302.49490-1-coxu@redhat.com>
+         <20220713072111.230333-1-coxu@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: g_KImgFJpySzZBFEX4vx4ME1Adxu0fYj
-X-Proofpoint-ORIG-GUID: HGQgRuxRIqY95VflTpVa7PBfUNIq7TnG
+X-Proofpoint-GUID: Fr7HlAMLzOgY2q57u1UJRu5T-WiUxJYG
+X-Proofpoint-ORIG-GUID: FClJBHTbZacQzfCFbUO4Cd14E0SRbUrp
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-13_03,2022-07-13_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 adultscore=0 lowpriorityscore=0 spamscore=0
- phishscore=0 mlxlogscore=999 impostorscore=0 mlxscore=0 bulkscore=0
- clxscore=1015 suspectscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207130055
+ definitions=2022-07-13_03,2022-07-13_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ clxscore=1015 lowpriorityscore=0 spamscore=0 bulkscore=0 malwarescore=0
+ adultscore=0 mlxscore=0 mlxlogscore=999 impostorscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207130055
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 12/07/2022 à 11:47, Laurent Dufour a écrit :
-> Le 12/07/2022 à 03:46, Nicholas Piggin a écrit :
->> Excerpts from Laurent Dufour's message of June 27, 2022 11:53 pm:
->>> During a LPM, while the memory transfer is in progress on the arrival side,
->>> some latencies is generated when accessing not yet transferred pages on the
->>> arrival side. Thus, the NMI watchdog may be triggered too frequently, which
->>> increases the risk to hit a NMI interrupt in a bad place in the kernel,
->>> leading to a kernel panic.
->>>
->>> Disabling the Hard Lockup Watchdog until the memory transfer could be a too
->>> strong work around, some users would want this timeout to be eventually
->>> triggered if the system is hanging even during LPM.
->>>
->>> Introduce a new sysctl variable nmi_watchdog_factor. It allows to apply
->>> a factor to the NMI watchdog timeout during a LPM. Just before the CPU are
->>> stopped for the switchover sequence, the NMI watchdog timer is set to
->>>  watchdog_tresh + factor%
->>>
->>> A value of 0 has no effect. The default value is 200, meaning that the NMI
->>> watchdog is set to 30s during LPM (based on a 10s watchdog_tresh value).
->>> Once the memory transfer is achieved, the factor is reset to 0.
->>>
->>> Setting this value to a high number is like disabling the NMI watchdog
->>> during a LPM.
->>>
->>> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
->>> ---
->>>  Documentation/admin-guide/sysctl/kernel.rst | 12 ++++++
->>>  arch/powerpc/platforms/pseries/mobility.c   | 43 +++++++++++++++++++++
->>>  2 files changed, 55 insertions(+)
->>>
->>> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
->>> index ddccd1077462..0bb0b7f27e96 100644
->>> --- a/Documentation/admin-guide/sysctl/kernel.rst
->>> +++ b/Documentation/admin-guide/sysctl/kernel.rst
->>> @@ -592,6 +592,18 @@ to the guest kernel command line (see
->>>  Documentation/admin-guide/kernel-parameters.rst).
->>>  
->>>  
->>> +nmi_watchdog_factor (PPC only)
->>> +==================================
->>> +
->>> +Factor apply to to the NMI watchdog timeout (only when ``nmi_watchdog`` is
->>> +set to 1). This factor represents the percentage added to
->>> +``watchdog_thresh`` when calculating the NMI watchdog timeout during a
->>> +LPM. The soft lockup timeout is not impacted.
->>
->> Could "LPM" or "mobility" be a bit more prominent in the parameter name
->> and documentation? Something else might want to add a factor as well,
->> one day.
+On Wed, 2022-07-13 at 15:21 +0800, Coiby Xu wrote:
+> Currently, an unsigned kernel could be kexec'ed when IMA arch specific
+> policy is configured unless lockdown is enabled. Enforce kernel
+> signature verification check in the kexec_file_load syscall when IMA
+> arch specific policy is configured.
 > 
-> In the V2 version, Nathan suggested "making the user-visible
-> name more generic (e.g. "nmi_watchdog_factor") in case it makes sense to
-> apply this to other contexts in the future."
-> 
-> So I made the change to a more generic name. I think this is a good option
-> since the documentation is explicit about the LPM particular case.
-> If in the future this factor needs to apply during an other operation that
-> name will be generic enough.
-> 
-> Do you agree ?
+> Fixes: 99d5cadfde2b ("kexec_file: split KEXEC_VERIFY_SIG into KEXEC_SIG and KEXEC_SIG_FORCE")
+> Reported-by: Mimi Zohar <zohar@linux.ibm.com>
+> Suggested-by: Mimi Zohar <zohar@linux.ibm.com>
+> Signed-off-by: Coiby Xu <coxu@redhat.com>
+> ---
+> v2
+>  - don't include linux/kexec.h since it's already been included in
+>    linux/ima.h
+>  - fix build errors when KEXEC_FILE/KEXEC_CORE is disable as caught by
+>    kernel test robot <lkp@intel.com>
 
-Nick and I discussed that.
-Nick prefers to have LPM in the tunable names, and thinks we can add a new
-tunable if a separate user came up which required it.
+Thanks, Coiby.  This version of the patch is now queued in next-
+integrity/next-
+integrity-testing.
 
-We agree that 'nmi_wd_lpm_factor' is a good name.
-I'll send a v5 updating that name.
-
->>
->> Otherwise the code looks okay.
->>
->> Reviewed-by: Nicholas Piggin <npiggin@gmail.com>
->>
->>> +
->>> +A value of 0 means no change. The default value is 200 meaning the NMI
->>> +watchdog is set to 30s (based on ``watchdog_thresh`` equal to 10).
->>> +
->>> +
->>>  numa_balancing
->>>  ==============
->>>  
->>> diff --git a/arch/powerpc/platforms/pseries/mobility.c b/arch/powerpc/platforms/pseries/mobility.c
->>> index 907a779074d6..649155faafc2 100644
->>> --- a/arch/powerpc/platforms/pseries/mobility.c
->>> +++ b/arch/powerpc/platforms/pseries/mobility.c
->>> @@ -48,6 +48,39 @@ struct update_props_workarea {
->>>  #define MIGRATION_SCOPE	(1)
->>>  #define PRRN_SCOPE -2
->>>  
->>> +#ifdef CONFIG_PPC_WATCHDOG
->>> +static unsigned int nmi_wd_factor = 200;
->>> +
->>> +#ifdef CONFIG_SYSCTL
->>> +static struct ctl_table nmi_wd_factor_ctl_table[] = {
->>> +	{
->>> +		.procname	= "nmi_watchdog_factor",
->>> +		.data		= &nmi_wd_factor,
->>> +		.maxlen		= sizeof(int),
->>> +		.mode		= 0644,
->>> +		.proc_handler	= proc_douintvec_minmax,
->>> +	},
->>> +	{}
->>> +};
->>> +static struct ctl_table nmi_wd_factor_sysctl_root[] = {
->>> +	{
->>> +		.procname       = "kernel",
->>> +		.mode           = 0555,
->>> +		.child          = nmi_wd_factor_ctl_table,
->>> +	},
->>> +	{}
->>> +};
->>> +
->>> +static int __init register_nmi_wd_factor_sysctl(void)
->>> +{
->>> +	register_sysctl_table(nmi_wd_factor_sysctl_root);
->>> +
->>> +	return 0;
->>> +}
->>> +device_initcall(register_nmi_wd_factor_sysctl);
->>> +#endif /* CONFIG_SYSCTL */
->>> +#endif /* CONFIG_PPC_WATCHDOG */
->>> +
->>>  static int mobility_rtas_call(int token, char *buf, s32 scope)
->>>  {
->>>  	int rc;
->>> @@ -702,13 +735,20 @@ static int pseries_suspend(u64 handle)
->>>  static int pseries_migrate_partition(u64 handle)
->>>  {
->>>  	int ret;
->>> +	unsigned int factor = 0;
->>>  
->>> +#ifdef CONFIG_PPC_WATCHDOG
->>> +	factor = nmi_wd_factor;
->>> +#endif
->>>  	ret = wait_for_vasi_session_suspending(handle);
->>>  	if (ret)
->>>  		return ret;
->>>  
->>>  	vas_migration_handler(VAS_SUSPEND);
->>>  
->>> +	if (factor)
->>> +		watchdog_nmi_set_lpm_factor(factor);
->>> +
->>>  	ret = pseries_suspend(handle);
->>>  	if (ret == 0) {
->>>  		post_mobility_fixup();
->>> @@ -716,6 +756,9 @@ static int pseries_migrate_partition(u64 handle)
->>>  	} else
->>>  		pseries_cancel_migration(handle, ret);
->>>  
->>> +	if (factor)
->>> +		watchdog_nmi_set_lpm_factor(0);
->>> +
->>>  	vas_migration_handler(VAS_RESUME);
->>>  
->>>  	return ret;
->>> -- 
->>> 2.36.1
->>>
->>>
-> 
+Mimi
 
