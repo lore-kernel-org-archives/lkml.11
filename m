@@ -2,142 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9448DC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:40:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234653AbiGMHkS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S234745AbiGMHko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234722AbiGMHkO (ORCPT
+        with ESMTP id S234255AbiGMHki (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:40:14 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455939749B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:40:13 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id f14so8100797qkm.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=f8LMtVTNpLm99mphGsEODrdfaZdyJZiyR5/bZD+IxFc=;
-        b=Ce2G/CgloTyx3KJeqJbLG6cM814F7ZoMy//mdEpAuNfsFGLZctjxAwOc565n4tXFyZ
-         jE95WbZMWPK2fMHz5fudJplbKLiXeKjoOyJZHmRGCweyeWetQU9U5eJcFC9wOQmCV2Y4
-         bRI6EZ+OdnDrk1yfdDNKF4hVRStwRdmmjHpRiCjVePkKQvKQaJmaaddVaPz8KJRSMfXq
-         m0Z0Aw+UNFVffGCikt3/04SBu5UpX8Tpfrrn8ursvGbpQxGI2nDTSWUiAyr+ac/fjgs4
-         utgR9EaIC0MxbpktVv0CQzoOA8hxRrDKKCI7KKBSBctpynR1n0NKZUkXQWcWLQwIUqyx
-         kh6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=f8LMtVTNpLm99mphGsEODrdfaZdyJZiyR5/bZD+IxFc=;
-        b=U0AI3acSGkNrNIs5A8U9UskCzfVIEHR8rIXePRCw6G1IpqVWXnSY2dFEsUC82YEynA
-         IKFBu++GQ9BDXxfcUUhzOyfX+DKdrVW9+jz7hTwFUfmEagNIF5wizLextXvsgw8s7pci
-         gzOU5TLlUux6xPXbqZY8ZA+xfnIxivrOqPT1r5F6Y3IR3+PG1j7ZnS8zANP+xRgbsgxO
-         VsX7tSAoZ1DcLeHVmxleRBd2jLzh9NW/2OPIFcSxOMz8L3vMSHeIQ7Rb1C5BpxlCznTt
-         oOkRqiRsMAec66MmIIaWuKkCt90/s54jlvpUOlTL/XA3TUBLqtWVTHb0O1Y0AtVSRjDa
-         GguA==
-X-Gm-Message-State: AJIora90q/FT9yq0owfcb9mlfiWWM2/RNoI0oqhR9sCSKBI8pmHvupnN
-        5EVgVEOHOU7VWE76ibRCPQ==
-X-Google-Smtp-Source: AGRyM1s6c45gwft70lFlXJ2Z8ydYkPXE++6fKCShXnhvjkuZcSssCeTYHkI5BOj3yQdIO8ZJoojEeQ==
-X-Received: by 2002:a05:620a:2681:b0:6b5:b547:40d with SMTP id c1-20020a05620a268100b006b5b547040dmr1461969qkp.34.1657698012391;
-        Wed, 13 Jul 2022 00:40:12 -0700 (PDT)
-Received: from [192.168.1.210] (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id w4-20020a05620a424400b006aedb35d8a1sm11724945qko.74.2022.07.13.00.40.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 00:40:11 -0700 (PDT)
-Message-ID: <a4d7f359-c430-6487-ec38-009bc2af2e97@gmail.com>
-Date:   Wed, 13 Jul 2022 03:40:10 -0400
+        Wed, 13 Jul 2022 03:40:38 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45AB6E587D;
+        Wed, 13 Jul 2022 00:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657698034; x=1689234034;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=p6S9d0eoOccrcr2x6G9e4hJJ9OVvTKahjywxJ3zVPng=;
+  b=XF5ri1fOs/6Jvmk8nzWU+eFMmyngz64N+h0AiMmI15I/JOvtRZbKjjok
+   gAjBaVh8D315dLNQg3r4/oAEGav2tx+LRsFG8K7dRQNxtqHLLx63SMfZN
+   zbYURaW0u1rCbJXHuT+LhTeSrunTciBeHObNuFX5BVn6JjX3zDNkhCNK+
+   w7rU0nFpU7FrEqOGs95tMBukML2Jw7vIJHqpmbLJSAgPYBl43GtFj2waL
+   DAusmCTdsd5/eHiVGSB/3/AM3uuIf7dlAxq0bnZZZebYYnZgdSk7T2gSs
+   MROEGaPjwmQILxySVhuocg9D6JGOL0aSNbpMU0zs9UCfwS57yqeFrYo0x
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="265549705"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="265549705"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 00:40:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="685065350"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
+  by FMSMGA003.fm.intel.com with ESMTP; 13 Jul 2022 00:40:25 -0700
+Date:   Wed, 13 Jul 2022 15:37:07 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     Isaku Yamahata <isaku.yamahata@gmail.com>
+Cc:     Chao Gao <chao.gao@intel.com>, isaku.yamahata@intel.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>, chao.p.peng@intel.com
+Subject: Re: [PATCH v7 000/102] KVM TDX basic feature support
+Message-ID: <20220713073707.GA2831541@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <cover.1656366337.git.isaku.yamahata@intel.com>
+ <20220711151701.GA1375147@ls.amr.corp.intel.com>
+ <20220712050714.GA26573@gao-cwp>
+ <20220712105419.GB2805143@chaop.bj.intel.com>
+ <20220712172250.GJ1379820@ls.amr.corp.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [RFC PATCH] 9p: forbid use of mempool for TFLUSH
-Content-Language: en-US
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     Christian Schoenebeck <linux_oss@crudebyte.com>,
-        linux-kernel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
-        Greg Kurz <groug@kaod.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Suren Baghdasaryan <surenb@google.com>
-References: <12950409.o0bIpVV1Ut@silver>
- <20220713041700.2502404-1-asmadeus@codewreck.org>
- <0aa8323d-9461-a861-ac35-6952e7aeaf93@gmail.com>
- <Ys5wRdSwtTeLF6nc@codewreck.org>
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-In-Reply-To: <Ys5wRdSwtTeLF6nc@codewreck.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712172250.GJ1379820@ls.amr.corp.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/13/22 03:12, Dominique Martinet wrote:
-> Kent Overstreet wrote on Wed, Jul 13, 2022 at 02:39:06AM -0400:
->> On 7/13/22 00:17, Dominique Martinet wrote:
->>> TFLUSH is called while the thread still holds memory for the
->>> request we're trying to flush, so mempool alloc can deadlock
->>> there. With p9_msg_buf_size() rework the flush allocation is
->>> small so just make it fail if allocation failed; all that does
->>> is potentially leak the request we're flushing until its reply
->>> finally does come.. or if it never does until umount.
->>
->> Why not just add separate mempools for flushes? We don't have to allocate
->> memory for big payloads so they won't cost much, and then the IO paths will
->> be fully mempool-ified :)
+On Tue, Jul 12, 2022 at 10:22:50AM -0700, Isaku Yamahata wrote:
+> On Tue, Jul 12, 2022 at 06:54:19PM +0800,
+> Chao Peng <chao.p.peng@linux.intel.com> wrote:
 > 
-> I don't think it really matters either way -- I'm much more worried
-> about the two points I gave in the commit comment section: mempools not
-> being shared leading to increased memory usage when many mostly-idle
-> mounts (I know users who need that), and more importantly that the
-> mempool waiting is uninterruptible/non-failible might be "nice" from the
-> using mempool side but I'd really prefer users to be able to ^C out of
-> a mount made on a bad server getting stuck in mempool_alloc at least.
-
-We should never get stuck allocating memory - if that happens, game 
-over, system can no longer make forward progress.
-
-(oh, that does give me an idea: Suren just implemented a code tagging 
-mechanism for tracking memory allocations by callsite, and I was talking 
-about using it for tracking latency. Memory allocation latency would be 
-a great thing to measure, it's something we care about and we haven't 
-had a good way of measuring it before).
-
-> It looked good before I realized all the ways this could hang, but now I
-> just think for something like 9p it makes more sense to fail the
-> allocation and the IO than to bounce forever trying to allocate memory
-> we don't have.
-
-A filesystem that randomly fails IOs is, fundamentally, not a filesystem 
-that _works_. This whole thing started because 9pfs failing IOs has been 
-breaking my xfstests runs - and 9pfs isn't the thing I'm trying to test!
-
-Local filesystems and the local IO stack have always had this 
-understanding - that IO needs to _just work_ and be able to make forward 
-progress without allocating additional memory, otherwise everything 
-falls over because memory reclaim requires doing IO. It's fundamentally 
-no different with network filesystems, the cultural expectation just 
-hasn't been there historically and not for any good technical reason - 
-it's just that in -net land dropping packets is generally a fine thing 
-to do when you have to - but it's really not in filesystem land, not if 
-you want to make something that's reliable under memory pressure!
-
-> Let's first see if you still see if you still see high order allocation
-> failures when these are made much less likely with Chritisan's patch.
-
-Which patch is that? Unless you're talking about my mempool patch?
-
-> What I intend to push this cycle is in
-> https://github.com/martinetd/linux/commits/9p-test
-> up to 'net/9p: allocate appropriate reduced message buffers'; if you can
-> easily produce them I'd appreciate if you could confirm if it helps.
+> > On Tue, Jul 12, 2022 at 01:07:20PM +0800, Chao Gao wrote:
+> > > On Mon, Jul 11, 2022 at 08:17:01AM -0700, Isaku Yamahata wrote:
+> > > >Hi. Because my description on large page support was terse, I wrote up more
+> > > >detailed one.  Any feedback/thoughts on large page support?
+> > > >
+> > > >TDP MMU large page support design
+> > > >
+> > > >Two main discussion points
+> > > >* how to track page status. private vs shared, no-largepage vs can-be-largepage
+> > > 
+> > > ...
+> > > 
+> > > >
+> > > >Tracking private/shared and large page mappable
+> > > >-----------------------------------------------
+> > > >VMM needs to track that page is mapped as private or shared at 4KB granularity.
+> > > >For efficiency of EPT violation path (****), at 2MB and 1GB level, VMM should
+> > > >track the page can be mapped as a large page (regarding private/shared).  VMM
+> > > >updates it on MapGPA and references it on the EPT violation path. (****)
+> > > 
+> > > Isaku,
+> > > 
+> > > + Peng Chao
+> > > 
+> > > Doesn't UPM guarantee that 2MB/1GB large page in CR3 should be either all
+> > > private or all shared?
+> > > 
+> > > KVM always retrieves the mapping level in CR3 and enforces that EPT's
+> > > page level is not greater than that in CR3. My point is if UPM already enforces
+> > > no mixed pages in a large page, then KVM needn't do that again (UPM can
+> > > be trusted).
+> > 
+> > The backing store in the UMP can tell KVM which page level it can
+> > support for a given private gpa, similar to host_pfn_mapping_level() for
+> > shared address.
+> >
+> > However, this solely represents the backing store's capability, KVM
+> > still needs additional info to decide whether that can be safely mapped
+> > as 2M/1G, e.g. all the following pages in the 2M/1G range should be all
+> > private, currently this is not something backing store can tell.
 > 
-> (just waiting for Chritian's confirmation + adjusting the strcmp for
-> rdma before I push it to 9p-next)
-> --
-> Dominique
-> 
+> This argument applies to shared GPA.  The shared pages is backed by normal file
+> mapping with UPM.  When KVM is mapping shared GPA, the same check is needed.  So
+> I think KVM has to track all private or all shared or no-largepage at 2MB/1GB
+> level.  If UPM tracks shared-or-private at 4KB level, probably KVM may not need to
+> track it at 4KB level.
 
+Right, the same also applies to shared memory. All the info we need is
+whether pages of a 2M range is all private/shared but not mixed. UPM v7
+has code tracking that in KVM and previously versions we track that in
+the backing store which has been discussed not a good idea.
+
+Chao
+> 
+> 
+> > Actually, in UPM v7 we let KVM record this info so one possible solution
+> > is making use of it.
+> > 
+> >   https://lkml.org/lkml/2022/7/6/259
+> > 
+> > Then to map a page as 2M, KVM needs to check:
+> >   - Memory backing store support that level
+> >   - All pages in 2M range are private as we recorded through
+> >     KVM_MEMORY_ENCRYPT_{UN,}REG_REGION
+> >   - No existing partial 4K map(s) in 2M range
+> -- 
+> Isaku Yamahata <isaku.yamahata@gmail.com>
