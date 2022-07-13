@@ -2,126 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD7BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89417CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236488AbiGMO2F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        id S236497AbiGMO3G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:29:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235824AbiGMO1f (ORCPT
+        with ESMTP id S236425AbiGMO3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:27:35 -0400
-Received: from sender4-op-o18.zoho.com (sender4-op-o18.zoho.com [136.143.188.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2912C3342F;
-        Wed, 13 Jul 2022 07:27:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1657722405; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=kfIUHjNNLNr9b6T26+2lWcHoWkCElMipxn5vWoQ27EmZ+QWc4G3CJ54a6/B44J8nO2BSIPjGuz8rnNCKEyFspFjxYozPIM3aiveCtOlNBmZgFtL+WW0tmDPpq4c4lJOuq+IcNX4REw0L07KZWETnJGjzzKIRtiLWRRUciSIFCNo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1657722405; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=6EfsuV0oyUK6JOK/M9DBD2m9qiNT/2Qog8cyd8NWFl0=; 
-        b=cqvUv4wV4tgODBVtwlAZtbBr8citdYVdzJpIMyfRmpfuRKKsbtBjl5xccO99rD8xYEkCtnTu+tI3+lwOi3zRlbzsDFS+fwrRhEU01N95u+avCkL/5Z6f0DStxoYYGD0ZoaQUxRneWL/pan83oZiqU81QBFD6ciF4FI64Lpbk5RA=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=icenowy.me;
-        spf=pass  smtp.mailfrom=uwu@icenowy.me;
-        dmarc=pass header.from=<uwu@icenowy.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1657722405;
-        s=zmail; d=icenowy.me; i=uwu@icenowy.me;
-        h=Message-ID:Subject:Subject:From:From:To:To:Cc:Cc:Date:Date:In-Reply-To:References:Content-Type:MIME-Version:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=6EfsuV0oyUK6JOK/M9DBD2m9qiNT/2Qog8cyd8NWFl0=;
-        b=O4xKEISCWQv47NEPeRvf/A6PQ59Bi8SvTo7k9nxIcmZZSgKYNSRBSHbBeCc2AcGj
-        EIMDAWTekp3lGtaaITNm7noP7pFxDsTUgkB6PJdVY/kKl+TOmb0OMqMDBiDnbuohP1L
-        Fhm4w+1dseN3N2JyYB82Mqfw3rgn34otsdXvwS7Y=
-Received: from edelgard.icenowy.me (59.41.163.162 [59.41.163.162]) by mx.zohomail.com
-        with SMTPS id 1657722402060688.0417263615216; Wed, 13 Jul 2022 07:26:42 -0700 (PDT)
-Message-ID: <e8543838cd221ab6699da16c985eed7514daa786.camel@icenowy.me>
-Subject: Re: [PATCH v1 2/2] riscv: dts: starfive: add the missing monitor
- core
-From:   Icenowy Zheng <uwu@icenowy.me>
-To:     Conor Dooley <mail@conchuod.ie>,
-        Emil Renner Berthing <kernel@esmil.dk>,
+        Wed, 13 Jul 2022 10:29:03 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBEC33E17
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:29:02 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id u15so2767220lji.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:29:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tkoow3fvqNobh0Z0Fm1iQlmk1WvKd33czLctPY8NUUk=;
+        b=BtBdnKWQ8M+XWyv7RZn7ZYmpSJhSucnf+p6MM/o2UIAAjxfbJQwo5jChdZyQF/qieO
+         L+jWLYPTyPQcPgEeo3WTE7NaRej5JwBqEyGykzbyRI+wg4SVUphX/f+RHPjtq90t31qm
+         5Ph8PCuWxltnqU6BaiIsEzmTQjpvM8RJfImviIsxpQNK69PPJSGKIRMd9d1ZTPLwIZ5s
+         CgelLDIiVlBTYo71b+JEm5SEk8llgpa1SDpRL+sfzEcAnjH35LWrm2Di8YxRHlbRJYbS
+         r5V8uxN2ffERsob0DJL/JWFBySFgvzhQ0Ou36h+6nRdmRNpDB9nxWiAX+7WLOzWFI8XX
+         Rdag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tkoow3fvqNobh0Z0Fm1iQlmk1WvKd33czLctPY8NUUk=;
+        b=LAE4t99rE64TmWf/uVJhirAeROk4KFpWmKgxjYAKQ/AO0ounbFH5XOttC0vNGMByM/
+         9ruB7OFjbs9RRP4U+p0HrqwpUH24L8c0qMai82yeQyXEUlAFXdYwYDy8Zov1fX3ZIHq6
+         LG5lmEVPsdKe4nrAPQztWfx4YM3HaPtJ4gAQMneqVcqm1LRIIWA8f18sPMvzGExxaNxj
+         PmN5JkAC2f5yuj6/DwlM8cyxFFd3BTxGcpW7q72/IgvCCbkUaD6LTcPUIwJ2zjuVVqWK
+         Hm5qJxgNPTvLwgM4M0NxtGLGMXIYgeXewvtqN0U0P7qitDPwvI6/cE8k/1Vn1VCxiZzj
+         vtmA==
+X-Gm-Message-State: AJIora+waRMXnmY3T9G/yYO/3IP4GRvFSU0H7VGNHtdk/yjKNOw28EEd
+        2PTvfmy2DPC9f3sZiXn+y6I8Bw==
+X-Google-Smtp-Source: AGRyM1s0wCRklqZfZDg0CtJDPtzkFa3x9a1E5zKhkT8PO5l+kIj3kSsvlqE3LG/qbIaA230cykFwpA==
+X-Received: by 2002:a2e:557:0:b0:25d:466a:31b8 with SMTP id 84-20020a2e0557000000b0025d466a31b8mr1874204ljf.243.1657722540371;
+        Wed, 13 Jul 2022 07:29:00 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id j13-20020a056512344d00b00489de206812sm1906840lfr.151.2022.07.13.07.28.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 07:28:59 -0700 (PDT)
+Message-ID: <d8bc7a14-a9c5-4d34-997a-48a8d27c5edd@linaro.org>
+Date:   Wed, 13 Jul 2022 16:28:57 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 2/2] pinctrl: nuvoton: add NPCM8XX pinctrl and GPIO
+ driver
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Conor Dooley <conor.dooley@microchip.com>
-Cc:     devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 13 Jul 2022 22:26:04 +0800
-In-Reply-To: <20220711184325.1367393-3-mail@conchuod.ie>
-References: <20220711184325.1367393-1-mail@conchuod.ie>
-         <20220711184325.1367393-3-mail@conchuod.ie>
-Organization: Anthon Open-Source Community
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 
-MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-ZohoMailClient: External
+        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
+        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+References: <20220710102110.39748-1-tmaimon77@gmail.com>
+ <20220710102110.39748-3-tmaimon77@gmail.com>
+ <95d12b72-be9d-5503-c4ea-801303bb7776@linaro.org>
+ <CAP6Zq1geFJsKrdQEN5Vqjw6e8bsiArDe1tzJ-jkQm-2XT-0KyQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAP6Zq1geFJsKrdQEN5Vqjw6e8bsiArDe1tzJ-jkQm-2XT-0KyQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-5ZyoIDIwMjItMDctMTHmmJ/mnJ/kuIDnmoQgMTk6NDMgKzAxMDDvvIxDb25vciBEb29sZXnlhpnp
-gZPvvJoKPiBGcm9tOiBDb25vciBEb29sZXkgPGNvbm9yLmRvb2xleUBtaWNyb2NoaXAuY29tPgo+
-IAo+IFRoZSBKSDcxMDAgaGFzIGEgMzIgYml0IG1vbml0b3IgY29yZSB0aGF0IGlzIG1pc3Npbmcg
-ZnJvbSB0aGUgZGV2aWNlCj4gdHJlZS4gQWRkIGl0IChhbmQgaXRzIGNwdS1tYXAgZW50cnkpIHRv
-IG1vcmUgYWNjdXJhdGVseSByZWZsZWN0IHRoZQo+IGFjdHVhbCB0b3BvbG9neSBvZiB0aGUgU29D
-Lgo+IAo+IFNpZ25lZC1vZmYtYnk6IENvbm9yIERvb2xleSA8Y29ub3IuZG9vbGV5QG1pY3JvY2hp
-cC5jb20+Cj4gLS0tCj4gwqBhcmNoL3Jpc2N2L2Jvb3QvZHRzL3N0YXJmaXZlL2poNzEwMC5kdHNp
-IHwgMjEgKysrKysrKysrKysrKysrKysrKysrCj4gwqAxIGZpbGUgY2hhbmdlZCwgMjEgaW5zZXJ0
-aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9hcmNoL3Jpc2N2L2Jvb3QvZHRzL3N0YXJmaXZlL2po
-NzEwMC5kdHNpCj4gYi9hcmNoL3Jpc2N2L2Jvb3QvZHRzL3N0YXJmaXZlL2poNzEwMC5kdHNpCj4g
-aW5kZXggYzYxN2E2MWUyNmUyLi45MmZjZTViNjZkM2QgMTAwNjQ0Cj4gLS0tIGEvYXJjaC9yaXNj
-di9ib290L2R0cy9zdGFyZml2ZS9qaDcxMDAuZHRzaQo+ICsrKyBiL2FyY2gvcmlzY3YvYm9vdC9k
-dHMvc3RhcmZpdmUvamg3MTAwLmR0c2kKPiBAQCAtNjcsNiArNjcsMjMgQEAgY3B1MV9pbnRjOiBp
-bnRlcnJ1cHQtY29udHJvbGxlciB7Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgfTsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4g
-wqAKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgRTI0OiBjcHVAMiB7Cj4gK8KgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjb21wYXRpYmxlID0gInNp
-Zml2ZSxlMjQiLCAicmlzY3YiOwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgcmVnID0gPDI+Owo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgZGV2aWNlX3R5cGUgPSAiY3B1IjsKPiArwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGktY2FjaGUtYmxvY2stc2l6ZSA9IDwzMj47Cj4g
-K8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBpLWNhY2hlLXNl
-dHMgPSA8MjU2PjsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoGktY2FjaGUtc2l6ZSA9IDwxNjM4ND47Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqByaXNjdixpc2EgPSAicnYzMmltYWZjIjsKPiArwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHN0YXR1cyA9ICJkaXNhYmxlZCI7
-Cj4gKwo+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY3B1
-Ml9pbnRjOiBpbnRlcnJ1cHQtY29udHJvbGxlciB7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29tcGF0aWJsZSA9ICJyaXNj
-dixjcHUtaW50YyI7Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LWNvbnRyb2xsZXI7Cj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgI2ludGVy
-cnVwdC1jZWxscyA9IDwxPjsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoH07Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gKwo+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY3B1LW1hcCB7Cj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2x1c3RlcjAgewo+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBjb3Jl
-MCB7Cj4gQEAgLTc2LDYgKzkzLDEwIEBAIGNvcmUwIHsKPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY29yZTEgewo+IMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgY3B1ID0gPCZVNzRfMT47Cj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07Cj4gKwo+ICvCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oGNvcmUyIHsKPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY3B1ID0gPCZFMjQ+Owo+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoH07
-CgpTb3JyeSBidXQgSSB0aGluayB0aGlzIGNoYW5nZSBtYWtlcyB0aGUgdG9wb2xvZ3kgbW9yZSBp
-bmFjY3VyYXRlLgoKVGhlIEUyNCBjb3JlIGlzIHZlcnkgaW5kZXBlbmRlbnQsIGp1c3QgYW5vdGhl
-ciBDUFUgY29yZSBjb25uZWN0ZWQgdGhlCnNhbWUgYnVzIC0tIGV2ZW4gbm8gY29oZXJlbmN5IChF
-MjQgdGFrZXMgQUhCLCB3aGljaCBpcyBub3QgY29oZXJlbmN5LQpzZW5zaWJsZSkuIEV2ZW4gdGhl
-IFRBUCBvZiBpdCBpcyBpbmRlcGVuZGVudCB3aXRoIHRoZSBVNzQgVEFQLgoKQW5kIGJ5IGRlZmF1
-bHQgaXQgZG9lcyBub3QgYm9vdCBhbnkgcHJvcGVyIGNvZGUgKGlmIGEgZGVidWdnZXIgaXMKYXR0
-YWNoZWQsIGl0IHdpbGwgZGlzY292ZXIgdGhhdCB0aGUgRTI0IGlzIGluIGNvbnNpc3RlbnRseSBm
-YXVsdCBhdCAweDAKKG10dmVjIGlzIDB4MCBhbmQgd2hlbiBmYXVsdCBpdCBqdW1wcyB0byAweDAg
-YW5kIGZhdWx0IGFnYWluKSwgdW50aWwKaXRzIGNsb2NrIGlzIGp1c3Qgc2h1dGRvd24gYnkgTGlu
-dXggY2xlYW5pbmcgdXAgdW51c2VkIGNsb2Nrcy4pCgpQZXJzb25hbGx5IEkgdGhpbmsgaXQgc2hv
-dWxkIGJlIGltcGxlbWVudGVkIGFzIGEgcmVtb3RlcHJvYyBpbnN0ZWFkLgoKPiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB9Owo+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgfTsKPiDCoMKgwqDCoMKgwqDCoMKgfTsKCg==
+On 13/07/2022 15:35, Tomer Maimon wrote:
 
+>>> +static int npcm8xx_pinctrl_probe(struct platform_device *pdev)
+>>> +{
+>>> +     struct npcm8xx_pinctrl *pctrl;
+>>> +     int ret;
+>>> +
+>>> +     pctrl = devm_kzalloc(&pdev->dev, sizeof(*pctrl), GFP_KERNEL);
+>>> +     if (!pctrl)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     pctrl->dev = &pdev->dev;
+>>> +     dev_set_drvdata(&pdev->dev, pctrl);
+>>> +
+>>> +     pctrl->gcr_regmap =
+>>> +             syscon_regmap_lookup_by_compatible("nuvoton,npcm845-gcr");
+>>
+>> No. Use property. By this patchset, I would expect that you learnt from
+>> previous mistakes around this. Why repeating the same trouble second time?
+> You suggest to use phandle property like nuvoton,sysgcr even that the
+> NPCM8XX pin controller driver is used only NPCM8XX SoC, so the only
+> GCR node in the NPCM8XX SoC is nuvoton,npcm845-gcr?
 
+Yes. The previous case (reset driver, AFAIR) was also about driver used
+only in one SoC, wasn't it?
+
+Best regards,
+Krzysztof
