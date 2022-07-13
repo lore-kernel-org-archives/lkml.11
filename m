@@ -2,240 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 845EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 11:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9175BC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234946AbiGML7v (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 07:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        id S235226AbiGMMAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiGML7t (ORCPT
+        with ESMTP id S235174AbiGMMAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 07:59:49 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45351F32F6;
-        Wed, 13 Jul 2022 04:59:48 -0700 (PDT)
+        Wed, 13 Jul 2022 08:00:04 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F6EF5114
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:00:02 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id s21so11656608pjq.4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:00:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657713588; x=1689249588;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=dgsaYpf/vsoYhmP9tn9UVNlFtNHTVqtvjpcLY3JOMKg=;
-  b=HLT9GzbW3lIG81rd4rN7FHI2ROF9sEIG7qRmflNuKxYWMQc1+0rJrBao
-   9VUfxwRbKmrs6ICgZYZS2uuwhESyPtESTmuHN1bbnsf/vNmpWDIoqokCz
-   8edx+Lv3ZIm9+V5VLoMkIjoMOi7gVSEtth9AXd7bpB486S+BUcV/xdqqz
-   w=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 13 Jul 2022 04:59:48 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 04:59:48 -0700
-Received: from hu-vgarodia-hyd.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Jul 2022 04:59:45 -0700
-From:   Vikash Garodia <quic_vgarodia@quicinc.com>
-To:     <stanimir.varbanov@linaro.org>, <linux-media@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <frkoenig@chromium.org>, <quic_dikshita@quicinc.com>,
-        <quic_vgarodia@quicinc.com>
-Subject: [PATCH v3] media: venus: set ubwc configuration on specific video hardware
-Date:   Wed, 13 Jul 2022 17:29:36 +0530
-Message-ID: <1657713576-21525-1-git-send-email-quic_vgarodia@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        d=gmail.com; s=20210112;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=OnXt52/Zp2ft6yRsPQtGQKdmFR+mM5FPT8XBS7HJCCE=;
+        b=jt2qxK6K7RpYaFKuLqExwmk4dp2M1rU7vWp2h9+Ag8gjWOek21MXE1SS59CMcyeD2D
+         PrMsUTdyOZGUicIFNp9a68jANV/qF66kXNQa/1Ltanvr3Vdl3liHHD3d6+J7obK7m44q
+         WdJ6oNiMyHoJVzTqcKocLTcWOCgbk/gHWvh10iRXl3noXmIRk7w7l59gxpxmkEzzOo+S
+         xSqMuwRV4/GeG6qQitDKMxgjWSnclcojbQHPus3QORDvoNP5P16rfGlTDvyqqhXfaQlq
+         9ivRelko48xfz53G90MTRqv0kgQxqjiF5JLf/fQ9lZpjLp47SoQgT8bBfacdjpyRZ9I6
+         aAYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=OnXt52/Zp2ft6yRsPQtGQKdmFR+mM5FPT8XBS7HJCCE=;
+        b=X8mnM80o5Z/eipr6pY+qx4mE4TTFCjZq8HDQ5QQQb2fLrhSW0QI6RDE7mkJSVdlvoq
+         aknAQXCILp4lsQnmWMMtl/leZzGhdAU9zAukv14J4cUwR6Yz3Fbxtz0ZRXq/LXLXuVcy
+         00TmDNbXkCf6YliwPQUWD7ioEDceOnt2OXPt8ENk37piJXb1OgzKziij1c/g2LHvLOMi
+         xa4JONmaSAKGOzYnVK+JY9s06o+hqCIYYCyXaEtNRfKWmqXMOQDZoMyh5Za21uRT3s4R
+         M6y4B8NbM5TJxnokbusKrZzpv25Ql9ThIES5x87HJnz8hzf/WRQrlEDomJIqn7R+28ZO
+         Oe6w==
+X-Gm-Message-State: AJIora8PqvrpIRbR84WN5fcVxrnxz9f+LR+fatOTU12X+P6MmohU0IkN
+        IRi3oLfuK2Yenz6qgfLPzzR8jrOLXRCmGQ==
+X-Google-Smtp-Source: AGRyM1uNphEJ93H5zZO964IdBpWdVH2jHHra+7zFZ5yJEFhkRY53P6l2ZRvXu5ftyV2No8AXZLWjZw==
+X-Received: by 2002:a17:90b:a05:b0:1ef:8f7c:6343 with SMTP id gg5-20020a17090b0a0500b001ef8f7c6343mr9992901pjb.241.1657713601956;
+        Wed, 13 Jul 2022 05:00:01 -0700 (PDT)
+Received: from MBP ([39.170.101.209])
+        by smtp.gmail.com with ESMTPSA id l13-20020a170902f68d00b0016c6e360ff2sm1575692plg.132.2022.07.13.05.00.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 05:00:01 -0700 (PDT)
+References: <20220707090501.55483-1-schspa@gmail.com>
+ <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Schspa Shi <schspa@gmail.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     tj@kernel.org, linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] workqueue: Use active mask for new worker when pool is
+ DISASSOCIATED
+Date:   Wed, 13 Jul 2022 19:22:06 +0800
+In-reply-to: <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
+Message-ID: <m2y1wxi5qh.fsf@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-UBWC configuration parameters would vary across video hardware
-generations. At the same time, driver is expected to configure these
-parameters, without relying on video firmware to use the default
-configurations.
-Setting the configuration parameters for sc7280.
 
-Signed-off-by: Vikash Garodia <quic_vgarodia@quicinc.com>
----
-Change since v2:
+Lai Jiangshan <jiangshanlai@gmail.com> writes:
 
- Review comments addressed(from Stanimir)
+> CC Peter.
+> Peter has changed the CPU binding code in workqueue.c.
+>
+> I'm not understanding the problem enough, if kthread_bind_mask() is buggy
+> in workqueue.c, it would be buggy in other places too.
+>
 
- drivers/media/platform/qcom/venus/core.c       |  5 +++++
- drivers/media/platform/qcom/venus/core.h       |  2 ++
- drivers/media/platform/qcom/venus/hfi_cmds.c   |  9 +++++++++
- drivers/media/platform/qcom/venus/hfi_cmds.h   |  1 +
- drivers/media/platform/qcom/venus/hfi_helper.h | 20 ++++++++++++++++++++
- drivers/media/platform/qcom/venus/hfi_venus.c  | 26 ++++++++++++++++++++++++++
- 6 files changed, 63 insertions(+)
+It's not the bug of to use kthread_bind_mask(), other than we set the
+bad pool->attrs->cpumask to this kthread.
 
-diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
-index 877eca1..b08b98e 100644
---- a/drivers/media/platform/qcom/venus/core.c
-+++ b/drivers/media/platform/qcom/venus/core.c
-@@ -832,6 +832,10 @@ static const struct reg_val sm7280_reg_preset[] = {
- 	{ 0xb0088, 0 },
- };
- 
-+static const struct hfi_ubwc_config sc7280_ubwc_config = {
-+	0, 0, {1, 1, 1, 0, 0, 0}, 8, 32, 14, 0, 0, {0, 0}
-+};
-+
- static const struct venus_resources sc7280_res = {
- 	.freq_tbl = sc7280_freq_table,
- 	.freq_tbl_size = ARRAY_SIZE(sc7280_freq_table),
-@@ -841,6 +845,7 @@ static const struct venus_resources sc7280_res = {
- 	.bw_tbl_enc_size = ARRAY_SIZE(sc7280_bw_table_enc),
- 	.bw_tbl_dec = sc7280_bw_table_dec,
- 	.bw_tbl_dec_size = ARRAY_SIZE(sc7280_bw_table_dec),
-+	.ubwc_conf = &sc7280_ubwc_config,
- 	.clks = {"core", "bus", "iface"},
- 	.clks_num = 3,
- 	.vcodec0_clks = {"vcodec_core", "vcodec_bus"},
-diff --git a/drivers/media/platform/qcom/venus/core.h b/drivers/media/platform/qcom/venus/core.h
-index d338255..32551c2 100644
---- a/drivers/media/platform/qcom/venus/core.h
-+++ b/drivers/media/platform/qcom/venus/core.h
-@@ -16,6 +16,7 @@
- #include "dbgfs.h"
- #include "hfi.h"
- #include "hfi_platform.h"
-+#include "hfi_helper.h"
- 
- #define VDBGL	"VenusLow : "
- #define VDBGM	"VenusMed : "
-@@ -57,6 +58,7 @@ struct venus_resources {
- 	unsigned int bw_tbl_dec_size;
- 	const struct reg_val *reg_tbl;
- 	unsigned int reg_tbl_size;
-+	const struct hfi_ubwc_config *ubwc_conf;
- 	const char * const clks[VIDC_CLKS_NUM_MAX];
- 	unsigned int clks_num;
- 	const char * const vcodec0_clks[VIDC_VCODEC_CLKS_NUM_MAX];
-diff --git a/drivers/media/platform/qcom/venus/hfi_cmds.c b/drivers/media/platform/qcom/venus/hfi_cmds.c
-index 4ecd444..930b743 100644
---- a/drivers/media/platform/qcom/venus/hfi_cmds.c
-+++ b/drivers/media/platform/qcom/venus/hfi_cmds.c
-@@ -58,6 +58,15 @@ void pkt_sys_coverage_config(struct hfi_sys_set_property_pkt *pkt, u32 mode)
- 	pkt->data[1] = mode;
- }
- 
-+void pkt_sys_ubwc_config(struct hfi_sys_set_property_pkt *pkt, const struct hfi_ubwc_config *hfi)
-+{
-+	pkt->hdr.size = struct_size(pkt, data, 1) + sizeof(*hfi);
-+	pkt->hdr.pkt_type = HFI_CMD_SYS_SET_PROPERTY;
-+	pkt->num_properties = 1;
-+	pkt->data[0] = HFI_PROPERTY_SYS_UBWC_CONFIG;
-+	memcpy(&pkt->data[1], hfi, sizeof(*hfi));
-+}
-+
- int pkt_sys_set_resource(struct hfi_sys_set_resource_pkt *pkt, u32 id, u32 size,
- 			 u32 addr, void *cookie)
- {
-diff --git a/drivers/media/platform/qcom/venus/hfi_cmds.h b/drivers/media/platform/qcom/venus/hfi_cmds.h
-index 327ed90..99bc0b6 100644
---- a/drivers/media/platform/qcom/venus/hfi_cmds.h
-+++ b/drivers/media/platform/qcom/venus/hfi_cmds.h
-@@ -256,6 +256,7 @@ void pkt_sys_init(struct hfi_sys_init_pkt *pkt, u32 arch_type);
- void pkt_sys_pc_prep(struct hfi_sys_pc_prep_pkt *pkt);
- void pkt_sys_idle_indicator(struct hfi_sys_set_property_pkt *pkt, u32 enable);
- void pkt_sys_power_control(struct hfi_sys_set_property_pkt *pkt, u32 enable);
-+void pkt_sys_ubwc_config(struct hfi_sys_set_property_pkt *pkt, const struct hfi_ubwc_config *hfi);
- int pkt_sys_set_resource(struct hfi_sys_set_resource_pkt *pkt, u32 id, u32 size,
- 			 u32 addr, void *cookie);
- int pkt_sys_unset_resource(struct hfi_sys_release_resource_pkt *pkt, u32 id,
-diff --git a/drivers/media/platform/qcom/venus/hfi_helper.h b/drivers/media/platform/qcom/venus/hfi_helper.h
-index 2daa88e..d2d6719 100644
---- a/drivers/media/platform/qcom/venus/hfi_helper.h
-+++ b/drivers/media/platform/qcom/venus/hfi_helper.h
-@@ -427,6 +427,7 @@
- #define HFI_PROPERTY_SYS_CODEC_POWER_PLANE_CTRL			0x5
- #define HFI_PROPERTY_SYS_IMAGE_VERSION				0x6
- #define HFI_PROPERTY_SYS_CONFIG_COVERAGE			0x7
-+#define HFI_PROPERTY_SYS_UBWC_CONFIG				0x8
- 
- /*
-  * HFI_PROPERTY_PARAM_COMMON_START
-@@ -626,6 +627,25 @@ struct hfi_debug_config {
- 	u32 mode;
- };
- 
-+struct hfi_ubwc_config {
-+	u32 size;
-+	u32 packet_type;
-+	struct {
-+		u32 max_channel_override : 1;
-+		u32 mal_length_override : 1;
-+		u32 hb_override : 1;
-+		u32 bank_swzl_level_override : 1;
-+		u32 bank_spreading_override : 1;
-+		u32 reserved : 27;
-+		} override_bit_info;
-+	u32 max_channels;
-+	u32 mal_length;
-+	u32 highest_bank_bit;
-+	u32 bank_swzl_level;
-+	u32 bank_spreading;
-+	u32 reserved[2];
-+};
-+
- struct hfi_enable {
- 	u32 enable;
- };
-diff --git a/drivers/media/platform/qcom/venus/hfi_venus.c b/drivers/media/platform/qcom/venus/hfi_venus.c
-index 9a34662..2ad40b3 100644
---- a/drivers/media/platform/qcom/venus/hfi_venus.c
-+++ b/drivers/media/platform/qcom/venus/hfi_venus.c
-@@ -904,6 +904,24 @@ static int venus_sys_set_power_control(struct venus_hfi_device *hdev,
- 	return 0;
- }
- 
-+static int venus_sys_set_ubwc_config(struct venus_hfi_device *hdev)
-+{
-+	struct hfi_sys_set_property_pkt *pkt;
-+	u8 packet[IFACEQ_VAR_SMALL_PKT_SIZE];
-+	const struct venus_resources *res = hdev->core->res;
-+	int ret;
-+
-+	pkt = (struct hfi_sys_set_property_pkt *)packet;
-+
-+	pkt_sys_ubwc_config(pkt, res->ubwc_conf);
-+
-+	ret = venus_iface_cmdq_write(hdev, pkt, false);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int venus_get_queue_size(struct venus_hfi_device *hdev,
- 				unsigned int index)
- {
-@@ -922,6 +940,7 @@ static int venus_get_queue_size(struct venus_hfi_device *hdev,
- static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
- {
- 	struct device *dev = hdev->core->dev;
-+	const struct venus_resources *res = hdev->core->res;
- 	int ret;
- 
- 	ret = venus_sys_set_debug(hdev, venus_fw_debug);
-@@ -945,6 +964,13 @@ static int venus_sys_set_default_properties(struct venus_hfi_device *hdev)
- 		dev_warn(dev, "setting hw power collapse ON failed (%d)\n",
- 			 ret);
- 
-+	/* For specific venus core, it is mandatory to set the UBWC configuration */
-+	if (res->ubwc_conf) {
-+		ret = venus_sys_set_ubwc_config(hdev);
-+		if (ret)
-+			dev_warn(dev, "setting ubwc config failed (%d)\n", ret);
-+	}
-+
- 	return ret;
- }
- 
+>
+> On 2022/7/7 17:05, Schspa Shi wrote:
+>
+>>   -	if (worker->rescue_wq)
+>> -		set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+>> +	if (worker->rescue_wq) {
+>> +		if (pool->flags & POOL_DISASSOCIATED)
+>> +			set_cpus_allowed_ptr(worker->task, cpu_active_mask);
+>> +		else
+>> +			set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+>> +	}
+>>   
+>
+> For unbound pools (which also has POOL_DISASSOCIATED), pool->attrs->cpumask
+> should be used if pool->attrs->cpumask has active cpu.
+>
+
+In this case pool->attrs->cpumask have no active cpu, the cpu for this
+pool have offlined already.
+
+The bug will occurs when the cpu have called the workqueue_offline_cpu
+form cpu unplug, and create a new worker which will running on a offline
+cpu.
+
+>
+>> +
+>> +	mutex_lock(&wq_pool_attach_mutex);
+>> +	if ((pool->flags & POOL_DISASSOCIATED)) {
+>> +		/* We can't call get_online_cpus, there will be deadlock
+>> +		 * cpu_active_mask will no change, because we have
+>> +		 * wq_pool_attach_mutex hold.
+>> +		 **/
+>> +		kthread_bind_mask(worker->task, cpu_active_mask);
+>> +	} else {
+>> +		kthread_bind_mask(worker->task, pool->attrs->cpumask);
+>> +	}
+>> +	mutex_unlock(&wq_pool_attach_mutex);
+>
+>
+> For unbound pools, pool->attrs->cpumask should be used if pool->attrs->cpumask
+> has active cpu.
+>
+> wq_pool_attach_mutex is held here and in worker_attach_to_pool() which smells bad.
+>
+
+Yes, this will be changed, I have make a new patch , to move the
+thread bind to worker_attach_to_pool, via set_cpus_allowed_ptr.
+
+>
+>
+> The change is complex.  And if kthread_bind_mask() can't work as expected here,
+> the change I prefer would be:
+>
+> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+> index 4056f2a3f9d5..1ad8aef5fe98 100644
+> --- a/kernel/workqueue.c
+> +++ b/kernel/workqueue.c
+> @@ -1862,6 +1862,12 @@ static void worker_attach_to_pool(struct worker *worker,
+>  {
+>  	mutex_lock(&wq_pool_attach_mutex);
+>
+> +	/*
+> +	 * set_cpus_allowed_ptr() will fail if the cpumask doesn't have any
+> +	 * online CPUs.  It'll be re-applied when any of the CPUs come up.
+> +	 */
+> +	set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+> +
+
+This will succeed in this case, set_cpus_allowed_ptr will use
+cpu_online_mask to verify the cpumask is valid, but in this case,
+the cpu_state is between cpu_online and cpu_active. And this
+modification doesn't solve the problem I'm having.
+
+>  	/*
+>  	 * The wq_pool_attach_mutex ensures %POOL_DISASSOCIATED remains
+>  	 * stable across this function.  See the comments above the flag
+> @@ -1872,9 +1877,6 @@ static void worker_attach_to_pool(struct worker *worker,
+>  	else
+>  		kthread_set_per_cpu(worker->task, pool->cpu);
+>
+> -	if (worker->rescue_wq)
+> -		set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+> -
+>  	list_add_tail(&worker->node, &pool->workers);
+>  	worker->pool = pool;
+>
+> @@ -1952,7 +1954,7 @@ static struct worker *create_worker(struct worker_pool *pool)
+>  		goto fail;
+>
+>  	set_user_nice(worker->task, pool->attrs->nice);
+> -	kthread_bind_mask(worker->task, pool->attrs->cpumask);
+> +	worker->flags |= PF_NO_SETAFFINITY;
+>
+>  	/* successful, attach the worker to the pool */
+>  	worker_attach_to_pool(worker, pool);
+> @@ -4270,7 +4272,7 @@ static int init_rescuer(struct workqueue_struct *wq)
+>  	}
+>
+>  	wq->rescuer = rescuer;
+> -	kthread_bind_mask(rescuer->task, cpu_possible_mask);
+> +	rescuer->flags |= PF_NO_SETAFFINITY;
+>  	wake_up_process(rescuer->task);
+>
+>  	return 0;
+>
+>
+> It is untested.  It effectively reverts the commit 640f17c82460e
+> ("workqueue: Restrict affinity change to rescuer").
+> It avoids using kthread_bind_mask().
+
+I will upload a new patchset to remove the extra &wq_pool_attach_mutex
+and add a timing diagram to make this question clearer.
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+BRs
+Schspa Shi
