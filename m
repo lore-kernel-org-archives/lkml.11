@@ -2,53 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D67C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA300C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235309AbiGMIN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S235320AbiGMIOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235005AbiGMIMg (ORCPT
+        with ESMTP id S235010AbiGMIMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E03BEA146
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 01:12:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B26FEA141;
+        Wed, 13 Jul 2022 01:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 176D361A7B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A73C36AE7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC01A61A44;
+        Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AC64C341E5;
         Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=Bmte6pkPKEOsNY8boMcDubrEjTNZt2JaXVTTSbZp1vA=;
+        bh=PqPlgIAlFyMpP7L789BurP975nmnKIyBwIXdpVDg5yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WRAFxVOnRlXPyhvhttJc8yyCD+gz9n4bAufpI+FsX0Z/+evuPEghkuADAl0ERbHeU
-         MfK5rXkAGFKhJYRZ5GRgY2q+oPPOHgJhsQDppWQyt1f8QtkSzCLYCA0xgA24wHGn/o
-         9kEyYUAjv193xtfKwudcZZJE9Wj2RALRKQihqiF0BHHC125YMzgaXkmeEWNzscH2RG
-         3QF/djKC3VkrgzMO07yunYgjl/JreVO2Jikg+NnnJW4gy3pabatvtvMloRW6IHKlm9
-         UncT1BOaZO/wPE+GIh/qwRLNWEx2P+mx114AODDpYs9eviWwZRA/WtpzpWeY369ZPq
-         IO3JEo3qEpIjQ==
+        b=D0kKyHiXDCKIteitN7csA+HvvNev9nkF3luVYDfS3vKTOBTJHXPLH2gWhDqpo6YaA
+         ABJ7gzwNzsP7txHseBd44Y7zcJzM7era82j2qwZwX+qsSbJfnUdHDX6jq2uokFfqZx
+         0/BiOJR0cUSJg9tAegb+8t8dm8AjC79fRyjWex06UiwwSM313tMaAApuMACvDhkX3G
+         Qmx/qLguteARTZj0/z+Hrsgnq5Okd6QD3BwwAV45q6MPxm9PAJXQkKGzoUeUeeepHP
+         4MGvMB0C95WhRblKKjjDatW6TMA5rcIM45gHf5wHaVxO9SVzu0DM6/hLsF2dG5J+6J
+         VMMM6m6Bg6S7Q==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004zty-R5;
+        id 1oBXTx-004zuE-TU;
         Wed, 13 Jul 2022 09:12:29 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 25/39] drm/i915: i915_vma_resource.c: fix some kernel-doc markups
-Date:   Wed, 13 Jul 2022 09:12:13 +0100
-Message-Id: <a830bd63085178004106069a914e80758e321fcd.1657699522.git.mchehab@kernel.org>
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 29/39] docs: gpu: i915.rst: display: add kernel-doc markups
+Date:   Wed, 13 Jul 2022 09:12:17 +0100
+Message-Id: <f612d5d73c6972693a71140bb247e861a1670919.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -59,14 +63,9 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Building docs currently produces two warnings:
-
-    Documentation/foo/i915:71: ./drivers/gpu/drm/i915/i915_vma_resource.c:286: WARNING: Inline strong start-string without end-string.
-    Documentation/foo/i915:71: ./drivers/gpu/drm/i915/i915_vma_resource.c:370: WARNING: Inline strong start-string without end-string.
-
-That's because @foo evaluates into **foo**, and placing anything
-after it without spaces cause Sphinx to warn and do the wrong
-thing.. So, replace them by a different Sphinx-compatible tag.
+There are several documented kAPI at the display side that
+aren't currently part of the docs. Add them, as this allows
+identifying issues with badly-formatted tags.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,31 +73,70 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/i915_vma_resource.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/gpu/i915.rst | 50 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/i915_vma_resource.c b/drivers/gpu/drm/i915/i915_vma_resource.c
-index 27c55027387a..fa5a678018d9 100644
---- a/drivers/gpu/drm/i915/i915_vma_resource.c
-+++ b/drivers/gpu/drm/i915/i915_vma_resource.c
-@@ -283,7 +283,7 @@ i915_vma_resource_color_adjust_range(struct i915_address_space *vm,
-  *
-  * The function needs to be called with the vm lock held.
-  *
-- * Return: Zero on success, -ERESTARTSYS if interrupted and @intr==true
-+ * Return: Zero on success, -ERESTARTSYS if interrupted and ``intr==true``
-  */
- int i915_vma_resource_bind_dep_sync(struct i915_address_space *vm,
- 				    u64 offset,
-@@ -367,7 +367,7 @@ void i915_vma_resource_bind_dep_sync_all(struct i915_address_space *vm)
-  * this means that during heavy memory pressure, we will sync in this
-  * function.
-  *
-- * Return: Zero on success, -ERESTARTSYS if interrupted and @intr==true
-+ * Return: Zero on success, -ERESTARTSYS if interrupted and ``intr==true``
-  */
- int i915_vma_resource_bind_dep_await(struct i915_address_space *vm,
- 				     struct i915_sw_fence *sw_fence,
+diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
+index 4e59db1cfb00..2ad7941a79f2 100644
+--- a/Documentation/gpu/i915.rst
++++ b/Documentation/gpu/i915.rst
+@@ -100,6 +100,56 @@ Display FIFO Underrun Reporting
+ .. kernel-doc:: drivers/gpu/drm/i915/display/intel_fifo_underrun.c
+    :internal:
+ 
++Atomic Modeset Support
++----------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_atomic.c
++
++Display Power Domain
++--------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_display_power.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_display_power_map.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_display_power_well.c
++
++Misc display functions
++----------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_backlight.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_crtc.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_connector.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_display_debugfs.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_dp.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_dp_link_training.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_dpll.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_dpt.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_fb.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_fb_pin.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_gmbus.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_lvds.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_opregion.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_snps_phy.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/intel_tc.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/display/skl_scaler.c
++
++
+ Plane Configuration
+ -------------------
+ 
 -- 
 2.36.1
 
