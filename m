@@ -2,142 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95792C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39528CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235529AbiGMO5k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:57:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60148 "EHLO
+        id S236639AbiGMO5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231580AbiGMO5g (ORCPT
+        with ESMTP id S236632AbiGMO5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:57:36 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE8193DF2E
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:57:34 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id a9so19477655lfk.11
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:57:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=jsje3ehsR9ECEkj9DfwB4VaXb0L+a8MycN172EG5eN0=;
-        b=yvLyC+97xwgjQCTxuOGpEGThaXKimbQEVNC3zZgRfJD7waj7OsQW4SD9tUL+KukEp4
-         H9Be1+kNouZZEaM1WPmgQlSQlH78KfEDAjelvzKr3bLJ+cOBBccHVJibqu6yPw6irowR
-         /OlBiFNiU0Tg1q3mlL39JvDD8ESfRM2QRB4gfzVCaUS2e3V5MYVFbpfTei7YnvqVTha0
-         ux3Gzwj673tn7l7ci1bOi9LIR7zl0vmzXO77Py364nzIGMRV4nqfYgRgOEo3ADxLi56Z
-         YUTZ4DAKqMHyCSMflv1sF8hZ2SW9AzbTohAAUj5PcrpMUofnoRuFffBhmw8JMM/iQoed
-         a6pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=jsje3ehsR9ECEkj9DfwB4VaXb0L+a8MycN172EG5eN0=;
-        b=tiq3DxHEVlMs1G0Koxr5MNHfV4L7G/yvB5sKNQp4+2ZaviF27usqCKrWNPom9Yn88n
-         /AvSmogCwW/X8spB3Pmi6DdYkjm14rphfSPnvxv9zllC5GGS6bRcRIzb/YXUqWqn7yNN
-         MwEpY/k1FzIw4huEH4WrbP5ydxp8mmZ+P4Z1W+yj2zLJPzAEMFAioiLM+luoTnVBktnm
-         n1J8T3ljYOOd/8sM5tX1DdV3WbSeSMfsBOHORKHJ/vfkhgOvWlhoE8CjJAQISZSWTjD9
-         NLyTBZVkPeFWq4WSY1BD46UOxqG5Ds5OjeKpnCdDMgZwpeROGHpvr8x7bk6i7REhCZPE
-         /pUw==
-X-Gm-Message-State: AJIora+uTVy40G2S57mhqSvHWXj8ZTqZPIXuzG9aYKZHnO+aDMrwK9Dn
-        NNnxKbkrvirLKlNFWWQ155e6IA==
-X-Google-Smtp-Source: AGRyM1vgRrhj/XY2koHbYAelGs303XVEdbTp0skZTLYnMp+cYfZfwoA4a64JTuw4BRIVm4/zK2SH5Q==
-X-Received: by 2002:a05:6512:1091:b0:489:7a4b:c46e with SMTP id j17-20020a056512109100b004897a4bc46emr2241003lfg.151.1657724252969;
-        Wed, 13 Jul 2022 07:57:32 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id x26-20020a19f61a000000b0047f963bf815sm2842009lfe.93.2022.07.13.07.57.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 07:57:32 -0700 (PDT)
-Message-ID: <2a43d0a3-cb6e-460c-d17f-abb81de40422@linaro.org>
-Date:   Wed, 13 Jul 2022 16:57:29 +0200
+        Wed, 13 Jul 2022 10:57:45 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E8F3E75E;
+        Wed, 13 Jul 2022 07:57:41 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eCWTyYeLTwLCaJXq3T85zOsbL+ub7uKuQsofd8QBgd9e0eV63QB4lw6yxRFvdvPM/NKaQLHyKoUWsYI3LGAnB4FNNSTlt3yyfIHmZiWW7/czg4NjHn5Kk4rzSiqrrmA30Y6YwYHKsLAAv4WWnpZpb8iPWRbWf06UXZ2uk8lPhcsZIin/RszBFvWqOsXbynJBpjLHqM+3ZJDV5+LB5sv1QLbX7Q6e1JGkA43SETitNAHxbpH1kIIdRpEu5HSFyjuovY7LoVr+ewYDQqYJp/skoq2S00jjWutSrptSiiHPRw5PDO1xtcD5bypqU1pQec2TCwwKHoQ5EmKf0lyY8x72kg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4TdE5gMnaZ4RpqJ1/gBId6MFgb8G9NdwWxJ4JaBL//E=;
+ b=H/Yr05lThtHvGER2zlFZkd7RBPgi6Erq/piFjaovDFfHRQgU5baA672D90+vF3rttFIVwmxSdo9nQQ5uX38/drLByZuH7fz9Ytm0g5iggwIYKzUZEtwCQ2v4RGodAAMDDLbxXdYpCHh5xVanQbjlcSZiQ86s8+IpsFwC+L77vlrxS7SONmYKroC6YdX4OYwikbKwzNEQ1TgVaKzpa1MCl3XPJfKJ7aARcBegK4WCQw7jXgTu39f/XIa07MiMChSsLCmPHJLJD3S0nr/3mt9vxuSeV/Fz+3sxCA4a2VROZwoMZlca4f0GCIaQT05oLkXLs2ux9MN3uVRmdqzWVJfjUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=linaro.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4TdE5gMnaZ4RpqJ1/gBId6MFgb8G9NdwWxJ4JaBL//E=;
+ b=nfCd6IbEx84dfBcL78qDBxwvs0sPHOftIw6Gk35osmtNFusexogIxO+lyVcIq8vy9dgomWDegSIkobIoR/vrNTJRYRr5K8mYXRK8lyqTg0iN4kWi7I7to0kwUuMF858mvgMqV2jbl7kdt3dFq1qrGQ0yMGyJfnvSf5k5i9EUA1Y=
+Received: from DM6PR03CA0076.namprd03.prod.outlook.com (2603:10b6:5:333::9) by
+ BY5PR12MB4066.namprd12.prod.outlook.com (2603:10b6:a03:207::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Wed, 13 Jul
+ 2022 14:57:39 +0000
+Received: from DM6NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:333:cafe::a8) by DM6PR03CA0076.outlook.office365.com
+ (2603:10b6:5:333::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.17 via Frontend
+ Transport; Wed, 13 Jul 2022 14:57:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ DM6NAM11FT019.mail.protection.outlook.com (10.13.172.172) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 14:57:38 +0000
+Received: from ethanolx1ade-milan-genesis.amd.com (10.180.168.240) by
+ SATLEXMB04.amd.com (10.181.40.145) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Wed, 13 Jul 2022 09:57:37 -0500
+From:   Carlos Bilbao <carlos.bilbao@amd.com>
+To:     <bjorn.andersson@linaro.org>, <amitk@kernel.org>,
+        <thara.gopinath@gmail.com>, <konrad.dybcio@somainline.org>
+CC:     <agross@kernel.org>, <david.brown@linaro.org>,
+        <linux-pm@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bilbao@vt.edu>,
+        Carlos Bilbao <carlos.bilbao@amd.com>
+Subject: [PATCH 0/4] thermal/drivers/qcom: Code refactoring
+Date:   Wed, 13 Jul 2022 09:56:52 -0500
+Message-ID: <20220713145655.3844109-1-carlos.bilbao@amd.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v1 2/2] pinctrl: nuvoton: add NPCM8XX pinctrl and GPIO
- driver
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-References: <20220710102110.39748-1-tmaimon77@gmail.com>
- <20220710102110.39748-3-tmaimon77@gmail.com>
- <95d12b72-be9d-5503-c4ea-801303bb7776@linaro.org>
- <CAP6Zq1geFJsKrdQEN5Vqjw6e8bsiArDe1tzJ-jkQm-2XT-0KyQ@mail.gmail.com>
- <d8bc7a14-a9c5-4d34-997a-48a8d27c5edd@linaro.org>
- <CAP6Zq1iAPmV9KVrBVqmRix8sTq0zLsw3T1vPo-t1Q+2RgO4qsA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <CAP6Zq1iAPmV9KVrBVqmRix8sTq0zLsw3T1vPo-t1Q+2RgO4qsA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b4f947ae-2aef-43c5-2eba-08da64e0075d
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4066:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: NAEH9tBGSaeiuwRUyiC9RH1/v/WAypf+sNmLRfte8Uiwapf50cVEvImrpnsfRBWSkVqyrpUAyN6d8fvNpTqEuYFufpSb8HSq8LDOVrUQoFwogM95dUIjGsh8UWUhn73FWPs0HDNEmgfxix8GQQAWl+OSVQ2aWs7T8tMvPxm8u2OG0FyTve8ieFIFvEmbDgScmkaY2Cluw6uvW0wHTWL0rOcok2bVayaRMWrveRR8e8mLYkEy7Wf1kawYuwJpMS2vzIktkN2X5/j6iDBaoTRJ7d6zVC+eLoqIwwSf+9uIzVIgA9K/y76p3PnQ84YFxnPWgHjTPBWelEbDql7pXnfr7v06LpyqMQv6bhEtorZktRSdQzlW+65AJM7CdCqL66wXegK+4rWj/bfhje6fbVNaDdx8O4xMXKus7b0S2bM4JVkbZVcLWZYnwAX2YuX31jzj6dixJfGKbAyDvDQ6fexXbN36k6xFxEmv1gCOCQ4slwlg2wB4DuYvL7p7UMB7cHFYEiIITNq3O/9mHZhknsG+xx4Lgi+K+wVR62PGgFV76eZqt5mH/FNL3uQ5krrw/5NUJWVGw/Xxs2UrmvCOdNljQ9cxJYZFTyTsh7w5PjIiWTf+PjxWItC/EGkXHLw+P7n8Fgv5R10N8xrq66mA12/x+fYVDocuxucTE5ouj1mekfZPgx/yUOquoKOCHsmwrf2q9nSrWdrCnh+mZXQeA+4tmcXg3NbqhbPxYl3B5EiluEY0o83MQOEpNt8+8ALTUuvySRInn+SmdjH5ec3yuf31Yt1qknXdMox6Zo5u5tZsb8EgSpQuwZrELjGHZWlijsGVuOyPjJGMFqBueCDXfWBSwjVeAzqh1e1I9UJnrtVqoPo=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(396003)(39860400002)(376002)(40470700004)(46966006)(36840700001)(40480700001)(83380400001)(356005)(86362001)(82740400003)(81166007)(40460700003)(36860700001)(82310400005)(8936002)(5660300002)(478600001)(2616005)(7416002)(41300700001)(2906002)(44832011)(54906003)(6666004)(110136005)(316002)(16526019)(4326008)(8676002)(70206006)(70586007)(186003)(36756003)(4744005)(426003)(26005)(1076003)(7696005)(336012)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 14:57:38.4408
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4f947ae-2aef-43c5-2eba-08da64e0075d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/2022 16:51, Tomer Maimon wrote:
-> On Wed, 13 Jul 2022 at 17:29, Krzysztof Kozlowski
-> <krzysztof.kozlowski@linaro.org> wrote:
->>
->> On 13/07/2022 15:35, Tomer Maimon wrote:
->>
->>>>> +static int npcm8xx_pinctrl_probe(struct platform_device *pdev)
->>>>> +{
->>>>> +     struct npcm8xx_pinctrl *pctrl;
->>>>> +     int ret;
->>>>> +
->>>>> +     pctrl = devm_kzalloc(&pdev->dev, sizeof(*pctrl), GFP_KERNEL);
->>>>> +     if (!pctrl)
->>>>> +             return -ENOMEM;
->>>>> +
->>>>> +     pctrl->dev = &pdev->dev;
->>>>> +     dev_set_drvdata(&pdev->dev, pctrl);
->>>>> +
->>>>> +     pctrl->gcr_regmap =
->>>>> +             syscon_regmap_lookup_by_compatible("nuvoton,npcm845-gcr");
->>>>
->>>> No. Use property. By this patchset, I would expect that you learnt from
->>>> previous mistakes around this. Why repeating the same trouble second time?
->>> You suggest to use phandle property like nuvoton,sysgcr even that the
->>> NPCM8XX pin controller driver is used only NPCM8XX SoC, so the only
->>> GCR node in the NPCM8XX SoC is nuvoton,npcm845-gcr?
->>
->> Yes. The previous case (reset driver, AFAIR) was also about driver used
->> only in one SoC, wasn't it?
-> Actually not, the NPCM reset driver serves NPCM7XX and NPCM8XX and
-> probably other future BMC SoC's
+This patchset refactors the code of Qualcomm thermal drivers, with simpler
+return values, logic for two functions, and a constant array for maximum
+number of sensors per version.
 
-No, when someone developed reset driver, it served only NPCM7XX. So
-using this argument - only one SoC is supported - that person use
-exactly the same API as here.
+Carlos Bilbao (4):
+  thermal/drivers/qcom: Simplify returns for tsens-8060.c
+  thermal/drivers/qcom: Simplify function code_to_degc()
+  thermal/drivers/qcom: Simplify function calibrate_8960()
+  thermal/drivers/qcom: Use array for max num sensors per version
+---
+ drivers/thermal/qcom/tsens-8960.c   | 33 ++++++++---------------------
+ drivers/thermal/qcom/tsens-common.c | 15 ++++++-------
+ drivers/thermal/qcom/tsens-v0_1.c   |  4 ++--
+ drivers/thermal/qcom/tsens-v1.c     |  2 +-
+ drivers/thermal/qcom/tsens-v2.c     |  2 +-
+ drivers/thermal/qcom/tsens.h        |  6 ++++++
+ 6 files changed, 25 insertions(+), 37 deletions(-)
 
-And it was wrong...
-
-Now you use the same argument - only one SoC is supported.
-
-I clearly see a pattern here...
-
-> Still, you suggest using the phandle property in the driver even if
-> the driver serves one SoC?
->>
->> Best regards,
->> Krzysztof
-> 
-> Best regards,
-> 
-> Tomer
-
-
-Best regards,
-Krzysztof
