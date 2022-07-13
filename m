@@ -2,70 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F37CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7044CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234509AbiGMHDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:03:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58740 "EHLO
+        id S232918AbiGMHE5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234495AbiGMHDm (ORCPT
+        with ESMTP id S229487AbiGMHEy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 03:03:42 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 222E319022;
-        Wed, 13 Jul 2022 00:03:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=n7mQQpkSKyBeUuYBLyboh7IsO0uahzQ+El0fPXZP7kw=;
-        t=1657695821; x=1658905421; b=hGarN/jfELl75Cyj8v9aaYvKezIHORvfT0kxx2qvArW200S
-        yyOBjQ5pchcQB2863C52jzAsF5Wdf8IDO/4TakWdssBws/sYNmO7sxV92eG4u8JNv0duBT+4icIqV
-        XWj+8KlX3LU2CvUCU9kB07nRKRzW8647uBOC6Nl0NEa9a4uiwRxjrIdjH9yQibVmC63/pC//HcMs7
-        //EQu7iuiptEKgbIHHL0lqnmc7fsGA5YSaVJqQFBqk0raPpdCE9K4LYX+X9LsY9f4T7XOK5+khQWw
-        7mHrP4wVP30RDRQhRrjqCTvdk7tY1OP8xflbmohaskJ5FpfdJ3B1+AxB3DMM3EcQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oBWPD-00Eavy-S1;
-        Wed, 13 Jul 2022 09:03:31 +0200
-Message-ID: <9a028efb77ae662fe8eabcf2ffb5a64214f07418.camel@sipsolutions.net>
-Subject: Re: [PATCH] um: seed rng using host OS rng
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Date:   Wed, 13 Jul 2022 09:03:31 +0200
-In-Reply-To: <d20a629c-8c15-ca8a-c34a-c5c084dbee03@cambridgegreys.com>
-References: <20220712232738.77737-1-Jason@zx2c4.com>
-         <d20a629c-8c15-ca8a-c34a-c5c084dbee03@cambridgegreys.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Wed, 13 Jul 2022 03:04:54 -0400
+X-Greylist: delayed 938 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 00:04:53 PDT
+Received: from 1.mo560.mail-out.ovh.net (1.mo560.mail-out.ovh.net [46.105.63.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2AA988CEA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 00:04:53 -0700 (PDT)
+Received: from player691.ha.ovh.net (unknown [10.108.16.31])
+        by mo560.mail-out.ovh.net (Postfix) with ESMTP id 7435223CF0
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:49:14 +0000 (UTC)
+Received: from RCM-web5.webmail.mail.ovh.net (ip-194-187-74-233.konfederacka.maverick.com.pl [194.187.74.233])
+        (Authenticated sender: rafal@milecki.pl)
+        by player691.ha.ovh.net (Postfix) with ESMTPSA id 5562B2CA7D90B;
+        Wed, 13 Jul 2022 06:49:06 +0000 (UTC)
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Date:   Wed, 13 Jul 2022 08:49:06 +0200
+From:   =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
+To:     William Zhang <william.zhang@broadcom.com>
+Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] arm64: dts: broadcom: bcm4908: Fix timer node for
+ BCM4906 SoC
+In-Reply-To: <20220708182507.23542-1-william.zhang@broadcom.com>
+References: <20220708182507.23542-1-william.zhang@broadcom.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <50bd9abda381ebdcaea41d116b4baa9c@milecki.pl>
+X-Sender: rafal@milecki.pl
+X-Originating-IP: 194.187.74.233
+X-Webmail-UserID: rafal@milecki.pl
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Ovh-Tracer-Id: 7703970116579929051
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: -100
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgedvfedrudejiedgudduhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeggfffhvfevufgjfhgfkfigihgtgfesthejjhdttdervdenucfhrhhomheptfgrfhgrlhgpofhilhgvtghkihcuoehrrghfrghlsehmihhlvggtkhhirdhplheqnecuggftrfgrthhtvghrnhepgedvffejledvgeegteehgeevjeeiteegieeigfegleevjeffheeikefhudeulefhnecukfhppedtrddtrddtrddtpdduleegrddukeejrdejgedrvdeffeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphhouhhtpdhhvghlohepphhlrgihvghrieeluddrhhgrrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehrrghfrghlsehmihhlvggtkhhirdhplhdpnhgspghrtghpthhtohepuddprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhrghdpoffvtefjohhsthepmhhoheeitd
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-07-13 at 07:58 +0100, Anton Ivanov wrote:
->=20
-> IIRC UML RNG device reads directly from host.
+On 2022-07-08 20:25, William Zhang wrote:
+> The cpu mask value in interrupt property inherits from bcm4908.dtsi
+> which sets to four cpus. Correct the value to two cpus for dual core
+> BCM4906 SoC.
+> 
+> Fixes: c8b404fb05dc ("arm64: dts: broadcom: bcm4908: add BCM4906
+> Netgear R8000P DTS files")
 
-Yes, but that's a /dev/hwrng device, so you still need some userspace to
-feed entropy from that into /dev/random.
-
-> If you are using UMLs own /dev/random you are effectively using the host=
-=20
-> one.
-
-> So unless I am mistaken, you need extra randomness only if you do not=20
-> have UMLs /dev/random compiled in.
-
-No, neither of those is true.
-
-johannes
+Well, one note. You shouldn't line break Fixes: line.
 
 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
