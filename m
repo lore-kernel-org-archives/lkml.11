@@ -2,94 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A41A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E414C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 09:39:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236110AbiGMJji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 05:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
+        id S236125AbiGMJj4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 05:39:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234588AbiGMJjg (ORCPT
+        with ESMTP id S234547AbiGMJjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 05:39:36 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC10F54E9
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:39:36 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31c9b70c382so106695947b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:39:36 -0700 (PDT)
+        Wed, 13 Jul 2022 05:39:54 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46B19F54EF
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:39:54 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y141so9758802pfb.7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 02:39:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=B/bZLQ21BnbCxpHA4zoKoOFFh9G3ZriCKWCB4lTGRTU=;
-        b=ZO6UB9xl2PomzSnA9P0ERrfsb+F0CnXxcbeTNjkLpFEo+2za3/xXWGbmqKTihGXER4
-         mUgRTu0USH+xA3FoCVjWLUFkdgJyDitP/5IlrEykEULV55mtPO57VI6rmC/VX416o04i
-         kwQ2YtAApJmvL4GOZ2EoIzNaIBDWwqYuzIng2KRohWNuuIVHdS8JipjKP99t92jluQsC
-         SISG6PGesDj5oYOmbT0cXN8DLCLKvFQyDUy4LXMu77z2q11E2r0MZC87PvFMpE1f/3gy
-         HcQxarJCB6amUiC0bsTHYF7BFZRv9dnUrP+YMZZZOKyEzJfLzJ57y79Rrry3IR8It8sz
-         VUxA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J2J2u1LkrsbKi6YvldfMoSvbAoYgO95fp1M0s8Wr27g=;
+        b=q3Ou4++fA1E2GW1K5dfL+/AMScnGCdQYEknNYdOhQfS2mca12EWg6stFGOlyqhACDx
+         k9c6851FVlb/I+2EbEH2vk4abOpPhBNTeqS+AvSdFmbd0rr1sXumTOnhx+t85req/oQZ
+         7D8u6VwHoMJYWsGu/PUtFaAKyS5Ph29TpNxqXkXEPO+EoPGW46bDfz7+PNyFyRx9qulq
+         Yt2mUCrwsGhPtcO+IboNh8xwBdtuaKcpp8uqeg5ULghfTggd2AfXE/dWB3KsMVFtkW6M
+         ZXb34Pa82FmnmzLydjm9jQIAZrAhgvzXV6AIMKeIgqlR7i3xQIZkvuu0cUfdDrJpa8Go
+         1gpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=B/bZLQ21BnbCxpHA4zoKoOFFh9G3ZriCKWCB4lTGRTU=;
-        b=iZAPOrK1QPZTm0N9NfBeVLdV8dbDG1SflV3EQk66NlLJS0vhWSsffFWjFIgmklPGaC
-         KSs4j9xMgmvah15k/aRbv6K9knlAHr5TBOYsnmgafLQtMPgH7OxuM3qwCAlnkW3rjtS9
-         mDK8VUlBU2vEuZNs/pcgjwH469Lkmj/gxlgCMnbuErnAaDt6aZbeRedJTp0J3ucUmePj
-         petS888Rj/0QKhAobZyggrDUutbs7Q0CyiO5HCkSuuRN609d4TB2fNdc69fXBTzwcpyO
-         NlurnBhI+9L0D8F/tYOGZr+I7Dj38Bk3EwvbBsupINSZJGgNaHw8NQowcuvYyzkwmPjf
-         56rg==
-X-Gm-Message-State: AJIora/aBnrdI1EewK181aS9nBopw6WyI85X0fE6cUGSX94FPuL/ykgf
-        TY9CBzU91GcpGqNjp1DZyD8ZMPqWbXJa0zNSlSM=
-X-Google-Smtp-Source: AGRyM1uNbxKaJof5c0AAkDGC552d0gWxId5xZzgbfSrWHBy/aP1poMmgkbYdzJkcBPwCKqdNXqAArZSaWfKIFxdFASo=
-X-Received: by 2002:a81:4986:0:b0:31d:388b:d08d with SMTP id
- w128-20020a814986000000b0031d388bd08dmr3002440ywa.185.1657705175260; Wed, 13
- Jul 2022 02:39:35 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J2J2u1LkrsbKi6YvldfMoSvbAoYgO95fp1M0s8Wr27g=;
+        b=KM22Cdj9tsbkaAj2E3JIhVsgSw4Xm+k2JT+aopvI4rOWhYodfkA8IJD3d2JYjJ5wG4
+         omSvLIkpUtG1kE60JxJOBvBQjA4oGwUE5Ij7+73bigdG39aI0z0L2n7o+nI8fvZKhpnQ
+         OED4tTM1Ut6yMyk36YjW4tn2wGDk6pjxoC1WlaE+9mv0DUz0odDpiONQOKGVC/YpHAZy
+         jZk5qmOpAhGXk+FiEXhevGJmWI8e8AT3HdqmeMM+QIJ27+VVEA3jDGrS7vIpXkmS+XHZ
+         YyHfoOX5XpVwLCGJsZB55/kI27n6r3UHimVk1JDsjUmOV2IsKNeN0SdN0QTa6BNbg95u
+         eOTQ==
+X-Gm-Message-State: AJIora8b1bhClZ5MCGlNbAjO/YIUpVgIhBlc2PpCzSGWZGGzPXWIUcwa
+        bixg9ppAeuFkjgwJJAwMQls=
+X-Google-Smtp-Source: AGRyM1seFzWdcIfrPjmiqtO38PN1ilMVEJJ4f2IK2QQJ04vBjZCyutuvF1ySjmoy7Fu7GgsTchsKGA==
+X-Received: by 2002:a05:6a00:889:b0:510:91e6:6463 with SMTP id q9-20020a056a00088900b0051091e66463mr2516118pfj.58.1657705193789;
+        Wed, 13 Jul 2022 02:39:53 -0700 (PDT)
+Received: from ip-172-31-24-42.ap-northeast-1.compute.internal (ec2-35-77-58-189.ap-northeast-1.compute.amazonaws.com. [35.77.58.189])
+        by smtp.gmail.com with ESMTPSA id a3-20020a170902ee8300b001640aad2f71sm8335113pld.180.2022.07.13.02.39.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 02:39:53 -0700 (PDT)
+Date:   Wed, 13 Jul 2022 09:39:48 +0000
+From:   Hyeonggon Yoo <42.hyeyoo@gmail.com>
+To:     Christoph Lameter <cl@gentwo.de>
+Cc:     Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH v3 1/15] mm/slab: move NUMA-related code to
+ __do_cache_alloc()
+Message-ID: <Ys6S5ALolh0z1JjJ@ip-172-31-24-42.ap-northeast-1.compute.internal>
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
+ <20220712133946.307181-2-42.hyeyoo@gmail.com>
+ <alpine.DEB.2.22.394.2207121626530.55992@gentwo.de>
 MIME-Version: 1.0
-References: <20220707091301.1282291-1-cezary.rojewski@intel.com>
- <CAHp75VceKBoxXVPP4dRYb8LQqHMMDHFp6-E2iuZ-h2RTK8PWQQ@mail.gmail.com>
- <e0c7d254-ace3-625c-cc83-52ca0b45e9fc@intel.com> <CAHp75VckU2ZraLJ-frjWXjUu9pFW+-XmWgTbYqUXOUNAD-1HGA@mail.gmail.com>
- <6c8e4104-2239-a188-649d-585f059cabdd@intel.com> <YsgjdKEtE7pMDTnZ@smile.fi.intel.com>
- <a73b3ec0-5abb-ddfd-414b-b9807f05413e@linux.intel.com> <CAHp75Vd4D0KF7ik+aMOwv-+bofWja_tDe4YUmihQBF+RiHZTmA@mail.gmail.com>
- <e2fe6351-f9ee-48eb-ad7f-280249f7f3f7@intel.com> <17c91bfb3a864ae1be2ac3226f170f55@AcuMS.aculab.com>
-In-Reply-To: <17c91bfb3a864ae1be2ac3226f170f55@AcuMS.aculab.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 13 Jul 2022 11:38:58 +0200
-Message-ID: <CAHp75VdOq5-2h_ojRaGKs1sJqM-wsYtv4543FeBW4_eH4+gMVg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] lib/string_helpers: Introduce strsplit_u32()
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Cezary Rojewski <cezary.rojewski@intel.com>,
-        =?UTF-8?Q?P=C3=A9ter_Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        "amadeuszx.slawinski@linux.intel.com" 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2207121626530.55992@gentwo.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:14 AM David Laight <David.Laight@aculab.com> wrote:
->
-> >          if (pint)
-> > -               *pint = value;
-> > +               memcpy(pint, &value, min(nsize, sizeof(value)));
->
-> That is just soooooo broken.
+On Tue, Jul 12, 2022 at 04:29:10PM +0200, Christoph Lameter wrote:
+> On Tue, 12 Jul 2022, Hyeonggon Yoo wrote:
+> 
+> > @@ -3241,31 +3219,46 @@ slab_alloc_node(struct kmem_cache *cachep, gfp_t flags, int nodeid, size_t orig_
+> >  }
+> >
+> >  static __always_inline void *
+> > -__do_cache_alloc(struct kmem_cache *cache, gfp_t flags)
+> > +__do_cache_alloc(struct kmem_cache *cachep, gfp_t flags, int nodeid)
+> >  {
+> > -	void *objp;
+> > +	void *objp = NULL;
+> > +	int slab_node = numa_mem_id();
+> >
+> > -	if (current->mempolicy || cpuset_do_slab_mem_spread()) {
+> > -		objp = alternate_node_alloc(cache, flags);
+> > -		if (objp)
+> > -			goto out;
+> > +	if (nodeid == NUMA_NO_NODE) {
+> > +		if (current->mempolicy || cpuset_do_slab_mem_spread()) {
+> > +			objp = alternate_node_alloc(cachep, flags);
+> > +			if (objp)
+> > +				goto out;
+> > +		}
+> > +		/*
+> > +		 * Use the locally cached objects if possible.
+> > +		 * However ____cache_alloc does not allow fallback
+> > +		 * to other nodes. It may fail while we still have
+> > +		 * objects on other nodes available.
+> > +		 */
+> > +		objp = ____cache_alloc(cachep, flags);
+> > +		nodeid = slab_node;
+> > +	} else if (nodeid == slab_node) {
+> > +		objp = ____cache_alloc(cachep, flags);
+> > +	} else if (!get_node(cachep, nodeid)) {
+> > +		/* Node not bootstrapped yet */
+> > +		objp = fallback_alloc(cachep, flags);
+> > +		goto out;
+> >  	}
+> > -	objp = ____cache_alloc(cache, flags);
+> >
+> >  	/*
+> >  	 * We may just have run out of memory on the local node.
+> >  	 * ____cache_alloc_node() knows how to locate memory on other nodes
+> >  	 */
+> >  	if (!objp)
+> > -		objp = ____cache_alloc_node(cache, flags, numa_mem_id());
+> > -
+> > +		objp = ____cache_alloc_node(cachep, flags, nodeid);
+> 
+> 
+> Does this preserve the original behavior? nodeid is the parameter passed
+> to __do_cache_alloc(). numa_mem_id() is the nearest memory node.
 
-OK.
+Yes it does preserve the original behavior.
 
-
--- 
-With Best Regards,
-Andy Shevchenko
+nodeid equals to value of numa_mem_id() when nodeid was NUMA_NO_NODE and
+____cache_alloc() failed to allocate.
