@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40259C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 08:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiGMINp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 04:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41714 "EHLO
+        id S235304AbiGMINw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 04:13:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234991AbiGMIMg (ORCPT
+        with ESMTP id S234983AbiGMIMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 04:12:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB7EEA143;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B708EA142;
         Wed, 13 Jul 2022 01:12:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CED5E61A51;
-        Wed, 13 Jul 2022 08:12:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 508C2C36AEC;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 035FD61A55;
+        Wed, 13 Jul 2022 08:12:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD21C36AFA;
         Wed, 13 Jul 2022 08:12:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657699952;
-        bh=NGoFV+XEZz1AEK80xsrPTYnST06m5w8suHzIjN1TXLA=;
+        bh=HeQqUJvrGcgYZ3zwMqACCOwmFJoNKkacbDuzCb76kf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cbUrNe6uWcxuzBp+/Z4L0Q8+2yXsy+bgXUTT5LfdHo7xYiuUPk2y3DOWfPoSEYgPe
-         obNgdcxxmFAqqs14rJfc0LXc4VnCtb9kl1Y4p/tFGktP00AHWF58lrMKs0axc9AiDM
-         t2FimThIjjrc7qjzljsR0LhHhUOK/QM6u8PlIcZNx3xngD+nOLHYlQyIIihmEj3Thu
-         CbjEaQkoXziFLZphz13iWRWEF1rKSnIXCsR3EqkoMG8vvmsEHwc4LcMZNv0co4R4Ey
-         NcANxAh2btb+kJT2VgTBHJauOeqAakwxbTe3GGL+vHnciPPhr1l2SEnWN8hs5b3ToC
-         hsnUbaZ9rZwNQ==
+        b=JU1uPcPoXoaKexY3zQNP7ndYqYVk4nOaRZtPoCbgzOxMncB1AQRgPli10liVuE20i
+         OBt3GAmnNTiUarxdWqoJcHeY5MOOlkdoD0PDPtA8c7gwTXZnXM2WlqjpipNwxZ/OiU
+         wNfAfvw+VRDwSiB+9jxsFqTMixLIBp0gC6snditMXUQ2QIewFFV8M4Xh9RwgACGFco
+         cxW5ZQ1eSfa6hL6p9C681o2udmJFMuRVnvu12duzHIPkV+TN/nzlBb63e1KaXQghvN
+         SivMTLFTVpes8tac4T5m3xcpfS+jAblYdzsFUUeMZUROmQIguF9JMW0JsUxJyPA8ii
+         +SDvt5GhYU+yw==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBXTx-004zuH-U6;
-        Wed, 13 Jul 2022 09:12:29 +0100
+        id 1oBXTy-004zuZ-1E;
+        Wed, 13 Jul 2022 09:12:30 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Daniel Vetter <daniel@ffwll.ch>,
@@ -50,9 +50,9 @@ Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 30/39] docs: gpu: i915.rst: gt: add more kernel-doc markups
-Date:   Wed, 13 Jul 2022 09:12:18 +0100
-Message-Id: <d7d1f6d6516eb3a82041af1d5f40c2f550de40db.1657699522.git.mchehab@kernel.org>
+Subject: [PATCH v2 35/39] docs: gpu: i915.rst: add the remaining kernel-doc markup files
+Date:   Wed, 13 Jul 2022 09:12:23 +0100
+Message-Id: <5630ff7f2d5a99fc78b4fc2fa7e63649d23f226c.1657699522.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657699522.git.mchehab@kernel.org>
 References: <cover.1657699522.git.mchehab@kernel.org>
@@ -63,9 +63,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are several documented GT kAPI that aren't currently part
-of the docs. Add them, as this allows identifying issues with
-badly-formatted tags.
+There are other files with kernel-doc markups:
+
+	$ git grep -l "/\*\*" $(git ls-files|grep drivers/gpu/drm/i915/) >kernel-doc-files
+	$ for i in $(cat kernel-doc-files); do if [ "$(git grep $i Documentation/)" == "" ]; then echo "$i"; fi; done >aaa
+
+Add them to i915.rst as well.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -73,70 +76,142 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
 
- Documentation/gpu/i915.rst | 43 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 42 insertions(+), 1 deletion(-)
+ Documentation/gpu/i915.rst | 87 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 87 insertions(+)
 
 diff --git a/Documentation/gpu/i915.rst b/Documentation/gpu/i915.rst
-index 2ad7941a79f2..afd8c0e3c689 100644
+index 974754586be8..6bb50edc6d79 100644
 --- a/Documentation/gpu/i915.rst
 +++ b/Documentation/gpu/i915.rst
-@@ -149,7 +149,6 @@ Misc display functions
+@@ -13,6 +13,11 @@ Core Driver Infrastructure
+ This section covers core driver infrastructure used by both the display
+ and the GEM parts of the driver.
  
- .. kernel-doc:: drivers/gpu/drm/i915/display/skl_scaler.c
++Core driver
++-----------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_driver.c
++
+ Runtime Power Management
+ ------------------------
  
--
- Plane Configuration
+@@ -29,6 +34,10 @@ Runtime Power Management
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/intel_pm.c
+ 
++.. kernel-doc:: drivers/gpu/drm/i915/intel_wakeref.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_active.h
++
+ Interrupt Handling
+ ------------------
+ 
+@@ -44,6 +53,28 @@ Interrupt Handling
+ .. kernel-doc:: drivers/gpu/drm/i915/i915_irq.c
+    :functions: intel_runtime_pm_enable_interrupts
+ 
++Error handling
++--------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_gpu_error.c
++
++Memory Handling
++---------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma_resource.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma_resource.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_vma.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_mm.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_memory_region.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_memcpy.c
++
+ Intel GVT-g Guest Support(vGPU)
+ -------------------------------
+ 
+@@ -109,6 +140,54 @@ Workarounds
+ .. kernel-doc:: drivers/gpu/drm/i915/gt/intel_workarounds.c
+    :doc: Hardware workarounds
+ 
++32-bits compatible ioctl Logic
++------------------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ioc32.c
++
++Scatterlist handling
++--------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_scatterlist.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_scatterlist.c
++
++i915 request
++------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_request.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_request.c
++
++Ancillary routines
++------------------
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_deps.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_deps.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_device_info.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_params.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_sw_fence_work.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_syncmap.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_pcode.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_reg_defs.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_wopcm.h
++
++
++PXP
++---
++
++.. kernel-doc:: drivers/gpu/drm/i915/pxp/intel_pxp_irq.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/pxp/intel_pxp_tee.c
++
+ Display Hardware Handling
+ =========================
+ 
+@@ -618,6 +697,12 @@ Protected Objects
+ Table Manager (TTM)
  -------------------
  
-@@ -308,6 +307,48 @@ Multicast/Replicated (MCR) Registers
- .. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gt_mcr.c
-    :internal:
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ttm_buddy_manager.h
++
++.. kernel-doc:: drivers/gpu/drm/i915/i915_ttm_buddy_manager.c
++
++.. kernel-doc:: drivers/gpu/drm/i915/intel_region_ttm.c
++
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.c
  
-+GT engine
-+---------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_types.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_cs.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_engine_pm.c
-+
-+GT context
-+----------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_context.h
-+
-+Graphics Translation Tables
-+---------------------------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_ggtt.c
-+
-+Other GT functionality
-+----------------------
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gsc.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_gtt.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_migrate.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_mocs.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rc6.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_reset.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps_types.h
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_rps.c
-+
-+.. kernel-doc:: drivers/gpu/drm/i915/gt/intel_sseu.c
-+
- Memory Management and Command Submission
- ========================================
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_ttm.h
+@@ -627,6 +712,8 @@ Table Manager (TTM)
+ Graphics Execution Manager (GEM)
+ --------------------------------
  
++.. kernel-doc:: drivers/gpu/drm/i915/i915_gem.c
++
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_create.c
+ 
+ .. kernel-doc:: drivers/gpu/drm/i915/gem/i915_gem_domain.c
 -- 
 2.36.1
 
