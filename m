@@ -2,109 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A32DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3689C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236377AbiGMPy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:54:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        id S237067AbiGMPzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231703AbiGMPyx (ORCPT
+        with ESMTP id S237075AbiGMPzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:54:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C6164D4F0;
-        Wed, 13 Jul 2022 08:54:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B3792CE2311;
-        Wed, 13 Jul 2022 15:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDA5BC34114;
-        Wed, 13 Jul 2022 15:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657727687;
-        bh=yzj2tQXkHXeXbrjacBMpqSpUwIv3NFm5hxQonwujK30=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GoRZ576TwxqW+bs/Qw6T/u3KWjC32ul69wVFyyN2sjCMau09dzsCAwPt67j20lA7F
-         hDgkyfQv8EH9FLHIB8v72eF63c6O3JKzwRCLvmApLBsNTOvyE7lVirpvNcNWChHrya
-         lzUJX0GWqTWp1o3mL6VWWHZd/eM+z9/S0XkchLRe1BATTZ0bZ0PcxDhjTePHslBksV
-         WArYwu3efGYaRctPpd/cVHtoXPv+ox1yfjzaLic/QzB40m3iTk6/8EVlnXtvs6Yx/U
-         WmXI3ty6vvIgIgpxhJ/4k/S1t0Jmnm6UHsbRPNSkCJyeFV1DUdUmt70isrLEPc1fCs
-         CLaSL/+zbljAQ==
-Date:   Wed, 13 Jul 2022 17:04:36 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
- allocate() stage
-Message-ID: <20220713170436.32330fa6@jic23-huawei>
-In-Reply-To: <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
-        <20220604145955.2a1108ca@jic23-huawei>
-        <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Wed, 13 Jul 2022 11:55:17 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E944E852
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:55:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657727716; x=1689263716;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=OJYgszKDoNAcc0vzhgDLq9HJwqVYguHdW9WNBKVVEU4=;
+  b=h3c1LbjOIQV1Zy5Cf0GGvMDcMonSH1MYOeEkTzjORJY3BPpTQ5xLVsM4
+   oaHhOJVtwl62p/5OWW53VxKy5reiQYE9AA7WuSMuK5i8iBfjm+FmYhhxi
+   phIWB9QwsmWpsy5bzHJE5U9LkngV6X6x7PR+UB3C7CXXnBnSU9HoN8grs
+   6dN4fofyeGX4N0GJ5f3EEiWkHPiCwPTwAn4+CL56Rq5HYrnrigJ0qHUWi
+   HEdc0M7VK1aSEn0hYO7HuF0IWGF6ncvTUQovXz3hcu30FDKJqsG2kBMal
+   vnegTXMJYezY9DoE0z/XBU+atEwOSyrzz4YHDBexF/oNWpgliiryh05w+
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="268297325"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="268297325"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 08:49:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="545903814"
+Received: from lkp-server02.sh.intel.com (HELO 8708c84be1ad) ([10.239.97.151])
+  by orsmga003.jf.intel.com with ESMTP; 13 Jul 2022 08:49:02 -0700
+Received: from kbuild by 8708c84be1ad with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oBebm-0003dP-6X;
+        Wed, 13 Jul 2022 15:49:02 +0000
+Date:   Wed, 13 Jul 2022 23:48:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Brian Vazquez <brianvv@google.com>
+Subject: net/core/dev.c:10290:18: sparse: sparse: cast removes address space
+ '__percpu' of expression
+Message-ID: <202207132315.QFxcZZNI-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 1 Jul 2022 11:59:59 +0000
-Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   b047602d579b4fb028128a525f056bbdc890e7f0
+commit: 625788b5844511cf4c30cffa7fa0bc3a69cebc82 net: add per-cpu storage and net->core_stats
+date:   4 months ago
+config: riscv-randconfig-s032-20220713 (https://download.01.org/0day-ci/archive/20220713/202207132315.QFxcZZNI-lkp@intel.com/config)
+compiler: riscv32-linux-gcc (GCC) 11.3.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=625788b5844511cf4c30cffa7fa0bc3a69cebc82
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 625788b5844511cf4c30cffa7fa0bc3a69cebc82
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash net/core/
 
-> Hello Jonathan,
-> 
-> This patch has been on the mailing list for one month already, but no
-> comments from other IIO reviewers. What do you think we should do with it?
-> Is it a helpful change or not?
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Given I'm way behind and timing in cycle, I'm probably going to kick this
-back to start of the next cycle. Sorry for delay,
 
-Jonathan
+sparse warnings: (new ones prefixed by >>)
+   net/core/dev.c:3254:23: sparse: sparse: incorrect type in argument 4 (different base types) @@     expected restricted __wsum [usertype] csum @@     got unsigned int @@
+   net/core/dev.c:3254:23: sparse:     expected restricted __wsum [usertype] csum
+   net/core/dev.c:3254:23: sparse:     got unsigned int
+   net/core/dev.c:3254:23: sparse: sparse: cast from restricted __wsum
+>> net/core/dev.c:10290:18: sparse: sparse: cast removes address space '__percpu' of expression
+   net/core/dev.c:3759:17: sparse: sparse: context imbalance in '__dev_queue_xmit' - different lock contexts for basic block
+   net/core/dev.c:4961:17: sparse: sparse: context imbalance in 'net_tx_action' - different lock contexts for basic block
 
-> 
-> On Sat, Jun 04, 2022 at 02:59:55PM +0100, Jonathan Cameron wrote:
-> > On Wed, 1 Jun 2022 17:48:32 +0000
-> > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> >   
-> > > To provide a new IIO trigger to the IIO core, usually driver executes the
-> > > following pipeline: allocate()/register()/get(). Before, IIO core assigned
-> > > trig->owner as a pointer to the module which registered this trigger at
-> > > the register() stage. But actually the trigger object is owned by the
-> > > module earlier, on the allocate() stage, when trigger object is
-> > > successfully allocated for the driver.
-> > > 
-> > > This patch moves trig->owner initialization from register()
-> > > stage of trigger initialization pipeline to allocate() stage to
-> > > eliminate all misunderstandings and time gaps between trigger object
-> > > creation and owner acquiring.
-> > > 
-> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>  
-> > 
-> > Hi Dmitry,
-> > 
-> > I 'think' this is fine, but its in the high risk category that I'd like
-> > to keep it on list for a few weeks before applying.
-> > 
-> > Note I'm still keen that in general we keep the flow such that
-> > we do allocate()/register()/get() as there is no guarantee that the get()
-> > will never do anything that requires the trigger to be registered, even
-> > though that is true today.  Which is another way of saying I'm still
-> > keen we fix up any cases that sneak in after your fix up set dealt with
-> > the current ones.
-> > 
-> > Thanks for following up on this!
-> > 
-> > Jonathan
-> >   
-> 
+vim +/__percpu +10290 net/core/dev.c
 
+ 10282	
+ 10283	struct net_device_core_stats *netdev_core_stats_alloc(struct net_device *dev)
+ 10284	{
+ 10285		struct net_device_core_stats __percpu *p;
+ 10286	
+ 10287		p = alloc_percpu_gfp(struct net_device_core_stats,
+ 10288				     GFP_ATOMIC | __GFP_NOWARN);
+ 10289	
+ 10290		if (p && cmpxchg(&dev->core_stats, NULL, p))
+ 10291			free_percpu(p);
+ 10292	
+ 10293		/* This READ_ONCE() pairs with the cmpxchg() above */
+ 10294		p = READ_ONCE(dev->core_stats);
+ 10295		if (!p)
+ 10296			return NULL;
+ 10297	
+ 10298		return this_cpu_ptr(p);
+ 10299	}
+ 10300	EXPORT_SYMBOL(netdev_core_stats_alloc);
+ 10301	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
