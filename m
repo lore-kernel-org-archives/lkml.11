@@ -2,95 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC84C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B45ACC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 14:25:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236328AbiGMOZB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 10:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58796 "EHLO
+        id S234656AbiGMOZk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 10:25:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236360AbiGMOYr (ORCPT
+        with ESMTP id S229497AbiGMOZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 10:24:47 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ADB3342F;
-        Wed, 13 Jul 2022 07:24:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657722284; x=1689258284;
-  h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Qcu2fDzbjH+8Pob7GAhka1a5X+B4rezoCFYuJ3gdx9w=;
-  b=SZaS28hDr+JcVFtTVgjatL0muvDmpIc9VgNTKk/H+vko53aQQ3DFQSyK
-   U3ruq7WJnzO3guHJ4yKX/i76/OQwOGtymeq0ybHwVhHCXmq391bPJMRBt
-   ESm4yiq2uBY/e0awxlUp77pI90U3qclYdji+RxgvdEaeBHzu8h6hjSeA2
-   6QPlvv5G16SMmPSxYbkrd94BkpMoeDFu5lXg6s1JfyPF1jhLnwtuSe2pK
-   q0z8bX9UoV9M+ZYFaIZHIYR4p2NpV1kv/IpxVRXCh5lMyuGhdsTPIgTeV
-   M5jka+I+bNK3Xh9zqwByyAgYQvtTj/uiPL74DvTrIOGF4fq/x2D78qNqK
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="371537551"
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="371537551"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 07:24:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
-   d="scan'208";a="663375775"
-Received: from wopr.jf.intel.com ([10.54.75.125])
-  by fmsmga004.fm.intel.com with ESMTP; 13 Jul 2022 07:24:43 -0700
-Message-ID: <838bd68dbdc14e556d0b69d910b9fd6dd5898f29.camel@linux.intel.com>
-Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
- (printk issue)
-From:   Todd Brandt <todd.e.brandt@linux.intel.com>
-Reply-To: todd.e.brandt@linux.intel.com
-To:     John Ogness <john.ogness@linutronix.de>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Date:   Wed, 13 Jul 2022 07:24:43 -0700
-In-Reply-To: <87ilo1wdac.fsf@jogness.linutronix.de>
-References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
-         <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
-         <87czegxccb.fsf@jogness.linutronix.de>
-         <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
-         <87tu7qvx1q.fsf@jogness.linutronix.de>
-         <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
-         <87o7xwbuoy.fsf@jogness.linutronix.de> <Ysvbp8vz7R9hDNqx@alley>
-         <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Wed, 13 Jul 2022 10:25:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F4730572
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 07:25:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99BD761DCD
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 14:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63EB6C34114;
+        Wed, 13 Jul 2022 14:25:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657722334;
+        bh=GqcKhLMme2XRMten/jm7ZOrt21JXJHyJD21A4eNiL7g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=keEgJhqaweRJnjFlZaWt/kdMX9uj0iaMueByIac72DC7Hpzk/0n1LXJf40FSr6THR
+         0ROaeFqhWLAVK2RI/8J3JEPgL9XrDcDRlvEQa7uwNHO0nGPEoQq1bNvLDcwCTpjZAk
+         C+aOUWi1G+i3caxugd+mvXLGQILWxcmIJLyWinQ0=
+Date:   Wed, 13 Jul 2022 16:25:30 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Phil Auld <pauld@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Tian Tao <tiantao6@hisilicon.com>
+Subject: Re: [PATCH v2] drivers/base/node.c: fix userspace break from using
+ bin_attributes for cpumap and cpulist
+Message-ID: <Ys7V2oW82qW75x6X@kroah.com>
+References: <20220713134545.1382367-1-pauld@redhat.com>
+ <Ys7Pkxqzrz75gCiN@kroah.com>
+ <Ys7TCFoGIk3hlCpB@lorien.usersys.redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys7TCFoGIk3hlCpB@lorien.usersys.redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-07-13 at 11:57 +0206, John Ogness wrote:
-> On 2022-07-11, Sergey Senozhatsky <senozhatsky@chromium.org> wrote:
-> > > It seems that __pr_flush() does not check whether all consoles
-> > > are
-> > > suspended. In this case the progress is not possible and it has
-> > > to
-> > > wait the entire timeout.
+On Wed, Jul 13, 2022 at 10:13:28AM -0400, Phil Auld wrote:
+> On Wed, Jul 13, 2022 at 03:58:43PM +0200 Greg Kroah-Hartman wrote:
+> > On Wed, Jul 13, 2022 at 09:45:45AM -0400, Phil Auld wrote:
+> > > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
+> > > This breaks userspace code that retrieves the size before reading the file. Rather
+> > > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
+> > > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
+> > > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
+> > > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
+> > > (8192 * 5). In order to get near that you'd need a system with every other CPU on one
+> > > node or something similar. e.g. (0,2,4,... 1024,1026...). To simplify the math and
+> > > support larger NR_CPUS we are using NR_CPUS * 6. We also set it to a min of PAGE_SIZE
+> > > to retain the older behavior for smaller NR_CPUS. The cpumap file wants to be something
+> > > like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using NR_CPUS/2.
+> > > 
+> > > On an 80 cpu 4-node sytem (NR_CPUS == 8192)
+> > > 
+> > > before:
+> > > 
+> > > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
+> > > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
+> > > 
+> > > after:
+> > > 
+> > > -r--r--r--. 1 root root 49152 Jul 13 09:26 /sys/devices/system/node/node0/cpulist
+> > > -r--r--r--. 1 root root  4096 Jul 13 09:24 /sys/devices/system/node/node0/cpumap
+> > > 
+> > > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
+> > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > > Signed-off-by: Phil Auld <pauld@redhat.com>
+> > > ---
+> > >  drivers/base/node.c | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/drivers/base/node.c b/drivers/base/node.c
+> > > index 0ac6376ef7a1..3577f4eb4ac6 100644
+> > > --- a/drivers/base/node.c
+> > > +++ b/drivers/base/node.c
+> > > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
+> > >  	return n;
+> > >  }
+> > >  
+> > > -static BIN_ATTR_RO(cpumap, 0);
+> > > +static BIN_ATTR_RO(cpumap, (((NR_CPUS>>1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE));
 > > 
-> > But isn't console_suspended set after pr_flush() call?
+> > Why not just PAGE_SIZE?
+> >
 > 
-> There should not be any printing after the suspend_console() message.
-> If
-> Todd's report is coming from 5.19-rc1, then it is likely a kthread
-> issue, where the kthread is not respecting @console_suspended. (This
-> would still need to be fixed for the kthreads, but would not be
-> relevant
-> for 5.19.)
+> This one is likely to grow beyond page size if NR_CPUS is larger than 8192. It's about 2300 bytes
+> at 8192 if my math is right.
 > 
-> John
+> Let me ask again before I write the comments... what values of NR_CPUS are you seeing? Are people
+> using an order of magnitude above 8192? Two orders?  This patch (with the 6 below) handles about 1
+> order more.
 
-It appears to still be there in rc5 (our lab system is usually 6 days
-behind, so rc6 hasn't been run yet). I'm building a new rc6 kernel with
-CONFIG_PRINTK_CALLER today and will run it on all affected machines,
-I'll send out the data this afternoon Oregon Time. I'll include
-timelines for all affected machines to give you a better sampling.
+One order for now that we know of, probably larger that we don't :)
 
+> > >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> > >  				   struct bin_attribute *attr, char *buf,
+> > > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> > >  	return n;
+> > >  }
+> > >  
+> > > -static BIN_ATTR_RO(cpulist, 0);
+> > > +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 6) > PAGE_SIZE) ? NR_CPUS *6 : PAGE_SIZE));
+> > 
+> > "* 6" in both places here?
+> >
+> 
+> It's compile time so it's cheap. But yes, 6 in both places.  That's to support NR_CPUS=100000.
+
+Sorry, I was trying to point out to use a " " before the "6" in both
+places.  Not questioning the math.
+
+thanks,
+
+greg k-h
