@@ -2,124 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D03C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:26:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E401CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 15:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236889AbiGMP0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 11:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33504 "EHLO
+        id S236924AbiGMP0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 11:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236105AbiGMP02 (ORCPT
+        with ESMTP id S236654AbiGMP0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 11:26:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB0A54D146
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:26:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657725986;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kJkaLG9WJPX2u3dxR5FbaiE55jud0LnanxlOTAFcW1A=;
-        b=iz0wGXyDz+77lkslFqBr4IAwM+AC8OAVtZT9ZA6pFrF8NiuahWXl4LkLLYjLKrkZHj40YF
-        t2PaWHFZ1Vwu/IPcBbGihxtPLO2wpNz+GlaFaMuHvc7FzK9qeYXIq89oXNSPj8nwIxoYY7
-        YytWDfQJEz9yVl59PsSC7FBScWNUvWQ=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-41-noEoCM3-NrqgVHmoUrmYzw-1; Wed, 13 Jul 2022 11:26:16 -0400
-X-MC-Unique: noEoCM3-NrqgVHmoUrmYzw-1
-Received: by mail-qt1-f199.google.com with SMTP id h25-20020ac87779000000b0031ea852ca63so9328034qtu.11
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 08:26:16 -0700 (PDT)
+        Wed, 13 Jul 2022 11:26:48 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9347A4D15C;
+        Wed, 13 Jul 2022 08:26:47 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id ss3so14444779ejc.11;
+        Wed, 13 Jul 2022 08:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=kzxlcZi7f09uxzv1rHERdurRhsF4h+KpHejIZNkN6qs=;
+        b=PsC622FxZFBDQOCQvYNUeIA/Yj2Pus0JFG2MtQUPE1AWqF/6SMV+HObPyO9XeBNBGV
+         ETK6zX0s6ydwbz8LcNXgFngZHNMLf9PvTFCXAU4DZLyZW4WQ50LGvHFqaRFULVvjUhrJ
+         xchpdta58xXRV8qL5fHWTWKnM4dy4JXCN3tASpkbyRbFKtQ1LMFS95e3j3shhwe7Gf8i
+         f4pF7tzGCB9DzmLlZMbjwB4tXIIdRuJbk5hTee5rLiUCnOin8rX8cWNGZmX2QayoKYx7
+         ++hFJ2xyxN7im6gf8eZhNA5kwIJyRbnp/GKsu7yB8yD6WLHqLKl4V7ND8GaWtkPIZKyY
+         URow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kJkaLG9WJPX2u3dxR5FbaiE55jud0LnanxlOTAFcW1A=;
-        b=hJi7+ggna4s7FQuhPuCiXiZbVsPeLm3iyOGFYcVRsryTFDpjrXXWVerscAjONrXYLt
-         bI65erSCZ02hOpd29RnIewlMh1hdUNabsQrl7C72dBC90gFAURmWm7hhOa1/RwhtRs9U
-         5W7HqGkOgbpmRALqalXEVtIVT7fT162StcAk9dFG6fsGMOy2cizr4YBrjKNtlt4H91Hg
-         7u2V0eBu/JNWNeGh3og1NeGzCtDPNKruNIGRAfgbRpl4T9StJ0G34LkrnlMAz2RTanml
-         AGUQk0gm0/kT8rCjftasY8p6rH1y8i7Jk4Fr06BMzDvHwOPq/k+EIunmVgaCqjrWqHZm
-         gwYA==
-X-Gm-Message-State: AJIora8WIlYWkqKbS13MScnFS+/ofxg4Bm48gyFuxaMW0BA5outGzpIy
-        91prZpKQmEHBBXjJMQeOSuJW1O8wkRqruJtB079bsSZFoxnLWvfgi4K8zcBAUr52HoN1rj15M3n
-        dArErOMbTJwU1v5TNy7f9kuWW
-X-Received: by 2002:a05:622a:181:b0:31d:476f:58a3 with SMTP id s1-20020a05622a018100b0031d476f58a3mr3649846qtw.389.1657725975635;
-        Wed, 13 Jul 2022 08:26:15 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uzqnK0jx1FbXH/slmZUIowJUVoVFeBmckvJKf1obuBX6QrR/01EHH5oxL61vgfFSoL3RdjWQ==
-X-Received: by 2002:a05:622a:181:b0:31d:476f:58a3 with SMTP id s1-20020a05622a018100b0031d476f58a3mr3649816qtw.389.1657725975426;
-        Wed, 13 Jul 2022 08:26:15 -0700 (PDT)
-Received: from halaneylaptop ([2600:1700:1ff0:d0e0::2e])
-        by smtp.gmail.com with ESMTPSA id dt8-20020a05620a478800b006a91da2fc8dsm9032814qkb.0.2022.07.13.08.26.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 08:26:15 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 10:26:13 -0500
-From:   Andrew Halaney <ahalaney@redhat.com>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Johan Hovold <johan@kernel.org>, bjorn.andersson@linaro.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Steve Capper <Steve.Capper@arm.com>
-Subject: Re: [PATCH] arm64: dts: qcom: sc8280xp: Fix PMU interrupt
-Message-ID: <20220713152613.yofokevcwzm2lc4x@halaneylaptop>
-References: <20220713143429.22624-1-manivannan.sadhasivam@linaro.org>
- <Ys7c0JGAV7AAEjaO@hovoldconsulting.com>
- <20220713151305.GA4591@workstation>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kzxlcZi7f09uxzv1rHERdurRhsF4h+KpHejIZNkN6qs=;
+        b=pGoe74Telgh5y1s1nMdeH0FZqzkw5B4xMQyL99vLb9+J06+RdMHCEbXd6gb1NX53p/
+         0Hovee54rnvK59lb8PtO23632uOyKZ88q9FHLyen78Pkf84+YBB24PzN0Idh7OL3HeA/
+         3EPji17GsD0oWy5f4G187a2hQfFYNBYn//O6C7tUkYmvdB+h6q61+5dGqjI4aiKcUGWh
+         Dhlzhs599YI8bUi3o5eTJZm0z2H4M79kAIw/N9C4hNNtBevEyhI4dcKN6Ez9veE9ymYF
+         rUP3jPpwWMiWrJeRNZenwv0eEVpd9I2FbJVA2QpNf08CjMamJCysBm5uo0LX+50SAz10
+         7gwg==
+X-Gm-Message-State: AJIora9T947Jt20HJ681giqKTBExnqjAlrwNIIhT0MWXBoAtJZYisQzV
+        saufXRwtj4WRFtcOqDEf/xFR4L5JXXE=
+X-Google-Smtp-Source: AGRyM1sFoaG6MHmbm4bR0mniczE6xP/FYB4PAOFc3Y1NHX7ZS+t/NGK9re79B7JJdKwLGBDyLh2qOw==
+X-Received: by 2002:a17:906:58cf:b0:726:97db:4f6d with SMTP id e15-20020a17090658cf00b0072697db4f6dmr4031917ejs.261.1657726006002;
+        Wed, 13 Jul 2022 08:26:46 -0700 (PDT)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id ch15-20020a0564021bcf00b0043a71c376a2sm8116926edb.33.2022.07.13.08.26.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 08:26:45 -0700 (PDT)
+Message-ID: <304678bb-f49c-9c3b-e15e-df6c9e8a4ea2@gmail.com>
+Date:   Wed, 13 Jul 2022 17:26:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713151305.GA4591@workstation>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH v2 2/8] ARM: dts: Move BCM963138DVT board dts to
+ ARCH_BCMBCA
+To:     William Zhang <william.zhang@broadcom.com>,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>
+Cc:     Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
+        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
+        kursad.oney@broadcom.com, f.fainelli@gmail.com,
+        anand.gore@broadcom.com, Arnd Bergmann <arnd@arndb.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Olof Johansson <olof@lixom.net>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, soc@kernel.org
+References: <20220707070037.261532-1-william.zhang@broadcom.com>
+ <20220707070037.261532-3-william.zhang@broadcom.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <20220707070037.261532-3-william.zhang@broadcom.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 08:43:05PM +0530, Manivannan Sadhasivam wrote:
-> On Wed, Jul 13, 2022 at 04:55:12PM +0200, Johan Hovold wrote:
-> > On Wed, Jul 13, 2022 at 08:04:29PM +0530, Manivannan Sadhasivam wrote:
-> > > PPI interrupt should be 7 for the PMU.
-> > > 
-> > > Cc: Johan Hovold <johan+linaro@kernel.org>
-> > > Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
-> > > Reported-by: Steve Capper <Steve.Capper@arm.com>
-> > > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > > ---
-> > >  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > index 268ab423577a..2d7823cb783c 100644
-> > > --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
-> > > @@ -477,7 +477,7 @@ memory@80000000 {
-> > >  
-> > >  	pmu {
-> > >  		compatible = "arm,armv8-pmuv3";
-> > > -		interrupts = <GIC_PPI 5 IRQ_TYPE_LEVEL_HIGH>;
-> > > +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_HIGH>;
-> > >  	};
-> > >  
-> > >  	psci {
-> > 
-> > The interrupt number matches the vendor devicetree I have access to, but
-> > the vendor source also has IRQ_TYPE_LEVEL_LOW instead of
-> > IRQ_TYPE_LEVEL_HIGH here.
+On 7.07.2022 09:00, William Zhang wrote:
+> Use CONFIG_ARCH_BCMBCA to build all the BCMBCA SoC dts and remove
+> CONFIG_ARCH_BCM_63XX from the makefile
+> 
+> Signed-off-by: William Zhang <william.zhang@broadcom.com>
+> ---
+> 
+> (no changes since v1)
+> 
+>   arch/arm/boot/dts/Makefile | 3 +--
+>   1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+> index 38d9c60aece7..1bf8e2f8ee68 100644
+> --- a/arch/arm/boot/dts/Makefile
+> +++ b/arch/arm/boot/dts/Makefile
+> @@ -147,8 +147,6 @@ dtb-$(CONFIG_ARCH_BCM_53573) += \
+>   	bcm47189-luxul-xap-810.dtb \
+>   	bcm47189-tenda-ac9.dtb \
+>   	bcm947189acdbmr.dtb
+> -dtb-$(CONFIG_ARCH_BCM_63XX) += \
+> -	bcm963138dvt.dtb
+>   dtb-$(CONFIG_ARCH_BCM_CYGNUS) += \
+>   	bcm911360_entphn.dtb \
+>   	bcm911360k.dtb \
+> @@ -184,6 +182,7 @@ dtb-$(CONFIG_ARCH_BRCMSTB) += \
+>   	bcm7445-bcm97445svmb.dtb
+>   dtb-$(CONFIG_ARCH_BCMBCA) += \
+>   	bcm947622.dtb \
+> +	bcm963138dvt.dtb \
+>   	bcm963148.dtb \
+>   	bcm963178.dtb \
+>   	bcm96756.dtb \
 
-+1 to what I see as well, fwiw. Totally missed that when reviewing
-earlier.
+Do we want to mix all that DT files? Are ARCH_BCM_63XX (ex-)users
+interested in compiling all of them?
 
-> > 
-> > Is that another copy-paste error, perhaps?
-> > 
-> 
-> I don't have access to the documentation of this SoC now but since Steve
-> tried with IRQ_TYPE_LEVEL_HIGH and it worked for him, I think it is best
-> to leave it as it is.
-> 
-> Thanks,
-> Mani
-> 
-> > Johan
-> 
-
+For IPROC SoCs we have separated symbols: ARCH_BCM_CYGNUS / ARCH_BCM_HR2
+/ ARCH_BCM_NSP / ARCH_BCM_5301X and we compile arch specific DT files
+only.
