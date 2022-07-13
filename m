@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C156CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA39CCA479
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 07:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234621AbiGMHro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42856 "EHLO
+        id S234420AbiGMHrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230077AbiGMHrl (ORCPT
+        with ESMTP id S234094AbiGMHrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 13 Jul 2022 03:47:41 -0400
-X-Greylist: delayed 357 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 13 Jul 2022 00:47:39 PDT
-Received: from mail.fris.de (mail.fris.de [IPv6:2a01:4f8:c2c:390b::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AD8FE5DD5;
+Received: from mail.fris.de (mail.fris.de [116.203.77.234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E97F2E5DD3;
         Wed, 13 Jul 2022 00:47:38 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 781C1C0142;
-        Wed, 13 Jul 2022 09:41:34 +0200 (CEST)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id CAE39C01DA;
+        Wed, 13 Jul 2022 09:41:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fris.de; s=dkim;
-        t=1657698098; h=from:subject:date:message-id:to:cc:mime-version:
-         content-transfer-encoding; bh=JDQJvV5fPEycK4HRG4YFHEdBvu0jCgAbXPDA61SwOkA=;
-        b=Gsux09wlTqVjJYIPS2ZlponisZumHxcZCKDzQhHF0fIsWMxp6i7qxr6KaAJSvAQzLliXiC
-        UcJoTIqSpc9QlG8D9DCdwFJ+bJCIwI3yL3sQzlwsSiPegUMtfDDNUNizOCnxLEdGStkKRd
-        z0ZIf3Obvm643900QHTq+uw4Crlg2kXTjfLrmcRgPmCnCcPEEI+aqViK5Lj5xArlOuJc+y
-        JpVoygulB5nw4cCMamRy0nRF7RNdb8QJUaV9edr3buwt9aTR3z8GPtxuYHZy2b170SHb6H
-        b7coOk0Dnw70xa/9BlWo33zj8Hzro0A52opu73QOnH7FiKpnArzwsqVxqVL4gg==
+        t=1657698107; h=from:subject:date:message-id:to:cc:mime-version:
+         content-transfer-encoding:in-reply-to:references;
+        bh=vSJoVm9+bdQ/o3Q6dZ6Jra7Qci1VIKd+fIskH70gakE=;
+        b=j39BPDn7iBdsswlFGxjDdRGTbpLds5P13f8E7riq3tbSrs2nnanBrqATxOtMmIlAWGm4Y0
+        6NEpbyoJV+GPshesxdbDcJrBHQi73O3jTQChCdSRBLreAdhJgUiStxj4Q+nuBGYG6JKSL6
+        JKIJBdxZ2ZMeJK+4e1nYhkEMmfhWplQMRbtxxLTQTxdyUzFOIM1h2xelXldf/seoi1KBnz
+        nKhtjvg6NStbRFF1EmJkQ9ZDw9Ygt/lzGBZRpMerj2ZjY6PKPKdVodPPhe/7gHxi7yWdqL
+        by0mhBgcWHP2SZ31wq9YyZWYhdDXGCA0Q7dxBtbKUn8gMa20EazfLFRw0oDRvA==
 From:   Frieder Schrempf <frieder@fris.de>
-To:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Li Yang <leoyang.li@nxp.com>,
+To:     devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>
 Cc:     Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: [PATCH 0/6] arm64: dts: imx8mm-kontron: Improvements and OSM board support
-Date:   Wed, 13 Jul 2022 09:41:11 +0200
-Message-Id: <20220713074118.14733-1-frieder@fris.de>
+        Fabio Estevam <festevam@gmail.com>,
+        Heiko Thiery <heiko.thiery@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>
+Subject: [PATCH 4/6] arm64: dts: imx8mm-kontron: Use upper case PMIC regulator names
+Date:   Wed, 13 Jul 2022 09:41:15 +0200
+Message-Id: <20220713074118.14733-5-frieder@fris.de>
+In-Reply-To: <20220713074118.14733-1-frieder@fris.de>
+References: <20220713074118.14733-1-frieder@fris.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Last-TLS-Session-Version: TLSv1.3
@@ -46,29 +53,116 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-This set contains a few small improvements for the imx8mm-kontron devicetrees
-(patch 1 to 4) and support for a new SoM (patch 5-6, including baseboard) that
-complies to the Open Standard Module (OSM) 1.0 hardware specification, size S
-(https://sget.org/standards/osm).
+Use upper case PMIC regulator names to comply with the bindings.
 
-Frieder Schrempf (6):
-  arm64: dts: imx8mm-kontron: Adjust board and SoM model strings
-  arm64: dts: imx8mm-kontron: Use the VSELECT signal to switch SD card
-    IO voltage
-  arm64: dts: imx8mm-kontron: Remove low DDRC operating point
-  arm64: dts: imx8mm-kontron: Use upper case PMIC regulator names
-  arm64: dts: Add support for Kontron SL/BL i.MX8MM OSM-S
-  dt-bindings: arm: fsl: Add Kontron BL i.MX8MM OSM-S board
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+ .../freescale/imx8mm-kontron-n801x-som.dtsi   | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
- .../devicetree/bindings/arm/fsl.yaml          |   6 +
- arch/arm64/boot/dts/freescale/Makefile        |   1 +
- .../dts/freescale/imx8mm-kontron-n801x-s.dts  |   5 +-
- .../freescale/imx8mm-kontron-n801x-som.dtsi   |  30 +-
- .../dts/freescale/imx8mm-kontron-n802x-s.dts  | 377 ++++++++++++++++++
- .../freescale/imx8mm-kontron-n802x-som.dtsi   | 309 ++++++++++++++
- 6 files changed, 709 insertions(+), 19 deletions(-)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-n802x-s.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-kontron-n802x-som.dtsi
-
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+index 2d0661cce89b..2e3d51bbf92e 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-kontron-n801x-som.dtsi
+@@ -85,7 +85,7 @@ pca9450: pmic@25 {
+ 
+ 		regulators {
+ 			reg_vdd_soc: BUCK1 {
+-				regulator-name = "buck1";
++				regulator-name = "BUCK1";
+ 				regulator-min-microvolt = <800000>;
+ 				regulator-max-microvolt = <850000>;
+ 				regulator-boot-on;
+@@ -96,7 +96,7 @@ reg_vdd_soc: BUCK1 {
+ 			};
+ 
+ 			reg_vdd_arm: BUCK2 {
+-				regulator-name = "buck2";
++				regulator-name = "BUCK2";
+ 				regulator-min-microvolt = <850000>;
+ 				regulator-max-microvolt = <950000>;
+ 				regulator-boot-on;
+@@ -107,7 +107,7 @@ reg_vdd_arm: BUCK2 {
+ 			};
+ 
+ 			reg_vdd_dram: BUCK3 {
+-				regulator-name = "buck3";
++				regulator-name = "BUCK3";
+ 				regulator-min-microvolt = <850000>;
+ 				regulator-max-microvolt = <950000>;
+ 				regulator-boot-on;
+@@ -115,7 +115,7 @@ reg_vdd_dram: BUCK3 {
+ 			};
+ 
+ 			reg_vdd_3v3: BUCK4 {
+-				regulator-name = "buck4";
++				regulator-name = "BUCK4";
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-boot-on;
+@@ -123,7 +123,7 @@ reg_vdd_3v3: BUCK4 {
+ 			};
+ 
+ 			reg_vdd_1v8: BUCK5 {
+-				regulator-name = "buck5";
++				regulator-name = "BUCK5";
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-boot-on;
+@@ -131,7 +131,7 @@ reg_vdd_1v8: BUCK5 {
+ 			};
+ 
+ 			reg_nvcc_dram: BUCK6 {
+-				regulator-name = "buck6";
++				regulator-name = "BUCK6";
+ 				regulator-min-microvolt = <1100000>;
+ 				regulator-max-microvolt = <1100000>;
+ 				regulator-boot-on;
+@@ -139,7 +139,7 @@ reg_nvcc_dram: BUCK6 {
+ 			};
+ 
+ 			reg_nvcc_snvs: LDO1 {
+-				regulator-name = "ldo1";
++				regulator-name = "LDO1";
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-boot-on;
+@@ -147,7 +147,7 @@ reg_nvcc_snvs: LDO1 {
+ 			};
+ 
+ 			reg_vdd_snvs: LDO2 {
+-				regulator-name = "ldo2";
++				regulator-name = "LDO2";
+ 				regulator-min-microvolt = <800000>;
+ 				regulator-max-microvolt = <900000>;
+ 				regulator-boot-on;
+@@ -155,7 +155,7 @@ reg_vdd_snvs: LDO2 {
+ 			};
+ 
+ 			reg_vdda: LDO3 {
+-				regulator-name = "ldo3";
++				regulator-name = "LDO3";
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <1800000>;
+ 				regulator-boot-on;
+@@ -163,7 +163,7 @@ reg_vdda: LDO3 {
+ 			};
+ 
+ 			reg_vdd_phy: LDO4 {
+-				regulator-name = "ldo4";
++				regulator-name = "LDO4";
+ 				regulator-min-microvolt = <900000>;
+ 				regulator-max-microvolt = <900000>;
+ 				regulator-boot-on;
+@@ -171,7 +171,7 @@ reg_vdd_phy: LDO4 {
+ 			};
+ 
+ 			reg_nvcc_sd: LDO5 {
+-				regulator-name = "ldo5";
++				regulator-name = "LDO5";
+ 				regulator-min-microvolt = <1800000>;
+ 				regulator-max-microvolt = <3300000>;
+ 			};
 -- 
 2.37.0
+
