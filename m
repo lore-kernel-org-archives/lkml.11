@@ -2,205 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22F3CCA482
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87CEECCA47F
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 01:35:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233607AbiGMBeh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 12 Jul 2022 21:34:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
+        id S233657AbiGMBft (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 12 Jul 2022 21:35:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiGMBee (ORCPT
+        with ESMTP id S229775AbiGMBfr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 12 Jul 2022 21:34:34 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A024C923C
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:34:33 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so1156244pjr.4
-        for <linux-kernel@vger.kernel.org>; Tue, 12 Jul 2022 18:34:33 -0700 (PDT)
+        Tue, 12 Jul 2022 21:35:47 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2120.outbound.protection.outlook.com [40.107.92.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E69A5CB448;
+        Tue, 12 Jul 2022 18:35:42 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hVDieQz88IsVnoFAwccPx9UKB0bWebYn1dhTvDFQRx6P9nEWvn/xwfmQ0NFi7oOjQ8PCVFjOeRM+9D3gxzPeLSkIJZIU/deqxPxI/6GTo8aMc1YIVmW9XHGHftroW2DRW51aeGfOHlowEuqCwYeHfhFQrxOUQuWgqEU3SP0SrSIHxdoXIC0zeKZ17GiEDTdFipmODaWtBxVHfg1Xk85eVtTdz60F4IyYtEKsX69YBcP7BGaXTy/1IlI2DYpF/M1izQs+AGZLyknBImYqSXisdSeqohOEEUiGdUpucF26bs1EbuNnk0Cr2KJnwDVIjBZeYqH3jUyCS4UygV0YptTzuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ddo/S8RK8zfpj2dyMNU8a7uWnD8XMriQO6FxXXYVM8E=;
+ b=Tr6Ef0kXDoQ3/QZ4oECcWSxkW6LVP/gziVO+ePKU4ck6assQXYwKi+FKt8LbdZE8SkmLwmfjaItecACa1SqF+mC/kYv4Os9axovDEzNWY0iBDl81ufK7l05Ewcr3Ff6FRfaYMP8JWLxYdgxp91TdxMcPu5h6iN9fDVC88IZyDlQxmwYrc1CdbkQcBw4xPo92AwtaPhTsfifkVR5wvL70BSXdx1C1VJMwSz30EqUJVihkcWwQRR/LJVuX6qg94UED/O8dXijIo/4ezw2DwHyB80tg8/mTfKa691Ur7t3vpAOIsS4D3TaY3HK2F3+aJwLGe89nTMQL2mTvdt3FpbKFyg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XGSpGU9y1qKiwBDHtAjINY9EHDaIDTEGfdXCP9bclWI=;
-        b=V4fBHAYghVFtCj/gyK9mu3PyvFXqcOoz2B2mKkJDh/adD4u9JvaBL253pjyTFBedRt
-         GVuAft2l+07Oz6wgg4sUN8GjywhMpSBY8JBWFfogIjh3h/wQnPJNZJ7+uzDvCbVEyy7c
-         TJy9acvtLuLwkUzPXiqBbcfn+02wtNDgmDZvo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XGSpGU9y1qKiwBDHtAjINY9EHDaIDTEGfdXCP9bclWI=;
-        b=rHr6mNQHvF/Jti5YDtwB+i3sndlvx8USrOC2y8MNivB6u5xRaWI9ZNlt3oBiAgIgmV
-         4Mcq9nK8jLop47pOTl9cYsME05r3WqrlFOEau1on326jc82YzB5X5R29VkMLO4R01enk
-         T7il+NKSmb+3Y99D/ZrxggR8tYMO9B4aM8f355MNc9MzneobmapBHdp/rpI55zABo7p7
-         ROa1Z20+1EYHoIXYNxT2XmBnAm4Io1SYUrg6T9cH/k2rICvfrMZdcUg+vSdom5IhjK5k
-         gtrkg6eIZQw/p7xWhqGrtH4PUAjUqFV4Y2wubPBKHrgqufsmEPHGDbK8vO8ynp58oDFX
-         uwhQ==
-X-Gm-Message-State: AJIora9dsMdh1HhkGrs2qfEzeFFOLrx6MJgUMgrV13vF2n/mAWj5NklY
-        yx7Z0XM1Lo8fcrgHZ7Q24184Rg==
-X-Google-Smtp-Source: AGRyM1vI7qTqran/oYY9YxCvZJ1Kt81TzkURUZr5Ev/sRdQsuRtTkDpVmPEpjwtDdB06uhd4ToiPtA==
-X-Received: by 2002:a17:902:b7c4:b0:16b:e3d0:c0fe with SMTP id v4-20020a170902b7c400b0016be3d0c0femr842506plz.98.1657676072727;
-        Tue, 12 Jul 2022 18:34:32 -0700 (PDT)
-Received: from localhost ([2620:15c:11a:202:e036:8c0d:9cf:7a45])
-        by smtp.gmail.com with UTF8SMTPSA id kk18-20020a17090b4a1200b001ec9dce6f10sm226231pjb.38.2022.07.12.18.34.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jul 2022 18:34:32 -0700 (PDT)
-Date:   Tue, 12 Jul 2022 18:34:30 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Krishna Kurapati PSSNV <quic_kriskura@quicinc.com>
-Cc:     Pavan Kondeti <quic_pkondeti@quicinc.com>, saravanak@google.com,
-        Stephen Boyd <swboyd@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Doug Anderson <dianders@chromium.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, quic_ppratap@quicinc.com,
-        quic_vpulyala@quicinc.com
-Subject: Re: [PATCH v20 2/5] usb: dwc3: core: Host wake up support from
- system suspend
-Message-ID: <Ys4hJrWjkn+LREZL@google.com>
-References: <20220620085415.GA13744@hu-pkondeti-hyd.qualcomm.com>
- <CAE-0n52bq9feA6BVdAp791SWQtT1Yj4M2ppg3o_KOaRFO8r+0Q@mail.gmail.com>
- <20220628053148.GA21797@hu-pkondeti-hyd.qualcomm.com>
- <CAE-0n50PGw_XSZ0-iV7gem6+-LENoq6ZVOwX3f+0XjkrHg-rLw@mail.gmail.com>
- <c16a1c37-9183-8d0c-a5ad-39b897a0ab24@quicinc.com>
- <Yr5JmrSaus8xKpM9@google.com>
- <20220701101526.GA30468@hu-pkondeti-hyd.qualcomm.com>
- <Yr8YUYJGJ5FRA3cv@google.com>
- <09f6a717-2bbb-6bd3-f7a8-5ac9e3db51f3@quicinc.com>
- <9f9f9abc-9b37-8bfb-3efa-6c860b5dba8d@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ddo/S8RK8zfpj2dyMNU8a7uWnD8XMriQO6FxXXYVM8E=;
+ b=CqnNj9XHIcrD8u1MJJxW+AVA25sjlApk0cwdYQ3G+ukctqI42D4O4Kjj7McO99dMtmRiDS8ShQzPcmQl50sOgAsbtB0NviQH8RfjDRKocQruXfaHZfrU3u7yqMMJq1ndGWPlm0hJzxiYc+mnNaH5tjjuKv7ZbCuMDNhDQ4DM23M=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by BLAPR10MB4931.namprd10.prod.outlook.com
+ (2603:10b6:208:331::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.15; Wed, 13 Jul
+ 2022 01:35:40 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5395.020; Wed, 13 Jul 2022
+ 01:35:40 +0000
+Date:   Wed, 13 Jul 2022 01:35:37 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linus.walleij@linaro.org, alexandre.belloni@bootlin.com,
+        kavyasree.kotagiri@microchip.com, UNGLinuxDriver@microchip.com,
+        maxime.chevallier@bootlin.com, michael@walle.cc,
+        andy.shevchenko@gmail.com
+Subject: Re: [PATCH v4 2/2] pinctrl: ocelot: Fix pincfg
+Message-ID: <Ys6D2adSuRmoSD3s@COLIN-DESKTOP1.localdomain>
+References: <20220712195043.3842081-1-horatiu.vultur@microchip.com>
+ <20220712195043.3842081-3-horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9f9f9abc-9b37-8bfb-3efa-6c860b5dba8d@quicinc.com>
+In-Reply-To: <20220712195043.3842081-3-horatiu.vultur@microchip.com>
+X-ClientProxiedBy: SJ0PR03CA0055.namprd03.prod.outlook.com
+ (2603:10b6:a03:33e::30) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 770587ab-51bd-4b74-e28d-08da646ffe82
+X-MS-TrafficTypeDiagnostic: BLAPR10MB4931:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aQ0RsYgNmnKk6PfLdktylZ2taootKFXVkhKvtzelCuGAXKBaczhQv2CiEnbPJ/ghwoOvq2YhO0DFX1jiRFvzoCHBgAl37fiP0+S6khdz5S3QJgnSS3UaWUbC+BgqDKj3fIWB9E5T7lBRdrpJNMMeTznYurvpTDORn7+TTvmPeSkTSnGG3FTTyJiMMZVhBR2RG/Q/zIfgZkqE6aZKJ9aemSHg49/V6OF54AMpVI76n99iIWgi2cuZJhKrDMuJoOYfPu/V3qcw8WsMFvjm5h3FZppa2mprrOgJ4br9N7rC6oFkenQphKu4I3KI3OaGUG/2xf5gHwba+sqdQsObGjKJVE+gbMZnz6IA6RhKlUo0wflQUrJns0PB4qDOQvpl1RukaBbYVZebt/FhUlRPP7qYmh16e6fn/mT6sZWkPY1Lom3U5JIhv3rVLNgbmHthT7u4l2UpRwV811WeYe6J3u+I55dUd0R9jIhUHmpMQLdJdUO8XBI/6FYAOWQrgHL4XUNIZ+3Jkwwhq8F+1H7ls00MykPB4n8adKRoe/baJpsIqAk2ljxgN2fp/aZKcNxJOPo2B8nHgV/1yKepEk9xJqqWZdOLT1lmFe3sVG6IH34YoZbgejMaVITqAEeZHJTYqay4waZTk6NEo5Gika9xWRpTUxfYUOKb83UYF4f2ySZoC7uYl5/fSTeY8eLfWod5nNLxzbYT0oyFGDll+CixR1kchDoFNQ0R7i59Myf96OrqWMWQ6Fe8v5whu7J/EvMWtA27
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(39830400003)(136003)(366004)(396003)(478600001)(44832011)(4744005)(6666004)(83380400001)(8936002)(6486002)(6916009)(41300700001)(7416002)(5660300002)(316002)(66946007)(26005)(8676002)(66556008)(6512007)(186003)(4326008)(2906002)(66476007)(6506007)(9686003)(86362001)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?5+AAGnYfYoeO6PWv9bbvdhcyqyyseZjGCuZcFUbqNKvFw/HprHUUoauyJHnP?=
+ =?us-ascii?Q?fzgx5bBtDg10QHnAJ221gD/98k5JZyK3rvzmm8Axtf/20VChC5L8ETAbwjHd?=
+ =?us-ascii?Q?TBa/xR7cgDPdnkvRKmroFOmOk11YPLEPVoLxTB0hXTrzxBmkUad661qgrokV?=
+ =?us-ascii?Q?SFUXGz+fGw0abbgO5NGkdH4MS49786KWNX+aF+UcURpVB3I9uXWzvC7b41XR?=
+ =?us-ascii?Q?2BlR8DUYOymAek8xzzCLK77yf5DPH/6qS8JDRU4uMwOgBo5zR3sugZ61FK31?=
+ =?us-ascii?Q?WuNZq93Eto8FxckW+lbk5SeKd4t9MZAGFj6vBLiK3pJzNmkIpd//IDugLeP9?=
+ =?us-ascii?Q?XLGXdU4ifpcecqnBDUi2ZRc6JpsXQ8cNtFcI8cP4C2G0SDylvVPnchqAVToO?=
+ =?us-ascii?Q?dnzHy1E87xxxebdPTunWe7fIBaf3ndK2aDaFAzuEN9dtAxbcDubB5A6vPSHd?=
+ =?us-ascii?Q?bm2vAjotb46h8aLomkC5ip9aQvHc4cn7NBPInR5dH99MV6oi9ISu5TH1BhNg?=
+ =?us-ascii?Q?aptkUSBAjxEjJO39/woDg2eGdCf/EXyoRumnLpek0mpySSebN6OBHbLHyRJ8?=
+ =?us-ascii?Q?RQ5sT2wprS7TV35b6AbIqFavGCDgoJF7rbDt2zt6lyh+QLrsLJQX1jSY3T/f?=
+ =?us-ascii?Q?9Sdqks4/gW2R5t0v61cU0/cJladOO9vbcrFPfl3wo7f9v7W+BAdyfoX/U4f/?=
+ =?us-ascii?Q?jQbFaZSh7P49TeWIbbIfMzNBVEZH45qqTuBFePSgyxEMMfoe8MH5VZeDEvpt?=
+ =?us-ascii?Q?a5ahfIJhtXumsbvgtDe4sAGOVoJrP/IT5Twsw/oEnjW/uDiul8MQudD3rH3h?=
+ =?us-ascii?Q?0zUbGAGEo/DGSCcWR39RxE2jo2QmKeQjnSnw/qARpALrlRyQ8kxklo/lsQzX?=
+ =?us-ascii?Q?O0xayj12fxmeGsj8ebpqb42VphEOvFWQUk9lZI+EM4R7GQOYQOhugyN3XAfN?=
+ =?us-ascii?Q?xV8CEyykRi8Ao7IftWunbC9xL6dU1VZMlsBpcLKO0k0HfzCU2iQigsff1Usm?=
+ =?us-ascii?Q?9ZUEHxNevzch6Z5SMPvOIx0aNNtFs2Y81VHOdLO+fOgh5+ou8wbhD/g1U/a7?=
+ =?us-ascii?Q?seWpNTVi8d9HDj/n4ION/mvqp/N1KUaZxJyuIKwcaPT7S9Bs0AVsRpaBVtet?=
+ =?us-ascii?Q?cLKzUl1TEE+zTnMSKGt/460lY3xC8XPJMcnGY/x+BDeO5hUvWYYPvGv+vt2n?=
+ =?us-ascii?Q?yrrnjXH0LKcoqgt7632bU+IkV+TiGqOLdpAxks5QP2QSk2wfV0W5ON0muMX9?=
+ =?us-ascii?Q?458E1nEgIW7KIUKTv4Hv9vtn5B2g2C9mT+QFx3ahv+nxiqg6MWO9ErPieVfy?=
+ =?us-ascii?Q?URzcl4WZPsPQnEmxBavr6GzbgYNDT20dc8ZZk9dcpn96HJg3id7nBiH4JllG?=
+ =?us-ascii?Q?wlMASSofql0UTO04DQ3GyK0N5xrPtq+WgdSEgYiSuZJUEpJRoJGUdGc8clT5?=
+ =?us-ascii?Q?iag3SYmf/TJpSbl94aPAMMRbIfzcx7etOPmZoMcEhfkZPYy2av8NfEhbCOsM?=
+ =?us-ascii?Q?eR/n02Rxt5JznCIM8VNwgisNHUg+R1i9is+/357Bw7DEDb9pnM+XUWMu9bpm?=
+ =?us-ascii?Q?INHDMLm7lvSEIhdYigSK7zlkWNy7qabG4KYJ4CnpVhzLalRCVxdpfrJLfNwV?=
+ =?us-ascii?Q?4A=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 770587ab-51bd-4b74-e28d-08da646ffe82
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 01:35:40.2515
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Zx1ozCkafBtslADpuZdWzNZdH81ubRhgD2LDdM9h8bn1Zbx8F0lmSzKrTO8R9CZWF8lGjTnvlFPvN89VW87TQrtIP8NWz650A8hP3rj4gYY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLAPR10MB4931
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 04:37:19PM +0530, Krishna Kurapati PSSNV wrote:
->    On 7/6/2022 12:28 PM, Krishna Kurapati PSSNV wrote:
+On Tue, Jul 12, 2022 at 09:50:43PM +0200, Horatiu Vultur wrote:
+> The blamed commit changed to use regmaps instead of __iomem. But it
+> didn't update the register offsets to be at word offset, so it uses byte
+> offset.
+> Another issue with the same commit is that it has a limit of 32 registers
+> which is incorrect. The sparx5 has 64 while lan966x has 77.
 > 
->    On 7/1/2022 9:22 PM, Matthias Kaehlcke wrote:
-> 
-> On Fri, Jul 01, 2022 at 03:45:26PM +0530, Pavan Kondeti wrote:
-> 
-> On Thu, Jun 30, 2022 at 06:10:50PM -0700, Matthias Kaehlcke wrote:
-> 
-> dwc3-qcom should wait for dwc3 core to call component_add() and then do
-> whatever needs to be done once the dwc3 core is registered in the
-> dwc3-qcom bind callback. Honestly this may all be a little overkill if
-> there's only two drivers here, dwc3-qcom and dwc3 core. It could
-> probably just be some callback from dwc3 core at the end of probe that
-> calls some function in dwc3-qcom.
-> 
-> Since the issue we are facing is that the ssphy device links are not ready
-> causing the dwc3 probe not being invoked, can we add an API as Pavan
-> suggested
-> to check if deferred_probe listfor dwc3 device is empty or not andbased on
-> that we can choose to defer our qcomprobe ? In this case, we don't need to
-> touch the dwc3 core driver and would be making changesonly in qcom glue
-> driver.
-> 
-> As mentioned above, it shouldn't be necessary to add component support to
-> all the glue drivers. An API to check for deferred probing is an option,
-> however there is a possible race condition: When the dwc3-qcom driver checks
-> for a deferred probe the core could still be probing, in that situation the
-> glue would proceed before the core driver is ready. That could be avoided
-> with the component based approach.
-> 
-> The race can happen only if asynchronous probe is enabled, otherwise the
-> child's probe happens synchronously in of_platform_populate()
-> 
-> I was thinking about the case where the dwc3-qcom probe is initially deferred,
-> then the deferred probe starts shortly after (asynchronously) and now the
-> dwc3-qcom driver does its check. Probably it's not very likely to happen ...
-> 
-> 
-> OTOH, would the below condition suffice for our needs here? if our device
-> is not bounded to a driver, we check the state of initcalls and return
-> either error or -EPROBE_DEFER
-> 
-> diff --git a/drivers/usb/dwc3/dwc3-qcom.c b/drivers/usb/dwc3/dwc3-qcom.c
-> index 7b6eff5..519a503 100644
-> --- a/drivers/usb/dwc3/dwc3-qcom.c
-> +++ b/drivers/usb/dwc3/dwc3-qcom.c
-> @@ -722,6 +722,9 @@ static int dwc3_qcom_of_register_core(struct platform_device
->  *pdev)
->                 dev_err(dev, "failed to get dwc3 platform device\n");
->         }
-> 
-> +       if (!qcom->dwc3->dev.driver)
-> +               return driver_deferred_probe_check_state(&qcom->dwc3->dev);
-> +
->  node_put:
->         of_node_put(dwc3_np);
-> 
-> I like the simplicity of it, no need for new APIs.
-> 
-> The components based approach would be slightly safer, but in practice I
-> think this should be good enough.
-> 
->    Hi Pavan, Mathias,
->      I have tested the suggested code and verified that it works on
->    sc7180. I see that the API has been removed recently in the following
->    patch :\
->    commit 9cbffc7a59561be950ecc675d19a3d2b45202b2b
->    Author: Saravana Kannan [1]<saravanak@google.com>
->    Date:   Wed Jun 1 00:07:05 2022 -0700
->    driver core: Delete driver_deferred_probe_check_state()
->    Can we make a patch and add it back to the kernel for this purpose ?
->    Hi Saravana,
->      Can you help suggest if we can revert your patch or make a new one to
->    add back the function.
+> Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-The cover letter [1] of the 'deferred_probe_timeout logic clean up'
-series [2] has more context:
+Acked-by: Colin Foster <colin.foster@in-advantage.com>
 
-
-  A lot of the deferred_probe_timeout logic is redundant with
-  fw_devlink=on.  Also, enabling deferred_probe_timeout by default breaks
-  a few cases.
-
-  This series tries to delete the redundant logic, simplify the frameworks
-  that use driver_deferred_probe_check_state(), enable
-  deferred_probe_timeout=10 by default, and fixes the nfsroot failure
-  case.
-
-  The overall idea of this series is to replace the global behavior of
-  driver_deferred_probe_check_state() where all devices give up waiting on
-  supplier at the same time with a more granular behavior:
-
-  1. Devices with all their suppliers successfully probed by late_initcall
-     probe as usual and avoid unnecessary deferred probe attempts.
-
-  2. At or after late_initcall, in cases where boot would break because of
-     fw_devlink=on being strict about the ordering, we
-
-     a. Temporarily relax the enforcement to probe any unprobed devices
-        that can probe successfully in the current state of the system.
-        For example, when we boot with a NFS rootfs and no network device
-        has probed.
-     b. Go back to enforcing the ordering for any devices that haven't
-        probed.
-
-  3. After deferred probe timeout expires, we permanently give up waiting
-     on supplier devices without drivers. At this point, whatever devices
-     can probe without some of their optional suppliers end up probing.
-
-  In the case where module support is disabled, it's fairly
-  straightforward and all device probes are completed before the initcalls
-  are done.
-
-[1] https://lore.kernel.org/all/20220601070707.3946847-1-saravanak@google.com/
-[2] https://patchwork.kernel.org/project/linux-pm/list/?series=646471&archive=both&state=*
-
-
-Does anything speak against returning -EPROBE_DEFER directly from dwc3-qcom's
-probe()? Now with deferred_probe_timeout > 0 there should be at least no endless
-probing.
