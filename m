@@ -2,107 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39883C43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DB4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:58:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236240AbiGMN5S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:57:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60284 "EHLO
+        id S236306AbiGMN6y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:58:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236221AbiGMN5Q (ORCPT
+        with ESMTP id S235802AbiGMN6t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:57:16 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DF12CE1F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:57:15 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id p27-20020a05600c1d9b00b003a2f36054d0so1235949wms.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=kxqBWdiXM5WNeClMPGN89m5g9fK7yBoXSaVViiNVQ8g=;
-        b=g7sCyBZ237J9K19/0sLWl+a9stt/xgvJwPjoGXhb1JnLwI9WgOT5UER5tZx+ucO7HG
-         TUidhRNoQx+iPvX8Cgu5YLiKO+LQiydCKckRhJpvZ3WLOOvGGvPFEdLoR27DGwu4V6FC
-         zIkvixE0WB/haEqVW38dd4zgrBNkJ999UIgBDvj/EELkdCw9TTP2uxxC/AvujWJGOgkL
-         Wa0VFTm0j38hB0F08Z+72EJ9vjPAazAJ0OZ27HkdmdS/UrumBa6DjT7TOHxKNfhNd77N
-         c0IJDm7qvKme7P5/5iNKwpPqgpF4gdnSBFULZkFpjmRuC1ToMJxx3gDnMCXaxFwyYjma
-         rxWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=kxqBWdiXM5WNeClMPGN89m5g9fK7yBoXSaVViiNVQ8g=;
-        b=6ztoAWxhCjpYmmQoMkf96qfVI3eSgfdaSH34k870FX6yB8t0en8JMV6xlT6MZoLoFe
-         kmLWF2I5oiCl5YAoOObNzp+vqwtsyj+hFhTea6peUCgIABEcA3u08fdqFaZG0J6gNM3a
-         pGUS+c1MDmt7v7lN6dgTBIBsk3u2yt6KOh1kghZXrYSLbUohJPMHvhHwc21K3+YgwZxP
-         76JtaDz5wC8WSB2+eVFcDWwut4qXwNTbRucNN/fIOVduUVE1HtcNoIwYDiUoKH6y7OyI
-         NCz48yYpEJqvTNAwjt2OL1l702sU1Ph+NFPqvCxyiDjMfuOs96jh7pSXnc61KLe95w62
-         apSg==
-X-Gm-Message-State: AJIora99gFrq8mgtQdpEPCAEh0SKDdkqRxBQsRyVPFhWP4cz1Gabqple
-        236ZM0VgCEEFZ6gc/D91y+chzg==
-X-Google-Smtp-Source: AGRyM1uyOfqclVmQuJNbbQ1yXc9HRCf/RwP0I+Sf1skoemahVccck27LpxY8u85oblBG8emnTLxgjQ==
-X-Received: by 2002:a05:600c:2117:b0:3a2:d44f:4d9f with SMTP id u23-20020a05600c211700b003a2d44f4d9fmr9634057wml.17.1657720634459;
-        Wed, 13 Jul 2022 06:57:14 -0700 (PDT)
-Received: from [192.168.178.32] ([51.155.200.13])
-        by smtp.gmail.com with ESMTPSA id z11-20020a5d4d0b000000b0021b9f126fd3sm10946839wrt.14.2022.07.13.06.57.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jul 2022 06:57:14 -0700 (PDT)
-Message-ID: <e1b00ebf-fb06-6eb3-2fa2-7e7155594626@isovalent.com>
-Date:   Wed, 13 Jul 2022 14:57:13 +0100
+        Wed, 13 Jul 2022 09:58:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F32E65A7
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:58:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C719C61D92
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7990FC34114;
+        Wed, 13 Jul 2022 13:58:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657720727;
+        bh=e/BMPIIZAaUiscbT6bTx/taPR68QeZbo8DuWen9ljuM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=k7Q6w5Z2xcPNbwK+yx78wDiJF9mqEX1xEY9D3vA9RaQ7OjyoD0hkY07zXZkv6ZNPS
+         L1+bHp5Rdv0VuwdEBeeitO8h8GlpQvbS0FV0OuKDhSziuNfSnw8OniteOoqYeV0vdV
+         j1a1u64fBSgCE6LvIcH9QmoilP/loRpuk9XaXYfg=
+Date:   Wed, 13 Jul 2022 15:58:43 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Phil Auld <pauld@redhat.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Tian Tao <tiantao6@hisilicon.com>
+Subject: Re: [PATCH v2] drivers/base/node.c: fix userspace break from using
+ bin_attributes for cpumap and cpulist
+Message-ID: <Ys7Pkxqzrz75gCiN@kroah.com>
+References: <20220713134545.1382367-1-pauld@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [RFC PATCH v2 1/1] bpftool: Align dumped file headers with
- skeletons.
-Content-Language: en-GB
-To:     Francis Laniel <flaniel@linux.microsoft.com>, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220713134046.15020-1-flaniel@linux.microsoft.com>
- <20220713134046.15020-2-flaniel@linux.microsoft.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-In-Reply-To: <20220713134046.15020-2-flaniel@linux.microsoft.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713134545.1382367-1-pauld@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/2022 14:40, Francis Laniel wrote:
-> This commit adds the following lines to file generated by dump:
-> /* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-> /* THIS FILE IS AUTOGENERATED BY BPFTOOL! */
-> Hence, the dumped file headers follows that of skeletons.
+On Wed, Jul 13, 2022 at 09:45:45AM -0400, Phil Auld wrote:
+> Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
+> This breaks userspace code that retrieves the size before reading the file. Rather
+> than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
+> limitation of cpumap ABI") let's put in a size value at compile time. Use direct
+> comparison and a worst-case maximum to ensure compile time constants. For cpulist the
+> max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
+> (8192 * 5). In order to get near that you'd need a system with every other CPU on one
+> node or something similar. e.g. (0,2,4,... 1024,1026...). To simplify the math and
+> support larger NR_CPUS we are using NR_CPUS * 6. We also set it to a min of PAGE_SIZE
+> to retain the older behavior for smaller NR_CPUS. The cpumap file wants to be something
+> like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using NR_CPUS/2.
 > 
-> Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
+> On an 80 cpu 4-node sytem (NR_CPUS == 8192)
+> 
+> before:
+> 
+> -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
+> -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
+> 
+> after:
+> 
+> -r--r--r--. 1 root root 49152 Jul 13 09:26 /sys/devices/system/node/node0/cpulist
+> -r--r--r--. 1 root root  4096 Jul 13 09:24 /sys/devices/system/node/node0/cpumap
+> 
+> Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> Signed-off-by: Phil Auld <pauld@redhat.com>
 > ---
->  tools/bpf/bpftool/btf.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/base/node.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-> index 7e6accb9d9f7..066a0acd0ecd 100644
-> --- a/tools/bpf/bpftool/btf.c
-> +++ b/tools/bpf/bpftool/btf.c
-> @@ -425,6 +425,8 @@ static int dump_btf_c(const struct btf *btf,
->  	if (err)
->  		return err;
+> diff --git a/drivers/base/node.c b/drivers/base/node.c
+> index 0ac6376ef7a1..3577f4eb4ac6 100644
+> --- a/drivers/base/node.c
+> +++ b/drivers/base/node.c
+> @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
+>  	return n;
+>  }
 >  
-> +	printf("/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */\n");
-> +	printf("/* THIS FILE IS AUTOGENERATED BY BPFTOOL! */\n");
->  	printf("#ifndef __VMLINUX_H__\n");
->  	printf("#define __VMLINUX_H__\n");
->  	printf("\n");
+> -static BIN_ATTR_RO(cpumap, 0);
+> +static BIN_ATTR_RO(cpumap, (((NR_CPUS>>1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE));
 
-Looks good, simpler than v1, thank you!
+Why not just PAGE_SIZE?
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+If not, a HUGE comment explaining what you are doing here is going to be
+required.
+
+>  
+>  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+>  				   struct bin_attribute *attr, char *buf,
+> @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+>  	return n;
+>  }
+>  
+> -static BIN_ATTR_RO(cpulist, 0);
+> +static BIN_ATTR_RO(cpulist, (((NR_CPUS * 6) > PAGE_SIZE) ? NR_CPUS *6 : PAGE_SIZE));
+
+"* 6" in both places here?
+
+And again, we need a huge comment explaining this so that we can
+understand it in a few weeks, and in 10 years...
+
+thanks,
+
+greg k-h
