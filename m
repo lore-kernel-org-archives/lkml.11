@@ -2,88 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F95AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D183C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235726AbiGMNGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 09:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        id S235800AbiGMNHl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:07:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGMNGc (ORCPT
+        with ESMTP id S229607AbiGMNHj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 09:06:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5CFB8F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:06:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 708E5B81F01
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 13:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A73EC34114;
-        Wed, 13 Jul 2022 13:06:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657717589;
-        bh=I/8fgDiVhnQn+g4npPm+EFV2apCMQYq4lmg3gRkrX5A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RCnnZ5qfDQxP81MKBUlOpjlcR8nVBAkxZYruHpAfkjACJXmeHrCjG7/7ak8I7mERB
-         bClPoF99tHTeV+XmL8u9WAZzgVRdlp5dACgY1ZDgjX1rZZm2BC4HFILR7vhRFnS1mI
-         AFC+ubeNtWL7LXuMWpsVCX6tKTSm7h0x7/9eIqAg=
-Date:   Wed, 13 Jul 2022 15:06:25 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Phil Auld <pauld@redhat.com>
-Cc:     Barry Song <21cnbao@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Rafael J . Wysocki : --cc=" <rafael@kernel.org>,
-        Tian Tao <tiantao6@hisilicon.com>,
-        Barry Song <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH] drivers/base/node.c: fix userspace break from using
- bin_attributes for cpumap and cpulist
-Message-ID: <Ys7DUYXuzwUvQzT6@kroah.com>
-References: <20220712214301.809967-1-pauld@redhat.com>
- <CAGsJ_4xG0az1-g8DWL-mEv_cF3ZBMe6j87m_cxeL9abvxGNW=g@mail.gmail.com>
- <Ys6ud4JmMGjktAlL@lorien.usersys.redhat.com>
+        Wed, 13 Jul 2022 09:07:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71363C7C;
+        Wed, 13 Jul 2022 06:07:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657717658; x=1689253658;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=haP6Lue6eVNR6wMmuzcn6w4p0UNCT0G+a/I04GM2UjI=;
+  b=EBhLhk9pJ6m7E7UUxn9CtxyoPvIfvsk+bAhcXmiwWTdyl4wNH31ThmFM
+   APiIAcTxKMYJ0WCgp/oP03xwtWqutGUzxlZVVm/ox6It6du4ZR4ZnMUeV
+   f8xnzviG1EjWuyx8GHUggSvbRSg9FDuHHiuEsjXxV7OAFnFlj2zkqdMHq
+   4kuUEK5jvbgN9WxXbYiPaTU3kalmxc2ZxAK3qfnpGWdZ/QtPH78Z24pGZ
+   TgJ1w2TEYyih2FcP5ls/mMUPEPqvlYZjHUcRimjX7QA7q7XhkevytSnh7
+   HPl9vOddPF95rbDgpxzXKNY6ifcu4pQ9zr7DPRv7OHjPrk5mqFKKyuqK4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10406"; a="282757862"
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="282757862"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 06:07:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,267,1650956400"; 
+   d="scan'208";a="922623351"
+Received: from unknown (HELO localhost.localdomain.sh.intel.com) ([10.238.175.107])
+  by fmsmga005.fm.intel.com with ESMTP; 13 Jul 2022 06:07:35 -0700
+From:   Tianfei Zhang <tianfei.zhang@intel.com>
+To:     ssantosh@kernel.org, krzysztof.kozlowski@linaro.org
+Cc:     trix@redhat.com, yilun.xu@intel.com, russell.h.weight@intel.com,
+        linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org,
+        matthew.gerlach@linux.intel.com,
+        Debarati Biswas <debaratix.biswas@intel.com>,
+        Tianfei Zhang <tianfei.zhang@intel.com>
+Subject: [PATCH v2] memory: dfl-emif: Update the dfl emif driver support revision 1
+Date:   Wed, 13 Jul 2022 09:03:55 -0400
+Message-Id: <20220713130355.196115-1-tianfei.zhang@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys6ud4JmMGjktAlL@lorien.usersys.redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 07:37:27AM -0400, Phil Auld wrote:
-> On Wed, Jul 13, 2022 at 11:18:59AM +1200 Barry Song wrote:
-> > On Wed, Jul 13, 2022 at 9:58 AM Phil Auld <pauld@redhat.com> wrote:
-> > >
-> > > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
-> > > This breaks userspace code that retrieves the size before reading the file. Rather
-> > > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
-> > > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
-> > > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
-> > > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960.
-> > > In order to get near that you'd need a system with every other CPU on one node or
-> > > something similar. e.g. (0,2,4,... 1024,1026...). We set it to a min of PAGE_SIZE
-> > > to retain the older behavior. For cpumap, PAGE_SIZE is plenty big.
-> > >
-> > > On an 80 cpu 4-node system (NR_CPUS == 8192)
-> > >
-> > > before:
-> > >
-> > > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
-> > > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
-> > 
-> > it is a fundamental problem of bin_attr, isn't it? when we don't know the
-> > exact size of an attribute, and this size might become more than one
-> > PAGE_SIZE, we use bin_attr to break the limitation. but the fact is that
-> > we really don't know or it is really hard to know the actual size of the
-> > attribute.
-> >
-> 
-> But it broke userspace applications. I figured rather than revert it maybe
-> we can find a max size to put in there and make it continue to work.
+From: Debarati Biswas <debaratix.biswas@intel.com>
 
-Yes, we need to do this, we can't break userspace.
+The next generation (revision 1) of the DFL EMIF feature device requires
+support for more than 4 memory banks. It does not support the selective
+clearing of memory banks. A capability register replaces the previous
+control register, and contains a bitmask to indicate the presence of each
+memory bank. This bitmask aligns with the previous control register
+bitmask that served the same purpose. The control and capability
+registers are treated like a C Union structure in order to support both
+the new and old revisions of the EMIF device.
 
-thanks,
+Signed-off-by: Debarati Biswas <debaratix.biswas@intel.com>
+Signed-off-by: Russ Weight <russell.h.weight@intel.com>
+Signed-off-by: Tianfei Zhang <tianfei.zhang@intel.com>
+---
+v2: no code change, just rebased to v5.19-rc6.
+---
+ drivers/memory/dfl-emif.c | 62 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 57 insertions(+), 5 deletions(-)
 
-greg k-h
+diff --git a/drivers/memory/dfl-emif.c b/drivers/memory/dfl-emif.c
+index 3f719816771d..da06cd30a016 100644
+--- a/drivers/memory/dfl-emif.c
++++ b/drivers/memory/dfl-emif.c
+@@ -24,11 +24,24 @@
+ #define EMIF_STAT_CLEAR_BUSY_SFT	16
+ #define EMIF_CTRL			0x10
+ #define EMIF_CTRL_CLEAR_EN_SFT		0
+-#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(3, 0)
++#define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(7, 0)
+ 
+ #define EMIF_POLL_INVL			10000 /* us */
+ #define EMIF_POLL_TIMEOUT		5000000 /* us */
+ 
++/*
++ * The Capability Register replaces the Control Register (at the same
++ * offset) for EMIF feature revisions > 0. The bitmask that indicates
++ * the presence of memory channels exists in both the Capability Register
++ * and Control Register definitions. These can be thought of as a C union.
++ * The Capability Register definitions are used to check for the existence
++ * of a memory channel, and the Control Register definitions are used for
++ * managing the memory-clear functionality in revision 0.
++ */
++#define EMIF_CAPABILITY_BASE		0x10
++#define EMIF_CAPABILITY_CHN_MSK_V0	GENMASK_ULL(3, 0)
++#define EMIF_CAPABILITY_CHN_MSK		GENMASK_ULL(7, 0)
++
+ struct dfl_emif {
+ 	struct device *dev;
+ 	void __iomem *base;
+@@ -106,16 +119,30 @@ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 0);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 1);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 2);
+ emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 3);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 4);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 5);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 6);
++emif_state_attr(init_done, EMIF_STAT_INIT_DONE_SFT, 7);
+ 
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 0);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 1);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 2);
+ emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 3);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 4);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 5);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 6);
++emif_state_attr(cal_fail, EMIF_STAT_CALC_FAIL_SFT, 7);
++
+ 
+ emif_clear_attr(0);
+ emif_clear_attr(1);
+ emif_clear_attr(2);
+ emif_clear_attr(3);
++emif_clear_attr(4);
++emif_clear_attr(5);
++emif_clear_attr(6);
++emif_clear_attr(7);
++
+ 
+ static struct attribute *dfl_emif_attrs[] = {
+ 	&emif_attr_inf0_init_done.attr.attr,
+@@ -134,6 +161,22 @@ static struct attribute *dfl_emif_attrs[] = {
+ 	&emif_attr_inf3_cal_fail.attr.attr,
+ 	&emif_attr_inf3_clear.attr.attr,
+ 
++	&emif_attr_inf4_init_done.attr.attr,
++	&emif_attr_inf4_cal_fail.attr.attr,
++	&emif_attr_inf4_clear.attr.attr,
++
++	&emif_attr_inf5_init_done.attr.attr,
++	&emif_attr_inf5_cal_fail.attr.attr,
++	&emif_attr_inf5_clear.attr.attr,
++
++	&emif_attr_inf6_init_done.attr.attr,
++	&emif_attr_inf6_cal_fail.attr.attr,
++	&emif_attr_inf6_clear.attr.attr,
++
++	&emif_attr_inf7_init_done.attr.attr,
++	&emif_attr_inf7_cal_fail.attr.attr,
++	&emif_attr_inf7_clear.attr.attr,
++
+ 	NULL,
+ };
+ 
+@@ -143,15 +186,24 @@ static umode_t dfl_emif_visible(struct kobject *kobj,
+ 	struct dfl_emif *de = dev_get_drvdata(kobj_to_dev(kobj));
+ 	struct emif_attr *eattr = container_of(attr, struct emif_attr,
+ 					       attr.attr);
++	struct dfl_device *ddev = to_dfl_dev(de->dev);
+ 	u64 val;
+ 
+ 	/*
+-	 * This device supports upto 4 memory interfaces, but not all
++	 * This device supports up to 8 memory interfaces, but not all
+ 	 * interfaces are used on different platforms. The read out value of
+-	 * CLEAN_EN field (which is a bitmap) could tell how many interfaces
+-	 * are available.
++	 * CAPABILITY_CHN_MSK field (which is a bitmap) indicates which
++	 * interfaces are available.
+ 	 */
+-	val = FIELD_GET(EMIF_CTRL_CLEAR_EN_MSK, readq(de->base + EMIF_CTRL));
++	if (ddev->revision > 0 && strstr(attr->name, "_clear"))
++		return 0;
++
++	if (ddev->revision == 0)
++		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK_V0,
++				readq(de->base + EMIF_CAPABILITY_BASE));
++	else
++		val = FIELD_GET(EMIF_CAPABILITY_CHN_MSK,
++				readq(de->base + EMIF_CAPABILITY_BASE));
+ 
+ 	return (val & BIT_ULL(eattr->index)) ? attr->mode : 0;
+ }
+-- 
+2.26.2
+
