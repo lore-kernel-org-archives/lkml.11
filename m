@@ -2,116 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8717CCA479
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A4A1C43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 13:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229724AbiGMM6R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:58:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
+        id S235540AbiGMNBR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 09:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231492AbiGMM6P (ORCPT
+        with ESMTP id S235148AbiGMNBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:58:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AEBCD74791
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:58:14 -0700 (PDT)
+        Wed, 13 Jul 2022 09:01:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F4EFE53
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:01:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657717093;
+        s=mimecast20190719; t=1657717267;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=iYC8Yec1GTbUtaYK7RYva4XXz/xl1ExjZYRMzojC8yQ=;
-        b=L8Y2U5FFfXvBLvZ0piQufktp3doNmsC2UCEjTpIsr+X915Ip6KGs8+mi3Izz0vWY9oVht7
-        URrVz3IpVGvbQtQ2/WlzEztZV87ac4MHWrEh2EpJtVirKnHt31pQNoxKmt4x0isLoa6+lV
-        8GQq/UAjqE7Nj4/uRlPsl2vCx7BvVRM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=c5tTaTQWdtIl7l1GJF3+E3vkHxBuOg16Ki+fSt3hNw8=;
+        b=bcmcmnPF0rK2cH2cokmatFLEn7go4LfHZfmhlUe+c/cYrTCsqBlAt4k4cYSv8crlaEYEu1
+        scnDmunvWGlD2+fVQWKUVA578bpzx6DNgAltd674irs683GYVgSGqxapTbMRBRmz+hvYFd
+        AgmLZEeCAiNDaLLsg0WZgrUSQSdTT20=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-407-y1PoGr-KObSmF7vKk7zy-g-1; Wed, 13 Jul 2022 08:58:12 -0400
-X-MC-Unique: y1PoGr-KObSmF7vKk7zy-g-1
-Received: by mail-wm1-f70.google.com with SMTP id c17-20020a7bc011000000b003a2bfaf8d3dso5526993wmb.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:58:12 -0700 (PDT)
+ us-mta-526-oWvjLATDPBW9S-f3McZg-A-1; Wed, 13 Jul 2022 09:01:05 -0400
+X-MC-Unique: oWvjLATDPBW9S-f3McZg-A-1
+Received: by mail-ed1-f71.google.com with SMTP id x21-20020a05640226d500b0043abb7ac086so8308752edd.14
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 06:01:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iYC8Yec1GTbUtaYK7RYva4XXz/xl1ExjZYRMzojC8yQ=;
-        b=6h4bUoxkuynX6dUN0l7a+80zFpktLh9VLn4Hn4EJypMY0ITqNEgAk2IbmZYiH8Sxik
-         qFM6QDU50BC6zXtp0iO/w2ykZ2GYSWtD5jhck4KSzs9RYjr6WsioLDcivn5Z0Mxw/AXv
-         oj9E4/OXi7+eQSDGFF3TT0NgYWWj/4BwFGiVIsY40qP8JHkibaxdWvIcLOKszCmVjJKV
-         E9rwLDGSkOBumXThu1OmAlKa8I9u/JR5kbaOUe+y4zbzsiG/LaQJU5wxwSY3NUT7B+A3
-         iTpSBApy1lVkulKr7jqXg/Tzf/1w/K2OSeQ/HIE+6HaFbPWZ0TuDc6DpkwpaOLQIUjgM
-         vJVA==
-X-Gm-Message-State: AJIora8O7ghpS8rmvWHGfexT/k2lNq3cTioijkdBKXOCeq1K601pcJQW
-        KafMn+H/z6k7QuTyMXJoMJh6lZ42eHCof8H42L8NeYhOEKX+8ihVIALu6poYOVOiIhanTh4TRwB
-        GBy7MGz+fK6I2ZpQarrTwmizI
-X-Received: by 2002:a1c:7910:0:b0:3a2:e033:cdbc with SMTP id l16-20020a1c7910000000b003a2e033cdbcmr9660887wme.122.1657717091470;
-        Wed, 13 Jul 2022 05:58:11 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sRsnqWu8rRP2FIUsaOp6/GcdlWCvwK0G1/Y1QaiEpMZI2+dk3VkUEbOS2ulOuht+mJNcB7qA==
-X-Received: by 2002:a1c:7910:0:b0:3a2:e033:cdbc with SMTP id l16-20020a1c7910000000b003a2e033cdbcmr9660859wme.122.1657717091160;
-        Wed, 13 Jul 2022 05:58:11 -0700 (PDT)
-Received: from localhost.localdomain ([151.29.54.26])
-        by smtp.gmail.com with ESMTPSA id p2-20020a1c7402000000b003a2fdde48d1sm944864wmc.25.2022.07.13.05.58.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 05:58:10 -0700 (PDT)
-Date:   Wed, 13 Jul 2022 14:58:08 +0200
-From:   Juri Lelli <juri.lelli@redhat.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        linux-rt-users <linux-rt-users@vger.kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>
-Subject: Re: [PATCH] sched/deadline: Fix BUG_ON condition for deboosted tasks
-Message-ID: <Ys7BYCvlgphAwQ+Y@localhost.localdomain>
-References: <20220713075014.411739-1-juri.lelli@redhat.com>
- <Ys6wgxiZbdjxyh8C@hirez.programming.kicks-ass.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=c5tTaTQWdtIl7l1GJF3+E3vkHxBuOg16Ki+fSt3hNw8=;
+        b=h0yvdmM4FDYS1RP7oRm7c8awLFxiDA5PH6szROrSPAa3igqTHhiTfrEoFwPik/4TPH
+         rdMc7DUpe8KhIzRowFDXKLH9aYi+o1L3EaTmqUxQDmryC6pYsoSNok6+C6ehB1bDUbDq
+         7LRX4m2czdUMnbltY7sUY02QUcH9ksTY+skIOjLz9cGU82c/QWpu+Hvxbv5rreK1CdRM
+         P42sKcpAAq0f1cXyuT3E3s+559R+2ix09WMwAptmxcnttt9XDttdVM3+oijKH/wqVZyo
+         m2CStXJ7TnzJdlCLf7kJGJcp6cVpWdC+ntFO/he10uzZMxQ6tM1MWc5LVfy3uEyZoHyZ
+         AwZA==
+X-Gm-Message-State: AJIora9dUCplodEt7n40wvUMDrxS2Tl4QUi2RLyZoyTs0I2UlFK4GbUv
+        EJt2QZyijXPeSrICOZK0pUTq0bVgM37HBdjz3D4Fm5GuK8fEi6FURTT+Orqa012LXpHDrJ8qCaf
+        fisHL0RYQ1FSHUZRyU19/NNAIIxsZFOw+mYR6c21y
+X-Received: by 2002:a17:907:168f:b0:72b:5571:2228 with SMTP id hc15-20020a170907168f00b0072b55712228mr3497009ejc.397.1657717264496;
+        Wed, 13 Jul 2022 06:01:04 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sM/Q/qXIJtvyge1RBA27I1zfyOERWxp2hTuT6He8VnUbVBaCHWeBofNJRY+F3CAMZEc4y1/wzNTDwJ7jxzCyM=
+X-Received: by 2002:a17:907:168f:b0:72b:5571:2228 with SMTP id
+ hc15-20020a170907168f00b0072b55712228mr3496979ejc.397.1657717264233; Wed, 13
+ Jul 2022 06:01:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys6wgxiZbdjxyh8C@hirez.programming.kicks-ass.net>
+References: <20220713085627.175604-1-bagasdotme@gmail.com> <20220713085627.175604-2-bagasdotme@gmail.com>
+In-Reply-To: <20220713085627.175604-2-bagasdotme@gmail.com>
+From:   Vlad Dronov <vdronov@redhat.com>
+Date:   Wed, 13 Jul 2022 15:00:53 +0200
+Message-ID: <CAMusb+S+JPJOzHYfuK+YvZydNxoQ9nvE_jGoudTPJiD2HfsTNw@mail.gmail.com>
+Subject: Re: [PATCH RESEND v2 1/2] Documentation: qat: Use code block for qat
+ sysfs example
+To:     Bagas Sanjaya <bagasdotme@gmail.com>
+Cc:     linux-doc@vger.kernel.org, linux-next@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Adam Guerin <adam.guerin@intel.com>,
+        Fiona Trahe <fiona.trahe@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Tomasz Kowallik <tomaszx.kowalik@intel.com>,
+        linux-crypto@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/22 13:46, Peter Zijlstra wrote:
-> On Wed, Jul 13, 2022 at 09:50:14AM +0200, Juri Lelli wrote:
-> > Tasks the are being deboosted from SCHED_DEADLINE might enter
-> > enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
-> > since they are not boosted anymore, the if (is_dl_boosted()) branch is
-> > not taken, but the else if (!dl_prio) is and inside this one we
-> > BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
-> > otherwise we had entered the if branch above. Long story short, the
-> > current condition doesn't make sense and always leads to triggering of a
-> > BUG.
-> > 
-> > Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
-> > to be present, but additional flags are not a problem.
-> > 
-> > Fixes: 2279f540ea7d ("sched/deadline: Fix priority inheritance with multiple scheduling classes")
-> > Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
-> > ---
-> >  kernel/sched/deadline.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-> > index 5867e186c39a..0447d46f4718 100644
-> > --- a/kernel/sched/deadline.c
-> > +++ b/kernel/sched/deadline.c
-> > @@ -1703,7 +1703,7 @@ static void enqueue_task_dl(struct rq *rq, struct task_struct *p, int flags)
-> >  		 * the throttle.
-> >  		 */
-> >  		p->dl.dl_throttled = 0;
-> > -		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
-> > +		BUG_ON(!(flags & ENQUEUE_REPLENISH));
-> 
-> While there, can we perhaps make it less fatal? 
+Hi,
 
-Yep. On it. Thanks!
+On Wed, Jul 13, 2022 at 10:57 AM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+> kernel test robot and Stephen Rothwell reported htmldocs warning:
+>
+> Documentation/ABI/testing/sysfs-driver-qat:24: WARNING: Unexpected indentation.
+>
+> The warning isn't caused by Date: field pointed by the warning, but rather
+> by sysfs example that isn't in literal code block.
+>
+> Add the code block marker.
+>
+> Link: https://lore.kernel.org/linux-next/20220711204932.333379b4@canb.auug.org.au/
+> Link: https://lore.kernel.org/linux-doc/202207090803.TEGI95qw-lkp@intel.com/
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Fixes: d4cfb144f60551 ("crypto: qat - expose device config through sysfs for 4xxx")
+> Acked-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+> Cc: Wojciech Ziemba <wojciech.ziemba@intel.com>
+> Cc: Adam Guerin <adam.guerin@intel.com>
+> Cc: Fiona Trahe <fiona.trahe@intel.com>
+> Cc: Herbert Xu <herbert@gondor.apana.org.au>
+> Cc: Vladis Dronov <vdronov@redhat.com>
+> Cc: Tomasz Kowallik <tomaszx.kowalik@intel.com>
+> Cc: linux-crypto@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> ---
+>  Documentation/ABI/testing/sysfs-driver-qat | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/Documentation/ABI/testing/sysfs-driver-qat b/Documentation/ABI/testing/sysfs-driver-qat
+> index a600531e95628f..43e081ec22cc4a 100644
+> --- a/Documentation/ABI/testing/sysfs-driver-qat
+> +++ b/Documentation/ABI/testing/sysfs-driver-qat
+> @@ -46,7 +46,8 @@ Description:  Reports the current configuration of the QAT device and allows
+>
+>                 The following example shows how to change the configuration of
+>                 a device configured for running crypto services in order to
+> -               run data compression:
+> +               run data compression::
+> +
+>                         # cat /sys/bus/pci/devices/<BDF>/qat/state
+>                         up
+>                         # cat /sys/bus/pci/devices/<BDF>/qat/cfg_services
+> --
 
-Juri
+Acked-by: Vladis Dronov <vdronov@redhat.com>
+
+Best regards,
+Vladis Dronov | Red Hat, Inc. | The Core Kernel | Senior Software Engineer
 
