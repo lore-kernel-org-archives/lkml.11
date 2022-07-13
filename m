@@ -2,196 +2,326 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9175BC43334
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 357A2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 12:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235226AbiGMMAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 08:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50614 "EHLO
+        id S235804AbiGMMAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 08:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235174AbiGMMAE (ORCPT
+        with ESMTP id S235669AbiGMMAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 08:00:04 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F6EF5114
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:00:02 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id s21so11656608pjq.4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 05:00:02 -0700 (PDT)
+        Wed, 13 Jul 2022 08:00:10 -0400
+Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A4FF54CD;
+        Wed, 13 Jul 2022 05:00:09 -0700 (PDT)
+Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-2ef5380669cso109754427b3.9;
+        Wed, 13 Jul 2022 05:00:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=OnXt52/Zp2ft6yRsPQtGQKdmFR+mM5FPT8XBS7HJCCE=;
-        b=jt2qxK6K7RpYaFKuLqExwmk4dp2M1rU7vWp2h9+Ag8gjWOek21MXE1SS59CMcyeD2D
-         PrMsUTdyOZGUicIFNp9a68jANV/qF66kXNQa/1Ltanvr3Vdl3liHHD3d6+J7obK7m44q
-         WdJ6oNiMyHoJVzTqcKocLTcWOCgbk/gHWvh10iRXl3noXmIRk7w7l59gxpxmkEzzOo+S
-         xSqMuwRV4/GeG6qQitDKMxgjWSnclcojbQHPus3QORDvoNP5P16rfGlTDvyqqhXfaQlq
-         9ivRelko48xfz53G90MTRqv0kgQxqjiF5JLf/fQ9lZpjLp47SoQgT8bBfacdjpyRZ9I6
-         aAYA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QqFcQmgGQGc7DUvpJqUQSaobZTRakvVtcLc5e1986Vg=;
+        b=KhrYSrsfk8B9x/UWggXcmUu32sbl1kCbFRyaN1DN5TzUwr96/dDlMsHnUkApLAl2/v
+         DRGra9Hj2Ww4eMIz2rOWnyKZUXh3lVVEQsMxP1R2+c4rHwOWvySRfl1b7g1X+MizOaep
+         /ieaGTJW0zRzov/nWOTU3ihjS9RqB4YvnhAGNWMqWrYYNNezRh8MM/bWxLXYHUiWxtr/
+         RK0JDk+rDbIU7z/WaARg1Jzg6XEjAeceLGBjNZgihUKHOy9wcwNPxdku5770oTw8NR+a
+         Olz8IVAUeC90C27gzlIptJK7gr/FVa4YSj1HBPZtgEgjw9L0PqTGhBWarpTxlZV0IFa2
+         wfiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=OnXt52/Zp2ft6yRsPQtGQKdmFR+mM5FPT8XBS7HJCCE=;
-        b=X8mnM80o5Z/eipr6pY+qx4mE4TTFCjZq8HDQ5QQQb2fLrhSW0QI6RDE7mkJSVdlvoq
-         aknAQXCILp4lsQnmWMMtl/leZzGhdAU9zAukv14J4cUwR6Yz3Fbxtz0ZRXq/LXLXuVcy
-         00TmDNbXkCf6YliwPQUWD7ioEDceOnt2OXPt8ENk37piJXb1OgzKziij1c/g2LHvLOMi
-         xa4JONmaSAKGOzYnVK+JY9s06o+hqCIYYCyXaEtNRfKWmqXMOQDZoMyh5Za21uRT3s4R
-         M6y4B8NbM5TJxnokbusKrZzpv25Ql9ThIES5x87HJnz8hzf/WRQrlEDomJIqn7R+28ZO
-         Oe6w==
-X-Gm-Message-State: AJIora8PqvrpIRbR84WN5fcVxrnxz9f+LR+fatOTU12X+P6MmohU0IkN
-        IRi3oLfuK2Yenz6qgfLPzzR8jrOLXRCmGQ==
-X-Google-Smtp-Source: AGRyM1uNphEJ93H5zZO964IdBpWdVH2jHHra+7zFZ5yJEFhkRY53P6l2ZRvXu5ftyV2No8AXZLWjZw==
-X-Received: by 2002:a17:90b:a05:b0:1ef:8f7c:6343 with SMTP id gg5-20020a17090b0a0500b001ef8f7c6343mr9992901pjb.241.1657713601956;
-        Wed, 13 Jul 2022 05:00:01 -0700 (PDT)
-Received: from MBP ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id l13-20020a170902f68d00b0016c6e360ff2sm1575692plg.132.2022.07.13.05.00.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 05:00:01 -0700 (PDT)
-References: <20220707090501.55483-1-schspa@gmail.com>
- <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Schspa Shi <schspa@gmail.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     tj@kernel.org, linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH] workqueue: Use active mask for new worker when pool is
- DISASSOCIATED
-Date:   Wed, 13 Jul 2022 19:22:06 +0800
-In-reply-to: <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
-Message-ID: <m2y1wxi5qh.fsf@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QqFcQmgGQGc7DUvpJqUQSaobZTRakvVtcLc5e1986Vg=;
+        b=tdwCMgLrr0Bh5Q8JzYpHx+fKfNj1LL/h2d4CmX/POImjGMd1JsV7sSGIlcLCXCeDXt
+         Y2m8B8JPwGZl3UFDKKAe8qGCo2sa2KUac2zQ/FQxFgCmH0JPuETR15RdUg3+yi67csDs
+         dV77Q75+4i4DTvxcpt7OEGEAwV1pmj41S5nEhZr4/x17ArbnMHEVhlHkChjGVACpqii9
+         yFl16WKckptY8/riwUrH1Xf/MeIpatFsZvR+M+yHiOKxEPUOor7CyT7Z3TWOobaRL8Nv
+         TruXXTEQI4jhNkPSn7qwgOZGbGF30vW4BvYE5IGrV/ESo9vnuCLi1FsMjeJeyBQs3lsT
+         yUsw==
+X-Gm-Message-State: AJIora/XZY4iF4nrQsOmh6PggNJMoMHY26GYvYrnHnLUN7XF/e4OLw4s
+        JD34dVvARwwETNMfQjreHA78IVOdmKc1gth6LuE=
+X-Google-Smtp-Source: AGRyM1syQeK/8RcImkP0kJZa5KTMfWyLkuNxadGq7hNXN7TJYZiJaCWins20mzbQKrVOPZN5cWibsrXT/1Ly2VM5GmA=
+X-Received: by 2002:a81:4986:0:b0:31d:388b:d08d with SMTP id
+ w128-20020a814986000000b0031d388bd08dmr3630269ywa.185.1657713608712; Wed, 13
+ Jul 2022 05:00:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220713105910.931983-1-lewis.hanly@microchip.com> <20220713105910.931983-2-lewis.hanly@microchip.com>
+In-Reply-To: <20220713105910.931983-2-lewis.hanly@microchip.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 13 Jul 2022 13:59:32 +0200
+Message-ID: <CAHp75VfGTd02jKYsFq94BF_Gqro2trk3iyyALBatS1Bps3HYhw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] gpio: mpfs: add polarfire soc gpio support
+To:     lewis.hanly@microchip.com
+Cc:     "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Marc Zyngier <maz@kernel.org>, conor.dooley@microchip.com,
+        daire.mcnamara@microchip.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Wed, Jul 13, 2022 at 1:00 PM <lewis.hanly@microchip.com> wrote:
+>
+> From: Lewis Hanly <lewis.hanly@microchip.com>
+>
+> Add a driver to support the Polarfire SoC gpio controller.
 
-Lai Jiangshan <jiangshanlai@gmail.com> writes:
+GPIO
 
-> CC Peter.
-> Peter has changed the CPU binding code in workqueue.c.
->
-> I'm not understanding the problem enough, if kthread_bind_mask() is buggy
-> in workqueue.c, it would be buggy in other places too.
->
+...
 
-It's not the bug of to use kthread_bind_mask(), other than we set the
-bad pool->attrs->cpumask to this kthread.
+Below my comments, I have tried hard not to duplicate what Conor
+already mentioned. So consider this as additional part.
 
->
-> On 2022/7/7 17:05, Schspa Shi wrote:
->
->>   -	if (worker->rescue_wq)
->> -		set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
->> +	if (worker->rescue_wq) {
->> +		if (pool->flags & POOL_DISASSOCIATED)
->> +			set_cpus_allowed_ptr(worker->task, cpu_active_mask);
->> +		else
->> +			set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
->> +	}
->>   
->
-> For unbound pools (which also has POOL_DISASSOCIATED), pool->attrs->cpumask
-> should be used if pool->attrs->cpumask has active cpu.
->
+...
 
-In this case pool->attrs->cpumask have no active cpu, the cpu for this
-pool have offlined already.
+> +config GPIO_POLARFIRE_SOC
+> +       bool "Microchip FPGA GPIO support"
 
-The bug will occurs when the cpu have called the workqueue_offline_cpu
-form cpu unplug, and create a new worker which will running on a offline
-cpu.
+Why not tristate?
 
->
->> +
->> +	mutex_lock(&wq_pool_attach_mutex);
->> +	if ((pool->flags & POOL_DISASSOCIATED)) {
->> +		/* We can't call get_online_cpus, there will be deadlock
->> +		 * cpu_active_mask will no change, because we have
->> +		 * wq_pool_attach_mutex hold.
->> +		 **/
->> +		kthread_bind_mask(worker->task, cpu_active_mask);
->> +	} else {
->> +		kthread_bind_mask(worker->task, pool->attrs->cpumask);
->> +	}
->> +	mutex_unlock(&wq_pool_attach_mutex);
->
->
-> For unbound pools, pool->attrs->cpumask should be used if pool->attrs->cpumask
-> has active cpu.
->
-> wq_pool_attach_mutex is held here and in worker_attach_to_pool() which smells bad.
->
+> +       depends on OF_GPIO
 
-Yes, this will be changed, I have make a new patch , to move the
-thread bind to worker_attach_to_pool, via set_cpus_allowed_ptr.
+Why?
 
->
->
-> The change is complex.  And if kthread_bind_mask() can't work as expected here,
-> the change I prefer would be:
->
-> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-> index 4056f2a3f9d5..1ad8aef5fe98 100644
-> --- a/kernel/workqueue.c
-> +++ b/kernel/workqueue.c
-> @@ -1862,6 +1862,12 @@ static void worker_attach_to_pool(struct worker *worker,
->  {
->  	mutex_lock(&wq_pool_attach_mutex);
->
-> +	/*
-> +	 * set_cpus_allowed_ptr() will fail if the cpumask doesn't have any
-> +	 * online CPUs.  It'll be re-applied when any of the CPUs come up.
-> +	 */
-> +	set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+> +       select GPIOLIB_IRQCHIP
+> +       select IRQ_DOMAIN_HIERARCHY
+
+More naturally this line looks if put before GPIOLB_IRQCHIP one.
+
+> +       select GPIO_GENERIC
+> +       help
+> +         Say yes here to support the GPIO device on Microchip FPGAs.
+
+When allowing it to be a module, add a text that tells how the driver
+will be called.
+
+...
+
+> +/*
+> + * Microchip PolarFire SoC (MPFS) GPIO controller driver
+> + *
+> + * Copyright (c) 2018-2022 Microchip Technology Inc. and its subsidiaries
+> + *
+> + * Author: Lewis Hanly <lewis.hanly@microchip.com>
+
+> + *
+
+This line is not needed.
+
+> + */
+
+...
+
+> +#include <linux/of.h>
+> +#include <linux/of_irq.h>
+
+Why?
+
+Also don't forget mod_devicetable.h.
+
+...
+
+> +#define NUM_GPIO                       32
+> +#define BYTE_BOUNDARY                  0x04
+
+Without namespace?
+
+...
+
+> +       gpio_cfg = readl(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY));
+
 > +
 
-This will succeed in this case, set_cpus_allowed_ptr will use
-cpu_online_mask to verify the cpumask is valid, but in this case,
-the cpu_state is between cpu_online and cpu_active. And this
-modification doesn't solve the problem I'm having.
+Unneeded line.
 
->  	/*
->  	 * The wq_pool_attach_mutex ensures %POOL_DISASSOCIATED remains
->  	 * stable across this function.  See the comments above the flag
-> @@ -1872,9 +1877,6 @@ static void worker_attach_to_pool(struct worker *worker,
->  	else
->  		kthread_set_per_cpu(worker->task, pool->cpu);
->
-> -	if (worker->rescue_wq)
-> -		set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
-> -
->  	list_add_tail(&worker->node, &pool->workers);
->  	worker->pool = pool;
->
-> @@ -1952,7 +1954,7 @@ static struct worker *create_worker(struct worker_pool *pool)
->  		goto fail;
->
->  	set_user_nice(worker->task, pool->attrs->nice);
-> -	kthread_bind_mask(worker->task, pool->attrs->cpumask);
-> +	worker->flags |= PF_NO_SETAFFINITY;
->
->  	/* successful, attach the worker to the pool */
->  	worker_attach_to_pool(worker, pool);
-> @@ -4270,7 +4272,7 @@ static int init_rescuer(struct workqueue_struct *wq)
->  	}
->
->  	wq->rescuer = rescuer;
-> -	kthread_bind_mask(rescuer->task, cpu_possible_mask);
-> +	rescuer->flags |= PF_NO_SETAFFINITY;
->  	wake_up_process(rescuer->task);
->
->  	return 0;
->
->
-> It is untested.  It effectively reverts the commit 640f17c82460e
-> ("workqueue: Restrict affinity change to rescuer").
-> It avoids using kthread_bind_mask().
+> +       if (gpio_cfg & MPFS_GPIO_EN_IN)
+> +               return 1;
+> +
+> +       return 0;
 
-I will upload a new patchset to remove the extra &wq_pool_attach_mutex
-and add a timing diagram to make this question clearer.
+Don't we have specific definitions for the directions?
+
+...
+
+> +       struct gpio_chip *gc = irq_data_get_irq_chip_data(data);
+> +       int gpio_index = irqd_to_hwirq(data);
+> +       u32 interrupt_type;
+
+> +       struct mpfs_gpio_chip *mpfs_gpio = gpiochip_get_data(gc);
+
+This line naturally looks better before interrupt_type definition.
+Try to keep the "longest line first" everywhere in the driver.
+
+> +       u32 gpio_cfg;
+> +       unsigned long flags;
+
+...
+
+> +       switch (type) {
+> +       case IRQ_TYPE_EDGE_BOTH:
+> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_BOTH;
+> +               break;
+
+> +
+
+Unneeded line here and everywhere in the similar cases in the entire code.
+
+> +       case IRQ_TYPE_EDGE_FALLING:
+> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_NEG;
+> +               break;
+> +
+> +       case IRQ_TYPE_EDGE_RISING:
+> +               interrupt_type = MPFS_GPIO_TYPE_INT_EDGE_POS;
+> +               break;
+> +
+> +       case IRQ_TYPE_LEVEL_HIGH:
+> +               interrupt_type = MPFS_GPIO_TYPE_INT_LEVEL_HIGH;
+> +               break;
+> +
+> +       case IRQ_TYPE_LEVEL_LOW:
+> +               interrupt_type = MPFS_GPIO_TYPE_INT_LEVEL_LOW;
+> +               break;
+> +       }
+
+...
+
+> +       mpfs_gpio_assign_bit(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY),
+> +                            MPFS_GPIO_EN_INT, 1);
+
+Too many parentheses.
+
+...
+
+> +       mpfs_gpio_assign_bit(mpfs_gpio->base + (gpio_index * BYTE_BOUNDARY),
+> +                            MPFS_GPIO_EN_INT, 0);
+
+Ditto.
+
+...
+
+> +static int mpfs_gpio_irq_set_affinity(struct irq_data *data,
+> +                                     const struct cpumask *dest,
+> +                                     bool force)
+> +{
+
+> +       if (data->parent_data)
+
+> +               return irq_chip_set_affinity_parent(data, dest, force);
+> +
+> +       return -EINVAL;
+> +}
+
+Why do you need this? Isn't it taken care of by the IRQ chip core?
+
+...
+
+> +       struct clk *clk;
+> +       struct device *dev = &pdev->dev;
+
+> +       struct device_node *node = pdev->dev.of_node;
+> +       struct device_node *irq_parent;
+
+Why do you need these?
+
+> +       struct gpio_irq_chip *girq;
+> +       struct irq_domain *parent;
+> +       struct mpfs_gpio_chip *mpfs_gpio;
+> +       int i, ret, ngpio;
+
+...
+
+> +       clk = devm_clk_get(&pdev->dev, NULL);
+> +       if (IS_ERR(clk)) {
+> +               dev_err(&pdev->dev, "devm_clk_get failed\n");
+> +               return PTR_ERR(clk);
+> +       }
+
+return dev_err_probe(...);
+
+It's not only convenient, but here it fixes a bug.
+
+> +       ret = clk_prepare_enable(clk);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "failed to enable clock\n");
+> +               return ret;
+
+return dev_err_probe(...);
+
+> +       }
+
+Make it managed as well in addition to gpiochip_add_data(), otherwise
+you will have wrong ordering.
+
+...
+
+> +       ngpio = of_irq_count(node);
+> +       if (ngpio > NUM_GPIO) {
+
+> +               dev_err(dev, "Too many GPIO interrupts (max=%d)\n",
+> +                       NUM_GPIO);
+> +               ret = -ENXIO;
+> +               goto cleanup_clock;
+
+return dev_err_probe(...);
+
+> +       }
+> +
+> +       irq_parent = of_irq_find_parent(node);
+> +       if (!irq_parent) {
+> +               dev_err(dev, "no IRQ parent node\n");
+> +               ret = -ENODEV;
+> +               goto cleanup_clock;
+
+Ditto.
+
+> +       }
+> +       parent = irq_find_host(irq_parent);
+> +       if (!parent) {
+> +               dev_err(dev, "no IRQ parent domain\n");
+> +               ret = -ENODEV;
+> +               goto cleanup_clock;
+
+Ditto.
+
+> +       }
+
+Why do you need all these? Seems a copy'n'paste from gpio-sifive,
+which is the only GPIO driver using this pattern.
+
+...
+
+> +               mpfs_gpio_assign_bit(mpfs_gpio->base + (i * BYTE_BOUNDARY),
+> +                                    MPFS_GPIO_EN_INT, 0);
+
+Too many parentheses.
+
+
+> +       girq->fwnode = of_node_to_fwnode(node);
+
+This is an interesting way of
+
+    ...->fwnode = dev_fwnode(dev);
+
+
+...
+
+> +       dev_info(dev, "Microchip MPFS GPIO registered, ngpio=%d\n", ngpio);
+
+Noise.
+
+...
+
+> +               .of_match_table = of_match_ptr(mpfs_gpio_match),
+
+Please, avoid using of_match_ptr(). It brings more harm than usefulness.
 
 -- 
-BRs
-Schspa Shi
+With Best Regards,
+Andy Shevchenko
