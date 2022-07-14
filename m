@@ -2,88 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ACFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D18FCCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:22:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233544AbiGNEWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49202 "EHLO
+        id S233748AbiGNEWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232089AbiGNEW0 (ORCPT
+        with ESMTP id S233414AbiGNEW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:22:26 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF94275FD;
-        Wed, 13 Jul 2022 21:22:25 -0700 (PDT)
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E3mxpZ020551;
-        Thu, 14 Jul 2022 04:22:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=AlN9Hp9+KlkquTPFGxnks1+pPt0aRkDB5DYGzzm4jiU=;
- b=p0zPeU27Jc6IYtHMxRc7JY5EUenLxKOhMbYWucU9HvWwpAOsOr7Zfy8E+GnTCyLLNbOh
- 058G5i7jePXTiXAog7mNARVk2idEsSpnftL9rVb5BQXhZwZMTRYQNFScLSZ0IAfzUfrn
- NT4sb6smbosEVjWVNjRVAaLpGkz4HRhi/OcvSV8ydPktGXUIQtPpD+SEgaCYIPj6Q/Zr
- fqztWyiQEsMk3oiT44IFVwfoKbdNuh1T7s37ewNH5aAyC/vbpTm09BgogCVLlYVdlhXw
- ZPWaPz5fvFJnifC43POPl7W5MSjlLqMVXBU6kor3YT2q+p2Uw4DStMUELmhB0z+qjWg3 sw== 
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71xrkxs3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 04:22:15 +0000
-Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26E4Ax3Z001091;
-        Thu, 14 Jul 2022 04:22:14 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7045au23-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 04:22:14 +0000
-Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 26E4MD5D024736;
-        Thu, 14 Jul 2022 04:22:13 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7045au20-1;
-        Thu, 14 Jul 2022 04:22:13 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Bart Van Assche <bvanassche@acm.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bean Huo <beanhuo@micron.com>, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yue Hu <huyue2@yulong.com>
-Subject: Re: [PATCH] scsi: ufs: ufshcd: Drop loglevel of WriteBoost message
-Date:   Thu, 14 Jul 2022 00:22:08 -0400
-Message-Id: <165777180152.4401.10494313651978409350.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220709000027.3929970-1-bjorn.andersson@linaro.org>
-References: <20220709000027.3929970-1-bjorn.andersson@linaro.org>
+        Thu, 14 Jul 2022 00:22:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4027F275FD;
+        Wed, 13 Jul 2022 21:22:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3712B82333;
+        Thu, 14 Jul 2022 04:22:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B97DC34114;
+        Thu, 14 Jul 2022 04:22:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772544;
+        bh=+pwhI5DseAVUweaksDK2NMrC+e9Ib1UwCS+TtiDZy7g=;
+        h=From:To:Cc:Subject:Date:From;
+        b=nRMqTONG84Q1/50KE8MkFY+taRqGhEPv6RJVnySbdFK6i6nxPl7X7afRdVvqXEtWR
+         GtZwTDWfeDyxWguKD+7hBvPT+ggKpK03wgNkDLu3GYONpu54rNg7n/icLZDUg1Avh0
+         5JugYW4IEQSYxkic//p6v/qm4NSNODXjnvw1Qdhz4ThjtpSXvx6pVdNFFJ3MrgTYPi
+         DFMyepvB3N3mnDKtV0NaaNfOHJlKWRdZwIFR1blTMzGLvjTt55PbiaFRysfNOihfsa
+         AnCQ4oNqh1enxUvRZxzrKclfwqLBc2WVsCXeZxqY+m4uOA3ls/UsGlSFicuXJVGOr0
+         Jq15U2aVG8NqQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.18 01/41] ASoC: ops: Fix off by one in range control validation
+Date:   Thu, 14 Jul 2022 00:21:41 -0400
+Message-Id: <20220714042221.281187-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: JIh9csJSE7p0J26esIo00Xrce3KvZAPV
-X-Proofpoint-ORIG-GUID: JIh9csJSE7p0J26esIo00Xrce3KvZAPV
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Jul 2022 17:00:27 -0700, Bjorn Andersson wrote:
+From: Mark Brown <broonie@kernel.org>
 
-> Commit '3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")'
-> changed the log level of the write boost enable/disable notification
-> from debug to info, this results in a lot of noise in the kernel log
-> during normal operation.
-> 
-> Drop it back to debug level to avoid this.
-> 
-> [...]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-Applied to 5.19/scsi-fixes, thanks!
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-[1/1] scsi: ufs: ufshcd: Drop loglevel of WriteBoost message
-      https://git.kernel.org/mkp/scsi/c/2ae57c995003
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index e693070f51fe..d867f449d82d 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -526,7 +526,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
+ 
+ 	if (invert)
+@@ -547,7 +547,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
+ 
+ 		if (invert)
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.35.1
+
