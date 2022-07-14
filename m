@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3085C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86475C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:37:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232705AbiGNEhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:37:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48278 "EHLO
+        id S237646AbiGNEho (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237632AbiGNEgw (ORCPT
+        with ESMTP id S236220AbiGNEhF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:36:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E0E3D5A8;
-        Wed, 13 Jul 2022 21:26:47 -0700 (PDT)
+        Thu, 14 Jul 2022 00:37:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D3B93D5BC;
+        Wed, 13 Jul 2022 21:26:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3D0BB8236E;
-        Thu, 14 Jul 2022 04:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A16BC36AE2;
-        Thu, 14 Jul 2022 04:26:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 345CC61E5C;
+        Thu, 14 Jul 2022 04:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88B57C34115;
+        Thu, 14 Jul 2022 04:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772804;
-        bh=5IEYN5foefB4K0Dyg0jaz4/QY7YbSg5VpEmxben9s0s=;
+        s=k20201202; t=1657772809;
+        bh=aluQHv286Aoi7OvfkwIRBdVBjt90I8dJ2JRkySyyPDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r52H2BeKhEe9ihsH+cIjm3WWV6WdxQrcKwVIAk2W/NUdqfAc2HBn4z3V55TFYWeDT
-         j+vMiEPnB/MQbrBysAH7Ku+/TPveUtrw1uJb9ZZTcHBJhFszf4X4v36MHfiQ0ujd/v
-         m3jfTNE0Ohde8ztQQIE4AuXZT4MeSym7epZvwZl41KHxamfqHwg9SppdKaAkIeGwIb
-         +M6QAZF8IrCxC5w5q7WKUqZE5aadMqcHabiUkRH/TWx3Yr50ehDEIwprOXRwjWffuh
-         /jBaf9KYcFZoA66UCoJhcdoaT0jYHAwp9Dfdwh872gHakdCwMK0mbpzAVB9mwfly6T
-         tUGTd/7WOUB8w==
+        b=da5umemMxuTgC2fXlSYefTw32rEI4k0zILX2v9X19llq61A6mIX7Sw2J4cmzc/gsT
+         eNK0Xp7Ubzxb7/OnxUBw9/Xdkm+3wRicsymtkzVgHEIWSEJ8aNmJ28WF4DPdfjoFoC
+         XTty2cNceiDIHFlgMpBbYDH61eVi75MRbIV00UaTheEwKkLIbI+F9tjawMQk/Yy0RL
+         T5TJKXJPUcMj6F4LYkx93jrCCuK+NhvU5uRdoteHPaaZLaVE55OyUQnGqVWsoLzM/r
+         5RFZ3gZpTgfjqAUU3lld3sRuh1TiMwHHeH/IxDFY1kHfEy6EU0pX/x78kJZY04rQ8D
+         QyRevyxX6k1eg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stafford Horne <shorne@gmail.com>, Marc Zyngier <maz@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, jonas@southpole.se,
-        stefan.kristiansson@saunalahti.fi, tglx@linutronix.de,
-        openrisc@lists.librecores.org
-Subject: [PATCH AUTOSEL 4.19 3/6] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
-Date:   Thu, 14 Jul 2022 00:26:33 -0400
-Message-Id: <20220714042637.282511-3-sashal@kernel.org>
+Cc:     Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mcoquelin.stm32@gmail.com,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 5/6] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
+Date:   Thu, 14 Jul 2022 00:26:35 -0400
+Message-Id: <20220714042637.282511-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042637.282511-1-sashal@kernel.org>
 References: <20220714042637.282511-1-sashal@kernel.org>
@@ -52,39 +55,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
+[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
 
-The mask_ack operation clears the interrupt by writing to the PICSR
-register.  This we don't want for level triggered interrupt because
-it does not actually clear the interrupt on the source hardware.
+The peripheral clock of CEC is not LSE but CEC.
 
-This was causing issues in qemu with multi core setups where
-interrupts would continue to fire even though they had been cleared in
-PICSR.
-
-Just remove the mask_ack operation.
-
-Acked-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-or1k-pic.c | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm/boot/dts/stm32mp157c.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
-index dd9d5d12fea2..05931fdedbb9 100644
---- a/drivers/irqchip/irq-or1k-pic.c
-+++ b/drivers/irqchip/irq-or1k-pic.c
-@@ -70,7 +70,6 @@ static struct or1k_pic_dev or1k_pic_level = {
- 		.name = "or1k-PIC-level",
- 		.irq_unmask = or1k_pic_unmask,
- 		.irq_mask = or1k_pic_mask,
--		.irq_mask_ack = or1k_pic_mask_ack,
- 	},
- 	.handle = handle_level_irq,
- 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
+diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
+index 4278a4b22860..7c5b2727ba2e 100644
+--- a/arch/arm/boot/dts/stm32mp157c.dtsi
++++ b/arch/arm/boot/dts/stm32mp157c.dtsi
+@@ -413,7 +413,7 @@ cec: cec@40016000 {
+ 			compatible = "st,stm32-cec";
+ 			reg = <0x40016000 0x400>;
+ 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&rcc CEC_K>, <&clk_lse>;
++			clocks = <&rcc CEC_K>, <&rcc CEC>;
+ 			clock-names = "cec", "hdmi-cec";
+ 			status = "disabled";
+ 		};
 -- 
 2.35.1
 
