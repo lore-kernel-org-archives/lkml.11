@@ -2,92 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF1EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79232C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237563AbiGNJHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:07:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56914 "EHLO
+        id S237626AbiGNJHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:07:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237542AbiGNJHl (ORCPT
+        with ESMTP id S233386AbiGNJHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:07:41 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A05F32B91
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:07:40 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id bp17so1764269lfb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:07:40 -0700 (PDT)
+        Thu, 14 Jul 2022 05:07:49 -0400
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AC422BFB;
+        Thu, 14 Jul 2022 02:07:47 -0700 (PDT)
+Received: by mail-oi1-x231.google.com with SMTP id r191so1636257oie.7;
+        Thu, 14 Jul 2022 02:07:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=O1fNejxW8S6H3wv5VBDx0d1TMHYJMe9L7no5jLI+Oyg=;
-        b=FIWHDEbpdoMv9foYW/B/ZPtig8wu4pEhkSnJzoI/DZjVzJm5Uk9JRPlHQyfSJ2FnJA
-         jninjZNbhOXQGhuMabXHpPHWKh5WR9VGTUzQsCXD217MLSYM8KOp7AzJrWAtjPvMBaJv
-         avXKmhbuigxPKdiIk4Tb1PpAOm6WUX6kh9qL7QgTiyWMGcD99QWRxcagakI6e2hcMPqg
-         YAb0ne9PlQ6egBsDjGsQtTWy+c8CNQR4Sa07dV4VxFBcEMu53wKzCNKLK3xJOzVqX2uc
-         s+aFlE5Ek/avWAy47EsyUg114ufEFE9i0BADRMpZ1jvB0iu69NxoNNIPnrYytfdW4yRz
-         7WDw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=HtoAKV34fkg7oJD7fYEz8ioi5wZAzA+9Ww8IthJm6js=;
+        b=SGUOaQYgjTEUxx3qgHflmR3uXxb9Sdtf8NQ2J3S7+I9Fzk7GslAZLiWW5Tnn1uVSj1
+         dU9DoOwvNfecF2lHZxoxVKojNAZz1ta9JDkZycrvSBayPIntBof9VOnGEIbCnAxjWtRt
+         j6Awmt5ANPjlm/eLS3eoelzjFAtZvSJp1NgvJcV0/ad/ULiKtEdnBtrBdSNokFgWM/tA
+         8NeQSRzcF6CFq5RC3xjMHlKb6Yjlg7Y7L+pF2JW1BIsaApuEXq6M/lWZ8xC+tBtpm6MC
+         ep4EYgwdjkPVymQ4/pPO8YAO8PwTMk2A+zPFREd1a1OXDmvbDXd4lofhs+fCLxyKnACG
+         DAng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=O1fNejxW8S6H3wv5VBDx0d1TMHYJMe9L7no5jLI+Oyg=;
-        b=wU1EaYPg2hlNCZzGuD3AYyB4eu2LkPIjgHph7jgtJZAXuIVbi7hybgekbN9CDiVUVs
-         SpEZIz7AfrvTka0THFurOxcKBr9AbHS6eIYFysPa2sdtl47bBiz/dzSH0HkVxtj/iGPb
-         LKlcihT2+D6USwBdEsR9tlN2kG4acAr2JyWswcfpM3YRcT50aC4mHPTkiAWuOskgJ2wZ
-         qdxbehIagiVWa1A2OrWR/3nLo647h1DectkDTr/RGNRI0fn8lx7PH2grX7Mep4K+ivSh
-         tkxr2Jx5ZrsH411bQrsgKEJw2yOxNqTcFGfEl8lvCNaCNeINJoot1/ADcH+Voh7r3tUV
-         HmDg==
-X-Gm-Message-State: AJIora87ykUK1TR/jcUzOVmpVDeaznPLJ5ecZ0pwmtiFjYsC1zUNht9B
-        VLNrvvrNRFi4nOm7AW17GoPnsA==
-X-Google-Smtp-Source: AGRyM1vtx0KI4Lf85fLv2hVsyciC0HjRj8ejjNeCKGSnn+E/6D2Cog8AfiXPRY1s3r32AKC7+faa2g==
-X-Received: by 2002:a05:6512:3b29:b0:489:f0ad:1d18 with SMTP id f41-20020a0565123b2900b00489f0ad1d18mr4710485lfv.3.1657789658590;
-        Thu, 14 Jul 2022 02:07:38 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id a27-20020a2eb55b000000b0025d5b505df1sm173151ljn.136.2022.07.14.02.07.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:07:37 -0700 (PDT)
-Message-ID: <b1d14a58-5f7e-f013-4f80-c63d3f1951f2@linaro.org>
-Date:   Thu, 14 Jul 2022 11:07:35 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=HtoAKV34fkg7oJD7fYEz8ioi5wZAzA+9Ww8IthJm6js=;
+        b=BP45e1Mt30I13XuyluJlEyNg6G+y/F+qqV2mxpLV1QIvPIfRIByHtFjKLPy9ajZLjO
+         frauyp9s/1AizibtvISi/fjgaXisEj605W1oECFqUNBy1V4zHb1XKUF+SxJr9d7HlLva
+         IRr7RokDA8r87KKWVEIiALxE48DlQMKrsc8UG89iAPZpO9C85HmsVT3ukTprScmLUbKt
+         joauWorFSl+2VlgEcJwmvZmBW+U4WNt2UltWexRYaJOqIjRZYqrp/aVDYbvg5S4f4xw/
+         S2wr5leEmriqqz330DmhzAtM6qL4LmV0UgIeRchY8u7t/Nv+/Cxbx5CgHczqyDMDPrfP
+         oXKA==
+X-Gm-Message-State: AJIora+axvUoDl3UcyAUEaqaLKJYb1RFa7KrTnOJ3V/4td6X08y3u+8H
+        N41arBMKF+43TxJHu7RhWERACD45qmXEoFD/utNMsLITuy0MIw==
+X-Google-Smtp-Source: AGRyM1tYqmmTTh5yn+aJRqp7Gt0nH2iHs/VvgL4A/Z2KEfbB9bG1GoGX0CATwSeA424Pn/7rMywZUN2VoUO5xOKXPVk=
+X-Received: by 2002:a05:6808:bce:b0:337:aaf6:8398 with SMTP id
+ o14-20020a0568080bce00b00337aaf68398mr4096084oik.252.1657789666301; Thu, 14
+ Jul 2022 02:07:46 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 04/30] dt-bindings: phy: qcom,qmp: fix child node
- description
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-5-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707134725.3512-5-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org>
+In-Reply-To: <870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 14 Jul 2022 11:07:10 +0200
+Message-ID: <CA+icZUVbQNM+MkMCQik83FoiWF_a1v7Mb-4hZX6SZgNcp2x5SA@mail.gmail.com>
+Subject: Re: [PATCH V2] rtla: Fix Makefile when called from -C tools/
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/2022 15:46, Johan Hovold wrote:
-> Fix the incorrect description of the child nodes which claimed that one
-> node is required per lane rather than per PHY.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+On Wed, Jul 13, 2022 at 11:32 PM Daniel Bristot de Oliveira
+<bristot@kernel.org> wrote:
+>
+> Sedat Dilek reported an error on rtla Makefile when running:
+>
+>     $ make -C tools/ clean
+>     [...]
+>     make[2]: Entering directory
+>     '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
+>     [...]
+>     '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
+>     /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
+>     rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
+>     make[2]: *** [Makefile:120: clean] Error 1
+>     make[2]: Leaving directory
+>
+> This occurred because the rtla calls kernel's Makefile to get the
+> version in silence mode, e.g.,
+>
+>     $ make -sC ../../.. kernelversion
+>     5.19.0-rc4
+>
+> But the -s is being ignored when rtla's makefile is called indirectly,
+> so the output looks like this:
+>
+>     $ make -C ../../.. kernelversion
+>     make: Entering directory '/root/linux'
+>     5.19.0-rc4
+>     make: Leaving directory '/root/linux'
+>
+> Using 'grep -v make' avoids this problem, e.g.,
+>
+>     $ make -C ../../.. kernelversion | grep -v make
+>     5.19.0-rc4
+>
+> Thus, add | grep -v make.
+>
+> Cc: Steven Rostedt <rostedt@goodmis.org>
+> Fixes: 8619e32825fd ("rtla: Follow kernel version")
+> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 > ---
->  Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml | 4 +---
 
+Thanks for v2.
+That looks good to me.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Daniel, you are right that not passing -s to make-line will not show
+the grep output.
 
+Formally and again my...
 
-Best regards,
-Krzysztof
+Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+
+-Sedat-
+
+>  tools/tracing/rtla/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+> index 3822f4ea5f49..1bea2d16d4c1 100644
+> --- a/tools/tracing/rtla/Makefile
+> +++ b/tools/tracing/rtla/Makefile
+> @@ -1,6 +1,6 @@
+>  NAME   :=      rtla
+>  # Follow the kernel version
+> -VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
+> +VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
+>
+>  # From libtracefs:
+>  # Makefiles suck: This macro sets a default value of $(2) for the
+> --
+> 2.32.0
+>
