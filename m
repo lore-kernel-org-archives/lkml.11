@@ -2,97 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F62C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:34:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B14C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239322AbiGNMeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:34:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52934 "EHLO
+        id S239311AbiGNMeY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239044AbiGNMeU (ORCPT
+        with ESMTP id S239318AbiGNMeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:34:20 -0400
-Received: from relay08.th.seeweb.it (relay08.th.seeweb.it [IPv6:2001:4b7a:2000:18::169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ABDB58847
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:34:16 -0700 (PDT)
+        Thu, 14 Jul 2022 08:34:21 -0400
+Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [IPv6:2001:4b7a:2000:18::171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF30F5721A;
+        Thu, 14 Jul 2022 05:34:14 -0700 (PDT)
 Received: from localhost.localdomain (abxj14.neoplus.adsl.tpnet.pl [83.9.3.14])
-        by m-r2.th.seeweb.it (Postfix) with ESMTPA id 6760140164;
-        Thu, 14 Jul 2022 14:34:14 +0200 (CEST)
+        by m-r2.th.seeweb.it (Postfix) with ESMTPA id D54364016F;
+        Thu, 14 Jul 2022 14:34:11 +0200 (CEST)
 From:   Konrad Dybcio <konrad.dybcio@somainline.org>
 To:     ~postmarketos/upstreaming@lists.sr.ht
 Cc:     martin.botka@somainline.org,
         angelogioacchino.delregno@somainline.org,
         marijn.suijten@somainline.org, jamipkettunen@somainline.org,
         Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/5] arm64: dts: qcom: sm8450: Adjust memory map
-Date:   Thu, 14 Jul 2022 14:34:04 +0200
-Message-Id: <20220714123406.1919836-3-konrad.dybcio@somainline.org>
+Subject: [PATCH v2 1/5] dt-bindings: arm: qcom: Document Sony Xperia 1 IV (PDX223)
+Date:   Thu, 14 Jul 2022 14:34:02 +0200
+Message-Id: <20220714123406.1919836-1-konrad.dybcio@somainline.org>
 X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220714123406.1919836-1-konrad.dybcio@somainline.org>
-References: <20220714123406.1919836-1-konrad.dybcio@somainline.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix up the camera region (cross-referenced different vendors' msm-5.10
-drops, 9f500000 is the default location for SM8450) and reserve the
-second chunk occupied by xbl_sc.
+Document the compatible for the PDX223 device.
 
 Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-No changes since v1
+Changes since v1:
+- Add Krzysztof's a-b
 
- arch/arm64/boot/dts/qcom/sm8450.dtsi | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8450.dtsi b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-index 7d08fad76371..09e7587de0de 100644
---- a/arch/arm64/boot/dts/qcom/sm8450.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8450.dtsi
-@@ -436,11 +436,6 @@ cdsp_secure_heap: memory@80c00000 {
- 			no-map;
- 		};
+diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+index 5c06d1bfc046..e19f5511ebc1 100644
+--- a/Documentation/devicetree/bindings/arm/qcom.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+@@ -305,6 +305,7 @@ properties:
+           - enum:
+               - qcom,sm8450-hdk
+               - qcom,sm8450-qrd
++              - sony,pdx223
+           - const: qcom,sm8450
  
--		camera_mem: memory@85200000 {
--			reg = <0x0 0x85200000 0x0 0x500000>;
--			no-map;
--		};
--
- 		video_mem: memory@85700000 {
- 			reg = <0x0 0x85700000 0x0 0x700000>;
- 			no-map;
-@@ -503,6 +498,11 @@ cvp_mem: memory@9ee00000 {
- 			no-map;
- 		};
- 
-+		camera_mem: memory@9f500000 {
-+			reg = <0x0 0x9f500000 0x0 0x800000>;
-+			no-map;
-+		};
-+
- 		rmtfs_mem: memory@9fd00000 {
- 			compatible = "qcom,rmtfs-mem";
- 			reg = <0x0 0x9fd00000 0x0 0x280000>;
-@@ -512,6 +512,11 @@ rmtfs_mem: memory@9fd00000 {
- 			qcom,vmid = <15>;
- 		};
- 
-+		xbl_sc_mem2: memory@a6e00000 {
-+			reg = <0x0 0xa6e00000 0x0 0x40000>;
-+			no-map;
-+		};
-+
- 		global_sync_mem: memory@a6f00000 {
- 			reg = <0x0 0xa6f00000 0x0 0x100000>;
- 			no-map;
+ additionalProperties: true
 -- 
 2.37.0
 
