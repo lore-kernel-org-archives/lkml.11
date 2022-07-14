@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F446C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12D5CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:36:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231978AbiGNEg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
+        id S232095AbiGNEgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237524AbiGNEfL (ORCPT
+        with ESMTP id S237661AbiGNEf6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:35:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B083CBC1;
-        Wed, 13 Jul 2022 21:26:28 -0700 (PDT)
+        Thu, 14 Jul 2022 00:35:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1845C3CBDC;
+        Wed, 13 Jul 2022 21:26:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A31DB82376;
-        Thu, 14 Jul 2022 04:26:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 985ECC34115;
-        Thu, 14 Jul 2022 04:26:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3B2E61E51;
+        Thu, 14 Jul 2022 04:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D126C34114;
+        Thu, 14 Jul 2022 04:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772784;
-        bh=yq3en7uJrOMsKfoyfIqOia6edMmizWg+luTeklrv0dg=;
+        s=k20201202; t=1657772790;
+        bh=aCxKvGgvHIIyXlj7KbS97sr9G2YeS9r+HloRo3tKYo4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bhpmAk+TrtDI78ujxgpYy1b31r6v4otZTfjZWUrefW/a4g3LTvfFmgkgmX72A+pBK
-         lcfvnoHknnBu9ZhzYIAqsDmZmvzBne+czWGx9VHUPmZxPpoSgWvL6InxHDgIEHXR7M
-         soewmfU6w3+ia0N5NDzrWkH6AkEYoLKIGfISPQuj4Iz1szdBbg1UlaO7i7QVZBgMzu
-         hi+c5kAVo01wS/aTXtN7F0WvnUmc29Srp5RJdVN4HyqanonSQqa5KWYZYUzWBm1ByZ
-         rE3R2n63g9rUiWTd/332hSQeZjFCPn/KplHOgdwgLLAqx1aFPmmIKcWAWRXArFuk/a
-         P27ZaQPiZ5ifQ==
+        b=QQSe6ajwBtw+5pe0FOMGkLDiy0JVhbbbCpr7AVaC5umztEkQDAvAsZ7n56RHWm12f
+         7Yc+on5as0ansPQK2/cAhKKZYGqxbgJvrsCwbqwoWu3KqBCWgdVWgCb3u+8nsaPENl
+         3X/wRjDBk5URiz7+k4UQyW/FanMsv8wr/zqSCrHMEUn30mSXwfAAN7SgQ6Sf98P+Bx
+         VRcAkjAGfWcrzEYBtZRWcCLncS5sDT2P5wFKohem4iv6rNs7HLSZP7PYB6bFInYxOG
+         wDFVbTRmsxukxpEuwCB9aESUoljdBw5QQP019pIkphs/KevftdCEPhidEEXX1LIrFw
+         4YRp/YXY2JeTA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, rf@opensource.cirrus.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com
-Subject: [PATCH AUTOSEL 5.4 05/10] ASoC: madera: Fix event generation for rate controls
-Date:   Thu, 14 Jul 2022 00:26:07 -0400
-Message-Id: <20220714042612.282378-5-sashal@kernel.org>
+Cc:     Juergen Gross <jgross@suse.com>, Borislav Petkov <bp@suse.de>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, brijesh.singh@amd.com, ak@linux.intel.com,
+        kirill.shutemov@linux.intel.com, michael.roth@amd.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, thomas.lendacky@amd.com
+Subject: [PATCH AUTOSEL 5.4 07/10] x86: Clear .brk area at early boot
+Date:   Thu, 14 Jul 2022 00:26:09 -0400
+Message-Id: <20220714042612.282378-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042612.282378-1-sashal@kernel.org>
 References: <20220714042612.282378-1-sashal@kernel.org>
@@ -53,49 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Juergen Gross <jgross@suse.com>
 
-[ Upstream commit 980555e95f7cabdc9c80a07107622b097ba23703 ]
+[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
 
-madera_adsp_rate_put always returns zero regardless of if the control
-value was updated. This results in missing notifications to user-space
-of the control change. Update the handling to return 1 when the
-value is changed.
+The .brk section has the same properties as .bss: it is an alloc-only
+section and should be cleared before being used.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Not doing so is especially a problem for Xen PV guests, as the
+hypervisor will validate page tables (check for writable page tables
+and hypervisor private bits) before accepting them to be used.
+
+Make sure .brk is initially zero by letting clear_bss() clear the brk
+area, too.
+
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kernel/head64.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index e375dca9ba8d..4a56082a4c43 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -853,7 +853,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	const int adsp_num = e->shift_l;
- 	const unsigned int item = ucontrol->value.enumerated.item[0];
--	int ret;
-+	int ret = 0;
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 206a4b6144c2..950286016f63 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -383,6 +383,8 @@ static void __init clear_bss(void)
+ {
+ 	memset(__bss_start, 0,
+ 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
++	memset(__brk_base, 0,
++	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
+ }
  
- 	if (item >= e->items)
- 		return -EINVAL;
-@@ -870,10 +870,10 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 			 "Cannot change '%s' while in use by active audio paths\n",
- 			 kcontrol->id.name);
- 		ret = -EBUSY;
--	} else {
-+	} else if (priv->adsp_rate_cache[adsp_num] != e->values[item]) {
- 		/* Volatile register so defer until the codec is powered up */
- 		priv->adsp_rate_cache[adsp_num] = e->values[item];
--		ret = 0;
-+		ret = 1;
- 	}
- 
- 	mutex_unlock(&priv->rate_lock);
+ static unsigned long get_cmd_line_ptr(void)
 -- 
 2.35.1
 
