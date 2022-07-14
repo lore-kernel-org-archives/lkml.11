@@ -2,88 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42BA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:11:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 529FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:15:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231271AbiGNCK7 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 22:10:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
+        id S231268AbiGNCPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 22:15:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiGNCK5 (ORCPT
+        with ESMTP id S229441AbiGNCPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 22:10:57 -0400
-Received: from elephants.elehost.com (elephants.elehost.com [216.66.27.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427772BEE;
-        Wed, 13 Jul 2022 19:10:56 -0700 (PDT)
-Received: from Mazikeen (cpe00fc8d49d843-cm00fc8d49d840.cpe.net.cable.rogers.com [174.119.96.21] (may be forged))
-        (authenticated bits=0)
-        by elephants.elehost.com (8.16.1/8.16.1) with ESMTPSA id 26E2AkUH048754
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 13 Jul 2022 22:10:46 -0400 (EDT)
-        (envelope-from rsbecker@nexbridge.com)
-Reply-To: <rsbecker@nexbridge.com>
-From:   <rsbecker@nexbridge.com>
-To:     <rsbecker@nexbridge.com>, "'Junio C Hamano'" <gitster@pobox.com>,
-        <git@vger.kernel.org>
-Cc:     "'Linux Kernel'" <linux-kernel@vger.kernel.org>,
-        <git-packagers@googlegroups.com>
-References: <xmqqv8s2fefi.fsf@gitster.g> <01af01d896b1$a48e32f0$edaa98d0$@nexbridge.com> <01b101d896c4$31761bd0$94625370$@nexbridge.com>
-In-Reply-To: <01b101d896c4$31761bd0$94625370$@nexbridge.com>
-Subject: RE: [Test Failures] Git v2.37.1 (was RE: [ANNOUNCE] Git v2.37.1 and others)
-Date:   Wed, 13 Jul 2022 22:10:39 -0400
-Organization: Nexbridge Inc.
-Message-ID: <021701d89726$ed4d09b0$c7e71d10$@nexbridge.com>
+        Wed, 13 Jul 2022 22:15:51 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A01481DA6A;
+        Wed, 13 Jul 2022 19:15:49 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Ljyh81jWPz1L8wT;
+        Thu, 14 Jul 2022 10:13:12 +0800 (CST)
+Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 10:15:47 +0800
+Received: from k04.huawei.com (10.67.174.115) by
+ dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 10:15:47 +0800
+From:   Pu Lehui <pulehui@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+        Pu Lehui <pulehui@huawei.com>
+Subject: [PATCH bpf-next v2 1/3] samples: bpf: Fix cross-compiling error by using bootstrap bpftool
+Date:   Thu, 14 Jul 2022 10:46:10 +0800
+Message-ID: <20220714024612.944071-2-pulehui@huawei.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220714024612.944071-1-pulehui@huawei.com>
+References: <20220714024612.944071-1-pulehui@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: en-ca
-Thread-Index: AQOax8rq/kYLSctl3duwOPHxjLu0zAJkQfEUAKRaJqep4HjDUA==
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.115]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500019.china.huawei.com (7.185.36.180)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On July 13, 2022 10:24 AM, I wrote:
->On July 13, 2022 8:11 AM, I wrote:
->>On July 12, 2022 1:07 PM, Junio C Hamano wrote:
->>>Git v2.37.1, together with v2.30.5, v2.31.4, v2.32.3, v2.33.4,
->>>v2.34.4, v2.35.4, and
->>>v2.36.2 for older maintenance tracks, are now available at the usual places.
->>>
->>>These are to address CVE-2022-29187, where the fixes in v2.36.1 and
->>>below to address CVE-2022-24765 released earlier may not have been
->complete.
->>
->>Following are net new test failures with 2.37.1 compared with 2.37.0
->>are as follows on NonStop ia64 and x86 platforms:
->>
->>t5516-fetch-push subtests 53, 113
->>
->>t5545-push-options subtest 9
->
->Test passes when not run in Jenkins CI/CD
->
->>t5601-clone subtest 8
->
->Test passes when not run in Jenkins CI/CD
->
->>t7502-commit-porcelain subtests 20-26, 29-33, 42-47
->
->Test passes when not run in Jenkins CI/CD
->
->>t7528-signed-commit-ssh subtests 4, 5
->
->Test passes when not run in Jenkins CI/CD
->
->So it looks like a Jenkins/git test interaction is the issue here. I'm wondering
->whether running the test with </dev/null and 2>/dev/null might make a
->difference when running in Jenkins. The tty where Jenkins was started is in a
->permanently disconnected state.
->
->Mostly ignore the subtest failures, but still, would like to know why these subtests
->in particular.
+Currently, when cross compiling bpf samples, the host side cannot
+use arch-specific bpftool to generate vmlinux.h or skeleton. Since
+samples/bpf use bpftool for vmlinux.h, skeleton, and static linking
+only, we can use lightweight bootstrap version of bpftool to handle
+these, and it's always host-native.
 
-Strangely, setting stdin to /dev/null and stderr to /dev/null makes no difference in the test results. stdout is the Jenkins pipe, which is Java of course, but roughly a popen(x, "r"). I have no explanation at this point why specific tests fail - other than OpenSSH, which I know attempts to prompt if it thinks the tty is even remotely reasonable.
+Signed-off-by: Pu Lehui <pulehui@huawei.com>
+Suggested-by: Andrii Nakryiko <andrii@kernel.org>
+---
+ samples/bpf/Makefile | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 5002a5b9a7da..727da3c5879b 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -282,12 +282,10 @@ $(LIBBPF): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
+ 
+ BPFTOOLDIR := $(TOOLS_PATH)/bpf/bpftool
+ BPFTOOL_OUTPUT := $(abspath $(BPF_SAMPLES_PATH))/bpftool
+-BPFTOOL := $(BPFTOOL_OUTPUT)/bpftool
+-$(BPFTOOL): $(LIBBPF) $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
+-	    $(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ \
+-		OUTPUT=$(BPFTOOL_OUTPUT)/ \
+-		LIBBPF_OUTPUT=$(LIBBPF_OUTPUT)/ \
+-		LIBBPF_DESTDIR=$(LIBBPF_DESTDIR)/
++BPFTOOL := $(BPFTOOL_OUTPUT)/bootstrap/bpftool
++$(BPFTOOL): $(wildcard $(BPFTOOLDIR)/*.[ch] $(BPFTOOLDIR)/Makefile) | $(BPFTOOL_OUTPUT)
++	$(MAKE) -C $(BPFTOOLDIR) srctree=$(BPF_SAMPLES_PATH)/../../ 		\
++		OUTPUT=$(BPFTOOL_OUTPUT)/ bootstrap
+ 
+ $(LIBBPF_OUTPUT) $(BPFTOOL_OUTPUT):
+ 	$(call msg,MKDIR,$@)
+-- 
+2.25.1
 
