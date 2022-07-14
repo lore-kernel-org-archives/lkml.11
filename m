@@ -2,194 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 22:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9103CC43334
+	for <linux-kernel@archiver.kernel.org>; Wed, 13 Jul 2022 23:01:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229919AbiGMW5t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 18:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50966 "EHLO
+        id S229960AbiGMXB6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 19:01:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229734AbiGMW5U (ORCPT
+        with ESMTP id S229515AbiGMXB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 18:57:20 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2057.outbound.protection.outlook.com [40.107.92.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880684F66B
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 15:57:19 -0700 (PDT)
+        Wed, 13 Jul 2022 19:01:56 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2128.outbound.protection.outlook.com [40.107.92.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0748C2A95D;
+        Wed, 13 Jul 2022 16:01:54 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KRx8MtGyo3u+89hfNW8tOh/qjjuoa7DdP7YIN9aG9AjwDSDwkHoDMSBFd9OrcOgE9Aw6Z6FGkalxv+xBot3RzoWvxmuSvyaaUlNTmibwah+BNlvgc90V9cEZLHnmULyMcvZ7LlIRZQihG5q9j0GVkrMbrhxFIBd8K1qjFdhq9CL1TsEvrfSuN5am4aNidJhqCT/h3QWh5f/g0jyTwrgsQdJEaf5+/gPls1eRH4k31iIvP3iKDEcVIpnJxLlhW57mDRJPE1MAyzqGH0Np17wziIGfj3RrePOfqg5BGaevy7UIKh0p13LrhJfSfA/ZjFG7aKecRPaOc+URUVlWT7gN4g==
+ b=QeFHxk7hzETEaLEV3CWyjZNp5VdquVgDNRaViIf22cAQOG8dyEPhkKEVSmCBC65C65ovdxj9OW4I8oabzvhc1iuelOaQz1+AFq/d5xmtLfPDwSijJRtRrC0xi3BOtlKaRdm3GKrIEwAE3gU+GsdFeFSEIsRlz221qmXJkV/7uihUtuoRPBan9N1/WtfV3pdBZ95vw+UXU7dKH4vQVKn0kgQplWFyu6697uK7W2vVku72hPVELrcDfmjxKob7W5pQQ0GrM24IxdZy0UdJC8Rb/Mn9mkEyvPmAa5G076uu2r2ETGlci3ISyXcs4ntvOcnsSi6zYYXP981NXRTxnVwL5w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rZEm+UAH24b0q2b9Q+/RLJN4DBSZgEBMNp3yqlweJJ4=;
- b=f80qhZ/kh52XTwnsHSkXKT4xIBtOQZYmV31xf1Q4eVdRJqaKyUx2apZE9b7GB1koIhIRssUdNaqx/wqqMnEr4BE4WUTxeYEqT/12AVrjoHfOvuUdWoSLAO5IiwZnKJpGYpfBmd7jy/ZgsyC4WVn3nHEuDhP8uyaLRSrQijhd8f5VGPjTNMIVFHHlmHcHn8kcWhZB6l0FDdRpo2pN4CpeYT+rmA2FWUh97vYvDyb06sdRtjAjGWFJm9QFB9a6n7iv+TEBotqLpsyRYknkkT4rjiscpLEZGs0nb41mVfTNDFUcjMlOCYUvek3Ro6T2F4uWOCGkC+h1Fn6YhmhEEVIQ5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ bh=vtGO7dCmWGNJYrKCoSQ7wdH6hPdcMIvS4Vfk/PDcxXQ=;
+ b=nizVfkhQpS4K5eOCnDrgzl3zstNQOffSRLMXuDKBdUMD7SL7HcrIIUj60Wz3MEc9xkK1+bnVT/fmY05JqZUtSKiLvSZT8huII5DdSihiczvxWq4yI/JIY5EHDKIUYW5vGsZ9ddlgx4wA7Ll27Jg9myenWVSN3Xht4tSNjmC/XIHug0F+CwOPSJQHbhBNQr0ZpHaebAJd/blVFRsqhsz/SJxCH0Tlm4hsbJm/1RXQf8ZXNE38EHUQXQOkwOkQ2V7ftrY6iRs2ChYE+qFi4Bitgz2JsVqX9DFzrubd2UNY8HqZb21MaTr/Xkip6kEkmIyVjR71c0LTkQCcdc0v4KPinA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rZEm+UAH24b0q2b9Q+/RLJN4DBSZgEBMNp3yqlweJJ4=;
- b=0Ez3ThGBTYK0MEAPzWpkFPDHALSNhL6Xo6Llb066xMZsR6yJvw6gaLPOx9DoDxVOMnz6uhylJISc6xCWGLdDhERCICjXTtXP4tEZ3yY1WpUmDMKKmDr89JP4lBI5eEyzV0UHTgiI21tInVOsnepwx3hKHwzIsBzVgYSJC6ka4vo=
-Received: from BN8PR15CA0047.namprd15.prod.outlook.com (2603:10b6:408:80::24)
- by DS7PR12MB6008.namprd12.prod.outlook.com (2603:10b6:8:7f::15) with
- Microsoft SMTP Server (version=TLS1_2,
+ bh=vtGO7dCmWGNJYrKCoSQ7wdH6hPdcMIvS4Vfk/PDcxXQ=;
+ b=X+6oZqKV4NMdsea7ReOy6YV2xOrv2siYOU3H60VWw47HntvfDoNqHV7BJ4hlDrTWPlB/rzQrsn7hRknGUZjdVYoJy/aWSwaJk+SW+VU4nywDESmmyo+5eLQpb1t8OWv/Qwr/nyoWIpcRjdqapoY7hnKKH4VieX2vcuIw4PEtf3c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CY5PR10MB6021.namprd10.prod.outlook.com
+ (2603:10b6:930:3f::8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Wed, 13 Jul
- 2022 22:57:14 +0000
-Received: from BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:80:cafe::ef) by BN8PR15CA0047.outlook.office365.com
- (2603:10b6:408:80::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26 via Frontend
- Transport; Wed, 13 Jul 2022 22:57:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN8NAM11FT032.mail.protection.outlook.com (10.13.177.88) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5438.12 via Frontend Transport; Wed, 13 Jul 2022 22:57:13 +0000
-Received: from sp5-759chost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Wed, 13 Jul
- 2022 17:57:09 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC:     <joro@8bytes.org>, <robin.murphy@arm.com>, <vasant.hegde@amd.com>,
-        <ashish.kalra@amd.com>, <jon.grimm@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4 4/9] iommu/amd: Process all IVHDs before enabling IOMMU features
-Date:   Wed, 13 Jul 2022 17:56:46 -0500
-Message-ID: <20220713225651.20758-5-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
-References: <20220713225651.20758-1-suravee.suthikulpanit@amd.com>
+ 2022 23:01:51 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::712f:6916:3431:e74e%6]) with mapi id 15.20.5395.020; Wed, 13 Jul 2022
+ 23:01:50 +0000
+Date:   Wed, 13 Jul 2022 23:01:50 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Robert Marko <robert.marko@sartura.hr>
+Cc:     linus.walleij@linaro.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH 2/2] pinctrl: ocelot: fix pinconf
+Message-ID: <Ys+xTubC2iwetqYS@COLIN-DESKTOP1.localdomain>
+References: <20220713225151.1476041-1-robert.marko@sartura.hr>
+ <20220713225151.1476041-2-robert.marko@sartura.hr>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713225151.1476041-2-robert.marko@sartura.hr>
+X-ClientProxiedBy: MW4PR04CA0070.namprd04.prod.outlook.com
+ (2603:10b6:303:6b::15) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 44ed8d58-8409-45d8-ac63-08da652306a8
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6008:EE_
+X-MS-Office365-Filtering-Correlation-Id: 11c1c455-1913-42ad-d104-08da6523abb3
+X-MS-TrafficTypeDiagnostic: CY5PR10MB6021:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7s43bRthSUf4dKjLzL2flhrkLanS0GEoPcyga+VttqaSEvf++E/BpBPWo1XxBtLw4i9ATKDS0AuiSNfRddD25mcvg7XwSrg45r5z5vxCumhWNRPJ/nrE160i1DNq+UpV66dYPknx1wbaPtFDc1q+CtUNFGymZ/PR8fPFyAyUguhoL9kKmFICqduVegbYa7CFbsEsbA8W1vaYmuhyC3iwwanR8+yZR71mfHjnrJpNm3aRSrMmdg9LiL6uLgcd772yHQ8kvTAGVUFmgKwrip03JOCm2rYTTQWXMo8lPSrAQR5RxmbLXehK8L+Tww6kFfuw3eZB6iKow1FjAPlwo5GDyG5C5/v6Nqk5euW8o1lGYcHFrwePK0sx58EGhL2StcBHi718/AF7Hwp0BTAA4JjGw0ETIL94+U7UfDU9TvnBf5iDTT7hwXLye75rXhgywIaqh5DBv3jPo9Nse3HBxuLs3jxKy2QuPthu4H+e5FjbljfdGYKpbm+FQZPCdliabAdKFZX50SY2ANn55uaLCoKRNaBetCIC5W+CioslldtGFh6O4ekFH26OminisF7gmNJ72vs2hFv7kSckNGIxcteo+BPQs0Tbc9hLHAkw8TXniQaAbU4zDRh2OjPzzxZOcICVvqjKm2WI6rXt1KHIXHJ4+dp9d6Zbwg3gtyQ3UlJU4x2sgKxUXysNdAvyJgyktkDN2/uM4zPbgLT8pC3j0heFxApJc6fD6XOLfVAU027JR7LplSTfiF/Xix4hFPzlWmyvqfJMUg0/cN80BKiGpk3cYz69jZ8Na99kMfNWARZlMA3WTJqx3OlDmdWLq02ZkzPcsX/jEoA7Zx7g5grX67dwBzzVM633Gx9g2otjSJUM3Go=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(136003)(396003)(376002)(40470700004)(46966006)(36840700001)(82740400003)(186003)(16526019)(47076005)(426003)(40460700003)(81166007)(83380400001)(86362001)(54906003)(36860700001)(8676002)(2906002)(336012)(40480700001)(4326008)(70206006)(110136005)(36756003)(70586007)(2616005)(8936002)(316002)(478600001)(356005)(5660300002)(6666004)(41300700001)(1076003)(7696005)(82310400005)(44832011)(26005)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 22:57:13.5699
+X-Microsoft-Antispam-Message-Info: o/BRD/zSWE7aWdzouv8dwgQgHMHGnf2NWvOPRBTGXok+n6pB+nSCODg/Jwi1YYyD7PQRYbh2g+0SjzRHXdJ7Nr8elj9W/jYXhNkb84028WO3xdo4Td3sjZ3hBLuZGMqKqH2aP6LbP6oxC1ViXD7EB7Nk5peZPv5r3kyoIySK6dE1UYaEbD9rZV0h1iYOD4R2axvT6FsurDxLCVA/vMeUU0ID/Hyft+8ACESkdd4NUsOUltS1G04oAQb1msaga+Y9C83BgX2nyHfPuLFY9gEx1XfaZ5+k9nvH6tSkE84w9wvHBUclPpOkuU86Nl7kr6/FwigAhzZI+7WPb/wKS8TeNKlv8N3U9tYtGUgdq1Vq7SyRefsaFBtLSYLsOZAi8f37Cn47t+b5DodmUEeYPTq8c2UZwFEzsKV0NotYsuTWwW6On9a8UU/5QOD2psGoPXOClGdUMcp6q4YCU7RyiA5u95TIbnY04uNslmvty2K3Mhqxr6ASFThix+37/yG/8AB8d2abrZOHB2FgLlTRUzoSysRLsuBcEJ8svrAz99c2pQ5W5xQMlsaVcwZ/s9K02+i4giT0zWeQQA6Qb+dWvz9sY0Wp4yS+rx7KHLyg7IVNuYBd88gAVIU5EKcG5mvp43NE9D/onUituualERu5OhHbpJTzV5ZYnDlAd2Yq1LrLB2dtokqxrMtHXefzMD81ZsXyELbXyEb2/OdFdcdjGqHwFg9oqElRH4QEt6Om99CcBljSuHJSzT+bAD9ht7Pe5iDXHXHclYYKCrEUSQ1DKXWbnJAULpFWEAbrKH0//Bhgtx7BGpEDNMDzD+2CKyg4E/Pyl/gxQC6Bzu6HTC1QfSYkEg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(39830400003)(396003)(136003)(376002)(346002)(6512007)(6916009)(478600001)(41300700001)(6486002)(316002)(44832011)(966005)(26005)(6506007)(38100700002)(2906002)(4326008)(83380400001)(66476007)(5660300002)(66556008)(8676002)(66946007)(86362001)(186003)(8936002)(9686003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dlLeBlDdv3ARO6MI44x86hPIqdnxPMM1cuglBTuMmOUbaXuiCXNCrGTL4rj8?=
+ =?us-ascii?Q?XRVWzyNEAB0Z/+0a3NsL599/JUszf40ZiwocZAlmEG78QYDXQl0cE281idAf?=
+ =?us-ascii?Q?eM1Q3aW9gU6t+sV02d2pzLfkBdDDbeF8hyYuqzpIAY6CUKevGOu8QMj5MudO?=
+ =?us-ascii?Q?M32/GHzThiwQM7UL0lZJcFxumsd9VxF7XpBAGKn6N9K7hLdg0PQ1bgIx5t/Y?=
+ =?us-ascii?Q?5AEZESgheMFahmwxVr85eKBvX0XtKew+P3SKcyVQoiUN68Tuz15AbrYcc9Ds?=
+ =?us-ascii?Q?6P/DuPhmjFarLa6GdwIzddHWgb4vsyYWS1vk/qzfOapNV+T4spJ6QD3QUv3p?=
+ =?us-ascii?Q?vaaOmB/L6VcsRkidYRNj/5pt2JvGR62F35YzL9Uj7BhrJW75sWZtjBV19UUG?=
+ =?us-ascii?Q?uWz2HdDYoq5gQpyFNszB9pt4W2IAUxHczyrW1Zo6JxgeakzGYwYbpabBpFin?=
+ =?us-ascii?Q?nbTv5chAPdTZH+D9otzu3UKft+I+iw0jY6vhIKtUBW4y+9g3+94arT1WUfX7?=
+ =?us-ascii?Q?3tjqw+BQw1k3b+sKg0EaoRfgcvtDf5a/WwSLq0j0UVtoWqM3VY2axCR2hRTR?=
+ =?us-ascii?Q?eJKOAEFavPWR3tBt9po7Tgwe5lzKRCMpoFAWgXCe4MAqr9W6UlrGtqkJW846?=
+ =?us-ascii?Q?+9xthrXplBZDcyz5SE181oRJZUtIdy54SSZJiRuaDb2AjJz1Y+u5ws+N7CB0?=
+ =?us-ascii?Q?FdTNPypmRBeTDxhHN3YuH/ftrD2Zfadva4KfpkBOzULpX0Qxbwq3sL3lHEZ4?=
+ =?us-ascii?Q?UBw3sn3tZfEep5MY31Mwp3mQgZqSE99J6NCTHrOEetHqC32vsfICv9SLgrYv?=
+ =?us-ascii?Q?iaxYK5LKJioIG+U0P+bkEhyVQwBgsaqtp4iB4AtHFokjc6r0EsnTlE42UP1i?=
+ =?us-ascii?Q?XlKzqjcCUpxuHMKsoQbJmkcCbjrByG0U7aaB31oEzD8/D0gnCVL7lJgXDPo5?=
+ =?us-ascii?Q?+/oypljCXlOVOQZi+POLdcIR/WdnzF+lMt/iwiZRlfW+C5fHpCdNPWXqNE6g?=
+ =?us-ascii?Q?Ku0td1ZV8M6W0+ddSoLvyKXKjcaMRFi8H2yl8qXiOqI3hMwFFnYZlkbpaMDw?=
+ =?us-ascii?Q?uIsaxNi99ozL13nRrYpZ2qBoOQOLFSjCQFXYWL8h/kIh0vpsI8H3jKQmhukz?=
+ =?us-ascii?Q?MALWiprE+PeOtFSXqoPxOfn1L6SMScDmMKJnimmsR0w7tUTmbkNlkwKog7Pp?=
+ =?us-ascii?Q?SS039krr6wopWUznbpP5+nwAnOVGkbQ84H0cAzaI7joU8EBUQBJQ05R/NxEw?=
+ =?us-ascii?Q?w/8d5xAkn/VzleI8Jx+sJ97ckFfxdwtRsnL0+jAp9ioJGcym7X5DbgLpu5Hz?=
+ =?us-ascii?Q?Qq32XViB6MWTlog5WAOnjKaag8Ms01+2P1QLfDcUfltbKykJIIOh2QLkyvYx?=
+ =?us-ascii?Q?CCzry/DpnUGh/FfeJx0p9ZewTLAk48NoYnObzVS/cnJ6ajFc7oJ8fJ5vcv9X?=
+ =?us-ascii?Q?rx+SagDwCFbeP5aMgOaSdSeDBwuSwsoNZwyblJpJOEyfHfTs94HJUkO/N3O5?=
+ =?us-ascii?Q?YyutU420oCGH0FdXudFbK/Ytjx7r9gY1NsxQyNtgPTfUft67CSHPnd1tJzZO?=
+ =?us-ascii?Q?jin1vLE8lgpLKt1jrVpfBrlwqGcM9u2HO+ZZ2IQOqE85gC0tkUw0GZb2AE9V?=
+ =?us-ascii?Q?7w=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 11c1c455-1913-42ad-d104-08da6523abb3
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2022 23:01:50.7326
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 44ed8d58-8409-45d8-ac63-08da652306a8
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT032.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6008
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bN7CUIqBMHCekVQ33Orw1vQ3NkbqHOHzW2kvTjMqTnJKSHuALskLrwG8PxaO5Wi0HDqMwe8QfQ/YTW0LZs6OS8WQceru/HAKV74Rzv2deyg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR10MB6021
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ACPI IVRS table can contain multiple IVHD blocks. Each block contains
-information used to initialize each IOMMU instance.
+Hi Robert,
 
-Currently, init_iommu_all sequentially process IVHD block and initialize
-IOMMU instance one-by-one. However, certain features require all IOMMUs
-to be configured in the same way system-wide. In case certain IVHD blocks
-contain inconsistent information (most likely FW bugs), the driver needs
-to go through and try to revert settings on IOMMUs that have already been
-configured.
+On Thu, Jul 14, 2022 at 12:51:51AM +0200, Robert Marko wrote:
+> Commit "pinctrl: ocelot: convert pinctrl to regmap" moved to using
+> regmap_read/write, however it neglected to also carry out alignment
+> to register stride of 4.
+> 
+> This would cause the following error:
+> [    1.720873] pinctrl-ocelot 6110101e0.pinctrl: pin_config_set op failed for pin 34
+> [    1.728110] sdhci-sparx5 600800000.mmc: Error applying setting, reverse things back
+> 
+> So, regmap_read would return -EINVAL as it was being passed address
+> of the pin without stride, so for example pin 34 would end up being
+> 0x22 in hex.
+> 
+> Fix this by accouting for the stride in register address.
 
-A solution is to split IOMMU initialization into 3 phases:
+Sorry for the bug. Horaitu found this as well and recently submitted
+patches:
 
-Phase1 : Processes information of the IVRS table for all IOMMU instances.
-This allow all IVHDs to be processed prior to enabling features.
+https://patchwork.ozlabs.org/project/linux-gpio/patch/20220713193750.4079621-3-horatiu.vultur@microchip.com/
 
-Phase2 : Early feature support check on all IOMMUs (using information in
-IVHD blocks.
+The second patch in his set fixes both of these issues (reg_stride and
+max_register).
 
-Phase3 : Iterates through all IOMMU instances and enabling features.
-
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/init.c | 25 +++++++++++++++++++------
- 1 file changed, 19 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 741fee1abfc4..a0f4b5bbd98c 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1721,7 +1721,6 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 				 struct acpi_table_header *ivrs_base)
- {
- 	struct amd_iommu_pci_seg *pci_seg;
--	int ret;
- 
- 	pci_seg = get_pci_segment(h->pci_seg, ivrs_base);
- 	if (pci_seg == NULL)
-@@ -1802,6 +1801,13 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 	if (!iommu->mmio_base)
- 		return -ENOMEM;
- 
-+	return init_iommu_from_acpi(iommu, h);
-+}
-+
-+static int __init init_iommu_one_late(struct amd_iommu *iommu)
-+{
-+	int ret;
-+
- 	if (alloc_cwwb_sem(iommu))
- 		return -ENOMEM;
- 
-@@ -1823,10 +1829,6 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 	if (amd_iommu_pre_enabled)
- 		amd_iommu_pre_enabled = translation_pre_enabled(iommu);
- 
--	ret = init_iommu_from_acpi(iommu, h);
--	if (ret)
--		return ret;
--
- 	if (amd_iommu_irq_remap) {
- 		ret = amd_iommu_create_irq_domain(iommu);
- 		if (ret)
-@@ -1837,7 +1839,7 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 	 * Make sure IOMMU is not considered to translate itself. The IVRS
- 	 * table tells us so, but this is a lie!
- 	 */
--	pci_seg->rlookup_table[iommu->devid] = NULL;
-+	iommu->pci_seg->rlookup_table[iommu->devid] = NULL;
- 
- 	return 0;
- }
-@@ -1882,6 +1884,7 @@ static int __init init_iommu_all(struct acpi_table_header *table)
- 	end += table->length;
- 	p += IVRS_HEADER_LENGTH;
- 
-+	/* Phase 1: Process all IVHD blocks */
- 	while (p < end) {
- 		h = (struct ivhd_header *)p;
- 		if (*p == amd_iommu_target_ivhd_type) {
-@@ -1907,6 +1910,16 @@ static int __init init_iommu_all(struct acpi_table_header *table)
- 	}
- 	WARN_ON(p != end);
- 
-+	/* Phase 2 : Early feature support check */
-+	get_global_efr();
-+
-+	/* Phase 3 : Enabling IOMMU features */
-+	for_each_iommu(iommu) {
-+		ret = init_iommu_one_late(iommu);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.32.0
-
+> 
+> Fixes: 076d9e71bcf8 ("pinctrl: ocelot: convert pinctrl to regmap")
+> Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+> ---
+>  drivers/pinctrl/pinctrl-ocelot.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/pinctrl/pinctrl-ocelot.c b/drivers/pinctrl/pinctrl-ocelot.c
+> index 84bfbe649b67..a71145367b15 100644
+> --- a/drivers/pinctrl/pinctrl-ocelot.c
+> +++ b/drivers/pinctrl/pinctrl-ocelot.c
+> @@ -1327,7 +1327,9 @@ static int ocelot_hw_get_value(struct ocelot_pinctrl *info,
+>  	if (info->pincfg) {
+>  		u32 regcfg;
+>  
+> -		ret = regmap_read(info->pincfg, pin, &regcfg);
+> +		ret = regmap_read(info->pincfg,
+> +				  pin * regmap_get_reg_stride(info->pincfg),
+> +				  &regcfg);
+>  		if (ret)
+>  			return ret;
+>  
+> @@ -1359,14 +1361,18 @@ static int ocelot_pincfg_clrsetbits(struct ocelot_pinctrl *info, u32 regaddr,
+>  	u32 val;
+>  	int ret;
+>  
+> -	ret = regmap_read(info->pincfg, regaddr, &val);
+> +	ret = regmap_read(info->pincfg,
+> +			  regaddr * regmap_get_reg_stride(info->pincfg),
+> +			  &val);
+>  	if (ret)
+>  		return ret;
+>  
+>  	val &= ~clrbits;
+>  	val |= setbits;
+>  
+> -	ret = regmap_write(info->pincfg, regaddr, val);
+> +	ret = regmap_write(info->pincfg,
+> +			   regaddr * regmap_get_reg_stride(info->pincfg),
+> +			   val);
+>  
+>  	return ret;
+>  }
+> -- 
+> 2.36.1
+> 
