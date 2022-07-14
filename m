@@ -2,91 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E40CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 968DAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:17:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237993AbiGNJR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37600 "EHLO
+        id S238139AbiGNJRi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:17:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238044AbiGNJRF (ORCPT
+        with ESMTP id S238026AbiGNJRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:17:05 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52C313E8A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:17 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id bp17so1791469lfb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TRFeXXTXwzOUXF1n3l5jU1GT6K4HDgLulMkCIGzGeHI=;
-        b=fZsx0Aa7TgK5AluPUxwrimZsRFlg/bN/JQ3buBRmMKH7eXQ/rZgxoNJwhpcGRuT91j
-         l8e8bFAkRyQe+ArrN+4WfbKUSbS8LooXkofNij6ydXL+2rMfkGtQI+xGb8WVDJYCJC4K
-         YlzZxl/TytxnzYuA24vcut2uPFIb3Nr575WHIFYfMYJE204kkwMPY/b4fueAEQkLTaYk
-         QaP3yQQqoRa74sszy7p5riXuwRTfe13MFlml/uEayAJH0aGFhdiODCvG2tkzCer7R28e
-         0bvYEcbNex+mCmogMtlLzVZx9QrSkzNQQClf8Tn0Jaai+Ajg+WWNRXMe1lfiP9ey71pq
-         Jq1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TRFeXXTXwzOUXF1n3l5jU1GT6K4HDgLulMkCIGzGeHI=;
-        b=MVdLlmlSGM0A6i3dGrC5WUgGcwQMFSSqE3ARxTidS7HwYz5QdLgdcyv6lVcm+/KI2E
-         g0wZcZnCLJxNHiQVhjP8JsO/hz2Y1akNvDb394+0LOGJA6MP+ncT/hUIUdw+fMebNRya
-         UYuA0kAoHbjTV2Ak5XTiaDiPOmSfWOeS5ygUzTAldx1uQBMy5Ureo55YJuRc2tQLczE1
-         aXa5Mn1Tmt6T+UyDWvPql416fsgBw4wDVg6cB9Sda2+IaEl5h7lyO55tH9cgcxleIXpb
-         qrrYpC+BA2iI80fl3s6wu0kWZ8sv5Wj5ynUUN8rTwyo+7SsJvodMk5Fkpn8zKewzYPjW
-         engQ==
-X-Gm-Message-State: AJIora9ragXAzOkV0Q4uEDkzB+nUYo91Hsy3MusHVIJaw5BP9Vsl42pW
-        oQ0IGwFBUGjDf929NYBe2yabTw==
-X-Google-Smtp-Source: AGRyM1sC2lRYbWIiCDX906wuVnasYpRy8GgAZP4DK6DJ+DK3ztwsNKcilXJ/9nV2DA3dsX1mNCXfdA==
-X-Received: by 2002:a19:6d09:0:b0:481:3c54:ad52 with SMTP id i9-20020a196d09000000b004813c54ad52mr4886048lfc.393.1657790106277;
-        Thu, 14 Jul 2022 02:15:06 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id s5-20020a056512214500b0047255d2111csm252203lfr.75.2022.07.14.02.15.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:15:05 -0700 (PDT)
-Message-ID: <f9bddc6f-faec-01a2-55b7-eab2740120f8@linaro.org>
-Date:   Thu, 14 Jul 2022 11:15:03 +0200
+        Thu, 14 Jul 2022 05:17:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52A8348CA7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657790077;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=P8mgjKFqX7MmZ5KvbYN2e1kDN0MosrE9AegwpzTRGWc=;
+        b=HgRho9GWmvlSXiJV6phHazk9E5YWP7rjpO7FF2QrI+e1nX+DtzSTFV1vzlz+IdxNr8dgil
+        of2IbuNFmr/38qNjXxRKc9OLkk9BGvQXVR4YEqPwd+cUFcxcKo1rKUQQ73elj1WJ9NbF3R
+        jgYLH6Zo8uG0aA3wis4JtXUkDle0V40=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-296-caoBoTzpN6-Sw7Xe-C0ZjQ-1; Thu, 14 Jul 2022 05:14:26 -0400
+X-MC-Unique: caoBoTzpN6-Sw7Xe-C0ZjQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 62490802E5C;
+        Thu, 14 Jul 2022 09:14:26 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 074882166B26;
+        Thu, 14 Jul 2022 09:14:23 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 22/25] KVM: nVMX: Always set required-1 bits of pinbased_ctls to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR
+Date:   Thu, 14 Jul 2022 11:13:24 +0200
+Message-Id: <20220714091327.1085353-23-vkuznets@redhat.com>
+In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 12/30] dt-bindings: phy: add QMP PCIe PHY schema
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-13-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707134725.3512-13-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/2022 15:47, Johan Hovold wrote:
-> The QMP PHY DT schema is getting unwieldy. Break out the PCIe PHY
-> binding in a separate file.
-> 
-> Add an example node based on a cleaned up version of sm8250.dtsi.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Similar to exit_ctls_low, entry_ctls_low, procbased_ctls_low,
+pinbased_ctls_low should be set to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR
+and not host's MSR_IA32_VMX_PINBASED_CTLS value |=
+PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR.
 
+The commit eabeaaccfca0 ("KVM: nVMX: Clean up and fix pin-based
+execution controls") which introduced '|=' doesn't mention anything
+about why this is needed, the change seems rather accidental.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Note: normally, required-1 portion of MSR_IA32_VMX_PINBASED_CTLS should
+be equal to PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR so no behavioral change
+is expected, however, it is (in theory) possible to observe something
+different there when e.g. KVM is running as a nested hypervisor. Hope
+this doesn't happen in practice.
 
+Reported-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/vmx/nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index dcf3ee645212..09654d5c2144 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -6586,7 +6586,7 @@ void nested_vmx_setup_ctls_msrs(struct nested_vmx_msrs *msrs, u32 ept_caps)
+ 	rdmsr(MSR_IA32_VMX_PINBASED_CTLS,
+ 		msrs->pinbased_ctls_low,
+ 		msrs->pinbased_ctls_high);
+-	msrs->pinbased_ctls_low |=
++	msrs->pinbased_ctls_low =
+ 		PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR;
+ 	msrs->pinbased_ctls_high &=
+ 		PIN_BASED_EXT_INTR_MASK |
+-- 
+2.35.3
+
