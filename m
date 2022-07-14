@@ -2,98 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA544C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:48:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240507AbiGNQrl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42890 "EHLO
+        id S240050AbiGNQsZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240501AbiGNQrV (ORCPT
+        with ESMTP id S235187AbiGNQsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:47:21 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459E119039;
-        Thu, 14 Jul 2022 09:45:30 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id z23so4435614eju.8;
-        Thu, 14 Jul 2022 09:45:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hhxIWNbzrgE/4mMvH3ENhNTONUeqoY/2MuWDy67vgak=;
-        b=JeRIQYogWxTP7m+CyHQWOmmYu9LcGJBf9gdIglPrxd7QCli6YzRtV9SUWnPcaDcUfs
-         dtjfW8wjbQNPUNuePp7TDaE+ApuVYMSI2yKVcOMMdShGqwmRJKcfIbSUziOTv41muYIM
-         JwFHjRnw3YdHIB/aJbSmn1CiYFLsu3HcC8EhTt4dXCdnSeBkdn6MktdFcxwjPZYFVr8Q
-         jvrQc2pHoVLVO29N3o0zZUvRi8oIPfuYV1kfOx0IK1ksOl8lin/Lwb7fYJI8Wk0Av0dC
-         JIU9pcuR9EH6ai3CYiGvLjMwiL2KmF6NtjvcWTSdO2RZIOffY7cHrqbSotcKD5KNNLuW
-         DXyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=hhxIWNbzrgE/4mMvH3ENhNTONUeqoY/2MuWDy67vgak=;
-        b=c4I7nqtNI/40zKJP71Pz/AM1LkttcaRo7hO6QqsrkiUfMVeSgKcqShO8vNY9ozKiVG
-         7gYTJ3ItcOg5jeSTOzOcfwJ1JyErIq11nROCLbs1tw26aT75bzVg2Nz/rtcDyDDVpzGF
-         qZCvyJ5KAzunQIDlUEirYzLl01QzZaYEJWtT/FlZQcfX5HW1tMmzzhORRj0/2FRyi5wU
-         NSrPDX9OYSnCwilCutF1v4ypFiAie95dBq6JGDlT1loP2b2d+OBW0n5TUEmJuCpC4/KV
-         PhaF4A8HaScGYxrybTyNlgaAgUkJi1isAk6brlwjfPS6xChw5r3d091m/auhc1jhPE24
-         jprQ==
-X-Gm-Message-State: AJIora/smS1Rh9kG4BuLVBTmwpQP1QBwuseRcT3aXs2UAm2sHDqXDNKh
-        cXqcV2ivy35uwm2OHuUOhXBTlJpdsIc=
-X-Google-Smtp-Source: AGRyM1tqOzj/60GEr+33fLXoqzb/CRFI3uqNFX7HBU77x45YOmmBmz+qwFRTOZ3e2n3ukqWQe2Q/jw==
-X-Received: by 2002:a17:907:2854:b0:72b:8f44:26a3 with SMTP id el20-20020a170907285400b0072b8f4426a3mr9566677ejc.96.1657817128297;
-        Thu, 14 Jul 2022 09:45:28 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id t10-20020a05640203ca00b0043a26e3db72sm1341586edw.54.2022.07.14.09.45.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 09:45:27 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <bc2c1af3-33ec-d97e-f604-12a991c7cd5e@redhat.com>
-Date:   Thu, 14 Jul 2022 18:45:25 +0200
+        Thu, 14 Jul 2022 12:48:06 -0400
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DF26E8AE
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:46:01 -0700 (PDT)
+Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
+         client-signature RSA-PSS (2048 bits) client-digest SHA256)
+        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
+        by mx0.riseup.net (Postfix) with ESMTPS id 4LkL2f73xZz9svP;
+        Thu, 14 Jul 2022 16:45:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1657817134; bh=oTt/xCCD/UUmSHwReWaxrUI1n297jYtleCZ9PTN2bMw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=oikR8EA/PoKgRr+eQggjmUFyAVPka3BT4fG06Rei9Sqi8g2JdsxmT1tXPLUaSS7kW
+         se5emkQw1QzmgahtP+fX73LwM8uJAfV7bC1VAtmLEGKV0FaHwbXIzzLPuNTwE5tyJ2
+         Z2waUMi0utT9UzX3ql1mJMZQkgw0dcoxkf4uzMjc=
+X-Riseup-User-ID: 78BA2B3056E721CAACDA863D27ED1DF81F1CA3751B3B5D38A9AACD4C31E50681
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4LkL2X4Zf5z5vW1;
+        Thu, 14 Jul 2022 16:45:24 +0000 (UTC)
+From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+To:     Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Dmytro Laktyushkin <Dmytro.Laktyushkin@amd.com>,
+        Aurabindo Pillai <aurabindo.pillai@amd.com>
+Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        mwen@igalia.com, andrealmeid@riseup.net,
+        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com,
+        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
+Subject: [PATCH 02/12] drm/amd/display: Change get_pipe_idx function scope
+Date:   Thu, 14 Jul 2022 13:44:57 -0300
+Message-Id: <20220714164507.561751-2-mairacanal@riseup.net>
+In-Reply-To: <20220714164507.561751-1-mairacanal@riseup.net>
+References: <20220714164507.561751-1-mairacanal@riseup.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 0/5] KVM: x86: Clean up rmap zap helpers
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220712015558.1247978-1-seanjc@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220712015558.1247978-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/12/22 03:55, Sean Christopherson wrote:
-> Clean up the rmap helpers (mostly renames) to yield a more coherent set of
-> APIs, and to purge the irritating and inconsistent "rmapp" (p is for pointer)
-> nomenclature.
-> 
-> Patch 1 is a tangentially related fix for a benign bug.
-> 
-> Sean Christopherson (5):
->    KVM: x86/mmu: Return a u64 (the old SPTE) from
->      mmu_spte_clear_track_bits()
->    KVM: x86/mmu: Rename rmap zap helpers to better show relationships
->    KVM: x86/mmu: Remove underscores from __pte_list_remove()
->    KVM: x86/mmu: Use innermost rmap zap helper when recycling rmaps
->    KVM: x86/mmu: Drop the "p is for pointer" from rmap helpers
-> 
->   arch/x86/kvm/mmu/mmu.c | 73 +++++++++++++++++++++---------------------
->   1 file changed, 36 insertions(+), 37 deletions(-)
-> 
-> 
-> base-commit: b9b71f43683ae9d76b0989249607bbe8c9eb6c5c
+Turn previously global function into a static function as it is not used
+outside the file.
 
-I'm not sure I dig the ____, I'll take a closer look tomorrow or next 
-week since it's dinner time here.
+Signed-off-by: Maíra Canal <mairacanal@riseup.net>
+---
+ drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c | 2 +-
+ drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.h | 1 -
+ 2 files changed, 1 insertion(+), 2 deletions(-)
 
-I'm pushing what you and I collected over the past 3 weeks, for now I 
-only checked that it compiles.
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+index 39f93072b5e0..c5a0a3649e9a 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.c
+@@ -251,7 +251,7 @@ unsigned int get_total_surface_size_in_mall_bytes(
+ 	return size;
+ }
+ 
+-unsigned int get_pipe_idx(struct display_mode_lib *mode_lib, unsigned int plane_idx)
++static unsigned int get_pipe_idx(struct display_mode_lib *mode_lib, unsigned int plane_idx)
+ {
+ 	int pipe_idx = -1;
+ 	int i;
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.h b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.h
+index 47b149d4bfcf..6e61b5382361 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.h
++++ b/drivers/gpu/drm/amd/display/dc/dml/display_mode_vba.h
+@@ -165,7 +165,6 @@ unsigned int get_total_surface_size_in_mall_bytes(
+ 		struct display_mode_lib *mode_lib,
+ 		const display_e2e_pipe_params_st *pipes,
+ 		unsigned int num_pipes);
+-unsigned int get_pipe_idx(struct display_mode_lib *mode_lib, unsigned int plane_idx);
+ 
+ bool get_is_phantom_pipe(struct display_mode_lib *mode_lib,
+ 		const display_e2e_pipe_params_st *pipes,
+-- 
+2.36.1
 
-Paolo
