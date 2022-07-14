@@ -2,75 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E62BCCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237777AbiGNJpe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:45:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
+        id S237554AbiGNJpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:45:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238446AbiGNJpO (ORCPT
+        with ESMTP id S238405AbiGNJp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:45:14 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303C22982B;
-        Thu, 14 Jul 2022 02:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=07oUEKHSzm+NLpMZQXlziUA9naI9SGuvr9Rc9aLt8XE=;
-        t=1657791912; x=1659001512; b=V/fjWiVYh2fLZwviFs5feSv7Uwyq5bSbkmUBMxq+4k5s2Ur
-        7MO3xTQuIm+pWTpTcSo3r3MTtDdwrTvhhKhoimhMy1D4aoB1p4Jkc8WAM1PaTIeCQ/MYdl4iX29Wc
-        t+O4zy2lnmzgQw9yBynt3AamfQExS/5QMfCpTIIDkqRxAIitZLJ+8PS4kBOupD9xmLLLeljVBvT1k
-        K0ZteVPCYrLUNNs9SsV01Kqx8Y/17K1Q0kVk0kziRDhTp0AeJItX2VGBn2jzo9slCpycEVhkVrrCZ
-        FguVmzVX9t8e489IIfDzCb5WEC0Ay3Zn9QA5V1GhHQp8Y9/ZkOb2BGjFNRlFgyRQ==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oBvP5-00Fa1N-Ix;
-        Thu, 14 Jul 2022 11:45:03 +0200
-Message-ID: <7cebf20083d2464e5f1467a406cda583ae2750a0.camel@sipsolutions.net>
-Subject: Re: [PATCH] p54: add missing parentheses in p54_flush()
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        Christian Lamparter <chunkeey@googlemail.com>
-Cc:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Date:   Thu, 14 Jul 2022 11:45:02 +0200
-In-Reply-To: <20220714091741.90747-1-subkhankulov@ispras.ru>
-References: <20220714091741.90747-1-subkhankulov@ispras.ru>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+        Thu, 14 Jul 2022 05:45:29 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E9C140B7;
+        Thu, 14 Jul 2022 02:45:27 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJImAIl_1657791878;
+Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJImAIl_1657791878)
+          by smtp.aliyun-inc.com;
+          Thu, 14 Jul 2022 17:45:24 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 2/6] net/smc: optimize for smc_sndbuf_sync_sg_for_device and smc_rmb_sync_sg_for_cpu
+Date:   Thu, 14 Jul 2022 17:44:01 +0800
+Message-Id: <1657791845-1060-3-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-14 at 12:17 +0300, Rustam Subkhankulov wrote:
-> The assignment of the value to the variable total in the loop
-> condition must be enclosed in additional parentheses, since otherwise,
-> in accordance with the precedence of the operators, the conjunction
-> will be performed first, and only then the assignment.
->=20
-> Due to this error, a warning later in the function after the loop may
-> not occur in the situation when it should.
->=20
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->=20
-> Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-> Fixes: d3466830c165 ("p54: move under intersil vendor directory")
->=20
+From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
 
-That fixes can't be right, it just moved the code.
+Some CPU, such as Xeon, can guarantee DMA cache coherency.
+So it is no need to use dma sync APIs to flush cache on such CPUs.
+In order to avoid calling dma sync APIs on the IO path, use the
+dma_need_sync to check whether smc_buf_desc needs dma sync when
+creating smc_buf_desc.
 
-johannes
+Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+---
+ net/smc/smc_core.c |  8 ++++++++
+ net/smc/smc_core.h |  1 +
+ net/smc/smc_ib.c   | 29 +++++++++++++++++++++++++++++
+ net/smc/smc_ib.h   |  2 ++
+ 4 files changed, 40 insertions(+)
+
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 1faa0cb..fa3a7a8 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -2016,6 +2016,9 @@ static int smcr_buf_map_link(struct smc_buf_desc *buf_desc, bool is_rmb,
+ 		goto free_table;
+ 	}
+ 
++	buf_desc->is_dma_need_sync |=
++		smc_ib_is_sg_need_sync(lnk, buf_desc) << lnk->link_idx;
++
+ 	/* create a new memory region for the RMB */
+ 	if (is_rmb) {
+ 		rc = smc_ib_get_memory_region(lnk->roce_pd,
+@@ -2234,6 +2237,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 		/* check for reusable slot in the link group */
+ 		buf_desc = smc_buf_get_slot(bufsize_short, lock, buf_list);
+ 		if (buf_desc) {
++			buf_desc->is_dma_need_sync = 0;
+ 			SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
+ 			SMC_STAT_BUF_REUSE(smc, is_smcd, is_rmb);
+ 			break; /* found reusable slot */
+@@ -2292,6 +2296,8 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+ 
+ void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn)
+ {
++	if (!conn->sndbuf_desc->is_dma_need_sync)
++		return;
+ 	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
+ 	    !smc_link_active(conn->lnk))
+ 		return;
+@@ -2302,6 +2308,8 @@ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn)
+ {
+ 	int i;
+ 
++	if (!conn->rmb_desc->is_dma_need_sync)
++		return;
+ 	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
+ 		return;
+ 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index c441dfe..46ddec5 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -180,6 +180,7 @@ struct smc_buf_desc {
+ 					/* mem region registered */
+ 			u8		is_map_ib[SMC_LINKS_PER_LGR_MAX];
+ 					/* mem region mapped to lnk */
++			u8		is_dma_need_sync;
+ 			u8		is_reg_err;
+ 					/* buffer registration err */
+ 		};
+diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+index dcda416..60e5095 100644
+--- a/net/smc/smc_ib.c
++++ b/net/smc/smc_ib.c
+@@ -729,6 +729,29 @@ int smc_ib_get_memory_region(struct ib_pd *pd, int access_flags,
+ 	return 0;
+ }
+ 
++bool smc_ib_is_sg_need_sync(struct smc_link *lnk,
++			    struct smc_buf_desc *buf_slot)
++{
++	struct scatterlist *sg;
++	unsigned int i;
++	bool ret = false;
++
++	/* for now there is just one DMA address */
++	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
++		    buf_slot->sgt[lnk->link_idx].nents, i) {
++		if (!sg_dma_len(sg))
++			break;
++		if (dma_need_sync(lnk->smcibdev->ibdev->dma_device,
++				  sg_dma_address(sg))) {
++			ret = true;
++			goto out;
++		}
++	}
++
++out:
++	return ret;
++}
++
+ /* synchronize buffer usage for cpu access */
+ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
+ 			    struct smc_buf_desc *buf_slot,
+@@ -737,6 +760,9 @@ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
+ 	struct scatterlist *sg;
+ 	unsigned int i;
+ 
++	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
++		return;
++
+ 	/* for now there is just one DMA address */
+ 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
+ 		    buf_slot->sgt[lnk->link_idx].nents, i) {
+@@ -757,6 +783,9 @@ void smc_ib_sync_sg_for_device(struct smc_link *lnk,
+ 	struct scatterlist *sg;
+ 	unsigned int i;
+ 
++	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
++		return;
++
+ 	/* for now there is just one DMA address */
+ 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
+ 		    buf_slot->sgt[lnk->link_idx].nents, i) {
+diff --git a/net/smc/smc_ib.h b/net/smc/smc_ib.h
+index 5d8b49c..03429567 100644
+--- a/net/smc/smc_ib.h
++++ b/net/smc/smc_ib.h
+@@ -102,6 +102,8 @@ void smc_ib_buf_unmap_sg(struct smc_link *lnk,
+ int smc_ib_get_memory_region(struct ib_pd *pd, int access_flags,
+ 			     struct smc_buf_desc *buf_slot, u8 link_idx);
+ void smc_ib_put_memory_region(struct ib_mr *mr);
++bool smc_ib_is_sg_need_sync(struct smc_link *lnk,
++			    struct smc_buf_desc *buf_slot);
+ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
+ 			    struct smc_buf_desc *buf_slot,
+ 			    enum dma_data_direction data_direction);
+-- 
+1.8.3.1
+
