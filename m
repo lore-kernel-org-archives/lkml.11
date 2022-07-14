@@ -2,121 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2E5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3654C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236180AbiGNE3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
+        id S236732AbiGNE3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:29:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235631AbiGNE2O (ORCPT
+        with ESMTP id S235769AbiGNE20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:28:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E36030F57;
-        Wed, 13 Jul 2022 21:24:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0851661E1B;
-        Thu, 14 Jul 2022 04:24:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36814C36AE3;
-        Thu, 14 Jul 2022 04:24:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772679;
-        bh=hrhyR0PquUIdfLfSQKpeMvCnSErNrBrDbTXMT4JsZmQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eHyFDctA9vgrTxoX/rnxYK77gNN2Vg3R1hKF40KLoWpYzA5d33CupyKRuSfWxwY2r
-         3zVOqcphBvQnAnw4tPuLXAYl/3eG1H6//eOkhTWctAFLqZpk+jUimue0MP6Ld42oh6
-         4r4f2Ob7/uWyAe7Cyh9VPaYZIR6f8stispTine9XMAvQ/HxY634+AfwiwtueuveYKG
-         8I7tdpzJUweQWAYWFike0vKpiuIkEfmnM/+AtTR91IM9guu+oVke7E5UWJnICZZJKl
-         79jWwkOnFnUAm7P2lnzqbMhcBEG7oDq60aGiVoB/BFkF3aK9dR6F20BTXN4rTy7IJk
-         Ebr+6O4gTj8tw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 04/28] ASoC: rt711-sdca-sdw: fix calibrate mutex initialization
-Date:   Thu, 14 Jul 2022 00:24:05 -0400
-Message-Id: <20220714042429.281816-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
+        Thu, 14 Jul 2022 00:28:26 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3871730F79
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:42 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772679;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uxYP30zRX3+087a7ADNvtSYGr7OYdBOK6+qjv5apzug=;
+        b=sGAgNWl+QsPuHrDIKzPoBBx6HVHedRs64JXAKDuyH1mhvAaIvkUIwJIwreEZXvxkTNVElP
+        3c0Z6BUl/ANe58vB+qbj24Xi8DpYV0IC5ddQGxxDvHrQM+RKyM/pJ3oGzdVa9KdApisg37
+        sWcmVrsOAyW2EBgafjcV6q6BrUuw+SU=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 2/8] mm/hugetlb: make pud_huge() and follow_huge_pud() aware of non-present pud entry
+Date:   Thu, 14 Jul 2022 13:24:14 +0900
+Message-Id: <20220714042420.1847125-3-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit ed0a7fb29c9fd4f53eeb37d1fe2354df7a038047 ]
+follow_pud_mask() does not support non-present pud entry now.  As long as
+I tested on x86_64 server, follow_pud_mask() still simply returns
+no_page_table() for non-present_pud_entry() due to pud_bad(), so no severe
+user-visible effect should happen.  But generally we should call
+follow_huge_pud() for non-present pud entry for 1GB hugetlb page.
 
-In codec driver bind/unbind test, the following warning is thrown:
+Update pud_huge() and follow_huge_pud() to handle non-present pud entries.
+The changes are similar to previous works for pud entries commit e66f17ff7177
+("mm/hugetlb: take page table lock in follow_huge_pmd()") and commit
+cbef8478bee5 ("mm/hugetlb: pmd_huge() returns true for non-present hugepage").
 
-DEBUG_LOCKS_WARN_ON(lock->magic != lock)
-...
-[  699.182495]  rt711_sdca_jack_init+0x1b/0x1d0 [snd_soc_rt711_sdca]
-[  699.182498]  rt711_sdca_set_jack_detect+0x3b/0x90 [snd_soc_rt711_sdca]
-[  699.182500]  snd_soc_component_set_jack+0x24/0x50 [snd_soc_core]
-
-A quick check in the code shows that the 'calibrate_mutex' used by
-this driver are not initialized at probe time. Moving the
-initialization to the probe removes the issue.
-
-BugLink: https://github.com/thesofproject/linux/issues/3644
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
 ---
- sound/soc/codecs/rt711-sdca-sdw.c | 3 +++
- sound/soc/codecs/rt711-sdca.c     | 2 +-
- 2 files changed, 4 insertions(+), 1 deletion(-)
+v2 -> v3:
+- fixed typos in subject and description,
+- added comment on pud_huge(),
+- added comment about fallback for hwpoisoned entry,
+- updated initial check about FOLL_{PIN,GET} flags.
+---
+ arch/x86/mm/hugetlbpage.c |  8 +++++++-
+ mm/hugetlb.c              | 32 ++++++++++++++++++++++++++++++--
+ 2 files changed, 37 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/codecs/rt711-sdca-sdw.c b/sound/soc/codecs/rt711-sdca-sdw.c
-index c722a2b0041f..a085b2f530aa 100644
---- a/sound/soc/codecs/rt711-sdca-sdw.c
-+++ b/sound/soc/codecs/rt711-sdca-sdw.c
-@@ -373,6 +373,9 @@ static int rt711_sdca_sdw_remove(struct sdw_slave *slave)
- 	if (rt711->first_hw_init)
- 		pm_runtime_disable(&slave->dev);
- 
-+	mutex_destroy(&rt711->calibrate_mutex);
-+	mutex_destroy(&rt711->disable_irq_lock);
-+
- 	return 0;
+diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
+index 509408da0da1..6b3033845c6d 100644
+--- a/arch/x86/mm/hugetlbpage.c
++++ b/arch/x86/mm/hugetlbpage.c
+@@ -30,9 +30,15 @@ int pmd_huge(pmd_t pmd)
+ 		(pmd_val(pmd) & (_PAGE_PRESENT|_PAGE_PSE)) != _PAGE_PRESENT;
  }
  
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 2e992589f1e4..f041e036b05f 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1411,6 +1411,7 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
- 	rt711->regmap = regmap;
- 	rt711->mbq_regmap = mbq_regmap;
++/*
++ * pud_huge() returns 1 if @pud is hugetlb related entry, that is normal
++ * hugetlb entry or non-present (migration or hwpoisoned) hugetlb entry.
++ * Otherwise, returns 0.
++ */
+ int pud_huge(pud_t pud)
+ {
+-	return !!(pud_val(pud) & _PAGE_PSE);
++	return !pud_none(pud) &&
++		(pud_val(pud) & (_PAGE_PRESENT|_PAGE_PSE)) != _PAGE_PRESENT;
+ }
  
-+	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
+ #ifdef CONFIG_HUGETLB_PAGE
+diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+index cf8ccee7654c..77119d93a0f9 100644
+--- a/mm/hugetlb.c
++++ b/mm/hugetlb.c
+@@ -6978,10 +6978,38 @@ struct page * __weak
+ follow_huge_pud(struct mm_struct *mm, unsigned long address,
+ 		pud_t *pud, int flags)
+ {
+-	if (flags & (FOLL_GET | FOLL_PIN))
++	struct page *page = NULL;
++	spinlock_t *ptl;
++	pte_t pte;
++
++	if (WARN_ON_ONCE(flags & FOLL_PIN))
+ 		return NULL;
  
- 	/*
-@@ -1549,7 +1550,6 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
- 			rt711_sdca_jack_detect_handler);
- 		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
- 			rt711_sdca_btn_check_handler);
--		mutex_init(&rt711->calibrate_mutex);
- 	}
+-	return pte_page(*(pte_t *)pud) + ((address & ~PUD_MASK) >> PAGE_SHIFT);
++retry:
++	ptl = huge_pte_lock(hstate_sizelog(PUD_SHIFT), mm, (pte_t *)pud);
++	if (!pud_huge(*pud))
++		goto out;
++	pte = huge_ptep_get((pte_t *)pud);
++	if (pte_present(pte)) {
++		page = pud_page(*pud) + ((address & ~PUD_MASK) >> PAGE_SHIFT);
++		if (WARN_ON_ONCE(!try_grab_page(page, flags))) {
++			page = NULL;
++			goto out;
++		}
++	} else {
++		if (is_hugetlb_entry_migration(pte)) {
++			spin_unlock(ptl);
++			__migration_entry_wait(mm, (pte_t *)pud, ptl);
++			goto retry;
++		}
++		/*
++		 * hwpoisoned entry is treated as no_page_table in
++		 * follow_page_mask().
++		 */
++	}
++out:
++	spin_unlock(ptl);
++	return page;
+ }
  
- 	/* calibration */
+ struct page * __weak
 -- 
-2.35.1
+2.25.1
 
