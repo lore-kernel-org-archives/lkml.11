@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:10:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239164AbiGNMKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
+        id S238675AbiGNMLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:11:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238644AbiGNMJy (ORCPT
+        with ESMTP id S237555AbiGNMLC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:09:54 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A931013
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:08:50 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id w12-20020a05660201cc00b0067bcf00282dso628445iot.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:08:50 -0700 (PDT)
+        Thu, 14 Jul 2022 08:11:02 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 087E361705
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:09:21 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id e9-20020a056e020b2900b002dc6c27849cso991618ilu.8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:09:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=WugDegGD5tYpRsXUE6iQPO7lN4FJAzAu9piPnbZrWMo=;
-        b=Mm67UoTBkLG4L1Bmm4hVcZ2zyh1ItreddcOumIQQn9Y+mPaMtV+BLZc8IWoUkMmhpS
-         /G/1gV4kfG7R5j6fA9IS3SIdwQtA0i4JZU09tyfjyXDeZYY5npNfTKZ4Smgf34gHjCVW
-         325dkOV3guC8CuF5WbUOMCVn+FCP6ZgvQkwfQ0GtsGnqVnN8a36NsDl/aAr/Cxl4FKhF
-         P2Kjh6rfxoA0pQfv2Uu3yX1vUPt5PDVSBA/NsOF0LxVcA3A4dBkb/V0Wfg7fqdPPm2im
-         1M5XDhDoQtf/F+4rvcV9ybR9Tkrdd7PJX4Q4TUx51yp9CYFMtdY9eisYxW5NWLukiOyJ
-         Lhrw==
-X-Gm-Message-State: AJIora/S50OfY8dH2KrmMpqrpFDL3pB2TmNwLbfCyRxw+cipJvSlz3Lo
-        DFw7STzic2FMh4h9TEJzZAKCJV3oXWhCtjS9a/KZt65oLBGr
-X-Google-Smtp-Source: AGRyM1stg3QufNq27r18ZDT8evXqsYrJV2PTeShtDN38PD5PDQy3L+MQLWCRjezDhgltpGSXqJ9Uhm394v5jnuq/E6I52bB9JU/U
+        bh=t/JWl1auGyP7dRyKdtQPk8LnN5k4DzbxUNSFwRTHcRc=;
+        b=J3YN/lywk/V4ZMpbuwTguHNe85TZ0fpL5wbQajX4l7FJ+7gaPXX+5zugfG6i6YJpHD
+         aBUczrAR8dve1Z8kXs12sDUg6oaB8l38Tdwc6cw08rn+Vqjw62uejFgGZRRv9NtEqzDJ
+         /cGrlZLZbDxh8ZCXKp15SNjVkeRlgCr4CI7sTxP1Lgfl2ydAM20g7+rEtd4AJBt6CtA+
+         Ib9BDSzK9WmJ+8PaJP8oyN7nNuwDbxWuk8pYqqn4YZ2guWm84hEZif9ngWPpDtkRbSde
+         n64Cqgl6d2FMVTtSIgd03n4Vdjgi/KXznNlrnVjqH/wWNqlclHctOLURHzhK9yLtm31M
+         JZWQ==
+X-Gm-Message-State: AJIora/vVnjLoafroZLnnPncE9m4brdb3pxRvl3AdySdPpu2xPoGqt7T
+        2jGcyMtqlp39nHb8MJ4TDNpWMDZNAFqkaA2mYSTZ4Baudo7z
+X-Google-Smtp-Source: AGRyM1sTlC5YxlWad4CIcwPM0BAjCa6kn9Q4apd6Q8FX/P5y4kUB3LiO16/GSg+78SxoJZg3a6S6HaTkduM5iE0i1VJFzRxvXxhf
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:41a:b0:33f:8881:888c with SMTP id
- q26-20020a056638041a00b0033f8881888cmr4039712jap.110.1657800505951; Thu, 14
- Jul 2022 05:08:25 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 05:08:25 -0700
+X-Received: by 2002:a02:940a:0:b0:33c:b3f9:3e7f with SMTP id
+ a10-20020a02940a000000b0033cb3f93e7fmr4586868jai.287.1657800561085; Thu, 14
+ Jul 2022 05:09:21 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 05:09:21 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000044115e05e3c2c2fb@google.com>
-Subject: [syzbot] WARNING in ext4_iomap_begin
-From:   syzbot <syzbot+c97a5f91bbd6de05e1c2@syzkaller.appspotmail.com>
-To:     adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tytso@mit.edu
+Message-ID: <0000000000008d55fe05e3c2c57c@google.com>
+Subject: [syzbot] WARNING in r8712_usb_write_mem/usb_submit_urb
+From:   syzbot <syzbot+6716435e45f2b68f32fa@syzkaller.appspotmail.com>
+To:     Larry.Finger@lwfinger.net, dan.carpenter@oracle.com,
+        florian.c.schilhabel@googlemail.com, gregkh@linuxfoundation.org,
+        johan@kernel.org, linux-kernel@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-usb@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, wanngchenng@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -52,73 +54,66 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    4a57a8400075 vf/remap: return the amount of bytes actually..
-git tree:       upstream
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=17460cac080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=970ac5ffe160d24
-dashboard link: https://syzkaller.appspot.com/bug?extid=c97a5f91bbd6de05e1c2
+HEAD commit:    8affe37c525d usb: dwc3: gadget: fix high speed multiplier ..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
+console output: https://syzkaller.appspot.com/x/log.txt?x=14260cac080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ebec88088cc2071
+dashboard link: https://syzkaller.appspot.com/bug?extid=6716435e45f2b68f32fa
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16f964ac080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15655f92080000
 
-Bisection is inconclusive: the issue happens on the oldest tested release.
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12083f1c080000
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11083f1c080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16083f1c080000
+Unfortunately, I don't have any reproducer for this issue yet.
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+c97a5f91bbd6de05e1c2@syzkaller.appspotmail.com
+Reported-by: syzbot+6716435e45f2b68f32fa@syzkaller.appspotmail.com
 
 ------------[ cut here ]------------
-WARNING: CPU: 0 PID: 8422 at fs/ext4/inode.c:3418 ext4_iomap_begin+0x1aa/0x780 fs/ext4/inode.c:3418
+usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+WARNING: CPU: 0 PID: 1217 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
 Modules linked in:
-CPU: 0 PID: 8422 Comm: syz-executor260 Not tainted 5.19.0-rc6-syzkaller-00115-g4a57a8400075 #0
+CPU: 0 PID: 1217 Comm: dhcpcd Not tainted 5.19.0-rc4-syzkaller-00118-g8affe37c525d #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:ext4_iomap_begin+0x1aa/0x780 fs/ext4/inode.c:3418
-Code: 83 c0 01 38 d0 7c 08 84 d2 0f 85 d8 05 00 00 41 0f b7 9f c2 05 00 00 31 ff 89 de e8 70 72 5b ff 66 85 db 74 5c e8 46 76 5b ff <0f> 0b 41 bd de ff ff ff e8 39 76 5b ff 48 b8 00 00 00 00 00 fc ff
-RSP: 0018:ffffc9000d87f260 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 00000000000000bc RCX: 0000000000000000
-RDX: ffff88807a848100 RSI: ffffffff821e24ea RDI: 0000000000000003
-RBP: 0000000000000180 R08: 0000000000000003 R09: 0000000000000000
-R10: 00000000000000bc R11: 0000000000000001 R12: 000000000000000c
-R13: ffff88806f0aa6fa R14: ffffc9000d87f550 R15: ffff88806f0aa630
-FS:  00007fcf662ec700(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+RIP: 0010:usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
+Code: 7c 24 18 e8 a0 32 8f fd 48 8b 7c 24 18 e8 76 46 18 ff 41 89 d8 44 89 e1 4c 89 ea 48 89 c6 48 c7 c7 80 1c a9 86 e8 ee d0 09 02 <0f> 0b e9 58 f8 ff ff e8 72 32 8f fd 48 81 c5 b8 05 00 00 e9 84 f7
+RSP: 0018:ffffc900010576d0 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000000
+RDX: ffff8881130ed580 RSI: ffffffff812c0fe8 RDI: fffff5200020aecc
+RBP: ffff88811d9fd0f0 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000001 R12: 0000000000000003
+R13: ffff8881382359b0 R14: 0000000000000003 R15: ffff888110529b00
+FS:  00007f9441e74740(0000) GS:ffff8881f6800000(0000) knlGS:0000000000000000
 CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fcf662cb718 CR3: 0000000021572000 CR4: 00000000003506f0
+CR2: 00007fcd7323da70 CR3: 0000000118d80000 CR4: 00000000003506f0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
  <TASK>
- iomap_iter+0x454/0x1110 fs/iomap/iter.c:74
- __iomap_dio_rw+0x6b6/0x1a80 fs/iomap/direct-io.c:600
- iomap_dio_rw+0x3c/0xa0 fs/iomap/direct-io.c:689
- ext4_dio_write_iter fs/ext4/file.c:566 [inline]
- ext4_file_write_iter+0xe50/0x1520 fs/ext4/file.c:677
- call_write_iter include/linux/fs.h:2058 [inline]
- do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:742
- do_iter_write+0x182/0x700 fs/read_write.c:868
- vfs_iter_write+0x70/0xa0 fs/read_write.c:909
- iter_file_splice_write+0x6fa/0xc10 fs/splice.c:689
- do_splice_from fs/splice.c:767 [inline]
- direct_splice_actor+0x110/0x180 fs/splice.c:936
- splice_direct_to_actor+0x34b/0x8c0 fs/splice.c:891
- do_splice_direct+0x1a7/0x270 fs/splice.c:979
- do_sendfile+0xae0/0x1240 fs/read_write.c:1262
- __do_sys_sendfile64 fs/read_write.c:1327 [inline]
- __se_sys_sendfile64 fs/read_write.c:1313 [inline]
- __x64_sys_sendfile64+0x1cc/0x210 fs/read_write.c:1313
+ r8712_usb_write_mem+0x2e0/0x3e0 drivers/staging/rtl8712/usb_ops_linux.c:177
+ rtl8712_dl_fw+0x8b8/0xe20 drivers/staging/rtl8712/hal_init.c:203
+ rtl8712_hal_init drivers/staging/rtl8712/hal_init.c:330 [inline]
+ rtl871x_hal_init+0xae/0x180 drivers/staging/rtl8712/hal_init.c:394
+ netdev_open+0xe6/0x690 drivers/staging/rtl8712/os_intfs.c:379
+ __dev_open+0x2c4/0x4d0 net/core/dev.c:1432
+ __dev_change_flags+0x583/0x750 net/core/dev.c:8533
+ dev_change_flags+0x93/0x170 net/core/dev.c:8604
+ devinet_ioctl+0x15d1/0x1ca0 net/ipv4/devinet.c:1146
+ inet_ioctl+0x1e6/0x320 net/ipv4/af_inet.c:968
+ sock_do_ioctl+0xcc/0x230 net/socket.c:1169
+ sock_ioctl+0x2f1/0x640 net/socket.c:1286
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7fcf6633fe79
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fcf662ec2f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000028
-RAX: ffffffffffffffda RBX: 00007fcf663c54c0 RCX: 00007fcf6633fe79
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: 0000000000000004
-RBP: 00007fcf663920bc R08: 0000000000000000 R09: 0000000000000000
-R10: 00000000ffffdffa R11: 0000000000000246 R12: 00007fcf663910b8
-R13: 0030656c69662f2e R14: e5d26e84aa4cf3c6 R15: 00007fcf663c54c8
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f9441f620e7
+Code: 3c 1c e8 1c ff ff ff 85 c0 79 87 49 c7 c4 ff ff ff ff 5b 5d 4c 89 e0 41 5c c3 66 0f 1f 84 00 00 00 00 00 b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 61 9d 0c 00 f7 d8 64 89 01 48
+RSP: 002b:00007ffc7f6121f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 00007f9441e746c8 RCX: 00007f9441f620e7
+RDX: 00007ffc7f6223e8 RSI: 0000000000008914 RDI: 0000000000000005
+RBP: 00007ffc7f632598 R08: 00007ffc7f6223a8 R09: 00007ffc7f622358
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffc7f6223e8 R14: 0000000000000028 R15: 0000000000008914
  </TASK>
 
 
@@ -129,6 +124,3 @@ syzbot engineers can be reached at syzkaller@googlegroups.com.
 
 syzbot will keep track of this issue. See:
 https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
