@@ -2,85 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B6AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:05:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233100AbiGNGFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
+        id S232500AbiGNGFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiGNGFD (ORCPT
+        with ESMTP id S230061AbiGNGFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:05:03 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B162F001
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:05:02 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id o31-20020a17090a0a2200b001ef7bd037bbso1779972pjo.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:05:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eGkXc885c1hCSI4ONJ+dbs87JEZwIoCuBJ6Z3BoEJIY=;
-        b=lrVYuDg15X44pQb/2AI//flwNaC0TQ8ZCV7UZO6STgS3wEmvfXzA8fXbqGTtCB6Ia5
-         hzlUEAAj2/+Vtvo8+9Gn40/A8tVl9oDiOrNh//i0jb/Z7V11hIx4hCgXAiCN08swI1BI
-         ofK3oSD5qrMM6z2rEvDSkvc7uRlkaQrui7bEaQqMENmeIQJuYve4/iXVkazN2pRZEhh4
-         apOmoySSVJ4yI9eb+ATVqrJ358/aqLR8ZUiblVQjV1RHxdYueBsNLiE0Pyz4kKE6EyOg
-         Kv/gGWXZ8OCJBefWK96tar6mS57jc6F1VyF9DY2312TGSKSksFUC9E9XJHWt+P27wIXh
-         qSqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eGkXc885c1hCSI4ONJ+dbs87JEZwIoCuBJ6Z3BoEJIY=;
-        b=lvBmK1xx4k1lNjOilv679W6J7CtsBbNQncftll14DGHY3dDipj5Av7MG7aBAuzCzv5
-         DZqdFb1lsDgV6ndq6wpJzwzc7C+vaupYzSJmRF+gOcLpzgLMDlPSy666EmzXhSk7YwFF
-         RdfB7pjIrhCwFj0KaG+HdWUKj6emsWwyvKaHFZJ7aHexkQiv4wSnmH0zHLm9nLaBqRtv
-         LUgDRQoYN1XQ4G+Vp4AulkUMQxn7aqHIskfKPdy2C72iex+eRA/QLhkxoJECti6KOqRW
-         A6sbM78PcezvLud1Yu9hDVsN2IB9QrX7KMvkAN1igvFpnDZTFWxjAYzIvNsyUkUA2L9J
-         GpEw==
-X-Gm-Message-State: AJIora8tyqnEqvWT/VgxpnkDBdLM/GxpL1gvRAHeU6QFLmqG9N6vPiEu
-        I74OGkOqcPJEBN1LZtmSDAOU42p2can+tA==
-X-Google-Smtp-Source: AGRyM1uNflhHsjaGJlWnopAz4E+lk58waV1Winwi77jHW5iw0BVm87YuRQjN5MyECKHy/f5PaAVjWQ==
-X-Received: by 2002:a17:903:245:b0:16b:9c49:6b1c with SMTP id j5-20020a170903024500b0016b9c496b1cmr6624712plh.153.1657778701641;
-        Wed, 13 Jul 2022 23:05:01 -0700 (PDT)
-Received: from gavin-desktop.hitronhub.home (S0106bc4dfb71c2f3.vn.shawcable.net. [50.64.54.244])
-        by smtp.gmail.com with ESMTPSA id p10-20020a170902a40a00b0016bea75a3dfsm492301plq.50.2022.07.13.23.05.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 23:05:01 -0700 (PDT)
-From:   Gavin Keusch <gavinkeusch@gmail.com>
-To:     pmladek@suse.com
-Cc:     linux-kernel@vger.kernel.org, Gavin Keusch <gavinkeusch@gmail.com>
-Subject: [PATCH] kernel: watchdog: fix missing space coding style issue
-Date:   Wed, 13 Jul 2022 23:04:57 -0700
-Message-Id: <20220714060457.96599-1-gavinkeusch@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 14 Jul 2022 02:05:46 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D7A42F001;
+        Wed, 13 Jul 2022 23:05:44 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lk3nl0b2bzkX1F;
+        Thu, 14 Jul 2022 14:03:23 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Jul
+ 2022 14:05:27 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hawk@kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH v2,bpf-next] bpf: Don't redirect packets with invalid pkt_len
+Date:   Thu, 14 Jul 2022 14:09:59 +0800
+Message-ID: <20220714060959.25232-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixed missing space causing coding style error
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog is valid before forwarding it directly.
 
-Signed-off-by: Gavin Keusch <gavinkeusch@gmail.com>
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- kernel/watchdog.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+v1: should not check len in fast path
 
-diff --git a/kernel/watchdog.c b/kernel/watchdog.c
-index ecb0e8346e65..b6b150c4b179 100644
---- a/kernel/watchdog.c
-+++ b/kernel/watchdog.c
-@@ -306,7 +306,7 @@ static int is_softlockup(unsigned long touch_ts,
- 			 unsigned long period_ts,
- 			 unsigned long now)
- {
--	if ((watchdog_enabled & SOFT_WATCHDOG_ENABLED) && watchdog_thresh){
-+	if ((watchdog_enabled & SOFT_WATCHDOG_ENABLED) && watchdog_thresh) {
- 		/* Warn about unreasonable delays. */
- 		if (time_after(now, period_ts + get_softlockup_thresh()))
- 			return now - touch_ts;
+ net/bpf/test_run.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 2ca96acbc50a..750d7d173a20 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -1152,6 +1152,12 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
+ 	ret = convert___skb_to_skb(skb, ctx);
+ 	if (ret)
+ 		goto out;
++
++	if (skb->len == 0) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	ret = bpf_test_run(prog, skb, repeat, &retval, &duration, false);
+ 	if (ret)
+ 		goto out;
 -- 
-2.34.1
+2.17.1
 
