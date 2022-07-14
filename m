@@ -2,323 +2,716 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE785C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 548A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238009AbiGNJPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38512 "EHLO
+        id S238013AbiGNJPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237968AbiGNJOb (ORCPT
+        with ESMTP id S237878AbiGNJOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:14:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A163D2408B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SeRyipOFSwIWEWpM2bqiB87hoiAOs+tsyWE+YqLyz5A=;
-        b=bPxZo31XqLTOV3Hrj9G2Z/XivCLc1f1iBkb7sWvxTKqXgVJ97JKIWz5ybe5DipATsUqmXm
-        UcHD8jZ+9reOy/9skfTlbWraCn2Q6DHQketkZwJLepDzCTVncXaOOpoO4YZt7zjtEHSgOM
-        nYg/Zn4015UPiHuUmrlp3kDDtZmBM5E=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-362-2_78dMRJPTKDeCd81nD81w-1; Thu, 14 Jul 2022 05:13:53 -0400
-X-MC-Unique: 2_78dMRJPTKDeCd81nD81w-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Jul 2022 05:14:38 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3E527B3E;
+        Thu, 14 Jul 2022 02:14:08 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C68223800C31;
-        Thu, 14 Jul 2022 09:13:52 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9E07F2166B26;
-        Thu, 14 Jul 2022 09:13:50 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 09/25] KVM: VMX: nVMX: Support TSC scaling and PERF_GLOBAL_CTRL with enlightened VMCS
-Date:   Thu, 14 Jul 2022 11:13:11 +0200
-Message-Id: <20220714091327.1085353-10-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E17D966015AA;
+        Thu, 14 Jul 2022 10:14:01 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657790044;
+        bh=4Z4r17z54zrj7EIDIoDCdNvp8TcjmxrLN3WgMSCrtpY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jVNNJjt4lxLLFRrJkfP041qnWIOEhT1vlkSKYujTIukj+gUc+asYAWJ3z9vW+/U0w
+         fIwcG4J+BMpCba4euIZCH5i6r2xFNU8sv2Kd8vmnvLPe9vVitOeh8KWgp0NNLvJPhU
+         0gaT1ddUiEHzHZUUNTmM97r2l7afHeNN8VkCRIyOoMsk2mP7hKoELZH5kHkQbCqwkD
+         bJePMhWVLC3s76f8t66X9Ferpbj3EPBb6etDDnpp7Nk6qndvcGGPnfI4vTcObdfyuK
+         hOhpIsHT6pp/fJAbuvXBkJdtyoJIb6AKKMCfZoU6k9J0YiciINW6vKxb4PIrZt6gIQ
+         2HfeGBdDU2ZZg==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        dmitry.osipenko@collabora.com, Zhigang.Shi@liteon.com
+Cc:     krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com,
+        andy.shevchenko@gmail.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v8 2/2] iio: light: Add support for ltrf216a sensor
+Date:   Thu, 14 Jul 2022 14:43:12 +0530
+Message-Id: <20220714091312.838152-3-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220714091312.838152-1-shreeya.patel@collabora.com>
+References: <20220714091312.838152-1-shreeya.patel@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enlightened VMCS v1 got updated and now includes the required fields
-for TSC scaling and loading PERF_GLOBAL_CTRL upon VMENTER/VMEXIT
-features. For Hyper-V on KVM enablement, KVM can just observe VMX control
-MSRs and use the features (with or without eVMCS) when
-possible. Hyper-V on KVM case is trickier because of live migration:
-the new features require explicit enablement from VMM to not break
-it. Luckily, the updated eVMCS revision comes with a feature bit in
-CPUID.0x4000000A.EBX.
+Add initial support for ltrf216a ambient light sensor.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Datasheet: https://gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
+Co-developed-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+Co-developed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 ---
- arch/x86/kvm/hyperv.c     |  2 +-
- arch/x86/kvm/vmx/evmcs.c  | 88 +++++++++++++++++++++++++++++++--------
- arch/x86/kvm/vmx/evmcs.h  | 17 ++------
- arch/x86/kvm/vmx/nested.c |  2 +-
- arch/x86/kvm/vmx/vmx.c    |  2 +-
- 5 files changed, 78 insertions(+), 33 deletions(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index a8e4944ca110..995d3ab1443e 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2552,7 +2552,7 @@ int kvm_get_hv_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid2 *cpuid,
- 		case HYPERV_CPUID_NESTED_FEATURES:
- 			ent->eax = evmcs_ver;
- 			ent->eax |= HV_X64_NESTED_MSR_BITMAP;
--
-+			ent->ebx |= HV_X64_NESTED_EVMCS1_2022_UPDATE;
- 			break;
+Note :-
+
+This patch generates the below mentioned warnings due to not documenting
+the 'ltr' string in vendors-prefix.yaml and liteon,ltrf216a.yaml files.
+The thread for the discussion of not documenting 'ltr' as deprecated
+prefix can be found here.
+https://lore.kernel.org/lkml/20220511094024.175994-2-shreeya.patel@collabora.com/
+
+There are released devices which uses ltr216a light sensor and exposes the
+vendor prefix name as 'ltr' through ACPI. Hence, we would like to add
+this string under compatible property which would help probe the light sensor
+driver.
+
+WARNING: DT compatible string "ltr,ltrf216a" appears un-documented
+-- check ./Documentation/devicetree/bindings/
+#474: FILE: drivers/iio/light/ltrf216a.c:421:
++       { .compatible = "ltr,ltrf216a", },
+
+WARNING: DT compatible string vendor "ltr" appears un-documented
+-- check ./Documentation/devicetree/bindings/vendor-prefixes.yaml
+#474: FILE: drivers/iio/light/ltrf216a.c:421:
++       { .compatible = "ltr,ltrf216a", },
+
+Changes in v8
+  - Add caching mechanism to restore register state after h/w resume.
+  - Add callback functions and disable locking in regmap config.
+  - Update mutex comment as per it's current scope in the driver.
+  - Add Shreeya as author of the driver.
+  - Make some minor cleanups.
+
+Changes in v7
+  - Add regmap support.
+  - Fix runtime power management implementation.
+  - Fix the ordering of devm and non-devm functions.
+  - Use DEFINE_RUNTIME_DEV_PM_OPS macro
+
+Changes in v6
+  - Fix some errors reported by kernel test robot.
+  - Add protocol details for the datasheet link.
+  - Remove useless assignments.
+  - Add unit details for read data delay macro.
+  - Use pm_sleep_ptr().
+
+Changes in v5
+  - Add power management support.
+  - Add reset functionality.
+  - Use readx_poll_timeout() to get data.
+  - Cleanup some of the redundant code.
+  - Update int_time_fac after I2C write is successful.
+  - Rename mutex to lock.
+  - Use Reverse Xmas tree pattern for all variable definitions.
+  - Improve error handling messages and add error codes.
+  - Add one more MODULE_AUTHOR.
+  - Remove cleardata which was reading data for infrared light.
+
+Changes in v4
+  - Add more descriptive comment for mutex lock
+  - Fix mutex locking in read_raw()
+  - Use i2c_smbus_read_i2c_block_data()
+
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+
+
+ drivers/iio/light/Kconfig    |  11 +
+ drivers/iio/light/Makefile   |   1 +
+ drivers/iio/light/ltrf216a.c | 522 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 534 insertions(+)
+ create mode 100644 drivers/iio/light/ltrf216a.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 8537e88f02e3..7cf6e8490123 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -331,6 +331,17 @@ config LTR501
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called ltr501.
  
- 		case HYPERV_CPUID_SYNDBG_VENDOR_AND_MAX_FUNCTIONS:
-diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-index 8bea5dea0341..52a53debd806 100644
---- a/arch/x86/kvm/vmx/evmcs.c
-+++ b/arch/x86/kvm/vmx/evmcs.c
-@@ -368,7 +368,60 @@ uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
- 	return 0;
- }
- 
--void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
-+enum evmcs_v1_revision {
-+	EVMCSv1_2016,
-+	EVMCSv1_2022,
++config LTRF216A
++	tristate "Liteon LTRF216A Light Sensor"
++	depends on I2C
++	select REGMAP_I2C
++	help
++	  If you say Y or M here, you get support for Liteon LTRF216A
++	  Ambient Light Sensor.
++
++	  If built as a dynamically linked module, it will be called
++	  ltrf216a.
++
+ config LV0104CS
+ 	tristate "LV0104CS Ambient Light Sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index d10912faf964..6f23817fae6f 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -31,6 +31,7 @@ obj-$(CONFIG_ISL29125)		+= isl29125.o
+ obj-$(CONFIG_JSA1212)		+= jsa1212.o
+ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+ obj-$(CONFIG_LTR501)		+= ltr501.o
++obj-$(CONFIG_LTRF216A)		+= ltrf216a.o
+ obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
+ obj-$(CONFIG_MAX44000)		+= max44000.o
+ obj-$(CONFIG_MAX44009)		+= max44009.o
+diff --git a/drivers/iio/light/ltrf216a.c b/drivers/iio/light/ltrf216a.c
+new file mode 100644
+index 000000000000..fd0c5dd5ffa0
+--- /dev/null
++++ b/drivers/iio/light/ltrf216a.c
+@@ -0,0 +1,522 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * LTRF216A Ambient Light Sensor
++ *
++ * Copyright (C) 2022 Collabora, Ltd.
++ * Author: Shreeya Patel <shreeya.patel@collabora.com>
++ *
++ * Copyright (C) 2021 Lite-On Technology Corp (Singapore)
++ * Author: Shi Zhigang <Zhigang.Shi@liteon.com>
++ *
++ * IIO driver for LTRF216A (7-bit I2C slave address 0x53).
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/init.h>
++#include <linux/iopoll.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/pm.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/iio.h>
++
++#include <asm/unaligned.h>
++
++#define LTRF216A_ALS_RESET_MASK		BIT(4)
++#define LTRF216A_ALS_DATA_STATUS	BIT(3)
++#define LTRF216A_ALS_ENABLE_MASK	BIT(1)
++#define LTRF216A_MAIN_CTRL		0x00
++#define LTRF216A_ALS_MEAS_RES		0x04
++#define LTRF216A_ALS_GAIN		0x05
++#define LTRF216A_PART_ID		0x06
++#define LTRF216A_MAIN_STATUS		0x07
++#define LTRF216A_ALS_CLEAR_DATA_0	0x0a
++#define LTRF216A_ALS_CLEAR_DATA_1	0x0b
++#define LTRF216A_ALS_CLEAR_DATA_2	0x0c
++#define LTRF216A_ALS_DATA_0		0x0d
++#define LTRF216A_ALS_DATA_1		0x0e
++#define LTRF216A_ALS_DATA_2		0x0f
++#define LTRF216A_INT_CFG		0x19
++#define LTRF216A_INT_PST		0x1a
++#define LTRF216A_ALS_THRES_UP_0		0x21
++#define LTRF216A_ALS_THRES_UP_1		0x22
++#define LTRF216A_ALS_THRES_UP_2		0x23
++#define LTRF216A_ALS_THRES_LOW_0	0x24
++#define LTRF216A_ALS_THRES_LOW_1	0x25
++#define LTRF216A_ALS_THRES_LOW_2	0x26
++#define LTRF216A_ALS_READ_DATA_DELAY_US	20000
++
++static const int ltrf216a_int_time_available[][2] = {
++	{ 0, 400000 },
++	{ 0, 200000 },
++	{ 0, 100000 },
++	{ 0,  50000 },
++	{ 0,  25000 },
 +};
 +
-+enum evmcs_unsupported_ctrl_type {
-+	EVMCS_EXIT_CTLS,
-+	EVMCS_ENTRY_CTLS,
-+	EVMCS_2NDEXEC,
-+	EVMCS_PINCTRL,
-+	EVMCS_VMFUNC,
++static const int ltrf216a_int_time_reg[][2] = {
++	{ 400, 0x03 },
++	{ 200, 0x13 },
++	{ 100, 0x22 },
++	{  50, 0x31 },
++	{  25, 0x40 },
 +};
 +
-+static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu,
-+				      enum evmcs_unsupported_ctrl_type ctrl_type)
++/*
++ * Window Factor is needed when the device is under Window glass
++ * with coated tinted ink. This is to compensate for the light loss
++ * due to the lower transmission rate of the window glass and helps
++ * in calculating lux.
++ */
++#define LTRF216A_WIN_FAC	1
++
++struct ltrf216a_data {
++	struct regmap *regmap;
++	struct i2c_client *client;
++	u32 int_time;
++	u16 int_time_fac;
++	u8 als_gain_fac;
++	/*
++	 * Protects regmap accesses and makes sure integration time
++	 * remains constant during the measurement of lux.
++	 */
++	struct mutex lock;
++};
++
++static const struct iio_chan_spec ltrf216a_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_PROCESSED) |
++			BIT(IIO_CHAN_INFO_INT_TIME),
++		.info_mask_separate_available =
++			BIT(IIO_CHAN_INFO_INT_TIME),
++	},
++};
++
++static void ltrf216a_reset(struct iio_dev *indio_dev)
 +{
-+	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
-+	enum evmcs_v1_revision evmcs_rev = EVMCSv1_2016;
++	struct ltrf216a_data *data = iio_priv(indio_dev);
 +
-+	if (!hv_vcpu)
-+		return 0;
++	/* reset sensor, chip fails to respond to this, so ignore any errors */
++	regmap_write(data->regmap, LTRF216A_MAIN_CTRL, LTRF216A_ALS_RESET_MASK);
 +
-+	if (hv_vcpu->cpuid_cache.nested_ebx & HV_X64_NESTED_EVMCS1_2022_UPDATE)
-+		evmcs_rev = EVMCSv1_2022;
++	/* reset time */
++	usleep_range(1000, 2000);
++}
 +
-+	switch (ctrl_type) {
-+	case EVMCS_EXIT_CTLS:
-+		if (evmcs_rev == EVMCSv1_2016)
-+			return EVMCS1_UNSUPPORTED_VMEXIT_CTRL |
-+				VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
-+		else
-+			return EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-+	case EVMCS_ENTRY_CTLS:
-+		if (evmcs_rev == EVMCSv1_2016)
-+			return EVMCS1_UNSUPPORTED_VMENTRY_CTRL |
-+				VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
-+		else
-+			return EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-+	case EVMCS_2NDEXEC:
-+		if (evmcs_rev == EVMCSv1_2016)
-+			return EVMCS1_UNSUPPORTED_2NDEXEC |
-+				SECONDARY_EXEC_TSC_SCALING;
-+		else
-+			return EVMCS1_UNSUPPORTED_2NDEXEC;
-+	case EVMCS_PINCTRL:
-+		return EVMCS1_UNSUPPORTED_PINCTRL;
-+	case EVMCS_VMFUNC:
-+		return EVMCS1_UNSUPPORTED_VMFUNC;
++static int ltrf216a_enable(struct iio_dev *indio_dev)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	/* enable sensor */
++	ret = regmap_set_bits(data->regmap,
++			      LTRF216A_MAIN_CTRL, LTRF216A_ALS_ENABLE_MASK);
++	if (ret) {
++		dev_err(dev, "failed to enable sensor: %d\n", ret);
++		return ret;
 +	}
++
++	/* sleep for one integration cycle after enabling the device */
++	msleep(ltrf216a_int_time_reg[0][0]);
 +
 +	return 0;
 +}
 +
-+void nested_evmcs_filter_control_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 *pdata)
- {
- 	u32 ctl_low = (u32)*pdata;
- 	u32 ctl_high = (u32)(*pdata >> 32);
-@@ -380,72 +433,73 @@ void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata)
- 	switch (msr_index) {
- 	case MSR_IA32_VMX_EXIT_CTLS:
- 	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
--		ctl_high &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-+		ctl_high &= ~evmcs_get_unsupported_ctls(vcpu, EVMCS_EXIT_CTLS);
- 		break;
- 	case MSR_IA32_VMX_ENTRY_CTLS:
- 	case MSR_IA32_VMX_TRUE_ENTRY_CTLS:
--		ctl_high &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-+		ctl_high &= ~evmcs_get_unsupported_ctls(vcpu, EVMCS_ENTRY_CTLS);
- 		break;
- 	case MSR_IA32_VMX_PROCBASED_CTLS2:
--		ctl_high &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
-+		ctl_high &= ~evmcs_get_unsupported_ctls(vcpu, EVMCS_2NDEXEC);
- 		break;
- 	case MSR_IA32_VMX_TRUE_PINBASED_CTLS:
- 	case MSR_IA32_VMX_PINBASED_CTLS:
--		ctl_high &= ~EVMCS1_UNSUPPORTED_PINCTRL;
-+		ctl_high &= ~evmcs_get_unsupported_ctls(vcpu, EVMCS_PINCTRL);
- 		break;
- 	case MSR_IA32_VMX_VMFUNC:
--		ctl_low &= ~EVMCS1_UNSUPPORTED_VMFUNC;
-+		ctl_low &= ~evmcs_get_unsupported_ctls(vcpu, EVMCS_VMFUNC);
- 		break;
- 	}
- 
- 	*pdata = ctl_low | ((u64)ctl_high << 32);
- }
- 
--int nested_evmcs_check_controls(struct vmcs12 *vmcs12)
-+int nested_evmcs_check_controls(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12)
- {
- 	int ret = 0;
- 	u32 unsupp_ctl;
- 
- 	unsupp_ctl = vmcs12->pin_based_vm_exec_control &
--		EVMCS1_UNSUPPORTED_PINCTRL;
-+		evmcs_get_unsupported_ctls(vcpu, EVMCS_PINCTRL);
- 	if (unsupp_ctl) {
- 		trace_kvm_nested_vmenter_failed(
--			"eVMCS: unsupported pin-based VM-execution controls",
-+			"eVMCS: unsupported pin-based VM-execution controls: ",
- 			unsupp_ctl);
- 		ret = -EINVAL;
- 	}
- 
- 	unsupp_ctl = vmcs12->secondary_vm_exec_control &
--		EVMCS1_UNSUPPORTED_2NDEXEC;
-+		evmcs_get_unsupported_ctls(vcpu, EVMCS_2NDEXEC);
- 	if (unsupp_ctl) {
- 		trace_kvm_nested_vmenter_failed(
--			"eVMCS: unsupported secondary VM-execution controls",
-+			"eVMCS: unsupported secondary VM-execution controls: ",
- 			unsupp_ctl);
- 		ret = -EINVAL;
- 	}
- 
- 	unsupp_ctl = vmcs12->vm_exit_controls &
--		EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-+		evmcs_get_unsupported_ctls(vcpu, EVMCS_EXIT_CTLS);
- 	if (unsupp_ctl) {
- 		trace_kvm_nested_vmenter_failed(
--			"eVMCS: unsupported VM-exit controls",
-+			"eVMCS: unsupported VM-exit controls: ",
- 			unsupp_ctl);
- 		ret = -EINVAL;
- 	}
- 
- 	unsupp_ctl = vmcs12->vm_entry_controls &
--		EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-+		evmcs_get_unsupported_ctls(vcpu, EVMCS_ENTRY_CTLS);
- 	if (unsupp_ctl) {
- 		trace_kvm_nested_vmenter_failed(
--			"eVMCS: unsupported VM-entry controls",
-+			"eVMCS: unsupported VM-entry controls: ",
- 			unsupp_ctl);
- 		ret = -EINVAL;
- 	}
- 
--	unsupp_ctl = vmcs12->vm_function_control & EVMCS1_UNSUPPORTED_VMFUNC;
-+	unsupp_ctl = vmcs12->vm_function_control &
-+		evmcs_get_unsupported_ctls(vcpu, EVMCS_VMFUNC);
- 	if (unsupp_ctl) {
- 		trace_kvm_nested_vmenter_failed(
--			"eVMCS: unsupported VM-function controls",
-+			"eVMCS: unsupported VM-function controls: ",
- 			unsupp_ctl);
- 		ret = -EINVAL;
- 	}
-diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-index f886a8ff0342..4b809c79ae63 100644
---- a/arch/x86/kvm/vmx/evmcs.h
-+++ b/arch/x86/kvm/vmx/evmcs.h
-@@ -37,16 +37,9 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
-  *	EPTP_LIST_ADDRESS               = 0x00002024,
-  *	VMREAD_BITMAP                   = 0x00002026,
-  *	VMWRITE_BITMAP                  = 0x00002028,
-- *
-- *	TSC_MULTIPLIER                  = 0x00002032,
-  *	PLE_GAP                         = 0x00004020,
-  *	PLE_WINDOW                      = 0x00004022,
-  *	VMX_PREEMPTION_TIMER_VALUE      = 0x0000482E,
-- *      GUEST_IA32_PERF_GLOBAL_CTRL     = 0x00002808,
-- *      HOST_IA32_PERF_GLOBAL_CTRL      = 0x00002c04,
-- *
-- * Currently unsupported in KVM:
-- *	GUEST_IA32_RTIT_CTL		= 0x00002814,
-  */
- #define EVMCS1_UNSUPPORTED_PINCTRL (PIN_BASED_POSTED_INTR | \
- 				    PIN_BASED_VMX_PREEMPTION_TIMER)
-@@ -58,12 +51,10 @@ DECLARE_STATIC_KEY_FALSE(enable_evmcs);
- 	 SECONDARY_EXEC_ENABLE_PML |					\
- 	 SECONDARY_EXEC_ENABLE_VMFUNC |					\
- 	 SECONDARY_EXEC_SHADOW_VMCS |					\
--	 SECONDARY_EXEC_TSC_SCALING |					\
- 	 SECONDARY_EXEC_PAUSE_LOOP_EXITING)
- #define EVMCS1_UNSUPPORTED_VMEXIT_CTRL					\
--	(VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL |				\
--	 VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
--#define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL)
-+	(VM_EXIT_SAVE_VMX_PREEMPTION_TIMER)
-+#define EVMCS1_UNSUPPORTED_VMENTRY_CTRL (0)
- #define EVMCS1_UNSUPPORTED_VMFUNC (VMX_VMFUNC_EPTP_SWITCHING)
- 
- struct evmcs_field {
-@@ -243,7 +234,7 @@ bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa);
- uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu);
- int nested_enable_evmcs(struct kvm_vcpu *vcpu,
- 			uint16_t *vmcs_version);
--void nested_evmcs_filter_control_msr(u32 msr_index, u64 *pdata);
--int nested_evmcs_check_controls(struct vmcs12 *vmcs12);
-+void nested_evmcs_filter_control_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 *pdata);
-+int nested_evmcs_check_controls(struct kvm_vcpu *vcpu, struct vmcs12 *vmcs12);
- 
- #endif /* __KVM_X86_VMX_EVMCS_H */
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 4fc84f0f5875..dcf3ee645212 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -2891,7 +2891,7 @@ static int nested_vmx_check_controls(struct kvm_vcpu *vcpu,
- 		return -EINVAL;
- 
- 	if (to_vmx(vcpu)->nested.enlightened_vmcs_enabled)
--		return nested_evmcs_check_controls(vmcs12);
-+		return nested_evmcs_check_controls(vcpu, vmcs12);
- 
- 	return 0;
- }
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index c30115b9cb33..b4915d841357 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1858,7 +1858,7 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
- 		 */
- 		if (!msr_info->host_initiated &&
- 		    vmx->nested.enlightened_vmcs_enabled)
--			nested_evmcs_filter_control_msr(msr_info->index,
-+			nested_evmcs_filter_control_msr(vcpu, msr_info->index,
- 							&msr_info->data);
- 		break;
- 	case MSR_IA32_RTIT_CTL:
++static int ltrf216a_disable(struct iio_dev *indio_dev)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	ret = regmap_write(data->regmap, LTRF216A_MAIN_CTRL, 0);
++	if (ret)
++		dev_err(dev, "failed to disable sensor: %d\n", ret);
++
++	return ret;
++}
++
++static int ltrf216a_set_int_time(struct ltrf216a_data *data, int itime)
++{
++	struct device *dev = &data->client->dev;
++	unsigned int i;
++	u8 reg_val;
++	int ret;
++
++	for (i = 0; i < ARRAY_SIZE(ltrf216a_int_time_available); i++) {
++		if (ltrf216a_int_time_available[i][1] == itime)
++			break;
++	}
++	if (i == ARRAY_SIZE(ltrf216a_int_time_available))
++		return -EINVAL;
++
++	reg_val = ltrf216a_int_time_reg[i][1];
++
++	ret = regmap_write(data->regmap, LTRF216A_ALS_MEAS_RES, reg_val);
++	if (ret) {
++		dev_err(dev, "failed to set integration time: %d\n", ret);
++		return ret;
++	}
++
++	data->int_time_fac = ltrf216a_int_time_reg[i][0];
++	data->int_time = itime;
++
++	return 0;
++}
++
++static int ltrf216a_get_int_time(struct ltrf216a_data *data,
++				 int *val, int *val2)
++{
++	*val = 0;
++	*val2 = data->int_time;
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int ltrf216a_set_power_state(struct ltrf216a_data *data, bool on)
++{
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	if (on) {
++		ret = pm_runtime_resume_and_get(dev);
++		if (ret) {
++			dev_err(dev, "failed to resume runtime PM: %d\n", ret);
++			return ret;
++		}
++	} else {
++		pm_runtime_mark_last_busy(dev);
++		pm_runtime_put_autosuspend(dev);
++	}
++
++	return ret;
++}
++
++static int ltrf216a_read_data(struct ltrf216a_data *data, u8 addr)
++{
++	struct device *dev = &data->client->dev;
++	int ret, val;
++	u8 buf[3];
++
++	ret = regmap_read_poll_timeout(data->regmap, LTRF216A_MAIN_STATUS,
++				       val, val & LTRF216A_ALS_DATA_STATUS,
++				       LTRF216A_ALS_READ_DATA_DELAY_US,
++				       LTRF216A_ALS_READ_DATA_DELAY_US * 50);
++	if (ret) {
++		dev_err(dev, "failed to wait for measurement data: %d\n", ret);
++		return ret;
++	}
++
++	ret = regmap_bulk_read(data->regmap, addr, buf, sizeof(buf));
++	if (ret) {
++		dev_err(dev, "failed to read measurement data: %d\n", ret);
++		return ret;
++	}
++
++	return get_unaligned_le24(&buf[0]);
++}
++
++static int ltrf216a_get_lux(struct ltrf216a_data *data)
++{
++	int ret, greendata;
++	u64 lux, div;
++
++	ret = ltrf216a_set_power_state(data, true);
++	if (ret)
++		return ret;
++
++	greendata = ltrf216a_read_data(data, LTRF216A_ALS_DATA_0);
++	if (greendata < 0)
++		return greendata;
++
++	ltrf216a_set_power_state(data, false);
++
++	lux = greendata * 45 * LTRF216A_WIN_FAC * 100;
++	div = data->als_gain_fac * data->int_time_fac * 100;
++
++	return div_u64(lux, div);
++}
++
++static int ltrf216a_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan, int *val,
++			     int *val2, long mask)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		mutex_lock(&data->lock);
++		ret = ltrf216a_get_lux(data);
++		mutex_unlock(&data->lock);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_INT_TIME:
++		mutex_lock(&data->lock);
++		ret = ltrf216a_get_int_time(data, val, val2);
++		mutex_unlock(&data->lock);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ltrf216a_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan, int val,
++			      int val2, long mask)
++{
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0)
++			return -EINVAL;
++		mutex_lock(&data->lock);
++		ret = ltrf216a_set_int_time(data, val2);
++		mutex_unlock(&data->lock);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ltrf216a_read_available(struct iio_dev *indio_dev,
++				   struct iio_chan_spec const *chan,
++				   const int **vals, int *type, int *length,
++				   long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		*length = ARRAY_SIZE(ltrf216a_int_time_available) * 2;
++		*vals = (const int *)ltrf216a_int_time_available;
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info ltrf216a_info = {
++	.read_raw = ltrf216a_read_raw,
++	.write_raw = ltrf216a_write_raw,
++	.read_avail = ltrf216a_read_available,
++};
++
++static bool ltrf216a_readable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case LTRF216A_MAIN_CTRL:
++	case LTRF216A_ALS_MEAS_RES:
++	case LTRF216A_ALS_GAIN:
++	case LTRF216A_PART_ID:
++	case LTRF216A_MAIN_STATUS:
++	case LTRF216A_ALS_CLEAR_DATA_0:
++	case LTRF216A_ALS_CLEAR_DATA_1:
++	case LTRF216A_ALS_CLEAR_DATA_2:
++	case LTRF216A_ALS_DATA_0:
++	case LTRF216A_ALS_DATA_1:
++	case LTRF216A_ALS_DATA_2:
++	case LTRF216A_INT_CFG:
++	case LTRF216A_INT_PST:
++	case LTRF216A_ALS_THRES_UP_0:
++	case LTRF216A_ALS_THRES_UP_1:
++	case LTRF216A_ALS_THRES_UP_2:
++	case LTRF216A_ALS_THRES_LOW_0:
++	case LTRF216A_ALS_THRES_LOW_1:
++	case LTRF216A_ALS_THRES_LOW_2:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool ltrf216a_writable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case LTRF216A_MAIN_CTRL:
++	case LTRF216A_ALS_MEAS_RES:
++	case LTRF216A_ALS_GAIN:
++	case LTRF216A_INT_CFG:
++	case LTRF216A_INT_PST:
++	case LTRF216A_ALS_THRES_UP_0:
++	case LTRF216A_ALS_THRES_UP_1:
++	case LTRF216A_ALS_THRES_UP_2:
++	case LTRF216A_ALS_THRES_LOW_0:
++	case LTRF216A_ALS_THRES_LOW_1:
++	case LTRF216A_ALS_THRES_LOW_2:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool ltrf216a_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case LTRF216A_ALS_CLEAR_DATA_0:
++	case LTRF216A_ALS_CLEAR_DATA_1:
++	case LTRF216A_ALS_CLEAR_DATA_2:
++	case LTRF216A_ALS_DATA_0:
++	case LTRF216A_ALS_DATA_1:
++	case LTRF216A_ALS_DATA_2:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool ltrf216a_precious_reg(struct device *dev, unsigned int reg)
++{
++	return reg == LTRF216A_MAIN_STATUS;
++}
++
++static const struct regmap_config ltrf216a_regmap_config = {
++	.name = "ltrf216a",
++	.reg_bits = 8,
++	.val_bits = 8,
++	.cache_type = REGCACHE_RBTREE,
++	.max_register = LTRF216A_ALS_THRES_LOW_2,
++	.readable_reg = ltrf216a_readable_reg,
++	.writeable_reg = ltrf216a_writable_reg,
++	.volatile_reg = ltrf216a_volatile_reg,
++	.precious_reg = ltrf216a_precious_reg,
++	.disable_locking = true,
++};
++
++static int ltrf216a_probe(struct i2c_client *client)
++{
++	struct ltrf216a_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++
++	data->regmap = devm_regmap_init_i2c(client, &ltrf216a_regmap_config);
++	if (IS_ERR(data->regmap))
++		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
++				     "regmap initialization failed\n");
++
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	mutex_init(&data->lock);
++
++	indio_dev->info = &ltrf216a_info;
++	indio_dev->name = "ltrf216a";
++	indio_dev->channels = ltrf216a_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ltrf216a_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	/* reset sensor, chip fails to respond to this, so ignore any errors */
++	ltrf216a_reset(indio_dev);
++
++	ret = regmap_reinit_cache(data->regmap, &ltrf216a_regmap_config);
++	if (ret)
++		return dev_err_probe(&client->dev, ret,
++				     "failed to reinit regmap cache\n");
++
++	ret = devm_pm_runtime_enable(&client->dev);
++	if (ret)
++		return dev_err_probe(&client->dev, ret,
++				     "failed to enable runtime PM\n");
++
++	pm_runtime_set_autosuspend_delay(&client->dev, 1000);
++	pm_runtime_use_autosuspend(&client->dev);
++
++	if (!IS_ENABLED(CONFIG_PM)) {
++		ret = ltrf216a_enable(indio_dev);
++		if (ret)
++			return ret;
++	}
++
++	data->int_time = 100000;
++	data->int_time_fac = 100;
++	data->als_gain_fac = 3;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static int ltrf216a_runtime_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = ltrf216a_disable(indio_dev);
++	if (ret)
++		return ret;
++
++	regcache_cache_only(data->regmap, true);
++
++	return 0;
++}
++
++static int ltrf216a_runtime_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ltrf216a_data *data = iio_priv(indio_dev);
++	int ret;
++
++	regcache_cache_only(data->regmap, false);
++	regcache_mark_dirty(data->regmap);
++	ret = regcache_sync(data->regmap);
++	if (ret)
++		goto cache_only;
++
++	ret = ltrf216a_enable(indio_dev);
++	if (ret)
++		goto cache_only;
++
++	return 0;
++
++cache_only:
++	regcache_cache_only(data->regmap, true);
++
++	return ret;
++}
++
++static DEFINE_RUNTIME_DEV_PM_OPS(ltrf216a_pm_ops, ltrf216a_runtime_suspend,
++				 ltrf216a_runtime_resume, NULL);
++
++static const struct i2c_device_id ltrf216a_id[] = {
++	{ "ltrf216a" },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, ltrf216a_id);
++
++static const struct of_device_id ltrf216a_of_match[] = {
++	{ .compatible = "liteon,ltrf216a" },
++	{ .compatible = "ltr,ltrf216a" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, ltrf216a_of_match);
++
++static struct i2c_driver ltrf216a_driver = {
++	.driver = {
++		.name = "ltrf216a",
++		.pm = pm_ptr(&ltrf216a_pm_ops),
++		.of_match_table = ltrf216a_of_match,
++	},
++	.probe_new = ltrf216a_probe,
++	.id_table = ltrf216a_id,
++};
++module_i2c_driver(ltrf216a_driver);
++
++MODULE_AUTHOR("Shreeya Patel <shreeya.patel@collabora.com>");
++MODULE_AUTHOR("Shi Zhigang <Zhigang.Shi@liteon.com>");
++MODULE_DESCRIPTION("LTRF216A ambient light sensor driver");
++MODULE_LICENSE("GPL");
 -- 
-2.35.3
+2.30.2
 
