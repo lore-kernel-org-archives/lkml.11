@@ -2,172 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC64C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9913C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234484AbiGNEXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:23:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
+        id S234513AbiGNEX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234024AbiGNEWy (ORCPT
+        with ESMTP id S234025AbiGNEWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 00:22:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D8227FD1;
-        Wed, 13 Jul 2022 21:22:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CE8661E6D;
-        Thu, 14 Jul 2022 04:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6182CC34115;
-        Thu, 14 Jul 2022 04:22:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772561;
-        bh=wQ+2xB80hzHa+R7jNMk4qsSoxV0mDunv4FYTD9AogEY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gtgmw7wjH/1F2XD1AiXpZa+ARn5K2jWM7edkyHQy38bbaDOc/RdpZQeZJC5py/UVA
-         6PNfScEhSMxLDqU/kn2VOfK6sO39B9IAyVG/dvvNkxtk36UrJi25mqYehUR72q5x27
-         o8Iz2bPKoq19JissUb5eAGteKzdMdB8wsI8Yw0CoHkZXNT20iUFh1BdMgQX36Ir4Nx
-         6ZKYLjE0g0945pi4aOnYd/4s1n3sJAi+nZSQL/qSR7asFaAqsGaGe9GX5wa7H+G+Ku
-         6+x2P2BAuFrBLiJdyKfLHp04cy3KZFtTz90HCutJ6NKhT5HFhWDxqCJGignxFCnxWh
-         KavCvxFAXXhgQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.18 08/41] ASoC: codecs: rt700/rt711/rt711-sdca: initialize workqueues in probe
-Date:   Thu, 14 Jul 2022 00:21:48 -0400
-Message-Id: <20220714042221.281187-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042221.281187-1-sashal@kernel.org>
-References: <20220714042221.281187-1-sashal@kernel.org>
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E11A27FD6;
+        Wed, 13 Jul 2022 21:22:43 -0700 (PDT)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E3nC8E031560;
+        Thu, 14 Jul 2022 04:22:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=oc7DODaeMYfYgN8sRoftnKbUEW5IoAXyOTF7b89UI8Y=;
+ b=gXEtEJJXmVKSN/La/mLjd2HoivD5OLkcnO9Sd+bJ3RUBXOUZizZXiwpOb55IfoC/hSfL
+ JAwUezS2Lsy2tRG+j4TL5iWcufiC2UEMzP3veCgClDY8FWyIfk6u1K95JfO5jtldFZXg
+ nAXKYh0CbHshqtQXQT+vISImHjnJ/xXj5xbGym+DHCV086F8nFuvvvKlExzFvXIz9U0C
+ 1/LFXKq8PenokpTVniEZu/ssQGmbPbMB5nLNxqICriry3tF/9slqciYzOAkxu0N32NFm
+ +JiTxStAp+cWOt6ALH7iBBADpAPI/vKYqf/orHPOROMx41LitDZ53W7wBp7dlj4jI3kg Cw== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71r1bje8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 04:22:35 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26E4ApYm040463;
+        Thu, 14 Jul 2022 04:22:35 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h70451jpd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 04:22:35 +0000
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 26E4MWBl023864;
+        Thu, 14 Jul 2022 04:22:34 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h70451jnc-4;
+        Thu, 14 Jul 2022 04:22:34 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Daniil Lunev <dlunev@chromium.org>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        linux-scsi@vger.kernel.org, Avri Altman <avri.altman@wdc.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Bean Huo <beanhuo@micron.com>
+Subject: Re: [PATCH v2] scsi: ufs: ufs-pci: Enable WriteBooster capability on ADL
+Date:   Thu, 14 Jul 2022 00:22:24 -0400
+Message-Id: <165777182484.7272.12896788838326615430.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220705165316.v2.1.Ib5ebec952d9a59f5c69c89b694777f517d22466d@changeid>
+References: <20220705165316.v2.1.Ib5ebec952d9a59f5c69c89b694777f517d22466d@changeid>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: DwV263lcnkIDVk_bpc2GLkc5PSevAd9j
+X-Proofpoint-GUID: DwV263lcnkIDVk_bpc2GLkc5PSevAd9j
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+On Tue, 5 Jul 2022 16:53:26 +1000, Daniil Lunev wrote:
 
-[ Upstream commit ba98d7d8b60ba410aa03834f6aa48fd3b2e68478 ]
+> Sets the WriteBooster capability flag when ADL's UFS controller is used.
+> 
+> 
 
-The workqueues are initialized in the io_init functions, which isn't
-quite right. In some tests, this leads to warnings throw from
-__queue_delayed_work()
+Applied to 5.20/scsi-queue, thanks!
 
-WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
+[1/1] scsi: ufs: ufs-pci: Enable WriteBooster capability on ADL
+      https://git.kernel.org/mkp/scsi/c/1466b3bc456a
 
-Move all the initializations to the probe functions.
-
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-7-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/soc/codecs/rt700.c      | 12 +++++-------
- sound/soc/codecs/rt711-sdca.c | 10 +++-------
- sound/soc/codecs/rt711.c      | 12 +++++-------
- 3 files changed, 13 insertions(+), 21 deletions(-)
-
-diff --git a/sound/soc/codecs/rt700.c b/sound/soc/codecs/rt700.c
-index 1f4da32639d4..d24064e77edc 100644
---- a/sound/soc/codecs/rt700.c
-+++ b/sound/soc/codecs/rt700.c
-@@ -1114,6 +1114,11 @@ int rt700_init(struct device *dev, struct regmap *sdw_regmap,
- 
- 	mutex_init(&rt700->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt700->jack_detect_work,
-+			  rt700_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
-+			  rt700_btn_check_handler);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1208,13 +1213,6 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
- 	/* Finish Initial Settings, set power to D3 */
- 	regmap_write(rt700->regmap, RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
- 
--	if (!rt700->first_hw_init) {
--		INIT_DELAYED_WORK(&rt700->jack_detect_work,
--			rt700_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
--			rt700_btn_check_handler);
--	}
--
- 	/*
- 	 * if set_jack callback occurred early than io_init,
- 	 * we set up the jack detection function now
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 9c88c92c0abc..d8821d535a24 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1414,6 +1414,9 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_sdca_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_sdca_btn_check_handler);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1545,13 +1548,6 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
- 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
- 		RT711_PUSH_BTN_INT_CTL0, 0x20, 0x00);
- 
--	if (!rt711->first_hw_init) {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_sdca_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_sdca_btn_check_handler);
--	}
--
- 	/* calibration */
- 	ret = rt711_sdca_calibration(rt711);
- 	if (ret < 0)
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index 3cb4bf76c021..608deb7c2ea2 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -1206,6 +1206,10 @@ int rt711_init(struct device *dev, struct regmap *sdw_regmap,
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_btn_check_handler);
-+	INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
-+
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1313,14 +1317,8 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
- 
- 	if (rt711->first_hw_init)
- 		rt711_calibration(rt711);
--	else {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_btn_check_handler);
--		INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
-+	else
- 		schedule_work(&rt711->calibration_work);
--	}
- 
- 	/*
- 	 * if set_jack callback occurred early than io_init,
 -- 
-2.35.1
-
+Martin K. Petersen	Oracle Linux Engineering
