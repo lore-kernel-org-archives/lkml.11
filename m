@@ -2,151 +2,226 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2967EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 254B8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237676AbiGNE6a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:58:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
+        id S237732AbiGNE6h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:58:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237710AbiGNE57 (ORCPT
+        with ESMTP id S232139AbiGNE6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:57:59 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ADE29C87
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:46:01 -0700 (PDT)
+        Thu, 14 Jul 2022 00:58:04 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A5A29830
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:47:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657773961; x=1689309961;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=GKrkqORkkA4/uiGhuEYqezDKq5gdwgZLfiwXLp1Z++Q=;
-  b=LhKPfpcBEKxIBUcNLDI9Hwr1bLxC0PZiD3B0uH6kS3PAHnVUv4NmsIGM
-   4EvJadNen5dAguHXNzvgR2fJc03lj0Mr8MY9by2JWTxhrWYIpklDb2OU1
-   99KKyaXhNV8vodf/MJEQdq88t+d0jj9C0cWyXa1a6F1G/ox1zF7RUrSV4
-   MGdnxQvRrIsNcXL24nSDErX4ulWuDT0D6+wxqNEZyJdL2dNO5TueeiiIh
-   cKkENZ3YVpmXtnEFcFxrlFl8R8z6KwSdfHxCNOwsKILYXiiU62NnAwsoO
-   HA8eXMRQQnEBK01BG4+JV6IT53sMli6Wvj97sCTvwrxSux+5lMXQBxrtG
+  t=1657774021; x=1689310021;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=tQabWDHm5mUWj7HdtljK3PgAxXDNA1HKUQKgEYI3PlE=;
+  b=FaWN+UQ03ucoGDoiT+oVhoET4W/oSnwPf/A1jm8clayTg+1ChA0C4q6P
+   s7+xch6tq8KbDWYM8928nnnIxB1E0qcy0nhoBnCbyf+H2l7ZCczmzCjMr
+   Y1qOMx3DcCbCve8ZnNOOhEWX3RoDm0MtLjBVG505jIQLwYSm1XLuNRYZZ
+   jVQb799AS+b/15VAu6Eu25MGeROC8Qg4PxmLvtPWyeaTi4fEiFwxQ32xf
+   GNtOUeZaFIdOrT3yA+sVUcFc7vvWP4+xNTfYbMw+jYFujwb72uB98+eiX
+   eKJY282xbiEm5FWgwvS8I2eGx9T5sDnh/o2caRmVhlKItZ5yAO4pJ5SIA
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286157417"
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="284170448"
 X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="286157417"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 21:46:01 -0700
+   d="asc'?scan'208";a="284170448"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 21:47:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="546126327"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 13 Jul 2022 21:45:59 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBqje-0000E6-TF;
-        Thu, 14 Jul 2022 04:45:58 +0000
-Date:   Thu, 14 Jul 2022 12:45:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     James Smart <jsmart2021@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Justin Tee <justin.tee@broadcom.com>
-Subject: arch/arm64/include/asm/cmpxchg.h:88:1: sparse: sparse: cast
- truncates bits from constant value (369 becomes 69)
-Message-ID: <202207141231.RoL3iyJf-lkp@intel.com>
+   d="asc'?scan'208";a="599992536"
+Received: from zhen-hp.sh.intel.com (HELO zhen-hp) ([10.239.159.108])
+  by fmsmga007.fm.intel.com with ESMTP; 13 Jul 2022 21:46:57 -0700
+Date:   Thu, 14 Jul 2022 12:23:26 +0800
+From:   Zhenyu Wang <zhenyuw@linux.intel.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Zhi Wang <zhi.a.wang@intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 07/39] drm/i915: gvt: fix kernel-doc trivial warnings
+Message-ID: <20220714042326.GY1089@zhen-hp.sh.intel.com>
+Reply-To: Zhenyu Wang <zhenyuw@linux.intel.com>
+References: <cover.1657699522.git.mchehab@kernel.org>
+ <375c0c0ca2ef414f25e14f274457f77373a9268d.1657699522.git.mchehab@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="CCAbHT5wTCfICpGW"
 Content-Disposition: inline
+In-Reply-To: <375c0c0ca2ef414f25e14f274457f77373a9268d.1657699522.git.mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   4a57a8400075bc5287c5c877702c68aeae2a033d
-commit: 17b27ac5922454ff7de91cbed458643608c36abc scsi: lpfc: Add rx monitoring statistics
-date:   11 months ago
-config: arm64-allyesconfig (https://download.01.org/0day-ci/archive/20220714/202207141231.RoL3iyJf-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 11.3.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=17b27ac5922454ff7de91cbed458643608c36abc
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 17b27ac5922454ff7de91cbed458643608c36abc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/cpufreq/ drivers/irqchip/ drivers/scsi/hisi_sas/ drivers/scsi/lpfc/
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+--CCAbHT5wTCfICpGW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 2022.07.13 09:11:55 +0100, Mauro Carvalho Chehab wrote:
+> Some functions seem to have been renamed without updating the kernel-doc
+> markup causing warnings. Also, struct intel_vgpu_dmabuf_obj is not
+> properly documented, but has a kerneld-doc markup.
+>=20
+> Fix those warnings:
+> 	drivers/gpu/drm/i915/gvt/aperture_gm.c:308: warning: expecting prototype=
+ for inte_gvt_free_vgpu_resource(). Prototype was for intel_vgpu_free_resou=
+rce() instead
+> 	drivers/gpu/drm/i915/gvt/aperture_gm.c:344: warning: expecting prototype=
+ for intel_alloc_vgpu_resource(). Prototype was for intel_vgpu_alloc_resour=
+ce() instead
+> 	drivers/gpu/drm/i915/gvt/cfg_space.c:257: warning: expecting prototype f=
+or intel_vgpu_emulate_cfg_read(). Prototype was for intel_vgpu_emulate_cfg_=
+write() instead
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'vgpu' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'info' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'dmabuf_id' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'kref' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'initref' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/dmabuf.h:61: warning: Function parameter or mem=
+ber 'list' not described in 'intel_vgpu_dmabuf_obj'
+> 	drivers/gpu/drm/i915/gvt/handlers.c:3066: warning: expecting prototype f=
+or intel_t_default_mmio_write(). Prototype was for intel_vgpu_default_mmio_=
+write() instead
+> 	drivers/gpu/drm/i915/gvt/mmio_context.c:560: warning: expecting prototyp=
+e for intel_gvt_switch_render_mmio(). Prototype was for intel_gvt_switch_mm=
+io() instead
+> 	drivers/gpu/drm/i915/gvt/page_track.c:131: warning: expecting prototype =
+for intel_vgpu_enable_page_track(). Prototype was for intel_vgpu_disable_pa=
+ge_track() instead
+> 	drivers/gpu/drm/i915/gvt/vgpu.c:215: warning: expecting prototype for in=
+tel_gvt_active_vgpu(). Prototype was for intel_gvt_activate_vgpu() instead
+> 	drivers/gpu/drm/i915/gvt/vgpu.c:230: warning: expecting prototype for in=
+tel_gvt_deactive_vgpu(). Prototype was for intel_gvt_deactivate_vgpu() inst=
+ead
+> 	drivers/gpu/drm/i915/gvt/vgpu.c:358: warning: expecting prototype for in=
+tel_gvt_destroy_vgpu(). Prototype was for intel_gvt_destroy_idle_vgpu() ins=
+tead
+>=20
+> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> ---
+>=20
+> To avoid mailbombing on a large number of people, only mailing lists were=
+ C/C on the cover.
+> See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git=
+=2Emchehab@kernel.org/
+>=20
+>  drivers/gpu/drm/i915/gvt/cfg_space.c  | 2 +-
+>  drivers/gpu/drm/i915/gvt/dmabuf.h     | 2 +-
+>  drivers/gpu/drm/i915/gvt/page_track.c | 2 +-
+>  drivers/gpu/drm/i915/gvt/vgpu.c       | 6 +++---
+>  4 files changed, 6 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/gpu/drm/i915/gvt/cfg_space.c b/drivers/gpu/drm/i915/=
+gvt/cfg_space.c
+> index dad3a6054335..a0fc6d356588 100644
+> --- a/drivers/gpu/drm/i915/gvt/cfg_space.c
+> +++ b/drivers/gpu/drm/i915/gvt/cfg_space.c
+> @@ -243,7 +243,7 @@ static void emulate_pci_bar_write(struct intel_vgpu *=
+vgpu, unsigned int offset,
+>  }
+> =20
+>  /**
+> - * intel_vgpu_emulate_cfg_read - emulate vGPU configuration space write
+> + * intel_vgpu_emulate_cfg_write - emulate vGPU configuration space write
+>   * @vgpu: target vgpu
+>   * @offset: offset
+>   * @p_data: write data ptr
+> diff --git a/drivers/gpu/drm/i915/gvt/dmabuf.h b/drivers/gpu/drm/i915/gvt=
+/dmabuf.h
+> index 5f8f03fb1d1b..3dcdb6570eda 100644
+> --- a/drivers/gpu/drm/i915/gvt/dmabuf.h
+> +++ b/drivers/gpu/drm/i915/gvt/dmabuf.h
+> @@ -48,7 +48,7 @@ struct intel_vgpu_fb_info {
+>  	struct intel_vgpu_dmabuf_obj *obj;
+>  };
+> =20
+> -/**
+> +/*
+>   * struct intel_vgpu_dmabuf_obj- Intel vGPU device buffer object
+>   */
+>  struct intel_vgpu_dmabuf_obj {
+> diff --git a/drivers/gpu/drm/i915/gvt/page_track.c b/drivers/gpu/drm/i915=
+/gvt/page_track.c
+> index 3375b51c75f1..df34e73cba41 100644
+> --- a/drivers/gpu/drm/i915/gvt/page_track.c
+> +++ b/drivers/gpu/drm/i915/gvt/page_track.c
+> @@ -120,7 +120,7 @@ int intel_vgpu_enable_page_track(struct intel_vgpu *v=
+gpu, unsigned long gfn)
+>  }
+> =20
+>  /**
+> - * intel_vgpu_enable_page_track - cancel write-protection on guest page
+> + * intel_vgpu_disable_page_track - cancel write-protection on guest page
+>   * @vgpu: a vGPU
+>   * @gfn: the gfn of guest page
+>   *
+> diff --git a/drivers/gpu/drm/i915/gvt/vgpu.c b/drivers/gpu/drm/i915/gvt/v=
+gpu.c
+> index 46da19b3225d..8e71cda19995 100644
+> --- a/drivers/gpu/drm/i915/gvt/vgpu.c
+> +++ b/drivers/gpu/drm/i915/gvt/vgpu.c
+> @@ -205,7 +205,7 @@ static void intel_gvt_update_vgpu_types(struct intel_=
+gvt *gvt)
+>  }
+> =20
+>  /**
+> - * intel_gvt_active_vgpu - activate a virtual GPU
+> + * intel_gvt_activate_vgpu - activate a virtual GPU
+>   * @vgpu: virtual GPU
+>   *
+>   * This function is called when user wants to activate a virtual GPU.
+> @@ -219,7 +219,7 @@ void intel_gvt_activate_vgpu(struct intel_vgpu *vgpu)
+>  }
+> =20
+>  /**
+> - * intel_gvt_deactive_vgpu - deactivate a virtual GPU
+> + * intel_gvt_deactivate_vgpu - deactivate a virtual GPU
+>   * @vgpu: virtual GPU
+>   *
+>   * This function is called when user wants to deactivate a virtual GPU.
+> @@ -348,7 +348,7 @@ struct intel_vgpu *intel_gvt_create_idle_vgpu(struct =
+intel_gvt *gvt)
+>  }
+> =20
+>  /**
+> - * intel_gvt_destroy_vgpu - destroy an idle virtual GPU
+> + * intel_gvt_destroy_idle_vgpu - destroy an idle virtual GPU
+>   * @vgpu: virtual GPU
+>   *
+>   * This function is called when user wants to destroy an idle virtual GP=
+U.
+> --=20
 
-sparse warnings: (new ones prefixed by >>)
-   drivers/scsi/lpfc/lpfc_init.c: note: in included file:
-   drivers/scsi/lpfc/lpfc_ids.h:26:28: sparse: sparse: symbol 'lpfc_id_table' was not declared. Should it be static?
-   drivers/scsi/lpfc/lpfc_init.c:145:40: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned int [usertype] @@     got restricted __be32 [usertype] @@
-   drivers/scsi/lpfc/lpfc_init.c:145:40: sparse:     expected unsigned int [usertype]
-   drivers/scsi/lpfc/lpfc_init.c:145:40: sparse:     got restricted __be32 [usertype]
-   drivers/scsi/lpfc/lpfc_init.c:385:27: sparse: sparse: restricted __be32 degrades to integer
-   drivers/scsi/lpfc/lpfc_init.c:390:34: sparse: sparse: restricted __be32 degrades to integer
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:4442:24: sparse: sparse: cast to restricted __be64
-   drivers/scsi/lpfc/lpfc_init.c:6111:32: sparse: sparse: Using plain integer as NULL pointer
-   drivers/scsi/lpfc/lpfc_init.c:7518:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [addressable] [usertype] wwn @@     got restricted __be64 [usertype] @@
-   drivers/scsi/lpfc/lpfc_init.c:7518:21: sparse:     expected unsigned long long [addressable] [usertype] wwn
-   drivers/scsi/lpfc/lpfc_init.c:7518:21: sparse:     got restricted __be64 [usertype]
-   drivers/scsi/lpfc/lpfc_init.c:7523:21: sparse: sparse: incorrect type in assignment (different base types) @@     expected unsigned long long [addressable] [usertype] wwn @@     got restricted __be64 [usertype] @@
-   drivers/scsi/lpfc/lpfc_init.c:7523:21: sparse:     expected unsigned long long [addressable] [usertype] wwn
-   drivers/scsi/lpfc/lpfc_init.c:7523:21: sparse:     got restricted __be64 [usertype]
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13866:24: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13867:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13868:15: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c:13869:17: sparse: sparse: cast to restricted __be32
-   drivers/scsi/lpfc/lpfc_init.c: note: in included file (through arch/arm64/include/asm/atomic.h, include/linux/atomic.h, include/asm-generic/bitops/atomic.h, ...):
->> arch/arm64/include/asm/cmpxchg.h:88:1: sparse: sparse: cast truncates bits from constant value (369 becomes 69)
+Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
 
-vim +88 arch/arm64/include/asm/cmpxchg.h
+Thanks! I'll put in queue with other gvt fixes.
 
-10b663aef1c247 Catalin Marinas 2012-03-05  84  
-305d454aaa292b Will Deacon     2015-10-08  85  __XCHG_GEN()
-305d454aaa292b Will Deacon     2015-10-08  86  __XCHG_GEN(_acq)
-305d454aaa292b Will Deacon     2015-10-08  87  __XCHG_GEN(_rel)
-305d454aaa292b Will Deacon     2015-10-08 @88  __XCHG_GEN(_mb)
-305d454aaa292b Will Deacon     2015-10-08  89  
+--CCAbHT5wTCfICpGW
+Content-Type: application/pgp-signature; name="signature.asc"
 
-:::::: The code at line 88 was first introduced by commit
-:::::: 305d454aaa292be3a09a9d674e6c35f5b4249a13 arm64: atomics: implement native {relaxed, acquire, release} atomics
+-----BEGIN PGP SIGNATURE-----
 
-:::::: TO: Will Deacon <will.deacon@arm.com>
-:::::: CC: Catalin Marinas <catalin.marinas@arm.com>
+iF0EARECAB0WIQTXuabgHDW6LPt9CICxBBozTXgYJwUCYs+aNAAKCRCxBBozTXgY
+J9jlAJ0SBHiGlVnl69HpQC7DoBtaBEcTKwCaA5E4YFCilATJ34RgabNyuY5uV0U=
+=ZLap
+-----END PGP SIGNATURE-----
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--CCAbHT5wTCfICpGW--
