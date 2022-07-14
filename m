@@ -2,139 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3797DC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71BC0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237301AbiGNIuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:50:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45660 "EHLO
+        id S237405AbiGNIuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiGNIuJ (ORCPT
+        with ESMTP id S229506AbiGNIul (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:50:09 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03BA11C93A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:50:08 -0700 (PDT)
+        Thu, 14 Jul 2022 04:50:41 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44BAD3ED72
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:50:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657788609; x=1689324609;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=9YLyw3a9ws0g5Y/zxv66yB33PVyxoOytrXNruWQ7tPA=;
-  b=mXjtwRcxMx1jcP7FJyjENhcBgftSBWWjdFH3R2MkKonT8h7/Wo1r3ADZ
-   iJLI0Mhesoo7YQqYm7jENMQ4L+bFGgQNmhamsSTOgHsBnxZ7hpiM0VL+W
-   I+wqgQgxntlRX61o47S5k6pEzITaPHnrxqCAIPHZx6zO93azgPW/I1YTd
-   bG8U2BkjMW/Jk0CnPTK3lCBDK9BLzW4eF7N2UIyFAzqIjZlT92mzWowCb
-   AbVxCSvvxkyrFJ2d6P2fjiV6xXvFM/2T63zDXD8T6XdcDLhXAx+lpFSne
-   81zm3vGx53/ykReT9EWC+LPtBok1Cta5NHdoCMX+YpbpNP7ob5DmUP1MY
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="347137555"
+  t=1657788640; x=1689324640;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=+nkwAyhBBbTdcIq1r+Hu2NumNZeEfZRU9U/lzgfMfTI=;
+  b=XovSQXpOZcj7uwp0B48ic02wrAcmoV7KTZIOdiw7ZDkok/Gzt4tvdo4n
+   e+4BtzD3V9oqFJ/Ak76Gn4fUWXJT+Z5y2wGtlO/wKElr6PJlAH07HSj1J
+   hlRsgm+7ghtUvigO+ByLOyuEfTqf3Z0YmeqJKZjaazVMR2WrnmNeq2s3+
+   KKu6Rp8xayHaB5Ly8kyiRPOhqMRD6fGtQ7jvOx2qa77AwPZzyN29FVr2Q
+   iaVpVoRCTeQbt1BDR+CvQbCmPZ8sZsE91GqK8ql6gqDC4WO2j8k557kbF
+   jmB4IASaXlRefKPVgPRFK6Fhb1LcWE/5VmhILzMdxsdvbZNkPe+H6O8c/
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="284214479"
 X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="347137555"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 01:50:06 -0700
-X-ExtLoop1: 1
+   d="scan'208";a="284214479"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 01:50:39 -0700
 X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="663708019"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 14 Jul 2022 01:50:05 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBuXs-0000MG-Ct;
-        Thu, 14 Jul 2022 08:50:04 +0000
-Date:   Thu, 14 Jul 2022 16:49:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Xiang Gao <xiang@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [xiang:erofs/advancedpcl 16/16] fs/erofs/zdata.c:896:12: warning:
- variable 'len' is uninitialized when used here
-Message-ID: <202207141642.UPeaIPx7-lkp@intel.com>
+   d="scan'208";a="653784267"
+Received: from maurocar-mobl2.ger.corp.intel.com (HELO maurocar-mobl2) ([10.252.36.101])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 01:50:37 -0700
+Date:   Thu, 14 Jul 2022 10:50:34 +0200
+From:   Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
+To:     Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        intel-gvt-dev@lists.freedesktop.org
+Subject: Re: [Intel-gfx] [PATCH v2 01/39] drm/i915/gvt: Fix kernel-doc for
+ intel_gvt_switch_mmio()
+Message-ID: <20220714105034.0b370a6a@maurocar-mobl2>
+In-Reply-To: <Ys9Am6jkPiVnA+uW@intel.com>
+References: <cover.1657699522.git.mchehab@kernel.org>
+        <72db6b58c1f223e326f84978267ba064eaf67ff0.1657699522.git.mchehab@kernel.org>
+        <Ys8/JP3ITMKF1aHp@intel.com>
+        <Ys9Am6jkPiVnA+uW@intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/xiang/linux.git erofs/advancedpcl
-head:   0889e3f1d4cc1d9cb08d961107c5e810c47ecfd0
-commit: 0889e3f1d4cc1d9cb08d961107c5e810c47ecfd0 [16/16] erofs: introduce multi-reference pclusters (fully-referenced)
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220714/202207141642.UPeaIPx7-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e61b9c556267086ef9b743a0b57df302eef831b)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/xiang/linux.git/commit/?id=0889e3f1d4cc1d9cb08d961107c5e810c47ecfd0
-        git remote add xiang https://git.kernel.org/pub/scm/linux/kernel/git/xiang/linux.git
-        git fetch --no-tags xiang erofs/advancedpcl
-        git checkout 0889e3f1d4cc1d9cb08d961107c5e810c47ecfd0
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/erofs/
+On Wed, 13 Jul 2022 18:00:59 -0400
+Rodrigo Vivi <rodrigo.vivi@intel.com> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> On Wed, Jul 13, 2022 at 05:54:44PM -0400, Rodrigo Vivi wrote:
+> > On Wed, Jul 13, 2022 at 09:11:49AM +0100, Mauro Carvalho Chehab wrote:  
+> > > From: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> > > 
+> > > Fix the following W=1 kernel warnings:
+> > > 
+> > > drivers/gpu/drm/i915/gvt/mmio_context.c:560: warning: expecting
+> > > prototype for intel_gvt_switch_render_mmio(). Prototype was for
+> > > intel_gvt_switch_mmio() instead.
+> > > 
+> > > Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> > > Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> > > Acked-by: Zhenyu Wang <zhenyuw@linux.intel.com>
+> > > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>  
+> > 
+> > Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>  
+> 
+> I actually changed my mind after seeing that in most cases you use "()"
+> for the functions and you didn't use for this case...
 
-All warnings (new ones prefixed by >>):
+The documentation build system handles both ways equally, and there's
+no consensus kernel-wide about what would be the preferred way[1].
 
->> fs/erofs/zdata.c:896:12: warning: variable 'len' is uninitialized when used here [-Wuninitialized]
-                                   cur += len;
-                                          ^~~
-   fs/erofs/zdata.c:887:32: note: initialize the variable 'len' to silence this warning
-                           unsigned int pgnr, scur, len;
-                                                       ^
-                                                        = 0
-   1 warning generated.
+Also, at the html (or pdf) output, they'll all look the same. So, no
+difference in practice at the produced documentation.
 
+[1] The current count (using drm-tip 2022y-07m-12d-21h-47m-27s) as basis,
+    is:
 
-vim +/len +896 fs/erofs/zdata.c
+	$ git ls-files|xargs grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+ -" |wc -l
+	36680
+	$ git ls-files|xargs grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+\s*\(\) -" |wc -l
+	12068
 
-   869	
-   870	static void z_erofs_fill_other_copies(struct z_erofs_decompress_backend *be,
-   871					      int err)
-   872	{
-   873		unsigned int off0 = be->pcl->pageofs_out;
-   874		struct list_head *p, *n;
-   875	
-   876		list_for_each_safe(p, n, &be->decompressed_secondary_bvecs) {
-   877			struct z_erofs_bvec_item *bvi;
-   878			unsigned int end, cur;
-   879			void *dst, *src;
-   880	
-   881			bvi = container_of(p, struct z_erofs_bvec_item, list);
-   882			cur = bvi->bvec.offset < 0 ? -bvi->bvec.offset : 0;
-   883			end = min_t(unsigned int, be->pcl->length - bvi->bvec.offset,
-   884				    bvi->bvec.end);
-   885			dst = kmap_local_page(bvi->bvec.page);
-   886			while (cur < end) {
-   887				unsigned int pgnr, scur, len;
-   888	
-   889				pgnr = (bvi->bvec.offset + cur + off0) >> PAGE_SHIFT;
-   890				DBG_BUGON(pgnr >= be->nr_pages);
-   891	
-   892				scur = bvi->bvec.offset + cur -
-   893						((pgnr << PAGE_SHIFT) - off0);
-   894				if (!be->decompressed_pages[pgnr]) {
-   895					err = -EFSCORRUPTED;
- > 896					cur += len;
-   897					continue;
-   898				}
-   899				src = kmap_local_page(be->decompressed_pages[pgnr]);
-   900				len = min_t(unsigned int, end - cur, PAGE_SIZE - scur);
-   901				memcpy(dst + cur, src + scur, len);
-   902				kunmap_local(src);
-   903				cur += len;
-   904			}
-   905			kunmap_local(dst);
-   906			if (err)
-   907				z_erofs_page_mark_eio(bvi->bvec.page);
-   908			z_erofs_onlinepage_endio(bvi->bvec.page);
-   909			list_del(p);
-   910			kfree(bvi);
-   911		}
-   912	}
-   913	
+    So, 48748 documented functions, being ~25% with parenthesis, 
+    and ~75% without it.
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+    Under drivers/gpu, the numbers are:
+
+	$ git ls-files|grep drivers/gpu/|xargs grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+\s*\(\) -" |wc -l
+	480
+	mchehab@sal /new_devel/v4l/tmp $ git ls-files|grep drivers/gpu/|xargs grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+ -" |wc -l
+	4046
+
+> which one should we pick for consistency?
+
+Yeah, it is nicer to use the same way everywhere. Btw, on media, I was
+enforcing one way at the beginning, but I ended giving up doing that
+as it was too many efforts for too little. Nowadays, half of media
+function declarations have parenthesis, half doesn't.
+
+Anyway, this is what we have at i915 driver, before this series:
+
+	$ grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+\s*\(\) -" $(find drivers/gpu/drm/i915 -type f)|wc -l
+	53
+	$ grep -Pzo "\/\*\*\n \* [_a-zA-Z0-9]+ -" $(find drivers/gpu/drm/i915 -type f)|wc -l
+	542
+
+This series include 3 functions with "()" (on patches 1 and 3, both
+authored by Jiapeng, and 11 functions without it on my own patches.
+
+I'll change those two patches to remove the "()" for consistency.
+
+I guess I'll add a patch at the end changing the other 53 functions
+to drop "()".
+
+Regards,
+Mauro
