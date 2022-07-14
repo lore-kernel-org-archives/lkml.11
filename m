@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA58EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73874C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232549AbiGNVax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 17:30:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
+        id S240980AbiGNVa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 17:30:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240904AbiGNVaM (ORCPT
+        with ESMTP id S240916AbiGNVaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 17:30:12 -0400
 Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35AF46EE9E;
-        Thu, 14 Jul 2022 14:30:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 464F06EEA2;
+        Thu, 14 Jul 2022 14:30:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657834210; x=1689370210;
+  t=1657834211; x=1689370211;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MKXPIIFCKq1Ix/NaBw0lwW3hR6vL7FK0OLfTG46MOK8=;
-  b=ICGSY2Hnkt1QXtX1aWyWcc0g707qyHNr4nBFmINuNYfjXJExlXYVIWPE
-   w5Jy3jcwVFIP4LwjQW017xyaRxYyMuPbSO9yH+3Y/L4x+Scbrj64jn78G
-   3MeP7/tq7o9z+FOWRRWHZPpe2rOPf4uL53hi1kp3se4oLTXtELJR+Trq0
-   A=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jul 2022 14:30:08 -0700
+  bh=VzZv/RLeksObiqe10i19QRwTM/pl1X0UAcpW9tKoUJA=;
+  b=g7pCkPgsWPjXTNiS/BRrVKIGyjMnwpKiTGunYmPrKK0piBpR7wtuXATw
+   Auj/pL8uYUO99qAEBM5V+m7/7ZR3CMQRxYSmhQNqF/6QGYTQ5dQ15SaFB
+   PBB0UhEJ3b562AWxn8jdDjfZhCxQTY5XKApAmW2LOACSgyBqfsYFlyfOy
+   k=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jul 2022 14:30:10 -0700
 X-QCInternal: smtphost
 Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 14:30:08 -0700
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 14:30:11 -0700
 Received: from hu-eberman-lv.qualcomm.com (10.49.16.6) by
  nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 14:30:08 -0700
+ 15.2.986.22; Thu, 14 Jul 2022 14:30:10 -0700
 From:   Elliot Berman <quic_eberman@quicinc.com>
 To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
         <linux-kernel@vger.kernel.org>
@@ -52,9 +52,9 @@ CC:     Elliot Berman <quic_eberman@quicinc.com>,
         Will Deacon <will@kernel.org>,
         Catalin Marinas <catalin.marinas@arm.com>,
         <devicetree@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH v2 08/11] gunyah: rsc_mgr: Add resource manager RPC core
-Date:   Thu, 14 Jul 2022 14:29:37 -0700
-Message-ID: <20220714212940.2988436-9-quic_eberman@quicinc.com>
+Subject: [PATCH v2 11/11] gunyah: Add tty console driver for RM Console Serivces
+Date:   Thu, 14 Jul 2022 14:29:40 -0700
+Message-ID: <20220714212940.2988436-12-quic_eberman@quicinc.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220714212940.2988436-1-quic_eberman@quicinc.com>
 References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
@@ -69,813 +69,475 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The resource manager is a special virtual machine which is always
-running on a Gunyah system. It provides APIs for creating and destroying
-VMs, secure memory management, sharing/lending of memory between VMs,
-and setup of inter-VM communication. Calls to the resource manager are
-made via message queues.
-
-This patch implements the basic probing and RPC mechanism to make those
-API calls. Request/response calls can be made with gh_rm_call.
-Drivers can also register to notifications pushed by RM via
-gh_rm_register_notifier
-
-Specific API calls that resource manager supports will be implemented in
-subsequent patches.
+Gunyah provides a console for each VM using the VM console resource
+manager APIs. This driver allows console data from other
+VMs to be accessed via a TTY device and exports a console device to dump
+Linux's own logs to our console.
 
 Signed-off-by: Elliot Berman <quic_eberman@quicinc.com>
 ---
- MAINTAINERS                          |   2 +-
- drivers/virt/gunyah/Kconfig          |   1 +
- drivers/virt/gunyah/Makefile         |   1 +
- drivers/virt/gunyah/gunyah_private.h |   3 +
- drivers/virt/gunyah/rsc_mgr.c        | 623 +++++++++++++++++++++++++++
- drivers/virt/gunyah/rsc_mgr.h        |  34 ++
- drivers/virt/gunyah/sysfs.c          |   7 +
- include/linux/gunyah_rsc_mgr.h       |  29 ++
- 8 files changed, 699 insertions(+), 1 deletion(-)
- create mode 100644 drivers/virt/gunyah/rsc_mgr.c
- create mode 100644 drivers/virt/gunyah/rsc_mgr.h
- create mode 100644 include/linux/gunyah_rsc_mgr.h
+ Documentation/virt/gunyah/index.rst   |   7 +
+ drivers/virt/gunyah/Kconfig           |  10 +
+ drivers/virt/gunyah/Makefile          |   3 +
+ drivers/virt/gunyah/rsc_mgr_console.c | 405 ++++++++++++++++++++++++++
+ 4 files changed, 425 insertions(+)
+ create mode 100644 drivers/virt/gunyah/rsc_mgr_console.c
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5d46c1f91b92..4bbec2ae4a6c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8745,7 +8745,7 @@ F:	Documentation/devicetree/bindings/firmware/gunyah-hypervisor.yaml
- F:	Documentation/virt/gunyah/
- F:	arch/arm64/include/asm/gunyah.h
- F:	drivers/virt/gunyah/
--F:	include/linux/gunyah.h
-+F:	include/linux/gunyah*.h
- 
- HABANALABS PCI DRIVER
- M:	Oded Gabbay <ogabbay@kernel.org>
+diff --git a/Documentation/virt/gunyah/index.rst b/Documentation/virt/gunyah/index.rst
+index e7bb2b14543e..95ba9b71ab30 100644
+--- a/Documentation/virt/gunyah/index.rst
++++ b/Documentation/virt/gunyah/index.rst
+@@ -90,3 +90,10 @@ When booting a virtual machine which uses a devicetree, resource manager overlay
+ how to communicate with resource manager, and basic description and capabilities of
+ this VM. See Documentation/devicetree/bindings/gunyah/qcom,hypervisor.yml for a description
+ of this node.
++
++Resource Manager Consoles
++-------------------------
++RM provides infrastructure for virtual machines to share an interactive console. This can be used to
++interact with a VM which may not have access to a serial port. Linux will register a printk console:
++ttyGH0. That console and other VM's consoles can be accessed via ttyGHX.
++/sys/class/tty/ttyGHX/vmid will print the VM which is associated with that TTY.
 diff --git a/drivers/virt/gunyah/Kconfig b/drivers/virt/gunyah/Kconfig
-index e88289963518..2ef4887e280d 100644
+index 2ef4887e280d..f5a951ee2b4a 100644
 --- a/drivers/virt/gunyah/Kconfig
 +++ b/drivers/virt/gunyah/Kconfig
-@@ -4,6 +4,7 @@ config GUNYAH
- 	tristate "Gunyah Virtualization drivers"
- 	depends on ARM64
- 	select SYS_HYPERVISOR
-+	select AUXILIARY_BUS
- 	help
- 	  The Gunyah drivers are the helper interfaces that runs in a guest VM
- 	  such as basic inter-VM IPC and signaling mechanism,s and higher level
+@@ -12,3 +12,13 @@ config GUNYAH
+ 
+ 	  Say Y here to enable the drivers needed to interact in a Gunyah
+ 	  virtual environment.
++
++if GUNYAH
++config GUNYAH_RESOURCE_MANAGER_CONSOLE
++	tristate "Gunyah Resource Manager Consoles"
++	depends on TTY
++	help
++	  This enables support for console output using Gunyah's Resource Manager RPC.
++	  This is normally used when a secondary VM which does not have exclusive access
++	  to a real serial device and virtio-console is unavailable.
++endif
 diff --git a/drivers/virt/gunyah/Makefile b/drivers/virt/gunyah/Makefile
-index 94dc8e738911..86655bca8944 100644
+index b3f15c052297..001cf1630c03 100644
 --- a/drivers/virt/gunyah/Makefile
 +++ b/drivers/virt/gunyah/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0-only
- 
+@@ -3,3 +3,6 @@
  gunyah-y += sysfs.o device.o msgq.o
-+gunyah-y += rsc_mgr.o
+ gunyah-y += rsc_mgr.o rsc_mgr_rpc.o
  obj-$(CONFIG_GUNYAH) += gunyah.o
-\ No newline at end of file
-diff --git a/drivers/virt/gunyah/gunyah_private.h b/drivers/virt/gunyah/gunyah_private.h
-index 2ade32bd9bdf..6483ffa8c15d 100644
---- a/drivers/virt/gunyah/gunyah_private.h
-+++ b/drivers/virt/gunyah/gunyah_private.h
-@@ -12,4 +12,7 @@ void gunyah_bus_exit(void);
- int __init gh_msgq_init(void);
- void gh_msgq_exit(void);
- 
-+int __init gh_rsc_mgr_init(void);
-+void gh_rsc_mgr_exit(void);
 +
- #endif
-diff --git a/drivers/virt/gunyah/rsc_mgr.c b/drivers/virt/gunyah/rsc_mgr.c
++gunyah_console-y += rsc_mgr_console.o
++obj-$(CONFIG_GUNYAH_RESOURCE_MANAGER_CONSOLE) += gunyah_console.o
+diff --git a/drivers/virt/gunyah/rsc_mgr_console.c b/drivers/virt/gunyah/rsc_mgr_console.c
 new file mode 100644
-index 000000000000..b8268ee02fab
+index 000000000000..eda25100314f
 --- /dev/null
-+++ b/drivers/virt/gunyah/rsc_mgr.c
-@@ -0,0 +1,623 @@
++++ b/drivers/virt/gunyah/rsc_mgr_console.c
+@@ -0,0 +1,405 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
 + * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
 + */
 +
-+#define pr_fmt(fmt) "gh_rsc_mgr: " fmt
++#define pr_fmt(fmt) "gh_rsc_mgr_console: " fmt
 +
-+#include <linux/of.h>
-+#include <linux/slab.h>
-+#include <linux/delay.h>
-+#include <linux/mutex.h>
-+#include <linux/sched.h>
-+#include <linux/gunyah.h>
-+#include <linux/module.h>
-+#include <linux/of_irq.h>
-+#include <linux/kthread.h>
-+#include <linux/notifier.h>
-+#include <linux/irqdomain.h>
-+#include <linux/workqueue.h>
-+#include <linux/completion.h>
-+#include <linux/auxiliary_bus.h>
 +#include <linux/gunyah_rsc_mgr.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/platform_device.h>
++#include <linux/auxiliary_bus.h>
++#include <linux/workqueue.h>
++#include <linux/spinlock.h>
++#include <linux/tty_flip.h>
++#include <linux/console.h>
++#include <linux/module.h>
++#include <linux/kfifo.h>
++#include <linux/kref.h>
++#include <linux/slab.h>
++#include <linux/tty.h>
++#include <linux/of.h>
 +
-+#include "gunyah_private.h"
-+#include "rsc_mgr.h"
-+
-+/* Resource Manager Header */
-+struct gh_rm_rpc_hdr {
-+	u8 version:4,
-+		hdr_words:4;
-+	u8 type:2,
-+		fragments:6;
-+	u16 seq;
-+	u32 msg_id;
-+} __packed;
-+
-+/* Standard reply header */
-+struct gh_rm_rpc_reply_hdr {
-+	struct gh_rm_rpc_hdr rpc_hdr;
-+	u32 err_code;
-+} __packed;
-+
-+/* RPC Header versions */
-+#define GH_RM_RPC_HDR_VERSION_ONE	0x1
-+
-+/* RPC Header words */
-+#define GH_RM_RPC_HDR_WORDS		0x2
-+
-+/* RPC Message types */
-+#define GH_RM_RPC_TYPE_CONT		0x0
-+#define GH_RM_RPC_TYPE_REQ		0x1
-+#define GH_RM_RPC_TYPE_RPLY		0x2
-+#define GH_RM_RPC_TYPE_NOTIF		0x3
-+
-+#define GH_RM_MAX_NUM_FRAGMENTS		62
-+
-+#define GH_RM_MAX_MSG_SIZE	(GH_MSGQ_MAX_MSG_SIZE - sizeof(struct gh_rm_rpc_hdr))
-+
-+/**
-+ * struct gh_rm_connection - Represents a complete message from resource manager
-+ * @payload: Combined payload of all the fragments (i.e. msg headers stripped off).
-+ * @size: Size of the payload.
-+ * @ret: Linux return code, set in case there was an error processing the connection.
-+ * @msg_id: Message ID from the header.
-+ * @type: GH_RM_RPC_TYPE_RPLY or GH_RM_RPC_TYPE_NOTIF.
-+ * @num_fragments: total number of fragments expected to be received for this connection.
-+ * @fragments_recieved: fragments received so far.
-+ * @rm_error: For request/reply sequences with standard replies.
-+ * @seq: Sequence ID for the main message.
++/*
++ * The Linux TTY code does not support dynamic addition of tty derived devices so we need to know
++ * how many tty devices we might need when space is allocated for the tty device. Since VMs might be
++ * added/removed dynamically, we need to make sure we have enough allocated.
 + */
-+struct gh_rm_connection {
-+	void *payload;
-+	size_t size;
++#define RSC_MGR_TTY_ADAPTERS		16
++
++/* # of payload bytes that can fit in a 1-fragment CONSOLE_WRITE message */
++#define RM_CONS_WRITE_MSG_SIZE	((1 * (GH_MSGQ_MAX_MSG_SIZE - 8)) - 4)
++
++struct rm_cons_port {
++	struct tty_port port;
++	gh_vmid_t vmid;
++	bool open;
++	unsigned int index;
++
++	DECLARE_KFIFO(put_fifo, char, 1024);
++	spinlock_t fifo_lock;
++	struct work_struct put_work;
++
++	struct rm_cons_data *cons_data;
++};
++
++struct rm_cons_data {
++	struct tty_driver *tty_driver;
++	struct device *dev;
++
++	spinlock_t ports_lock;
++	struct rm_cons_port *ports[RSC_MGR_TTY_ADAPTERS];
++
++	struct notifier_block rsc_mgr_notif;
++	struct console console;
++};
++
++static void put_work_fn(struct work_struct *ws)
++{
++	char buf[RM_CONS_WRITE_MSG_SIZE];
++	int count, ret;
++	struct rm_cons_port *port = container_of(ws, struct rm_cons_port, put_work);
++
++	while (!kfifo_is_empty(&port->put_fifo)) {
++		count = kfifo_out_spinlocked(&port->put_fifo, buf, sizeof(buf), &port->fifo_lock);
++		if (count <= 0)
++			continue;
++
++		ret = gh_rm_console_write(port->vmid, buf, count);
++		if (ret) {
++			pr_warn_once("failed to send characters: %d\n", ret);
++			break;
++		}
++	}
++}
++
++static int rsc_mgr_console_notif(struct notifier_block *nb, unsigned long cmd, void *data)
++{
++	int count, i;
++	struct rm_cons_port *rm_port;
++	struct tty_port *tty_port = NULL;
++	struct rm_cons_data *cons_data = container_of(nb, struct rm_cons_data, rsc_mgr_notif);
++	const struct gh_rm_notification *notif = data;
++	struct gh_rm_notif_vm_console_chars const * const msg = notif->buff;
++
++	if (cmd != GH_RM_NOTIF_VM_CONSOLE_CHARS ||
++		notif->size < sizeof(*msg))
++		return NOTIFY_DONE;
++
++	spin_lock(&cons_data->ports_lock);
++	for (i = 0; i < RSC_MGR_TTY_ADAPTERS; i++) {
++		if (!cons_data->ports[i])
++			continue;
++		if (cons_data->ports[i]->vmid == msg->vmid) {
++			rm_port = cons_data->ports[i];
++			break;
++		}
++	}
++	if (rm_port)
++		tty_port = tty_port_get(&rm_port->port);
++	spin_unlock(&cons_data->ports_lock);
++
++	if (!rm_port)
++		pr_warn("Received unexpected console characters for VMID %u\n", msg->vmid);
++	if (!tty_port)
++		return NOTIFY_DONE;
++
++	count = tty_buffer_request_room(tty_port, msg->num_bytes);
++	tty_insert_flip_string(tty_port, msg->bytes, count);
++	tty_flip_buffer_push(tty_port);
++
++	tty_port_put(tty_port);
++	return NOTIFY_OK;
++}
++
++static ssize_t vmid_show(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct rm_cons_port *rm_port = dev_get_drvdata(dev);
++
++	if (rm_port->vmid == GH_VMID_SELF)
++		return sysfs_emit(buf, "self\n");
++
++	return sysfs_emit(buf, "%u\n", rm_port->vmid);
++}
++
++static DEVICE_ATTR_RO(vmid);
++
++static struct attribute *rsc_mgr_tty_dev_attrs[] = {
++	&dev_attr_vmid.attr,
++	NULL
++};
++
++static const struct attribute_group rsc_mgr_tty_dev_attr_group = {
++	.attrs = rsc_mgr_tty_dev_attrs,
++};
++
++static const struct attribute_group *rsc_mgr_tty_dev_attr_groups[] = {
++	&rsc_mgr_tty_dev_attr_group,
++	NULL
++};
++
++static int rsc_mgr_tty_open(struct tty_struct *tty, struct file *filp)
++{
 +	int ret;
-+	u32 msg_id;
-+	u8 type;
++	struct rm_cons_port *rm_port = dev_get_drvdata(tty->dev);
 +
-+	u8 num_fragments;
-+	u8 fragments_received;
-+
-+	/* only for req/reply sequence */
-+	u32 rm_error;
-+	u16 seq;
-+	struct completion seq_done;
-+};
-+
-+struct gh_rm_notif_complete {
-+	struct gh_rm_connection *conn;
-+	struct work_struct work;
-+};
-+
-+struct gh_rsc_mgr {
-+	struct task_struct *recv_task;
-+	struct gunyah_device *msgq_tx, *msgq_rx;
-+
-+	struct idr call_idr;
-+	struct mutex call_idr_lock;
-+
-+	struct mutex send_lock;
-+};
-+
-+static struct gh_rsc_mgr *__rsc_mgr;
-+SRCU_NOTIFIER_HEAD_STATIC(gh_rm_notifier);
-+
-+static struct gh_rm_connection *gh_rm_alloc_connection(u32 msg_id, u8 type)
-+{
-+	struct gh_rm_connection *connection;
-+
-+	connection = kzalloc(sizeof(*connection), GFP_KERNEL);
-+	if (!connection)
-+		return NULL;
-+
-+	connection->type = type;
-+	connection->msg_id = msg_id;
-+
-+	return connection;
-+}
-+
-+/**
-+ * gh_rm_init_connection_payload() - Fills the first message for a connection.
-+ */
-+static int gh_rm_init_connection_payload(struct gh_rm_connection *connection, void *msg,
-+					size_t hdr_size, size_t payload_size)
-+{
-+	struct gh_rm_rpc_hdr *hdr = msg;
-+	size_t max_buf_size;
-+
-+	connection->num_fragments = hdr->fragments;
-+	connection->fragments_received = 0;
-+	connection->type = hdr->type;
-+
-+	/* There's not going to be any payload, no need to allocate buffer. */
-+	if (!payload_size && !connection->num_fragments)
-+		return 0;
-+
-+	/*
-+	 * maximum payload size is GH_MSGQ_MAX_MSG_SIZE - hdr_size
-+	 * and can received (hdr->fragments + 1) of those
-+	 */
-+	max_buf_size = (GH_MSGQ_MAX_MSG_SIZE - hdr_size) * (hdr->fragments + 1);
-+
-+	connection->payload = kzalloc(max_buf_size, GFP_KERNEL);
-+	if (!connection->payload)
-+		return -ENOMEM;
-+
-+	memcpy(connection->payload, msg + hdr_size, payload_size);
-+	connection->size = payload_size;
-+	return 0;
-+}
-+
-+static void gh_rm_notif_work(struct work_struct *work)
-+{
-+	struct gh_rm_notif_complete *notif = container_of(work, struct gh_rm_notif_complete, work);
-+	struct gh_rm_connection *connection = notif->conn;
-+	u32 notif_id = connection->msg_id;
-+	struct gh_rm_notification notification = {
-+		.buff = connection->payload,
-+		.size = connection->size,
-+	};
-+
-+	srcu_notifier_call_chain(&gh_rm_notifier, notif_id, &notification);
-+
-+	kfree(connection->payload);
-+	kfree(connection);
-+	kfree(notif);
-+}
-+
-+static struct gh_rm_connection *gh_rm_process_notif(struct gh_rsc_mgr *rsc_mgr,
-+						    void *msg, size_t msg_size)
-+{
-+	struct gh_rm_rpc_hdr *hdr = msg;
-+	struct gh_rm_connection *connection;
-+
-+	connection = gh_rm_alloc_connection(hdr->msg_id, hdr->type);
-+	if (!connection) {
-+		pr_err("Failed to alloc connection for notification, dropping.\n");
-+		return NULL;
-+	}
-+
-+	if (gh_rm_init_connection_payload(connection, msg, sizeof(*hdr), msg_size - sizeof(*hdr))) {
-+		pr_err("Failed to alloc connection buffer for notification, dropping.\n");
-+		kfree(connection);
-+		return NULL;
-+	}
-+
-+	return connection;
-+}
-+
-+static struct gh_rm_connection *gh_rm_process_rply(struct gh_rsc_mgr *rsc_mgr,
-+						   void *msg, size_t msg_size)
-+{
-+	struct gh_rm_rpc_reply_hdr *reply_hdr = msg;
-+	struct gh_rm_rpc_hdr *hdr = msg;
-+	struct gh_rm_connection *connection;
-+
-+	if (mutex_lock_interruptible(&rsc_mgr->call_idr_lock))
-+		return ERR_PTR(-ERESTARTSYS);
-+
-+	connection = idr_find(&rsc_mgr->call_idr, hdr->seq);
-+	mutex_unlock(&rsc_mgr->call_idr_lock);
-+
-+	if (!connection) {
-+		pr_err("Failed to find connection for sequence %u\n", hdr->seq);
-+		return NULL;
-+	}
-+	if (connection->msg_id != hdr->msg_id) {
-+		pr_err("Reply for sequence %u expected msg_id: %x but got %x\n", hdr->seq,
-+			connection->msg_id, hdr->msg_id);
-+		/*
-+		 * Don't complete connection and error the client, maybe resource manager will
-+		 * send us the expected reply sequence soon.
-+		 */
-+		return NULL;
-+	}
-+
-+	if (gh_rm_init_connection_payload(connection, msg, sizeof(*reply_hdr),
-+					msg_size - sizeof(*reply_hdr))) {
-+		pr_err("Failed to alloc connection buffer for sequence %d\n", hdr->seq);
-+		/* Send connection complete and error the client. */
-+		connection->ret = -ENOMEM;
-+		complete(&connection->seq_done);
-+		return NULL;
-+	}
-+
-+	connection->rm_error = reply_hdr->err_code;
-+	return connection;
-+}
-+
-+static void gh_rm_process_cont(struct gh_rm_connection *connection, void *msg, size_t msg_size)
-+{
-+	struct gh_rm_rpc_hdr *hdr = msg;
-+	size_t payload_size = msg_size - sizeof(*hdr);
-+
-+	/*
-+	 * hdr->fragments and hdr->msg_id preserves the value from first reply or notif message.
-+	 * For sake of sanity, check if it's still intact.
-+	 */
-+	if (connection->msg_id != hdr->msg_id)
-+		pr_warn("Appending mismatched continuation with id %d to connection with id %d\n",
-+			hdr->msg_id, connection->msg_id);
-+	if (connection->num_fragments != hdr->fragments)
-+		pr_warn("Number of fragments mismatch for seq: %d\n", hdr->seq);
-+
-+	memcpy(connection->payload + connection->size, msg + sizeof(*hdr), payload_size);
-+	connection->size += payload_size;
-+	connection->fragments_received++;
-+}
-+
-+static bool gh_rm_complete_connection(struct gh_rm_connection *connection)
-+{
-+	struct gh_rm_notif_complete *notif_work;
-+
-+	if (!connection)
-+		return false;
-+
-+	if (connection->fragments_received != connection->num_fragments)
-+		return false;
-+
-+	switch (connection->type) {
-+	case GH_RM_RPC_TYPE_RPLY:
-+		complete(&connection->seq_done);
-+		break;
-+	case GH_RM_RPC_TYPE_NOTIF:
-+		notif_work = kzalloc(sizeof(*notif_work), GFP_KERNEL);
-+		if (notif_work == NULL)
-+			break;
-+
-+		notif_work->conn = connection;
-+		INIT_WORK(&notif_work->work, gh_rm_notif_work);
-+
-+		schedule_work(&notif_work->work);
-+		break;
-+	default:
-+		pr_err("Invalid message type (%d) received\n", connection->type);
-+		break;
-+	}
-+
-+	return true;
-+}
-+
-+static void gh_rm_abort_connection(struct gh_rm_connection *connection)
-+{
-+	switch (connection->type) {
-+	case GH_RM_RPC_TYPE_RPLY:
-+		connection->ret = -EIO;
-+		complete(&connection->seq_done);
-+		break;
-+	case GH_RM_RPC_TYPE_NOTIF:
-+		fallthrough;
-+	default:
-+		kfree(connection->payload);
-+		kfree(connection);
-+	}
-+}
-+
-+static int gh_rm_recv_task_fn(void *data)
-+{
-+	struct gh_rsc_mgr *rsc_mgr = data;
-+	struct gh_rm_connection *connection = NULL;
-+	struct gh_rm_rpc_hdr *hdr = NULL;
-+	ssize_t msg_size;
-+	void *msg;
-+
-+	msg = kzalloc(GH_MSGQ_MAX_MSG_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	while (!kthread_should_stop()) {
-+		/* Block until a new message is received */
-+		msg_size = gh_msgq_recv(rsc_mgr->msgq_rx, msg, GH_MSGQ_MAX_MSG_SIZE, 0);
-+		if (msg_size < 0) {
-+			pr_err("Failed to receive the message: %ld\n", msg_size);
-+			continue;
-+		} else if (msg_size <= sizeof(struct gh_rm_rpc_hdr)) {
-+			pr_err("Invalid message size received: %ld is too small\n", msg_size);
-+			continue;
++	if (!rm_port->open) {
++		ret = gh_rm_console_open(rm_port->vmid);
++		if (ret) {
++			pr_err("Failed to open RM console for vmid %x: %d\n", rm_port->vmid, ret);
++			return ret;
 +		}
-+
-+		hdr = msg;
-+		switch (hdr->type) {
-+		case GH_RM_RPC_TYPE_NOTIF:
-+			if (connection) {
-+				/* Not possible per protocol. Do something better than BUG_ON */
-+				pr_warn("Received start of new notification without finishing existing message series.\n");
-+				gh_rm_abort_connection(connection);
-+			}
-+			connection = gh_rm_process_notif(rsc_mgr, msg, msg_size);
-+			break;
-+		case GH_RM_RPC_TYPE_RPLY:
-+			if (connection) {
-+				/* Not possible per protocol. Do something better than BUG_ON */
-+				pr_warn("Received start of new reply without finishing existing message series.\n");
-+				gh_rm_abort_connection(connection);
-+			}
-+			connection = gh_rm_process_rply(rsc_mgr, msg, msg_size);
-+			break;
-+		case GH_RM_RPC_TYPE_CONT:
-+			if (!connection) {
-+				pr_warn("Received a continuation message without receiving initial message\n");
-+				break;
-+			}
-+			gh_rm_process_cont(connection, msg, msg_size);
-+			break;
-+		default:
-+			pr_err("Invalid message type (%d) received\n", hdr->type);
-+			continue;
-+		}
-+
-+		if (gh_rm_complete_connection(connection))
-+			connection = NULL;
++		rm_port->open = true;
 +	}
 +
-+	return 0;
++	return tty_port_open(&rm_port->port, tty, filp);
 +}
 +
-+static int gh_rm_send_request(struct gh_rsc_mgr *rsc_mgr, u32 message_id,
-+				const void *req_buff, size_t req_buff_size,
-+				struct gh_rm_connection *connection)
++static void rsc_mgr_tty_close(struct tty_struct *tty, struct file *filp)
 +{
-+	size_t buff_size_remaining = req_buff_size;
-+	const void *req_buff_curr = req_buff;
-+	struct gh_rm_rpc_hdr *hdr;
-+	unsigned long tx_flags;
-+	u32 num_fragments = 0;
-+	size_t payload_size;
-+	void *msg;
-+	int i, ret = 0;
-+
-+	if (req_buff_size > GH_RM_MAX_MSG_SIZE)
-+		num_fragments = req_buff_size / GH_RM_MAX_MSG_SIZE;
-+
-+	if (WARN(num_fragments > GH_RM_MAX_NUM_FRAGMENTS,
-+		 "Limit exceeded for the number of fragments: %u\n", num_fragments))
-+		return -E2BIG;
-+
-+	/*
-+	 * The above calculation also includes the count for the 'request' packet.
-+	 * Exclude it as the header needs to fill the num. of fragments to follow.
-+	 */
-+	if (num_fragments)
-+		num_fragments--;
-+
-+	if (mutex_lock_interruptible(&rsc_mgr->send_lock))
-+		return -ERESTARTSYS;
-+
-+	msg = kzalloc(GH_MSGQ_MAX_MSG_SIZE, GFP_KERNEL);
-+	if (!msg) {
-+		mutex_unlock(&rsc_mgr->send_lock);
-+		return -ENOMEM;
-+	}
-+
-+	/* Consider also the 'request' packet for the loop count */
-+	for (i = 0; i <= num_fragments; i++) {
-+		if (buff_size_remaining > GH_RM_MAX_MSG_SIZE) {
-+			payload_size = GH_RM_MAX_MSG_SIZE;
-+			buff_size_remaining -= payload_size;
-+		} else {
-+			payload_size = buff_size_remaining;
-+		}
-+
-+		memset(msg, 0, GH_MSGQ_MAX_MSG_SIZE);
-+
-+		/* Fill header */
-+		hdr = msg;
-+		hdr->version = GH_RM_RPC_HDR_VERSION_ONE;
-+		hdr->hdr_words = GH_RM_RPC_HDR_WORDS;
-+		hdr->type = i == 0 ? GH_RM_RPC_TYPE_REQ : GH_RM_RPC_TYPE_CONT;
-+		hdr->fragments = num_fragments;
-+		hdr->seq = connection->seq;
-+		hdr->msg_id = message_id;
-+
-+		/* Copy payload */
-+		memcpy(msg + sizeof(*hdr), req_buff_curr, payload_size);
-+		req_buff_curr += payload_size;
-+
-+		/* Force the last fragment to be sent immediately to the receiver */
-+		tx_flags = (i == num_fragments) ? GH_MSGQ_TX_PUSH : 0;
-+
-+		ret = gh_msgq_send(rsc_mgr->msgq_tx, msg, sizeof(*hdr) + payload_size, tx_flags);
-+
-+		if (ret < 0)
-+			break;
-+	}
-+
-+	mutex_unlock(&rsc_mgr->send_lock);
-+	return ret < 0 ? ret : 0;
-+}
-+
-+/**
-+ * gh_rm_call: Achieve request-response type communication with RPC
-+ * @message_id: The RM RPC message-id
-+ * @req_buff: Request buffer that contains the payload
-+ * @req_buff_size: Total size of the payload
-+ * @resp_buf: Pointer to a response buffer
-+ * @resp_buff_size: Size of the response buffer
-+ * @reply_err_code: Returns Gunyah standard error code for the response
-+ *
-+ * Make a request to the RM-VM and wait for reply back. For a successful
-+ * response, the function returns the payload. The size of the payload is set in resp_buff_size.
-+ * The resp_buf should be freed by the caller.
-+ *
-+ * Context: Process context. Will sleep waiting for reply.
-+ * Return: >0 is standard reply error from RM. <0 on internal error.
-+ */
-+int gh_rm_call(u32 message_id, void *req_buff, size_t req_buff_size,
-+		void **resp_buf, size_t *resp_buff_size)
-+{
-+	struct gh_rm_connection *connection;
 +	int ret;
-+	struct gh_rsc_mgr *rsc_mgr = __rsc_mgr;
++	struct rm_cons_port *rm_port = dev_get_drvdata(tty->dev);
 +
-+	/* messaged_id 0 is reserved */
-+	if (!message_id)
-+		return -EINVAL;
++	if (rm_port->open) {
++		if (rm_port->vmid != GH_VMID_SELF) {
++			ret = gh_rm_console_close(rm_port->vmid);
++			if (ret)
++				pr_warn("Failed to close RM console for vmid %d: %d\n",
++					rm_port->vmid, ret);
++		}
++		rm_port->open = false;
 +
-+	if (!rsc_mgr)
-+		return -EPROBE_DEFER;
-+
-+	connection = gh_rm_alloc_connection(message_id, GH_RM_RPC_TYPE_RPLY);
-+	if (!connection)
-+		return -ENOMEM;
-+
-+	init_completion(&connection->seq_done);
-+
-+	/* Allocate a new seq number for this connection */
-+	if (mutex_lock_interruptible(&rsc_mgr->call_idr_lock)) {
-+		kfree(connection);
-+		return -ERESTARTSYS;
-+	}
-+	connection->seq = idr_alloc_cyclic(&rsc_mgr->call_idr, connection, 0, U16_MAX, GFP_KERNEL);
-+	mutex_unlock(&rsc_mgr->call_idr_lock);
-+
-+	/* Send the request to the Resource Manager */
-+	ret = gh_rm_send_request(rsc_mgr, message_id, req_buff, req_buff_size, connection);
-+	if (ret < 0)
-+		goto out;
-+
-+	/* Wait for response */
-+	wait_for_completion(&connection->seq_done);
-+
-+	if (connection->ret) {
-+		ret = connection->ret;
-+		kfree(connection->payload);
-+		goto out;
++		tty_port_close(&rm_port->port, tty, filp);
 +	}
 +
-+	if (connection->rm_error) {
-+		ret = connection->rm_error;
-+		kfree(connection->payload);
-+		goto out;
-+	}
++}
 +
-+	*resp_buf = connection->payload;
-+	*resp_buff_size = connection->size;
++static int rsc_mgr_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
++{
++	struct rm_cons_port *rm_port = dev_get_drvdata(tty->dev);
++	int ret;
 +
-+out:
-+	mutex_lock(&rsc_mgr->call_idr_lock);
-+	idr_remove(&rsc_mgr->call_idr, connection->seq);
-+	mutex_unlock(&rsc_mgr->call_idr_lock);
++	ret = kfifo_in_spinlocked(&rm_port->put_fifo, buf, count, &rm_port->fifo_lock);
++	if (ret > 0)
++		schedule_work(&rm_port->put_work);
 +
-+	kfree(connection);
 +	return ret;
 +}
 +
-+int gh_rm_register_notifier(struct notifier_block *nb)
++static unsigned int rsc_mgr_mgr_tty_write_room(struct tty_struct *tty)
 +{
-+	return srcu_notifier_chain_register(&gh_rm_notifier, nb);
-+}
-+EXPORT_SYMBOL_GPL(gh_rm_register_notifier);
++	struct rm_cons_port *rm_port = dev_get_drvdata(tty->dev);
 +
-+int gh_rm_unregister_notifier(struct notifier_block *nb)
-+{
-+	return srcu_notifier_chain_unregister(&gh_rm_notifier, nb);
-+}
-+EXPORT_SYMBOL_GPL(gh_rm_unregister_notifier);
-+
-+static struct gunyah_device *gh_msgq_platform_probe_direction(struct platform_device *pdev,
-+				u8 gh_type, int idx)
-+{
-+	int irq, ret;
-+	u64 capid;
-+	struct device_node *node = pdev->dev.of_node;
-+	struct gunyah_device *ghdev;
-+
-+	irq = platform_get_irq(pdev, idx);
-+	if (irq < 0) {
-+		dev_err(&pdev->dev, "Failed to get irq%d: %d\n", idx, irq);
-+		return ERR_PTR(irq);
-+	}
-+
-+	ret = of_property_read_u64_index(node, "reg", idx, &capid);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to get capid%d: %d\n", idx, ret);
-+		return ERR_PTR(ret);
-+	}
-+
-+	ghdev = gunyah_device_alloc(&pdev->dev, capid, gh_type);
-+	ghdev->irq = irq;
-+	ret = gunyah_device_add(ghdev);
-+	if (ret) {
-+		kfree(ghdev);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return ghdev;
++	return kfifo_avail(&rm_port->put_fifo);
 +}
 +
-+static int gh_rm_drv_probe(struct platform_device *pdev)
++static void rsc_mgr_console_write(struct console *co, const char *buf, unsigned count)
 +{
-+	struct gh_rsc_mgr *rsc_mgr;
++	struct rm_cons_port *rm_port = co->data;
 +	int ret;
 +
-+	rsc_mgr = devm_kzalloc(&pdev->dev, sizeof(*rsc_mgr), GFP_KERNEL);
-+	if (!rsc_mgr)
-+		return -ENOMEM;
-+	platform_set_drvdata(pdev, rsc_mgr);
++	ret = kfifo_in_spinlocked(&rm_port->put_fifo, buf, count, &rm_port->fifo_lock);
++	if (ret > 0)
++		schedule_work(&rm_port->put_work);
++}
 +
-+	mutex_init(&rsc_mgr->call_idr_lock);
-+	idr_init(&rsc_mgr->call_idr);
-+	mutex_init(&rsc_mgr->send_lock);
++static struct tty_driver *rsc_mgr_console_device(struct console *co, int *index)
++{
++	struct rm_cons_port *rm_port = co->data;
 +
-+	rsc_mgr->msgq_tx = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_TX, 0);
-+	if (IS_ERR(rsc_mgr->msgq_tx))
-+		return PTR_ERR(rsc_mgr->msgq_tx);
-+	rsc_mgr->msgq_rx = gh_msgq_platform_probe_direction(pdev, GUNYAH_DEVICE_TYPE_MSGQ_RX, 1);
-+	if (IS_ERR(rsc_mgr->msgq_rx)) {
-+		ret = PTR_ERR(rsc_mgr->msgq_rx);
-+		goto err_msgq_tx;
++	*index = rm_port->index;
++	return rm_port->port.tty->driver;
++}
++
++static int rsc_mgr_console_setup(struct console *co, char *unused)
++{
++	int ret;
++	struct rm_cons_port *rm_port = co->data;
++
++	if (!rm_port->open) {
++		ret = gh_rm_console_open(rm_port->vmid);
++		if (ret) {
++			pr_err("Failed to open RM console for vmid %x: %d\n", rm_port->vmid, ret);
++			return ret;
++		}
++		rm_port->open = true;
 +	}
-+
-+	rsc_mgr->recv_task = kthread_run(gh_rm_recv_task_fn, rsc_mgr, "gh_rm_recv_task");
-+	if (IS_ERR_OR_NULL(rsc_mgr->recv_task)) {
-+		ret = PTR_ERR(rsc_mgr->recv_task);
-+		goto err_msgq;
-+	}
-+
-+	__rsc_mgr = rsc_mgr;
 +
 +	return 0;
++}
 +
-+err_msgq:
-+	gunyah_device_remove(rsc_mgr->msgq_rx);
-+err_msgq_tx:
-+	gunyah_device_remove(rsc_mgr->msgq_tx);
++static int rsc_mgr_console_exit(struct console *co)
++{
++	int ret;
++	struct rm_cons_port *rm_port = co->data;
++
++	if (rm_port->open) {
++		ret = gh_rm_console_close(rm_port->vmid);
++		if (ret) {
++			pr_err("Failed to close RM console for vmid %x: %d\n", rm_port->vmid, ret);
++			return ret;
++		}
++		rm_port->open = false;
++	}
++
++	return 0;
++}
++
++static const struct tty_operations rsc_mgr_tty_ops = {
++	.open = rsc_mgr_tty_open,
++	.close = rsc_mgr_tty_close,
++	.write = rsc_mgr_tty_write,
++	.write_room = rsc_mgr_mgr_tty_write_room,
++};
++
++static void rsc_mgr_port_destruct(struct tty_port *port)
++{
++	struct rm_cons_port *rm_port = container_of(port, struct rm_cons_port, port);
++	struct rm_cons_data *cons_data = rm_port->cons_data;
++
++	spin_lock(&cons_data->ports_lock);
++	WARN_ON(cons_data->ports[rm_port->index] != rm_port);
++	cons_data->ports[rm_port->index] = NULL;
++	spin_unlock(&cons_data->ports_lock);
++	kfree(rm_port);
++}
++
++static const struct tty_port_operations rsc_mgr_port_ops = {
++	.destruct = rsc_mgr_port_destruct,
++};
++
++static struct rm_cons_port *rsc_mgr_port_create(struct rm_cons_data *cons_data, gh_vmid_t vmid)
++{
++	struct rm_cons_port *rm_port;
++	struct device *ttydev;
++	unsigned int index;
++	int ret;
++
++	rm_port = kzalloc(sizeof(*rm_port), GFP_KERNEL);
++	rm_port->vmid = vmid;
++	INIT_KFIFO(rm_port->put_fifo);
++	spin_lock_init(&rm_port->fifo_lock);
++	INIT_WORK(&rm_port->put_work, put_work_fn);
++	tty_port_init(&rm_port->port);
++	rm_port->port.ops = &rsc_mgr_port_ops;
++
++	spin_lock(&cons_data->ports_lock);
++	for (index = 0; index < RSC_MGR_TTY_ADAPTERS; index++) {
++		if (!cons_data->ports[index]) {
++			cons_data->ports[index] = rm_port;
++			rm_port->index = index;
++			break;
++		}
++	}
++	spin_unlock(&cons_data->ports_lock);
++	if (index >= RSC_MGR_TTY_ADAPTERS) {
++		ret = -ENOSPC;
++		goto err_put_port;
++	}
++
++	ttydev = tty_port_register_device_attr(&rm_port->port, cons_data->tty_driver, index,
++					      cons_data->dev, rm_port, rsc_mgr_tty_dev_attr_groups);
++	if (IS_ERR(ttydev)) {
++		ret = PTR_ERR(ttydev);
++		goto err_put_port;
++	}
++
++	return rm_port;
++err_put_port:
++	tty_port_put(&rm_port->port);
++	return ERR_PTR(ret);
++}
++
++static int rsc_mgr_console_probe(struct auxiliary_device *auxdev,
++	const struct auxiliary_device_id *aux_dev_id)
++{
++	struct rm_cons_data *cons_data;
++	struct rm_cons_port *rm_port;
++	int ret;
++	gh_vmid_t vmid;
++
++	cons_data = devm_kzalloc(&auxdev->dev, sizeof(*cons_data), GFP_KERNEL);
++	if (!cons_data)
++		return -ENOMEM;
++	dev_set_drvdata(&auxdev->dev, cons_data);
++	cons_data->dev = &auxdev->dev;
++
++	cons_data->tty_driver = tty_alloc_driver(RSC_MGR_TTY_ADAPTERS,
++						 TTY_DRIVER_REAL_RAW | TTY_DRIVER_DYNAMIC_DEV);
++	if (IS_ERR(cons_data->tty_driver))
++		return PTR_ERR(cons_data->tty_driver);
++
++	cons_data->tty_driver->driver_name = "gh";
++	cons_data->tty_driver->name = "ttyGH";
++	cons_data->tty_driver->type = TTY_DRIVER_TYPE_SYSTEM;
++	cons_data->tty_driver->init_termios = tty_std_termios;
++	tty_set_operations(cons_data->tty_driver, &rsc_mgr_tty_ops);
++
++	ret = tty_register_driver(cons_data->tty_driver);
++	if (ret) {
++		dev_err(&auxdev->dev, "Could not register tty driver: %d\n", ret);
++		goto err_put_tty;
++	}
++
++	spin_lock_init(&cons_data->ports_lock);
++
++	cons_data->rsc_mgr_notif.notifier_call = rsc_mgr_console_notif;
++	ret = gh_rm_register_notifier(&cons_data->rsc_mgr_notif);
++	if (ret) {
++		dev_err(&auxdev->dev, "Could not register for resource manager notifications: %d\n",
++			ret);
++		goto err_put_tty;
++	}
++
++	rm_port = rsc_mgr_port_create(cons_data, GH_VMID_SELF);
++	if (IS_ERR(rm_port)) {
++		ret = PTR_ERR(rm_port);
++		dev_err(&auxdev->dev, "Could not create own console: %d\n", ret);
++		goto err_unreg_notif;
++	}
++
++	strncpy(cons_data->console.name, "ttyGH", sizeof(cons_data->console.name));
++	cons_data->console.write = rsc_mgr_console_write;
++	cons_data->console.device = rsc_mgr_console_device;
++	cons_data->console.setup = rsc_mgr_console_setup;
++	cons_data->console.exit = rsc_mgr_console_exit;
++	cons_data->console.index = rm_port->index;
++	cons_data->console.data = rm_port;
++	register_console(&cons_data->console);
++
++	ret = gh_rm_get_vmid(&vmid);
++	if (!ret)
++		rsc_mgr_port_create(cons_data, vmid);
++	else
++		pr_warn("Failed to get this VM's VMID: %d. Not creating loop-back console\n", ret);
++
++	return 0;
++err_unreg_notif:
++	gh_rm_unregister_notifier(&cons_data->rsc_mgr_notif);
++err_put_tty:
++	tty_driver_kref_put(cons_data->tty_driver);
 +	return ret;
 +}
 +
-+static int gh_rm_drv_remove(struct platform_device *pdev)
++static void rsc_mgr_console_remove(struct auxiliary_device *auxdev)
 +{
-+	struct gh_rsc_mgr *rsc_mgr = platform_get_drvdata(pdev);
++	struct rm_cons_data *cons_data = dev_get_drvdata(&auxdev->dev);
 +
-+	gunyah_device_remove(rsc_mgr->msgq_tx);
-+	gunyah_device_remove(rsc_mgr->msgq_rx);
-+
-+	return 0;
++	unregister_console(&cons_data->console);
++	gh_rm_unregister_notifier(&cons_data->rsc_mgr_notif);
++	tty_driver_kref_put(cons_data->tty_driver);
 +}
 +
-+static const struct of_device_id gh_rm_of_match[] = {
-+	{ .compatible = "gunyah-resource-manager" },
-+	{ }
++static struct auxiliary_device_id rsc_mgr_console_ids[] = {
++	{ .name = "gunyah.console" },
++	{}
 +};
-+MODULE_DEVICE_TABLE(of, gh_rm_of_match);
++MODULE_DEVICE_TABLE(auxiliary, rsc_mgr_console_ids);
 +
-+static struct platform_driver gh_rsc_mgr_driver = {
-+	.probe = gh_rm_drv_probe,
-+	.remove = gh_rm_drv_remove,
-+	.driver = {
-+		.name = "gh_rsc_mgr",
-+		.of_match_table = gh_rm_of_match,
-+	},
++static struct auxiliary_driver rsc_mgr_console_drv = {
++	.probe = rsc_mgr_console_probe,
++	.remove = rsc_mgr_console_remove,
++	.id_table = rsc_mgr_console_ids,
 +};
++module_auxiliary_driver(rsc_mgr_console_drv);
 +
-+int __init gh_rsc_mgr_init(void)
-+{
-+	return platform_driver_register(&gh_rsc_mgr_driver);
-+}
-+
-+void gh_rsc_mgr_exit(void)
-+{
-+	platform_driver_unregister(&gh_rsc_mgr_driver);
-+}
-diff --git a/drivers/virt/gunyah/rsc_mgr.h b/drivers/virt/gunyah/rsc_mgr.h
-new file mode 100644
-index 000000000000..e4f2499267bf
---- /dev/null
-+++ b/drivers/virt/gunyah/rsc_mgr.h
-@@ -0,0 +1,34 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+#ifndef __GH_RSC_MGR_PRIV_H
-+#define __GH_RSC_MGR_PRIV_H
-+
-+#include <linux/gunyah.h>
-+
-+/* RM Error codes */
-+#define GH_RM_ERROR_OK			0x0
-+#define GH_RM_ERROR_UNIMPLEMENTED	0xFFFFFFFF
-+#define GH_RM_ERROR_NOMEM		0x1
-+#define GH_RM_ERROR_NORESOURCE		0x2
-+#define GH_RM_ERROR_DENIED		0x3
-+#define GH_RM_ERROR_INVALID		0x4
-+#define GH_RM_ERROR_BUSY		0x5
-+#define GH_RM_ERROR_ARGUMENT_INVALID	0x6
-+#define GH_RM_ERROR_HANDLE_INVALID	0x7
-+#define GH_RM_ERROR_VALIDATE_FAILED	0x8
-+#define GH_RM_ERROR_MAP_FAILED		0x9
-+#define GH_RM_ERROR_MEM_INVALID		0xA
-+#define GH_RM_ERROR_MEM_INUSE		0xB
-+#define GH_RM_ERROR_MEM_RELEASED	0xC
-+#define GH_RM_ERROR_VMID_INVALID	0xD
-+#define GH_RM_ERROR_LOOKUP_FAILED	0xE
-+#define GH_RM_ERROR_IRQ_INVALID		0xF
-+#define GH_RM_ERROR_IRQ_INUSE		0x10
-+#define GH_RM_ERROR_IRQ_RELEASED	0x11
-+
-+int gh_rm_call(u32 message_id, void *req_buff, size_t req_buff_size,
-+		void **resp_buf, size_t *resp_buff_size);
-+
-+#endif
-diff --git a/drivers/virt/gunyah/sysfs.c b/drivers/virt/gunyah/sysfs.c
-index 7589689e5e92..7c0efc80f85e 100644
---- a/drivers/virt/gunyah/sysfs.c
-+++ b/drivers/virt/gunyah/sysfs.c
-@@ -148,7 +148,13 @@ static int __init gunyah_init(void)
- 	if (ret)
- 		goto err_bus;
- 
-+	ret = gh_rsc_mgr_init();
-+	if (ret)
-+		goto err_msgq;
-+
- 	return ret;
-+err_msgq:
-+	gh_msgq_exit();
- err_bus:
- 	gunyah_bus_exit();
- err_sysfs:
-@@ -159,6 +165,7 @@ module_init(gunyah_init);
- 
- static void __exit gunyah_exit(void)
- {
-+	gh_rsc_mgr_exit();
- 	gh_msgq_exit();
- 	gunyah_bus_exit();
- 	gh_sysfs_unregister();
-diff --git a/include/linux/gunyah_rsc_mgr.h b/include/linux/gunyah_rsc_mgr.h
-new file mode 100644
-index 000000000000..015bd851e1a3
---- /dev/null
-+++ b/include/linux/gunyah_rsc_mgr.h
-@@ -0,0 +1,29 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ */
-+
-+#ifndef _GUNYAH_RSC_MGR_H
-+#define _GUNYAH_RSC_MGR_H
-+
-+#include <linux/list.h>
-+#include <linux/notifier.h>
-+#include <linux/gunyah.h>
-+
-+typedef u16 gh_vmid_t;
-+typedef u32 gh_virq_handle_t;
-+
-+#define GH_VMID_INVAL	U16_MAX
-+
-+/* Gunyah recognizes VMID0 as an alias to the current VM's ID */
-+#define GH_VMID_SELF			0
-+
-+struct gh_rm_notification {
-+	const void *buff;
-+	const size_t size;
-+};
-+
-+int gh_rm_register_notifier(struct notifier_block *nb);
-+int gh_rm_unregister_notifier(struct notifier_block *nb);
-+
-+#endif
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("Gunyah Console");
 -- 
 2.25.1
 
