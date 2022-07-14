@@ -2,274 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83F80C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237653AbiGNHr7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43288 "EHLO
+        id S237509AbiGNHsE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237500AbiGNHrI (ORCPT
+        with ESMTP id S237456AbiGNHrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:47:08 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F1A3A480;
-        Thu, 14 Jul 2022 00:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657784827; x=1689320827;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IgQIW9OcSiZMlvIj+aZi0OP3kMeCavrUReS+btvbQv4=;
-  b=O383c6BWR7ftm5asE6M0eRgr+PEUlrAfSnYPHrzhNGHGJwNPfwzi+/rc
-   81toUOCRH5sDpxEPGfK2p69ngdDLeS+MhroakXneOlxleWK7Xv7imjl1B
-   gy7OgliSu/Rwcb93AjU9vO7odbe3si3tPzy91T15cvvzWD1p7cDzEPFFA
-   lZf3lvq1pGT7BFNZYrw2CSzIlZ3aVilza4jBe8jC9yPa/rqeFKVSaK0YK
-   ujYpzqSc4cgxtizh4Dcm7FxZI3jlVHvkzPYf6/LQ6Hjt1tDO1txCm9FKw
-   8uV/zda8Hx7U81ZO2/hi2yj4RcskFBZxA1eZLMyGGU58F4DGAnH7e2I+E
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286584196"
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="286584196"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 00:47:06 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="546174593"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga003.jf.intel.com with ESMTP; 14 Jul 2022 00:47:06 -0700
-Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.216])
-        by linux.intel.com (Postfix) with ESMTP id E1DCC580BE0;
-        Thu, 14 Jul 2022 00:47:03 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        Thu, 14 Jul 2022 03:47:10 -0400
+Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74DEC3A499;
+        Thu, 14 Jul 2022 00:47:09 -0700 (PDT)
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 6B8CE202189;
+        Thu, 14 Jul 2022 09:47:07 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B21B2021A6;
+        Thu, 14 Jul 2022 09:47:07 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 936BB180222A;
+        Thu, 14 Jul 2022 15:47:05 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
+        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH 1/1] net: stmmac: switch to use interrupt for hw crosstimestamping
-Date:   Thu, 14 Jul 2022 15:54:27 +0800
-Message-Id: <20220714075428.1060984-1-vee.khee.wong@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v15 11/17] PCI: imx6: Move regulator enable out of imx6_pcie_deassert_core_reset()
+Date:   Thu, 14 Jul 2022 15:31:03 +0800
+Message-Id: <1657783869-19194-12-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using current implementation of polling mode, there is high chances we
-will hit into timeout error when running phc2sys. Hence, update the
-implementation of hardware crosstimestamping to use the MAC interrupt
-service routine instead of polling for TSIS bit in the MAC Timestamp
-Interrupt Status register to be set.
+Move regulator enable out of imx6_pcie_deassert_core_reset(), since the
+regulator_enable() has nothing to do with imx6_pcie_deassert_core_reset().
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Link: https://lore.kernel.org/r/1656645935-1370-12-git-send-email-hongxing.zhu@nxp.com
+Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 25 ++++++++++++-------
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  3 ++-
- .../net/ethernet/stmicro/stmmac/dwmac4_core.c |  4 +++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../ethernet/stmicro/stmmac/stmmac_hwtstamp.c |  5 ++++
- .../net/ethernet/stmicro/stmmac/stmmac_ptp.c  | 12 +--------
- include/linux/stmmac.h                        |  1 +
- 7 files changed, 30 insertions(+), 21 deletions(-)
+ drivers/pci/controller/dwc/pci-imx6.c | 36 ++++++++++++---------------
+ 1 file changed, 16 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 38fe77d1035e..3fe720c5dc9f 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -298,6 +298,11 @@ static void get_arttime(struct mii_bus *mii, int intel_adhoc_addr,
- 	*art_time = ns;
- }
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 95815e4255d3..d263574e5c85 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -712,19 +712,10 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ 	struct device *dev = pci->dev;
+ 	int ret;
  
-+static int stmmac_cross_ts_isr(struct stmmac_priv *priv)
-+{
-+	return (readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE);
-+}
-+
- static int intel_crosststamp(ktime_t *device,
- 			     struct system_counterval_t *system,
- 			     void *ctx)
-@@ -313,8 +318,6 @@ static int intel_crosststamp(ktime_t *device,
- 	u32 num_snapshot;
- 	u32 gpio_value;
- 	u32 acr_value;
--	int ret;
--	u32 v;
- 	int i;
- 
- 	if (!boot_cpu_has(X86_FEATURE_ART))
-@@ -328,6 +331,8 @@ static int intel_crosststamp(ktime_t *device,
- 	if (priv->plat->ext_snapshot_en)
- 		return -EBUSY;
- 
-+	priv->plat->int_snapshot_en = 1;
-+
- 	mutex_lock(&priv->aux_ts_lock);
- 	/* Enable Internal snapshot trigger */
- 	acr_value = readl(ptpaddr + PTP_ACR);
-@@ -347,6 +352,7 @@ static int intel_crosststamp(ktime_t *device,
- 		break;
- 	default:
- 		mutex_unlock(&priv->aux_ts_lock);
-+		priv->plat->int_snapshot_en = 0;
- 		return -EINVAL;
- 	}
- 	writel(acr_value, ptpaddr + PTP_ACR);
-@@ -368,13 +374,12 @@ static int intel_crosststamp(ktime_t *device,
- 	gpio_value |= GMAC_GPO1;
- 	writel(gpio_value, ioaddr + GMAC_GPIO_STATUS);
- 
--	/* Poll for time sync operation done */
--	ret = readl_poll_timeout(priv->ioaddr + GMAC_INT_STATUS, v,
--				 (v & GMAC_INT_TSIE), 100, 10000);
+-	if (imx6_pcie->vpcie) {
+-		ret = regulator_enable(imx6_pcie->vpcie);
+-		if (ret) {
+-			dev_err(dev, "failed to enable vpcie regulator: %d\n",
+-				ret);
+-			return ret;
+-		}
+-	}
 -
--	if (ret == -ETIMEDOUT) {
--		pr_err("%s: Wait for time sync operation timeout\n", __func__);
--		return ret;
-+	/* Time sync done Indication - Interrupt method */
-+	if (!wait_event_interruptible_timeout(priv->tstamp_busy_wait,
-+					      stmmac_cross_ts_isr(priv),
-+					      HZ / 100)) {
-+		priv->plat->int_snapshot_en = 0;
-+		return -ETIMEDOUT;
+ 	ret = imx6_pcie_clk_enable(imx6_pcie);
+ 	if (ret) {
+ 		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
+-		goto err_clks;
++		return ret;
  	}
  
- 	num_snapshot = (readl(ioaddr + GMAC_TIMESTAMP_STATUS) &
-@@ -392,6 +397,7 @@ static int intel_crosststamp(ktime_t *device,
+ 	switch (imx6_pcie->drvdata->variant) {
+@@ -783,15 +774,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
  	}
- 
- 	system->cycles *= intel_priv->crossts_adj;
-+	priv->plat->int_snapshot_en = 0;
  
  	return 0;
- }
-@@ -576,6 +582,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
- 
- 	plat->has_crossts = true;
- 	plat->crosststamp = intel_crosststamp;
-+	plat->int_snapshot_en = 0;
- 
- 	/* Setup MSI vector offset specific to Intel mGbE controller */
- 	plat->msi_mac_vec = 29;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 462ca7ed095a..71dad409f78b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -150,7 +150,8 @@
- #define	GMAC_PCS_IRQ_DEFAULT	(GMAC_INT_RGSMIIS | GMAC_INT_PCS_LINK |	\
- 				 GMAC_INT_PCS_ANE)
- 
--#define	GMAC_INT_DEFAULT_ENABLE	(GMAC_INT_PMT_EN | GMAC_INT_LPI_EN)
-+#define	GMAC_INT_DEFAULT_ENABLE	(GMAC_INT_PMT_EN | GMAC_INT_LPI_EN | \
-+				 GMAC_INT_TSIE)
- 
- enum dwmac4_irq_status {
- 	time_stamp_irq = 0x00001000,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index fd41db65fe1d..d5299dd13e85 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -23,6 +23,7 @@
- static void dwmac4_core_init(struct mac_device_info *hw,
- 			     struct net_device *dev)
- {
-+	struct stmmac_priv *priv = netdev_priv(dev);
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 value = readl(ioaddr + GMAC_CONFIG);
- 
-@@ -58,6 +59,9 @@ static void dwmac4_core_init(struct mac_device_info *hw,
- 		value |= GMAC_INT_FPE_EN;
- 
- 	writel(value, ioaddr + GMAC_INT_EN);
-+
-+	if (GMAC_INT_DEFAULT_ENABLE & GMAC_INT_TSIE)
-+		init_waitqueue_head(&priv->tstamp_busy_wait);
+-
+-err_clks:
+-	if (imx6_pcie->vpcie) {
+-		ret = regulator_disable(imx6_pcie->vpcie);
+-		if (ret)
+-			dev_err(dev, "failed to disable vpcie regulator: %d\n",
+-				ret);
+-	}
+-	return ret;
  }
  
- static void dwmac4_rx_queue_enable(struct mac_device_info *hw,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 57970ae2178d..f9e83964aa7e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -266,6 +266,7 @@ struct stmmac_priv {
- 	rwlock_t ptp_lock;
- 	/* Protects auxiliary snapshot registers from concurrent access. */
- 	struct mutex aux_ts_lock;
-+	wait_queue_head_t tstamp_busy_wait;
+ static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
+@@ -914,17 +896,31 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
+ 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
+ 	int ret;
  
- 	void __iomem *mmcaddr;
- 	void __iomem *ptpaddr;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-index 92d32940aff0..764832f4dae1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_hwtstamp.c
-@@ -179,6 +179,11 @@ static void timestamp_interrupt(struct stmmac_priv *priv)
- 	u64 ptp_time;
- 	int i;
- 
-+	if (priv->plat->int_snapshot_en) {
-+		wake_up(&priv->tstamp_busy_wait);
-+		return;
++	if (imx6_pcie->vpcie) {
++		ret = regulator_enable(imx6_pcie->vpcie);
++		if (ret) {
++			dev_err(dev, "failed to enable vpcie regulator: %d\n",
++				ret);
++			return ret;
++		}
 +	}
 +
- 	tsync_int = readl(priv->ioaddr + GMAC_INT_STATUS) & GMAC_INT_TSIE;
+ 	imx6_pcie_assert_core_reset(imx6_pcie);
+ 	imx6_pcie_init_phy(imx6_pcie);
+ 	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
+ 	if (ret < 0) {
+ 		dev_err(dev, "pcie deassert core reset failed: %d\n", ret);
+-		return ret;
++		goto err_reg_disable;
+ 	}
  
- 	if (!tsync_int)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-index e45fb191d8e6..4d11980dcd64 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c
-@@ -175,11 +175,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 	struct stmmac_priv *priv =
- 	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
- 	void __iomem *ptpaddr = priv->ptpaddr;
--	void __iomem *ioaddr = priv->hw->pcsr;
- 	struct stmmac_pps_cfg *cfg;
--	u32 intr_value, acr_value;
- 	int ret = -EOPNOTSUPP;
- 	unsigned long flags;
-+	u32 acr_value;
+ 	imx6_setup_phy_mpll(imx6_pcie);
  
- 	switch (rq->type) {
- 	case PTP_CLK_REQ_PEROUT:
-@@ -213,19 +212,10 @@ static int stmmac_enable(struct ptp_clock_info *ptp,
- 			netdev_dbg(priv->dev, "Auxiliary Snapshot %d enabled.\n",
- 				   priv->plat->ext_snapshot_num >>
- 				   PTP_ACR_ATSEN_SHIFT);
--			/* Enable Timestamp Interrupt */
--			intr_value = readl(ioaddr + GMAC_INT_EN);
--			intr_value |= GMAC_INT_TSIE;
--			writel(intr_value, ioaddr + GMAC_INT_EN);
--
- 		} else {
- 			netdev_dbg(priv->dev, "Auxiliary Snapshot %d disabled.\n",
- 				   priv->plat->ext_snapshot_num >>
- 				   PTP_ACR_ATSEN_SHIFT);
--			/* Disable Timestamp Interrupt */
--			intr_value = readl(ioaddr + GMAC_INT_EN);
--			intr_value &= ~GMAC_INT_TSIE;
--			writel(intr_value, ioaddr + GMAC_INT_EN);
- 		}
- 		writel(acr_value, ptpaddr + PTP_ACR);
- 		mutex_unlock(&priv->aux_ts_lock);
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 29917850f079..8df475db88c0 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -260,6 +260,7 @@ struct plat_stmmacenet_data {
- 	bool has_crossts;
- 	int int_snapshot_num;
- 	int ext_snapshot_num;
-+	bool int_snapshot_en;
- 	bool ext_snapshot_en;
- 	bool multi_msi_en;
- 	int msi_mac_vec;
+ 	return 0;
++
++err_reg_disable:
++	if (imx6_pcie->vpcie)
++		regulator_disable(imx6_pcie->vpcie);
++	return ret;
+ }
+ 
+ static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
 -- 
 2.25.1
 
