@@ -2,178 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB357C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01ABECCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239750AbiGNVvn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 17:51:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
+        id S240694AbiGNVwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 17:52:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232764AbiGNVvl (ORCPT
+        with ESMTP id S232764AbiGNVwC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 17:51:41 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7D9F419A6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:51:39 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31cac89d8d6so30714647b3.2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Is95C/L9u8P2TPO36yk8p8lfgnPVB5nyDTTX5guyjaU=;
-        b=XIkoxh/9JOyfuHjAx7KJIMcBXGxB9e2PCqXf7smuLG4iFkGU8wl0JKd5uqPjcZ0lmu
-         MddxyS6x/VAQ+Py6fvej3tqqwuvp5zS5bWwzGtDD/xM+ptQwgRk2Ft45f6Pp+xmxEy00
-         LBj9LxTHOeAtk+QcHPKEwGYfaODCTflH7xTVQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Is95C/L9u8P2TPO36yk8p8lfgnPVB5nyDTTX5guyjaU=;
-        b=j8+TjISbLdwnFZ4YFN8l+gyDqEJfOkP7AaD9r0fvDjVBOaPpup5Xmpj9tTfij1ZcH/
-         UfpDkq9OvapfI1t9DlamS0e0Wq1zYJEvMt0WAE2vSiJYNffKa1j4mY09hcprEp99zCpQ
-         34TC92qfaTy6zPg6SKL/0SjByNdePAerI/N3uE2ctMVbIv6KFZwr6nYZDAIobQoPpmW6
-         6wrLt9+/wSYM8setwClb2UUsAOm8ko1i6Ks9sNVUF2+hCvbfGIrM4mr80dnTIaIvvrLM
-         j9AomlqQ+3qOBr25cUaymG1+Pp0BBd19aEchJohrdfDqaAazNHUfo+d7YQm4gjH4Ue9y
-         B/QQ==
-X-Gm-Message-State: AJIora87okuyvoNi5gsJt/Pj9G+qMi7fCo+oS69ncA48nftrYExSRDke
-        3o33RQFLbn1oIRqQUzYaEmiAvs8aQVO4RvVCSakf1Q==
-X-Google-Smtp-Source: AGRyM1tCouO8shQx1D4/D7nmNdE9NSDbKg9yUp3w4dmDoXPXkBMBkN9F0iCrn/FEgA5dgZfulBxSjmA3qMyupeKRcKo=
-X-Received: by 2002:a81:6054:0:b0:31c:97f4:b5c with SMTP id
- u81-20020a816054000000b0031c97f40b5cmr12384788ywb.432.1657835499055; Thu, 14
- Jul 2022 14:51:39 -0700 (PDT)
+        Thu, 14 Jul 2022 17:52:02 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70128419A6;
+        Thu, 14 Jul 2022 14:52:00 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id EEABB22238;
+        Thu, 14 Jul 2022 23:51:56 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1657835518;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eUOOklFf429NJHGjFaL0HxFv89LnFvPtMIbNqZTM4d0=;
+        b=HSkIfATqx+Z/1khW1hK+6puc0ECVGu02CCNcVyvWwwxFtkmNvepbMsWDMYOqDCJN9552/Q
+        jpV5u9uj2zXqR6KVmUiRi6qnHalq2wx1hvKHbXfAZ7L5VYX18olHGeTivSo0mSj4iuktL4
+        opgvlduW4U0xYcytb9s/OnvmWHuLf7o=
 MIME-Version: 1.0
-References: <20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid>
- <CACeCKadV=k5J1ZSG+p8M5iBnX5nXrn-XnK62Nq_op2kJ68+-9w@mail.gmail.com> <CANkg5ewRc5zhBtxLhazo8Wsfa3Srj32AwZD9mD=W=Qqpqi7zJQ@mail.gmail.com>
-In-Reply-To: <CANkg5ewRc5zhBtxLhazo8Wsfa3Srj32AwZD9mD=W=Qqpqi7zJQ@mail.gmail.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Thu, 14 Jul 2022 14:51:28 -0700
-Message-ID: <CACeCKaer_hacWmLDDMJSK-KFjxqiXV8S1-ydCWGT3mkQVeN-rg@mail.gmail.com>
-Subject: Re: [PATCH v2] platform/chrome: cros_ec: Send host event for prepare/complete
-To:     Tim Van Patten <timvp@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, rrangel@chromium.org,
-        robbarnes@google.com, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        chrome-platform@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Thu, 14 Jul 2022 23:51:56 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     =?UTF-8?Q?Michal_Such=C3=A1nek?= <msuchanek@suse.de>
+Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: Re: [PATCH 1/2] mtd: spi-nor: When a flash memory is missing do not
+ report an error
+In-Reply-To: <20220714205529.GE17705@kitsune.suse.cz>
+References: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
+ <d8de86aa0331be697fbef33d5ab2c57a@walle.cc>
+ <20220714205529.GE17705@kitsune.suse.cz>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <33abf7b84860049c4a22605578303ff2@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tim,
+Am 2022-07-14 22:55, schrieb Michal Suchánek:
+> On Thu, Jul 14, 2022 at 09:41:48PM +0200, Michael Walle wrote:
+>> Hi,
+>> 
+>> Am 2022-07-14 21:19, schrieb Michal Suchanek:
+>> > It is normal that devices are designed with multiple types of storage,
+>> > and only some types of storage are present.
+>> >
+>> > The kernel can handle this situation gracefully for many types of
+>> > storage devices such as mmc or ata but it reports and error when spi
+>> > flash is not present.
+>> >
+>> > Only print a notice that the storage device is missing when no response
+>> > to the identify command is received.
+>> >
+>> > Consider reply buffers with all bits set to the same value no response.
+>> 
+>> I'm not sure you can compare SPI with ATA and MMC. I'm just speaking 
+>> of
+>> DT now, but there, for ATA and MMC you just describe the controller 
+>> and
+>> it will auto-detect the connected storage. Whereas with SPI you 
+>> describe
+> 
+> Why does mmc assume storage and SDIO must be descibed? Why the special
+> casing?
 
-On Thu, Jul 14, 2022 at 1:55 PM Tim Van Patten <timvp@google.com> wrote:
->
-> Hi,
+I can't follow you here. My SDIO wireless card just works in an SD
+slot and doesn't have to be described.
 
-Please avoid top-posting [1]
+>> both the controller and the flash. So I'd argue that your hardware
+>> description is wrong if it describes a flash which is not present.
+> 
+> At any rate the situation is the same - the storage may be present
+> sometimes. I don't think assuming some kind of device by defualt is a
+> sound practice.
 
->
-> We had issues measuring overall suspend and resume times, which this
-> patch attempts to help resolve.   As stated in the description, the EC
-> host command logs couldn't be used reliably, since they weren't
-> generated at the start of suspend/end of resume, but instead at some
-> point in the middle of the procedures.   This CL moves when the
-> commands are sent from the AP to the EC to as early/late as possible
-> in an attempt to deterministically capture as much of each process as
-> possible.
+Where is the assumption when the DT tells you there is a flash
+on a specific chip select but actually there it isn't. Shouldn't
+the DT then be fixed?
 
-If the timing of the EC host command logs is unreliable, why not add
-new host commands specifically for this, and then call those at the moment(s)
-you deem is more appropriate, instead of moving the suspend/resume itself
-(which may be introducing its own timing ramifications)?
+Maybe I don't understand your problem. What are you trying to
+solve? I mean this just demotes an error to an info message.
 
-Calling such a theoretical new EC host command from the userspace power manager
-would probably accomplish the same thing.
+> However, when the board is designed for a specific kind of device which
+> is not always present, and the kernel can detect the device, it is
+> perfectly fine to describe it.
+> 
+> The alternative is to not use the device at all, even when present,
+> which is kind of useless.
 
-From the kernel documentation[2], "The prepare phase is meant to
-prevent races by preventing new devices from being registered; the PM core
-would never know that all the children of a device had been suspended if new
-children could be registered at will." and "The method may also prepare the
-device or driver in some way for the upcoming system power transition, but
-it should not put the device into a low-power state."
+Or let the bootloader update your device tree and disable the device
+if it's not there? Or load an overlay if it is there?
 
-So it seems like an incorrect usage of this callback.
-
->
-> While this patch could potentially be split, both the logging and PM
-> changes are means to the same end: improving logging behavior to make
-> it easier for developers to measure suspend/resume time and aid in
-> debugging.
-
-That alone is not sufficient cause to combine 2 different changes into
-a single patch.
-The flip side is: the patch to move the suspend/resume host commands into
-prepare/complete() can itself introduce regressions. We should be able to
-revert that without touching the patch adding the logging (assuming concerns
-regarding that are addressed).
-
-BR,
-
--Prashant
-
-[1] See "Top-posting" in https://people.kernel.org/tglx/
-[2] https://kernel.org/doc/html/latest/driver-api/pm/devices.html#entering-system-suspend
-
-
-
-
-> This will make it easier to bisect CLs in the event of
-> regressions, as well as more deterministically verify optimizations
-> and improvements.
->
-> @Rob Barnes Please fill in any other gaps you think are relevant.
->
->
-> On Thu, Jul 14, 2022 at 12:34 PM Prashant Malani <pmalani@chromium.org> wrote:
-> >
-> > HI Tim,
-> >
-> > On Wed, Jul 6, 2022 at 7:51 PM Tim Van Patten <timvp@google.com> wrote:
-> > >
-> > > Update cros_ec_lpc_pm_ops to call cros_ec_lpc_suspend() during PM
-> > > .prepare() and cros_ec_lpc_resume() during .complete. This allows the
-> > > EC to log entry/exit of AP's suspend/resume more accurately.
-> > >
-> > > Signed-off-by: Tim Van Patten <timvp@google.com>
-> > > ---
-> > >
-> > > Changes in v2:
-> > > - Include cros_ec_resume() return value in dev_info() output.
-> > > - Guard setting .prepare/.complete with #ifdef CONFIG_PM_SLEEP.
-> > >
-> > >  drivers/platform/chrome/cros_ec_lpc.c | 14 +++++++++++---
-> > >  1 file changed, 11 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/platform/chrome/cros_ec_lpc.c b/drivers/platform/chrome/cros_ec_lpc.c
-> > > index 7677ab3c0ead9..ce49fbc4ed2e1 100644
-> > > --- a/drivers/platform/chrome/cros_ec_lpc.c
-> > > +++ b/drivers/platform/chrome/cros_ec_lpc.c
-> > > @@ -534,19 +534,27 @@ static int cros_ec_lpc_suspend(struct device *dev)
-> > >  {
-> > >         struct cros_ec_device *ec_dev = dev_get_drvdata(dev);
-> > >
-> > > +       dev_info(dev, "Prepare EC suspend\n");
-> >
-> > This patch is doing 2 things:
-> > 1. Changing the timing of cros_ec_lpc_suspend()/resume() invocation.
-> > 2. Adding print logs for these callbacks.
-> >
-> > Whether 2.) is necessary is already being discussed, so I won't
-> > comment on that, but it sounds
-> > like this should be 2 different patches.
-> >
-> > Also, please explain what is wrong with "Previously, those events were sent when
-> > suspend/resume were already in progress." IOW, what issue is this
-> > solving, besides
-> > better ordering of EC logs.
-> >
-> > BR,
-> >
-> > -Prashant
->
->
->
-> --
->
-> Tim Van Patten | ChromeOS | timvp@google.com | (720) 432-0997
+-michael
