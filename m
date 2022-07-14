@@ -2,127 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D341C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:14:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239676AbiGNNOo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S239688AbiGNNOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235068AbiGNNOk (ORCPT
+        with ESMTP id S231989AbiGNNOm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:14:40 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 457431C924
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:14:38 -0700 (PDT)
-Received: from mail-yw1-f181.google.com ([209.85.128.181]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1Mi2Fj-1nYmAX0zq5-00e8DK for <linux-kernel@vger.kernel.org>; Thu, 14 Jul
- 2022 15:14:36 +0200
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-31bf3656517so16228397b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:14:36 -0700 (PDT)
-X-Gm-Message-State: AJIora87dVBX+DLh37CXKUqy3ESZ510y4pTRJQH+h1oG/NCEbkzVIilh
-        8O9sUD5XiawQRXw1Ai2V7cV2/cxFX+G9TNOwL/A=
-X-Google-Smtp-Source: AGRyM1uafSJFpQOlxzTuazebv+1foYrOHcDhoNoaVMnzWGhMXx70Y5podLuFPtEHoJzzuxj3TfSuVgA3zmXb+TXcIs4=
-X-Received: by 2002:a81:9b02:0:b0:31c:9ae4:99ec with SMTP id
- s2-20020a819b02000000b0031c9ae499ecmr9597696ywg.495.1657804475066; Thu, 14
- Jul 2022 06:14:35 -0700 (PDT)
+        Thu, 14 Jul 2022 09:14:42 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726CF46D9C;
+        Thu, 14 Jul 2022 06:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=XhHZFllZttK/nD0DghuHkAh2pYiQ6FVFXSwybTv29+M=; b=qMmQN49rflM5nNAbrtDJndAePo
+        JkZBQa4twrJ30algsJoMebfheMEDj3dvPEMTjEs61ybh448PVs7S0+evyXujJGkfhp7wgK79OppbE
+        cCooS75r3gjqj/ZScAe2awt8ja6AKbOT4KewCHmroR/G1/ijtcEN72ocsBK9ST6g7z/N825vnPwzc
+        JOYlQY25cgg9yjfCbNn6Uq0ubwzMRXNUQS+QkE7WRJBB+X5wnhUASoqG4zGCxgillM9vUW+FsdPOQ
+        CHM9C/bOghoqyPT+jjqxBWQ2cW5xzxp2tqHjc3ujH4SxkkQbk+ad6JzrWibSHcYDYN9BWQtXqB3P8
+        m41ydZB/IdGkY+6AIu7TaMMKeDn+CSbJhCW0MpdZ0F/GbPv+Nk0jRny1sYD5T16Owx14keLT2KYZA
+        plnf9k103TAWyYqoAm+NvkZ8XBNU8U+x5pnsLR1dX157HFtvGhuk3UqC7jet6yMfQ47VhizhWY6FJ
+        VYCpzwf6nnyFzsuk7aXNhqaaq/eQgw2CrSGCP/UUcIrsVBnq/P/RhsAknlBv6SAtJxYJO/uIxLkaz
+        rqxQhYNl/QKeGbgPZqjbxVIbASa5vd4SVYqAIq5zWFH7Th28K90znIIM/IzQF4uiee/j3MWXgba0E
+        O6Xoocfx3t4MpX4rpyWgt8jiXFYI/Cf6unHSMamZE=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Subject: Re: [PATCH v5 10/11] net/9p: add p9_msg_buf_size()
+Date:   Thu, 14 Jul 2022 15:14:31 +0200
+Message-ID: <1784081.3E5Dq0oo6N@silver>
+In-Reply-To: <Ys8wqPbA5eogtvmG@codewreck.org>
+References: <cover.1657636554.git.linux_oss@crudebyte.com> <5564296.oo812IJUPE@silver>
+ <Ys8wqPbA5eogtvmG@codewreck.org>
 MIME-Version: 1.0
-References: <20220714042736.2133067-1-shorne@gmail.com> <20220714042736.2133067-2-shorne@gmail.com>
- <CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com> <YtAO/nxcsjjc8M/c@antec>
-In-Reply-To: <YtAO/nxcsjjc8M/c@antec>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 14 Jul 2022 15:14:18 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2B82z3+qUDnm7hSn0y7Kqs3CoGtUDxUSrjG86UA56tAg@mail.gmail.com>
-Message-ID: <CAK8P3a2B82z3+qUDnm7hSn0y7Kqs3CoGtUDxUSrjG86UA56tAg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] openrisc: Add pci bus support
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, LKML <linux-kernel@vger.kernel.org>,
-        Openrisc <openrisc@lists.librecores.org>,
-        Jonas Bonn <jonas@southpole.se>,
-        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:jHmubrKEqz1zeuuGx1djmsVNmjLP5jT81eHPCDSYJ+5UDzfG47g
- qIrCFWfqD+8IE3e4ZRwJQ/G6Ce4kgNSFcO2m42ndtAaTSA95hQHlESPMwYJaXl9zCnRwkK/
- YC0DJstaFhKKtZB5IB9hCJgupSK9Cs3sTMIGNjc04fa8hwmPs3nyn0m/YRHra7KPp93el8L
- nKAYHQ9nFAwop5JOisMCg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:789tF/xj5OM=:EaTxDqXhyPyKfuuWsmMyvY
- auQ2FYUzmIEjm+Gn/iW3pBt1xDyjUGjtu2svgW/yoGZm43YYTYE6gz/dzlWwrBFLO7p4p94w7
- Gv+MUN8I8nHxesIuYFH6Zu9U8Fsl43P+xYfg7eC4e40piTQWWa/xHkZQO3awiuvyJl7gyeE1P
- xt5jo8WiD0MvBFAGzdRyiR2kbBHITqxSOehBKqZxkqCs34OeNX+t7dEtRIFTswRALS/d6Qk2K
- da4kShO3ClRl4UnnlgwyJXZJtY57Ve/cR6ETKJLyc5KwWlX/NerFBBkaa6OE7CfRpPC3oD/Ug
- EwnjyrZNPgdnZhFG0TuVwVRO+HQTZT82kQhWy3Odg1ZKjdIELIKUMA0VSCGvsxk1bCN661lKC
- wc8vGcNRs4Fx/d+FstOYEeV/YXgr46Ds4d18KnzwtlMmP1j19FjCMhYXLzeKL7zqd12YXYb3N
- 9C4pHnXrTuePdkKItMx0DluNpcUzGj3ojgNXXptKnB6aY1emfysqgkugy874Yx5KG2HTg9y4y
- +ZK/fZN31eIXGbD4lGlMVRe20GraQParfayxJlnVrpHOSFGDSnhN+IgLKq8zDEZCkQFaEWl1W
- 38X8hU302xvEpLgh7o1EFvOpCNy7qv7Rc/WDOnJ221RAUQkAxt1ceIWeMUrWo79Rcw7IrT+UC
- peWlpsbtwmdKZY4y4XfyRUupACS8W7Dg6cCg5d77A17DwmOeVKyc7DGqvv0oDw1OrLC3apt0J
- tbThgxDPRT+tayk6rjS8WMnpnWessrVYdLSs3A==
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:41 PM Stafford Horne <shorne@gmail.com> wrote:
-> On Thu, Jul 14, 2022 at 09:56:44AM +0200, Arnd Bergmann wrote:
-> > > diff --git a/arch/openrisc/Kconfig b/arch/openrisc/Kconfig
-> > > index e814df4c483c..327241988819 100644
-> > > --- a/arch/openrisc/Kconfig
-> > > +++ b/arch/openrisc/Kconfig
-> > > @@ -21,7 +21,9 @@ config OPENRISC
-> > >         select GENERIC_IRQ_PROBE
-> > >         select GENERIC_IRQ_SHOW
-> > >         select GENERIC_IOMAP
-> > > +       select GENERIC_PCI_IOMAP
-> > >         select GENERIC_CPU_DEVICES
-> >
-> > > @@ -46,9 +50,6 @@ config MMU
-> > >  config GENERIC_HWEIGHT
-> > >         def_bool y
-> > >
-> > > -config NO_IOPORT_MAP
-> > > -       def_bool y
-> > > -
->
-> I tried the below patch on top of this but I get failures, as the __pci_ioport_map
-> uses ioport_map.
->
->     lib/pci_iomap.c: In function 'pci_iomap_range':
->       CC      drivers/i2c/i2c-core-base.o
->     ./include/asm-generic/pci_iomap.h:29:41: error: implicit declaration of function 'ioport_map'; did you mean 'ioremap'? [-Werror=implicit-function-declaration]
->        29 | #define __pci_ioport_map(dev, port, nr) ioport_map((port), (nr))
->           |                                         ^~~~~~~~~~
->     lib/pci_iomap.c:44:24: note: in expansion of macro '__pci_ioport_map'
->        44 |                 return __pci_ioport_map(dev, start, len);
->           |                        ^~~~~~~~~~~~~~~~
->
+On Mittwoch, 13. Juli 2022 22:52:56 CEST Dominique Martinet wrote:
+> Christian Schoenebeck wrote on Wed, Jul 13, 2022 at 03:06:01PM +0200:
+> > > > +	case P9_TWALK:
+> > > > +		BUG_ON(strcmp("ddT", fmt));
+> > > > +		va_arg(ap, int32_t);
+> > > > +		va_arg(ap, int32_t);
+> > > > +		{
+> > > > +			uint i, nwname = max(va_arg(ap, int), 0);
+> > > 
+> > > I was about to say that the max is useless as for loop would be cut
+> > > short, but these are unsigned... So the code in protocol.c p9pdu_vwritef
+> > > 'T' has a bug (int cast directly to uint16): do you want to fix it or
+> > > shall I go ahead?
+> > 
+> > I'd either send a separate patch today for fixing 'T', or if you want
+> > to handle it by yourself, then just go ahead.
+> 
+> I'd appreciate if you have time, doesn't make much difference though
 
-Ah, I see. So setting NO_IOPORT_MAP without GENERIC_PCI_IOMAP
-probably just works, but then you'd also build all the driver that use
-ioport_map() when they cannot work.
+Looking closer at this separate issue; there is probably nothing to fix. 'T'
+(and 'R') in p9pdu_vwritef() pulls an 'int' argument from the stack. But the
+actual variable is passed here:
 
-Maybe add another
+struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+			      const unsigned char * const *wnames, int clone)
+{
+    ...
+    req = p9_client_rpc(clnt, P9_TWALK, "ddT", oldfid->fid, fid->fid,
+                        nwname, wnames);
+    ...
+}
 
-#define __pci_ioport_map(dev, port, nr) NULL
+So the variable being passed was already uint16_t, which made me re-aware why
+this is working anyway: Because C and C++ have this nice language hack that
+any variadic integer variable smaller than 'int' is automatically casted to
+'int' before being passed.
 
-case to include/asm-generic/pci_iomap.h, or add an #ifdef to lib
-pci_iomap_range() to not call it in this case.
+I mean I could clamp the pulled argument like:
 
-> > GENERIC_IOMAP makes no sense without PIO, and I think you also
-> > need to keep the NO_IOPORT_MAP. I think you still want
-> > GENERIC_PCI_IOMAP, which in the absence of the other two
-> > should turn just return an __iomem pointer for memory resource
-> > and NULL for i/o resources.
->
-> OK.
->
-> If we keep NO_IOPORT_MAP, it causes HAS_IOPORT_MAP to be false and it removes
-> the definition of ioport_map which still seems to be needed at link time.  Maybe
-> thats an issue though.
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 3754c33e2974..5fd1e948c86a 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -441,7 +441,7 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+                        }
+                        break;
+                case 'T':{
+-                               uint16_t nwname = va_arg(ap, int);
++                               uint16_t nwname = clamp_t(int, va_arg(ap, int), 0, USHRT_MAX);
+                                const char **wnames = va_arg(ap, const char **);
+ 
+                                errcode = p9pdu_writef(pdu, proto_version, "w",
+@@ -462,7 +462,7 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+                        }
+                        break;
+                case 'R':{
+-                               uint16_t nwqid = va_arg(ap, int);
++                               uint16_t nwqid = clamp_t(int, va_arg(ap, int), 0, USHRT_MAX);
+                                struct p9_qid *wqids =
+                                    va_arg(ap, struct p9_qid *);
 
-This is the intention of CONFIG_NO_IOPORT_MAP, it's meant to be set
-on architectures that have no way of defining ioport_map() in a sensible
-way.
+But it's pretty much pointless overhead. Another option would be to change
+va_arg(ap, int) -> va_arg(ap, uint16_t), just to make it more clear what was
+pushed from the other side.
 
-        Arnd
+Which probably also means I can simply drop the max() call in this patch 10
+here as well.
+
+For the 'R' case: I haven't found the spot where this is actually used.
+
+> > > > +	case P9_TCREATE:
+> > > > +		BUG_ON(strcmp("dsdb?s", fmt));
+> > > > +		va_arg(ap, int32_t);
+> > > > +		{
+> > > > +			const char *name = va_arg(ap, const char *);
+> > > > +			if ((c->proto_version != p9_proto_2000u) &&
+> > > > +			    (c->proto_version != p9_proto_2000L))
+> > > 
+> > > (I don't think 9p2000.L can call TCREATE, but it doesn't really hurt
+> > > either)
+> > 
+> > Yes, Tcreate is only 9p2000 and 9p2000.u. Semantically this particular
+> > check here means "if proto == 9p.2000". I can't remember anymore why I
+> > came up with this inverted form here. I'll change it to "if
+> > (c->proto_version == p9_proto_legacy)".
+> 
+> Sounds good.
+> 
+> > > > +	case P9_TRENAMEAT:
+> > > if we have trenameat we probably want trename, tunlinkat as well?
+> > > What's your criteria for counting individually vs slapping 8k at it?
+> > > 
+> > > In this particular case, oldname/newname are single component names
+> > > within a directory so this is capped at 2*(4+256), that could easily fit
+> > > in 4k without bothering.
+> > 
+> > I have not taken the Linux kernel's current filename limit NAME_MAX
+> > (255) as basis, in that case you would be right. Instead I looked up
+> > what the maximum filename length among file systems in general was,
+> > and saw that ReiserFS supports up to slightly below 4k? So I took 4k
+> > as basis for the calculation used here, and the intention was to make
+> > this code more future proof. Because revisiting this code later on
+> > always takes quite some time and always has this certain potential to
+> > miss out details.
+> 
+> hmm, that's pretty deeply engrained into the VFS but I guess it might
+> change eventually, yes.
+> 
+> I don't mind as long as we're consistent (cf. unlink/mkdir below), in
+> practice measuring doesn't cost much.
+
+OK, I also make that more clear from the commit log then that 4k was taken as
+basis and why.
+
+> > Independent of the decision; additionally it might make sense to add
+> > something like:
+> > 
+> > #if NAME_MAX > 255
+> > # error p9_msg_buf_size() needs adjustments
+> > #endif
+> 
+> That's probably an understatement but I don't mind either way, it
+> doesn't hurt.
+> 
+> > > > +		BUG_ON(strcmp("dsds", fmt));
+> > > > +		va_arg(ap, int32_t);
+> > > > +		{
+> > > > +			const char *oldname = va_arg(ap, const char *);
+> > > > +			va_arg(ap, int32_t);
+> > > > +			{
+> > > > +				const char *newname = va_arg(ap, const char *);
+> > > 
+> > > (style nitpick) I don't see the point of nesting another level of
+> > > indentation here, it feels cleaner to declare oldname/newname at the
+> > > start of the block and be done with it.
+> > 
+> > Because  va_arg(ap, int32_t);  must remain between those two
+> > declarations, and I think either the compiler or style check script
+> > was barking at me. But I will recheck, if possible I will remove the
+> > additional block scope here.
+> 
+> Yes, I think it'd need to look like this:
+> 
+> 	case foo:
+> 		BUG_ON(...)
+> 		va_arg(ap, int32_t);
+> 		{
+> 			const char *oldname = va_arg(ap, const char *);
+> 			const char *newname;
+> 			va_arg(ap, int32_t);
+> 			newname = va_arg(ap, const_char *);
+> 			...
+> 		}
+> or
+> 		{
+> 			const char *oldname, *newname;
+> 			oldname = va_arg(ap, const char *);
+> 			va_arg(ap, int32_t)
+> 			newname = va_arg(ap, const char *);
+> 			...
+> 		}
+> 
+> I guess the later is slightly easier on the eyes
+
+Ah yes, that's your win there.
+
+> > > > +	/* small message types */
+> > > 
+> > > ditto: what's your criteria for 4k vs 8k?
+> > 
+> > As above, 4k being the basis for directory entry names, plus PATH_MAX
+> > (4k) as basis for maximum path length.
+> > 
+> > However looking at it again, if NAME_MAX == 4k was assumed exactly,
+> > then Tsymlink would have the potential to exceed 8k, as it has name[s]
+> > and symtgt[s] plus the other fields.
+> 
+> yes.
+> 
+> > > > +	case P9_TSTAT:
+> > > this is just fid[4], so 4k is more than enough
+> > 
+> > I guess that was a typo and should have been Twstat instead?
+> 
+> Ah, had missed this because 9p2000.L's version of stat[n] is fixed size.
+> Sounds good.
+> 
+> > > > +	case P9_RSTAT:
+> > > also fixed size 4+4+8+8+8+8+8+8+4 -- fits in 4k.
+> > 
+> > Rstat contains stat[n] which in turn contains variable-length string
+> > fields (filename, owner name, group name)
+> 
+> Right, same mistake.
+> 
+> > > > +	case P9_TSYMLINK:
+> > > that one has symlink target which can be arbitrarily long (filesystem
+> > > specific, 4k is the usual limit for linux but some filesystem I don't
+> > > know might handle more -- it might be worth going through the trouble of
+> > > going through it.
+> > 
+> > Like mentioned above, if exactly NAME_MAX == 4k was assumed, then
+> > Tsymlink may even be >8k.
+> 
+> And all the other remarks are 'yes if we assume bigger NAME_MAX' -- I'm
+> happy either way.
+> 
+> > > rest all looks ok to me.
+> > 
+> > Thanks for the review! I know, that's really a dry patch to look
+> > at. :)
+> 
+> Thanks for writing it in the first place ;)
+> 
+> --
+> Dominique
+
+
+
+
