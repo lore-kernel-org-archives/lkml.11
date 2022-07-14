@@ -2,172 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D93C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4416DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237310AbiGNEaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33066 "EHLO
+        id S237330AbiGNEaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:30:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236662AbiGNE3E (ORCPT
+        with ESMTP id S236673AbiGNE3E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 00:29:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6585A28E36;
-        Wed, 13 Jul 2022 21:24:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 019C361EB2;
-        Thu, 14 Jul 2022 04:24:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC80C34114;
-        Thu, 14 Jul 2022 04:24:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772688;
-        bh=pKDMyWlO9kR+C6ViZ9yan6wE0QuZsKfeViglCg+/zgM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyplbyV7ReUzSFLwNZuK1DhO16vsTzpWzh6DdqmKo5ow/tIO26WCD6Z4Lzl1tv5E9
-         Aodi30sjLoK9QpfqLsayuMle0ZYMT79q8gzx9Vnly5PD2ptpMwXDjo3pOY6XtFLFcN
-         ozVYQHZiuDJXqSq9FgXlBDHr/t7frftg0yv0q+SytGxaw6Vqa0t2Tp2Xy+VF2yrQDO
-         o8bpj/mrohVVf9/w5WcBYMiEBxHPTdfmmlgidVebbxSAo7r1Px7PQUrmUkap4TuYNT
-         x73rT3SgFmyyct0GL6ESURwm3luRV/BtfD8hrgVxWy3zZlYz3N5CZXFuOoF/iDWBe8
-         zWXiztzTsfXhQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Rander Wang <rander.wang@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 08/28] ASoC: codecs: rt700/rt711/rt711-sdca: initialize workqueues in probe
-Date:   Thu, 14 Jul 2022 00:24:09 -0400
-Message-Id: <20220714042429.281816-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161D028E3A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:49 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772688;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vci+a2j3p4dRTO4MvgjEzQFBNpUGagACvgxCOkke+7Y=;
+        b=WJNZQLeeJiGf/RGk2CRNPv9wRnsekMjkGr8ZWSoOA6S/JQh1Q/oeu2H0YZMNJiIy53mOY/
+        xcdUwC5oL30e0z9tHk+tr6hRIVpIW8J/eQUU0s/mcFZkQCySp+qGSEmeJyV2eRQIIlCSag
+        jZqk3kJflYbLc496e8mA2+EEAK9P0N8=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 4/8] mm, hwpoison: make unpoison aware of raw error info in hwpoisoned hugepage
+Date:   Thu, 14 Jul 2022 13:24:16 +0900
+Message-Id: <20220714042420.1847125-5-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit ba98d7d8b60ba410aa03834f6aa48fd3b2e68478 ]
+Raw error info list needs to be removed when hwpoisoned hugetlb is
+unpoisoned.  And unpoison handler needs to know how many errors there
+are in the target hugepage. So add them.
 
-The workqueues are initialized in the io_init functions, which isn't
-quite right. In some tests, this leads to warnings throw from
-__queue_delayed_work()
+HPageVmemmapOptimized(hpage) and HPageRawHwpUnreliable(hpage)) sometimes
+can't be unpoisoned, so skip them.
 
-WARN_ON_FUNCTION_MISMATCH(timer->function, delayed_work_timer_fn);
-
-Move all the initializations to the probe functions.
-
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Rander Wang <rander.wang@intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Link: https://lore.kernel.org/r/20220606203752.144159-7-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- sound/soc/codecs/rt700.c      | 12 +++++-------
- sound/soc/codecs/rt711-sdca.c | 10 +++-------
- sound/soc/codecs/rt711.c      | 12 +++++-------
- 3 files changed, 13 insertions(+), 21 deletions(-)
+v6 -> v7:
+- free_raw_hwp_pages() checks HPageVmemmapOptimized(hpage) only when
+  move_flag is true so that unpoison works for HPageVmemmapOptimized pages.
 
-diff --git a/sound/soc/codecs/rt700.c b/sound/soc/codecs/rt700.c
-index 0c7416a5eb50..5cf910e7940b 100644
---- a/sound/soc/codecs/rt700.c
-+++ b/sound/soc/codecs/rt700.c
-@@ -1114,6 +1114,11 @@ int rt700_init(struct device *dev, struct regmap *sdw_regmap,
+v5 -> v6:
+- set type of return value of hugetlb_clear_page_hwpoison() to void
+- change type of return value of hugetlb_clear_page_hwpoison() to unsigned long
+
+v4 -> v5:
+- fix type of return value of free_raw_hwp_pages()
+  (found by kernel test robot),
+- prevent unpoison for HPageVmemmapOptimized and HPageRawHwpUnreliable.
+---
+ include/linux/swapops.h |  9 +++++++
+ mm/memory-failure.c     | 52 +++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 56 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/swapops.h b/include/linux/swapops.h
+index a01aeb3fcc0b..ddc98f96ad2c 100644
+--- a/include/linux/swapops.h
++++ b/include/linux/swapops.h
+@@ -498,6 +498,11 @@ static inline void num_poisoned_pages_dec(void)
+ 	atomic_long_dec(&num_poisoned_pages);
+ }
  
- 	mutex_init(&rt700->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt700->jack_detect_work,
-+			  rt700_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
-+			  rt700_btn_check_handler);
++static inline void num_poisoned_pages_sub(long i)
++{
++	atomic_long_sub(i, &num_poisoned_pages);
++}
 +
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1208,13 +1213,6 @@ int rt700_io_init(struct device *dev, struct sdw_slave *slave)
- 	/* Finish Initial Settings, set power to D3 */
- 	regmap_write(rt700->regmap, RT700_SET_AUDIO_POWER_STATE, AC_PWRST_D3);
+ #else
  
--	if (!rt700->first_hw_init) {
--		INIT_DELAYED_WORK(&rt700->jack_detect_work,
--			rt700_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt700->jack_btn_check_work,
--			rt700_btn_check_handler);
--	}
--
- 	/*
- 	 * if set_jack callback occurred early than io_init,
- 	 * we set up the jack detection function now
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index e77a3b5ad63b..9438fd264405 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -1414,6 +1414,9 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
- 
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_sdca_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_sdca_btn_check_handler);
+ static inline swp_entry_t make_hwpoison_entry(struct page *page)
+@@ -518,6 +523,10 @@ static inline struct page *hwpoison_entry_to_page(swp_entry_t entry)
+ static inline void num_poisoned_pages_inc(void)
+ {
+ }
 +
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1545,13 +1548,6 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
- 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
- 		RT711_PUSH_BTN_INT_CTL0, 0x20, 0x00);
++static inline void num_poisoned_pages_sub(long i)
++{
++}
+ #endif
  
--	if (!rt711->first_hw_init) {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_sdca_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_sdca_btn_check_handler);
--	}
--
- 	/* calibration */
- 	ret = rt711_sdca_calibration(rt711);
- 	if (ret < 0)
-diff --git a/sound/soc/codecs/rt711.c b/sound/soc/codecs/rt711.c
-index eadcfb31b5e8..4c734e48073f 100644
---- a/sound/soc/codecs/rt711.c
-+++ b/sound/soc/codecs/rt711.c
-@@ -1199,6 +1199,10 @@ int rt711_init(struct device *dev, struct regmap *sdw_regmap,
- 	mutex_init(&rt711->calibrate_mutex);
- 	mutex_init(&rt711->disable_irq_lock);
+ static inline int non_swap_entry(swp_entry_t entry)
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index fa29849769ed..8b9c0d228549 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1680,19 +1680,23 @@ static inline struct llist_head *raw_hwp_list_head(struct page *hpage)
+ 	return (struct llist_head *)&page_private(hpage + SUBPAGE_INDEX_HWPOISON);
+ }
  
-+	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_jack_detect_handler);
-+	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_btn_check_handler);
-+	INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
+-static void __free_raw_hwp_pages(struct page *hpage)
++static unsigned long __free_raw_hwp_pages(struct page *hpage, bool move_flag)
+ {
+ 	struct llist_head *head;
+ 	struct llist_node *t, *tnode;
++	unsigned long count = 0;
+ 
+ 	head = raw_hwp_list_head(hpage);
+ 	llist_for_each_safe(tnode, t, head->first) {
+ 		struct raw_hwp_page *p = container_of(tnode, struct raw_hwp_page, node);
+ 
+-		SetPageHWPoison(p->page);
++		if (move_flag)
++			SetPageHWPoison(p->page);
+ 		kfree(p);
++		count++;
+ 	}
+ 	llist_del_all(head);
++	return count;
+ }
+ 
+ static int hugetlb_set_page_hwpoison(struct page *hpage, struct page *page)
+@@ -1735,17 +1739,36 @@ static int hugetlb_set_page_hwpoison(struct page *hpage, struct page *page)
+ 		 * Once HPageRawHwpUnreliable is set, raw_hwp_page is not
+ 		 * used any more, so free it.
+ 		 */
+-		__free_raw_hwp_pages(hpage);
++		__free_raw_hwp_pages(hpage, false);
+ 	}
+ 	return ret;
+ }
+ 
++static unsigned long free_raw_hwp_pages(struct page *hpage, bool move_flag)
++{
++	/*
++	 * HPageVmemmapOptimized hugepages can't be freed because struct
++	 * pages for tail pages are required but they don't exist.
++	 */
++	if (move_flag && HPageVmemmapOptimized(hpage))
++		return 0;
 +
- 	/*
- 	 * Mark hw_init to false
- 	 * HW init will be performed when device reports present
-@@ -1306,14 +1310,8 @@ int rt711_io_init(struct device *dev, struct sdw_slave *slave)
++	/*
++	 * HPageRawHwpUnreliable hugepages shouldn't be unpoisoned by
++	 * definition.
++	 */
++	if (HPageRawHwpUnreliable(hpage))
++		return 0;
++
++	return __free_raw_hwp_pages(hpage, move_flag);
++}
++
+ void hugetlb_clear_page_hwpoison(struct page *hpage)
+ {
+ 	if (HPageRawHwpUnreliable(hpage))
+ 		return;
+ 	ClearPageHWPoison(hpage);
+-	__free_raw_hwp_pages(hpage);
++	free_raw_hwp_pages(hpage, true);
+ }
  
- 	if (rt711->first_hw_init)
- 		rt711_calibration(rt711);
--	else {
--		INIT_DELAYED_WORK(&rt711->jack_detect_work,
--			rt711_jack_detect_handler);
--		INIT_DELAYED_WORK(&rt711->jack_btn_check_work,
--			rt711_btn_check_handler);
--		INIT_WORK(&rt711->calibration_work, rt711_calibration_work);
-+	else
- 		schedule_work(&rt711->calibration_work);
--	}
+ /*
+@@ -1889,6 +1912,10 @@ static inline int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *
+ 	return 0;
+ }
  
- 	/*
- 	 * if set_jack callback occurred early than io_init,
++static inline unsigned long free_raw_hwp_pages(struct page *hpage, bool flag)
++{
++	return 0;
++}
+ #endif	/* CONFIG_HUGETLB_PAGE */
+ 
+ static int memory_failure_dev_pagemap(unsigned long pfn, int flags,
+@@ -2294,6 +2321,7 @@ int unpoison_memory(unsigned long pfn)
+ 	struct page *p;
+ 	int ret = -EBUSY;
+ 	int freeit = 0;
++	unsigned long count = 1;
+ 	static DEFINE_RATELIMIT_STATE(unpoison_rs, DEFAULT_RATELIMIT_INTERVAL,
+ 					DEFAULT_RATELIMIT_BURST);
+ 
+@@ -2341,6 +2369,13 @@ int unpoison_memory(unsigned long pfn)
+ 
+ 	ret = get_hwpoison_page(p, MF_UNPOISON);
+ 	if (!ret) {
++		if (PageHuge(p)) {
++			count = free_raw_hwp_pages(page, false);
++			if (count == 0) {
++				ret = -EBUSY;
++				goto unlock_mutex;
++			}
++		}
+ 		ret = TestClearPageHWPoison(page) ? 0 : -EBUSY;
+ 	} else if (ret < 0) {
+ 		if (ret == -EHWPOISON) {
+@@ -2349,6 +2384,13 @@ int unpoison_memory(unsigned long pfn)
+ 			unpoison_pr_info("Unpoison: failed to grab page %#lx\n",
+ 					 pfn, &unpoison_rs);
+ 	} else {
++		if (PageHuge(p)) {
++			count = free_raw_hwp_pages(page, false);
++			if (count == 0) {
++				ret = -EBUSY;
++				goto unlock_mutex;
++			}
++		}
+ 		freeit = !!TestClearPageHWPoison(p);
+ 
+ 		put_page(page);
+@@ -2361,7 +2403,7 @@ int unpoison_memory(unsigned long pfn)
+ unlock_mutex:
+ 	mutex_unlock(&mf_mutex);
+ 	if (!ret || freeit) {
+-		num_poisoned_pages_dec();
++		num_poisoned_pages_sub(count);
+ 		unpoison_pr_info("Unpoison: Software-unpoisoned page %#lx\n",
+ 				 page_to_pfn(p), &unpoison_rs);
+ 	}
 -- 
-2.35.1
+2.25.1
 
