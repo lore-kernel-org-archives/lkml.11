@@ -2,60 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F019AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237623AbiGNJIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57372 "EHLO
+        id S237537AbiGNJJd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:09:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237612AbiGNJIB (ORCPT
+        with ESMTP id S235849AbiGNJJa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:08:01 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02FED3D598
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:08:00 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t1so1741483lft.8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:07:59 -0700 (PDT)
+        Thu, 14 Jul 2022 05:09:30 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E0B51EEC4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:09:28 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id u13so1764379lfn.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:09:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Jl4DNwb2Gyurm+zGL+d676Qd+COluIRUuESVpeQKWC0=;
-        b=L3RT6QR1ni+Q+ys1fl+pnF8bB7RPAWkwFMz+tnF3P5v1Jd3wUSFvPf5Mwvsx/eJ8Xm
-         iNzAdw6xIF4RU2F1JxKzt2a4hw685/Rb8T6LbbfclXbSotZWIf3zXg5OV6ZZdC2sY+cI
-         xcQliuqOuOtC8RFonaNA7Z7Ik5jWmb8JZfLQS/v+FPQuFLHcil5o0XmKEUZzFdKtjPxz
-         HiZE0WIFMTqbi1PZdHggLX2RU/eGbRstiskNjBo0eBXT+SPIXCkim2fafcRnXtS5UCfx
-         ci+DfnRFFa7hL8mdOR9JRPvDC5vSfJyO90ldyJ7nGLjNtHLB1MBwSMe3cLgmfwbhL8Jv
-         qAtQ==
+        bh=WjFu8FA+ZvYFQ0mgdR9rWCbv3lmDuucCfUc6RkI5UJs=;
+        b=qBNocUs02EVbJuP8Ba8s5HIVQNyruoTkkviJ5knKOYgGVytay7miBfDOfakCsDfCAq
+         75khIHwQ1btc/LYw5xHvkKqcOoFrUcQL7dU18abHutvURoh4jkg+IB3v8zHvSOVFsW/x
+         LBz++bCj8Ywd8csfwxDLgleDpPxj3uu7BKo+vBFW/wQsR4ptlEVmW5rLppMHT6SiOTAw
+         E83VfjikXFNGxgHTV0PjA98CWDYtReEajCVJVnQKawjFNU+/gMiEO94bQfzCiGHi9EXT
+         PtAxTl7GxCuRjDQQX1QKEHnREOikhShQxB5Mgmsd1tl8HYhrWnH+SGUs0ylSzZR2scqx
+         eTHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Jl4DNwb2Gyurm+zGL+d676Qd+COluIRUuESVpeQKWC0=;
-        b=UXqgfQCIVcO+fsKe9051ROQPmx8A1ac5Cto1FoQQBdd1+1XJDtiz19j3tIQIBjJoA4
-         ILY2NXbdXJYYitRn0j2lwfFDD0udBqdagH+BiuQpidoHFbWBVzCL/rw9ollFFHEuUdn1
-         z/EmtcYTXbILrJcXbnGBJ34pN8bTuukVYx61b5QF/j0svfEDSsFeCbbKnBnJpc4dNsFu
-         DqDARAAJY6HAK6htZaBns73FgPsfCSb1pPIK4FwH3r58hWu7TqR2isR8ovtv1/AAPg6h
-         lewNsiYQu0x6LJOv+aQl3gjfA6+ye0X3ST5x4w/5s264V+3iDMuhg7jtNi6vyQKtrVPV
-         fYTw==
-X-Gm-Message-State: AJIora83sDsama9YD+h+53cPh4GMK08qQoUCSfGyFX2neHSA6K3hAsCn
-        +WHAvbIAXJK9yESmT20z2nlY+w==
-X-Google-Smtp-Source: AGRyM1tsipuDR7LJx1E5SIC+SfOIqDfrOGGC9rV1JuuIXdT8wzO+pIR201gcIftWNEW9UcvQIALmLw==
-X-Received: by 2002:ac2:4288:0:b0:489:da8b:293a with SMTP id m8-20020ac24288000000b00489da8b293amr4412363lfh.106.1657789678414;
-        Thu, 14 Jul 2022 02:07:58 -0700 (PDT)
+        bh=WjFu8FA+ZvYFQ0mgdR9rWCbv3lmDuucCfUc6RkI5UJs=;
+        b=AA6kybncr1cGKh2LxEap9Im3VXvI5rC/iTK97JjgnralR/dB+U3AAlQu6j0QaQFSQk
+         JRSLb2gw8rmYEa9l4KXwLmaQporwpjV6vhltNLKzkillZkfpXqAQNX64OF7/HYf+h2ea
+         QmtcbizPi27T+/axxRvPrvK56cHpQdkYmXw4VxfFKPSEz+Tm2rCXbnF2yG+CuW+vrfm+
+         yJ/QQkKvejpbgsBQkoAdcLo5YyuS9JxiFG+3uDLUdTGa5hj7mdfM1Mmb9aUZ6OR4rWYQ
+         9qioz3rb9I3UT7/VxUB/Gpg6dg8hZ8BXD6w/yk70wdDnKzhsaIOW44DjaqyBNErxO0qS
+         PdZg==
+X-Gm-Message-State: AJIora8+LXuHySS26vWtfWBsWbluH5uDeKxTlx/R4smdvzdiLb76LnF0
+        zXNAn1AYmebdr2WbH/4oLL9/eA==
+X-Google-Smtp-Source: AGRyM1sr9QbMsD/PF6xIHUn8ZPFH4qsXTIMJn7Um6tZIIiNZroL3GezNb416WIrC8BhAjfhfcr6dpw==
+X-Received: by 2002:a19:8c12:0:b0:489:c75b:3bfc with SMTP id o18-20020a198c12000000b00489c75b3bfcmr4623003lfd.222.1657789766876;
+        Thu, 14 Jul 2022 02:09:26 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id q9-20020a056512210900b0048905c6103csm253120lfr.9.2022.07.14.02.07.56
+        by smtp.gmail.com with ESMTPSA id x19-20020a056512079300b004794a78bfe7sm254619lfr.6.2022.07.14.02.09.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:07:57 -0700 (PDT)
-Message-ID: <b09f8007-ffbd-94cd-e5f7-bc30f40cee0b@linaro.org>
-Date:   Thu, 14 Jul 2022 11:07:55 +0200
+        Thu, 14 Jul 2022 02:09:26 -0700 (PDT)
+Message-ID: <a9001806-b189-02bf-6fb8-ccea145a2027@linaro.org>
+Date:   Thu, 14 Jul 2022 11:09:24 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 05/30] dt-bindings: phy: qcom,qmp: clean up
- descriptions
+Subject: Re: [PATCH v2 08/30] dt-bindings: phy: add qcom,msm8996-qmp-pcie-phy
+ schema
 Content-Language: en-US
 To:     Johan Hovold <johan+linaro@kernel.org>,
         Vinod Koul <vkoul@kernel.org>,
@@ -68,9 +68,9 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-6-johan+linaro@kernel.org>
+ <20220707134725.3512-9-johan+linaro@kernel.org>
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707134725.3512-6-johan+linaro@kernel.org>
+In-Reply-To: <20220707134725.3512-9-johan+linaro@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -78,14 +78,22 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 On 07/07/2022 15:47, Johan Hovold wrote:
-> Clean up the remaining descriptions by using uppercase "PHY"
-> consistently and dropping redundant information from the register
-> descriptions.
+> The QMP PHY DT schema is getting unwieldy. Break out the odd-bird
+> msm8996-qmp-pcie-phy which is the only QMP PHY that uses separate
+> "per-lane" nodes.
+> 
+> Add an example node based on a cleaned up version of msm8996.dtsi.
 > 
 > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  .../phy/qcom,msm8996-qmp-pcie-phy.yaml        | 146 ++++++++++++++++++
+>  .../devicetree/bindings/phy/qcom,qmp-phy.yaml |  26 ----
+>  2 files changed, 146 insertions(+), 26 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
+> 
 
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 
 Best regards,
