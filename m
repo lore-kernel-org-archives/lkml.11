@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD2ECC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0442EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238930AbiGNL2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S238524AbiGNLcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238858AbiGNL2I (ORCPT
+        with ESMTP id S230299AbiGNLcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:28:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D7D57253;
-        Thu, 14 Jul 2022 04:28:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6149661CC2;
-        Thu, 14 Jul 2022 11:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6257EC341CA;
-        Thu, 14 Jul 2022 11:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657798083;
-        bh=9ohwBQS9o/0eQWGzO9pBqXpDkfHCagUjBWWDKn5wNw4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QkBcA0xOxbZqDCuGkJ7ygm1jVxMqSFVVfQ9Ich8Wwlo7Wp2YMy77JoAzeaiKqZgKX
-         grNU7pvKFtU6xkOFXQUuZOFN3/NRuvX7B1fPNvnsibfjNuUOU0M1gdGk0DbhO9XtSK
-         2r1sWZ4dXbQguu5mlNWrdHhvrLKVduWNR1EfWBZdR4YEwxebvQsQYRQxWYeFO58uku
-         8FKbtPbyNi8Mz5ud7HoSsic0QdRj5a5pad1uRtqF8jcMvNlIxf9Bi/Bbetk4QCYdSq
-         r3+bW58nRHSGFuyqGYzDLK1WI+4NzXABcgjWs9ejAwP+FY2qGsIv5kBX4Hx7rOGFco
-         r2UN5KAEAAZNg==
-From:   Lee Jones <lee@kernel.org>
-To:     lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 8/8] dt-bindings: regulator: pwm: Update Lee Jones' email address
-Date:   Thu, 14 Jul 2022 12:25:33 +0100
-Message-Id: <20220714112533.539910-9-lee@kernel.org>
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-In-Reply-To: <20220714112533.539910-1-lee@kernel.org>
-References: <20220714112533.539910-1-lee@kernel.org>
+        Thu, 14 Jul 2022 07:32:00 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5B1F9206
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:31:59 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9561013D5;
+        Thu, 14 Jul 2022 04:31:59 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.85.183])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 33CBC3F792;
+        Thu, 14 Jul 2022 04:31:58 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 12:31:54 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>, peterz@infradead.org
+Subject: Re: [PATCH] lkdtm: cfi: add test for HW landing pad CFI
+Message-ID: <Ys/+qghGmH4kK4DN@FVFF77S0Q05N>
+References: <20220713151815.295520-1-mark.rutland@arm.com>
+ <Ys7vRTThFVNz7moO@sirena.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys7vRTThFVNz7moO@sirena.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Going forward, I'll be using my kernel.org for upstream work.
+On Wed, Jul 13, 2022 at 05:13:57PM +0100, Mark Brown wrote:
+> On Wed, Jul 13, 2022 at 04:18:15PM +0100, Mark Rutland wrote:
+> > Some architectures have coarse-grained HW CFI schemes where indirect
+> > branches must target a "landing pad" instruction (e.g. BTI on arm64,
+> > ENDBR on x86). These prevent gadgetization of arbitrary portions of
+> > functions.
+> 
+> > Add a test which checks these work as expected.
+> 
+> > For example, on arm64 HW with BTI this should result in a BTI exception
+> > being taken:
+> 
+> > +/*
+> > + * This tries to call an indirect function with an address which is not a
+> > + * function entry point. This should be caught by architectures with "landing
+> > + * pad" instructions (e.g. BTI on arm64, or ENDBR on x86).
+> > + */
+> > +static void lkdtm_CFI_FORWARD_LANDING_PAD(void)
+> > +{
+> > +	void (*func)(int *);
+> > +
+> > +	func = (void *)((unsigned long)lkdtm_increment_void + 4);
+> > +
+> > +	pr_info("Calling gadget address ...\n");
+> > +	func(&called_count);
+> > +
+> > +	pr_err("FAIL: survived gadget function call!\n");
+> > +}
+> 
+> Incrementing the address by 4 here is the right number for arm64 and it
+> looks like it's also right for the x86_64 ENDBR64 instruction but are we
+> guaranteed that it'll do the right thing for other architectures,
+> especially those with variable length instructions - couldn't we just
+> get an illegal instruction exception due to ending up pointing at
+> something that isn't the start of an instruction even if CFI isn't
+> active?
+> 
+> Not sure that worrying about that at this point isn't making perfect the
+> enemy of good though, it could be dealt with later.  Perhaps just put
+> the offset behind a #define to make it a tiny bit more discoverable?
 
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org> (su
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc: linux-pwm@vger.kernel.org
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Signed-off-by: Lee Jones <lee@kernel.org>
----
- Documentation/devicetree/bindings/regulator/pwm-regulator.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+How about I just add a comment for now? e.g.
 
-diff --git a/Documentation/devicetree/bindings/regulator/pwm-regulator.yaml b/Documentation/devicetree/bindings/regulator/pwm-regulator.yaml
-index 0332fec48a883..82b6f2fde422b 100644
---- a/Documentation/devicetree/bindings/regulator/pwm-regulator.yaml
-+++ b/Documentation/devicetree/bindings/regulator/pwm-regulator.yaml
-@@ -8,7 +8,7 @@ title: Bindings for the Generic PWM Regulator
- 
- maintainers:
-   - Brian Norris <briannorris@chromium.org>
--  - Lee Jones <lee.jones@linaro.org>
-+  - Lee Jones <lee@kernel.org>
-   - Alexandre Courbot <acourbot@nvidia.com>
- 
- description: |
--- 
-2.37.0.144.g8ac04bfd2-goog
+	/*
+	 * Skip past a landing pad instruction.
+	 * On arm64 all instructions are 4-byte aligned, and x86's ENDBR is 4
+	 * bytes.
+	 */
 
+Thanks,
+Mark.
