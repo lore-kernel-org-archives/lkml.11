@@ -2,163 +2,270 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:26:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:26:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238792AbiGNL0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34724 "EHLO
+        id S238831AbiGNL04 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:26:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238813AbiGNL0c (ORCPT
+        with ESMTP id S238785AbiGNL0c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 07:26:32 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F17D5885A;
-        Thu, 14 Jul 2022 04:26:29 -0700 (PDT)
-Received: from pyrite.rasen.tech (softbank036240121080.bbtec.net [36.240.121.80])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 3AEE8A1D;
-        Thu, 14 Jul 2022 13:26:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1657797987;
-        bh=ugkBqo38wIBxdX9iPYWMjbhexB/lDWFHBogAakQ2yC0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NLHuYk25JC2deaK7qP+Y/X0e8k3ILzD6SvW40lxguUvUoUy24l4StKtWTF63t4Cjj
-         X8joqb8EDvGblHyzOr4n/A28LY65R6DOonocOlX4S41nAzvZnsm1bRioX6s0v6IgrV
-         Z448zA2rbvZU6LNTIvZ9XykgRoOKOKp9bso1OXAU=
-From:   Paul Elder <paul.elder@ideasonboard.com>
-To:     linux-media@vger.kernel.org
-Cc:     Paul Elder <paul.elder@ideasonboard.com>,
-        Dafna Hirschfeld <dafna@fastmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        laurent.pinchart@ideasonboard.com,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] media: rkisp1: Add YC swap capability
-Date:   Thu, 14 Jul 2022 20:26:02 +0900
-Message-Id: <20220714112603.1117335-2-paul.elder@ideasonboard.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220714112603.1117335-1-paul.elder@ideasonboard.com>
-References: <20220714112603.1117335-1-paul.elder@ideasonboard.com>
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BEB95726C;
+        Thu, 14 Jul 2022 04:26:27 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 656336601A3B;
+        Thu, 14 Jul 2022 12:26:24 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657797985;
+        bh=S3uu1fiJqnW9GfhBdNOm5ox+Kfz/PBBejcQCNxtJG7Q=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nmnLgvsJ7wUdm7PX1mVlONbq1I4u5c8cliefOUgywi8O7eQNZ9V+UIqkndktdgbcP
+         I0dEshLOWiiUfvkV/+4U8lS3BJfHmZgWj3KVrMa/ccUIYo9Dnpb4HTLgtic2FTgNh7
+         g5d+02tP+6EPQhfdPAcWyW0jpcfH2kHqBjomZ+ZuOvzEhVWZ2vJ9XBqB3laT4PSV/x
+         wE27WhtoF+NNzOHG02pv3MTUxMxOvBeOAV4Al3aYiSSPgVfkd9x19nYDLM9Qlt0zBW
+         OPk0gbvq517iOXDN2+v2c/sA8s86kGLxsltZPJRKhmMDcmNkBKg0OPz6pPN2wKSIEw
+         tSgJZPher7yKQ==
+Message-ID: <8bc57373-70e4-8ab6-659f-0917dbf14c38@collabora.com>
+Date:   Thu, 14 Jul 2022 13:26:21 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v14 04/10] video/hdmi: Add audio_infoframe packing for DP
+Content-Language: en-US
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com, deller@gmx.de,
+        airlied@linux.ie
+Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
+        wenst@chromium.org, ck.hu@mediatek.com, liangxu.xu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-fbdev@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+ <20220712111223.13080-5-rex-bc.chen@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220712111223.13080-5-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ISP version in the i.MX8MP has an MI_OUTPUT_ALIGN_FORMAT register
-that the rk3399 does not have. This register allows swapping bytes,
-which can be used to implement UYVY from YUYV.
+Il 12/07/22 13:12, Bo-Chen Chen ha scritto:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> Similar to HDMI, DP uses audio infoframes as well which are structured
+> very similar to the HDMI ones.
+> 
+> This patch adds a helper function to pack the HDMI audio infoframe for
+> DP, called hdmi_audio_infoframe_pack_for_dp().
+> hdmi_audio_infoframe_pack_only() is split into two parts. One of them
+> packs the payload only and can be used for HDMI and DP.
+> 
+> Also constify the frame parameter in hdmi_audio_infoframe_check() as
+> it is passed to hdmi_audio_infoframe_check_only() which expects a const.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
+>   drivers/video/hdmi.c         | 82 +++++++++++++++++++++++++++---------
+>   include/drm/display/drm_dp.h |  2 +
+>   include/linux/hdmi.h         |  7 ++-
+>   3 files changed, 71 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/video/hdmi.c b/drivers/video/hdmi.c
+> index 947be761dfa4..86805d77cc86 100644
+> --- a/drivers/video/hdmi.c
+> +++ b/drivers/video/hdmi.c
+> @@ -21,6 +21,7 @@
+>    * DEALINGS IN THE SOFTWARE.
+>    */
+>   
+> +#include <drm/display/drm_dp.h>
+>   #include <linux/bitops.h>
+>   #include <linux/bug.h>
+>   #include <linux/errno.h>
+> @@ -381,12 +382,34 @@ static int hdmi_audio_infoframe_check_only(const struct hdmi_audio_infoframe *fr
+>    *
+>    * Returns 0 on success or a negative error code on failure.
+>    */
+> -int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame)
+> +int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame)
+>   {
+>   	return hdmi_audio_infoframe_check_only(frame);
+>   }
+>   EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+>   
+> +static void
+> +hdmi_audio_infoframe_pack_payload(const struct hdmi_audio_infoframe *frame,
+> +				  u8 *buffer)
+> +{
+> +	u8 channels;
+> +
+> +	if (frame->channels >= 2)
+> +		channels = frame->channels - 1;
+> +	else
+> +		channels = 0;
+> +
+> +	buffer[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
+> +	buffer[1] = ((frame->sample_frequency & 0x7) << 2) |
+> +		 (frame->sample_size & 0x3);
+> +	buffer[2] = frame->coding_type_ext & 0x1f;
+> +	buffer[3] = frame->channel_allocation;
+> +	buffer[4] = (frame->level_shift_value & 0xf) << 3;
+> +
+> +	if (frame->downmix_inhibit)
+> +		buffer[4] |= BIT(7);
+> +}
+> +
+>   /**
+>    * hdmi_audio_infoframe_pack_only() - write HDMI audio infoframe to binary buffer
+>    * @frame: HDMI audio infoframe
+> @@ -404,7 +427,6 @@ EXPORT_SYMBOL(hdmi_audio_infoframe_check);
+>   ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+>   				       void *buffer, size_t size)
+>   {
+> -	unsigned char channels;
+>   	u8 *ptr = buffer;
+>   	size_t length;
+>   	int ret;
+> @@ -420,28 +442,13 @@ ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+>   
+>   	memset(buffer, 0, size);
+>   
+> -	if (frame->channels >= 2)
+> -		channels = frame->channels - 1;
+> -	else
+> -		channels = 0;
+> -
+>   	ptr[0] = frame->type;
+>   	ptr[1] = frame->version;
+>   	ptr[2] = frame->length;
+>   	ptr[3] = 0; /* checksum */
+>   
+> -	/* start infoframe payload */
+> -	ptr += HDMI_INFOFRAME_HEADER_SIZE;
+> -
+> -	ptr[0] = ((frame->coding_type & 0xf) << 4) | (channels & 0x7);
+> -	ptr[1] = ((frame->sample_frequency & 0x7) << 2) |
+> -		 (frame->sample_size & 0x3);
+> -	ptr[2] = frame->coding_type_ext & 0x1f;
+> -	ptr[3] = frame->channel_allocation;
+> -	ptr[4] = (frame->level_shift_value & 0xf) << 3;
+> -
+> -	if (frame->downmix_inhibit)
+> -		ptr[4] |= BIT(7);
+> +	hdmi_audio_infoframe_pack_payload(frame,
+> +					  ptr + HDMI_INFOFRAME_HEADER_SIZE);
+>   
+>   	hdmi_infoframe_set_checksum(buffer, length);
+>   
+> @@ -479,6 +486,43 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+>   }
+>   EXPORT_SYMBOL(hdmi_audio_infoframe_pack);
+>   
+> +/**
+> + * hdmi_audio_infoframe_pack_for_dp - Pack a HDMI Audio infoframe for DisplayPort
+> + *
+> + * @frame:      HDMI Audio infoframe
+> + * @sdp:        secondary data packet for display port. This is filled with the
+> + * appropriate: data
 
-Add a feature flag to signify the presence of this feature, and add it
-to the i.MX8MP match data. Also add it as a flag to the format info in
-the list of supported formats by the capture v4l2 devices, and update
-enum_fmt and s_fmt to take it into account.
+"This is filled with the appropriate data"
 
-Signed-off-by: Paul Elder <paul.elder@ideasonboard.com>
----
- .../platform/rockchip/rkisp1/rkisp1-capture.c | 27 ++++++++++++++-----
- .../platform/rockchip/rkisp1/rkisp1-common.h  |  1 +
- .../platform/rockchip/rkisp1/rkisp1-dev.c     |  3 ++-
- 3 files changed, 23 insertions(+), 8 deletions(-)
+... well, that's pretty obvious, isn't it?
+You're describing that this function is filling sdp in the description, so you
+can just remove that part.
 
-diff --git a/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c b/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-index c494afbc21b4..85fd85fe208c 100644
---- a/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-+++ b/drivers/media/platform/rockchip/rkisp1/rkisp1-capture.c
-@@ -47,13 +47,15 @@ enum rkisp1_plane {
-  * @fourcc: pixel format
-  * @fmt_type: helper filed for pixel format
-  * @uv_swap: if cb cr swapped, for yuv
-+ * @yc_swap: if y and cb/cr swapped, for yuv
-  * @write_format: defines how YCbCr self picture data is written to memory
-  * @output_format: defines sp output format
-  * @mbus: the mbus code on the src resizer pad that matches the pixel format
-  */
- struct rkisp1_capture_fmt_cfg {
- 	u32 fourcc;
--	u8 uv_swap;
-+	u32 uv_swap : 1;
-+	u32 yc_swap : 1;
- 	u32 write_format;
- 	u32 output_format;
- 	u32 mbus;
-@@ -1150,9 +1152,13 @@ static const struct rkisp1_capture_fmt_cfg *
- rkisp1_find_fmt_cfg(const struct rkisp1_capture *cap, const u32 pixelfmt)
- {
- 	unsigned int i;
-+	bool yc_swap_support =
-+		cap->rkisp1->info->features & RKISP1_FEATURE_MI_OUTPUT_ALIGN;
- 
- 	for (i = 0; i < cap->config->fmt_size; i++) {
--		if (cap->config->fmts[i].fourcc == pixelfmt)
-+		const struct rkisp1_capture_fmt_cfg *fmt = &cap->config->fmts[i];
-+		if (fmt->fourcc == pixelfmt &&
-+		    (!fmt->yc_swap || yc_swap_support))
- 			return &cap->config->fmts[i];
- 	}
- 	return NULL;
-@@ -1223,22 +1229,29 @@ static int rkisp1_enum_fmt_vid_cap_mplane(struct file *file, void *priv,
- 	struct rkisp1_capture *cap = video_drvdata(file);
- 	const struct rkisp1_capture_fmt_cfg *fmt = NULL;
- 	unsigned int i, n = 0;
-+	bool yc_swap_support =
-+		cap->rkisp1->info->features & RKISP1_FEATURE_MI_OUTPUT_ALIGN;
- 
--	if (!f->mbus_code) {
--		if (f->index >= cap->config->fmt_size)
--			return -EINVAL;
-+	if (f->index >= cap->config->fmt_size)
-+		return -EINVAL;
- 
-+	if (!f->mbus_code && yc_swap_support) {
- 		fmt = &cap->config->fmts[f->index];
- 		f->pixelformat = fmt->fourcc;
- 		return 0;
- 	}
- 
- 	for (i = 0; i < cap->config->fmt_size; i++) {
--		if (cap->config->fmts[i].mbus != f->mbus_code)
-+		fmt = &cap->config->fmts[i];
-+
-+		if (!!f->mbus_code && fmt->mbus != f->mbus_code)
-+			continue;
-+
-+		if (!yc_swap_support && fmt->yc_swap)
- 			continue;
- 
- 		if (n++ == f->index) {
--			f->pixelformat = cap->config->fmts[i].fourcc;
-+			f->pixelformat = fmt->fourcc;
- 			return 0;
- 		}
- 	}
-diff --git a/drivers/media/platform/rockchip/rkisp1/rkisp1-common.h b/drivers/media/platform/rockchip/rkisp1/rkisp1-common.h
-index 38be565341d6..b0f9221a1922 100644
---- a/drivers/media/platform/rockchip/rkisp1/rkisp1-common.h
-+++ b/drivers/media/platform/rockchip/rkisp1/rkisp1-common.h
-@@ -119,6 +119,7 @@ enum rkisp1_feature {
- 	RKISP1_FEATURE_MAIN_STRIDE = BIT(3),
- 	RKISP1_FEATURE_DMA_34BIT = BIT(4),
- 	RKISP1_FEATURE_SELF_PATH = BIT(5),
-+	RKISP1_FEATURE_MI_OUTPUT_ALIGN = BIT(6),
- };
- 
- /*
-diff --git a/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c b/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-index 3b549c07a9bb..a475933820fd 100644
---- a/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-+++ b/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-@@ -520,7 +520,8 @@ static const struct rkisp1_info imx8mp_isp_info = {
- 	.isp_ver = IMX8MP_V10,
- 	.features = RKISP1_FEATURE_RSZ_CROP
- 		  | RKISP1_FEATURE_MAIN_STRIDE
--		  | RKISP1_FEATURE_DMA_34BIT,
-+		  | RKISP1_FEATURE_DMA_34BIT
-+		  | RKISP1_FEATURE_MI_OUTPUT_ALIGN,
- };
- 
- static const struct of_device_id rkisp1_of_match[] = {
--- 
-2.30.2
+Also, "Secondary data packet for DisplayPort", please.
+
+
+> + * @dp_version: Display Port version to be encoded in the header
+
+We're not meaning "a display port", but really "DisplayPort": please remove
+the space between "Display" and "Port" :-)
+
+(here and in the description below)
+
+> + *
+> + * Packs a HDMI Audio Infoframe to be sent over Display Port. This function
+> + * fills the secondary data packet to be used for Display Port.
+> + *
+> + * Return: Number of total written bytes or a negative errno on failure.
+> + */
+> +ssize_t
+> +hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
+> +				 struct dp_sdp *sdp, u8 dp_version)
+> +{
+> +	int ret;
+> +
+> +	ret = hdmi_audio_infoframe_check(frame);
+> +	if (ret)
+> +		return ret;
+> +
+> +	memset(sdp->db, 0, sizeof(sdp->db));
+> +
+> +	/* Secondary-data packet header */
+> +	sdp->sdp_header.HB0 = 0;
+> +	sdp->sdp_header.HB1 = frame->type;
+> +	sdp->sdp_header.HB2 = DP_SDP_AUDIO_INFOFRAME_HB2;
+> +	sdp->sdp_header.HB3 = (dp_version & 0x3f) << 2;
+> +
+> +	hdmi_audio_infoframe_pack_payload(frame, sdp->db);
+> +
+> +	return frame->length + 4;
+
+What's this magic number 4 about?
+
+Please use a definition for that.
+
+> +}
+> +EXPORT_SYMBOL(hdmi_audio_infoframe_pack_for_dp);
+> +
+>   /**
+>    * hdmi_vendor_infoframe_init() - initialize an HDMI vendor infoframe
+>    * @frame: HDMI vendor infoframe
+> diff --git a/include/drm/display/drm_dp.h b/include/drm/display/drm_dp.h
+> index 9e3aff7e68bb..6c0871164771 100644
+> --- a/include/drm/display/drm_dp.h
+> +++ b/include/drm/display/drm_dp.h
+> @@ -1536,6 +1536,8 @@ enum drm_dp_phy {
+>   #define DP_SDP_VSC_EXT_CEA		0x21 /* DP 1.4 */
+>   /* 0x80+ CEA-861 infoframe types */
+>   
+> +#define DP_SDP_AUDIO_INFOFRAME_HB2	0x1b
+> +
+>   /**
+>    * struct dp_sdp_header - DP secondary data packet header
+>    * @HB0: Secondary Data Packet ID
+> diff --git a/include/linux/hdmi.h b/include/linux/hdmi.h
+> index c8ec982ff498..2f4dcc8d060e 100644
+> --- a/include/linux/hdmi.h
+> +++ b/include/linux/hdmi.h
+> @@ -336,7 +336,12 @@ ssize_t hdmi_audio_infoframe_pack(struct hdmi_audio_infoframe *frame,
+>   				  void *buffer, size_t size);
+>   ssize_t hdmi_audio_infoframe_pack_only(const struct hdmi_audio_infoframe *frame,
+>   				       void *buffer, size_t size);
+> -int hdmi_audio_infoframe_check(struct hdmi_audio_infoframe *frame);
+> +int hdmi_audio_infoframe_check(const struct hdmi_audio_infoframe *frame);
+> +
+> +struct dp_sdp;
+> +ssize_t
+> +hdmi_audio_infoframe_pack_for_dp(const struct hdmi_audio_infoframe *frame,
+> +				 struct dp_sdp *sdp, u8 dp_version);
+>   
+>   enum hdmi_3d_structure {
+>   	HDMI_3D_STRUCTURE_INVALID = -1,
 
