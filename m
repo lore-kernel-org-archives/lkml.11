@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85576C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239501AbiGNQnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
+        id S239572AbiGNQny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiGNQng (ORCPT
+        with ESMTP id S235379AbiGNQng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 12:43:36 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD504B0C4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:43:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30C64B483;
+        Thu, 14 Jul 2022 09:43:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F78E6204F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71101C341C8;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB1C62054;
+        Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C179AC341D0;
         Thu, 14 Jul 2022 16:43:29 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w0-004lLq-EH;
+        id 1oC1w0-004lMw-QG;
         Thu, 14 Jul 2022 12:43:28 -0400
-Message-ID: <20220714164328.278538105@goodmis.org>
+Message-ID: <20220714164328.646104564@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:42:58 -0400
+Date:   Thu, 14 Jul 2022 12:43:00 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Zheng Yejian <zhengyejian1@huawei.com>,
-        Tom Rix <trix@redhat.com>
-Subject: [for-next][PATCH 02/23] tracing/histograms: Simplify create_hist_fields()
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>
+Subject: [for-next][PATCH 04/23] tracing/ipv4/ipv6: Use static array for name field in
+ fib*_lookup_table event
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -43,46 +45,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheng Yejian <zhengyejian1@huawei.com>
+From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-When I look into implements of create_hist_fields(), I think there can be
-following two simplifications:
-  1. If something wrong happened in parse_var_defs(), free_var_defs() would
-     have been called in it, so no need goto free again after calling it;
-  2. After calling create_key_fields(), regardless of the value of 'ret', it
-     then always runs into 'out: ', so the judge of 'ret' is redundant.
+The fib_lookup_table and fib6_lookup_table events declare name as a
+dynamic_array, but also give it a fixed size, which defeats the purpose of
+the dynamic array, especially since the dynamic array also includes meta
+data in the event to specify its size.
 
-Link: https://lkml.kernel.org/r/20220630013152.164871-1-zhengyejian1@huawei.com
+Since the size of the name is at most 16 bytes (defined by IFNAMSIZ),
+it is not worth spending the effort to determine the size of the string.
 
-Signed-off-by: Zheng Yejian <zhengyejian1@huawei.com>
-Reviewed-by: Tom Rix <trix@redhat.com>
+Just use a fixed size array and copy into it. This will save 4 bytes that
+are used for the meta data that saves the size and position of a dynamic
+array, and even slightly speed up the event processing.
+
+Link: https://lkml.kernel.org/r/20220704091436.3705edbf@rorschach.local.home
+
+Cc: David S. Miller <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Acked-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_events_hist.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ include/trace/events/fib.h  | 6 +++---
+ include/trace/events/fib6.h | 8 ++++----
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/trace/trace_events_hist.c b/kernel/trace/trace_events_hist.c
-index e87a46794079..fdf784620c28 100644
---- a/kernel/trace/trace_events_hist.c
-+++ b/kernel/trace/trace_events_hist.c
-@@ -4455,7 +4455,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
+diff --git a/include/trace/events/fib.h b/include/trace/events/fib.h
+index 6f2a4dc35e37..c2300c407f58 100644
+--- a/include/trace/events/fib.h
++++ b/include/trace/events/fib.h
+@@ -32,7 +32,7 @@ TRACE_EVENT(fib_table_lookup,
+ 		__array(	__u8,	gw6,	16	)
+ 		__field(	u16,	sport		)
+ 		__field(	u16,	dport		)
+-		__dynamic_array(char,  name,   IFNAMSIZ )
++		__array(char,  name,   IFNAMSIZ )
+ 	),
  
- 	ret = parse_var_defs(hist_data);
- 	if (ret)
--		goto out;
-+		return ret;
+ 	TP_fast_assign(
+@@ -66,7 +66,7 @@ TRACE_EVENT(fib_table_lookup,
+ 		}
  
- 	ret = create_val_fields(hist_data, file);
- 	if (ret)
-@@ -4466,8 +4466,7 @@ static int create_hist_fields(struct hist_trigger_data *hist_data,
- 		goto out;
+ 		dev = nhc ? nhc->nhc_dev : NULL;
+-		__assign_str(name, dev ? dev->name : "-");
++		strlcpy(__entry->name, dev ? dev->name : "-", IFNAMSIZ);
  
- 	ret = create_key_fields(hist_data, file);
--	if (ret)
--		goto out;
-+
-  out:
- 	free_var_defs(hist_data);
+ 		if (nhc) {
+ 			if (nhc->nhc_gw_family == AF_INET) {
+@@ -95,7 +95,7 @@ TRACE_EVENT(fib_table_lookup,
+ 		  __entry->tb_id, __entry->oif, __entry->iif, __entry->proto,
+ 		  __entry->src, __entry->sport, __entry->dst, __entry->dport,
+ 		  __entry->tos, __entry->scope, __entry->flags,
+-		  __get_str(name), __entry->gw4, __entry->gw6, __entry->err)
++		  __entry->name, __entry->gw4, __entry->gw6, __entry->err)
+ );
+ #endif /* _TRACE_FIB_H */
  
+diff --git a/include/trace/events/fib6.h b/include/trace/events/fib6.h
+index c6abdcc77c12..6e821eb79450 100644
+--- a/include/trace/events/fib6.h
++++ b/include/trace/events/fib6.h
+@@ -31,7 +31,7 @@ TRACE_EVENT(fib6_table_lookup,
+ 		__field(        u16,	dport		)
+ 		__field(        u8,	proto		)
+ 		__field(        u8,	rt_type		)
+-		__dynamic_array(	char,	name,	IFNAMSIZ )
++		__array(		char,	name,	IFNAMSIZ )
+ 		__array(		__u8,	gw,	16	 )
+ 	),
+ 
+@@ -63,9 +63,9 @@ TRACE_EVENT(fib6_table_lookup,
+ 		}
+ 
+ 		if (res->nh && res->nh->fib_nh_dev) {
+-			__assign_str(name, res->nh->fib_nh_dev);
++			strlcpy(__entry->name, res->nh->fib_nh_dev->name, IFNAMSIZ);
+ 		} else {
+-			__assign_str(name, "-");
++			strcpy(__entry->name, "-");
+ 		}
+ 		if (res->f6i == net->ipv6.fib6_null_entry) {
+ 			struct in6_addr in6_zero = {};
+@@ -83,7 +83,7 @@ TRACE_EVENT(fib6_table_lookup,
+ 		  __entry->tb_id, __entry->oif, __entry->iif, __entry->proto,
+ 		  __entry->src, __entry->sport, __entry->dst, __entry->dport,
+ 		  __entry->tos, __entry->scope, __entry->flags,
+-		  __get_str(name), __entry->gw, __entry->err)
++		  __entry->name, __entry->gw, __entry->err)
+ );
+ 
+ #endif /* _TRACE_FIB6_H */
 -- 
 2.35.1
