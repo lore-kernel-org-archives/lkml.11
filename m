@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98D51CCA486
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F37C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236931AbiGNEdF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:33:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36160 "EHLO
+        id S237550AbiGNEdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237495AbiGNEb7 (ORCPT
+        with ESMTP id S237426AbiGNEcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:31:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD0E357FD;
-        Wed, 13 Jul 2022 21:25:40 -0700 (PDT)
+        Thu, 14 Jul 2022 00:32:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFF74357C4;
+        Wed, 13 Jul 2022 21:25:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5EA3B8237C;
-        Thu, 14 Jul 2022 04:25:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7773FC341CD;
-        Thu, 14 Jul 2022 04:25:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BA9061E51;
+        Thu, 14 Jul 2022 04:25:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FC0C34115;
+        Thu, 14 Jul 2022 04:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772737;
-        bh=BmG0AIFw+eljF42VL9fIOkV9TDiDb49cHlNYb29j45k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZAS7pkcIdMqgr6ECWGRJxbQE8E2Q5wEtMqr+KLT3PZJXqRtuzdb4VALna0alJR1Xx
-         Z0G8Pmb6SKbQVm3PzFBqRbGIzJ9tSMlSMfuMiPv4RJdWiK/lT+yev5aIwKgnBuXHxl
-         CpHnvpJF5I+L9zEfYvNhHwKvLu1514LgkG9FQSakcn/cpBvep2etyzv/T3KjyJTZFn
-         rHMXB1skNhbbv1/KBaoxLzLbJQVB2AWZZ6hh+v8DBvL+V/zbXLt96xb58LMUZIaj6R
-         x59gwO1NbceBVg7A2vfIWI/PYYOwcFYXRM1wMwu4iIKymG4TUsKoHF5eMPI0fJ/5KN
-         /iaXzBfybFmLw==
+        s=k20201202; t=1657772743;
+        bh=fw9XhsSsHJOAoHA7IJQfgjSpPMbNwTc5hGVW6cBOafc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RvXzJTT1UL0A1HO95mmerJuvoJ8q78yjUAXQAKalqc1/CycoDhrC1O51oe3GpY0eX
+         i3ermraqExvT2Ic1CiM3rLWvgX/4ZC1lcnT6NaaqdjGan3WklSFBsuKCPegdYxnXSr
+         6AcQwUAlrgKGXVepf6Q+CcxBlCrEIFaBSEW0Tyd9xVcGk9lqOjVSC/eJG6fN6icOkF
+         Dzw7YByMeo3dn5oUMxqplOB08d9WTka6nrnbMRSXyt/FGBU7BD+lIlYQjfl6kfb6EV
+         +wGoh8Jmea5YG6OY5LzuUZaXQ25y3/TKGVEBNReM9RnX4MVt7iir1t8FdEjItLoFsR
+         DVbYK/30QapHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keith Busch <kbusch@kernel.org>, Chris Egolf <cegolf@ugholf.net>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
-        sagi@grimberg.me, linux-nvme@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 27/28] nvme-pci: phison e16 has bogus namespace ids
-Date:   Thu, 14 Jul 2022 00:24:28 -0400
-Message-Id: <20220714042429.281816-27-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.10 01/15] ASoC: ops: Fix off by one in range control validation
+Date:   Thu, 14 Jul 2022 00:25:26 -0400
+Message-Id: <20220714042541.282175-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,36 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Keith Busch <kbusch@kernel.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 73029c9b23cf1213e5f54c2b59efce08665199e7 ]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-Add the quirk.
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216049
-Reported-by: Chris Egolf <cegolf@ugholf.net>
-Signed-off-by: Keith Busch <kbusch@kernel.org>
-Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvme/host/pci.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index c3db9f12dac3..d820131d39b2 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -3337,7 +3337,8 @@ static const struct pci_device_id nvme_id_table[] = {
- 				NVME_QUIRK_DISABLE_WRITE_ZEROES|
- 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
- 	{ PCI_DEVICE(0x1987, 0x5016),	/* Phison E16 */
--		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
-+		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
-+				NVME_QUIRK_BOGUS_NID, },
- 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
- 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
- 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index 15bfcdbdfaa4..0f26d6c31ce5 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -517,7 +517,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
+ 
+ 	if (invert)
+@@ -538,7 +538,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
+ 
+ 		if (invert)
 -- 
 2.35.1
 
