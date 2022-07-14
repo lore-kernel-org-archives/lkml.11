@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 120F4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9797FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239770AbiGNOQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
+        id S239247AbiGNOQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239397AbiGNOQA (ORCPT
+        with ESMTP id S238924AbiGNOQm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:16:00 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BECE860508
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:15:59 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ez10so3626606ejc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:15:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=46hVWaCjx73rPro0Xd0FsbKaZ9xICZpeUq+VAvR8QyQ=;
-        b=dayB62ziv3PB+cXjd896yXhTbMzBeWEoeAdLOopJX3aq6bp9wJob3XuQM4oRVx2yGj
-         jdlGCwzxqZDvf9o82U+NtbRAXzRIyVUgp2vK6xJKyAeuexIcrSOL9GLnmEL0wcjy6dGP
-         z0sZ7+MgshUe4Qpfgfl90lQkjMqvZXQNGJH7DbZnKOk5WmbLwLWQKBYBuOMknoSeNtgP
-         oE/d09iVnYzbbcxU2QIJb1M2KWdMSo804+bh13oLpCXcphiH9mAEt/WptdLMwzQ039JR
-         YjY0pp4AdOzFkixAwItFuqfmT0x4gqOnafg3fJ6uxLzSRiGC4a7P8SiEL6SlVN1kjfAl
-         vVkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=46hVWaCjx73rPro0Xd0FsbKaZ9xICZpeUq+VAvR8QyQ=;
-        b=Jo32IN+2euFECWOucY/mez2C/7wXd3KxxAFR15aKjRpCx2S6In4Ex9AcsVf9Gt4NzI
-         I2o8GnlTe0d1/NJAOVJfcQBJ0t02Tyd9igzFihzQTCBnuP4FWx7LmkLFahZyUxcHEl0c
-         V33AsGZyxgOdQPBIj8RC0ALNybTAQ2ps8g8x+kbt6TI/kmhG+5804BtE2Y/tHWLTNWZ3
-         J+QKeIwWxQK16ifV0CJYsxIvI7YOU5lxGm9FdA/yCWBa1rxXnb680bTLrYB2JuFGfSMQ
-         6Sct6H0zmJx4h8+Agz7f+RkQZautz8hJT2W6rnpFePCmQ4Ugs4+82CRL2HNyBtiy9GBV
-         GQ2A==
-X-Gm-Message-State: AJIora+JgyzFW/a5T4/Zyn42zi9byT3TmQGjyGvAzr8yS9p/vmtIgLE2
-        gDIGKZSTfBpks9ErAAn1mdmEtYYc0BbDS8vfUGMQ2A==
-X-Google-Smtp-Source: AGRyM1sOVFTweX/7D10y5LMAzTNLwKU/QG7AHmo8of6n2sVe7xxZ/1fne0BA6TZNHtaZSDp2y9nlrKyYLq6DA/bXoH4=
-X-Received: by 2002:a17:907:720a:b0:72b:549e:305a with SMTP id
- dr10-20020a170907720a00b0072b549e305amr8627280ejc.691.1657808158093; Thu, 14
- Jul 2022 07:15:58 -0700 (PDT)
+        Thu, 14 Jul 2022 10:16:42 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A50AE6393A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:16:41 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 5A75722238;
+        Thu, 14 Jul 2022 16:16:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1657808199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=i4hkXMmFP+CHQ05L6lGn9y6aeHyZZDWO3dv2qnfJNbI=;
+        b=nNAGnq+MNxIYaLLhUxVHcQUBPZA+T0V9Z/XOTnEAh5DWVO8Q/dLrTgswYOd1d5GoQ/PaIE
+        sGh1JnJBKdPlXfkYG0abvN/nb3jzF8h/MWvYwtO5Ifoh4IbuTp3Ee0F8nHI5yv8hWlYezg
+        htvnggQyWQfOyolVvfUDhr5/ioYuuJw=
 MIME-Version: 1.0
-References: <20220628024913.1755292-1-tzungbi@kernel.org> <20220628024913.1755292-8-tzungbi@kernel.org>
- <CABXOdTft0Nu_hJQuXwepBXE3tWZf7jaidGE5mamq_=1Zi4hevg@mail.gmail.com> <Ys+QZyOdIT8d1rvW@google.com>
-In-Reply-To: <Ys+QZyOdIT8d1rvW@google.com>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Thu, 14 Jul 2022 07:15:46 -0700
-Message-ID: <CABXOdTcb2iMfokJL-rHJ5FkUYTyvjbaqooVXud2pfoE-_fEg9Q@mail.gmail.com>
-Subject: Re: [RESEND PATCH 07/11] platform/chrome: cros_ec_proto: return
- -EAGAIN when retries timed out
-To:     Tzung-Bi Shih <tzungbi@kernel.org>
-Cc:     Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        "open list:CHROME HARDWARE PLATFORM SUPPORT" 
-        <chrome-platform@lists.linux.dev>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 14 Jul 2022 16:16:39 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+Cc:     clg@kaod.org, linux-kernel@vger.kernel.org,
+        linux-mtd@lists.infradead.org, p.yadav@ti.com,
+        quic_ggregory@quicinc.com, quic_jiles@quicinc.com,
+        tudor.ambarus@microchip.com
+Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
+In-Reply-To: <63cedfce-34bb-ed63-3871-75a6c3dd5d73@quicinc.com>
+References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
+ <20220711095042.2095360-1-michael@walle.cc>
+ <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
+ <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
+ <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
+ <00f0c9d480ef5a414f1c34492661bd9e@walle.cc>
+ <63cedfce-34bb-ed63-3871-75a6c3dd5d73@quicinc.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <6be710bb5c1bf0449e54a54b78f6f7a0@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 8:41 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
->
-> On Wed, Jul 13, 2022 at 11:18:32AM -0700, Guenter Roeck wrote:
-> > On Mon, Jun 27, 2022 at 7:49 PM Tzung-Bi Shih <tzungbi@kernel.org> wrote:
-> > >
-> > > While EC_COMMS_STATUS_PROCESSING flag is still on after it tries
-> > > EC_COMMAND_RETRIES times for sending EC_CMD_GET_COMMS_STATUS,
-> > > cros_ec_wait_until_complete() doesn't return an error code.
-> > >
-> > > Return -EAGAIN in the case instead.
-> >
-> > Does this make sense, or should it be -ETIMEDOUT ? What does the EC do
-> > if it is still busy (stuck ?) with executing a command and it gets
-> > another one ?
->
-> AFAIK, most existing ECs use single task for host command[1][2].  As a
-> result, EC won't reply if it was busying on executing a host command.
-> Not sure if it would change after leveraging Zephyr (if enabling multi-core
-> support).
->
-> EC_CMD_GET_COMMS_STATUS is the only exception.  EC executes the command in
-> interrupt context[3].  That's why AP can use EC_CMD_GET_COMMS_STATUS to query
-> the status while EC was busying on another host command.
->
-> I have no strong preference for the return code but tried to align to another
-> timeout case (when cros_ec_xfer_command() returned -EAGAIN for
-> EC_COMMAND_RETRIES times).  Do we want to separate the cases: one for -EAGAIN
-> and another one for -ETIMEDOUT?
+Hi,
 
-If -EAGAIN is used elsewhere, let's stick with it.
+Am 2022-07-14 15:47, schrieb Jae Hyun Yoo:
+> On 7/14/2022 12:41 AM, Michael Walle wrote:
+>> What does "doesn't boot at all" mean? Are there any kernel startup
+>> messages?
+> 
+> I'm sharing the error messages below.
 
-Thanks,
-Guenter
+Thanks.
 
->
-> [1]: https://crrev.com/4c0ae8814a68f2c2655ebb0b3b80ec4529d07cb3/common/host_command.c#428
-> [2]: https://crrev.com/4c0ae8814a68f2c2655ebb0b3b80ec4529d07cb3/board/volteer/ec.tasklist#20
-> [3]: https://crrev.com/4c0ae8814a68f2c2655ebb0b3b80ec4529d07cb3/common/host_command.c#176
+> [    0.748594] spi-nor spi0.0: w25q512nwq (65536 Kbytes)
+> [    0.865216] spi-aspeed-smc 1e620000.spi: CE0 read buswidth:4 
+> [0x406c0741]
+> [    0.872833] ------------[ cut here ]------------
+> [    0.877984] WARNING: CPU: 1 PID: 1 at drivers/mtd/mtdcore.c:583
+> add_mtd_device+0x28c/0x53c
+> [    0.887237] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
+> 5.15.43-AUTOINC-dirty-23801a6 #1
+
+Could you please try it on the latest (vanilla) linux-next?
+
+-michael
