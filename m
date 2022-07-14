@@ -2,133 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C64EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B239CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:12:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240442AbiGNOM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:12:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49916 "EHLO
+        id S240377AbiGNOMq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240350AbiGNOMV (ORCPT
+        with ESMTP id S240429AbiGNOM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:12:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E42654C82;
-        Thu, 14 Jul 2022 07:12:08 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26ECaxI7031958;
-        Thu, 14 Jul 2022 14:12:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : references : from : subject : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=678zjVBjiVOwXHJhZQpMbyH65qlU4B7o72itmKDXWz4=;
- b=te6WQXJeFPgHlUAS9ZTh+d4mlFG3Li/FNiCHg2MKyRcXiz5XRi4LtTI6WGiOP+ohnXgg
- ss8DfGPO1hHnLgg5hbIfDIUXWp++LD1mvuRL2RCgHQ7tdgCcUvlq8F0u3qCp3IdVVKWV
- QSxhEJ5C+xA9MRjuTMiFlwR9SsKjva7Nh3kUnv8mX0g/r12twz01WULtwiJVukhwGQV/
- oHEWfzWgK2xqV49nFH5xZMIJrs8RnsSHaxWWngNz3nbynwtzOQrlHw5mtBaZhIpRfnFd
- 1o7bznvsaU78uRgkua3IWBhHLPPD1W1H1ePspi09Jpw+5qkBv4nbuPpFzhw1cy6t1J3h GA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hak32aq4s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 14:12:07 +0000
-Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26EE08NI028291;
-        Thu, 14 Jul 2022 14:12:07 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hak32aq3q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 14:12:07 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26EE5Q8k015181;
-        Thu, 14 Jul 2022 14:12:04 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 3h71a8necr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 14:12:04 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26EEC1BS24904102
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 14:12:01 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5BC23A405B;
-        Thu, 14 Jul 2022 14:12:01 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97DC4A4054;
-        Thu, 14 Jul 2022 14:12:00 +0000 (GMT)
-Received: from [9.145.62.186] (unknown [9.145.62.186])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 14:12:00 +0000 (GMT)
-Message-ID: <541d85d3-4864-583c-ff33-d0f566770c9f@linux.ibm.com>
-Date:   Thu, 14 Jul 2022 16:12:00 +0200
+        Thu, 14 Jul 2022 10:12:27 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDCF5F980;
+        Thu, 14 Jul 2022 07:12:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D09F0CE27C4;
+        Thu, 14 Jul 2022 14:12:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7B9FC34114;
+        Thu, 14 Jul 2022 14:12:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657807935;
+        bh=8fBfjFECA4prmKNVhYJ0IJWUT9G/Hd/flA0UAeza7Ps=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=1Sn+Vb2lm4WCBLgAy9MkxbYMFMMXKKx1sWr4qY5ZJcTqUP5Gy13Q/LbCAeV4PyY6C
+         zvADvB4YQxk4A4UCQoAg2Wjd9jVsJ+MFdW1YI2R/7/88hTShda6SqfqsM0YUcIXPbg
+         HgEsIh67KCNLVXxO87wPDP3n5pZdpg/WRTHTmO8s=
+Date:   Thu, 14 Jul 2022 15:49:33 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     "Kao, Ben" <ben.kao@intel.com>
+Cc:     "Nyman, Mathias" <mathias.nyman@intel.com>,
+        "mathias.nyman@linux.intel.com" <mathias.nyman@linux.intel.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] xhci-pci: Enable runtime PM on Alder Lake-N PCH xHCI
+ controller
+Message-ID: <YtAe7eNMju8EdFTE@kroah.com>
+References: <20220712122442.22504-1-ben.kao@intel.com>
+ <Ys1sxRT0i/NXSui7@kroah.com>
+ <SN6PR11MB32930FD21F5C00DB8A8429A0ED889@SN6PR11MB3293.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Content-Language: en-US
-To:     Pierre Morel <pmorel@linux.ibm.com>, kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com, scgl@linux.ibm.com
-References: <20220714101824.101601-1-pmorel@linux.ibm.com>
- <20220714101824.101601-3-pmorel@linux.ibm.com>
-From:   Janosch Frank <frankja@linux.ibm.com>
-Subject: Re: [PATCH v13 2/2] KVM: s390: resetting the Topology-Change-Report
-In-Reply-To: <20220714101824.101601-3-pmorel@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: HMjFGSPX4U6Gaf9HY3xHKcarm35HOhcO
-X-Proofpoint-GUID: VoOHqQY2O1Xi0R0dvQYg7TLmBxfjvtZF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_10,2022-07-14_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- impostorscore=0 phishscore=0 malwarescore=0 adultscore=0 mlxscore=0
- bulkscore=0 spamscore=0 mlxlogscore=999 clxscore=1015 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207140060
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR11MB32930FD21F5C00DB8A8429A0ED889@SN6PR11MB3293.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/14/22 12:18, Pierre Morel wrote:
-> During a subsystem reset the Topology-Change-Report is cleared.
-> 
-> Let's give userland the possibility to clear the MTCR in the case
-> of a subsystem reset.
-> 
-> To migrate the MTCR, we give userland the possibility to
-> query the MTCR state.
-> 
-> We indicate KVM support for the CPU topology facility with a new
-> KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
-> 
-> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> Reviewed-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+On Thu, Jul 14, 2022 at 09:06:44AM +0000, Kao, Ben wrote:
+> > From: Greg KH <gregkh@linuxfoundation.org>
+> > Sent: Tuesday, July 12, 2022 8:45 PM
+> > To: Kao, Ben <ben.kao@intel.com>
+> > Cc: Nyman, Mathias <mathias.nyman@intel.com>;
+> > mathias.nyman@linux.intel.com; linux-usb@vger.kernel.org; linux-
+> > kernel@vger.kernel.org
+> > Subject: Re: [PATCH] xhci-pci: Enable runtime PM on Alder Lake-N PCH xHCI
+> > controller
+> > 
+> > On Tue, Jul 12, 2022 at 08:24:42PM +0800, Ben Kao wrote:
+> > > There are two Alder Lake-N xHCI host controllers with PCI IDs 0x464e
+> > > and 0x54ed, now we add the quirk to default enable runtime PM for
+> > > 0x54ed.
+> > >
+> > > Signed-off-by: Ben Kao <ben.kao@intel.com>
+> > > ---
+> > >  drivers/usb/host/xhci-pci.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/drivers/usb/host/xhci-pci.c b/drivers/usb/host/xhci-pci.c
+> > > index dce6c0ec8d34..44486156bd5d 100644
+> > > --- a/drivers/usb/host/xhci-pci.c
+> > > +++ b/drivers/usb/host/xhci-pci.c
+> > > @@ -61,6 +61,7 @@
+> > >  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_XHCI		0x461e
+> > >  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_XHCI
+> > 	0x464e
+> > >  #define PCI_DEVICE_ID_INTEL_ALDER_LAKE_PCH_XHCI	0x51ed
+> > > +#define PCI_DEVICE_ID_INTEL_ALDER_LAKE_N_PCH_XHCI	0x54ed
+> > 
+> > I think we ask this every time, but why don't we enable this for all devices
+> > and then only disable it for the tiny number that don't need it?
+> Got it, I will provide another patch to enable runtime PM by default for all
+> Intel devices if no one has concerns.
 
-Nit below, but:
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+Please test to verify that it works on the systems you enable it for and
+verify that future devices will also work properly.
 
-> --- a/include/uapi/linux/kvm.h
-> +++ b/include/uapi/linux/kvm.h
-> @@ -1158,6 +1158,7 @@ struct kvm_ppc_resize_hpt {
->   #define KVM_CAP_SYSTEM_EVENT_DATA 215
->   #define KVM_CAP_ARM_SYSTEM_SUSPEND 216
->   #define KVM_CAP_S390_PROTECTED_DUMP 217
-> +#define KVM_CAP_S390_CPU_TOPOLOGY 218
->   #define KVM_CAP_S390_ZPCI_OP 221
+thanks,
 
-Using 222 and moving it a line down might make more sense as 218 is 
-KVM_CAP_X86_TRIPLE_FAULT_EVENT.
-
-Can you fix this and push both patches to devel?
-Also send the fixed patch as a reply to this message so I can pick it 
-from the list.
-
-next and devel have diverted a bit so I will need to fix this up for 
-next, same for the Documentation entry which will be 6.39 instead of 6.38.
-
->   
->   #ifdef KVM_CAP_IRQ_ROUTING
-
+greg k-h
