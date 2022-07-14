@@ -2,85 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5306AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB081CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233455AbiGNGv2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
+        id S234424AbiGNGwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbiGNGvZ (ORCPT
+        with ESMTP id S230239AbiGNGwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:51:25 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 770282871F;
-        Wed, 13 Jul 2022 23:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657781484; x=1689317484;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=IgFWBJhx8O61e3eZsPUNChi+KMCQ8uSmCcKx5rnwkXU=;
-  b=P9w5pc4mMclIQrRyLhRDH0Z8wSBVdHGaUN/pCOOmAzzLcTHUHNgDbD3l
-   dMzcBW6WMZl75c+6yPLbntx81cMukvX1w6XG4dlDwht+o11e6A7rf0KFw
-   lEhpCK0pG0E4QsDzIIdlrh11LyjziqOs9ZRFKymqQOJaS03H6cS14pXsu
-   m/p8oW2gDtwSxoQFnFQNWLRTJAu1JgXkIVwXikldOU6/qicpyM7d0vSjI
-   Ahe+dvnioI7QhI3loYZZ1YqJwb3HQR3wmjKVpoJpsoYMTl/MoZAWEGBTc
-   hivYKxm5BHJ4uOEZW7bdqaLzq8h9py0jE5dnIgEzJDnRPa4rlAzQyfaka
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="268463995"
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="268463995"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 23:51:23 -0700
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="922953841"
-Received: from unknown (HELO jiezho4x-mobl1.ccr.corp.intel.com) ([10.255.29.31])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 23:51:19 -0700
-From:   Jie2x Zhou <jie2x.zhou@intel.com>
-To:     jie2x.zhou@intel.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, shuah@kernel.org,
-        nathan@kernel.org, ndesaulniers@google.com, trix@redhat.com,
-        netdev@vger.kernel.org
-Cc:     linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, llvm@lists.linux.dev,
-        Philip Li <philip.li@intel.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] tools/testing/selftests/net/bpf/Makefile: fix fatal error: 'bpf/bpf_helpers.h' file not found
-Date:   Thu, 14 Jul 2022 14:50:03 +0800
-Message-Id: <20220714065003.8388-1-jie2x.zhou@intel.com>
-X-Mailer: git-send-email 2.20.1
+        Thu, 14 Jul 2022 02:52:03 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F35CE2872A;
+        Wed, 13 Jul 2022 23:51:54 -0700 (PDT)
+X-UUID: b429b8c9050f401a862da3b3f2aa3118-20220714
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:ba925e1f-f082-483a-8be6-0102a9ea29cf,OB:10,L
+        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:51
+X-CID-INFO: VERSION:1.1.8,REQID:ba925e1f-f082-483a-8be6-0102a9ea29cf,OB:10,LOB
+        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:51
+X-CID-META: VersionHash:0f94e32,CLOUDID:b800f532-b9e4-42b8-b28a-6364427c76bb,C
+        OID:da579af93ed8,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: b429b8c9050f401a862da3b3f2aa3118-20220714
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1058698050; Thu, 14 Jul 2022 14:51:48 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Thu, 14 Jul 2022 14:51:47 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 14 Jul 2022 14:51:47 +0800
+Message-ID: <24726b8a5994961b966cf90b1f56c71a844d274a.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 14 Jul 2022 14:51:47 +0800
+In-Reply-To: <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In tools/testing/selftests run:
-make -C bpf
-make -C net
-fatal error: 'bpf/bpf_helpers.h' file not found
+Hi, Bo-Chen:
 
-Add bpf/bpf_helpers.h include path in net/bpf/Makefile.
+On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
+> 
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
+> 
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
----
- tools/testing/selftests/net/bpf/Makefile | 1 +
- 1 file changed, 1 insertion(+)
+[snip]
 
-diff --git a/tools/testing/selftests/net/bpf/Makefile b/tools/testing/selftests/net/bpf/Makefile
-index 8ccaf8732eb2..07d56d446358 100644
---- a/tools/testing/selftests/net/bpf/Makefile
-+++ b/tools/testing/selftests/net/bpf/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- CLANG ?= clang
-+CCINCLUDE += -I../bpf/tools/include
- CCINCLUDE += -I../../bpf
- CCINCLUDE += -I../../../../lib
- CCINCLUDE += -I../../../../../usr/include/
--- 
-2.36.1
+> +static int mtk_dp_train_tps_2_3(struct mtk_dp *mtk_dp, u8
+> target_linkrate,
+> +				u8 target_lane_count, int
+> *iteration_count,
+> +				u8 *lane_adjust,  int *status_control,
+> +				u8 *prev_lane_adjust)
+> +{
+> +	u8 val;
+> +	u8 link_status[DP_LINK_STATUS_SIZE] = {};
+> +
+> +	if (*status_control == 1) {
+> +		if (mtk_dp->train_info.tps4) {
+> +			mtk_dp_train_set_pattern(mtk_dp, 4);
+> +			val = DP_TRAINING_PATTERN_4;
+> +		} else if (mtk_dp->train_info.tps3) {
+> +			mtk_dp_train_set_pattern(mtk_dp, 3);
+> +			val = DP_LINK_SCRAMBLING_DISABLE |
+> +				DP_TRAINING_PATTERN_3;
+> +		} else {
+> +			mtk_dp_train_set_pattern(mtk_dp, 2);
+> +			val = DP_LINK_SCRAMBLING_DISABLE |
+> +				DP_TRAINING_PATTERN_2;
+> +		}
+> +		drm_dp_dpcd_writeb(&mtk_dp->aux,
+> +				   DP_TRAINING_PATTERN_SET, val);
+> +		drm_dp_dpcd_read(&mtk_dp->aux,
+> +				 DP_ADJUST_REQUEST_LANE0_1,
+> lane_adjust,
+> +				 sizeof(*lane_adjust) * 2);
+> +
+> +		mtk_dp_train_update_swing_pre(mtk_dp,
+> +					      target_lane_count,
+> lane_adjust);
+> +		*status_control = 2;
+> +		(*iteration_count)++;
+> +	}
+> +
+> +	drm_dp_link_train_channel_eq_delay(&mtk_dp->aux, mtk_dp-
+> >rx_cap);
+> +
+> +	drm_dp_dpcd_read_link_status(&mtk_dp->aux, link_status);
+> +
+> +	if (!drm_dp_clock_recovery_ok(link_status, target_lane_count)) 
+
+I think this checking is redundant. I think we could just keep
+drm_dp_channel_eq_ok() and drop drm_dp_clock_recovery_ok() here because
+if drm_dp_clock_recovery_ok() fail, it imply that
+drm_dp_channel_eq_ok() would fail. So just check drm_dp_channel_eq_ok()
+is enough.
+
+Regards,
+CK
+
+> {
+> +		mtk_dp->train_info.cr_done = false;
+> +		mtk_dp->train_info.eq_done = false;
+> +		dev_dbg(mtk_dp->dev, "Link train EQ fail\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (drm_dp_channel_eq_ok(link_status, target_lane_count)) {
+> +		mtk_dp->train_info.eq_done = true;
+> +		dev_dbg(mtk_dp->dev, "Link train EQ pass\n");
+> +		return 0;
+> +	}
+> +
+> +	if (*prev_lane_adjust == link_status[4])
+> +		(*iteration_count)++;
+> +	else
+> +		*prev_lane_adjust = link_status[4];
+> +
+> +	return -EAGAIN;
+> +}
+> +
 
