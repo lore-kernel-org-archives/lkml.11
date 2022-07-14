@@ -2,112 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6714FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:26:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A63B3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238718AbiGNQ0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        id S239007AbiGNQ1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:27:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiGNQ0m (ORCPT
+        with ESMTP id S230117AbiGNQ1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:26:42 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E396561736
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:26:40 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id ez10so4302415ejc.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:26:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
-        h=from:content-transfer-encoding:mime-version:subject:date:references
-         :to:in-reply-to:message-id;
-        bh=7EsrX8RZzD1TPXFClMq2wq7FeJKp9EF1t1w9cW3xhJg=;
-        b=ew7OS+ExEFwv26meWu3bPXo2KC9aPJHx4sgXnwhGd9BkvwvymYlLHwdjfl6ROM8hdx
-         inR3ATH5CRCDYqasegeX8QsnvCBB16A5ecUh6+oQDSWhHKl2qv+76z6Ja44eO/9n38WY
-         m3/Jn+T8FnQtoYklwIrP9yu9FpgtPAhcNoxZn/S1TPsxCxM1QFWs6Z76Issv9nO1sFgP
-         +LOlISQpmEt79xRo0rQEQGVtdbVWaqLOaL09+mB7TNk6jcV4gw1/TYinnKhyD6evtcRD
-         CtduV1B61RzuZHhmTPmTB7m3V4nKc0gISg7MgYdxEYL/ZNMstptB15W6BZLYQqinjvIk
-         43GQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:content-transfer-encoding:mime-version
-         :subject:date:references:to:in-reply-to:message-id;
-        bh=7EsrX8RZzD1TPXFClMq2wq7FeJKp9EF1t1w9cW3xhJg=;
-        b=I0N6+aVaImctAOHvXvj3Fp2j7+NPVi2IBQNzqT86D+cPBL8kemjLGYZeAd8TeWIqmj
-         pMIK2/YJj1z2coY1habq8P8alu/QhUiZe1pxEksY8x4ks1EQOV9fjW7B6dzcJhoiJQ7k
-         qMH/mLfhKBqRwcWOSOFuGCQnQJSmfFrPtR8Y9cl6yfus8kqCuFCTY1+GUYZFobKZej+I
-         h7Yr+aNdJGrw7jX0CJ7JhVnjqBpMOu0RIZmiMyR4RhTP5hCm4Rl4RQvSb+JAXqOcM6Tx
-         z42uPnK9i6/ZynZlm9Fc0qujxZIYLSNfWAdc2cew+RqLCUpmzkb3shFzoL4e2buTWvDh
-         p3oQ==
-X-Gm-Message-State: AJIora+Wfo4WszAFk+HYpCUVtJGHpz7YW7THiOiJ9s6TZl1Ka62aYnui
-        EhY0moFFFieOFMQVvpr1YWf5Ag==
-X-Google-Smtp-Source: AGRyM1tZTRUBFPqEmbiQrELRo8KQJc0vOQEwbM0TUYq7mZvrAv6anJA7BNMzkfzR3xqVc5OXuvS7UQ==
-X-Received: by 2002:a17:907:1623:b0:72b:64e3:878a with SMTP id hb35-20020a170907162300b0072b64e3878amr9631814ejc.185.1657815999468;
-        Thu, 14 Jul 2022 09:26:39 -0700 (PDT)
-Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
-        by smtp.gmail.com with ESMTPSA id lb11-20020a170907784b00b007246492658asm879265ejc.117.2022.07.14.09.26.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Jul 2022 09:26:38 -0700 (PDT)
-From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: [PATCH v2] arm64: dts: rockchip: Fix SD card init on rk3399-nanopi4
-Date:   Thu, 14 Jul 2022 18:26:38 +0200
-References: <C639AD88-77A1-4485-BAEA-2FF8FC15A844@kohlschutter.com>
- <12878108.O9o76ZdvQC@diego> <103b714c-b07c-f016-1062-84bd94786b22@arm.com>
- <9AF1E75F-5947-49B0-887D-82C426527B99@kohlschutter.com>
- <590f7a08-a6ca-be54-4254-363343642a52@arm.com>
- <A6B896E5-CD25-4441-B6A5-0BE1FA284B2C@kohlschutter.com>
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        =?utf-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Linux MMC List <linux-mmc@vger.kernel.org>
-In-Reply-To: <A6B896E5-CD25-4441-B6A5-0BE1FA284B2C@kohlschutter.com>
-Message-Id: <A9634366-A012-43D2-B253-8BB9BF6005C7@kohlschutter.com>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Thu, 14 Jul 2022 12:27:40 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AD561B3C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:27:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=88JOhkNUSoMMoClhidAsgxns/gETlUPh9cr1gTnulbI=; b=e+BbfDQ//3J55jajPromAgti6W
+        BqlxJFKeEV+8i1sjNKbt1rfI8OSpFIvgkcAjaBD53rFXshCzwZSIvneSxfrgJo1FhFIl5EnHhsExc
+        eAxXfcrbqXBFDz6PE/5X0zY9iNfMT8OtrH/RlgQji1uWIn0pM/LhzOj53WW4oURiWfxTWUHnUiQzn
+        jPa5x0EWTxjTgpIX98+ga8xHPn+A6vTvybHjyGISeCXEADrnAxJtYlq2ecrLX9X9Y4d9jk0rSsHWy
+        xZ1AyhX6nbOxQ3+jGHPAz92qnxBSe++LpyVqZ7R8UBcEG/tONUVP2YgBlBazUKGPWPL4UFP2p24OS
+        9OUB0Mgw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oC1gW-009VsB-Si; Thu, 14 Jul 2022 16:27:28 +0000
+Date:   Thu, 14 Jul 2022 17:27:28 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        syzbot <syzbot+a785d07959bc94837d51@syzkaller.appspotmail.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        syzkaller-bugs@googlegroups.com, Zach O'Keefe <zokeefe@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Liam Howlett <liam.howlett@oracle.com>
+Subject: Re: [syzbot] memory leak in xas_create
+Message-ID: <YtBD8L4yIjKtIfw9@casper.infradead.org>
+References: <000000000000eb2d6c05e35a0d73@google.com>
+ <20220711133808.d86400ce9960febcb0fd537b@linux-foundation.org>
+ <YsyMQ2jzOICVbCda@casper.infradead.org>
+ <CACT4Y+bL3aM-cVeYSLU7az1x2Yj1vH7GaQSq=Z-BGc5Vk1Vi4w@mail.gmail.com>
+ <Ys1r06szkVi3QEai@casper.infradead.org>
+ <CACT4Y+Z44fS04StzMh+sfUWo-k5sjYf3VGhhK2ppkHP=9RZQEw@mail.gmail.com>
+ <Ys1v1548IkSJ45F/@casper.infradead.org>
+ <CACT4Y+a=N3Q6f4dDcmONZYBHMgkO3MpbqoYDupo_N1tKJ=14Rg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACT4Y+a=N3Q6f4dDcmONZYBHMgkO3MpbqoYDupo_N1tKJ=14Rg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mmc/SD-card initialization may fail on NanoPi r4s with
-"mmc1: problem reading SD Status register" /
-"mmc1: error -110 whilst initialising SD card"
+On Tue, Jul 12, 2022 at 03:29:29PM +0200, Dmitry Vyukov wrote:
+> Then I think it's still possible that this is a KMEMLEAK false
+> positive. IIRC it may have some false positives since it does not do
+> full stop-the-world before scanning memory/registers. syzkaller tries
+> to circumvent this by doing multiple scans with some delays, but it
+> does not give 100% guarantee.
+> And I am assuming this code does not try to hide pointers by storing
+> something in low/high bits, etc.
 
-Moreover, rebooting would also sometimes hang.
+Oh, I meant to answer this.  The XArray does set bit 1 of the pointer
+when it's stored in the tree.  However, this shouldn't affect kmemleak
+(I would think) because it looks like a pointer to the third byte of the
+allocation, so the allocation is still referenced, even if the first
+byte of the allocation isn't referenced.
 
-This is caused by the gpio entry for the vcc3v0-sd regulator;
-even though it appears to be the correct GPIO pin, the presence
-of the binding causes these errors.
-
-Fix the regulator to drop the gpio binding and add a comment
-to prevent accidental reintroduction of that entry.
-
-Signed-off-by: Christian Kohlsch=C3=BCtter <christian@kohlschutter.com>
----
- arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi =
-b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
-index 8c0ff6c96e03..d5f8a62e01be 100644
---- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
-@@ -67,7 +67,7 @@ vcc1v8_s3: vcc1v8-s3 {
- 	vcc3v0_sd: vcc3v0-sd {
- 		compatible =3D "regulator-fixed";
- 		enable-active-high;
--		gpio =3D <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
-+		// gpio =3D <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>; // breaks =
-SDHC card support
- 		pinctrl-names =3D "default";
- 		pinctrl-0 =3D <&sdmmc0_pwr_h>;
- 		regulator-always-on;
---=20
-2.36.1
-
-
+Also, I would expect kmemleak to report bugs all over if this were the
+problem, because every node no matter how it's allocated gets its bit 1
+set.
