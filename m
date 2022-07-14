@@ -2,94 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D654EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC6DCCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231981AbiGNAcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 20:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55222 "EHLO
+        id S232079AbiGNAdt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 20:33:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiGNAce (ORCPT
+        with ESMTP id S231364AbiGNAdr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 20:32:34 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2212CF5A5;
-        Wed, 13 Jul 2022 17:32:34 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id fz10so804572pjb.2;
-        Wed, 13 Jul 2022 17:32:34 -0700 (PDT)
+        Wed, 13 Jul 2022 20:33:47 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC29DF86;
+        Wed, 13 Jul 2022 17:33:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MM9AZwRsJa4u3kZSBjtvlRoNVdyeEyJLv7qGDDBUOJU=;
-        b=X+lYPHUDqWHSbSUn0lNMXuI0Z2lTKUlOJD5+Od036ugTsXzSbewrfRcQ1OCbtUiOy/
-         iO4ogCWwajRvbkn5NoeHYaMhNCLN4bWg35lHYRZ6tBLXkPubQDyUjMlU3NucQbsm4Gf0
-         ZU/yZMctKeBR1Vn1j393NnWxvUMq6CmJVkef5U8Wj8uLByLVAd7YIi8koDJkSG6yABX9
-         fB9pIj2T0n4RZGmfu583yEt5qaPzXeBGPod0WshRHyqioXa1yTM8wDHbgCharifWZAmW
-         7MwXMNW0YLdzKKJqJmP5SWOnQ/8Si8gTGB2kL8GkCXCulAOYfRf0LUX8BKMck83tZ268
-         M4Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MM9AZwRsJa4u3kZSBjtvlRoNVdyeEyJLv7qGDDBUOJU=;
-        b=7acZ7GBxTyKBHB0sX06SIB19zE3hHyeT6vM6TQqLOp6Q4tNPbcz9q0hlS6MkpSYdxL
-         jB/Vr71KzzrLoidwXN9q5RiS/Wpwr4ljt+lzamFFPIuVEOTu1g3pnj3c8dL49q/xuSkm
-         ICNzwH1jG6jCwIJnwRmOFNYQUVpqxJjC7AfP5WWxrtouBr0G1cmKQSgSxh1Gayq7U0hk
-         jCdOrtyYsEcfLhHA//HINMvqpQdRsv8ZXHgp6yjQTzsQF5oAFruhS5yQVXdOrcnGVqrJ
-         fhQyZ9MREVyelM9DvDgY29qZs6uriQ7J/9Hb8TktcPa9UrlcwH2x3R9cO52tYSYIjHfN
-         wBKA==
-X-Gm-Message-State: AJIora/TWHF0qCoBMb5t2ax4n9Tbvwud9h0sZsr3MZymwvJYg7PRaMrZ
-        FOjRJAXxM0On/y9cHOP2ckw=
-X-Google-Smtp-Source: AGRyM1v+ME+NkLJuOlIz/neyJ4EiPapShH2CbglvJhujKzP00kqYfr2SuBwvpPi54PJyvF5Md59SYA==
-X-Received: by 2002:a17:90b:38c4:b0:1f0:59c0:570 with SMTP id nn4-20020a17090b38c400b001f059c00570mr12706155pjb.178.1657758753470;
-        Wed, 13 Jul 2022 17:32:33 -0700 (PDT)
-Received: from sol (110-174-58-111.static.tpgi.com.au. [110.174.58.111])
-        by smtp.gmail.com with ESMTPSA id e29-20020aa7981d000000b0052a8128699fsm132310pfl.207.2022.07.13.17.32.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 17:32:32 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 08:32:27 +0800
-From:   Kent Gibson <warthog618@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Dipen Patel <dipenp@nvidia.com>
-Subject: Re: [PATCH 4/6] gpiolib: cdev: simplify line event identification
-Message-ID: <20220714003227.GA18272@sol>
-References: <20220713013721.68879-1-warthog618@gmail.com>
- <20220713013721.68879-5-warthog618@gmail.com>
- <CAHp75VeRshC3Db8Q2J80fk7=UvLiRymrkoAbuWceOfncfzvr7A@mail.gmail.com>
- <20220713102710.GB113115@sol>
- <CAHp75VdL4Zy=1+m5e4gcNUM7uW-q4cfJb1xof3qiQx6ZWsMSPg@mail.gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657758826; x=1689294826;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=+mGrTUmTGJXp8BKCiJkibrxPq3mFqrRy7Uuu7cIa6dQ=;
+  b=idGgPubpsfLGRVUz8bDDhmgxCUetwjH+rCeJDZ5kgRYqDB59fH9zKB0j
+   4hVAB+tGojKi3PYmKayFH26Egcva9sEnR7LBSMHf0BY0Aqbjt4+Dvlp5T
+   lQsFZlqG1HDDFKFYhH4NjchAJFzcJrR7eCXYAE41ohRicmwTVWorOnjpK
+   k=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 13 Jul 2022 17:33:45 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 17:33:45 -0700
+Received: from nalasex01b.na.qualcomm.com (10.47.209.197) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 13 Jul 2022 17:33:44 -0700
+Received: from [10.110.36.60] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 13 Jul
+ 2022 17:33:44 -0700
+Message-ID: <9d5230ac-c2fa-6ec8-0deb-f81d1b941222@quicinc.com>
+Date:   Wed, 13 Jul 2022 17:33:43 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VdL4Zy=1+m5e4gcNUM7uW-q4cfJb1xof3qiQx6ZWsMSPg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 4/5] usb: dwc3: Allow end transfer commands to be sent
+ during soft disconnect
+Content-Language: en-US
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        "balbi@kernel.org" <balbi@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "quic_jackp@quicinc.com" <quic_jackp@quicinc.com>
+References: <20220708185007.21743-1-quic_wcheng@quicinc.com>
+ <20220708185007.21743-5-quic_wcheng@quicinc.com>
+ <06498069-db45-202b-eba6-47bfa6948143@synopsys.com>
+ <8029f6bb-4704-0495-00d2-ee78ee684eb3@quicinc.com>
+ <889ba0fc-4a8c-cb89-ba7c-90119a58b997@synopsys.com>
+ <59631540-ee6a-41f3-d460-4808162d06c9@quicinc.com>
+ <cf292b7f-3a16-3d2e-d01f-288902b44f1a@synopsys.com>
+From:   Wesley Cheng <quic_wcheng@quicinc.com>
+In-Reply-To: <cf292b7f-3a16-3d2e-d01f-288902b44f1a@synopsys.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 01:24:33PM +0200, Andy Shevchenko wrote:
-> On Wed, Jul 13, 2022 at 12:27 PM Kent Gibson <warthog618@gmail.com> wrote:
-> > On Wed, Jul 13, 2022 at 11:59:10AM +0200, Andy Shevchenko wrote:
-> > > On Wed, Jul 13, 2022 at 3:39 AM Kent Gibson <warthog618@gmail.com> wrote:
+Hi Thinh,
+
+On 7/13/2022 5:19 PM, Thinh Nguyen wrote:
+> On 7/13/2022, Wesley Cheng wrote:
+>> Hi Thinh,
+>>
+>> On 7/12/2022 6:42 PM, Thinh Nguyen wrote:
+>>> On 7/12/2022, Wesley Cheng wrote:
+>>>> Hi Thinh,
+>>>>
+>>>> On 7/8/2022 6:58 PM, Thinh Nguyen wrote:
+>>>>> On 7/8/2022, Wesley Cheng wrote:
+>>>>>> If soft disconnect is in progress, allow the endxfer command to be
+>>>>>> sent,
+>>>>>> without this, there is an issue where the stop active transfer call
+>>>>>> (during pullup disable) wouldn't actually issue the endxfer command,
+>>>>>> while clearing the DEP flag.
+>>>>>>
+>>>>>> In addition, if the DWC3_EP_DELAY_STOP flag was set before soft
+>>>>>> disconnect
+>>>>>> started (i.e. from the dequeue path), ensure that when the EP0
+>>>>>> transaction
+>>>>>> completes during soft disconnect, to issue the endxfer with the force
+>>>>>> parameter set, as it does not expect a command complete event.
+>>>>>>
+>>>>>> Signed-off-by: Wesley Cheng <quic_wcheng@quicinc.com>
+>>>>>> ---
+>>>>>>      drivers/usb/dwc3/ep0.c    | 3 +--
+>>>>>>      drivers/usb/dwc3/gadget.c | 5 ++++-
+>>>>>>      2 files changed, 5 insertions(+), 3 deletions(-)
+>>>>>>
+>>>>>> diff --git a/drivers/usb/dwc3/ep0.c b/drivers/usb/dwc3/ep0.c
+>>>>>> index 506ef717fdc0..5851b0e9db0a 100644
+>>>>>> --- a/drivers/usb/dwc3/ep0.c
+>>>>>> +++ b/drivers/usb/dwc3/ep0.c
+>>>>>> @@ -290,8 +290,7 @@ void dwc3_ep0_out_start(struct dwc3 *dwc)
+>>>>>>              if (!(dwc3_ep->flags & DWC3_EP_DELAY_STOP))
+>>>>>>                  continue;
+>>>>>>      -        dwc3_ep->flags &= ~DWC3_EP_DELAY_STOP;
+>>>>>> -        dwc3_stop_active_transfer(dwc3_ep, true, true);
+>>>>>> +        dwc3_stop_active_transfer(dwc3_ep, true, dwc->connected);
+>>>>>>          }
+>>>>>>      }
+>>>>>>      diff --git a/drivers/usb/dwc3/gadget.c
+>>>>>> b/drivers/usb/dwc3/gadget.c
+>>>>>> index bd40608b19df..fba2797ad9ae 100644
+>>>>>> --- a/drivers/usb/dwc3/gadget.c
+>>>>>> +++ b/drivers/usb/dwc3/gadget.c
+>>>>>> @@ -3696,8 +3696,10 @@ void dwc3_stop_active_transfer(struct dwc3_ep
+>>>>>> *dep, bool force,
+>>>>>>          if (dep->number <= 1 && dwc->ep0state != EP0_DATA_PHASE)
+>>>>>>              return;
+>>>>>>      +    if (interrupt && (dep->flags & DWC3_EP_DELAY_STOP))
+>>>>>> +        return;
+>>>>>> +
+>>>>>>          if (!(dep->flags & DWC3_EP_TRANSFER_STARTED) ||
+>>>>>> -        (dep->flags & DWC3_EP_DELAY_STOP) ||
+>>>>>>              (dep->flags & DWC3_EP_END_TRANSFER_PENDING))
+>>>>>>              return;
+>>>>>>      @@ -3744,6 +3746,7 @@ void dwc3_stop_active_transfer(struct
+>>>>>> dwc3_ep *dep, bool force,
+>>>>>>          __dwc3_stop_active_transfer(dep, force, interrupt);
+>>>>>>          spin_lock(&dwc->lock);
+>>>>>>      +    dep->flags &= ~DWC3_EP_DELAY_STOP;
+>>>>>
+>>>>> Can we clear this flag in __dwc3_stop_active_transfer(). It should
+>>>>> apply
+>>>>> if End Transfer command was sent.
+>>>>
+>>>> I wanted to make sure that we weren't modifying the DEP flags outside
+>>>> of a spin lock.  Patch#3 modifies it where we unlock before calling
+>>>> __dwc3_stop_active_transfer(), so we can allow the dwc3 threaded IRQ
+>>>> handle events while the cmd status polling happens.
+>>>>
+>>>> Maybe we can unlock/lock the dwc3->lock inside
+>>>> __dwc3_stop_active_transfer() and that way we can ensure DEP flags are
+>>>> modified properly?
+>>>
+>>> I didn't realize that you unlock/lock when calling
+>>> __dwc3_stop_active_transfer(). We'd need to be careful if we want to
+>>> unlock/lock it, and avoid it all together if possible. It can be easily
+>>> overlooked just like dwc3_gadget_giveback().
+>>>
+>>> What issue did you see without doing this?
+>>
+>> I saw endxfer timeout issues if I didn't do it.  If we keep the lock
+>> held, then the DWC3 event processing would be blocked across the
+>> entire time we are waiting for the command act to clear.  With
+>> unlocking before polling, then at least we're still able to handle the
+>> EP0 events that are pending.
+>>
+>> It was definitely one of the harder scenarios to reproduce.  The main
+>> patch series which resolved a lot of the issues early on was patch#1.
+>> After adding that the other issues are seen maybe after a day or so of
+>> testing.
+>>
 > 
-> ...
+> I see. The soft-disconnect still go through right?
+> Can you try this and see if this works for you?
 > 
-> > > > +               le.id = level ? GPIO_V2_LINE_EVENT_RISING_EDGE :
-> > > > +                               GPIO_V2_LINE_EVENT_FALLING_EDGE;
-> > >
-> > > It seems several times you are doing the same, perhaps a helper?
-> >
-> > If by several times you mean twice, then yeah.
-> > Not sure that reaches the threshold for a helper though.
+> diff --git a/drivers/usb/dwc3/gadget.c b/drivers/usb/dwc3/gadget.c
+> index 13e4f1a03417..4f67a484c490 100644
+> --- a/drivers/usb/dwc3/gadget.c
+> +++ b/drivers/usb/dwc3/gadget.c
+> @@ -451,7 +451,9 @@ int dwc3_send_gadget_ep_cmd(struct dwc3_ep *dep,
+> unsigned int cmd,
 > 
-> Up to you, then!
+>           dwc3_writel(dep->regs, DWC3_DEPCMD, cmd);
+> 
+> -       if (!(cmd & DWC3_DEPCMD_CMDACT)) {
+> +       if (!(cmd & DWC3_DEPCMD_CMDACT) ||
+> +           (DWC3_DEPCMD_CMD(cmd) == DWC3_DEPCMD_ENDTRANSFER &&
+> +            !(cmd & DWC3_DEPCMD_CMDIOC))) {
+>                   ret = 0;
+>                   goto skip_status;
+>           }
+> 
+> 
+> We can set it and forget it when we're about to de-initialize the
+> controller. Just like what we've already done by not waiting for the End
+> Transfer endpoint command completion interrupt.
 > 
 
-Turns out there are three instances, so a helper it is.
+I can see this working for the soft disconnect case, but we'll need to 
+address it differently for the EP dequeue scenario where IOC/interrupt 
+is required to clean up the TRBs.  This is one of the reasons why I went 
+with the spinlock approach, since it would apply to both situations.
 
-Cheers,
-Kent.
+Thanks
+Wesley Cheng
