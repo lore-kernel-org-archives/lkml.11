@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236000AbiGNFAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 01:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40958 "EHLO
+        id S237784AbiGNFAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 01:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237786AbiGNE7O (ORCPT
+        with ESMTP id S237790AbiGNE7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 00:59:14 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD114BCC
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:54:56 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4oXmo003614;
-        Thu, 14 Jul 2022 04:54:39 GMT
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94A9D42
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:55:04 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4euTr025703;
+        Thu, 14 Jul 2022 04:54:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=b+DyslCJ+aNfJ1BhlsMBmfDn5MamMcqj7Sg8ofMaRWY=;
- b=DIj8d4+eqOKbxHLpbdvqiqnUA58lx5mdjAnrz80F2zsGI5eHs96CofOHsPNx3teIzuWp
- RpUjDw/wOF9myt/0gLllRG0badzlInb/YF1zVbufwoj5lw5M26Ot9rbYDxg5NcI2ZWg6
- bnv6hszYYnE/FayFv/nAygty7v8FcGhG2xoe4B6f3CcWIJE/5TIzjGmdQgazC57oC/St
- QGU9WxZgK8mVPOS2JAOFU4+bV20OeHwVOfXkaSzEq+XiuhXQ7I2S6uGRBQhd0Bk8oNjx
- OZD4slfI/JtvKWLR0VS6t54BvJl9D7FigwtEhMJpZaDS/SDCoBDqGexRFZ4upxT/4vZw 3Q== 
+ bh=GCK7ll44P8j4h55kV+WDbGEyORYDyOp7vBvfUGSIw0A=;
+ b=pZ5do8lfViIMc4xyZ/APyecusSIsca4WZKmKLn/E4QRf36ajs/npEmCxq2q7XmKuQy4c
+ vp9eWRxLvZy1uRWf6oFr57+L2bKxK8bIAy2qp1sjmTxjM/UgCbYYAv8vlOsYFCwMend5
+ Ecn2R/aGCQGEX6nltw7j/N/2cYG9BdxbyEqwAZqveNf/Xze/L9EsGz85jk/gHZjVnLpx
+ whkH3YdyTETglCKm0sgsrGXtUX+6DKI69sjMTQCVA2OUEKzRejdsagYWCRfkDa6cWkka
+ +pBv61YebfjS6WjFzIsvFl5esTVym+Hawb4/JyS0MNxcdDOQwEXybutfqsyJ043iZFEu zg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hacfng1df-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac1k8dk3-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:54:39 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E4scqq016645;
-        Thu, 14 Jul 2022 04:54:38 GMT
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hacfng1d1-1
+        Thu, 14 Jul 2022 04:54:53 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E4irFH008767;
+        Thu, 14 Jul 2022 04:54:52 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac1k8djv-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:54:38 +0000
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E4rN3C002155;
-        Thu, 14 Jul 2022 04:54:37 GMT
+        Thu, 14 Jul 2022 04:54:52 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E4qOTZ010045;
+        Thu, 14 Jul 2022 04:54:51 GMT
 Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma03wdc.us.ibm.com with ESMTP id 3h71a9rgrj-1
+        by ppma01dal.us.ibm.com with ESMTP id 3h71aa8s1p-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:54:37 +0000
+        Thu, 14 Jul 2022 04:54:51 +0000
 Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E4saRB32440686
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E4soA021889472
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 04:54:36 GMT
+        Thu, 14 Jul 2022 04:54:50 GMT
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 22EDF7805F;
-        Thu, 14 Jul 2022 04:54:36 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 5DDF77805F;
+        Thu, 14 Jul 2022 04:54:50 +0000 (GMT)
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1AC487805E;
-        Thu, 14 Jul 2022 04:54:30 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 0664A7805C;
+        Thu, 14 Jul 2022 04:54:44 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.119.34])
         by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 04:54:29 +0000 (GMT)
+        Thu, 14 Jul 2022 04:54:43 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -73,244 +73,132 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
         "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v9 2/8] mm/demotion: Move memory demotion related code
-Date:   Thu, 14 Jul 2022 10:23:45 +0530
-Message-Id: <20220714045351.434957-3-aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v9 4/8] mm/demotion: Add hotplug callbacks to handle new numa node onlined
+Date:   Thu, 14 Jul 2022 10:23:47 +0530
+Message-Id: <20220714045351.434957-5-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
 References: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 1kqM7CsoOoPHCCZ-ncior5bJZk17lGes
-X-Proofpoint-GUID: _2Rka3SCtzHlmQyN6N2jdR-SaU_AvvrS
+X-Proofpoint-GUID: uMPMhRGHcGzasyEimxH5UObiVYEJQYmK
+X-Proofpoint-ORIG-GUID: JOK9OVg23shEHFpvU0lD4K5a5O5uW0o9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-14_02,2022-07-13_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- clxscore=1015 suspectscore=0 adultscore=0 lowpriorityscore=0 mlxscore=0
- bulkscore=0 malwarescore=0 impostorscore=0 phishscore=0 mlxlogscore=999
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ suspectscore=0 mlxlogscore=999 impostorscore=0 adultscore=0 malwarescore=0
  spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2206140000 definitions=main-2207140019
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This move memory demotion related code to mm/memory-tiers.c.
-No functional change in this patch.
+If the new NUMA node onlined doesn't have a memory tier assigned,
+the kernel adds the NUMA node to default memory tier.
 
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
- include/linux/memory-tiers.h |  7 ++++
- include/linux/migrate.h      |  2 --
- mm/memory-tiers.c            | 63 ++++++++++++++++++++++++++++++++++++
- mm/migrate.c                 | 60 +---------------------------------
- mm/vmscan.c                  |  1 +
- 5 files changed, 72 insertions(+), 61 deletions(-)
+ mm/memory-tiers.c | 68 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index a81dbc20e0d1..c47dbe381089 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_MEMORY_TIERS_H
- #define _LINUX_MEMORY_TIERS_H
- 
-+#include <linux/types.h>
-+
- #ifdef CONFIG_NUMA
- 
- #define MEMORY_TIER_HBM_GPU	300
-@@ -11,5 +13,10 @@
- #define DEFAULT_MEMORY_TIER	MEMORY_TIER_DRAM
- #define MAX_MEMORY_TIER_ID	400
- 
-+extern bool numa_demotion_enabled;
-+
-+#else
-+
-+#define numa_demotion_enabled	false
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-index 069a89e847f3..43e737215f33 100644
---- a/include/linux/migrate.h
-+++ b/include/linux/migrate.h
-@@ -78,7 +78,6 @@ static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
- #if defined(CONFIG_MIGRATION) && defined(CONFIG_NUMA)
- extern void set_migration_target_nodes(void);
- extern void migrate_on_reclaim_init(void);
--extern bool numa_demotion_enabled;
- extern int next_demotion_node(int node);
- #else
- static inline void set_migration_target_nodes(void) {}
-@@ -87,7 +86,6 @@ static inline int next_demotion_node(int node)
- {
-         return NUMA_NO_NODE;
- }
--#define numa_demotion_enabled  false
- #endif
- 
- #ifdef CONFIG_COMPACTION
 diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 011877b6dbb9..5cb7a351594b 100644
+index 79347d4ab05e..5706ad647136 100644
 --- a/mm/memory-tiers.c
 +++ b/mm/memory-tiers.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
- #include <linux/types.h>
-+#include <linux/device.h>
- #include <linux/nodemask.h>
+@@ -5,6 +5,7 @@
  #include <linux/slab.h>
  #include <linux/lockdep.h>
-@@ -76,3 +77,65 @@ static int __init memory_tier_init(void)
+ #include <linux/moduleparam.h>
++#include <linux/memory.h>
+ #include <linux/memory-tiers.h>
+ 
+ struct memory_tier {
+@@ -130,8 +131,73 @@ int node_create_and_set_memory_tier(int node, int tier)
+ }
+ EXPORT_SYMBOL_GPL(node_create_and_set_memory_tier);
+ 
++static int __node_set_memory_tier(int node, int tier)
++{
++	int ret = 0;
++	struct memory_tier *memtier;
++
++	memtier = __get_memory_tier_from_id(tier);
++	if (!memtier) {
++		ret = -EINVAL;
++		goto out;
++	}
++	node_set(node, memtier->nodelist);
++out:
++	return ret;
++}
++
++static int node_set_memory_tier(int node, int tier)
++{
++	struct memory_tier *memtier;
++	int ret = 0;
++
++	mutex_lock(&memory_tier_lock);
++	memtier = __node_get_memory_tier(node);
++	if (!memtier)
++		ret = __node_set_memory_tier(node, tier);
++
++	mutex_unlock(&memory_tier_lock);
++
++	return ret;
++}
++
+ static unsigned int default_memtier = DEFAULT_MEMORY_TIER;
+ core_param(default_memory_tier, default_memtier, uint, 0644);
++/*
++ * This runs whether reclaim-based migration is enabled or not,
++ * which ensures that the user can turn reclaim-based migration
++ * at any time without needing to recalculate migration targets.
++ */
++static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
++						 unsigned long action, void *_arg)
++{
++	struct memory_notify *arg = _arg;
++
++	/*
++	 * Only update the node migration order when a node is
++	 * changing status, like online->offline.
++	 */
++	if (arg->status_change_nid < 0)
++		return notifier_from_errno(0);
++
++	switch (action) {
++	case MEM_ONLINE:
++		/*
++		 * We ignore the error here, if the node already have the tier
++		 * registered, we will continue to use that for the new memory
++		 * we are adding here.
++		 */
++		node_set_memory_tier(arg->status_change_nid, default_memtier);
++		break;
++	}
++
++	return notifier_from_errno(0);
++}
++
++static void __init migrate_on_reclaim_init(void)
++{
++	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
++}
+ 
+ static int __init memory_tier_init(void)
+ {
+@@ -153,6 +219,8 @@ static int __init memory_tier_init(void)
+ 	/* CPU only nodes are not part of memory tiers. */
+ 	memtier->nodelist = node_states[N_MEMORY];
+ 	mutex_unlock(&memory_tier_lock);
++
++	migrate_on_reclaim_init();
  	return 0;
  }
  subsys_initcall(memory_tier_init);
-+
-+bool numa_demotion_enabled = false;
-+
-+#ifdef CONFIG_MIGRATION
-+#ifdef CONFIG_SYSFS
-+static ssize_t numa_demotion_enabled_show(struct kobject *kobj,
-+					  struct kobj_attribute *attr, char *buf)
-+{
-+	return sysfs_emit(buf, "%s\n",
-+			  numa_demotion_enabled ? "true" : "false");
-+}
-+
-+static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
-+					   struct kobj_attribute *attr,
-+					   const char *buf, size_t count)
-+{
-+	ssize_t ret;
-+
-+	ret = kstrtobool(buf, &numa_demotion_enabled);
-+	if (ret)
-+		return ret;
-+
-+	return count;
-+}
-+
-+static struct kobj_attribute numa_demotion_enabled_attr =
-+	__ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
-+	       numa_demotion_enabled_store);
-+
-+static struct attribute *numa_attrs[] = {
-+	&numa_demotion_enabled_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group numa_attr_group = {
-+	.attrs = numa_attrs,
-+};
-+
-+static int __init numa_init_sysfs(void)
-+{
-+	int err;
-+	struct kobject *numa_kobj;
-+
-+	numa_kobj = kobject_create_and_add("numa", mm_kobj);
-+	if (!numa_kobj) {
-+		pr_err("failed to create numa kobject\n");
-+		return -ENOMEM;
-+	}
-+	err = sysfs_create_group(numa_kobj, &numa_attr_group);
-+	if (err) {
-+		pr_err("failed to register numa group\n");
-+		goto delete_obj;
-+	}
-+	return 0;
-+
-+delete_obj:
-+	kobject_put(numa_kobj);
-+	return err;
-+}
-+subsys_initcall(numa_init_sysfs);
-+#endif /* CONFIG_SYSFS */
-+#endif
-diff --git a/mm/migrate.c b/mm/migrate.c
-index 6c1ea61f39d8..fce7d4a9e940 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -2509,64 +2509,6 @@ void __init migrate_on_reclaim_init(void)
- 	set_migration_target_nodes();
- 	cpus_read_unlock();
- }
-+#endif /* CONFIG_NUMA */
- 
--bool numa_demotion_enabled = false;
--
--#ifdef CONFIG_SYSFS
--static ssize_t numa_demotion_enabled_show(struct kobject *kobj,
--					  struct kobj_attribute *attr, char *buf)
--{
--	return sysfs_emit(buf, "%s\n",
--			  numa_demotion_enabled ? "true" : "false");
--}
--
--static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
--					   struct kobj_attribute *attr,
--					   const char *buf, size_t count)
--{
--	ssize_t ret;
--
--	ret = kstrtobool(buf, &numa_demotion_enabled);
--	if (ret)
--		return ret;
--
--	return count;
--}
--
--static struct kobj_attribute numa_demotion_enabled_attr =
--	__ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
--	       numa_demotion_enabled_store);
--
--static struct attribute *numa_attrs[] = {
--	&numa_demotion_enabled_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group numa_attr_group = {
--	.attrs = numa_attrs,
--};
--
--static int __init numa_init_sysfs(void)
--{
--	int err;
--	struct kobject *numa_kobj;
- 
--	numa_kobj = kobject_create_and_add("numa", mm_kobj);
--	if (!numa_kobj) {
--		pr_err("failed to create numa kobject\n");
--		return -ENOMEM;
--	}
--	err = sysfs_create_group(numa_kobj, &numa_attr_group);
--	if (err) {
--		pr_err("failed to register numa group\n");
--		goto delete_obj;
--	}
--	return 0;
--
--delete_obj:
--	kobject_put(numa_kobj);
--	return err;
--}
--subsys_initcall(numa_init_sysfs);
--#endif /* CONFIG_SYSFS */
--#endif /* CONFIG_NUMA */
-diff --git a/mm/vmscan.c b/mm/vmscan.c
-index f7d9a683e3a7..3a8f78277f99 100644
---- a/mm/vmscan.c
-+++ b/mm/vmscan.c
-@@ -50,6 +50,7 @@
- #include <linux/printk.h>
- #include <linux/dax.h>
- #include <linux/psi.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/div64.h>
 -- 
 2.36.1
 
