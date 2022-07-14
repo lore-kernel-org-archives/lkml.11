@@ -2,91 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AFBBC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6EB7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235844AbiGNHmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39856 "EHLO
+        id S237244AbiGNHqQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:46:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230163AbiGNHl6 (ORCPT
+        with ESMTP id S229754AbiGNHqN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:41:58 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDAD1F63D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:41:57 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id E640B22246;
-        Thu, 14 Jul 2022 09:41:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1657784516;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ogFlYqmAqQxn6+1FR20t7h2PNmZxGGdMcvOHgoKXDus=;
-        b=hEOd3Qbl+ejzDleZB42HjtegmxzoDlxldOSpYYz5UopFPl+JTTvk0V4TxayqnlK/TsZewn
-        Mjsapjb+BR0iriYSZdgBMlBCaYSdUk30e0xkttEvrf54SVTaJa2scq2yMuH1YVvp7EEZ7x
-        JS+DXe40yXDwPEEqsGHyLzgFUisYuJ8=
+        Thu, 14 Jul 2022 03:46:13 -0400
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED89E32074;
+        Thu, 14 Jul 2022 00:46:11 -0700 (PDT)
+Received: by mail-lf1-f51.google.com with SMTP id z25so1485722lfr.2;
+        Thu, 14 Jul 2022 00:46:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EhSSJXEhZEMBp4Pn5sTwK0oED0S/y3gQS+mDbRM7VjI=;
+        b=3RlDL1cXMDE2Yo9HBu9BnqWEfFtkRopdUAFO4trLevTIaUqDAWFv2odqt4cOwk8n2p
+         1zZqLFEtPGMLkgRyAp5gQiBjtqFqGTYuKG3YDIBz1bWQhCTwnAWGkGanzS/zJyEegR7P
+         8b6/MYAFMzncA7ozO2m0PHHJQQ/zVv7cKqXyHzdITj4k0NoLkSq1r8/5+QHU2Xpw9QtO
+         GwnjhuiGRqitxbtuwDnHYpHgbi9EqnMrs5stuPdTQmUBIqU/kofB5TBph8gbZQWv93g4
+         bMy5kDx4mQZm9wB6jRKk9xa9BTff5P54+xHVXEAyUsd6jiotj1oBi6AUtz7UuNSYveNd
+         xEOQ==
+X-Gm-Message-State: AJIora8sQ1Nset6c+WyWYfT4PO4+Vk1ube38mBcU8xk5SVetAuwlzqdq
+        DKRaySPftOQ1D1cGtTzecl4=
+X-Google-Smtp-Source: AGRyM1vOgwI11l8kxmqHOrANiN2wD3HJe9fQsLc/YTrQ4ryDJ04ME6sxbvvvOSwzFn8oFF61HH58Ag==
+X-Received: by 2002:a05:6512:16a6:b0:47f:74b5:2704 with SMTP id bu38-20020a05651216a600b0047f74b52704mr4381285lfb.54.1657784770209;
+        Thu, 14 Jul 2022 00:46:10 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.googlemail.com with ESMTPSA id r8-20020a2e80c8000000b00253d4db8a92sm132936ljg.63.2022.07.14.00.46.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 00:46:09 -0700 (PDT)
+Message-ID: <2014e1bf-a8c7-a41b-cddc-dda25ef1d567@kernel.org>
+Date:   Thu, 14 Jul 2022 09:46:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 14 Jul 2022 09:41:55 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-Cc:     clg@kaod.org, linux-kernel@vger.kernel.org,
-        linux-mtd@lists.infradead.org, p.yadav@ti.com,
-        quic_ggregory@quicinc.com, quic_jiles@quicinc.com,
-        tudor.ambarus@microchip.com
-Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
-In-Reply-To: <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
-References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
- <20220711095042.2095360-1-michael@walle.cc>
- <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
- <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
- <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <00f0c9d480ef5a414f1c34492661bd9e@walle.cc>
-X-Sender: michael@walle.cc
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next] soc: qcom: icc-bwmon: Remove unnecessary print
+ function dev_err()
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220714072253.63052-1-yang.lee@linux.alibaba.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <20220714072253.63052-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-Am 2022-07-13 23:01, schrieb Jae Hyun Yoo:
-> On 7/13/2022 7:32 AM, Michael Walle wrote:
->> Am 2022-07-13 16:26, schrieb Jae Hyun Yoo:
->>>>> +    { "w25q512nwq", INFO(0xef6020, 0, 64 * 1024, 1024)
->>>> 
->>>> Please use INFO(0xef6020, 0, 0, 0) and test wether it will still
->>>> work correctly. We will then be able to convert it to SNOR_ID3()
->>>> later.
->>> 
->>> Tested it but it doesn't work with INFO(0xef6020, 0, 0, 0). I'll keep
->>> it as is.
->> 
->> Can you please look into this? I'd expect this to work if the SFDP
->> tables are correct because all this should come from the tables.
->> You can look at /sys/kernel/debug/spi-nor/spi0.0/params and see
->> what is changing there.
+On 14/07/2022 09:22, Yang Li wrote:
+> Eliminate the follow coccicheck warning:
+> ./drivers/soc/qcom/icc-bwmon.c:349:2-9: line 349 is redundant because platform_get_irq() already prints an error
 > 
-> I tested it again but result is still the same. I can check the parsed
-> info like below if I use INFO(0xef6020, 0, 64 * 1024, 1024) but I can't
-> even check the debugfs info if I use INFO(0xef6020, 0, 0, 0) since it
-> doesn't boot at all. I think, this patch should go as is and the size
-> parsing issue could be fixed using a separate fix.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 
-What does "doesn't boot at all" mean? Are there any kernel startup
-messages?
+This was reported by coccinelle, not a robot, so the tag is not appropriate.
 
-Just to be sure, you have PARSE_SFDP set, right?
+This is an open source work and public collaboration. The "Reported-by"
+usually means that the issue was reported to us, in some way, usually in
+public. Can we see the report?
+Otherwise adding non-public, non-verifiable reports is useless and
+clutters our report-credit-system.
 
-The entry should be (skipping OTP to make sure that isn't
-the problem here):
-{ "w25q512nwq", INFO(0xef6020, 0, 0, 0) PARSE_SFDP }
 
--michael
+Best regards,
+Krzysztof
