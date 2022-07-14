@@ -2,111 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA25C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20C7DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238620AbiGNLID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        id S238626AbiGNLIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229666AbiGNLIB (ORCPT
+        with ESMTP id S229761AbiGNLIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:08:01 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9F56163;
-        Thu, 14 Jul 2022 04:08:01 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26EB7plu090790;
-        Thu, 14 Jul 2022 06:07:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1657796871;
-        bh=p7pqq2g8/Wby+2K8I1+/FwfIeNjPoy6Wx6KoZD17UX0=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=S90nZq5HNvlqK1P43SUIumnzYKKRkK/yc6yy2NbjmaZT16ZlmoWPMDWXvKtIBlp5a
-         X8ov1ZVvQz+h00IChm4LT1d/AQ4qrhUbrQkDw7j3iM4uKjPDmwcR+Rvk6ap8U0ajrC
-         eVKOARqsfM9U8aWkAW1or4ZmXoAv37QVR9DUxtSY=
-Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26EB7pVe019466
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 14 Jul 2022 06:07:51 -0500
-Received: from DFLE100.ent.ti.com (10.64.6.21) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 14
- Jul 2022 06:07:50 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 14 Jul 2022 06:07:50 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26EB7oXs021273;
-        Thu, 14 Jul 2022 06:07:50 -0500
-Date:   Thu, 14 Jul 2022 16:37:49 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     <vaishnav.a@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <vigneshr@ti.com>
-Subject: Re: [PATCH -next] spi: cadence-quadspi: Remove spi_master_put() in
- probe failure path
-Message-ID: <20220714110749.ee5r4hznjn3ij66s@ti.com>
-References: <20220601071611.11853-1-vaishnav.a@ti.com>
- <165459880689.302078.15844858048042907353.b4-ty@kernel.org>
+        Thu, 14 Jul 2022 07:08:36 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7597E3AE;
+        Thu, 14 Jul 2022 04:08:34 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 11:08:31 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657796912;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qxX5sW+cuNZzG69+cBPf9V0vtrlfTlK6c63AmDLg2Ac=;
+        b=zF26pg5msQNMNO6qOGcYDXNsZXUrjPA9Lgssul1fhwculLD7n5jbt9vkCYVAd3DI6bWgtO
+        P7ppd13ww7dvU/NfNtBmg9RBxG4e4NeGH59hHvFzDdy5lJvwctRvJPutyUhFpv+F8W8MwZ
+        uOBLJ1d5xiwtbvHih3b/8lDFpH5keuzRIof99yNqBIMetfwAkC9BuGe6x2aHcUEyIX5yj6
+        bi6xXMse8Yx+iVSDIP2nhSG81xPMXQzUrXeccg4GfxeEMxkzxjxdJD+DbDNzMI2YHg8bTX
+        AhFb3IOs07Mm6kVcW48vOpjNMvYshFCe9BR85Scl0FaOll9RhYG/+K3lRSMUeg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657796912;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qxX5sW+cuNZzG69+cBPf9V0vtrlfTlK6c63AmDLg2Ac=;
+        b=FsAWEZeldOfvL7V8JqmEQ+JkAlmcI0VZU3KBBa/RxAvV8FSM/SZejZ2W+veq0fhkI2KwnJ
+        Izf6IGZClNxmiRBw==
+From:   "tip-bot2 for Alexandre Chartre" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/entry: Remove UNTRAIN_RET from native_irq_return_ldt
+Cc:     Alexandre Chartre <alexandre.chartre@oracle.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <35b0d50f-12d1-10c3-f5e8-d6c140486d4a@oracle.com>
+References: <35b0d50f-12d1-10c3-f5e8-d6c140486d4a@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <165459880689.302078.15844858048042907353.b4-ty@kernel.org>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Message-ID: <165779691151.15455.14072147760711822581.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
+The following commit has been merged into the x86/urgent branch of tip:
 
-On 07/06/22 11:46AM, Mark Brown wrote:
-> On Wed, 1 Jun 2022 12:46:11 +0530, Vaishnav Achath wrote:
-> > Currently the spi_master is allocated by devm_spi_alloc_master()
-> > and devres core manages the deallocation, but in probe failure
-> > path spi_master_put() is being handled manually which causes
-> > "refcount underflow use-after-free" warning when probe failure happens
-> > after allocating spi_master.
-> > 
-> > Trimmed backtrace during failure:
-> > 
-> > [...]
-> 
-> Applied to
-> 
->    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
+Commit-ID:     d16e0b26672066035439b2f49887f6576c4a3689
+Gitweb:        https://git.kernel.org/tip/d16e0b26672066035439b2f49887f6576c4a3689
+Author:        Alexandre Chartre <alexandre.chartre@oracle.com>
+AuthorDate:    Wed, 13 Jul 2022 21:58:08 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Thu, 14 Jul 2022 09:45:12 +02:00
 
-I see this error in v5.19-rc6 as well. Can we get this patch merged as a 
-fix in rc7? Sorry for spotting this so late in the cycle, but I thought 
-you had already got this merged in one of the rcs.
+x86/entry: Remove UNTRAIN_RET from native_irq_return_ldt
 
-> 
-> Thanks!
-> 
-> [1/1] spi: cadence-quadspi: Remove spi_master_put() in probe failure path
->       commit: 8523c96894e916b20ba3612e48e404fad5acfdd9
-> 
-> All being well this means that it will be integrated into the linux-next
-> tree (usually sometime in the next 24 hours) and sent to Linus during
-> the next merge window (or sooner if it is a bug fix), however if
-> problems are discovered then the patch may be dropped or reverted.
-> 
-> You may get further e-mails resulting from automated or manual testing
-> and review of the tree, please engage with people reporting problems and
-> send followup patches addressing any issues that are reported if needed.
-> 
-> If any updates are required or you are submitting further changes they
-> should be sent as incremental updates against current git, existing
-> patches will not be replaced.
-> 
-> Please add any relevant lists and maintainers to the CCs when replying
-> to this mail.
-> 
-> Thanks,
-> Mark
+UNTRAIN_RET is not needed in native_irq_return_ldt because RET
+untraining has already been done at this point.
 
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+In addition, when the RETBleed mitigation is IBPB, UNTRAIN_RET clobbers
+several registers (AX, CX, DX) so here it trashes user values which are
+in these registers.
+
+Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/35b0d50f-12d1-10c3-f5e8-d6c140486d4a@oracle.com
+---
+ arch/x86/entry/entry_64.S | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
+index 285e043..9953d96 100644
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -727,7 +727,6 @@ native_irq_return_ldt:
+ 	pushq	%rdi				/* Stash user RDI */
+ 	swapgs					/* to kernel GS */
+ 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rdi	/* to kernel CR3 */
+-	UNTRAIN_RET
+ 
+ 	movq	PER_CPU_VAR(espfix_waddr), %rdi
+ 	movq	%rax, (0*8)(%rdi)		/* user RAX */
