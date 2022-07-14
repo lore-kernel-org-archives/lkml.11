@@ -2,266 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20442C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D43C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:42:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240785AbiGNSmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:42:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56246 "EHLO
+        id S240789AbiGNSmh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232093AbiGNSmK (ORCPT
+        with ESMTP id S232093AbiGNSmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:42:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F085959250;
-        Thu, 14 Jul 2022 11:42:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6188EB82885;
-        Thu, 14 Jul 2022 18:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 654C1C34114;
-        Thu, 14 Jul 2022 18:42:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657824125;
-        bh=mDPYepdb8ZMtjYZIy9oLieQo0ev/tUm3Vj50xM8X0vs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sIzi7aF/eVJ0hOZudaNg0t7EaydKlWLoBgQAgqn6wmwiNCxZBn9RfvmAskbV2GRI/
-         Yj78cZtpmVQxvvKWZ6c4AJ+YJcuiyr582e17YId+zebT7M39boWFHN9HtQatJfnf77
-         4gGIJwPpJDsNpiYhM+SvgReHBq0kkQiPrMPNVPpV+TGAmTcS9BUrhC4Jt/8lFaPBgw
-         CoTPLlHTGbbRXeTgWlyrqCVFbjUT8Yg+gseWd3SqARsiBGueEWIEX767YofOjoKQP/
-         5q9rrxHbeIQn3L3T0MTrvOEgk4Sfz7vmLjnMZsQWIdH1Ot6tCaMDlV2bylEIaxPLDY
-         6bhl84SG1YLYA==
-Received: by pali.im (Postfix)
-        id BB5281295; Thu, 14 Jul 2022 20:42:02 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] PCI: Assign PCI domain by ida_alloc()
-Date:   Thu, 14 Jul 2022 20:41:30 +0200
-Message-Id: <20220714184130.5436-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220702204737.7719-1-pali@kernel.org>
-References: <20220702204737.7719-1-pali@kernel.org>
+        Thu, 14 Jul 2022 14:42:35 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AE8599F6;
+        Thu, 14 Jul 2022 11:42:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657824154; x=1689360154;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VLaGZ0CFcCMDw4sKrezyshgqgNu52lSz3UC7gONrKKM=;
+  b=C1t1w87kosiH+02dpsYA7EXoIhh+dyMdmaohh+fxi9i7vA0UQPR/MXKM
+   U+YzajLc0RLDtloH55IgBTBtsdbXoXHaUrFEl05mYJFPxX4yKueFm8XDO
+   D7bU6aCGotngx6FH33grnmaUAR0gZaCViRTXri5OzO4UjfvraUBfUfqlj
+   7P+XWYI36Rs++EOliz36zag8PV/2AOjkNavpPnkwrYnpNTtaFeczy481U
+   lzFZKEmucL8SUCswwwr5ZkSPBYt0svtIoJB/5xeSDfhgQO64o7ac1g9m9
+   p45ELtSi4rjxsUhXSmtgc5ceUmoaJRRkNiL+xc4g+i8htIhndhJ19rB9d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="268629871"
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="268629871"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 11:42:33 -0700
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="653996066"
+Received: from pravinpa-mobl.amr.corp.intel.com (HELO desk) ([10.212.243.89])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 11:42:32 -0700
+Date:   Thu, 14 Jul 2022 11:42:29 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        antonio.gomez.iglesias@linux.intel.com
+Subject: Re: [PATCH] x86/bugs: Switch to "auto" when "ibrs" selected on
+ Enhanced IBRS parts
+Message-ID: <20220714184229.lw24xiqzwlcxjnaq@desk>
+References: <0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com>
+ <Ys/7RiC9Z++38tzq@quatroqueijos>
+ <YtABEwRnWrJyIKTY@worktop.programming.kicks-ass.net>
+ <20220714160106.c6efowo6ptsu72ne@treble>
+ <YtBMZMaOnA8g8m0a@worktop.programming.kicks-ass.net>
+ <20220714173814.p5kdyimu6ho7zjt5@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20220714173814.p5kdyimu6ho7zjt5@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace assignment of PCI domain from atomic_inc_return() to ida_alloc().
+On Thu, Jul 14, 2022 at 10:38:14AM -0700, Josh Poimboeuf wrote:
+>On Thu, Jul 14, 2022 at 07:03:32PM +0200, Peter Zijlstra wrote:
+>> On Thu, Jul 14, 2022 at 09:01:06AM -0700, Josh Poimboeuf wrote:
+>>
+>> > > Yeah this; if the user asks for IBRS, we should give him IBRS. I hate
+>> > > the 'I know better, let me change that for you' mentality.
+>> >
+>> > eIBRS CPUs don't even have legacy IBRS so I don't see how this is even
+>> > possible.
+>>
+>> You can still WRMSR a lot on them. Might not make sense but it 'works'.
+>
+>Even in Intel documentation, eIBRS is often referred to as IBRS. It
+>wouldn't be surprising for a user to consider spectre_v2=ibrs to mean
+>"use eIBRS".
+>
+>I'm pretty sure there's nobody out there that wants spectre_v2=ibrs to
+>mean "make it slower and possibly less secure because it's being used
+>contrary to the spec".
 
-Use two IDAs, one for static domain allocations (those which are defined in
-device tree) and second for dynamic allocations (all other).
+Apart from testing, I don't see a reason for a user to deliberately
+choose =ibrs on Enhanced IBRS parts. But, I am guessing most users would
+just rely on "=auto" mode.
 
-During removal of root bus / host bridge release also allocated domain id.
-So released id can be reused again, for example in situation when
-dynamically loading and unloading native PCI host bridge drivers.
+So honoring what the user asked and printing a warning may be fine. And
+hope they would see the warning if they unintentionally chose "=ibrs" on
+an eIBRS part.
 
-This change also allows to mix static device tree assignment and dynamic by
-kernel as all static allocations are reserved in dynamic pool.
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
-Idea of this patch comes from the following discussion:
-https://lore.kernel.org/linux-pci/20210412123936.25555-1-pali@kernel.org/t/#u
-
-Changes in v2:
-* Fix broken compilation
----
- drivers/pci/pci.c    | 103 +++++++++++++++++++++++++------------------
- drivers/pci/probe.c  |   5 +++
- drivers/pci/remove.c |   6 +++
- include/linux/pci.h  |   1 +
- 4 files changed, 72 insertions(+), 43 deletions(-)
-
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index cfaf40a540a8..34fdcee6634a 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -6762,60 +6762,70 @@ static void pci_no_domains(void)
- }
- 
- #ifdef CONFIG_PCI_DOMAINS_GENERIC
--static atomic_t __domain_nr = ATOMIC_INIT(-1);
-+static DEFINE_IDA(pci_domain_nr_static_ida);
-+static DEFINE_IDA(pci_domain_nr_dynamic_ida);
- 
--static int pci_get_new_domain_nr(void)
-+static void of_pci_reserve_static_domain_nr(void)
- {
--	return atomic_inc_return(&__domain_nr);
-+	struct device_node *np;
-+	int domain_nr;
-+
-+	for_each_node_by_type(np, "pci") {
-+		domain_nr = of_get_pci_domain_nr(np);
-+		if (domain_nr < 0)
-+			continue;
-+		/*
-+		 * Permanently allocate domain_nr in dynamic_ida
-+		 * to prevent it from dynamic allocation.
-+		 */
-+		ida_alloc_range(&pci_domain_nr_dynamic_ida,
-+				domain_nr, domain_nr, GFP_KERNEL);
-+	}
- }
- 
- static int of_pci_bus_find_domain_nr(struct device *parent)
- {
--	static int use_dt_domains = -1;
--	int domain = -1;
-+	static bool static_domains_reserved = false;
-+	int domain_nr;
- 
--	if (parent)
--		domain = of_get_pci_domain_nr(parent->of_node);
-+	/* On the first call scan device tree for static allocations. */
-+	if (!static_domains_reserved) {
-+		of_pci_reserve_static_domain_nr();
-+		static_domains_reserved = true;
-+	}
-+
-+	if (parent) {
-+		/*
-+		 * If domain is in DT then allocate it in static IDA.
-+		 * This prevent duplicate static allocations in case
-+		 * of errors in DT.
-+		 */
-+		domain_nr = of_get_pci_domain_nr(parent->of_node);
-+		if (domain_nr >= 0)
-+			return ida_alloc_range(&pci_domain_nr_static_ida,
-+					       domain_nr, domain_nr,
-+					       GFP_KERNEL);
-+	}
- 
- 	/*
--	 * Check DT domain and use_dt_domains values.
--	 *
--	 * If DT domain property is valid (domain >= 0) and
--	 * use_dt_domains != 0, the DT assignment is valid since this means
--	 * we have not previously allocated a domain number by using
--	 * pci_get_new_domain_nr(); we should also update use_dt_domains to
--	 * 1, to indicate that we have just assigned a domain number from
--	 * DT.
--	 *
--	 * If DT domain property value is not valid (ie domain < 0), and we
--	 * have not previously assigned a domain number from DT
--	 * (use_dt_domains != 1) we should assign a domain number by
--	 * using the:
--	 *
--	 * pci_get_new_domain_nr()
--	 *
--	 * API and update the use_dt_domains value to keep track of method we
--	 * are using to assign domain numbers (use_dt_domains = 0).
--	 *
--	 * All other combinations imply we have a platform that is trying
--	 * to mix domain numbers obtained from DT and pci_get_new_domain_nr(),
--	 * which is a recipe for domain mishandling and it is prevented by
--	 * invalidating the domain value (domain = -1) and printing a
--	 * corresponding error.
-+	 * If domain was not specified in DT then choose free id from dynamic
-+	 * allocations. All domain numbers from DT are permanently in dynamic
-+	 * allocations to prevent assigning them to other DT nodes without
-+	 * static domain.
- 	 */
--	if (domain >= 0 && use_dt_domains) {
--		use_dt_domains = 1;
--	} else if (domain < 0 && use_dt_domains != 1) {
--		use_dt_domains = 0;
--		domain = pci_get_new_domain_nr();
--	} else {
--		if (parent)
--			pr_err("Node %pOF has ", parent->of_node);
--		pr_err("Inconsistent \"linux,pci-domain\" property in DT\n");
--		domain = -1;
--	}
-+	return ida_alloc(&pci_domain_nr_dynamic_ida, GFP_KERNEL);
-+}
- 
--	return domain;
-+static void of_pci_bus_release_domain_nr(struct pci_bus *bus, struct device *parent)
-+{
-+	if (bus->domain_nr < 0)
-+		return;
-+
-+	/* Release domain from ida in which was it allocated. */
-+	if (of_get_pci_domain_nr(parent->of_node) == bus->domain_nr)
-+		ida_free(&pci_domain_nr_static_ida, bus->domain_nr);
-+	else
-+		ida_free(&pci_domain_nr_dynamic_ida, bus->domain_nr);
- }
- 
- int pci_bus_find_domain_nr(struct pci_bus *bus, struct device *parent)
-@@ -6823,6 +6833,13 @@ int pci_bus_find_domain_nr(struct pci_bus *bus, struct device *parent)
- 	return acpi_disabled ? of_pci_bus_find_domain_nr(parent) :
- 			       acpi_pci_bus_find_domain_nr(bus);
- }
-+
-+void pci_bus_release_domain_nr(struct pci_bus *bus, struct device *parent)
-+{
-+	if (!acpi_disabled)
-+		return;
-+	of_pci_bus_release_domain_nr(bus, parent);
-+}
- #endif
- 
- /**
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 17a969942d37..12092d238403 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -906,6 +906,8 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 		bus->domain_nr = pci_bus_find_domain_nr(bus, parent);
- 	else
- 		bus->domain_nr = bridge->domain_nr;
-+	if (bus->domain_nr < 0)
-+		goto free;
- #endif
- 
- 	b = pci_find_bus(pci_domain_nr(bus), bridge->busnr);
-@@ -1030,6 +1032,9 @@ static int pci_register_host_bridge(struct pci_host_bridge *bridge)
- 	device_del(&bridge->dev);
- 
- free:
-+#ifdef CONFIG_PCI_DOMAINS_GENERIC
-+	pci_bus_release_domain_nr(bus, parent);
-+#endif
- 	kfree(bus);
- 	return err;
- }
-diff --git a/drivers/pci/remove.c b/drivers/pci/remove.c
-index 4c54c75050dc..0145aef1b930 100644
---- a/drivers/pci/remove.c
-+++ b/drivers/pci/remove.c
-@@ -160,6 +160,12 @@ void pci_remove_root_bus(struct pci_bus *bus)
- 	pci_remove_bus(bus);
- 	host_bridge->bus = NULL;
- 
-+#ifdef CONFIG_PCI_DOMAINS_GENERIC
-+	/* Release domain_nr if it was dynamically allocated */
-+	if (host_bridge->domain_nr == PCI_DOMAIN_NR_NOT_SET)
-+		pci_bus_release_domain_nr(bus, host_bridge->dev.parent);
-+#endif
-+
- 	/* remove the host bridge */
- 	device_del(&host_bridge->dev);
- }
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 81a57b498f22..6c7f27e62bcc 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1723,6 +1723,7 @@ static inline int acpi_pci_bus_find_domain_nr(struct pci_bus *bus)
- { return 0; }
- #endif
- int pci_bus_find_domain_nr(struct pci_bus *bus, struct device *parent);
-+void pci_bus_release_domain_nr(struct pci_bus *bus, struct device *parent);
- #endif
- 
- /* Some architectures require additional setup to direct VGA traffic */
--- 
-2.20.1
-
+Thanks,
+Pawan
