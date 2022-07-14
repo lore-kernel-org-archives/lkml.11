@@ -2,119 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF1CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37874CCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239375AbiGNNgz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:36:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
+        id S239425AbiGNNiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:38:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235944AbiGNNgv (ORCPT
+        with ESMTP id S239240AbiGNNiI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:36:51 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE47350199;
-        Thu, 14 Jul 2022 06:36:49 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 13:36:46 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657805807;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wUuV7gEmLufUpUosWh0vdx07cSvJv6Gwml73gCX5Z0U=;
-        b=kolAvBmlwU5UEH2xz0GhvDBHFD2ezEyMwu3GTJnEEG5cMX30vvodsdA408y1KUS6oTOFLZ
-        Ddbz4473DomEadrjOKQSytQohAXqSQqbTcXcEDBFZr2WtbuV8+DzOL3rMMWFyeQqs925Mn
-        Q0rExRjlGeqmupFfLYBB0Lcb6Pz1/00E8Ciz3B8WXqjztO3Z/pKB2TVHHgl739iRniAS0/
-        nIosiFPMzp2BCno7HDHFCp4PQq+Ag2mNTvHAMKxpJXtQqCBRbeSNKpm8ktHacBSDrTYscr
-        l9HVUmHRIDkvO7gAJGR578040KQ7rlhPIWlWwKY1k2ObLHi+fxGxGdphjPe/jw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657805807;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=wUuV7gEmLufUpUosWh0vdx07cSvJv6Gwml73gCX5Z0U=;
-        b=+hekk2v96XZsGGR/BdQnq8xXOEMGOXXFUFtdnDGfz4ldl60zTJxtu9kFJ76hWrC1lQ4AqM
-        SGrgAoyczapKMIAg==
-From:   "tip-bot2 for Nathan Chancellor" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/speculation: Use DECLARE_PER_CPU for
- x86_spec_ctrl_current
-Cc:     kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Nick Desaulniers <ndesaulniers@google.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220713152436.2294819-1-nathan@kernel.org>
-References: <20220713152436.2294819-1-nathan@kernel.org>
+        Thu, 14 Jul 2022 09:38:08 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9640054CAE;
+        Thu, 14 Jul 2022 06:38:07 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id y9so1849148pff.12;
+        Thu, 14 Jul 2022 06:38:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OpmfwN/J8ZTICSzccrhBIpc9ZkfZKVmS0yTPE9OckSU=;
+        b=P8JDkffPEQJ+0PZuxarOGUq/HuVCJaA++tVCBZCJfVuhM8VTaal2y1cnCnHMW4FqPN
+         IDdiIJwCf2/IOvb8PAKpL4Cv1H/hWcMU84KYyFSj8TL8wBeSYxIov1xyLjuIx5cY1r75
+         2m6MO5Z+H6sN5VqelhgzaGIsKPkbkiwkRnX3ULDmhUo40oKKPy7XqGDCu0ux1uGUJSQR
+         aZXfZT8kv2TxP8rzFXKld5bpREnpphvTQBns6gBXF4C515nnfR1IJ5KEeIXv1BptB925
+         N2bHYmilJTyYuH8qSwkmrRaRFbQ3Py6JMtRMFI8MjU0BOROgkj5MGOOBk4WHJA0ewLcI
+         USPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=OpmfwN/J8ZTICSzccrhBIpc9ZkfZKVmS0yTPE9OckSU=;
+        b=hL9Vk7Wt3p1Hh9mWNj0or0/TGrncS6O3kcIPpzw7ouGdnVXPbFXn+41HLab1K4p/o0
+         9l2/VC/yjOQ103MTl72Fc3fkvU9ItDoj65KQgJUyw8tLsYjmT4SrwB1Gw8IMRxhLq5Z1
+         PqEPndQYo7F0BZ/4BVBhW8zHV1+fTAC1v2NW/6lAqgFUODWJbt00OoYdk5OcZ/AxY3f8
+         41mYUOg1uL5mxZihS/kQVg+gvuqis4sDM/B11xvsMMSe/22Fqd4QoMGCobSZGtgduB1y
+         9eYOG4XeZRlh/AjSSVI/LQOQtuJGrPGtg/r4pJ7LJE+pUy3dtRg34GJ3Vjcn6TltBsHi
+         0DUA==
+X-Gm-Message-State: AJIora8CBiaT1F9fONeY3c0BRrS9SYBS9hdu+KWMdLT8BQka3g41TE6t
+        VAV0lbyhXrmbk6ejFPz2ONA=
+X-Google-Smtp-Source: AGRyM1vCtckFmC3nc6mMaAk1y5t2v7Ybn8SDjp47SI6V+JOzOavjkwqLvW+ropO8RiT8WLqz/VLpgg==
+X-Received: by 2002:a63:3181:0:b0:417:b4b5:df09 with SMTP id x123-20020a633181000000b00417b4b5df09mr7803649pgx.398.1657805887022;
+        Thu, 14 Jul 2022 06:38:07 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id s7-20020a63ff47000000b0041981461f5dsm1286244pgk.90.2022.07.14.06.38.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 06:38:01 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Thu, 14 Jul 2022 06:38:00 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     "Kallas, Pawel" <pawel.kallas@intel.com>
+Cc:     jdelvare@suse.com, corbet@lwn.net, linux-hwmon@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        iwona.winiarska@intel.com
+Subject: Re: [PATCH 0/3] hwmon: (pmbus) add power from energy readings
+Message-ID: <20220714133800.GA3916254@roeck-us.net>
+References: <20220706104024.3118590-1-pawel.kallas@intel.com>
+ <20220706131758.GA652205@roeck-us.net>
+ <dc8771ad-b48b-317d-b132-47208ef58710@intel.com>
+ <20220707140952.GB3492673@roeck-us.net>
+ <0b776040-c3bd-034f-bbcd-b929f1a4d19a@intel.com>
 MIME-Version: 1.0
-Message-ID: <165780580628.15455.7953753659675037331.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0b776040-c3bd-034f-bbcd-b929f1a4d19a@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the x86/urgent branch of tip:
+On Thu, Jul 07, 2022 at 06:00:45PM +0200, Kallas, Pawel wrote:
+> 
+> On 07-Jul-22 4:09 PM, Guenter Roeck wrote:
+> > On Thu, Jul 07, 2022 at 04:01:54PM +0200, Kallas, Pawel wrote:
+> > > On 06-Jul-22 3:17 PM, Guenter Roeck wrote:
+> > > > On Wed, Jul 06, 2022 at 12:40:21PM +0200, Kallas, Pawel wrote:
+> > > > > Add support for reading EIN or EOUT registers and expose power calculated
+> > > > > from energy. This is more accurate than PIN and POUT power readings.
+> > > > > Readings are exposed in new hwmon files power1_average and power2_average.
+> > > > > Also add support for QUERY command that is needed to check availability
+> > > > > of EIN and EOUT reads and its data format. Only direct data format is
+> > > > > supported due to lack of test devices supporting other formats.
+> > > > > 
+> > > > I don't think this is a good idea. EIN/EOUT report energy consumption,
+> > > > not power.
+> > > According to PMBus-Specification-Rev-1-3-1-Part-II-20150313 "READ_EIN and
+> > > READ_EOUT commands provide information that can be used to calculate power
+> > > consumption". That is accumulator summing instantaneous input power
+> > > expressed in "watt-samples" and counter indicating number of samples.
+> > > The only reasonable thing that can be done with those values is calculating
+> > > power.
+> > Yes, but that is not the responsibility of the kernel. Just like we don't add
+> > up power measurements to calculate energy, we don't take energy measurements
+> > and calculate power consumption. Similar, we don't take voltage and current
+> > measurements and report power consumption from it either.
+> > 
+> > > > The "average" attributes as implemented don't really report
+> > > > a reliable number since the averaging period is not defined.
+> > > Agree, it is calculating average power since last read, which could be
+> > > incorrect with multiple consumers. However, this is the only possibility
+> > > without adding some timer logic.
+> > Another reason for doing it in userspace. Read energy every N seconds, and use
+> > the difference to calculate average power consumption average over that time
+> > period.
+> We cannot "read energy". Raw value from READ_EIN and READ_EOUT is not
+> energy.
 
-Commit-ID:     db866d3352ec85e821e730e191481cba3a2bfa6e
-Gitweb:        https://git.kernel.org/tip/db866d3352ec85e821e730e191481cba3a2bfa6e
-Author:        Nathan Chancellor <nathan@kernel.org>
-AuthorDate:    Wed, 13 Jul 2022 08:24:37 -07:00
-Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Thu, 14 Jul 2022 13:40:21 +02:00
+Sure, it is an accumulation of power reading samples over time. as such,
+it doesn't really even report a power average. Either case, any value
+derived from it is all but worthless unless a well defined time interval
+is available.  Unfortunately, such a time interval would require a kernel
+timer, which would, at least in low power situations, have impact on the
+power readings and is thus unacceptable. Maybe that is why later PMBus
+specification introduced explicit READ_KWH_IN and READ_KWH_OUT commands.
 
-x86/speculation: Use DECLARE_PER_CPU for x86_spec_ctrl_current
+> > > > Also, kernel
+> > > > drivers should not make up such numbers. I don't mind adding energy
+> > > > attribute support, but that should be reported as what it is, energy.
+> > > > What userspace does with it would then be a userspace concern; it can
+> > > > calculate all kinds of averages from it as much as it wants.
+> > > Returning direct value of read registers would also work for our use case,
+> > > but it is not in line with sysfs interface.
+> > I did not suggest that. Just use the "energyX_in" attributes.
+> Expressing raw value from READ_EIN or READ_EOUT is not in line with
+> sysfs interface, because "energyX_in" should have microJoules as unit.
+> Those commands have very specific format that is not actually energy.
+> Since the only sensible use case for those raw values is calculating power
+> we figured it would be better (and more accurate) to do it in kernel.
+> Also, if we just express raw value, the user would have to know data format
+> of the values for the device and know register format to decode the data.
 
-Clang warns:
+A joule is one watt-second, and the registers accumulate power samples over
+a period of time. Sure, dividing the reported values by the time interval
+results in the average power consumption over that time interval. Just like
+multiplying the average power consumption with the time interval results in
+the energy consumption over that timer interval. If we say we can't
+determine the energy because the accumulated values are just snapshots in
+time, we just as well can't trust the average power calculated from it.
 
-  arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
-  DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
-                      ^
-  arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
-  extern u64 x86_spec_ctrl_current;
-             ^
-  1 error generated.
+Anyway, I don't really see an acceptable solution. Reporting the average
+power would require a periodic function running every second or so which
+would at least potentially falsify the reported values, and if you say that
+reporting the energy (which might still require a timer function, but less
+frequently) isn't feasible I take you by your word.
 
-The declaration should be using DECLARE_PER_CPU instead so all
-attributes stay in sync.
+Guenter
 
-Fixes: fc02735b14ff ("KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-Link: https://lore.kernel.org/r/20220713152436.2294819-1-nathan@kernel.org
----
- arch/x86/include/asm/nospec-branch.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/arch/x86/include/asm/nospec-branch.h b/arch/x86/include/asm/nospec-branch.h
-index bb05ed4..10a3bfc 100644
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -11,6 +11,7 @@
- #include <asm/cpufeatures.h>
- #include <asm/msr-index.h>
- #include <asm/unwind_hints.h>
-+#include <asm/percpu.h>
- 
- #define RETPOLINE_THUNK_SIZE	32
- 
-@@ -280,7 +281,7 @@ static inline void indirect_branch_prediction_barrier(void)
- 
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern u64 x86_spec_ctrl_current;
-+DECLARE_PER_CPU(u64, x86_spec_ctrl_current);
- extern void write_spec_ctrl_current(u64 val, bool force);
- extern u64 spec_ctrl_current(void);
- 
+> > 
+> > Thanks,
+> > Guenter
+> > 
+> > > > Also, new attributes should not depend on query command support.
+> > > > I don't mind adding support for that, but it would have to be independent
+> > > > of energy attribute support.
+> > > > 
+> > > > Thanks,
+> > > > Guenter
+> > > > 
+> > > > > Kallas, Pawel (3):
+> > > > >     hwmon: (pmbus) add support for QUERY command
+> > > > >     hwmon: (pmbus) refactor sensor initialization
+> > > > >     hwmon: (pmbus) add EIN and EOUT readings
+> > > > > 
+> > > > >    Documentation/hwmon/pmbus-core.rst |   7 +
+> > > > >    drivers/hwmon/pmbus/pmbus.c        |  20 +++
+> > > > >    drivers/hwmon/pmbus/pmbus.h        |  19 +++
+> > > > >    drivers/hwmon/pmbus/pmbus_core.c   | 261 +++++++++++++++++++++++++++--
+> > > > >    4 files changed, 291 insertions(+), 16 deletions(-)
+> > > > > 
+> > > > > 
+> > > > > base-commit: 7c1de25c06f31b04744beae891baf147af9ba0cb
