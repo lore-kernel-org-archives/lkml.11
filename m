@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673F3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237594AbiGNEff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46648 "EHLO
+        id S231397AbiGNEfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237622AbiGNEeW (ORCPT
+        with ESMTP id S237510AbiGNEeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:34:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734E43B94F;
-        Wed, 13 Jul 2022 21:26:13 -0700 (PDT)
+        Thu, 14 Jul 2022 00:34:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F123AE60;
+        Wed, 13 Jul 2022 21:26:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C901061EB7;
-        Thu, 14 Jul 2022 04:26:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B58FC34115;
-        Thu, 14 Jul 2022 04:26:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDC62B8237C;
+        Thu, 14 Jul 2022 04:26:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE23C36AF4;
+        Thu, 14 Jul 2022 04:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772772;
-        bh=VZ/ySEKwch8hX9Yt/2DDVKTkE+/L3t9gTkYGiHmEYrA=;
+        s=k20201202; t=1657772764;
+        bh=8UBj1z2lp/6daPvXBnEXV1Z/SWwo2LziTpTiD7CUaTk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZR/5s/dqmdmoH/bM1Vv68O3EeRJj+mNxqAR00HsOmjID/zTVCf4I7Vp0AhF5UnAki
-         WS283CUyAUYvIQ8eLi6SY5EPpPYFOln5b0Vz4SXaXo880Rtvz7V+sGc11e7ojhydfB
-         KfEYgMpPCtfPNhiLFoYtSVM57Z+hhvlmH9BOCoIrTNohhirWNJg+1fZr+x/Kr/HfUg
-         buhWG1zBe2VNYTDuZsPdufj1QB6FgKy/UFAIt9+EjV9hsBWL721vGEFYJeK7V98JpV
-         gtP4y+5EJYk3grl9if3pCnWcBl2V5z1OabPfhPU61T50Mh949xYtJqzubEc0YE4ZuS
-         acWK1oYsctEKA==
+        b=HILDlXh4NSJ2S7eyFm9Aiob4rS5hSeSLyjerMkz9yDWkVc25Df+DLeatbe/qZUjC2
+         Da1EczqVAklo+8SeFROjvTqnWPOCuErBUAdnVqqwcikSeit9es/RQGyQiEGe3AguZV
+         ZoILNIezJzzg3tvdezgdsakn2NgpFuy06V8PXNzW8/ZDJKw+wxNZykryN+AuXCMkgV
+         0Qnn+D3FySFgjGtyI/JiWOWj7PeUea0rvnfBdaHDto6639sl5e8Z1hMWOup7/RDfN3
+         TG5UGl2J4O/IHQWf91XORabainYkEMpy3wDHWIXFcnXIYrjz4hwg+HHKSYo0rEjB+L
+         3ZLXHbBkNgFLQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, ebiederm@xmission.com,
-        keescook@chromium.org, oleg@redhat.com, tglx@linutronix.de,
-        peterz@infradead.org
-Subject: [PATCH AUTOSEL 5.10 15/15] signal handling: don't use BUG_ON() for debugging
-Date:   Thu, 14 Jul 2022 00:25:40 -0400
-Message-Id: <20220714042541.282175-15-sashal@kernel.org>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
+        khalasa@piap.pl
+Subject: [PATCH AUTOSEL 5.10 11/15] soc: ixp4xx/npe: Fix unused match warning
+Date:   Thu, 14 Jul 2022 00:25:36 -0400
+Message-Id: <20220714042541.282175-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042541.282175-1-sashal@kernel.org>
 References: <20220714042541.282175-1-sashal@kernel.org>
@@ -52,52 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Linus Walleij <linus.walleij@linaro.org>
 
-[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
+[ Upstream commit 620f83b8326ce9706b1118334f0257ae028ce045 ]
 
-These are indeed "should not happen" situations, but it turns out recent
-changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
-exists, is pending more testing), and the BUG_ON() makes it
-unnecessarily hard to actually debug for no good reason.
+The kernel test robot found this inconsistency:
 
-It's been that way for a long time, but let's make it clear: BUG_ON() is
-not good for debugging, and should never be used in situations where you
-could just say "this shouldn't happen, but we can continue".
+  drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
+  'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
+     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
 
-Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
-continue running.  Instead of making the system basically unusuable
-because you crashed the machine while potentially holding some very core
-locks (eg this function is commonly called while holding 'tasklist_lock'
-for writing).
+This is because the match is enclosed in the of_match_ptr()
+which compiles into NULL when OF is disabled and this
+is unnecessary.
 
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fix it by dropping of_match_ptr() around the match.
+
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Link: https://lore.kernel.org/r/20220626074315.61209-1-linus.walleij@linaro.org'
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/signal.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/soc/ixp4xx/ixp4xx-npe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/signal.c b/kernel/signal.c
-index 6bb2df4f6109..d05f783d5a5e 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -1912,12 +1912,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
- 	bool autoreap = false;
- 	u64 utime, stime;
- 
--	BUG_ON(sig == -1);
-+	WARN_ON_ONCE(sig == -1);
- 
-- 	/* do_notify_parent_cldstop should have been called instead.  */
-- 	BUG_ON(task_is_stopped_or_traced(tsk));
-+	/* do_notify_parent_cldstop should have been called instead.  */
-+	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
- 
--	BUG_ON(!tsk->ptrace &&
-+	WARN_ON_ONCE(!tsk->ptrace &&
- 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
- 
- 	/* Wake up all pidfd waiters */
+diff --git a/drivers/soc/ixp4xx/ixp4xx-npe.c b/drivers/soc/ixp4xx/ixp4xx-npe.c
+index 6065aaab6740..8482a4892b83 100644
+--- a/drivers/soc/ixp4xx/ixp4xx-npe.c
++++ b/drivers/soc/ixp4xx/ixp4xx-npe.c
+@@ -735,7 +735,7 @@ static const struct of_device_id ixp4xx_npe_of_match[] = {
+ static struct platform_driver ixp4xx_npe_driver = {
+ 	.driver = {
+ 		.name           = "ixp4xx-npe",
+-		.of_match_table = of_match_ptr(ixp4xx_npe_of_match),
++		.of_match_table = ixp4xx_npe_of_match,
+ 	},
+ 	.probe = ixp4xx_npe_probe,
+ 	.remove = ixp4xx_npe_remove,
 -- 
 2.35.1
 
