@@ -2,68 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B60C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:33:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 730F8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239793AbiGNQdb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59976 "EHLO
+        id S232166AbiGNQgm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239777AbiGNQd1 (ORCPT
+        with ESMTP id S229608AbiGNQgj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:33:27 -0400
-X-Greylist: delayed 469 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 09:33:27 PDT
-Received: from uho.ysoft.cz (uho.ysoft.cz [81.19.3.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F3FA65D78
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:33:27 -0700 (PDT)
-Received: from iota-build.ysoft.local (unknown [10.1.5.151])
-        by uho.ysoft.cz (Postfix) with ESMTP id 4CED3A08FD;
-        Thu, 14 Jul 2022 18:25:36 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
-        s=20160406-ysoft-com; t=1657815936;
-        bh=Zm5jim8AZMOa7t15V1eFzaZWY0d9aU4B/ymOzF5a0V8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=YXWlbOs4ed+SKp6yDU6N6Y2COyPQSZ0uMDsSA3b6q+RIiaj3aptBXpSnen9Z7PG7N
-         Kf3MjgSenlmPPpkl8VQgsko0Rfa7NJ7v00/9Bh7ei+Pd8RjwEO2cICTn/VbbUhnH4M
-         bbR8TbVXIeEQ3CD5O74TLx07ncgzv8fJIQeEOjqs=
-From:   =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>
-Cc:     Sascha Hauer <s.hauer@pengutronix.de>, <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>, <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
-Subject: [PATCH] ARM: dts: imx6dl-yapp4: Bind the backlight controller to the LCD panel
-Date:   Thu, 14 Jul 2022 18:25:15 +0200
-Message-Id: <1657815915-1872-1-git-send-email-michal.vokac@ysoft.com>
-X-Mailer: git-send-email 2.1.4
+        Thu, 14 Jul 2022 12:36:39 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C8AB32447
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:36:38 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id g126so2345410pfb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:36:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qJq/9VO0RiGUeQoupgJtjYlbFevkBFFS2JBjwLHRB28=;
+        b=QHWviJLgTPtOWeq4sUL1bq618FoaKGeLI7ofn+LcKxyAMz+BmjTZ68UeveM7WuU07q
+         sIJaSUSVoTDqOySdp3Sw2p40TmYncfZxwHjY7RCPwPp13P+lGywh0cKvsy2AUrVO5Jxy
+         So6hgrq25o48g/Qo3rBBwrvtfSa//I4fxQF8DruTruWWz3mxDNhgCvpvBOZGmRAr7SEJ
+         7Vt+4OGx8FTk4eUMxi1FyRjSgrkkD3I8TeIYIdFcTFURST67DyQOpsEWcOLfqlpJ/oEh
+         lYeIUqjmSg+BgdEa+9R1K0Up5/DPR2PSVzSbUm2uR+abbuFGMx3r676XbkFlJF+YE/uD
+         Da/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qJq/9VO0RiGUeQoupgJtjYlbFevkBFFS2JBjwLHRB28=;
+        b=chcNS/RKphCI5xdU12f8ZPZhyfGc6OwFxxhKlVr1rPMuP/qwhjgryktKt8dxgqSrJI
+         HfPQR3cynmBwK+9/d8vAXeh5JNJuIi4nlfgDKHfp5tAC/QPZb0+3G7nIXtoG/FIS9k6m
+         S4ap7zC9rVpIjrf+IexnCf5v4O8RyKVZFelOct8r/j4VWqqs7snvC/Ahprs3OAGlPAZY
+         L92y8e49+eGzwUrlsgAET+XMIffK08eTfD2cNoTGpGvDfycsx8ZaUxi7kXvOCxnSorg3
+         /VgFrWFgOjwXmrz8ApHv9xhH5VUUDxTSHcQKSoHiLPBb5v8rZX5bF+40nqVg9MebWW+q
+         /2SQ==
+X-Gm-Message-State: AJIora+4x5wwEv0Iu8VUR9Ty+Htki/UwwaCIQJ9fRxLlNn7NAobsWJCX
+        kXEtYlh8OHvQ2oHBT/JdP5MVIA==
+X-Google-Smtp-Source: AGRyM1vTFXTPbN8ejq1bAfzPOBZEjeG7EmOWXT98RYjKLECxbQCCJ3td4g8gXPwNeoVOb7IsSfJSPA==
+X-Received: by 2002:a05:6a00:cc7:b0:52a:e51c:dc18 with SMTP id b7-20020a056a000cc700b0052ae51cdc18mr9293156pfv.56.1657816597588;
+        Thu, 14 Jul 2022 09:36:37 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id k4-20020a170902c40400b0016782c55790sm1745270plk.232.2022.07.14.09.36.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 09:36:37 -0700 (PDT)
+Message-ID: <0904ae71-972f-f183-f295-bce3b8518fcf@kernel.dk>
+Date:   Thu, 14 Jul 2022 10:36:35 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: linux-next: manual merge of the block tree with the vfs tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Keith Busch <kbusch@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220714120840.1e1f8c63@canb.auug.org.au>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220714120840.1e1f8c63@canb.auug.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add connection between the backlight controller and LCD panel.
-With that the backlight is automatically switched on when the panel
-is on or switched off when the panel is blanked.
+On 7/13/22 8:08 PM, Stephen Rothwell wrote:
+> Hi all,
+> 
+> Today's linux-next merge of the block tree got a conflict in:
+> 
+>   block/bio.c
+> 
+> between commits:
+> 
+>   35006342b739 ("block: ensure iov_iter advances for added pages")
+>   248022ffae3f ("block: ensure bio_iov_add_page can't fail")
+>   7b1ccdf617ca ("block: fix leaking page ref on truncated direct io")
+>   9a6469060316 ("block: convert to advancing variants of iov_iter_get_pages{,_alloc}()")
+> 
+> from the vfs tree and commits:
+> 
+>   5a044eef1265 ("block: ensure iov_iter advances for added pages")
+>   ac3c48e32c04 ("block: ensure bio_iov_add_page can't fail")
+>   44b6b0b0e980 ("block: fix leaking page ref on truncated direct io")
+> 
+> from the block tree.
 
-Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
----
- arch/arm/boot/dts/imx6dl-yapp4-common.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+I pinged Al about this the other day, but haven't heard back yet. It's
+not clear to me what block bits he has in his tree. We'll get it sorted
+out.
 
-diff --git a/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi b/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi
-index 5054e4ab82e2..0afd6647484a 100644
---- a/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi
-+++ b/arch/arm/boot/dts/imx6dl-yapp4-common.dtsi
-@@ -55,6 +55,7 @@
- 	panel: panel {
- 		compatible = "dataimage,scf0700c48ggu18";
- 		power-supply = <&sw2_reg>;
-+		backlight = <&backlight>;
- 		status = "disabled";
- 
- 		port {
 -- 
-2.1.4
+Jens Axboe
 
