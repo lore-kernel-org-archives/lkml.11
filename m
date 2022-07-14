@@ -2,129 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC365C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB6CBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239709AbiGNNPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41766 "EHLO
+        id S238166AbiGNNPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:15:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239729AbiGNNPW (ORCPT
+        with ESMTP id S239387AbiGNNPs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:15:22 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2AE349B7B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657804521; x=1689340521;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=4U5I2ex4OwxZ/BuD3pYaRT1dyPT5Hq50fxa3/H/Z9DQ=;
-  b=huovy/6J99Yy4Y5eItPMaTiOWHulC55NY/svcZtu+4hAAkraQKmwPeJT
-   NOIHBPwVHYJAu7aAS1bTR5tVaEsFk9FO/ePqfVBIu5EykTUAcivT69e+X
-   NeffxnaEOED/aH2VpRxhpk60YHrWT0986q5cPURmTlqyWk5UUpMQS3elO
-   wH+BstLy46HsVXmBLnrg3jK1AQvCdM73k4oXewW0pdougoet+mEOcbYkG
-   1b+DKa6zX3r+Ce6aYS9oJwlK3pCSJeWclFozskk4Rs5re17I4jmku0o+E
-   JT2sc+t61BqWamlSrP/wEfy0ZgOaMZdLczxS78ZdicACGJ/AovAGtJS+C
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="347187321"
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="347187321"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 06:15:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="623408378"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 14 Jul 2022 06:15:19 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBygZ-0000h7-04;
-        Thu, 14 Jul 2022 13:15:19 +0000
-Date:   Thu, 14 Jul 2022 21:14:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Nicholas Piggin <npiggin@gmail.com>
-Cc:     kbuild-all@lists.01.org, Nicholas Piggin <npiggin@gmail.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Waiman Long <longman@redhat.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        "linux-kernel @ vger . kernel . org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 07/12] locking/qspinlock: remove arch
- qspinlock_paravirt.h includes
-Message-ID: <202207142142.cpBOsrfO-lkp@intel.com>
-References: <20220713070704.308394-8-npiggin@gmail.com>
+        Thu, 14 Jul 2022 09:15:48 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363A1545F1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:15:46 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id o7so2731709lfq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:15:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y48E6PDFxhOGhAYVKqWlob2V1GffQky6+hara5tcdLo=;
+        b=x9Hqw1BTgXzHKBiG2OLYcS2qRp7Sz3flmFvjdYEncU8GDBZQGFzRHDqWvl2GZEQzWs
+         FsmPaPtuFGaiqKXQ0rgYuY1IJvGT9XHaKIiGie3uBqCYb5yZUxsGKCGerqVb/EDy2MQy
+         BrkIPlpMjIIODx0OZIpPfuVTK/CPTmssfDzD87fRsv5/iF7Rkgzt3wvFTahxaqIGZ+wF
+         b0LxvmpRxROYRG7PvrgPGM3wSIagrIcIKwRXmd8quwYVM2XgRpqq7+pGhei6aj5AEZ1a
+         ZxtNyfAEF5Qg5TkVb401bU9vk1vAqt7Jy4UkztS6JIJpbx4jaxv5mhURfqXHgOZyi+xk
+         gVtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y48E6PDFxhOGhAYVKqWlob2V1GffQky6+hara5tcdLo=;
+        b=ldaLjWBVlmGo/OQWY22vF/X3BmAyNQyVIvf8ZMxnG2YiSW/FncRg+km6q7kk9xnHJB
+         8tpS64PYChQaemnrFcBJ2Arq3hqJIMGRXEM5gP6op+Fz4ahBGFvprykHBdSRWl1+nYq4
+         3gYsVNSL1vsdAdcD9I+gFA7HjuNZd84GBOFTI3eLyg7I15bj6xLFcf8H7leOUNueaJIj
+         ULjlecLs+Ll4uhiq6KtNjLvTPjphu8Q/GzwKzcJtDm0xcktYanNo8WQr19vIIf5rBNKe
+         gNaV6WFtQMQWh0A4DcJuuOY4isCpyxtJTUG3Z9yJLJ+Q7wxeiKk4IzxA2GvhddxeaYdL
+         UZVA==
+X-Gm-Message-State: AJIora/4kHP4fH+F5oktqhZxb1FKjMsiCpc9EsJ1qPGk1/73OvWdnkcQ
+        pPYktOMA5v9R0k79XYczAZez9tPpLro+2EWcqoHGCQ==
+X-Google-Smtp-Source: AGRyM1umM56+JO1HV8nicFnjzJ1pyPk04eb7pywiBmEsbAuvhiuDTIjoJzE4r2MPwg7ysTsXe877jrrGJ/WnekYwUVQ=
+X-Received: by 2002:a05:6512:139a:b0:48a:1a73:8adc with SMTP id
+ p26-20020a056512139a00b0048a1a738adcmr1218415lfa.226.1657804544526; Thu, 14
+ Jul 2022 06:15:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220713070704.308394-8-npiggin@gmail.com>
+References: <20220710230603.13526-1-semen.protsenko@linaro.org>
+ <20220710230603.13526-5-semen.protsenko@linaro.org> <4d198463-fedc-a5d9-6804-63c134da76e7@linaro.org>
+In-Reply-To: <4d198463-fedc-a5d9-6804-63c134da76e7@linaro.org>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Thu, 14 Jul 2022 16:15:33 +0300
+Message-ID: <CAPLW+4ktP0_W_OgjAoK3BXOFaEiXvP1qNGCc-iQyr2fNL1srug@mail.gmail.com>
+Subject: Re: [PATCH v2 4/7] iommu/exynos: Use lookup based approach to access registers
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Janghyuck Kim <janghyuck.kim@samsung.com>,
+        Cho KyongHo <pullip.cho@samsung.com>,
+        Daniel Mentz <danielmentz@google.com>,
+        David Virag <virag.david003@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nicholas,
+On Tue, 12 Jul 2022 at 19:52, Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
 
-I love your patch! Perhaps something to improve:
+[snip]
 
-[auto build test WARNING on tip/locking/core]
-[also build test WARNING on tip/x86/core powerpc/next linus/master v5.19-rc6 next-20220714]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> > +static void sysmmu_write(struct sysmmu_drvdata *data, size_t idx, u32 val)
+> > +{
+> > +     writel(val, data->sfrbase + data->regs[idx]);
+>
+> Beside what Robin wrote, I also don't think these wrappers actually
+> help, because you reverse arguments comparing to writel.
+>
+> How about having a per-variant structure with offsets and using it like:
+>
+> #define SYSMMU_REG(data, reg) ((data)->sfrbase + (data)->variant->reg)
+> writel(CTRL_ENABLE, SYSMMU_REG(data, mmu_ctrl_reg))
+>
+> Would that be more readable?
+>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Nicholas-Piggin/locking-qspinlock-simplify-code-generation/20220713-151009
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git eae6d58d67d9739be5f7ae2dbead1d0ef6528243
-config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220714/202207142142.cpBOsrfO-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/87679eeea9f1939c252d16df3ac6a01bf9daaa60
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Nicholas-Piggin/locking-qspinlock-simplify-code-generation/20220713-151009
-        git checkout 87679eeea9f1939c252d16df3ac6a01bf9daaa60
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/locking/
+Yes, this looks better for my taste too. I tend to get a tunnel vision
+when working with downstream code for a while. But I noticed that that
+approach is used sometimes as well, e.g. in
+drivers/pinctrl/samsung/pinctrl-exynos-arm64.c (in struct
+samsung_pin_bank_type). Anyway, I've reworked it exactly as you
+suggested, will send v2 soon. Thanks!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   In file included from kernel/locking/qspinlock.c:29:
-   kernel/locking/qspinlock_stat.h:36:9: warning: no previous prototype for 'lockevent_read' [-Wmissing-prototypes]
-      36 | ssize_t lockevent_read(struct file *file, char __user *user_buf,
-         |         ^~~~~~~~~~~~~~
-   kernel/locking/qspinlock.c:705:1: warning: no previous prototype for '__pv_queued_spin_unlock_slowpath' [-Wmissing-prototypes]
-     705 | __pv_queued_spin_unlock_slowpath(struct qspinlock *lock, u8 locked)
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> kernel/locking/qspinlock.c:749:16: warning: no previous prototype for '__pv_queued_spin_unlock' [-Wmissing-prototypes]
-     749 | __visible void __pv_queued_spin_unlock(struct qspinlock *lock)
-         |                ^~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/__pv_queued_spin_unlock +749 kernel/locking/qspinlock.c
-
-91668ee1ed703d Nicholas Piggin 2022-07-13  747  
-91668ee1ed703d Nicholas Piggin 2022-07-13  748  #ifndef __pv_queued_spin_unlock
-91668ee1ed703d Nicholas Piggin 2022-07-13 @749  __visible void __pv_queued_spin_unlock(struct qspinlock *lock)
-91668ee1ed703d Nicholas Piggin 2022-07-13  750  {
-91668ee1ed703d Nicholas Piggin 2022-07-13  751  	u8 locked;
-91668ee1ed703d Nicholas Piggin 2022-07-13  752  
-91668ee1ed703d Nicholas Piggin 2022-07-13  753  	/*
-91668ee1ed703d Nicholas Piggin 2022-07-13  754  	 * We must not unlock if SLOW, because in that case we must first
-91668ee1ed703d Nicholas Piggin 2022-07-13  755  	 * unhash. Otherwise it would be possible to have multiple @lock
-91668ee1ed703d Nicholas Piggin 2022-07-13  756  	 * entries, which would be BAD.
-91668ee1ed703d Nicholas Piggin 2022-07-13  757  	 */
-91668ee1ed703d Nicholas Piggin 2022-07-13  758  	locked = cmpxchg_release(&lock->locked, _Q_LOCKED_VAL, 0);
-91668ee1ed703d Nicholas Piggin 2022-07-13  759  	if (likely(locked == _Q_LOCKED_VAL))
-91668ee1ed703d Nicholas Piggin 2022-07-13  760  		return;
-91668ee1ed703d Nicholas Piggin 2022-07-13  761  
-91668ee1ed703d Nicholas Piggin 2022-07-13  762  	__pv_queued_spin_unlock_slowpath(lock, locked);
-91668ee1ed703d Nicholas Piggin 2022-07-13  763  }
-87679eeea9f193 Nicholas Piggin 2022-07-13  764  EXPORT_SYMBOL(__pv_queued_spin_unlock);
-91668ee1ed703d Nicholas Piggin 2022-07-13  765  #endif
-91668ee1ed703d Nicholas Piggin 2022-07-13  766  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> Best regards,
+> Krzysztof
