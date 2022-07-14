@@ -2,141 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1C1CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:01:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34471C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237610AbiGNIB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57384 "EHLO
+        id S234633AbiGNICy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:02:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236396AbiGNIBV (ORCPT
+        with ESMTP id S229874AbiGNICv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:01:21 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2107.outbound.protection.outlook.com [40.107.237.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FC822522;
-        Thu, 14 Jul 2022 01:01:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YDUPAOKMOphxy9lsBNVGaBZf2g6nDwFWL5egkL4+qo32Ki/WjZykEmo3LP1O3klMRTMBSk2rqHwNJ6vkWw5jGgNGm76CZCRAz35BK+O9Zu/kHYb6sH0HiHqNLOGe3BYL6HmR3JeBLvrI+c3izDxDZkHw/hYfPQgLsyzPdmA4JpjpvVzxRz3IiS3dC5cpuPi+B3VTOPLPS4Vjk8B22sqvSt/zTp0xU9tXfh+ZM34F/OcH5pblx4mMUK77Nhpbdqnrt4FOFC/Spr1bjzwxB6rRSHh5V7WH/AXt6W2AL+wkts7RQdhg3QfoNjg2mHYcrMhwiCZnSLpUMYnHleQzqgDz9w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cwwE8cisTu7u6opjMWRDzwUH3LyxGNeq3/utgdQGNHU=;
- b=MjaJf8Ri+yQs68RPtTfL6r/5fUemLxvYoKMzdF469OMa8yFj84FBGHJ9l5b4qJoc0dYIG/MwyzvOLAU80V+5ZQllxk9iiy6UrByLMaq3CsVo7KPKgQT+PLufmzW0qgFqGAWnDCoj6BF4MqgWT3epijOyIq/7NGS6CQX7KBNxXrqt86SdL5jBj2oIFcLLEbH4BAlK84Dn1g2udTExXr7yWRABMrkwQ26mpTlAKSzeBBItTg/myVv6wxmGhM6t5alU8G4tuDN0/FQuMnZfELRigoYN2gElc7iHwRjQKd7wCT2bSIYFbSJzLTa4oTnn9yitX6kjsfLXStCoGzRU45ISLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
- header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
+        Thu, 14 Jul 2022 04:02:51 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27E7248CA
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:02:49 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id a9so1484928lfk.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:02:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cwwE8cisTu7u6opjMWRDzwUH3LyxGNeq3/utgdQGNHU=;
- b=nGRVNlx40NBUUhnKEmcDNPFzmpNUhV7toGoCedzYvmnEU9MGdNykMC61utWGjkKzy37P0QBcdFj0BOTf7jlDGJZ4UGyEoQ5Ry+hoiJnjzfTRePIzujcEjBShJsZ66wNOuHuWNb8SSPHHiAGq5NNt73PRit7dyQq0gBE/RUg/XKQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by DM5PR04MB0252.namprd04.prod.outlook.com (2603:10b6:3:6f::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.21; Thu, 14 Jul
- 2022 08:01:17 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::f02d:f2e:cba9:223b]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::f02d:f2e:cba9:223b%6]) with mapi id 15.20.5438.012; Thu, 14 Jul 2022
- 08:01:17 +0000
-Date:   Thu, 14 Jul 2022 16:01:12 +0800
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, Rob Herring <robh@kernel.org>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v18 1/2] dt-bindings: usb: Add analogix anx7411 PD binding
-Message-ID: <20220714080112.GA13028@anxtwsw-Precision-3640-Tower>
-References: <20220713084139.2810115-1-xji@analogixsemi.com>
- <f9e1ad3b-d6ed-7392-2fd9-ca6ff0417b16@linaro.org>
- <20220714020238.GA4276@anxtwsw-Precision-3640-Tower>
- <f3c98e31-7c68-34a6-f492-95c1b6eeb625@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f3c98e31-7c68-34a6-f492-95c1b6eeb625@linaro.org>
-X-ClientProxiedBy: TY2PR04CA0006.apcprd04.prod.outlook.com
- (2603:1096:404:f6::18) To BY5PR04MB6739.namprd04.prod.outlook.com
- (2603:10b6:a03:229::8)
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=lI36sTnCb0+DmOyAUw1CM5m4XVa/PVp2AcLeXMQCCI4=;
+        b=gjyUm66YJEPpSn//X3ZOvHoEpi1FH/8Ti98snRzY3cYPydTF8ZnX63AAE9cUJZ1LeG
+         flkxCz92JB64spplRtBQ4ag4la0wOeDJWqJvY8iZCLS8j5F4Urs8JIkvHSSvgY5VVnZA
+         C0fkX9aA++DGvTdIijtqvWxW0ssCQRrFN8pAlInPaAnNn4c4ccQSN5WNqViYkquGC76C
+         Oz8zAia9QL6sqPsazX/HnawIYi2NiM9cVBY1j5icb+LjlV5FGm99AWca+SnoCSzXXNA9
+         q1MuCwME7qdKhO30h+p6wY1P2mslDMt1NYba0GRA8yR8UQitIPmx4/VLqi8xUikX98mO
+         KFhA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lI36sTnCb0+DmOyAUw1CM5m4XVa/PVp2AcLeXMQCCI4=;
+        b=DvaTizJy2snm4B+4WWXzAjvEN6qTaURVxcINoeiBHfqttLoHfMy2EnNTL7o5Rleejm
+         zFmXjObLTSRfpbOErexKU37sW4ENPyIm/8cgBKr/LVn6vcQ/uyGfjCQrwlq2OEwJL+Jb
+         PlBzdXh/Ensf78tAaJEtfDcHZSLJ2RoEYb0xT8b+ScfZHAav9wB6qEQI7TBlVqn6YsTw
+         wJNIPGy0qiVPa6BoLT+OWFAjHlO4PhvhrjCIGnZy6ekH4xDZi7/3Ps3O3V53b8+oeyjI
+         3H98kcD7EeGiup2+5Zd3u6VGxEGoDj/e+FVnoj0Ld3zVkmFkp3VCS95MbwbUu3HQD7/W
+         lhOg==
+X-Gm-Message-State: AJIora+4EXvrz4/si83Jx6ENsKafS6aFGs9BuJwNR4YSduX2AggqwMlD
+        7SNskw2tmDRJ72YDpCnp/XSW5Cofnovwsw==
+X-Google-Smtp-Source: AGRyM1sv62lHORtgudSBwTulpCkYzf7vRdJw4P69KsktDIRzFN3BKy8OBP4FM0iNzTIQG2YNTwPxBw==
+X-Received: by 2002:a05:6512:159e:b0:489:d127:5b38 with SMTP id bp30-20020a056512159e00b00489d1275b38mr4752696lfb.480.1657785768179;
+        Thu, 14 Jul 2022 01:02:48 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id p17-20020a2eb991000000b0025a6da9cb86sm142898ljp.114.2022.07.14.01.02.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 01:02:47 -0700 (PDT)
+Message-ID: <2abcefcb-92c3-713b-8087-f63cad781ba9@linaro.org>
+Date:   Thu, 14 Jul 2022 10:02:44 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cad38908-33ed-4933-d739-08da656f0797
-X-MS-TrafficTypeDiagnostic: DM5PR04MB0252:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BUsTSxVKXmMeKTomusTM08LuVfi5JodagR4ibIHtRKrd+TAI4RPppxuksb1FPh+J2i9TORO7CjJQKra/xVzX0gbTMbWc+gsVz1CxhyA0tlnuIokbr73QF0JlcsKz9AGaDm1yIfs+gGLzPwFSz6ghDVZG3fdxK6wWw5nRemjQZmwQ5KF/SF4nqqG0RNaOvptpT4PzV1nZNuBKMVuUgPGvDFc2Gfsxvf5uswhaeunqeQYT7laNky5U8Un90dmmvmK4WNv9UwRXpkjauJB+ynJrsyW2Pe7LccqXWR1AzTvoGwln3smGnzvV+g/TYEDxuahfCOVuHftK2SDSjqxJB/T54oI0URJeHW8iZC1yPI+3JlVmPcuQ3CEpq6syaxbEiHO31LeCBiQTBEbUgUwCxtWLMn5dC03pLwfCBmm9OKYdLVIEHgLFcL7xLfgTv67w1B+YGTEWOupjMJqNbtzl9hMCHGV3RAda1T0X5qrA+/R34b3cCQVNaGdKaqR/Np5tdT18eBQoOIAH1DhTb6guI1mvFJ79qxC8ra+iucKkyYg+hpRp1yCHRBmH/LULQnBC6lvGSehudZqpHhMsry/sseF8HQCVnWsfc0hWlnAd2+hg+VBFWRh5NhD49x+PFPDI+L9NKb8uTx4YSOSvhedP6fAlhRdWQ0Xazlqz565uFPGn5TZzpVcOVtp/6SRuagQgkgtKjdOHpkIr3D7mn7g8fBYSicbGrTfYnuWQwb1PvdXdbPLHBkr8AC7CGsf7WXbKhOSyTXqyE3RkLEY+iDwNBhaL0JQv9vKqtByVYje2/BluJgNQh+YyPoQLnf06RvdH1WDm
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(346002)(376002)(39840400004)(136003)(366004)(38350700002)(2906002)(316002)(38100700002)(5660300002)(41300700001)(33656002)(4744005)(33716001)(1076003)(52116002)(55236004)(66556008)(8676002)(6506007)(66476007)(6666004)(86362001)(53546011)(66946007)(8936002)(26005)(6512007)(4326008)(6486002)(6916009)(478600001)(186003)(9686003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?d2R4/ahctaHMaWEiGUxL/e1GLHRXJXDzjAQIKYF9eBg9FmyqU2rfRi4Ppv5J?=
- =?us-ascii?Q?M+dXwz04mJQtDqMEzcrMtKgvsMZ0qliDrJjY0pElfpplkFf8nqjkERORH7ef?=
- =?us-ascii?Q?ci7ZUnoKYKUfWk5zpxMPR1vsRPlHz0kAw3kHV6EuhuMPLBpHD6zBZejO7XwJ?=
- =?us-ascii?Q?0wPEfB1QMeKY9Mtpf312e1ReV9tk2vn61CW26EClZaoDWCw8XhW17yT8SycR?=
- =?us-ascii?Q?vrNR/HdSLrCHLXPiUJzgxUTj10QXR1H87Vh4fQQoGZl4E6GWGvhl9oz3bYdK?=
- =?us-ascii?Q?ne6NnL/y0l9XFYx/S7Qw1Vzi3xSR7Vgwl4/jRZUjEERwte5+9Sc/p2Iy9lHB?=
- =?us-ascii?Q?PmWSc+rr8OMa+hmiIIf00wJxpDWS8opefSKSxHr5tcUs4GPOchJkTx5b9VZ2?=
- =?us-ascii?Q?wYuNv4z7/Sa8/ra+9SNmEycw2xBMzUJx7Z60f3qU/mwWvgNS8Ou8nSN/vdC3?=
- =?us-ascii?Q?0AG0gXnFdABZCaKDiln0GyRnuVQxruiqFpF/SnOOHOwTpqu4D3WJX/k0xoep?=
- =?us-ascii?Q?3wYis1ydzXGfhd9tJ4Zz10dMKN9nXpA/z6DcJu2rNBDCtdsttoV2ED7h20fw?=
- =?us-ascii?Q?tRtd4Qok1SjdoRVUEQknvfSGTQoima68upSrVSTZW2uKLLWoIYdaNIJmSx4P?=
- =?us-ascii?Q?dV9Q3+4dqwFICglYHSV9JAdPeaGMpl+87QDMANk0Fr6l6V/b3T8jgjK/VKOl?=
- =?us-ascii?Q?n4H38+Qsp4dlczVz44pgfXO4El2K5dlr7RM1lozgrCIyRENAher4UubyObcA?=
- =?us-ascii?Q?Ar14LiAl+Zy2u5XH/vdGTFXWUjkk0mfusTmJVJ7ClhT7x1YT3zb8szC2R8xJ?=
- =?us-ascii?Q?1Y/ZNk8xg20eVaiy/rU7WvnCq+heCyyrFNQBvs8bAq+7YRNKnHCPi8H4nYVC?=
- =?us-ascii?Q?FktykeLnHtDMTliAa+uLV+jE2diPK3HgfcP0sWKnWvdGNAUPaizc2kSCjChu?=
- =?us-ascii?Q?FAuYDj7jnfCL6BUKMNOV+oT7dK6dXSXudeBGEo/QgbTOLbP8jRNcBlnlf2/2?=
- =?us-ascii?Q?hazb6SBEquk14IDUfl21MvbwkRA/tbbcIggd5RwqFFY3KAdw8kCGCydKQCOt?=
- =?us-ascii?Q?xc84Pcn8yD1RoYzs3clduudjQ7D3ZgBrepDJOCzG4CznbR52RoSQx+Z1E8ZU?=
- =?us-ascii?Q?Iq3wT+VcAwpLz84XgcTFQVzHEd/SUxuphF4JmEuGBLyVZWZgwAVAn0981DoX?=
- =?us-ascii?Q?lT1W9LiLNJV1zoaS5yN5fOl96T8ra4fjII9FsMtU9NLX0G7t4/dvkAKmLza6?=
- =?us-ascii?Q?NeTHAlzu4+czc2aCbOhLN48LbMruRbRad+kjSwRh+ANJ+a5UomY2fYB508bc?=
- =?us-ascii?Q?ssGo5jxOmHeA+3TNvN1sQ9/e3/qfTGjDC4c9iOPff2EJwsA80ip4Lb2nd80N?=
- =?us-ascii?Q?IKYAeOYWDbOE9r2QJEvrt0AOrps7XdBDwp9/4yX5Aloy6RQUPqxEu1W1wPIJ?=
- =?us-ascii?Q?wUTBCLilYquUYvrMAx8dwpkvrnHNy8YeG4xJRVxhFdVmio1xbmVoTb3bO7Ks?=
- =?us-ascii?Q?54Jg/AamYrniwv0e5nI2p2LEm9mrBVH1VZM37iHDBNDD+y+CB9BKaSdzRaEg?=
- =?us-ascii?Q?rosQn2LGqoHnO0wgi6PP6delwqIFi0Uy+uVQyN+z?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cad38908-33ed-4933-d739-08da656f0797
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 08:01:17.1714
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6H1gKabu8LvGZeEnePaRhyuQH5J7XtjblFXfpZKnOan3TXDXMYTADPbUXRma0s6KPwwGNNfHDtg8d7sWQxrGWg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR04MB0252
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next RESEND] soc: qcom: icc-bwmon: Remove unnecessary
+ print function dev_err()
+Content-Language: en-US
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220714075532.104665-1-yang.lee@linux.alibaba.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220714075532.104665-1-yang.lee@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 08:52:09AM +0200, Krzysztof Kozlowski wrote:
-> On 14/07/2022 04:02, Xin Ji wrote:
-> > On Wed, Jul 13, 2022 at 11:28:16AM +0200, Krzysztof Kozlowski wrote:
-> >> On 13/07/2022 10:41, Xin Ji wrote:
-> >>> Add analogix PD chip anx7411 device binding
-> >>>
-> >>> Reviewed-by: Rob Herring <robh@kernel.org>
-> >>> Signed-off-by: Xin Ji <xji@analogixsemi.com>
-> >>>
-> >>> ---
-> >>> v17 -> v18 : Change node name from "usb_typec" to "typec"
-> >>
-> >> Node name was anx7411, not usb_typec. What are you changing here? The label?
-> > Hi Krzysztof, sorry, I'm confused by your comment, this patch followed the
-> > other dts example in other yaml file and passed the dts checking by
-> > command "make dt_binding_check".
-> > 
-> > Do you mean change the the node name "anx7411" to "typec"?
+On 14/07/2022 09:55, Yang Li wrote:
+> Eliminate the follow coccicheck warning:
+> ./drivers/soc/qcom/icc-bwmon.c:349:2-9: line 349 is redundant because platform_get_irq() already prints an error
 > 
-> Yes, since the some revisions ago I asked to use a generic name for the
-> node (generic node name).
-> 
-> 
-> Best regards,
-> Krzysztof
-Hi Krzysztof, OK, I'll change it in next version.
-Thanks,
-Xin
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
