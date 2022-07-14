@@ -2,108 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A0F0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:30:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4989C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:31:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239289AbiGNMaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44674 "EHLO
+        id S239341AbiGNMbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238968AbiGNM2x (ORCPT
+        with ESMTP id S239037AbiGNMbC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:28:53 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E6A103B;
-        Thu, 14 Jul 2022 05:28:51 -0700 (PDT)
-X-UUID: bfb08c463665483fb29f32845e22704f-20220714
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:db4c56ee-de69-4530-b550-76e7590b6589,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:95
-X-CID-INFO: VERSION:1.1.8,REQID:db4c56ee-de69-4530-b550-76e7590b6589,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:95
-X-CID-META: VersionHash:0f94e32,CLOUDID:a139fd32-b9e4-42b8-b28a-6364427c76bb,C
-        OID:efa0f5914d39,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: bfb08c463665483fb29f32845e22704f-20220714
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1958708093; Thu, 14 Jul 2022 20:28:42 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Thu, 14 Jul 2022 20:28:41 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.3 via Frontend Transport; Thu, 14 Jul 2022 20:28:41 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
-        "Will Deacon" <will@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Tinghan Shen" <tinghan.shen@mediatek.com>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        "MandyJH Liu" <mandyjh.liu@mediatek.com>,
-        Weiyi Lu <weiyi.lu@mediatek.com>
-CC:     <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Henry Chen <henryc.chen@mediatek.com>
-Subject: [PATCH v2 12/19] arm64: dts: mt8195: Add spmi node
-Date:   Thu, 14 Jul 2022 20:28:30 +0800
-Message-ID: <20220714122837.20094-13-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220714122837.20094-1-tinghan.shen@mediatek.com>
-References: <20220714122837.20094-1-tinghan.shen@mediatek.com>
+        Thu, 14 Jul 2022 08:31:02 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2B26069A;
+        Thu, 14 Jul 2022 05:30:09 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id C1EB96601A3D;
+        Thu, 14 Jul 2022 13:30:04 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657801805;
+        bh=JVzIn5i13DB3/LDAuFTquEfvgf4d0MOmVf70FJzjMJc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=OoAviENdLmUSvVXKjtV8pZcO9HKH6GmHsSHPis+lTpAkyhs422g+PIZEeVDWzySig
+         ueTEMOkXaenWoQSWRpkl7mU9zOOn7NaXh7bnnBtSyHL58YaJhaYzYbjDicIfWIRdcA
+         y95lrdbjBDfOx7y/r1rlAGzfzR1AhdMcsOZ4VLVYYPqh6OZfI7707HzBfj0Rs/WxId
+         NunmwCi+DVC6y+3MZCDj/+m3LphY6H/GlG01fnw/WzUCKYvU2BnJXZ7jCD9FzZuYiD
+         P2bpxjTDLHSUyMh+PgEFbtxK5ChjnPv5sWMc1RjBhiOy+BbVeq4NiBV+6TjQVcPzSm
+         2uxIivKlaPlQA==
+Message-ID: <468507bc-e10d-0d7c-aa77-bab4769efbcf@collabora.com>
+Date:   Thu, 14 Jul 2022 14:30:01 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/1] dt-bindings: uart: update bindings for MT8188 SoC
+Content-Language: en-US
+To:     kewei.xu@mediatek.com, gregkh@linuxfoundation.org,
+        robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        srv_heupstream@mediatek.com, leilk.liu@mediatek.com,
+        qii.wang@mediatek.com, liguo.zhang@mediatek.com,
+        caiyu.chen@mediatek.com, david-yh.chiu@mediatek.com
+References: <20220714104149.23343-1-kewei.xu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220714104149.23343-1-kewei.xu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add spmi node to mt8195.
+Il 14/07/22 12:41, kewei.xu@mediatek.com ha scritto:
+> From: Kewei Xu <kewei.xu@mediatek.com>
+> 
+> Add a DT binding documentation for the MT8188 soc.
+> 
+> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
 
-Signed-off-by: Henry Chen <henryc.chen@mediatek.com>
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+This file doesn't even exist anymore. I've converted it to json-schema, check
+out commit 22b10b33b9c6e76bc08f64e52862e68c4dc76052
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 7686c7fe19cb..0e23cdf82685 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -697,6 +697,21 @@
- 			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
- 		};
- 
-+		spmi: spmi@10027000 {
-+			compatible = "mediatek,mt8195-spmi";
-+			reg = <0 0x10027000 0 0x000e00>,
-+			      <0 0x10029000 0 0x000100>;
-+			reg-names = "pmif", "spmimst";
-+			clocks = <&infracfg_ao CLK_INFRA_AO_PMIC_AP>,
-+				 <&infracfg_ao CLK_INFRA_AO_PMIC_TMR>,
-+				 <&topckgen CLK_TOP_SPMI_M_MST>;
-+			clock-names = "pmif_sys_ck",
-+				      "pmif_tmr_ck",
-+				      "spmimst_clk_mux";
-+			assigned-clocks = <&topckgen CLK_TOP_PWRAP_ULPOSC>;
-+			assigned-clock-parents = <&topckgen CLK_TOP_ULPOSC1_D10>;
-+		};
-+
- 		scp_adsp: clock-controller@10720000 {
- 			compatible = "mediatek,mt8195-scp_adsp";
- 			reg = <0 0x10720000 0 0x1000>;
--- 
-2.18.0
+Regards,
+Angelo
+
+> ---
+>   Documentation/devicetree/bindings/serial/mtk-uart.txt | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> index 113b5d6a2245..e5094e1db7b4 100644
+> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
+> @@ -21,6 +21,7 @@ Required properties:
+>     * "mediatek,mt8173-uart" for MT8173 compatible UARTS
+>     * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+>     * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
+> +  * "mediatek,mt8188-uart", "mediatek,mt6577-uart" for MT8188 compatible UARTS
+>     * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
+>     * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
+>     * "mediatek,mt8516-uart" for MT8516 compatible UARTS
+> 
 
