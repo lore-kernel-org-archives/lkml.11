@@ -2,106 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE46C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9674C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238562AbiGNMhh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56646 "EHLO
+        id S238523AbiGNMiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239420AbiGNMha (ORCPT
+        with ESMTP id S238628AbiGNMiL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:37:30 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE7515D59D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:37:28 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id q7so1978256lji.12
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Q0GAHQSOTxhxpUo/ZJhtYmvMT6XJZL0TrRa7lrD3iFA=;
-        b=E3DTDT6XdCAsKc26MwIcqGu0tCxtFnDRRDAyh9dwFXc8IygL6HQNoxso4UlwHxvZzq
-         WzJ/2T/j876OmS6ahXQl4O2d7lPwOKblpUYlt+1Ea4c6X47zKiIlSAj+cw3Hhihl/6L9
-         19Qd1k9rBpL/wzmDLRrTSciYyjLTTilzBPLuCsWs2WGoTQrbDB9nMcGoCI9EWZAmYrWP
-         7OEnZWVBQhrxiM1/SGGdgwUqivCYwt43/2K2RXGvzxI09Bxh76xHxgWBA4KrsE6qKOQ9
-         i7maYKDGCVQW36jJWz+rvMpmUJa0/sAhnEG6Sc1okrWDCDqIMoZ/b094F/56f6Q1GAlx
-         BhsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Q0GAHQSOTxhxpUo/ZJhtYmvMT6XJZL0TrRa7lrD3iFA=;
-        b=pNj81ehDQEFbxCt4u7IEEyXM8o0EFKX3L/IYKt8RgKL6zn0EKqBCUaa4a5kZWyitCn
-         MjG4ODDmPFwIPXjWMl3ocMrolPBOz8IaJ0sFtcHgLJiR2YmPWDXU/t40SxEUpC8Q8C5Y
-         dDBxMWalijjYtRsOTEGvVysjbeLVZw4aZz4RF24oQ35ITTa8x2sOTFRZ1/+b7MxX5Xjm
-         9PhfgQsopeEUtJLwtI0zBzETPf9O6mTPqZa7aOTomz47vVAx+/SfZC3M6BWhAW+7yZTB
-         VvTS4jFL2AEJXhI7sBHv4RmXIo2tXmxiMPBIrDR0SP7csnb4lV+lu4GLLwi+h1XgNODK
-         m+DA==
-X-Gm-Message-State: AJIora+DpxzlkYIYW9cZpV+s9sxjYB29ye4Eu8XgPhDFbXpXv7weRbtD
-        MOwCfIs1Bp2XzFPiT3J/472t7g==
-X-Google-Smtp-Source: AGRyM1vOmTKPpfrDgDh+eex3iOgwHWQWO4dNfuGGPm+YgPCrqUcfFWNz28hIjdmaESsmWgYGjXoe3g==
-X-Received: by 2002:a05:651c:1026:b0:25d:6de0:d53d with SMTP id w6-20020a05651c102600b0025d6de0d53dmr4432827ljm.282.1657802247351;
-        Thu, 14 Jul 2022 05:37:27 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id g8-20020a19e048000000b00488fd910e22sm341003lfj.140.2022.07.14.05.37.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 05:37:26 -0700 (PDT)
-Message-ID: <8148e91d-5a2e-915f-9e54-dfbfb7e014c5@linaro.org>
-Date:   Thu, 14 Jul 2022 14:37:23 +0200
+        Thu, 14 Jul 2022 08:38:11 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF7CD5C9CE;
+        Thu, 14 Jul 2022 05:38:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id A54E01F8FB;
+        Thu, 14 Jul 2022 12:38:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657802288;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tN/KMnzfK08k1zHwz3a76YlKl7qTFBSFPkaQtZzhBJo=;
+        b=YV5Hx2NpBVlFYKIBvEqpgHXPQQwef9F25yCzKOdH0qA8OdWvRjPiFxnl++EZu9IXCFrg9O
+        EMtEVZk2ClHOE8Kljugr8+FrFPvpKPTKZ7B8nLeVCp0QW5e4XBAwzRFfuB6WyT3Bf4Hc7G
+        IQE9yM/CB4rhQSOEHqUONIATGKxyev0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657802288;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=tN/KMnzfK08k1zHwz3a76YlKl7qTFBSFPkaQtZzhBJo=;
+        b=UoPb/YSnPgXbrGsO++XfxbnF53as2lYK0wlytATcczF6KFt5QYJm3TuyK8XOlfX8HaWsNk
+        F5l7YY+nQokV2uAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 52920133A6;
+        Thu, 14 Jul 2022 12:38:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id WawDEzAO0GKcfwAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Thu, 14 Jul 2022 12:38:08 +0000
+Date:   Thu, 14 Jul 2022 14:33:17 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     Wang Yugui <wangyugui@e16-tech.com>
+Cc:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Nick Terrell <terrelln@fb.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Filipe Manana <fdmanana@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>
+Subject: Re: [PATCH] btrfs: Replace kmap() with kmap_local_page() in zstd.c
+Message-ID: <20220714123317.GI15169@suse.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, Wang Yugui <wangyugui@e16-tech.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, Nick Terrell <terrelln@fb.com>,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Filipe Manana <fdmanana@kernel.org>,
+        Ira Weiny <ira.weiny@intel.com>
+References: <20220611135203.27992-1-fmdefrancesco@gmail.com>
+ <20220714082519.A7C9.409509F4@e16-tech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 4/5] arm64: dts: qcom: sm8450: Add SDHCI2
-Content-Language: en-US
-To:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220714123406.1919836-1-konrad.dybcio@somainline.org>
- <20220714123406.1919836-4-konrad.dybcio@somainline.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220714123406.1919836-4-konrad.dybcio@somainline.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220714082519.A7C9.409509F4@e16-tech.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 14:34, Konrad Dybcio wrote: +3121,45 @@ ufs_mem_phy_lanes:
-phy@1d87400 {
->  			};
->  		};
->  
-> +		sdhc_2: sdhci@8804000 {
-> +			compatible = "qcom,sm8450-sdhci", "qcom,sdhci-msm-v5";
-> +			reg = <0 0x08804000 0 0x1000>;
-> +
-> +			interrupts = <GIC_SPI 207 IRQ_TYPE_LEVEL_HIGH>,
-> +				     <GIC_SPI 223 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-names = "hc_irq", "pwr_irq";
-> +
-> +			clocks = <&gcc GCC_SDCC2_AHB_CLK>,
-> +				 <&gcc GCC_SDCC2_APPS_CLK>,
-> +				 <&rpmhcc RPMH_CXO_CLK>;
-> +			clock-names = "iface", "core", "xo";
-> +			resets = <&gcc GCC_SDCC2_BCR>;
-> +			interconnects = <&aggre2_noc MASTER_SDCC_2 0 &mc_virt SLAVE_EBI1 0>,
-> +					<&gem_noc MASTER_APPSS_PROC 0 &config_noc SLAVE_SDCC_2 0>;
-> +			interconnect-names = "sdhc-ddr","cpu-sdhc";
+On Thu, Jul 14, 2022 at 08:25:20AM +0800, Wang Yugui wrote:
+> Hi,
+> 
+> Compiler warning:
+> 
+> fs/btrfs/zstd.c:478:55: warning: passing argument 1 of ‘__kunmap_local’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+>   478 |                         kunmap_local(workspace->in_buf.src);
+> ./include/linux/highmem-internal.h:284:24: note: in definition of macro ‘kunmap_local’
+>   284 |         __kunmap_local(__addr);                                 \
+>       |                        ^~~~~~
+> ./include/linux/highmem-internal.h:200:41: note: expected ‘void *’ but argument is of type ‘const void *’
+>   200 | static inline void __kunmap_local(void *addr)
+>       |                                   ~~~~~~^~~~
 
-Missing space after ','.
-
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
+This requires patch
+https://lore.kernel.org/all/20220706111520.12858-2-fmdefrancesco@gmail.com/
+that adds const to kmap/kunmap API.
