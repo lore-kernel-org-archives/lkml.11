@@ -2,135 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63394C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:12:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238125AbiGNKMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50560 "EHLO
+        id S238155AbiGNKMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiGNKML (ORCPT
+        with ESMTP id S238154AbiGNKM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:12:11 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B2FB4E85F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:12:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657793530; x=1689329530;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=JQlJDKssteaPZeUYsjfBApzNCdJz+y8Krml4yEAslSU=;
-  b=kX7uaZE031mCUE1GX9lgLTL5NVzUvLAwCBLdwx67kDATWr1Q5s4wE0NH
-   +R4IfQKHbd0SkTVsevTFItYW013Fy+NFGtzHjfx+Pmnn51XNO+5ecyr5r
-   B6QQBRPpRSvejTrKKMnYqdeYx9mX7m92Wr4uh5lmcHEmv8xXmb2TByxeg
-   72pYqdGktnbNpvZJG/tXXtTAoB+V5tvPM102ixIvI+2ZdqSB+ktXjP8y4
-   jT4Va3eO1e5zemjtg9VAnNWb0l7fvept3x1dkky/rAGkK7gtzN+0oiJkA
-   0oslnYKllRjIH2a0aG4kHc9RDLMfubUoH8TwngW0M7mLudIUdfdHy0y8k
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="347153582"
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="347153582"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 03:12:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="546215061"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 14 Jul 2022 03:12:08 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oBvpH-0000Qx-TY;
-        Thu, 14 Jul 2022 10:12:07 +0000
-Date:   Thu, 14 Jul 2022 18:11:09 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     kbuild-all@lists.01.org, build@wireguard.com,
-        linux-kernel@vger.kernel.org
-Subject: [zx2c4-wireguard:jd/new-archs 3/9] arch/um/drivers/tty.c:26:24:
- error: 'NULL' undeclared
-Message-ID: <202207141802.1bmhOfxR-lkp@intel.com>
+        Thu, 14 Jul 2022 06:12:29 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5AFF5006B
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:12:28 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id j3so1432122pfb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ingics-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0E33zPMISUjZjMbg4zmucxqueJJj1HicVLRlB46GvXI=;
+        b=7Kq0F9BBD4gyUtsYQL7BoRRmlqulxuknl1kQK/3c2ekXaKtF17FqiVucOLnCgyZEYw
+         uIFqJnQ2dOCOJUuMZ+eWO8Av6IG1/uoTEkEatx4lpRhI558pS5o15X2XVfFVMwVYiZi5
+         ePWQSZfpIT8Six3E+1ON9n9OjjNeYcQa9+fTf6kBe9yXyHlUJidWPY4AyYM1UAH8YdAz
+         JeVFDPD6N6stJzXJ55OF5aXYkTewDls/MSulVYeGArmprc7ZFmF5DUykWUaAKyq/GaZc
+         /5ZuT9BKzubJ5klPw0rnITilCqZ9xwoS5/khuUMsPa8MRaHs1RrHCvj4OAm54vrHf3XN
+         bv2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0E33zPMISUjZjMbg4zmucxqueJJj1HicVLRlB46GvXI=;
+        b=JazfXZqMWqzJEtt4/tLnRj6fHwY27UIZzKGpqswS0PB/Dl10BDNuAvCoDeRJ9HUkmi
+         5FHkXldH0z3CBMhXwVCamcVPL60T367crQuoRB8k3vAkBy0hMIaYZR/e7GcxetpNNyhJ
+         TqRdtIuHR3shMHE4kGV0qr3vL5mycYfy6l64GN+nTFdxcAzsRT1lBGZHT+NuFfSnuxTf
+         ltckDZ3lVK7Sld+766LBK8LlpPPpzbN9QHX/ffW7rcwptFPiPu30UTGn81EqvR9deELB
+         8XV2Ch1rz/UFuHDTG2Ni5U9JCFnZJaD+nxHfteaZ1zbuDKv9aXrErBv/YyxEiT4q7i63
+         lGZg==
+X-Gm-Message-State: AJIora9I4zNtPJ2MvlS0AY6pt63LTPUPGdPvjFnjFwYKivOwt5rlSgTX
+        tEnWMH6GQwYFDT0yW4r7Zz8axw==
+X-Google-Smtp-Source: AGRyM1t493CzN7Wakthopl1qPSg5I2Vg9L1jV9ITONw8lxkxq+1kw4s/v6thkfJHbIwP3vTFLADc4A==
+X-Received: by 2002:a63:389:0:b0:415:dde9:4507 with SMTP id 131-20020a630389000000b00415dde94507mr7210580pgd.117.1657793548263;
+        Thu, 14 Jul 2022 03:12:28 -0700 (PDT)
+Received: from alpha.. (122-117-179-2.hinet-ip.hinet.net. [122.117.179.2])
+        by smtp.googlemail.com with ESMTPSA id a28-20020aa795bc000000b00528c8ed356dsm1269764pfk.96.2022.07.14.03.12.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 03:12:27 -0700 (PDT)
+From:   Axel Lin <axel.lin@ingics.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-kernel@vger.kernel.org, Axel Lin <axel.lin@ingics.com>
+Subject: [PATCH] regulator: max597x: Don't return uninitialized variable in .probe
+Date:   Thu, 14 Jul 2022 18:12:12 +0800
+Message-Id: <20220714101212.502824-1-axel.lin@ingics.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git jd/new-archs
-head:   b41a21fc924011fb4c7463c8b7b4761dc798e795
-commit: 2c1370ee8e1c862e1de8c624d7900d575a131150 [3/9] um: include sys/types.h instead of stddef.h for size_t
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220714/202207141802.1bmhOfxR-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git/commit/?id=2c1370ee8e1c862e1de8c624d7900d575a131150
-        git remote add zx2c4-wireguard https://git.kernel.org/pub/scm/linux/kernel/git/zx2c4/wireguard-linux.git
-        git fetch --no-tags zx2c4-wireguard jd/new-archs
-        git checkout 2c1370ee8e1c862e1de8c624d7900d575a131150
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+Remove the code checking and returning uninitialized variable.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Axel Lin <axel.lin@ingics.com>
+---
+ drivers/regulator/max597x-regulator.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-All errors (new ones prefixed by >>):
-
-   arch/um/drivers/tty.c: In function 'tty_chan_init':
->> arch/um/drivers/tty.c:26:24: error: 'NULL' undeclared (first use in this function)
-      26 |                 return NULL;
-         |                        ^~~~
-   arch/um/drivers/tty.c:12:1: note: 'NULL' is defined in header '<stddef.h>'; did you forget to '#include <stddef.h>'?
-      11 | #include <um_malloc.h>
-     +++ |+#include <stddef.h>
-      12 | 
-   arch/um/drivers/tty.c:26:24: note: each undeclared identifier is reported only once for each function it appears in
-      26 |                 return NULL;
-         |                        ^~~~
---
-   arch/um/drivers/cow_user.c: In function 'read_cow_header':
->> arch/um/drivers/cow_user.c:296:17: error: implicit declaration of function 'offsetof' [-Werror=implicit-function-declaration]
-     296 |         if (n < offsetof(typeof(header->v1), backing_file)) {
-         |                 ^~~~~~~~
-   arch/um/drivers/cow_user.c:17:1: note: 'offsetof' is defined in header '<stddef.h>'; did you forget to '#include <stddef.h>'?
-      16 | #include "cow_sys.h"
-     +++ |+#include <stddef.h>
-      17 | 
->> arch/um/drivers/cow_user.c:296:26: error: expected expression before 'typeof'
-     296 |         if (n < offsetof(typeof(header->v1), backing_file)) {
-         |                          ^~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/NULL +26 arch/um/drivers/tty.c
-
-^1da177e4c3f415 Linus Torvalds 2005-04-16  18  
-5e7672ec3f059f7 Jeff Dike      2006-09-27  19  static void *tty_chan_init(char *str, int device, const struct chan_opts *opts)
-^1da177e4c3f415 Linus Torvalds 2005-04-16  20  {
-^1da177e4c3f415 Linus Torvalds 2005-04-16  21  	struct tty_chan *data;
-^1da177e4c3f415 Linus Torvalds 2005-04-16  22  
-^1da177e4c3f415 Linus Torvalds 2005-04-16  23  	if (*str != ':') {
-e99525f97069004 Jeff Dike      2007-10-16  24  		printk(UM_KERN_ERR "tty_init : channel type 'tty' must specify "
-^1da177e4c3f415 Linus Torvalds 2005-04-16  25  		       "a device\n");
-108ffa8cbfa323d Jeff Dike      2006-07-10 @26  		return NULL;
-^1da177e4c3f415 Linus Torvalds 2005-04-16  27  	}
-^1da177e4c3f415 Linus Torvalds 2005-04-16  28  	str++;
-^1da177e4c3f415 Linus Torvalds 2005-04-16  29  
-43f5b3085fdd27c Jeff Dike      2008-05-12  30  	data = uml_kmalloc(sizeof(*data), UM_GFP_KERNEL);
-^1da177e4c3f415 Linus Torvalds 2005-04-16  31  	if (data == NULL)
-108ffa8cbfa323d Jeff Dike      2006-07-10  32  		return NULL;
-^1da177e4c3f415 Linus Torvalds 2005-04-16  33  	*data = ((struct tty_chan) { .dev 	= str,
-^1da177e4c3f415 Linus Torvalds 2005-04-16  34  				     .raw 	= opts->raw });
-^1da177e4c3f415 Linus Torvalds 2005-04-16  35  
-108ffa8cbfa323d Jeff Dike      2006-07-10  36  	return data;
-^1da177e4c3f415 Linus Torvalds 2005-04-16  37  }
-^1da177e4c3f415 Linus Torvalds 2005-04-16  38  
-
-:::::: The code at line 26 was first introduced by commit
-:::::: 108ffa8cbfa323d462a2f4b49f38da3205d36e5a [PATCH] uml: formatting fixes
-
-:::::: TO: Jeff Dike <jdike@addtoit.com>
-:::::: CC: Linus Torvalds <torvalds@g5.osdl.org>
-
+diff --git a/drivers/regulator/max597x-regulator.c b/drivers/regulator/max597x-regulator.c
+index 5e09aa4213be..03c6027682d8 100644
+--- a/drivers/regulator/max597x-regulator.c
++++ b/drivers/regulator/max597x-regulator.c
+@@ -453,9 +453,6 @@ static int max597x_regulator_probe(struct platform_device *pdev)
+ 		data->num_switches = num_switches;
+ 		data->regmap = max597x->regmap;
+ 
+-		if (ret < 0)
+-			return ret;
+-
+ 		ret = max597x_adc_range(data->regmap, i, &max597x->irng[i], &max597x->mon_rng[i]);
+ 		if (ret < 0)
+ 			return ret;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.34.1
+
