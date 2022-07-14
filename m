@@ -2,119 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0442CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7B0C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232271AbiGNC7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 22:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
+        id S232499AbiGNC72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 22:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbiGNC7K (ORCPT
+        with ESMTP id S232253AbiGNC7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 22:59:10 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B671A048
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VJH7R.V_1657767544;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VJH7R.V_1657767544)
-          by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 10:59:04 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, alexandre.ghiti@canonical.com,
-        guoren@kernel.org, anup@brainfault.org, mick@ics.forth.gr,
-        rppt@kernel.org, heiko@sntech.de
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        huanyi.xj@alibaba-inc.com,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [PATCH V2 1/2] RISC-V: Add arch_crash_save_vmcoreinfo support
-Date:   Thu, 14 Jul 2022 10:59:00 +0800
-Message-Id: <20220714025901.359695-2-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
-References: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
+        Wed, 13 Jul 2022 22:59:20 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45AB22538
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:18 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id h132so323652pgc.10
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language
+         :from:to:cc:references:in-reply-to:content-transfer-encoding;
+        bh=1KjU3PLDicyTH9daCuPh3Hm/2NYtDhdcfpWa369op3Q=;
+        b=P5iQCyYlTsWtVPtEI0II+heIZcCoqfKjjY/xe4s2LceVtVDAHq00Lu3V671XO9gku7
+         ZEg3PGC9W0VsHuaUE2hYzV8yIXcus0U8vDn1HaqzvGhE2W22MedVCuSOF85jx5sU52dB
+         A8UAGW6WZOBAcL93zXURNqLAj+/ANC2GyBz5gQvc2iFNY5ISoR4gtHgp4XDR9TtSmSJR
+         EZ+41S8nT6NSsH8Hw9YJwWqQiX9ufJg6fWnRrTLEAYf2emokOZJEaWkELyrFcQNVDg+l
+         +OUO98q768NrpGwYzL1TzVZBV7Ox2AcDg4Pj96PcLZweruJGqrU/3VYyr9nxbaOVdxWJ
+         aYhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=1KjU3PLDicyTH9daCuPh3Hm/2NYtDhdcfpWa369op3Q=;
+        b=uYGeh+zlCR6aNtxeLK0VjTj5F+ePpRkKDj9IXRPOqqi8iEKDMn1qvkIQ2XR3EoK8jZ
+         d2O4hp1H9L5Wj/+zCfmm1rnWsZJWdmJdTyum0SAB62vZQgwl8nuTSg820QukcybFYtXj
+         /ddE9GuR+mAqEGqSTNDGysnQ+jAZzd8oGb2j41omUicWfcrLfNRO1A03/o7vae4Sq0Jm
+         Na6tozMkotQCVk0p5/Gxdd0AHd5d4gUFDP6/5MB3iwv4W25V4y1+BHclTeSmpKsdy8Y5
+         /NRYyIrs6NpTIL8IpBQzst+F40uMq/i2oqaM6LD3TdxWNrbasTeN2bNeW9F+XDUTnfQX
+         DUWg==
+X-Gm-Message-State: AJIora84Y2ws36SJWQAIHJMQYJfaZVpQb3EDCnwl/OMVUxeTLF5l6hbo
+        p3yVqUPdi9k5p3e0a6JFH7EdCVAy2ss1Kg==
+X-Google-Smtp-Source: AGRyM1tEmFHfcBWA2ZOuLTAe6QSvtuq1xH6f410WpSbSCppUsKGCEnMcfChAcS4BhJ7h2U4zEo2wrA==
+X-Received: by 2002:a63:460f:0:b0:412:7a8b:128c with SMTP id t15-20020a63460f000000b004127a8b128cmr5833883pga.270.1657767558145;
+        Wed, 13 Jul 2022 19:59:18 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id e29-20020aa7981d000000b0052ab54a4711sm271471pfl.150.2022.07.13.19.59.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 19:59:17 -0700 (PDT)
+Message-ID: <38b6e5f5-247a-bd44-061d-f492e7d47b99@kernel.dk>
+Date:   Wed, 13 Jul 2022 20:59:16 -0600
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH V5 0/2] ublk: add io_uring based userspace block driver
+Content-Language: en-US
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Ming Lei <ming.lei@redhat.com>
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        io-uring@vger.kernel.org,
+        Gabriel Krisman Bertazi <krisman@collabora.com>,
+        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
+        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>
+References: <20220713140711.97356-1-ming.lei@redhat.com>
+ <6e5d590b-448d-ea75-f29d-877a2cd6413b@kernel.dk> <Ys9g9RhZX5uwa9Ib@T590>
+ <94289486-a7fa-1801-3c67-717e0392f374@kernel.dk>
+In-Reply-To: <94289486-a7fa-1801-3c67-717e0392f374@kernel.dk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add arch_crash_save_vmcoreinfo(), which exports VM layout(MODULES, VMALLOC,
-VMEMMAP and KERNEL_LINK_ADDR ranges), satp mode and ram base to vmcore.
+On 7/13/22 8:54 PM, Jens Axboe wrote:
+> On 7/13/22 6:19 PM, Ming Lei wrote:
+>> On Wed, Jul 13, 2022 at 02:25:25PM -0600, Jens Axboe wrote:
+>>> On 7/13/22 8:07 AM, Ming Lei wrote:
+>>>> Hello Guys,
+>>>>
+>>>> ublk driver is one kernel driver for implementing generic userspace block
+>>>> device/driver, which delivers io request from ublk block device(/dev/ublkbN) into
+>>>> ublk server[1] which is the userspace part of ublk for communicating
+>>>> with ublk driver and handling specific io logic by its target module.
+>>>
+>>> Ming, is this ready to get merged in an experimental state?
+>>
+>> Hi Jens,
+>>
+>> Yeah, I think so.
+>>
+>> IO path can survive in xfstests(-g auto), and control path works
+>> well in ublksrv builtin hotplug & 'kill -9' daemon test.
+>>
+>> The UAPI data size should be good, but definition may change per
+>> future requirement change, so I think it is ready to go as
+>> experimental.
+> 
+> OK let's give it a go then. I tried it out and it seems to work for me,
+> even if the shutdown-while-busy is something I'd to look into a bit
+> more.
+> 
+> BTW, did notice a typo on the github page:
+> 
+> 2) dependency
+> - liburing with IORING_SETUP_SQE128 support
+> 
+> - linux kernel 5.9(IORING_SETUP_SQE128 support)
+> 
+> that should be 5.19, typo.
 
-Default pagetable levels and PAGE_OFFSET aren't same for different kernel
-version as below. For default pagetable levels, it sets sv57 on defaultly
-in latest kernel and do fallback to try to set sv48 on boot time if sv57
-is not supported in current hardware.
+I tried this:
 
-For ram base, the default value is 0x80200000 for qemu riscv64 env, 0x200000
-for riscv64 SoC platform(eg, SoC platform of RISC-V XuanTie 910 CPU).
+axboe@m1pro-kvm ~/g/ubdsrv (master)> sudo ./ublk add -t loop /dev/nvme0n1
+axboe@m1pro-kvm ~/g/ubdsrv (master) [255]> 
 
- * Linux Kernel 5.18 ~
- *      PGTABLE_LEVELS = 5
- *      PAGE_OFFSET = 0xff60000000000000
- * Linux Kernel 5.17 ~
- *      PGTABLE_LEVELS = 4
- *      PAGE_OFFSET = 0xffffaf8000000000
- * Linux Kernel 4.19 ~
- *      PGTABLE_LEVELS = 3
- *      PAGE_OFFSET = 0xffffffe000000000
+and got this dump:
 
-Since these configurations change from time to time and version to version,
-it is preferable to export them via vmcoreinfo than to change the crash's
-code frequently, it can simplify the development of crash tool.
+[   34.041647] WARNING: CPU: 3 PID: 60 at block/blk-mq.c:3880 blk_mq_release+0xa4/0xf0
+[   34.043858] Modules linked in:
+[   34.044911] CPU: 3 PID: 60 Comm: kworker/3:1 Not tainted 5.19.0-rc6-00320-g5c37a506da31 #1608
+[   34.047689] Hardware name: linux,dummy-virt (DT)
+[   34.049207] Workqueue: events blkg_free_workfn
+[   34.050731] pstate: 60400005 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   34.053026] pc : blk_mq_release+0xa4/0xf0
+[   34.054360] lr : blk_mq_release+0x44/0xf0
+[   34.055694] sp : ffff80000b16bcb0
+[   34.056804] x29: ffff80000b16bcb0 x28: 0000000000000000 x27: 0000000000000000
+[   34.059135] x26: 0000000000000000 x25: ffff00001fe9bb05 x24: 0000000000000000
+[   34.061454] x23: ffff000005062eb8 x22: ffff000004608998 x21: 0000000000000000
+[   34.063775] x20: ffff000004608a50 x19: ffff000004608950 x18: ffff80000b7b3c88
+[   34.066085] x17: 0000000000000000 x16: 0000000000000000 x15: 0000000000000000
+[   34.068410] x14: 0000000000000002 x13: 0000000000013638 x12: 0000000000000000
+[   34.070715] x11: ffff80000945b7e8 x10: 0000000000006f2e x9 : 00000000ffffffff
+[   34.073037] x8 : ffff800008fb5000 x7 : ffff80000860cf28 x6 : 0000000000000000
+[   34.075334] x5 : 0000000000000000 x4 : 0000000000000028 x3 : ffff80000b16bc14
+[   34.077650] x2 : ffff0000086d66a8 x1 : ffff0000086d66a8 x0 : ffff0000086d6400
+[   34.079966] Call trace:
+[   34.080789]  blk_mq_release+0xa4/0xf0
+[   34.081811]  blk_release_queue+0x58/0xa0
+[   34.082758]  kobject_put+0x84/0xe0
+[   34.083590]  blk_put_queue+0x10/0x18
+[   34.084468]  blkg_free_workfn+0x58/0x84
+[   34.085511]  process_one_work+0x2ac/0x438
+[   34.086449]  worker_thread+0x1cc/0x264
+[   34.087322]  kthread+0xd0/0xe0
+[   34.088053]  ret_from_fork+0x10/0x20
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
----
- arch/riscv/kernel/Makefile     |  1 +
- arch/riscv/kernel/crash_core.c | 28 ++++++++++++++++++++++++++++
- 2 files changed, 29 insertions(+)
- create mode 100644 arch/riscv/kernel/crash_core.c
 
-diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
-index c71d6591d539..54e4183db080 100644
---- a/arch/riscv/kernel/Makefile
-+++ b/arch/riscv/kernel/Makefile
-@@ -81,6 +81,7 @@ obj-$(CONFIG_KGDB)		+= kgdb.o
- obj-$(CONFIG_KEXEC)		+= kexec_relocate.o crash_save_regs.o machine_kexec.o
- obj-$(CONFIG_KEXEC_FILE)	+= elf_kexec.o machine_kexec_file.o
- obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
-+obj-$(CONFIG_CRASH_CORE)	+= crash_core.o
- 
- obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
- 
-diff --git a/arch/riscv/kernel/crash_core.c b/arch/riscv/kernel/crash_core.c
-new file mode 100644
-index 000000000000..c096904dd0f3
---- /dev/null
-+++ b/arch/riscv/kernel/crash_core.c
-@@ -0,0 +1,28 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+#include <linux/crash_core.h>
-+#include <linux/pagemap.h>
-+
-+void arch_crash_save_vmcoreinfo(void)
-+{
-+	VMCOREINFO_NUMBER(VA_BITS);
-+	VMCOREINFO_NUMBER(phys_ram_base);
-+
-+	/* Please note VMCOREINFO_NUMBER() uses "%d", not "%x" */
-+	vmcoreinfo_append_str("NUMBER(PAGE_OFFSET)=0x%lx\n", PAGE_OFFSET);
-+	vmcoreinfo_append_str("NUMBER(VMALLOC_START)=0x%lx\n", VMALLOC_START);
-+	vmcoreinfo_append_str("NUMBER(VMALLOC_END)=0x%lx\n", VMALLOC_END);
-+	vmcoreinfo_append_str("NUMBER(VMEMMAP_START)=0x%lx\n", VMEMMAP_START);
-+	vmcoreinfo_append_str("NUMBER(VMEMMAP_END)=0x%lx\n", VMEMMAP_END);
-+
-+	if (IS_ENABLED(CONFIG_64BIT)) {
-+		vmcoreinfo_append_str("NUMBER(MODULES_VADDR)=0x%lx\n", MODULES_VADDR);
-+		vmcoreinfo_append_str("NUMBER(MODULES_END)=0x%lx\n", MODULES_END);
-+#ifdef CONFIG_KASAN
-+		vmcoreinfo_append_str("NUMBER(KASAN_SHADOW_START)=0x%lx\n", KASAN_SHADOW_START);
-+		vmcoreinfo_append_str("NUMBER(KASAN_SHADOW_END)=0x%lx\n", KASAN_SHADOW_END);
-+#endif
-+		vmcoreinfo_append_str("NUMBER(KERNEL_LINK_ADDR)=0x%lx\n", KERNEL_LINK_ADDR);
-+		vmcoreinfo_append_str("NUMBER(ADDRESS_SPACE_END)=0x%lx\n", ADDRESS_SPACE_END);
-+	}
-+}
 -- 
-2.17.1
+Jens Axboe
 
