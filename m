@@ -2,118 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47105CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:38:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237971AbiGNKiJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
+        id S238220AbiGNKjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237555AbiGNKiI (ORCPT
+        with ESMTP id S229986AbiGNKjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:38:08 -0400
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4AC4BD31;
-        Thu, 14 Jul 2022 03:38:07 -0700 (PDT)
-Received: by mail-ej1-f41.google.com with SMTP id ez10so2590217ejc.13;
-        Thu, 14 Jul 2022 03:38:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Da9JEC7sUGHY+kW86al+MlF51R6SUQjf24M49G8OwHc=;
-        b=sSt79Ao4EA+Sxqycj92HB5U/EtwADsyJ5pv73fws0WSE4R0I1EofkXUc9DIj/s7Zg6
-         lSpUYIKzv1Hn5Z6dtghYseCMkm861+Zhu8rXaH0/tEiVPzOQNkJsfrFYesZutyO8TqIe
-         RouSnuigy3LmKeWY5EPl3YWq1J9ZuZuIAdgS1ZCZuW4sPEalAoK4uWpZJzx33z21nUMd
-         XYGJRz71rg6FfMDs1cOhYQCiArBUfqkjsNt41mTfNT4/99tFqeWcYTihGZkJtTKk/ElG
-         rXNKfupwBtz2+iWkkEbEDn5Hz/awKzg7wpW3+iCqVWIKth8BWwv/5MvtXCQzEm0rU0/3
-         a8jQ==
-X-Gm-Message-State: AJIora963kLSK0I78RdNMz3Z6dlrxGBjmT9zesvnzqX8hkvVKrG2ke3b
-        nNgOjuCL7vjQKkJqIjotqlU=
-X-Google-Smtp-Source: AGRyM1tylAikhT0jp8xuKYehbTcWTlzDur0ynRLeAdWpAL3ujadz/4Hz4YTv5mkPVzYlKcYDne9mDA==
-X-Received: by 2002:a17:907:2815:b0:72b:70f6:4ced with SMTP id eb21-20020a170907281500b0072b70f64cedmr7883051ejc.353.1657795085810;
-        Thu, 14 Jul 2022 03:38:05 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id ey6-20020a0564022a0600b00431962fe5d4sm805026edb.77.2022.07.14.03.38.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 03:38:04 -0700 (PDT)
-Message-ID: <78cd3375-e95e-51b2-bf89-bad645e16ea4@kernel.org>
-Date:   Thu, 14 Jul 2022 12:38:03 +0200
+        Thu, 14 Jul 2022 06:39:00 -0400
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD91629CB1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:38:58 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by michel.telenet-ops.be with bizsmtp
+        id uyev270084C55Sk06yevaP; Thu, 14 Jul 2022 12:38:56 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oBvwx-003The-4P; Thu, 14 Jul 2022 12:20:03 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oBulZ-00Bf1L-HR; Thu, 14 Jul 2022 11:04:13 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Hans de Goede <hdegoede@redhat.com>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH v2 2/5] drm/modes: Extract drm_mode_parse_cmdline_named_mode()
+Date:   Thu, 14 Jul 2022 11:04:07 +0200
+Message-Id: <1371554419ae63cb54c2a377db0c1016fcf200bb.1657788997.git.geert@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1657788997.git.geert@linux-m68k.org>
+References: <cover.1657788997.git.geert@linux-m68k.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] can: slcan: do not sleep with a spin lock held
-Content-Language: en-US
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org
-Cc:     lkp@lists.01.org, Jeroen Hofstee <jhofstee@victronenergy.com>,
-        lkp@intel.com, kernel test robot <oliver.sang@intel.com>,
-        Richard Palethorpe <rpalethorpe@suse.de>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        ltp@lists.linux.it, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-References: <20220713154458.253076-1-dario.binacchi@amarulasolutions.com>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220713154458.253076-1-dario.binacchi@amarulasolutions.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13. 07. 22, 17:44, Dario Binacchi wrote:
-> We can't call close_candev() with a spin lock held, so release the lock
-> before calling it.
-> 
-> Fixes: c4e54b063f42f ("can: slcan: use CAN network device driver API")
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> Link: https://lore.kernel.org/linux-kernel/Ysrf1Yc5DaRGN1WE@xsang-OptiPlex-9020/
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> 
-> ---
-> 
-> Changes in v2:
-> - Release the lock just before calling the close_candev().
-> 
->   drivers/net/can/slcan/slcan-core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-> index 54d29a410ad5..5214421dedf3 100644
-> --- a/drivers/net/can/slcan/slcan-core.c
-> +++ b/drivers/net/can/slcan/slcan-core.c
-> @@ -689,6 +689,7 @@ static int slc_close(struct net_device *dev)
->   		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
->   	}
->   	netif_stop_queue(dev);
-> +	spin_unlock_bh(&sl->lock);
->   	close_candev(dev);
->   	sl->can.state = CAN_STATE_STOPPED;
->   	if (sl->can.bittiming.bitrate == CAN_BITRATE_UNKNOWN)
-> @@ -696,7 +697,6 @@ static int slc_close(struct net_device *dev)
->   
->   	sl->rcount   = 0;
->   	sl->xleft    = 0;
+Extract the code to check for a named mode parameter into its own
+function, to streamline the main parsing flow.
 
-So all these sets need not be under the spinlock?
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+---
+v2:
+  - Add Reviewed-by, Acked-by,
+  - Fix length check.
+---
+ drivers/gpu/drm/drm_modes.c | 40 +++++++++++++++++++++++++++----------
+ 1 file changed, 29 insertions(+), 11 deletions(-)
 
-If so, you should explain why in the commit message.
-
-> -	spin_unlock_bh(&sl->lock);
->   
->   	return 0;
->   }
-
-thanks,
+diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
+index 67773740c74c9ba0..a3df18fccb31fa77 100644
+--- a/drivers/gpu/drm/drm_modes.c
++++ b/drivers/gpu/drm/drm_modes.c
+@@ -1749,6 +1749,29 @@ static const char * const drm_named_modes_whitelist[] = {
+ 	"PAL",
+ };
+ 
++static int drm_mode_parse_cmdline_named_mode(const char *name,
++					     unsigned int length, bool refresh,
++					     struct drm_cmdline_mode *mode)
++{
++	unsigned int i;
++	int ret;
++
++	for (i = 0; i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
++		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
++		if (ret != length)
++			continue;
++
++		if (refresh)
++			return -EINVAL; /* named + refresh is invalid */
++
++		strcpy(mode->name, drm_named_modes_whitelist[i]);
++		mode->specified = true;
++		return 0;
++	}
++
++	return 0;
++}
++
+ /**
+  * drm_mode_parse_command_line_for_connector - parse command line modeline for connector
+  * @mode_option: optional per connector mode option
+@@ -1785,7 +1808,7 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+ 	const char *bpp_ptr = NULL, *refresh_ptr = NULL, *extra_ptr = NULL;
+ 	const char *options_ptr = NULL;
+ 	char *bpp_end_ptr = NULL, *refresh_end_ptr = NULL;
+-	int i, len, ret;
++	int len, ret;
+ 
+ 	memset(mode, 0, sizeof(*mode));
+ 	mode->panel_orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
+@@ -1823,16 +1846,11 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+ 	}
+ 
+ 	/* First check for a named mode */
+-	for (i = 0; mode_end && i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
+-		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
+-		if (ret == mode_end) {
+-			if (refresh_ptr)
+-				return false; /* named + refresh is invalid */
+-
+-			strcpy(mode->name, drm_named_modes_whitelist[i]);
+-			mode->specified = true;
+-			break;
+-		}
++	if (mode_end) {
++		ret = drm_mode_parse_cmdline_named_mode(name, mode_end,
++							refresh_ptr, mode);
++		if (ret)
++			return false;
+ 	}
+ 
+ 	/* No named mode? Check for a normal mode argument, e.g. 1024x768 */
 -- 
-js
-suse labs
+2.25.1
+
