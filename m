@@ -2,111 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A08AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCFFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:55:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237584AbiGNHxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45866 "EHLO
+        id S237202AbiGNHzn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237628AbiGNHw7 (ORCPT
+        with ESMTP id S230370AbiGNHzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:52:59 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CE526E3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:52:58 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id g16-20020a17090a7d1000b001ea9f820449so7694201pjl.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:52:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=egUZShWWFfJvJGgDYNvzi2mq2YkyEJX8dqyYulCWxMA=;
-        b=kCZjuXiNve52btMzwkOrHXi0qbubRIPWlPYTzqCtMfVej81TQRPENJiIWfCYVwv4wo
-         y8u+ft84ab1joSTR75Z27N18UisYHNho5KsoNJA7iBWvoP1HZKhw4mOV4d0rAcy56i71
-         DDFNQm9SlIAKpJqhxYojkO38HcEk5S02kuprbfOqFD59tg+ri2E9Eyy8XGeJrmGKKj65
-         DlY+I1aVaWlXl1wDvlmk5hy381KMdbDAA5E03AgcM68lChv11ednAmWWOV50vVWMHdML
-         hQx9Jp/PQp7547/5KQIa6Xzd1/DoJELKRV+8aFE5uVyF7GHP7Bq65nCZxuKHpn+qXpAf
-         NACQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=egUZShWWFfJvJGgDYNvzi2mq2YkyEJX8dqyYulCWxMA=;
-        b=eDllIjPX1nEIj+nzyBuHM81Gd4uZ991bJLLW9OzIOjXD/1KBFosDkm1lLK7NwppZQE
-         XTGJW/MpEFA+zjoMZTbynh1ZiRpa/nMRFNf0Plz8m2RboVjhRZLjeAGFtHbVUDwUD6Ly
-         Gg11xQlR0Ih88Jet0rpG98VnjfMwW+/fs1qzSMHQjo2yzXQfVae41EM2FEKjkBdWD2sC
-         Rm9aK6iq/P8UJsjFiipa0KLvyESAp3EP/1w6ekB0RVXiNrjFMLHOw2cD/Ibxih1wf0IS
-         LQnk+0biA6Zz3nF346VxNOXWQrS+V554OW1DnMljLqXsz9wNpCO4YXvw4IOSg1nmYuEU
-         X5iQ==
-X-Gm-Message-State: AJIora+NSqyaNT0CPizUGUoY1nhHLzpxyDgmbDoaRXQT5en/DnWTBnA1
-        4fklDqtoYCOoF3ew5uY+U/s=
-X-Google-Smtp-Source: AGRyM1u5QSr5pqLCDw267ozgral5tGr/brIhzB4k02FD6FD+QVfOA1zaa10tysPIrvksOA/jS9CjBg==
-X-Received: by 2002:a17:90b:3e89:b0:1f0:4233:b20e with SMTP id rj9-20020a17090b3e8900b001f04233b20emr8547349pjb.0.1657785177509;
-        Thu, 14 Jul 2022 00:52:57 -0700 (PDT)
-Received: from octofox.hsd1.ca.comcast.net ([2601:641:401:1d20:d0f1:2297:37d1:f468])
-        by smtp.gmail.com with ESMTPSA id c11-20020a056a00008b00b005289fad1bbesm923541pfj.94.2022.07.14.00.52.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 00:52:56 -0700 (PDT)
-From:   Max Filippov <jcmvbkbc@gmail.com>
-To:     linux-xtensa@linux-xtensa.org
-Cc:     Chris Zankel <chris@zankel.net>, linux-kernel@vger.kernel.org,
-        Max Filippov <jcmvbkbc@gmail.com>
-Subject: [PATCH] xtensa: enable ARCH_HAS_GCOV_PROFILE_ALL
-Date:   Thu, 14 Jul 2022 00:53:05 -0700
-Message-Id: <20220714075305.154776-1-jcmvbkbc@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 14 Jul 2022 03:55:39 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B9A81E4;
+        Thu, 14 Jul 2022 00:55:37 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VJIAY5q_1657785334;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VJIAY5q_1657785334)
+          by smtp.aliyun-inc.com;
+          Thu, 14 Jul 2022 15:55:34 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     krzysztof.kozlowski@linaro.org
+Cc:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH -next RESEND] soc: qcom: icc-bwmon: Remove unnecessary print function dev_err()
+Date:   Thu, 14 Jul 2022 15:55:32 +0800
+Message-Id: <20220714075532.104665-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Select ARCH_HAS_GCOV_PROFILE_ALL and set GCOV_PROFILE = n inside
-arch/xtensa/boot/lib.
+Eliminate the follow coccicheck warning:
+./drivers/soc/qcom/icc-bwmon.c:349:2-9: line 349 is redundant because platform_get_irq() already prints an error
 
-Signed-off-by: Max Filippov <jcmvbkbc@gmail.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- Documentation/features/debug/gcov-profile-all/arch-support.txt | 2 +-
- arch/xtensa/Kconfig                                            | 1 +
- arch/xtensa/boot/lib/Makefile                                  | 1 +
- 3 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/soc/qcom/icc-bwmon.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/Documentation/features/debug/gcov-profile-all/arch-support.txt b/Documentation/features/debug/gcov-profile-all/arch-support.txt
-index 502c1d409648..0b3ba2415fac 100644
---- a/Documentation/features/debug/gcov-profile-all/arch-support.txt
-+++ b/Documentation/features/debug/gcov-profile-all/arch-support.txt
-@@ -27,5 +27,5 @@
-     |       sparc: | TODO |
-     |          um: |  ok  |
-     |         x86: |  ok  |
--    |      xtensa: | TODO |
-+    |      xtensa: |  ok  |
-     -----------------------
-diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
-index c4ef8e9c7249..5fa1fd1aecff 100644
---- a/arch/xtensa/Kconfig
-+++ b/arch/xtensa/Kconfig
-@@ -6,6 +6,7 @@ config XTENSA
- 	select ARCH_HAS_CURRENT_STACK_POINTER
- 	select ARCH_HAS_DEBUG_VM_PGTABLE
- 	select ARCH_HAS_DMA_PREP_COHERENT if MMU
-+	select ARCH_HAS_GCOV_PROFILE_ALL
- 	select ARCH_HAS_KCOV
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU if MMU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if MMU
-diff --git a/arch/xtensa/boot/lib/Makefile b/arch/xtensa/boot/lib/Makefile
-index 6f9a56a8ca85..0378a22a08e3 100644
---- a/arch/xtensa/boot/lib/Makefile
-+++ b/arch/xtensa/boot/lib/Makefile
-@@ -18,6 +18,7 @@ endif
- KASAN_SANITIZE := n
- KCSAN_SANITIZE := n
- KCOV_INSTRUMENT := n
-+GCOV_PROFILE := n
+diff --git a/drivers/soc/qcom/icc-bwmon.c b/drivers/soc/qcom/icc-bwmon.c
+index bea3ea1de7a4..7f8aca533cd3 100644
+--- a/drivers/soc/qcom/icc-bwmon.c
++++ b/drivers/soc/qcom/icc-bwmon.c
+@@ -345,10 +345,8 @@ static int bwmon_probe(struct platform_device *pdev)
+ 	}
  
- CFLAGS_REMOVE_inflate.o += -fstack-protector -fstack-protector-strong
- CFLAGS_REMOVE_zmem.o += -fstack-protector -fstack-protector-strong
+ 	bwmon->irq = platform_get_irq(pdev, 0);
+-	if (bwmon->irq < 0) {
+-		dev_err(dev, "failed to acquire bwmon IRQ\n");
++	if (bwmon->irq < 0)
+ 		return bwmon->irq;
+-	}
+ 
+ 	ret = devm_pm_opp_of_add_table(dev);
+ 	if (ret)
 -- 
-2.30.2
+2.20.1.7.g153144c
 
