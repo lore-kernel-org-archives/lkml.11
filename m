@@ -2,272 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20902CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47119C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:42:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237857AbiGNKlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:41:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49908 "EHLO
+        id S238350AbiGNKmC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:42:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237845AbiGNKl1 (ORCPT
+        with ESMTP id S237845AbiGNKmA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:41:27 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9AA4AD62;
-        Thu, 14 Jul 2022 03:41:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657795286; x=1689331286;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4m0nVoik1JDg6vMtfsVmoRpjewhXoiEOBS1XwgEx6VI=;
-  b=TtJs3E0JtNNEuWmbhFS1TiDxCknP0UEaRcCytg5M95eP2hfZat6elnUW
-   irSFUQcs9Zt7ve/YrWVVJdAYeqDf6Fm1RgDMmJYv2sbXwNB/InjdYF8+4
-   07VsbJlVCucyjFVkq0pDoaR0Ezh3VCKVoh+cERzW6sLCRtq60l8CzC6cR
-   M=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 14 Jul 2022 03:41:26 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 03:41:25 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 03:41:25 -0700
-Received: from [10.216.15.238] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Jul
- 2022 03:41:17 -0700
-Message-ID: <fda73692-8733-50b0-938b-56b3ff4855a7@quicinc.com>
-Date:   Thu, 14 Jul 2022 16:11:12 +0530
+        Thu, 14 Jul 2022 06:42:00 -0400
+Received: from ironport.ite.com.tw (60-251-196-230.hinet-ip.hinet.net [60.251.196.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7AE491FF
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:41:56 -0700 (PDT)
+Received: from unknown (HELO mse.ite.com.tw) ([192.168.35.30])
+  by ironport.ite.com.tw with ESMTP; 14 Jul 2022 18:41:53 +0800
+Received: from CSBMAIL1.internal.ite.com.tw (CSBMAIL1.internal.ite.com.tw [192.168.65.58])
+        by mse.ite.com.tw with ESMTP id 26EAfp1K040938;
+        Thu, 14 Jul 2022 18:41:51 +0800 (GMT-8)
+        (envelope-from allen.chen@ite.com.tw)
+Received: from CSBMAIL1.internal.ite.com.tw (192.168.65.58) by
+ CSBMAIL1.internal.ite.com.tw (192.168.65.58) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.14; Thu, 14 Jul 2022 18:41:51 +0800
+Received: from CSBMAIL1.internal.ite.com.tw ([fe80::dd22:b444:859b:61c7]) by
+ CSBMAIL1.internal.ite.com.tw ([fe80::dd22:b444:859b:61c7%18]) with mapi id
+ 15.01.2176.014; Thu, 14 Jul 2022 18:41:51 +0800
+From:   <allen.chen@ite.com.tw>
+To:     <treapking@chromium.org>, <andrzej.hajda@intel.com>,
+        <narmstrong@baylibre.com>, <robert.foss@linaro.org>,
+        <Laurent.pinchart@ideasonboard.com>, <jonas@kwiboo.se>,
+        <jernej.skrabec@gmail.com>, <airlied@linux.ie>, <daniel@ffwll.ch>
+CC:     <hsinyi@chromium.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>, <Kenneth.Hung@ite.com.tw>,
+        <Jau-Chih.Tseng@ite.com.tw>, <Hermes.Wu@ite.com.tw>
+Subject: RE: [PATCH v2] drm/bridge: it6505: Power on downstream device in
+ .atomic_enable
+Thread-Topic: [PATCH v2] drm/bridge: it6505: Power on downstream device in
+ .atomic_enable
+Thread-Index: AQHYl2WhMyMSW5NQwU2abTU4OMFnz619rWtw
+Date:   Thu, 14 Jul 2022 10:41:51 +0000
+Message-ID: <a7c9c0b2a35e45f89cb7d6d7646396f2@ite.com.tw>
+References: <20220714173715.v2.1.I85af54e9ceda74ec69f661852825845f983fc343@changeid>
+In-Reply-To: <20220714173715.v2.1.I85af54e9ceda74ec69f661852825845f983fc343@changeid>
+Accept-Language: en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [192.168.70.46]
+x-tm-snts-smtp: 9FC9254C1A08E1488876D87E4C2C2BE95FBC308C14AFD7FCAE685AFA5B44DC1B2002:8
+Content-Type: text/plain; charset="big5"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v4 1/2] PCI: qcom: Add system PM support
-Content-Language: en-US
-To:     Matthias Kaehlcke <mka@chromium.org>
-CC:     <helgaas@kernel.org>, <linux-pci@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <quic_vbadigan@quicinc.com>, <quic_hemantk@quicinc.com>,
-        <quic_nitegupt@quicinc.com>, <quic_skananth@quicinc.com>,
-        <quic_ramkri@quicinc.com>, <manivannan.sadhasivam@linaro.org>,
-        <swboyd@chromium.org>, <dmitry.baryshkov@linaro.org>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-References: <1656684800-31278-1-git-send-email-quic_krichai@quicinc.com>
- <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
- <1657118425-10304-2-git-send-email-quic_krichai@quicinc.com>
- <Ysyb24TidwWFH0Dm@google.com>
-From:   Krishna Chaitanya Chundru <quic_krichai@quicinc.com>
-In-Reply-To: <Ysyb24TidwWFH0Dm@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-MAIL: mse.ite.com.tw 26EAfp1K040938
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 7/12/2022 3:23 AM, Matthias Kaehlcke wrote:
-> On Wed, Jul 06, 2022 at 08:10:24PM +0530, Krishna chaitanya chundru wrote:
->> Add suspend and resume pm callbacks.
->>
->> When system suspends, and if the link is in L1ss, disable the clocks
->> and power down the phy so that system enters into low power state to
->> save the maximum power. And when the system resumes, enable the clocks
->> back and power on phy if they are disabled in the suspend path.
->>
->> we are doing this only when link is in l1ss but not in L2/L3 as
->> no where we are forcing link to L2/L3 by sending PME turn off.
->>
->> is_suspended flag indicates if the clocks are disabled in the suspend
->> path or not. And this flag is being used to restrict the access to
->> config space, dbi etc when clock are turned-off.
->>
->> Changes since v3:
->> 	- Powering down the phy in suspend and powering it on resume to
->> 	  acheive maximum power savings.
->> Changes since v2:
->> 	- Replaced the enable, disable clks ops with suspend and resume
->> 	- Renamed support_pm_opsi flag  with supports_system_suspend.
->> Changes since v1:
->> 	- Fixed compilation errors.
->>
->> Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
->> ---
->>   drivers/pci/controller/dwc/pcie-qcom.c | 85 ++++++++++++++++++++++++++++++++++
->>   1 file changed, 85 insertions(+)
->>
->> diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
->> index 6ab9089..0a9d1ee 100644
->> --- a/drivers/pci/controller/dwc/pcie-qcom.c
->> +++ b/drivers/pci/controller/dwc/pcie-qcom.c
->> @@ -41,6 +41,9 @@
->>   #define L23_CLK_RMV_DIS				BIT(2)
->>   #define L1_CLK_RMV_DIS				BIT(1)
->>   
->> +#define PCIE20_PARF_PM_STTS                     0x24
->> +#define PCIE20_PARF_PM_STTS_LINKST_IN_L1SUB    BIT(8)
->> +
->>   #define PCIE20_PARF_PHY_CTRL			0x40
->>   #define PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK	GENMASK(20, 16)
->>   #define PHY_CTRL_PHY_TX0_TERM_OFFSET(x)		((x) << 16)
->> @@ -190,6 +193,8 @@ struct qcom_pcie_ops {
->>   	void (*post_deinit)(struct qcom_pcie *pcie);
->>   	void (*ltssm_enable)(struct qcom_pcie *pcie);
->>   	int (*config_sid)(struct qcom_pcie *pcie);
->> +	int (*suspend)(struct qcom_pcie *pcie);
->> +	int (*resume)(struct qcom_pcie *pcie);
->>   };
->>   
->>   struct qcom_pcie_cfg {
->> @@ -199,6 +204,7 @@ struct qcom_pcie_cfg {
->>   	unsigned int has_ddrss_sf_tbu_clk:1;
->>   	unsigned int has_aggre0_clk:1;
->>   	unsigned int has_aggre1_clk:1;
->> +	unsigned int supports_system_suspend:1;
->>   };
->>   
->>   struct qcom_pcie {
->> @@ -209,6 +215,7 @@ struct qcom_pcie {
->>   	struct phy *phy;
->>   	struct gpio_desc *reset;
->>   	const struct qcom_pcie_cfg *cfg;
->> +	unsigned int is_suspended:1;
->>   };
->>   
->>   #define to_qcom_pcie(x)		dev_get_drvdata((x)->dev)
->> @@ -1308,6 +1315,33 @@ static void qcom_pcie_post_deinit_2_7_0(struct qcom_pcie *pcie)
->>   	clk_disable_unprepare(res->pipe_clk);
->>   }
->>   
->> +static int qcom_pcie_resume_2_7_0(struct qcom_pcie *pcie)
->> +{
->> +	struct qcom_pcie_resources_2_7_0 *res = &pcie->res.v2_7_0;
->> +	int ret;
->> +
->> +	clk_prepare_enable(res->pipe_clk);
->> +
->> +	ret = clk_bulk_prepare_enable(res->num_clks, res->clks);
->> +
->> +	phy_power_on(pcie->phy);
->> +
->> +	return ret;
->> +}
->> +
->> +static int qcom_pcie_suspend_2_7_0(struct qcom_pcie *pcie)
->> +{
->> +	struct qcom_pcie_resources_2_7_0 *res = &pcie->res.v2_7_0;
->> +
->> +	phy_power_off(pcie->phy);
->> +
->> +	clk_bulk_disable_unprepare(res->num_clks, res->clks);
->> +
->> +	clk_disable_unprepare(res->pipe_clk);
->> +
->> +	return 0;
->> +}
->> +
->>   static int qcom_pcie_link_up(struct dw_pcie *pci)
->>   {
->>   	u16 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_EXP);
->> @@ -1496,6 +1530,8 @@ static const struct qcom_pcie_ops ops_1_9_0 = {
->>   	.post_init = qcom_pcie_post_init_2_7_0,
->>   	.post_deinit = qcom_pcie_post_deinit_2_7_0,
->>   	.config_sid = qcom_pcie_config_sid_sm8250,
->> +	.suspend = qcom_pcie_suspend_2_7_0,
->> +	.resume = qcom_pcie_resume_2_7_0,
->>   };
->>   
->>   static const struct qcom_pcie_cfg apq8084_cfg = {
->> @@ -1548,6 +1584,7 @@ static const struct qcom_pcie_cfg sc7280_cfg = {
->>   	.ops = &ops_1_9_0,
->>   	.has_tbu_clk = true,
->>   	.pipe_clk_need_muxing = true,
->> +	.supports_system_suspend = true,
->>   };
->>   
->>   static const struct dw_pcie_ops dw_pcie_ops = {
->> @@ -1591,6 +1628,8 @@ static int qcom_pcie_probe(struct platform_device *pdev)
->>   
->>   	pcie->cfg = pcie_cfg;
->>   
->> +	pcie->is_suspended = false;
->> +
->>   	pcie->reset = devm_gpiod_get_optional(dev, "perst", GPIOD_OUT_HIGH);
->>   	if (IS_ERR(pcie->reset)) {
->>   		ret = PTR_ERR(pcie->reset);
->> @@ -1645,6 +1684,51 @@ static int qcom_pcie_probe(struct platform_device *pdev)
->>   	return ret;
->>   }
->>   
->> +static int __maybe_unused qcom_pcie_pm_suspend(struct device *dev)
->> +{
->> +	struct qcom_pcie *pcie = dev_get_drvdata(dev);
->> +	u32 val;
->> +
->> +	if (!pcie->cfg->supports_system_suspend)
->> +		return 0;
->> +
->> +	/* if the link is not in l1ss don't turn off clocks */
->> +	val = readl(pcie->parf + PCIE20_PARF_PM_STTS);
->> +	if (!(val & PCIE20_PARF_PM_STTS_LINKST_IN_L1SUB)) {
->> +		dev_warn(dev, "Link is not in L1ss\n");
->> +		return 0;
->> +	}
->> +
->> +	if (pcie->cfg->ops->suspend)
->> +		pcie->cfg->ops->suspend(pcie);
->> +
->> +	pcie->is_suspended = true;
->> +
->> +	return 0;
->> +}
->> +
->> +static int __maybe_unused qcom_pcie_pm_resume(struct device *dev)
->> +{
->> +	struct qcom_pcie *pcie = dev_get_drvdata(dev);
->> +
->> +	if (!pcie->cfg->supports_system_suspend)
->> +		return 0;
-> The above check can be omitted, it is implied by the next one.
-> 'is_suspended' can only be true when system suspend is supported.
-Sure will remove in the next patch.
->
->> +
->> +	if (!pcie->is_suspended)
->> +		return 0;
->> +
->> +	if (pcie->cfg->ops->resume)
->> +		pcie->cfg->ops->resume(pcie);
->> +
->> +	pcie->is_suspended = false;
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct dev_pm_ops qcom_pcie_pm_ops = {
->> +	NOIRQ_SYSTEM_SLEEP_PM_OPS(qcom_pcie_pm_suspend, qcom_pcie_pm_resume)
->> +};
->> +
->>   static const struct of_device_id qcom_pcie_match[] = {
->>   	{ .compatible = "qcom,pcie-apq8084", .data = &apq8084_cfg },
->>   	{ .compatible = "qcom,pcie-ipq8064", .data = &ipq8064_cfg },
->> @@ -1679,6 +1763,7 @@ static struct platform_driver qcom_pcie_driver = {
->>   	.probe = qcom_pcie_probe,
->>   	.driver = {
->>   		.name = "qcom-pcie",
->> +		.pm = pm_sleep_ptr(&qcom_pcie_pm_ops),
->>   		.suppress_bind_attrs = true,
->>   		.of_match_table = qcom_pcie_match,
->>   	},
->> -- 
->> 2.7.4
->>
+UmV2aWV3ZWQtYnk6IEFsbGVuIENoZW4gPGFsbGVuLmNoZW5AaXRlLmNvbS50dz4NCg0KLS0tLS1P
+cmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IFBpbi1ZZW4gTGluIDx0cmVhcGtpbmdAY2hyb21p
+dW0ub3JnPiANClNlbnQ6IFRodXJzZGF5LCBKdWx5IDE0LCAyMDIyIDU6MzkgUE0NClRvOiBBbmRy
+emVqIEhhamRhIDxhbmRyemVqLmhhamRhQGludGVsLmNvbT47IE5laWwgQXJtc3Ryb25nIDxuYXJt
+c3Ryb25nQGJheWxpYnJlLmNvbT47IFJvYmVydCBGb3NzIDxyb2JlcnQuZm9zc0BsaW5hcm8ub3Jn
+PjsgTGF1cmVudCBQaW5jaGFydCA8TGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9hcmQuY29tPjsg
+Sm9uYXMgS2FybG1hbiA8am9uYXNAa3dpYm9vLnNlPjsgSmVybmVqIFNrcmFiZWMgPGplcm5lai5z
+a3JhYmVjQGdtYWlsLmNvbT47IERhdmlkIEFpcmxpZSA8YWlybGllZEBsaW51eC5pZT47IERhbmll
+bCBWZXR0ZXIgPGRhbmllbEBmZndsbC5jaD4NCkNjOiBIc2luLVlpIFdhbmcgPGhzaW55aUBjaHJv
+bWl1bS5vcmc+OyBBbGxlbiBDaGVuICizr6xmpnQpIDxhbGxlbi5jaGVuQGl0ZS5jb20udHc+OyBQ
+aW4tWWVuIExpbiA8dHJlYXBraW5nQGNocm9taXVtLm9yZz47IGRyaS1kZXZlbEBsaXN0cy5mcmVl
+ZGVza3RvcC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNClN1YmplY3Q6IFtQQVRD
+SCB2Ml0gZHJtL2JyaWRnZTogaXQ2NTA1OiBQb3dlciBvbiBkb3duc3RyZWFtIGRldmljZSBpbiAu
+YXRvbWljX2VuYWJsZQ0KDQpTZW5kIERQQ0QgRFBfU0VUX1BPV0VSX0QwIGNvbW1hbmQgdG8gdGhl
+IG1vbml0b3IgaW4gLmF0b21pY19lbmFibGUgY2FsbGJhY2suIFdpdGhvdXQgdGhpcyBjb21tYW5k
+LCBzb21lIG1vbml0b3JzIHdvbid0IHNob3cgdXAgYWdhaW4gYWZ0ZXIgY2hhbmdpbmcgdGhlIHJl
+c29sdXRpb24uDQoNCkZpeGVzOiA0NmNhN2RhN2YxZTggKCJkcm0vYnJpZGdlOiBpdDY1MDU6IFNl
+bmQgRFBDRCBTRVRfUE9XRVIgdG8gZG93bnN0cmVhbSIpDQoNClNpZ25lZC1vZmYtYnk6IFBpbi1Z
+ZW4gTGluIDx0cmVhcGtpbmdAY2hyb21pdW0ub3JnPg0KLS0tDQoNCkNoYW5nZXMgaW4gdjI6DQot
+IFVwZGF0ZSB0aGUgdHlwbyBpbiB0aGUgc3VtbWFyeSAocG93ZXIgb24gLS0+IHBvd2VyIG9mZikN
+Ci0gUmUtd3JpdGUgdGhlIGNvbW1pdCBtZXNzYWdlIHRvIG1ha2UgaXQgY2xlYXJlci4NCg0KIGRy
+aXZlcnMvZ3B1L2RybS9icmlkZ2UvaXRlLWl0NjUwNS5jIHwgMyArKysNCiAxIGZpbGUgY2hhbmdl
+ZCwgMyBpbnNlcnRpb25zKCspDQoNCmRpZmYgLS1naXQgYS9kcml2ZXJzL2dwdS9kcm0vYnJpZGdl
+L2l0ZS1pdDY1MDUuYyBiL2RyaXZlcnMvZ3B1L2RybS9icmlkZ2UvaXRlLWl0NjUwNS5jDQppbmRl
+eCA0YjY3M2M0NzkyZDcuLmU1NjI2MDM1ZjMxMSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvZ3B1L2Ry
+bS9icmlkZ2UvaXRlLWl0NjUwNS5jDQorKysgYi9kcml2ZXJzL2dwdS9kcm0vYnJpZGdlL2l0ZS1p
+dDY1MDUuYw0KQEAgLTI5NDUsNiArMjk0NSw5IEBAIHN0YXRpYyB2b2lkIGl0NjUwNV9icmlkZ2Vf
+YXRvbWljX2VuYWJsZShzdHJ1Y3QgZHJtX2JyaWRnZSAqYnJpZGdlLA0KIAlpZiAocmV0KQ0KIAkJ
+ZGV2X2VycihkZXYsICJGYWlsZWQgdG8gc2V0dXAgQVZJIGluZm9mcmFtZTogJWQiLCByZXQpOw0K
+IA0KKwlpdDY1MDVfZHJtX2RwX2xpbmtfc2V0X3Bvd2VyKCZpdDY1MDUtPmF1eCwgJml0NjUwNS0+
+bGluaywNCisJCQkJICAgICBEUF9TRVRfUE9XRVJfRDApOw0KKw0KIAlpdDY1MDVfdXBkYXRlX3Zp
+ZGVvX3BhcmFtZXRlcihpdDY1MDUsIG1vZGUpOw0KIA0KIAlyZXQgPSBpdDY1MDVfc2VuZF92aWRl
+b19pbmZvZnJhbWUoaXQ2NTA1LCAmZnJhbWUpOw0KLS0NCjIuMzcuMC4xNDQuZzhhYzA0YmZkMi1n
+b29nDQoNCg==
