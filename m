@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A68C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD873C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237398AbiGNEbS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:31:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        id S237004AbiGNEb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:31:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237244AbiGNE3y (ORCPT
+        with ESMTP id S236708AbiGNEaV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DFF31DE2;
-        Wed, 13 Jul 2022 21:25:08 -0700 (PDT)
+        Thu, 14 Jul 2022 00:30:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD3D732068;
+        Wed, 13 Jul 2022 21:25:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FD0AB8237E;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 74AA661E91;
+        Thu, 14 Jul 2022 04:25:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F24EC3411C;
         Thu, 14 Jul 2022 04:25:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D45C36AE3;
-        Thu, 14 Jul 2022 04:25:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772705;
-        bh=j+EoYSsZES5hhB5OM6SUrJyraaqpTYQoCYq/3DBqlug=;
+        s=k20201202; t=1657772708;
+        bh=gb/czhMg4fVob1ttITgWIuTsBA07eCazqwFw3vqBK4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sF0W2LAYVABs7RRbAzB15KuwSBqfNn0f5OgFzYpwAwP9pUJZRlen1dmC0Pd4hRm+P
-         2tpD0SoK7Np0YG4KKWYok3pvnKP6LQ9DPUg3J/1GaYdSKq/ag9K/UsJWyLveOWqt2i
-         1FY1JXJw3eDH7Ysx5lE2zIDDR1f3VssXC243NFHr//T03CWU+Pzy4+I1BBK7hBNhXu
-         bNqZxIHVIJ/CWGR4FLNGs01QEOxThW3vdoAWpkTUYuZGXBzr+PXMDGk8/+20aiWCqx
-         p1eF+cJlDDpds/2WtB14u06aQa29AGURqTNzXfXm+Z4BBtQVAuDEuOwPQwf83SrFp3
-         3xZqlucA/Cqzg==
+        b=CxmttC+DA0iSSCCAvDnmZFZziAykCJNX4uvRGl4ihHSaq/NZNOkcsFVSA1oQl5osn
+         VT3lSJe6T5BqAah4u3l0REH4HVSYRL0xKB719hWwTAKiUiX2kcXt/jSt6psJ5Kjci0
+         jcaYPcXHqxMRTUQhPVLK4iESxRpse0AOcVJTcRXLYHJeEbG4yAfjrrskndBY3OFuAc
+         +DPAA0rvN9oIvSvI/IP1aQzYa6PhWjVdFXMyoRS/OYi5HddpRMhqCOiM/xriRpFyBQ
+         ON4uT0xtMNVgee1+QSvo59PkE4IRKTzhZSvkmR6pdEEDrOLBhCflrnlB7s+Qvb17Xo
+         Ldnv4THLV4XPQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shuming Fan <shumingf@realtek.com>,
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, oder_chiou@realtek.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 14/28] ASoC: rt711-sdca: fix kernel NULL pointer dereference when IO error
-Date:   Thu, 14 Jul 2022 00:24:15 -0400
-Message-Id: <20220714042429.281816-14-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, james.schulman@cirrus.com,
+        david.rhodes@cirrus.com, tanureal@opensource.cirrus.com,
+        rf@opensource.cirrus.com, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org,
+        patches@opensource.cirrus.com
+Subject: [PATCH AUTOSEL 5.15 16/28] ASoC: cs47l15: Fix event generation for low power mux control
+Date:   Thu, 14 Jul 2022 00:24:17 -0400
+Message-Id: <20220714042429.281816-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
 References: <20220714042429.281816-1-sashal@kernel.org>
@@ -53,45 +55,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuming Fan <shumingf@realtek.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 1df793d479bef546569fc2e409ff8bb3f0fb8e99 ]
+[ Upstream commit 7f103af4a10f375b9b346b4d0b730f6a66b8c451 ]
 
-The initial settings will be written before the codec probe function.
-But, the rt711->component doesn't be assigned yet.
-If IO error happened during initial settings operations, it will cause the kernel panic.
-This patch changed component->dev to slave->dev to fix this issue.
+cs47l15_in1_adc_put always returns zero regardless of if the control
+value was updated. This results in missing notifications to user-space
+of the control change. Update the handling to return 1 when the value is
+changed.
 
-Signed-off-by: Shuming Fan <shumingf@realtek.com>
-Link: https://lore.kernel.org/r/20220621090719.30558-1-shumingf@realtek.com
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-3-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt711-sdca.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/codecs/cs47l15.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/codecs/rt711-sdca.c b/sound/soc/codecs/rt711-sdca.c
-index 9438fd264405..e99293b8fcf5 100644
---- a/sound/soc/codecs/rt711-sdca.c
-+++ b/sound/soc/codecs/rt711-sdca.c
-@@ -34,7 +34,7 @@ static int rt711_sdca_index_write(struct rt711_sdca_priv *rt711,
+diff --git a/sound/soc/codecs/cs47l15.c b/sound/soc/codecs/cs47l15.c
+index 1ee83160b83f..ac9ccdea15b5 100644
+--- a/sound/soc/codecs/cs47l15.c
++++ b/sound/soc/codecs/cs47l15.c
+@@ -122,6 +122,9 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		snd_soc_kcontrol_component(kcontrol);
+ 	struct cs47l15 *cs47l15 = snd_soc_component_get_drvdata(component);
  
- 	ret = regmap_write(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to set private value: %06x <= %04x ret=%d\n",
- 			addr, value, ret);
++	if (!!ucontrol->value.integer.value[0] == cs47l15->in1_lp_mode)
++		return 0;
++
+ 	switch (ucontrol->value.integer.value[0]) {
+ 	case 0:
+ 		/* Set IN1 to normal mode */
+@@ -150,7 +153,7 @@ static int cs47l15_in1_adc_put(struct snd_kcontrol *kcontrol,
+ 		break;
+ 	}
  
-@@ -50,7 +50,7 @@ static int rt711_sdca_index_read(struct rt711_sdca_priv *rt711,
+-	return 0;
++	return 1;
+ }
  
- 	ret = regmap_read(regmap, addr, value);
- 	if (ret < 0)
--		dev_err(rt711->component->dev,
-+		dev_err(&rt711->slave->dev,
- 			"Failed to get private value: %06x => %04x ret=%d\n",
- 			addr, *value, ret);
- 
+ static const struct snd_kcontrol_new cs47l15_snd_controls[] = {
 -- 
 2.35.1
 
