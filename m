@@ -2,135 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1147C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:24:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7309CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238664AbiGNLYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:24:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        id S238686AbiGNLZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238410AbiGNLYY (ORCPT
+        with ESMTP id S230053AbiGNLZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:24:24 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE10DFAE;
-        Thu, 14 Jul 2022 04:24:23 -0700 (PDT)
-X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286227621"
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="286227621"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 04:24:22 -0700
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="738243957"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 04:24:19 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andy.shevchenko@gmail.com>)
-        id 1oBwx5-001DBX-2t;
-        Thu, 14 Jul 2022 14:24:15 +0300
-Date:   Thu, 14 Jul 2022 14:24:15 +0300
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>, knaerzche@gmail.com,
-        Collabora Kernel ML <kernel@collabora.com>,
-        bob.beckett@collabora.com,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        linux-staging@lists.linux.dev, nicolas.dufresne@collabora.com,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>
-Subject: Re: [PATCH 3/6] bitops: bitmap helper to set variable length values
-Message-ID: <Ys/835VdAYRVYdXW@smile.fi.intel.com>
-References: <20220713163201.136202-1-sebastian.fricke@collabora.com>
- <Ys8Txuq9/u/EL6sj@yury-laptop>
- <CAHp75VeOLfKw4-+Dpn54yy6j=tdiBNA_2Kvhj7mUUjTD-M_vYA@mail.gmail.com>
- <Ys8gpl3m+vvEM7Sy@yury-laptop>
- <CAHp75VeGSWoq-a10nA9NLKBEX7L_eiL0zPMJHUbX=c64wG8hkg@mail.gmail.com>
- <Ys8uKUKErpoWL873@yury-laptop>
+        Thu, 14 Jul 2022 07:25:40 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 687DFDEBA;
+        Thu, 14 Jul 2022 04:25:38 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 26EBPR7d8023296, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 26EBPR7d8023296
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 14 Jul 2022 19:25:27 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 14 Jul 2022 19:25:30 +0800
+Received: from localhost.localdomain (172.21.132.192) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 14 Jul 2022 19:25:29 +0800
+From:   <hildawu@realtek.com>
+To:     <marcel@holtmann.org>
+CC:     <johan.hedberg@gmail.com>, <luiz.dentz@gmail.com>,
+        <linux-bluetooth@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <max.chou@realtek.com>, <alex_lu@realsil.com.cn>,
+        <kidman@realtek.com>
+Subject: [PATCH v2 1/5] Bluetooth: btusb: Add Realtek RTL8852C support ID 0x04CA:0x4007
+Date:   Thu, 14 Jul 2022 19:25:19 +0800
+Message-ID: <20220714112523.13242-2-hildawu@realtek.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220714112523.13242-1-hildawu@realtek.com>
+References: <20220714112523.13242-1-hildawu@realtek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys8uKUKErpoWL873@yury-laptop>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [172.21.132.192]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/14/2022 11:06:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzcvMTQgpFekyCAwOTowNTowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 01:42:17PM -0700, Yury Norov wrote:
-> On Wed, Jul 13, 2022 at 10:14:24PM +0200, Andy Shevchenko wrote:
-> > On Wed, Jul 13, 2022 at 9:44 PM Yury Norov <yury.norov@gmail.com> wrote:
-> > > On Wed, Jul 13, 2022 at 09:10:33PM +0200, Andy Shevchenko wrote:
-> > > > On Wed, Jul 13, 2022 at 8:56 PM Yury Norov <yury.norov@gmail.com> wrote:
-> > > > > On Wed, Jul 13, 2022 at 06:31:59PM +0200, Sebastian Fricke wrote:
+From: Hilda Wu <hildawu@realtek.com>
 
-...
+Add the support ID(0x04CA, 0x4007) to usb_device_id table for
+Realtek RTL8852C.
 
-> > > > > I'd suggest you to try implementing
-> > > > >         bitmap_copy_from(dst, src, dst_off, len)
-> > > > > or even
-> > > > >         bitmap_copy_from(dst, dst_off, src, src_off, len)
-> > > > > if you expect that you'll need more flexibility in the future.
-> > > >
-> > > > Do you think it would be useful?
-> > > >
-> > > > We have bitmap_replace() & bitmap_remap(). Wouldn't that be enough?
-> > >
-> > > bitmap_replace and bitmap_remap have no an 'offset' parameter.
-> > 
-> > True.
-> > 
-> > But then it's a bit too generic to have this src_off, no?
-> 
-> That's why I said:
-> 
-> > > > > if you expect that you'll need more flexibility in the future.
-> 
-> My preferred option is bitmap_copy_from(dst, src, dst_off, len).
-> 
-> > I would rather expect for asymmetrical bitmaps that the other side
-> > will be either one of the fixed width types (it makes sense to have
-> > for 32- or 64-bit arguments.
-> 
-> Look at patch #6 - it copies 1,4,5,9,10,32,37... - pretty much a random
-> number number of bits.
+The device info from /sys/kernel/debug/usb/devices as below.
 
-It's too poor randomness, as u64 covers all what in patch 6.
+T:  Bus=03 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=12   MxCh= 0
+D:  Ver= 1.00 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+P:  Vendor=04ca ProdID=4007 Rev= 0.00
+S:  Manufacturer=Realtek
+S:  Product=Bluetooth Radio
+S:  SerialNumber=00e04c000001
+C:* #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=1ms
+E:  Ad=02(O) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
+I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
+I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
+I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
+I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
+I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
+E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
 
-> > When you have a source bitmap of x bits and  you would like to copy it
-> > into a y-bit one, I would think that either you have a small amount of
-> > bits in x anyway, or x is a full-sized bitmap (same order as y).
-> 
-> It sounds like a speculation to me. Why shouldn't we let people to
-> copy with an offset any number of bits? 
+Signed-off-by: Hilda Wu <hildawu@realtek.com>
+---
+ drivers/bluetooth/btusb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Because it's a common case. You have a value in the register / variable, which
-naturally is one of the POD types. Now you want to inject this into bitmap at
-the arbitrary offset. Value itself also needs to be variadic size in bits.
-
-Basically what he is trying to achieve is something like bitfield.h API over
-bitmaps. Dunno, if actually bitfield.h in the certain driver wouldn't be
-enough.
-
-> > Also
-> > keep in mind that granularity is long, so less than long it makes no
-> > sense.
-> > 
-> >   bitmap_copy_from_T(unsigned long *map, start, len, T src),
-> > 
-> > where T is type, start is the offset in map, len is the amount of bits
-> > from src starting from 0. That's what is required in most of the cases
-> > I believe.
-> 
-> But not in Sebastian's case, according to patch #6.
-
-I think it's a case, see above.
-
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index fb1a67189412..f3a68d755099 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -427,6 +427,10 @@ static const struct usb_device_id blacklist_table[] = {
+ 	{ USB_DEVICE(0x04ca, 0x4006), .driver_info = BTUSB_REALTEK |
+ 						     BTUSB_WIDEBAND_SPEECH },
+ 
++	/* Realtek 8852CE Bluetooth devices */
++	{ USB_DEVICE(0x04ca, 0x4007), .driver_info = BTUSB_REALTEK |
++						     BTUSB_WIDEBAND_SPEECH },
++
+ 	/* Realtek Bluetooth devices */
+ 	{ USB_VENDOR_AND_INTERFACE_INFO(0x0bda, 0xe0, 0x01, 0x01),
+ 	  .driver_info = BTUSB_REALTEK },
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
