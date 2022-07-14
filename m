@@ -2,81 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D487ACCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 23:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C5EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 23:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240787AbiGNXMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 19:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S240678AbiGNXPi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 19:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGNXML (ORCPT
+        with ESMTP id S229481AbiGNXPh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 19:12:11 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA14E13EB5;
-        Thu, 14 Jul 2022 16:12:09 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LkVcj1klCz4xj3;
-        Fri, 15 Jul 2022 09:12:05 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1657840325;
-        bh=5H/p7fC0T7O0CKL7lcUQrsN0T83Ij9Fuk1Fp22Ad9xs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=T1t65oLaJwVKZsIJdfInsG64wh/mNEFDLOf3MPQE1biuH7YpHnJ95Z+Jov0YI4HhD
-         GXtvpKaLK6JOfAN1bn825Q0s8WODDqO0CXhEcBXrwTbsVcMNRMW8aI5ocWqZ/Le/Ue
-         l9jb8BqoRQdvNaizMj8BQRssyWBLNfiBMDwdSB1/nX4FQcEHUbLOWdGRo9olUVO/E9
-         HGJPqYMPGG60JM4tm+JRmuloAyywb380F/6ekF5sRPpQpN/NphCC+hYN41frRRPvvE
-         24XNRz4KFcGFT7PcPhpBZ0EhgkSvgjDm3UjP6HKZVP7y36qbZaWI6suaQ3cJUCTdHh
-         EHc0690fohrjA==
-Date:   Fri, 15 Jul 2022 09:11:49 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Mimi Zohar <zohar@linux.vnet.ibm.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the integrity tree
-Message-ID: <20220715091149.3136235c@canb.auug.org.au>
+        Thu, 14 Jul 2022 19:15:37 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 937AD70E52;
+        Thu, 14 Jul 2022 16:15:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657840536; x=1689376536;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=H72vDAfPb/FZ8kn2h1SLYLPaWmLyKQvlwofVuzFDncI=;
+  b=V90tkd6ftmY8KikbwIimUrh8Q0SqrRur5Nr8gQD3gG0fnbIhEv4UaYxQ
+   nNM0eZDHHQ4vFqC7aFZFa3j02F7VJIRsubh3Or2/deTgQBcB+hCNDafgL
+   TTd6qNg+h5kHlutl99rlvB5iNx3Gkq/KUkb3Yi2hKjjBmxFXR7sKOkcgh
+   zyRNSTA+0NnMnS82/yz+zk5pvOQ6SNG0VEW04Gr8NvLtpouMjWDUAyHk1
+   3fP6zs3RkVijNuMS3UcEzE4nwW/gI7F+PFYiXGoxNz39kvLkZGC7uJUCK
+   gFOdszqyD/rgWuhG/yExcgNVmCHnq9jNNA28W0kJVkmmltvyIS8/1fFn9
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="286390807"
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="286390807"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 16:15:36 -0700
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="546446644"
+Received: from jacobode-mobl.amr.corp.intel.com (HELO desk) ([10.212.243.89])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 16:15:35 -0700
+Date:   Thu, 14 Jul 2022 16:15:35 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        antonio.gomez.iglesias@linux.intel.com,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: [PATCH v2] x86/bugs: Warn when "ibrs" mitigation is selected on
+ Enhanced IBRS parts
+Message-ID: <2a5eaf54583c2bfe0edc4fea64006656256cca17.1657814857.git.pawan.kumar.gupta@linux.intel.com>
+References: <0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/yloJtg/GQj0hytyyf=AnVtt";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/yloJtg/GQj0hytyyf=AnVtt
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+IBRS mitigation for spectre_v2 forces write to MSR_IA32_SPEC_CTRL at
+every kernel entry/exit. On Enhanced IBRS parts setting
+MSR_IA32_SPEC_CTRL[IBRS] only once at boot is sufficient. MSR writes at
+every kernel entry/exit incur unnecessary performance loss.
 
-Hi all,
+When Enhanced IBRS feature is present, print a warning about this
+unnecessary performance loss.
 
-Commits
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+---
+v1->v2: Instead of changing the mitigation, print a warning about the
+        perf loss.
 
-  47e766ce0c21 ("kexec: drop weak attribute from functions")
-  0ce9331cf85a ("kexec_file: drop weak attribute from functions")
+v1: https://lore.kernel.org/lkml/0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com/
 
-are missing a Signed-off-by from their committers.
+ arch/x86/kernel/cpu/bugs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---=20
-Cheers,
-Stephen Rothwell
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 0dd04713434b..1c54fad3c54b 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -975,6 +975,7 @@ static inline const char *spectre_v2_module_string(void) { return ""; }
+ #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
+ #define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
++#define SPECTRE_V2_IBRS_PERF_MSG "WARNING: IBRS mitigation selected on Enhanced IBRS CPU, this may cause unnecessary performance loss\n"
+ 
+ #ifdef CONFIG_BPF_SYSCALL
+ void unpriv_ebpf_notify(int new_state)
+@@ -1415,6 +1416,8 @@ static void __init spectre_v2_select_mitigation(void)
+ 
+ 	case SPECTRE_V2_IBRS:
+ 		setup_force_cpu_cap(X86_FEATURE_KERNEL_IBRS);
++		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED))
++			pr_warn(SPECTRE_V2_IBRS_PERF_MSG);
+ 		break;
+ 
+ 	case SPECTRE_V2_LFENCE:
 
---Sig_/yloJtg/GQj0hytyyf=AnVtt
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+base-commit: 4a57a8400075bc5287c5c877702c68aeae2a033d
+-- 
+2.35.3
 
------BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLQorYACgkQAVBC80lX
-0GzLAAf/ap/GewdHdNr+KFZX/j2nooyvOcb6Na8NOTnx05yWjkZxy4Uf1pJdelm5
-MDVGDrYC8q2gEkHYrx+GX3ZfxabZ5pBS7OVwbRu35QG+fwuLCUGNPufyfO7Vi2ZY
-IlEJvRLnU0njIfu7DNPCUHxpYhE2Q5n1HaJZg65qTtuMyRyB5nosJhbnT2e6gxRd
-aG8DNAN5EVTQW8o0QhmKdQpEAQKY4Q1TDc/UUiNR/aMqOV1WLkHGah5uMZS39xdD
-YRa/FXHrdC/6CIcj4daNNOtzYvnl/hWNj+eX5ijQA0OyDUML+IfhMgXUBZeG94zN
-k3AT1HW9S589A6l7FGi87wgfrK1lNQ==
-=aHTc
------END PGP SIGNATURE-----
-
---Sig_/yloJtg/GQj0hytyyf=AnVtt--
