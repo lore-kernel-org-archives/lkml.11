@@ -2,92 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA538C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F35DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238110AbiGNJRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
+        id S238146AbiGNJSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:18:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237895AbiGNJR0 (ORCPT
+        with ESMTP id S237896AbiGNJSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:17:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B96948C9C
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790079;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UjsNm2Jv3oaUf3Eo8JPqiZa30xi6lvau/0XmuvFshsw=;
-        b=Ppi5MqR6NERcNj4C6iZGA12E7vMxk+LUHqExnLMU2piA9J25YCjjIWlQSgbQrzMOoZCmYR
-        s6HsLDFx80pF+2RXv+4jeUJWRBwxgM/IeRd0RGVhCT9iAWB+HrVtQOXlugGYtRKYtG0NAV
-        U+fn2SISk3EC0JdOiYF9vGnuVjG0UA8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-426-YCDDQresObKSa9XCUyP33A-1; Thu, 14 Jul 2022 05:14:34 -0400
-X-MC-Unique: YCDDQresObKSa9XCUyP33A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BD20B3C01DE4;
-        Thu, 14 Jul 2022 09:14:33 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B79F2166B26;
-        Thu, 14 Jul 2022 09:14:31 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 25/25] KVM: nVMX: Use cached host MSR_IA32_VMX_MISC value for setting up nested MSR
-Date:   Thu, 14 Jul 2022 11:13:27 +0200
-Message-Id: <20220714091327.1085353-26-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+        Thu, 14 Jul 2022 05:18:00 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0F64A82B
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:49 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id r9so1762279lfp.10
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:15:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=R+KzWMV4PGws7LHrrh61+iUc6s0/upYI0aondL2dwwY=;
+        b=qxclZdaOL0Z2pWNQkJeemWXR7/uucodFnIH6t05D3hME0vYV542h+0TcKto/g/+L9L
+         kCrfljDmp7NmiDi+iAjXKqBlAnJJRId8hBZ3vYZlGwgmNHkQZSuPVpOuLNYwfLG0tY9N
+         9ZNnJyL1PzpjcMNwr3O37tsrUNGox5N5VPiJYYKCabDQN7z0h4rRRWhht0Fr+QRmv+0k
+         MdOLRruTS1V6lTAA5M+xV/wghi7koOOCiDQuMyIdztrwRrGONdDnd1MsAx56UPRFZTX8
+         ILOwDQO6BGDQ5c3nwlK9G7/uq1S9rjS4+z+RwJrgF77dwzbubFlDmQ+mnxUBvEzdDCdh
+         cdDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=R+KzWMV4PGws7LHrrh61+iUc6s0/upYI0aondL2dwwY=;
+        b=ZgXpAwz1A9oCgSS9aLNLQ001Mb5n3+cS98z/eHYDA57GQ6FLfWo6GGvhJrgFi2pleP
+         w0dnknIFLPfd0q9URVKEV+8S5GcG7L7Ma290Fo0G3CPGc7fz25HY9Y061Xvq2GEAfPhJ
+         jebPi2Y/6/ac3WftHMyNbLNHbq9c/90FW//ccNp2uWRUWOq22eaTDnxVNSyqpXHLdBb3
+         XwL3qAHbICyQfgcmtLo89syK4T3wmdWCSUCoeyLkfmky0HEIlWVBLg0a+V3PstOZZ7H4
+         uxVeXXmzw3O3pFVTYaMDPWghL7cmyJFsMjeNYU07gFT0TZqeY0MgtpR7i5WWLBp/0wlz
+         A67g==
+X-Gm-Message-State: AJIora/QX2+uyRSZLDrKzS8PeaQEjHqzulpQB/XI4HnStGFgMWNGNNB/
+        s7QrNfo3ph3rh2RTwUzcyyf3Vg==
+X-Google-Smtp-Source: AGRyM1sQWC4ogVdKX+fBAK6mPRvhxHD8r32F51/7jDL1xoqZXPehDsD9tbjLIkKwEPqmVgm7V44uBA==
+X-Received: by 2002:a05:6512:16a2:b0:489:cbc9:a4ec with SMTP id bu34-20020a05651216a200b00489cbc9a4ecmr4630321lfb.173.1657790143160;
+        Thu, 14 Jul 2022 02:15:43 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id h25-20020a056512055900b0047f79c636f7sm253111lfl.167.2022.07.14.02.15.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 02:15:42 -0700 (PDT)
+Message-ID: <0e698eed-e6ff-9c37-1de9-f1f224531c8c@linaro.org>
+Date:   Thu, 14 Jul 2022 11:15:40 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 13/30] dt-bindings: phy: qcom,qmp-pcie: add missing
+ child node schema
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220707134725.3512-1-johan+linaro@kernel.org>
+ <20220707134725.3512-14-johan+linaro@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220707134725.3512-14-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-vmcs_config has cached host MSR_IA32_VMX_MISC value, use it for setting
-up nested MSR_IA32_VMX_MISC in nested_vmx_setup_ctls_msrs() and avoid the
-redundant rdmsr().
+On 07/07/2022 15:47, Johan Hovold wrote:
+> Add the missing the description of the PHY-provider child node which was
+> ignored when converting to DT schema.
+> 
+> Fixes: ccf51c1cedfd ("dt-bindings: phy: qcom,qmp: Convert QMP PHY bindings to yaml")
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  .../bindings/phy/qcom,qmp-pcie-phy.yaml       | 92 +++++++++++++++++++
 
-No (real) functional change intended.
 
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/vmx/nested.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 3d386c663fac..8026dab71086 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -6754,10 +6754,7 @@ void nested_vmx_setup_ctls_msrs(struct vmcs_config *vmcs_conf, u32 ept_caps)
- 		msrs->secondary_ctls_high |= SECONDARY_EXEC_ENCLS_EXITING;
- 
- 	/* miscellaneous data */
--	rdmsr(MSR_IA32_VMX_MISC,
--		msrs->misc_low,
--		msrs->misc_high);
--	msrs->misc_low &= VMX_MISC_SAVE_EFER_LMA;
-+	msrs->misc_low = (u32)vmcs_conf->misc & VMX_MISC_SAVE_EFER_LMA;
- 	msrs->misc_low |=
- 		MSR_IA32_VMX_MISC_VMWRITE_SHADOW_RO_FIELDS |
- 		VMX_MISC_EMULATED_PREEMPTION_TIMER_RATE |
--- 
-2.35.3
 
+Best regards,
+Krzysztof
