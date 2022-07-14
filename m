@@ -2,146 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 536CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:46:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A15C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238473AbiGNJqC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:46:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52810 "EHLO
+        id S238475AbiGNJqG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238427AbiGNJpj (ORCPT
+        with ESMTP id S238428AbiGNJpj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 05:45:39 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B7B4A830;
-        Thu, 14 Jul 2022 02:45:36 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJImAaW_1657791924;
-Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJImAaW_1657791924)
-          by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 17:45:34 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/6] net/smc: Introduce a sysctl for setting SMC-R buffer type
-Date:   Thu, 14 Jul 2022 17:44:02 +0800
-Message-Id: <1657791845-1060-4-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D7E17E17;
+        Thu, 14 Jul 2022 02:45:38 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so2520328pjf.2;
+        Thu, 14 Jul 2022 02:45:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=WDks3qDrWxLLtCzjVaMIFrgSz1H5Uq4a3TXwwtZzFxU=;
+        b=fWGF1ctfDmnVtVVRRM36dynmdVl5bGA5h+FhA/rID6Nz0G4nnvxzp6sBGGMWZzEIM8
+         Ti/CupQerEuuJ/t+arQqrcuFTRxO0y+JmIUVMnNsVLsz9777aWANmt6xDH+oeYV8l5Va
+         AWQK9BAJnyZ6LOo3ljekYK4Tg9MWmPV0qTZCKsFgs4w49HQ4alVZH1bU3HdDWSGuJOGA
+         JSHBvZH6fCUKAoGvugqzKZp98FzCfg1oru3zJdFKKVGFsTinD8hKy/64/8xifmY+4Zkx
+         NfUZ6eZb63b5mV0JDdPEoxVGLeZUT+2WCSI0F0Jx8NAVbl2DgLTj4G3u4aR55lUU3HQC
+         gyAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=WDks3qDrWxLLtCzjVaMIFrgSz1H5Uq4a3TXwwtZzFxU=;
+        b=5/fFq5FrcR3OAOhTyFhFjv1gAuIBdpF/F2YVugUxjqaMJFEK/yu/hcBFwGTUneB42r
+         lZwQMBaMQ34JrJHsmADbhE61AKk7wVk4f/kPaABe1btA3SKNzaMrmOF449L3l9i0iCJO
+         TX8jmjLGGhg0pEeGC/wRQJyXjytzqyZU/57fXKY9dEErEU3GjCf+ER1ttkE05IEnwrDs
+         e4xsnT1jMUslp48tmrzlaqUGUx1wYTJ8iytiwvfCGiMgwSrcoOe0yAdYRIcAJ7XcJJku
+         izEgjXeQGq7pniVGkeno6t+1H9RkklE03CYA7Qhe+blhQpc/9jj0KSb6TX1fhXpkPNR3
+         +eqg==
+X-Gm-Message-State: AJIora8xGYUt3m0N4BEsaC+xmjR/7hwQm3wtvmGhIngtrH4cxv0iaTup
+        zDj17j5XCbX+l/SdVJgpDxWW7Ceu4/g=
+X-Google-Smtp-Source: AGRyM1tUr9tR7jln7dFmubnwg490ShbAWDJfkuJr+RTXFGwsJjS7W6AtAl4lhV9QSY8VQ/DodM9emw==
+X-Received: by 2002:a17:903:189:b0:16c:39b2:c217 with SMTP id z9-20020a170903018900b0016c39b2c217mr8102829plg.113.1657791937720;
+        Thu, 14 Jul 2022 02:45:37 -0700 (PDT)
+Received: from localhost.localdomain ([2402:7500:488:5f89:217d:a3c8:f1ea:4115])
+        by smtp.gmail.com with ESMTPSA id i1-20020a056a00004100b0052acb753b8bsm1169233pfk.158.2022.07.14.02.45.34
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Jul 2022 02:45:37 -0700 (PDT)
+From:   cy_huang <u0084500@gmail.com>
+To:     jic23@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v6 1/3] dt-bindings: iio: adc: Add rtq6056 adc support
+Date:   Thu, 14 Jul 2022 17:45:23 +0800
+Message-Id: <1657791925-23929-2-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657791925-23929-1-git-send-email-u0084500@gmail.com>
+References: <1657791925-23929-1-git-send-email-u0084500@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch introduces the sysctl smcr_buf_type for setting
-the type of SMC-R sndbufs and RMBs.
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Valid values includes:
+Add the documentation for Richtek rtq6056.
 
-- SMCR_PHYS_CONT_BUFS, which means use physically contiguous
-  buffers for better performance and is the default value.
-
-- SMCR_VIRT_CONT_BUFS, which means use virtually contiguous
-  buffers in case of physically contiguous memory is scarce.
-
-- SMCR_MIXED_BUFS, which means first try to use physically
-  contiguous buffers. If not available, then use virtually
-  contiguous buffers.
-
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/networking/smc-sysctl.rst | 13 +++++++++++++
- include/net/netns/smc.h                 |  1 +
- net/smc/smc_core.h                      |  6 ++++++
- net/smc/smc_sysctl.c                    | 11 +++++++++++
- 4 files changed, 31 insertions(+)
+Since v3
+- change the node name to be generic 'adc' in binding example.
 
-diff --git a/Documentation/networking/smc-sysctl.rst b/Documentation/networking/smc-sysctl.rst
-index 0987fd1..742e90e 100644
---- a/Documentation/networking/smc-sysctl.rst
-+++ b/Documentation/networking/smc-sysctl.rst
-@@ -21,3 +21,16 @@ autocorking_size - INTEGER
- 	know how/when to uncork their sockets.
- 
- 	Default: 64K
+Since v2
+- Change the resistor property name to be generic 'shunt-resistor-micro-ohms'.
+
+---
+ .../bindings/iio/adc/richtek,rtq6056.yaml          | 56 ++++++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+new file mode 100644
+index 00000000..88e0086
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/richtek,rtq6056.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+smcr_buf_type - INTEGER
-+        Controls which type of sndbufs and RMBs to use in later newly created
-+        SMC-R link group. Only for SMC-R.
++title: RTQ6056 Bi-Directional Current and Power Monitor with 16-bit ADC
 +
-+        Default: 0 (physically contiguous sndbufs and RMBs)
++maintainers:
++  - ChiYuan Huang <cy_huang@richtek.com>
 +
-+        Possible values:
++description: |
++  The RTQ6056 is a high accuracy current-sense monitor with I2C and SMBus
++  interface, and the device provides full information for system by reading
++  out the loading current and power.
 +
-+        - 0 - Use physically contiguous buffers
-+        - 1 - Use virtually contiguous buffers
-+        - 2 - Mixed use of the two types. Try physically contiguous buffers first.
-+          If not available, use virtually contiguous buffers then.
-diff --git a/include/net/netns/smc.h b/include/net/netns/smc.h
-index e5389ee..2adbe2b 100644
---- a/include/net/netns/smc.h
-+++ b/include/net/netns/smc.h
-@@ -18,5 +18,6 @@ struct netns_smc {
- 	struct ctl_table_header		*smc_hdr;
- #endif
- 	unsigned int			sysctl_autocorking_size;
-+	unsigned int			sysctl_smcr_buf_type;
- };
- #endif
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 46ddec5..7652dfa 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -217,6 +217,12 @@ enum smc_lgr_type {				/* redundancy state of lgr */
- 	SMC_LGR_ASYMMETRIC_LOCAL,	/* local has 1, peer 2 active RNICs */
- };
- 
-+enum smcr_buf_type {		/* types of SMC-R sndbufs and RMBs */
-+	SMCR_PHYS_CONT_BUFS	= 0,
-+	SMCR_VIRT_CONT_BUFS	= 1,
-+	SMCR_MIXED_BUFS		= 2,
-+};
++  The device monitors both of the drops across sense resistor and the BUS
++  voltage, converts into the current in amperes, and power in watts through
++  internal analog-to-digital converter ADC. The programmable calibration,
++  adjustable conversion time, and averaging function are also built in for
++  more design flexibility.
 +
- enum smc_llc_flowtype {
- 	SMC_LLC_FLOW_NONE	= 0,
- 	SMC_LLC_FLOW_ADD_LINK	= 2,
-diff --git a/net/smc/smc_sysctl.c b/net/smc/smc_sysctl.c
-index cf3ab13..0613868 100644
---- a/net/smc/smc_sysctl.c
-+++ b/net/smc/smc_sysctl.c
-@@ -15,6 +15,7 @@
- #include <net/net_namespace.h>
- 
- #include "smc.h"
-+#include "smc_core.h"
- #include "smc_sysctl.h"
- 
- static struct ctl_table smc_table[] = {
-@@ -25,6 +26,15 @@
- 		.mode           = 0644,
- 		.proc_handler	= proc_douintvec,
- 	},
-+	{
-+		.procname	= "smcr_buf_type",
-+		.data		= &init_net.smc.sysctl_smcr_buf_type,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_douintvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_TWO,
-+	},
- 	{  }
- };
- 
-@@ -49,6 +59,7 @@ int __net_init smc_sysctl_net_init(struct net *net)
- 		goto err_reg;
- 
- 	net->smc.sysctl_autocorking_size = SMC_AUTOCORKING_DEFAULT_SIZE;
-+	net->smc.sysctl_smcr_buf_type = SMCR_PHYS_CONT_BUFS;
- 
- 	return 0;
- 
++  Datasheet is available at
++  https://www.richtek.com/assets/product_file/RTQ6056/DSQ6056-00.pdf
++
++properties:
++  compatible:
++    const: richtek,rtq6056
++
++  reg:
++    maxItems: 1
++
++  "#io-channel-cells":
++    const: 1
++
++  shunt-resistor-micro-ohms:
++    description: Shunt IN+/IN- sensing node resistor
++
++required:
++  - compatible
++  - reg
++  - "#io-channel-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      adc@40 {
++        compatible = "richtek,rtq6056";
++        reg = <0x40>;
++        #io-channel-cells = <1>;
++      };
++    };
 -- 
-1.8.3.1
+2.7.4
 
