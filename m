@@ -2,144 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08337C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66AA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238918AbiGNNSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44402 "EHLO
+        id S239387AbiGNNTk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:19:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbiGNNSh (ORCPT
+        with ESMTP id S237339AbiGNNTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:18:37 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEDC2723
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:18:36 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id p9so2842984pjd.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:18:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FICPOvskNZaVS6/YR3ZJCLElglUVHG4aUM/j9Ly4324=;
-        b=ooP01MEqxBoJ6U5T/WcpBN+kmFOvE889VGqCywIGW92yZMj/tMHwMp6z6X+qBhSxhC
-         /ZXjM3V3lGjRLGvunCkCSEAKBaTK7gGR0FNmTYEg871ZdLUVUYAzi0v/CrqtWubqr94w
-         LUPJP23Wz9OQBRgJ1gJWSmPgvZMC0Gt07jR1LW3hT/MRhse+tXwoMMW6VzhpWz7DrWLX
-         CRMrpHtfG22WVR/7YoPTfFSi7STDVIqt0MMk6Sw1HYvr1cAE+mhO29U0MbznaePoVYsG
-         HSoCwV1PzTXD59wkE+RU82tTnZ5thvHXP3e/PaMjyBPpsUkgnPLWwsf9FQs4sjmkKsKb
-         4xCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FICPOvskNZaVS6/YR3ZJCLElglUVHG4aUM/j9Ly4324=;
-        b=BHHsBT3kp8guyMPKb5l97CbRDwdWlE8W6zbssNUv4s1Rxw1q9tVd1a99pHqXhylVsZ
-         pDdie7O8V8pXV1diqnSJ9gN/wDZgW+Ur3cCLJjvUnVbC5j+dd0YCiCprUcR1nS28lSNs
-         BwdLY3jCC32RcEP2GNYY03iAO39N2YK4NOqhWOLlQS25Lkwuqr/PWOkmV2JOWldY3yHo
-         f+60zPoLkyArxo9RXRW/mgCEqI0sVX8obTXleZ3GQ6IpmMKnIae3zlkV6cASAnlXcYxA
-         1iuXiY9HWmTZT9ndKoXZzSHfvmxPYUAbJbEK5zqL+4ZY3CW2hZ/zz+WR3aGI5AdT8UzG
-         RuDA==
-X-Gm-Message-State: AJIora+KcgUkU2BvM4/T9/ecMtK2VcZ0aYQSTVm9RpuPE1VZQZc436rF
-        PncJ2/q6Ch2TbD9NUxxfWyQTeN0tCUH2RQ0=
-X-Google-Smtp-Source: AGRyM1uAw2M8wcHabu7VBgr4Scn4GmEmyZCmDrjmoyrcS84dkCO6AijkpeVD5EJaAuvSiKtlKGjaJQ==
-X-Received: by 2002:a17:90a:b117:b0:1ef:958f:e5b7 with SMTP id z23-20020a17090ab11700b001ef958fe5b7mr15947591pjq.107.1657804716264;
-        Thu, 14 Jul 2022 06:18:36 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id c6-20020a63d146000000b0040d75537824sm1297573pgj.86.2022.07.14.06.18.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 06:18:35 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     eli.billauer@gmail.com, arnd@arndb.de, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH v5 RESEND] char: xillybus: Check endpoint type at probe time
-Date:   Thu, 14 Jul 2022 21:18:24 +0800
-Message-Id: <20220714131824.919052-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 09:19:39 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3615A2D6;
+        Thu, 14 Jul 2022 06:19:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657804777; x=1689340777;
+  h=to:cc:subject:references:date:mime-version:
+   content-transfer-encoding:from:message-id:in-reply-to;
+  bh=MlovTKwdv4vyOzzEPdprXX3mxaB1TZB0fD8qqF0s5OY=;
+  b=KJ/uAkLHjE36UkJ1ARKNSf+j6fn7nWNXc2ZoUnCQ+ZEmyk23KkcWbGi2
+   7AVN0m1UV4JYk9U6LPQN3y9UcZFNtFHEIyU4Lgn/cGXzZ0txye23ZB5KO
+   dZvP0Rcfvn8at2clLNv8jOkTk+OUN2hsreB/iAzLroxlPkE2nfseNFLVl
+   V0zeCQyG+rCpI9DxSIbv/Mf9VQAbYtXMcrCdTJTlokaiXrHQ647sTrj2H
+   w+hlIqToDn5Zkjtl8fTsyfAQ2WjFri9dxZfPnIL3LNJ+wGJWzb3i//vtT
+   oFxVnBftlm1Eqk2p8yDWSWmRAjmYcZ+S/wtdFp+2Ua4JIurKDL1J4kYuM
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="283064623"
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="283064623"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 06:19:37 -0700
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="653870234"
+Received: from hhuan26-mobl1.amr.corp.intel.com (HELO hhuan26-mobl1.mshome.net) ([10.212.123.68])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-SHA; 14 Jul 2022 06:19:36 -0700
+Content-Type: text/plain; charset=iso-8859-15; format=flowed; delsp=yes
+To:     linux-kernel@vger.kernel.org,
+        "Dave Hansen" <dave.hansen@linux.intel.com>
+Cc:     "Jarkko Sakkinen" <jarkko@kernel.org>,
+        "Andy Lutomirski" <luto@kernel.org>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+        linux-sgx@vger.kernel.org
+Subject: Re: [PATCH] x86/sgx: Allow enclaves to use Asynchrounous Exit
+ Notification
+References: <20220705183648.3739111-1-dave.hansen@linux.intel.com>
+Date:   Thu, 14 Jul 2022 08:19:31 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+From:   "Haitao Huang" <haitao.huang@linux.intel.com>
+Organization: Intel Corp
+Message-ID: <op.1pasmtstwjvjmi@hhuan26-mobl1.mshome.net>
+In-Reply-To: <20220705183648.3739111-1-dave.hansen@linux.intel.com>
+User-Agent: Opera Mail/1.0 (Win32)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The driver submits bulk urb without checking the endpoint type is
-actually bulk.
+Hi Dave
 
-[    3.108690] usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-[    3.108983] WARNING: CPU: 0 PID: 211 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd9/0x18b0
-[    3.110976] RIP: 0010:usb_submit_urb+0xcd9/0x18b0
-[    3.115318] Call Trace:
-[    3.115452]  <TASK>
-[    3.115570]  try_queue_bulk_in+0x43c/0x6e0 [xillyusb]
-[    3.115838]  xillyusb_probe+0x488/0x1230 [xillyusb]
+I think you need add this change in arch/x86/kernel/cpu/sgx/ioctl.c,  
+inside sgx_encl_create function:
 
-Add a check at probe time to fix the bug.
+-	encl->attributes_mask = SGX_ATTR_DEBUG | SGX_ATTR_MODE64BIT |  
+SGX_ATTR_KSS;
++	encl->attributes_mask = SGX_ATTR_DEBUG | SGX_ATTR_MODE64BIT |  
+SGX_ATTR_KSS | SGX_ATTR_ASYNC_EXIT_NOTIFY;
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/char/xillybus/xillyusb.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+Otherwise, EINIT ioctl fails with this new attribute set in enclave secs.
 
-diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-index 39bcbfd908b4..b1bac2fdb42a 100644
---- a/drivers/char/xillybus/xillyusb.c
-+++ b/drivers/char/xillybus/xillyusb.c
-@@ -167,6 +167,7 @@ struct xillyusb_dev {
- 	struct device		*dev; /* For dev_err() and such */
- 	struct kref		kref;
- 	struct workqueue_struct	*workq;
-+	struct usb_interface *intf;
- 
- 	int error;
- 	spinlock_t error_lock; /* protect @error */
-@@ -1890,8 +1891,31 @@ static const struct file_operations xillyusb_fops = {
- 	.poll       = xillyusb_poll,
- };
- 
-+static int xillyusb_check_endpoint(struct xillyusb_dev *xdev, u8 addr)
-+{
-+	int i;
-+	struct usb_host_interface *if_desc = xdev->intf->altsetting;
-+
-+	for (i = 0; i < if_desc->desc.bNumEndpoints; i++) {
-+		struct usb_endpoint_descriptor *ep = &if_desc->endpoint[i].desc;
-+
-+		if (ep->bEndpointAddress != addr)
-+			continue;
-+
-+		if ((usb_pipein(addr) && usb_endpoint_is_bulk_in(ep)) ||
-+			(usb_pipeout(addr) && usb_endpoint_is_bulk_out(ep)))
-+			return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
- {
-+	if (xillyusb_check_endpoint(xdev, IN_EP_NUM | USB_DIR_IN) ||
-+		xillyusb_check_endpoint(xdev, MSG_EP_NUM | USB_DIR_OUT))
-+		return -EINVAL;
-+
- 	xdev->msg_ep = endpoint_alloc(xdev, MSG_EP_NUM | USB_DIR_OUT,
- 				      bulk_out_work, 1, 2);
- 	if (!xdev->msg_ep)
-@@ -1963,6 +1987,8 @@ static int setup_channels(struct xillyusb_dev *xdev,
- 			chan->out_log2_element_size = out_desc & 0x0f;
- 			chan->out_log2_fifo_size =
- 				((out_desc >> 8) & 0x1f) + 16;
-+			if (xillyusb_check_endpoint(xdev, (i+2) | USB_DIR_OUT))
-+				return -EINVAL;
- 		}
- 	}
- 
-@@ -2126,6 +2152,7 @@ static int xillyusb_probe(struct usb_interface *interface,
- 	mutex_init(&xdev->process_in_mutex);
- 	mutex_init(&xdev->msg_mutex);
- 
-+	xdev->intf = interface;
- 	xdev->udev = usb_get_dev(interface_to_usbdev(interface));
- 	xdev->dev = &interface->dev;
- 	xdev->error = 0;
--- 
-2.25.1
 
+Thanks
+Haitao
+On Tue, 05 Jul 2022 13:36:48 -0500, Dave Hansen  
+<dave.hansen@linux.intel.com> wrote:
+
+> Short Version:
+>
+> Allow enclaves to use the new Asynchronous EXit (AEX)
+> notification mechanism.  This mechanism lets enclaves run a
+> handler after an AEX event.  These handlers can run mitigations
+> for things like SGX-Step[1].
+>
+> AEX Notify will be made available both on upcoming processors and
+> on some older processors through microcode updates.
+>
+> Long Version:
+>
+> == SGX Attribute Background ==
+>
+> The SGX architecture includes a list of SGX "attributes".  These
+> attributes ensure consistency and transparency around specific
+> enclave features.
+>
+> As a simple example, the "DEBUG" attribute allows an enclave to
+> be debugged, but also destroys virtually all of SGX security.
+> Using attributes, enclaves can know that they are being debugged.
+> Attributes also affect enclave attestation so an enclave can, for
+> instance, be denied access to secrets while it is being debugged.
+>
+> The kernel keeps a list of known attributes and will only
+> initialize enclaves that use a known set of attributes.  This
+> kernel policy eliminates the chance that a new SGX attribute
+> could cause undesired effects.
+>
+> For example, imagine a new attribute was added called
+> "PROVISIONKEY2" that provided similar functionality to
+> "PROVISIIONKEY".  A kernel policy that allowed indiscriminate use
+> of unknown attributes and thus PROVISIONKEY2 would undermine the
+> existing kernel policy which limits use of PROVISIONKEY enclaves.
+>
+> == AEX Notify Background ==
+>
+> "Intel Architecture Instruction Set Extensions and Future
+> Features - Version 45" is out[2].  There is a new chapter:
+>
+> 	Asynchronous Enclave Exit Notify and the EDECCSSA User Leaf Function.
+>
+> Enclaves exit can be either synchronous and consensual (EEXIT for
+> instance) or asynchronous (on an interrupt or fault).  The
+> asynchronous ones can evidently be exploited to single step
+> enclaves[1], on top of which other naughty things can be built.
+>
+> AEX Notify will be made available both on upcoming processors and
+> on some older processors through microcode updates.
+>
+> == The Problem ==
+>
+> These attacks are currently entirely opaque to the enclave since
+> the hardware does the save/restore under the covers. The
+> Asynchronous Enclave Exit Notify (AEX Notify) mechanism provides
+> enclaves an ability to detect and mitigate potential exposure to
+> these kinds of attacks.
+>
+> == The Solution ==
+>
+> Define the new attribute value for AEX Notification.  Ensure the
+> attribute is cleared from the list reserved attributes which
+> allows it to be used in enclaves.
+>
+> I just built this and ran it to make sure there were no obvious
+> regressions since I do not have the hardware to test it handy.
+> Tested-by's would be much appreciated.
+>
+> 1. https://github.com/jovanbulck/sgx-step
+> 2. https://cdrdv2.intel.com/v1/dl/getContent/671368?explicitVersion=true
+>
+> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+> Cc: Andy Lutomirski <luto@kernel.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: x86@kernel.org
+> Cc: "H. Peter Anvin" <hpa@zytor.com>
+> Cc: linux-sgx@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  arch/x86/include/asm/sgx.h | 25 ++++++++++++++++++-------
+>  1 file changed, 18 insertions(+), 7 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/sgx.h b/arch/x86/include/asm/sgx.h
+> index 3f9334ef67cd..f7328d8efd83 100644
+> --- a/arch/x86/include/asm/sgx.h
+> +++ b/arch/x86/include/asm/sgx.h
+> @@ -110,17 +110,28 @@ enum sgx_miscselect {
+>   * %SGX_ATTR_EINITTOKENKEY:	Allow to use token signing key that is used  
+> to
+>   *				sign cryptographic tokens that can be passed to
+>   *				EINIT as an authorization to run an enclave.
+> + * %SGX_ATTR_ASYNC_EXIT_NOTIFY:	Allow enclaves to be notified after an
+> + *				asynchronous exit has occurred.
+>   */
+>  enum sgx_attribute {
+> -	SGX_ATTR_INIT		= BIT(0),
+> -	SGX_ATTR_DEBUG		= BIT(1),
+> -	SGX_ATTR_MODE64BIT	= BIT(2),
+> -	SGX_ATTR_PROVISIONKEY	= BIT(4),
+> -	SGX_ATTR_EINITTOKENKEY	= BIT(5),
+> -	SGX_ATTR_KSS		= BIT(7),
+> +	SGX_ATTR_INIT		   = BIT(0),
+> +	SGX_ATTR_DEBUG		   = BIT(1),
+> +	SGX_ATTR_MODE64BIT	   = BIT(2),
+> +				  /* BIT(3) is reserved */
+> +	SGX_ATTR_PROVISIONKEY	   = BIT(4),
+> +	SGX_ATTR_EINITTOKENKEY	   = BIT(5),
+> +				  /* BIT(6) is for CET */
+> +	SGX_ATTR_KSS		   = BIT(7),
+> +				  /* BIT(8) is reserved */
+> +				  /* BIT(9) is reserved */
+> +	SGX_ATTR_ASYNC_EXIT_NOTIFY = BIT(10),
+>  };
+> -#define SGX_ATTR_RESERVED_MASK	(BIT_ULL(3) | BIT_ULL(6) |  
+> GENMASK_ULL(63, 8))
+> +#define SGX_ATTR_RESERVED_MASK	(BIT_ULL(3) | \
+> +				 BIT_ULL(6) | \
+> +				 BIT_ULL(8) | \
+> +				 BIT_ULL(9) | \
+> +				 GENMASK_ULL(63, 11))
+> /**
+>   * struct sgx_secs - SGX Enclave Control Structure (SECS)
