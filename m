@@ -2,154 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35B9FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433E3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240529AbiGNWHv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 18:07:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57238 "EHLO
+        id S240731AbiGNWKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 18:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232678AbiGNWHu (ORCPT
+        with ESMTP id S232678AbiGNWKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 18:07:50 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED866A9D1;
-        Thu, 14 Jul 2022 15:07:49 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id ABCAD1F944;
-        Thu, 14 Jul 2022 22:07:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1657836466; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rxL2Skx8UbFEzQGYad/BuKmDMwwk8ncManhq+noClII=;
-        b=nxO/VsiByIQUvVw8J3ec8bA9Eu0GqyfKAIeitip/+JUq3wxLXLPc3ZEP0m4Y0l2sN+FfFY
-        2mbmtaRnK98LtjaY5ZMVb38Luz5E/d25hhVK0JUJJd1DJQXRo5L8nkqORD4WoZ18GrHsq+
-        ZSM//84UURlzTy+CWZ12ZyXCHYIeZEI=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1657836466;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rxL2Skx8UbFEzQGYad/BuKmDMwwk8ncManhq+noClII=;
-        b=1oHnFx62By/T3EA1ZD0f6lyFebUWlXX0tED1o5Z6GDaSWFHJ9N8iImlQQ6/zhyj++TDBQz
-        +2qz/Orr3TcT/+Cg==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id D3E4C2C141;
-        Thu, 14 Jul 2022 22:07:45 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 00:07:44 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Michael Walle <michael@walle.cc>
-Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: Re: [PATCH 1/2] mtd: spi-nor: When a flash memory is missing do not
- report an error
-Message-ID: <20220714220744.GF17705@kitsune.suse.cz>
-References: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
- <d8de86aa0331be697fbef33d5ab2c57a@walle.cc>
- <20220714205529.GE17705@kitsune.suse.cz>
- <33abf7b84860049c4a22605578303ff2@walle.cc>
+        Thu, 14 Jul 2022 18:10:48 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B0F6B260
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 15:10:47 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so9872673pjo.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 15:10:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gqge0mk3/xGYFTh18E2jnpKtnW4CjHppw+t99itaHzo=;
+        b=IMntXprRgReVScC//+y80pFgCc5MMVibbsZtQEZJg6HqR11EtdVB+kbCApjzGcSgUI
+         KpYSs7FXzbPfmEhNZ5PeUE3imhuNiSuRZptjybJjAaeiA5sKXlPON6l7jkzFo8zE6kGJ
+         l7Ko1DscobPRMkGhwCC++PlH3qeF7iZdJC3aQpEeiMsmp3x4YoGORLSdF7Jk32IA82Ke
+         l7PfQkyKwplVjKTIm//Po39RsVp0i5ParOzep+s1WTx5cjZLDDNwqnRkO7DdPU3J+2TO
+         VRuFj9N6aX544MBVjDRWKy6pHYMS12d/PzosZ/fE/B5Mfdzuzn9RJde4GO9wS7eLHm0v
+         dd3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gqge0mk3/xGYFTh18E2jnpKtnW4CjHppw+t99itaHzo=;
+        b=Tv2FfvV0dnCSpA2h6miYkqsyQ633xcu2kRz9rwiKeo9QcZMIJgmIqWI9/Sbrfn1zi4
+         3sClcpoqzT1PNXOguDDVTYUrgxboRXIUoFN1o77X+hQLMXfzZmejbCzOz7PkjhUkjSFJ
+         lSGl67QMMlkDTufm9o2TSZVtq5GmTlxCfTTIBBch5J+euN/WtU/Wzxzlo3cJLXb1FqEy
+         SJrDBFBOev9/pKeXZGAfSUIdgmVPMFQ3b2ApCUmVNdf624Cgn0tjAjdF7f9XFau3LqD/
+         6XrwYSlk5I4MAIngH84EdCsmov0weqgX93yhIFnq48XPHIfJrBlJ1uaj8rgPjXo2nl8a
+         Dpyg==
+X-Gm-Message-State: AJIora90qeBg1DnRJa3FWjuq1PSyD0mWbb2+c2HCHSxrANxLVFQWYDuY
+        VlSvQwN8Q653vI38xTtpgTgJvQ==
+X-Google-Smtp-Source: AGRyM1sQy7g6Lx004XY5UaDJCUONgmwruUHtPt4GmtXlfbyyR8TE6dVpRZU8BBQe3uhJvhN6CjCOoA==
+X-Received: by 2002:a17:902:c10a:b0:16c:5b27:9d30 with SMTP id 10-20020a170902c10a00b0016c5b279d30mr10007801pli.32.1657836647059;
+        Thu, 14 Jul 2022 15:10:47 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b0016bebb0cb96sm1971563plx.266.2022.07.14.15.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 15:10:46 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 22:10:43 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Subject: Re: [PATCH 02/12] KVM: X86/MMU: Rename kvm_unlink_unsync_page() to
+ kvm_mmu_page_clear_unsync()
+Message-ID: <YtCUYzTerwfjWo4V@google.com>
+References: <20220605064342.309219-1-jiangshanlai@gmail.com>
+ <20220605064342.309219-3-jiangshanlai@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <33abf7b84860049c4a22605578303ff2@walle.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220605064342.309219-3-jiangshanlai@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 11:51:56PM +0200, Michael Walle wrote:
-> Am 2022-07-14 22:55, schrieb Michal Suchánek:
-> > On Thu, Jul 14, 2022 at 09:41:48PM +0200, Michael Walle wrote:
-> > > Hi,
-> > > 
-> > > Am 2022-07-14 21:19, schrieb Michal Suchanek:
-> > > > It is normal that devices are designed with multiple types of storage,
-> > > > and only some types of storage are present.
-> > > >
-> > > > The kernel can handle this situation gracefully for many types of
-> > > > storage devices such as mmc or ata but it reports and error when spi
-> > > > flash is not present.
-> > > >
-> > > > Only print a notice that the storage device is missing when no response
-> > > > to the identify command is received.
-> > > >
-> > > > Consider reply buffers with all bits set to the same value no response.
-> > > 
-> > > I'm not sure you can compare SPI with ATA and MMC. I'm just speaking
-> > > of
-> > > DT now, but there, for ATA and MMC you just describe the controller
-> > > and
-> > > it will auto-detect the connected storage. Whereas with SPI you
-> > > describe
-> > 
-> > Why does mmc assume storage and SDIO must be descibed? Why the special
-> > casing?
+On Sun, Jun 05, 2022, Lai Jiangshan wrote:
+> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 > 
-> I can't follow you here. My SDIO wireless card just works in an SD
-> slot and doesn't have to be described.
+> "Unlink" is ambiguous, the function does not disconnect any link.
 > 
-> > > both the controller and the flash. So I'd argue that your hardware
-> > > description is wrong if it describes a flash which is not present.
-> > 
-> > At any rate the situation is the same - the storage may be present
-> > sometimes. I don't think assuming some kind of device by defualt is a
-> > sound practice.
+> Use "clear" instead which is an antonym of "mark" in the name of the
+> function mark_unsync() or kvm_mmu_mark_parents_unsync().
+
+Hmm, but "clearing a page" is a common operation.  Might not be proper English,
+but my vote is to use "unmark".  KVM already uses link+unlink, account+unaccount,
+etc..., so mark+unmark should be intuitive for readers.
+
+> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+> ---
+>  arch/x86/kvm/mmu/mmu.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> Where is the assumption when the DT tells you there is a flash
-> on a specific chip select but actually there it isn't. Shouldn't
-> the DT then be fixed?
-
-The DT says there isn't a flash on a specific chip select when there is.
-Shouldn't that be fixed?
-
-> Maybe I don't understand your problem. What are you trying to
-> solve? I mean this just demotes an error to an info message.
-
-Many boards provide multiple storage options - you get a PCB designed to
-carry different kinds of storage, some may be socketed, some can be
-soldered on in some production batches and not others.
-
-The kernel can handle this for many kinds of storage but not SPI flash.
-
-I don't see any reason why SPI flash should be a second class storage.
-
-> > However, when the board is designed for a specific kind of device which
-> > is not always present, and the kernel can detect the device, it is
-> > perfectly fine to describe it.
-> > 
-> > The alternative is to not use the device at all, even when present,
-> > which is kind of useless.
+> diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+> index f61416818116..c20981dfc4fd 100644
+> --- a/arch/x86/kvm/mmu/mmu.c
+> +++ b/arch/x86/kvm/mmu/mmu.c
+> @@ -1825,7 +1825,7 @@ static int mmu_unsync_walk(struct kvm_mmu_page *sp,
+>  	return __mmu_unsync_walk(sp, pvec);
+>  }
+>  
+> -static void kvm_unlink_unsync_page(struct kvm *kvm, struct kvm_mmu_page *sp)
+> +static void kvm_mmu_page_clear_unsync(struct kvm *kvm, struct kvm_mmu_page *sp)
+>  {
+>  	WARN_ON(!sp->unsync);
+>  	trace_kvm_mmu_sync_page(sp);
+> @@ -1987,7 +1987,7 @@ static int mmu_sync_children(struct kvm_vcpu *vcpu,
+>  		}
+>  
+>  		for_each_sp(pages, sp, parents, i) {
+> -			kvm_unlink_unsync_page(vcpu->kvm, sp);
+> +			kvm_mmu_page_clear_unsync(vcpu->kvm, sp);
+>  			flush |= kvm_sync_page(vcpu, sp, &invalid_list) > 0;
+>  			mmu_pages_clear_parents(&parents);
+>  		}
+> @@ -2326,7 +2326,7 @@ static bool __kvm_mmu_prepare_zap_page(struct kvm *kvm,
+>  		unaccount_shadowed(kvm, sp);
+>  
+>  	if (sp->unsync)
+> -		kvm_unlink_unsync_page(kvm, sp);
+> +		kvm_mmu_page_clear_unsync(kvm, sp);
+>  	if (!sp->root_count) {
+>  		/* Count self */
+>  		(*nr_zapped)++;
+> -- 
+> 2.19.1.6.gb485710b
 > 
-> Or let the bootloader update your device tree and disable the device
-> if it's not there?
-
-But then it must be in the device tree?
-
-And then people will complain that if the bootloader does not have this
-feature then the kernel prints an error message?
-
-> Or load an overlay if it is there?
-
-Or maybe the kernel could just detect if the storage is present?
-
-It's not like we don't have an identify command.
-
-Thanks
-
-Michal
