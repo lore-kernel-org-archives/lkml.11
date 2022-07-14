@@ -2,147 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9F6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 03:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C3C8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 03:19:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232660AbiGNDTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 23:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
+        id S232864AbiGNDTh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 23:19:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232042AbiGNDT1 (ORCPT
+        with ESMTP id S232673AbiGNDTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 23:19:27 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB240A6;
-        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so6879785pjr.4;
-        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
-        b=U4JVh3ts33oVhhRAbTM4c01uw8QW6+vPU5AqzfkUcw3FPZNY8y02/Y+KIVqy1S4PKY
-         5pj7O3afgjTX6R10hLARBk03+f/Hr1YiLgdpLhc/e78LIyjRKfljkvQXJB1hLqJFdRRF
-         jdF6c0pxHOTze5Aj9r6r8Nmy8oQi6jZ4fMraezZQo5ANTXWFU5Nc+3Nei8lIvYBuJaFH
-         aDPaeHQAbNaqtI5y6YG+jZUe87mlUecRFtkz3v8gPOC9GcuAfGaQCidjOxNgzJyyS0EH
-         219BNBZfoqtKx2cfHqVkMALPBSks3/29Di8x9BNKUvXm9NYwBdYLzJtor8iERr1Y+tC/
-         OyxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
-        b=WwAzydN/Y+B2LOjKMl9fn7G4SUxfVj0CZ9iy6vTn0Zj41DdECDai5kKS9DbHX602Hj
-         CHr2+Jsg8BAfuHxFXSKZdSLRg/OGLfLrBQLw2tmMGKBNqv2xxlRBwlfxJSc/woNFmYD+
-         +B1Ia+K7rjHRoz5KNaNiJfjItD50PfxOadqNrTVO3lj+SKpkWGuwT7mw/Tq9iQiuIrh7
-         xS+LfqNAp1J7rbOdmrqQcCwseT1rItWra1q0r08xPED6yq4gfBRKabhrCWAywWk9pbxu
-         00b5XS7KfDKsmBrxK/Qc01gKh4cy4fiNV0sc/fmsIHjb39dh5tZ3ReWU79SWlhL4ET8x
-         6SnA==
-X-Gm-Message-State: AJIora+LwLk35UfYP0Z0hH48+5n1bicQwrwVkU6aEstdpaNil8Yrtc7c
-        TRyVjICgoBZuZxHe0fbPq4DhNkSS8FA=
-X-Google-Smtp-Source: AGRyM1tWJujGTkrezqCP3LyXiasWmr8nGAOJP1sPDZw2284iA56M+LT2CdcvyND93KOnVEX4QwG++Q==
-X-Received: by 2002:a17:90b:3149:b0:1f0:3539:e7ae with SMTP id ip9-20020a17090b314900b001f03539e7aemr13877497pjb.80.1657768765569;
-        Wed, 13 Jul 2022 20:19:25 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id pc13-20020a17090b3b8d00b001ef8ea89a33sm2411453pjb.2.2022.07.13.20.19.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 20:19:24 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     linux-serial@vger.kernel.org
-Cc:     Doug Berger <opendmb@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Al Cooper <alcooperx@gmail.com>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
-Date:   Wed, 13 Jul 2022 20:13:15 -0700
-Message-Id: <20220714031316.404918-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 13 Jul 2022 23:19:32 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5AAF240A6;
+        Wed, 13 Jul 2022 20:19:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:Cc:To:Subject:From:
+        MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hlVc3S338Hs1/PiwG/AKrI6AGgY3YdI9TqJMD9Bi1PE=; b=X+EIsxb/17qPVsjsj7DTQ1KetF
+        oyWGhlb840NRd9rsQLLwQAdYvhzpN/K1TJ/w/6GtgvC+EQ/7rY1hMl574NvgC5gTn6Fc5kfCA2+2z
+        eYyd2bL0cB9UvtEX8FZKm515zrK0gVspoy353swryS/WWZsV1pNs/Xq9dK4rwUYWKddMJ7pZLas/i
+        rq7iuLekWhdzuSqVwgZkVs+TcC77nhFLMa7v10/15Eu+Uzb/JEky+NyU9ndCevCvPnq3uf7Csu6sz
+        Yl9LNhfIZFTSnbcGgbO9Awpu6DvDU0sMcCshibs8vv9MA9EcNbWlFkb7OaRK0kChrGVZ6qyaNcjqu
+        G3i3zhgw==;
+Received: from [177.139.47.106] (helo=[192.168.15.109])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oBpNd-00Fohe-Gr; Thu, 14 Jul 2022 05:19:09 +0200
+Message-ID: <36a8f60a-69b2-4586-434e-29820a64cd88@igalia.com>
+Date:   Thu, 14 Jul 2022 00:18:51 -0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
+Subject: [RFC] futex2: add NUMA awareness
+Content-Language: en-US
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        linux-kernel@vger.kernel.org
+Cc:     linux-api@vger.kernel.org, fweimer@redhat.com,
+        libc-alpha@sourceware.org,
+        Andrey Semashev <andrey.semashev@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doug Berger <opendmb@gmail.com>
+Hi,
 
-Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
-from S2") prevented an early enabling of RTS during resume, but it did
-not actively restore the RTS state after resume.
+futex2 is an ongoing project with the goal to create a new interface for
+futex that solves ongoing issues with the current syscall.
 
-Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
-Signed-off-by: Doug Berger <opendmb@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v3:
+One of this problems is the lack of NUMA awareness for futex operations.
+This RFC is aimed to gather feedback around the a NUMA interface proposal.
 
-- moved set_mctrl within the critical section
+ * The problem
 
-Changes in v2:
+futex has a single, global hash table to store information of current
+waiters to be queried by wakers. This hash table is stored in a single
+node in non-uniform machines. This means that a process running in other
+nodes will have some overhead using futex, given that it will need to
+access the table in a different node.
 
-- reworded the commit message to be clearer
+ * A solution
 
- drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
- 1 file changed, 18 insertions(+), 6 deletions(-)
+For NUMA machines, it would be allocated a table per node. Processes
+then would be able to use the local table to avoid sharing data with
+other nodes.
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 9b878d023dac..8efdc271eb75 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
--
--	serial8250_suspend_port(priv->line);
--	clk_disable_unprepare(priv->baud_mux_clk);
-+	unsigned long flags;
- 
- 	/*
- 	 * This will prevent resume from enabling RTS before the
--	 *  baud rate has been resored.
-+	 *  baud rate has been restored.
- 	 */
-+	spin_lock_irqsave(&port->lock, flags);
- 	priv->saved_mctrl = port->mctrl;
--	port->mctrl = 0;
-+	port->mctrl &= ~TIOCM_RTS;
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	serial8250_suspend_port(priv->line);
-+	clk_disable_unprepare(priv->baud_mux_clk);
- 
- 	return 0;
- }
-@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
- 	struct uart_8250_port *up = serial8250_get_port(priv->line);
- 	struct uart_port *port = &up->port;
-+	unsigned long flags;
- 	int ret;
- 
- 	ret = clk_prepare_enable(priv->baud_mux_clk);
-@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
- 		start_rx_dma(serial8250_get_port(priv->line));
- 	}
- 	serial8250_resume_port(priv->line);
--	port->mctrl = priv->saved_mctrl;
-+
-+	if (priv->saved_mctrl & TIOCM_RTS) {
-+		/* Restore RTS */
-+		spin_lock_irqsave(&port->lock, flags);
-+		port->mctrl |= TIOCM_RTS;
-+		port->ops->set_mctrl(port, port->mctrl);
-+		spin_unlock_irqrestore(&port->lock, flags);
-+	}
-+
- 	return 0;
- }
- 
--- 
-2.25.1
+ * The interface
 
+Userspace needs to specify which node would like to use to store/query
+the futex table. The common case would be to operate on the current
+node, but some cases could required to operate in another one.
+
+Before getting to the NUMA part, a quick recap of the syscalls interface
+of futex2:
+
+futex_wait(void *uaddr, unsigned int val, unsigned int flags,
+           struct timespec *timo)
+
+futex_wake(void *uaddr, unsigned long nr_wake, unsigned int flags)
+
+struct futex_requeue {
+	void *uaddr;
+	unsigned int flags;
+};
+
+futex_requeue(struct futex_requeue *rq1, struct futex_requeue *rq2,
+	      unsigned int nr_wake, unsigned int nr_requeue,
+	      u64 cmpval, unsigned int flags)
+
+
+As requeue already has 6 arguments, we can't add an argument for the
+node ID, we need to pack it in a struct. So then we have
+
+struct futexX_numa {
+        __uX value;
+        __sX hint;
+};
+
+Where X can be 8, 16, 32 or 64 (futex2 supports variable sized futexes).
+`value` is the futex value and `hint` can be -1 for the current node, or
+[0, MAX_NUMA_NODES) to specify a node. Example:
+
+struct futex32_numa f = {.value = 0, hint = -1};
+
+...
+
+futex_wait(&f, 0, FUTEX_NUMA | FUTEX_32, NULL);
+
+Then &f would be used as the futex address, as expected, and this would
+be used for the current node. If an app is expecting to have calls from
+different nodes then it should do for instance:
+
+struct futex32_numa f = {.value = 0, hint = 2};
+
+For non-NUMA apps, a call without FUTEX_NUMA flag would just use the
+first node as default.
+
+Feedback? Who else should I CC?
+
+Thanks,
+	André
