@@ -2,150 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEBEEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C967C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237849AbiGNJyg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:54:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35168 "EHLO
+        id S234827AbiGNJ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:57:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiGNJyb (ORCPT
+        with ESMTP id S231447AbiGNJ5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:54:31 -0400
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1666D474D6;
-        Thu, 14 Jul 2022 02:54:29 -0700 (PDT)
-Received: by mail-ot1-x335.google.com with SMTP id n12-20020a9d64cc000000b00616ebd87fc4so812529otl.7;
-        Thu, 14 Jul 2022 02:54:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=X6mRQhVSO5biAw/mXo/QUbT/IuLAZ3fsxf8wWVobTxs=;
-        b=AQnv6bm+0RwEPxeMJug4uEWaTRQiB0TwNLNvn064FDpcLOaCD7gKOtUp2lGAUZ8ovR
-         8+nyQ4Wpoh8hX89wInzJ/Ngb3qpI8TFVg/00WU5gkOmP2pFKtT5xH1ON+91sMuY1YJ6A
-         MBIXVvbH1piz14eP0epeaRwlmHnxnrBxhZyy+uIDP9jtcgKXXZo2f/1tkqkjWGUN2SPm
-         GD8VGIP4mpyKeSXaWnh07C6PqEeaCoaZfyiDKNcvijDGN+H3PlKnVWnkeoRKJTHxUc70
-         0e/h59bCxQs1fXsMnMzCtI6xlaESD7rBWwx9ppLsj17AniqJci633w87ueJIyo/nFG2V
-         jRAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=X6mRQhVSO5biAw/mXo/QUbT/IuLAZ3fsxf8wWVobTxs=;
-        b=ZP/agJIPxUG2WzzCTzxpnwF+ew6s/MSJSsujxxTXYQ53BC14Kp+gfRyMKet/D9jLr+
-         rfiROI5TyC+uDQMKnb07qLvlSxxfXOQ02Mzwo7Cxc9C2hPI56NhLsWAol4loCRXB5mvw
-         GmCCOEApHWu0dJ7hCLjqchqN4Re2zseAMcHZikJ1oRo4OxwCcNCQcTd5I7gwtZ+SSM3h
-         aKPqtbpobvSlgkdxk2+SG3TWIULC3doigPsvLwOgrBW+0V9o6Zau37ktaBgyoPB+DWDS
-         DPPDa1ZsuOpKh+sLQayfaYKW8LK2jJTrfOCA7sbpUqZsygd4HX5y2yqsSx5L1zt0FeoH
-         w1Og==
-X-Gm-Message-State: AJIora8tifyIFmMCxjIp/xpoVIeFxsaLmuKL1H27RlW/QevAFfDqf5r9
-        /quwEhZJX6lMMNInZ1ylUhW6wsaqDUXunC8HLWjUIFE7WWOW/g==
-X-Google-Smtp-Source: AGRyM1utmP+baueRn1lT4LhqU3E8OboEVfz6YBmgkFA8G1Zd84Uk0LA58rQYSV95jQlLMcw/nSe6HR4Z95muJowDzdI=
-X-Received: by 2002:a05:6830:3686:b0:61c:4a56:5c8b with SMTP id
- bk6-20020a056830368600b0061c4a565c8bmr3111730otb.49.1657792468382; Thu, 14
- Jul 2022 02:54:28 -0700 (PDT)
+        Thu, 14 Jul 2022 05:57:05 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF084C603
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:57:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657792624; x=1689328624;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=jm5IY6xwqjhzPn9Sa0+lhMEHPOhFZtYu1pdlIzIHsq0=;
+  b=BFQdKhkCnfJVpGsmU8H8UNb7Iv+gkm6Tp0S49F0j/dT8UxNhrla+AMzU
+   0Zi+3B1BC+CsttKuo4m/rxcseXC/GN2vQMg8txhgPuRpKpscuDrK7mgJQ
+   ASwADRaRTFVt0jWOZSXarxD9Jrv3S/BzotMdlNldCXvIEuJl2cnNOOSfu
+   b/5+3CVP0068NRW+SfEjGKZXyVxvzCacCV446uxZd2XYVs1FHOvZGUvdj
+   Ij9cnmYg2zyt1AIGI4g6d/Pgy91f76YPBWGRY22LoUIRNSqhzdMgOK27u
+   NBG/tx5HkQey0tOl5HeogPX06OdvzDuUK11Uo1e1VXcCkLhhJbMY1knSO
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286608714"
+X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
+   d="scan'208";a="286608714"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 02:57:03 -0700
+X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
+   d="scan'208";a="653810786"
+Received: from acsok-mobl.ti.intel.com (HELO maurocar-mobl2) ([10.252.37.128])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 02:57:00 -0700
+Date:   Thu, 14 Jul 2022 11:56:57 +0200
+From:   Mauro Carvalho Chehab <mauro.chehab@linux.intel.com>
+To:     Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Patnana Venkata Sai <venkata.sai.patnana@intel.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Fernando Ramos <greenfoo@u92.eu>
+Subject: Re: [Intel-gfx] [PATCH v2 05/39] drm/i915: display: fix kernel-doc
+ markup warnings
+Message-ID: <20220714114239.5da0362d@maurocar-mobl2>
+In-Reply-To: <Ys9BksNo/iylds2g@intel.com>
+References: <cover.1657699522.git.mchehab@kernel.org>
+        <e860a7d8e5f9c41c462ef354b9ca6f36ae142e1b.1657699522.git.mchehab@kernel.org>
+        <Ys9BksNo/iylds2g@intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-References: <870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org>
- <CA+icZUVbQNM+MkMCQik83FoiWF_a1v7Mb-4hZX6SZgNcp2x5SA@mail.gmail.com>
-In-Reply-To: <CA+icZUVbQNM+MkMCQik83FoiWF_a1v7Mb-4hZX6SZgNcp2x5SA@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Thu, 14 Jul 2022 11:53:52 +0200
-Message-ID: <CA+icZUW-Mu-Cak481yrE9f6PvGcfaDN7ZPLhrtX6L7zOPU73Zg@mail.gmail.com>
-Subject: Re: [PATCH V2] rtla: Fix Makefile when called from -C tools/
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 11:07 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
->
-> On Wed, Jul 13, 2022 at 11:32 PM Daniel Bristot de Oliveira
-> <bristot@kernel.org> wrote:
-> >
-> > Sedat Dilek reported an error on rtla Makefile when running:
-> >
-> >     $ make -C tools/ clean
-> >     [...]
-> >     make[2]: Entering directory
-> >     '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
-> >     [...]
-> >     '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
-> >     /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
-> >     rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
-> >     make[2]: *** [Makefile:120: clean] Error 1
-> >     make[2]: Leaving directory
-> >
-> > This occurred because the rtla calls kernel's Makefile to get the
-> > version in silence mode, e.g.,
-> >
-> >     $ make -sC ../../.. kernelversion
-> >     5.19.0-rc4
-> >
-> > But the -s is being ignored when rtla's makefile is called indirectly,
-> > so the output looks like this:
-> >
-> >     $ make -C ../../.. kernelversion
-> >     make: Entering directory '/root/linux'
-> >     5.19.0-rc4
-> >     make: Leaving directory '/root/linux'
-> >
-> > Using 'grep -v make' avoids this problem, e.g.,
-> >
-> >     $ make -C ../../.. kernelversion | grep -v make
-> >     5.19.0-rc4
-> >
-> > Thus, add | grep -v make.
-> >
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Fixes: 8619e32825fd ("rtla: Follow kernel version")
-> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+On Wed, 13 Jul 2022 18:05:06 -0400
+Rodrigo Vivi <rodrigo.vivi@intel.com> wrote:
+
+> On Wed, Jul 13, 2022 at 09:11:53AM +0100, Mauro Carvalho Chehab wrote:
+> > There are a couple of issues at i915 display kernel-doc markups:
+> > 
+> > 	drivers/gpu/drm/i915/display/intel_display_debugfs.c:2238: warning: Function parameter or member 'intel_connector' not described in 'intel_connector_debugfs_add'
+> > 	drivers/gpu/drm/i915/display/intel_display_debugfs.c:2238: warning: Excess function parameter 'connector' description in 'intel_connector_debugfs_add'
+> > 	drivers/gpu/drm/i915/display/intel_display_power.c:700: warning: expecting prototype for intel_display_power_put_async(). Prototype was for __intel_display_power_put_async() instead
+> > 	drivers/gpu/drm/i915/display/intel_tc.c:807: warning: Function parameter or member 'work' not described in 'intel_tc_port_disconnect_phy_work'
+> > 	drivers/gpu/drm/i915/display/intel_tc.c:807: warning: Excess function parameter 'dig_port' description in 'intel_tc_port_disconnect_phy_work'
+> > 
+> > Those are due to wrong parameter of function name. Address them.
+> > 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 > > ---
->
-> Thanks for v2.
-> That looks good to me.
->
-> Daniel, you are right that not passing -s to make-line will not show
-> the grep output.
->
-> Formally and again my...
->
-> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
-> Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
->
+> > 
+> > To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> > See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
+> > 
+> >  drivers/gpu/drm/i915/display/intel_display_debugfs.c | 2 +-
+> >  drivers/gpu/drm/i915/display/intel_display_power.c   | 2 +-
+> >  drivers/gpu/drm/i915/display/intel_tc.c              | 2 +-
+> >  3 files changed, 3 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/i915/display/intel_display_debugfs.c b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
+> > index 6c3954479047..1e35eb01742b 100644
+> > --- a/drivers/gpu/drm/i915/display/intel_display_debugfs.c
+> > +++ b/drivers/gpu/drm/i915/display/intel_display_debugfs.c
+> > @@ -2229,7 +2229,7 @@ DEFINE_SHOW_ATTRIBUTE(i915_current_bpc);
+> >  
+> >  /**
+> >   * intel_connector_debugfs_add - add i915 specific connector debugfs files
+> > - * @connector: pointer to a registered drm_connector
+> > + * @intel_connector: pointer to a registered drm_connector
+> >   *
+> >   * Cleanup will be done by drm_connector_unregister() through a call to
+> >   * drm_debugfs_connector_remove().
+> > diff --git a/drivers/gpu/drm/i915/display/intel_display_power.c b/drivers/gpu/drm/i915/display/intel_display_power.c
+> > index 589af257edeb..fd6b71160a06 100644
+> > --- a/drivers/gpu/drm/i915/display/intel_display_power.c
+> > +++ b/drivers/gpu/drm/i915/display/intel_display_power.c
+> > @@ -685,7 +685,7 @@ intel_display_power_put_async_work(struct work_struct *work)
+> >  }
+> >  
+> >  /**
+> > - * intel_display_power_put_async - release a power domain reference asynchronously
+> > + * __intel_display_power_put_async - release a power domain reference asynchronously  
+> 
+> oh, we are really using __ prefix for non-static functions?! o.O
 
-Addendum:
+Yeah... Btw, this is actually a common practice to have __ prefix on
+non-static and even on exported functions. Usually, the __ variant
+assumes that a spinlock/mutex were already taken previously.
 
-Subject?
+However, that's not the case here, as it starts holding a mutex.
 
-[PATCH V2] rtla: Fix Makefile when called from -C tools/
+In this specific case, the __ variant is called by an inline
+function on a different way, depending if 
+CONFIG_DRM_I915_DEBUG_RUNTIME_PM is true. On such case, it passes 
+the runtime PM wakeref, otherwise it passes a -1.
 
-...called from -C tools/ clean?
+Funny enough, intel_display_power_put() ifdef is inside the C
+file, using a different implementation:
 
- -Sedat-
+#if IS_ENABLED(CONFIG_DRM_I915_DEBUG_RUNTIME_PM)
+	...
+	void intel_display_power_put(struct drm_i915_private *dev_priv,
+        	                     enum intel_display_power_domain domain,
+                	             intel_wakeref_t wakeref)
+	...
+#else
+	...
+	void intel_display_power_put_unchecked(struct drm_i915_private *dev_priv,
+                                       enum intel_display_power_domain domain)
+	...
+#endif
 
->
-> >  tools/tracing/rtla/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-> > index 3822f4ea5f49..1bea2d16d4c1 100644
-> > --- a/tools/tracing/rtla/Makefile
-> > +++ b/tools/tracing/rtla/Makefile
-> > @@ -1,6 +1,6 @@
-> >  NAME   :=      rtla
-> >  # Follow the kernel version
-> > -VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
-> > +VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
-> >
-> >  # From libtracefs:
-> >  # Makefiles suck: This macro sets a default value of $(2) for the
-> > --
-> > 2.32.0
-> >
+For consistency, I would use the same solution for both, probably
+at the C file, and avoiding use a __ prefix for the async put version.
+
+> anyway, with that ditto "()" consistency,
+> 
+> Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+
+Thanks!
+
+Btw, I'm removing "()" from patches 1-3 (both at descriptions and
+internally), keeping your R-B on them too.
+
+Regards,
+Mauro
