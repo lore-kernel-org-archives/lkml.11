@@ -2,74 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C56CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4339C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:16:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238083AbiGNJQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:16:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
+        id S238095AbiGNJQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237995AbiGNJQA (ORCPT
+        with ESMTP id S238002AbiGNJQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:16:00 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2997E474CA;
-        Thu, 14 Jul 2022 02:14:46 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lk7zL1TvPzhZ94;
-        Thu, 14 Jul 2022 17:11:58 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 17:14:34 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Jul
- 2022 17:14:33 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-CC:     <logang@deltatee.com>, <dan.j.williams@intel.com>,
-        <hans.verkuil@cisco.com>, <alexandre.belloni@free-electrons.com>,
-        <gregkh@linuxfoundation.org>, <viro@zeniv.linux.org.uk>
-Subject: [PATCH RESEND] chardev: fix error handling in cdev_device_add()
-Date:   Thu, 14 Jul 2022 17:23:55 +0800
-Message-ID: <20220714092355.991306-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 05:16:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 41170474D5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657790065;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jIf2IliMZMftd2zacl44+L2psRLOFoqylDbt4FKbzFc=;
+        b=a2nLrxLwDiTt5Qg2N409D2CWswSEgXG3EMeK1FH0xH85VDIlb0MOV3SyShZKnpA8A9PIYZ
+        3GaVpCRkgDxuH9dKBB/8RSWgXK9cHC7hIqfAtVoNQbja9ProXTAxgaokDqVxoCAcSX1dXP
+        ynoYsTF2KUGRrLnUNlo0soUkSSdOV4Q=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-381-5Hh1RvsBPW2Pk3H8vW_tEg-1; Thu, 14 Jul 2022 05:14:21 -0400
+X-MC-Unique: 5Hh1RvsBPW2Pk3H8vW_tEg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C688129AA3B7;
+        Thu, 14 Jul 2022 09:14:20 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC2C22166B26;
+        Thu, 14 Jul 2022 09:14:18 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 20/25] KVM: x86: VMX: Replace some Intel model numbers with mnemonics
+Date:   Thu, 14 Jul 2022 11:13:22 +0200
+Message-Id: <20220714091327.1085353-21-vkuznets@redhat.com>
+In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If dev->devt is not set, cdev_add() will not be called, so if device_add()
-fails, cdev_del() is not needed. Fix this by checking dev->devt in error
-case.
+From: Jim Mattson <jmattson@google.com>
 
-Fixes: 233ed09d7fda ("chardev: add helper function to register char devs with a struct device")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Intel processor code names are more familiar to many readers than
+their decimal model numbers.
+
+Signed-off-by: Jim Mattson <jmattson@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- fs/char_dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/vmx/vmx.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/fs/char_dev.c b/fs/char_dev.c
-index ba0ded7842a7..3f667292608c 100644
---- a/fs/char_dev.c
-+++ b/fs/char_dev.c
-@@ -547,7 +547,7 @@ int cdev_device_add(struct cdev *cdev, struct device *dev)
- 	}
- 
- 	rc = device_add(dev);
--	if (rc)
-+	if (rc && dev->devt)
- 		cdev_del(cdev);
- 
- 	return rc;
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index eca6875d6732..2dff5b94c535 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2580,11 +2580,11 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	 */
+ 	if (boot_cpu_data.x86 == 0x6) {
+ 		switch (boot_cpu_data.x86_model) {
+-		case 26: /* AAK155 */
+-		case 30: /* AAP115 */
+-		case 37: /* AAT100 */
+-		case 44: /* BC86,AAY89,BD102 */
+-		case 46: /* BA97 */
++		case INTEL_FAM6_NEHALEM_EP:	/* AAK155 */
++		case INTEL_FAM6_NEHALEM:	/* AAP115 */
++		case INTEL_FAM6_WESTMERE:	/* AAT100 */
++		case INTEL_FAM6_WESTMERE_EP:	/* BC86,AAY89,BD102 */
++		case INTEL_FAM6_NEHALEM_EX:	/* BA97 */
+ 			_vmentry_control &= ~VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
+ 			_vmexit_control &= ~VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
+ 			pr_warn_once("kvm: VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL "
 -- 
-2.25.1
+2.35.3
 
