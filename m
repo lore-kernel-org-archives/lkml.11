@@ -2,151 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A54B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FB7CCA482
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:12:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237761AbiGNJLI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:11:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32874 "EHLO
+        id S229506AbiGNJMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:12:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237709AbiGNJK7 (ORCPT
+        with ESMTP id S237690AbiGNJLt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:10:59 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D57D2408E
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:10:57 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id c15so1469856ljr.0
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:10:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CZPLNxoOrlBXnnELoaUQZiTp1bpHPpDagke/CdxO/sA=;
-        b=w40AoTU9ec62G6Pl7RJx0BX5Ba8XLiFWwt17SYbTMi6qtaF4sjXjMnIxmV4DKjLlLj
-         nBCnYUUvpJRI/dVKSdA/nQw1+AnLNx2cqk/j/plX8ZpGctfz+BdBPmFov/dM2Av7KvdX
-         xbToaDKOk1/WcU/JRqQbGQS0EY/TJ15+F/9N7pFpbmS18Yh6mlYjd/0x72E+mKSseBUT
-         tjkd3Y4bUKRgJyL0ROSfBdxyPCif1GdeXNq+hkioC0FCayl+QgAf5ghvpSyFoL5qTI3m
-         hHD/A5LGcWJm0nnf3z3BBJVZqhoH1ziR/CBuId+ReckCsAgGKu4040WmwRhvq1SWwRcu
-         L+Aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CZPLNxoOrlBXnnELoaUQZiTp1bpHPpDagke/CdxO/sA=;
-        b=hfWXZCiJBUeyOwR9QAA6VMmMcXP4a7hKzwp+oD8I4MCf8Dbia3t7vaA0WuT6wvK5Ht
-         mulXnJ+kw4yZpFq6u49AN4iQnRpqbbjHgbKnMaRfZ3S0xyYGr4wuYAOgwpankhfRNmpc
-         1FSDC9G/O7lg8PAh+bAGl//tLc5H72JeJpXOUp6JeDTIdjRe0+x1NVG0IFcpSO4vGnNo
-         nNdOoOL0JZ4tQg1c8HFqeOSTWckZQ2FV/X3tJOH/U6oIKjBOepNQ5FyvaVjqigVndIYh
-         ybnw+OcNxU6SgN/jz7cIeyfiWlGkFb1lTei1FY0lVTNa64WzuFgFIWTxPbmy/sa8XLy5
-         ETMg==
-X-Gm-Message-State: AJIora+we9oHsWAEqLsg/yRM4BmtxhiRXbw01R02B/YcS/U3qNByGWv1
-        J7z3K0XmzBZqPtVqm1Y3M9NwPg==
-X-Google-Smtp-Source: AGRyM1txAJKSbvRFtUvOJa0mWbsnIAkKGgiWNta1hCJHavlH87N+jCrX8rb96Wx9KKeggeag63bq9A==
-X-Received: by 2002:a2e:8093:0:b0:25d:63ce:4d56 with SMTP id i19-20020a2e8093000000b0025d63ce4d56mr3790440ljg.105.1657789855541;
-        Thu, 14 Jul 2022 02:10:55 -0700 (PDT)
-Received: from krzk-bin.. (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id d8-20020a056512368800b004790ef191e3sm250006lfs.216.2022.07.14.02.10.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 02:10:55 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH v3 3/3] mmc: sdhci-msm: drop redundant of_device_id entries
-Date:   Thu, 14 Jul 2022 11:10:42 +0200
-Message-Id: <20220714091042.22287-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220714091042.22287-1-krzysztof.kozlowski@linaro.org>
-References: <20220714091042.22287-1-krzysztof.kozlowski@linaro.org>
+        Thu, 14 Jul 2022 05:11:49 -0400
+X-Greylist: delayed 2399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 02:11:48 PDT
+Received: from sinsgout.his.huawei.com (sinsgout.his.huawei.com [119.8.179.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2FB22B34;
+        Thu, 14 Jul 2022 02:11:48 -0700 (PDT)
+Received: from sinmsgout03.his.huawei.com (unknown [172.28.115.130])
+        by sinsgout.his.huawei.com (SkyGuard) with ESMTP id 4Lk6CX1llBz3Z9D9;
+        Thu, 14 Jul 2022 15:52:24 +0800 (CST)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.156.208])
+        by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4Lk6B94QXHz9xGQ7;
+        Thu, 14 Jul 2022 15:51:13 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 09:52:14 +0200
+Received: from [10.126.173.191] (10.126.173.191) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 08:52:13 +0100
+Message-ID: <8a9d9c72-65c1-cb7d-80d7-4ac2b65871fe@huawei.com>
+Date:   Thu, 14 Jul 2022 08:52:15 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
+To:     "Martin K. Petersen" <martin.petersen@oracle.com>
+CC:     Christoph Hellwig <hch@lst.de>, <damien.lemoal@opensource.wdc.com>,
+        <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
+        <iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>,
+        <linuxarm@huawei.com>
+References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
+ <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
+ <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
+ <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
+ <yq135f4xul0.fsf@ca-mkp.ca.oracle.com>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <yq135f4xul0.fsf@ca-mkp.ca.oracle.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.126.173.191]
+X-ClientProxiedBy: lhreml725-chm.china.huawei.com (10.201.108.76) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts three commits:
-1. Revert "mmc: sdhci-msm: Add compatible string check for sdx65"
-   This reverts commit 953706844f0f2fd4dc6984cc010fe6cf51c041f2.
+On 14/07/2022 04:10, Martin K. Petersen wrote:
 
-2. Revert "mmc: sdhci-msm: Add compatible string check for sm8150"
-   This reverts commit 5acd6adb65802cc6f9986be3750179a820580d37.
+Hi Martin,
 
-3. Revert "mmc: sdhci-msm: Add SoC specific compatibles"
-   This reverts commit 466614a9765c6fb67e1464d0a3f1261db903834b.
+>> So I set max hw sectors at this ‘opt’ mapping size to ensure that we
+>> get no mappings which exceed this size. Indeed, I think max sectors is
+>> 128Kb today for my host, which would be same as dma_opt_mapping_size()
+>> value with an IOMMU enabled. And I find that only a small % of request
+>> size may exceed this 128kb size, but it still has a big performance
+>> impact.
+> The purpose of the soft limit is to pick the appropriate I/O size
+> (i.e. for best performance). The purpose of the hard limit is to ensure
+> we don't submit something the hardware can't handle or describe.
+> 
+> IOW, the hard limit is not about performance at all. The hard limit is
+> mainly relevant for things that are way bigger than anything we'd issue
+> as regular filesystem I/O such as multi-megabyte firmware images, etc.
+> 
+> It's perfectly fine for firmware download performance to be
+> "suboptimal". What is typically more important in that scenario is that
+> the firmware image makes it inside a single I/O.
 
-The oldest commit 466614a9765c ("mmc: sdhci-msm: Add SoC specific
-compatibles") did not specify what benefits such multiple compatibles
-bring, therefore assume there is none.  On the other hand such approach
-brings a lot of churn to driver maintenance by expecting commit for
-every new compatible, even though it is already covered by the fallback.
+OK, fine. I've improved the next version such that the DMA mapping opt 
+limit only affects the max_sectors default.
 
-There is really no sense in duplicating of_device_id for each
-variant, which is already covered by generic compatible fallback
-qcom,sdhci-msm-v4 or qcom,sdhci-msm-v5.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-
----
-
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc: Doug Anderson <dianders@chromium.org>
----
- drivers/mmc/host/sdhci-msm.c | 29 ++++-------------------------
- 1 file changed, 4 insertions(+), 25 deletions(-)
-
-diff --git a/drivers/mmc/host/sdhci-msm.c b/drivers/mmc/host/sdhci-msm.c
-index e395411fb6fd..dc2991422a87 100644
---- a/drivers/mmc/host/sdhci-msm.c
-+++ b/drivers/mmc/host/sdhci-msm.c
-@@ -2435,33 +2435,12 @@ static const struct sdhci_msm_variant_info sdm845_sdhci_var = {
- };
- 
- static const struct of_device_id sdhci_msm_dt_match[] = {
--	 /* Following two entries are deprecated (kept only for backward compatibility) */
--	{.compatible = "qcom,sdhci-msm-v4", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,sdhci-msm-v5", .data = &sdhci_msm_v5_var},
--	/* Add entries for sdcc versions less than 5.0 here */
--	{.compatible = "qcom,apq8084-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8226-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8916-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8953-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8974-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8992-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8994-sdhci", .data = &sdhci_msm_mci_var},
--	{.compatible = "qcom,msm8996-sdhci", .data = &sdhci_msm_mci_var},
- 	/*
--	 * Add entries for sdcc version 5.0 here. For SDCC version 5.0.0,
--	 * MCI registers are removed from SDCC interface and some registers
--	 * are moved to HC.
-+	 * Do not add new variants to the driver which are compatible with
-+	 * generic ones, unless they need customization.
- 	 */
--	{.compatible = "qcom,qcs404-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sdx55-sdhci",  .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sdx65-sdhci",  .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sdm630-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sm6125-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sm6350-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sm8150-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sm8250-sdhci", .data = &sdhci_msm_v5_var},
--	{.compatible = "qcom,sc7280-sdhci", .data = &sdhci_msm_v5_var},
--	/* Add entries where soc specific handling is required, here */
-+	{.compatible = "qcom,sdhci-msm-v4", .data = &sdhci_msm_mci_var},
-+	{.compatible = "qcom,sdhci-msm-v5", .data = &sdhci_msm_v5_var},
- 	{.compatible = "qcom,sdm845-sdhci", .data = &sdm845_sdhci_var},
- 	{.compatible = "qcom,sc7180-sdhci", .data = &sdm845_sdhci_var},
- 	{},
--- 
-2.34.1
-
+Thanks,
+John
