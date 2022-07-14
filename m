@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D60AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3DFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:26:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbiGNE0O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49438 "EHLO
+        id S235551AbiGNE0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234262AbiGNEZ1 (ORCPT
+        with ESMTP id S234728AbiGNEZ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:25:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 162362A96E;
-        Wed, 13 Jul 2022 21:23:26 -0700 (PDT)
+        Thu, 14 Jul 2022 00:25:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 059012AC56;
+        Wed, 13 Jul 2022 21:23:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56F2EB82376;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 678B0B82371;
+        Thu, 14 Jul 2022 04:23:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D49FCC34115;
         Thu, 14 Jul 2022 04:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9917C341C6;
-        Thu, 14 Jul 2022 04:23:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772603;
-        bh=wOFnb+h38ZHkQ71ZrI57raY9yE4kjjI4LOL96pxBNUs=;
+        s=k20201202; t=1657772606;
+        bh=mlyiupWzoaqCGlzd2A4M2PlghwEdsgGXG2cqiizqiTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cYIUnM73PZbYHx1aMg+vbC7gx2LIDl/ODkO0uhfukx9jgSED1EnPi5gIbrJDX46e6
-         L8H2oqwe3xaKACFg7FHSwq9homeEV8gIRolyd+n+c6sFayDL2W5GX7W5I14QqlY/I0
-         IjY7Jf3eL+7/bMSP0mIts/hKsR6iltyF6JOw8g7s+NxdRHt3SorY089M60bEbFDT2z
-         9liOOXMqisnOnMzaFw0+rXWEwFZRRkJS7yxVb0HlZmueIx+qpOj+myMi5L2CFZqGjy
-         Wjo4AnyRPvvnDqfEPEb0HQ2xBHVF/RNeFn90Kp9rvZFkkBofw1oeqUpZXBbwoZZ+4c
-         vJE1l68WpGozw==
+        b=VHw/NmvbylW3ufXSvh3DZvn4SONR4q3JEYy4V/uLV+X2iXXjXGPlXExjlU2I2qOXj
+         Bjm8D9yN8SLNphyr2Wp5ZLwr3REN+DXmK7+QZhbwIJpemfiziDnALOVisRhTiojoHR
+         i9Oa2A+7Vut3i5IbcJ4YL377nMpFOIviwqTsm/wa7bZMnGJguuTm771YlKhaP09VKh
+         JIbCvCZu6HrbJnGgmp7q94ECk6clll2QzITVNybVTQrWf4TmyfvjvggZEVeP6zoRoL
+         G3S3UvPLq0bole5wLl0D/7q0Hk3PVBVbHQECLz8otziMbHZgprVaVVkgWMUiw/ZicH
+         nrugbjT2SUnwQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, rf@opensource.cirrus.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com
-Subject: [PATCH AUTOSEL 5.18 25/41] ASoC: madera: Fix event generation for rate controls
-Date:   Thu, 14 Jul 2022 00:22:05 -0400
-Message-Id: <20220714042221.281187-25-sashal@kernel.org>
+Cc:     Jacky Bai <ping.bai@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, aisheng.dong@nxp.com,
+        festevam@gmail.com, shawnguo@kernel.org, stefan@agner.ch,
+        linux-gpio@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 27/41] pinctrl: imx: Add the zero base flag for imx93
+Date:   Thu, 14 Jul 2022 00:22:07 -0400
+Message-Id: <20220714042221.281187-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042221.281187-1-sashal@kernel.org>
 References: <20220714042221.281187-1-sashal@kernel.org>
@@ -53,49 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Jacky Bai <ping.bai@nxp.com>
 
-[ Upstream commit 980555e95f7cabdc9c80a07107622b097ba23703 ]
+[ Upstream commit fbc24ebc65507feb9728dc38197f90486148dda0 ]
 
-madera_adsp_rate_put always returns zero regardless of if the control
-value was updated. This results in missing notifications to user-space
-of the control change. Update the handling to return 1 when the
-value is changed.
+On i.MX93, the pin mux reg offset is from 0x0,
+so need to add the 'ZERO_OFFSET_VALID' flag to make
+sure the pin at mux offset 0 can be found.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-5-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Jacky Bai <ping.bai@nxp.com>
+Link: https://lore.kernel.org/r/20220613031854.1571357-1-ping.bai@nxp.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/pinctrl/freescale/pinctrl-imx93.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index 8095a87117cf..b9f19fbd2911 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -899,7 +899,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 	struct soc_enum *e = (struct soc_enum *)kcontrol->private_value;
- 	const int adsp_num = e->shift_l;
- 	const unsigned int item = ucontrol->value.enumerated.item[0];
--	int ret;
-+	int ret = 0;
+diff --git a/drivers/pinctrl/freescale/pinctrl-imx93.c b/drivers/pinctrl/freescale/pinctrl-imx93.c
+index c0630f69e995..417e41b37a6f 100644
+--- a/drivers/pinctrl/freescale/pinctrl-imx93.c
++++ b/drivers/pinctrl/freescale/pinctrl-imx93.c
+@@ -239,6 +239,7 @@ static const struct pinctrl_pin_desc imx93_pinctrl_pads[] = {
+ static const struct imx_pinctrl_soc_info imx93_pinctrl_info = {
+ 	.pins = imx93_pinctrl_pads,
+ 	.npins = ARRAY_SIZE(imx93_pinctrl_pads),
++	.flags = ZERO_OFFSET_VALID,
+ 	.gpr_compatible = "fsl,imx93-iomuxc-gpr",
+ };
  
- 	if (item >= e->items)
- 		return -EINVAL;
-@@ -916,10 +916,10 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
- 			 "Cannot change '%s' while in use by active audio paths\n",
- 			 kcontrol->id.name);
- 		ret = -EBUSY;
--	} else {
-+	} else if (priv->adsp_rate_cache[adsp_num] != e->values[item]) {
- 		/* Volatile register so defer until the codec is powered up */
- 		priv->adsp_rate_cache[adsp_num] = e->values[item];
--		ret = 0;
-+		ret = 1;
- 	}
- 
- 	mutex_unlock(&priv->rate_lock);
 -- 
 2.35.1
 
