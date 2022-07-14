@@ -2,91 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A43C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD9DCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:56:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235339AbiGNGyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38132 "EHLO
+        id S235356AbiGNG4V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiGNGyf (ORCPT
+        with ESMTP id S233723AbiGNG4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:54:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7E22AC4F
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:54:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE710B8222A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:54:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AA84C34115
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:54:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657781672;
-        bh=pY6Oh1xI3elnYIaAyKOGZ+znYcxLjnl8Uh5Nt/yrIoo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=jMpFH48cdb7uQwOo4R5JaygLrQlIKxKWQLFRoOu9DjNe9oR2oA+AjIbS8Hi0cMseN
-         oy2BsRFu0PP+KKL1ZUTrXFNSax0CBbE5exY69vNEA0OTzkjRsw1sBFHh3Oyx65IOJk
-         ZIeCtJhcEhX6seNXpGO4yTXM8lA/+YMteNw2gy7pK3OoPKI1hoq1nVIox3OcTfJnZE
-         PVnw5k5cc4ByMt5Jy/HtAgGzvhokjB2NyjQyD0HxWtyvJ9lD3c+teNbYD6gtn43xvY
-         i00bqM6vxhxBLROnjsgHLfdP/xtj8rEzu6qlzZCMZLZe0jE2j1crIT/czVmIIWUDq1
-         EKTWYO88tGt8Q==
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-31c9b70c382so7837147b3.6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:54:32 -0700 (PDT)
-X-Gm-Message-State: AJIora/9/liH3FriQqNt7MU34c2M/TmtIutBIH8VOv6HD5PbUBs4hejQ
-        ePg/5EC1XIyKzJ3gnDBczRyUniE6pTYItxydac4=
-X-Google-Smtp-Source: AGRyM1vvphUH1o0RqtC3ZmwDKrSwcj2aM46AYWxZb67L7oriGa4izPonw02pIMzohRrw5ur3ZFDh9WoDMYBoL1DERWc=
-X-Received: by 2002:a0d:fec3:0:b0:31b:c2d6:34ea with SMTP id
- o186-20020a0dfec3000000b0031bc2d634eamr8103089ywf.62.1657781671284; Wed, 13
- Jul 2022 23:54:31 -0700 (PDT)
+        Thu, 14 Jul 2022 02:56:19 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DBCA2AC5D
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:56:17 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id o12so1081947ljc.3
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:56:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ygGDwyimlIf6c05yh3mozG3M0LF6/sjmmvfiI7zgyuU=;
+        b=d8DEnAboI1y3aR3jhMI4/YzqBvZ9o9rjL4KyTI7+7E25Yr5BaIYHmgBDBLi3n2sH12
+         MSZmpn6S1WEVuE9A+UlpxHTuzdZI+9Rjp1/JWGd+9or1PyTRaEY068QBl/qwNYXjZG29
+         PJLGB8XR+gHnX+OmANqWCTJNHBkCxcbufkWL9s3a8LikGP5d9FxFk2vv8jEIXxP24dgE
+         s2lZBW0H/NO9Ahf+DHtnPnyolDJBgH2QJD1yX4VvJPAybDQ7lPUMWg/FHA+rTv1ajTP2
+         W4oWsHA/z/RsLXl27xHxbl8f8jMEryw9/aXWEXnaOhBGfB8t7p9IZ/MPr7dlq2W7tS3t
+         K8rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ygGDwyimlIf6c05yh3mozG3M0LF6/sjmmvfiI7zgyuU=;
+        b=s2fqJXVaTHyfk/9t224mmqGZsinpSFYEKg69hYJab7+ltWGINVwjyeTglCpJQH36FQ
+         ny7uT1gZNjTPhSM0OBXFkO5ofbxZqUoEX1aEL5zEiXlWJBZ2OfmZFO6q9ibqQvHPPneg
+         QA+OqfLg9mUBOy2tHBmQX80V1T7PUfPYbAvF5FUWP3q2wuiFw7y5CDfAdcaYH7qWPhgr
+         XYi89p5a/BAFtvnLCGLijUc0nCDDDFljTUcr+1El2183NEl6qcRKL32zHZPJRK+fFqLS
+         FU514Gzs4krMKTSBUYnJR8+EuqsJCGqS6gvBJWBNKn+VeowouQqLhp1EcweS3DcIcX5h
+         lsHg==
+X-Gm-Message-State: AJIora/Dy7rC4YzijhmpKvSNPufxtUQjtnq+DLScxHqr6hzQ0kx+Mc6B
+        660v3MZyscwdgddpMXbArcUyag==
+X-Google-Smtp-Source: AGRyM1u9SaJfjTEEpazUdRmvnE17TWyJfAUNVJCvIoNGh9kZrSYvFpaFiEtk2B03nsKGZXM2OuktKA==
+X-Received: by 2002:a2e:92c6:0:b0:255:84cb:4eea with SMTP id k6-20020a2e92c6000000b0025584cb4eeamr3703749ljh.204.1657781775995;
+        Wed, 13 Jul 2022 23:56:15 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id k6-20020ac257c6000000b00489cd8ee61asm194547lfo.275.2022.07.13.23.56.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jul 2022 23:56:14 -0700 (PDT)
+Message-ID: <7a4fba17-9c71-a4e6-643a-62aa0dfd4774@linaro.org>
+Date:   Thu, 14 Jul 2022 08:56:12 +0200
 MIME-Version: 1.0
-References: <20220714012908.4948-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220714012908.4948-1-yang.lee@linux.alibaba.com>
-From:   Oded Gabbay <ogabbay@kernel.org>
-Date:   Thu, 14 Jul 2022 09:54:04 +0300
-X-Gmail-Original-Message-ID: <CAFCwf12DeOFdwKk-bunOhO=NK6y6emFpEFY0J96Y5bmYE0bYSA@mail.gmail.com>
-Message-ID: <CAFCwf12DeOFdwKk-bunOhO=NK6y6emFpEFY0J96Y5bmYE0bYSA@mail.gmail.com>
-Subject: Re: [PATCH -next] habanalabs: Simplify bool conversion
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] arm64: dts: marvell: Fix compatible strings for Armada
+ 3720 boards
+Content-Language: en-US
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220713125644.3117-1-pali@kernel.org>
+ <a9e1ccb7-6caa-2f7c-b879-b3ff4945794c@linaro.org>
+ <20220713200336.addvyfjhakrx72am@pali>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220713200336.addvyfjhakrx72am@pali>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 4:29 AM Yang Li <yang.lee@linux.alibaba.com> wrote:
->
-> Fix the following coccicheck warning:
-> ./drivers/misc/habanalabs/gaudi2/gaudi2.c:9727:48-53: WARNING:
-> conversion to bool not needed here
->
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-> ---
->  drivers/misc/habanalabs/gaudi2/gaudi2.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-> index 98336a1a84b0..344b4dedef41 100644
-> --- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
-> +++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
-> @@ -9724,7 +9724,7 @@ static int gaudi2_get_mmu_base(struct hl_device *hdev, u64 mmu_id, u32 *mmu_base
->
->  static void gaudi2_ack_mmu_error(struct hl_device *hdev, u64 mmu_id)
->  {
-> -       bool is_pmmu = (mmu_id == HW_CAP_PMMU ? true : false);
-> +       bool is_pmmu = (mmu_id == HW_CAP_PMMU);
->         struct gaudi2_device *gaudi2 = hdev->asic_specific;
->         u32 mmu_base;
->
-> --
-> 2.20.1.7.g153144c
->
-This patch is:
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+On 13/07/2022 22:03, Pali Rohár wrote:
+> On Wednesday 13 July 2022 21:42:43 Krzysztof Kozlowski wrote:
+>> On 13/07/2022 14:56, Pali Rohár wrote:
+>>> All Armada 3720 boards have Armada 3720 processor which is of Armada 3700
+>>> family and do not have Armada 3710 processor. So none of them should have
+>>> compatible string for Armada 3710 processor.
+>>>
+>>> Fix compatible string for all these boards by removing wrong processor
+>>> string "marvell,armada3710" and adding family string "marvell,armada3700"
+>>> as the last one. (Note that this is same way how are defined Armada 3710
+>>> DTS files).
+>>
+>> Please do not introduce some changes just in DTS, but start from the
+>> bindings. Someone wrote the bindings like that and expected to be that
+>> way, so first change the bindings with proper rationale. Then change the
+>> DTS files.
+>>
+>>
+>> Best regards,
+>> Krzysztof
+> 
+> Ok, I tried to update bindings and fix example in it, see patch:
+> https://lore.kernel.org/linux-devicetree/20220713200123.22612-1-pali@kernel.org/
 
-Applied to -next.
-Thanks,
-Oded
+The reason you used here should be expressed in that commit as well
+because you change the ABI and affect other users (projects, systems).
+
+Best regards,
+Krzysztof
