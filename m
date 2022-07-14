@@ -2,147 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CF1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:37:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE81C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238839AbiGNPhM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 11:37:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
+        id S238946AbiGNPiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 11:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229461AbiGNPhK (ORCPT
+        with ESMTP id S231968AbiGNPiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 11:37:10 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2A84AD73
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:37:09 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id v202-20020a6361d3000000b0041615ebed02so1392079pgb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:37:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:message-id:mime-version:subject:from:to:cc;
-        bh=JkRA3Mpa+i25bXGiM48nrv2DUtxPE5vPtImMAiVJCCQ=;
-        b=Esfd8MNtNxWYJPcYQ/wED/Laa6sCw2myW6KT2u8A6wlFKhJXSNSKfH3clFKTZA9/OI
-         1+9sB2Ng3bA3kwy9+0cqTgDXvINhiOPmf6pk+0wLY986MmcP6YOr8hUVDyYUf/1LrAAi
-         7B67RFadbzS8uMub4k4GdRtSAjq6tiUpPLPhWT5/eeSt9ksNQDdFkLXXMDIsnQPRWPGS
-         VeTMT7cR1xl0/FyGhapM84G0P5Bm7JYoT8t5Hb1v9Brddav7LLEpoG6I6NBpgKJnpVcA
-         f7c+GXAHCQ9lM4FQmjYyXNvDakR1e+npIwTA2JDiSUdG/kNePxk8sbvbIoyqL+wOQsFq
-         3wow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:message-id:mime-version:subject
-         :from:to:cc;
-        bh=JkRA3Mpa+i25bXGiM48nrv2DUtxPE5vPtImMAiVJCCQ=;
-        b=h9qfYsyg7cD7VbwbX020sZsSphwBlPDGvTpfLKZbcYq0hOuMcW8+/+Y/H1C+oX5u3n
-         l0Ptlar2niIRnaWzNmJEXj/y1K3K6P2q0nwNovD0uCvGk7Bs3HV3DcMKyCgsoCST0xt+
-         Nu6yqpNwvhqaYMXIDk1oxGXJdGbX+OUlK7XABhHm69FdH7qL100Xg5x8rM4LGlCaazai
-         7XxYUQ9URXO5jXjWtbTkGRvMqcpinBXs2r6aR2msohHIffog/fxIu5jXRccIg0K1wAZX
-         u/3S6S6mnbGwieysB3vDBzIxIIevGMRlaScthK5vcsFfgzQ4WHI4llnTEHdCLOlq4lYr
-         EV8w==
-X-Gm-Message-State: AJIora8k157anVH1Y5t8tepsiq3Mmu2NGXw4Cqatn8ZTRfERU1/Twku6
-        RVqctGW6iR4d7GwucoYRAvilMCs3Z0k=
-X-Google-Smtp-Source: AGRyM1te2o3cMfktLglQrxa1ovvTodM+d9kHChmo9hfTBQpm8nd+VQWhs3W1f4B7/eBJjtZy3k1LKzSdG9A=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:99f:b0:52a:dd61:a50f with SMTP id
- u31-20020a056a00099f00b0052add61a50fmr8894806pfg.9.1657813029533; Thu, 14 Jul
- 2022 08:37:09 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 14 Jul 2022 15:37:07 +0000
-Message-Id: <20220714153707.3239119-1-seanjc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
-Subject: [PATCH] KVM: x86: Restrict get_mt_mask() to a u8, use KVM_X86_OP_OPTIONAL_RET0
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+        Thu, 14 Jul 2022 11:38:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818C0481D0;
+        Thu, 14 Jul 2022 08:38:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F969B823DE;
+        Thu, 14 Jul 2022 15:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A856CC3411C;
+        Thu, 14 Jul 2022 15:38:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657813089;
+        bh=U9G5H+F5ke4Ig1zhCGdP+JXYur2miSUshKx7+9DJkZk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ntY6kk5rfRV/jplMtoO0VwrEPFtoYYymHPd19E+KscZ4zy+/+P+t9mZYZEf9XC2DC
+         bhYylukM6lpZwkEwUgC9UdUJliEBYkJQ4g/4soxJmsjapha3zIDibt9L/oBuv0g68M
+         redoVX+gBo2DDaV2XvKK4Kt7sGYWdxiWFm8Nn2U4xiJXLXat/FfzWN0WagJcrKbJM6
+         P0AEstXeJfYTDI7D0UfxoP7Jps1ciz97fusNVpTfCRRU5ExLryBTL4cTyuyWhEqcto
+         u9wprbirqr0GcN/ny3jsWZc5g6opGKzmcaxd+QywRP7Z4Wc7QLPkM7tsN2DrLSKQHk
+         +xo8rO5Ua7BDw==
+Received: by mail-vk1-f172.google.com with SMTP id m188so983298vkm.3;
+        Thu, 14 Jul 2022 08:38:09 -0700 (PDT)
+X-Gm-Message-State: AJIora/IhV7sWcsfkG6T8ozxIoEBvDVRlcP9dMlxHGasYRAvLy7pNCTx
+        nq5NxCxRbzuLR4DgowYbVlt8TYikv0XE47tobQ==
+X-Google-Smtp-Source: AGRyM1ueakcaqefdrg7VLkKXk8mWYborOH3gMs/rbv3OLb8P/RdVgXMatAj03gLpnDmmrBTDHwqD6nygYxHFXTW2Wnk=
+X-Received: by 2002:a1f:2049:0:b0:374:866b:6dd8 with SMTP id
+ g70-20020a1f2049000000b00374866b6dd8mr3907873vkg.15.1657813088619; Thu, 14
+ Jul 2022 08:38:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220630131543.225554-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220630131543.225554-1-angelogioacchino.delregno@collabora.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 14 Jul 2022 09:37:57 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLY7eSLKhRrL7hx9jFxTm-s=MmdXOVVJv3667fSoeSvSQ@mail.gmail.com>
+Message-ID: <CAL_JsqLY7eSLKhRrL7hx9jFxTm-s=MmdXOVVJv3667fSoeSvSQ@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: pinctrl: mt8195: Add and use drive-strength-microamp
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
+        <nfraprado@collabora.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Restrict get_mt_mask() to a u8 and reintroduce using a RET0 static_call
-for the SVM implementation.  EPT stores the memtype information in the
-lower 8 bits (bits 6:3 to be precise), and even returns a shifted u8
-without an explicit cast to a larger type; there's no need to return a
-full u64.
+On Thu, Jun 30, 2022 at 7:15 AM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> As was already done for MT8192 in commit b52e695324bb ("dt-bindings:
+> pinctrl: mt8192: Add drive-strength-microamp"), replace the custom
+> mediatek,drive-strength-adv property with the standardized pinconf
+> 'drive-strength-microamp' one.
+>
+> Similarly to the mt8192 counterpart, there's no user of property
+> 'mediatek,drive-strength-adv', hence removing it is safe.
+>
+> Fixes: 69c3d58dc187 ("dt-bindings: pinctrl: mt8195: Add mediatek,drive-strength-adv property")
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  .../bindings/pinctrl/pinctrl-mt8195.yaml      | 27 ++-----------------
+>  1 file changed, 2 insertions(+), 25 deletions(-)
 
-Note, RET0 doesn't play nice with a u64 return on 32-bit kernels, see
-commit bf07be36cd88 ("KVM: x86: do not use KVM_X86_OP_OPTIONAL_RET0 for
-get_mt_mask").
+Now failing in linux-next. Looks like the example needs updating:
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/include/asm/kvm-x86-ops.h | 2 +-
- arch/x86/include/asm/kvm_host.h    | 2 +-
- arch/x86/kvm/svm/svm.c             | 6 ------
- arch/x86/kvm/vmx/vmx.c             | 2 +-
- 4 files changed, 3 insertions(+), 9 deletions(-)
-
-diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
-index 6f2f1affbb78..51f777071584 100644
---- a/arch/x86/include/asm/kvm-x86-ops.h
-+++ b/arch/x86/include/asm/kvm-x86-ops.h
-@@ -88,7 +88,7 @@ KVM_X86_OP(deliver_interrupt)
- KVM_X86_OP_OPTIONAL(sync_pir_to_irr)
- KVM_X86_OP_OPTIONAL_RET0(set_tss_addr)
- KVM_X86_OP_OPTIONAL_RET0(set_identity_map_addr)
--KVM_X86_OP(get_mt_mask)
-+KVM_X86_OP_OPTIONAL_RET0(get_mt_mask)
- KVM_X86_OP(load_mmu_pgd)
- KVM_X86_OP(has_wbinvd_exit)
- KVM_X86_OP(get_l2_tsc_offset)
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index de5a149d0971..fa4b2392fba0 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1546,7 +1546,7 @@ struct kvm_x86_ops {
- 	int (*sync_pir_to_irr)(struct kvm_vcpu *vcpu);
- 	int (*set_tss_addr)(struct kvm *kvm, unsigned int addr);
- 	int (*set_identity_map_addr)(struct kvm *kvm, u64 ident_addr);
--	u64 (*get_mt_mask)(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio);
-+	u8 (*get_mt_mask)(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio);
- 
- 	void (*load_mmu_pgd)(struct kvm_vcpu *vcpu, hpa_t root_hpa,
- 			     int root_level);
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 37ce061dfc76..19af6dacfc5b 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4158,11 +4158,6 @@ static bool svm_has_emulated_msr(struct kvm *kvm, u32 index)
- 	return true;
- }
- 
--static u64 svm_get_mt_mask(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio)
--{
--	return 0;
--}
--
- static void svm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- {
- 	struct vcpu_svm *svm = to_svm(vcpu);
-@@ -4814,7 +4809,6 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
- 	.check_apicv_inhibit_reasons = avic_check_apicv_inhibit_reasons,
- 	.apicv_post_state_restore = avic_apicv_post_state_restore,
- 
--	.get_mt_mask = svm_get_mt_mask,
- 	.get_exit_info = svm_get_exit_info,
- 
- 	.vcpu_after_set_cpuid = svm_vcpu_after_set_cpuid,
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index c30115b9cb33..c895a3b6824d 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7352,7 +7352,7 @@ static int __init vmx_check_processor_compat(void)
- 	return 0;
- }
- 
--static u64 vmx_get_mt_mask(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio)
-+static u8 vmx_get_mt_mask(struct kvm_vcpu *vcpu, gfn_t gfn, bool is_mmio)
- {
- 	u8 cache;
- 
-
-base-commit: b9b71f43683ae9d76b0989249607bbe8c9eb6c5c
--- 
-2.37.0.144.g8ac04bfd2-goog
-
+Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.example.dtb:
+pinctrl@10005000: i2c0-pins:pins: 'mediatek,drive-strength-adv' does
+not match any of the regexes: 'pinctrl-[0-9]+'
+ From schema: /builds/robherring/linux-dt/Documentation/devicetree/bindings/pinctrl/pinctrl-mt8195.yaml
