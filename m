@@ -2,72 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4458C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:23:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5194DCCA479
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231743AbiGNAXN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 20:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
+        id S232229AbiGNAXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 20:23:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231342AbiGNAXH (ORCPT
+        with ESMTP id S231476AbiGNAXI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 20:23:07 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F1D17062;
-        Wed, 13 Jul 2022 17:22:49 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DNfw2c023362;
-        Thu, 14 Jul 2022 00:22:45 GMT
+        Wed, 13 Jul 2022 20:23:08 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA3C17AB5;
+        Wed, 13 Jul 2022 17:22:52 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E09RZg021473;
+        Thu, 14 Jul 2022 00:22:49 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references :
  content-transfer-encoding : content-type : mime-version;
- s=corp-2021-07-09; bh=fA77Qcm8rRzG9dbv7FNVc6h8ApUU3OW+4w8rD4YBgIg=;
- b=qvIHurcB8LuYWiiotIut/PqT0+rQeUlwHNwQhHuEQPm8kqkC5RpRdTVmRERFSReqBbeU
- OH13kilwDp3g4laIYn4ksJYaXVO+77/IS23L10V61OvnYx/YZWlM16YwhxVO84YCC6Og
- +QtDOb/sWtwmD0RkGf5jIyyRnVH9pvJYwchpMvZ3rchbWm3b0YpwTXhtT1ofMjSCE1te
- wnOk/zYBCifNJ71XKMb3nHyR4P13EIuUpL/aSIJx5I6Jm8uXuIPmfzA7g+x0ON8eHgz9
- OsRTQCGRZeYFmRoT4NQnuuurBgd0Q5ox4ITyt1lnDDSNbbn7j5JbbxmSYBIqF/m3oyqd Ew== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71scbsnf-1
+ s=corp-2021-07-09; bh=TQcsHYOiQzrFR86kwcDg5R/L0gioZBwzsHJI+4HDMvA=;
+ b=aFbysCsIYDLkuYE2RqDr921h0RA9gg01OHi90HhtHRBItrtsuMFAQeNHQnx6IHe3cB8M
+ 2spoKXuFdWevLywbnCRqlFwh5RnsDCc+h+iEujs8AtqKg/7OTMTaeCl/1BKmwUUyoH/L
+ 193E2sydJN0DCMVFy+VxG2qHppz54e07tjjMRWMBUiVmnjNR+31Z807aZIcFYtD0WkVm
+ hxM4NFCxUXBEPQvMXfVliv8cSYj/TfUiJ42ZTYrQc+B0RTGWC6XzXZw2lGAvcbvzdn1i
+ yWTppV1GiubpDP8Y8kh/db/jq3XEYu4QhmmY/oKOFSOkKwWmvst/dVdstXD0CfFqwRXG 6A== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71rg3j6c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 00:22:45 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26E0FO0f024677;
-        Thu, 14 Jul 2022 00:22:44 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2177.outbound.protection.outlook.com [104.47.73.177])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7045nsv4-1
+        Thu, 14 Jul 2022 00:22:48 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26E0GteL031842;
+        Thu, 14 Jul 2022 00:22:47 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h70457bqh-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 00:22:44 +0000
+        Thu, 14 Jul 2022 00:22:47 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUb4P58xceqLx5B9jOm8nnUdC8+P04EclQx08OEcDYFsXONOMVhrUPKhU87xMB+MF85/ooONASm4HmzX/wS6fQI7HwDIJ31ThKu+a2pyAfh/XQWDM5AaqompeR6dBdeR97lErlQHwpvnRoZMksocXAt0BMZgbQseKjU9+C+NrRTy0pvFEysOm4ODfIs29BLHykF2Cp10xBwQFFtNvii7Y7rkK2hB7gpXFkycMLxgFzULL0ga64dVeDj6V+3bbRow9M7OE8LgJW+yB7WKdzUGl/Lbgs3LQONAzjpSFfFb31giJHuVFqZxUDb29N/fVFqNcPtj/+KSMNOBnr0CmbQZmg==
+ b=OmLKOHsYSDB+lWX43GrtfKa+KuqwdrwAFicEnNmR7vxefH5+uRvGvsCk0MYF+vRivu0fD77OFqJDuH+pkVbr0sUN5TKwYzoRINVP5vvoE6QVBXJmFBgj3PRt7R9kzzbxoTGQsFoeYKJBscerXZupHRmzq1vqi9Sf+lCkVxwnl8tWqkfyv1SM9Atn62iNrObtwyLZ4OMawMIC4G3BipLoohXvnaYDkidaY2QrdetAxxSkKO51FScABbcX5rpnRQKVYbntT0AwSVEAUOTNt/6VQjukKmDxPs1Vimrjm/0JnilH3J5LkbEnBeWZPKYOjSQnlNc3gu0RfBApItec4f8Xhw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fA77Qcm8rRzG9dbv7FNVc6h8ApUU3OW+4w8rD4YBgIg=;
- b=irZZLIvlWeyv1kSIPDaahNOV/kDCJXV2IZfmd+p5JxdqpguXgyJAYD6Xd+gmLgSbfsLrqcLues0ae87ZJcOi3859o2lxrHfVg2pz1ePmtp4u7EFYLkWwTZSPbaMynZznQZPuhixCa9hlMIQ7+MZmFrk6Wf4DMiWPWt4oZGrVdosAfp3A9OWuODpLwrhJ40FtgJzAZ0nbKFAzrr9O/oNHHejfmMJ/ya/7N3odciLvLIzscSBzcBejYDT1cLn6UbDrD6SpX9zTviAVzcoYf82YCzxGVSPiYIKAkGqni78KQi5u0M7HtxGUIA2aZrzjZwrez1gC2jdnya2pGDgLQ2kRHA==
+ bh=TQcsHYOiQzrFR86kwcDg5R/L0gioZBwzsHJI+4HDMvA=;
+ b=U/Zw2z9M2kWjrAo/iidxvrPhINLOsi9l2qnnIChp5tINN7p4pMMFyc5Wiqf5Iu7Pw3/wgo7U5si74OqlWUuh6A6FWIe30BOvR48iQX/vdqJvyB/fliq4Lu4BUYaID7y3AA2s5yKnHKJxcZUm06cUyKHImV/xy+/Iuf9cdF6n/B2mEynYlgiVOoE8/0Q73BoSMcXKIKqbNIza0ADI7mu00WXiiPGiFkyJtfOH43q7N9wbPRDlRUTj0TZin7OzxuSJo5OJXxhiALxyUExg9a1n0wGaGxNBjJFAw4sXU8WzmyXaYsjudTsKh2hTO+iQSj60p8yjpYel5HfCp1e9wPT4hw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fA77Qcm8rRzG9dbv7FNVc6h8ApUU3OW+4w8rD4YBgIg=;
- b=rkLZMfkXF9JieF/ipqPToZt1YZ9q5JhMtCeWiiasBjJI2/GxSV8JpuMpDgVHZ6JfLBcNAOmJXzsFR12jI0yzBDUnL4FYO5lrUw5EGNqBiNyBQMbgGUz56YOvED+Vs5rsRtNCPJeiyd9ANRdia8YGfE2uLg5409AMWftR441trnQ=
+ bh=TQcsHYOiQzrFR86kwcDg5R/L0gioZBwzsHJI+4HDMvA=;
+ b=U2DkH7L+k9pJT6ogYrJM/BStBNYHRRX60dHxZOGv8nqiDFJFH0RwA5W61tqsi1aUEgNyCzZS+g9uaRhXmh4scDghjpolyekrVyvzvlcyGG9lA+c3zxUJIb0gL+Wyn15qKifSLE2q0w58S0ujVlv7UnDs8gQRXbVZqdfI237wnmg=
 Received: from CO1PR10MB4468.namprd10.prod.outlook.com (2603:10b6:303:6c::24)
  by BY5PR10MB3986.namprd10.prod.outlook.com (2603:10b6:a03:1fb::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Thu, 14 Jul
- 2022 00:22:41 +0000
+ 2022 00:22:45 +0000
 Received: from CO1PR10MB4468.namprd10.prod.outlook.com
  ([fe80::dd9d:e9dd:d864:524c]) by CO1PR10MB4468.namprd10.prod.outlook.com
  ([fe80::dd9d:e9dd:d864:524c%7]) with mapi id 15.20.5438.013; Thu, 14 Jul 2022
- 00:22:41 +0000
+ 00:22:45 +0000
 From:   Imran Khan <imran.f.khan@oracle.com>
 To:     tj@kernel.org, gregkh@linuxfoundation.org, viro@zeniv.linux.org.uk
 Cc:     linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: [PATCH 3/5] kernfs: Introduce interface to access per-fs rwsem.
-Date:   Thu, 14 Jul 2022 10:22:22 +1000
-Message-Id: <20220714002224.3641629-4-imran.f.khan@oracle.com>
+Subject: [PATCH 5/5] kernfs: Add a document to describe hashed locks used in kernfs.
+Date:   Thu, 14 Jul 2022 10:22:24 +1000
+Message-Id: <20220714002224.3641629-6-imran.f.khan@oracle.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220714002224.3641629-1-imran.f.khan@oracle.com>
 References: <20220714002224.3641629-1-imran.f.khan@oracle.com>
@@ -78,724 +78,294 @@ X-ClientProxiedBy: SYCP282CA0011.AUSP282.PROD.OUTLOOK.COM
  (2603:10b6:303:6c::24)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d181f560-3852-4b6e-b470-08da652ef731
+X-MS-Office365-Filtering-Correlation-Id: 51970c65-7765-43fb-5775-08da652ef994
 X-MS-TrafficTypeDiagnostic: BY5PR10MB3986:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: meHSPJsYyftWv0nLWdXj38xViaIg0idmQQmTfjfGcn1ZDAh9BAMMRhTEfNYbi+NJParFmouat9OkiFG7s3wMjw8onhXnt9h7MkOW4uTIlN2Z1gTVlQ3lsxQZURKsZnfxnVYQeLEmsuVQVzm7+okQZfXNhegBUgqhpBv3njfGJQ9b9MK9iAxpKjiiuWsNI+B2FeWHwuT5CTlkqKoJRW44kTmGC5CZB/sxrIbnLjJ/Zm736uILvk0t+3EDCUff0GXkVE/RwkWUz8DY9Eg6MroUNV5jTBzybUPpSCz/d/03my1Bd9fPE6O1ALCWtlKCYFih0SrbdIzA9TwQnDuGyd5YsnHH6pzMoIgtmuhMlQ/Sbd8FcLvJg3tbHyvJdlofGZHOzusm6Rjjdlx+AsABED3GIvEhFxEZLkKoBVrkdo7fgyTagjUOuv5X3375RNfeFFDhzYT8AwNuFq7Qc7x+InDvGs8UBK0Nj503kNgeR+rk9VdlwMdfQh+MqAclG8hWKegMnf3KlcTz5SXnmcBc5M8vvmD2L5TU4nJTP4b4pVVg3twmmgQA7lWYhk4GAoE/H/LCMUUgwyZmnA65B/Kg0jXfXsxoYjRMPxGb4Yrcj9DYhYEDF/9xIvs5Iau75MbQ3xtGtXzlTcR277e0EKZlUCFhoJ0dsgwgL68RATV6RUfsVVjHeYdec/1cKWZVhqZENMb9iIIsjHxoLXVkefOOvrRsajphoYRADpiSobglGRJ6QQOndE/76BOLBq+MzLW31bhTGVc5VE5dDEfVs31bUXiol3WDY9ehkShAgaB6x4BxuX98rGqOCGhlkFIs6SfrDrOt
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(39860400002)(136003)(396003)(376002)(26005)(478600001)(6666004)(52116002)(6506007)(6486002)(6512007)(66946007)(41300700001)(66476007)(8676002)(66556008)(86362001)(316002)(4326008)(83380400001)(38350700002)(1076003)(38100700002)(2616005)(30864003)(186003)(36756003)(8936002)(5660300002)(103116003)(2906002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 8tQrEtlEV1I/ivvsQEg0hMvtycPmzUqwrpeoH8FyEVSgat4GmIRYqOlhdSpt+l5rUlfKMUeJI3coTmKPVNyUrCD/7K2+v40KntjD94mn8HvncQ8INkg+M80vsNHFnQp1yxkwCtIG+yFx4oDkg2SsiDIdfYLyM3jMw8YGZuZ7MqWpwvB97ITY97X19ujHHc0eoaaW6cz99S1BtbQ7IYwo2817KYlNTHbLeDEe30K/V2Y7VwQ4fH5og2xmCi8n2Hrp8uXvJOKBfANC7s3VxEtskwNhgyBOTvCe3ob1iZlzmXUi67dnUOH8nxa1SNj+U/70LM2BuKgsmhOzde0Doz6QNo867TLWoH3SSfQCdVaPQm9YxWW8A7tAYwBtxO41ISrZZmROGDerRLbpQXHOZcP0ZyYdDUtP4BHBNDPc5ADrX2loIoGUpAnBofpDK1rgdDKKsYgMly2TWEYC9oPHCXsW31/wuPOIUt1qZk9b2ezXcTMMLf19EUmrhPyigXCGg8DbhUd3vmxqmfwV7hmzor9JWuHNRRiogEwVNskf7VswlzQuWb5GkcBe7WnTWD1qrOocnya8erjNfIDy7i9gm/fv5KmwLKsLxRtAlRo6UlZqu1LP6HFlS9O3W/9IMK1jYkHNVQxry8s3AQPm2i4euhxUR4gMLL8ddPcywNbZGJOxDrXiE3khH29vpMsoeOkjIqp8xxnd5tdFSTtnFqkv08hY8zmvP+yx1PsS0aJqkLKkbGD0YvDlnWnh6Y17gZPvwR8GMmtsAjpU4qeUtDYT45BU+i/Ye4H3B0SEFWviTR+Z8Rp9RjdxVDb0Z4pyG4nQf4Lf
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR10MB4468.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(39860400002)(136003)(396003)(376002)(26005)(478600001)(6666004)(52116002)(6506007)(6486002)(6512007)(66946007)(41300700001)(66476007)(8676002)(66556008)(86362001)(316002)(4326008)(83380400001)(38350700002)(1076003)(38100700002)(2616005)(186003)(36756003)(8936002)(5660300002)(103116003)(2906002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?45KjFioyWwxJh59IyFFF1pVnR0nBvB/c5Q3IR3GQWqyC/FZ8YGZSKX1wP91H?=
- =?us-ascii?Q?3nuij2xjTNjocxsXnVlLn6kMnmbdvImEbl256c80WcNu3i5YeEOG/DAPA+Bj?=
- =?us-ascii?Q?/wyKXcFvrs49YeOVULhoQDm3eDY866J1n1fNhxDYEfsNYHbh6wLXunsSiDc0?=
- =?us-ascii?Q?WoXtSxRnOf5diZ8usVh+FwvPZtudb2phCSE98KTRf3wzbrWalYhLqgNJai1/?=
- =?us-ascii?Q?XxVyuQn/ET+rJMx1A+9LS/Pc+3dQbc7m+6UaoBjByWE6FxOZvzsUkQi4vv9s?=
- =?us-ascii?Q?GQ/7KozFEdKZCfn6oktDZ+S6cd3Jfi350OEy074EtaQ8qqaz25ncxoY1ni6e?=
- =?us-ascii?Q?oarM853iEH+F25/UXe5PcD0Q+I+l1cuwQzv+say5LS7xP4DLY0TRvRINfujl?=
- =?us-ascii?Q?onhDvWPJNDdTwAKcKgnOsVoj98NcLY+KXDKSATp3vJTt0zToJgFNXB5ZRI7D?=
- =?us-ascii?Q?6zb7hCp8tW3HSFIDWJyJoorJ5JBara+HKAd9xxhtkGYUXeLell52OASY4tIX?=
- =?us-ascii?Q?kTIv8KAnPvDeVGD7Gc/oBrbl3qmsUH3nDHUyYAD2Dp9L8n8I8icJe27O4tfe?=
- =?us-ascii?Q?br3BDBh1YzkyW1BWbWFdq3nYaF9Cj3g9fKpdIukmwnp69rRke/J0Q0xRdVgY?=
- =?us-ascii?Q?BNHkv7hxF8ejQxz9dwtlbcfke+BXAH0ktik3OZSMlpWrWD4vydyYzD4wkTrd?=
- =?us-ascii?Q?vPozt7lZGzNk5QkWvtjH7x3N/uw7kK3LayN4/nFhfB/IiZD8FFcHgulPKPbc?=
- =?us-ascii?Q?eRlLbOdjOxA/6BbWcN3gWP/BKHhTuAkIdZK7VEtYajSb8Ww2TY3/+YGszAdu?=
- =?us-ascii?Q?6SZzB0FMPjQQgrkHHh9CK4NUNHvmtPv0/47jfFsDhIkSZ1nGb1O+ADsGNNcn?=
- =?us-ascii?Q?6o3K8lM/At5dfTOkF1dSEiqloG1ykv4hdTBnCH+Hk87PlrZrv3za9S+7X8rQ?=
- =?us-ascii?Q?S2SvjsO9pN5sEI+F824E8/Nhwzvs1lOCzvSnTXpHZTxqXncV1tecntuHB015?=
- =?us-ascii?Q?g1+kIJ816LxP3ZFfqkCup4va9V9riKnASX0rGcsmK18t4KL8CrfQOSmxqj3+?=
- =?us-ascii?Q?RnbWkdBvuMP4djUL+ywr8jA60y8Tqz4p13EgdVMhIN/29OUEok0q4jfzYsi/?=
- =?us-ascii?Q?nCi2l4nd5iCY7VXF2j/QqFYVK4mNZQd01aw0E5eyBjut4KaU2Zyd8WTDRT6h?=
- =?us-ascii?Q?C3f8TANxntST3Dgk3HGeJd6r9UR410uAUoMTSQQwtt/mh3mk8AMqfYZabejF?=
- =?us-ascii?Q?cYcu8lYAfFNGGlqQqvfzyYLs/ssktbWcwPp+0eBoMDKAsDLxSz/4ycZbpSIi?=
- =?us-ascii?Q?WaDu6zYXXhoz6N7R+MCDkpqeY0tuhQxj8vKnrU0CACpVERNXATtzf8rpWtW8?=
- =?us-ascii?Q?GNVDGjoMb8oxwyFCeKU7RWxR48b4wghSuTlL/zSuWfDDZRBBTG12Y6vXn8Ja?=
- =?us-ascii?Q?xo+jk+YJ8kj8gHBea1RxMqd8cIuYRbVLrE+IOoMpecSpJeEoy+40PzOrNho4?=
- =?us-ascii?Q?iE5QYRQqNrws6LrmpBpc3QKz8fJlu9Lkh2E5rCUJ8sKq0FuahGI6+aautfor?=
- =?us-ascii?Q?J07c+LnXysqgATsFEiZeQyLSA//TggNP1TYAGFq4LduDZr4wP9lS9a9gpzo+?=
- =?us-ascii?Q?VQ=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AhsNMf9Vbsc32H//rHFQf/XKbyiLk3gjY24Xo/+yVvLhQrczD8P2SF3B1AW5?=
+ =?us-ascii?Q?G51OkNjyUh1FgpcU9ZsSViV57oYCZR8IgqsSSGz8IKGWq5fVhvf/OArWOTXD?=
+ =?us-ascii?Q?m7pcWKfDRKxmEL5nb9Yj2Gn3x/7a/z0lt2qfN4KyteqQ7r09d9rCdsjrQbIk?=
+ =?us-ascii?Q?ub5BZ8ZGmfCVEvwCFAwNOf0eJ0Bodk4XJGaPjbLtxB61tAxlfpiNgVPhyGB6?=
+ =?us-ascii?Q?F+9BH/PO0nfuLG43svH1z9fm57ijaF+Azn2zIwtvvwEvet5HlNzrBPF3zC0m?=
+ =?us-ascii?Q?addzRUg/bC3whxCL7MvGDREXtHqApv6HGzL04JvLSmply9x0rLB2W2CrMITL?=
+ =?us-ascii?Q?wxk0z7R2RsFQdBJJGOrYrnoLJPJVgiNmzqyj0qa5C34j9TrPxIMQNZ6bdNBu?=
+ =?us-ascii?Q?Lb1PmzJ4Zx8K7E25jjuPQ7AWkDjk9Mhmv9TbygwflMrh5nbYOlEXZJtOhnDO?=
+ =?us-ascii?Q?xjmixcNjRP7oWIOh5TDiluSrVtFVECsgiNGhL4tFAHpOAX85tXPSYQyt8Wrb?=
+ =?us-ascii?Q?M8JABrlP2AIz02CNWIRca5O9Em1A+dfK8zrpz08dYRkaA6Ft2dA3sEGx8Ml0?=
+ =?us-ascii?Q?9s5By3T688ZMl5qO6TZs2ENU+sWyrAcBoKstzJ7WuYBiBzXzO5wmwwckpw/L?=
+ =?us-ascii?Q?vEygcEdM0FGzlna5unmhkPqAp9nzf9e0M0cx4fBY/B8MdTKRCU3Sl+4h+vtq?=
+ =?us-ascii?Q?Bzc8zmr+xBX+xUsXw3KXvsmZK/63dkEhVG3pQrlBW4Qe9CvWjafPWD8nMPi3?=
+ =?us-ascii?Q?Ivnh69NII/Up1S7Sa20bl35A/JbZW2pRndYC/BxuY7AjhohE/2Yanpt7r0ED?=
+ =?us-ascii?Q?96r8NTs45dOmn3IyJGvhovR0b+3YR13co+btgX7p3ByzXdR+D9J2CEKZo6wb?=
+ =?us-ascii?Q?h5t/8avON/fdnMOoqDI68NE/Wkm/ZSmywzCVW5F4CByZfJaS8qXmlrJcSry6?=
+ =?us-ascii?Q?rk3SBOd8HsbxYMXE0RtLYtDE99ENcw48QPUc5mC/yygTBzChWU872+2vJMIN?=
+ =?us-ascii?Q?vIglt/4hVMKPs68X2ClnVmHC6KMxpe+teS9dDzHgARc0GJWYKcB+zQ1NVDq5?=
+ =?us-ascii?Q?IIUxzdWVVQKppiY5UHcNHH31snlz402Kl/8D1cAq7QUz75Nff4LJi7uXzl4f?=
+ =?us-ascii?Q?LX3E6U9kLUsqYsG1r7JfOhuOSzT5FD0ba0ZPEbE1E62n7JUn+IWNWS/+bfa0?=
+ =?us-ascii?Q?SYWxaP4hfhG7mJQ72YkYI8C7uX7j7XrwNGpNclaA72AwtOJtI/FI0N7RYvw7?=
+ =?us-ascii?Q?+cA0hDTLgasymLImZp/ms7NxoAatDzWPI7AbBhXqrbBp1VHNxAc4tOWpCWDQ?=
+ =?us-ascii?Q?+PCwc1tIiOlC+laV7dol0C9hY5En8UhzfMMWLJ9Wdlx55VKstfs4OMwlYOod?=
+ =?us-ascii?Q?mii1T98ySOj4TjPKyr6dQmwtGgSn0xmRoFfKJhDmrjiCbMmMctc+VBLUImjI?=
+ =?us-ascii?Q?8dbcaUWr1d92zmmRZyWK2+QuE3lCdNz+8RSmEghLdgRjptnSRR+Jf31j6Rqt?=
+ =?us-ascii?Q?Feal/pCVp+qor0dJgxrrUHNTf8KmlkQi4IUxoNHKqtLPKBGmLHsI8nAI5jdD?=
+ =?us-ascii?Q?HlexYafY2/g4mWGcZg7ILW1jydnogPUbvlVJDL/5QkLUp2uAv2omKyP2e4HH?=
+ =?us-ascii?Q?pg=3D=3D?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d181f560-3852-4b6e-b470-08da652ef731
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51970c65-7765-43fb-5775-08da652ef994
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR10MB4468.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 00:22:41.7727
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 00:22:45.7277
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: d+bSV84qsbsmux8bxwkwxIDRCy7rQP52njbcFSbu/mulZ2nyP+8HYAZrkA1gExuBINx3tcCoeLaYoY2GmKe5lQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: BgedZBM7oquJnLwHT0UV/4kBEGTOAJ5KmckLJWCb6FVcVd7El5lEXhAJielCQtYcU94EtIu1tUhXnONP0VMNHQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB3986
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
  definitions=2022-07-13_13:2022-07-13,2022-07-13 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0 mlxscore=0
- suspectscore=0 adultscore=0 spamscore=0 mlxlogscore=999 bulkscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 phishscore=0 spamscore=0 malwarescore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
  definitions=main-2207140000
-X-Proofpoint-GUID: pDdsCtU8x4TMlW1FsNxnc7Avl5GJmBWv
-X-Proofpoint-ORIG-GUID: pDdsCtU8x4TMlW1FsNxnc7Avl5GJmBWv
+X-Proofpoint-GUID: 8vOw77miQM3a3dKQhrL77nV1UtK5QGTg
+X-Proofpoint-ORIG-GUID: 8vOw77miQM3a3dKQhrL77nV1UtK5QGTg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-per-fs rwsem is used across kernfs for synchronization purposes.
-Having an interface to access it not only avoids code duplication, it
-can also help in changing the underlying locking mechanism without needing
-to change the lock users. For example next patch modifies this interface
-to make use of hashed rwsems in place of per-fs rwsem.
+This document describes usage and proof of various hashed locks
+introduced in this patch set.
 
 Signed-off-by: Imran Khan <imran.f.khan@oracle.com>
 ---
- fs/kernfs/dir.c             | 119 ++++++++++++++++++------------------
- fs/kernfs/file.c            |   5 +-
- fs/kernfs/inode.c           |  26 ++++----
- fs/kernfs/kernfs-internal.h |  78 +++++++++++++++++++++++
- fs/kernfs/mount.c           |   6 +-
- fs/kernfs/symlink.c         |   6 +-
- 6 files changed, 159 insertions(+), 81 deletions(-)
+ .../filesystems/kernfs-hashed-locks.rst       | 214 ++++++++++++++++++
+ 1 file changed, 214 insertions(+)
+ create mode 100644 Documentation/filesystems/kernfs-hashed-locks.rst
 
-diff --git a/fs/kernfs/dir.c b/fs/kernfs/dir.c
-index d2a0b4acd0733..73f4ebc1464e2 100644
---- a/fs/kernfs/dir.c
-+++ b/fs/kernfs/dir.c
-@@ -33,7 +33,7 @@ static DEFINE_SPINLOCK(kernfs_idr_lock);	/* root->ino_idr */
- 
- static bool kernfs_active(struct kernfs_node *kn)
- {
--	lockdep_assert_held(&kernfs_root(kn)->kernfs_rwsem);
-+	kernfs_rwsem_assert_held(kn);
- 	return atomic_read(&kn->active) >= 0;
- }
- 
-@@ -467,12 +467,20 @@ static void kernfs_drain(struct kernfs_node *kn)
- 	__releases(&kernfs_root(kn)->kernfs_rwsem)
- 	__acquires(&kernfs_root(kn)->kernfs_rwsem)
- {
-+	struct rw_semaphore *rwsem;
- 	struct kernfs_root *root = kernfs_root(kn);
- 
--	lockdep_assert_held_write(&root->kernfs_rwsem);
-+	/**
-+	 * kn has the same root as its ancestor, so it can be used to get
-+	 * per-fs rwsem.
-+	 */
-+	rwsem = kernfs_rwsem_ptr(kn);
+diff --git a/Documentation/filesystems/kernfs-hashed-locks.rst b/Documentation/filesystems/kernfs-hashed-locks.rst
+new file mode 100644
+index 0000000000000..a000e6fcf78ca
+--- /dev/null
++++ b/Documentation/filesystems/kernfs-hashed-locks.rst
+@@ -0,0 +1,214 @@
++.. SPDX-License-Identifier: GPL-2.0-only
 +
-+	kernfs_rwsem_assert_held_write(kn);
++===================
++kernfs hashed locks
++===================
 +
- 	WARN_ON_ONCE(kernfs_active(kn));
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 
- 	if (kernfs_lockdep(kn)) {
- 		rwsem_acquire(&kn->dep_map, 0, 0, _RET_IP_);
-@@ -491,7 +499,7 @@ static void kernfs_drain(struct kernfs_node *kn)
- 
- 	kernfs_drain_open_files(kn);
- 
--	down_write(&root->kernfs_rwsem);
-+	kernfs_down_write(kn);
- }
- 
- /**
-@@ -726,12 +734,12 @@ struct kernfs_node *kernfs_find_and_get_node_by_id(struct kernfs_root *root,
- int kernfs_add_one(struct kernfs_node *kn)
- {
- 	struct kernfs_node *parent = kn->parent;
--	struct kernfs_root *root = kernfs_root(parent);
- 	struct kernfs_iattrs *ps_iattr;
-+	struct rw_semaphore *rwsem;
- 	bool has_ns;
- 	int ret;
- 
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(parent);
- 
- 	ret = -EINVAL;
- 	has_ns = kernfs_ns_enabled(parent);
-@@ -762,7 +770,7 @@ int kernfs_add_one(struct kernfs_node *kn)
- 		ps_iattr->ia_mtime = ps_iattr->ia_ctime;
- 	}
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 
- 	/*
- 	 * Activate the new node unless CREATE_DEACTIVATED is requested.
-@@ -776,7 +784,7 @@ int kernfs_add_one(struct kernfs_node *kn)
- 	return 0;
- 
- out_unlock:
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	return ret;
- }
- 
-@@ -797,7 +805,7 @@ static struct kernfs_node *kernfs_find_ns(struct kernfs_node *parent,
- 	bool has_ns = kernfs_ns_enabled(parent);
- 	unsigned int hash;
- 
--	lockdep_assert_held(&kernfs_root(parent)->kernfs_rwsem);
-+	kernfs_rwsem_assert_held(parent);
- 
- 	if (has_ns != (bool)ns) {
- 		WARN(1, KERN_WARNING "kernfs: ns %s in '%s' for '%s'\n",
-@@ -829,7 +837,7 @@ static struct kernfs_node *kernfs_walk_ns(struct kernfs_node *parent,
- 	size_t len;
- 	char *p, *name;
- 
--	lockdep_assert_held_read(&kernfs_root(parent)->kernfs_rwsem);
-+	kernfs_rwsem_assert_held_read(parent);
- 
- 	spin_lock_irq(&kernfs_pr_cont_lock);
- 
-@@ -867,12 +875,12 @@ struct kernfs_node *kernfs_find_and_get_ns(struct kernfs_node *parent,
- 					   const char *name, const void *ns)
- {
- 	struct kernfs_node *kn;
--	struct kernfs_root *root = kernfs_root(parent);
-+	struct rw_semaphore *rwsem;
- 
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(parent);
- 	kn = kernfs_find_ns(parent, name, ns);
- 	kernfs_get(kn);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	return kn;
- }
-@@ -892,12 +900,12 @@ struct kernfs_node *kernfs_walk_and_get_ns(struct kernfs_node *parent,
- 					   const char *path, const void *ns)
- {
- 	struct kernfs_node *kn;
--	struct kernfs_root *root = kernfs_root(parent);
-+	struct rw_semaphore *rwsem;
- 
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(parent);
- 	kn = kernfs_walk_ns(parent, path, ns);
- 	kernfs_get(kn);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	return kn;
- }
-@@ -1062,7 +1070,7 @@ struct kernfs_node *kernfs_create_empty_dir(struct kernfs_node *parent,
- static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
- {
- 	struct kernfs_node *kn;
--	struct kernfs_root *root;
-+	struct rw_semaphore *rwsem;
- 
- 	if (flags & LOOKUP_RCU)
- 		return -ECHILD;
-@@ -1078,13 +1086,12 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
- 		parent = kernfs_dentry_node(dentry->d_parent);
- 		if (parent) {
- 			spin_unlock(&dentry->d_lock);
--			root = kernfs_root(parent);
--			down_read(&root->kernfs_rwsem);
-+			rwsem = kernfs_down_read(parent);
- 			if (kernfs_dir_changed(parent, dentry)) {
--				up_read(&root->kernfs_rwsem);
-+				kernfs_up_read(rwsem);
- 				return 0;
- 			}
--			up_read(&root->kernfs_rwsem);
-+			kernfs_up_read(rwsem);
- 		} else
- 			spin_unlock(&dentry->d_lock);
- 
-@@ -1095,8 +1102,7 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
- 	}
- 
- 	kn = kernfs_dentry_node(dentry);
--	root = kernfs_root(kn);
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(kn);
- 
- 	/* The kernfs node has been deactivated */
- 	if (!kernfs_active(kn))
-@@ -1115,10 +1121,10 @@ static int kernfs_dop_revalidate(struct dentry *dentry, unsigned int flags)
- 	    kernfs_info(dentry->d_sb)->ns != kn->ns)
- 		goto out_bad;
- 
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 	return 1;
- out_bad:
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 	return 0;
- }
- 
-@@ -1132,12 +1138,11 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
- {
- 	struct kernfs_node *parent = dir->i_private;
- 	struct kernfs_node *kn;
--	struct kernfs_root *root;
- 	struct inode *inode = NULL;
- 	const void *ns = NULL;
-+	struct rw_semaphore *rwsem;
- 
--	root = kernfs_root(parent);
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(parent);
- 	if (kernfs_ns_enabled(parent))
- 		ns = kernfs_info(dir->i_sb)->ns;
- 
-@@ -1148,7 +1153,7 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
- 		 * create a negative.
- 		 */
- 		if (!kernfs_active(kn)) {
--			up_read(&root->kernfs_rwsem);
-+			kernfs_up_read(rwsem);
- 			return NULL;
- 		}
- 		inode = kernfs_get_inode(dir->i_sb, kn);
-@@ -1163,7 +1168,7 @@ static struct dentry *kernfs_iop_lookup(struct inode *dir,
- 	 */
- 	if (!IS_ERR(inode))
- 		kernfs_set_rev(parent, dentry);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	/* instantiate and hash (possibly negative) dentry */
- 	return d_splice_alias(inode, dentry);
-@@ -1286,7 +1291,7 @@ static struct kernfs_node *kernfs_next_descendant_post(struct kernfs_node *pos,
- {
- 	struct rb_node *rbn;
- 
--	lockdep_assert_held_write(&kernfs_root(root)->kernfs_rwsem);
-+	kernfs_rwsem_assert_held_write(root);
- 
- 	/* if first iteration, visit leftmost descendant which may be root */
- 	if (!pos)
-@@ -1321,9 +1326,9 @@ static struct kernfs_node *kernfs_next_descendant_post(struct kernfs_node *pos,
- void kernfs_activate(struct kernfs_node *kn)
- {
- 	struct kernfs_node *pos;
--	struct kernfs_root *root = kernfs_root(kn);
-+	struct rw_semaphore *rwsem;
- 
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 
- 	pos = NULL;
- 	while ((pos = kernfs_next_descendant_post(pos, kn))) {
-@@ -1337,7 +1342,7 @@ void kernfs_activate(struct kernfs_node *kn)
- 		pos->flags |= KERNFS_ACTIVATED;
- 	}
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- }
- 
- static void __kernfs_remove(struct kernfs_node *kn)
-@@ -1348,7 +1353,7 @@ static void __kernfs_remove(struct kernfs_node *kn)
- 	if (!kn)
- 		return;
- 
--	lockdep_assert_held_write(&kernfs_root(kn)->kernfs_rwsem);
-+	kernfs_rwsem_assert_held_write(kn);
- 
- 	/*
- 	 * This is for kernfs_remove_self() which plays with active ref
-@@ -1417,16 +1422,14 @@ static void __kernfs_remove(struct kernfs_node *kn)
-  */
- void kernfs_remove(struct kernfs_node *kn)
- {
--	struct kernfs_root *root;
-+	struct rw_semaphore *rwsem;
- 
- 	if (!kn)
- 		return;
- 
--	root = kernfs_root(kn);
--
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 	__kernfs_remove(kn);
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- }
- 
- /**
-@@ -1512,9 +1515,9 @@ void kernfs_unbreak_active_protection(struct kernfs_node *kn)
- bool kernfs_remove_self(struct kernfs_node *kn)
- {
- 	bool ret;
--	struct kernfs_root *root = kernfs_root(kn);
-+	struct rw_semaphore *rwsem;
- 
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 	kernfs_break_active_protection(kn);
- 
- 	/*
-@@ -1542,9 +1545,9 @@ bool kernfs_remove_self(struct kernfs_node *kn)
- 			    atomic_read(&kn->active) == KN_DEACTIVATED_BIAS)
- 				break;
- 
--			up_write(&root->kernfs_rwsem);
-+			kernfs_up_write(rwsem);
- 			schedule();
--			down_write(&root->kernfs_rwsem);
-+			rwsem = kernfs_down_write(kn);
- 		}
- 		finish_wait(waitq, &wait);
- 		WARN_ON_ONCE(!RB_EMPTY_NODE(&kn->rb));
-@@ -1557,7 +1560,7 @@ bool kernfs_remove_self(struct kernfs_node *kn)
- 	 */
- 	kernfs_unbreak_active_protection(kn);
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	return ret;
- }
- 
-@@ -1574,7 +1577,7 @@ int kernfs_remove_by_name_ns(struct kernfs_node *parent, const char *name,
- 			     const void *ns)
- {
- 	struct kernfs_node *kn;
--	struct kernfs_root *root;
-+	struct rw_semaphore *rwsem;
- 
- 	if (!parent) {
- 		WARN(1, KERN_WARNING "kernfs: can not remove '%s', no directory\n",
-@@ -1582,14 +1585,14 @@ int kernfs_remove_by_name_ns(struct kernfs_node *parent, const char *name,
- 		return -ENOENT;
- 	}
- 
--	root = kernfs_root(parent);
--	down_write(&root->kernfs_rwsem);
++kernfs uses following hashed locks
 +
-+	rwsem = kernfs_down_write(parent);
- 
- 	kn = kernfs_find_ns(parent, name, ns);
- 	if (kn)
- 		__kernfs_remove(kn);
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 
- 	if (kn)
- 		return 0;
-@@ -1608,16 +1611,15 @@ int kernfs_rename_ns(struct kernfs_node *kn, struct kernfs_node *new_parent,
- 		     const char *new_name, const void *new_ns)
- {
- 	struct kernfs_node *old_parent;
--	struct kernfs_root *root;
- 	const char *old_name = NULL;
-+	struct rw_semaphore *rwsem;
- 	int error;
- 
- 	/* can't move or rename root */
- 	if (!kn->parent)
- 		return -EINVAL;
- 
--	root = kernfs_root(kn);
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 
- 	error = -ENOENT;
- 	if (!kernfs_active(kn) || !kernfs_active(new_parent) ||
-@@ -1671,7 +1673,7 @@ int kernfs_rename_ns(struct kernfs_node *kn, struct kernfs_node *new_parent,
- 
- 	error = 0;
-  out:
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	return error;
- }
- 
-@@ -1742,14 +1744,13 @@ static int kernfs_fop_readdir(struct file *file, struct dir_context *ctx)
- 	struct dentry *dentry = file->f_path.dentry;
- 	struct kernfs_node *parent = kernfs_dentry_node(dentry);
- 	struct kernfs_node *pos = file->private_data;
--	struct kernfs_root *root;
- 	const void *ns = NULL;
-+	struct rw_semaphore *rwsem;
- 
- 	if (!dir_emit_dots(file, ctx))
- 		return 0;
- 
--	root = kernfs_root(parent);
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(parent);
- 
- 	if (kernfs_ns_enabled(parent))
- 		ns = kernfs_info(dentry->d_sb)->ns;
-@@ -1766,12 +1767,12 @@ static int kernfs_fop_readdir(struct file *file, struct dir_context *ctx)
- 		file->private_data = pos;
- 		kernfs_get(pos);
- 
--		up_read(&root->kernfs_rwsem);
-+		kernfs_up_read(rwsem);
- 		if (!dir_emit(ctx, name, len, ino, type))
- 			return 0;
--		down_read(&root->kernfs_rwsem);
-+		rwsem = kernfs_down_read(parent);
- 	}
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 	file->private_data = NULL;
- 	ctx->pos = INT_MAX;
- 	return 0;
-diff --git a/fs/kernfs/file.c b/fs/kernfs/file.c
-index 77c3e34a6c7da..7c8bdf4ce31f4 100644
---- a/fs/kernfs/file.c
-+++ b/fs/kernfs/file.c
-@@ -911,6 +911,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
- 	struct kernfs_node *kn;
- 	struct kernfs_super_info *info;
- 	struct kernfs_root *root;
-+	struct rw_semaphore *rwsem;
- repeat:
- 	/* pop one off the notify_list */
- 	spin_lock_irq(&kernfs_notify_lock);
-@@ -925,7 +926,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
- 
- 	root = kernfs_root(kn);
- 	/* kick fsnotify */
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 
- 	down_write(&root->supers_rwsem);
- 	list_for_each_entry(info, &kernfs_root(kn)->supers, node) {
-@@ -965,7 +966,7 @@ static void kernfs_notify_workfn(struct work_struct *work)
- 	}
- 	up_write(&root->supers_rwsem);
- 
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	kernfs_put(kn);
- 	goto repeat;
- }
-diff --git a/fs/kernfs/inode.c b/fs/kernfs/inode.c
-index 3d783d80f5daa..efe5ae98abf46 100644
---- a/fs/kernfs/inode.c
-+++ b/fs/kernfs/inode.c
-@@ -99,11 +99,11 @@ int __kernfs_setattr(struct kernfs_node *kn, const struct iattr *iattr)
- int kernfs_setattr(struct kernfs_node *kn, const struct iattr *iattr)
- {
- 	int ret;
--	struct kernfs_root *root = kernfs_root(kn);
-+	struct rw_semaphore *rwsem;
- 
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 	ret = __kernfs_setattr(kn, iattr);
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	return ret;
- }
- 
-@@ -112,14 +112,13 @@ int kernfs_iop_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- {
- 	struct inode *inode = d_inode(dentry);
- 	struct kernfs_node *kn = inode->i_private;
--	struct kernfs_root *root;
-+	struct rw_semaphore *rwsem;
- 	int error;
- 
- 	if (!kn)
- 		return -EINVAL;
- 
--	root = kernfs_root(kn);
--	down_write(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_write(kn);
- 	error = setattr_prepare(&init_user_ns, dentry, iattr);
- 	if (error)
- 		goto out;
-@@ -132,7 +131,7 @@ int kernfs_iop_setattr(struct user_namespace *mnt_userns, struct dentry *dentry,
- 	setattr_copy(&init_user_ns, inode, iattr);
- 
- out:
--	up_write(&root->kernfs_rwsem);
-+	kernfs_up_write(rwsem);
- 	return error;
- }
- 
-@@ -187,14 +186,14 @@ int kernfs_iop_getattr(struct user_namespace *mnt_userns,
- {
- 	struct inode *inode = d_inode(path->dentry);
- 	struct kernfs_node *kn = inode->i_private;
--	struct kernfs_root *root = kernfs_root(kn);
-+	struct rw_semaphore *rwsem;
- 
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(kn);
- 	spin_lock(&inode->i_lock);
- 	kernfs_refresh_inode(kn, inode);
- 	generic_fillattr(&init_user_ns, inode, stat);
- 	spin_unlock(&inode->i_lock);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	return 0;
- }
-@@ -277,22 +276,21 @@ void kernfs_evict_inode(struct inode *inode)
- int kernfs_iop_permission(struct user_namespace *mnt_userns,
- 			  struct inode *inode, int mask)
- {
-+	struct rw_semaphore *rwsem;
- 	struct kernfs_node *kn;
--	struct kernfs_root *root;
- 	int ret;
- 
- 	if (mask & MAY_NOT_BLOCK)
- 		return -ECHILD;
- 
- 	kn = inode->i_private;
--	root = kernfs_root(kn);
- 
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(kn);
- 	spin_lock(&inode->i_lock);
- 	kernfs_refresh_inode(kn, inode);
- 	ret = generic_permission(&init_user_ns, inode, mask);
- 	spin_unlock(&inode->i_lock);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	return ret;
- }
-diff --git a/fs/kernfs/kernfs-internal.h b/fs/kernfs/kernfs-internal.h
-index 3cd17c100d10e..0babc3dc4f4a3 100644
---- a/fs/kernfs/kernfs-internal.h
-+++ b/fs/kernfs/kernfs-internal.h
-@@ -169,4 +169,82 @@ extern const struct inode_operations kernfs_symlink_iops;
-  * kernfs locks
-  */
- extern struct kernfs_global_locks *kernfs_locks;
++1. Hashed mutexes
++2. Hashed rwsem
 +
-+static inline struct rw_semaphore *kernfs_rwsem_ptr(struct kernfs_node *kn)
-+{
-+	struct kernfs_root *root = kernfs_root(kn);
++In certain cases hashed rwsem needs to work in conjunction with a per-fs mutex
++(Described further below).So this document describes this mutex as well.
 +
-+	return &root->kernfs_rwsem;
-+}
++A kernfs_global_locks object (defined below) provides hashed mutexes,
++hashed spinlocks and hashed rwsems.
 +
-+static inline void kernfs_rwsem_assert_held(struct kernfs_node *kn)
-+{
-+	lockdep_assert_held(kernfs_rwsem_ptr(kn));
-+}
++	struct kernfs_global_locks {
++		struct mutex open_file_mutex[NR_KERNFS_LOCKS];
++		struct rw_semaphore kernfs_rwsem[NR_KERNFS_LOCKS];
++	};
 +
-+static inline void kernfs_rwsem_assert_held_write(struct kernfs_node *kn)
-+{
-+	lockdep_assert_held_write(kernfs_rwsem_ptr(kn));
-+}
++For all hashed locks address of a kernfs_node object acts as hashing key.
 +
-+static inline void kernfs_rwsem_assert_held_read(struct kernfs_node *kn)
-+{
-+	lockdep_assert_held_read(kernfs_rwsem_ptr(kn));
-+}
++For the remainder of this document a node means a kernfs_node object. The
++node can refer to a file, directory or symlink of a kernfs based file system.
++Also a node's mutex or rwsem refers to hashed mutex, or hashed rwsem
++corresponding to the node. It does not mean any locking construct embedded in
++the kernfs_node itself.
 +
-+/**
-+ * kernfs_down_write() - Acquire kernfs rwsem
-+ *
-+ * @kn: kernfs_node for which rwsem needs to be taken
-+ *
-+ * Return: pointer to acquired rwsem
-+ */
-+static inline struct rw_semaphore *kernfs_down_write(struct kernfs_node *kn)
-+{
-+	struct rw_semaphore *rwsem = kernfs_rwsem_ptr(kn);
++What is protected by hashed locks
++=================================
 +
-+	down_write(rwsem);
++(1) There's one kernfs_open_file for each open file and all kernfs_open_file
++    instances corresponding to a kernfs_node are maintained in a list.
++    hashed mutexes or kernfs_global_locks.open_file_mutex[index]  protects
++    this list.
 +
-+	return rwsem;
-+}
++(2) Hashed rwsems or kernfs_global_locks.kernfs_rwsem[index] protects node's
++    state and synchronizes operations that change state of a node or depend on
++    the state of a node.
 +
-+/**
-+ * kernfs_up_write - Release kernfs rwsem
-+ *
-+ * @rwsem: address of rwsem to release
-+ *
-+ * Return: void
-+ */
-+static inline void kernfs_up_write(struct rw_semaphore *rwsem)
-+{
-+	up_write(rwsem);
-+}
++(3) per-fs mutex (mentioned earlier) provides synchronization between lookup
++    and remove operations. It also protects against topology change.
++    While looking for a node we will not have address of corresponding node
++    so we can't acquire node's rwsem right from the beginning.
++    On the other hand a parallel remove operation for the same node can acquire
++    corresponding rwsem and go ahead with node removal. So it may happen that
++    search operation for the node finds and returns it but before it can be
++    pinned or used, the remove operation, that was going on in parallel, removes
++    the node and hence makes its any future use wrong.
++    per-fs mutex ensures that for competing search and remove operations only
++    one proceeds at a time and since object returned by search is pinned before
++    releasing the per-fs mutex, it will be available for subsequent usage.
 +
-+/**
-+ * kernfs_down_read() - Acquire kernfs rwsem
-+ *
-+ * @kn: kernfs_node for which rwsem needs to be taken
-+ *
-+ * Return: pointer to acquired rwsem
-+ */
-+static inline struct rw_semaphore *kernfs_down_read(struct kernfs_node *kn)
-+{
-+	struct rw_semaphore *rwsem = kernfs_rwsem_ptr(kn);
++    This per-fs mutex also protects against topology change during path walks.
++    During path walks we need to acquire and release rwsems corresponding to
++    directories so that these directories don't move and their children RB tree
++    does not change. Since these rwsems can't be taken under a spinlock,
++    kernfs_rename_lock can't be used and needed protection against topology
++    change is provided by per-fs mutex.
 +
-+	down_read(rwsem);
++Lock usage and proof
++=======================
 +
-+	return rwsem;
-+}
++(1) Hashed mutexes
 +
-+/**
-+ * kernfs_up_read - Release kernfs rwsem
-+ *
-+ * @rwsem: address of rwsem to release
-+ *
-+ * Return: void
-+ */
-+static inline void kernfs_up_read(struct rw_semaphore *rwsem)
-+{
-+	up_read(rwsem);
-+}
- #endif	/* __KERNFS_INTERNAL_H */
-diff --git a/fs/kernfs/mount.c b/fs/kernfs/mount.c
-index d2be1c3047157..3c5334b74f369 100644
---- a/fs/kernfs/mount.c
-+++ b/fs/kernfs/mount.c
-@@ -237,9 +237,9 @@ struct dentry *kernfs_node_dentry(struct kernfs_node *kn,
- static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *kfc)
- {
- 	struct kernfs_super_info *info = kernfs_info(sb);
--	struct kernfs_root *kf_root = kfc->root;
- 	struct inode *inode;
- 	struct dentry *root;
-+	struct rw_semaphore *rwsem;
- 
- 	info->sb = sb;
- 	/* Userspace would break if executables or devices appear on sysfs */
-@@ -257,9 +257,9 @@ static int kernfs_fill_super(struct super_block *sb, struct kernfs_fs_context *k
- 	sb->s_shrink.seeks = 0;
- 
- 	/* get root inode, initialize and unlock it */
--	down_read(&kf_root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(info->root->kn);
- 	inode = kernfs_get_inode(sb, info->root->kn);
--	up_read(&kf_root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 	if (!inode) {
- 		pr_debug("kernfs: could not get root inode\n");
- 		return -ENOMEM;
-diff --git a/fs/kernfs/symlink.c b/fs/kernfs/symlink.c
-index 0ab13824822f7..9d41036025547 100644
---- a/fs/kernfs/symlink.c
-+++ b/fs/kernfs/symlink.c
-@@ -113,12 +113,12 @@ static int kernfs_getlink(struct inode *inode, char *path)
- 	struct kernfs_node *kn = inode->i_private;
- 	struct kernfs_node *parent = kn->parent;
- 	struct kernfs_node *target = kn->symlink.target_kn;
--	struct kernfs_root *root = kernfs_root(parent);
-+	struct rw_semaphore *rwsem;
- 	int error;
- 
--	down_read(&root->kernfs_rwsem);
-+	rwsem = kernfs_down_read(parent);
- 	error = kernfs_get_target_path(parent, target, path);
--	up_read(&root->kernfs_rwsem);
-+	kernfs_up_read(rwsem);
- 
- 	return error;
- }
++    Since hashed mutexes protect the list of kernfs_open_file instances
++    corresponding to a kernfs_node, ->open and ->release backends of
++    file_operations need to acquire hashed mutex corresponding to kernfs_node.
++    Also when a kernfs_node is removed, all of its kernfs_open_file instances
++    are drained after deactivating the node. This drain operation acquires
++    hashed mutex to traverse list of kernfs_open_file instances.
++    So addition (via ->open), deletion (via ->release) and traversal
++    (during kernfs_drain) of kernfs_open_file list occurs in a synchronous
++    manner.
++
++(2) Hashed rwsems
++
++	3.1. A node's rwsem protects its state and needs to be acquired to:
++		3.1.a. Remove the node
++		3.1.b. Move the node
++		3.1.c. Travers or modify a node's children RB tree (for
++		       directories), i.e to add/remove files/subdirectories
++		       within/from a directory.
++		3.1.d. Modify or access node's inode attributes
++
++	3.2. Hashed rwsems are used in following operations:
++
++		3.2.a. Addition of a new node
++
++		While adding a new kernfs_node under a kernfs directory
++		kernfs_add_one acquires directory node's rwsem for
++		writing. Clause 3.1.a ensures that directory exists
++		throughout the operation. Clause 3.1.c ensures proper
++		updation of children rb tree (i.e ->dir.children).
++		Clause 3.1.d ensures correct modification of inode
++		attribute to reflect timestamp of this operation.
++		If the directory gets removed while waiting for semaphore,
++		the subsequent checks in kernfs_add_one will fail resulting
++		in early bail out from kernfs_add_one.
++
++		3.2.b. Removal of a node
++
++		Removal of a node involves recursive removal of all of its
++		descendants as well. per-fs mutex (i.e kernfs_rm_mutex) avoids
++		concurrent node removals even if the nodes are different.
++
++		At first node's rwsem is acquired. Clause 3.1.c avoids parallel
++		modification of descendant tree and while holding this rwsem
++		each of the descendants are deactivated.
++
++		Once a descendant has been deactivated and drained, its parent's
++		rwsem is taken. Clause 3.1.c ensures proper unlinking of this
++		descendant from its siblings. Clause 3.1.d ensures that parent's
++		inode attributes are correctly updated to record time stamp of
++		removal.
++
++		3.2.c. Movement of a node
++
++		Moving or renaming a node (kernfs_rename_ns) acquires rwsem for
++		node and its old and new parents. Clauses 3.1.b and 3.1.c avoid
++		concurrent move operations for the same node.
++		Also if old parent of a node changes while waiting for rwsem,
++		the acquisition of rwsem for 3 involved nodes is attempted
++		again. It is always ensured that as far as old parent is
++		concerned, rwsem corresponding to current parent is acquired.
++
++		3.2.d. Reading a directory
++
++		For diectory reading kernfs_fop_readdir acquires directory
++		node's rwsem for reading. Clause 3.1.c ensures a consistent view
++		of children RB tree.
++		As far as directroy being read is concerned, if it gets removed
++		while waiting for semaphore, the for loop that iterates through
++		children will be ineffective. So for this operation acquiring
++		directory node's rwsem for reading is enough.
++
++		3.2.e. Dentry revalidation
++
++		A dentry revalidation (kernfs_dop_revalidate) can happen for a
++		negative or for a normal dentry.
++		For negative dentries we just need to check parent change, so in
++		this case acquiring parent kernfs_node's rwsem for reading is
++		enough.
++		For a normal dentry acquiring node's rwsem for reading is enough
++		(Clause 3.1.a and 3.1.b).
++		If node gets removed while waiting for the lock subsequent checks
++		in kernfs_dop_revalidate will fail and kernfs_dop_revalidate will
++		exit early.
++
++		3.2.f. kernfs_node lookup
++
++		While searching for a node under a given parent
++		(kernfs_find_and_get_ns, kernfs_walk_and_get_ns) rwsem of parent
++		node is acquired for reading. Clause 3.1.c ensures a consistent
++		view of parent's children RB tree. To avoid parallel removal of
++		found node before it gets pinned, these operation make use of
++		per-fs mutex (kernfs_rm_mutex) as explained earlier.
++		This per-fs mutex is also taken during kernfs_node removal
++		(__kernfs_remove).
++
++		If the node being searched gets removed while waiting for the
++		mutex or rwsem, the subsequent kernfs_find_ns or kernfs_walk_ns
++		will fail.
++
++		3.2.g. kenfs_node's inode lookup
++
++		Looking up for inode instances via kernfs_iop_lookup involves
++		node lookup. So locks acquired are same as ones required in 3.2.f.
++		Also once node lookup is complete parent's rwsem is released and
++		rwsem of found node is acquired to get corresponding inode.
++		Since we are operating under per-fs kernfs_rm_mutex the found node
++		will not disappear in the middle.
++
++		3.2.h. Updating or reading inode attribute
++
++		Interfaces that change inode attributes(i.e kernfs_setattr and
++		kernfs_iop_setattr) acquire node's rwsem for writing.
++		If the kernfs_node gets removed while waiting for the semaphore
++		the subsequent __kernfs_setattr will fail.
++		From 3.2.a and 3.2.b we know that updates due to addition or
++		removal of nodes will not happen in parallel.
++		So just locking the kernfs_node in these cases is enough to
++		guarantee correct modification of inode attributes.
++		Similarly the interfaces that read inode attributes
++		(i.e kernfs_iop_getattr, kernfs_iop_permission) just need to
++		acquire involved node's rwsem for reading.
++
++		3.2.i. kernfs file event generation
++
++		kernfs_notify pins involved node before scheduling
++		kernfs_notify_work and kernfs_notify_workfn acquires node's
++		rwsem. Clauses in 3.1 ensure a consistent view of node state
++		throughout execution of work handler.
++
++		3.2.j. mount
++
++		kernfs_fill_super, invoked during mount operation, acquires root
++		node's rwsem. During mount process there can't be other execution
++		contexts trying to move or delete the node so just locking the
++		involved node(i.e the root node) is enough.
++
++		3.2.k. while activating a node
++
++		For a node that started as deactivated, kernfs_activate
++		activates the node. In this case acquiring node's rwsem is
++		enough. Since the node is not active yet any parallel removal
++		that wins the race for rwsem will skip this node and its
++		descendents. Also user space can't see a deactivated node so we
++		don't have any parallel access emanating from their as well.
++
++	3.3  For operations that involve locking multiple nodes at the same time
++	     locks are acquired in order of their addresses.
 -- 
 2.30.2
 
