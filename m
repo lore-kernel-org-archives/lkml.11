@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1063C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiGNC7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 22:59:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57598 "EHLO
+        id S232164AbiGNC7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 22:59:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231926AbiGNC7J (ORCPT
+        with ESMTP id S232137AbiGNC7L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 22:59:09 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62EC19C03
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:07 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VJH7R-e_1657767542;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VJH7R-e_1657767542)
+        Wed, 13 Jul 2022 22:59:11 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E0719C03
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VJH72kJ_1657767545;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VJH72kJ_1657767545)
           by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 10:59:03 +0800
+          Thu, 14 Jul 2022 10:59:06 +0800
 From:   Xianting Tian <xianting.tian@linux.alibaba.com>
 To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
         aou@eecs.berkeley.edu, alexandre.ghiti@canonical.com,
@@ -27,40 +27,46 @@ To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         huanyi.xj@alibaba-inc.com,
         Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [PATCH V2 0/2] Improve vmcoreinfo and memory layout dump
-Date:   Thu, 14 Jul 2022 10:58:59 +0800
-Message-Id: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
+Subject: [PATCH V2 2/2] riscv: Add modules to virtual kernel memory layout dump
+Date:   Thu, 14 Jul 2022 10:59:01 +0800
+Message-Id: <20220714025901.359695-3-xianting.tian@linux.alibaba.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
+References: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch series are the improvements for vmcoreinfo and memory
-layout dump.
+Modules always live before the kernel, MODULES_END is fixed but
+MODULES_VADDR isn't fixed, it depends on the kernel size.
+Let's add it to virtual kernel memory layout dump.
 
-The first patch(1/2) is to add VM layout to vmcoreinfo, which can
-simlify the development of crash tool as ARM64 already did
-(arch/arm64/kernel/crash_core.c).
+As MODULES is only defined for CONFIG_64BIT, so we dump it when
+CONFIG_64BIT.
 
-The second patch(2/2) is to add MODULES to memory layout dump.
+eg,
+MODULES_VADDR - MODULES_END
+0xffffffff01133000 - 0xffffffff80000000
 
-Changes v1 -> v2:
- patch 1: add VA_BITS to vmcoreinfo as ARM64 does, not satp_mode.
-	  crash tool can read VA_BITS to determin the pagetable
-	  levels.
- patch 1,2: As MODULES area is only defined when CONFIG_64BIT=y for
-	    riscv64, so only use MODULES area when CONFIG_64BIT=y. 
- 
-Xianting Tian (2):
-  RISC-V: Add arch_crash_save_vmcoreinfo support
-  riscv: Add modules to virtual kernel memory layout dump
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+---
+ arch/riscv/mm/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
- arch/riscv/kernel/Makefile     |  1 +
- arch/riscv/kernel/crash_core.c | 28 ++++++++++++++++++++++++++++
- arch/riscv/mm/init.c           |  3 +++
- 3 files changed, 32 insertions(+)
- create mode 100644 arch/riscv/kernel/crash_core.c
-
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index d466ec670e1f..bbc9431e9042 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -135,6 +135,9 @@ static void __init print_vm_layout(void)
+ 		(unsigned long)VMEMMAP_END);
+ 	print_ml("vmalloc", (unsigned long)VMALLOC_START,
+ 		(unsigned long)VMALLOC_END);
++	if (IS_ENABLED(CONFIG_64BIT))
++		print_ml("modules", (unsigned long)MODULES_VADDR,
++			(unsigned long)MODULES_END);
+ 	print_ml("lowmem", (unsigned long)PAGE_OFFSET,
+ 		(unsigned long)high_memory);
+ 	if (IS_ENABLED(CONFIG_64BIT)) {
 -- 
 2.17.1
 
