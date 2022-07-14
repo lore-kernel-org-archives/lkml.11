@@ -2,111 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19263C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 00:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbiGNATc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 20:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46826 "EHLO
+        id S230413AbiGNAUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 20:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiGNATT (ORCPT
+        with ESMTP id S229618AbiGNAUp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 20:19:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D68DB15A19
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 17:19:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657757957;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cYTecQwHshpf7b8DCjqwvpE5Y9uxd9DEd0zHHWe8xcw=;
-        b=WDi9nDj9z/xRaisVCykCdrqT57QyhDBwm8TMOM66rclPOuDUW9S3IpPE9rk0x9cd2ZYKOz
-        sH6PYTR8Po9Iqyhm41MfVsmauuvnYcWy6pPTvd4ItR+GWj6jvdEpIe5KodYdSFMm6EJVd9
-        dOHBVh3X8L3FkMhBoMeMhswermcmZeU=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-333-6C1v3qamOLS7jr_OyTFtRQ-1; Wed, 13 Jul 2022 20:19:12 -0400
-X-MC-Unique: 6C1v3qamOLS7jr_OyTFtRQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B093101A54E;
-        Thu, 14 Jul 2022 00:19:12 +0000 (UTC)
-Received: from T590 (ovpn-8-16.pek2.redhat.com [10.72.8.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 50DB640E8B04;
-        Thu, 14 Jul 2022 00:19:06 +0000 (UTC)
-Date:   Thu, 14 Jul 2022 08:19:01 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Jens Axboe <axboe@kernel.dk>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        io-uring@vger.kernel.org,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        ZiyangZhang <ZiyangZhang@linux.alibaba.com>,
-        Xiaoguang Wang <xiaoguang.wang@linux.alibaba.com>,
-        ming.lei@redhat.com
-Subject: Re: [PATCH V5 0/2] ublk: add io_uring based userspace block driver
-Message-ID: <Ys9g9RhZX5uwa9Ib@T590>
-References: <20220713140711.97356-1-ming.lei@redhat.com>
- <6e5d590b-448d-ea75-f29d-877a2cd6413b@kernel.dk>
+        Wed, 13 Jul 2022 20:20:45 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78DC13DE9
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 17:20:44 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id v185so107941ioe.11
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 17:20:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CDf7ponVtSwiyUmUKyQv1LkgIIKuEWvKXkEsaaBEY2Y=;
+        b=HggXnN/J0acz+YkhI6q06LHQzBUWx4SyERrzbFwCiDcE1fGxZ9FojgYvQAp4NPNlg2
+         BqZiTqxFrRGHT0j6lzha6tR6mO9YtCc0lOQ7cdQT7HJX7GZwEhMBTC0Vd/vBeHY8XlXP
+         PClWPE2NT3hxcPxu088W1BXA1sCkVtwqhUZKXuuB0W1NX6UD9ZM4tbfDTmZhEFjaqvu9
+         VFImIZ5m8BP6JXevrJ4dAbhax590AiWG3V5ykKC0B/qyA4+rvunzJMdr/c6A/K5OZRHy
+         h/hLRQKqpSGh6iq+PkJhgpIKPafI7SNvj4eAGdpIY0P6U+Cetrq/UNIj1SiI1FET4OLg
+         MHgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CDf7ponVtSwiyUmUKyQv1LkgIIKuEWvKXkEsaaBEY2Y=;
+        b=C08PjdB63BblPeNQZjJetTru/Ok5NQDAbMdNSq4jfE09xF/NImvwZAWZutfy1E7y6y
+         dE3B2OvVXJn2DmIguTMX2zbVrvFDQMTNItAY4fps5jpFz0ep9nxia249/OBto75UALmU
+         jzcnhZu8R7PrMme4644xq9lIMT70GOU1VVlZCEPM4XG1aGWzTJGCYGUNctFdnltCizED
+         aBcITw/GzFL0DZO0nLLs5YNVG58Ap43Ivn2Lw4ZJQvXCDH03poFjH1EkJPfGFAs9oW4C
+         t2xOgBFsKck7rFzaV54Hlq/sW+ZN67E3udtXrM1msUrOZ4hm2u5i+rhUrfNyOSipE2Z5
+         NOcA==
+X-Gm-Message-State: AJIora/ZndrzpJiuwcABM8CvB/LtAfocQA9KiY2KPy6PpARSk1EEvm/R
+        LeybxxH2r2bqROeWn7/LoDYZdPA3bo71cwRVnFq4cw==
+X-Google-Smtp-Source: AGRyM1utcceOTJGlb4M5/bFD4LjtpLOqEpDwdFZ5zX7llLQO/pbiz4LcSPnGu54S1lGVOngExwZQefuHXR0jsKyVbOw=
+X-Received: by 2002:a05:6638:349f:b0:33f:68a2:5eb5 with SMTP id
+ t31-20020a056638349f00b0033f68a25eb5mr3415957jal.167.1657758044032; Wed, 13
+ Jul 2022 17:20:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6e5d590b-448d-ea75-f29d-877a2cd6413b@kernel.dk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+References: <20220712130542.18836-1-linmiaohe@huawei.com> <Ys2xyCUnqpJt0eIo@monkey>
+ <Ys7ViSsOxLaQJIfy@xz-m1.local> <Ys7uXHdzzFezUub5@xz-m1.local>
+ <CAJHvVcgqb6R6ePMbgmA8LpMpMgrGWie9ZCTuR4MA77GTvi4XAw@mail.gmail.com> <Ys9XAbuxkDUlnmv0@monkey>
+In-Reply-To: <Ys9XAbuxkDUlnmv0@monkey>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Wed, 13 Jul 2022 17:20:07 -0700
+Message-ID: <CAJHvVci9iij+eDV-EWDOtjmWFYo0H+1LkzKBp6=XOpwDA4Jh-g@mail.gmail.com>
+Subject: Re: [PATCH] mm/hugetlb: avoid corrupting page->mapping in hugetlb_mcopy_atomic_pte
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+Cc:     Peter Xu <peterx@redhat.com>, Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 02:25:25PM -0600, Jens Axboe wrote:
-> On 7/13/22 8:07 AM, Ming Lei wrote:
-> > Hello Guys,
-> > 
-> > ublk driver is one kernel driver for implementing generic userspace block
-> > device/driver, which delivers io request from ublk block device(/dev/ublkbN) into
-> > ublk server[1] which is the userspace part of ublk for communicating
-> > with ublk driver and handling specific io logic by its target module.
-> 
-> Ming, is this ready to get merged in an experimental state?
+On Wed, Jul 13, 2022 at 4:36 PM Mike Kravetz <mike.kravetz@oracle.com> wrote:
+>
+> On 07/13/22 15:46, Axel Rasmussen wrote:
+> > I think there is a small mistake in this patch.
+> >
+> > Consider the non-minor-fault case. We have this block:
+> >
+> > /* Add shared, newly allocated pages to the page cache. */
+> > if (vm_shared && !is_continue) {
+> >         /* ... */
+> > }
+> >
+> > In here, we've added the newly allocated page to the page cache, and
+> > we've set this page_in_pagecache flag to true. But we *do not* setup
+> > rmap for this page in this block. I think in this case, the patch will
+> > cause us to do the wrong thing: we should hugepage_add_new_anon_rmap()
+> > further down, but with this patch we dup instead.
+>
+> I am not sure I follow.  The patch from Miaohe Lin would not change any
+> behavior in the 'if (vm_shared && !is_continue)' case.  In this case
+> both vm_shared and page_in_pagecache are true.
+>
+> IIUC, the patch would address the case where !vm_shared && is_continue.
 
-Hi Jens,
+Ah, you're right, my interpretation of the various flags got mixed up
+somewhere along the way.
 
-Yeah, I think so.
+page_in_pagecache is equivalent to vm_shared in this function,
+*except* when we have is_continue. Given that, I think this patch is
+correct in the vm_shared case (no behavior change). In case of
+!vm_shared && is_continue, I agree the patch is a correction to the
+previous behavior.
 
-IO path can survive in xfstests(-g auto), and control path works
-well in ublksrv builtin hotplug & 'kill -9' daemon test.
-
-The UAPI data size should be good, but definition may change per
-future requirement change, so I think it is ready to go as
-experimental.
-
-If you are fine, please add the following delta change into patch 1,
-or let me know if resend is needed.
-
-
-diff --git a/drivers/block/Kconfig b/drivers/block/Kconfig
-index 2ba77fd960c2..e19fcab016ba 100644
---- a/drivers/block/Kconfig
-+++ b/drivers/block/Kconfig
-@@ -409,10 +409,13 @@ config BLK_DEV_RBD
- 	  If unsure, say N.
- 
- config BLK_DEV_UBLK
--	tristate "Userspace block driver"
-+	tristate "Userspace block driver (Experimental)"
- 	select IO_URING
- 	help
--          io uring based userspace block driver.
-+	  io_uring based userspace block driver. Together with ublk server, ublk
-+	  has been working well, but interface with userspace or command data
-+	  definition isn't finalized yet, and might change according to future
-+	  requirement, so mark is as experimental now.
- 
- source "drivers/block/rnbd/Kconfig"
- 
-
-
-Thanks,
-Ming
-
+>
+> On 07/12/22 21:05, Miaohe Lin wrote:
+> > In MCOPY_ATOMIC_CONTINUE case with a non-shared VMA, pages in the page
+> > cache are installed in the ptes. But hugepage_add_new_anon_rmap is called
+> > for them mistakenly because they're not vm_shared. This will corrupt the
+> > page->mapping used by page cache code.
+> >
+> > Fixes: f619147104c8 ("userfaultfd: add UFFDIO_CONTINUE ioctl")
+> > Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+> > ---
+> >  mm/hugetlb.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/mm/hugetlb.c b/mm/hugetlb.c
+> > index 8d379e03f672..b232e1508e49 100644
+> > --- a/mm/hugetlb.c
+> > +++ b/mm/hugetlb.c
+> > @@ -6038,7 +6038,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
+> >       if (!huge_pte_none_mostly(huge_ptep_get(dst_pte)))
+> >               goto out_release_unlock;
+> >
+> > -     if (vm_shared) {
+> > +     if (page_in_pagecache) {
+> >               page_dup_file_rmap(page, true);
+> >       } else {
+> >               ClearHPageRestoreReserve(page);
+>
+> --
+> Mike Kravetz
