@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E68C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B40A6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239610AbiGNMqH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
+        id S238398AbiGNMqO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239475AbiGNMoK (ORCPT
+        with ESMTP id S239477AbiGNMoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 08:44:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33845459A5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 353E2459AB;
         Thu, 14 Jul 2022 05:44:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78F3061FBA;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76C5061FA5;
         Thu, 14 Jul 2022 12:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65912C36AF2;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48FE3C36AF3;
         Thu, 14 Jul 2022 12:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657802645;
-        bh=y3h86ThrtOdmfEwUCJxqBFgU1OEt8L7HTB1Ln5JVo1o=;
+        bh=whKOsHJQeMHVrofhdeytcdGoOgRf8f8ARs/poCrPxXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j6NIT9lJKbuCuD6u7FTa0uLqaA/lHeLfH0ZxsqO7ho/E2da72xzhbcIecV4oqin5Q
-         Au4ORQcRtJOKzy8JgBsx/o2XHVsxsKnMh0jLr+grmvfbviwv2azXELVfu7C9rlnf9y
-         10fm2PZFzq2PFtZP+ZePqCxgmnrxEdKtKcQakXNrW43hkGd1dufZ/8OIrHupAObsBQ
-         yOcZSaxNhAkc0aRmARrvLVMjaBWYDfhJmyci85NM4fWVza8u0C21+aPvJq1Nt2rDMV
-         wVw5If+Sp7mhR3P11KG/g6haBwSQRRlGaU/1qsj5zk52epWOTAy4srxxd2VoZOOcli
-         R2owf9U8MfCuQ==
+        b=FkYNqMNhjObZmODgQpO8n4b3/bhWu7uTTl3wbW72vF8IhwuFw22r5hyfZG9iYSYln
+         6o1M3LGEOICB3I6/P+t3nDS4WtZtCyDMCQ+eyCx+VlYtscE95nK8mXqOThvXYFcyCN
+         XRMmYy+stXHiKbPInrCByXMrEwdSOMj8Ih2IY489HDUxZxn/KPwL12FhKNBtq9XvLS
+         QvYmNgwX80iZK5yb1s8GYubsKbhsGvJehD3HBVfYgJ2fMXqjosHJy5G+O2yg60U0JU
+         kAmsLtw9pCyD43OCXSuzcOL7lvzvgqFWPu0K8yO5LdIXjOGxjgGBxv2CBryF6Ow6yu
+         XzF986rK5+9dg==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oByCQ-0007E9-QH; Thu, 14 Jul 2022 14:44:10 +0200
+        id 1oByCQ-0007E3-Kf; Thu, 14 Jul 2022 14:44:10 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 23/30] dt-bindings: phy: qcom,qmp-usb3-dp: fix bogus clock-cells property
-Date:   Thu, 14 Jul 2022 14:43:26 +0200
-Message-Id: <20220714124333.27643-24-johan+linaro@kernel.org>
+Subject: [PATCH v3 21/30] dt-bindings: phy: qcom,qmp-usb: deprecate PIPE clock name
+Date:   Thu, 14 Jul 2022 14:43:24 +0200
+Message-Id: <20220714124333.27643-22-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714124333.27643-1-johan+linaro@kernel.org>
 References: <20220714124333.27643-1-johan+linaro@kernel.org>
@@ -59,46 +59,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The QMP PHY wrapper node is not a clock provider so drop the bogus
-'#clock-cells' property that was added when converting to DT schema.
+Deprecate the PHY node 'clock-names' property which specified that the
+PIPE clock name should have a bogus "lane" suffix.
 
-Fixes: 59351049ad15 ("dt-bindings: phy: qcom,qmp-usb3-dp: Add dt bindings for USB3 DP PHY")
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- .../devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml        | 5 -----
- 1 file changed, 5 deletions(-)
+ Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-index b078009ed509..d8bfdbd6d9cf 100644
---- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb3-dp-phy.yaml
-@@ -30,9 +30,6 @@ properties:
-       - const: dp_com
-       - const: dp
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
+index 883ee7cb23d5..604d22f47a56 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-usb-phy.yaml
+@@ -83,6 +83,7 @@ patternProperties:
+           - description: PIPE clock
  
--  "#clock-cells":
--    enum: [ 1, 2 ]
--
-   "#address-cells":
-     enum: [ 1, 2 ]
+       clock-names:
++        deprecated: true
+         items:
+           - const: pipe0
  
-@@ -147,7 +144,6 @@ patternProperties:
- required:
-   - compatible
-   - reg
--  - "#clock-cells"
-   - "#address-cells"
-   - "#size-cells"
-   - ranges
-@@ -169,7 +165,6 @@ examples:
-               <0x088e8000 0x10>,
-               <0x088ea000 0x40>;
-         reg-names = "usb", "dp_com", "dp";
--        #clock-cells = <1>;
-         #address-cells = <1>;
-         #size-cells = <1>;
-         ranges = <0x0 0x088e9000 0x2000>;
+@@ -98,7 +99,6 @@ patternProperties:
+     required:
+       - reg
+       - clocks
+-      - clock-names
+       - "#clock-cells"
+       - clock-output-names
+       - "#phy-cells"
+@@ -354,7 +354,6 @@ examples:
+                       <0x600 0x70>;
+ 
+                 clocks = <&gcc GCC_USB3_SEC_PHY_PIPE_CLK>;
+-                clock-names = "pipe0";
+ 
+                 #clock-cells = <0>;
+                 clock-output-names = "usb3_uni_phy_pipe_clk_src";
 -- 
 2.35.1
 
