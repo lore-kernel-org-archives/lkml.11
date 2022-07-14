@@ -2,135 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B3BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 23:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AE66C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 23:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbiGNXPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 19:15:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39486 "EHLO
+        id S240907AbiGNXQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 19:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240790AbiGNXPt (ORCPT
+        with ESMTP id S240880AbiGNXP7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 19:15:49 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6179570E5A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:15:48 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id k19so1740208pll.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:15:48 -0700 (PDT)
+        Thu, 14 Jul 2022 19:15:59 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7EE70E52
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:15:58 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id fy29so4941229ejc.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:15:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1uA4mMpLpcRR07bw1byaro66HK9+gzc14ZtiPZ8jfjA=;
-        b=As7pQ8CUT32Bd1LIq4AKb1ELuwXk+Tg1MdC1AUysMK9njWTOlc0OAsXlYWtrr15WJk
-         t5DF7RJsJdX2IR1vzbg0HicaP5A2owgtHNkeSnINSoyTDbi8Ql5QDPkxKyD4dfoUrGJo
-         tRetXkr7kWDTsVcYinNmDFQ39nrnuRrxNd5E4wCVyv1itFi0ABg2+6qKEqwMEprgc893
-         TSEFRiVf74mGYfN6ZZqIzL20etl7QHWiX4IciOkajGrieYbSwPZ+5UYHPMkPzIMhAkbL
-         PcIKqJiZwDSy4YkQnQ7E94tuNJCizdBQWm0M7qr2DoUzRPC9iCHDUTY0QU51B8YEZlMw
-         S2RA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mhQ2HipCSIsUJpyE/i8kxJC7kPv5Mey32tmIcjzcEvM=;
+        b=E2/At9bh0D+VaRs0orvvuVOXh4fB5WM8tcn/3FipPHKSOBT3NhDUeIDNQ/mQER9x8Z
+         XV9jeVxH9x2+zduW3/Gu50S4g+78OEXb8l1fM82ztO6lYoOZ7JpbZ0y5SP0OKbgx8XbJ
+         km0wJxtnSUeQCP/qz9ngZvdi21muhw6ELdWE4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1uA4mMpLpcRR07bw1byaro66HK9+gzc14ZtiPZ8jfjA=;
-        b=IyOuBUDpXzV5pkJzCHEArol9wh0nunAtW0dRK7/3BlebI7RGch0i1H8j6oTpbKrZX7
-         c8UUrtiwXSe8opnYXysOOEEa3gVquvO+R4JWozPPJBtprh2IINobbSyxkidHrLXQqO4m
-         KBZRInIy9gKDbYulrLPB/EyBJSSMwtxhSzQJhWg5wc587H37TIQZbbSRtnVdVRwUSfnr
-         UOFra2zJtvyrtjaJ6B086L1IddSzS9mwtEAFKDli0SuuwZPHtY1AmwejjnEpwEDVkoaS
-         IgaJLbGb3w6T9MzHfWJaMWiPzoSZHxySz0DsbNhzgenJHG2A3TkeG5AonR+ttXBEG5o3
-         2Bkw==
-X-Gm-Message-State: AJIora9EWeu8D0lOT60RCVhTp0FPXo7XDjvEJBZsn0t9ETcmZcdutdBi
-        0zJMuUihDtoSA3XZb/eDM8uBK+4iYgMRvg==
-X-Google-Smtp-Source: AGRyM1uZbC7z2IBVQIZHYd+INOO841VeEdfsy+WMFnXkM1+47oPPD8//WDi92rKva1HNS7Gb3v0yVQ==
-X-Received: by 2002:a17:90a:c4f:b0:1df:a178:897f with SMTP id u15-20020a17090a0c4f00b001dfa178897fmr12107587pje.19.1657840547725;
-        Thu, 14 Jul 2022 16:15:47 -0700 (PDT)
-Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
-        by smtp.gmail.com with ESMTPSA id m5-20020a170902db0500b001677d4a9654sm2016703plx.265.2022.07.14.16.15.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 16:15:47 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 23:15:42 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Subject: Re: [PATCH 04/12] KVM: X86/MMU: Remove mmu_pages_clear_parents()
-Message-ID: <YtCjnvTkx1wtsuLn@google.com>
-References: <20220605064342.309219-1-jiangshanlai@gmail.com>
- <20220605064342.309219-5-jiangshanlai@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mhQ2HipCSIsUJpyE/i8kxJC7kPv5Mey32tmIcjzcEvM=;
+        b=kZn1ThNsT0evrOwIGchyCfjIdGVmYQUrh7JGyJnWarY1VSrUvDVEi7Xtdg1DBlPbVw
+         f5ScOXZ8orRwYbvrP/AsirsqfEEJ2wezkI8uXUB/0IHIvRNw8LrJBViMfGkwVwxynPUI
+         f56bBJ2qhpUPyDbStMc2iXtTH3ppj+mWrOioKqDvdqb9HSYmP19lrJkYmh8plIIZbeR0
+         NHptITq+e3AMd3ILqvPMXaHuqOqxIokFkTtIkXQiFnotHlqSXACpmSCJvYCow+p99kDF
+         5o++uyDgkF5LvZQHBYxv6efQ2WMJxJR/bpSlYBUh7Lp2GVK6Uut5DjADqWlpD3Qr0EP8
+         T3eA==
+X-Gm-Message-State: AJIora929IhkuZbZKUzmXI9FWms36PG/AInlh+feoxNGKybC3LGHGuIO
+        guBbI6yTu0nJ4GrdlGcbdKz1lK2nCY1beAFBN3s=
+X-Google-Smtp-Source: AGRyM1snORHGI001uNgByURWZOVbHiMha9X60wa7wQl1k5wcx7srG8uIruSmAOia91vFAURfEG5LKg==
+X-Received: by 2002:a17:906:49d4:b0:6d6:e5ec:9a23 with SMTP id w20-20020a17090649d400b006d6e5ec9a23mr11312708ejv.79.1657840556631;
+        Thu, 14 Jul 2022 16:15:56 -0700 (PDT)
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com. [209.85.221.50])
+        by smtp.gmail.com with ESMTPSA id d23-20020a170906305700b0072b7d76211dsm1237305ejd.107.2022.07.14.16.15.52
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 16:15:53 -0700 (PDT)
+Received: by mail-wr1-f50.google.com with SMTP id bk26so4485140wrb.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:15:52 -0700 (PDT)
+X-Received: by 2002:a05:6000:1a88:b0:21d:aa97:cb16 with SMTP id
+ f8-20020a0560001a8800b0021daa97cb16mr10335067wry.97.1657840551971; Thu, 14
+ Jul 2022 16:15:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220605064342.309219-5-jiangshanlai@gmail.com>
+References: <20220714205646.4023495-1-ndesaulniers@google.com>
+In-Reply-To: <20220714205646.4023495-1-ndesaulniers@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 14 Jul 2022 16:15:35 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
+Message-ID: <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
+Subject: Re: [PATCH] ubsan: disable UBSAN_DIV_ZERO for clang
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, Marco Elver <elver@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the shortlog, I really want to capture the net effect.  It took me a lot of
-staring and reading (and hopefully not misreading) to figure out that this is a
-glorified nop.
-
-  KVM: x86/mmu: Update unsync children metadata via recursion, not bottom-up walk
-
-On Sun, Jun 05, 2022, Lai Jiangshan wrote:
-> From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> 
-> mmu_unsync_walk() is designed to be workable in a pagetable which has
-> unsync child bits set in the shadow pages in the pagetable but without
-> any unsync shadow pages.
-> 
-> This can be resulted when the unsync shadow pages of a pagetable
-> can be walked from other pagetables and have been synced or zapped
-> when other pagetables are synced or zapped.
+On Thu, Jul 14, 2022 at 1:56 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
 >
-> So mmu_pages_clear_parents() is not required even when the callers of
-> mmu_unsync_walk() zap or sync the pagetable.
+> Building with UBSAN_DIV_ZERO with clang produces numerous fallthrough
+> warnings from objtool.
 
-There's one other critical piece that it took me a quite some time to suss out
-from the code: the @parent passed to mmu_sync_children() _is_ updated because
-mmu_sync_children() loops on mmu_unsync_walk().  It's only the parents of @parent
-that are not updated, but they weren't updated anyways because mmu_pages_clear_parents()
-doesn't operate on the parents of @parent.
+Ok, with this applied, things are better.
 
-> So remove mmu_pages_clear_parents() and the child bits can be cleared in
-> the next call of mmu_unsync_walk() in one go.
+There are still the "__ubsan_handle_load_invalid_value() with UACCESS
+enabled" messages, but those are misfeatures of the kvm cmpxchg
+implementation.
 
-Ah, I missed (over and over) that the "next call" is the one right mmu_sync_children()
-and mmu_unsync_walk(), not a future call.
+I'm not entirely sure why the clang build warns but gcc doesn't, but I
+*think* it's because clang is just being silly. It *looks* like it
+checks that a "bool" has a value range of 0/1, and will complain if
+not.
 
-Because I kept losing track of which pagetable was which, how about this for
-a changelog?
+And the reason I say that's silly is that if I read it correctly, then
+that value has literally been generated by clang itself, using "setz"
+instruction.
 
-  When syncing a shadow page with unsync children, do not update the
-  "unsync children" metadata from the bottom up, and instead defer the
-  update to the next "iteration" of mmu_unsync_walk() (all users of
-  mmu_unsync_walk() loop until it returns "no unsync children").
+It's the __try_cmpxchg_user_asm() macro, and with clang-14 I have it's
+that CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT case, and the C code uses
+inline asm and does
 
-  mmu_unsync_walk() is designed to handle the scenario where a shadow page
-  has a false positive on having unsync children, i.e. unsync_children can
-  be elevated without any child shadow pages actually being unsync.
+        asm_volatile_goto("\n"                                          \
+                     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
+                     _ASM_EXTABLE_UA(1b, %l[label])                     \
+                     : CC_OUT(z) (success),                             \
 
-  Such a scenario already occurs when a child is synced or zapped by a
-  different walk of the page tables, i.e. with a different set of parents,
-  as unmarking parents is done only for the current walk.
+where that CC_OUT() in this case turns into
 
-  Note, mmu_pages_clear_parents() doesn't update parents of @parent, so
-  there's no change in functionality from that perspective.
+   # define CC_OUT(c) "=@cc" #c
 
-  Removing mmu_pages_clear_parents() allows for further simplifying
-  mmu_unsync_walk(), including removing the struct mmu_page_path since
-  mmu_pages_clear_parents() was the only the function is the only user of it.
+and clang generates this code for it:
 
-With a cleaned up shortlog+changelog, and assuming I didn't misread everything...
+   7d01e:       f0 48 0f b1 4d 00       lock cmpxchg %rcx,0x0(%rbp)
+   7d024:       49 89 c5                mov    %rax,%r13
+   7d027:       0f 94 c0                sete   %al
+   7d02a:       41 88 c6                mov    %al,%r14b
+   7d02d:       bf 02 00 00 00          mov    $0x2,%edi
+   7d032:       44 89 f6                mov    %r14d,%esi
+   7d035:       e8 00 00 00 00          call    __sanitizer_cov_trace_const_cmp1
+   7d03a:       41 80 fe 01             cmp    $0x1,%r14b
+   7d03e:       0f 87 af 01 00 00       ja     7d1f3
+<emulator_cmpxchg_emulated+0x6b3>
 
-Reviewed-by: Sean Christopherson <seanjc@google.com>
+where that last "ja     7d1f3" is the branch to the code that then
+calls __ubsan_handle_load_invalid_value.
 
-> 
-> Removing mmu_pages_clear_parents() allows for further simplifying
-> mmu_unsync_walk() including removing the struct mmu_page_path since
-> the function is the only user of it.
-> 
-> Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-> ---
+But look at that code: it's literally
+
+    sete   %al
+    mov    %al,%r14b
+    cmp    $0x1,%r14b
+
+where clang has generated that "sete itself, and then it verifies that
+the result is "<= 1".
+
+IOW, clang seems to be literally just checking that the "sete"
+instruction works right.
+
+That's silly.
+
+Maybe I'm misreading this, but I think the reason the clang build
+complains, but the gcc build does not, is simply because gcc isn't
+doing crazy checks of how the CPU works.
+
+Some mis-feature of the "asm with flag output" code, where clang
+doesn't understand that it generated that code itself, and the "setcc"
+instruction always returns 0/1?
+
+The old issue with "memcpy/memset() leaves .noinstr.text section"
+because clang has generated out-of-line functions for trivial copies
+also remains, but whatever.
+
+             Linus
