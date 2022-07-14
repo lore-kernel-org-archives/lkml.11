@@ -2,96 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3230FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F3FCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239978AbiGNRCt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 13:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34370 "EHLO
+        id S240095AbiGNRDU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 13:03:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232491AbiGNRCo (ORCPT
+        with ESMTP id S239659AbiGNRDT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 13:02:44 -0400
-Received: from mail-yw1-x1136.google.com (mail-yw1-x1136.google.com [IPv6:2607:f8b0:4864:20::1136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D0357273
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:02:43 -0700 (PDT)
-Received: by mail-yw1-x1136.google.com with SMTP id 00721157ae682-2ef5380669cso23380017b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:02:43 -0700 (PDT)
+        Thu, 14 Jul 2022 13:03:19 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BC15724C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:03:18 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id dn9so4511038ejc.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:03:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qtK8JWxmh8q5x5mO5HKZTmWYXVBtIH5ikPi8Wy+gYMM=;
-        b=E5mRlU4YdLivxzyaoEtuezS+Jtt7mY/sjICKjY8rfA/5Hio8aVxjqIJ94Gd+8yucJs
-         VnhiykLwDQxlI64fycNCOI4gzCStjgGAnV0vlAIOmg1/v3ECoPqdBat2KOX+fAxTalH1
-         /+7+bFTCU77K/CocLn+YYSABxxeSEYdZ6gF+w=
+        bh=Pm+iphli5RRfa4JmHeh81lVBkwRMzWQKLMKTsw18lMo=;
+        b=Z6ZquADLYu4uMwnTfB77Llp499vJAhe+VRkqcHP7yOsgzWOu9zDeuVv569iCGwq/TN
+         n14hSaPCbUQ38LjnNOasq8gCvSbs/42WYABjzHa4Zob3/Bzo6643Bg7S4R0uqisbfoYa
+         ihvN3aq2+yGj/oCPRE7nev9NxH4BVy6V92VdA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qtK8JWxmh8q5x5mO5HKZTmWYXVBtIH5ikPi8Wy+gYMM=;
-        b=F7zTeIWxaVLot8XRyFAu8OSsxQLkWaGB67AQKIAqveMiE+X9SoHhRW0RCdlLXRGntt
-         W6cX/QeEyYvBoTDF2sZeiqj9SKRQoCDYcuVGGuUVmstNq/mOYYnK8iS1086yqDrCt5xB
-         AE0hLahVFJJqTrRGM2FWxo72UOsES4xGYB9Jbu9QdYbrOTIToFMY/CHryvnufmWlBWrV
-         syFm4Mbeb92KoVrvKxJ/fwvWHLLFe3GtR4D4L0gZK4gtxSpUx6cEO9cYAdct3Yq1qHVa
-         1Mj+aeKH9OL1t4ZSfd+Xc3MeJoFrv3fHHtIK5sd8uTSpP8kAKrKlUcMEJt0mHAXAsdC/
-         mn0g==
-X-Gm-Message-State: AJIora9ujzRw8vA8gl/0RPrgyWk7l7bShiQqTp4AeE7+74Zb2OHTtKMv
-        cHRuSITKubzYlL2xGdD4sk6i9JGoOIZEubALv2ZYPw==
-X-Google-Smtp-Source: AGRyM1tl9TTfRVYxTb3SUNeA4pfUuj3s8pzE/79IWe7n/UP0VoNGNinQM5IVUwftl0kpeY4bG+r4nvRTrmm38DonMWI=
-X-Received: by 2002:a0d:c787:0:b0:31b:a963:e1de with SMTP id
- j129-20020a0dc787000000b0031ba963e1demr10578743ywd.283.1657818162816; Thu, 14
- Jul 2022 10:02:42 -0700 (PDT)
+        bh=Pm+iphli5RRfa4JmHeh81lVBkwRMzWQKLMKTsw18lMo=;
+        b=Th1lKxdcOGY1eWqJY/DO23EPIFYFgu+mBDQrA87hpkyHXh4SLg6/224nT+KgeyeHpc
+         sEuBhg1Wsc0emW5xfzYjet23MU90fTkuQimoyTPgLmjSUn/tHb2anuhFootnRYS+/R1N
+         siYwesZZvWJv6TuZzqlkeJ3SkzlTHtvs5ILfG6kWdau/ZPi31E4rgpp2hGsTmHCKO+F+
+         rdpVHlBNNNhWfCSLryKuYdwJb/AtNEqHjbHHNud1XPEaMk9nLmqyZYENnGMGj1bzU/2n
+         rKz3ymhI3dV6AGG8EOrDG2czy0UaMbndaWe9xJ+EbghNMLEsyJcf1TTb0PLnZm7ZwRFr
+         U8uQ==
+X-Gm-Message-State: AJIora93IbxmIPAEZUl5u/7sD7HNYsQZYm2DVygZVNohhEMVU8olXfgF
+        YOPiQsppfqCWVQymhVrweZH9WmxmRXysBBgN5a0=
+X-Google-Smtp-Source: AGRyM1vHg7egNBg1z/z6E4Xmshzq3v/bQ3CJdj027dCINgAtyNUEU/nqHc2h3PuBbbdD9aIqalGhEw==
+X-Received: by 2002:a17:906:4fc4:b0:6da:b4c6:fadb with SMTP id i4-20020a1709064fc400b006dab4c6fadbmr9689337ejw.282.1657818196406;
+        Thu, 14 Jul 2022 10:03:16 -0700 (PDT)
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com. [209.85.221.47])
+        by smtp.gmail.com with ESMTPSA id b6-20020aa7cd06000000b004355998ec1asm1322133edw.14.2022.07.14.10.03.13
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 10:03:14 -0700 (PDT)
+Received: by mail-wr1-f47.google.com with SMTP id r14so3418359wrg.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:03:13 -0700 (PDT)
+X-Received: by 2002:a5d:544b:0:b0:21d:70cb:b4a2 with SMTP id
+ w11-20020a5d544b000000b0021d70cbb4a2mr8990916wrv.281.1657818193135; Thu, 14
+ Jul 2022 10:03:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220711072333.2064341-1-pmalani@chromium.org> <YtAkeQ1Do7CuM/PR@kroah.com>
-In-Reply-To: <YtAkeQ1Do7CuM/PR@kroah.com>
-From:   Prashant Malani <pmalani@chromium.org>
-Date:   Thu, 14 Jul 2022 10:02:32 -0700
-Message-ID: <CACeCKaekD4S93XbYGOia+vuCwc+oRJpcNKVgrxEasa4MDGsSoQ@mail.gmail.com>
-Subject: Re: [PATCH v4 0/9] Type-C switch driver and Type-C framework updates
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev, bleung@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
+References: <20220712183238.844813653@linuxfoundation.org> <CA+G9fYtntg7=zWSs-dm+n_AUr_u0eBOU0zrwWqMeXZ+SF6_bLw@mail.gmail.com>
+ <eb63e4ce-843f-c840-060e-6e15defd3c4d@roeck-us.net> <CAHk-=wj5cOA+fbGeV15kvwe6YGT54Wsk8F2UGoekVQLTPJz_pw@mail.gmail.com>
+ <CAHk-=wgq1soM4gudypWLVQdYuvJbXn38LtvJMtnLZX+RTypqLg@mail.gmail.com>
+ <Ys/bYJ2bLVfNBjFI@nazgul.tnic> <6b4337f4-d1de-7ba3-14e8-3ad0f9b18788@redhat.com>
+ <8BEC3365-FC09-46C5-8211-518657C0308E@alien8.de>
+In-Reply-To: <8BEC3365-FC09-46C5-8211-518657C0308E@alien8.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 14 Jul 2022 10:02:57 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj4vtoWZPMXJU-B9qW1zLHsoA1Qb2P0NW=UFhZmrCrf9Q@mail.gmail.com>
+Message-ID: <CAHk-=wj4vtoWZPMXJU-B9qW1zLHsoA1Qb2P0NW=UFhZmrCrf9Q@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/78] 5.15.55-rc1 review
+To:     Boris Petkov <bp@alien8.de>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        kvm list <kvm@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        stable <stable@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pavel Machek <pavel@denx.de>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Slade Watkins <slade@sladewatkins.com>, patches@kernelci.org,
+        Sean Christopherson <seanjc@google.com>,
+        Shuah Khan <shuah@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>, X86 ML <x86@kernel.org>,
+        lkft-triage@lists.linaro.org,
+        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Anders Roxell <anders.roxell@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
-
-On Thu, Jul 14, 2022 at 7:15 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+On Thu, Jul 14, 2022 at 7:46 AM Boris Petkov <bp@alien8.de> wrote:
 >
-> On Mon, Jul 11, 2022 at 07:22:54AM +0000, Prashant Malani wrote:
-> > This series introduces a retimer class to the USB Type-C framework,
-> > It also introduces a Chrome EC (Embedded Controller) switch driver which
-> > registers the aforementioned retimer switches as well as mode-switches.
-> >
-> > Patch 1 and 2 introduce the retimer class and associated functions to
-> > the Type-C common code.
-> >
-> > Patches 3-7 add the cros-typec-switch driver.
-> >
-> > Patches 8-9 update cros-ec-typec to get and use retimer switch handles.
-> >
-> > Submission suggestion (as always, open to better suggestions):
-> > - Patch 1 and 2 can go through the USB repo.
-> > - Patch 3-9 can go through the chrome-platform repo. Since they depend
-> >   on patches 1 and 2, we can create an "topic branch" off of usb-next
-> >   once Patch 1 and 2 are submitted, and then apply Patches 3-9 on top
-> >   of that "topic branch" before merging it back into chrome-platform's
-> >   for-next branch
+> On July 14, 2022 1:46:53 PM UTC, Paolo Bonzini <pbonzini@redhat.com> wrote:
+> >Please leave that one out as Peter suggested a better fix and I have that queued for Linus.
 >
-> That's a mess, I can just take all of them into my tree if you want.
+> Already zapped.
 
-That works for me. Thanks for taking Patch 1 and 2; it should be fine
-to apply the rest of the patches to your tree too.
+I like Peter's more obvious use of FASTYOP_LENGTH, but this is just disgusting:
 
-Best regards,
+    #define FASTOP_SIZE (8 << ((FASTOP_LENGTH > 8) & 1) <<
+((FASTOP_LENGTH > 16) & 1))
+
+I mean, I understand what it's doing, but just two lines above it the
+code has a "ilog2()" use that already depends on the fact that you can
+use ilog2() as a constant compile-time expression.
+
+And guess what? The code could just use roundup_pow_of_two(), which is
+designed exactly like ilog2() to be used for compile-time constant
+values.
+
+So the code should just use
+
+    #define FASTOP_SIZE roundup_pow_of_two(FASTOP_LENGTH)
+
+and be a lot more legible, wouldn't it?
+
+Because I don't think there is anything magical about the length
+"8/16/32". It's purely "aligned and big enough to contain
+FASTOP_LENGTH".
+
+And then the point of that
+
+    static_assert(FASTOP_LENGTH <= FASTOP_SIZE);
+
+just goes away, because there are no subtle math issues there any more.
+
+In fact, the remaining question is just "where did the 7 come from" in
+
+    #define FASTOP_LENGTH (7 + ENDBR_INSN_SIZE + RET_LENGTH)
+
+because other than that it all looks fairly straightforward.
+
+              Linus
