@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E363C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:53:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49585C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240301AbiGNNxe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:53:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S240394AbiGNNxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240295AbiGNNxF (ORCPT
+        with ESMTP id S240306AbiGNNxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:53:05 -0400
+        Thu, 14 Jul 2022 09:53:08 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D57C5E32F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:51:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EB0EE6557F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:51:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657806672;
+        s=mimecast20190719; t=1657806673;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+B/MCkWgHGwkbiSdTeVd6nzC6AqTH7flCrfgUjvjcz8=;
-        b=RNLP+BKLhz0Z6JjZI1yM6oDXzy9V8KX6UDaA8oz4Fne9Z5YdKU4TjWJkejCpcXYtjLmub3
-        Asg92oZ25Aknv+ronFApNREkx7ooQ4KTEJzSbLeBxq7Fgs6Y+Lc4FgP6d0etTh1+FfHhNm
-        88fCWHqVEQjnkZBnMtLdvXi7PsSSucQ=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=IBINJ5i4lgV6BGGi1+B8SsQ6g/aePUpoS3VvJcXWVUE=;
+        b=DDM+OPG3vPei/16bRI4pqymhiRhVVttpAEdq4S5Bze3SZ6lUZ840c3/mfkGWH/Hqam82L0
+        7vmgJD3fdRVAowdY624MYXIzQKbBG91MgQkQLY7q9ooo5TOs7gdgUsmqJ1ar1ljHCfJE0g
+        FpzBTtufOfZNm4lTIsndhQ3CCQxc1no=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-408-fnu-oXAlMTGwG7vBJJ-FSA-1; Thu, 14 Jul 2022 09:51:00 -0400
-X-MC-Unique: fnu-oXAlMTGwG7vBJJ-FSA-1
+ us-mta-58-hFUH_YYyM4CLE7VLt-ODhg-1; Thu, 14 Jul 2022 09:51:04 -0400
+X-MC-Unique: hFUH_YYyM4CLE7VLt-ODhg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A0A423C1172C;
-        Thu, 14 Jul 2022 13:50:59 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EAB86804191;
+        Thu, 14 Jul 2022 13:51:03 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E11382166B26;
-        Thu, 14 Jul 2022 13:50:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0DCF22166B26;
+        Thu, 14 Jul 2022 13:51:01 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -48,9 +48,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Yuan Yao <yuan.yao@linux.intel.com>,
         Maxim Levitsky <mlevitsk@redhat.com>,
         linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v8 37/39] KVM: selftests: Move Hyper-V VP assist page enablement out of evmcs.h
-Date:   Thu, 14 Jul 2022 15:49:27 +0200
-Message-Id: <20220714134929.1125828-38-vkuznets@redhat.com>
+Subject: [PATCH v8 39/39] KVM: selftests: Rename 'evmcs_test' to 'hyperv_evmcs'
+Date:   Thu, 14 Jul 2022 15:49:29 +0200
+Message-Id: <20220714134929.1125828-40-vkuznets@redhat.com>
 In-Reply-To: <20220714134929.1125828-1-vkuznets@redhat.com>
 References: <20220714134929.1125828-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -61,184 +61,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hyper-V VP assist page is not eVMCS specific, it is also used for
-enlightened nSVM. Move the code to vendor neutral place.
+Conform to the rest of Hyper-V emulation selftests which have 'hyperv'
+prefix. Get rid of '_test' suffix as well as the purpose of this code
+is fairly obvious.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- tools/testing/selftests/kvm/Makefile          |  1 +
- .../selftests/kvm/include/x86_64/evmcs.h      | 40 +------------------
- .../selftests/kvm/include/x86_64/hyperv.h     | 31 ++++++++++++++
- .../testing/selftests/kvm/lib/x86_64/hyperv.c | 21 ++++++++++
- .../testing/selftests/kvm/x86_64/evmcs_test.c |  1 +
- 5 files changed, 56 insertions(+), 38 deletions(-)
- create mode 100644 tools/testing/selftests/kvm/lib/x86_64/hyperv.c
+ tools/testing/selftests/kvm/.gitignore                          | 2 +-
+ tools/testing/selftests/kvm/Makefile                            | 2 +-
+ .../selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c}       | 0
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+ rename tools/testing/selftests/kvm/x86_64/{evmcs_test.c => hyperv_evmcs.c} (100%)
 
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 6d0810c791f2..df9445a379e1 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -15,7 +15,6 @@
+ /x86_64/cpuid_test
+ /x86_64/cr4_cpuid_sync_test
+ /x86_64/debug_regs
+-/x86_64/evmcs_test
+ /x86_64/emulator_error_test
+ /x86_64/fix_hypercall_test
+ /x86_64/get_msr_index_features
+@@ -23,6 +22,7 @@
+ /x86_64/kvm_pv_test
+ /x86_64/hyperv_clock
+ /x86_64/hyperv_cpuid
++/x86_64/hyperv_evmcs
+ /x86_64/hyperv_features
+ /x86_64/hyperv_ipi
+ /x86_64/hyperv_svm_test
 diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index e7850bd20482..9f2c1b988f63 100644
+index 9f2c1b988f63..9eaa120cf6de 100644
 --- a/tools/testing/selftests/kvm/Makefile
 +++ b/tools/testing/selftests/kvm/Makefile
-@@ -49,6 +49,7 @@ LIBKVM += lib/test_util.c
- 
- LIBKVM_x86_64 += lib/x86_64/apic.c
- LIBKVM_x86_64 += lib/x86_64/handlers.S
-+LIBKVM_x86_64 += lib/x86_64/hyperv.c
- LIBKVM_x86_64 += lib/x86_64/perf_test_util.c
- LIBKVM_x86_64 += lib/x86_64/processor.c
- LIBKVM_x86_64 += lib/x86_64/svm.c
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index cf505252e415..1491e43dced5 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -10,6 +10,7 @@
- #define SELFTEST_KVM_EVMCS_H
- 
- #include <stdint.h>
-+#include "hyperv.h"
- #include "vmx.h"
- 
- #define u16 uint16_t
-@@ -20,27 +21,6 @@
- 
- extern bool enable_evmcs;
- 
--struct hv_nested_enlightenments_control {
--	struct {
--		__u32 directhypercall:1;
--		__u32 reserved:31;
--	} features;
--	struct {
--		__u32 reserved;
--	} hypercallControls;
--} __packed;
--
--/* Define virtual processor assist page structure. */
--struct hv_vp_assist_page {
--	__u32 apic_assist;
--	__u32 reserved1;
--	__u64 vtl_control[3];
--	struct hv_nested_enlightenments_control nested_control;
--	__u8 enlighten_vmentry;
--	__u8 reserved2[7];
--	__u64 current_nested_vmcs;
--} __packed;
--
- struct hv_enlightened_vmcs {
- 	u32 revision_id;
- 	u32 abort;
-@@ -246,31 +226,15 @@ struct hv_enlightened_vmcs {
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_ENLIGHTENMENTSCONTROL    BIT(15)
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL                      0xFFFF
- 
--#define HV_X64_MSR_VP_ASSIST_PAGE		0x40000073
--#define HV_X64_MSR_VP_ASSIST_PAGE_ENABLE	0x00000001
--#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT	12
--#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
--		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
--
- #define HV_VMX_SYNTHETIC_EXIT_REASON_TRAP_AFTER_FLUSH 0x10000031
- 
- extern struct hv_enlightened_vmcs *current_evmcs;
--extern struct hv_vp_assist_page *current_vp_assist;
- 
- int vcpu_enable_evmcs(struct kvm_vcpu *vcpu);
- 
--static inline int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist)
-+static inline void evmcs_enable(void)
- {
--	u64 val = (vp_assist_pa & HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK) |
--		HV_X64_MSR_VP_ASSIST_PAGE_ENABLE;
--
--	wrmsr(HV_X64_MSR_VP_ASSIST_PAGE, val);
--
--	current_vp_assist = vp_assist;
--
- 	enable_evmcs = true;
--
--	return 0;
- }
- 
- static inline int evmcs_vmptrld(uint64_t vmcs_pa, void *vmcs)
-diff --git a/tools/testing/selftests/kvm/include/x86_64/hyperv.h b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-index 8a7d607e3a38..42213f5de17f 100644
---- a/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/hyperv.h
-@@ -234,4 +234,35 @@ static inline void hyperv_write_xmm_input(void *data, int n_sse_regs)
- /* Proper HV_X64_MSR_GUEST_OS_ID value */
- #define HYPERV_LINUX_OS_ID ((u64)0x8100 << 48)
- 
-+#define HV_X64_MSR_VP_ASSIST_PAGE		0x40000073
-+#define HV_X64_MSR_VP_ASSIST_PAGE_ENABLE	0x00000001
-+#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT	12
-+#define HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK	\
-+		(~((1ull << HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_SHIFT) - 1))
-+
-+struct hv_nested_enlightenments_control {
-+	struct {
-+		__u32 directhypercall:1;
-+		__u32 reserved:31;
-+	} features;
-+	struct {
-+		__u32 reserved;
-+	} hypercallControls;
-+} __packed;
-+
-+/* Define virtual processor assist page structure. */
-+struct hv_vp_assist_page {
-+	__u32 apic_assist;
-+	__u32 reserved1;
-+	__u64 vtl_control[3];
-+	struct hv_nested_enlightenments_control nested_control;
-+	__u8 enlighten_vmentry;
-+	__u8 reserved2[7];
-+	__u64 current_nested_vmcs;
-+} __packed;
-+
-+extern struct hv_vp_assist_page *current_vp_assist;
-+
-+int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist);
-+
- #endif /* !SELFTEST_KVM_HYPERV_H */
-diff --git a/tools/testing/selftests/kvm/lib/x86_64/hyperv.c b/tools/testing/selftests/kvm/lib/x86_64/hyperv.c
-new file mode 100644
-index 000000000000..32dc0afd9e5b
---- /dev/null
-+++ b/tools/testing/selftests/kvm/lib/x86_64/hyperv.c
-@@ -0,0 +1,21 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Hyper-V specific functions.
-+ *
-+ * Copyright (C) 2021, Red Hat Inc.
-+ */
-+#include <stdint.h>
-+#include "processor.h"
-+#include "hyperv.h"
-+
-+int enable_vp_assist(uint64_t vp_assist_pa, void *vp_assist)
-+{
-+	uint64_t val = (vp_assist_pa & HV_X64_MSR_VP_ASSIST_PAGE_ADDRESS_MASK) |
-+		HV_X64_MSR_VP_ASSIST_PAGE_ENABLE;
-+
-+	wrmsr(HV_X64_MSR_VP_ASSIST_PAGE, val);
-+
-+	current_vp_assist = vp_assist;
-+
-+	return 0;
-+}
-diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-index d76f6e054fcc..0cbf9143ac20 100644
---- a/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/evmcs_test.c
-@@ -99,6 +99,7 @@ void guest_code(struct vmx_pages *vmx_pages, vm_vaddr_t pgs_gpa)
- 	GUEST_SYNC(2);
- 
- 	enable_vp_assist(vmx_pages->vp_assist_gpa, vmx_pages->vp_assist);
-+	evmcs_enable();
- 
- 	GUEST_ASSERT(vmx_pages->vmcs_gpa);
- 	GUEST_ASSERT(prepare_for_vmx_operation(vmx_pages));
+@@ -78,11 +78,11 @@ TEST_PROGS_x86_64 += x86_64/nx_huge_pages_test.sh
+ TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
+ TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
+ TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
+-TEST_GEN_PROGS_x86_64 += x86_64/evmcs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/emulator_error_test
+ TEST_GEN_PROGS_x86_64 += x86_64/fix_hypercall_test
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
++TEST_GEN_PROGS_x86_64 += x86_64/hyperv_evmcs
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_ipi
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_svm_test
+diff --git a/tools/testing/selftests/kvm/x86_64/evmcs_test.c b/tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
+similarity index 100%
+rename from tools/testing/selftests/kvm/x86_64/evmcs_test.c
+rename to tools/testing/selftests/kvm/x86_64/hyperv_evmcs.c
 -- 
 2.35.3
 
