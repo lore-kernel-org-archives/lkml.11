@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08B2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F897C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:39:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238220AbiGNKjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47770 "EHLO
+        id S238421AbiGNKjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiGNKjA (ORCPT
+        with ESMTP id S238389AbiGNKjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:39:00 -0400
-Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD91629CB1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:38:58 -0700 (PDT)
+        Thu, 14 Jul 2022 06:39:08 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894CD545F1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:39:03 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by michel.telenet-ops.be with bizsmtp
-        id uyev270084C55Sk06yevaP; Thu, 14 Jul 2022 12:38:56 +0200
+        by laurent.telenet-ops.be with bizsmtp
+        id uyf1270184C55Sk01yf1Eh; Thu, 14 Jul 2022 12:39:03 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oBvwx-003The-4P; Thu, 14 Jul 2022 12:20:03 +0200
+        id 1oBvwx-003The-6V; Thu, 14 Jul 2022 12:20:03 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oBulZ-00Bf1L-HR; Thu, 14 Jul 2022 11:04:13 +0200
+        id 1oBulZ-00Bf1B-G5; Thu, 14 Jul 2022 11:04:13 +0200
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
 To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
         Maxime Ripard <mripard@kernel.org>,
@@ -36,97 +36,58 @@ To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
 Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
         linux-m68k@vger.kernel.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH v2 2/5] drm/modes: Extract drm_mode_parse_cmdline_named_mode()
-Date:   Thu, 14 Jul 2022 11:04:07 +0200
-Message-Id: <1371554419ae63cb54c2a377db0c1016fcf200bb.1657788997.git.geert@linux-m68k.org>
+Subject: [PATCH v2 0/5] drm/modes: Command line mode selection fixes and improvements
+Date:   Thu, 14 Jul 2022 11:04:05 +0200
+Message-Id: <cover.1657788997.git.geert@linux-m68k.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1657788997.git.geert@linux-m68k.org>
-References: <cover.1657788997.git.geert@linux-m68k.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Extract the code to check for a named mode parameter into its own
-function, to streamline the main parsing flow.
+	Hi all,
 
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
----
-v2:
+This patch series contains fixes and improvements for specifying video
+modes on the kernel command line.
+
+Changes compared to v1[1]:
   - Add Reviewed-by, Acked-by,
-  - Fix length check.
----
- drivers/gpu/drm/drm_modes.c | 40 +++++++++++++++++++++++++++----------
- 1 file changed, 29 insertions(+), 11 deletions(-)
+  - Keep length check.
 
-diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
-index 67773740c74c9ba0..a3df18fccb31fa77 100644
---- a/drivers/gpu/drm/drm_modes.c
-+++ b/drivers/gpu/drm/drm_modes.c
-@@ -1749,6 +1749,29 @@ static const char * const drm_named_modes_whitelist[] = {
- 	"PAL",
- };
- 
-+static int drm_mode_parse_cmdline_named_mode(const char *name,
-+					     unsigned int length, bool refresh,
-+					     struct drm_cmdline_mode *mode)
-+{
-+	unsigned int i;
-+	int ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
-+		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
-+		if (ret != length)
-+			continue;
-+
-+		if (refresh)
-+			return -EINVAL; /* named + refresh is invalid */
-+
-+		strcpy(mode->name, drm_named_modes_whitelist[i]);
-+		mode->specified = true;
-+		return 0;
-+	}
-+
-+	return 0;
-+}
-+
- /**
-  * drm_mode_parse_command_line_for_connector - parse command line modeline for connector
-  * @mode_option: optional per connector mode option
-@@ -1785,7 +1808,7 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
- 	const char *bpp_ptr = NULL, *refresh_ptr = NULL, *extra_ptr = NULL;
- 	const char *options_ptr = NULL;
- 	char *bpp_end_ptr = NULL, *refresh_end_ptr = NULL;
--	int i, len, ret;
-+	int len, ret;
- 
- 	memset(mode, 0, sizeof(*mode));
- 	mode->panel_orientation = DRM_MODE_PANEL_ORIENTATION_UNKNOWN;
-@@ -1823,16 +1846,11 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
- 	}
- 
- 	/* First check for a named mode */
--	for (i = 0; mode_end && i < ARRAY_SIZE(drm_named_modes_whitelist); i++) {
--		ret = str_has_prefix(name, drm_named_modes_whitelist[i]);
--		if (ret == mode_end) {
--			if (refresh_ptr)
--				return false; /* named + refresh is invalid */
--
--			strcpy(mode->name, drm_named_modes_whitelist[i]);
--			mode->specified = true;
--			break;
--		}
-+	if (mode_end) {
-+		ret = drm_mode_parse_cmdline_named_mode(name, mode_end,
-+							refresh_ptr, mode);
-+		if (ret)
-+			return false;
- 	}
- 
- 	/* No named mode? Check for a normal mode argument, e.g. 1024x768 */
+This has been tested on ARAnyM using a work-in-progress Atari DRM driver
+(more info and related patches can be found in [2]).
+
+Thanks for your comments!
+
+[1] "[PATCH 0/5] drm/modes: Command line mode selection fixes and
+    improvements"
+    https://lore.kernel.org/r/cover.1657301107.git.geert@linux-m68k.org
+[2] "[PATCH v3 00/10] drm: Add support for low-color frame buffer formats"
+    https://lore.kernel.org/r/cover.1657294931.git.geert@linux-m68k.org
+
+Geert Uytterhoeven (5):
+  drm/modes: parse_cmdline: Handle empty mode name part
+  drm/modes: Extract drm_mode_parse_cmdline_named_mode()
+  drm/modes: parse_cmdline: Make mode->*specified handling more uniform
+  drm/modes: Add support for driver-specific named modes
+  drm/modes: parse_cmdline: Add support for named modes containing
+    dashes
+
+ drivers/gpu/drm/drm_modes.c | 56 ++++++++++++++++++++++++++-----------
+ include/drm/drm_connector.h | 10 +++++++
+ 2 files changed, 49 insertions(+), 17 deletions(-)
+
 -- 
 2.25.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
