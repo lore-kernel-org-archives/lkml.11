@@ -2,137 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5784CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 423FAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232172AbiGNGGp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34872 "EHLO
+        id S232850AbiGNGHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiGNGGm (ORCPT
+        with ESMTP id S230061AbiGNGHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:06:42 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF2F2FFEB
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:06:41 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id ez10so1480308ejc.13
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=K+qPh4pfyjzo3UQTrP14sCh1amn4SLpPOTTUiC7RJvM=;
-        b=Xe2PnzltsKqDutrwfavyPGTMwZW0sX2s5qJIolHhzjUR3uhBSU+H4M/P03wazBGOBN
-         KvrZ13FMLLvoKkZihx8D1i50T4KLTTfbcMVbAcjywlz3AB+qLS5JEsZEzEsUiCCKsJ9o
-         GCnoGrk1v4Bq3+DAFY94rV9msEkEnfK6O9Dkw5LEvgDaPi41SXSPldJGNpIV6Hw8dKyY
-         0/QWpf4GBiBIxyaPK1kgsgL7/HBd5UgH6rkvahEYpTUhTgPmps6nH1ID2TED587j5UKs
-         IJEmw1QlJd1MzTYI7GKkKSxeuIRhgX4cg6mI5w1c3O131BjQYJQwRQa7bSXxwMZG0eAo
-         Ci2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=K+qPh4pfyjzo3UQTrP14sCh1amn4SLpPOTTUiC7RJvM=;
-        b=JqMkt7tu76RRKks8z5FpK4g64D3ZeZl47ps3hadXX8PgbfvSnzQuQwVuroYdSoZ7Cd
-         jnSMvK2fXewZjHdZ2b3ysezhNPMO0ToVuzus+G5waNSqfTWqKHQmDKuWr9aDiUjigmtl
-         lthw4I4pmc6iLA2CiSEMNFyT1EJCdPElnM57fq7TfS7Czsd8Qz+0+AF3975DhsGccygy
-         npM1VNymWMflk6cnTW8qtGLcflE5tLjGDJ/Q4AXDpRld7zfpWa0IbNpSYgpuSy9B/bwU
-         5nkP3x+NvvW58UaFvIMYdq60Cragi2zsl0H4SmhsRLAzNfqPxNABHdkwRPKeOE7yKFo0
-         VV9Q==
-X-Gm-Message-State: AJIora+X4LBfgIpwWqXZzTM+kpLc3tMRe4iNziEi3PF/4QkkTk1K0XRn
-        gkAL8wLW33MFywmtDewld60y4KjDtiQjxl2JQwHn
-X-Google-Smtp-Source: AGRyM1uqqIx1J3a1TVOBzuCe5tUP29YfbWQmKBFSTieb0oYA4e/OIY6Nx5Rg1NjIDkDQeIdBalgCFKDCN/CVFKgHQks=
-X-Received: by 2002:a17:906:8461:b0:72e:e3f5:373b with SMTP id
- hx1-20020a170906846100b0072ee3f5373bmr63658ejc.199.1657778799778; Wed, 13 Jul
- 2022 23:06:39 -0700 (PDT)
+        Thu, 14 Jul 2022 02:07:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B6533057A
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:07:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657778836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=0Iv/of2lWJhY6Wq6eUx2wF1MOm6COuhI4THcs0fOz4c=;
+        b=fZKin7Cs4FiuZPHTUULSV0WC1oAw56BhahjJtmrtgArzW0Ox24zJCp9nVTOntBshUnV+Hp
+        Kl1UTssjlDBZextYn8X06S/z4SVuQnq6SbnouboskhQXVECohYv2zlsBU2XPl73h+UOeAr
+        GnusYuHs4yRtyHKI3k6XR8mUL4hRPR8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-568-xg7vNdqMMFWLrvckPTivMg-1; Thu, 14 Jul 2022 02:07:10 -0400
+X-MC-Unique: xg7vNdqMMFWLrvckPTivMg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B956E802D1C;
+        Thu, 14 Jul 2022 06:07:09 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-37.bne.redhat.com [10.64.54.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6237140E80E0;
+        Thu, 14 Jul 2022 06:07:05 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, seanjc@google.com,
+        mathieu.desnoyers@efficios.com, shuah@kernel.org, maz@kernel.org,
+        oliver.upton@linux.dev, pbonzini@redhat.com, shan.gavin@gmail.com
+Subject: [PATCH] KVM: selftests: Double check on the current CPU in rseq_test
+Date:   Thu, 14 Jul 2022 16:06:42 +0800
+Message-Id: <20220714080642.3376618-1-gshan@redhat.com>
 MIME-Version: 1.0
-References: <20220706050503.171-1-xieyongji@bytedance.com> <20220706050503.171-2-xieyongji@bytedance.com>
- <1106133f-ebd4-f6a8-83ab-19e995bcdba6@redhat.com> <CACycT3sNt_PcPQ__KVSqV6xd=+z5+gbMqWhu6H3vcj_fTGzUsw@mail.gmail.com>
- <CACGkMEsOXyewVZ76Cc4BoZv1vhXbT1t8tm-9GqV9CJ70bF-xwg@mail.gmail.com>
-In-Reply-To: <CACGkMEsOXyewVZ76Cc4BoZv1vhXbT1t8tm-9GqV9CJ70bF-xwg@mail.gmail.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 14 Jul 2022 14:06:28 +0800
-Message-ID: <CACycT3tMw-Lz0ij8u8Fp0Xz2tc6q+jWp7Pk+iirmzd9wHsV3Pg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] vduse: Remove unnecessary spin lock protection
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 10:27 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Wed, Jul 13, 2022 at 7:09 PM Yongji Xie <xieyongji@bytedance.com> wrot=
-e:
-> >
-> > On Wed, Jul 13, 2022 at 1:44 PM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > >
-> > > =E5=9C=A8 2022/7/6 13:04, Xie Yongji =E5=86=99=E9=81=93:
-> > > > Taking iotlb lock to access bounce page in page fault
-> > > > handler is meaningless since vduse_domain_free_bounce_pages()
-> > > > would only be called during file release.
-> > > >
-> > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > > ---
-> > > >   drivers/vdpa/vdpa_user/iova_domain.c | 7 ++-----
-> > > >   1 file changed, 2 insertions(+), 5 deletions(-)
-> > > >
-> > > > diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vd=
-pa_user/iova_domain.c
-> > > > index 6daa3978d290..bca1f0b8850c 100644
-> > > > --- a/drivers/vdpa/vdpa_user/iova_domain.c
-> > > > +++ b/drivers/vdpa/vdpa_user/iova_domain.c
-> > > > @@ -211,17 +211,14 @@ static struct page *
-> > > >   vduse_domain_get_bounce_page(struct vduse_iova_domain *domain, u6=
-4 iova)
-> > > >   {
-> > > >       struct vduse_bounce_map *map;
-> > > > -     struct page *page =3D NULL;
-> > > > +     struct page *page;
-> > > >
-> > > > -     spin_lock(&domain->iotlb_lock);
-> > > >       map =3D &domain->bounce_maps[iova >> PAGE_SHIFT];
-> > > >       if (!map->bounce_page)
-> > > > -             goto out;
-> > > > +             return NULL;
-> > >
-> > >
-> > > Interesting, I wonder why we don't serialize with
-> > > vduse_domain_map_bounce_page() with iotlb_lock?
-> > >
-> >
-> > Userspace should only access the bounce page after we set up the dma
-> > mapping, so we don't need serialization from the iotlb_lock in this
-> > case.
->
-> What about the buggy/malicious user space that tries to access those
-> pages before or just in the middle of it has been mapped?
->
+In rseq_test, there are two threads created. Those two threads are
+'main' and 'migration_thread' separately. We also have the assumption
+that non-migration status on 'migration-worker' thread guarantees the
+same non-migration status on 'main' thread. Unfortunately, the assumption
+isn't true. The 'main' thread can be migrated from one CPU to another
+one between the calls to sched_getcpu() and READ_ONCE(__rseq.cpu_id).
+The following assert is raised eventually because of the mismatched
+CPU numbers.
 
-Yes, it might happen. But it would not have any problem. The userspace
-might get a page or a SIGBUS error.
+The issue can be reproduced on arm64 system occasionally.
 
-> > And vduse_domain_map_bounce_page() only sets the
-> > map->bounce_page rather than clears the map->bounce_page, we would not
-> > have any problem without the lock protection.
->
-> Probably, I see an assignment of orig_phys after the alloc_page() but
-> it seems only used in bouncing which will only be called by dma ops.
-> At least we'd better have a comment to explain the synchronization
-> here.
->
+  host# uname -r
+  5.19.0-rc6-gavin+
+  host# # cat /proc/cpuinfo | grep processor | tail -n 1
+  processor    : 223
+  host# pwd
+  /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
+  host# for i in `seq 1 100`;   \
+        do echo "--------> $i"; \
+        ./rseq_test; sleep 3;   \
+        done
+  --------> 1
+  --------> 2
+  --------> 3
+  --------> 4
+  --------> 5
+  --------> 6
+  ==== Test Assertion Failure ====
+    rseq_test.c:265: rseq_cpu == cpu
+    pid=3925 tid=3925 errno=4 - Interrupted system call
+       1  0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
+       2  0x0000ffffb044affb: ?? ??:0
+       3  0x0000ffffb044b0c7: ?? ??:0
+       4  0x0000000000401a6f: _start at ??:?
+    rseq CPU = 4, sched CPU = 27
 
-Yes, only map->bounce_page might be accessed concurrently in those two
-places. I will add some comments in them.
+This fixes the issue by double-checking on the current CPU after
+call to READ_ONCE(__rseq.cpu_id) and restarting the test if the
+two consecutive CPU numbers aren't euqal.
 
-Thanks,
-Yongji
+Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
+Signed-off-by: Gavin Shan <gshan@redhat.com>
+---
+ tools/testing/selftests/kvm/rseq_test.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+index 4158da0da2bb..74709dd9f5b2 100644
+--- a/tools/testing/selftests/kvm/rseq_test.c
++++ b/tools/testing/selftests/kvm/rseq_test.c
+@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
+ {
+ 	int r, i, snapshot;
+ 	struct kvm_vm *vm;
+-	u32 cpu, rseq_cpu;
++	u32 cpu, rseq_cpu, last_cpu;
+ 
+ 	/* Tell stdout not to buffer its content */
+ 	setbuf(stdout, NULL);
+@@ -259,8 +259,9 @@ int main(int argc, char *argv[])
+ 			smp_rmb();
+ 			cpu = sched_getcpu();
+ 			rseq_cpu = READ_ONCE(__rseq.cpu_id);
++			last_cpu = sched_getcpu();
+ 			smp_rmb();
+-		} while (snapshot != atomic_read(&seq_cnt));
++		} while (snapshot != atomic_read(&seq_cnt) || cpu != last_cpu);
+ 
+ 		TEST_ASSERT(rseq_cpu == cpu,
+ 			    "rseq CPU = %d, sched CPU = %d\n", rseq_cpu, cpu);
+-- 
+2.23.0
+
