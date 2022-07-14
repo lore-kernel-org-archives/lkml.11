@@ -2,130 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F74C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:11:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D28C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239227AbiGNMLy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:11:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
+        id S232033AbiGNMNO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231637AbiGNMLk (ORCPT
+        with ESMTP id S229923AbiGNMNM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:11:40 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D085E5D59D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:10:53 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id q9so2281543wrd.8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:10:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=y5Tg7l3XIXoLarUSKVZXEIQ6qB8NqY7J9uUJaMOQEX8=;
-        b=b/ypvXVyh+dDxJNobrL9DNZ1DoTaduf7JAcxjZ4FguVhuYGZjXPdNS5C3UDuBmE3JX
-         B5BVsODBbBg4sgftte7GAxhPHdvpFPAAGPql53cVq4Oee/IumsBM1qvYwyKDpGX9OFd9
-         OCghFn7ZZhG14Ro3ckNC3+/t82pvU1ECLnWquKP5LGO9Dffux4Jysc13mVFUjKiIQ7P4
-         7G9H4ojcn7vuZ9//k56Ucu3Js86jjVaMY3H8ckafZ7oYSFwTgQ9CKX71g7WJM9QhYS6a
-         dB0gF/WK12cO461nmCJn9BDxYvx9wI6OMw5AGJSj9PfJlzmyvfCtv3TyoYWlx3KBp1YG
-         0zig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=y5Tg7l3XIXoLarUSKVZXEIQ6qB8NqY7J9uUJaMOQEX8=;
-        b=mTPWfhLPxIibgBhE3WqgPpBjSU/OQ3Xgz/mgVbxWkmrEUq01c3+7OhRmHqw1YR4zlG
-         rEBEbQycH1is4sto81qTSeAYHfdvkSx94yMljgxgXaNhW0yH9xjouOZebAt+DZ/6wxlB
-         3hTgardPkaa1wJa9T3JyiVy7uq+yMnVyzOSjp8xOKXYksDlshpZE4zvnItaLjyJBrHRz
-         vgMGCVVTonU+W1CPs6vA9lKk3QOT8DoIZ0fYq+/6E/IrwXjPf4B6yWHJBV3eKfhuXbVX
-         OOU4BWoGvKvTeIaYtJbenEDAEpUArncydl9f5vQ9MLUJuFNgkef81PWPBUWSSt6I+Prm
-         CJRQ==
-X-Gm-Message-State: AJIora9WcUYsJMiC07JfLVOdmo2Nuh8dJigfqP44VL0eI/CcIkkx8SmH
-        KrmgUfWk9rDbe1A+OJS4i5mHwA==
-X-Google-Smtp-Source: AGRyM1v/MKz110s+XqlPHUIpr1tAlhGTb2EkTdhvuwwGbX91Jd/nkFrdVfYH/EhwzLayzDaDhecP8g==
-X-Received: by 2002:adf:f5c7:0:b0:21d:7f20:7508 with SMTP id k7-20020adff5c7000000b0021d7f207508mr7965566wrp.458.1657800652395;
-        Thu, 14 Jul 2022 05:10:52 -0700 (PDT)
-Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
-        by smtp.gmail.com with ESMTPSA id m17-20020a05600c3b1100b003976fbfbf00sm2121158wms.30.2022.07.14.05.10.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 05:10:51 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 13:10:49 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>, Wolfram Sang <wsa@kernel.org>,
-        Jean Delvare <jdelvare@suse.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Henning Schild <henning.schild@siemens.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Yong <jonathan.yong@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        linux-i2c@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-gpio@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Peter Tyser <ptyser@xes-inc.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Mark Gross <markgross@kernel.org>
-Subject: Re: [PATCH v6 00/12] platform/x86: introduce p2sb_bar() helper
-Message-ID: <YtAHyZ5WHDRbgOZe@google.com>
-References: <20220606164138.66535-1-andriy.shevchenko@linux.intel.com>
- <YqBS8I62YBPFC9iS@google.com>
- <20220714112656.GB16407@duo.ucw.cz>
+        Thu, 14 Jul 2022 08:13:12 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D0151A6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:13:12 -0700 (PDT)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E3duVu018136;
+        Thu, 14 Jul 2022 05:13:10 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=dRuLtSGJoQSVRfDNoSBClXepVJNHQ59wCDUFMOuKg0w=;
+ b=bThDXqKyTI//EopbKzDTJxkVK2QrRNIYiZmJmoe9Sa5PiqE4qB9W56BwxxpLeIATHTgB
+ 9O3BFQyTb1K/7t1xdGITg3so7m6sXN3R07XTvHIF+nrErnbnGM5riu14MSLrXY2tYwG9
+ 3J5CHlZasFcHeGuIlh5OklDWfJRAuxIM9+ipxmHGVJxUJSpKSeupKUk/y3n5St2IQQbH
+ NJQv69vbreGa0RvhE9X/b592gNhvtuzzRze9gmiKzqw0va5vS2xiCNRkDk4VBCM2TKuO
+ FocFWnLef0mBuAY11xE9hzX0rOmQHqT/In5MhuakI2oNzkYVwh97IDuOTVGAUWBI9fT/ gg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3habegsk39-15
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 05:13:10 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 14 Jul
+ 2022 05:12:21 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 14 Jul 2022 05:12:21 -0700
+Received: from localhost.localdomain (unknown [10.110.150.170])
+        by maili.marvell.com (Postfix) with ESMTP id EBF423F704D;
+        Thu, 14 Jul 2022 05:12:20 -0700 (PDT)
+From:   Wojciech Bartczak <wbartczak@marvell.com>
+To:     <wbartczak@marvell.com>, <linux-kernel@vger.kernel.org>
+CC:     <wbartczak@gmail.com>, Jassi Brar <jassisinghbrar@gmail.com>,
+        "Piyush Malgujar" <pmalgujar@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH 0/2] Add support for Marvell MHU on CN9x and CN10x SoC
+Date:   Thu, 14 Jul 2022 05:12:11 -0700
+Message-ID: <20220714121215.22931-1-wbartczak@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220714112656.GB16407@duo.ucw.cz>
+Content-Type: text/plain
+X-Proofpoint-GUID: nz8yssWuLm-yU06BzGF4yuW0f1vT67Mr
+X-Proofpoint-ORIG-GUID: nz8yssWuLm-yU06BzGF4yuW0f1vT67Mr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-14_10,2022-07-14_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022, Pavel Machek wrote:
+In order to support ARM SCMI for the Marvell CN9x, CN10x SoC, add a
+generic platform MHU driver based loosely on arm_mhu.c and pcc.c.
 
-> On Wed 2022-06-08 08:42:40, Lee Jones wrote:
-> > On Mon, 06 Jun 2022, Andy Shevchenko wrote:
-> > 
-> > > There are a few users that would like to utilize P2SB mechanism of hiding
-> > > and unhiding a device from the PCI configuration space.
-> > > 
-> > > Here is the series to consolidate p2sb handling code for existing users
-> > > and to provide a generic way for new comer(s).
-> > > 
-> > > It also includes a patch to enable GPIO controllers on Apollo Lake
-> > > when it's used with ABL bootloader w/o ACPI support.
-> > > 
-> > > The patch that brings the helper ("platform/x86/intel: Add Primary to
-> > > Sideband (P2SB) bridge support") has a commit message that sheds a light
-> > > on what the P2SB is and why this is needed.
-> > > 
-> > > I have tested this on Apollo Lake platform (I'm able to see SPI NOR and
-> > > since we have an ACPI device for GPIO I do not see any attempts to recreate
-> > > one).
-> > > 
-> > > The series is ready to be merged via MFD tree, but see below.
-> > > 
-> > > The series also includes updates for Simatic IPC drivers that partially
-> > > tagged by respective maintainers (the main question is if Pavel is okay
-> > > with the last three patches, since I believe Hans is okay with removing
-> > > some code under PDx86). Hence the first 8 patches can be merged right
-> > > away and the rest when Pavel does his review.
-> > 
-> > Can we just wait for Pavel's review, then merge them all at once?
-> 
-> 10,12: Acked-by: Pavel Machek <pavel@ucw.cz>
+Wojciech Bartczak (2):
+  dt-bindings: mailbox : marvell,mbox: Add bindings
+  mailbox: mvl_mhu: Add support for Marvell Message Handling Unit
 
-Thanks Pavel.  I'll get that added.
+ .../mailbox/marvell,mbox-mailbox.yaml         | 112 +++++
+ MAINTAINERS                                   |   9 +
+ drivers/mailbox/Kconfig                       |  10 +
+ drivers/mailbox/Makefile                      |   2 +
+ drivers/mailbox/mvl_mhu.c                     | 473 ++++++++++++++++++
+ 5 files changed, 606 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mailbox/marvell,mbox-mailbox.yaml
+ create mode 100644 drivers/mailbox/mvl_mhu.c
 
 -- 
-Lee Jones [李琼斯]
-Principal Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.17.1
+
