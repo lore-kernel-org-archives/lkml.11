@@ -2,105 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6117C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C158FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:00:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235412AbiGNRAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 13:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
+        id S232146AbiGNRAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 13:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiGNRAD (ORCPT
+        with ESMTP id S233286AbiGNRAF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 13:00:03 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE81812AB9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:02 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id y4so3226354edc.4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UkKAKPPtro79xKHDPBehtihMhR7Lh7lQwIdzYzaJOZw=;
-        b=Mr94LDjwnV8nGBNNVAJX0c9LMeMtH4cDpRa5fj+6lq8ilb1VFMXaD3H2Ik9nf7Im9V
-         XZyhuuiBGMSLiEDZ8jkg99ghi7VhgSI6uCGroUHirIu1a+9FR19M3SveBO6J6ruu/gBv
-         73wvSSvqkb+WbC+/4GP+cysrOXahEAqgw1UYI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UkKAKPPtro79xKHDPBehtihMhR7Lh7lQwIdzYzaJOZw=;
-        b=WN6HGbRUNjeUXtpBoeebE2EfZXgrmBuJXgNH9FvoQ+jhFjudvBaSx2lU6mTVUT5lFa
-         F3Vtz1EjklvDtie+4tNZw+6wtGxaZOUoZudK98V32/HSxT5gH5AtwleCq61fJfv7g98V
-         fSpfBMyU4tX3oFqHPbWQTSftkmtFOQZLGA8bD1nKBiMYjPrk7nFZqs8nuW+RHQpoqDBR
-         yDGa8rk4FcqQffg8de3TK38Ykrgfb8dIQaLriyTMpgSq3pfvw8q0VGtQOQo6AUM2bTUT
-         DqWRtmfdNOMsDGJNm7iduoF2I+NzSJY5JTJ7qZ/zqXkKAITu990eST9EMT+MhYgd4++N
-         tBLQ==
-X-Gm-Message-State: AJIora8OQZNx4w5AV+bq4l8d2jizabiOAiMIzZVINENLlXYbfpiWwQyf
-        t9EYvcOmVowlWZhIchJGhiNHRffPsBtp9euQbuI=
-X-Google-Smtp-Source: AGRyM1si/yxHtjxWyL0QTeGsxw7L7QzihPvpPhtimktQArUZc7WzQCCFuQlrqEcjgszQrw86inQv1w==
-X-Received: by 2002:aa7:cac7:0:b0:43a:c5ba:24a6 with SMTP id l7-20020aa7cac7000000b0043ac5ba24a6mr13293233edt.84.1657818001142;
-        Thu, 14 Jul 2022 10:00:01 -0700 (PDT)
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
-        by smtp.gmail.com with ESMTPSA id zk8-20020a17090733c800b00705cd37fd5asm895181ejb.72.2022.07.14.10.00.00
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 10:00:00 -0700 (PDT)
-Received: by mail-wm1-f47.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so1392546wmb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:00 -0700 (PDT)
-X-Received: by 2002:a7b:cd97:0:b0:3a2:dfcf:dd2d with SMTP id
- y23-20020a7bcd97000000b003a2dfcfdd2dmr15971099wmj.68.1657817517167; Thu, 14
- Jul 2022 09:51:57 -0700 (PDT)
+        Thu, 14 Jul 2022 13:00:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D52012AB9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C8745B8276A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 17:00:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4918BC3411C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 17:00:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657818001;
+        bh=UGj+eCckkc850V3QsjcZ5WcggED7iC+1xqWLrRUQ6RE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=LVfFFhzebpd9sdj1mBa1NU5HBzaJ3dd2bGpm/fA6MTmUnhd4iMXd7c+qgsSzth2ZP
+         YfO3GVhRy9GwydKpBg3ZdiDzDT5A12nj5QcjfREo+sfoo2iXeWSu7PxmhmZltk78SD
+         A4AfWaDY/ftUQVoKygIcOMBuS8/pQDhhrrje+cJkFq5Ra5DEE1D9UpM9lWt4OFWdRl
+         f2VH9lG6cOOtSm5WofJxZ3gv5GxaPuRlJytpOo1mcVt9l0z11v0FM3C+HA1/WIOIvu
+         bgsTQhL/5H0TLDv9+fVpFhU8emE+OAPhnw6VfKuZNWKiSg1ILDDcz3sx6fes2BiMJa
+         El6ZIlB3M5hbw==
+Received: by mail-vs1-f54.google.com with SMTP id 189so2035191vsh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:01 -0700 (PDT)
+X-Gm-Message-State: AJIora8yecx5NHU88LyOQjpE2aQ3lApPgigL59cSmPiu6BBX2RUIPfFo
+        nO5hzseyrg1lcU6F+D8wIBrTYc4ZGO5C5UKoTw==
+X-Google-Smtp-Source: AGRyM1tmQNpW9X8WBPr5RSgt1vVGyZK+vlYOHFnoy0tJ5bkRE4CcAyAU0o9zvmYAP32soYW6YihRiO6TiY9gUmtrtVE=
+X-Received: by 2002:a67:d194:0:b0:357:8ea:5554 with SMTP id
+ w20-20020a67d194000000b0035708ea5554mr3983654vsi.0.1657818000224; Thu, 14 Jul
+ 2022 10:00:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220712183238.844813653@linuxfoundation.org> <CA+G9fYtntg7=zWSs-dm+n_AUr_u0eBOU0zrwWqMeXZ+SF6_bLw@mail.gmail.com>
- <eb63e4ce-843f-c840-060e-6e15defd3c4d@roeck-us.net> <CAHk-=wj5cOA+fbGeV15kvwe6YGT54Wsk8F2UGoekVQLTPJz_pw@mail.gmail.com>
- <CAHk-=wgq1soM4gudypWLVQdYuvJbXn38LtvJMtnLZX+RTypqLg@mail.gmail.com> <Ys/bYJ2bLVfNBjFI@nazgul.tnic>
-In-Reply-To: <Ys/bYJ2bLVfNBjFI@nazgul.tnic>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 14 Jul 2022 09:51:40 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wjdafFUFwwQNvNQY_D32CBXnp6_V=DL2FpbbdstVxafow@mail.gmail.com>
-Message-ID: <CAHk-=wjdafFUFwwQNvNQY_D32CBXnp6_V=DL2FpbbdstVxafow@mail.gmail.com>
-Subject: Re: [PATCH 5.15 00/78] 5.15.55-rc1 review
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kvm list <kvm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Slade Watkins <slade@sladewatkins.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>
+References: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
+ <20220707081826.953449-3-Naresh.Solanki@9elements.com> <20220714141041.GB2229197-robh@kernel.org>
+ <YtAkwcwXaQqZV75d@sirena.org.uk> <CAL_JsqKu_HCDoPBTcVdVV2JyD_8p3+cbrNC0u6VrK85vWZmt3Q@mail.gmail.com>
+ <YtArbh4a40cACRMt@sirena.org.uk> <CAL_Jsq+KRyE3i3CkPKopGgFvL+h0pT3R-d3aZNgVmKyiTy3gjw@mail.gmail.com>
+ <YtA8KOLDIsEH+okf@sirena.org.uk>
+In-Reply-To: <YtA8KOLDIsEH+okf@sirena.org.uk>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 14 Jul 2022 10:59:48 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKCByvNASAxRWV3bcjFSBjXZUQf0Xvv_dCZ0z1CRCcOKA@mail.gmail.com>
+Message-ID: <CAL_JsqKCByvNASAxRWV3bcjFSBjXZUQf0Xvv_dCZ0z1CRCcOKA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/4] dt-bindings: regulator: add bindings for output-supply
+To:     Mark Brown <broonie@kernel.org>, Zev Weiss <zev@bewilderbeest.net>
+Cc:     Naresh Solanki <naresh.solanki@9elements.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:02 AM Borislav Petkov <bp@alien8.de> wrote:
++Zev
+
+On Thu, Jul 14, 2022 at 9:54 AM Mark Brown <broonie@kernel.org> wrote:
 >
-> I'm guessing you're thinking of cutting an -rc7 so that people can test
-> the whole retbleed mitigation disaster an additional week?
+> On Thu, Jul 14, 2022 at 09:07:49AM -0600, Rob Herring wrote:
+> > On Thu, Jul 14, 2022 at 8:43 AM Mark Brown <broonie@kernel.org> wrote:
+>
+> > > Consider for example a BMC (IIRC that's what their specific product is),
+> > > a bench supply or some automated test equipment.  Part of the function
+> > > for these systems is to provide power to other systems which would be
+> > > represented as a root or wall supply in the description of the system
+> > > that actually uses the supply if it were described using DT.
+>
+> > Didn't someone else have a similar use recently? Controlling some
+> > supply external to the system. I can't seem to find it now.
+>
+> IIRC that was an earlier iteration of the same thing - it's been round
+> the houses a bit.  extcon seemed like it might be a home since these are
+> external connections from the system but in the end people didn't think
+> it looked like a good fit.
 
-Oh, absolutely. Doing an -rc7 is normal.
+Found it:
 
-Right now the question isn't whether an rc7 happens, but whether we'll
-need an rc8. We'll see.
+v1: https://lore.kernel.org/all/20220504065252.6955-2-zev@bewilderbeest.net/
+v2: https://lore.kernel.org/all/20220505232557.10936-1-zev@bewilderbeest.net/
 
-Oh, I do hate the hw-embargoed stuff that doesn't get all the usual
-testing in all our automation.
+v2 was the using extcon version. v1 looks pretty similar to this one
+though anything that's just a compatible plus supplies would.
 
-             Linus
+But AFAICT these 2 submissions are completely independent.
+
+> > In any case, it's not for you to describe, but Naresh, and in the
+> > binding and commit messages. But first we need to overcome proper
+> > usage of get_maintainers.pl. In response, to my first reply on v4, I
+> > have a second v4 sent privately today (and still only the vendor
+> > prefix). Sigh. AFAICT, for v1-v3, the only thing that made it to the
+> > list was the cover letters. Bottom line is this series has multiple
+> > problems and shouldn't have been applied yet.
+>
+> I can drop it but I do think it's reasonable to be adding a vendor
+> binding for this, we don't seem to have enough people engaged to scope
+> out a generic binding confidently and TBH I've got a feeling we might
+> want multiple application specific generic bindings when we do have one.
+
+I don't mind the vendor prefix. I mind the vendor prefix without any
+description of the vendor's h/w.
+
+Rob
