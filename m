@@ -2,270 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AA6CCA482
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA943CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239627AbiGNMxc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:53:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49622 "EHLO
+        id S239634AbiGNM4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239619AbiGNMx2 (ORCPT
+        with ESMTP id S231811AbiGNM4F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:53:28 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52A04507F;
-        Thu, 14 Jul 2022 05:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657803208; x=1689339208;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=K+xDiE/1lBZqmu71rpEeANOTvIpVh7FPxs9iynE1FnE=;
-  b=bwNplnP40+Cs/R8lW68HyU4VUERawSDKDBeqU2a1QA3cfPNNUuR51Gq4
-   F0w1eANxswlgzHQdPLJqbPewwmxm1NXaBv9SiZIkzvmmqipPeStksbnBS
-   +tMJKcdhCHlZEEeuRB6N7Mr7vojMrfKp2pAQWxPlLRtXqnoI6/MUmeaP0
-   ra1/IsVQChmOyYZ9+0tpwgfRSnrlNTGxt9U21D+xN7JSgOW7R7PEgbcpU
-   /JCSdHNQS9OorCXr0u1i1wIA/23L7wtEp9zJQyQTAxS8QkMaemtnHaJFj
-   Pc4yElQg3zVDuMf4iCsP6Sz4OF938/UNeevUTqV6edMSrJcf1Ka1du36P
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="172116621"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 05:53:28 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 05:53:27 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 05:53:18 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <eugen.hristev@microchip.com>
-CC:     <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2] watchdog: dt-bindings: atmel,at91sam9-wdt: convert to json-schema
-Date:   Thu, 14 Jul 2022 15:51:24 +0300
-Message-ID: <20220714125122.144377-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 08:56:05 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D9CD4D4F5;
+        Thu, 14 Jul 2022 05:56:04 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id o8so988187wms.2;
+        Thu, 14 Jul 2022 05:56:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vbTEm3oI6IgJFHsJWIHl+dQRVX68qV+BiPO2Jb+Qzcs=;
+        b=aYafQQptpaj/jiAhls31/DMXbevapRrMNC4lYXGqKMk+WxvJH4CEUhd337xJdMlAtx
+         dJHTi98XvDkj7TcURAng17HC0quMVUlP4guZ9gldHQIpnwAqH8d6CHvn0BaVRg2Kie80
+         /9NQn4Ip4tsAOi8c4oKzTnJJ5BTv6s62RrZCamuIl3IhaKwxhRJOdSVYLrYGa6zYNXk9
+         Y31qtNkjgej7UuTcd39GDn082uEXjZFzbXGUvK9k9MQmLqr76xDYcrJiomvItGQzKcoD
+         wQOuDUrVVwaLl8bE9c+W0GCJKuJHsxS9flAKqEUR8KZ79u0C647AhHF2znv9yZGaaQ+G
+         7RPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vbTEm3oI6IgJFHsJWIHl+dQRVX68qV+BiPO2Jb+Qzcs=;
+        b=HlRUxVU2FlGmsgf1Yx08qYLMENE1Pk1S+kcmu8yFzqPrt9vCRi60GCRUWBAbJP1tT0
+         R+lN+kS0n/s3120pMiEQgOzXNA9dc5cMgJBCPszmALdqo2D3DntWTgPZ3Vjojugr/ogd
+         acsC8p+KXCSdt8FPdy3lKp3Ac+6d+WwA/0kHiwpy3u2p+YLz79Vjhu1+L+bGqiQHwBjA
+         VAk5ffh2EjhHTLgTGfNDfXzdJVjTv1GxGNUIfXDukinUiw1THBI7yPzo5hhHEHtFxKhv
+         rcK/9gRgXsXpD2qbM97ikfTSBpOGB5wq7Ol5F9Gg+qXaOI6aSBcFqKIrBe4NTfLAhKAt
+         kEjw==
+X-Gm-Message-State: AJIora8Ws2zAcP1etNsQWQSMfBjF/chkJ8pQrGwbo6xk5T/w8Kfpui2T
+        BuhsfviyqG7LlglaWU76lwc=
+X-Google-Smtp-Source: AGRyM1vphDRTHe0FjntvAsam/bcOuRYiK+SBQJ5eie6byGyPW63ldZxb3fv3ZQMexvhYOitoK503uQ==
+X-Received: by 2002:a05:600c:1c0e:b0:3a1:9a4b:28ee with SMTP id j14-20020a05600c1c0e00b003a19a4b28eemr14609203wms.203.1657803362957;
+        Thu, 14 Jul 2022 05:56:02 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id m2-20020a05600c3b0200b0039ee391a024sm5733425wms.14.2022.07.14.05.56.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 05:56:02 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm: flip-work: rename commited -> committed
+Date:   Thu, 14 Jul 2022 13:56:01 +0100
+Message-Id: <20220714125601.34812-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert at91sam9 WDT binding for Atmel/Microchip SoCs to json-schema
-format.
+There is a spelling mistake in the list head variable, rename it.
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
+ drivers/gpu/drm/drm_flip_work.c | 10 +++++-----
+ include/drm/drm_flip_work.h     |  6 +++---
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-v1 -> v2:
-- move "allOf" under "required"
-
- .../bindings/watchdog/atmel,at91sam9-wdt.yaml | 127 ++++++++++++++++++
- .../bindings/watchdog/atmel-wdt.txt           |  51 -------
- 2 files changed, 127 insertions(+), 51 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
- delete mode 100644 Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
-
-diff --git a/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
-new file mode 100644
-index 000000000000..ad27bc518670
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
-@@ -0,0 +1,127 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/atmel,at91sam9-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Watchdog Timers
-+
-+maintainers:
-+  - Eugen Hristev <eugen.hristev@microchip.com>
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9260-wdt
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  atmel,max-heartbeat-sec:
-+    description:
-+      Should contain the maximum heartbeat value in seconds. This value
-+      should be less or equal to 16. It is used to compute the WDV field.
-+    maximum: 16
-+
-+  atmel,min-heartbeat-sec:
-+    description:
-+      Should contain the minimum heartbeat value in seconds. This value
-+      must be smaller than the max-heartbeat-sec value. It is used to
-+      compute the WDD field.
-+    maximum: 16
-+
-+  atmel,watchdog-type:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: |
-+      Should be hardware or software.
-+    oneOf:
-+      - description:
-+          Hardware watchdog uses the at91 watchdog reset.
-+        const: hardware
-+      - description: |
-+          Software watchdog uses the watchdog interrupt
-+          to trigger a software reset.
-+        const: software
-+    default: hardware
-+
-+  atmel,reset-type:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: |
-+      Should be proc or all. This is valid only when using hardware watchdog.
-+    oneOf:
-+      - description:
-+          Assert peripherals and processor reset signals.
-+        const: all
-+      - description:
-+          Assert the processor reset signal.
-+        const: proc
-+    default: all
-+
-+  atmel,disable:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Should be present if you want to stop the watchdog.
-+
-+  atmel,idle-halt:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Should be present if you want to stop the watchdog when
-+      entering idle state.
-+      CAUTION: This property should be used with care, it actually makes the
-+      watchdog not counting when the CPU is in idle state, therefore the
-+      watchdog reset time depends on mean CPU usage and will not reset at all
-+      if the CPU stops working while it is in idle state, which is probably
-+      not what you want.
-+
-+  atmel,dbg-halt:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Should be present if you want to stop the watchdog when
-+      entering debug state.
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+  - if:
-+      properties:
-+        atmel,reset-type:
-+          enum:
-+            - all
-+            - proc
-+    then:
-+      properties:
-+        atmel,watchdog-type:
-+          const: hardware
-+
-+dependencies:
-+  atmel,reset-type: ['atmel,watchdog-type']
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    watchdog@fffffd40 {
-+        compatible = "atmel,at91sam9260-wdt";
-+        reg = <0xfffffd40 0x10>;
-+        interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
-+        clocks = <&clk32k>;
-+        timeout-sec = <15>;
-+        atmel,watchdog-type = "hardware";
-+        atmel,reset-type = "all";
-+        atmel,dbg-halt;
-+        atmel,idle-halt;
-+        atmel,max-heartbeat-sec = <16>;
-+        atmel,min-heartbeat-sec = <0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt b/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
-deleted file mode 100644
-index 711a880b3d3b..000000000000
---- a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
-+++ /dev/null
-@@ -1,51 +0,0 @@
--* Atmel Watchdog Timers
--
--** at91sam9-wdt
--
--Required properties:
--- compatible: must be "atmel,at91sam9260-wdt".
--- reg: physical base address of the controller and length of memory mapped
--  region.
--- clocks: phandle to input clock.
--
--Optional properties:
--- timeout-sec: contains the watchdog timeout in seconds.
--- interrupts : Should contain WDT interrupt.
--- atmel,max-heartbeat-sec : Should contain the maximum heartbeat value in
--	seconds. This value should be less or equal to 16. It is used to
--	compute the WDV field.
--- atmel,min-heartbeat-sec : Should contain the minimum heartbeat value in
--	seconds. This value must be smaller than the max-heartbeat-sec value.
--	It is used to compute the WDD field.
--- atmel,watchdog-type : Should be "hardware" or "software". Hardware watchdog
--	use the at91 watchdog reset. Software watchdog use the watchdog
--	interrupt to trigger a software reset.
--- atmel,reset-type : Should be "proc" or "all".
--	"all" : assert peripherals and processor reset signals
--	"proc" : assert the processor reset signal
--	This is valid only when using "hardware" watchdog.
--- atmel,disable : Should be present if you want to disable the watchdog.
--- atmel,idle-halt : Should be present if you want to stop the watchdog when
--	entering idle state.
--	CAUTION: This property should be used with care, it actually makes the
--	watchdog not counting when the CPU is in idle state, therefore the
--	watchdog reset time depends on mean CPU usage and will not reset at all
--	if the CPU stop working while it is in idle state, which is probably
--	not what you want.
--- atmel,dbg-halt : Should be present if you want to stop the watchdog when
--	entering debug state.
--
--Example:
--	watchdog@fffffd40 {
--		compatible = "atmel,at91sam9260-wdt";
--		reg = <0xfffffd40 0x10>;
--		interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
--		clocks = <&clk32k>;
--		timeout-sec = <15>;
--		atmel,watchdog-type = "hardware";
--		atmel,reset-type = "all";
--		atmel,dbg-halt;
--		atmel,idle-halt;
--		atmel,max-heartbeat-sec = <16>;
--		atmel,min-heartbeat-sec = <0>;
--	};
+diff --git a/drivers/gpu/drm/drm_flip_work.c b/drivers/gpu/drm/drm_flip_work.c
+index 060b753881a2..8efb5f2c5773 100644
+--- a/drivers/gpu/drm/drm_flip_work.c
++++ b/drivers/gpu/drm/drm_flip_work.c
+@@ -104,7 +104,7 @@ void drm_flip_work_commit(struct drm_flip_work *work,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&work->lock, flags);
+-	list_splice_tail(&work->queued, &work->commited);
++	list_splice_tail(&work->queued, &work->committed);
+ 	INIT_LIST_HEAD(&work->queued);
+ 	spin_unlock_irqrestore(&work->lock, flags);
+ 	queue_work(wq, &work->worker);
+@@ -122,8 +122,8 @@ static void flip_worker(struct work_struct *w)
+ 
+ 		INIT_LIST_HEAD(&tasks);
+ 		spin_lock_irqsave(&work->lock, flags);
+-		list_splice_tail(&work->commited, &tasks);
+-		INIT_LIST_HEAD(&work->commited);
++		list_splice_tail(&work->committed, &tasks);
++		INIT_LIST_HEAD(&work->committed);
+ 		spin_unlock_irqrestore(&work->lock, flags);
+ 
+ 		if (list_empty(&tasks))
+@@ -149,7 +149,7 @@ void drm_flip_work_init(struct drm_flip_work *work,
+ {
+ 	work->name = name;
+ 	INIT_LIST_HEAD(&work->queued);
+-	INIT_LIST_HEAD(&work->commited);
++	INIT_LIST_HEAD(&work->committed);
+ 	spin_lock_init(&work->lock);
+ 	work->func = func;
+ 
+@@ -165,6 +165,6 @@ EXPORT_SYMBOL(drm_flip_work_init);
+  */
+ void drm_flip_work_cleanup(struct drm_flip_work *work)
+ {
+-	WARN_ON(!list_empty(&work->queued) || !list_empty(&work->commited));
++	WARN_ON(!list_empty(&work->queued) || !list_empty(&work->committed));
+ }
+ EXPORT_SYMBOL(drm_flip_work_cleanup);
+diff --git a/include/drm/drm_flip_work.h b/include/drm/drm_flip_work.h
+index 21c3d512d25c..2e1342cdc568 100644
+--- a/include/drm/drm_flip_work.h
++++ b/include/drm/drm_flip_work.h
+@@ -67,15 +67,15 @@ struct drm_flip_task {
+  * @func: callback fxn called for each committed item
+  * @worker: worker which calls @func
+  * @queued: queued tasks
+- * @commited: commited tasks
+- * @lock: lock to access queued and commited lists
++ * @committed: committed tasks
++ * @lock: lock to access queued and committed lists
+  */
+ struct drm_flip_work {
+ 	const char *name;
+ 	drm_flip_func_t func;
+ 	struct work_struct worker;
+ 	struct list_head queued;
+-	struct list_head commited;
++	struct list_head committed;
+ 	spinlock_t lock;
+ };
+ 
 -- 
-2.25.1
+2.35.3
 
