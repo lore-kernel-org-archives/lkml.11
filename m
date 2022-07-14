@@ -2,131 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D535C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:09:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B85C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:12:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238076AbiGNKJz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:09:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
+        id S238149AbiGNKMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:12:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231163AbiGNKJx (ORCPT
+        with ESMTP id S231788AbiGNKMM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:09:53 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 796C34E854
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:09:52 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lk9DG6ThlzlVlr;
-        Thu, 14 Jul 2022 18:08:14 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 18:09:50 +0800
-Subject: Re: [PATCH] mm/hugetlb: avoid corrupting page->mapping in
- hugetlb_mcopy_atomic_pte
-To:     Axel Rasmussen <axelrasmussen@google.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Peter Xu <peterx@redhat.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Linux MM <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <20220712130542.18836-1-linmiaohe@huawei.com>
- <Ys2xyCUnqpJt0eIo@monkey> <Ys7ViSsOxLaQJIfy@xz-m1.local>
- <Ys7uXHdzzFezUub5@xz-m1.local>
- <CAJHvVcgqb6R6ePMbgmA8LpMpMgrGWie9ZCTuR4MA77GTvi4XAw@mail.gmail.com>
- <Ys9XAbuxkDUlnmv0@monkey>
- <CAJHvVci9iij+eDV-EWDOtjmWFYo0H+1LkzKBp6=XOpwDA4Jh-g@mail.gmail.com>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <1a27f20c-ed69-398a-5e6d-bb7ec5f14f5f@huawei.com>
-Date:   Thu, 14 Jul 2022 18:09:49 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        Thu, 14 Jul 2022 06:12:12 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21DE501B6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:12:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A2DAD1FADB;
+        Thu, 14 Jul 2022 10:12:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1657793529; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VX//aeJx0d8DjNGTlh0QNBOe0MYsqoOxy69wWtb3e9M=;
+        b=d1TbqnONavoXAV+tHuJNtc4e7AI+JKCEkI2hF/0mzli5mKraIa/wpohStZnb7M+Tkvw1W9
+        RC8WaE/xoaqGxqGayGOr57l5qi55grod/Winys8Tt3j/ijbZfu5JPZOJwXmFtdnVGs3TPJ
+        L2yyYkdoW9y8wZaG2McxKDABGjSZsgM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1657793529;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=VX//aeJx0d8DjNGTlh0QNBOe0MYsqoOxy69wWtb3e9M=;
+        b=ltZ5WX5tJrK4p15RQJaZKV+igpq6QBDp8kR/Yniy5+VRxSGC+1nmf6z5qVdemgr4WzRh5r
+        ZFbwEHTIkqyEmTAw==
+Received: from quack3.suse.cz (unknown [10.100.224.230])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id DFC3A2C143;
+        Thu, 14 Jul 2022 10:12:08 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 5A116A05FB; Thu, 14 Jul 2022 12:12:07 +0200 (CEST)
+Date:   Thu, 14 Jul 2022 12:12:07 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Xiu Jianfeng <xiujianfeng@huawei.com>
+Cc:     akpm@linux-foundation.org, axboe@kernel.dk, neilb@suse.de,
+        johannes.thumshirn@wdc.com, jack@suse.cz, willy@infradead.org,
+        mgorman@techsingularity.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] writeback: Cleanup inode_to_wb_is_valid()
+Message-ID: <20220714101207.5qh3bfvadqrorerp@quack3>
+References: <20220714084147.140324-1-xiujianfeng@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <CAJHvVci9iij+eDV-EWDOtjmWFYo0H+1LkzKBp6=XOpwDA4Jh-g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714084147.140324-1-xiujianfeng@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/14 8:20, Axel Rasmussen wrote:
-> On Wed, Jul 13, 2022 at 4:36 PM Mike Kravetz <mike.kravetz@oracle.com> wrote:
->>
->> On 07/13/22 15:46, Axel Rasmussen wrote:
->>> I think there is a small mistake in this patch.
->>>
->>> Consider the non-minor-fault case. We have this block:
->>>
->>> /* Add shared, newly allocated pages to the page cache. */
->>> if (vm_shared && !is_continue) {
->>>         /* ... */
->>> }
->>>
->>> In here, we've added the newly allocated page to the page cache, and
->>> we've set this page_in_pagecache flag to true. But we *do not* setup
->>> rmap for this page in this block. I think in this case, the patch will
->>> cause us to do the wrong thing: we should hugepage_add_new_anon_rmap()
->>> further down, but with this patch we dup instead.
->>
->> I am not sure I follow.  The patch from Miaohe Lin would not change any
->> behavior in the 'if (vm_shared && !is_continue)' case.  In this case
->> both vm_shared and page_in_pagecache are true.
->>
->> IIUC, the patch would address the case where !vm_shared && is_continue.
+On Thu 14-07-22 16:41:47, Xiu Jianfeng wrote:
+> inode_to_wb_is_valid() is no longer used since commit fe55d563d417
+> ("remove inode_congested()"), remove it.
 > 
-> Ah, you're right, my interpretation of the various flags got mixed up
-> somewhere along the way.
+> Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+
+Looks good! Feel free to add:
+
+Reviewed-by: Jan Kara <jack@suse.cz>
+
+								Honza
+
+> ---
+>  include/linux/backing-dev.h | 17 -----------------
+>  1 file changed, 17 deletions(-)
 > 
-> page_in_pagecache is equivalent to vm_shared in this function,
-> *except* when we have is_continue. Given that, I think this patch is
-> correct in the vm_shared case (no behavior change). In case of
-> !vm_shared && is_continue, I agree the patch is a correction to the
-> previous behavior.
+> diff --git a/include/linux/backing-dev.h b/include/linux/backing-dev.h
+> index d452071db572..f9f14e385582 100644
+> --- a/include/linux/backing-dev.h
+> +++ b/include/linux/backing-dev.h
+> @@ -235,18 +235,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
+>  	return wb;
+>  }
+>  
+> -/**
+> - * inode_to_wb_is_valid - test whether an inode has a wb associated
+> - * @inode: inode of interest
+> - *
+> - * Returns %true if @inode has a wb associated.  May be called without any
+> - * locking.
+> - */
+> -static inline bool inode_to_wb_is_valid(struct inode *inode)
+> -{
+> -	return inode->i_wb;
+> -}
+> -
+>  /**
+>   * inode_to_wb - determine the wb of an inode
+>   * @inode: inode of interest
+> @@ -345,11 +333,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
+>  	return &bdi->wb;
+>  }
+>  
+> -static inline bool inode_to_wb_is_valid(struct inode *inode)
+> -{
+> -	return true;
+> -}
+> -
+>  static inline struct bdi_writeback *inode_to_wb(struct inode *inode)
+>  {
+>  	return &inode_to_bdi(inode)->wb;
+> -- 
+> 2.17.1
 > 
->>
->> On 07/12/22 21:05, Miaohe Lin wrote:
->>> In MCOPY_ATOMIC_CONTINUE case with a non-shared VMA, pages in the page
->>> cache are installed in the ptes. But hugepage_add_new_anon_rmap is called
->>> for them mistakenly because they're not vm_shared. This will corrupt the
->>> page->mapping used by page cache code.
->>>
->>> Fixes: f619147104c8 ("userfaultfd: add UFFDIO_CONTINUE ioctl")
->>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
->>> ---
->>>  mm/hugetlb.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/mm/hugetlb.c b/mm/hugetlb.c
->>> index 8d379e03f672..b232e1508e49 100644
->>> --- a/mm/hugetlb.c
->>> +++ b/mm/hugetlb.c
->>> @@ -6038,7 +6038,7 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
->>>       if (!huge_pte_none_mostly(huge_ptep_get(dst_pte)))
->>>               goto out_release_unlock;
->>>
->>> -     if (vm_shared) {
->>> +     if (page_in_pagecache) {
->>>               page_dup_file_rmap(page, true);
-
-Many thanks for your comments.
-
-As discussed in another thread, we might call page_dup_file_rmap for newly
-allocated page (regardless of this patch). So should we come up a seperate
-patch to call page_add_file_rmap here instead?
-
-Thanks.
-
->>>       } else {
->>>               ClearHPageRestoreReserve(page);
->>
->> --
->> Mike Kravetz
-> .
-> 
-
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
