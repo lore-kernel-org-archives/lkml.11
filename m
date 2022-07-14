@@ -2,152 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D171C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 701BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237743AbiGNJ52 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
+        id S238101AbiGNJ5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235898AbiGNJ5I (ORCPT
+        with ESMTP id S237551AbiGNJ51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:57:08 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D7F3D4C603;
-        Thu, 14 Jul 2022 02:57:06 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oBvaj-0006rx-01; Thu, 14 Jul 2022 11:57:05 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 69F76C0493; Thu, 14 Jul 2022 11:55:06 +0200 (CEST)
-Date:   Thu, 14 Jul 2022 11:55:06 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MIPS: Remove VR41xx support
-Message-ID: <20220714095506.GB10086@alpha.franken.de>
-References: <20220705164632.97942-1-tsbogend@alpha.franken.de>
+        Thu, 14 Jul 2022 05:57:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D3B4650182
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:57:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657792639;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=due5AmS56nwKHQURWRio6Jj0V5YHWUHW3moonKZbp+k=;
+        b=jKt76gTpcOjv4x+mHomcPP6DK2cyJQWVEE9y7Tl5r+YlyLzRUdNs0vwUn0UhlB/XMiEK1U
+        ASCXnK976G9hXN6PnGyJv4a3D3VFlhhMYmRZv5pvU7YA7VjSSFC0zrZTw5gIbCz0z0CRdp
+        NNmxU+fUrs+S3bUt0fgODD5lE2roQoY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-649-0WmbUmN1NsC1jn5Nq3AMEQ-1; Thu, 14 Jul 2022 05:57:18 -0400
+X-MC-Unique: 0WmbUmN1NsC1jn5Nq3AMEQ-1
+Received: by mail-wm1-f70.google.com with SMTP id c17-20020a7bc011000000b003a2bfaf8d3dso448750wmb.0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:57:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=due5AmS56nwKHQURWRio6Jj0V5YHWUHW3moonKZbp+k=;
+        b=g33JSYeHwbLJobT9cHOf6RIXu1CLkE09+w13iHFWe9xjDv8TzvzG9IPrQgTe1BZ/l+
+         w+EBi/DgRFfoBFFFX1c+cUDCc0IP7f+rHVAWBNrLkgWg9A1lvOuML/MQxuvGAY9fSChr
+         rtD/1y0ufHV3bVKVhpchy1k/vaflxNQ3mX64C6gcdRZWfwePQJ5HjiTgHKx+pUt3+7DC
+         /RN2WzEGaW1RuNrbp5QlJzIxWCPutNM8ubWWLhs0g6MHfnB5Y+qGStBPDNa+dIbmPzlL
+         IcKYwD7zu9aSkxcv2q+KpbOvNrkeGNKx+9MuIB2HpNiiqr75HSfhG4IFQqsbPl4V4hS8
+         UH6g==
+X-Gm-Message-State: AJIora8VvbG12nnksrspAaFrirvLzRkFJkmvJUbPDAKmhH7UUvyRAL+p
+        FF1z/1KSE1cqU5yw3vmILECuxxJrfstktHv6ImTCM9TrxkYorMicW9EUiHBhZGSjNrdm3s5Ih0w
+        EjtOIhtYiNC1/ZM0PZaOevP2W
+X-Received: by 2002:a5d:6e8d:0:b0:21d:7adc:7102 with SMTP id k13-20020a5d6e8d000000b0021d7adc7102mr7322823wrz.9.1657792637714;
+        Thu, 14 Jul 2022 02:57:17 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1thfI/HeBALlz1MpWK7X8M2igq3/FhpwNnjJ1ZYgqajB1pTOb1ykpm1uWMRTuBXxCFL8QuxDg==
+X-Received: by 2002:a5d:6e8d:0:b0:21d:7adc:7102 with SMTP id k13-20020a5d6e8d000000b0021d7adc7102mr7322802wrz.9.1657792637491;
+        Thu, 14 Jul 2022 02:57:17 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id o12-20020adfca0c000000b0021dbaa4f38dsm1287018wrh.18.2022.07.14.02.57.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 02:57:16 -0700 (PDT)
+Message-ID: <aff0dd9ba5d5730435a92e6a90dc15bb6eae5977.camel@redhat.com>
+Subject: Re: [PATCH v4 03/25] x86/hyperv: Update 'struct
+ hv_enlightened_vmcs' definition
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 14 Jul 2022 12:57:15 +0300
+In-Reply-To: <20220714091327.1085353-4-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+         <20220714091327.1085353-4-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220705164632.97942-1-tsbogend@alpha.franken.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 06:46:25PM +0200, Thomas Bogendoerfer wrote:
-> No (active) developer owns this hardware, so let's remove Linux support.
+On Thu, 2022-07-14 at 11:13 +0200, Vitaly Kuznetsov wrote:
+> Updated Hyper-V Enlightened VMCS specification lists several new
+> fields for the following features:
 > 
-> Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> - PerfGlobalCtrl
+> - EnclsExitingBitmap
+> - Tsc Scaling
+> - GuestLbrCtl
+> - CET
+> - SSP
+> 
+> Update the definition. The updated definition is available only when
+> CPUID.0x4000000A.EBX BIT(0) is '1'. Add a define for it as well.
+> 
+> Note: The latest TLFS is available at
+> https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/tlfs/tlfs
+> 
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 > ---
->  arch/mips/Kbuild.platforms              |   1 -
->  arch/mips/Kconfig                       |  23 -
->  arch/mips/Makefile                      |   1 -
->  arch/mips/configs/capcella_defconfig    |  91 ---
->  arch/mips/configs/e55_defconfig         |  37 --
->  arch/mips/configs/mpc30x_defconfig      |  53 --
->  arch/mips/configs/tb0219_defconfig      |  76 ---
->  arch/mips/configs/tb0226_defconfig      |  71 ---
->  arch/mips/configs/tb0287_defconfig      |  84 ---
->  arch/mips/configs/workpad_defconfig     |  67 ---
->  arch/mips/include/asm/cpu-type.h        |  11 -
->  arch/mips/include/asm/cpu.h             |   3 +-
->  arch/mips/include/asm/mach-vr41xx/irq.h |   9 -
->  arch/mips/include/asm/mipsregs.h        |  14 -
->  arch/mips/include/asm/pgtable-32.h      |   5 -
->  arch/mips/include/asm/pgtable-64.h      |   5 -
->  arch/mips/include/asm/vermagic.h        |   2 -
->  arch/mips/include/asm/vr41xx/capcella.h |  30 -
->  arch/mips/include/asm/vr41xx/giu.h      |  41 --
->  arch/mips/include/asm/vr41xx/irq.h      |  97 ----
->  arch/mips/include/asm/vr41xx/mpc30x.h   |  24 -
->  arch/mips/include/asm/vr41xx/pci.h      |  77 ---
->  arch/mips/include/asm/vr41xx/siu.h      |  45 --
->  arch/mips/include/asm/vr41xx/tb0219.h   |  29 -
->  arch/mips/include/asm/vr41xx/tb0226.h   |  30 -
->  arch/mips/include/asm/vr41xx/tb0287.h   |  30 -
->  arch/mips/include/asm/vr41xx/vr41xx.h   | 148 -----
->  arch/mips/kernel/cpu-probe.c            |  40 --
->  arch/mips/lib/dump_tlb.c                |   8 -
->  arch/mips/mm/c-r4k.c                    |  44 --
->  arch/mips/mm/tlbex.c                    |  35 --
->  arch/mips/pci/Makefile                  |   6 -
->  arch/mips/pci/fixup-capcella.c          |  37 --
->  arch/mips/pci/fixup-mpc30x.c            |  36 --
->  arch/mips/pci/fixup-tb0219.c            |  38 --
->  arch/mips/pci/fixup-tb0226.c            |  73 ---
->  arch/mips/pci/fixup-tb0287.c            |  52 --
->  arch/mips/pci/ops-vr41xx.c              | 113 ----
->  arch/mips/pci/pci-vr41xx.c              | 309 ----------
->  arch/mips/pci/pci-vr41xx.h              | 141 -----
->  arch/mips/vr41xx/Kconfig                | 104 ----
->  arch/mips/vr41xx/Makefile               |   5 -
->  arch/mips/vr41xx/Platform               |  29 -
->  arch/mips/vr41xx/casio-e55/Makefile     |   6 -
->  arch/mips/vr41xx/casio-e55/setup.c      |  27 -
->  arch/mips/vr41xx/common/Makefile        |   6 -
->  arch/mips/vr41xx/common/bcu.c           | 210 -------
->  arch/mips/vr41xx/common/cmu.c           | 242 --------
->  arch/mips/vr41xx/common/giu.c           | 110 ----
->  arch/mips/vr41xx/common/icu.c           | 714 ------------------------
->  arch/mips/vr41xx/common/init.c          |  60 --
->  arch/mips/vr41xx/common/irq.c           | 106 ----
->  arch/mips/vr41xx/common/pmu.c           | 123 ----
->  arch/mips/vr41xx/common/rtc.c           | 105 ----
->  arch/mips/vr41xx/common/siu.c           | 142 -----
->  arch/mips/vr41xx/common/type.c          |  11 -
->  arch/mips/vr41xx/ibm-workpad/Makefile   |   6 -
->  arch/mips/vr41xx/ibm-workpad/setup.c    |  27 -
->  58 files changed, 1 insertion(+), 4068 deletions(-)
->  delete mode 100644 arch/mips/configs/capcella_defconfig
->  delete mode 100644 arch/mips/configs/e55_defconfig
->  delete mode 100644 arch/mips/configs/mpc30x_defconfig
->  delete mode 100644 arch/mips/configs/tb0219_defconfig
->  delete mode 100644 arch/mips/configs/tb0226_defconfig
->  delete mode 100644 arch/mips/configs/tb0287_defconfig
->  delete mode 100644 arch/mips/configs/workpad_defconfig
->  delete mode 100644 arch/mips/include/asm/mach-vr41xx/irq.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/capcella.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/giu.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/irq.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/mpc30x.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/pci.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/siu.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/tb0219.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/tb0226.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/tb0287.h
->  delete mode 100644 arch/mips/include/asm/vr41xx/vr41xx.h
->  delete mode 100644 arch/mips/pci/fixup-capcella.c
->  delete mode 100644 arch/mips/pci/fixup-mpc30x.c
->  delete mode 100644 arch/mips/pci/fixup-tb0219.c
->  delete mode 100644 arch/mips/pci/fixup-tb0226.c
->  delete mode 100644 arch/mips/pci/fixup-tb0287.c
->  delete mode 100644 arch/mips/pci/ops-vr41xx.c
->  delete mode 100644 arch/mips/pci/pci-vr41xx.c
->  delete mode 100644 arch/mips/pci/pci-vr41xx.h
->  delete mode 100644 arch/mips/vr41xx/Kconfig
->  delete mode 100644 arch/mips/vr41xx/Makefile
->  delete mode 100644 arch/mips/vr41xx/Platform
->  delete mode 100644 arch/mips/vr41xx/casio-e55/Makefile
->  delete mode 100644 arch/mips/vr41xx/casio-e55/setup.c
->  delete mode 100644 arch/mips/vr41xx/common/Makefile
->  delete mode 100644 arch/mips/vr41xx/common/bcu.c
->  delete mode 100644 arch/mips/vr41xx/common/cmu.c
->  delete mode 100644 arch/mips/vr41xx/common/giu.c
->  delete mode 100644 arch/mips/vr41xx/common/icu.c
->  delete mode 100644 arch/mips/vr41xx/common/init.c
->  delete mode 100644 arch/mips/vr41xx/common/irq.c
->  delete mode 100644 arch/mips/vr41xx/common/pmu.c
->  delete mode 100644 arch/mips/vr41xx/common/rtc.c
->  delete mode 100644 arch/mips/vr41xx/common/siu.c
->  delete mode 100644 arch/mips/vr41xx/common/type.c
->  delete mode 100644 arch/mips/vr41xx/ibm-workpad/Makefile
->  delete mode 100644 arch/mips/vr41xx/ibm-workpad/setup.c
+>  arch/x86/include/asm/hyperv-tlfs.h | 26 ++++++++++++++++++++++++--
+>  1 file changed, 24 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+> index 6f0acc45e67a..ebc27017fa48 100644
+> --- a/arch/x86/include/asm/hyperv-tlfs.h
+> +++ b/arch/x86/include/asm/hyperv-tlfs.h
+> @@ -138,6 +138,17 @@
+>  #define HV_X64_NESTED_GUEST_MAPPING_FLUSH              BIT(18)
+>  #define HV_X64_NESTED_MSR_BITMAP                       BIT(19)
+>  
+> +/*
+> + * Nested quirks. These are HYPERV_CPUID_NESTED_FEATURES.EBX bits.
+> + *
+> + * Note: HV_X64_NESTED_EVMCS1_2022_UPDATE is not currently documented in any
+> + * published TLFS version. When the bit is set, nested hypervisor can use
+> + * 'updated' eVMCSv1 specification (perf_global_ctrl, s_cet, ssp, lbr_ctl,
+> + * encls_exiting_bitmap, tsc_multiplier fields which were missing in 2016
+> + * specification).
+> + */
+> +#define HV_X64_NESTED_EVMCS1_2022_UPDATE               BIT(0)
+> +
+>  /*
+>   * This is specific to AMD and specifies that enlightened TLB flush is
+>   * supported. If guest opts in to this feature, ASID invalidations only
+> @@ -559,9 +570,20 @@ struct hv_enlightened_vmcs {
+>         u64 partition_assist_page;
+>         u64 padding64_4[4];
+>         u64 guest_bndcfgs;
+> -       u64 padding64_5[7];
+> +       u64 guest_ia32_perf_global_ctrl;
+> +       u64 guest_ia32_s_cet;
+> +       u64 guest_ssp;
+> +       u64 guest_ia32_int_ssp_table_addr;
+> +       u64 guest_ia32_lbr_ctl;
+> +       u64 padding64_5[2];
+>         u64 xss_exit_bitmap;
+> -       u64 padding64_6[7];
+> +       u64 encls_exiting_bitmap;
+> +       u64 host_ia32_perf_global_ctrl;
+> +       u64 tsc_multiplier;
+> +       u64 host_ia32_s_cet;
+> +       u64 host_ssp;
+> +       u64 host_ia32_int_ssp_table_addr;
+> +       u64 padding64_6;
+>  } __packed;
+>  
+>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                    0
 
-applied to mips-next.
+All look good now.
 
-Thomas.
+I really don't like the new 'online' TLFS spec - as you said,
+they can indeed change it any moment without any traces.
 
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+Seems it was done with good intentions, and it much easier to use,
+but they should also provide a PDF, or at least some form or archive of
+these web pages.
+
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+
+Best regards,
+	Maxim Levitsky
+
+
