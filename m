@@ -2,94 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6B6CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238806AbiGNL1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
+        id S238529AbiGNL1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238813AbiGNL1P (ORCPT
+        with ESMTP id S238790AbiGNL1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:27:15 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153FA5885E
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:27:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=8Ps/TljTNHGfY8PDlzoxZJIjrp8/Szhza8CwHrtIT94=; b=tPAfp9GBKXxV9jckn5pMF4an9F
-        gGGVDnga/jzhqanLvhCduFP7e2Gqm/nXJSG5ltwIZrXD63IfbPGAkfN3XRgaFt/i/8oFcyrqVLcjd
-        Rsq9pdpn06gtjIHUJhK5gTsP/2QedVhLK/MIW7d/NE6yB3C1olyDAgYRE/v2W1vV7X1yt/m9+NZvr
-        z1vrGD7Pdj7IDYUg48dMauiol7/vaJJ7QTPmUdetiuWNZrzCUT0+e4hO5PnzEX6t1qpcyw20nINpi
-        BLNKIRXhGtoEK4x7eKhAIYi6pCtGm0fC7h+xYliJkOttjP3qk8hP2t+pYGf/yAsH7gGhewYDFGtwF
-        g8/GHWgQ==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBwzc-009K9b-BT; Thu, 14 Jul 2022 11:26:52 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 8566F98016F; Thu, 14 Jul 2022 13:26:51 +0200 (CEST)
-Date:   Thu, 14 Jul 2022 13:26:51 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Libo Chen <libo.chen@oracle.com>
-Cc:     vincent.guittot@linaro.org, mgorman@suse.de,
-        tim.c.chen@linux.intel.com, 21cnbao@gmail.com,
-        dietmar.eggemann@arm.com, linux-kernel@vger.kernel.org,
-        tglx@linutronix.de
-Subject: Re: [PATCH] sched/fair: no sync wakeup from interrupt context
-Message-ID: <Ys/9e52SDRp8Kpnn@worktop.programming.kicks-ass.net>
-References: <20220711224704.1672831-1-libo.chen@oracle.com>
+        Thu, 14 Jul 2022 07:27:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A62B58879
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:27:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DED761B75
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C97D9C3411C;
+        Thu, 14 Jul 2022 11:27:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657798067;
+        bh=SD3jecQUKQiJHuXwCvcq11EL2LTpQ6ytcH9yFhQwQlM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GOTESsBMkFtZm21u9XPlYhBjBk6tmjavKb+TjkVrU3d4QNTk55mRLkNnFkJQTUe26
+         GH/a2vMZCLPyQdT01fw4qoieU5rIhg/jxsPT0MNGVE4KmIyew+WYhEbbRcxcg9wpY2
+         TOGXNon1bxSutHlOdadqkQaYyTYt5TUlN3v/nC0oMSbURKKP7TsS3gQBtkhlZOpKxw
+         FTO85Dw3fuMcbea/PRhyaY8g7VhPt9Mrb9g0bCjJKo1H1u0vCzixYh532Ium0CgcpD
+         MKNV1EdI629f6dP9P35AIAVODzvpI7Ta/5we6PtUFx+tQ1MZTJhL6mv5uZZsE2W+8f
+         b9w/9hcJASl4A==
+From:   Lee Jones <lee@kernel.org>
+To:     lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>
+Subject: [PATCH 1/8] MAINTAINERS: Use Lee Jones' kernel.org address for MFD submissions
+Date:   Thu, 14 Jul 2022 12:25:26 +0100
+Message-Id: <20220714112533.539910-2-lee@kernel.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
+In-Reply-To: <20220714112533.539910-1-lee@kernel.org>
+References: <20220714112533.539910-1-lee@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711224704.1672831-1-libo.chen@oracle.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 03:47:04PM -0700, Libo Chen wrote:
-> Barry Song first pointed out that replacing sync wakeup with regular wakeup
-> seems to reduce overeager wakeup pulling and shows noticeable performance
-> improvement.[1]
-> 
-> This patch argues that allowing sync for wakeups from interrupt context
-> is a bug 
+Going forward, I'll be using my kernel.org for upstream work.
 
-Yes.
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Lee Jones <lee@kernel.org>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> The
-> assumption is built into wake_affine() where it discounts the waker's presence
-> from the runqueue when sync is true. The random waker from interrupts bears no
-> relation to the wakee and don't usually go to sleep immediately afterwards
-> unless wakeup granularity is reached. 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2f96b480000a2..dad7f26edf5ac 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13825,7 +13825,7 @@ F:	Documentation/devicetree/bindings/media/i2c/aptina,mt9v111.yaml
+ F:	drivers/media/i2c/mt9v111.c
+ 
+ MULTIFUNCTION DEVICES (MFD)
+-M:	Lee Jones <lee.jones@linaro.org>
++M:	Lee Jones <lee@kernel.org>
+ S:	Supported
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git
+ F:	Documentation/devicetree/bindings/mfd/
+-- 
+2.37.0.144.g8ac04bfd2-goog
 
-Exactly that.
-
-> Signed-off-by: Libo Chen <libo.chen@oracle.com>
-> ---
->  kernel/sched/fair.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> index 794c2cb945f8..59b210d2cdb5 100644
-> --- a/kernel/sched/fair.c
-> +++ b/kernel/sched/fair.c
-> @@ -6704,7 +6704,9 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
->  static int
->  select_task_rq_fair(struct task_struct *p, int prev_cpu, int wake_flags)
->  {
-> -	int sync = (wake_flags & WF_SYNC) && !(current->flags & PF_EXITING);
-> +	/* Don't set sync for wakeup from irq/soft ctx */
-> +	int sync = in_task() && (wake_flags & WF_SYNC)
-> +		   && !(current->flags & PF_EXITING);
-
-That's not a coding style you'll find anywhere near this code though.
-I'll fix it up.
-
->  	struct sched_domain *tmp, *sd = NULL;
->  	int cpu = smp_processor_id();
->  	int new_cpu = prev_cpu;
-> --
-> 2.31.1
-> 
