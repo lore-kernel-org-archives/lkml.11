@@ -2,93 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40656C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:41:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240647AbiGNWla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 18:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50580 "EHLO
+        id S240737AbiGNWls (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 18:41:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGNWl2 (ORCPT
+        with ESMTP id S229448AbiGNWlq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 18:41:28 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED116EE84;
-        Thu, 14 Jul 2022 15:41:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=dF8P5lISOtudOc5lOEvkHblck5rhWyzYdp8lqqJ3+zw=; b=D9FGt5VqSNX0rsos3zTvPMyDFR
-        UZnT82UcOpsn7UobKS+m0vYaem/Z+clRc8Nopat5VtPsgycp0FdSiVnra/1L2ubqgbQHH2CV5SCph
-        LNDnfhyb1OGCSsw3peijBxcBkmH8Hu8xr1KDKfFiFxyuYL4QB/2Jm1NTAn35hRAuldkXQp6V3QSPh
-        QGeAvtLqANohYScyXdwtdTd+d58a6MQW053ls525MD8vqv00Xqa2FgfnX+cRu0eyVZgRYaFcQPv4t
-        QFB6Adm7oFbd+xIM9wcmTpwNfm1cSxXUHqpHT3ejs8WtSJ9KbXxkO186NONdfbRhADxwUGnLh4Mp0
-        OCT9xCTw==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oC7WP-0026H6-JW; Thu, 14 Jul 2022 22:41:25 +0000
-Message-ID: <fb9751d2-0ca1-2d6b-bd3d-e008a7676f43@infradead.org>
-Date:   Thu, 14 Jul 2022 15:41:23 -0700
+        Thu, 14 Jul 2022 18:41:46 -0400
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B3E71BE5;
+        Thu, 14 Jul 2022 15:41:43 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1oC7W3-0001Ki-Qf; Fri, 15 Jul 2022 00:41:03 +0200
+Message-ID: <84646f56-dcb0-b0f8-f485-eb0d69a84c9c@maciej.szmigiero.name>
+Date:   Fri, 15 Jul 2022 00:40:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 05/11] virt: gunyah: Add sysfs nodes
+ Thunderbird/91.9.0
 Content-Language: en-US
-To:     Elliot Berman <quic_eberman@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org
-Cc:     Trilok Soni <quic_tsoni@quicinc.com>,
-        Murali Nalajala <quic_mnalajala@quicinc.com>,
-        Srivatsa Vaddagiri <quic_svaddagiri@quicinc.com>,
-        Carl van Schaik <quic_cvanscha@quicinc.com>,
-        Andy Gross <agross@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-References: <20220223233729.1571114-1-quic_eberman@quicinc.com>
- <20220714212940.2988436-1-quic_eberman@quicinc.com>
- <20220714212940.2988436-6-quic_eberman@quicinc.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220714212940.2988436-6-quic_eberman@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        kvm@vger.kernel.org
+References: <20220714124453.188655-1-mlevitsk@redhat.com>
+ <52d44630-21ad-1291-4185-40d5728eaea6@maciej.szmigiero.name>
+ <034401953bc935d997c143153938edb1034b52cd.camel@redhat.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [PATCH] KVM: SVM: fix task switch emulation on INTn instruction.
+In-Reply-To: <034401953bc935d997c143153938edb1034b52cd.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 14.07.2022 15:57, Maxim Levitsky wrote:
+> On Thu, 2022-07-14 at 15:50 +0200, Maciej S. Szmigiero wrote:
+>> On 14.07.2022 14:44, Maxim Levitsky wrote:
+>>> Recently KVM's SVM code switched to re-injecting software interrupt events,
+>>> if something prevented their delivery.
+>>>
+>>> Task switch due to task gate in the IDT, however is an exception
+>>> to this rule, because in this case, INTn instruction causes
+>>> a task switch intercept and its emulation completes the INTn
+>>> emulation as well.
+>>>
+>>> Add a missing case to task_switch_interception for that.
+>>>
+>>> This fixes 32 bit kvm unit test taskswitch2.
+>>>
+>>> Fixes: 7e5b5ef8dca322 ("KVM: SVM: Re-inject INTn instead of retrying the insn on "failure"")
+>>>
+>>> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+>>> ---
+>>
+>> That's a good catch, your patch looks totally sensible to me.
+>> People running Win 3.x or OS/2 on top of KVM will surely be grateful for it :)
+> 
+> Yes and also people who run 32 bit kvm unit tests :)
 
+It looks like more people need to do this regularly :)
 
-On 7/14/22 14:29, Elliot Berman wrote:
-> diff --git a/drivers/virt/gunyah/Kconfig b/drivers/virt/gunyah/Kconfig
-> new file mode 100644
-> index 000000000000..e88289963518
-> --- /dev/null
-> +++ b/drivers/virt/gunyah/Kconfig
-> @@ -0,0 +1,13 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +
-> +config GUNYAH
-> +	tristate "Gunyah Virtualization drivers"
-> +	depends on ARM64
-> +	select SYS_HYPERVISOR
-> +	help
-> +	  The Gunyah drivers are the helper interfaces that runs in a guest VM
-> +	  such as basic inter-VM IPC and signaling mechanism,s and higher level
+> BTW, I do have a win98 VM which I run once in a while under KVM.
+> On Intel it works very well, on AMD, only works without NPT and without MMU
+> pre-fetching, due to fact that the OS doesn't correctly invalidate TLB entries.
 
-	Drop the "comma" ..................................^^^^
+Interesting, maybe it is related to some operation in 90s CPUs implicitly
+invalidating (or just replacing) enough TLB entries to actually make it work
+(usually) - just a guess.
 
-> +	  services such as memory/device sharing, IRQ sharing, and so on.
-> +
-> +	  Say Y here to enable the drivers needed to interact in a Gunyah
-> +	  virtual environment.
+> I do need to test KVM with OS/2 on one of the weekends.... ;-)
+> 
+> Thanks for the review,
+> 	Best regards,
+> 		Maxim Levitsky
+> 
 
--- 
-~Randy
+Thanks,
+Maciej
