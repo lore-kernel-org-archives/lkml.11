@@ -2,170 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A952CCA480
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA55C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiGNLTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
+        id S238449AbiGNLWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230016AbiGNLTW (ORCPT
+        with ESMTP id S230016AbiGNLWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:19:22 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1272A42AFB;
-        Thu, 14 Jul 2022 04:19:20 -0700 (PDT)
-X-UUID: 87323f8443794ff2bdacbc3f052a3eb3-20220714
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:dd6261c3-b5af-4250-a2c9-126d182e9630,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:0
-X-CID-META: VersionHash:0f94e32,CLOUDID:586a4c64-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 87323f8443794ff2bdacbc3f052a3eb3-20220714
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1722459032; Thu, 14 Jul 2022 19:19:17 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Thu, 14 Jul 2022 19:19:16 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Thu, 14 Jul 2022 19:19:15 +0800
-Message-ID: <f0ba5478d77a5190a9050e4518ebbd44bcd889a6.camel@mediatek.com>
-Subject: Re: [PATCH v14 03/10] drm/edid: Add cea_sad helpers for freq/length
-From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <ck.hu@mediatek.com>, <liangxu.xu@mediatek.com>,
-        <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Date:   Thu, 14 Jul 2022 19:19:10 +0800
-In-Reply-To: <67b3a842-66aa-2336-3955-d5aa760cdd4b@collabora.com>
-References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
-         <20220712111223.13080-4-rex-bc.chen@mediatek.com>
-         <67b3a842-66aa-2336-3955-d5aa760cdd4b@collabora.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 14 Jul 2022 07:22:15 -0400
+X-Greylist: delayed 12585 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 04:22:10 PDT
+Received: from sinmsgout03.his.huawei.com (sinmsgout03.his.huawei.com [119.8.177.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6B6481DE;
+        Thu, 14 Jul 2022 04:22:10 -0700 (PDT)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.156.207])
+        by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4LkBrC1b2Lz9v7Bs;
+        Thu, 14 Jul 2022 19:20:59 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 13:22:03 +0200
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 12:21:59 +0100
+From:   John Garry <john.garry@huawei.com>
+To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
+        <will@kernel.org>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <hch@lst.de>,
+        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-ide@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v6 0/6] DMA mapping changes for SCSI core
+Date:   Thu, 14 Jul 2022 19:15:23 +0800
+Message-ID: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-14 at 13:12 +0200, AngeloGioacchino Del Regno wrote:
-> Il 12/07/22 13:12, Bo-Chen Chen ha scritto:
-> > From: Guillaume Ranquet <granquet@baylibre.com>
-> > 
-> > This patch adds two helper functions that extract the frequency and
-> > word
-> > length from a struct cea_sad.
-> > 
-> > For these helper functions new defines are added that help
-> > translate the
-> > 'freq' and 'byte2' fields into real numbers.
-> > 
-> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
-> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
-> > ---
-> >   drivers/gpu/drm/drm_edid.c | 73
-> > ++++++++++++++++++++++++++++++++++++++
-> >   include/drm/drm_edid.h     | 14 ++++++++
-> >   2 files changed, 87 insertions(+)
-> > 
-> > diff --git a/drivers/gpu/drm/drm_edid.c
-> > b/drivers/gpu/drm/drm_edid.c
-> > index bc43e1b32092..79316d7f1fd8 100644
-> > --- a/drivers/gpu/drm/drm_edid.c
-> > +++ b/drivers/gpu/drm/drm_edid.c
-> > @@ -4916,6 +4916,79 @@ int drm_edid_to_speaker_allocation(const
-> > struct edid *edid, u8 **sadb)
-> >   }
-> >   EXPORT_SYMBOL(drm_edid_to_speaker_allocation);
-> >   
-> > +/**
-> > + * drm_cea_sad_get_sample_rate - Extract the sample rate from
-> > cea_sad
-> > + * @sad: Pointer to the cea_sad struct
-> > + *
-> > + * Extracts the cea_sad frequency field and returns the sample
-> > rate in Hz.
-> > + *
-> > + * Return: Sample rate in Hz or a negative errno if parsing
-> > failed.
-> > + */
-> > +int drm_cea_sad_get_sample_rate(const struct cea_sad *sad)
-> > +{
-> > +	switch (sad->freq) {
-> > +	case DRM_CEA_SAD_FREQ_32KHZ:
-> > +		return 32000;
-> > +	case DRM_CEA_SAD_FREQ_44KHZ:
-> > +		return 44100;
-> > +	case DRM_CEA_SAD_FREQ_48KHZ:
-> > +		return 48000;
-> > +	case DRM_CEA_SAD_FREQ_88KHZ:
-> > +		return 88200;
-> > +	case DRM_CEA_SAD_FREQ_96KHZ:
-> > +		return 96000;
-> > +	case DRM_CEA_SAD_FREQ_176KHZ:
-> > +		return 176400;
-> > +	case DRM_CEA_SAD_FREQ_192KHZ:
-> > +		return 192000;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +EXPORT_SYMBOL(drm_cea_sad_get_sample_rate);
-> > +
-> > +static bool drm_cea_sad_is_pcm(const struct cea_sad *sad)
-> > +{
-> > +	switch (sad->format) {
-> > +	case HDMI_AUDIO_CODING_TYPE_PCM:
-> > +		return true;
-> > +	default:
-> > +		return false;
-> > +	}
-> 
-> Are you sure that you need this helper? That's used only in one
-> function...
-> ...if you really need this one, though, I don't think that using a
-> switch
-> is the best option here.
-> 
-> Unless anyone is against that (please, reason?), I would be for doing
-> it like:
-> 
-> 	return sad->format == HDMI_AUDIO_CODING_TYPE_PCM;
-> 
-> Everything else looks good to me (and working, too).
-> 
-> Cheers,
-> Angelo
+As reported in [0], DMA mappings whose size exceeds the IOMMU IOVA caching
+limit may see a big performance hit.
 
-Hello Angelo,
+This series introduces a new DMA mapping API, dma_opt_mapping_size(), so
+that drivers may know this limit when performance is a factor in the
+mapping.
 
-I think you are right,
-in this case, we don't need this help function.
-I will merge this function into
-drm_cea_sad_get_uncompressed_word_length()
+The SCSI SAS transport code is modified only to use this limit. For now I
+did not want to touch other hosts as I have a concern that this change
+could cause a performance regression.
 
-BRs,
-Bo-Chen
+I also added a patch for libata-scsi as it does not currently honour the
+shost max_sectors limit.
 
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
+
+Changes since v5:
+- Rebase to Linux 5.19-rc6
+- Add Martin's tags to unmodified patches (thanks!)
+- Apply DMA opt limit to max_sectors in sd driver, and not max_hw_sectors
+
+Changes since v4:
+- tweak libata and other patch titles
+- Add Robin's tag (thanks!)
+- Clarify description of new DMA mapping API
+
+Changes since v3:
+- Apply max DMA optimial limit to SAS hosts only
+  Note: Even though "scsi: core: Cap shost max_sectors only once when
+  adding" is a subset of a previous patch I did not transfer the RB tags
+- Rebase on v5.19-rc4
+
+John Garry (6):
+  dma-mapping: Add dma_opt_mapping_size()
+  dma-iommu: Add iommu_dma_opt_mapping_size()
+  scsi: core: Cap shost max_sectors according to DMA limits only once
+  scsi: sd: Allow max_sectors be capped at DMA optimal size limit
+  scsi: scsi_transport_sas: Cap shost opt_sectors according to DMA
+    optimal limit
+  ata: libata-scsi: Cap ata_device->max_sectors according to
+    shost->max_sectors
+
+ Documentation/core-api/dma-api.rst | 14 ++++++++++++++
+ drivers/ata/libata-scsi.c          |  1 +
+ drivers/iommu/dma-iommu.c          |  6 ++++++
+ drivers/iommu/iova.c               |  5 +++++
+ drivers/scsi/hosts.c               |  5 +++++
+ drivers/scsi/scsi_lib.c            |  4 ----
+ drivers/scsi/scsi_transport_sas.c  |  6 ++++++
+ drivers/scsi/sd.c                  |  2 ++
+ include/linux/dma-map-ops.h        |  1 +
+ include/linux/dma-mapping.h        |  5 +++++
+ include/linux/iova.h               |  2 ++
+ include/scsi/scsi_host.h           |  1 +
+ kernel/dma/mapping.c               | 12 ++++++++++++
+ 13 files changed, 60 insertions(+), 4 deletions(-)
+
+-- 
+2.35.3
 
