@@ -2,147 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0E2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:59:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8ECAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:00:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237794AbiGNK7q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
+        id S238526AbiGNLAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237669AbiGNK7n (ORCPT
+        with ESMTP id S237669AbiGNLAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:59:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D1D4F4B4BA
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:59:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657796381;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FavxfYWL200Y0rn9Lp1shFMwNCXImob7qzskzLrDddU=;
-        b=Dbh2yNnDdKna4OsqEf8qT/hwofO2srJEREsi94/iHyGLDCeZZIDJBwiShzHFQMD9SCBMBc
-        WV0z5GvlV1ejUumm/EL8gcxvfHhtJ7rHzjAxkQvU3L4yP04UUkjcFokruKR9RHugco3cf4
-        II1VF9YwNjgqvwt6qDWsfPyEhIinwPs=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-41-OOjnwfdRMZiMFvxBPBpBHQ-1; Thu, 14 Jul 2022 06:59:37 -0400
-X-MC-Unique: OOjnwfdRMZiMFvxBPBpBHQ-1
-Received: by mail-wm1-f72.google.com with SMTP id n18-20020a05600c501200b003a050cc39a0so494640wmr.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:59:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=FavxfYWL200Y0rn9Lp1shFMwNCXImob7qzskzLrDddU=;
-        b=p/Yjk6CzR9QRDvgRGQJhopVY0u1JoYtuj5U9q30k/CB19eBdku37UvFfjun1u2Ix9m
-         +1BLWXUzXzketAGAwYYJ+/TgFbs3Rmb8ejhyny0/8NOsopwuxy/1PnLDRQJbttztfsIm
-         Hy25tdjFr2BQCfRu1nmXANlq7IhIoVW5Usrl7/hcWRVv5+acsOdZ1R14p1zbKcnMEwmN
-         /cH+1DvYSHrQGK9MJQx6MW1FjoErmt8ViA6xVUi78VlM/N54xSOtBq8JBI6utR8YFtw5
-         +11xTOK3ynQ+lWvn/YHKxzFLpw9nrwCFx/L+uZNS1BvesCDMKfzwWoTbP4DsRKt+RJ+Z
-         rBkQ==
-X-Gm-Message-State: AJIora8Cgg7DZnc7qvRVfnm5yUUrEb68xJBSNTBl5z4cxfquR1tSJHyv
-        dOoBFO87k9AW+3AXtSlZSE4q0oFdEaaphQb7ecEgUn6txwAVlqSdbudTRhFrE9aPTTlBM3DeZeG
-        A/norqSRpBogQP6Mnp4K7ij8+
-X-Received: by 2002:a5d:47a4:0:b0:21d:99b2:9434 with SMTP id 4-20020a5d47a4000000b0021d99b29434mr8238608wrb.597.1657796376742;
-        Thu, 14 Jul 2022 03:59:36 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vMFeyb0UzdUzINxZqK//aaNWZxJ8umYEnULpjLkJUb8f7TOKCnyWQdEJVvreAIVsbJGvW6Mg==
-X-Received: by 2002:a5d:47a4:0:b0:21d:99b2:9434 with SMTP id 4-20020a5d47a4000000b0021d99b29434mr8238592wrb.597.1657796376512;
-        Thu, 14 Jul 2022 03:59:36 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id d13-20020adffbcd000000b0021d9591c64fsm1215600wrs.33.2022.07.14.03.59.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 03:59:35 -0700 (PDT)
-Message-ID: <7f8d7a318bde9f290b5d782e63c8d27b3a6cdb40.camel@redhat.com>
-Subject: Re: [PATCH 5.15 00/78] 5.15.55-rc1 review
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Naresh Kamboju <naresh.kamboju@linaro.org>,
-        kvm list <kvm@vger.kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Alex =?ISO-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Date:   Thu, 14 Jul 2022 13:59:33 +0300
-In-Reply-To: <Ys/qHw7E/6gWqEbN@kroah.com>
-References: <20220712183238.844813653@linuxfoundation.org>
-         <CA+G9fYtntg7=zWSs-dm+n_AUr_u0eBOU0zrwWqMeXZ+SF6_bLw@mail.gmail.com>
-         <1a143d949dc333666374cf14fae4496045f77db4.camel@redhat.com>
-         <Ys/qHw7E/6gWqEbN@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        Thu, 14 Jul 2022 07:00:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C506F564EE;
+        Thu, 14 Jul 2022 04:00:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6401560C1C;
+        Thu, 14 Jul 2022 11:00:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD83C34114;
+        Thu, 14 Jul 2022 11:00:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657796419;
+        bh=d7dJzHy3R4d3efKnyqF1Bs4i3d1AFlB+D2NT0p1gevU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mIMm8UuymYGzasiWrapSwDV3BiJoF1yRtWQMqJJ5cqYVEOqF2xjIzfbD36CAzxyYt
+         NrEDpwQNhh9tbxqYRMu887wgzprhX8SwYgd2tt6B9C5bo77b+ybDEUwI7uuweLVQTO
+         tVhJSf7tsinQEcd+Rj+D6xELXiQSnnCB2pHqVejQ5jvmLvuxD1aTKqgK1IwBWzm5dx
+         bbhEyMf3pmi25tCnuC8MpjBUjgdMuvqw6SCv7xbfE8CxGnTyLZRScWjQas7togxw+k
+         a8Vw4WNL/7qBewkR0iP157GyKKBP7UK+Wku44rHE9Hz7/5NXaf/tF+lGwiAQJMR0zT
+         lvmkuBLic7Q7w==
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-31caffa4a45so13150227b3.3;
+        Thu, 14 Jul 2022 04:00:19 -0700 (PDT)
+X-Gm-Message-State: AJIora8X0M6GQJew/D9SnxKql0w+vaqAHCbTrAiLf3NVlwB8NYmgLk+c
+        6c7sC66veykK9EPU9kegnfMS6WHmgrlzxMEx+lE=
+X-Google-Smtp-Source: AGRyM1v8B84SNAdGfOI4zRumWOHG4tF3fWc5HBtUKpdHnhrTodjFGxXFqWCe2mA6l8aeAzCy9c7C96Np8oZnHoxYPK4=
+X-Received: by 2002:a81:1608:0:b0:31c:925f:c52c with SMTP id
+ 8-20020a811608000000b0031c925fc52cmr9171091yww.93.1657796418888; Thu, 14 Jul
+ 2022 04:00:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220714103119.22927-1-colin.i.king@gmail.com>
+In-Reply-To: <20220714103119.22927-1-colin.i.king@gmail.com>
+From:   Oded Gabbay <ogabbay@kernel.org>
+Date:   Thu, 14 Jul 2022 13:59:52 +0300
+X-Gmail-Original-Message-ID: <CAFCwf13ppoKUGtVRUc93EySHOVsXF-3XkfHUvC0K1O2adVDpFQ@mail.gmail.com>
+Message-ID: <CAFCwf13ppoKUGtVRUc93EySHOVsXF-3XkfHUvC0K1O2adVDpFQ@mail.gmail.com>
+Subject: Re: [PATCH][next] habanalabs: Fix spelling mistake "Scrubing" -> "Scrubbing"
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel-janitors@vger.kernel.org,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-14 at 12:04 +0200, Greg Kroah-Hartman wrote:
-> On Thu, Jul 14, 2022 at 12:50:10PM +0300, Maxim Levitsky wrote:
-> > On Wed, 2022-07-13 at 18:22 +0530, Naresh Kamboju wrote:
-> > > On Wed, 13 Jul 2022 at 00:17, Greg Kroah-Hartman
-> > > <gregkh@linuxfoundation.org> wrote:
-> > > > 
-> > > > This is the start of the stable review cycle for the 5.15.55 release.
-> > > > There are 78 patches in this series, all will be posted as a response
-> > > > to this one.  If anyone has any issues with these being applied, please
-> > > > let me know.
-> > > > 
-> > > > Responses should be made by Thu, 14 Jul 2022 18:32:19 +0000.
-> > > > Anything received after that time might be too late.
-> > > > 
-> > > > The whole patch series can be found in one patch at:
-> > > >         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.55-rc1.gz
-> > > > or in the git tree and branch at:
-> > > >         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> > > > and the diffstat can be found below.
-> > > > 
-> > > > thanks,
-> > > > 
-> > > > greg k-h
-> > > 
-> > > Results from Linaro’s test farm.
-> > > Regressions on x86_64.
-> > > 
-> > > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> > > 
-> > > 1) Kernel panic noticed on device x86_6 while running kvm-unit-tests.
-> > >    - APIC base relocation is unsupported by KVM
-> > 
-> > My 0.2 cent:
-> > 
-> > APIC base relocation warning is harmless, and I removed it 5.19 kernel:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?h=v5.19-rc6&id=3743c2f0251743b8ae968329708bbbeefff244cf
-> 
-> Nice, but doesn't look relevant for stable trees.
-> 
-> > The 'emulating exchange as write' is also something that KVM unit tests trigger
-> > normally although this warning recently did signal a real and very nasty bug, which I fixed in this commit:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?h=v5.19-rc6&id=33fbe6befa622c082f7d417896832856814bdde0
-> 
-> Already in the 5.18.2 release, doesn't look all that relevant for 5.15,
-> odd that it is showing up on 5.15.
-
-Yep, I also think so - I just wanted to point out the source of these warnings.
-
-Best regards,
-	Maxim Levitsky
-
-> 
-> thanks,
-> 
-> greg k-h
-> 
-
-
+On Thu, Jul 14, 2022 at 1:31 PM Colin Ian King <colin.i.king@gmail.com> wrote:
+>
+> There is a spelling mistake in a dev_dbg message. Fix it.
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  drivers/misc/habanalabs/gaudi/gaudi.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+> index cb2988e2c7a8..05dd5e13f13e 100644
+> --- a/drivers/misc/habanalabs/gaudi/gaudi.c
+> +++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+> @@ -4723,7 +4723,7 @@ static int gaudi_scrub_device_mem(struct hl_device *hdev)
+>         addr = prop->sram_user_base_address;
+>         size = hdev->pldm ? 0x10000 : prop->sram_size - SRAM_USER_BASE_OFFSET;
+>
+> -       dev_dbg(hdev->dev, "Scrubing SRAM: 0x%09llx - 0x%09llx val: 0x%llx\n",
+> +       dev_dbg(hdev->dev, "Scrubbing SRAM: 0x%09llx - 0x%09llx val: 0x%llx\n",
+>                         addr, addr + size, val);
+>         rc = gaudi_memset_device_memory(hdev, addr, size, val);
+>         if (rc) {
+> --
+> 2.35.3
+>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
+Applied to -next.
+Thanks,
+Oded
