@@ -2,142 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E26C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:27:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240571AbiGNS1I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        id S240646AbiGNS1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236398AbiGNS1F (ORCPT
+        with ESMTP id S239171AbiGNS1i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:27:05 -0400
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D026A9C8;
-        Thu, 14 Jul 2022 11:27:04 -0700 (PDT)
-Received: by mail-yb1-xb33.google.com with SMTP id y195so4745691yby.0;
-        Thu, 14 Jul 2022 11:27:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fHHAmoVicpFFRe1AG6LugNyRwFvXqtAqGnNR8gzDIHA=;
-        b=X+bTOZ62pL9/HmA4hfPkyUnh8Me/C2KZ/ywgwKbofh0Mkj7k9F8SZIs5hAlYet0ZuS
-         9wIsUiUtQv8cDrlDGhpaHBSPBn8SD2ufXJOMf58GcY/BKtrJIWEwkEdCXP+FZnxyougC
-         gtIe9Hez3x057H9WxwBl8yePhP8Otn/0V44tolcpZOqhVn9JlJ43lIyqQU7fRRnPGcxo
-         0CR302hMhLECMQPLc/OmR8MUf4WoYmFZftgILsQJNe7wf76m6gS0GNsVK1td68QpK13s
-         XgPVnAF29626VjlZKQK6Z7JgdFrSoB48RK2YEAT1PgEJDYIIUuyFzbujAKG/CDEr3lLV
-         vrhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fHHAmoVicpFFRe1AG6LugNyRwFvXqtAqGnNR8gzDIHA=;
-        b=58vcWsdNdkkVcYxzEnCXagzl1JnNx/tkViohHTwwOrB+HaVxjKBx3WzDq+aoWiB5uV
-         HVnTxQenKQ50l77Q/ZaXD6G8J0MFSE1Kol2JOAfcZVsPMkJ+VB4Mw980neqCeETa1EBB
-         NU24GPuKA1kR/+9fxx+VwLhF2ApaBm3X7C0LHt7jCmxUlbpFPIhUMzV+Rrv/wXC8c+Yl
-         UW2zU7v8+8Vcjqlh3V3BBQw+BtI+MNV2zxNXeyUddJTM9j//Qw6UcyT3HAvD5c/OuQGs
-         EXGA4grtfJJOXyORyZuAnnh6hcXND7jJMNOPuKPHRfZyk6Z0Yob91j2IhhTXGsnZDM8G
-         1c2w==
-X-Gm-Message-State: AJIora+/PeAmCal25GSAvC96HcIUOod4qTdR4KNTyVy3N8yOdAzqntYi
-        1vnG5eMqslbpq+TtmEKBkwuLNKOOcS8w84iPtjbjz6ejNfGdxQ==
-X-Google-Smtp-Source: AGRyM1uUoLczGcQp7vuW1nHxcpTA4w0cAng0KFgNrn0RBhSzACka+oUqQjb9tIKlOX4AHuTC5bFiTX12Biy7jWwYBMY=
-X-Received: by 2002:a25:44a:0:b0:66e:e25f:e4cb with SMTP id
- 71-20020a25044a000000b0066ee25fe4cbmr10380581ybe.158.1657823223558; Thu, 14
- Jul 2022 11:27:03 -0700 (PDT)
+        Thu, 14 Jul 2022 14:27:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976926A9E4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:27:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4EE63B82873
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 18:27:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6EBC34114;
+        Thu, 14 Jul 2022 18:27:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657823254;
+        bh=/FT9UKBc14rKByDW3P20U7+I62iSoTx8/22Gm2XZG8g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oWvc3rZLaZuzA1c5G6rFDx8Tcva7QpqCynUMvdvvELC8UN3xAMCXJL+FEFmZcJbth
+         F/W4MgYB8FHuAcWCfgdjrEni4i2OHOo/CJEiyoMOYaCn8JA1DlZJ7RVIVKEu19WXrZ
+         BNAupWpn+P8eqvhTrCevRuvLCQ9d1nG1thaqh2bTQt9cwCpkOEfDlsJRW9FR86lIZe
+         qE1doLtHgBA2Jg0uzlhfluGPKrJzXUZ3hD49dK6RpsqkZTOI775lqs570Ki9l55lbM
+         6s9zCBu1woHEzBQ53D+Kyt0f5UVmKDYTyCMF9XwSgEdXKd8lI8gpK0JnrZtoLbmFM+
+         kRCZEcSfu8APw==
+Date:   Thu, 14 Jul 2022 19:27:30 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: Question: regmap_field_write() - why using update?
+Message-ID: <YtBgEreCVZyD0kwb@sirena.org.uk>
+References: <e759045a-bc01-c194-35ad-42b534ccaa01@linaro.org>
+ <YtAxK1lIooDmdVBP@sirena.org.uk>
+ <14b0e150-511c-867a-281a-1d13e7e318e8@linaro.org>
+ <277e0484-60bd-7405-4cd1-acf0a03ef195@linaro.org>
 MIME-Version: 1.0
-References: <20220714185514.7d1a2ac9@canb.auug.org.au> <Ys/42uMzQy+CFTGI@debian>
- <YtA+127QgRifnRBZ@dev-arch.thelio-3990X> <CADVatmOTNA8uVqDEx6kp=+_O=wEhV2jbS9-frct-c4ZqBxcspg@mail.gmail.com>
- <YtBEXdrsthFamQs8@dev-arch.thelio-3990X>
-In-Reply-To: <YtBEXdrsthFamQs8@dev-arch.thelio-3990X>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Thu, 14 Jul 2022 19:26:27 +0100
-Message-ID: <CADVatmNOV+jn1WSFo=z4F9KqzYAgxCWr0cxTFL_5myJKFkQNzQ@mail.gmail.com>
-Subject: Re: linux-next: Tree for Jul 14
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="EStyfRuxHjle2/5z"
+Content-Disposition: inline
+In-Reply-To: <277e0484-60bd-7405-4cd1-acf0a03ef195@linaro.org>
+X-Cookie: The devil finds work for idle glands.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Nathan,
 
-On Thu, Jul 14, 2022 at 5:29 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> On Thu, Jul 14, 2022 at 05:21:32PM +0100, Sudip Mukherjee wrote:
-> > Hi Nathan,
-> >
-> > On Thu, Jul 14, 2022 at 5:05 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> > >
-> > > Hi Sudip,
-> > >
-> > > On Thu, Jul 14, 2022 at 12:07:06PM +0100, Sudip Mukherjee (Codethink) wrote:
-> > > > Hi Stephen,
-> > > >
-> > > > On Thu, Jul 14, 2022 at 06:55:14PM +1000, Stephen Rothwell wrote:
-> > > > > Hi all,
-> > > > >
-> > > > > Changes since 20220713:
-> > > >
-> > > > Build failures on next-20220714:
-> > >
-> > > <snip>
-> > >
+--EStyfRuxHjle2/5z
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-<snip>
+On Thu, Jul 14, 2022 at 05:15:34PM +0200, Krzysztof Kozlowski wrote:
+> On 14/07/2022 17:13, Krzysztof Kozlowski wrote:
 
->
-> Sure! I am not sure that we have tested mips or powerpc allmodconfig now
-> that I am thinking about it but we'll certainly take a look at any
-> issues that come from them and see what we can do.
+> > Indeed, I forgot about bits in a field... So it has to be like this or I
+> > need to use regmap_write(). I find the regmap field API very useful for
+> > devices with different register layouts, but the actual "fields" part is
+> > not really needed in my case.
 
-The build errors from powerpc allmodconfig with clang:
+> ... and few registers (like "clear" registers) actually do not allow to
+> read.
 
-1)
-Error: External symbol 'memset' referenced from prom_init.c
+The write only registers are a good point - we could handle them through
+special casing, that'd avoid any overhead from reading or issues if a
+physical read happens to return something unfortunate for some reason.
+Now I think about it there's also the fun case of registers which don't
+have symmetric read and write, though at some point regmap_field does
+stop being useful and those might well be pushing it.
 
-2)
-drivers/clk/qcom/gpucc-sm8350.c:111:2: error: initializer element is
-not a compile-time constant
-        gpu_cc_parent,
-        ^~~~~~~~~~~~~
-drivers/clk/qcom/gpucc-sm8350.c:126:2: error: initializer element is
-not a compile-time constant
-        gpu_cc_parent,
-        ^~~~~~~~~~~~~
-3)
-sound/soc/intel/avs/path.c:815:18: error: stack frame size (2672)
-exceeds limit (2048) in 'avs_path_create'
-[-Werror,-Wframe-larger-than]
-struct avs_path *avs_path_create(struct avs_dev *adev, u32 dma_id,
-                 ^
-4)
-drivers/net/ethernet/mellanox/mlx4/main.c:3332:12: error: stack frame
-size (2128) exceeds limit (2048) in 'mlx4_load_one'
-[-Werror,-Wframe-larger-than]
-static int mlx4_load_one(struct pci_dev *pdev, int pci_dev_data,
-           ^
-5)
-In file included from drivers/scsi/BusLogic.c:51:
-drivers/scsi/FlashPoint.c:1712:12: error: stack frame size (2896)
-exceeds limit (2048) in 'FlashPoint_HandleInterrupt'
-[-Werror,-Wframe-larger-than]
-static int FlashPoint_HandleInterrupt(void *pcard)
-           ^
-6)
-drivers/gpu/drm/amd/amdgpu/vcn_v3_0.c:1093:12: error: stack frame size
-(2128) exceeds limit (2048) in 'vcn_v3_0_start'
-[-Werror,-Wframe-larger-than]
+--EStyfRuxHjle2/5z
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-The (1) is also seen with gcc-12 on mainline -
-https://lore.kernel.org/lkml/Ys%2FaDKZNhhsENH9S@debian/
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLQYBIACgkQJNaLcl1U
+h9D3dAf/U2nW5o1TYKSt+WggFtbxNJ3QrUk9GAuP1buYCuMq5KTQb1luQQllcvni
+gBk+IAYAshJMemH3V0VMwSRoUFToQ8dzrIgGWrXzee1Jj2DjmUdLaOY+lvxecOUt
+Q7IEvx+UhNi/4P4gmkfA4wgAhN9gJPx98OkXUQQM2j+LtA/ex31Jfng7VDxxFS0o
+zcgp6kyWYtZNJNPOPxsPjr4ygFRaZUs71tkqCOgCSJULWANZmoGSFq1dsSdls6iW
+FYTxUL+y/Ec5exMbMlI0dhTstaKaP+ZdWuXBpTm0LizXZCVIWziPK3N6iyCgHfyU
+PtInJT3WHFGp1K6A2+EKd81IHYfZTw==
+=j5aG
+-----END PGP SIGNATURE-----
 
-
--- 
-Regards
-Sudip
+--EStyfRuxHjle2/5z--
