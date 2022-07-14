@@ -2,147 +2,264 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E65C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3980DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238308AbiGNKVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:21:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
+        id S238295AbiGNKVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238281AbiGNKVK (ORCPT
+        with ESMTP id S238280AbiGNKVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:21:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE1E52FFE
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:21:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63BF861F03
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:21:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1055C34114;
-        Thu, 14 Jul 2022 10:21:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657794066;
-        bh=3dg23Jgtwukc/GCHd2LHRM+BYubgruVg6fjGLogiQYM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NmhVa/CU3B8mmGtz8blBuT9rEZsK/OJdoesCxO2cjxthY1xO942wd66p37fSbaelT
-         Oj6EbZzD6F3SUM2NLz90oYUAUabiX8aHhlgPMyDccX2NVDxtbXtKjuLA47o3oldpy2
-         9CRxdQWRqHPUYKblXQ6pWg2n/cqsAKE+i3Irn9Fmbo+e4SU1Mt56P/5izRsy9TAQ1N
-         cjV+bztsPj4So6psEXNeOht7ZKUsuEKiMqlWS90+1Iqr4hcLVlDKfb7JLL1FKikxGM
-         bp3P+Rv+x6fGaN0VkH2IHgv3TSK3DTb6/hFlwqQuInOi6o1rqr1H2UiIan7AQf43nd
-         dF5QaCRJ3uS7g==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <maz@kernel.org>)
-        id 1oBvxw-007QGu-EY;
-        Thu, 14 Jul 2022 11:21:04 +0100
+        Thu, 14 Jul 2022 06:21:09 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBE52FF9;
+        Thu, 14 Jul 2022 03:21:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657794068; x=1689330068;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=g49j0cb9hxZKdZ75BONB6nCv4q9hV2JY4Lk4I2Q6EZ0=;
+  b=UEF9Djq1Ma/LZlty0OuGnRTeUJBfvtCMN4XOFB3OgfHQjS/Ir50MUyoh
+   GOjLrv4N4NWjVisUkLpmZr1shdUwCoZB3hQhT2Jq7Ds3tyoU2rE6QWjaD
+   d4f65l4N8WQExU6Z9K6Q+AnZ0wbjx0Wutkry3pDv0eVb6nsr4wHphXp4L
+   IkfEBWs7cJlFGYQwev3U80ko/CF0FG4acJLDXMWAj+BJK6NTmMJCWSptT
+   zhjLF8AW4I6FuwIjIqELn9f0KRjlIxRMdtLGVrdKHdKKLxjAUaBdiA+2E
+   u3OHtR8DycViqyWp8ZXcp+OTdZ8LlKZSOd8PjdHSlS53/PBrS1R6x/ieo
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
+   d="scan'208";a="167808613"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 03:21:06 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 14 Jul 2022 03:21:05 -0700
+Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 03:20:57 -0700
+From:   Sergiu Moga <sergiu.moga@microchip.com>
+To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <claudiu.beznea@microchip.com>, <eugen.hristev@microchip.com>
+CC:     <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Sergiu Moga <sergiu.moga@microchip.com>
+Subject: [PATCH] watchdog: dt-bindings: atmel,at91sam9-wdt: convert to json-schema
+Date:   Thu, 14 Jul 2022 13:12:44 +0300
+Message-ID: <20220714101242.103521-1-sergiu.moga@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date:   Thu, 14 Jul 2022 11:21:04 +0100
-From:   Marc Zyngier <maz@kernel.org>
-To:     Jianmin Lv <lvjianmin@loongson.cn>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: Re: [PATCH V14 14/15] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC
- for LoongArch
-In-Reply-To: <bfbd08d6-6f09-3ddb-0fdf-8c459352cf0f@loongson.cn>
-References: <1656837932-18257-1-git-send-email-lvjianmin@loongson.cn>
- <1656837932-18257-15-git-send-email-lvjianmin@loongson.cn>
- <87y1x5krjd.wl-maz@kernel.org>
- <f76927be-8c8c-5bbe-ef5c-a63f4a09b29c@loongson.cn>
- <bfbd08d6-6f09-3ddb-0fdf-8c459352cf0f@loongson.cn>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <22902b5c7616d47f6e48acc536a70da7@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-14 11:02, Jianmin Lv wrote:
-> On 2022/7/8 上午11:17, Jianmin Lv wrote:
->> 
->> 
->> On 2022/7/7 下午8:59, Marc Zyngier wrote:
->>> On Sun, 03 Jul 2022 09:45:31 +0100,
->>> Jianmin Lv <lvjianmin@loongson.cn> wrote:
->>>> 
->>>> For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
->>>> callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
->>>> implemented.
->>>> 
->>>> The acpi_get_gsi_domain_id callback returns related fwnode handle
->>>> of irqdomain for different GSI range.
->>>> 
->>>> The acpi_gsi_to_irq_fallback will create new mapping for gsi when
->>>> the mapping of it is not found.
->>>> 
->>>> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
->>>> ---
->>>>   drivers/acpi/bus.c                  |  3 +++
->>>>   drivers/irqchip/irq-loongarch-cpu.c | 37 
->>>> +++++++++++++++++++++++++++++++++++++
->>>>   include/linux/acpi.h                |  1 +
->>>>   3 files changed, 41 insertions(+)
->>>> 
->>>> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
->>>> index 86fa61a..63fbf00 100644
->>>> --- a/drivers/acpi/bus.c
->>>> +++ b/drivers/acpi/bus.c
->>>> @@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
->>>>       case ACPI_IRQ_MODEL_PLATFORM:
->>>>           message = "platform specific model";
->>>>           break;
->>>> +    case ACPI_IRQ_MODEL_LPIC:
->>>> +        message = "LPIC";
->>>> +        break;
->>>>       default:
->>>>           pr_info("Unknown interrupt routing model\n");
->>>>           return -ENODEV;
->>>> diff --git a/drivers/irqchip/irq-loongarch-cpu.c 
->>>> b/drivers/irqchip/irq-loongarch-cpu.c
->>>> index c2f7411..1b241d7 100644
->>>> --- a/drivers/irqchip/irq-loongarch-cpu.c
->>>> +++ b/drivers/irqchip/irq-loongarch-cpu.c
->>>> @@ -15,6 +15,41 @@
->>>>   static struct irq_domain *irq_domain;
->>>> +static int lpic_gsi_to_irq(u32 gsi)
->>>> +{
->>>> +    /* Only pch irqdomain transferring is required for LoongArch. 
->>>> */
->>>> +    if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
->>>> +        return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, 
->>>> ACPI_ACTIVE_HIGH);
->>>> +    return -1;
->>> 
->>> The expected return value on failure is 0 (which indicates that no
->>> interrupt was mapped). Here, things will break as acpi_gsi_to_irq()
->>> stores the result as unsigned, and compares the result to 0.
->>> 
->> 
->> Ok, thanks, I'll change the return value to 0 on failure and change 
->> return type to unsigned int.
->> 
->> 
-> 
-> Hi, Marc, if the return type is changed to unsigned int, the return
-> type of the fallback handler in the patch:
-> ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
-> 
-> should be changed to unsigned int too, yes?
+Convert at91sam9 WDT binding for Atmel/Microchip SoCs to Device Tree
+Schema format.
 
-Yes, of course.
+Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
+---
+ .../bindings/watchdog/atmel,at91sam9-wdt.yaml | 127 ++++++++++++++++++
+ .../bindings/watchdog/atmel-wdt.txt           |  51 -------
+ 2 files changed, 127 insertions(+), 51 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
+ delete mode 100644 Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
 
-         M.
+diff --git a/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
+new file mode 100644
+index 000000000000..b3f7cbe913a5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
+@@ -0,0 +1,127 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/watchdog/atmel,at91sam9-wdt.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Atmel Watchdog Timers
++
++maintainers:
++  - Eugen Hristev <eugen.hristev@microchip.com>
++
++allOf:
++  - $ref: watchdog.yaml#
++  - if:
++      properties:
++        atmel,reset-type:
++          enum:
++            - all
++            - proc
++    then:
++      properties:
++        atmel,watchdog-type:
++          const: hardware
++
++properties:
++  compatible:
++    const: atmel,at91sam9260-wdt
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  atmel,max-heartbeat-sec:
++    description:
++      Should contain the maximum heartbeat value in seconds. This value
++      should be less or equal to 16. It is used to compute the WDV field.
++    maximum: 16
++
++  atmel,min-heartbeat-sec:
++    description:
++      Should contain the minimum heartbeat value in seconds. This value
++      must be smaller than the max-heartbeat-sec value. It is used to
++      compute the WDD field.
++    maximum: 16
++
++  atmel,watchdog-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should be hardware or software.
++    oneOf:
++      - description:
++          Hardware watchdog uses the at91 watchdog reset.
++        const: hardware
++      - description: |
++          Software watchdog uses the watchdog interrupt
++          to trigger a software reset.
++        const: software
++    default: hardware
++
++  atmel,reset-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    description: |
++      Should be proc or all. This is valid only when using hardware watchdog.
++    oneOf:
++      - description:
++          Assert peripherals and processor reset signals.
++        const: all
++      - description:
++          Assert the processor reset signal.
++        const: proc
++    default: all
++
++  atmel,disable:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description:
++      Should be present if you want to stop the watchdog.
++
++  atmel,idle-halt:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Should be present if you want to stop the watchdog when
++      entering idle state.
++      CAUTION: This property should be used with care, it actually makes the
++      watchdog not counting when the CPU is in idle state, therefore the
++      watchdog reset time depends on mean CPU usage and will not reset at all
++      if the CPU stops working while it is in idle state, which is probably
++      not what you want.
++
++  atmel,dbg-halt:
++    $ref: /schemas/types.yaml#/definitions/flag
++    description: |
++      Should be present if you want to stop the watchdog when
++      entering debug state.
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++dependencies:
++  atmel,reset-type: ['atmel,watchdog-type']
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    watchdog@fffffd40 {
++        compatible = "atmel,at91sam9260-wdt";
++        reg = <0xfffffd40 0x10>;
++        interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
++        clocks = <&clk32k>;
++        timeout-sec = <15>;
++        atmel,watchdog-type = "hardware";
++        atmel,reset-type = "all";
++        atmel,dbg-halt;
++        atmel,idle-halt;
++        atmel,max-heartbeat-sec = <16>;
++        atmel,min-heartbeat-sec = <0>;
++    };
+diff --git a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt b/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
+deleted file mode 100644
+index 711a880b3d3b..000000000000
+--- a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
++++ /dev/null
+@@ -1,51 +0,0 @@
+-* Atmel Watchdog Timers
+-
+-** at91sam9-wdt
+-
+-Required properties:
+-- compatible: must be "atmel,at91sam9260-wdt".
+-- reg: physical base address of the controller and length of memory mapped
+-  region.
+-- clocks: phandle to input clock.
+-
+-Optional properties:
+-- timeout-sec: contains the watchdog timeout in seconds.
+-- interrupts : Should contain WDT interrupt.
+-- atmel,max-heartbeat-sec : Should contain the maximum heartbeat value in
+-	seconds. This value should be less or equal to 16. It is used to
+-	compute the WDV field.
+-- atmel,min-heartbeat-sec : Should contain the minimum heartbeat value in
+-	seconds. This value must be smaller than the max-heartbeat-sec value.
+-	It is used to compute the WDD field.
+-- atmel,watchdog-type : Should be "hardware" or "software". Hardware watchdog
+-	use the at91 watchdog reset. Software watchdog use the watchdog
+-	interrupt to trigger a software reset.
+-- atmel,reset-type : Should be "proc" or "all".
+-	"all" : assert peripherals and processor reset signals
+-	"proc" : assert the processor reset signal
+-	This is valid only when using "hardware" watchdog.
+-- atmel,disable : Should be present if you want to disable the watchdog.
+-- atmel,idle-halt : Should be present if you want to stop the watchdog when
+-	entering idle state.
+-	CAUTION: This property should be used with care, it actually makes the
+-	watchdog not counting when the CPU is in idle state, therefore the
+-	watchdog reset time depends on mean CPU usage and will not reset at all
+-	if the CPU stop working while it is in idle state, which is probably
+-	not what you want.
+-- atmel,dbg-halt : Should be present if you want to stop the watchdog when
+-	entering debug state.
+-
+-Example:
+-	watchdog@fffffd40 {
+-		compatible = "atmel,at91sam9260-wdt";
+-		reg = <0xfffffd40 0x10>;
+-		interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
+-		clocks = <&clk32k>;
+-		timeout-sec = <15>;
+-		atmel,watchdog-type = "hardware";
+-		atmel,reset-type = "all";
+-		atmel,dbg-halt;
+-		atmel,idle-halt;
+-		atmel,max-heartbeat-sec = <16>;
+-		atmel,min-heartbeat-sec = <0>;
+-	};
 -- 
-Jazz is not dead. It just smells funny...
+2.25.1
+
