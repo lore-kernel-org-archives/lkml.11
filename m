@@ -2,169 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36165CCA481
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:00:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239911AbiGNOAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57940 "EHLO
+        id S240197AbiGNOAO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:00:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239878AbiGNN6p (ORCPT
+        with ESMTP id S240407AbiGNN6q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:58:45 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F65C112B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:58:04 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id d12so2916029lfq.12
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:58:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
-        b=eZvDJbMtdOPQ3Hlc73SGr+GXOezfkTn0ravZ4O7F1MoOod7OhqpD8vvfNfTFMeVp74
-         j5NNgqimVWpvNd+hChUbhIZNlrM3MLHTmzV8E6ztrs4iqKNuKTpgKjgCI4GQK+C5k31G
-         lj6n12ONLcGYveOkj8O41G87V4fCSke/tHYo+N6uFox0EqjJa6jhVvgyoNGqABFydujL
-         sWXjC6waub7/4XEcL6TJUQnrYqacqJKZLdYZ+WzEdL1NQ1xLz9C0JaG+PQbMiWoQEufV
-         qxsp7Y+znXbPuD9CuWNsBW1ZYNAV1G/6IM6bdntXeYy61oTPfMlrmrsJqSzmNcjigXAS
-         u1IQ==
+        Thu, 14 Jul 2022 09:58:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D2CEA1133
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:58:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657807084;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=KsB/k7XGvHWoQ6egQzGPsZym+TsC+6TwIfhUT/WwqdM=;
+        b=jUYitV73EP5Nn0VqulsvYOi8ruGNtvRlibhUXyrvCrixGd5YqHi3SU/rqTbhqwDuQaxCtd
+        WGkktn1rUXhsG8kWXmez4EAYuC1L0QBeKC8oRQ1ScNAO1bhqytLpxLgkAk4paT1bWd4+bZ
+        8u46Ufj0wx2xTy918Lg6OsSHmLabgmA=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-570-2JgjBLVsNraEBAxg5j6ocA-1; Thu, 14 Jul 2022 09:58:03 -0400
+X-MC-Unique: 2JgjBLVsNraEBAxg5j6ocA-1
+Received: by mail-qk1-f200.google.com with SMTP id ay8-20020a05620a178800b006b57a178418so1198567qkb.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:58:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AsyrMzElWzo80Z5egogMNWofiRDznVZXTCiFutbvKII=;
-        b=GS8jPoHzc9q+TKx/OV6zP09zwOEaXs1ncL0kgfgvJT/+G8+lzUtbKW7lzhqZ1KV+BK
-         IVWjmjOnhWPAjRy8iIMMPRmCCx7yGb+GzjssK9QuVuuKSABHFMnpD0jpbuz/1VDzunv+
-         NK2ZerhyJAKhCPbPMXBYsNqJ97rhVymaLbvDAfuEkcBPNqxMNZZhCAk03E1E7hOHoqVR
-         Pe+QRwHcnk8MbWOyCR18+6p43k/+nmC7WUjvpBzaF/enP4bq+MbWKMgAjqDdDOCgn+tZ
-         ubbYokJ1nTibZibwfC6PQ05AdVS6VhlEbtfjDgkP19yH/UnYdF0XeCF7AKjB24M04tfr
-         uZFQ==
-X-Gm-Message-State: AJIora/rQkIBvg9diMHUjdfQZ9KP8m2qpq9lkBm5xsf9Yc83f9A3DsAY
-        +vom0hKnsu+Z+HBQPhGlHz0LE+brJGsscycLizcPJQ==
-X-Google-Smtp-Source: AGRyM1utf5B4o7kELwBxm7mmneS2IRfBXaZ05RbaenlLg45jt5LuOHpIalhl4TyctEbGWWsqOS6t/zSaVykK5WbqsVo=
-X-Received: by 2002:ac2:47f6:0:b0:488:b649:9f77 with SMTP id
- b22-20020ac247f6000000b00488b6499f77mr5638296lfp.559.1657807082858; Thu, 14
- Jul 2022 06:58:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220710230603.13526-1-semen.protsenko@linaro.org>
- <20220710230603.13526-7-semen.protsenko@linaro.org> <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
-In-Reply-To: <dcf4da29-9da0-69ea-300e-80d1f5cc10a3@arm.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Thu, 14 Jul 2022 16:57:51 +0300
-Message-ID: <CAPLW+4nc2B0J4yvnz37MrJnTHKtkDCNBX5L2ff_YRGDEbZiKQA@mail.gmail.com>
-Subject: Re: [PATCH v2 6/7] iommu/exynos: Add SysMMU v7 register sets
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Janghyuck Kim <janghyuck.kim@samsung.com>,
-        Cho KyongHo <pullip.cho@samsung.com>,
-        Daniel Mentz <danielmentz@google.com>,
-        David Virag <virag.david003@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=KsB/k7XGvHWoQ6egQzGPsZym+TsC+6TwIfhUT/WwqdM=;
+        b=GhvzfXdWmRjJ4rsJqNs69ucMhaFtuZwvTjSIroqTV9ppTiPHzYAxWqzC1zS50QJ9NH
+         WvTMYPE7aCbYheK+DMrOOJzWrojYp+ThGJQWMXshXcyO66w/OcMUVxzaOAGznp/ibAmQ
+         kMQAQhwzQQl5RHOArtcnbfc4GSebGMQApcgPNh1kC4jj2CO5QJIHXbmspUhFJhvkYhjf
+         iaFnUfZrAQjt96DiolgpxECXVPQQdCUN3QkjHE0UR+mbgYyv0aGoRO5+Iqz0S/8XBOFW
+         T9yDpR+254CDgjkZhcFGMSEusp5Q8bBsvp0Z0OgHjPaIYinNNU3Vn4FvYJllEWRbLHMb
+         jTvQ==
+X-Gm-Message-State: AJIora8kjs/5/OGR1ielKU9hhmkq0f1U6kGwPlHQhw9Sxdo1FleXWzIJ
+        GrqI5YMFClKthAqb9iZgpECTDF/dSHgUNnZ+LV+rTTDmSwV9rK1n8LNkAXcZTrDI6jpB6ZL13ed
+        t2oTnLnNyOXE9o6ccwbrhmHIX
+X-Received: by 2002:a05:6214:27cb:b0:473:5954:5951 with SMTP id ge11-20020a05621427cb00b0047359545951mr7919661qvb.2.1657807083227;
+        Thu, 14 Jul 2022 06:58:03 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1srA1bYyjq1CYysZjazFyJYNL6ms774yQxtBEhGn0TW9yx4Z/jHqjZ9e2hADHZfbOpuOOXj5w==
+X-Received: by 2002:a05:6214:27cb:b0:473:5954:5951 with SMTP id ge11-20020a05621427cb00b0047359545951mr7919646qvb.2.1657807083040;
+        Thu, 14 Jul 2022 06:58:03 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id cf12-20020a05622a400c00b0031ece0bc9f5sm290591qtb.45.2022.07.14.06.57.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 06:58:02 -0700 (PDT)
+Message-ID: <034401953bc935d997c143153938edb1034b52cd.camel@redhat.com>
+Subject: Re: [PATCH] KVM: SVM: fix task switch emulation on INTn instruction.
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        kvm@vger.kernel.org
+Date:   Thu, 14 Jul 2022 16:57:56 +0300
+In-Reply-To: <52d44630-21ad-1291-4185-40d5728eaea6@maciej.szmigiero.name>
+References: <20220714124453.188655-1-mlevitsk@redhat.com>
+         <52d44630-21ad-1291-4185-40d5728eaea6@maciej.szmigiero.name>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022 at 20:00, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2022-07-11 00:06, Sam Protsenko wrote:
-> > SysMMU v7 might have different register layouts (VM capable or non-VM
-> > capable). Check which layout is implemented in current SysMMU module and
-> > prepare the corresponding register table for futher usage.
-> >
-> > Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+On Thu, 2022-07-14 at 15:50 +0200, Maciej S. Szmigiero wrote:
+> On 14.07.2022 14:44, Maxim Levitsky wrote:
+> > Recently KVM's SVM code switched to re-injecting software interrupt events,
+> > if something prevented their delivery.
+> > 
+> > Task switch due to task gate in the IDT, however is an exception
+> > to this rule, because in this case, INTn instruction causes
+> > a task switch intercept and its emulation completes the INTn
+> > emulation as well.
+> > 
+> > Add a missing case to task_switch_interception for that.
+> > 
+> > This fixes 32 bit kvm unit test taskswitch2.
+> > 
+> > Fixes: 7e5b5ef8dca322 ("KVM: SVM: Re-inject INTn instead of retrying the insn on "failure"")
+> > 
+> > Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 > > ---
-> > Changes in v2:
-> >    - (none) This patch is new and added in v2
-> >
-> >   drivers/iommu/exynos-iommu.c | 26 ++++++++++++++++++++++----
-> >   1 file changed, 22 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> > index 48681189ccf8..64bf3331064f 100644
-> > --- a/drivers/iommu/exynos-iommu.c
-> > +++ b/drivers/iommu/exynos-iommu.c
-> > @@ -166,6 +166,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
-> >   enum {
-> >       REG_SET_V1,
-> >       REG_SET_V5,
-> > +     REG_SET_V7_NON_VM,
-> > +     REG_SET_V7_VM,
-> >       MAX_REG_SET
-> >   };
-> >
-> > @@ -201,6 +203,16 @@ static const unsigned int sysmmu_regs[MAX_REG_SET][MAX_REG_IDX] = {
-> >               0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
-> >               0x60, 0x64,
-> >       },
-> > +     /* SysMMU v7: Default register set (non-VM) */
-> > +     {
-> > +             0x00, 0x04, 0x08, 0x0c, 0x10, 0x14, 0x18, 0x20, 0x24,
-> > +             0x60, 0x64,
-> > +     },
-> > +     /* SysMMU v7: VM capable register set */
-> > +     {
-> > +             0x00, 0x04, 0x08, 0x800c, 0x8010, 0x8014, 0x8018, 0x8020,
-> > +             0x8024, 0x60, 0x64,
->
-> Yuck, see, it's turning into an unreadable mess already.
->
+> 
+> That's a good catch, your patch looks totally sensible to me.
+> People running Win 3.x or OS/2 on top of KVM will surely be grateful for it :)
 
-Will be reworked in v2, using variant struct approach suggested by Krzysztof.
+Yes and also people who run 32 bit kvm unit tests :)
 
-> This is also raising the question of whether it's worth abstracting
-> accesses to the common registers if it means having an ever-increasing
-> number of copies of those same offsets. Personally I'd leave those using
-> regular readl/writel, but even if there's an argument for keeping all
-> the callsites consistent (modulo the one that already can't be), there's
-> no reason the wrappers couldn't pick up the slack, e.g.:
->
+BTW, I do have a win98 VM which I run once in a while under KVM.
+On Intel it works very well, on AMD, only works without NPT and without MMU
+pre-fetching, due to fact that the OS doesn't correctly invalidate TLB entries.
 
-Agreed. Gonna leave the common regs out of it in v2, having only
-non-common registers in the variant structure. Also in v2 gonna stick
-with plain readl/writel calls, using SYSMMU_REG() wrapper suggested by
-Krzysztof.
+I do need to test KVM with OS/2 on one of the weekends.... ;-)
 
-> static void sysmmu_write(struct sysmmu_drvdata *data, size_t idx, u32 val)
-> {
->         unsigned int offset;
->
->         if (idx <= IDX_STATUS) {
->                 offset = idx * 4;
->         } else {
->                 offset = data->regs[idx - IDX_PT_BASE];
->                 if (WARN_ON(!offset))
->                         return;
->         }
->         writel(val, data->sfrbase + offset);
-> }
->
-> Indeed, not abstracting REG_MMU_CTRL via data->regs would then make it
-> trivial to be robust against unimplemented registers without even having
-> to remember to initialise their offsets to some magic value, which seems
-> rather attractive.
->
+Thanks for the review,
+	Best regards,
+		Maxim Levitsky
 
-Just on the discussion point (as this function won't be present in
-v2): one reason for this rework is to avoid using if-else branching,
-AFAIU those might have some performance impact (caches/branch
-prediction). Also the code looks better that way. Of course, in this
-particular driver those I/O calls don't happen very often, but still.
-One-line static function I used in v1 would be probably inlined by the
-compiler. Also SysMMU register layout(s) doesn't seem to be very
-consistent, w.r.t. offset values :)
-
-Anyway, I hope the way it's done in v2 will be more to your liking.
-
-> (also, as it only strikes me now, why are we passing enum values around
-> as size_t? That's just odd)
->
+> 
+> Reviewed-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
+> 
 > Thanks,
-> Robin.
->
+> Maciej
+> 
 
-[snip]
+
