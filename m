@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7694FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F916CCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237607AbiGNJXQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S235350AbiGNJXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238155AbiGNJWt (ORCPT
+        with ESMTP id S237182AbiGNJXM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:22:49 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EB043337
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:21:13 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id bp17so1814645lfb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:21:13 -0700 (PDT)
+        Thu, 14 Jul 2022 05:23:12 -0400
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD0A481FC
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:21:57 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id bx13so1475906ljb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:21:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=v0i4BngGplk2bTz5VXLIN5dpkH5AFH1r2D74LwVjm8s=;
-        b=jCSulb4PNhhMOOHOK64bq0VGtIugX35G0HT6umEYVhg4o+/YukaEyCGAZPpQGm3Wqf
-         tKMJG6SeuHbL6/bJ0LJNtv86K2ZLUfy+2ILmPd659lTyivaISjnucq07oyLV/a1juUw3
-         baoTd0rXkQPJjmuXBZlVR/Pz7F/JompiUprlhPovMoexLOfo+SAyukhy+mNdNX2gb5b6
-         H2FtDCJ6ZyoYLzjGVmH1xi6AtjHQ1I17Jzre76yZ7G/0uqjgAqHugKFi/tOBVy6Lufop
-         P1h5lAxM0Et0nIbS/JiT++Cq0YlLkT+h+jduefBiDpkkDLTrGog5NhcH8Me4Rgnl+sYp
-         N4fQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=TZbkzMvSZU0C1M4JV0xVgJvuTUUAz1VVtLQNRxdms4A=;
+        b=OfCJFx8krvR7N0u27F7RS9zlcFbCK/hXAnuevdwTLHvWPi8HuVSp7IaQCbqwR9Trrr
+         IqKylmeaSyDjnWs/Rh5TkzmJHmBdLFOrsiQtuRKt0UW6IAYozzqUN7o+BLejP2q6PX+q
+         yHC7e+hyZDm5y+SAKFLGCDBIRoyyDzL6+qWFQWuKfTXIHZZZ4iy10F1PETNHnzSDZoC9
+         yvU2URcqyXhsp7zFxirH5DUlIxTypVCZ+NJrHzZ0XG++fjLrPOxC3dpjoztgL/M/9CCD
+         Jm8GKbnVts1b0oOUwt44FZZnE/Vn2GdbB8LXeY++o+sANBURr9IqyzWjlOL2SU6JSWiQ
+         KQcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=v0i4BngGplk2bTz5VXLIN5dpkH5AFH1r2D74LwVjm8s=;
-        b=m+ssE2rz6Auwp7/H1HR8A8XMcbcfblPHLZYTV2D8vIgbhSVd9S3DoToWy81D6AelMb
-         Ch84oTeiyZzzG3zndHUBL4w47o0qNyC4ht0OOHLpIfNzXm9pNOBAMwpGHImR5uF3+9/j
-         pM9vcXoUZw7f8AFZ7p8icg9+HVbMQrd1nnhxBYI9xQS9x2ez3+/J/+BEoAeR/aecjGg0
-         2aLG73sRFD3WhX1yNOQiz5QQuzQmjed3PzGGt7sDdzm1MlRyx6QkiIn/ZBS2+aaf/Omf
-         fVZVMrSzC4V69HSkYGzADrjIlRH6nnUSrXoxUqEtwNI84m01Wqhqq4LZB97kVPI2wbdT
-         K8wA==
-X-Gm-Message-State: AJIora+iRK5inKUfXv9ujXt/5yehq53YafPbZGOxfRmVz5HyYo/lSpLH
-        E75FvxkisjMKBKVVc2tfsm6I1Q==
-X-Google-Smtp-Source: AGRyM1vxTtNgElDgbwPA+GE0uhFmw4LJzUGrKZx0hrScAXEFpRG1xcl/p/HL08v+eRQEDHNJqQS9YQ==
-X-Received: by 2002:a05:6512:b9f:b0:489:e00c:b226 with SMTP id b31-20020a0565120b9f00b00489e00cb226mr4713100lfv.498.1657790472211;
-        Thu, 14 Jul 2022 02:21:12 -0700 (PDT)
+        bh=TZbkzMvSZU0C1M4JV0xVgJvuTUUAz1VVtLQNRxdms4A=;
+        b=g55Zcc0P9WPZ/3UWuDxmqbRnvCmdfv7h7G9X4D5Lafodke1dEd4DEY8AvX+8dIKReP
+         AGW/KeU77QJ7FFv3Ac1kmD1uaRB3f7zoMU+m3aeNURnMe2cyxFM8RR8cM0/JBv415BZ9
+         +7qXoaK75PkMKiFrVHAlNi0AtRT7f1ItSyJyNay7prrDJJDjC4xR8C4Ot/bomYZWxAD3
+         q5B2F61zhrX9MyNVs77h9LC5vuXlgTOmsGfQ3B3CrWCTYqvt/TSrPKD/s6XVPhZRw4ff
+         2DPkkmRruMOsJEcusyLUBF3LEZ+Y2AnAg7BzdnQVCAHhAEQB0rwOTIgJBSo2PvspUOAF
+         O8Ng==
+X-Gm-Message-State: AJIora9Nw9RvBvsq34udkpGC9KaTzuBZtzXnYDNTQSgC+rcivxZxQDeH
+        xQ3m9+mZltjx/7DZHCjMUy4MCw==
+X-Google-Smtp-Source: AGRyM1uFuAVXyDIgiKh2eo18Tm1/3ynhtp7A6qKUZLGz3dA+UsobViAS6AaRrk5a//97+Zw8k7AZKA==
+X-Received: by 2002:a05:651c:243:b0:25d:5b44:197d with SMTP id x3-20020a05651c024300b0025d5b44197dmr4290099ljn.516.1657790515585;
+        Thu, 14 Jul 2022 02:21:55 -0700 (PDT)
 Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id o25-20020ac24359000000b00478fc420ea6sm254440lfl.244.2022.07.14.02.21.10
+        by smtp.gmail.com with ESMTPSA id r6-20020a2e8e26000000b0025d67053f0dsm179911ljk.135.2022.07.14.02.21.53
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:21:11 -0700 (PDT)
-Message-ID: <d9b97a47-c938-b8d4-b056-bdac3e04aa16@linaro.org>
-Date:   Thu, 14 Jul 2022 11:21:09 +0200
+        Thu, 14 Jul 2022 02:21:54 -0700 (PDT)
+Message-ID: <e8046961-9555-07b7-721c-eeb278cb2ec7@linaro.org>
+Date:   Thu, 14 Jul 2022 11:21:52 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH v2 09/30] dt-bindings: phy: qcom,msm8996-qmp-pcie: add
- missing child node schema
+Subject: Re: [PATCH v2 16/30] dt-bindings: phy: qcom,qmp-ufs: add missing
+ SM8450 clock
 Content-Language: en-US
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Johan Hovold <johan+linaro@kernel.org>,
         Vinod Koul <vkoul@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -69,28 +68,27 @@ Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-10-johan+linaro@kernel.org>
- <1b13f115-381d-9d50-d3da-590cebf68ca4@linaro.org>
-In-Reply-To: <1b13f115-381d-9d50-d3da-590cebf68ca4@linaro.org>
+ <20220707134725.3512-17-johan+linaro@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220707134725.3512-17-johan+linaro@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 11:10, Krzysztof Kozlowski wrote:
-> On 07/07/2022 15:47, Johan Hovold wrote:
->> Add the missing the description of the PHY-provider child nodes which
->> were ignored when converting to DT schema.
->>
->> Fixes: ccf51c1cedfd ("dt-bindings: phy: qcom,qmp: Convert QMP PHY bindings to yaml")
+On 07/07/2022 15:47, Johan Hovold wrote:
+> Add the missing "qref" clock used by the SM8450 UFS QMP PHY to the
+> binding.
 > 
-> To ease the backport all of fixes should either be independent
-> (preferred by some maintainers) or go to the beginning of the patchset.
-> I am fine with both.
+> Fixes: e04121ba1b08 ("dt-bindings: phy: qcom,qmp: Add SM8450 UFS phy compatible")
+> Fixes: 07fa917a335e ("arm64: dts: qcom: sm8450: add ufs nodes")
 
-Ah, I see why it cannot be moved upfront or to separate patchset. Ignore
-my comment.
+The second fixes seems not appropriate here, because you are not fixing
+a DTS. A fix for DTS would be a fix for that one.
+
+
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
