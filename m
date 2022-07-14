@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD5A5CCA485
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232295AbiGNEgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46942 "EHLO
+        id S237565AbiGNEgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:36:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231613AbiGNEer (ORCPT
+        with ESMTP id S237516AbiGNEfL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:34:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EC6A3B948;
-        Wed, 13 Jul 2022 21:26:25 -0700 (PDT)
+        Thu, 14 Jul 2022 00:35:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC0B3C8EB;
+        Wed, 13 Jul 2022 21:26:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B115B82333;
-        Thu, 14 Jul 2022 04:26:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C40A4C341C8;
-        Thu, 14 Jul 2022 04:26:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2283161EC5;
+        Thu, 14 Jul 2022 04:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A322C341C6;
+        Thu, 14 Jul 2022 04:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772783;
-        bh=eFBsxCetDJ205hLgzjrUyOHlkkYq8VLi5QVzS+pJUJU=;
+        s=k20201202; t=1657772786;
+        bh=2qjO8+odQ7oxEl1fALycalDewY6Q0DjTfZWWlCdvWKE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EAWzocFkWBmINUfFtSX+Er98uR2baL6mDhUBJU3binc322ZWQITLbQO7YlluzipJh
-         V8iDYK5jchKvcYmofJWqIJzifY6NeQw2QTrDIG97ZRlNukDUFbLM2c7MPXGcdRet3d
-         3kNcOOLrV1iUDkyruSuZghl5+mECjsyWlFE4tXoG2liST3l3Hmh6Ncv/tpEjRnmVBU
-         4b/CYWCBnvmBaAQUeHnmJ9LEyLNagRekb/lcYUzvfeTdOzr9bDcceWzV/+h4+vYSXG
-         NccRLLZWSRIhJP0xtFfuv2vbNonuy3uyqxl5sOKs1Jr4NGjlMnkXxu5KEDlsW7B81V
-         eujtsFj5PlX2w==
+        b=STHeHZNpG2mlyLgQ9phKf/k5Fdjdvdq6qBJLvnOVSbHPDd0uoz29542z2iG7Bg7UD
+         AKiDzPEhVH87ey6+7WjsphBFl/kjVWyGahjV0JAKMPjd1fCdTkjAl7ZD5N+hyS8yKy
+         yeaJqKpPDmBQ9LLu1q/9GIWLvzbqoX0qoO4t7cpvuF+HSwVvZ6NPRghbn+xacRTfJ0
+         9mXOS/+61FqXdLKWoJvKd/CrwCX5zs66Ve+nsiiq7ejRa/Su6RMhTXY+864zKCKaQO
+         vkc/dreXJffTbVGssqF+j+RkbOFGWYJlP8ujaROHt+X3qi6GWAvnNnE1j3HcECBYUi
+         iW6Iq2Gxuu2pQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, rf@opensource.cirrus.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, patches@opensource.cirrus.com
-Subject: [PATCH AUTOSEL 5.4 04/10] ASoC: madera: Fix event generation for OUT1 demux
-Date:   Thu, 14 Jul 2022 00:26:06 -0400
-Message-Id: <20220714042612.282378-4-sashal@kernel.org>
+Cc:     Stafford Horne <shorne@gmail.com>, Marc Zyngier <maz@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, jonas@southpole.se,
+        stefan.kristiansson@saunalahti.fi, tglx@linutronix.de,
+        openrisc@lists.librecores.org
+Subject: [PATCH AUTOSEL 5.4 06/10] irqchip: or1k-pic: Undefine mask_ack for level triggered hardware
+Date:   Thu, 14 Jul 2022 00:26:08 -0400
+Message-Id: <20220714042612.282378-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042612.282378-1-sashal@kernel.org>
 References: <20220714042612.282378-1-sashal@kernel.org>
@@ -53,44 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Stafford Horne <shorne@gmail.com>
 
-[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
+[ Upstream commit 8520501346ed8d1c4a6dfa751cb57328a9c843f1 ]
 
-madera_out1_demux_put returns the value of
-snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
-the kcontrol. This is obviously different to the expected return a 1 if
-the control was updated value. This results in spurious notifications to
-user-space. Update the handling to only return a 1 when the value is
-changed.
+The mask_ack operation clears the interrupt by writing to the PICSR
+register.  This we don't want for level triggered interrupt because
+it does not actually clear the interrupt on the source hardware.
 
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This was causing issues in qemu with multi core setups where
+interrupts would continue to fire even though they had been cleared in
+PICSR.
+
+Just remove the mask_ack operation.
+
+Acked-by: Marc Zyngier <maz@kernel.org>
+Signed-off-by: Stafford Horne <shorne@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/madera.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-or1k-pic.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
-index 52639811cc52..e375dca9ba8d 100644
---- a/sound/soc/codecs/madera.c
-+++ b/sound/soc/codecs/madera.c
-@@ -568,7 +568,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
- end:
- 	snd_soc_dapm_mutex_unlock(dapm);
- 
--	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
-+	if (ret < 0) {
-+		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return change;
- }
- EXPORT_SYMBOL_GPL(madera_out1_demux_put);
- 
+diff --git a/drivers/irqchip/irq-or1k-pic.c b/drivers/irqchip/irq-or1k-pic.c
+index 03d2366118dd..d5f1fabc45d7 100644
+--- a/drivers/irqchip/irq-or1k-pic.c
++++ b/drivers/irqchip/irq-or1k-pic.c
+@@ -66,7 +66,6 @@ static struct or1k_pic_dev or1k_pic_level = {
+ 		.name = "or1k-PIC-level",
+ 		.irq_unmask = or1k_pic_unmask,
+ 		.irq_mask = or1k_pic_mask,
+-		.irq_mask_ack = or1k_pic_mask_ack,
+ 	},
+ 	.handle = handle_level_irq,
+ 	.flags = IRQ_LEVEL | IRQ_NOPROBE,
 -- 
 2.35.1
 
