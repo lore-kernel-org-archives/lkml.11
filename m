@@ -2,158 +2,218 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C26C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:24:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2560AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239123AbiGNMYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:24:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39996 "EHLO
+        id S239234AbiGNMYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239122AbiGNMYK (ORCPT
+        with ESMTP id S233255AbiGNMYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:24:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0221543E64
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:23:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657801438;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=MrPaXkPo48S62oyKwvoLWRP8ZNCtWIGO5OoUipqtqks=;
-        b=WBxTmMmoFgkWxKFxpd0M/nHOUr5dFdXQcPDRUqHeVyOsLgLJ3BBHLwSwJCt8tDwxxqDGzX
-        W70HnRrV75qX/yDUoj8p9Se+69suhaSxKhslSfgiPc4+H3st8EjIldbtwybZZbPeAveMlw
-        zJfa0GMj8F1OQnDe+bxkuLHSrXPbzMA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-63-rwE3kNxnPQGg9Awn6Uptgg-1; Thu, 14 Jul 2022 08:23:55 -0400
-X-MC-Unique: rwE3kNxnPQGg9Awn6Uptgg-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 40EB038041E1;
-        Thu, 14 Jul 2022 12:23:55 +0000 (UTC)
-Received: from fedora (unknown [10.40.193.131])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 17E93906B6;
-        Thu, 14 Jul 2022 12:23:53 +0000 (UTC)
-Date:   Thu, 14 Jul 2022 14:23:51 +0200
-From:   Lukas Czerner <lczerner@redhat.com>
-To:     Tadeusz Struk <tadeusz.struk@linaro.org>
-Cc:     Theodore Ts'o <tytso@mit.edu>,
-        Andreas Dilger <adilger.kernel@dilger.ca>,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com
-Subject: Re: [PATCH] ext4: fix kernel BUG in ext4_free_blocks
-Message-ID: <20220714122351.vtiai34zvrrg2np2@fedora>
-References: <20220713185904.64138-1-tadeusz.struk@linaro.org>
- <20220714095300.ffij7re6l5n6ixlg@fedora>
+        Thu, 14 Jul 2022 08:24:30 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BDD63FA15
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:24:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657801457; x=1689337457;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HF32wfK8Jt0IfXyqG4u1CW61zAjej9oI11Uu8e7MLvI=;
+  b=niqTQIx6jl508xj+31oYc15UiIoTFErvt2fv+OK5uzqOE0GJlI/m5oX7
+   sHSYHiG26M48vrrZGHa/qsPJxNhiZsEE+AtxYnWg400oxGeI1nMobmQpz
+   i+9uvmqW6L6rJ58Wh+/DjGd/JQOW4yBlHfmGnzH20tFwcsnlJFBxrJIOK
+   T3qcTtGoYLhm4dQ+YVx0YBY7GbfX/3A2KFcYcKRMzYXx2fzh1AsrO6PFY
+   vxlzbslVTuuP2NKFNJ1I4fWktJn229krarqLhvRsXbGIdTYvCnry6SsZv
+   bFxNkeBMQFG4cgSSRd98svnSdMajUuuue/QBF6vEoFsckf9D084w+oYZ0
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="311148469"
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="311148469"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 05:24:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="663767847"
+Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 14 Jul 2022 05:24:15 -0700
+Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oBxt8-0000bB-Qa;
+        Thu, 14 Jul 2022 12:24:14 +0000
+Date:   Thu, 14 Jul 2022 20:23:59 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: [tglx-devel:depthtracking 35/38] arch/x86/kernel/callthunks.c:411:7:
+ warning: variable 'ret' is used uninitialized whenever 'if' condition is
+ true
+Message-ID: <202207142029.dpdKYPLD-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220714095300.ffij7re6l5n6ixlg@fedora>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 11:53:00AM +0200, Lukas Czerner wrote:
-> On Wed, Jul 13, 2022 at 11:59:04AM -0700, Tadeusz Struk wrote:
-> > Syzbot reported a BUG in ext4_free_blocks.
-> > The issue is triggered from ext4_mb_clear_bb(). What happens is the
-> > block number passed to ext4_get_group_no_and_offset() is 0 and the
-> > es->s_first_data_block is 1. This makes block group number returned
-> > from ext4_get_group_no_and_offset equal to -1. This is then passed to
-> > ext4_get_group_info() and hits a BUG:
-> > BUG_ON(group >= EXT4_SB(sb)->s_groups_count),
-> > what can be seen in the trace below.
-> > This patch adds an assertion to ext4_get_group_no_and_offset() that
-> > checks if block number is not smaller than es->s_first_data_block.
-> > 
-> > kernel BUG at fs/ext4/ext4.h:3319!
-> > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-> > CPU: 0 PID: 337 Comm: repro Not tainted 5.19.0-rc6-00105-g4e8e898e4107-dirty #14
-> > Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.16.0-1.fc36 04/01/2014
-> > RIP: 0010:ext4_mb_clear_bb+0x1bd6/0x1be0
-> > Call Trace:
-> >  <TASK>
-> >  ext4_free_blocks+0x9b3/0xc90
-> >  ext4_clear_blocks+0x344/0x3b0
-> >  ext4_ind_truncate+0x967/0x1050
-> >  ext4_truncate+0xb1b/0x1210
-> >  ext4_evict_inode+0xf06/0x16f0
-> >  evict+0x2a3/0x630
-> >  iput+0x618/0x850
-> >  ext4_enable_quotas+0x578/0x920
-> >  ext4_orphan_cleanup+0x539/0x1200
-> >  ext4_fill_super+0x94d8/0x9bc0
-> >  get_tree_bdev+0x40c/0x630
-> >  ext4_get_tree+0x1c/0x20
-> >  vfs_get_tree+0x88/0x290
-> >  do_new_mount+0x289/0xac0
-> >  path_mount+0x607/0xfd0
-> >  __se_sys_mount+0x2c4/0x3b0
-> >  __x64_sys_mount+0xbf/0xd0
-> >  do_syscall_64+0x3d/0x90
-> >  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> >  </TASK>
-> > 
-> > Link: https://syzkaller.appspot.com/bug?id=5266d464285a03cee9dbfda7d2452a72c3c2ae7c
-> > Reported-by: syzbot+15cd994e273307bf5cfa@syzkaller.appspotmail.com
-> > Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
-> > ---
-> >  fs/ext4/balloc.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/fs/ext4/balloc.c b/fs/ext4/balloc.c
-> > index 78ee3ef795ae..1175750ad05f 100644
-> > --- a/fs/ext4/balloc.c
-> > +++ b/fs/ext4/balloc.c
-> > @@ -56,6 +56,9 @@ void ext4_get_group_no_and_offset(struct super_block *sb, ext4_fsblk_t blocknr,
-> >  	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
-> >  	ext4_grpblk_t offset;
-> >  
-> > +	if (blocknr < le32_to_cpu(es->s_first_data_block))
-> > +		blocknr = le32_to_cpu(es->s_first_data_block);
-> > +
-> 
-> This does not seem right. we should never work with block number smaller
-> than s_first_data_block. The first 1024 bytes of the file system are
-> unused and in case we have 1k block size, the entire first block is
-> unused.
-> 
-> I guess the image we work here with is corrupted, from the log it seems
-> that it was noticed correctly so the question is why did we still ended
-> up calling ext4_free_blocks() ? Seems like this should have been stopped
-> earlier by ext4_clear_blocks() ?
-> 
-> I did notice that in ext4_mb_clear_bb() we call
-> ext4_get_group_no_and_offset() before ext4_inode_block_valid() but
-> again we should have caught this problem earlier.
-> 
-> Can you link me the file system image that generated this problem?
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git depthtracking
+head:   81d2c1b17a61bfeca4b92a5d6e1fb6f5ff464826
+commit: 57b6f2ca7edda679f0a9fe58087ecc9dd9f8dafb [35/38] kprobes: Add callthunk blacklisting
+config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220714/202207142029.dpdKYPLD-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e61b9c556267086ef9b743a0b57df302eef831b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git/commit/?id=57b6f2ca7edda679f0a9fe58087ecc9dd9f8dafb
+        git remote add tglx-devel https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git
+        git fetch --no-tags tglx-devel depthtracking
+        git checkout 57b6f2ca7edda679f0a9fe58087ecc9dd9f8dafb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/kernel/
 
-ok, I got the syzkaller C repro to work. The problem is that it's
-bigalloc file system and the 'block' and 'count' to free in
-ext4_free_blocks will get adjusted after the ext4_inode_block_valid().
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-We should make sure that if this happens we also clear the
-EXT4_FREE_BLOCKS_VALIDATED. Additonally the ext4_inode_block_valid()
-in ext4_mb_clear_bb() should be called *before* the values are taken for
-granted. I'll prepare a patch to fix this.
+All warnings (new ones prefixed by >>):
 
--Lukas
+>> arch/x86/kernel/callthunks.c:411:7: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+                   if (!vbuf)
+                       ^~~~~
+   arch/x86/kernel/callthunks.c:475:9: note: uninitialized use occurs here
+           return ret;
+                  ^~~
+   arch/x86/kernel/callthunks.c:411:3: note: remove the 'if' if its condition is always false
+                   if (!vbuf)
+                   ^~~~~~~~~~
+   arch/x86/kernel/callthunks.c:375:9: note: initialize the variable 'ret' to silence this warning
+           int ret, text_size, size;
+                  ^
+                   = 0
+   1 warning generated.
 
-> 
-> Thanks!
-> -Lukas
-> 
-> 
-> >  	blocknr = blocknr - le32_to_cpu(es->s_first_data_block);
-> >  	offset = do_div(blocknr, EXT4_BLOCKS_PER_GROUP(sb)) >>
-> >  		EXT4_SB(sb)->s_cluster_bits;
-> > -- 
-> > 2.36.1
-> > 
-> 
 
+vim +411 arch/x86/kernel/callthunks.c
+
+25cd68b763b44e Thomas Gleixner 2022-06-18  367  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  368  static __init_or_module int callthunks_setup(struct callthunk_sites *cs,
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  369  					     struct module_layout *layout)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  370  {
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  371  	u8 *tp, *thunk, *buffer, *vbuf = NULL;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  372  	struct paravirt_patch_site *pv;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  373  	unsigned int nthunks, bitpos;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  374  	struct thunk_mem_area *area;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  375  	int ret, text_size, size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  376  	s32 *s;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  377  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  378  	lockdep_assert_held(&text_mutex);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  379  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  380  	prdbg("Setup %s\n", layout_getname(layout));
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  381  	/* Calculate the number of thunks required */
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  382  	nthunks = cs->syms_end - cs->syms_start;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  383  	nthunks += cs->pv_end - cs->pv_start;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  384  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  385  	/*
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  386  	 * thunk_size can be 0 when there are no intra module calls,
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  387  	 * but there might be still sites to patch.
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  388  	 */
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  389  	if (!nthunks)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  390  		goto patch;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  391  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  392  	area = callthunks_alloc(nthunks);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  393  	if (!area)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  394  		return -ENOMEM;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  395  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  396  	bitpos = area->start;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  397  	thunk = area->tmem->base + bitpos * callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  398  	tp = thunk;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  399  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  400  	prdbg("Thunk %px\n", tp);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  401  	/*
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  402  	 * If the memory area is already RX, use a temporary
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  403  	 * buffer. Otherwise just copy into the unused area
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  404  	 */
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  405  	if (!area->tmem->is_rx) {
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  406  		prdbg("Using thunk direct\n");
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  407  		buffer = thunk;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  408  	} else {
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  409  		size = nthunks * callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  410  		vbuf = vmalloc(size);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18 @411  		if (!vbuf)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  412  			goto fail;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  413  		memset(vbuf, INT3_INSN_OPCODE, size);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  414  		buffer = vbuf;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  415  		prdbg("Using thunk vbuf %px\n", vbuf);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  416  	}
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  417  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  418  	for (s = cs->syms_start; s < cs->syms_end; s++, bitpos++) {
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  419  		void *dest = (void *)s + *s;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  420  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  421  		ret = callthunk_setup_one(dest, tp, buffer, layout);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  422  		if (ret)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  423  			goto fail;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  424  		buffer += callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  425  		tp += callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  426  		bitmap_set(area->tmem->map, bitpos, 1);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  427  		area->nthunks++;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  428  	}
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  429  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  430  	for (pv = cs->pv_start; pv < cs->pv_end; pv++, bitpos++) {
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  431  		ret = callthunk_setup_one(pv->instr, tp, buffer, layout);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  432  		if (ret)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  433  			goto fail;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  434  		buffer += callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  435  		tp += callthunk_desc.thunk_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  436  		bitmap_set(area->tmem->map, bitpos, 1);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  437  		area->nthunks++;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  438  	}
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  439  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  440  	text_size = tp - thunk;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  441  	prdbg("Thunk %px .. %px 0x%x\n", thunk, tp, text_size);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  442  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  443  	/*
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  444  	 * If thunk memory is already RX, poke the buffer into it.
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  445  	 * Otherwise make the memory RX.
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  446  	 */
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  447  	if (vbuf)
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  448  		text_poke_copy_locked(thunk, vbuf, text_size);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  449  	else
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  450  		callthunk_area_set_rx(area);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  451  	sync_core();
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  452  
+25cd68b763b44e Thomas Gleixner 2022-06-18  453  	ret = callthunk_set_modname(layout);
+25cd68b763b44e Thomas Gleixner 2022-06-18  454  	if (ret)
+25cd68b763b44e Thomas Gleixner 2022-06-18  455  		goto fail;
+25cd68b763b44e Thomas Gleixner 2022-06-18  456  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  457  	layout->base = thunk;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  458  	layout->size = text_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  459  	layout->text_size = text_size;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  460  	layout->arch_data = area;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  461  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  462  	vfree(vbuf);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  463  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  464  patch:
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  465  	prdbg("Patching call sites %s\n", layout_getname(layout));
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  466  	patch_call_sites(cs->call_start, cs->call_end, layout);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  467  	patch_paravirt_call_sites(cs->pv_start, cs->pv_end, layout);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  468  	prdbg("Patching call sites done%s\n", layout_getname(layout));
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  469  	return 0;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  470  
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  471  fail:
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  472  	WARN_ON_ONCE(ret);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  473  	callthunk_free(area, false);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  474  	vfree(vbuf);
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  475  	return ret;
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  476  }
+02b09aaafc9a43 Thomas Gleixner 2022-06-18  477  
+
+:::::: The code at line 411 was first introduced by commit
+:::::: 02b09aaafc9a439ca50cc049e98f7cc945e5b294 x86/callthunks: Add call patching for call depth tracking
+
+:::::: TO: Thomas Gleixner <tglx@linutronix.de>
+:::::: CC: Thomas Gleixner <tglx@linutronix.de>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
