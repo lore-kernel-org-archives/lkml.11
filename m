@@ -2,123 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEA9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5EE6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239229AbiGNRTO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 13:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46570 "EHLO
+        id S239876AbiGNRUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 13:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235636AbiGNRTL (ORCPT
+        with ESMTP id S235046AbiGNRUS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 13:19:11 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D614E84B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:19:09 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id o7so3884039lfq.9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:19:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/iRwB4SIZGcrcHdLv8kR4Wq5A27ltiLacaWAkXsJp44=;
-        b=EuBVP/4AG3rWcpGAfyEti98dnWn9EPkkJmI7Ln4EdEVHcAWSVlqLsuGQh+m5Epjobn
-         gPXkz+akTG/aDD0Ex8wHQ9YIvefZgI8VJbusQRIzHwfl5yXT34TbCS1FkNWoJONMiGY5
-         erEJnfeAzr+FxOOu+S5NjUyrY0QUd9ajVAjuuhcdugNd93G+e41oAPMZPBP+aYBVUORS
-         chC3sdeUYIguAUzpxdRoruPfkrCcA319TWstsmWzL+QvS2Qfvo+E4L7kiF2lDp4V4g6l
-         Scb6GVpJgXnQsXQnTuO5MSUuDMkMe8FJKYaVpdwrF7jdYFde5bhs6A2kH/JNEPq4Oypq
-         8bsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/iRwB4SIZGcrcHdLv8kR4Wq5A27ltiLacaWAkXsJp44=;
-        b=1RT9zF7PeMuz1jhhsCCnXyVz5tKz1+TFLz2z4l4LH9BOwVMd8X81W+Zwo7Aer0q9Oq
-         oijnJR0vPCaGlBRQ4seDrW6DdwpNXUg0e0Ctw0uWwZwqmkeAC+6f2zqpMTgDefXNfgkR
-         jPB9dKkKcLI0S2RVsiufvv8vZxTg2UFV1Jj68k6mLk8ybnJDUUN+BeFkxSPJrmnWpUWW
-         PRNh9mvUufvw5fhgQuhgU8rIB0L+s974m42X4dzFEyrLk6AEPcDnOZeX77wrLXB08Bo1
-         8D2qIO3oRK6PvPUctFFpAbomd386t0OBVAw7tRZMEYihoN1+F7qhv+wkMkBsj9ntFde8
-         +slw==
-X-Gm-Message-State: AJIora+jqUlcFMWm4c1N0Jfm5OxgSr35K4rM6TkMU7RqYVsZaKyqCdaV
-        2+D5mmuupneC6SXMzHyNqlXzqvsG4UiymeMuV//fhw==
-X-Google-Smtp-Source: AGRyM1ubgP89EswVsEcdm6/fKB3caUtCNtO+q94GutFgojH1MjQ6CTV9ueuUxg6pvRrIoSzPgUV8ePXyHezOTGBkz1o=
-X-Received: by 2002:a05:6512:1685:b0:47f:aab4:dcd0 with SMTP id
- bu5-20020a056512168500b0047faab4dcd0mr5736808lfb.481.1657819147425; Thu, 14
- Jul 2022 10:19:07 -0700 (PDT)
+        Thu, 14 Jul 2022 13:20:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094984E629;
+        Thu, 14 Jul 2022 10:20:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD550B8279C;
+        Thu, 14 Jul 2022 17:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2771AC341CA;
+        Thu, 14 Jul 2022 17:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657819214;
+        bh=FaHAeYiuAa69ylxwqikdJzOExKyhgIBJ5ttnjxlYBBk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Fkgys9TDA3sQjGkuMPawEyNxq8aCeUJv9pzWe+dmHSrfEIoWj0NUDETupmMw3DP9X
+         RpVN3cwEra5+Vbp3u0W5g7cTB59SuYvn1uTnD4fZMiDtDYepvAET6FdHBNGtRDAfur
+         Njtdz/5S9pzcIbvYRPsPPRoMe6gNLtBWXaAST+M3Or5ZOLkjJLq7Bt3b0I7IOX9usw
+         GOAZofFFFs5sX83CsvwQnDNuUuVL2W7EU49UdOvOJiVyHXLV1AR7KitB3/fHnFM3Ko
+         khUax7Q8/FBSoOrynDZPs9JSz2BzGS+bsTpx5g3ZnwqZjCGW6cFqtvOgWRVSXPMJWE
+         suLJEdOMW8rbQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0ED45E4522E;
+        Thu, 14 Jul 2022 17:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220714010021.1786616-1-mw@semihalf.com> <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
-In-Reply-To: <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Thu, 14 Jul 2022 19:18:57 +0200
-Message-ID: <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
-Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2] MAINTAINERS: Add an additional maintainer to the
+ AMD XGBE driver
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165781921405.9202.7756602413556094051.git-patchwork-notify@kernel.org>
+Date:   Thu, 14 Jul 2022 17:20:14 +0000
+References: <db367f24089c2bbbcd1cec8e21af49922017a110.1657751501.git.thomas.lendacky@amd.com>
+In-Reply-To: <db367f24089c2bbbcd1cec8e21af49922017a110.1657751501.git.thomas.lendacky@amd.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Shyam-sundar.S-k@amd.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Russell,
+Hello:
 
-czw., 14 lip 2022 o 14:32 Russell King (Oracle)
-<linux@armlinux.org.uk> napisa=C5=82(a):
->
-> On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
-> > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting=
-")
-> > stopped relying on SPEED_MAX constant and hardcoded speed settings
-> > for the switch ports and rely on phylink configuration.
-> >
-> > It turned out, however, that when the relevant code is called,
-> > the mac_capabilites of CPU/DSA port remain unset.
-> > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
-> > dsa_tree_setup_switches(), which precedes setting the caps in
-> > phylink_get_caps down in the chain of dsa_tree_setup_ports().
-> >
-> > As a result the mac_capabilites are 0 and the default speed for CPU/DSA
-> > port is 10M at the start. To fix that execute phylink_get_caps() callba=
-ck
-> > which fills port's mac_capabilities before they are processed.
-> >
-> > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting=
-")
-> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
->
-> Please don't merge this - the plan is to submit the RFC series I sent on
-> Wednesday which deletes this code, and I'd rather not re-spin the series
-> and go through the testing again because someone else changed the code.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Thank for the heads-up. Are you planning to resend the series or
-willing to get it merged as-is? I have perhaps one comment, but I can
-apply it later as a part of fwnode_/device_ migration.
+On Wed, 13 Jul 2022 17:31:41 -0500 you wrote:
+> Add Shyam Sundar S K as an additional maintainer to support the AMD XGBE
+> network device driver.
+> 
+> Cc: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
+> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+> 
+> 
+> [...]
 
->
-> Marcin - please can you test with my RFC series, which can be found at:
->
-> https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
->
+Here is the summary with links:
+  - [net-next,v2] MAINTAINERS: Add an additional maintainer to the AMD XGBE driver
+    https://git.kernel.org/netdev/net/c/51f1c31f8ba7
 
-The thing is my v2 of DSA fwnode_/device_ migration is tested and
-ready to send. There will be conflicts (rather easy) with your
-patchset - I volunteer to resolve it this way or another, depending on
-what lands first. I have 2 platforms to test it with + also ACPI case
-locally.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I'd like to make things as smooth as possible and make it before the
-upcoming merge window - please share your thoughts on this.
 
-Best regards,
-Marcin
