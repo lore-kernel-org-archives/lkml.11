@@ -2,332 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BEE1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 03:18:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD9F6C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 03:19:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232569AbiGNDSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 23:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39806 "EHLO
+        id S232660AbiGNDTb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 23:19:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232847AbiGNDSB (ORCPT
+        with ESMTP id S232042AbiGNDT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 23:18:01 -0400
-Received: from mail-oa1-x41.google.com (mail-oa1-x41.google.com [IPv6:2001:4860:4864:20::41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5673A25C7A
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 20:17:44 -0700 (PDT)
-Received: by mail-oa1-x41.google.com with SMTP id 586e51a60fabf-10c0052da61so944550fac.12
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 20:17:44 -0700 (PDT)
+        Wed, 13 Jul 2022 23:19:27 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73DBB240A6;
+        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id v4-20020a17090abb8400b001ef966652a3so6879785pjr.4;
+        Wed, 13 Jul 2022 20:19:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eBM0WXJ+GgNxVQg6ZdsN14nxrV6tKpZUKkvsS9po9uk=;
-        b=SfuBaOUHJo1YTYitIqTkgxosxnQFJ3Sr5clkO8THngRd+UKJ5N+13sGLRk84USdd23
-         ZBqe9Llb8rYjWbFffUZ2p/syvMvUJpKtZOb/QqXmFyBAEreQBqYrbZO9U951poUWRsU+
-         x/Fl/ZyjPzeEEf6gZudsX9ZIuQD8TYT9rtxT9FtQG86A3RTuK09C+oEgy8R6XGzlz10H
-         a+jL8ZGmU61hB0a8O4CcgK9FjRztisg/OsIvnBX47JaR64KRKibo4c7eDszuHBikSMvX
-         sAU3o6yogYnu2+UvIWOZJQQUjyu1/tfe2EiskYgV4HQoVrCUAH+vJW9KTbsniMHUHTiJ
-         t0UQ==
+        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
+        b=U4JVh3ts33oVhhRAbTM4c01uw8QW6+vPU5AqzfkUcw3FPZNY8y02/Y+KIVqy1S4PKY
+         5pj7O3afgjTX6R10hLARBk03+f/Hr1YiLgdpLhc/e78LIyjRKfljkvQXJB1hLqJFdRRF
+         jdF6c0pxHOTze5Aj9r6r8Nmy8oQi6jZ4fMraezZQo5ANTXWFU5Nc+3Nei8lIvYBuJaFH
+         aDPaeHQAbNaqtI5y6YG+jZUe87mlUecRFtkz3v8gPOC9GcuAfGaQCidjOxNgzJyyS0EH
+         219BNBZfoqtKx2cfHqVkMALPBSks3/29Di8x9BNKUvXm9NYwBdYLzJtor8iERr1Y+tC/
+         OyxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eBM0WXJ+GgNxVQg6ZdsN14nxrV6tKpZUKkvsS9po9uk=;
-        b=rLJBOVE7Gemsx8gnOVrRQ6C/mX3/d2d8QM9oOBCTFqj5UPHGuZOTGUL9ZqDyuhQRJe
-         CeCw2BRMdyr+zZuSHzeZg7KGEhCzTUjQS3u+neKhgqEheWpnC/1Z6WeX3+VvHSgZ+bu3
-         60RrtsToeHefmnY2wjbiJRrkRcpkwEUGrVjhn5b2qJ2oAcuDGEac4Dw80uVnWa88MJ5a
-         LpA6osA1xVzdeGiEW3jEU6hs+OYjoKB7PWrrq4ziL1bMzm3zm0vpz//yc+J92gImEI7F
-         wed2AmjwbB9lQvluD8PJNXSV+IZr7+E9TQJBImpFsZDwmaxzVDKsrz7c3OJ5/Husewat
-         CejQ==
-X-Gm-Message-State: AJIora9Cm9CYjfAacBbcam3mLRadg/e3aSNDEm1erpSc5fsw8uKXSU35
-        1j/mQkiUewE3BliTigqGD8w=
-X-Google-Smtp-Source: AGRyM1u0e/wyG2o85Dmsu1qJZ+yp7QTwQAHn6q2TS89Ip8yZRNTT/nz/zs22kmNiiOC2e+/tICCSAg==
-X-Received: by 2002:a05:6870:2053:b0:e9:3c2f:23d9 with SMTP id l19-20020a056870205300b000e93c2f23d9mr6798992oad.158.1657768663646;
-        Wed, 13 Jul 2022 20:17:43 -0700 (PDT)
-Received: from bertie (072-190-140-095.res.spectrum.com. [72.190.140.95])
-        by smtp.gmail.com with ESMTPSA id b11-20020a4aac8b000000b00434ace74464sm160162oon.16.2022.07.13.20.17.43
+        bh=z16sKopkYHjN1FnPOO3LV6eRRV3MiPUM2Dv4PfBl0DI=;
+        b=WwAzydN/Y+B2LOjKMl9fn7G4SUxfVj0CZ9iy6vTn0Zj41DdECDai5kKS9DbHX602Hj
+         CHr2+Jsg8BAfuHxFXSKZdSLRg/OGLfLrBQLw2tmMGKBNqv2xxlRBwlfxJSc/woNFmYD+
+         +B1Ia+K7rjHRoz5KNaNiJfjItD50PfxOadqNrTVO3lj+SKpkWGuwT7mw/Tq9iQiuIrh7
+         xS+LfqNAp1J7rbOdmrqQcCwseT1rItWra1q0r08xPED6yq4gfBRKabhrCWAywWk9pbxu
+         00b5XS7KfDKsmBrxK/Qc01gKh4cy4fiNV0sc/fmsIHjb39dh5tZ3ReWU79SWlhL4ET8x
+         6SnA==
+X-Gm-Message-State: AJIora+LwLk35UfYP0Z0hH48+5n1bicQwrwVkU6aEstdpaNil8Yrtc7c
+        TRyVjICgoBZuZxHe0fbPq4DhNkSS8FA=
+X-Google-Smtp-Source: AGRyM1tWJujGTkrezqCP3LyXiasWmr8nGAOJP1sPDZw2284iA56M+LT2CdcvyND93KOnVEX4QwG++Q==
+X-Received: by 2002:a17:90b:3149:b0:1f0:3539:e7ae with SMTP id ip9-20020a17090b314900b001f03539e7aemr13877497pjb.80.1657768765569;
+        Wed, 13 Jul 2022 20:19:25 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id pc13-20020a17090b3b8d00b001ef8ea89a33sm2411453pjb.2.2022.07.13.20.19.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 20:17:43 -0700 (PDT)
-From:   Rebecca Mckeever <remckee0@gmail.com>
-To:     Mike Rapoport <rppt@kernel.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     David Hildenbrand <david@redhat.com>,
-        Rebecca Mckeever <remckee0@gmail.com>
-Subject: [PATCH] memblock tests: change build options to run-time options
-Date:   Wed, 13 Jul 2022 22:17:17 -0500
-Message-Id: <20220714031717.12258-1-remckee0@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 13 Jul 2022 20:19:24 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-serial@vger.kernel.org
+Cc:     Doug Berger <opendmb@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Al Cooper <alcooperx@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v3] serial: 8250_bcm7271: Save/restore RTS in suspend/resume
+Date:   Wed, 13 Jul 2022 20:13:15 -0700
+Message-Id: <20220714031316.404918-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change verbose and movable node build options to run-time options.
+From: Doug Berger <opendmb@gmail.com>
 
-Movable node usage:
-    $ ./main -m
+Commit 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming
+from S2") prevented an early enabling of RTS during resume, but it did
+not actively restore the RTS state after resume.
 
-    Or:
-    $ ./main --movable-node
-
-Verbose usage:
-    $ ./main -v
-
-    Or:
-    $ ./main --verbose
-
-Signed-off-by: Rebecca Mckeever <remckee0@gmail.com>
+Fixes: 9cabe26e65a8 ("serial: 8250_bcm7271: UART errors after resuming from S2")
+Signed-off-by: Doug Berger <opendmb@gmail.com>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- tools/testing/memblock/Makefile               |  5 --
- tools/testing/memblock/linux/memory_hotplug.h |  8 +-
- tools/testing/memblock/main.c                 |  2 +
- .../testing/memblock/scripts/Makefile.include | 10 ---
- tools/testing/memblock/tests/common.c         | 86 ++++++++++++++++---
- tools/testing/memblock/tests/common.h         | 10 +--
- 6 files changed, 79 insertions(+), 42 deletions(-)
+Changes in v3:
 
-diff --git a/tools/testing/memblock/Makefile b/tools/testing/memblock/Makefile
-index 9fde49ad73bd..246f7ac8489b 100644
---- a/tools/testing/memblock/Makefile
-+++ b/tools/testing/memblock/Makefile
-@@ -45,13 +45,8 @@ help:
- 	@echo  '  clean		  - Remove generated files and symlinks in the directory'
- 	@echo  ''
- 	@echo  'Configuration:'
--	@echo  '  make VERBOSE=1            - enable verbose output, which includes the'
--	@echo  '                              names of functions being tested and the'
--	@echo  '                              number of test cases passing'
- 	@echo  '  make MEMBLOCK_DEBUG=1     - enable memblock_dbg() messages'
- 	@echo  '  make NUMA=1               - simulate enabled NUMA'
--	@echo  '  make MOVABLE_NODE=1       - override `movable_node_is_enabled`'
--	@echo  '                              definition to simulate movable NUMA nodes'
- 	@echo  '  make 32BIT_PHYS_ADDR_T=1  - Use 32 bit physical addresses'
- 
- vpath %.c ../../lib
-diff --git a/tools/testing/memblock/linux/memory_hotplug.h b/tools/testing/memblock/linux/memory_hotplug.h
-index 47988765a219..dabe2c556858 100644
---- a/tools/testing/memblock/linux/memory_hotplug.h
-+++ b/tools/testing/memblock/linux/memory_hotplug.h
-@@ -7,13 +7,11 @@
- #include <linux/cache.h>
- #include <linux/types.h>
- 
-+extern bool movable_node_enabled;
-+
- static inline bool movable_node_is_enabled(void)
- {
--#ifdef MOVABLE_NODE
--	return true;
--#else
--	return false;
--#endif
-+	return movable_node_enabled;
- }
- 
- #endif
-diff --git a/tools/testing/memblock/main.c b/tools/testing/memblock/main.c
-index fb183c9e76d1..4ca1024342b1 100644
---- a/tools/testing/memblock/main.c
-+++ b/tools/testing/memblock/main.c
-@@ -3,9 +3,11 @@
- #include "tests/alloc_api.h"
- #include "tests/alloc_helpers_api.h"
- #include "tests/alloc_nid_api.h"
-+#include "tests/common.h"
- 
- int main(int argc, char **argv)
- {
-+	parse_args(argc, argv);
- 	memblock_basic_checks();
- 	memblock_alloc_checks();
- 	memblock_alloc_helpers_checks();
-diff --git a/tools/testing/memblock/scripts/Makefile.include b/tools/testing/memblock/scripts/Makefile.include
-index 4401f79bed4c..aa6d82d56a23 100644
---- a/tools/testing/memblock/scripts/Makefile.include
-+++ b/tools/testing/memblock/scripts/Makefile.include
-@@ -6,11 +6,6 @@ ifeq ($(NUMA), 1)
- 	CFLAGS += -D CONFIG_NUMA
- endif
- 
--# Simulate movable NUMA memory regions
--ifeq ($(MOVABLE_NODE), 1)
--	CFLAGS += -D MOVABLE_NODE
--endif
+- moved set_mctrl within the critical section
+
+Changes in v2:
+
+- reworded the commit message to be clearer
+
+ drivers/tty/serial/8250/8250_bcm7271.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
+index 9b878d023dac..8efdc271eb75 100644
+--- a/drivers/tty/serial/8250/8250_bcm7271.c
++++ b/drivers/tty/serial/8250/8250_bcm7271.c
+@@ -1139,16 +1139,19 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
 -
- # Use 32 bit physical addresses.
- # Remember to install 32-bit version of dependencies.
- ifeq ($(32BIT_PHYS_ADDR_T), 1)
-@@ -18,11 +13,6 @@ ifeq ($(32BIT_PHYS_ADDR_T), 1)
- 	LDFLAGS += -m32
- endif
+-	serial8250_suspend_port(priv->line);
+-	clk_disable_unprepare(priv->baud_mux_clk);
++	unsigned long flags;
  
--# Enable verbose testing output
--ifeq ($(VERBOSE), 1)
--	CFLAGS += -D VERBOSE
--endif
--
- # Enable memblock_dbg() messages
- ifeq ($(MEMBLOCK_DEBUG), 1)
- 	CFLAGS += -D MEMBLOCK_DEBUG
-diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
-index ebc06b4c3255..24ce4135a83d 100644
---- a/tools/testing/memblock/tests/common.c
-+++ b/tools/testing/memblock/tests/common.c
-@@ -1,6 +1,9 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- #include "tests/common.h"
- #include <string.h>
-+#include <getopt.h>
-+#include <linux/memory_hotplug.h>
-+#include <linux/build_bug.h>
+ 	/*
+ 	 * This will prevent resume from enabling RTS before the
+-	 *  baud rate has been resored.
++	 *  baud rate has been restored.
+ 	 */
++	spin_lock_irqsave(&port->lock, flags);
+ 	priv->saved_mctrl = port->mctrl;
+-	port->mctrl = 0;
++	port->mctrl &= ~TIOCM_RTS;
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	serial8250_suspend_port(priv->line);
++	clk_disable_unprepare(priv->baud_mux_clk);
  
- #define INIT_MEMBLOCK_REGIONS			128
- #define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
-@@ -11,6 +14,27 @@ static struct test_memory memory_block;
- static const char __maybe_unused *prefixes[PREFIXES_MAX];
- static int __maybe_unused nr_prefixes;
- 
-+static const char *short_opts = "mv";
-+static const struct option long_opts[] = {
-+	{"movable-node", 0, NULL, 'm'},
-+	{"verbose", 0, NULL, 'v'},
-+	{NULL, 0, NULL, 0}
-+};
-+
-+static const char * const help_opts[] = {
-+	"disallow allocations from regions marked as hotplugged\n\t\t\t"
-+		"by simulating enabling the \"movable_node\" kernel\n\t\t\t"
-+		"parameter",
-+	"enable verbose output, which includes the name of the\n\t\t\t"
-+		"memblock function being tested, the name of the test,\n\t\t\t"
-+		"and whether the test passed or failed."
-+};
-+
-+static int verbose;
-+
-+/* sets global variable returned by movable_node_is_enabled() stub */
-+bool movable_node_enabled;
-+
- void reset_memblock_regions(void)
- {
- 	memset(memblock.memory.regions, 0,
-@@ -51,7 +75,38 @@ void dummy_physical_memory_cleanup(void)
- 	free(memory_block.base);
+ 	return 0;
  }
+@@ -1158,6 +1161,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 	struct brcmuart_priv *priv = dev_get_drvdata(dev);
+ 	struct uart_8250_port *up = serial8250_get_port(priv->line);
+ 	struct uart_port *port = &up->port;
++	unsigned long flags;
+ 	int ret;
  
--#ifdef VERBOSE
-+static void usage(const char *prog)
-+{
-+	printf("Usage: %s [-%s]\n", prog, short_opts);
-+
-+	BUILD_BUG_ON(ARRAY_SIZE(help_opts) != ARRAY_SIZE(long_opts) - 1);
-+	for (int i = 0; long_opts[i].name; i++) {
-+		printf("  -%c, --%-12s\t%s\n", long_opts[i].val,
-+		       long_opts[i].name, help_opts[i]);
-+	}
-+
-+	exit(1);
-+}
-+
-+void parse_args(int argc, char **argv)
-+{
-+	int c;
-+
-+	while ((c = getopt_long_only(argc, argv, short_opts, long_opts,
-+				     NULL)) != -1) {
-+		switch (c) {
-+		case 'm':
-+			movable_node_enabled = true;
-+			break;
-+		case 'v':
-+			verbose = 1;
-+			break;
-+		default:
-+			usage(argv[0]);
-+		}
-+	}
-+}
-+
- void print_prefixes(const char *postfix)
- {
- 	for (int i = 0; i < nr_prefixes; i++)
-@@ -61,25 +116,31 @@ void print_prefixes(const char *postfix)
- 
- void test_fail(void)
- {
--	ksft_test_result_fail(": ");
--	print_prefixes("failed\n");
-+	if (verbose) {
-+		ksft_test_result_fail(": ");
-+		print_prefixes("failed\n");
-+	}
- }
- 
- void test_pass(void)
- {
--	ksft_test_result_pass(": ");
--	print_prefixes("passed\n");
-+	if (verbose) {
-+		ksft_test_result_pass(": ");
-+		print_prefixes("passed\n");
-+	}
- }
- 
- void test_print(const char *fmt, ...)
- {
--	int saved_errno = errno;
--	va_list args;
--
--	va_start(args, fmt);
--	errno = saved_errno;
--	vprintf(fmt, args);
--	va_end(args);
-+	if (verbose) {
-+		int saved_errno = errno;
-+		va_list args;
-+
-+		va_start(args, fmt);
-+		errno = saved_errno;
-+		vprintf(fmt, args);
-+		va_end(args);
-+	}
- }
- 
- void prefix_reset(void)
-@@ -102,4 +163,3 @@ void prefix_pop(void)
- 		nr_prefixes--;
+ 	ret = clk_prepare_enable(priv->baud_mux_clk);
+@@ -1180,7 +1184,15 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
+ 		start_rx_dma(serial8250_get_port(priv->line));
  	}
+ 	serial8250_resume_port(priv->line);
+-	port->mctrl = priv->saved_mctrl;
++
++	if (priv->saved_mctrl & TIOCM_RTS) {
++		/* Restore RTS */
++		spin_lock_irqsave(&port->lock, flags);
++		port->mctrl |= TIOCM_RTS;
++		port->ops->set_mctrl(port, port->mctrl);
++		spin_unlock_irqrestore(&port->lock, flags);
++	}
++
+ 	return 0;
  }
--#endif /* VERBOSE */
-diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
-index 46de86a755f3..3e7f23d341d7 100644
---- a/tools/testing/memblock/tests/common.h
-+++ b/tools/testing/memblock/tests/common.h
-@@ -70,22 +70,14 @@ void reset_memblock_attributes(void);
- void setup_memblock(void);
- void dummy_physical_memory_init(void);
- void dummy_physical_memory_cleanup(void);
-+void parse_args(int argc, char **argv);
  
--#ifdef VERBOSE
- void test_fail(void);
- void test_pass(void);
- void test_print(const char *fmt, ...);
- void prefix_reset(void);
- void prefix_push(const char *prefix);
- void prefix_pop(void);
--#else
--static inline void test_fail(void) {}
--static inline void test_pass(void) {}
--static inline void test_print(const char *fmt, ...) {}
--static inline void prefix_reset(void) {}
--static inline void prefix_push(const char *prefix) {}
--static inline void prefix_pop(void) {}
--#endif /* VERBOSE */
- 
- static inline void test_pass_pop(void)
- {
 -- 
-2.34.1
+2.25.1
 
