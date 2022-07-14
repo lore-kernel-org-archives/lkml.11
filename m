@@ -2,102 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4EB8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB8BC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236983AbiGNIm2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:42:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
+        id S236702AbiGNInQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236911AbiGNImU (ORCPT
+        with ESMTP id S229931AbiGNInL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:42:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59D13D5A7;
-        Thu, 14 Jul 2022 01:42:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64F0F61E1F;
-        Thu, 14 Jul 2022 08:42:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FF69C34115;
-        Thu, 14 Jul 2022 08:42:12 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-mips@vger.kernel.org, linux-sh@vger.kernel.org,
-        Huacai Chen <chenhuacai@loongson.cn>, stable@vger.kernel.org
-Subject: [PATCH V2 3/3] SH: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
-Date:   Thu, 14 Jul 2022 16:41:36 +0800
-Message-Id: <20220714084136.570176-3-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220714084136.570176-1-chenhuacai@loongson.cn>
-References: <20220714084136.570176-1-chenhuacai@loongson.cn>
+        Thu, 14 Jul 2022 04:43:11 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32B915707
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:43:09 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id r2so562540wrs.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:43:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L7U+xNUa7u+4OWKfAhwvkxkgEoSFOdVNXwdOBUNhl9M=;
+        b=Ol0ItgBra8CvmNJ8jpibH2QON11G0XMH7k85OKhvXYQAFNLhV4mCOt1WOaP9HCrm6X
+         aXaxORtY99UXr/RHS6QGwCPBwfvUFbej/qYzLEaOVlwjXWntgymNa/Zlr7sccDiMpTp8
+         hC+ksv877LDHOn/OHjxeOIiw+ACYAZne2BM9L/VvpMhxCX6gcfllT48G63fFkTLoxGvS
+         EBWjAPURzYow+FZXNB5ffS43M8cBTIKuQSrslzKJmKOEIle4EuBwmG0UuGHmO5B/KiAF
+         L7KEhWopj3NJINDTYfOkuaGwgzruQ9Qykm0839QV4Ph6mZV2WR8q3h+ScyWhXONd/kMZ
+         BSpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L7U+xNUa7u+4OWKfAhwvkxkgEoSFOdVNXwdOBUNhl9M=;
+        b=uIPvpBVGnngyLzmWcj8hRbyhumIjMXlLgb4N3DxO6lh27veYbCoI1MImA2InKs/++t
+         TYALHAgfbgJCzcfEscEmZkg1dB0TziJTskw2jKTExi6/dB8RD2/eDZxp2w/4+HkyiF3y
+         ODIltuGOjgT/JJFGYF5fYZljDIVg0gpdIq4ykIiyg/1J/OD/J1SKIPv+FnjLdsAa6/8o
+         89PIANv1xKgfm/vbD3tPreM9lnymvEGQZvb5OnJlgJNnLE6/V7T6jTxxE8FOT0Rnfwba
+         6E+vSmh9Tu2spP8hiuk9D7hA/S+wA86+4dmMBbWnHs66Pp2cRnFlkQu8XeeJWmqkCuyb
+         vRIg==
+X-Gm-Message-State: AJIora8arnCgxsqIVBB2UOZxRaA7kygyXwlLEQZfT0+bbVpK32WlV8VO
+        XmSCDG2Hk1FuBsXF8mOAYJ4vmxBxg2+24Ssk
+X-Google-Smtp-Source: AGRyM1sYkTZXv+De3e9zo8Nj/yFYsp5RvzWolKLhXIiGgbrZVWfwK6L6SoGF7mX0YdxWp9LmYPqwEg==
+X-Received: by 2002:a5d:4bc4:0:b0:21d:918c:b945 with SMTP id l4-20020a5d4bc4000000b0021d918cb945mr7040455wrt.287.1657788188298;
+        Thu, 14 Jul 2022 01:43:08 -0700 (PDT)
+Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id i16-20020a5d5230000000b0021d9d13bf6csm854042wra.97.2022.07.14.01.43.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 01:43:07 -0700 (PDT)
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Ben Dooks <ben.dooks@sifive.com>
+Subject: [PATCH] net: macb: fixup sparse warnings on __be16 ports
+Date:   Thu, 14 Jul 2022 09:43:05 +0100
+Message-Id: <20220714084305.209425-1-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
-cpu_max_bits_warn() generates a runtime warning similar as below while
-we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
-instead of NR_CPUS to iterate CPUs.
+The port fields in the ethool flow structures are defined
+to be __be16 types, so sparse is showing issues where these
+are being passed to htons(). Fix these warnings by passing
+them to be16_to_cpu() instead.
 
-[    3.052463] ------------[ cut here ]------------
-[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
-[    3.070072] Modules linked in: efivarfs autofs4
-[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
-[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
-[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
-[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
-[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
-[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
-[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
-[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
-[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
-[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
-[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
-[    3.195868]         ...
-[    3.199917] Call Trace:
-[    3.203941] [<90000000002086d8>] show_stack+0x38/0x14c
-[    3.210666] [<9000000000cf846c>] dump_stack_lvl+0x60/0x88
-[    3.217625] [<900000000023d268>] __warn+0xd0/0x100
-[    3.223958] [<9000000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
-[    3.231150] [<9000000000210220>] show_cpuinfo+0x5e8/0x5f0
-[    3.238080] [<90000000004f578c>] seq_read_iter+0x354/0x4b4
-[    3.245098] [<90000000004c2e90>] new_sync_read+0x17c/0x1c4
-[    3.252114] [<90000000004c5174>] vfs_read+0x138/0x1d0
-[    3.258694] [<90000000004c55f8>] ksys_read+0x70/0x100
-[    3.265265] [<9000000000cfde9c>] do_syscall+0x7c/0x94
-[    3.271820] [<9000000000202fe4>] handle_syscall+0xc4/0x160
-[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
+These are being used in netdev_dbg() so should only effect
+anyone doing debug.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Fixes the following sparse warnings:
+
+drivers/net/ethernet/cadence/macb_main.c:3366:9: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3366:9: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3366:9: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3419:25: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3419:25: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3419:25: warning: cast from restricted __be16
+drivers/net/ethernet/cadence/macb_main.c:3419:25: warning: cast from restricted __be16
+
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
+
+--
+Note, given the IP is also being passed ot htons() should
+this either be changed to be32_to_cpu() or better passed
+as a pointre and the %pI4 be used to print it.
 ---
- arch/sh/kernel/cpu/proc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/cadence/macb_main.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/sh/kernel/cpu/proc.c b/arch/sh/kernel/cpu/proc.c
-index a306bcd6b341..5f6d0e827bae 100644
---- a/arch/sh/kernel/cpu/proc.c
-+++ b/arch/sh/kernel/cpu/proc.c
-@@ -132,7 +132,7 @@ static int show_cpuinfo(struct seq_file *m, void *v)
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index d89098f4ede8..f38b924e393b 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -3482,7 +3482,8 @@ static int gem_add_flow_filter(struct net_device *netdev,
+ 			fs->flow_type, (int)fs->ring_cookie, fs->location,
+ 			htonl(fs->h_u.tcp_ip4_spec.ip4src),
+ 			htonl(fs->h_u.tcp_ip4_spec.ip4dst),
+-			htons(fs->h_u.tcp_ip4_spec.psrc), htons(fs->h_u.tcp_ip4_spec.pdst));
++		        be16_to_cpu(fs->h_u.tcp_ip4_spec.psrc),
++		        be16_to_cpu(fs->h_u.tcp_ip4_spec.pdst));
  
- static void *c_start(struct seq_file *m, loff_t *pos)
- {
--	return *pos < NR_CPUS ? cpu_data + *pos : NULL;
-+	return *pos < nr_cpu_ids ? cpu_data + *pos : NULL;
- }
- static void *c_next(struct seq_file *m, void *v, loff_t *pos)
- {
+ 	spin_lock_irqsave(&bp->rx_fs_lock, flags);
+ 
+@@ -3535,8 +3536,8 @@ static int gem_del_flow_filter(struct net_device *netdev,
+ 					fs->flow_type, (int)fs->ring_cookie, fs->location,
+ 					htonl(fs->h_u.tcp_ip4_spec.ip4src),
+ 					htonl(fs->h_u.tcp_ip4_spec.ip4dst),
+-					htons(fs->h_u.tcp_ip4_spec.psrc),
+-					htons(fs->h_u.tcp_ip4_spec.pdst));
++					be16_to_cpu(fs->h_u.tcp_ip4_spec.psrc),
++					be16_to_cpu(fs->h_u.tcp_ip4_spec.pdst));
+ 
+ 			gem_writel_n(bp, SCRT2, fs->location, 0);
+ 
 -- 
-2.31.1
+2.35.1
 
