@@ -2,173 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80060C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237554AbiGNJpw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:45:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
+        id S236576AbiGNJp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238405AbiGNJp3 (ORCPT
+        with ESMTP id S234645AbiGNJpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:45:29 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E9C140B7;
-        Thu, 14 Jul 2022 02:45:27 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJImAIl_1657791878;
-Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJImAIl_1657791878)
-          by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 17:45:24 +0800
-From:   Wen Gu <guwen@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/6] net/smc: optimize for smc_sndbuf_sync_sg_for_device and smc_rmb_sync_sg_for_cpu
-Date:   Thu, 14 Jul 2022 17:44:01 +0800
-Message-Id: <1657791845-1060-3-git-send-email-guwen@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
-References: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+        Thu, 14 Jul 2022 05:45:35 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 939E531DD1;
+        Thu, 14 Jul 2022 02:45:34 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id b8so2328967pjo.5;
+        Thu, 14 Jul 2022 02:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=XEas1ADySh71w4N2jTpweq2zN8MLhza/tU18I8h10bw=;
+        b=M+eqwzvQMJa8u3DFy2EUoHHuRYe3lJJvu1/ax374Rc9wwtME0Z2xuWnxmG67wJJjrF
+         MJO2s0hsuYvBDePoNgKg6+ZjMG0is4AGeh0eX9XbwJkIbsB3rLCToiJVHePLmbvl9VPN
+         w8GcntpMhON6VBqeCUFEoc4bPT9bMxaer59M2OdJEnWNLxqj0bIqBXa18Wi8Zt5tHz5Y
+         m3F6To9xSqu73YzVyuMZmNYOzugrKj3JI+XUmRXmHnhXLC50w9YxZLBftmXklThLNlci
+         yM5f3Hh90hsFqTQiln3bHmoMmvI+kRr4sUNrJyLI0vJNEmx0B/ramu40PEgMf3OyzwuT
+         XHYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=XEas1ADySh71w4N2jTpweq2zN8MLhza/tU18I8h10bw=;
+        b=OlKYAYDN/RRD2xvvLdL6gMsApdkuL8mg1oCWpSXoqgTDw29kZLVFfvsnVdDIpU9Fq/
+         btxlULjgWneOkvQDnjZ8jyHa133SaArGJf04t8MUItd0MKhZQK+SRx3CityTiZd9Mr3R
+         WdPmzRg0O5RduSMZ3BHicg2bZJ9qo/DWFepD+aXwtJFIv69PjcTmUOJoEdpUbbnViPgh
+         9SNhRvZnryXn0ekGrBWcQsbbW6Oy3wFTCaFo8g/+y8UBR2zFHbjRoEFqGchCKuWYCECa
+         uEs12U57YOdDVbwNO3WGcvbKyb+tloC1I3jfkDITYVBdUcYvuP+ub9sWs4HQDJqQ1eTL
+         VCsQ==
+X-Gm-Message-State: AJIora8raStOLOlMb1F20Qbgk9yHD10PZOj+nvMODxLymzpQ8SIdGkwF
+        FzG6arhRd2x6blzkCJ+/OtQq6AWa+oA=
+X-Google-Smtp-Source: AGRyM1u4Furf/aD14WXMcgLav/OpgmqphaTZ7TRYxSfdW3AYfCbnXr4jKtc9p58eiYvXxWvk4c3zaQ==
+X-Received: by 2002:a17:90a:ff17:b0:1ef:8b4b:8cc0 with SMTP id ce23-20020a17090aff1700b001ef8b4b8cc0mr9020293pjb.155.1657791933733;
+        Thu, 14 Jul 2022 02:45:33 -0700 (PDT)
+Received: from localhost.localdomain ([2402:7500:488:5f89:217d:a3c8:f1ea:4115])
+        by smtp.gmail.com with ESMTPSA id i1-20020a056a00004100b0052acb753b8bsm1169233pfk.158.2022.07.14.02.45.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 14 Jul 2022 02:45:32 -0700 (PDT)
+From:   cy_huang <u0084500@gmail.com>
+To:     jic23@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     lars@metafoo.de, cy_huang@richtek.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v6 0/3] Add Richtek RTQ6056 support
+Date:   Thu, 14 Jul 2022 17:45:22 +0800
+Message-Id: <1657791925-23929-1-git-send-email-u0084500@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+From: ChiYuan Huang <cy_huang@richtek.com>
 
-Some CPU, such as Xeon, can guarantee DMA cache coherency.
-So it is no need to use dma sync APIs to flush cache on such CPUs.
-In order to avoid calling dma sync APIs on the IO path, use the
-dma_need_sync to check whether smc_buf_desc needs dma sync when
-creating smc_buf_desc.
+This patch series is to enable Richtek RTQ6056 support.
 
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
----
- net/smc/smc_core.c |  8 ++++++++
- net/smc/smc_core.h |  1 +
- net/smc/smc_ib.c   | 29 +++++++++++++++++++++++++++++
- net/smc/smc_ib.h   |  2 ++
- 4 files changed, 40 insertions(+)
+The RTQ6056 is a high accuracy current-sense monitor with I2C interface, and
+the device provides full information for system by reading out the load current
+and power.
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 1faa0cb..fa3a7a8 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -2016,6 +2016,9 @@ static int smcr_buf_map_link(struct smc_buf_desc *buf_desc, bool is_rmb,
- 		goto free_table;
- 	}
- 
-+	buf_desc->is_dma_need_sync |=
-+		smc_ib_is_sg_need_sync(lnk, buf_desc) << lnk->link_idx;
-+
- 	/* create a new memory region for the RMB */
- 	if (is_rmb) {
- 		rc = smc_ib_get_memory_region(lnk->roce_pd,
-@@ -2234,6 +2237,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 		/* check for reusable slot in the link group */
- 		buf_desc = smc_buf_get_slot(bufsize_short, lock, buf_list);
- 		if (buf_desc) {
-+			buf_desc->is_dma_need_sync = 0;
- 			SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
- 			SMC_STAT_BUF_REUSE(smc, is_smcd, is_rmb);
- 			break; /* found reusable slot */
-@@ -2292,6 +2296,8 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
- 
- void smc_sndbuf_sync_sg_for_device(struct smc_connection *conn)
- {
-+	if (!conn->sndbuf_desc->is_dma_need_sync)
-+		return;
- 	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd ||
- 	    !smc_link_active(conn->lnk))
- 		return;
-@@ -2302,6 +2308,8 @@ void smc_rmb_sync_sg_for_cpu(struct smc_connection *conn)
- {
- 	int i;
- 
-+	if (!conn->rmb_desc->is_dma_need_sync)
-+		return;
- 	if (!smc_conn_lgr_valid(conn) || conn->lgr->is_smcd)
- 		return;
- 	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index c441dfe..46ddec5 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -180,6 +180,7 @@ struct smc_buf_desc {
- 					/* mem region registered */
- 			u8		is_map_ib[SMC_LINKS_PER_LGR_MAX];
- 					/* mem region mapped to lnk */
-+			u8		is_dma_need_sync;
- 			u8		is_reg_err;
- 					/* buffer registration err */
- 		};
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index dcda416..60e5095 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -729,6 +729,29 @@ int smc_ib_get_memory_region(struct ib_pd *pd, int access_flags,
- 	return 0;
- }
- 
-+bool smc_ib_is_sg_need_sync(struct smc_link *lnk,
-+			    struct smc_buf_desc *buf_slot)
-+{
-+	struct scatterlist *sg;
-+	unsigned int i;
-+	bool ret = false;
-+
-+	/* for now there is just one DMA address */
-+	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
-+		    buf_slot->sgt[lnk->link_idx].nents, i) {
-+		if (!sg_dma_len(sg))
-+			break;
-+		if (dma_need_sync(lnk->smcibdev->ibdev->dma_device,
-+				  sg_dma_address(sg))) {
-+			ret = true;
-+			goto out;
-+		}
-+	}
-+
-+out:
-+	return ret;
-+}
-+
- /* synchronize buffer usage for cpu access */
- void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
- 			    struct smc_buf_desc *buf_slot,
-@@ -737,6 +760,9 @@ void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
- 	struct scatterlist *sg;
- 	unsigned int i;
- 
-+	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
-+		return;
-+
- 	/* for now there is just one DMA address */
- 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
- 		    buf_slot->sgt[lnk->link_idx].nents, i) {
-@@ -757,6 +783,9 @@ void smc_ib_sync_sg_for_device(struct smc_link *lnk,
- 	struct scatterlist *sg;
- 	unsigned int i;
- 
-+	if (!(buf_slot->is_dma_need_sync & (1U << lnk->link_idx)))
-+		return;
-+
- 	/* for now there is just one DMA address */
- 	for_each_sg(buf_slot->sgt[lnk->link_idx].sgl, sg,
- 		    buf_slot->sgt[lnk->link_idx].nents, i) {
-diff --git a/net/smc/smc_ib.h b/net/smc/smc_ib.h
-index 5d8b49c..03429567 100644
---- a/net/smc/smc_ib.h
-+++ b/net/smc/smc_ib.h
-@@ -102,6 +102,8 @@ void smc_ib_buf_unmap_sg(struct smc_link *lnk,
- int smc_ib_get_memory_region(struct ib_pd *pd, int access_flags,
- 			     struct smc_buf_desc *buf_slot, u8 link_idx);
- void smc_ib_put_memory_region(struct ib_mr *mr);
-+bool smc_ib_is_sg_need_sync(struct smc_link *lnk,
-+			    struct smc_buf_desc *buf_slot);
- void smc_ib_sync_sg_for_cpu(struct smc_link *lnk,
- 			    struct smc_buf_desc *buf_slot,
- 			    enum dma_data_direction data_direction);
+Since v6
+- Remove specific rtq6056 ABI document.
+- Update integration time description in general ABI document.
+- Remove the redundant blank line.
+- To prevent the race condition for attribute wrtie and shunt resistor write,
+  use 'iio_device_claim_direct_mode' API.
+- Refine the order for 'action_reset' and 'pm_runtime'.
+- Fix text typo in comment like as ohm to Ohm and timea to time.
+
+Since v5
+- Fix kernel version text for ABI.
+
+Since v4
+- Add '__aligned(8)' for timestamp member.
+- Declare timestamp from 'int64_t' to more unified 's64'.
+
+Since v3
+- change the node name to be generic 'adc' in binding example.
+- Refine pm_runtime API calling order in 'read_channel' API.
+- Fix vshunt wrong scale for divider.
+- Refine the comment text.
+- Use 'devm_add_action_or_reset' to decrease the code usage in probe
+  function.
+- Use RUNTIME_PM_OPS to replace SET_RUNTIME_PM_OPS.
+- minor fix for the comma.
+- Use pm_ptr to replace the direct assigned pm_ops.
+
+Since v2
+- Change the resistor property name to be generic 'shunt-resistor-micro-ohms'.
+- Rename file from 'rtq6056-adc' to 'rtq6056'.
+- Refine the ABI, if generic already defined it, remove it and check the channel
+  report unit.
+- Add copyright text.
+- include the correct header.
+- change the property parsing name.
+- To use iio_chan_spec address field.
+- Refine each channel separate and shared_by_all.
+- Use pm_runtime and pm_runtime_autosuspend.
+- Remove the shutdown callback. From the HW suggestion, it's not recommended to
+  use battery as the power supply.
+- Check all scale unit (voltage->mV, current->mA, power->milliWatt).
+- Use the read_avail to provide the interface for attribute value list.
+- Add comma for the last element in the const integer array.
+- Refine each ADC label text.
+- In read_label callback, replace snprintf to sysfs_emit.
+
+ChiYuan Huang (3):
+  dt-bindings: iio: adc: Add rtq6056 adc support
+  iio: adc: Add rtq6056 support
+  Documentation: ABI: testing: rtq6056: Update ABI docs
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  10 +
+ .../bindings/iio/adc/richtek,rtq6056.yaml          |  56 ++
+ drivers/iio/adc/Kconfig                            |  15 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/rtq6056.c                          | 664 +++++++++++++++++++++
+ 5 files changed, 746 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/richtek,rtq6056.yaml
+ create mode 100644 drivers/iio/adc/rtq6056.c
+
 -- 
-1.8.3.1
+2.7.4
 
