@@ -2,245 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20539C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:36:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2F0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:37:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238179AbiGNJgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:36:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
+        id S238258AbiGNJhZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237999AbiGNJgs (ORCPT
+        with ESMTP id S231724AbiGNJhY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:36:48 -0400
-Received: from mailgw01.horizon.ai (mailgw01.horizon.ai [42.62.85.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6463342F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:36:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; d=horizon.ai; s=bj; c=relaxed/simple;
-        q=dns/txt; i=@horizon.ai; t=1657791403; x=2521705003;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=OJt4NS1MaZe0Gy/eJ5TjQNiRFmcdRAyWJkkG/Fj2eAg=;
-        b=cws8Nmsd3iqNBTL56APR0UgeNHVCqOYAIjxRRR8+7ClKsiuOnbFyHxBQArOAZHYY
-        Dg1ptMjmM9kJiz58xZS98/tiBu6unvBHAXC36ctgIYjSVGpsWLALs1bZIQPF+Uir
-        C1z8ggR3dT8z8xZBf8su6NE8EUS9Uo2VGlEhp7/u8PU=;
-X-AuditID: 0a090144-31781700000015ea-32-62cfe3aa1c61
-Received: from mailgw01.horizon.ai ( [10.9.15.112])
-        by mailgw01.horizon.ai (Anti-spam for msg) with SMTP id 26.94.05610.AA3EFC26; Thu, 14 Jul 2022 17:36:42 +0800 (HKT)
-Received: from MBP (10.9.0.13) by exchange004.hobot.cc (10.9.15.112) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.27; Thu, 14 Jul 2022
- 17:36:41 +0800
-References: <20220714031645.28004-1-schspa@gmail.com>
- <CAJhGHyD=7t+-Env=Wim-3atq=qJg1j5EKiTvsbqhX1xCdi27Wg@mail.gmail.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Zhaohui Shi <zhaohui.shi@horizon.ai>
-To:     Lai Jiangshan <jiangshanlai@gmail.com>
-CC:     Tejun Heo <tj@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>
-Subject: Re: [PATCH v3] workqueue: Use active mask for new worker when pool
- is DISASSOCIATED
-Date:   Thu, 14 Jul 2022 16:58:46 +0800
-In-Reply-To: <CAJhGHyD=7t+-Env=Wim-3atq=qJg1j5EKiTvsbqhX1xCdi27Wg@mail.gmail.com>
-Message-ID: <m2tu7kkpcp.fsf@horizon.ai>
+        Thu, 14 Jul 2022 05:37:24 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65E793342F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:37:23 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id f11-20020a056e02168b00b002dc8abbf7f9so815516ila.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:37:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to
+         :content-transfer-encoding;
+        bh=WFr8N/EOSmpJftgydqWTgWKBCIxK/qqg2SGca5b7/a0=;
+        b=HUir2mpjEFZcbBGttGeTEcSXdkE99p5I7Se/hHKa7+GkDxVaBaYurJFzMnvRKYGHYv
+         iEaHRx/Ao3snRmCvGKg4suLViVKJSgkIz/h0y4ndai0rZgPMmuCrzJIINmUaRJKkym5K
+         CwXqcGLvsmLl3rYUHz5bx2zT5XjF3OEdHADvB6vI7W+W42fWLwSFCHVW7gps1ILzws+i
+         mVsUiSVwZRqi5McxvuOCi6raMVWhVHvC3lJ8UDsbF4ynZ2ocj42LnbvY4cuNgs2O4VU9
+         CblT9BN0nn0+CFEiTLBxzqkIIPl/J1nP/8D16xtsnaAtp3iU26x20mlgf7u7c8gLUci1
+         oWVQ==
+X-Gm-Message-State: AJIora/jVfY1EPPJwQXnzORgSY1Fd2L0VGwneEePwIBPQ8EH5tvRsZvp
+        bzGZV5inOE6q7wJ1F4Q3WJLb98g05rlZhzKvtu0fbsuCk3j5
+X-Google-Smtp-Source: AGRyM1sxKJjXTj4UWFLpmqINTljIveX51rI2INVvyAcfGFllt4JljMPZ63V8JFmC4qfytTKGfBRdfnZRa/QQCTAJM5EWQJDzPCdw
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.9.0.13]
-X-ClientProxiedBy: exchange002.hobot.cc (10.9.15.111) To exchange004.hobot.cc
- (10.9.15.112)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLLMWRmVeSWpSXmKPExsXCxclfoLvq8fkkg7XfrS0u75rDZnG89wCT
-        xa/lRxkdmD02r9Dy2LSqk83j8ya5AOYoLpuU1JzMstQifbsEroxHM+6zFZzQr/g0MayB8aNS
-        FyMnh4SAicSbZ7uYuxi5OIQEVjJK9LUsZIdwzjNKXH6zhAmkSkigRmLhyQ42EFtUQFliy575
-        7CA2m4CWRP+yv2BxESB7b+dTMJtZIFfi3IbdLCC2sECcxPtzD8HmsAioSqxcdQbM5hQIlPh4
-        ZTdYPa+AusTR1z+ZIWxBiZMzn7BAzJGQOPjiBTPEDcoSTVs/M0NcLSvx+eZxNgg7VuJZ03Sm
-        CYyCs5C0z0LSvoCRaRWjcG5iZk56uYGhXkZ+UWZVfp5eYuYmRnCIMrrsYPy24KPeIUYmDsZD
-        jBIczEoivN2HziUJ8aYkVlalFuXHF5XmpBYfYpTmYFES571kdiRJSCA9sSQ1OzW1ILUIJsvE
-        wSnVwNS81JrRkoH/1L1F2/eVstq89jPk/nbh59H+2dF7jRlk9JTKlqrGVcrsuLxw/zp7nz9V
-        SobLuLsWT3Mz1kpcsZNFqla1wN3ONsn054rdZ05c5Nc+U7/ns4n94SfMsxasVsle6PrwxoET
-        B9zkvAMbax7qit1aI7voeJN059a5O8Kzo7+sZy1R/6u8tUlf28lN9sXKWvO7kTM287P1Lwov
-        feCm3nIra5H3qauhUXcK0mLe27L37/hjq7LCftr9FwYiSvZN/bpXSxZ0i6ioObYFn0xcuvFl
-        1zfxrD2rjy6KbHxXFWGW/unQ+pjUrcztIUUmyzs7QtmLTtVZGqhz8E65vHzWyTeTNH8Wlkob
-        hk5PV2Ipzkg01GIuKk4EAHfavn/AAgAA
+X-Received: by 2002:a05:6638:419a:b0:341:3eac:e467 with SMTP id
+ az26-20020a056638419a00b003413eace467mr936227jab.101.1657791442807; Thu, 14
+ Jul 2022 02:37:22 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 02:37:22 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000f74bf05e3c0a6f0@google.com>
+Subject: [syzbot] linux-next boot error: kernel panic: swiotlb_init_remap:
+ nslabs = NUM too small
+From:   syzbot <syzbot+99f6c2141b62e707578c@syzkaller.appspotmail.com>
+To:     hch@infradead.org, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
+        m.szyprowski@samsung.com, robin.murphy@arm.com,
+        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
-Lai Jiangshan <jiangshanlai@gmail.com> writes:
+syzbot found the following issue on:
 
-> On Thu, Jul 14, 2022 at 11:16 AM Schspa Shi <schspa@gmail.com> wrote:
->>
->> When CPU-[un]hotplugs, all workers will be bound to active CPU via
->> unbind_workers().
->>
->> But the unbound worker still has a chance to create a new worker, which
->> has bound the newly created task to pool->attrs->cpumask. But the CPU has
->> been unplugged.
->>
->> Please refer to the following scenarios.
->>
->>            CPU0                                  CPU1
->> ------------------------------------------------------------------
->> sched_cpu_deactivate(cpu_active_mask clear)
->> workqueue_offline_cpu(work pool POOL_DISASSOCIATED)
->>   -- all worker will migrate to another cpu --
->>                                     worker_thread
->>                                     -- will create new worker if
->>                                        pool->worklist is not empty
->>                                        create_worker()
->>                                      -- new kworker will bound to CPU0
->
-> How will the new kworker bound to CPU0?  Could you give more details?
->
+HEAD commit:    4662b7adea50 Add linux-next specific files for 20220713
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=17a1c5c8080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=91e2c45190556e73
+dashboard link: https://syzkaller.appspot.com/bug?extid=99f6c2141b62e707578c
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-It's because we use pool->attrs->cpumask for the newly created worker
-to bind it to CPU0.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+99f6c2141b62e707578c@syzkaller.appspotmail.com
 
-Please note that the CPU0 marked here does not correspond to the
-fault log below, maybe I should change this CPU0 to CPU3, then it
-can be correspond to the exception log below.
-
-
-> Since the pool is POOL_DISASSOCIATED and kthread_is_per_cpu() will
-> be false for the new worker. ttwu() will put it on a fallback CPU IIUC
-> (see select_task_rq()).
->
-
-It won't put it on a fallback CPU, is_cpu_allowed() will use
-cpu_online_mask to check if a kthread can running on this CPU, we
-need cpu_active_mask in this case.
-
-see:
-static inline bool is_cpu_allowed(struct task_struct *p, int cpu)
-{
-	...
-	/* KTHREAD_IS_PER_CPU is always allowed. */
-	if (kthread_is_per_cpu(p))
-		return cpu_online(cpu);
-	...
-}
-
->>                                (pool->attrs->cpumask will be mask of CPU0).
->>       kworker/0:x will running on rq
->>
->> sched_cpu_dying
->>   if (rq->nr_running != 1 || rq_has_pinned_tasks(rq))
->>     WARN(true, "Dying CPU not properly vacated!");
->>       ---------OOPS-------------
->>
->
->
->> The stack trace of the bad running task was dumped via the following patch:
->> Link: https://lore.kernel.org/all/20220519161125.41144-1-schspa@gmail.com/
->> And I think this debug patch needs to be added to the mainline,
->> it can help us to debug this kind of problem
->>
->> To fix it, we can use cpu_active_mask when work pool is DISASSOCIATED.
->
-> use wq_unbound_cpumask.
->
-
-Yes, I forgot to change this.
-
->>
->> Signed-off-by: Schspa Shi <schspa@gmail.com>
->
-> Please solo CC Peter, as:
->
-> CC: Peter Zijlstra <peterz@infradead.org>
->
-
-OK, thanks for reminding me.
-
->>
->> --
->>
->> Changelog:
->> v1 -> v2:
->>         - Move worker task bind to worker_attach_to_pool, remove extra
->>         wq_pool_attach_mutex added.
->>         - Add a timing diagram to make this question clearer.
->> v2 -> v3:
->>         - Add missing PF_NO_SETAFFINITY, use cpumask_intersects to
->>         avoid setting bad mask for unbound work pool as Lai Jiangshan
->>         advised.
->>         - Call kthread_set_pre_cpu correctly for unbound worker.
->> ---
->>  kernel/workqueue.c | 16 +++++++++++-----
->>  1 file changed, 11 insertions(+), 5 deletions(-)
->>
->> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
->> index 1ea50f6be843..b3e9289d9640 100644
->> --- a/kernel/workqueue.c
->> +++ b/kernel/workqueue.c
->> @@ -1860,8 +1860,16 @@ static struct worker *alloc_worker(int node)
->>  static void worker_attach_to_pool(struct worker *worker,
->>                                    struct worker_pool *pool)
->>  {
->> +       const struct cpumask *cpu_mask;
->> +
->>         mutex_lock(&wq_pool_attach_mutex);
->>
->> +       if (cpumask_intersects(pool->attrs->cpumask, cpu_active_mask))
->> +               cpu_mask = pool->attrs->cpumask;
->> +       else
->> +               cpu_mask = wq_unbound_cpumask;
->> +
->> +       set_cpus_allowed_ptr(worker->task, cpu_mask);
->>         /*
->>          * The wq_pool_attach_mutex ensures %POOL_DISASSOCIATED remains
->>          * stable across this function.  See the comments above the flag
->> @@ -1870,10 +1878,8 @@ static void worker_attach_to_pool(struct worker *worker,
->>         if (pool->flags & POOL_DISASSOCIATED)
->>                 worker->flags |= WORKER_UNBOUND;
->>         else
->> -               kthread_set_per_cpu(worker->task, pool->cpu);
->> -
->> -       if (worker->rescue_wq)
->> -               set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
->> +               kthread_set_per_cpu(worker->task,
->> +                               cpu_mask == wq_unbound_cpumask ? -1 : pool->cpu);
->
-> Only workers for percpu pool need to set kthread_set_per_cpu().
-> So it is already handled in the above code, the branch is unneeded.
->
-Change this to something like fellowing.
-
-	if (pool->flags & POOL_DISASSOCIATED)
-		worker->flags |= WORKER_UNBOUND;
-	else if (cpu_mask == pool->attrs->cpumask)
-    	kthread_set_per_cpu(worker->task, pool->cpu);
-
-I add this because we will set it = -1 on unbind_workers too.
-static void unbind_workers(int cpu)
-{
-	...
-			for_each_pool_worker(worker, pool) {
-				kthread_set_per_cpu(worker->task, -1);
-				WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
-			}
-    ...
-}
-
->>
->>         list_add_tail(&worker->node, &pool->workers);
->>         worker->pool = pool;
->> @@ -1952,8 +1958,8 @@ static struct worker *create_worker(struct worker_pool *pool)
->>                 goto fail;
->>
->>         set_user_nice(worker->task, pool->attrs->nice);
->> -       kthread_bind_mask(worker->task, pool->attrs->cpumask);
->>
->> +       worker->task->flags |= PF_NO_SETAFFINITY;
->>         /* successful, attach the worker to the pool */
->>         worker_attach_to_pool(worker, pool);
->>
->> --
->> 2.29.0
->>
+NODE_DATA(0) allocated [mem 0x13fffa000-0x13fffffff]
+NODE_DATA(1) allocated [mem 0x23fff7000-0x23fffcfff]
+Zone ranges:
+  DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+  DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+  Normal   [mem 0x0000000100000000-0x000000023fffffff]
+  Device   empty
+Movable zone start for each node
+Early memory node ranges
+  node   0: [mem 0x0000000000001000-0x000000000009efff]
+  node   0: [mem 0x0000000000100000-0x00000000bfffcfff]
+  node   0: [mem 0x0000000100000000-0x000000013fffffff]
+  node   1: [mem 0x0000000140000000-0x000000023fffffff]
+Initmem setup node 0 [mem 0x0000000000001000-0x000000013fffffff]
+Initmem setup node 1 [mem 0x0000000140000000-0x000000023fffffff]
+On node 0, zone DMA: 1 pages in unavailable ranges
+On node 0, zone DMA: 97 pages in unavailable ranges
+On node 0, zone Normal: 3 pages in unavailable ranges
+kasan: KernelAddressSanitizer initialized
+ACPI: PM-Timer IO Port: 0xb008
+ACPI: LAPIC_NMI (acpi_id[0xff] dfl dfl lint[0x1])
+IOAPIC[0]: apic_id 0, version 17, address 0xfec00000, GSI 0-23
+ACPI: INT_SRC_OVR (bus 0 bus_irq 5 global_irq 5 high level)
+ACPI: INT_SRC_OVR (bus 0 bus_irq 9 global_irq 9 high level)
+ACPI: INT_SRC_OVR (bus 0 bus_irq 10 global_irq 10 high level)
+ACPI: INT_SRC_OVR (bus 0 bus_irq 11 global_irq 11 high level)
+ACPI: Using ACPI (MADT) for SMP configuration information
+smpboot: Allowing 2 CPUs, 0 hotplug CPUs
+PM: hibernation: Registered nosave memory: [mem 0x00000000-0x00000fff]
+PM: hibernation: Registered nosave memory: [mem 0x0009f000-0x0009ffff]
+PM: hibernation: Registered nosave memory: [mem 0x000a0000-0x000effff]
+PM: hibernation: Registered nosave memory: [mem 0x000f0000-0x000fffff]
+PM: hibernation: Registered nosave memory: [mem 0xbfffd000-0xbfffffff]
+PM: hibernation: Registered nosave memory: [mem 0xc0000000-0xfffbbfff]
+PM: hibernation: Registered nosave memory: [mem 0xfffbc000-0xffffffff]
+[mem 0xc0000000-0xfffbbfff] available for PCI devices
+Booting paravirtualized kernel on KVM
+clocksource: refined-jiffies: mask: 0xffffffff max_cycles: 0xffffffff, max_idle_ns: 19112604462750000 ns
+setup_percpu: NR_CPUS:8 nr_cpumask_bits:8 nr_cpu_ids:2 nr_node_ids:2
+percpu: Embedded 69 pages/cpu s243848 r8192 d30584 u1048576
+kvm-guest: PV spinlocks enabled
+PV qspinlock hash table entries: 256 (order: 0, 4096 bytes, linear)
+Fallback order for Node 0: 0 1 
+Fallback order for Node 1: 1 0 
+Built 2 zonelists, mobility grouping on.  Total pages: 2064125
+Policy zone: Normal
+Kernel command line: earlyprintk=serial net.ifnames=0 sysctl.kernel.hung_task_all_cpu_backtrace=1 ima_policy=tcb nf-conntrack-ftp.ports=20000 nf-conntrack-tftp.ports=20000 nf-conntrack-sip.ports=20000 nf-conntrack-irc.ports=20000 nf-conntrack-sane.ports=20000 binder.debug_mask=0 rcupdate.rcu_expedited=1 no_hash_pointers page_owner=on sysctl.vm.nr_hugepages=4 sysctl.vm.nr_overcommit_hugepages=4 secretmem.enable=1 sysctl.max_rcu_stall_to_panic=1 msr.allow_writes=off root=/dev/sda console=ttyS0 vsyscall=native numa=fake=2 kvm-intel.nested=1 spec_store_bypass_disable=prctl nopcid vivid.n_devs=16 vivid.multiplanar=1,2,1,2,1,2,1,2,1,2,1,2,1,2,1,2 netrom.nr_ndevs=16 rose.rose_ndevs=16 dummy_hcd.num=8 smp.csd_lock_timeout=100000 watchdog_thresh=55 workqueue.watchdog_thresh=140 sysctl.net.core.netdev_unregister_timeout_secs=140 panic_on_warn=1 BOOT_IMAGE=/boot/bzImage root=/dev/sda1 console=ttyS0
+Unknown kernel command line parameters "spec_store_bypass_disable=prctl BOOT_IMAGE=/boot/bzImage", will be passed to user space.
+mem auto-init: stack:off, heap alloc:on, heap free:off
+stackdepot hash table entries: 1048576 (order: 11, 8388608 bytes, linear)
+Kernel panic - not syncing: swiotlb_init_remap: nslabs = 0 too small
+CPU: 0 PID: 0 Comm: swapper Not tainted 5.19.0-rc6-next-20220713-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ panic+0x2c8/0x627 kernel/panic.c:274
+ swiotlb_init_remap+0x60/0x7e kernel/dma/swiotlb.c:306
+ mem_init+0x18/0x351 arch/x86/mm/init_64.c:1332
+ mm_init+0xa1/0xc9 init/main.c:843
+ start_kernel+0x18e/0x494 init/main.c:990
+ secondary_startup_64_no_verify+0xce/0xdb
+ </TASK>
+Rebooting in 86400 seconds..
 
 
--- 
-BRs
-Zhaohui Shi
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
