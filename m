@@ -2,120 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BBABC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3971FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236827AbiGNHPk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51934 "EHLO
+        id S236288AbiGNHR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237433AbiGNHPI (ORCPT
+        with ESMTP id S231887AbiGNHR0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:15:08 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0B5FE1403D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:15:06 -0700 (PDT)
-Received: from [10.90.50.23] (unknown [10.90.50.23])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxSeFzws9iU4odAA--.62026S3;
-        Thu, 14 Jul 2022 15:15:00 +0800 (CST)
-Message-ID: <8f3d86e4-f051-2cf8-d5ec-f1046632bbda@loongson.cn>
-Date:   Thu, 14 Jul 2022 15:14:59 +0800
+        Thu, 14 Jul 2022 03:17:26 -0400
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1421913E38;
+        Thu, 14 Jul 2022 00:17:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657783046; x=1689319046;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lVDa0Ra8BPX8SfKu3uDgPJAJ7DsotlSCQsd1gi3W+Ro=;
+  b=ESfK9u3aqQH6HJzrgGuyeg9MQkOPlCxfqNunMNvYBZTUv9USM6AnzQMB
+   GlKo6oiX/WjVTHSywIABfgiNOBdtxjkTN8doU+pDL5FR+x473+pv7CWUo
+   WEfnXQU/ABwKokPC95EYRGnf4AmcMLaGw9All/3AwV0XzVJdn4oNAwoWg
+   8=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jul 2022 00:17:25 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 00:17:25 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Jul 2022 00:17:24 -0700
+Received: from [10.50.55.40] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Jul
+ 2022 00:17:21 -0700
+Message-ID: <27007c45-1dbb-2c35-b1a8-eb2b2a6c9512@quicinc.com>
+Date:   Thu, 14 Jul 2022 12:47:17 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] LoongArch: Fix missing fcsr in ptrace's fpr_set
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH v2] arm64: dts: qcom: sc8280xp: fix apps_smmu irq
 Content-Language: en-US
-To:     Conor.Dooley@microchip.com, chenhuacai@kernel.org,
-        kernel@xen0n.name, oleg@redhat.com
-Cc:     lixu@loongson.cn, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220714062550.4934-1-huqi@loongson.cn>
- <6bc55cd5-bb6e-8d4a-79ec-4555c0b7765b@microchip.com>
-From:   Qi Hu <huqi@loongson.cn>
-In-Reply-To: <6bc55cd5-bb6e-8d4a-79ec-4555c0b7765b@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Parikshit Pareek <quic_ppareek@quicinc.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Prasanna Kumar <quic_kprasan@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        "Manivannan Sadhasivam" <manivannan.sadhasivam@linaro.org>,
+        Johan Hovold <johan@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
+References: <20220712140009.20765-1-quic_ppareek@quicinc.com>
+From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
+In-Reply-To: <20220712140009.20765-1-quic_ppareek@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9AxSeFzws9iU4odAA--.62026S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7CrWfuF4DuryxAFWrKw17Jrb_yoW8Cw1xpr
-        ZxAas5WFW8JFWfCr1qqrsY9r1qqwn2gFySg3s3t3WrAwnrXrs8GryqyrWIvFs2y348G3yx
-        Zr909Fs0yFsrAaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUv2b7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxk0xIA0c2IEe2xFo4CEbIxvr21l
-        c2xSY4AK6svPMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I
-        8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWU
-        twCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x
-        0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAF
-        wI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa
-        7IU56c_DUUUUU==
-X-CM-SenderInfo: pkxtxqxorr0wxvrqhubq/1tbiAQAHCV3QvP1HFQABsQ
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Parikshit,
 
-On 2022/7/14 14:51, Conor.Dooley@microchip.com wrote:
-> On 14/07/2022 07:25, Qi Hu wrote:
->> In file ptrace.c, function fpr_set does not copy fcsr data from ubuf
->> to kbuf. That's the reason why fcsr cannot be modified by ptrace.
->>
->> This patch fixs this problem and allows users using ptrace to modify
->> the fcsr.
->>
->> Signed-off-by: Qi Hu <huqi@loongson.cn>
->> Signed-off-by: Xu Li <lixu@loongson.cn>
-> Hey Qi Hu,
+On 7/12/2022 7:30 PM, Parikshit Pareek wrote:
+> Wrong values have been introduced for interrupts property. Fix those
+> ones, and correct the mapping of context banks to irq number.
 >
-> Why does this have Xu Li's SoB if they're neither the author nor listed
-> as a Co-developed-by:?
+> Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
+> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+> ---
+>   arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> As submitter, your SoB should be last anyway.
-> Thanks,
-> Conor.
->
-Ops. I realize using SoB here is incorrect. I will change it into 
-Co-developed-by.
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> index 7945cbb57bb4..1276a833251e 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -1580,7 +1580,6 @@
+>   				     <GIC_SPI 412 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 421 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 706 IRQ_TYPE_LEVEL_HIGH>,
+> -				     <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 424 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 425 IRQ_TYPE_LEVEL_HIGH>,
+> @@ -1591,6 +1590,7 @@
+>   				     <GIC_SPI 693 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 694 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 695 IRQ_TYPE_LEVEL_HIGH>,
+> +				     <GIC_SPI 696 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 410 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 411 IRQ_TYPE_LEVEL_HIGH>,
+>   				     <GIC_SPI 420 IRQ_TYPE_LEVEL_HIGH>,
 
-Thanks.
+Cross checking with the IP doc, 696 is not the only one missing, couple of other interrupts are also missing, below is the list.
 
-Qi.
+Interrupt 689 and 706 are not present in the IP doc, remove it.
+Interrupts 696, 697, 716, 913 are missing, I see this patch adds 696, add 697 as well.
+Interrupt 890 is not a context interrupt, remove it.
 
->> ---
->>    arch/loongarch/kernel/ptrace.c | 12 +++++++-----
->>    1 file changed, 7 insertions(+), 5 deletions(-)
->>
->> diff --git a/arch/loongarch/kernel/ptrace.c b/arch/loongarch/kernel/ptrace.c
->> index e6ab87948e1d..dc2b82ea894c 100644
->> --- a/arch/loongarch/kernel/ptrace.c
->> +++ b/arch/loongarch/kernel/ptrace.c
->> @@ -193,7 +193,7 @@ static int fpr_set(struct task_struct *target,
->>    		   const void *kbuf, const void __user *ubuf)
->>    {
->>    	const int fcc_start = NUM_FPU_REGS * sizeof(elf_fpreg_t);
->> -	const int fcc_end = fcc_start + sizeof(u64);
->> +	const int fcsr_start = fcc_start + sizeof(u64);
->>    	int err;
->>    
->>    	BUG_ON(count % sizeof(elf_fpreg_t));
->> @@ -209,10 +209,12 @@ static int fpr_set(struct task_struct *target,
->>    	if (err)
->>    		return err;
->>    
->> -	if (count > 0)
->> -		err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
->> -					  &target->thread.fpu.fcc,
->> -					  fcc_start, fcc_end);
->> +	err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
->> +				  &target->thread.fpu.fcc, fcc_start,
->> +				  fcc_start + sizeof(u64));
->> +	err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
->> +				  &target->thread.fpu.fcsr, fcsr_start,
->> +				  fcsr_start + sizeof(u32));
->>    
->>    	return err;
->>    }
 
+Thanks,
+Sai
