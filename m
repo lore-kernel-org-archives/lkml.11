@@ -2,228 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9D3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:42:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:44:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240665AbiGNTmT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 15:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
+        id S240697AbiGNTov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 15:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240653AbiGNTmR (ORCPT
+        with ESMTP id S232580AbiGNTos (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 15:42:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB22B6C134;
-        Thu, 14 Jul 2022 12:42:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E2ED621E8;
-        Thu, 14 Jul 2022 19:42:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B56A0C34114;
-        Thu, 14 Jul 2022 19:42:13 +0000 (UTC)
-Date:   Thu, 14 Jul 2022 15:42:12 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Dmitrii Dolgov <9erthalion6@gmail.com>, peterz@infradead.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        songliubraving@fb.com, mingo@redhat.com, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v4 1/1] perf/kprobe: maxactive for fd-based kprobe
-Message-ID: <20220714154212.4efb86c7@gandalf.local.home>
-In-Reply-To: <20220714193403.13211-1-9erthalion6@gmail.com>
-References: <20220714193403.13211-1-9erthalion6@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 14 Jul 2022 15:44:48 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E88066BC27;
+        Thu, 14 Jul 2022 12:44:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=juqdfawgY+mSOy4Q9xQHkJDUGz0LPzuu1htfB/1lskw=; b=nefOM4zVvJVlye2X2eOBPrTjOF
+        M+tA7bm/BSfK8k3HugWHtepejg31y/x7X3Xv4igOK1f23iFTQb71LqJuZQ5pkAxiKlJCjP8dGOvEe
+        yIrHeKA/ub+CP1rWS6VdjyPtFsi1GSDfCPb+un1VdGovhK59h0pKNQXagJQCv0dittjgzXB7A0EPF
+        S/gyOybpAiHfo+a7IAwHL2O01YoDV/Z0Rs+HnsNjaVf+FxXaXJH4AagMpd2qA2R32Jw8cXVurCseK
+        cZjBuDLr2ONA2lFMmxV7AZfxr7aiQ6DgDSGbr7QU30CibtI3jDhDigKR9DW2APaL+tPJGx7DSEIBs
+        N7Hn3m3g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33344)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oC4lN-0006G0-ED; Thu, 14 Jul 2022 20:44:41 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oC4lK-0006qv-Ou; Thu, 14 Jul 2022 20:44:38 +0100
+Date:   Thu, 14 Jul 2022 20:44:38 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>
+Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
+ CPU/DSA ports
+Message-ID: <YtByJhYpo5BzX4GV@shell.armlinux.org.uk>
+References: <20220714010021.1786616-1-mw@semihalf.com>
+ <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
+ <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jul 14, 2022 at 07:18:57PM +0200, Marcin Wojtas wrote:
+> Hi Russell,
+> 
+> czw., 14 lip 2022 o 14:32 Russell King (Oracle)
+> <linux@armlinux.org.uk> napisał(a):
+> >
+> > On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
+> > > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
+> > > stopped relying on SPEED_MAX constant and hardcoded speed settings
+> > > for the switch ports and rely on phylink configuration.
+> > >
+> > > It turned out, however, that when the relevant code is called,
+> > > the mac_capabilites of CPU/DSA port remain unset.
+> > > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
+> > > dsa_tree_setup_switches(), which precedes setting the caps in
+> > > phylink_get_caps down in the chain of dsa_tree_setup_ports().
+> > >
+> > > As a result the mac_capabilites are 0 and the default speed for CPU/DSA
+> > > port is 10M at the start. To fix that execute phylink_get_caps() callback
+> > > which fills port's mac_capabilities before they are processed.
+> > >
+> > > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting")
+> > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> >
+> > Please don't merge this - the plan is to submit the RFC series I sent on
+> > Wednesday which deletes this code, and I'd rather not re-spin the series
+> > and go through the testing again because someone else changed the code.
+> 
+> Thank for the heads-up. Are you planning to resend the series or
+> willing to get it merged as-is? I have perhaps one comment, but I can
+> apply it later as a part of fwnode_/device_ migration.
+> 
+> >
+> > Marcin - please can you test with my RFC series, which can be found at:
+> >
+> > https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
+> >
+> 
+> The thing is my v2 of DSA fwnode_/device_ migration is tested and
+> ready to send. There will be conflicts (rather easy) with your
+> patchset - I volunteer to resolve it this way or another, depending on
+> what lands first. I have 2 platforms to test it with + also ACPI case
+> locally.
+> 
+> I'd like to make things as smooth as possible and make it before the
+> upcoming merge window - please share your thoughts on this.
 
-Peter,
+I've also been trying to get the mv88e6xxx PCS conversion in, but
+it's been held up because there's a fundamental problem in DSA that
+this series is addressing.
 
-Since this is mostly perf related, care to take it?
+This series is addressing a faux pas on my part, where I had forgotten
+that phylink doesn't get used in DSA unless firmware specifies a
+fixed-link (or a PHY) - in other words when the firmware lacks a
+description of the link.
 
--- Steve
+So, what do we do...
 
-
-On Thu, 14 Jul 2022 21:34:03 +0200
-Dmitrii Dolgov <9erthalion6@gmail.com> wrote:
-
-> From: Song Liu <songliubraving@fb.com>
-> 
-> Enable specifying maxactive for fd based kretprobe. This will be useful
-> for tracing tools like bcc and bpftrace (see for example discussion [1]).
-> Use highest 4 bit (bit 59-63) to allow specifying maxactive by log2.
-> 
-> The original patch [2] seems to be fallen through the cracks and wasn't
-> applied. I've merely rebased the work done by Song Liu, verififed it
-> still works, and modified to allow specifying maxactive by log2 per
-> suggestion from the discussion thread.
-> 
-> Note that changes in rethook implementation may render maxactive
-> obsolete.
-> 
-> [1]: https://github.com/iovisor/bpftrace/issues/835
-> [2]: https://lore.kernel.org/all/20191007223111.1142454-1-songliubraving@fb.com/
-> 
-> Signed-off-by: Song Liu <songliubraving@fb.com>
-> Signed-off-by: Dmitrii Dolgov <9erthalion6@gmail.com>
-> Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-> Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
-> Previous discussion: https://lore.kernel.org/bpf/20220625152429.27539-1-9erthalion6@gmail.com/
-> 
-> Resent with LKML in Cc instead of linux-perf-users, as it is a kernel
-> change.
-> 
-> Changes in v4:
->     - Allow specifying maxactive by log2
-> 
-> Changes in v3:
->     - Set correct author
-> 
-> Changes in v2:
->     - Fix comment about number bits for the offset
-> 
->  include/linux/trace_events.h    |  3 ++-
->  kernel/events/core.c            | 20 ++++++++++++++++----
->  kernel/trace/trace_event_perf.c |  5 +++--
->  kernel/trace/trace_kprobe.c     |  4 ++--
->  kernel/trace/trace_probe.h      |  2 +-
->  5 files changed, 24 insertions(+), 10 deletions(-)
-> 
-> diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-> index e6e95a9f07a5..7ca453a73252 100644
-> --- a/include/linux/trace_events.h
-> +++ b/include/linux/trace_events.h
-> @@ -850,7 +850,8 @@ extern void perf_trace_destroy(struct perf_event *event);
->  extern int  perf_trace_add(struct perf_event *event, int flags);
->  extern void perf_trace_del(struct perf_event *event, int flags);
->  #ifdef CONFIG_KPROBE_EVENTS
-> -extern int  perf_kprobe_init(struct perf_event *event, bool is_retprobe);
-> +extern int  perf_kprobe_init(struct perf_event *event, bool is_retprobe,
-> +			     int max_active);
->  extern void perf_kprobe_destroy(struct perf_event *event);
->  extern int bpf_get_kprobe_info(const struct perf_event *event,
->  			       u32 *fd_type, const char **symbol,
-> diff --git a/kernel/events/core.c b/kernel/events/core.c
-> index 23bb19716ad3..184325ff2656 100644
-> --- a/kernel/events/core.c
-> +++ b/kernel/events/core.c
-> @@ -9809,24 +9809,34 @@ static struct pmu perf_tracepoint = {
->   * PERF_PROBE_CONFIG_IS_RETPROBE if set, create kretprobe/uretprobe
->   *                               if not set, create kprobe/uprobe
->   *
-> - * The following values specify a reference counter (or semaphore in the
-> - * terminology of tools like dtrace, systemtap, etc.) Userspace Statically
-> - * Defined Tracepoints (USDT). Currently, we use 40 bit for the offset.
-> + * PERF_UPROBE_REF_CTR_OFFSET_* specify a reference counter (or semaphore
-> + * in the terminology of tools like dtrace, systemtap, etc.) Userspace
-> + * Statically Defined Tracepoints (USDT). Currently, we use 32 bit for the
-> + * offset.
->   *
->   * PERF_UPROBE_REF_CTR_OFFSET_BITS	# of bits in config as th offset
->   * PERF_UPROBE_REF_CTR_OFFSET_SHIFT	# of bits to shift left
-> + *
-> + * PERF_KPROBE_MAX_ACTIVE_* defines log2 of max_active for kretprobe.
-> + * KRETPROBE_MAXACTIVE_MAX is 4096. We allow 4095 here to save a bit.
->   */
->  enum perf_probe_config {
->  	PERF_PROBE_CONFIG_IS_RETPROBE = 1U << 0,  /* [k,u]retprobe */
->  	PERF_UPROBE_REF_CTR_OFFSET_BITS = 32,
->  	PERF_UPROBE_REF_CTR_OFFSET_SHIFT = 64 - PERF_UPROBE_REF_CTR_OFFSET_BITS,
-> +	PERF_KPROBE_MAX_ACTIVE_BITS = 4,
-> +	PERF_KPROBE_MAX_ACTIVE_SHIFT = 64 - PERF_KPROBE_MAX_ACTIVE_BITS,
->  };
->  
->  PMU_FORMAT_ATTR(retprobe, "config:0");
->  #endif
->  
->  #ifdef CONFIG_KPROBE_EVENTS
-> +/* max_active is specified by log2, to allow larger values if needed */
-> +PMU_FORMAT_ATTR(max_active_log2, "config:59-63");
-> +
->  static struct attribute *kprobe_attrs[] = {
-> +	&format_attr_max_active_log2.attr,
->  	&format_attr_retprobe.attr,
->  	NULL,
->  };
-> @@ -9857,6 +9867,7 @@ static int perf_kprobe_event_init(struct perf_event *event)
->  {
->  	int err;
->  	bool is_retprobe;
-> +	int max_active_log2;
->  
->  	if (event->attr.type != perf_kprobe.type)
->  		return -ENOENT;
-> @@ -9871,7 +9882,8 @@ static int perf_kprobe_event_init(struct perf_event *event)
->  		return -EOPNOTSUPP;
->  
->  	is_retprobe = event->attr.config & PERF_PROBE_CONFIG_IS_RETPROBE;
-> -	err = perf_kprobe_init(event, is_retprobe);
-> +	max_active_log2 = event->attr.config >> PERF_KPROBE_MAX_ACTIVE_SHIFT;
-> +	err = perf_kprobe_init(event, is_retprobe, 1U << max_active_log2);
->  	if (err)
->  		return err;
->  
-> diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-> index a114549720d6..129000327809 100644
-> --- a/kernel/trace/trace_event_perf.c
-> +++ b/kernel/trace/trace_event_perf.c
-> @@ -245,7 +245,8 @@ void perf_trace_destroy(struct perf_event *p_event)
->  }
->  
->  #ifdef CONFIG_KPROBE_EVENTS
-> -int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
-> +int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe,
-> +					 int max_active)
->  {
->  	int ret;
->  	char *func = NULL;
-> @@ -271,7 +272,7 @@ int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
->  
->  	tp_event = create_local_trace_kprobe(
->  		func, (void *)(unsigned long)(p_event->attr.kprobe_addr),
-> -		p_event->attr.probe_offset, is_retprobe);
-> +		p_event->attr.probe_offset, is_retprobe, max_active);
->  	if (IS_ERR(tp_event)) {
->  		ret = PTR_ERR(tp_event);
->  		goto out;
-> diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-> index 47cebef78532..3ad30cfce9c3 100644
-> --- a/kernel/trace/trace_kprobe.c
-> +++ b/kernel/trace/trace_kprobe.c
-> @@ -1784,7 +1784,7 @@ static int unregister_kprobe_event(struct trace_kprobe *tk)
->  /* create a trace_kprobe, but don't add it to global lists */
->  struct trace_event_call *
->  create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
-> -			  bool is_return)
-> +			  bool is_return, int max_active)
->  {
->  	enum probe_print_type ptype;
->  	struct trace_kprobe *tk;
-> @@ -1799,7 +1799,7 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
->  	event = func ? func : "DUMMY_EVENT";
->  
->  	tk = alloc_trace_kprobe(KPROBE_EVENT_SYSTEM, event, (void *)addr, func,
-> -				offs, 0 /* maxactive */, 0 /* nargs */,
-> +				offs, max_active, 0 /* nargs */,
->  				is_return);
->  
->  	if (IS_ERR(tk)) {
-> diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
-> index 92cc149af0fd..26fe21980793 100644
-> --- a/kernel/trace/trace_probe.h
-> +++ b/kernel/trace/trace_probe.h
-> @@ -376,7 +376,7 @@ extern int traceprobe_set_print_fmt(struct trace_probe *tp, enum probe_print_typ
->  #ifdef CONFIG_PERF_EVENTS
->  extern struct trace_event_call *
->  create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
-> -			  bool is_return);
-> +			  bool is_return, int max_active);
->  extern void destroy_local_trace_kprobe(struct trace_event_call *event_call);
->  
->  extern struct trace_event_call *
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
