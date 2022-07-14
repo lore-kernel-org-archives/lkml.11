@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673F3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:35:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 906D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231397AbiGNEfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:35:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
+        id S237630AbiGNEfp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:35:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237510AbiGNEeF (ORCPT
+        with ESMTP id S237664AbiGNEeb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:34:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59F123AE60;
-        Wed, 13 Jul 2022 21:26:07 -0700 (PDT)
+        Thu, 14 Jul 2022 00:34:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 200203B967;
+        Wed, 13 Jul 2022 21:26:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDC62B8237C;
-        Thu, 14 Jul 2022 04:26:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCE23C36AF4;
-        Thu, 14 Jul 2022 04:26:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FDC161E91;
+        Thu, 14 Jul 2022 04:26:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD08BC34114;
+        Thu, 14 Jul 2022 04:26:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772764;
-        bh=8UBj1z2lp/6daPvXBnEXV1Z/SWwo2LziTpTiD7CUaTk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HILDlXh4NSJ2S7eyFm9Aiob4rS5hSeSLyjerMkz9yDWkVc25Df+DLeatbe/qZUjC2
-         Da1EczqVAklo+8SeFROjvTqnWPOCuErBUAdnVqqwcikSeit9es/RQGyQiEGe3AguZV
-         ZoILNIezJzzg3tvdezgdsakn2NgpFuy06V8PXNzW8/ZDJKw+wxNZykryN+AuXCMkgV
-         0Qnn+D3FySFgjGtyI/JiWOWj7PeUea0rvnfBdaHDto6639sl5e8Z1hMWOup7/RDfN3
-         TG5UGl2J4O/IHQWf91XORabainYkEMpy3wDHWIXFcnXIYrjz4hwg+HHKSYo0rEjB+L
-         3ZLXHbBkNgFLQ==
+        s=k20201202; t=1657772775;
+        bh=XqlTd4nTiZWMDUpAlCHbBSebnj0dDtBFRM1zS2k8yng=;
+        h=From:To:Cc:Subject:Date:From;
+        b=ueoI9ygRZ/dDejqg2xcRcy8r/3GNrHjX0I4ABRTFj7RrX40RUBZteO6ncZIq0n6d0
+         CHi426n0EK+7kuUQI2PqM2sVolXkpjRlkohDNGv/GL1T9FOvHWDnCg2yRF6lDBMzXN
+         N+8naUhkZJn5/jv+OsF/pOO67vtdCEaOuvkEd4MTmcxj3D9YgPnl79X8f324BXVowa
+         ZoZ0mXbby6orwXpMb+SfFUFVVUsklyW1jOnkWGT8yf4A/QmsMpUEXFC68fWoiahBk3
+         b00m+UeVWi+t9QE4M6toVFWPWZck3RHwKwQYkv7snlBrtXq+vufIoUM3Z2R7Fbg54N
+         YSNJdQbwggLkA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>,
-        khalasa@piap.pl
-Subject: [PATCH AUTOSEL 5.10 11/15] soc: ixp4xx/npe: Fix unused match warning
-Date:   Thu, 14 Jul 2022 00:25:36 -0400
-Message-Id: <20220714042541.282175-11-sashal@kernel.org>
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.4 01/10] ASoC: ops: Fix off by one in range control validation
+Date:   Thu, 14 Jul 2022 00:26:03 -0400
+Message-Id: <20220714042612.282378-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042541.282175-1-sashal@kernel.org>
-References: <20220714042541.282175-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,43 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Mark Brown <broonie@kernel.org>
 
-[ Upstream commit 620f83b8326ce9706b1118334f0257ae028ce045 ]
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-The kernel test robot found this inconsistency:
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-  drivers/soc/ixp4xx/ixp4xx-npe.c:737:34: warning:
-  'ixp4xx_npe_of_match' defined but not used [-Wunused-const-variable=]
-     737 | static const struct of_device_id ixp4xx_npe_of_match[] = {
-
-This is because the match is enclosed in the of_match_ptr()
-which compiles into NULL when OF is disabled and this
-is unnecessary.
-
-Fix it by dropping of_match_ptr() around the match.
-
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Link: https://lore.kernel.org/r/20220626074315.61209-1-linus.walleij@linaro.org'
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ixp4xx/ixp4xx-npe.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/ixp4xx/ixp4xx-npe.c b/drivers/soc/ixp4xx/ixp4xx-npe.c
-index 6065aaab6740..8482a4892b83 100644
---- a/drivers/soc/ixp4xx/ixp4xx-npe.c
-+++ b/drivers/soc/ixp4xx/ixp4xx-npe.c
-@@ -735,7 +735,7 @@ static const struct of_device_id ixp4xx_npe_of_match[] = {
- static struct platform_driver ixp4xx_npe_driver = {
- 	.driver = {
- 		.name           = "ixp4xx-npe",
--		.of_match_table = of_match_ptr(ixp4xx_npe_of_match),
-+		.of_match_table = ixp4xx_npe_of_match,
- 	},
- 	.probe = ixp4xx_npe_probe,
- 	.remove = ixp4xx_npe_remove,
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index 7a37312c8e0c..453b61b42dd9 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -530,7 +530,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
+ 
+ 	if (invert)
+@@ -551,7 +551,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
+ 
+ 		if (invert)
 -- 
 2.35.1
 
