@@ -2,110 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C83C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:15:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:15:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237904AbiGNJO7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35844 "EHLO
+        id S237908AbiGNJPD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237967AbiGNJOb (ORCPT
+        with ESMTP id S237893AbiGNJOb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 05:14:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EA075275C7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790044;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SeK8Lp8E+OxRYMMdV6YylOGvAgm4+77PZHQ5HflMTfk=;
-        b=I3fRHWHsKcNbR1sLyX61+6rMNBYmc97GwGuMx9438FbHaXKgA91KOmsaEh2qdHjQZBQfgr
-        h45I5bfvnvWOi6ixGNQpyyxgk3Ei2yPAs2M29HjuvoznfA5mk6vnM4F3rIiDMPseJ9ZNMf
-        7fBiB0KK2CTQEqbDmJqRHDcm/yZIUxg=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-508-YTcDHI_xPoKrIC_VsR3aEg-1; Thu, 14 Jul 2022 05:14:01 -0400
-X-MC-Unique: YTcDHI_xPoKrIC_VsR3aEg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 9148D811E81;
-        Thu, 14 Jul 2022 09:14:00 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5011C2166B26;
-        Thu, 14 Jul 2022 09:13:58 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 12/25] KVM: VMX: Check VM_ENTRY_IA32E_MODE in setup_vmcs_config()
-Date:   Thu, 14 Jul 2022 11:13:14 +0200
-Message-Id: <20220714091327.1085353-13-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D106E26562
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:03 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id o7so1758357lfq.9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=nwvO67pthvU0zeevtyCnNAZLdAsSKLX1m6E7/kckD6Q=;
+        b=irMu+nRCb0Rz/A2vhiztdaS3OmLQs2bfGkWAjeW6sNsjgO4suKz4rVku+vivyJo8P+
+         T2IfYYFCRP2pALyqJyXcloCeYsHys2hO7N/XXRERSvwDrnIQSvQmWNOgcJJ+CVQAWb6P
+         x+3SypgDDjIH6k63vCI9zMkoyE5OmLPbhkLnfwkKKbXDDjD5xadgwk4X1tWs7+ckG41X
+         mZJgPnjZ7Zgpvvvdh7hjkwm3sRGQuLbB6WFCbzVH0d7ehKXqsUp0+3LCWWUlV8VdMLU7
+         zyRbmtBois5WXzrdGKM2Knjnh2qPW339D4WChQaFYg52L27LffRcrz713AuxVS6PE/v4
+         qhlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nwvO67pthvU0zeevtyCnNAZLdAsSKLX1m6E7/kckD6Q=;
+        b=Oeu4R56YsUEVEiiIHJsgvJlWF1DRkHVvVrlatb4u6pgpp4Ec4oFL2pgVt8+3Xaf/Tq
+         BLVS/p7ADR9cAQETS72lJmNm64Mr78dBFjqZVAAQV54Hm1SvI2Moa8bTyrvu3NufhXZ0
+         UmeAYzIl+3NiMFDQv7/12OeDIsQYm5SfOASVn1+cbaUjaRuGCUgYWPgpHxIdMrk3JhYe
+         NM1RbpK3xfFQesb5ivL3n+009HzUgDJbmqmgQU3pxdq3zGGojgwWoQ1JUmg5yWJPjKPT
+         tYjxjwWIR/REqcqEww6uf5MbIR9Uf/MsjTPyV4dV0djTB4KcwsqfTvGY24v47JIFKV3c
+         aFSQ==
+X-Gm-Message-State: AJIora8woO3HllmR6656vfxHJ4Vvk102JZ/qOe/1n0uo9zYnI3klZ331
+        oYYdCB1j5UaIUsOKG8L892wOHPdqY+W1qw==
+X-Google-Smtp-Source: AGRyM1uN44hG70+tSGODvdTF3iQbM3VjrcEY73XGjgx+6lSHhPIzcLJyF97ltAfGRZzDy0lqVrT2QQ==
+X-Received: by 2002:ac2:5213:0:b0:48a:1082:b8e3 with SMTP id a19-20020ac25213000000b0048a1082b8e3mr3222399lfl.141.1657790041468;
+        Thu, 14 Jul 2022 02:14:01 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id r16-20020ac25c10000000b0047f7c897b61sm253776lfp.129.2022.07.14.02.13.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 02:14:00 -0700 (PDT)
+Message-ID: <4790173f-86b0-a079-dac8-282fe1d46755@linaro.org>
+Date:   Thu, 14 Jul 2022 11:13:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 11/30] dt-bindings: phy: qcom,msm8996-qmp-pcie:
+ deprecate reset names
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220707134725.3512-1-johan+linaro@kernel.org>
+ <20220707134725.3512-12-johan+linaro@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220707134725.3512-12-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VM_ENTRY_IA32E_MODE control is toggled dynamically by vmx_set_efer()
-and setup_vmcs_config() doesn't check its existence. On the contrary,
-nested_vmx_setup_ctls_msrs() doesn set it on x86_64. Add the missing
-check and filter the bit out in vmx_vmentry_ctrl().
+On 07/07/2022 15:47, Johan Hovold wrote:
+> Deprecate the PHY node 'reset-names' property which specified that the
+> reset name should have an unnecessary "lane" suffix.
+> 
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 
-No (real) functional change intended as all existing CPUs supporting
-long mode and VMX are supposed to have it.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/kvm/vmx/vmx.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index dd905ad72637..1aaec4d19e1b 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2610,6 +2610,9 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 		_pin_based_exec_control &= ~PIN_BASED_POSTED_INTR;
- 
- 	min = VM_ENTRY_LOAD_DEBUG_CONTROLS;
-+#ifdef CONFIG_X86_64
-+	min |= VM_ENTRY_IA32E_MODE;
-+#endif
- 	opt = VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |
- 	      VM_ENTRY_LOAD_IA32_PAT |
- 	      VM_ENTRY_LOAD_IA32_EFER |
-@@ -4242,9 +4245,14 @@ static u32 vmx_vmentry_ctrl(void)
- 	if (vmx_pt_mode_is_system())
- 		vmentry_ctrl &= ~(VM_ENTRY_PT_CONCEAL_PIP |
- 				  VM_ENTRY_LOAD_IA32_RTIT_CTL);
--	/* Loading of EFER and PERF_GLOBAL_CTRL are toggled dynamically */
--	return vmentry_ctrl &
--		~(VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL | VM_ENTRY_LOAD_IA32_EFER);
-+	/*
-+	 * IA32e mode, and loading of EFER and PERF_GLOBAL_CTRL are toggled dynamically.
-+	 */
-+	vmentry_ctrl &= ~(VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL |
-+			  VM_ENTRY_LOAD_IA32_EFER |
-+			  VM_ENTRY_IA32E_MODE);
-+
-+	return vmentry_ctrl;
- }
- 
- static u32 vmx_vmexit_ctrl(void)
--- 
-2.35.3
 
+Best regards,
+Krzysztof
