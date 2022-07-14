@@ -2,145 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75064C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:10:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9474C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239454AbiGNOK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:10:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
+        id S239630AbiGNOKs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231915AbiGNOKT (ORCPT
+        with ESMTP id S238714AbiGNOKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:10:19 -0400
-X-Greylist: delayed 2660 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 07:10:18 PDT
-Received: from maynard.decadent.org.uk (maynard.decadent.org.uk [95.217.213.242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 335654A81C;
-        Thu, 14 Jul 2022 07:10:18 -0700 (PDT)
-Received: from [91.187.115.177] (helo=deadeye)
-        by maynard with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1oByqp-0000X2-IP; Thu, 14 Jul 2022 15:25:55 +0200
-Received: from ben by deadeye with local (Exim 4.96)
-        (envelope-from <ben@decadent.org.uk>)
-        id 1oByqn-004wFW-2Z;
-        Thu, 14 Jul 2022 15:25:53 +0200
-Message-ID: <5afd3b45e9b95fa5023790c24f8a1b0b4ce1ca7c.camel@decadent.org.uk>
-Subject: Re: [PATCH v2 0/5] tools: fix compilation failure caused by
- init_disassemble_info API changes
-From:   Ben Hutchings <ben@decadent.org.uk>
-To:     sedat.dilek@gmail.com, Andres Freund <andres@anarazel.de>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>
-Date:   Thu, 14 Jul 2022 15:25:44 +0200
-In-Reply-To: <CA+icZUVDzogiyG=8sCuxdW4aaby_kRwToit2tg-A4D3VorVKnA@mail.gmail.com>
-References: <20220622231624.t63bkmkzphqvh3kx@alap3.anarazel.de>
-         <20220703212551.1114923-1-andres@anarazel.de>
-         <CA+icZUVDzogiyG=8sCuxdW4aaby_kRwToit2tg-A4D3VorVKnA@mail.gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-OgXkSgMMXMfCDQQ6En6D"
-User-Agent: Evolution 3.44.2-1 
+        Thu, 14 Jul 2022 10:10:45 -0400
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0361F4B0F4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:10:44 -0700 (PDT)
+Received: by mail-il1-f182.google.com with SMTP id d4so1007139ilc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:10:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zdD/5MjcvRSypR8gVKFCvLm+xBKhFvbh6ia5PmYh4sE=;
+        b=R1Qx53dpj34uBpYvf5LdpVioJ1JT5c5w8md+KB3aGhGSJuj2bAYJJ7w6uUXQp7o/Vu
+         mjTGPvSWcVll6Uqd/aESmL3N5KrUKRTzlyHUVGmI66X/4+KpsB1q7R1+Pobmsh0SLg1h
+         wxltEYWM4cQy3rjlQfLdn6JGKtY8DNRWUXPQEYicT6HzfJ0L1bxgMeHNHGG67ye1ByH8
+         YpqS5qNsnOO1LiPjtrPWEoL6VZ/W6ypQ9fCavpm9u83Q7gStpQhO4V/+apLV7TrXzuCw
+         58Cu7jVPKc4wzTKPzD6KcBPI+40YAEX+ns+eiuUoFcqcy/DD0ib8xdxjZJ0qok/SB1zf
+         rrRw==
+X-Gm-Message-State: AJIora8HqGSUz2fB3exLpRSWV4pAyaZKwZdO/FGf+VdmDN2/oDaRjzAg
+        6SX/bzsBNaVYC9fwt5PROA==
+X-Google-Smtp-Source: AGRyM1sPMV4W2UBrwLl8cXpTXjNRBW+X62579GqLa6ROiWu7HZU3vo7nbCEfSdnxT3ML2yVUdErf1A==
+X-Received: by 2002:a05:6e02:148c:b0:2dc:386c:9a1a with SMTP id n12-20020a056e02148c00b002dc386c9a1amr4727971ilk.188.1657807843139;
+        Thu, 14 Jul 2022 07:10:43 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id a19-20020a027353000000b0033f3fcba96bsm759794jae.100.2022.07.14.07.10.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 07:10:42 -0700 (PDT)
+Received: (nullmailer pid 2246944 invoked by uid 1000);
+        Thu, 14 Jul 2022 14:10:41 -0000
+Date:   Thu, 14 Jul 2022 08:10:41 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Naresh Solanki <naresh.solanki@9elements.com>
+Cc:     linux-kernel@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Patrick Rudolph <patrick.rudolph@9elements.com>
+Subject: Re: [PATCH v4 2/4] dt-bindings: regulator: add bindings for
+ output-supply
+Message-ID: <20220714141041.GB2229197-robh@kernel.org>
+References: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
+ <20220707081826.953449-3-Naresh.Solanki@9elements.com>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 91.187.115.177
-X-SA-Exim-Mail-From: ben@decadent.org.uk
-X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707081826.953449-3-Naresh.Solanki@9elements.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jul 07, 2022 at 10:18:24AM +0200, Naresh Solanki wrote:
+> Add a devicetree binding for the 9elements,output-supply driver.
 
---=-OgXkSgMMXMfCDQQ6En6D
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Bindings are for h/w, not drivers.
 
-On Thu, 2022-07-14 at 11:16 +0200, Sedat Dilek wrote:
-> On Sun, Jul 3, 2022 at 11:25 PM Andres Freund <andres@anarazel.de> wrote:
-> >=20
-> > binutils changed the signature of init_disassemble_info(), which now ca=
-uses
-> > compilation failures for tools/{perf,bpf} on e.g. debian unstable. Rele=
-vant
-> > binutils commit:
-> > https://sourceware.org/git/?p=3Dbinutils-gdb.git;a=3Dcommit;h=3D60a3da0=
-0bd5407f07
-> >=20
-> > I first fixed this without introducing the compat header, as suggested =
-by
-> > Quentin, but I thought the amount of repeated boilerplate was a bit too
-> > much. So instead I introduced a compat header to wrap the API changes. =
-Even
-> > tools/bpf/bpftool/jit_disasm.c, which needs its own callbacks for json,=
- imo
-> > looks nicer this way.
-> >=20
-> > I'm not regular contributor, so it very well might be my procedures are=
- a
-> > bit off...
-> >=20
-> > I am not sure I added the right [number of] people to CC?
-> >=20
-> > WRT the feature test: Not sure what the point of the -DPACKAGE=3D'"perf=
-"' is,
-> > nor why tools/perf/Makefile.config sets some LDFLAGS/CFLAGS that are al=
-so
-> > in feature/Makefile and why -ldl isn't needed in the other places. But.=
-..
-> >=20
-> > V2:
-> > - split patches further, so that tools/bpf and tools/perf part are enti=
-rely
-> >   separate
-> > - included a bit more information about tests I did in commit messages
-> > - add a maybe_unused to fprintf_json_styled's style argument
-> >=20
->=20
-> [ CC Ben ]
->=20
-> The Debian kernel-team has integrated your patchset v2.
->=20
-> In case you build without libbfd support there is [1].
-> So, feel free to take this for v3.
->=20
-> -Sedat-
->=20
-> [1] https://salsa.debian.org/kernel-team/linux/-/blob/sid/debian/patches/=
-bugfix/all/tools-perf-fix-build-without-libbfd.patch
-[...]
+> Example is also provided.
+> 
+> Signed-off-by: Naresh Solanki <Naresh.Solanki@9elements.com>
+> ---
+>  .../regulator/9elements,output-supply.yaml    | 63 +++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/regulator/9elements,output-supply.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/regulator/9elements,output-supply.yaml b/Documentation/devicetree/bindings/regulator/9elements,output-supply.yaml
+> new file mode 100644
+> index 000000000000..e4b67bc0794f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/regulator/9elements,output-supply.yaml
+> @@ -0,0 +1,63 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/regulator/userspace-consumer.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Regulator output-supply driver
+> +
+> +maintainers:
+> +  - Patrick Rudolph <patrick.rudolph@9elements.com>
+> +
+> +description: |
+> +  Regulator output-supply driver helps interact with regulator.
+> +  Provides regulator events & sysfs notify to capture regulator events
+> +  in realtime for userspace application.
+> +  This enables userspace application to monitor events in regulator(s) &
+> +  handle them appropriately.
 
-Thanks, I meant to send that fix upstream but got distracted.  It
-should really be folded into "tools perf: Fix compilation error with
-new binutils".
+What does userspace have to do with hardware description?
 
-Ben.
->=20
+> +
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - 9elements,output-supply
 
---=20
-Ben Hutchings
-Always try to do things in chronological order;
-it's less confusing that way.
+Why does this have a vendor prefix when it appears to be a s/w 
+construct?
 
---=-OgXkSgMMXMfCDQQ6En6D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+> +
+> +  regulator-name:
+> +    description: Name of the consumer line
+> +
+> +  regulator-boot-on:
+> +    description: Enable regulator during boot
+> +
+> +  regulator-supplies:
+> +    description: Supply names for this regulator. This can be multiple strings
 
------BEGIN PGP SIGNATURE-----
+What's the type for this? 
 
-iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmLQGVgACgkQ57/I7JWG
-EQnUjBAAk2XI7hNjRozbY7yy+c7k2alNVHWewYw9eUYYJ/2tSIMWsZuerXn0V7iT
-iUEDDd2CVlSSWiSrUHOHimsNjfsDlUtQ+Ev4pc+D83czOWFibs3n4qfixLsE2MFM
-dUXatRQVLgYCJzAvEZnsRK1rAMAbwhh6F1lZGPu+qBN10qDbUOIUnzpEcv4KOhb4
-yLEG1dLHNTO1L2N11xkG2OyDQTUhZxUetEwvmV7LikaA8zXfEpF2O1DNFVdgw3zI
-T0TzpQEvxaPgEcGd2PxFH034gNajsq9WkkiTdXBSGAF0XRkgPQP+LKoQKFc7RkGj
-E01IFeR+DuJVgf6J0YlrQYM23TuJOz4VKVjbbLUFgRqeBC5CQTKvE79jbQSmDZhm
-7QPfcOyRMAJ/FeGDuo8gn9S+9iIWJN8lJ+2RXMv0oT2wvyVF7C292mhAUecz5pmy
-Q/50PBWq3DCDEW8ILlWxqOBI7HeboygjznfEbubJtom13HYCwETUYjxIUdL/duLH
-6/MoktNcrC8XXCttBaFdLO9Ylp7z1w2hDB4+6Trz4y8uitQnJP2hNwxuhsb9clYh
-/fAxsXWPL45QAXMsAQMcWy+ciFaO7nEeTqcWgnj3O29htS72HgOkcdKTtNUp0enI
-OJrsQpLJlAa/4EbpLjtCPDDmDwrtGhlInE3P7mBhWf3iNuCP7Dk=
-=ReGY
------END PGP SIGNATURE-----
+The supply names are the prefix on -supply properties.
 
---=-OgXkSgMMXMfCDQQ6En6D--
+> +
+> +patternProperties:
+> +  ".*-supply$":
+> +    description: |
+> +      Input supply phandle(s) for this node. There should be
+> +      <supply-name>-supply to pass regulators handle
+> +
+> +required:
+> +  - compatible
+> +  - regulator-supplies
+> +  - ".*-supply$"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    p12v_b_consumer {
+> +        compatible = "9elements,output-supply";
+> +        regulator-name = "BCM1";
+> +        regulator-supplies = "vbus";
+> +        vbus-supply = <&p12v_b>;
+> +    };
+> +
+> +    ssb_rssd32 {
+> +        compatible = "9elements,output-supply";
+> +        regulator-name = "ssb_rssd32";
+> +        regulator-supplies = "sw0", "sw1";
+> +        sw0-supply = <&sw0_ssb_rssd32>;
+> +        sw1-supply = <&sw1_ssb_rssd32>;
+> +    };
+> +...
+> -- 
+> 2.35.3
+> 
+> 
