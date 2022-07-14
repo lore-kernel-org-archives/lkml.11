@@ -2,88 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E55C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A95DEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:59:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235574AbiGNG40 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
+        id S231913AbiGNG7X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:59:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235407AbiGNG4W (ORCPT
+        with ESMTP id S231828AbiGNG7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:56:22 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E5882D1FF;
-        Wed, 13 Jul 2022 23:56:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6oc7w
-        O6J7QkAI8GY1btKbQzxXLENuQsZWTbIo3WwccQ=; b=qaMtvJ/XXgshzKEAJn8Vv
-        kd67+FbZYRJ+WzQWGKKxIxdhEJ1gxij1O3QMADlZn2KXA7GP6ZBfcHhmzo82xb0J
-        Zkxi21O3cyMDZYq1uG3fUDd+u4ptwG7AtCwOg7qP3nvqoAmtOcsDXqLJr5sa3mz/
-        BxnWA+j7+zcXUsd7pyl+kM=
-Received: from localhost.localdomain (unknown [123.112.69.106])
-        by smtp1 (Coremail) with SMTP id GdxpCgBHKrv3vc9iXQK9OA--.2988S4;
-        Thu, 14 Jul 2022 14:56:02 +0800 (CST)
-From:   Jianglei Nie <niejianglei2021@163.com>
-To:     bhe@redhat.com, vgoyal@redhat.com, dyoung@redhat.com
-Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        Jianglei Nie <niejianglei2021@163.com>
-Subject: [PATCH v5] proc/vmcore: fix potential memory leak in vmcore_init()
-Date:   Thu, 14 Jul 2022 14:55:49 +0800
-Message-Id: <20220714065549.2344266-1-niejianglei2021@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 02:59:10 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAD242B190;
+        Wed, 13 Jul 2022 23:59:07 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E6hmqE029727;
+        Thu, 14 Jul 2022 06:59:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : to : cc : references : from : subject : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=GeT64NfS5k2tAgpLSlglGCY4PhITfWskpQ5HmZ6QoX0=;
+ b=llRSFn46x1quPK2wDOzYtg4bRovel3Od3mm+NjR7etSyuLFCYTZdEjKlxMzmj5X686DE
+ aJEDEQJ5ptUSKLJe4ccGIHUMLjsbgv4CiScPQmTIyFW+9noxNc5/aSAxUopTqJPqtddj
+ IjVoNK+rh/3c9qer5S9Vm7InluTtCikAO+Az49Vos6fJhysoHA7KfaLOX+hM7A1PZoiK
+ G+yo49sM6DMJSYeL59zHRR4d7yTfYEHCdSRGeTCuIfMNhPi/HsVwiWJ5K1dEjuwIkLFv
+ V8t9WjXx8DIthy3b4F5Y6u9XIUO9NUxPqggDb3CnO0X4dPJmyYoPGb/NUD19Orww3RIc nA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hae4frak9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 06:59:06 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E6nwxg023864;
+        Thu, 14 Jul 2022 06:59:06 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hae4frajq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 06:59:06 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E6rSpI004319;
+        Thu, 14 Jul 2022 06:59:04 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma06fra.de.ibm.com with ESMTP id 3h8ncnh5vr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 06:59:04 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E6vS6b22020368
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 06:57:28 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 18C19A4054;
+        Thu, 14 Jul 2022 06:59:01 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9FA22A405C;
+        Thu, 14 Jul 2022 06:59:00 +0000 (GMT)
+Received: from [9.145.62.186] (unknown [9.145.62.186])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 14 Jul 2022 06:59:00 +0000 (GMT)
+Message-ID: <abed8069-220a-ee32-b4fa-3cff935b539c@linux.ibm.com>
+Date:   Thu, 14 Jul 2022 08:59:00 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgBHKrv3vc9iXQK9OA--.2988S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWrKrWUtFW5Gw4xXFWfXr17Awb_yoW8JryUpF
-        1kGw48Cr95Wrn7Zr48Jw47Zw1kAa1UJayjqry3CF4ayrnxWw4vvrWFkFWF9F1Y9r10ga98
-        XFWkua1fAFZ8WF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zRDl1QUUUUU=
-X-Originating-IP: [123.112.69.106]
-X-CM-SenderInfo: xqlhyxxdqjzvrlsqjii6rwjhhfrp/1tbiMgI+jFWBz85v3gAAsm
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Content-Language: en-US
+To:     Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org
+Cc:     borntraeger@de.ibm.com, thuth@redhat.com, pasic@linux.ibm.com,
+        david@redhat.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, scgl@linux.ibm.com,
+        mimu@linux.ibm.com, nrb@linux.ibm.com
+References: <20220628135619.32410-1-imbrenda@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+Subject: Re: [PATCH v12 00/18] KVM: s390: pv: implement lazy destroy for
+ reboot
+In-Reply-To: <20220628135619.32410-1-imbrenda@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: XNyKNM8aZ2gI7zY6NPWPZb6wPeL7o6gm
+X-Proofpoint-ORIG-GUID: eCzD25cLDywZLHhs-OJ0w9_idvUGfNkH
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-14_04,2022-07-13_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 clxscore=1015 bulkscore=0 spamscore=0
+ phishscore=0 adultscore=0 mlxscore=0 mlxlogscore=972 lowpriorityscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207140025
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-elfcorehdr_alloc() allocates a memory chunk for elfcorehdr_addr with
-kzalloc(). If is_vmcore_usable() returns false, elfcorehdr_addr is a
-predefined value. If parse_crash_elf_headers() gets some error and
-returns a negetive value, the elfcorehdr_addr should be released with
-elfcorehdr_free().
+On 6/28/22 15:56, Claudio Imbrenda wrote:
+> Previously, when a protected VM was rebooted or when it was shut down,
+> its memory was made unprotected, and then the protected VM itself was
+> destroyed. Looping over the whole address space can take some time,
+> considering the overhead of the various Ultravisor Calls (UVCs). This
+> means that a reboot or a shutdown would take a potentially long amount
+> of time, depending on the amount of used memory.
+> 
+> This patchseries implements a deferred destroy mechanism for protected
+> guests. When a protected guest is destroyed, its memory can be cleared
+> in background, allowing the guest to restart or terminate significantly
+> faster than before.
+> 
 
-Fix it by calling elfcorehdr_free() when parse_crash_elf_headers() fails.
+Patches 1-12 have spent a considerable amount of time in the CI and I'd 
+like to queue them to be able to focus on the rest of the series.
 
-Acked-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
----
- fs/proc/vmcore.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Patch 9 will need two small fixups since there are two conflicts where a 
+line was introduced before your addition of the include and the struct 
+kvm_s390_pv mmu_notifier member. I.e. it's more of a patch history 
+problem than a real conflict.
 
-diff --git a/fs/proc/vmcore.c b/fs/proc/vmcore.c
-index 4eaeb645e759..390515c249dd 100644
---- a/fs/proc/vmcore.c
-+++ b/fs/proc/vmcore.c
-@@ -1569,15 +1569,16 @@ static int __init vmcore_init(void)
- 	rc = parse_crash_elf_headers();
- 	if (rc) {
- 		pr_warn("Kdump: vmcore not initialized\n");
--		return rc;
-+		goto fail;
- 	}
--	elfcorehdr_free(elfcorehdr_addr);
- 	elfcorehdr_addr = ELFCORE_ADDR_ERR;
- 
- 	proc_vmcore = proc_create("vmcore", S_IRUSR, NULL, &vmcore_proc_ops);
- 	if (proc_vmcore)
- 		proc_vmcore->size = vmcore_size;
--	return 0;
-+fail:
-+	elfcorehdr_free(elfcorehdr_addr);
-+	return rc;
- }
- fs_initcall(vmcore_init);
- 
--- 
-2.25.1
-
+I'd fix that up when queuing if you're ok with it?
