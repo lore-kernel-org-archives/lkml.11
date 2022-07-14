@@ -2,101 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FF3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:14:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCA5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238910AbiGNMOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
+        id S238808AbiGNMSI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:18:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239268AbiGNMOd (ORCPT
+        with ESMTP id S230220AbiGNMSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:14:33 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C6C2B199
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:14:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=8IsG3X6zCfF6DLdWoVTEy5WGlpBO4SysD3lWEtSUkiM=; b=jnnl+pDIp9qmpJESNHT4kZK9Sk
-        wv6gsqi+CQ1dQqvqbWqrsgN/o6Q9ZUcR8/t8t37+FaKkyP2/zBN7JmcOK6VorXpf5Mo0ac0epXuBB
-        NZRhSYJvIyY4pLELJxngsRsSbUPw/4wbtFdiQzirnWeYOdg7zCPBJFYZhR3uQmAd8apivkpdswyLj
-        GgcwVFrNVAMe5RdkExrbtqDc9bUSyUK1i+Y9r4II38IqRnUkPoLJi9a4T41oCq6WfRx0Flki8VxBr
-        gosBlbUYIvxyLgmzyGiIBsghk7C2y1P8A30o2qYnP5K3kUC72JqSTR8appZuJpfjT0qhl4AuIbRZ0
-        OX/U1diw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33330)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oBxjP-0005k5-MF; Thu, 14 Jul 2022 13:14:11 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oBxjJ-0006b8-ND; Thu, 14 Jul 2022 13:14:05 +0100
-Date:   Thu, 14 Jul 2022 13:14:05 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Balbir Singh <bsingharora@gmail.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Paul Mackerras <paulus@ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>
-Subject: Re: Linux 5.19-rc6
-Message-ID: <YtAIjVDa7IKRO3JX@shell.armlinux.org.uk>
-References: <CAHk-=wgTmGaToVFdSdoFqT2sNkk7jg2rSWasUYv-tASUZ2j_0Q@mail.gmail.com>
- <20220713050724.GA2471738@roeck-us.net>
- <CAHk-=widUqghhXus_GCM9+FESa5vHqMb_pO3=0dGYH8C+yix2w@mail.gmail.com>
- <Ys8hqoiN5iWbslsM@shell.armlinux.org.uk>
- <CAHk-=wjNxyXQqn=k0KipzUPoBYWQhUwybxee8GTkF_Oz6RPVFw@mail.gmail.com>
- <e63e108b-c99c-9ab7-0638-367b72983b81@roeck-us.net>
+        Thu, 14 Jul 2022 08:18:06 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23B53DBFE;
+        Thu, 14 Jul 2022 05:18:05 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id r6so2155377edd.7;
+        Thu, 14 Jul 2022 05:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z8FXPQ2HFsdQUAT+K94K5LqC4oPDIoYE7B3AmbxBbmI=;
+        b=fzmSn9/0x8bBpW8nEI3Fg9gdUlqbZV3NJ1Ga577qdd9juU5LLRLDsVpsnF9eve16qO
+         IAHT20iruWgksIAS26sdrKpyIXdjRdg6k1RVPUFWOcF6wv22nEXx9gh6ATGsOHra0tB3
+         kt7b/azZLQgTMRht51dENVUdXOwTGI0vmnUYZMqlymsT1HXfpRHZ+VtTmtNvi+Q3PQFW
+         10rzDoz1GKz1HrwvBUbXHYY/43Hy5PLf7tJCOqL/MJ/820FCt16Tf+5Ns7tmYoQq9lPA
+         86//5VL1abd62POh/EAbV1Vmv/p1vymTQIkcE75arO4BBBm+mAHYxpowLv9ravmW9Y7z
+         jVwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=z8FXPQ2HFsdQUAT+K94K5LqC4oPDIoYE7B3AmbxBbmI=;
+        b=LvmEySddXmXb/Oghzr2n/EIuFH6jSACO+lPkE+sMXwxwXF/y51eR/sTLqiZFZcEwno
+         d/y6q0eJRgRG+w2lH0H+bIH4Trmcjtph9SVF3yYBCQRRrMywRIPlF0+MGHIDsMtH8NLU
+         Z/ArD9ef15zKjcf10pDL88AQuSU/SsLsLM2R6VS2MVJpmwFrU83XXcpXw5ZnjPn+N2KT
+         q4hBBJs3G9h1ddpLl8F+alAiatJXycFs0LbwJW8BFKl134T4kL7dmjb0Ay9nbQBPSGzg
+         ruuDNwkcv3VhVN9tcjMuat2W2FCFUQDgkj59ejIMQnR5nwNS6L4vfZCz4ErjW4ET7b1V
+         0jXw==
+X-Gm-Message-State: AJIora/4fjsZ6mUprEURQ/7MPzHYuaj+SB8XKUKlWMIgQfqRytD81Yfo
+        LfUsnKIy3KhAffc2NgDZ7Is=
+X-Google-Smtp-Source: AGRyM1s0FLooPPofTKzsmTjW38dN7FmunKqAOFb5+ZQWmFsV95mTK4M5ORXv2xU0JZ+JtCFtyk79Ow==
+X-Received: by 2002:a05:6402:3886:b0:435:643a:b7ae with SMTP id fd6-20020a056402388600b00435643ab7aemr11823103edb.4.1657801084100;
+        Thu, 14 Jul 2022 05:18:04 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id b6-20020a170906038600b00711edab7622sm636692eja.40.2022.07.14.05.18.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 05:18:03 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH] crypto: lib/arc4 - expose library interface
+Date:   Thu, 14 Jul 2022 07:12:21 +0200
+Message-Id: <20220714051221.22525-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e63e108b-c99c-9ab7-0638-367b72983b81@roeck-us.net>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 01:40:41PM -0700, Guenter Roeck wrote:
-> On 7/13/22 13:21, Linus Torvalds wrote:
-> > On Wed, Jul 13, 2022 at 12:49 PM Russell King (Oracle)
-> > <linux@armlinux.org.uk> wrote:
-> > > 
-> > > There may be a patch that solves that, but it's never been submitted to
-> > > my patch system:
-> > > 
-> > > https://lore.kernel.org/all/20220524025139.40212-1-wangkefeng.wang@huawei.com/
-> > 
-> > That patch looks sane to me, but I guess Guenter would need to check
-> > ... Guenter?
-> > 
-> 
-> That patch is (and has been) in linux-next for a long time,
-> as commit d2ca1fd2bc70, and with the following tags.
-> 
->     Fixes: 7719a68b2fa4 ("ARM: 9192/1: amba: fix memory leak in amba_device_try_add()")
->     Reported-by: Guenter Roeck <linux@roeck-us.net>
->     Tested-by: Guenter Roeck <linux@roeck-us.net>
->     Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
->     Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> 
-> So, yes, it fixes the problem. I don't know where it is pulled from, though.
-> I thought that it is from Russell's tree, given his Signed-off-by:,
-> but I never really checked.
+Permit to compile the arc4 crypto lib without any user. This is required
+by the backports project [1] that require this lib for any wireless
+driver.
 
-Ah, yes, it's in the same bracnh as 9192/1. So if Linus is reporting
-that 9192/1 is still a problem in linux-next, then this patch does
-_not_ fix it.
+[1] https://backports.wiki.kernel.org/index.php/Main_Page
 
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+---
+ lib/crypto/Kconfig | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
+index 2082af43d51f..2dfc785a7817 100644
+--- a/lib/crypto/Kconfig
++++ b/lib/crypto/Kconfig
+@@ -6,7 +6,11 @@ config CRYPTO_LIB_AES
+ 	tristate
+ 
+ config CRYPTO_LIB_ARC4
+-	tristate
++	tristate "ARC4 library interface"
++	help
++	  Enable the ARC4 library interface. This interface is mainly
++	  used by wireless drivers and is required by the backports
++	  project.
+ 
+ config CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+ 	bool
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.36.1
+
