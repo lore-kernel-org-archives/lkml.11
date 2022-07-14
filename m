@@ -2,271 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FABC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbiGNTjO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 15:39:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39998 "EHLO
+        id S239339AbiGNTmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 15:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231500AbiGNTjB (ORCPT
+        with ESMTP id S232143AbiGNTmF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 15:39:01 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59996BCBB;
-        Thu, 14 Jul 2022 12:39:00 -0700 (PDT)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26EJSnWm018496;
-        Thu, 14 Jul 2022 19:38:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=IBxWt9MDvXqLFjlyajse+ZciF0blvUGo4RHDgg5suro=;
- b=fkb3aQ5/QsvLcOqMllYXsQ9JtKJ2YD0/fKIYQRkB2dbvj073aBChfgOdK8ofGCY7MKT8
- EjRQRLnN39owKyyxFNwM5sgl5/F6BJve/fZ6KspBZfLUrVPx9t5PLnJThtQYeJG6egRu
- HZIKKx9J5Jy+vcguLXbX/HRQgFWVSwddh1UzcUSILTMsfHCMr2L/PDhVaToJxlUXqX8O
- IexbBcmmX66dEHi1acAmCzWWHVKlXCs9rlO4/KAdvYUNfjfdKToO3bUOe2EzVAANWs3n
- hwk1crd017s6Hy09A0ph1VQhktVTRpj60Exc7U7Y8n3RZlG/b2UQIdSe2IYVK1ducIgi 8Q== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hasb307rm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 19:38:59 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26EJZrls011422;
-        Thu, 14 Jul 2022 19:38:58 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hasb307qp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 19:38:58 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26EJLRsj001081;
-        Thu, 14 Jul 2022 19:38:56 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03fra.de.ibm.com with ESMTP id 3h71a8nnn2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 19:38:56 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26EJcroY23003538
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 19:38:53 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 65EF0A404D;
-        Thu, 14 Jul 2022 19:38:53 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9D2B3A4040;
-        Thu, 14 Jul 2022 19:38:52 +0000 (GMT)
-Received: from li-c6ac47cc-293c-11b2-a85c-d421c8e4747b.ibm.com.com (unknown [9.171.80.107])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 19:38:52 +0000 (GMT)
-From:   Pierre Morel <pmorel@linux.ibm.com>
-To:     kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, frankja@linux.ibm.com, cohuck@redhat.com,
-        david@redhat.com, thuth@redhat.com, imbrenda@linux.ibm.com,
-        hca@linux.ibm.com, gor@linux.ibm.com, pmorel@linux.ibm.com,
-        wintera@linux.ibm.com, seiden@linux.ibm.com, nrb@linux.ibm.com,
-        scgl@linux.ibm.com
-Subject: [PATCH v13 2/2] KVM: s390: resetting the Topology-Change-Report
-Date:   Thu, 14 Jul 2022 21:43:34 +0200
-Message-Id: <20220714194334.127812-1-pmorel@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <541d85d3-4864-583c-ff33-d0f566770c9f@linux.ibm.com>
-References: <541d85d3-4864-583c-ff33-d0f566770c9f@linux.ibm.com>
+        Thu, 14 Jul 2022 15:42:05 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59C296C13E;
+        Thu, 14 Jul 2022 12:42:01 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 8758B22238;
+        Thu, 14 Jul 2022 21:41:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1657827716;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3ro6DsiZOyVl0p4EfjbReVqk2JZ+ojOAHyeH+zjJsEw=;
+        b=iBPQLNv4oS0P3UsioZAiEjIeQk76v1WKPCD5H0BzEwm00wXbLr8bX/Ya43aeQ5023QJq2k
+        4q5ldJ7b56ZzTlNLFYfJBNS0SE3Cpk9/hYEctK+IcAQ8s1yWUCUeHXT5KFE5rSHhco2K8k
+        KjI4b29t+HcLCCg6PXHnUv2ihhDi6d4=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: PaV5aRKIH9kBbJFindWIy-z0uXGNLXim
-X-Proofpoint-ORIG-GUID: 2xS_a92R5aSfzEeUnXBtYMarn0abVEY1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_17,2022-07-14_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- adultscore=0 suspectscore=0 spamscore=0 lowpriorityscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 phishscore=0 bulkscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207140085
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 14 Jul 2022 21:41:48 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Michal Suchanek <msuchanek@suse.de>
+Cc:     linux-sunxi@lists.linux.dev, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: Re: [PATCH 1/2] mtd: spi-nor: When a flash memory is missing do not
+ report an error
+In-Reply-To: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
+References: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d8de86aa0331be697fbef33d5ab2c57a@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-During a subsystem reset the Topology-Change-Report is cleared.
+Hi,
 
-Let's give userland the possibility to clear the MTCR in the case
-of a subsystem reset.
+Am 2022-07-14 21:19, schrieb Michal Suchanek:
+> It is normal that devices are designed with multiple types of storage,
+> and only some types of storage are present.
+> 
+> The kernel can handle this situation gracefully for many types of
+> storage devices such as mmc or ata but it reports and error when spi
+> flash is not present.
+> 
+> Only print a notice that the storage device is missing when no response
+> to the identify command is received.
+> 
+> Consider reply buffers with all bits set to the same value no response.
 
-To migrate the MTCR, we give userland the possibility to
-query the MTCR state.
+I'm not sure you can compare SPI with ATA and MMC. I'm just speaking of
+DT now, but there, for ATA and MMC you just describe the controller and
+it will auto-detect the connected storage. Whereas with SPI you describe
+both the controller and the flash. So I'd argue that your hardware
+description is wrong if it describes a flash which is not present.
 
-We indicate KVM support for the CPU topology facility with a new
-KVM capability: KVM_CAP_S390_CPU_TOPOLOGY.
+> Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+> ---
+>  drivers/mtd/spi-nor/core.c | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index 502967c76c5f..6bab540171a4 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -1652,6 +1652,24 @@ static const struct flash_info
+> *spi_nor_match_id(struct spi_nor *nor,
+>  	return NULL;
+>  }
+> 
+> +static const bool buffer_uniform(const u8 *buffer, size_t length)
+> +{
+> +	bool all0;
+> +	size_t i;
+> +
+> +	for (all0 = true, i = 0; i < length; i++)
+> +		if (buffer[i] != 0) {
+> +			all0 = false;
+> +			break;
+> +		}
+> +	if (all0)
+> +		return true;
+> +	for (i = 0; i < length; i++)
+> +		if (buffer[i] != 0xff)
+> +			return false;
+> +	return true;
+> +}
 
-Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-Reviewed-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
-Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
----
- Documentation/virt/kvm/api.rst   | 25 ++++++++++++++++
- arch/s390/include/uapi/asm/kvm.h |  1 +
- arch/s390/kvm/kvm-s390.c         | 51 ++++++++++++++++++++++++++++++++
- include/uapi/linux/kvm.h         |  1 +
- 4 files changed, 78 insertions(+)
+That seems unnecessarily complex.
+if (!memchr_inv(id, '\x00', SPI_NOR_MAX_ID_LEN) ||
+     !memchr_inv(id, '\xff', SPI_NOR_MAX_ID_LEN))
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index 82baa7682829..892fc2e470d7 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -8159,6 +8159,31 @@ PV guests. The `KVM_PV_DUMP` command is available for the
- dump related UV data. Also the vcpu ioctl `KVM_S390_PV_CPU_COMMAND` is
- available and supports the `KVM_PV_DUMP_CPU` subcommand.
- 
-+8.38 KVM_CAP_S390_CPU_TOPOLOGY
-+------------------------------
-+
-+:Capability: KVM_CAP_S390_CPU_TOPOLOGY
-+:Architectures: s390
-+:Type: vm
-+
-+This capability indicates that KVM will provide the S390 CPU Topology
-+facility which consist of the interpretation of the PTF instruction for
-+the function code 2 along with interception and forwarding of both the
-+PTF instruction with function codes 0 or 1 and the STSI(15,1,x)
-+instruction to the userland hypervisor.
-+
-+The stfle facility 11, CPU Topology facility, should not be indicated
-+to the guest without this capability.
-+
-+When this capability is present, KVM provides a new attribute group
-+on vm fd, KVM_S390_VM_CPU_TOPOLOGY.
-+This new attribute allows to get, set or clear the Modified Change
-+Topology Report (MTCR) bit of the SCA through the kvm_device_attr
-+structure.
-+
-+When getting the Modified Change Topology Report value, the attr->addr
-+must point to a byte where the value will be stored or retrieved from.
-+
- 9. Known KVM API problems
- =========================
- 
-diff --git a/arch/s390/include/uapi/asm/kvm.h b/arch/s390/include/uapi/asm/kvm.h
-index 7a6b14874d65..a73cf01a1606 100644
---- a/arch/s390/include/uapi/asm/kvm.h
-+++ b/arch/s390/include/uapi/asm/kvm.h
-@@ -74,6 +74,7 @@ struct kvm_s390_io_adapter_req {
- #define KVM_S390_VM_CRYPTO		2
- #define KVM_S390_VM_CPU_MODEL		3
- #define KVM_S390_VM_MIGRATION		4
-+#define KVM_S390_VM_CPU_TOPOLOGY	5
- 
- /* kvm attributes for mem_ctrl */
- #define KVM_S390_VM_MEM_ENABLE_CMMA	0
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 330a0cd4b8c8..b2cb13d1c0cd 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -647,6 +647,9 @@ int kvm_vm_ioctl_check_extension(struct kvm *kvm, long ext)
- 	case KVM_CAP_S390_ZPCI_OP:
- 		r = kvm_s390_pci_interp_allowed();
- 		break;
-+	case KVM_CAP_S390_CPU_TOPOLOGY:
-+		r = test_facility(11);
-+		break;
- 	default:
- 		r = 0;
- 	}
-@@ -858,6 +861,20 @@ int kvm_vm_ioctl_enable_cap(struct kvm *kvm, struct kvm_enable_cap *cap)
- 		icpt_operexc_on_all_vcpus(kvm);
- 		r = 0;
- 		break;
-+	case KVM_CAP_S390_CPU_TOPOLOGY:
-+		r = -EINVAL;
-+		mutex_lock(&kvm->lock);
-+		if (kvm->created_vcpus) {
-+			r = -EBUSY;
-+		} else if (test_facility(11)) {
-+			set_kvm_facility(kvm->arch.model.fac_mask, 11);
-+			set_kvm_facility(kvm->arch.model.fac_list, 11);
-+			r = 0;
-+		}
-+		mutex_unlock(&kvm->lock);
-+		VM_EVENT(kvm, 3, "ENABLE: CAP_S390_CPU_TOPOLOGY %s",
-+			 r ? "(not available)" : "(success)");
-+		break;
- 	default:
- 		r = -EINVAL;
- 		break;
-@@ -1794,6 +1811,31 @@ static void kvm_s390_update_topology_change_report(struct kvm *kvm, bool val)
- 	read_unlock(&kvm->arch.sca_lock);
- }
- 
-+static int kvm_s390_set_topo_change_indication(struct kvm *kvm,
-+					       struct kvm_device_attr *attr)
-+{
-+	if (!test_kvm_facility(kvm, 11))
-+		return -ENXIO;
-+
-+	kvm_s390_update_topology_change_report(kvm, !!attr->attr);
-+	return 0;
-+}
-+
-+static int kvm_s390_get_topo_change_indication(struct kvm *kvm,
-+					       struct kvm_device_attr *attr)
-+{
-+	u8 topo;
-+
-+	if (!test_kvm_facility(kvm, 11))
-+		return -ENXIO;
-+
-+	read_lock(&kvm->arch.sca_lock);
-+	topo = ((struct bsca_block *)kvm->arch.sca)->utility.mtcr;
-+	read_unlock(&kvm->arch.sca_lock);
-+
-+	return put_user(topo, (u8 __user *)attr->addr);
-+}
-+
- static int kvm_s390_vm_set_attr(struct kvm *kvm, struct kvm_device_attr *attr)
- {
- 	int ret;
-@@ -1814,6 +1856,9 @@ static int kvm_s390_vm_set_attr(struct kvm *kvm, struct kvm_device_attr *attr)
- 	case KVM_S390_VM_MIGRATION:
- 		ret = kvm_s390_vm_set_migration(kvm, attr);
- 		break;
-+	case KVM_S390_VM_CPU_TOPOLOGY:
-+		ret = kvm_s390_set_topo_change_indication(kvm, attr);
-+		break;
- 	default:
- 		ret = -ENXIO;
- 		break;
-@@ -1839,6 +1884,9 @@ static int kvm_s390_vm_get_attr(struct kvm *kvm, struct kvm_device_attr *attr)
- 	case KVM_S390_VM_MIGRATION:
- 		ret = kvm_s390_vm_get_migration(kvm, attr);
- 		break;
-+	case KVM_S390_VM_CPU_TOPOLOGY:
-+		ret = kvm_s390_get_topo_change_indication(kvm, attr);
-+		break;
- 	default:
- 		ret = -ENXIO;
- 		break;
-@@ -1912,6 +1960,9 @@ static int kvm_s390_vm_has_attr(struct kvm *kvm, struct kvm_device_attr *attr)
- 	case KVM_S390_VM_MIGRATION:
- 		ret = 0;
- 		break;
-+	case KVM_S390_VM_CPU_TOPOLOGY:
-+		ret = test_kvm_facility(kvm, 11) ? 0 : -ENXIO;
-+		break;
- 	default:
- 		ret = -ENXIO;
- 		break;
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 80216c6cece1..08206212fd36 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -1159,6 +1159,7 @@ struct kvm_ppc_resize_hpt {
- #define KVM_CAP_ARM_SYSTEM_SUSPEND 216
- #define KVM_CAP_S390_PROTECTED_DUMP 217
- #define KVM_CAP_S390_ZPCI_OP 221
-+#define KVM_CAP_S390_CPU_TOPOLOGY 222
- 
- #ifdef KVM_CAP_IRQ_ROUTING
- 
--- 
-2.31.1
+should be the same.
 
+-michael
+
+> +
+>  static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
+>  {
+>  	const struct flash_info *info;
+> @@ -1666,8 +1684,11 @@ static const struct flash_info
+> *spi_nor_detect(struct spi_nor *nor)
+> 
+>  	info = spi_nor_match_id(nor, id);
+>  	if (!info) {
+> -		dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
+> -			SPI_NOR_MAX_ID_LEN, id);
+> +		if (buffer_uniform(id, SPI_NOR_MAX_ID_LEN))
+> +			dev_info(nor->dev, "No flash memory detected.\n");
+> +		else
+> +			dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
+> +				SPI_NOR_MAX_ID_LEN, id);
+>  		return ERR_PTR(-ENODEV);
+>  	}
+>  	return info;
