@@ -2,217 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2227C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238111AbiGNKHZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:07:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
+        id S238036AbiGNKIH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:08:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238017AbiGNKHR (ORCPT
+        with ESMTP id S237673AbiGNKIE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:07:17 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE8151428;
-        Thu, 14 Jul 2022 03:07:17 -0700 (PDT)
-Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E9YptM015127;
-        Thu, 14 Jul 2022 10:07:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=mEr4E85Vot8Y7AKgbnNHVwJXGvZ8jhEjPpcu1Dr1Fcc=;
- b=yIH1HB3wNF+kg8bHK9yBLd07PzQIaTXI+ZjsyKgjaUD/cSTPzreHyU9AQSxyU6Rc1sd/
- CnSLGOQamSmolCEz77fXRYDQc+DwoMJjoIeW0jrOD8R9Tgbe1RVGXhrgLtGFTts42Bj8
- x8zvXrpnsuDmnT/CIJ98t814mMciXOJlyW4hGlgG237grv+GCgEwZod9MUAbD3aVWOsj
- yarlQ0hNkcivP81hHyc4eSYeC1C4+QF/I4MIW7F4k2Bjq+xzQeRU9tznn9PI28cBQdQz
- 2kcFl+jo1yB2F9p3KR2TRNwK7jm521vsh9oPXPhRpN5Ykc5UwmvGP17ieTTJul7o3egz bw== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71rg4jab-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 10:07:11 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26EA7AuT033208;
-        Thu, 14 Jul 2022 10:07:10 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2168.outbound.protection.outlook.com [104.47.55.168])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h704594t9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 10:06:35 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e8S3k2pxm3N05m+9W9/c/b0Pv3DLfeulq0TWD0lHuJG4gzfLgWOzeMG9x9OjG6tA7oZb8M28yWmtz/Wd9otWyRcvoNeG0/9EuVWsLkTOCwCAzR7irwjIcWknJHzdGw7VSj76irRtiLUyXfmoHBAowW/4aKPRoEp+oH1QupPA2Ng1uNDNUD5gKCSqNNsGs+W8SB+uyUzK/LNgYJD3KS7DTLjfKk1t0wRGIj4jU3kgrsn7jhExtPrqZLV5njP51F/BoDVXNNlDW5MoTnKas4YyCEFe3vhIWT2MbuP7yA/DmzpfVmoZ6tdr/WcgqOkH2n8483LmKc6Y5THmtkYrtMhZyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mEr4E85Vot8Y7AKgbnNHVwJXGvZ8jhEjPpcu1Dr1Fcc=;
- b=Bd2BSXOOd4L9SDHBG//QHxL1/plVQ+NVwdWQHOsn3e/Ns3xMt8NwGFddUeZaJj7dTibaogrZQ7ux19276XsYImEFD1yhS9fSK5KpS9J/wJLfUEx+0rzUGsgef37TFtQvnOaPKhKTLy2oMsGrlm8bVNfagEDIQxzH4Ao1a0sVHrtzNFtYWX24q1IXE5P4KKIoim8HcFs31ESyXqzVkTFiU5cZVj1pzNhETQptqY4tkZlcrqD/NSQoTwRnEYJyfbql8yg28Rd0rieVGugVRzHzOjuxxdZfL+mkxuXFm/5KY70C6MR30utonEo7+mwmhK9nCMKnrS/5G+n7x4UCugcQ1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mEr4E85Vot8Y7AKgbnNHVwJXGvZ8jhEjPpcu1Dr1Fcc=;
- b=Hcydfih8rUAO1l6H8fXcvYrix/1mgyuSe7+TVBHz0SgKymn6FDyC6sI4hg2OFDyzDaNeAALqYOnKjNZkrJyZNqkHjTsrM2pqawVu7xxtewSFzWZNPNKHsCoeNJxrBc98ctfA0yLdBKrOSaS+BS5ivWpvq8vN+wOTEZkL+krQx4o=
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com (2603:10b6:208:30e::22)
- by MW5PR10MB5668.namprd10.prod.outlook.com (2603:10b6:303:1a3::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.25; Thu, 14 Jul
- 2022 10:06:33 +0000
-Received: from BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::b1c7:933:e8c2:f84f]) by BLAPR10MB5267.namprd10.prod.outlook.com
- ([fe80::b1c7:933:e8c2:f84f%7]) with mapi id 15.20.5417.026; Thu, 14 Jul 2022
- 10:06:33 +0000
-Subject: Re: [PATCH] bpf: btf: Fix vsnprintf return value check
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jiri Olsa <olsajiri@gmail.com>
-Cc:     Fedor Tokarev <ftokarev@gmail.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220711211317.GA1143610@laptop> <YsyZY/tFm3hi5srl@krava>
- <CAEf4BzYGjNaqL4h8=4Jw7O_xxMfy=TbUg94VO6RZT5wOtV+_wQ@mail.gmail.com>
-From:   Alan Maguire <alan.maguire@oracle.com>
-Message-ID: <ef44abe0-81fc-9c97-a4e4-2b3ba19cd84f@oracle.com>
-Date:   Thu, 14 Jul 2022 11:06:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.3
-In-Reply-To: <CAEf4BzYGjNaqL4h8=4Jw7O_xxMfy=TbUg94VO6RZT5wOtV+_wQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM8P251CA0019.EURP251.PROD.OUTLOOK.COM
- (2603:10a6:20b:21b::24) To BLAPR10MB5267.namprd10.prod.outlook.com
- (2603:10b6:208:30e::22)
+        Thu, 14 Jul 2022 06:08:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2728251409
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:08:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657793283;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5yLJ2bZUwPbEJHKaSwHhV1p/EnBfuuZT7nkMtiX7CVI=;
+        b=RT6fYEdGKjh30LkaDYUUh1KK1LAHmRBbqoA+Ysc2hUInLc4jbpvrLxcNZw+fkA4u0p7Qts
+        vGSB7+kEH+gAMQKZDeeFQc5864wnSQ7TZdqamkujeiSl9Yd5Zu8FlMbOhH8+D8LJUTEKBO
+        99uk2VBjWcjRJA4rbXcPc+EPxLuHnCI=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-145-ecINwBunOIqL0o9T8ZLAXQ-1; Thu, 14 Jul 2022 06:08:01 -0400
+X-MC-Unique: ecINwBunOIqL0o9T8ZLAXQ-1
+Received: by mail-wm1-f71.google.com with SMTP id m10-20020a7bcb8a000000b003a2d979099cso552230wmi.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:08:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=5yLJ2bZUwPbEJHKaSwHhV1p/EnBfuuZT7nkMtiX7CVI=;
+        b=RQP8hDMse7mmcEh5nPFrczDTK6j1a9g8IYUlwyyJQeq1pd9xcwlZbHE1827WMYgmgF
+         SHOgNReZe+G8OmTfaJZpu1gBM1prspLRROlBJ756z0UckQs69uLVCK/Pcr4Sn8rtwNlh
+         QBFnOncxugyvyQ9vffM2YCOiudlhn++Ndgq/De/ZoAv4Ixu0oLMqLW9ozAxk4CD2NaLY
+         7vj4nYdxQq6Hn5nZb+vqg3LEKbDEwNry6jCefJMPXE5nzep1EwNsz+5OAfu7doGlJLQy
+         SuAkdlQi4dnXh72kPosYLztxUgBkaNaf1Rh57tGbQvfv8G01bBD6B0HPB0QHHaBkXYTv
+         gyBQ==
+X-Gm-Message-State: AJIora8z3o9OH7tFHAkzI9lT4yZujB9phkP/9PSPyztrLApfMPJ9cMMH
+        PdL3//9TI3E/kNo1fnZ4iCEmHPmW3PmEIkqmnaEo2TvYJWoSzXv0PRY2AcxgzWy8QoMi+K+vTmR
+        WcBg/Q1alt6xrC6qi3b0ZUiU3
+X-Received: by 2002:a5d:5311:0:b0:21d:656b:807e with SMTP id e17-20020a5d5311000000b0021d656b807emr7337468wrv.521.1657793280648;
+        Thu, 14 Jul 2022 03:08:00 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1spOrGYWP6gQ8F45DcZ+A44Aq18Wu0zW2WhwkrP140A8f4VGuWYv5/Pa7tkvvSjMmUb46z+eg==
+X-Received: by 2002:a5d:5311:0:b0:21d:656b:807e with SMTP id e17-20020a5d5311000000b0021d656b807emr7337443wrv.521.1657793280463;
+        Thu, 14 Jul 2022 03:08:00 -0700 (PDT)
+Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
+        by smtp.gmail.com with ESMTPSA id o3-20020adfeac3000000b0021d6ac977fasm1042092wrn.69.2022.07.14.03.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 03:07:59 -0700 (PDT)
+Message-ID: <3f4ff61979116c502663ab8b49ce869100f53e2a.camel@redhat.com>
+Subject: Re: [PATCH v4 08/25] KVM: selftests: Switch to updated eVMCSv1
+ definition
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 14 Jul 2022 13:07:58 +0300
+In-Reply-To: <20220714091327.1085353-9-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+         <20220714091327.1085353-9-vkuznets@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5456b57a-7abd-4088-0a3c-08da658087b5
-X-MS-TrafficTypeDiagnostic: MW5PR10MB5668:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nRfsByopW58ql1vegIvJF2veIMviFaM3SqU1FbgWJZc1CxdOmdbYriQfRz1ehEc5qdCZuHoUQaI8j2RrIKmVzD8g8MX2BIMo9NxcV79k8AZKgpuNYJ4FjiLIQSt6VXkM4o0OLvgVj2pblKyvCZib4+o2Qr6mFU4M8CvZQCAMqKioJUx20x+43holT7oPlhEmc4+2HqCFNvh4fKUvlyay4Mg+F+3QSW12LiP5fAhQABKB2uVIeg5eDRgwywJ3c/YisspGJXYP249aNR5KTvaULSceNDwfshsSneB/Po+aQ4Uw/HjHnQLDqKn85KDB+ykDaBf+ugKpx3c/RBNRNq4YxiIb/CGs6Ljn8HHW5s4s5A7ML3D2tYRpRK5essyeJRr6hA2kZhnBLtp/EVE5QojXwFU7r/qAZnTN9ygMU3VeMC6/G65RpbNxmWN7oGkzCRve6G1qdPlZ72wW4kfgwmxILjK0UDSB0bYlYBxpmesoqoTvxE70BhM2SKaTH/K1xRpdlqq35yxEJWmquHf4FMTVRpdgj9SHLD40QswbEi0OEatl4OK9aegj2aRW9RhJWyhaBD5WdbN2LtFQbGOuFJuS+wjSjBr8BuNnkEkSrkLXizGsbgrUoAT41RQdl1WffVDlWlogVEdEjSHE2y4fWIAxjx47HD5/CFOGl2ZnRoke+rXJhV/Pp/X+6dfXcjDi1Lu1u9WfmHLR6aO57Ae/4moqP3bhun72z/QSvWK1gTnikqnsIIGFZeS+LDa4bzdOod+VzyfB/Vpd2SOCJK0zqf//q4TL33d4w5lriIYZ3iNCtBpohqvVBNU0jVnk77htH9Z6NC1Owl0VtQmpZ6Lqyqlt43EaVX1WDZQ9CiYh1y/6Yn0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB5267.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(366004)(136003)(346002)(396003)(376002)(316002)(110136005)(6486002)(83380400001)(5660300002)(54906003)(478600001)(8676002)(2616005)(6666004)(52116002)(2906002)(53546011)(8936002)(36756003)(6506007)(41300700001)(31696002)(6512007)(31686004)(86362001)(38100700002)(44832011)(66946007)(66476007)(186003)(4326008)(66556008)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWF3U1E2VXdKTDB0SVd6cE1nK3duaWgxQVg0RXA1bGFUS0hUZkpEU24yYVFN?=
- =?utf-8?B?KytNWGdpUnhxazZHdFkycXA5UDlIU0NINm5EVEoyQVhsZnlyQUJvTUswWTdB?=
- =?utf-8?B?TGVXS2VlaHVFZ00yMUx4aTJhTWFBa0lhZS9CaHJGSitqR0tZYUk4bE1FR2Qy?=
- =?utf-8?B?a0NzY2pNY3pvVVlqWkxSV1VrczFBTis5WWplZEJDYW5kWTRHb2t5RzJ1eG5I?=
- =?utf-8?B?Qk8zU2RPQkFYb0J2R2RqVmtSTUMvamIwcWlIWnB1aHMyQTEzNElQTmtwLzVh?=
- =?utf-8?B?VHNXN002cXBSTm0veVlLV09iSUxHYWJCeEJLa2t5KzZzK2s5RHdlcjNlaFU2?=
- =?utf-8?B?dkZ3T1dsQ2daVGdpdUVxUjNxSXQzWG1VVENXVElyN0RZZFIxUnN1QlVqenFz?=
- =?utf-8?B?Y2xPLytnTEZrRE55V2psUWM2NzVyeTZZbXhHQUYwakRzVEkrK1FsZUUzUFVp?=
- =?utf-8?B?bkw1aitiU2xOYW9Ma1BSNlltendvT1pzZktpbm15bDAxNjBESXNHLzU1ZU9J?=
- =?utf-8?B?NnRrcGNicCtZY2lOa0IzU2ZDeHlocUh6TkxoakFPczMrYzJFQUxnUkFlbnMr?=
- =?utf-8?B?NlhGaGlqQ08rQ0hCbHViVk85ZGwyRnJ3MTRBWjlxWTlNSDBheGdQYXpGUTNR?=
- =?utf-8?B?b1I2N3YrT3JiK1BhL0IyVzA0RGtXU3N6WDBrQ2VuTjkvcjNLSmZLR3Y0MTB0?=
- =?utf-8?B?cjVzQk9CZUpuaGFkeFc5SFV0N3c1bGNpcEhkekFBMENwcHVFVWtuTWlWcUsz?=
- =?utf-8?B?bWxDS2RnektKUGlqbGFlRnNkZDFWckRQWUxQbFRNSkJZL2pZWjlGUVhLb2pV?=
- =?utf-8?B?eTRPQ2lWcWxDSytkNEtaQysreHJUZFZ5MnRneVpMczBvLzZiVGt3ODBzTHpX?=
- =?utf-8?B?U1dNNnVZNXg3akJ4UjZyM0dDbHhDbytWMi9sbFk4M203cE5GcHhnRjBQRkNU?=
- =?utf-8?B?dzRPUTkyK2J0MSs0R0dkalJzZm9PL1V0YTI2MG80bGp2NjhTZnJHNHpCV0pX?=
- =?utf-8?B?bUJMaStvN0VkMHBXOUZVR21LN3Z1bTBTRi9NVDk3b3hYSXZVb2FQTEFra1h1?=
- =?utf-8?B?d0Nlc0xKQk0xcjBWMzgzdWN5ZytLbjY1aVVlRmhQWWJlTFVTRUFhNWVEMnJG?=
- =?utf-8?B?MTZmZDNJN0wydUlXQWhoWEtIUThpSEYyZmhZVXIwRWZKZ09RTDhEL1VVWWVX?=
- =?utf-8?B?cmVkNmFFU3NKNGdudTB6TUM0QXVwU1dObVZiRUZ1b21YMjJtTGRoNVdocERB?=
- =?utf-8?B?aE1lSmZ6OS9mUUZnaldLMXY0YVZONEk2Ui9XY3pibDZ1ZndvdTd1TUVsUklh?=
- =?utf-8?B?bHFlczR1cDhKTmNyOXUvWTdiQVFxWUZSQzcvUHRkRGdUeFFqRjF4c0tMeUoz?=
- =?utf-8?B?WWxaQ3RieDhFaEZCaDA1c1p5TGxaTWJpc09OM0dhS0c1c3NoRUVDVG4rRkc5?=
- =?utf-8?B?YVg1dGYwTGw3ajA0WXhPODhsUUtSMDVJczByUGRYT0dxV3NhTUFNV0p3SGc3?=
- =?utf-8?B?bjdYVjc0eWk3ejVhQjdab1U3SGkza1lFTjRtcCs1Q04vaVJMVEZiTDEzNGVs?=
- =?utf-8?B?V2lGODJJdVoyMjNnOWs2Q1VkMlhqb1IwZU92dW5mT2dwVGNLQnFrcC8xRlNo?=
- =?utf-8?B?eWRKblc3QjRQWVpwMW1YeHVGcmorTUpSS3U4VExFMnI0WUdna2VWTzJ5M1cr?=
- =?utf-8?B?OXRmbDNPS05JczRQZndneElDMlE5WHNuQUwybkxIeHMxYzNER05POVRvbUtm?=
- =?utf-8?B?UUg0cGdmL2dlU1A2QTlhUjF4bkRZdGh4dzZGeGpWRDJTakZZR0VpWDdYWkYw?=
- =?utf-8?B?cndzZG41cDJWeno0MFZYUmppeWgySnlJY2toU1FVdk9mYURUSXNaQkcxaTlG?=
- =?utf-8?B?TlUvNjQ0UDRhSWFrWGo4dkJNWmgwV1F4eXlPQWMxMEpJVkREcUdOTXlJeE9q?=
- =?utf-8?B?TjNNQnNqZzVmOHgweXFFck5OaDhXUUYzdEU1d21FR05BbVA3UXN1c2U0T3M1?=
- =?utf-8?B?M1UrMnMzLzdwZzZNNWkzOTRvaDJ1RytKd2IwM2hhNTU3R3JIQkF0VFhqS2dx?=
- =?utf-8?B?N25GSWhnenBJcFdrTkhOSlQvOUxpNGV4bnhyTktxNjlObUd3elBkMHRpMnVp?=
- =?utf-8?B?dTBWMkt2RDBDZ2tLOFB5UERzQnBwU3FhbzduOFhjdnhySkdydjZqUkJIUW5P?=
- =?utf-8?Q?27SYL+ioSU5d08P27NiARyc=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5456b57a-7abd-4088-0a3c-08da658087b5
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB5267.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 10:06:33.5697
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cpscKGLqHxnYyR51tIWN7G6ug3I9LiD3OFMUjqWmsAN1pW4KvfVr6FFIWOb0LcnppwsAkbQai/nBDWkw9n0R6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR10MB5668
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-14_08:2022-07-13,2022-07-14 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 phishscore=0
- mlxlogscore=999 suspectscore=0 adultscore=0 mlxscore=0 spamscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207140042
-X-Proofpoint-GUID: RCtl427QkR_hUJxstfu3T9Su6YQrKonI
-X-Proofpoint-ORIG-GUID: RCtl427QkR_hUJxstfu3T9Su6YQrKonI
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/07/2022 19:40, Andrii Nakryiko wrote:
-> On Mon, Jul 11, 2022 at 2:45 PM Jiri Olsa <olsajiri@gmail.com> wrote:
->>
->> On Mon, Jul 11, 2022 at 11:13:17PM +0200, Fedor Tokarev wrote:
->>> vsnprintf returns the number of characters which would have been written if
->>> enough space had been available, excluding the terminating null byte. Thus,
->>> the return value of 'len_left' means that the last character has been
->>> dropped.
->>
->> should we have test for this in progs/test_snprintf.c ?
+On Thu, 2022-07-14 at 11:13 +0200, Vitaly Kuznetsov wrote:
+> Update Enlightened VMCS definition in selftests from KVM.
 > 
-> It might be too annoying to set up such test, and given the fix is
-> pretty trivial IMO it's ok without extra test. But cc Alan for ack.
-> Alan, please take a look as well.
+> Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  .../selftests/kvm/include/x86_64/evmcs.h      | 45 +++++++++++++++++--
+>  1 file changed, 42 insertions(+), 3 deletions(-)
 > 
+> diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+> index 3c9260f8e116..58db74f68af2 100644
+> --- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+> +++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
+> @@ -203,14 +203,25 @@ struct hv_enlightened_vmcs {
+>                 u32 reserved:30;
+>         } hv_enlightenments_control;
+>         u32 hv_vp_id;
+> -
+> +       u32 padding32_2;
+>         u64 hv_vm_id;
+>         u64 partition_assist_page;
+>         u64 padding64_4[4];
+>         u64 guest_bndcfgs;
+> -       u64 padding64_5[7];
+> +       u64 guest_ia32_perf_global_ctrl;
+> +       u64 guest_ia32_s_cet;
+> +       u64 guest_ssp;
+> +       u64 guest_ia32_int_ssp_table_addr;
+> +       u64 guest_ia32_lbr_ctl;
+> +       u64 padding64_5[2];
+>         u64 xss_exit_bitmap;
+> -       u64 padding64_6[7];
+> +       u64 encls_exiting_bitmap;
+> +       u64 host_ia32_perf_global_ctrl;
 
-I can follow up with a test, it should be okay I think (we can use
-the "don't show types" flag and tryp to print "10" with a 2-byte len or
-similar).
+Fixed here as well, thanks!
 
-In terms of the fix, it looks good, but given that the code is tricky, 
-it might be good to expand a bit on the explanation. Something like the below?
+Best regards,
+	Maxim Levitsky
 
-"When using btf_type_snprintf_show(), the user passes in a "len" value, and
-we use it to initialize ssnprintf.len_left, indicating how much space
-remains for the string representation, including the null byte, so "len - 1" 
-bytes are actually available for the actual string data, leaving one for 
-the terminating null byte.
+> +       u64 tsc_multiplier;
+> +       u64 host_ia32_s_cet;
+> +       u64 host_ssp;
+> +       u64 host_ia32_int_ssp_table_addr;
+> +       u64 padding64_6;
+>  };
+>  
+>  #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
+> @@ -656,6 +667,18 @@ static inline int evmcs_vmread(uint64_t encoding, uint64_t *value)
+>         case VIRTUAL_PROCESSOR_ID:
+>                 *value = current_evmcs->virtual_processor_id;
+>                 break;
+> +       case HOST_IA32_PERF_GLOBAL_CTRL:
+> +               *value = current_evmcs->host_ia32_perf_global_ctrl;
+> +               break;
+> +       case GUEST_IA32_PERF_GLOBAL_CTRL:
+> +               *value = current_evmcs->guest_ia32_perf_global_ctrl;
+> +               break;
+> +       case ENCLS_EXITING_BITMAP:
+> +               *value = current_evmcs->encls_exiting_bitmap;
+> +               break;
+> +       case TSC_MULTIPLIER:
+> +               *value = current_evmcs->tsc_multiplier;
+> +               break;
+>         default: return 1;
+>         }
+>  
+> @@ -1169,6 +1192,22 @@ static inline int evmcs_vmwrite(uint64_t encoding, uint64_t value)
+>                 current_evmcs->virtual_processor_id = value;
+>                 current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_XLAT;
+>                 break;
+> +       case HOST_IA32_PERF_GLOBAL_CTRL:
+> +               current_evmcs->host_ia32_perf_global_ctrl = value;
+> +               current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1;
+> +               break;
+> +       case GUEST_IA32_PERF_GLOBAL_CTRL:
+> +               current_evmcs->guest_ia32_perf_global_ctrl = value;
+> +               current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1;
+> +               break;
+> +       case ENCLS_EXITING_BITMAP:
+> +               current_evmcs->encls_exiting_bitmap = value;
+> +               current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2;
+> +               break;
+> +       case TSC_MULTIPLIER:
+> +               current_evmcs->tsc_multiplier = value;
+> +               current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2;
+> +               break;
+>         default: return 1;
+>         }
+>  
 
-In btf_snprintf_show() - which is passed the ssnprintf data as an argument -
-vsnprintf() returns the len that would have been written, and this _excludes_ 
-the null terminator. But we want to handle cases where the length of the string
-to be written (excluding the null terminator) exactly matches the original len 
-value we passed in (len == len_left) in the same way was we do other
-overflow cases (len > len_left)."
 
-Acked-by: Alan Maguire <alan.maguire@oracle.com>
-
->>
->> jirka
->>
->>>
->>> Signed-off-by: Fedor Tokarev <ftokarev@gmail.com>
->>> ---
->>>  kernel/bpf/btf.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
->>> index eb12d4f705cc..a9c1c98017d4 100644
->>> --- a/kernel/bpf/btf.c
->>> +++ b/kernel/bpf/btf.c
->>> @@ -6519,7 +6519,7 @@ static void btf_snprintf_show(struct btf_show *show, const char *fmt,
->>>       if (len < 0) {
->>>               ssnprintf->len_left = 0;
->>>               ssnprintf->len = len;
->>> -     } else if (len > ssnprintf->len_left) {
->>> +     } else if (len >= ssnprintf->len_left) {
->>>               /* no space, drive on to get length we would have written */
->>>               ssnprintf->len_left = 0;
->>>               ssnprintf->len += len;
->>> --
->>> 2.25.1
->>>
