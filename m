@@ -2,65 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35DF8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:09:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 06:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234144AbiGNGJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 02:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
+        id S233290AbiGNGMM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 02:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233280AbiGNGIw (ORCPT
+        with ESMTP id S230061AbiGNGMJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 02:08:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635E811C1E;
-        Wed, 13 Jul 2022 23:08:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A06B2B8220B;
-        Thu, 14 Jul 2022 06:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C45C8C34114;
-        Thu, 14 Jul 2022 06:08:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657778920;
-        bh=o9lMKv613CrGGGygcthUdb4r6QPjw/LhZtoV5PD7a2g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=eTQvcGYaPiqQUid3SIlQwBgz0x2usn1xBAD6Q9/9C6XDcMdw2H3olNWk9+VNhxbAq
-         a8YVCJvVJtzITAjcX2eE3anmQoJ1MWXJk0jZFPPxX0aSuYIepproHBOMGtE4okEohA
-         3hY91SEK4R9ATArIft3De4vnhpDGbtETslV4LrKY=
-Date:   Thu, 14 Jul 2022 08:08:37 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     sean.wang@kernel.org
-Cc:     stable@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sean Wang <sean.wang@mediatek.com>
-Subject: Re: [PATCH 5.15 2/5] Revert "mt76: mt7921e: fix possible probe
- failure after reboot"
-Message-ID: <Ys+y5QuKqtTPBGd0@kroah.com>
-References: <4bdcd29552ba78c87d8799181b9acddec465ad3c.1657764335.git.sean.wang@kernel.org>
- <c297b97b4af66777202652b29183397e671bc15d.1657764335.git.sean.wang@kernel.org>
+        Thu, 14 Jul 2022 02:12:09 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3501512082
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:12:05 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id j3so969941pfb.6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 23:12:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0JQX6/cIgCdb7Mg76sUFpOl71mtDqdXfnF0wcsBKWsM=;
+        b=MSniBgnOLurkJBS/hE33Ycon1qF3cNBocVhNzr3LgMuamK6dYjUdoDVt336IyjBgSt
+         BeY843VST6NEyYyLyhBxUdsiOMrMGUTqFNoWCydnQE5x0XOnWxYO5HWaWxOfp8NimnmZ
+         wRkQenr9JHGsORs7BzTst6zb+ahj4rDAsc2L4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0JQX6/cIgCdb7Mg76sUFpOl71mtDqdXfnF0wcsBKWsM=;
+        b=KRqThaetqdEXHMBnpsWQISIXrwWwIW/WZXNYu6ikYD8/MaIPHn0+E4GLE8YiVsjIsC
+         L7YjWdxV4WKc2XJnJj0ZyribV6OcU+cQxWZp4NhYZRvnriPNykLEsAFGFz7/bXXoBZ1h
+         saZ4vRTpt/XpAA3Jsq8xjioZLlSqpK38ylcFkym0jJtpYzC/LCBG8b7+YzfB4unI9ymE
+         LRD1yEQvNMlSEomz8j61G037nM9WmBO9HkwelzbOqamLMBd34n5hSgC41+BWTFddm8qX
+         WHZadAK8zxCKYLMbEQ36JLbDqPf4nmFtLDJs9wJudmiMRUyB1KZev18Mjay/uTMGHTw8
+         7TkA==
+X-Gm-Message-State: AJIora9vtRj5Pe5m7lTfVXUg70aCjUnwrwy5gCZOlNHOL8U97WoNgRAF
+        he8tveJqMn95hIOoPaPeFzMRaA==
+X-Google-Smtp-Source: AGRyM1taVQ9qHJJchRWXeqZw9zn67tFuwEXQj2+SbtcE1e1jgkp3bIJq+Jc2EaYDxH5GTEm/hoPC9g==
+X-Received: by 2002:a63:2a8f:0:b0:412:5278:b90 with SMTP id q137-20020a632a8f000000b0041252780b90mr6214516pgq.363.1657779124714;
+        Wed, 13 Jul 2022 23:12:04 -0700 (PDT)
+Received: from judyhsiao0523.c.googlers.com.com (0.223.81.34.bc.googleusercontent.com. [34.81.223.0])
+        by smtp.gmail.com with ESMTPSA id j10-20020a170902690a00b0016a17da4ad4sm509683plk.39.2022.07.13.23.12.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 23:12:04 -0700 (PDT)
+From:   Judy Hsiao <judyhsiao@chromium.org>
+To:     Andy Gross <agross@kernel.org>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srini Kandagatla <srinivas.kandagatla@linaro.org>,
+        dianders@chromium.org, mka@chromium.org, cychiang@google.com,
+        judyhsiao@google.com, swboyd@chromium.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Judy Hsiao <judyhsiao@chromium.org>
+Subject: [PATCH v1 0/3] Add dtsi for sc7280 herobrine boards that using
+Date:   Thu, 14 Jul 2022 06:11:48 +0000
+Message-Id: <20220714061151.2126288-1-judyhsiao@chromium.org>
+X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c297b97b4af66777202652b29183397e671bc15d.1657764335.git.sean.wang@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 07:07:38PM -0700, sean.wang@kernel.org wrote:
-> From: Sean Wang <sean.wang@mediatek.com>
-> 
-> This reverts commit 649178c0493e4080b2b226b0ef9fa2d834b1b412.
-> 
-> Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-> ---
-> There was mistake in
-> 649178c0493e ("mt76: mt7921e: fix possible probe failure after reboot")
-> that caused WiFi reset cannot work well as the reported issue
-> "PROBLEM: [Stable v5.15.42+] [mt7921] Wake after suspend locks up system
-> when mt7921-driver is used on a Lenovo ThinkPad E15 G3"
-> in http://lists.infradead.org/pipermail/linux-mediatek/2022-June/042668.html
-> So, we need to revert, fix and land it again on the stable tree from upstream.
+Put sound node and lpass_cpu node settings for boards that use rt5682
+codec in the sc7280-herobrine-audio-rt5682.dtsi as there are different
+choices of headset codec for herobrine projects. Common audio setting
+for the internal speaker is in sc7280-herobrine.dtsi.
 
-Same questions here as on patch 1/5.
+Judy Hsiao (3):
+  arm64: dts: qcom: sc7280: herobrine: Add pinconf settings for mi2s1
+  arm64: dts: qcom: sc7280: Add sc7280-herobrine-audio-rt5682.dtsi
+  arm64: dts: qcom: sc7280: include sc7280-herobrine-audio-rt5682.dtsi
+    in villager and herobrine-r1
+
+ .../qcom/sc7280-herobrine-audio-rt5682.dtsi   | 121 ++++++++++++++++++
+ .../qcom/sc7280-herobrine-herobrine-r1.dts    |   1 +
+ .../dts/qcom/sc7280-herobrine-villager-r0.dts |   1 +
+ .../arm64/boot/dts/qcom/sc7280-herobrine.dtsi |  15 +++
+ 4 files changed, 138 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-audio-rt5682.dtsi
+
+-- 
+2.37.0.144.g8ac04bfd2-goog
+
