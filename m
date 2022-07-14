@@ -2,96 +2,152 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FABC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ACDAC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:09:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237780AbiGNQFu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36764 "EHLO
+        id S237873AbiGNQJw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:09:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237665AbiGNQFt (ORCPT
+        with ESMTP id S232483AbiGNQJu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:05:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6900F5143A;
-        Thu, 14 Jul 2022 09:05:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1517DB82730;
-        Thu, 14 Jul 2022 16:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4705AC34114;
-        Thu, 14 Jul 2022 16:05:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657814745;
-        bh=u1PzRpfvIioRbL5vI4/uG1dc+4gqO2bAsTU0TqTxIPY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CT5yUYctDZH0qrlGCxQAuMOPhME+eSBJ6C/DdjprmCXeGu8g64qYnz24aLVyk7OeL
-         JUc/T82SG0qPzcncprQ2CNCgskGbbduSDjkU3DlyyaS6/46A9zAbQE44WPQP0QVq/+
-         EMItdC36oS3MuGW8wG6n92hoXMSXrTu8wyIm/tFLMzxb1rg5fdDQwJg9xFSf6IMWKf
-         JEzhwySCauX+dN8stFawkDD8p7uycHt0rplKPdKm5ie5+5GqAbpoJa8OYYy1oSVLqY
-         rBTwM3Kc8GBFAVuCXRmQWkzkAOdDDgIx0fhhQtF/XJQLfXWpb/O3YC7vwWrMzgXJ4n
-         6CBsDgZnqZXuQ==
-Date:   Thu, 14 Jul 2022 09:05:43 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Subject: Re: linux-next: Tree for Jul 14
-Message-ID: <YtA+127QgRifnRBZ@dev-arch.thelio-3990X>
-References: <20220714185514.7d1a2ac9@canb.auug.org.au>
- <Ys/42uMzQy+CFTGI@debian>
+        Thu, 14 Jul 2022 12:09:50 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 729A452FD7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:09:49 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id r2so2171387wrs.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:09:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o/feeXuDF17U3RBhITfW4b8xd6jPaKrhz4mQZDocXnE=;
+        b=qstB9JUwN0WNwR+RZEXK8uXWjBMHCoNZLWyXVtp2NScFXwB2tMJ2AA/eSIZWPKSLY2
+         88iD23awwtBYX/Ip7FxVW6GpTRnbF+3npCqPksCBtK8s2GiqPQfyVZtuZLwTPSccDl3t
+         jwTLFXRmMZvXeEnwxwdYZSLD15CHU9HC2M3sC9NxLvIslLwpJZSIk1yDvSPh6HYdirRQ
+         c4otksAWqzzA54BEYImE1T0rOhRNtJApq+KbbqgilXbhY5dwrg1HVEmx/dnPEstD8y7l
+         mLZr9WElpoCMJoxhLs7v0VmQ2L/NsFGCDa0SaTXf4op+ZhckSdp1oS+HRjFfcNFjMTkt
+         ZbpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o/feeXuDF17U3RBhITfW4b8xd6jPaKrhz4mQZDocXnE=;
+        b=UFZlwWL9r7Ge8uJxer17b3XKx6qkM2DE2Qq2PLZ/xv8Kbt8OvIeLOteXJRMJOfNk28
+         fal0kfMfmXmU3GNl/1ymZowL935OarQ7NeAEQb2zBjc/Z4zMfCuFXhSq4W1dYIqAj47d
+         ME36hQeLg65BRAvZaIHJ0aZFERQ9uNIN9nJYu0HZx0psNDuGhBzA8rjOSgc2moc7w3rZ
+         ouGDeHPraP6mOHThRQMcpLg+K83iPor8zvZj76vl6izrMq+65OdRFmaE7f3tBUUPjX4O
+         hmntKT8niGOlHTtj41We6D7qBQCHS4WNe3ETjNda7ysJ01JCEcWhwcgMC12chdRc7/W4
+         dH2g==
+X-Gm-Message-State: AJIora/9qnU42BtMFJoYfYpHCqKh92GkyNzsYlZ/4meCBC+i/kdwjghT
+        fFBBRKNRza/ZUO9NrwBhtkI3lQ==
+X-Google-Smtp-Source: AGRyM1thQHR7ljDVhTjy0f1PoC9fRTmLcI9qSF5de9HubbXG6CSsf9gMmgud55PZb4IwR9+1Aobk1w==
+X-Received: by 2002:a5d:5451:0:b0:21d:2295:6a05 with SMTP id w17-20020a5d5451000000b0021d22956a05mr8796856wrv.302.1657814987995;
+        Thu, 14 Jul 2022 09:09:47 -0700 (PDT)
+Received: from localhost.localdomain (91-123-191-107.gigainternet.pl. [91.123.191.107])
+        by smtp.gmail.com with ESMTPSA id p13-20020adff20d000000b0020e6ce4dabdsm1846289wro.103.2022.07.14.09.09.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 09:09:46 -0700 (PDT)
+From:   Patryk Duda <pdk@semihalf.com>
+To:     Benson Leung <bleung@chromium.org>
+Cc:     Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev, linux-kernel@vger.kernel.org,
+        upstream@semihalf.com, Patryk Duda <pdk@semihalf.com>
+Subject: [PATCH] platform/chrome: cros_ec_proto: Update version on GET_NEXT_EVENT failure
+Date:   Thu, 14 Jul 2022 18:09:51 +0200
+Message-Id: <20220714160951.9364-1-pdk@semihalf.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ys/42uMzQy+CFTGI@debian>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Sudip,
+Some EC based devices (e.g. Fingerpint MCU) can jump to RO part of the
+firmware (intentionally or due to device reboot). The RO part doesn't
+change during the device lifecycle, so it won't support newer version
+of EC_CMD_GET_NEXT_EVENT command.
 
-On Thu, Jul 14, 2022 at 12:07:06PM +0100, Sudip Mukherjee (Codethink) wrote:
-> Hi Stephen,
-> 
-> On Thu, Jul 14, 2022 at 06:55:14PM +1000, Stephen Rothwell wrote:
-> > Hi all,
-> > 
-> > Changes since 20220713:
-> 
-> Build failures on next-20220714:
+Function cros_ec_query_all() is responsible for finding maximum
+supported MKBP event version. It's usually called when the device is
+running RW part of the firmware, so the command version can be
+potentially higher than version supported by the RO.
 
-<snip>
+The problem was fixed by updating maximum supported version when the
+device returns EC_RES_INVALID_VERSION (mapped to -ENOPROTOOPT). That way
+the kernel will use highest common version supported by RO and RW.
 
-> x86_64 allmodconfig with clang fails with:
-> 
-> drivers/clk/qcom/gpucc-sm8350.c:111:2: error: initializer element is not a compile-time constant
->         gpu_cc_parent,
->         ^~~~~~~~~~~~~
-> drivers/clk/qcom/gpucc-sm8350.c:126:2: error: initializer element is not a compile-time constant
->         gpu_cc_parent,
->         ^~~~~~~~~~~~~
+Fixes: 3300fdd630d4 ("platform/chrome: cros_ec: handle MKBP more events flag")
+Cc: <stable@vger.kernel.org> # 5.10+
+Signed-off-by: Patryk Duda <pdk@semihalf.com>
+---
+When Fingerprint MCU is rebooted (e.g. as a part of tests) it jumps to
+the RO image and performs RW image signature check. If kernel calls
+EC_CMD_GET_NEXT_EVENT FPMCU RO will respond with EC_RES_INVALID_VERSION
+because it's older than RW and supports up to version 1 of the command.
+As a result kernel keeps trying to get MKBP events and effectively
+blocks FPMCU from jumping to RW image.
 
-I sent https://lore.kernel.org/20220711174004.3047516-1-nathan@kernel.org/
-for this a few days ago, it just needs to be picked up.
+Before patch 3300fdd630d4 the driver called version 1 of the command.
+If the device responded with EC_RES_INVALID_VERSION, the driver would
+use version 0 of the command.
 
-> arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
-> DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
->                     ^
-> ./arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
-> extern u64 x86_spec_ctrl_current;
+Best regards,
+Patryk
 
-This is now fixed in -tip so it should be fixed in -next tomorrorow:
+ drivers/platform/chrome/cros_ec_proto.c | 32 +++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-https://git.kernel.org/tip/db866d3352ec85e821e730e191481cba3a2bfa6e
+diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
+index ff767dccdf0f6..0a131045d50a9 100644
+--- a/drivers/platform/chrome/cros_ec_proto.c
++++ b/drivers/platform/chrome/cros_ec_proto.c
+@@ -750,6 +750,7 @@ int cros_ec_get_next_event(struct cros_ec_device *ec_dev,
+ 	u8 event_type;
+ 	u32 host_event;
+ 	int ret;
++	u32 ver_mask = 0;
+ 
+ 	/*
+ 	 * Default value for wake_event.
+@@ -771,6 +772,37 @@ int cros_ec_get_next_event(struct cros_ec_device *ec_dev,
+ 		return get_keyboard_state_event(ec_dev);
+ 
+ 	ret = get_next_event(ec_dev);
++	/*
++	 * -ENOPROTOOPT is returned when EC returns EC_RES_INVALID_VERSION.
++	 * This can occur when EC based device (e.g. Fingerprint MCU) jumps to
++	 * the RO image which doesn't support newer version of the command. In
++	 * this case we will attempt to update maximum supported version of the
++	 * EC_CMD_GET_NEXT_EVENT.
++	 */
++	if (ret == -ENOPROTOOPT) {
++		dev_dbg(ec_dev->dev,
++			"GET_NEXT_EVENT returned invalid version error.\n");
++		ret = cros_ec_get_host_command_version_mask(ec_dev,
++							EC_CMD_GET_NEXT_EVENT,
++							&ver_mask);
++		if (ret < 0 || ver_mask == 0)
++			/*
++			 * Do not change the MKBP supported version if we can't
++			 * obtain supported version correctly. Please note that
++			 * calling EC_CMD_GET_NEXT_EVENT returned
++			 * EC_RES_INVALID_VERSION which means that the command
++			 * is present.
++			 */
++			return -ENOPROTOOPT;
++
++		ec_dev->mkbp_event_supported = fls(ver_mask);
++		dev_dbg(ec_dev->dev, "MKBP support version changed to %u\n",
++			ec_dev->mkbp_event_supported - 1);
++
++		/* Try to get next event with new MKBP support version set. */
++		ret = get_next_event(ec_dev);
++	}
++
+ 	if (ret <= 0)
+ 		return ret;
+ 
+-- 
+2.31.0
 
-In the future, consider CC'ing our mailing list (llvm@lists.linux.dev)
-for any clang related issues so that we can get them taken care of ASAP,
-we have a MAINTAINERS entry for a reason :) thank you for testing with
-clang; the more people that use it, hopefully the easier it will be to
-get things unbroken.
-
-Cheers,
-Nathan
