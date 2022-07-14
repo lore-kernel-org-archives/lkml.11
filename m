@@ -2,150 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 563ACC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:25:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5E2CCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240639AbiGNSZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:25:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42076 "EHLO
+        id S240144AbiGNS1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232457AbiGNSZB (ORCPT
+        with ESMTP id S229504AbiGNS1E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:25:01 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F502F67F;
-        Thu, 14 Jul 2022 11:25:00 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id l11so4593395ybu.13;
-        Thu, 14 Jul 2022 11:25:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QgpUMNKvx4KSxdOjg/H5oB64G7sRuqVxnCSFFK5S8sA=;
-        b=FtVPv8yamS2M8R2Hd6fnpgy0UPOuVXIDaKzDwferjiysPyuEBRC6YruB09RseFLlX3
-         Ji5id92KFuNglPre0JK+KUn8+LUNT03Koy7kSxeffMBSYCR9ToL5+HPiZ7V0QolPwEWB
-         LOxkDi3h2OE1lIpmMVoBJVzDEfewB8R4YLUQQNUW1JL1xs3lt7F2grqIqwxn1RvQ+EJv
-         oREmTnhTOxycPmG9zUN00rmbcBujH63KScnmzqSO8+mPF7JRs4smDF5O78CxfuiXLh8g
-         Ukzynq8Xm6Ca/vf5h67XuzNIJcPcSP77qcBRWmxhTCErAczyDT6IYB4NLX/FL9VITHhF
-         oujQ==
-X-Gm-Message-State: AJIora/2Ee7JOMEdcJ9GvuHjzheDvC/LU6NU6B7DT/dxg8KsPe9l3IWp
-        9+x2xqj+GxHzQV4duJ0Du68FBFSCE4eS8x0zfUc=
-X-Google-Smtp-Source: AGRyM1sKF8hIlILzeJt9pj1sahLhPItLqLYJjCcPGgCAkSjpiF/Bs5Sy+YH0mASza7jY0e7LismkGuftew052O7DREk=
-X-Received: by 2002:a5b:202:0:b0:66f:aab4:9c95 with SMTP id
- z2-20020a5b0202000000b0066faab49c95mr8918464ybl.81.1657823100117; Thu, 14 Jul
- 2022 11:25:00 -0700 (PDT)
+        Thu, 14 Jul 2022 14:27:04 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD8C2F67F;
+        Thu, 14 Jul 2022 11:27:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657823224; x=1689359224;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ONPbwadEFPaJq6FRTJMZTyZ98gk4Ml1qAm6cr+oQAwY=;
+  b=FMr1vveyhFEQoIHML4WpdQ4TACQMGNzNE96UejscZH4tVRPOvsyBMhTf
+   b4zdlgiYi8UwwOg24GmrcU9UH+96oPR/afhbDBQH1al5nTrL5hrm88HWo
+   0jODBk3Iwo93Adk4jvxBEDkMbBtHUjYUAkZ0fwm+wGzkztQZ41VeGlQBD
+   WKJUSGwJHADnw6xjJv/YqC1Uj+P849g9jLPoGMBODz2+kmm/N6TjBECkN
+   8BGqds8PxBDPJ7+PqoMfnXjGUK3GIu0xbf+RX4QPPt/5Zw9QwabVNfwso
+   7k9kVUhsxAajiuLmO0VG4HNfRb2VhWdCIIFEGhsL6EJP+39vv8fqeRqs+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="285623054"
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="285623054"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 11:27:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
+   d="scan'208";a="571210455"
+Received: from kanliang-dev.jf.intel.com ([10.165.154.102])
+  by orsmga006.jf.intel.com with ESMTP; 14 Jul 2022 11:27:03 -0700
+From:   kan.liang@linux.intel.com
+To:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        vincent.weaver@maine.edu, linux-kernel@vger.kernel.org
+Cc:     mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@kernel.org, namhyung@kernel.org,
+        pawan.kumar.gupta@linux.intel.com,
+        Kan Liang <kan.liang@linux.intel.com>, stable@vger.kernel.org
+Subject: [PATCH] perf/x86/intel/lbr: Fix unchecked MSR access error on HSW
+Date:   Thu, 14 Jul 2022 11:26:30 -0700
+Message-Id: <20220714182630.342107-1-kan.liang@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220707151037.3901050-1-sbinding@opensource.cirrus.com> <20220707151037.3901050-2-sbinding@opensource.cirrus.com>
-In-Reply-To: <20220707151037.3901050-2-sbinding@opensource.cirrus.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Thu, 14 Jul 2022 20:24:49 +0200
-Message-ID: <CAJZ5v0gNwsddY1Ecasxhc_9hze5b77KdyUcQbbieHd3orGUGJQ@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] ACPI: utils: Add api to read _SUB from ACPI
-To:     Stefan Binding <sbinding@opensource.cirrus.com>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
-        <alsa-devel@alsa-project.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        patches@opensource.cirrus.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 5:11 PM Stefan Binding
-<sbinding@opensource.cirrus.com> wrote:
->
-> Add a wrapper function to read the _SUB string from ACPI.
->
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-In case you want to push this through ASoC
+The fuzzer triggers the below trace.
 
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+[ 7763.384369] unchecked MSR access error: WRMSR to 0x689
+(tried to write 0x1fffffff8101349e) at rIP: 0xffffffff810704a4
+(native_write_msr+0x4/0x20)
+[ 7763.397420] Call Trace:
+[ 7763.399881]  <TASK>
+[ 7763.401994]  intel_pmu_lbr_restore+0x9a/0x1f0
+[ 7763.406363]  intel_pmu_lbr_sched_task+0x91/0x1c0
+[ 7763.410992]  __perf_event_task_sched_in+0x1cd/0x240
 
-Otherwise, I need a maintainer's ACK to apply the second patch.
+On a machine with the LBR format LBR_FORMAT_EIP_FLAGS2, when the TSX is
+disabled, a TSX quirk is required to access LBR from registers.
+The lbr_from_signext_quirk_needed() is introduced to determine whether
+the TSX quirk should be applied. However, the
+lbr_from_signext_quirk_needed() is invoked before the
+intel_pmu_lbr_init(), which parses the LBR format information. Without
+the correct LBR format information, the TSX quirk never be applied.
 
-> ---
->  drivers/acpi/utils.c | 38 ++++++++++++++++++++++++++++++++++++++
->  include/linux/acpi.h |  6 ++++++
->  2 files changed, 44 insertions(+)
->
-> diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-> index 3a9773a09e19..5a7b8065e77f 100644
-> --- a/drivers/acpi/utils.c
-> +++ b/drivers/acpi/utils.c
-> @@ -291,6 +291,44 @@ int acpi_get_local_address(acpi_handle handle, u32 *addr)
->  }
->  EXPORT_SYMBOL(acpi_get_local_address);
->
-> +#define ACPI_MAX_SUB_BUF_SIZE  9
-> +
-> +const char *acpi_get_subsystem_id(acpi_handle handle)
-> +{
-> +       struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
-> +       union acpi_object *obj;
-> +       acpi_status status;
-> +       const char *sub;
-> +       size_t len;
-> +
-> +       status = acpi_evaluate_object(handle, METHOD_NAME__SUB, NULL, &buffer);
-> +       if (ACPI_FAILURE(status)) {
-> +               acpi_handle_debug(handle, "Reading ACPI _SUB failed: %#x\n", status);
-> +               return ERR_PTR(-ENODATA);
-> +       }
-> +
-> +       obj = buffer.pointer;
-> +       if (obj->type == ACPI_TYPE_STRING) {
-> +               len = strlen(obj->string.pointer);
-> +               if (len < ACPI_MAX_SUB_BUF_SIZE && len > 0) {
-> +                       sub = kstrdup(obj->string.pointer, GFP_KERNEL);
-> +                       if (!sub)
-> +                               sub = ERR_PTR(-ENOMEM);
-> +               } else {
-> +                       acpi_handle_err(handle, "ACPI _SUB Length %zu is Invalid\n", len);
-> +                       sub = ERR_PTR(-ENODATA);
-> +               }
-> +       } else {
-> +               acpi_handle_warn(handle, "Warning ACPI _SUB did not return a string\n");
-> +               sub = ERR_PTR(-ENODATA);
-> +       }
-> +
-> +       acpi_os_free(buffer.pointer);
-> +
-> +       return sub;
-> +}
-> +EXPORT_SYMBOL_GPL(acpi_get_subsystem_id);
-> +
->  acpi_status
->  acpi_evaluate_reference(acpi_handle handle,
->                         acpi_string pathname,
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index 2a0e95336094..447898685e09 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -762,6 +762,7 @@ static inline u64 acpi_arch_get_root_pointer(void)
->  #endif
->
->  int acpi_get_local_address(acpi_handle handle, u32 *addr);
-> +const char *acpi_get_subsystem_id(acpi_handle handle);
->
->  #else  /* !CONFIG_ACPI */
->
-> @@ -1023,6 +1024,11 @@ static inline int acpi_get_local_address(acpi_handle handle, u32 *addr)
->         return -ENODEV;
->  }
->
-> +static inline const char *acpi_get_subsystem_id(acpi_handle handle)
-> +{
-> +       return ERR_PTR(-ENODEV);
-> +}
-> +
->  static inline int acpi_register_wakeup_handler(int wake_irq,
->         bool (*wakeup)(void *context), void *context)
->  {
-> --
-> 2.25.1
->
+Move the lbr_from_signext_quirk_needed() into the intel_pmu_lbr_init().
+Checking x86_pmu.lbr_has_tsx in the lbr_from_signext_quirk_needed() is
+not required anymore.
+
+Both LBR_FORMAT_EIP_FLAGS2 and LBR_FORMAT_INFO have LBR_TSX flag, but
+only the LBR_FORMAT_EIP_FLAGS2 requirs the quirk. Update the comments
+accordingly.
+
+Fixes: 1ac7fd8159a8 ("perf/x86/intel/lbr: Support LBR format V7")
+Reported-by: Vince Weaver <vincent.weaver@maine.edu>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Cc: stable@vger.kernel.org
+---
+ arch/x86/events/intel/lbr.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
+
+diff --git a/arch/x86/events/intel/lbr.c b/arch/x86/events/intel/lbr.c
+index 13179f31fe10..4f70fb6c2c1e 100644
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -278,9 +278,9 @@ enum {
+ };
+ 
+ /*
+- * For formats with LBR_TSX flags (e.g. LBR_FORMAT_EIP_FLAGS2), bits 61:62 in
+- * MSR_LAST_BRANCH_FROM_x are the TSX flags when TSX is supported, but when
+- * TSX is not supported they have no consistent behavior:
++ * For format LBR_FORMAT_EIP_FLAGS2, bits 61:62 in MSR_LAST_BRANCH_FROM_x
++ * are the TSX flags when TSX is supported, but when TSX is not supported
++ * they have no consistent behavior:
+  *
+  *   - For wrmsr(), bits 61:62 are considered part of the sign extension.
+  *   - For HW updates (branch captures) bits 61:62 are always OFF and are not
+@@ -288,7 +288,7 @@ enum {
+  *
+  * Therefore, if:
+  *
+- *   1) LBR has TSX format
++ *   1) LBR format LBR_FORMAT_EIP_FLAGS2
+  *   2) CPU has no TSX support enabled
+  *
+  * ... then any value passed to wrmsr() must be sign extended to 63 bits and any
+@@ -300,7 +300,7 @@ static inline bool lbr_from_signext_quirk_needed(void)
+ 	bool tsx_support = boot_cpu_has(X86_FEATURE_HLE) ||
+ 			   boot_cpu_has(X86_FEATURE_RTM);
+ 
+-	return !tsx_support && x86_pmu.lbr_has_tsx;
++	return !tsx_support;
+ }
+ 
+ static DEFINE_STATIC_KEY_FALSE(lbr_from_quirk_key);
+@@ -1609,9 +1609,6 @@ void intel_pmu_lbr_init_hsw(void)
+ 	x86_pmu.lbr_sel_map  = hsw_lbr_sel_map;
+ 
+ 	x86_get_pmu(smp_processor_id())->task_ctx_cache = create_lbr_kmem_cache(size, 0);
+-
+-	if (lbr_from_signext_quirk_needed())
+-		static_branch_enable(&lbr_from_quirk_key);
+ }
+ 
+ /* skylake */
+@@ -1702,7 +1699,11 @@ void intel_pmu_lbr_init(void)
+ 	switch (x86_pmu.intel_cap.lbr_format) {
+ 	case LBR_FORMAT_EIP_FLAGS2:
+ 		x86_pmu.lbr_has_tsx = 1;
+-		fallthrough;
++		x86_pmu.lbr_from_flags = 1;
++		if (lbr_from_signext_quirk_needed())
++			static_branch_enable(&lbr_from_quirk_key);
++		break;
++
+ 	case LBR_FORMAT_EIP_FLAGS:
+ 		x86_pmu.lbr_from_flags = 1;
+ 		break;
+-- 
+2.35.1
+
