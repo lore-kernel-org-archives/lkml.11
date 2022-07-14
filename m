@@ -2,67 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3224EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1873CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238866AbiGNLcN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:32:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
+        id S238857AbiGNLcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230299AbiGNLcL (ORCPT
+        with ESMTP id S238846AbiGNLci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:32:11 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B69D206;
-        Thu, 14 Jul 2022 04:32:09 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id DFB561FAD3;
-        Thu, 14 Jul 2022 11:32:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657798327; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EmuMePcQGuxM9heOQ2mK6cbP7+zHaIyLwtcEh4MAP1c=;
-        b=AvC/B+2wk1WeXNFjl+3PLdV1OI8nMhJ87DzKbddyCNSSeFF7hcUtKUqqkDsb8GeOWlp+CJ
-        BJNaz95C6xbnDPgE8dUcHEZiyoidqPAGZt4rE0xjLZKd4O9pHfq/5SfvTqQWIWBc35Cxua
-        aJfk1y918cYCN+n1ok77HjixPWb74Wg=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6168E2C141;
-        Thu, 14 Jul 2022 11:32:07 +0000 (UTC)
-Date:   Thu, 14 Jul 2022 13:32:07 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     kexec@lists.infradead.org, linux-rt-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Eric Biederman <ebiederm@xmission.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Juri Lelli <jlelli@redhat.com>,
-        "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
-Subject: Re: [PATCH v4 0/2] kexec, panic: Making crash_kexec() NMI safe
-Message-ID: <20220714113207.GD2737@pathway.suse.cz>
-References: <20220630223258.4144112-1-vschneid@redhat.com>
+        Thu, 14 Jul 2022 07:32:38 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5AA1ADA2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:32:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=QF7MlNUqjT2UfEW9YfPAvRYW4tsr
+        xdKIhmgnJ6AkEkI=; b=HKqMpM1AKn0Tjl/qDOcLHPQOUidWaHe+loZMDcxOQeX+
+        Wh39vQfXsMS7VYRoizVYeD//Y4Ncuxn466bnL7pCYxwA1uwDqAOhGwg4uonMMxfC
+        MvNh5oed9JluTbYfh3oYmIE6CO08IIjnp8xVWiecPo5vroo9zhhTVCZ4BP/0eeM=
+Received: (qmail 578448 invoked from network); 14 Jul 2022 13:32:33 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 14 Jul 2022 13:32:33 +0200
+X-UD-Smtp-Session: l3s3148p1@QgjvQcLjvKQgAwDtxwdRAEXXn+yo/Rze
+Date:   Thu, 14 Jul 2022 13:32:32 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     John Stultz <jstultz@google.com>
+Cc:     linux-renesas-soc@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>
+Subject: Re: [PATCH 0/9] selftests: timers: fixes and improvements
+Message-ID: <Ys/+0CVwtTpBNfws@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        John Stultz <jstultz@google.com>, linux-renesas-soc@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>
+References: <20220713204623.5443-1-wsa+renesas@sang-engineering.com>
+ <CANDhNCp3KhGjXSrS4xmqrdPJfxStZOOn+FQxJEEoiXZ39CxDpg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="en0QinxNUHwiuF7U"
 Content-Disposition: inline
-In-Reply-To: <20220630223258.4144112-1-vschneid@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CANDhNCp3KhGjXSrS4xmqrdPJfxStZOOn+FQxJEEoiXZ39CxDpg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 2022-06-30 23:32:56, Valentin Schneider wrote:
-> Valentin Schneider (2):
->   kexec: Turn all kexec_mutex acquisitions into trylocks
->   panic, kexec: Make __crash_kexec() NMI safe
 
-This version looks good to me. For both patches:
+--en0QinxNUHwiuF7U
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Hey John,
 
-Best Regards,
-Petr
+> Acked-by: John Stultz <jstultz@google.com>
+>=20
+> Thanks so much for submitting these.
+
+Glad you like this series. I will wait some more to see if there are
+further review comments. But surely, I will add the missing parameter to
+the help output and add your tags to v2.
+
+Thank you for doing these tools :)
+
+   Wolfram
+
+
+--en0QinxNUHwiuF7U
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLP/tAACgkQFA3kzBSg
+KbZgqBAAl9r+En2Z/stzjSCSrZw83Tb7y+Kjgj2SlsEp37lxn5mIS1nAQa0N+yvL
+3S5zkE1Hj9yJagC7eIcDEv/oFX8zf3SJIAfJQ4NkfDO5ZhRUsiOyUhm81ywgbBCB
+xF4t5upcE7iJ7oeaxqaMEW26eQJOz7bRNec1SzX/jz3mZazfua+PD4ShhyTAaXzn
+xNJn7C3um2ySdmOS8wiLrFLVKqm7LIXmQy9eYzNnbfVf27n8/kM17co7xvYjeARG
+JxBGfhuMBBcayAVeTr2PlTtWzbSkaZkz1S+38KAeQDsJaPJbi8DcHxfBfnPgE88N
+1OabM1TUhN7qohy7VaAooWBL7JJt92aQkB5c0Os2ftHoCmmSELXEgQZz5clnsMD5
++OWzNxOgCX1YNb6aVufraIUxtJhql1HveE84Q014uAUYob+HnY39bGFyruqc7EK2
+QCXCrqjzV0wJjxjxZ8b4Gpo6nIrei9PgxU6TFy1pDvJ6HJypQz2YnbJ5Tx5IXuc3
+c1EIjYfQlODtryWANoqhvyaUQZy4L1Is7UM5iuVXsYhzL/DazqItoBl5dQf5+pmu
+n7h3lNVKThnYUJdXzEujtuMITFTfWW1Y/cyLhthdTnhiBbmFlKktc/9nOf3ykMD6
+1xF7ilgQYOGnyk3VD36Ov7ZtPtYXh2eTyezgquP9+EMsMmYSS7I=
+=ZXu/
+-----END PGP SIGNATURE-----
+
+--en0QinxNUHwiuF7U--
