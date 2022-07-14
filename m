@@ -2,94 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70943C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E65C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbiGNKVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        id S238308AbiGNKVP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238284AbiGNKVI (ORCPT
+        with ESMTP id S238281AbiGNKVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:21:08 -0400
-Received: from smtpproxy21.qq.com (smtpbg703.qq.com [203.205.195.89])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980E652FF5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:21:06 -0700 (PDT)
-X-QQ-mid: bizesmtp88t1657794040tri55nzf
-Received: from bupt-poweredger310.tendawifi.co ( [223.72.62.230])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 14 Jul 2022 18:20:38 +0800 (CST)
-X-QQ-SSF: 01400000002000B0U000B00A0000000
-X-QQ-FEAT: ceHWIenCpmAcEGmObNtKCWYmI7KReqwjoh4Um40PllQx1EI97ux5lJTagjUzp
-        tItgmTKInP9P/6sanY/2g8JTCvsVxkfjHnclVYVQw//WyzRMMBh5fbB6q1BHSGjcIOmV9Yj
-        uiihrghFXDFceqNMR3GYmYKU0ayWmkHW0ZDhmypqy4rBoF79v7hgxucPG3eZiYI0y7JLJZd
-        3Q8I1ruNdAERy7yPQKjbKPCq8Y7S31tq8hLOU6Myeo3TYRrnz9W2FQ0CVzZ+eqQx8YwKHg/
-        qE5G/fqBJKSpfwEnvadPUCFhl+4SnZzmAe2EHGNBe8MMB4EinKYaQSP8WIn3xA33ML2rBw+
-        73gxj31JewVYQ+Vf5las/GetRPooQUgNwuCYSo3rzLnVi3jNqA=
-X-QQ-GoodBg: 2
-From:   sdlyyxy <sdlyyxy@bupt.edu.cn>
-To:     johan@kernel.org, gregkh@linuxfoundation.org
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yan Xinyu <sdlyyxy@bupt.edu.cn>
-Subject: [PATCH] USB: serial: option: adding support for OPPO R11 diag port
-Date:   Thu, 14 Jul 2022 18:20:37 +0800
-Message-Id: <20220714102037.4113889-1-sdlyyxy@bupt.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 06:21:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFE1E52FFE
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:21:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63BF861F03
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:21:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1055C34114;
+        Thu, 14 Jul 2022 10:21:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657794066;
+        bh=3dg23Jgtwukc/GCHd2LHRM+BYubgruVg6fjGLogiQYM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NmhVa/CU3B8mmGtz8blBuT9rEZsK/OJdoesCxO2cjxthY1xO942wd66p37fSbaelT
+         Oj6EbZzD6F3SUM2NLz90oYUAUabiX8aHhlgPMyDccX2NVDxtbXtKjuLA47o3oldpy2
+         9CRxdQWRqHPUYKblXQ6pWg2n/cqsAKE+i3Irn9Fmbo+e4SU1Mt56P/5izRsy9TAQ1N
+         cjV+bztsPj4So6psEXNeOht7ZKUsuEKiMqlWS90+1Iqr4hcLVlDKfb7JLL1FKikxGM
+         bp3P+Rv+x6fGaN0VkH2IHgv3TSK3DTb6/hFlwqQuInOi6o1rqr1H2UiIan7AQf43nd
+         dF5QaCRJ3uS7g==
+Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oBvxw-007QGu-EY;
+        Thu, 14 Jul 2022 11:21:04 +0100
 MIME-Version: 1.0
+Date:   Thu, 14 Jul 2022 11:21:04 +0100
+From:   Marc Zyngier <maz@kernel.org>
+To:     Jianmin Lv <lvjianmin@loongson.cn>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: Re: [PATCH V14 14/15] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC
+ for LoongArch
+In-Reply-To: <bfbd08d6-6f09-3ddb-0fdf-8c459352cf0f@loongson.cn>
+References: <1656837932-18257-1-git-send-email-lvjianmin@loongson.cn>
+ <1656837932-18257-15-git-send-email-lvjianmin@loongson.cn>
+ <87y1x5krjd.wl-maz@kernel.org>
+ <f76927be-8c8c-5bbe-ef5c-a63f4a09b29c@loongson.cn>
+ <bfbd08d6-6f09-3ddb-0fdf-8c459352cf0f@loongson.cn>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <22902b5c7616d47f6e48acc536a70da7@kernel.org>
+X-Sender: maz@kernel.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:bupt.edu.cn:qybgforeign:qybgforeign8
-X-QQ-Bgrelay: 1
+X-SA-Exim-Connect-IP: 51.254.78.96
+X-SA-Exim-Rcpt-To: lvjianmin@loongson.cn, tglx@linutronix.de, linux-kernel@vger.kernel.org, guohanjun@huawei.com, lorenzo.pieralisi@arm.com, jiaxun.yang@flygoat.com, chenhuacai@loongson.cn
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Xinyu <sdlyyxy@bupt.edu.cn>
+On 2022-07-14 11:02, Jianmin Lv wrote:
+> On 2022/7/8 上午11:17, Jianmin Lv wrote:
+>> 
+>> 
+>> On 2022/7/7 下午8:59, Marc Zyngier wrote:
+>>> On Sun, 03 Jul 2022 09:45:31 +0100,
+>>> Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>>>> 
+>>>> For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
+>>>> callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
+>>>> implemented.
+>>>> 
+>>>> The acpi_get_gsi_domain_id callback returns related fwnode handle
+>>>> of irqdomain for different GSI range.
+>>>> 
+>>>> The acpi_gsi_to_irq_fallback will create new mapping for gsi when
+>>>> the mapping of it is not found.
+>>>> 
+>>>> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+>>>> ---
+>>>>   drivers/acpi/bus.c                  |  3 +++
+>>>>   drivers/irqchip/irq-loongarch-cpu.c | 37 
+>>>> +++++++++++++++++++++++++++++++++++++
+>>>>   include/linux/acpi.h                |  1 +
+>>>>   3 files changed, 41 insertions(+)
+>>>> 
+>>>> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+>>>> index 86fa61a..63fbf00 100644
+>>>> --- a/drivers/acpi/bus.c
+>>>> +++ b/drivers/acpi/bus.c
+>>>> @@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
+>>>>       case ACPI_IRQ_MODEL_PLATFORM:
+>>>>           message = "platform specific model";
+>>>>           break;
+>>>> +    case ACPI_IRQ_MODEL_LPIC:
+>>>> +        message = "LPIC";
+>>>> +        break;
+>>>>       default:
+>>>>           pr_info("Unknown interrupt routing model\n");
+>>>>           return -ENODEV;
+>>>> diff --git a/drivers/irqchip/irq-loongarch-cpu.c 
+>>>> b/drivers/irqchip/irq-loongarch-cpu.c
+>>>> index c2f7411..1b241d7 100644
+>>>> --- a/drivers/irqchip/irq-loongarch-cpu.c
+>>>> +++ b/drivers/irqchip/irq-loongarch-cpu.c
+>>>> @@ -15,6 +15,41 @@
+>>>>   static struct irq_domain *irq_domain;
+>>>> +static int lpic_gsi_to_irq(u32 gsi)
+>>>> +{
+>>>> +    /* Only pch irqdomain transferring is required for LoongArch. 
+>>>> */
+>>>> +    if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
+>>>> +        return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, 
+>>>> ACPI_ACTIVE_HIGH);
+>>>> +    return -1;
+>>> 
+>>> The expected return value on failure is 0 (which indicates that no
+>>> interrupt was mapped). Here, things will break as acpi_gsi_to_irq()
+>>> stores the result as unsigned, and compares the result to 0.
+>>> 
+>> 
+>> Ok, thanks, I'll change the return value to 0 on failure and change 
+>> return type to unsigned int.
+>> 
+>> 
+> 
+> Hi, Marc, if the return type is changed to unsigned int, the return
+> type of the fallback handler in the patch:
+> ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
+> 
+> should be changed to unsigned int too, yes?
 
-This patch adds support for OPPO R11 USB diag serial port to option
-driver. This phone uses Qualcomm Snapdragon 660 SoC.
+Yes, of course.
 
-usb-devices output:
-T:  Bus=03 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#= 10 Spd=480 MxCh= 0
-D:  Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=22d9 ProdID=276c Rev=04.04
-S:  Manufacturer=OPPO
-S:  Product=SDM660-MTP _SN:09C6BCA7
-S:  SerialNumber=beb2c403
-C:  #Ifs= 2 Cfg#= 1 Atr=80 MxPwr=500mA
-I:  If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-I:  If#=0x1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=usbfs
-
-Signed-off-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
----
- drivers/usb/serial/option.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-index de59fa919540..cf65cb84c3ca 100644
---- a/drivers/usb/serial/option.c
-+++ b/drivers/usb/serial/option.c
-@@ -573,6 +573,10 @@ static void option_instat_callback(struct urb *urb);
- #define WETELECOM_PRODUCT_6802			0x6802
- #define WETELECOM_PRODUCT_WMD300		0x6803
- 
-+/* OPPO products */
-+#define OPPO_VENDOR_ID				0x22d9
-+#define OPPO_PRODUCT_R11			0x276c
-+
- 
- /* Device flags */
- 
-@@ -2155,6 +2159,7 @@ static const struct usb_device_id option_ids[] = {
- 	{ USB_DEVICE_INTERFACE_CLASS(0x305a, 0x1404, 0xff) },			/* GosunCn GM500 RNDIS */
- 	{ USB_DEVICE_INTERFACE_CLASS(0x305a, 0x1405, 0xff) },			/* GosunCn GM500 MBIM */
- 	{ USB_DEVICE_INTERFACE_CLASS(0x305a, 0x1406, 0xff) },			/* GosunCn GM500 ECM/NCM */
-+	{ USB_DEVICE_AND_INTERFACE_INFO(OPPO_VENDOR_ID, OPPO_PRODUCT_R11, 0xff, 0xff, 0x30) },
- 	{ } /* Terminating entry */
- };
- MODULE_DEVICE_TABLE(usb, option_ids);
+         M.
 -- 
-2.25.1
-
-
-
+Jazz is not dead. It just smells funny...
