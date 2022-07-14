@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30ED3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14A61CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239816AbiGNNVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47382 "EHLO
+        id S238613AbiGNNVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239751AbiGNNVK (ORCPT
+        with ESMTP id S239657AbiGNNVQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:21:10 -0400
-Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767CC5E307
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:21:09 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VJJkPHv_1657804865;
-Received: from e18g06460.et15sqa.tbsite.net(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VJJkPHv_1657804865)
+        Thu, 14 Jul 2022 09:21:16 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D1F5A2DB
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:21:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VJJkPLG_1657804870;
+Received: from e18g06460.et15sqa.tbsite.net(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VJJkPLG_1657804870)
           by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 21:21:06 +0800
+          Thu, 14 Jul 2022 21:21:12 +0800
 From:   Gao Xiang <hsiangkao@linux.alibaba.com>
 To:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Gao Xiang <hsiangkao@linux.alibaba.com>
-Subject: [PATCH 05/16] erofs: drop the old pagevec approach
-Date:   Thu, 14 Jul 2022 21:20:40 +0800
-Message-Id: <20220714132051.46012-6-hsiangkao@linux.alibaba.com>
+Subject: [PATCH 09/16] erofs: get rid of `enum z_erofs_page_type'
+Date:   Thu, 14 Jul 2022 21:20:44 +0800
+Message-Id: <20220714132051.46012-10-hsiangkao@linux.alibaba.com>
 X-Mailer: git-send-email 2.24.4
 In-Reply-To: <20220714132051.46012-1-hsiangkao@linux.alibaba.com>
 References: <20220714132051.46012-1-hsiangkao@linux.alibaba.com>
@@ -35,121 +35,21 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the old pagevec approach but keep z_erofs_page_type for now.
-It will be reworked in the following commits as well.
-
-Also rename Z_EROFS_NR_INLINE_PAGEVECS as Z_EROFS_INLINE_BVECS with
-the new value 2 since it's actually enough to bootstrap.
+Remove it since pagevec[] is no longer used.
 
 Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 ---
- fs/erofs/zdata.c |  17 +++--
- fs/erofs/zdata.h |   9 +--
- fs/erofs/zpvec.h | 159 -----------------------------------------------
- 3 files changed, 16 insertions(+), 169 deletions(-)
- delete mode 100644 fs/erofs/zpvec.h
+ fs/erofs/zdata.c | 30 +++++-------------------------
+ 1 file changed, 5 insertions(+), 25 deletions(-)
 
 diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index f52c54058f31..e96704db106e 100644
+index 9065e160d6a6..cdfb2706e4ae 100644
 --- a/fs/erofs/zdata.c
 +++ b/fs/erofs/zdata.c
-@@ -27,6 +27,17 @@ static struct z_erofs_pcluster_slab pcluster_pool[] __read_mostly = {
+@@ -27,17 +27,6 @@ static struct z_erofs_pcluster_slab pcluster_pool[] __read_mostly = {
  	_PCLP(Z_EROFS_PCLUSTER_MAX_PAGES)
  };
  
-+/* page type in pagevec for decompress subsystem */
-+enum z_erofs_page_type {
-+	/* including Z_EROFS_VLE_PAGE_TAIL_EXCLUSIVE */
-+	Z_EROFS_PAGE_TYPE_EXCLUSIVE,
-+
-+	Z_EROFS_VLE_PAGE_TYPE_TAIL_SHARED,
-+
-+	Z_EROFS_VLE_PAGE_TYPE_HEAD,
-+	Z_EROFS_VLE_PAGE_TYPE_MAX
-+};
-+
- struct z_erofs_bvec_iter {
- 	struct page *bvpage;
- 	struct z_erofs_bvset *bvset;
-@@ -273,7 +284,6 @@ struct z_erofs_decompress_frontend {
- 	struct inode *const inode;
- 	struct erofs_map_blocks map;
- 	struct z_erofs_bvec_iter biter;
--	struct z_erofs_pagevec_ctor vector;
- 
- 	struct page *candidate_bvpage;
- 	struct z_erofs_pcluster *pcl, *tailpcl;
-@@ -636,7 +646,7 @@ static int z_erofs_collector_begin(struct z_erofs_decompress_frontend *fe)
- 		return ret;
- 	}
- 	z_erofs_bvec_iter_begin(&fe->biter, &fe->pcl->bvset,
--				Z_EROFS_NR_INLINE_PAGEVECS, fe->pcl->vcnt);
-+				Z_EROFS_INLINE_BVECS, fe->pcl->vcnt);
- 	/* since file-backed online pages are traversed in reverse order */
- 	fe->icpage_ptr = fe->pcl->compressed_pages +
- 			z_erofs_pclusterpages(fe->pcl);
-@@ -871,8 +881,7 @@ static int z_erofs_parse_out_bvecs(struct z_erofs_pcluster *pcl,
- 	struct page *old_bvpage;
- 	int i, err = 0;
- 
--	z_erofs_bvec_iter_begin(&biter, &pcl->bvset,
--				Z_EROFS_NR_INLINE_PAGEVECS, 0);
-+	z_erofs_bvec_iter_begin(&biter, &pcl->bvset, Z_EROFS_INLINE_BVECS, 0);
- 	for (i = 0; i < pcl->vcnt; ++i) {
- 		struct z_erofs_bvec bvec;
- 		unsigned int pagenr;
-diff --git a/fs/erofs/zdata.h b/fs/erofs/zdata.h
-index d03e333e4fde..a755c5a44d87 100644
---- a/fs/erofs/zdata.h
-+++ b/fs/erofs/zdata.h
-@@ -7,10 +7,10 @@
- #define __EROFS_FS_ZDATA_H
- 
- #include "internal.h"
--#include "zpvec.h"
-+#include "tagptr.h"
- 
- #define Z_EROFS_PCLUSTER_MAX_PAGES	(Z_EROFS_PCLUSTER_MAX_SIZE / PAGE_SIZE)
--#define Z_EROFS_NR_INLINE_PAGEVECS      3
-+#define Z_EROFS_INLINE_BVECS		2
- 
- #define Z_EROFS_PCLUSTER_FULL_LENGTH    0x00000001
- #define Z_EROFS_PCLUSTER_LENGTH_BIT     1
-@@ -34,7 +34,7 @@ struct name { \
- 	struct z_erofs_bvec bvec[total]; \
- };
- __Z_EROFS_BVSET(z_erofs_bvset,)
--__Z_EROFS_BVSET(z_erofs_bvset_inline, Z_EROFS_NR_INLINE_PAGEVECS)
-+__Z_EROFS_BVSET(z_erofs_bvset_inline, Z_EROFS_INLINE_BVECS)
- 
- /*
-  * Structure fields follow one of the following exclusion rules.
-@@ -69,9 +69,6 @@ struct z_erofs_pcluster {
- 	unsigned short nr_pages;
- 
- 	union {
--		/* L: inline a certain number of pagevecs for bootstrap */
--		erofs_vtptr_t pagevec[Z_EROFS_NR_INLINE_PAGEVECS];
--
- 		/* L: inline a certain number of bvec for bootstrap */
- 		struct z_erofs_bvset_inline bvset;
- 
-diff --git a/fs/erofs/zpvec.h b/fs/erofs/zpvec.h
-deleted file mode 100644
-index b05464f4a808..000000000000
---- a/fs/erofs/zpvec.h
-+++ /dev/null
-@@ -1,159 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * Copyright (C) 2018 HUAWEI, Inc.
-- *             https://www.huawei.com/
-- */
--#ifndef __EROFS_FS_ZPVEC_H
--#define __EROFS_FS_ZPVEC_H
--
--#include "tagptr.h"
--
 -/* page type in pagevec for decompress subsystem */
 -enum z_erofs_page_type {
 -	/* including Z_EROFS_VLE_PAGE_TAIL_EXCLUSIVE */
@@ -161,144 +61,68 @@ index b05464f4a808..000000000000
 -	Z_EROFS_VLE_PAGE_TYPE_MAX
 -};
 -
--extern void __compiletime_error("Z_EROFS_PAGE_TYPE_EXCLUSIVE != 0")
--	__bad_page_type_exclusive(void);
+ struct z_erofs_bvec_iter {
+ 	struct page *bvpage;
+ 	struct z_erofs_bvset *bvset;
+@@ -429,7 +418,6 @@ int erofs_try_to_free_cached_page(struct page *page)
+ 	return ret;
+ }
+ 
+-/* page_type must be Z_EROFS_PAGE_TYPE_EXCLUSIVE */
+ static bool z_erofs_try_inplace_io(struct z_erofs_decompress_frontend *fe,
+ 				   struct z_erofs_bvec *bvec)
+ {
+@@ -447,13 +435,11 @@ static bool z_erofs_try_inplace_io(struct z_erofs_decompress_frontend *fe,
+ 
+ /* callers must be with pcluster lock held */
+ static int z_erofs_attach_page(struct z_erofs_decompress_frontend *fe,
+-			       struct z_erofs_bvec *bvec,
+-			       enum z_erofs_page_type type)
++			       struct z_erofs_bvec *bvec, bool exclusive)
+ {
+ 	int ret;
+ 
+-	if (fe->mode >= COLLECT_PRIMARY &&
+-	    type == Z_EROFS_PAGE_TYPE_EXCLUSIVE) {
++	if (fe->mode >= COLLECT_PRIMARY && exclusive) {
+ 		/* give priority for inplaceio to use file pages first */
+ 		if (z_erofs_try_inplace_io(fe, bvec))
+ 			return 0;
+@@ -718,10 +704,9 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
+ 	struct erofs_sb_info *const sbi = EROFS_I_SB(inode);
+ 	struct erofs_map_blocks *const map = &fe->map;
+ 	const loff_t offset = page_offset(page);
+-	bool tight = true;
++	bool tight = true, exclusive;
+ 
+ 	enum z_erofs_cache_alloctype cache_strategy;
+-	enum z_erofs_page_type page_type;
+ 	unsigned int cur, end, spiltted, index;
+ 	int err = 0;
+ 
+@@ -798,12 +783,7 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
+ 		goto next_part;
+ 	}
+ 
+-	/* let's derive page type */
+-	page_type = cur ? Z_EROFS_VLE_PAGE_TYPE_HEAD :
+-		(!spiltted ? Z_EROFS_PAGE_TYPE_EXCLUSIVE :
+-			(tight ? Z_EROFS_PAGE_TYPE_EXCLUSIVE :
+-				Z_EROFS_VLE_PAGE_TYPE_TAIL_SHARED));
 -
--/* pagevec tagged pointer */
--typedef tagptr2_t	erofs_vtptr_t;
--
--/* pagevec collector */
--struct z_erofs_pagevec_ctor {
--	struct page *curr, *next;
--	erofs_vtptr_t *pages;
--
--	unsigned int nr, index;
--};
--
--static inline void z_erofs_pagevec_ctor_exit(struct z_erofs_pagevec_ctor *ctor,
--					     bool atomic)
--{
--	if (!ctor->curr)
--		return;
--
--	if (atomic)
--		kunmap_atomic(ctor->pages);
--	else
--		kunmap(ctor->curr);
--}
--
--static inline struct page *
--z_erofs_pagevec_ctor_next_page(struct z_erofs_pagevec_ctor *ctor,
--			       unsigned int nr)
--{
--	unsigned int index;
--
--	/* keep away from occupied pages */
--	if (ctor->next)
--		return ctor->next;
--
--	for (index = 0; index < nr; ++index) {
--		const erofs_vtptr_t t = ctor->pages[index];
--		const unsigned int tags = tagptr_unfold_tags(t);
--
--		if (tags == Z_EROFS_PAGE_TYPE_EXCLUSIVE)
--			return tagptr_unfold_ptr(t);
--	}
--	DBG_BUGON(nr >= ctor->nr);
--	return NULL;
--}
--
--static inline void
--z_erofs_pagevec_ctor_pagedown(struct z_erofs_pagevec_ctor *ctor,
--			      bool atomic)
--{
--	struct page *next = z_erofs_pagevec_ctor_next_page(ctor, ctor->nr);
--
--	z_erofs_pagevec_ctor_exit(ctor, atomic);
--
--	ctor->curr = next;
--	ctor->next = NULL;
--	ctor->pages = atomic ?
--		kmap_atomic(ctor->curr) : kmap(ctor->curr);
--
--	ctor->nr = PAGE_SIZE / sizeof(struct page *);
--	ctor->index = 0;
--}
--
--static inline void z_erofs_pagevec_ctor_init(struct z_erofs_pagevec_ctor *ctor,
--					     unsigned int nr,
--					     erofs_vtptr_t *pages,
--					     unsigned int i)
--{
--	ctor->nr = nr;
--	ctor->curr = ctor->next = NULL;
--	ctor->pages = pages;
--
--	if (i >= nr) {
--		i -= nr;
--		z_erofs_pagevec_ctor_pagedown(ctor, false);
--		while (i > ctor->nr) {
--			i -= ctor->nr;
--			z_erofs_pagevec_ctor_pagedown(ctor, false);
--		}
--	}
--	ctor->next = z_erofs_pagevec_ctor_next_page(ctor, i);
--	ctor->index = i;
--}
--
--static inline bool z_erofs_pagevec_enqueue(struct z_erofs_pagevec_ctor *ctor,
--					   struct page *page,
--					   enum z_erofs_page_type type,
--					   bool pvec_safereuse)
--{
--	if (!ctor->next) {
--		/* some pages cannot be reused as pvec safely without I/O */
--		if (type == Z_EROFS_PAGE_TYPE_EXCLUSIVE && !pvec_safereuse)
--			type = Z_EROFS_VLE_PAGE_TYPE_TAIL_SHARED;
--
--		if (type != Z_EROFS_PAGE_TYPE_EXCLUSIVE &&
--		    ctor->index + 1 == ctor->nr)
--			return false;
--	}
--
--	if (ctor->index >= ctor->nr)
--		z_erofs_pagevec_ctor_pagedown(ctor, false);
--
--	/* exclusive page type must be 0 */
--	if (Z_EROFS_PAGE_TYPE_EXCLUSIVE != (uintptr_t)NULL)
--		__bad_page_type_exclusive();
--
--	/* should remind that collector->next never equal to 1, 2 */
--	if (type == (uintptr_t)ctor->next) {
--		ctor->next = page;
--	}
--	ctor->pages[ctor->index++] = tagptr_fold(erofs_vtptr_t, page, type);
--	return true;
--}
--
--static inline struct page *
--z_erofs_pagevec_dequeue(struct z_erofs_pagevec_ctor *ctor,
--			enum z_erofs_page_type *type)
--{
--	erofs_vtptr_t t;
--
--	if (ctor->index >= ctor->nr) {
--		DBG_BUGON(!ctor->next);
--		z_erofs_pagevec_ctor_pagedown(ctor, true);
--	}
--
--	t = ctor->pages[ctor->index];
--
--	*type = tagptr_unfold_tags(t);
--
--	/* should remind that collector->next never equal to 1, 2 */
--	if (*type == (uintptr_t)ctor->next)
--		ctor->next = tagptr_unfold_ptr(t);
--
--	ctor->pages[ctor->index++] = tagptr_fold(erofs_vtptr_t, NULL, 0);
--	return tagptr_unfold_ptr(t);
--}
--#endif
++	exclusive = (!cur && (!spiltted || tight));
+ 	if (cur)
+ 		tight &= (fe->mode >= COLLECT_PRIMARY_FOLLOWED);
+ 
+@@ -812,7 +792,7 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
+ 					.page = page,
+ 					.offset = offset - map->m_la,
+ 					.end = end,
+-				  }), page_type);
++				  }), exclusive);
+ 	/* should allocate an additional short-lived page for bvset */
+ 	if (err == -EAGAIN && !fe->candidate_bvpage) {
+ 		fe->candidate_bvpage = alloc_page(GFP_NOFS | __GFP_NOFAIL);
 -- 
 2.24.4
 
