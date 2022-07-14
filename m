@@ -2,117 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DF9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E9D7C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbiGNE3d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:29:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33072 "EHLO
+        id S236307AbiGNE3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236288AbiGNE2C (ORCPT
+        with ESMTP id S236027AbiGNE2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:28:02 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CFE2FFC7
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:36 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657772675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CM1fnHF5+SZu84iYIKJ8/xtAtt5Of29zh4flgmzpzHg=;
-        b=BwviJmTV1NrutOKVW7t2ZR6/VQYai6/hAH0p6/moeb7eViAcHkhWJ74cRMf/BH6aWMBfOt
-        JTXER4Pykc+d0ZrjjBIFmZ9MbvYJR0obkimJH7iVtGyJTVv3Re+3nv86VDVzq29/4mFDg3
-        m+chYuz91PWa0PJiptIsKIaUEdj78/w=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [mm-unstable PATCH v7 1/8] mm/hugetlb: check gigantic_page_runtime_supported() in return_unused_surplus_pages()
-Date:   Thu, 14 Jul 2022 13:24:13 +0900
-Message-Id: <20220714042420.1847125-2-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
-References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+        Thu, 14 Jul 2022 00:28:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8729A2F001;
+        Wed, 13 Jul 2022 21:24:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36C9EB8237B;
+        Thu, 14 Jul 2022 04:24:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE9FC341C8;
+        Thu, 14 Jul 2022 04:24:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772673;
+        bh=I/S6MXKj+pJExOorvIiThOlDOL37GW0RHtgnBej/vcs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=X8P3M3uEnLgnWojff1dqZv95K4Lvj0sabfbXK0e21g/yt3sZTKz1ZKJv1G5n3Uq4Z
+         qC0otvc3t3h+gfNATeG1zUh1IRjZvkWDEirtR6/y87KMfuSYMcMU36pvFZCHoM3qaL
+         0fEBAmJmvoPRFQT1yx1WrXMdCEygKLFQCrsJuDTRWK8xh4YJ3pQKb4GCEUbwFaiYZM
+         gW4//YvRhlukpXNoMNY0eSvG8qu+Dkz7NOjCBYhFN4bclmd6nds+dSzMuTTs5CNI9t
+         Wj4vZ38cvkgzRiujy0FEGj2OQKt+t77rfN1obatupTAC9zmHGJb0yXJfMmrzXDPkP3
+         WIZoDjLYVSvsQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Haowen Bai <baihaowen@meizu.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andrew@aj.id.au,
+        joel@jms.id.au, linux-aspeed@lists.ozlabs.org,
+        openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 02/28] pinctrl: aspeed: Fix potential NULL dereference in aspeed_pinmux_set_mux()
+Date:   Thu, 14 Jul 2022 00:24:03 -0400
+Message-Id: <20220714042429.281816-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
+References: <20220714042429.281816-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Haowen Bai <baihaowen@meizu.com>
 
-I found a weird state of 1GB hugepage pool, caused by the following
-procedure:
+[ Upstream commit 84a85d3fef2e75b1fe9fc2af6f5267122555a1ed ]
 
-  - run a process reserving all free 1GB hugepages,
-  - shrink free 1GB hugepage pool to zero (i.e. writing 0 to
-    /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages), then
-  - kill the reserving process.
+pdesc could be null but still dereference pdesc->name and it will lead to
+a null pointer access. So we move a null check before dereference.
 
-, then all the hugepages are free *and* surplus at the same time.
-
-  $ cat /sys/kernel/mm/hugepages/hugepages-1048576kB/nr_hugepages
-  3
-  $ cat /sys/kernel/mm/hugepages/hugepages-1048576kB/free_hugepages
-  3
-  $ cat /sys/kernel/mm/hugepages/hugepages-1048576kB/resv_hugepages
-  0
-  $ cat /sys/kernel/mm/hugepages/hugepages-1048576kB/surplus_hugepages
-  3
-
-This state is resolved by reserving and allocating the pages then
-freeing them again, so this seems not to result in serious problem.
-But it's a little surprising (shrinking pool suddenly fails).
-
-This behavior is caused by hstate_is_gigantic() check in
-return_unused_surplus_pages(). This was introduced so long ago in 2008
-by commit aa888a74977a ("hugetlb: support larger than MAX_ORDER"), and
-at that time the gigantic pages were not supposed to be allocated/freed
-at run-time.  Now kernel can support runtime allocation/free, so let's
-check gigantic_page_runtime_supported() together.
-
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+Link: https://lore.kernel.org/r/1650508019-22554-1-git-send-email-baihaowen@meizu.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v4 -> v5:
-- drop additional gigantic_page_runtime_supported() checks.
+ drivers/pinctrl/aspeed/pinctrl-aspeed.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-v2 -> v3:
-- Fixed typo in patch description,
-- add !gigantic_page_runtime_supported() check instead of removing
-  hstate_is_gigantic() check (suggested by Miaohe and Muchun)
-- add a few more !gigantic_page_runtime_supported() check in
-  set_max_huge_pages() (by Mike).
----
- mm/hugetlb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index a4506ed1f1db..cf8ccee7654c 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -2432,8 +2432,7 @@ static void return_unused_surplus_pages(struct hstate *h,
- 	/* Uncommit the reservation */
- 	h->resv_huge_pages -= unused_resv_pages;
+diff --git a/drivers/pinctrl/aspeed/pinctrl-aspeed.c b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+index c94e24aadf92..83d47ff1cea8 100644
+--- a/drivers/pinctrl/aspeed/pinctrl-aspeed.c
++++ b/drivers/pinctrl/aspeed/pinctrl-aspeed.c
+@@ -236,11 +236,11 @@ int aspeed_pinmux_set_mux(struct pinctrl_dev *pctldev, unsigned int function,
+ 		const struct aspeed_sig_expr **funcs;
+ 		const struct aspeed_sig_expr ***prios;
  
--	/* Cannot return gigantic pages currently */
--	if (hstate_is_gigantic(h))
-+	if (hstate_is_gigantic(h) && !gigantic_page_runtime_supported())
- 		goto out;
+-		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
+-
+ 		if (!pdesc)
+ 			return -EINVAL;
  
- 	/*
++		pr_debug("Muxing pin %s for %s\n", pdesc->name, pfunc->name);
++
+ 		prios = pdesc->prios;
+ 
+ 		if (!prios)
 -- 
-2.25.1
+2.35.1
 
