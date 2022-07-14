@@ -2,108 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 316AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C35C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiGNQvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51408 "EHLO
+        id S232345AbiGNQxH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:53:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239171AbiGNQvE (ORCPT
+        with ESMTP id S230012AbiGNQxC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:51:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4AD61D57;
-        Thu, 14 Jul 2022 09:49:00 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id b11so4425251eju.10;
-        Thu, 14 Jul 2022 09:49:00 -0700 (PDT)
+        Thu, 14 Jul 2022 12:53:02 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D8FCD9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:53:01 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id z23so4470435eju.8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:53:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tB1X93ogJhANylPWr2KI+y5WU3eGimpfd/iYXdMRut4=;
-        b=X8U+PGKBTMHOF8FwhbT/aZH3hn6B64YhGubQUkCCB1pzaV60oGRqHqM3KLwAR4sJPo
-         NNNTnxtGtQFVIlLbZBytBuFOVL0lKdXCjg9n2njXxbsu2aCwAEZa+o9l7+zNzPIO5vUg
-         HH1pI7kTvNjsCccK+gLuS3loNLQmhBF6UXyfdnMolOeXkdpGRuSC3zioP22LGUFGQ2Gb
-         9bft6r+fP2Mhw5zqJBjZ1hr6u/tE4PdZ84cSOX4l1+V0OggdnYSvSgI6nJoZOjVJt+lK
-         GBAUq0RqaOaNzFy4YhfH1YaKQw3R8sKoC1a9uQZ6qOQ3DxKJCvjP1gEpbi87k6PCs/QE
-         eoJg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5tuLjpCGqWrD227/QGgnnSNYGLhT/vS01RvkkxDi7L4=;
+        b=TZsJ1ETna5AdZ9RUaz3BU1K06a0qxx7Lmc2KWmixjNCYKF3jI7BxPIkOC+Qj9zRghD
+         l5Fzn3Y+T7eKxPuPwxN0jxHkTm41clKD/a8wI1pJgiL/4tmWdd445WFkkX0UqpDwfaf8
+         CKfI6AxIl1ahxJJsc0V60tRZUco7YXkim060eyE6tKzRBriKRtH4Z7Wa9bOvdMCtinni
+         vX425htCQlkf/N27mVBvwst5puJ+li9xAb+yGkzWhtCGb2svRSOBLT41f7lCmYGzntMb
+         otwXLl9V2CK7fMSE6XByhfZjAmQBIohjqk3qCbdzLbsSRI3gYX7IIBolcdEiLqOSX86j
+         1lXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tB1X93ogJhANylPWr2KI+y5WU3eGimpfd/iYXdMRut4=;
-        b=WgCSM9fDwIuFWd0R6jEgBL6QgXsgFgB869QhTGkeUjNf+QI4lEHs3rogiuirBFfqk+
-         r7ZgkNmvgfMcyRY4kA3UrAU4NZtJpE/FShDkc+xu0X+kUm3MyzC6CKb8M0WghLwgL8CX
-         mle1HdQZkXSdPmCw1NkCFDBXabsCzQWesU0KlQ7Zf0q5RaYc/toS/V4iz+YZ++LMe680
-         A8R6JDHg+S1HFEijUZ19IOSbDZOSOYJe853V24P44QFaK1HAqtTye+7l8blwQfhDBylH
-         f4Ef4jsybPcQZBFobyNXS+5RpZtJ7+3Vt/6pz9ceYLe01ewxP3nmVAziKJlysciJamrK
-         RV0A==
-X-Gm-Message-State: AJIora9CQntxI3ISBV7NrgM2cVPJcsr1vAucS6iHzZh4EjDFHyVXeuoC
-        jS9+v9B7zesvbu9901Y4q80=
-X-Google-Smtp-Source: AGRyM1vGKigNOMcGNTFD/m1cRqJkjwoUYHw1esw9kHfp9D3mSa/PVRMcdlYAr9R0e4OEQANe+UeVIg==
-X-Received: by 2002:a17:907:7f9e:b0:72e:d375:431 with SMTP id qk30-20020a1709077f9e00b0072ed3750431mr5750854ejc.580.1657817339457;
-        Thu, 14 Jul 2022 09:48:59 -0700 (PDT)
-Received: from localhost.localdomain ([46.248.82.114])
-        by smtp.gmail.com with ESMTPSA id f25-20020a50fc99000000b00438ac12d6b9sm1325174edq.52.2022.07.14.09.48.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:48:59 -0700 (PDT)
-From:   Uros Bizjak <ubizjak@gmail.com>
-To:     linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Uros Bizjak <ubizjak@gmail.com>, Benjamin LaHaise <bcrl@kvack.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>
-Subject: [PATCH] aio: Use atomic_try_cmpxchg in __get_reqs_available
-Date:   Thu, 14 Jul 2022 18:48:51 +0200
-Message-Id: <20220714164851.3055-1-ubizjak@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5tuLjpCGqWrD227/QGgnnSNYGLhT/vS01RvkkxDi7L4=;
+        b=DoPvxXoXIm+bp3wTGV/G3LTkjPUMjiA3woa8Hlqk6WV2J2FwZgi17dff5SVHiNPcip
+         flPiZ0i7Q22DZLjA/3HpC4hS3SgpPPw7lclOfcGvElTQGjtV28ELmeXrKWu4WhKpvxLV
+         YFCT7utPWgIXA5b2x5U3U9qQUYR8TEmrLjW2aV72Eg/Y570LV0gpM9iQ5oOZEUK6olE2
+         cIJ2S4JHAxGVRUsqCNrrQWGxtz8e84uSCapZxrSSbXTTqrUUmY5MvHi3D/SxNSTSrSwl
+         YBFNgtrXHhhdraoBBHAB6/VvzuMSI/gP9AGguFn3BB9V+O78rBk0MTx4usJECpucGlEl
+         Bypw==
+X-Gm-Message-State: AJIora8GjWLXpYeqqpbF9EMP1XDMAGEJG9q4hC2M/i8x/wY+ktXa/dYu
+        3czMemLwmlqwU8CXGUREvGw3kFRVPam7NA/YoiA=
+X-Google-Smtp-Source: AGRyM1s6mcagDQ5ljN0eoYPPZCg+A/DFYjmUcK2ayLILrDu7Mxf2FI+04Gck13f6BKZ8622WE2PUCMXV5IU5gO/KDgw=
+X-Received: by 2002:a17:907:2702:b0:72b:307b:98e6 with SMTP id
+ w2-20020a170907270200b0072b307b98e6mr9697124ejk.658.1657817580248; Thu, 14
+ Jul 2022 09:53:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHk-=wgTmGaToVFdSdoFqT2sNkk7jg2rSWasUYv-tASUZ2j_0Q@mail.gmail.com>
+ <20220713050724.GA2471738@roeck-us.net> <CAHk-=widUqghhXus_GCM9+FESa5vHqMb_pO3=0dGYH8C+yix2w@mail.gmail.com>
+ <a804b76e-159f-dbc2-f8dc-62a58552e88d@roeck-us.net> <CADnq5_O6Tp2QPXyDCvpWuRXhDr6H1PM50Ow5YG2WeukqUd-GnQ@mail.gmail.com>
+ <CAHk-=wj4+BSj2SPMRUr-TZ4Qg2o9HGOBWiJQE336YcF_U1sVNQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wj4+BSj2SPMRUr-TZ4Qg2o9HGOBWiJQE336YcF_U1sVNQ@mail.gmail.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Thu, 14 Jul 2022 12:52:48 -0400
+Message-ID: <CADnq5_ME1DsZsmC1NbHOyzfKbBp_jcKycG7Fh1HMN8y3AejWKg@mail.gmail.com>
+Subject: Re: Linux 5.19-rc6
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Balbir Singh <bsingharora@gmail.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Paul Mackerras <paulus@ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use atomic_try_cmpxchg instead of atomic_cmpxchg (*ptr, old, new) == old
-in __get_reqs_available. x86 CMPXCHG instruction returns success in
-ZF flag, so this change saves a compare after cmpxchg (and related move
-instruction in front of cmpxchg).
+On Wed, Jul 13, 2022 at 5:32 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> On Wed, Jul 13, 2022 at 2:01 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+> >
+> > If you want to apply Guenter's patch original patch:
+> > https://patchwork.freedesktop.org/patch/490184/
+> > That's fine with me.
+>
+> Honestly, by this time I feel that it's too little, too late.
+>
+> The ppc people apparently didn't care at all about the fact that this
+> driver didn't compile.
+>
+> At least Michael Ellerman and Daniel Axtens were cc'd on that thread
+> with the proposed fix originally.
+>
+> I don't see any replies from ppc people as to why it happened, even
+> though apparently a bog-standard "make allmodconfig" just doesn't
+> build.
+>
+> I'd try it myself, since I do have a cross-build environment for some
+> earlier cross-build verification I did.
+>
+> But since my upgrade to F36 it now uses gcc-12, and possibly due to
+> that I get hundreds of errors long before I get to any drm drivers:
+>
+>   Cannot find symbol for section 19: .text.create_section_mapping.
+>   arch/powerpc/mm/mem.o: failed
+>   ...
+>   Cannot find symbol for section 19: .text.cpu_show_meltdown.
+>   drivers/base/cpu.o: failed
+>   Error: External symbol 'memset' referenced from prom_init.c
+>
+> this cross environment used to work for me, but something changed (I
+> mention gcc-12, but honestly, that's based on nothing at all, except
+> for the few problems it caused on x86-64. It could be something
+> entirely unrelated, but it does look like some bad interaction with
+> -ffunction-sections).
+>
+> So considering that the ppc people ignored this whole issue since the
+> merge window, I think it's entirely unreasonable to then apply a
+> ppc-specific patch for this at this time, when people literally asked
+> "why is this needed", and there was no reply from the powerpc side.
+>
+> Does any of that sound like "we should support this driver on powerpc" to you?
 
-Also, atomic_try_cmpxchg implicitly assigns old *ptr value
-to "old" when cmpxchg fails, enabling further code simplifications.
+Fair enough.  I don't have a strong opinion on the matter.  Users will
+hopefully likely notice the failure after release because most people
+don't test until after a release and then we'll apply the fix and
+re-enable it for 5.20 so that would leave 5.19 broken for PPC64 users
+which would not be ideal.  But as you said, no one has cared up to
+this point.
 
-No functional change intended.
+Alex
 
-Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-Cc: Benjamin LaHaise <bcrl@kvack.org>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
----
- fs/aio.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/fs/aio.c b/fs/aio.c
-index 3c249b938632..054897f59c5e 100644
---- a/fs/aio.c
-+++ b/fs/aio.c
-@@ -951,16 +951,13 @@ static bool __get_reqs_available(struct kioctx *ctx)
- 	local_irq_save(flags);
- 	kcpu = this_cpu_ptr(ctx->cpu);
- 	if (!kcpu->reqs_available) {
--		int old, avail = atomic_read(&ctx->reqs_available);
-+		int avail = atomic_read(&ctx->reqs_available);
- 
- 		do {
- 			if (avail < ctx->req_batch)
- 				goto out;
--
--			old = avail;
--			avail = atomic_cmpxchg(&ctx->reqs_available,
--					       avail, avail - ctx->req_batch);
--		} while (avail != old);
-+		} while (!atomic_try_cmpxchg(&ctx->reqs_available,
-+					     &avail, avail - ctx->req_batch));
- 
- 		kcpu->reqs_available += ctx->req_batch;
- 	}
--- 
-2.35.3
-
+>
+>                  Linus
