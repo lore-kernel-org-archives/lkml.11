@@ -2,135 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31BB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE83C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237863AbiGNJOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
+        id S237872AbiGNJOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:14:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237798AbiGNJNt (ORCPT
+        with ESMTP id S237800AbiGNJNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:13:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E35515F7A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790027;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WWnZMuOiNOxV4y5n13xEbB3VoK6AwgRUiY+UTOUdEwY=;
-        b=WTKQTR5WVcPfDZbUiyGELjab+ApNC/mM4Xq3260EA3FKOTJNRnT8liuWfjtjfDqCXxoSAH
-        DBPfkbJ1BHtVe3qI0dFogvp7VJIKCiOttc+tpNYBcU5RVcGad+Ahjma0J3e3vES0HaV+cp
-        U0FxuJLdfZtStZE6lK0N5zWjuMO7zvg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-257-Dzf1HZ7WN3WCQWmCPMplRw-1; Thu, 14 Jul 2022 05:13:45 -0400
-X-MC-Unique: Dzf1HZ7WN3WCQWmCPMplRw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Jul 2022 05:13:50 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3971BDE;
+        Thu, 14 Jul 2022 02:13:48 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4BC0B3C01DE2;
-        Thu, 14 Jul 2022 09:13:45 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4C3692166B26;
-        Thu, 14 Jul 2022 09:13:43 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 06/25] KVM: x86: hyper-v: Cache HYPERV_CPUID_NESTED_FEATURES CPUID leaf
-Date:   Thu, 14 Jul 2022 11:13:08 +0200
-Message-Id: <20220714091327.1085353-7-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id DCC6A66015AA;
+        Thu, 14 Jul 2022 10:13:43 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657790026;
+        bh=LkOHAPElpBGmw5W/o7Ewpw77hnBq4cbeXMEaxiKzSzc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PFDG5gUN1tp7H34JrmcXnUESQrImKDIcibEYqZJr3O7AbquD6EOQDgkAZfuC7uwXp
+         27WAMe6t8LhKVVcfX8UPYDLQemWahJmqkI9d3zGGAcsCOHYM03vku0Cc7i68Vm09Vb
+         iSu3rw/4Zy5f4vd+xHpXVjyOePOUB+stbd1BBMxJckPRY04oYLKFzoUKOorW0zg9SV
+         Objblu1g05994nEngrhyLyzw8wLEaKHyRyWyMNsHNBaeb5mnIzbbNSsSWS+fgO+2uX
+         CWfIxKDtKCUnCAYrh1W+NJdknE7dgCFJ3+/wpyFigGrepaKzC6yQQFwKhaS78N5USF
+         ZAkN2C6qWcM6g==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        dmitry.osipenko@collabora.com, Zhigang.Shi@liteon.com
+Cc:     krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com,
+        andy.shevchenko@gmail.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v8 0/2] Add LTRF216A Driver
+Date:   Thu, 14 Jul 2022 14:43:10 +0530
+Message-Id: <20220714091312.838152-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-KVM has to check guest visible HYPERV_CPUID_NESTED_FEATURES.EBX CPUID
-leaf to know which Enlightened VMCS definition to use (original or 2022
-update). Cache the leaf along with other Hyper-V CPUID feature leaves
-to make the check quick.
+This patchset adds support for ltrf216a Ambient Light Sensor
+and documents the DT bindings for the same.
 
-While on it, wipe the whole 'hv_vcpu->cpuid_cache' with memset() instead
-of having to zero each particular member when the corresponding CPUID entry
-was not found.
+Changes in v8
+  - Add caching mechanism to restore register state after h/w resume.
+  - Add callback functions and disable locking in regmap config.
+  - Update mutex comment as per it's current scope in the driver.
+  - Add Shreeya as author of the driver.
+  - Make some minor cleanups.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
----
- arch/x86/include/asm/kvm_host.h |  2 ++
- arch/x86/kvm/hyperv.c           | 17 ++++++++---------
- 2 files changed, 10 insertions(+), 9 deletions(-)
+Changes in v7
+  - Add regmap support.
+  - Fix runtime power management implementation.
+  - Fix the ordering of devm and non-devm functions.
+  - Use DEFINE_RUNTIME_DEV_PM_OPS macro
+  - Fix the error reported by kernel test robot for bindings.
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index de5a149d0971..077ec9cf3169 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -616,6 +616,8 @@ struct kvm_vcpu_hv {
- 		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
- 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
- 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
-+		u32 nested_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
-+		u32 nested_ebx; /* HYPERV_CPUID_NESTED_FEATURES.EBX */
- 	} cpuid_cache;
- };
- 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index e08189211d9a..a8e4944ca110 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -2005,31 +2005,30 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
- 
- 	hv_vcpu = to_hv_vcpu(vcpu);
- 
-+	memset(&hv_vcpu->cpuid_cache, 0, sizeof(hv_vcpu->cpuid_cache));
-+
- 	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_FEATURES, 0);
- 	if (entry) {
- 		hv_vcpu->cpuid_cache.features_eax = entry->eax;
- 		hv_vcpu->cpuid_cache.features_ebx = entry->ebx;
- 		hv_vcpu->cpuid_cache.features_edx = entry->edx;
--	} else {
--		hv_vcpu->cpuid_cache.features_eax = 0;
--		hv_vcpu->cpuid_cache.features_ebx = 0;
--		hv_vcpu->cpuid_cache.features_edx = 0;
- 	}
- 
- 	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_ENLIGHTMENT_INFO, 0);
- 	if (entry) {
- 		hv_vcpu->cpuid_cache.enlightenments_eax = entry->eax;
- 		hv_vcpu->cpuid_cache.enlightenments_ebx = entry->ebx;
--	} else {
--		hv_vcpu->cpuid_cache.enlightenments_eax = 0;
--		hv_vcpu->cpuid_cache.enlightenments_ebx = 0;
- 	}
- 
- 	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES, 0);
- 	if (entry)
- 		hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
--	else
--		hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
-+
-+	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
-+	if (entry) {
-+		hv_vcpu->cpuid_cache.nested_eax = entry->eax;
-+		hv_vcpu->cpuid_cache.nested_ebx = entry->ebx;
-+	}
- }
- 
- int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
+Changes in v6
+  - Fix some errors reported by kernel test robot.
+  - Add protocol details for the datasheet link.
+  - Remove useless assignments.
+  - Add unit details for read data delay macro.
+  - Use pm_sleep_ptr().
+
+Changes in v5
+  - Add power management support.
+  - Add reset functionality.
+  - Use readx_poll_timeout() to get data.
+  - Cleanup some of the redundant code.
+  - Update int_time_fac after I2C write is successful.
+  - Rename mutex to lock.
+  - Use Reverse Xmas tree pattern for all variable definitions.
+  - Improve error handling messages and add error codes.
+  - Add one more MODULE_AUTHOR.
+  - Remove cleardata which was reading data for infrared light.
+  - Remove patch for deprecated vendor prefix [PATCH v4 3/3].
+  - Remove deprecated string from DT binding document.
+
+Changes in v4
+  - Add more descriptive comment for mutex lock
+  - Fix mutex locking in read_raw()
+  - Use i2c_smbus_read_i2c_block_data()
+
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+  - Fix indentation in the bindings file.
+
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+  - Add interrupt and power supply property in DT bindings
+  - Add vendor prefix name as per the alphabetical order.
+
+Shreeya Patel (2):
+  dt-bindings: Document ltrf216a light sensor bindings
+  iio: light: Add support for ltrf216a sensor
+
+ .../bindings/iio/light/liteon,ltrf216a.yaml   |  49 ++
+ drivers/iio/light/Kconfig                     |  11 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/ltrf216a.c                  | 522 ++++++++++++++++++
+ 4 files changed, 583 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+ create mode 100644 drivers/iio/light/ltrf216a.c
+
 -- 
-2.35.3
+2.30.2
 
