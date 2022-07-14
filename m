@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCCEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6B0AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:45:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238384AbiGNMpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
+        id S239618AbiGNMpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:45:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239476AbiGNMoK (ORCPT
+        with ESMTP id S239483AbiGNMoK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 08:44:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3363B459A3;
-        Thu, 14 Jul 2022 05:44:08 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BD5C474CE;
+        Thu, 14 Jul 2022 05:44:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CE2061F92;
-        Thu, 14 Jul 2022 12:44:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1261C341D6;
-        Thu, 14 Jul 2022 12:44:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 457E7B824FB;
+        Thu, 14 Jul 2022 12:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5269C341F5;
+        Thu, 14 Jul 2022 12:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657802645;
-        bh=dBBUdqG3HG08FgR95FBeJSLPOANJallETi4YK4KPQew=;
+        s=k20201202; t=1657802644;
+        bh=I+j5FWoXbmdBFBfETzjX7b+J0jXVdvUAJ1GEQxCcjqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GfZXbRTN238URE8gWC7UmhRb9OwW3MuwVBZqyRztecKyIjqES/ylA0SnQOzlrUA1B
-         j/QPXMos0fya/YnNV14dmCGDOnkW4xRN/8pUh3hMbk42sR51hOzNsx/3ouLPMg3kmo
-         HnOTE39tymZbYBDmspa1sUHOnJ7no1mYZRgx3moOKQ/EBZvQjpRix9/ZKrA+BlVmxC
-         PNpwElh2uXh1Z/jVaSvPfLK+a7HeEp4GQMwEBcUOY5QbN2WPjXH1hSgCHskfW8GBMf
-         /LNViHS9L6X6aLghDbEC/rqmMgQAJTsei2SEJC3Qyjg0Ij0nDxURi0ujZTtYW5ToEH
-         C6iZC89/rLNhg==
+        b=YfExv+f2VlYq6HARkH+hjwJXPuayKeZIXxmKX6Jirk83tMTLq9IRGCrJ6enhFYMK9
+         vDHqDSCu1m3LvInC5FdKmIB5To9z/xC4WEIDWCuhMoOgpDa3aeflAd3BtlhnzIZXkS
+         iCIZ159kx9IIDMN61GrBxzOwW9YNPHYHYpBQaBRdm5iQzugE6PoncxDw8rJ9Ayp5yQ
+         rKHa9Xxqluezt2ZunpZBJS3tSOTgo/M5P0aZRwQeM9mOFqsNi36RIM3sFzwVMeGJpJ
+         fgjaFBv6oDhuXWSbWU9ovZRfUoDxzr/EkwC+IEX84yn/zbSYsy5BCbmHbzAzg5Jv2X
+         nrqyfrD6q/4VQ==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oByCR-0007EL-5v; Thu, 14 Jul 2022 14:44:11 +0200
+        id 1oByCQ-0007Dk-1u; Thu, 14 Jul 2022 14:44:10 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -47,9 +47,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan+linaro@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 27/30] phy: qcom-qmp-combo: drop pipe clock lane suffix
-Date:   Thu, 14 Jul 2022 14:43:30 +0200
-Message-Id: <20220714124333.27643-28-johan+linaro@kernel.org>
+Subject: [PATCH v3 15/30] dt-bindings: phy: add QMP UFS PHY schema
+Date:   Thu, 14 Jul 2022 14:43:18 +0200
+Message-Id: <20220714124333.27643-16-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714124333.27643-1-johan+linaro@kernel.org>
 References: <20220714124333.27643-1-johan+linaro@kernel.org>
@@ -59,40 +59,266 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pipe clock is defined in the "lane" node so there's no need to keep
-adding a redundant lane-number suffix to the clock name.
+The QMP PHY DT schema is getting unwieldy. Break out the UFS PHY
+binding in a separate file.
 
-Update driver to support the new binding where the pipe clock name has
-been deprecated by instead requesting the clock by index.
+Add an example node based on a cleaned up version of sc8280xp.dtsi.
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ .../devicetree/bindings/phy/qcom,qmp-phy.yaml |  60 -------
+ .../bindings/phy/qcom,qmp-ufs-phy.yaml        | 148 ++++++++++++++++++
+ 2 files changed, 148 insertions(+), 60 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-index faa50cf2e35e..fcb5c375425b 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-@@ -2533,7 +2533,6 @@ int qcom_qmp_phy_combo_create(struct device *dev, struct device_node *np, int id
- 	struct phy *generic_phy;
- 	struct qmp_phy *qphy;
- 	const struct phy_ops *ops;
--	char prop_name[MAX_PROP_NAME];
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+index 897dcd4f7dc9..21d6ec875529 100644
+--- a/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-phy.yaml
+@@ -19,32 +19,21 @@ properties:
+     enum:
+       - qcom,ipq6018-qmp-usb3-phy
+       - qcom,ipq8074-qmp-usb3-phy
+-      - qcom,msm8996-qmp-ufs-phy
+       - qcom,msm8996-qmp-usb3-phy
+-      - qcom,msm8998-qmp-ufs-phy
+       - qcom,msm8998-qmp-usb3-phy
+       - qcom,qcm2290-qmp-usb3-phy
+       - qcom,sc7180-qmp-usb3-phy
+-      - qcom,sc8180x-qmp-ufs-phy
+       - qcom,sc8180x-qmp-usb3-phy
+-      - qcom,sc8280xp-qmp-ufs-phy
+-      - qcom,sdm845-qmp-ufs-phy
+       - qcom,sdm845-qmp-usb3-phy
+       - qcom,sdm845-qmp-usb3-uni-phy
+       - qcom,sdx55-qmp-usb3-uni-phy
+       - qcom,sdx65-qmp-usb3-uni-phy
+-      - qcom,sm6115-qmp-ufs-phy
+-      - qcom,sm6350-qmp-ufs-phy
+-      - qcom,sm8150-qmp-ufs-phy
+       - qcom,sm8150-qmp-usb3-phy
+       - qcom,sm8150-qmp-usb3-uni-phy
+-      - qcom,sm8250-qmp-ufs-phy
+       - qcom,sm8250-qmp-usb3-phy
+       - qcom,sm8250-qmp-usb3-uni-phy
+-      - qcom,sm8350-qmp-ufs-phy
+       - qcom,sm8350-qmp-usb3-phy
+       - qcom,sm8350-qmp-usb3-uni-phy
+-      - qcom,sm8450-qmp-ufs-phy
+       - qcom,sm8450-qmp-usb3-phy
  
- 	qphy = devm_kzalloc(dev, sizeof(*qphy), GFP_KERNEL);
-@@ -2599,8 +2598,7 @@ int qcom_qmp_phy_combo_create(struct device *dev, struct device_node *np, int id
- 	 * Otherwise, we initialize pipe clock to NULL for
- 	 * all phys that don't need this.
- 	 */
--	snprintf(prop_name, sizeof(prop_name), "pipe%d", id);
--	qphy->pipe_clk = devm_get_clk_from_child(dev, np, prop_name);
-+	qphy->pipe_clk = devm_get_clk_from_child(dev, np, NULL);
- 	if (IS_ERR(qphy->pipe_clk)) {
- 		if (cfg->type == PHY_TYPE_USB3) {
- 			ret = PTR_ERR(qphy->pipe_clk);
+   reg:
+@@ -178,55 +167,6 @@ allOf:
+       required:
+         - vdda-phy-supply
+         - vdda-pll-supply
+-  - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - qcom,msm8996-qmp-ufs-phy
+-    then:
+-      properties:
+-        clocks:
+-          maxItems: 1
+-        clock-names:
+-          items:
+-            - const: ref
+-        resets:
+-          maxItems: 1
+-        reset-names:
+-          items:
+-            - const: ufsphy
+-      required:
+-        - vdda-phy-supply
+-        - vdda-pll-supply
+-  - if:
+-      properties:
+-        compatible:
+-          contains:
+-            enum:
+-              - qcom,msm8998-qmp-ufs-phy
+-              - qcom,sc8180x-qmp-ufs-phy
+-              - qcom,sc8280xp-qmp-ufs-phy
+-              - qcom,sdm845-qmp-ufs-phy
+-              - qcom,sm6350-qmp-ufs-phy
+-              - qcom,sm8150-qmp-ufs-phy
+-              - qcom,sm8250-qmp-ufs-phy
+-    then:
+-      properties:
+-        clocks:
+-          maxItems: 2
+-        clock-names:
+-          items:
+-            - const: ref
+-            - const: ref_aux
+-        resets:
+-          maxItems: 1
+-        reset-names:
+-          items:
+-            - const: ufsphy
+-      required:
+-        - vdda-phy-supply
+-        - vdda-pll-supply
+   - if:
+       properties:
+         compatible:
+diff --git a/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+new file mode 100644
+index 000000000000..e9dfed29e996
+--- /dev/null
++++ b/Documentation/devicetree/bindings/phy/qcom,qmp-ufs-phy.yaml
+@@ -0,0 +1,148 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/phy/qcom,qmp-ufs-phy.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm QMP PHY controller (UFS)
++
++maintainers:
++  - Vinod Koul <vkoul@kernel.org>
++
++description:
++  QMP PHY controller supports physical layer functionality for a number of
++  controllers on Qualcomm chipsets, such as, PCIe, UFS, and USB.
++
++properties:
++  compatible:
++    enum:
++      - qcom,msm8996-qmp-ufs-phy
++      - qcom,msm8998-qmp-ufs-phy
++      - qcom,sc8180x-qmp-ufs-phy
++      - qcom,sc8280xp-qmp-ufs-phy
++      - qcom,sdm845-qmp-ufs-phy
++      - qcom,sm6115-qmp-ufs-phy
++      - qcom,sm6350-qmp-ufs-phy
++      - qcom,sm8150-qmp-ufs-phy
++      - qcom,sm8250-qmp-ufs-phy
++      - qcom,sm8350-qmp-ufs-phy
++      - qcom,sm8450-qmp-ufs-phy
++
++  reg:
++    items:
++      - description: serdes
++
++  "#address-cells":
++    enum: [ 1, 2 ]
++
++  "#size-cells":
++    enum: [ 1, 2 ]
++
++  ranges: true
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++
++  clock-names:
++    minItems: 1
++    maxItems: 2
++
++  resets:
++    maxItems: 1
++
++  reset-names:
++    items:
++      - const: ufsphy
++
++  vdda-phy-supply: true
++
++  vdda-pll-supply: true
++
++  vddp-ref-clk-supply: true
++
++patternProperties:
++  "^phy@[0-9a-f]+$":
++    type: object
++    description: single PHY-provider child node
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++  - ranges
++  - clocks
++  - clock-names
++  - resets
++  - reset-names
++  - vdda-phy-supply
++  - vdda-pll-supply
++
++additionalProperties: false
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8996-qmp-ufs-phy
++    then:
++      properties:
++        clocks:
++          maxItems: 1
++        clock-names:
++          items:
++            - const: ref
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - qcom,msm8998-qmp-ufs-phy
++              - qcom,sc8180x-qmp-ufs-phy
++              - qcom,sc8280xp-qmp-ufs-phy
++              - qcom,sdm845-qmp-ufs-phy
++              - qcom,sm6350-qmp-ufs-phy
++              - qcom,sm8150-qmp-ufs-phy
++              - qcom,sm8250-qmp-ufs-phy
++    then:
++      properties:
++        clocks:
++          maxItems: 2
++        clock-names:
++          items:
++            - const: ref
++            - const: ref_aux
++
++examples:
++  - |
++    #include <dt-bindings/clock/qcom,gcc-sc8280xp.h>
++    #include <dt-bindings/clock/qcom,rpmh.h>
++    phy-wrapper@1d87000 {
++        compatible = "qcom,sc8280xp-qmp-ufs-phy";
++        reg = <0x01d87000 0xe10>;
++        #address-cells = <1>;
++        #size-cells = <1>;
++        ranges = <0x0 0x01d87000 0x1000>;
++
++        clocks = <&rpmhcc RPMH_CXO_CLK>, <&gcc GCC_UFS_PHY_PHY_AUX_CLK>;
++        clock-names = "ref", "ref_aux";
++
++        resets = <&ufs_mem_hc 0>;
++        reset-names = "ufsphy";
++
++        vdda-phy-supply = <&vreg_l6b>;
++        vdda-pll-supply = <&vreg_l3b>;
++
++        phy@400 {
++            reg = <0x400 0x108>,
++                  <0x600 0x1e0>,
++                  <0xc00 0x1dc>,
++                  <0x800 0x108>,
++                  <0xa00 0x1e0>;
++            #phy-cells = <0>;
++        };
++    };
 -- 
 2.35.1
 
