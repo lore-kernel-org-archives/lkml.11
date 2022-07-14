@@ -2,144 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D23D8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DABC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238230AbiGNNl0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:41:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38618 "EHLO
+        id S239847AbiGNNnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239847AbiGNNlN (ORCPT
+        with ESMTP id S238976AbiGNNnU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:41:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCBC061702
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:41:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657806072;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nYaKoPGAE5GuTNjUTcyk/8OnPeCKT4Q4LTaKkZkFBRE=;
-        b=XhZtny9CahhG0WrOHhooPId63zgiMfM2t80JhYUOC8soyrgBWgM/U/ZSgzInTx5ntbR1mt
-        TRkFGrCg7cHfMiIfjvycekF2juwS+x9DEXhe+GcEmPsna2sevWjn0hlJMs+XYvTmpkwjVN
-        zCygOJNu85WD1HXMIlMek3EbsMN6jyE=
-Received: from mail-pf1-f198.google.com (mail-pf1-f198.google.com
- [209.85.210.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-i1Bwj1tuMwa9G1TrbC5JUQ-1; Thu, 14 Jul 2022 09:41:05 -0400
-X-MC-Unique: i1Bwj1tuMwa9G1TrbC5JUQ-1
-Received: by mail-pf1-f198.google.com with SMTP id x123-20020a626381000000b005254d5e6a0fso1217600pfb.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:41:03 -0700 (PDT)
+        Thu, 14 Jul 2022 09:43:20 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954C06113E
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:43:19 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id q5so446070plr.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:43:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=l94nKR6tSBLp0ho7DFh344H0EUXKGg0rDvSMIqmKMQk=;
+        b=3eEwFZXec5Q3LwPrr+7lNJhZFPUXg1Gz6hzpeAAqR88eoiFLuZKSjNd1ttxg6Ic9Rk
+         h+9zi6+9KIFr0NOIvq3Rfxk/tT0gfAyMm3VXjbQE00q8hQktXe6SJYy62PR46tMTv4Ju
+         pxPVwwmz+AhIjVEHBqFMKTrWdFi26Td+qseAxaZOF4+TXf36M3MEigmfcjhsTSvusG5U
+         cm0XM9PQavZXaxwsS0l25tNeEZ3RDp1eIEe3IksruaBH/4LDElcIATpttSj+7DyL2XMA
+         1yIv5wb66ImlJn52wSjpJlBHXjFk6aOch9/kNgeAGUtip4/MtYmpDeWIWnhtvGRK9hZA
+         5hrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nYaKoPGAE5GuTNjUTcyk/8OnPeCKT4Q4LTaKkZkFBRE=;
-        b=zkd093BT07DFFycf47For299Ye2E+b0eub9ima5gpWRnMj1/rt2+ivfIe48aI0sCA7
-         MgTWs+DgxtocM5/3EaOe/4avpEN6s6jCCpau5d2PNkd0gfO6bz/F+fRtB0zrULzkuOrZ
-         dEc0iTT2/96muvQblg+CrvdNls8mRCjUlkeuCN/cvMctlSUFi9wzHL4IcO/IT9z3PsTi
-         KtZ9gHGwhW0PvtBUQOqP4ixOD0ZH9GCupL7rxle2TJP51NMW+MGcIpKQpbAlG+qSxG4U
-         YFASxDJqDwx0s8nPGNzLUFx0nCfhUi+1jEOcjuzynPHRvN3QArjUzRgtU7duVER0SFjz
-         rRZg==
-X-Gm-Message-State: AJIora/Iu7lEx5yoLSfL36q2a8crCWreabihCZDdWSt/zn4CIQFbcQWd
-        Ly4PH1e70PyTB81k1+nwDRgfIYR2FlUN07F6L2dI32XRs0PfarGI5KMh70bdX7n0PrIayF6QWPm
-        G4chO+HmlKtv2C4xp4pomQ5Hs
-X-Received: by 2002:a17:90b:3c07:b0:1f0:eab4:79e4 with SMTP id pb7-20020a17090b3c0700b001f0eab479e4mr1116948pjb.186.1657806062495;
-        Thu, 14 Jul 2022 06:41:02 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sPB4AJHTz7fd94myeXuSf8getkOgYveQhJicFIsXMd+oF8xCeEgRFuBRRxo5JHCdTOoHv9uw==
-X-Received: by 2002:a17:90b:3c07:b0:1f0:eab4:79e4 with SMTP id pb7-20020a17090b3c0700b001f0eab479e4mr1116928pjb.186.1657806062264;
-        Thu, 14 Jul 2022 06:41:02 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j31-20020a63fc1f000000b00419ab8f8d2csm1342551pgi.20.2022.07.14.06.41.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 06:41:01 -0700 (PDT)
-From:   Coiby Xu <coxu@redhat.com>
-To:     kexec@lists.infradead.org, linux-integrity@vger.kernel.org
-Cc:     Mimi Zohar <zohar@linux.ibm.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Michal Suchanek <msuchanek@suse.de>,
-        Baoquan He <bhe@redhat.com>, Dave Young <dyoung@redhat.com>,
-        Will Deacon <will@kernel.org>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Chun-Yi Lee <jlee@suse.com>, stable@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        James Morse <james.morse@arm.com>,
-        AKASHI Takahiro <takahiro.akashi@linaro.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v10 3/4] arm64: kexec_file: use more system keyrings to verify kernel image signature
-Date:   Thu, 14 Jul 2022 21:40:26 +0800
-Message-Id: <20220714134027.394370-4-coxu@redhat.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220714134027.394370-1-coxu@redhat.com>
-References: <20220714134027.394370-1-coxu@redhat.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=l94nKR6tSBLp0ho7DFh344H0EUXKGg0rDvSMIqmKMQk=;
+        b=zfXnvhbjsYPXPsAtTCQ8elcfKzAeNIpXI0x/xudwCBr06KoTwCGB47WdB+U3AngpzI
+         qpuWbp6WFK24A5uaYnKbuTC4S6v90sWKLS+ZCoGili0kpPMk+SNPdlVw2klwRiGJ5unx
+         Hi4d0gjAMsGQwG1uxiNyeNPEPRUgckLEq7nYrns/c9vnVxLga15koMy9NRTGEvjpvMD/
+         LZATnIFbxrre39ghc/czbLdPdYiMi/XE993wqZni/AyI0HuBd7ek26TkcXT9hyUPX0+J
+         NcaN3p7u5MOEiy9GL1VWF3w1TOKW18D8AqaRHvKFsB7kDyK8LL+hpxgwgtvhwsjtTUCy
+         5YhQ==
+X-Gm-Message-State: AJIora/EzMgNjx8Zsq7IKbDkLAhlQRgDhWT7SBjdbVYW6OpA/N7cowrO
+        l+IMGfJwmjlwqpmjOTsaSeB1gQ==
+X-Google-Smtp-Source: AGRyM1sjzdPsGBkJricCtr4IbqzTgn/KHGzyVxtVNORZ9L8uLT1ENNZIZH0EC3iAAXFcBmNrSDFAFw==
+X-Received: by 2002:a17:902:a418:b0:16c:9ee2:8a02 with SMTP id p24-20020a170902a41800b0016c9ee28a02mr5398240plq.46.1657806199026;
+        Thu, 14 Jul 2022 06:43:19 -0700 (PDT)
+Received: from [10.255.242.206] ([139.177.225.235])
+        by smtp.gmail.com with ESMTPSA id 186-20020a6214c3000000b0052ae3bcb807sm1653717pfu.188.2022.07.14.06.43.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 06:43:18 -0700 (PDT)
+Message-ID: <fe40bae5-7ec4-d5d2-ffb8-1387300dbbaf@bytedance.com>
+Date:   Thu, 14 Jul 2022 21:43:13 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0.1
+Subject: Re: [External] Re: [PATCH v2 09/10] sched/fair: stop load tracking
+ when task switched_from_fair()
+Content-Language: en-US
+To:     Dietmar Eggemann <dietmar.eggemann@arm.com>, mingo@redhat.com,
+        peterz@infradead.org, vincent.guittot@linaro.org,
+        rostedt@goodmis.org, bsegall@google.com, vschneid@redhat.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220713040430.25778-1-zhouchengming@bytedance.com>
+ <20220713040430.25778-10-zhouchengming@bytedance.com>
+ <27f0675e-8ac3-2200-749f-7290a256e3d9@arm.com>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <27f0675e-8ac3-2200-749f-7290a256e3d9@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, when loading a kernel image via the kexec_file_load() system
-call, arm64 can only use the .builtin_trusted_keys keyring to verify
-a signature whereas x86 can use three more keyrings i.e.
-.secondary_trusted_keys, .machine and .platform keyrings. For example,
-one resulting problem is kexec'ing a kernel image  would be rejected
-with the error "Lockdown: kexec: kexec of unsigned images is restricted;
-see man kernel_lockdown.7".
+On 2022/7/14 20:33, Dietmar Eggemann wrote:
+> On 13/07/2022 06:04, Chengming Zhou wrote:
+>> The same reason as the previous commit, if we don't reset the
+>> sched_avg last_update_time to 0, after a while in switched_to_fair():
+>>
+>> switched_to_fair
+>>   attach_task_cfs_rq
+>>     attach_entity_cfs_rq
+>>       update_load_avg
+>>         __update_load_avg_se(now, cfs_rq, se)
+>>
+>> The delta (now - sa->last_update_time) will wrongly contribute/decay
+>> sched_avg depends on the task running/runnable status at that time.
+> 
+> IMHO, a queued !fair task when switching back to fair will already be
+> enqueued (attached) as a fair task in __sched_setscheduler() prior to
+> the check_class_changed() call.
 
-This patch set enables arm64 to make use of the same keyrings as x86 to
-verify the signature kexec'ed kernel image.
+Right, this is true for a queued !fair task, it will enqueued (attached) before
+check_class_changed().
 
-Fixes: 732b7b93d849 ("arm64: kexec_file: add kernel signature verification support")
-Cc: stable@vger.kernel.org # 105e10e2cf1c: kexec_file: drop weak attribute from functions
-Cc: stable@vger.kernel.org # 34d5960af253: kexec: clean up arch_kexec_kernel_verify_sig
-Cc: stable@vger.kernel.org # 83b7bb2d49ae: kexec, KEYS: make the code in bzImage64_verify_sig generic
-Acked-by: Baoquan He <bhe@redhat.com>
-Cc: kexec@lists.infradead.org
-Cc: keyrings@vger.kernel.org
-Cc: linux-security-module@vger.kernel.org
-Co-developed-by: Michal Suchanek <msuchanek@suse.de>
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Coiby Xu <coxu@redhat.com>
----
- arch/arm64/kernel/kexec_image.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+enqueue_task_fair()
+  enqueue_entity()
+    update_load_avg(cfs_rq, se, UPDATE_TG | DO_ATTACH)
+      if (se->avg.last_update_time && !(flags & SKIP_AGE_LOAD))  --> true
+        __update_load_avg_se(now, cfs_rq, se)  --> (1)
+check_class_changed()
+  switched_to_fair()
+    attach_task_cfs_rq()
+      attach_entity_cfs_rq()
+        update_load_avg(cfs_rq, se, sched_feat(ATTACH_AGE_LOAD) ? 0 : SKIP_AGE_LOAD)
+          if (se->avg.last_update_time && !(flags & SKIP_AGE_LOAD))  --> true
+            __update_load_avg_se(now, cfs_rq, se)  --> (2)
 
-diff --git a/arch/arm64/kernel/kexec_image.c b/arch/arm64/kernel/kexec_image.c
-index 9ec34690e255..5ed6a585f21f 100644
---- a/arch/arm64/kernel/kexec_image.c
-+++ b/arch/arm64/kernel/kexec_image.c
-@@ -14,7 +14,6 @@
- #include <linux/kexec.h>
- #include <linux/pe.h>
- #include <linux/string.h>
--#include <linux/verification.h>
- #include <asm/byteorder.h>
- #include <asm/cpufeature.h>
- #include <asm/image.h>
-@@ -130,18 +129,10 @@ static void *image_load(struct kimage *image,
- 	return NULL;
- }
- 
--#ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
--static int image_verify_sig(const char *kernel, unsigned long kernel_len)
--{
--	return verify_pefile_signature(kernel, kernel_len, NULL,
--				       VERIFYING_KEXEC_PE_SIGNATURE);
--}
--#endif
--
- const struct kexec_file_ops kexec_image_ops = {
- 	.probe = image_probe,
- 	.load = image_load,
- #ifdef CONFIG_KEXEC_IMAGE_VERIFY_SIG
--	.verify_sig = image_verify_sig,
-+	.verify_sig = kexec_kernel_verify_pe_sig,
- #endif
- };
--- 
-2.35.3
 
+1. for queued !fair: (1) delta = (now - last_update_time), last_update_time is the time
+   when switched_from_fair().
+
+2. for !queued !fair: (2) delta = (now - last_update_time), last_update_time is the time
+   when switched_from_fair().
+
+The scenario in the commit message only cover !queued !fair case, I forget the queued !fair
+case, their problem is the same.
+
+
+> 
+> I can't see how this will work with your proposed change in using
+> last_update_time=0 for fair->!fair->fair class changes?
+If we reset last_update_time=0 for !fair task, then:
+
+1. for queued !fair: will not do (1) since the if condition is false.
+
+2. for !queued !fair: will not do (2) since the if condition is false.
+
+Thanks.
+
+> 
+>> This patch reset it's sched_avg last_update_time to 0, stop load
+>> tracking for !fair task, later in switched_to_fair() ->
+>> update_load_avg(), we can use its saved sched_avg.
+>>
+>> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+>> ---
+>>  kernel/sched/fair.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>> index 50f65a2ede32..576028f5a09e 100644
+>> --- a/kernel/sched/fair.c
+>> +++ b/kernel/sched/fair.c
+>> @@ -11552,6 +11552,11 @@ static void attach_task_cfs_rq(struct task_struct *p)
+>>  static void switched_from_fair(struct rq *rq, struct task_struct *p)
+>>  {
+>>  	detach_task_cfs_rq(p);
+>> +
+>> +#ifdef CONFIG_SMP
+>> +	/* Stop load tracking for !fair task */
+>> +	p->se.avg.last_update_time = 0;
+>> +#endif
+>>  }
+>>  
+>>  static void switched_to_fair(struct rq *rq, struct task_struct *p)
+> 
