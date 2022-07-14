@@ -2,264 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3980DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5576AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238295AbiGNKVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
+        id S238318AbiGNKVz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238280AbiGNKVJ (ORCPT
+        with ESMTP id S237809AbiGNKVx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:21:09 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDBE52FF9;
-        Thu, 14 Jul 2022 03:21:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657794068; x=1689330068;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=g49j0cb9hxZKdZ75BONB6nCv4q9hV2JY4Lk4I2Q6EZ0=;
-  b=UEF9Djq1Ma/LZlty0OuGnRTeUJBfvtCMN4XOFB3OgfHQjS/Ir50MUyoh
-   GOjLrv4N4NWjVisUkLpmZr1shdUwCoZB3hQhT2Jq7Ds3tyoU2rE6QWjaD
-   d4f65l4N8WQExU6Z9K6Q+AnZ0wbjx0Wutkry3pDv0eVb6nsr4wHphXp4L
-   IkfEBWs7cJlFGYQwev3U80ko/CF0FG4acJLDXMWAj+BJK6NTmMJCWSptT
-   zhjLF8AW4I6FuwIjIqELn9f0KRjlIxRMdtLGVrdKHdKKLxjAUaBdiA+2E
-   u3OHtR8DycViqyWp8ZXcp+OTdZ8LlKZSOd8PjdHSlS53/PBrS1R6x/ieo
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
-   d="scan'208";a="167808613"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 03:21:06 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 03:21:05 -0700
-Received: from ROB-ULT-M68701.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 03:20:57 -0700
-From:   Sergiu Moga <sergiu.moga@microchip.com>
-To:     <wim@linux-watchdog.org>, <linux@roeck-us.net>,
-        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <claudiu.beznea@microchip.com>, <eugen.hristev@microchip.com>
-CC:     <linux-watchdog@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Thu, 14 Jul 2022 06:21:53 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BE1222B7;
+        Thu, 14 Jul 2022 03:21:51 -0700 (PDT)
+X-UUID: b2b634651a5e41c693ba2f87c87e5099-20220714
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:48061111-a145-4f1d-ba54-267d8bf77698,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:142cfb32-b9e4-42b8-b28a-6364427c76bb,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: b2b634651a5e41c693ba2f87c87e5099-20220714
+Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 800925553; Thu, 14 Jul 2022 18:21:45 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Thu, 14 Jul 2022 18:21:44 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Thu, 14 Jul 2022 18:21:42 +0800
+Message-ID: <7c847b4177b9420b98bd6ecde473f149463e50b1.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Rex-BC Chen <rex-bc.chen@mediatek.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "mripard@kernel.org" <mripard@kernel.org>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "airlied@linux.ie" <airlied@linux.ie>
+CC:     "msp@baylibre.com" <msp@baylibre.com>,
+        "granquet@baylibre.com" <granquet@baylibre.com>,
+        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
+        <jitao.shi@mediatek.com>,
+        "wenst@chromium.org" <wenst@chromium.org>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        LiangXu Xu =?UTF-8?Q?=28=E5=BE=90=E4=BA=AE=29?= 
+        <LiangXu.Xu@mediatek.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergiu Moga <sergiu.moga@microchip.com>
-Subject: [PATCH] watchdog: dt-bindings: atmel,at91sam9-wdt: convert to json-schema
-Date:   Thu, 14 Jul 2022 13:12:44 +0300
-Message-ID: <20220714101242.103521-1-sergiu.moga@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Thu, 14 Jul 2022 18:21:41 +0800
+In-Reply-To: <b04f4a68e012157db43f8f7b0887d611f790a9c5.camel@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+         <8fad0421bb7a61ae5e2ecabfc93790f1e2f30b63.camel@mediatek.com>
+         <b04f4a68e012157db43f8f7b0887d611f790a9c5.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert at91sam9 WDT binding for Atmel/Microchip SoCs to Device Tree
-Schema format.
+Hi, Bo-Chen:
 
-Signed-off-by: Sergiu Moga <sergiu.moga@microchip.com>
----
- .../bindings/watchdog/atmel,at91sam9-wdt.yaml | 127 ++++++++++++++++++
- .../bindings/watchdog/atmel-wdt.txt           |  51 -------
- 2 files changed, 127 insertions(+), 51 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
- delete mode 100644 Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
+On Thu, 2022-07-14 at 16:24 +0800, Rex-BC Chen wrote:
+> On Wed, 2022-07-13 at 16:10 +0800, CK Hu wrote:
+> > Hi, Bo-Chen:
+> > 
+> > On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> > > From: Markus Schneider-Pargmann <msp@baylibre.com>
+> > > 
+> > > This patch adds a embedded displayport driver for the MediaTek
+> > > mt8195
+> > > SoC.
+> > > 
+> > > It supports the MT8195, the embedded DisplayPort units. It offers
+> > > DisplayPort 1.4 with up to 4 lanes.
+> > > 
+> > > The driver creates a child device for the phy. The child device
+> > > will
+> > > never exist without the parent being active. As they are sharing
+> > > a
+> > > register range, the parent passes a regmap pointer to the child
+> > > so
+> > > that
+> > > both can work with the same register range. The phy driver sets
+> > > device
+> > > data that is read by the parent to get the phy device that can be
+> > > used
+> > > to control the phy properties.
+> > > 
+> > > This driver is based on an initial version by
+> > > Jitao shi <jitao.shi@mediatek.com>
+> > > 
+> > > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > > ---
+> > 
+> > [snip]
+> > 
+> > > +
+> > > +struct mtk_dp_timings {
+> > > +	struct videomode vm;
+> > > +};
+> > > +
+> > > +struct mtk_dp_irq_sta {
+> > > +	bool hpd_inerrupt;
+> > > +};
+> > > +
+> > > +struct mtk_dp_train_info {
+> > > +	bool tps3;
+> > > +	bool tps4;
+> > > +	bool sink_ssc;
+> > > +	bool cable_plugged_in;
+> > > +	bool cable_state_change;
+> > > +	bool cr_done;
+> > > +	bool eq_done;
+> > > +	/* link_rate is in multiple of 0.27Gbps */
+> > > +	int link_rate;
+> > > +	int lane_count;
+> > > +	struct mtk_dp_irq_sta irq_sta;
+> > 
+> > There is only one member in struct mtk_dp_irq_sta, so drop struct
+> > mtk_dp_irq_sta and use bool hpd_inerrupt directly here.
+> > 
+> 
+> Hello CK,
+> 
+> ok, I will drop this.
+> 
+> > > +};
+> > > +
+> > > +struct mtk_dp_info {
+> > > +	u32 depth;
+> > > +	enum dp_pixelformat format;
+> > > +	struct mtk_dp_timings timings;
+> > 
+> > There is only one member in struct mtk_dp_timings, so drop struct
+> > mtk_dp_timings and use struct videomode vm directly here.
+> > 
+> 
+> This structure will add more variable in following patch.
+> whole struct is like,
+> struct mtk_dp_timings {
+> 	struct videomode vm;
+> 	u8 frame_rate;
+> 	u32 pix_rate_khz;
+> };
+> 
+> I want to keep this.
 
-diff --git a/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
-new file mode 100644
-index 000000000000..b3f7cbe913a5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/atmel,at91sam9-wdt.yaml
-@@ -0,0 +1,127 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/atmel,at91sam9-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel Watchdog Timers
-+
-+maintainers:
-+  - Eugen Hristev <eugen.hristev@microchip.com>
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+  - if:
-+      properties:
-+        atmel,reset-type:
-+          enum:
-+            - all
-+            - proc
-+    then:
-+      properties:
-+        atmel,watchdog-type:
-+          const: hardware
-+
-+properties:
-+  compatible:
-+    const: atmel,at91sam9260-wdt
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  atmel,max-heartbeat-sec:
-+    description:
-+      Should contain the maximum heartbeat value in seconds. This value
-+      should be less or equal to 16. It is used to compute the WDV field.
-+    maximum: 16
-+
-+  atmel,min-heartbeat-sec:
-+    description:
-+      Should contain the minimum heartbeat value in seconds. This value
-+      must be smaller than the max-heartbeat-sec value. It is used to
-+      compute the WDD field.
-+    maximum: 16
-+
-+  atmel,watchdog-type:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: |
-+      Should be hardware or software.
-+    oneOf:
-+      - description:
-+          Hardware watchdog uses the at91 watchdog reset.
-+        const: hardware
-+      - description: |
-+          Software watchdog uses the watchdog interrupt
-+          to trigger a software reset.
-+        const: software
-+    default: hardware
-+
-+  atmel,reset-type:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description: |
-+      Should be proc or all. This is valid only when using hardware watchdog.
-+    oneOf:
-+      - description:
-+          Assert peripherals and processor reset signals.
-+        const: all
-+      - description:
-+          Assert the processor reset signal.
-+        const: proc
-+    default: all
-+
-+  atmel,disable:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Should be present if you want to stop the watchdog.
-+
-+  atmel,idle-halt:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Should be present if you want to stop the watchdog when
-+      entering idle state.
-+      CAUTION: This property should be used with care, it actually makes the
-+      watchdog not counting when the CPU is in idle state, therefore the
-+      watchdog reset time depends on mean CPU usage and will not reset at all
-+      if the CPU stops working while it is in idle state, which is probably
-+      not what you want.
-+
-+  atmel,dbg-halt:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      Should be present if you want to stop the watchdog when
-+      entering debug state.
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+
-+dependencies:
-+  atmel,reset-type: ['atmel,watchdog-type']
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    watchdog@fffffd40 {
-+        compatible = "atmel,at91sam9260-wdt";
-+        reg = <0xfffffd40 0x10>;
-+        interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
-+        clocks = <&clk32k>;
-+        timeout-sec = <15>;
-+        atmel,watchdog-type = "hardware";
-+        atmel,reset-type = "all";
-+        atmel,dbg-halt;
-+        atmel,idle-halt;
-+        atmel,max-heartbeat-sec = <16>;
-+        atmel,min-heartbeat-sec = <0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt b/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
-deleted file mode 100644
-index 711a880b3d3b..000000000000
---- a/Documentation/devicetree/bindings/watchdog/atmel-wdt.txt
-+++ /dev/null
-@@ -1,51 +0,0 @@
--* Atmel Watchdog Timers
--
--** at91sam9-wdt
--
--Required properties:
--- compatible: must be "atmel,at91sam9260-wdt".
--- reg: physical base address of the controller and length of memory mapped
--  region.
--- clocks: phandle to input clock.
--
--Optional properties:
--- timeout-sec: contains the watchdog timeout in seconds.
--- interrupts : Should contain WDT interrupt.
--- atmel,max-heartbeat-sec : Should contain the maximum heartbeat value in
--	seconds. This value should be less or equal to 16. It is used to
--	compute the WDV field.
--- atmel,min-heartbeat-sec : Should contain the minimum heartbeat value in
--	seconds. This value must be smaller than the max-heartbeat-sec value.
--	It is used to compute the WDD field.
--- atmel,watchdog-type : Should be "hardware" or "software". Hardware watchdog
--	use the at91 watchdog reset. Software watchdog use the watchdog
--	interrupt to trigger a software reset.
--- atmel,reset-type : Should be "proc" or "all".
--	"all" : assert peripherals and processor reset signals
--	"proc" : assert the processor reset signal
--	This is valid only when using "hardware" watchdog.
--- atmel,disable : Should be present if you want to disable the watchdog.
--- atmel,idle-halt : Should be present if you want to stop the watchdog when
--	entering idle state.
--	CAUTION: This property should be used with care, it actually makes the
--	watchdog not counting when the CPU is in idle state, therefore the
--	watchdog reset time depends on mean CPU usage and will not reset at all
--	if the CPU stop working while it is in idle state, which is probably
--	not what you want.
--- atmel,dbg-halt : Should be present if you want to stop the watchdog when
--	entering debug state.
--
--Example:
--	watchdog@fffffd40 {
--		compatible = "atmel,at91sam9260-wdt";
--		reg = <0xfffffd40 0x10>;
--		interrupts = <1 IRQ_TYPE_LEVEL_HIGH 7>;
--		clocks = <&clk32k>;
--		timeout-sec = <15>;
--		atmel,watchdog-type = "hardware";
--		atmel,reset-type = "all";
--		atmel,dbg-halt;
--		atmel,idle-halt;
--		atmel,max-heartbeat-sec = <16>;
--		atmel,min-heartbeat-sec = <0>;
--	};
--- 
-2.25.1
+I think we could just drop struct mtk_dp_timings and place these member
+directly in struct mtk_dp_info.
+
+Regards,
+CK
+
+> 
+> BRs,
+> Bo-Chen
+> 
+> 
+> > Regards,
+> > CK
+> > 
+> > > +};
+> > > +
+> > 
+> > 
+> 
+> 
 
