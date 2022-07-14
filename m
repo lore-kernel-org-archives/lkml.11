@@ -2,100 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA009C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA094C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237581AbiGNFCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 01:02:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
+        id S232557AbiGNFCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 01:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235858AbiGNE77 (ORCPT
+        with ESMTP id S230435AbiGNFAW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:59:59 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91881F604;
-        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so7195258pjm.2;
-        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3XqwSVcbb9SNK7x/sWrwPwBFr5F6BGp/JwEon2mZrVk=;
-        b=P348rrdn7T5kYz2X3RAIhcop6zscRlqzSFEJfvHz/EHDUg6n4TmF493nncgb39jhki
-         +1UHrhqCw0l+g/L7AiFT7GcpLcNUOXSgWjA5esYQXGMsElssKWWuOA3ZRnWcOM6tTXag
-         Jhvmf7ZbLlX5tylcNA9sN7TaDUYVM89FxySn/XqsQJEgY0fd8LJJBERWr3+WSUx3qG2c
-         he5YEy3dn4XY/nYQGbxJ4qkiJIsnIl6BcX6s6RJbIGGMPUV2uz3acqDFzAICd7DjA491
-         3VYK8NkcdCVc/QaxvEaD4SivsyBntGKbc8qrZeHoQ6W3lgEB39fPifWbC6e4Es+W7hBM
-         bjwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3XqwSVcbb9SNK7x/sWrwPwBFr5F6BGp/JwEon2mZrVk=;
-        b=TGNAPg1KBFH4SNsMiUBMcIxYkacKGzqNUpo675ceYe5mQ1AFA9LalqhfU0/iz/XBe7
-         NCr7r5gZWu3+IoUzoPPx8uGcQrpfe3DWcZf5jVfA7LgY3sqCqLZbYgsT3khFLeOc2wrR
-         6G3ka7YHKeg6MJIE+//BP2GGuh5cOm4tjqyEr2xR46R/LyCSORXA9wvC+bVjH6KUf93+
-         LZWZQnNO2xRLyIlIA1JCTRohna/wcViGHLlpw4V2+YyaAnlEnEQg7HO2jPJ7t8Zj9NAL
-         dcO+m7C6hrIIojgva430sH0FB52byUfFQdDlrFPS3cjp+J43mrviBzKZcA6/eNW0x6xF
-         lIHA==
-X-Gm-Message-State: AJIora+szPWD9JYZCb5RJGX48aCLTxbboqckLv05G8/CT+BZ96ZejGvf
-        iLxYzSqahfd/cK7cRSOBWN4=
-X-Google-Smtp-Source: AGRyM1vR/ayn5IWrvE2UjQQvJ4olCUUXwUgyU1CWXvJDfOEua9aBkb2D/f/KyZLEmhAev2NyHEDc2Q==
-X-Received: by 2002:a17:90a:c088:b0:1ef:b85c:576b with SMTP id o8-20020a17090ac08800b001efb85c576bmr14203728pjs.237.1657774602374;
-        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
-Received: from fedora.. ([103.230.106.53])
-        by smtp.gmail.com with ESMTPSA id u9-20020a1709026e0900b0016bdd124d46sm320845plk.288.2022.07.13.21.56.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jul 2022 21:56:41 -0700 (PDT)
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-To:     chuck.lever@oracle.com
-Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
-        jakub@cloudflare.com, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
-        yhs@fb.com, syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com,
-        Khalid Masum <khalid.masum.92@gmail.com>
-Subject: Re: [PATCH v1] net: Add distinct sk_psock field
-Date:   Thu, 14 Jul 2022 10:55:17 +0600
-Message-Id: <20220714045517.185599-1-khalid.masum.92@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <165772238175.1757.4978340330606055982.stgit@oracle-102.nfsv4.dev>
-References: <165772238175.1757.4978340330606055982.stgit@oracle-102.nfsv4.dev>
+        Thu, 14 Jul 2022 01:00:22 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A2325E94
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657774637; x=1689310637;
+  h=from:to:cc:subject:references:date:in-reply-to:
+   message-id:mime-version;
+  bh=lwQnOGjgivQ5p2oJYc4Kbap67iNh8bkmNF0iKNVM8Oo=;
+  b=GtPSE7cV+cUQQj2ay8gZSqzTOaSta9qsTh+r0Jg7W+nS4BwjVqHY1kL+
+   tpXxKXIcwPjEZsuU4/9SSWhfEdThoMdzxBkOpQjBn9jfkgOGs7Bvbgaiw
+   2Twjnu/eoQOx6UGu/xItgsHEQTiJ4tZpBvYGTdPQVQ+sVjkmVKXz0xFfK
+   YXAi2JBGqMJQhvSagcz31cOL9e9WzMjpay+MJxYCm5rDqJzQbzS+r+QkZ
+   /t0s3xZJpkcTS18hLQfE1yPJnRdqIJ0tfVqP/Rd6magt4nmA1Je+xT/9D
+   aZ2FWY/Fz7Pmb9IThkvf9nc2dNlc/vtqVe+kigyT6mUlVtYtIQBQTBogf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="286554359"
+X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
+   d="scan'208";a="286554359"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 21:57:16 -0700
+X-IronPort-AV: E=Sophos;i="5.92,269,1650956400"; 
+   d="scan'208";a="546128526"
+Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 21:57:13 -0700
+From:   "Huang, Ying" <ying.huang@intel.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>, linux-mm@kvack.org,
+        akpm@linux-foundation.org, Wei Xu <weixugc@google.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>, jvgediya.oss@gmail.com
+Subject: Re: [PATCH v8 00/12] mm/demotion: Memory tiers and demotion
+References: <20220704070612.299585-1-aneesh.kumar@linux.ibm.com>
+        <87r130b2rh.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <60e97fa2-0b89-cf42-5307-5a57c956f741@linux.ibm.com>
+        <87r12r5dwu.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <0a55e48a-b4b7-4477-a72f-73644b5fc4cb@linux.ibm.com>
+        <87mtde6cla.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <fef35622-0bd4-f220-26bd-37d8e0112c4d@linux.ibm.com>
+        <87ilo267jl.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <ad4b095b-bb85-b01f-5d69-383219384c29@linux.ibm.com>
+        <87edyp67m1.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        <878roxuz9l.fsf@linux.ibm.com>
+Date:   Thu, 14 Jul 2022 12:56:55 +0800
+In-Reply-To: <878roxuz9l.fsf@linux.ibm.com> (Aneesh Kumar K. V.'s message of
+        "Wed, 13 Jul 2022 15:10:06 +0530")
+Message-ID: <87o7xs47hk.fsf@yhuang6-desk2.ccr.corp.intel.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=ascii
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 10:26:21 -0400 Chuck Lever wrote:
-> The sk_psock facility populates the sk_user_data field with the
-> address of an extra bit of metadata. User space sockets never
-> populate the sk_user_data field, so this has worked out fine.
-> 
-> However, kernel socket consumers such as the RPC client and server
-> do populate the sk_user_data field. The sk_psock() function cannot
-> tell that the content of sk_user_data does not point to psock
-> metadata, so it will happily return a pointer to something else,
-> cast to a struct sk_psock.
-> 
-> Thus kernel socket consumers and psock currently cannot co-exist.
-> 
-> We could educate sk_psock() to return NULL if sk_user_data does
-> not point to a struct sk_psock. However, a more general solution
-> that enables full co-existence psock and other uses of sk_user_data
-> might be more interesting.
-> 
-> Move the struct sk_psock address to its own pointer field so that
-> the contents of the sk_user_data field is preserved.
-> 
-> Reviewed-by: Hannes Reinecke <hare@suse.de>
-> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
 
-The patch seems to fix the syzbot bug: 
-[syzbot] KASAN: slab-out-of-bounds Read in sk_psock_get
-Reported-by: syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com
-As the reproducer no longer triggers the warning.
+> "Huang, Ying" <ying.huang@intel.com> writes:
 
-Tested-by: Khalid Masum <khalid.masum.92@gmail.com>
+[snip]
+
+>>
+>> I believe that sparse memory tier IDs can make memory tier more stable
+>> in some cases.  But this is different from the system suggested by
+>> Johannes.  Per my understanding, with Johannes' system, we will
+>>
+>> - one driver may online different memory types (such as kmem_dax may
+>>   online HBM, PMEM, etc.)
+>>
+>> - one memory type manages several memory nodes (NUMA nodes)
+>>
+>> - one "abstract distance" for each memory type
+>>
+>> - the "abstract distance" can be offset by user space override knob
+>>
+>> - memory tiers generated dynamic from different memory types according
+>>   "abstract distance" and overridden "offset"
+>>
+>> - the granularity to group several memory types into one memory tier can
+>>   be overridden via user space knob
+>>
+>> In this way, the memory tiers may be changed totally after user space
+>> overridden.  It may be hard to link memory tiers before/after the
+>> overridden.  So we may need to reset all per-memory-tier configuration,
+>> such as cgroup paritation limit or interleave weight, etc.
+>
+> Making sure we all agree on the details.
+>
+> In the proposal https://lore.kernel.org/linux-mm/7b72ccf4-f4ae-cb4e-f411-74d055482026@linux.ibm.com
+> instead of calling it "abstract distance" I was referring it as device
+> attributes.
+>
+> Johannes also suggested these device attributes/"abstract distance"
+> to be used to derive the memory tier to which the memory type/memory
+> device will be assigned.
+>
+> So dax kmem would manage different types of memory and based on the device
+> attributes, we would assign them to different memory tiers (memory tiers
+> in the range [0-200)).
+>
+> Now the additional detail here is that we might add knobs that will be
+> used by dax kmem to fine-tune memory types to memory tiers assignment.
+> On updating these knob values, the kernel should rebuild the entire
+> memory tier hierarchy. (earlier I was considering only newly added
+> memory devices will get impacted by such a change. But I agree it
+> makes sense to rebuild the entire hierarchy again) But that rebuilding
+> will be restricted to dax kmem driver.
+>
+
+Thanks for explanation and pointer.  Per my understanding, memory
+types and memory devices including abstract distances are used to
+describe the *physical* memory devices, not *policy*.  We may add more
+physical attributes to these memory devices, such as, latency,
+throughput, etc.  I think we can reach consensus on this point?
+
+In contrast, memory tiers are more about policy, such as
+demotion/promotion, interleaving and possible partition among cgroups.
+How to derive memory tiers from memory types (or devices)?  We have
+multiple choices.
+
+Per my understanding, Johannes suggested to use some policy parameters
+such as distance granularity (e.g., if granularity is 100, then memory
+devices with abstract distance 0-100, 100-200, 200-300, ... will be put
+to memory tier 0, 1, 2, ...) to build the memory tiers.  Distance
+granularity may be not flexible enough, we may need something like a set
+of cutoffs or range, e.g., 50, 100, 200, 500, or 0-50, 50-100, 100-200,
+200-500, >500.  These policy parameters should be overridable from user
+space.
+
+And per my understanding, you suggested to place memory devices to
+memory tiers directly via a knob of memory types (or memory devices).
+e.g., memory_type/memtier can be written to place the memory devices of
+the memory_type to the specified memtier.  Or via
+memorty_type/distance_offset to do that.
+
+Best Regards,
+Huang, Ying
+
+[snip]
