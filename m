@@ -2,107 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:30:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B66D3CCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:30:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236723AbiGNEaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S237020AbiGNEaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236899AbiGNE3L (ORCPT
+        with ESMTP id S237053AbiGNE3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6482980E;
-        Wed, 13 Jul 2022 21:24:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E962B8237A;
-        Thu, 14 Jul 2022 04:24:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 904C9C34114;
-        Thu, 14 Jul 2022 04:24:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772692;
-        bh=lcLO34MoPCLKVA/bKtAqWCoHH3fr4L1nHGwf+6hf4KU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LWr9CY/hb5a2ARvYmaW9c6irvMCiR2ELu6mWO2Qkgar8sCBzrLxR11k0CsL7Tj6Lp
-         yV/iZ354OGXVWJOxvpLT8aGa6AuP1XmMVuKmh6xwmqWSEKm1Wvbr5gy+YCDVZ+C23l
-         MNqayeYj3EEDrS5YLCwPzkLinpAlXjdJu5EUWAJytg2CbGjz6Vn8SWfv3avhEyDZp9
-         jYeyDwFI7/aWn81kVuQsmcLgX+z10MToiqVerVvHJzNLXPV1ICB9KQYQ7dmJzMG7Nb
-         2qYNL/lIDACnr3zktKzWiAaHNfJOxNBkfHh5AVmabCB26k7Jb1e5B9ywSOVFHSjw0H
-         Tti18vf9xQAJA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Ujfalusi <peter.ujfalusi@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        daniel.baluta@nxp.com, perex@perex.cz, tiwai@suse.com,
-        kai.vehmanen@linux.intel.com, yang.jie@linux.intel.com,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 09/28] ASoC: SOF: Intel: hda-loader: Clarify the cl_dsp_init() flow
-Date:   Thu, 14 Jul 2022 00:24:10 -0400
-Message-Id: <20220714042429.281816-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
+        Thu, 14 Jul 2022 00:29:17 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C737B3192C
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:59 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t1cH48TsYgnMbCs85Xjd/gEDfmg15eYdysyMKeEyQaw=;
+        b=MK+VYGzFHPOhVzFkcB+WBdKd2SKCz3HDhj7lJOuCvwCqOvR1ka6CIA8COfVSSJa8TYsznd
+        yld9V/YJipttANKJ/y1yiaPg2E3pEBrXWBBOMqaLi3iv5MxZJdR/ZtafuhZkOXk0frOxOY
+        uhUGxs30vHI6QanO2s9rQUQ4wcPT2mc=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 6/8] mm, hwpoison: make __page_handle_poison returns int
+Date:   Thu, 14 Jul 2022 13:24:18 +0900
+Message-Id: <20220714042420.1847125-7-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit bbfef046c6613404c01aeb9e9928bebb78dd327a ]
+__page_handle_poison() returns bool that shows whether
+take_page_off_buddy() has passed or not now.  But we will want to
+distinguish another case of "dissolve has passed but taking off failed"
+by its return value. So change the type of the return value.
+No functional change.
 
-Update the comment for the cl_dsp_init() to clarify what is done by the
-function and use the chip->init_core_mask instead of BIT(0) when
-unstalling/running the init core.
-
-Complements: 2a68ff846164 ("ASoC: SOF: Intel: hda: Revisit IMR boot sequence")
-Signed-off-by: Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Link: https://lore.kernel.org/r/20220609085949.29062-4-peter.ujfalusi@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- sound/soc/sof/intel/hda-loader.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+v2 -> v3:
+- move deleting "res = MF_FAILED" to the later patch. (by Miaohe)
+---
+ mm/memory-failure.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/sound/soc/sof/intel/hda-loader.c b/sound/soc/sof/intel/hda-loader.c
-index 14469e087b00..ee09393d42cb 100644
---- a/sound/soc/sof/intel/hda-loader.c
-+++ b/sound/soc/sof/intel/hda-loader.c
-@@ -80,9 +80,9 @@ static struct hdac_ext_stream *cl_stream_prepare(struct snd_sof_dev *sdev, unsig
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index f15d521c3f1f..c8fa3643791c 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -71,7 +71,13 @@ atomic_long_t num_poisoned_pages __read_mostly = ATOMIC_LONG_INIT(0);
+ 
+ static bool hw_memory_failure __read_mostly = false;
+ 
+-static bool __page_handle_poison(struct page *page)
++/*
++ * Return values:
++ *   1:   the page is dissolved (if needed) and taken off from buddy,
++ *   0:   the page is dissolved (if needed) and not taken off from buddy,
++ *   < 0: failed to dissolve.
++ */
++static int __page_handle_poison(struct page *page)
+ {
+ 	int ret;
+ 
+@@ -81,7 +87,7 @@ static bool __page_handle_poison(struct page *page)
+ 		ret = take_page_off_buddy(page);
+ 	zone_pcp_enable(page_zone(page));
+ 
+-	return ret > 0;
++	return ret;
  }
  
- /*
-- * first boot sequence has some extra steps. core 0 waits for power
-- * status on core 1, so power up core 1 also momentarily, keep it in
-- * reset/stall and then turn it off
-+ * first boot sequence has some extra steps.
-+ * power on all host managed cores and only unstall/run the boot core to boot the
-+ * DSP then turn off all non boot cores (if any) is powered on.
-  */
- static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- {
-@@ -117,7 +117,7 @@ static int cl_dsp_init(struct snd_sof_dev *sdev, int stream_tag)
- 			  ((stream_tag - 1) << 9)));
- 
- 	/* step 3: unset core 0 reset state & unstall/run core 0 */
--	ret = hda_dsp_core_run(sdev, BIT(0));
-+	ret = hda_dsp_core_run(sdev, chip->init_core_mask);
- 	if (ret < 0) {
- 		if (hda->boot_iteration == HDA_FW_BOOT_ATTEMPTS)
- 			dev_err(sdev->dev,
+ static bool page_handle_poison(struct page *page, bool hugepage_or_freepage, bool release)
+@@ -91,7 +97,7 @@ static bool page_handle_poison(struct page *page, bool hugepage_or_freepage, boo
+ 		 * Doing this check for free pages is also fine since dissolve_free_huge_page
+ 		 * returns 0 for non-hugetlb pages as well.
+ 		 */
+-		if (!__page_handle_poison(page))
++		if (__page_handle_poison(page) <= 0)
+ 			/*
+ 			 * We could fail to take off the target page from buddy
+ 			 * for example due to racy page allocation, but that's
+@@ -1086,7 +1092,7 @@ static int me_huge_page(struct page_state *ps, struct page *p)
+ 		 * subpages.
+ 		 */
+ 		put_page(hpage);
+-		if (__page_handle_poison(p)) {
++		if (__page_handle_poison(p) > 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
+ 		}
+@@ -1869,7 +1875,7 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 	if (res == 0) {
+ 		unlock_page(head);
+ 		res = MF_FAILED;
+-		if (__page_handle_poison(p)) {
++		if (__page_handle_poison(p) > 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
+ 		}
 -- 
-2.35.1
+2.25.1
 
