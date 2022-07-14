@@ -2,157 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E17E5C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC49C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240173AbiGNOHP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:07:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
+        id S239064AbiGNOID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240076AbiGNOHM (ORCPT
+        with ESMTP id S230190AbiGNOIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:07:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD06FEE28
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:07:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 83A2662104
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CCE6C34115;
-        Thu, 14 Jul 2022 14:07:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657807630;
-        bh=bw+wCJlOkejz2QxcahhYY8ZI2DH0WQfzGd5edWTkDnQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=bwWW6avYPYfmC8mHiHWR9Hw9Sunq/19HR3/TUP0gZy/AAUDOdf4IeiD1USMlZnMMj
-         VBG2BuTNFUDcLnYtgYSmYZxjZuWHVylv0DAvKMvg/gzOlX9BwOLz0UUQfJoOvLmMyt
-         Pp5DQt3y//Ed4IeX8qJ+R+fPHMhme2H1oQhEZIVA=
-Date:   Thu, 14 Jul 2022 15:28:44 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zheyu Ma <zheyuma97@gmail.com>
-Cc:     eli.billauer@gmail.com, arnd@arndb.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 RESEND] char: xillybus: Check endpoint type at probe
- time
-Message-ID: <YtAaDOBOyJkFHb/4@kroah.com>
-References: <20220714131824.919052-1-zheyuma97@gmail.com>
+        Thu, 14 Jul 2022 10:08:02 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B504828713
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:08:00 -0700 (PDT)
+Received: from [10.90.50.23] (unknown [10.90.50.23])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxf+M4I9BiWmUeAA--.63010S3;
+        Thu, 14 Jul 2022 22:07:53 +0800 (CST)
+Message-ID: <6896bb4c-5224-678f-e73c-fe95be41d196@loongson.cn>
+Date:   Thu, 14 Jul 2022 22:07:52 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220714131824.919052-1-zheyuma97@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] LoongArch: Fix missing fcsr in ptrace's fpr_set
+Content-Language: en-US
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>, Oleg Nesterov <oleg@redhat.com>,
+        Xu Li <lixu@loongson.cn>, loongarch@lists.linux.dev,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220714062550.4934-1-huqi@loongson.cn>
+ <CAAhV-H6NWYG1ChLRyK-EAGAmhDvP-x+z9BgBo3a=GAbQ-2bKig@mail.gmail.com>
+From:   Qi Hu <huqi@loongson.cn>
+In-Reply-To: <CAAhV-H6NWYG1ChLRyK-EAGAmhDvP-x+z9BgBo3a=GAbQ-2bKig@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: AQAAf9Dxf+M4I9BiWmUeAA--.63010S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7tFyxXrWDGryxZw17Wry8Xwb_yoW8Zw1kpr
+        ZxA3ZxGF48JrWrur9FqFnYvr1DXwnFgFyS9393t3WrArnFvws8JryDtF42vFWIy34rGayx
+        ZrnF9FsayFnFq3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvYb7Iv0xC_tr1lb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCY
+        02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4
+        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1D
+        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
+        0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v2
+        6r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07
+        j8GYLUUUUU=
+X-CM-SenderInfo: pkxtxqxorr0wxvrqhubq/1tbiAQAHCV3QvP1aPwABsn
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 09:18:24PM +0800, Zheyu Ma wrote:
-> The driver submits bulk urb without checking the endpoint type is
-> actually bulk.
-> 
-> [    3.108690] usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-> [    3.108983] WARNING: CPU: 0 PID: 211 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd9/0x18b0
-> [    3.110976] RIP: 0010:usb_submit_urb+0xcd9/0x18b0
-> [    3.115318] Call Trace:
-> [    3.115452]  <TASK>
-> [    3.115570]  try_queue_bulk_in+0x43c/0x6e0 [xillyusb]
-> [    3.115838]  xillyusb_probe+0x488/0x1230 [xillyusb]
-> 
-> Add a check at probe time to fix the bug.
-> 
-> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> ---
->  drivers/char/xillybus/xillyusb.c | 27 +++++++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
-> 
-> diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
-> index 39bcbfd908b4..b1bac2fdb42a 100644
-> --- a/drivers/char/xillybus/xillyusb.c
-> +++ b/drivers/char/xillybus/xillyusb.c
-> @@ -167,6 +167,7 @@ struct xillyusb_dev {
->  	struct device		*dev; /* For dev_err() and such */
->  	struct kref		kref;
->  	struct workqueue_struct	*workq;
-> +	struct usb_interface *intf;
->  
->  	int error;
->  	spinlock_t error_lock; /* protect @error */
-> @@ -1890,8 +1891,31 @@ static const struct file_operations xillyusb_fops = {
->  	.poll       = xillyusb_poll,
->  };
->  
-> +static int xillyusb_check_endpoint(struct xillyusb_dev *xdev, u8 addr)
-> +{
-> +	int i;
-> +	struct usb_host_interface *if_desc = xdev->intf->altsetting;
-> +
-> +	for (i = 0; i < if_desc->desc.bNumEndpoints; i++) {
-> +		struct usb_endpoint_descriptor *ep = &if_desc->endpoint[i].desc;
-> +
-> +		if (ep->bEndpointAddress != addr)
-> +			continue;
-> +
-> +		if ((usb_pipein(addr) && usb_endpoint_is_bulk_in(ep)) ||
-> +			(usb_pipeout(addr) && usb_endpoint_is_bulk_out(ep)))
-> +			return 0;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
->  static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
->  {
-> +	if (xillyusb_check_endpoint(xdev, IN_EP_NUM | USB_DIR_IN) ||
-> +		xillyusb_check_endpoint(xdev, MSG_EP_NUM | USB_DIR_OUT))
-> +		return -EINVAL;
-> +
->  	xdev->msg_ep = endpoint_alloc(xdev, MSG_EP_NUM | USB_DIR_OUT,
->  				      bulk_out_work, 1, 2);
->  	if (!xdev->msg_ep)
-> @@ -1963,6 +1987,8 @@ static int setup_channels(struct xillyusb_dev *xdev,
->  			chan->out_log2_element_size = out_desc & 0x0f;
->  			chan->out_log2_fifo_size =
->  				((out_desc >> 8) & 0x1f) + 16;
-> +			if (xillyusb_check_endpoint(xdev, (i+2) | USB_DIR_OUT))
-> +				return -EINVAL;
->  		}
->  	}
->  
-> @@ -2126,6 +2152,7 @@ static int xillyusb_probe(struct usb_interface *interface,
->  	mutex_init(&xdev->process_in_mutex);
->  	mutex_init(&xdev->msg_mutex);
->  
-> +	xdev->intf = interface;
->  	xdev->udev = usb_get_dev(interface_to_usbdev(interface));
->  	xdev->dev = &interface->dev;
->  	xdev->error = 0;
-> -- 
-> 2.25.1
-> 
 
-Hi,
+On 2022/7/14 21:12, Huacai Chen wrote:
+> Hi,
+>
+> On Thu, Jul 14, 2022 at 2:26 PM Qi Hu <huqi@loongson.cn> wrote:
+>> In file ptrace.c, function fpr_set does not copy fcsr data from ubuf
+>> to kbuf. That's the reason why fcsr cannot be modified by ptrace.
+>>
+>> This patch fixs this problem and allows users using ptrace to modify
+>> the fcsr.
+>>
+>> Signed-off-by: Qi Hu <huqi@loongson.cn>
+>> Signed-off-by: Xu Li <lixu@loongson.cn>
+>> ---
+>>   arch/loongarch/kernel/ptrace.c | 12 +++++++-----
+>>   1 file changed, 7 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/arch/loongarch/kernel/ptrace.c b/arch/loongarch/kernel/ptrace.c
+>> index e6ab87948e1d..dc2b82ea894c 100644
+>> --- a/arch/loongarch/kernel/ptrace.c
+>> +++ b/arch/loongarch/kernel/ptrace.c
+>> @@ -193,7 +193,7 @@ static int fpr_set(struct task_struct *target,
+>>                     const void *kbuf, const void __user *ubuf)
+>>   {
+>>          const int fcc_start = NUM_FPU_REGS * sizeof(elf_fpreg_t);
+>> -       const int fcc_end = fcc_start + sizeof(u64);
+>> +       const int fcsr_start = fcc_start + sizeof(u64);
+>>          int err;
+>>
+>>          BUG_ON(count % sizeof(elf_fpreg_t));
+>> @@ -209,10 +209,12 @@ static int fpr_set(struct task_struct *target,
+>>          if (err)
+>>                  return err;
+>>
+>> -       if (count > 0)
+>> -               err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
+>> -                                         &target->thread.fpu.fcc,
+>> -                                         fcc_start, fcc_end);
+>> +       err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
+>> +                                 &target->thread.fpu.fcc, fcc_start,
+>> +                                 fcc_start + sizeof(u64));
+>> +       err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
+>> +                                 &target->thread.fpu.fcsr, fcsr_start,
+>> +                                 fcsr_start + sizeof(u32));
+> You shouldn't remove (count > 0) here, because  the above
+> user_regset_copyin() will modify count inside, and so "count == 0" is
+> possible.
+>
+> Huacai
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
+Yes, the "count" should be considered. But the "count" is checked at the 
+beginning of the "user_regset_copyin()".
 
-You are receiving this message because of the following common error(s)
-as indicated below:
+So "count > 0" is useless, i think.
 
-- This looks like a new version of a previously submitted patch, but you
-  did not list below the --- line any changes from the previous version.
-  Please read the section entitled "The canonical patch format" in the
-  kernel file, Documentation/SubmittingPatches for what needs to be done
-  here to properly describe this.
+Also like riscv, "count" is not checked in "riscv_fpr_set()".
 
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
+>>          return err;
+>>   }
+>> --
+>> 2.37.0
+>>
 
-thanks,
-
-greg k-h's patch email bot
