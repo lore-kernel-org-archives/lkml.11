@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D15C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66266C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237528AbiGNEcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
+        id S237539AbiGNEcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:32:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237467AbiGNEby (ORCPT
+        with ESMTP id S237494AbiGNEb7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:31:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC7C33E38;
-        Wed, 13 Jul 2022 21:25:38 -0700 (PDT)
+        Thu, 14 Jul 2022 00:31:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E36B2A27C;
+        Wed, 13 Jul 2022 21:25:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72CA1B82376;
-        Thu, 14 Jul 2022 04:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADE25C34114;
-        Thu, 14 Jul 2022 04:25:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF99D61E4E;
+        Thu, 14 Jul 2022 04:25:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C71FC36AF3;
+        Thu, 14 Jul 2022 04:25:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772736;
-        bh=R3lZ3NCRdBNAZR5E9UfEpe/W3lAmCfKjijCWELZQ0aY=;
+        s=k20201202; t=1657772740;
+        bh=fHBYmqcIiLMomw61JKDjJgzcDQQWoa5ofC83PhIIq4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jR+ObY+1pGD/3eZKyJiapC6D47ualbpWxluTO6B5sXVsRubqa8Qp7NXO1hsvDN7cP
-         iBnmtplRQcv602lMWLAH0kJVPOT+GQbpnQsSjnwuZUEbpgy23KxBufgAVUFVQQRrDq
-         ma9KgdW/Ifwi9bp0RnB9E5AoPBh38uczfhiXGXpr0abV4+/LDVJdMyUdBzzuyzxams
-         6eBJL01HlW+KmonzG0XECRp63o6bSuFxoq9qCt9BRFUYVo5oGICG3zRsyW4r5SkgSA
-         lRk8EuOeERnElKTvO6cay6mOSJbvnx6qPWrxKgEGQnf+LjdlVZ2DqzKYCujU51RmGk
-         1qgB79cguDgZQ==
+        b=FcPpjw4GirVgmxpcQ62KqLVCOIj3o9sBr8chQbttcJ+LdxS7s0B6bBJK6QWiU4gRG
+         URqQudDE7RsSpEpc47kjtpKnFPc3YCZJ/fAIX7A8QGyAPzjqIsHTV4lS6Hsqlm1QI4
+         y3p86oA41m7RgtC76T+cQeAXSfX9aVD+KjJy9xQTAMmXNsj7yQXVmNLkIcvUnG7+8h
+         ag8UaPvLyYjK4ZF53vbmVtPsGlNffG/5ijU6rVrsilGWJcfytykWFF3embm/LSq/dw
+         diCs1fjdUyp/X+mKFCZ6kwe4ubtuZFwVD8z42VMNUEhjg1ld0B6XCRLZ/0gXiMh+mW
+         MDPtaHkRsPDAA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Egor Vorontsov <sdoregor@sdore.me>, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, hahnjo@hahnjo.de, willovertonuk@gmail.com,
-        brendan@grieve.com.au, john-linux@pelago.org.uk, alexander@tsoy.me,
-        alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 26/28] ALSA: usb-audio: Add quirk for Fiero SC-01 (fw v1.0.0)
-Date:   Thu, 14 Jul 2022 00:24:27 -0400
-Message-Id: <20220714042429.281816-26-sashal@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>, ebiederm@xmission.com,
+        keescook@chromium.org, oleg@redhat.com, tglx@linutronix.de,
+        peterz@infradead.org
+Subject: [PATCH AUTOSEL 5.15 28/28] signal handling: don't use BUG_ON() for debugging
+Date:   Thu, 14 Jul 2022 00:24:29 -0400
+Message-Id: <20220714042429.281816-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
 References: <20220714042429.281816-1-sashal@kernel.org>
@@ -53,185 +52,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Egor Vorontsov <sdoregor@sdore.me>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-[ Upstream commit 2307a0e1ca0b5c1337b37ac6302f96e017ebac3c ]
+[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
 
-The patch applies the same quirks used for SC-01 at firmware v1.1.0 to
-the ones running v1.0.0, with respect to hard-coded sample rates.
+These are indeed "should not happen" situations, but it turns out recent
+changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
+exists, is pending more testing), and the BUG_ON() makes it
+unnecessarily hard to actually debug for no good reason.
 
-I got two more units and successfully tested the patch series with both
-firmwares.
+It's been that way for a long time, but let's make it clear: BUG_ON() is
+not good for debugging, and should never be used in situations where you
+could just say "this shouldn't happen, but we can continue".
 
-The support is now complete (not accounting ASIO).
+Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
+continue running.  Instead of making the system basically unusuable
+because you crashed the machine while potentially holding some very core
+locks (eg this function is commonly called while holding 'tasklist_lock'
+for writing).
 
-Signed-off-by: Egor Vorontsov <sdoregor@sdore.me>
-Link: https://lore.kernel.org/r/20220627100041.2861494-2-sdoregor@sdore.me
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/usb/quirks-table.h | 132 +++++++++++++++++++++++++++++++++++++++
- sound/usb/quirks.c       |   4 ++
- 2 files changed, 136 insertions(+)
+ kernel/signal.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/usb/quirks-table.h b/sound/usb/quirks-table.h
-index 7067d314fecd..f93201a830b5 100644
---- a/sound/usb/quirks-table.h
-+++ b/sound/usb/quirks-table.h
-@@ -4167,6 +4167,138 @@ YAMAHA_DEVICE(0x7010, "UB99"),
- 		}
- 	}
- },
-+{
-+	/*
-+	 * Fiero SC-01 (firmware v1.0.0 @ 48 kHz)
-+	 */
-+	USB_DEVICE(0x2b53, 0x0023),
-+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "Fiero",
-+		.product_name = "SC-01",
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_COMPOSITE,
-+		.data = &(const struct snd_usb_audio_quirk[]) {
-+			{
-+				.ifnum = 0,
-+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+			},
-+			/* Playback */
-+			{
-+				.ifnum = 1,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 1,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x01,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_48000,
-+					.rate_min = 48000,
-+					.rate_max = 48000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 48000 },
-+					.clock = 0x29
-+				}
-+			},
-+			/* Capture */
-+			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 2,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x82,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC |
-+						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
-+					.rates = SNDRV_PCM_RATE_48000,
-+					.rate_min = 48000,
-+					.rate_max = 48000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 48000 },
-+					.clock = 0x29
-+				}
-+			},
-+			{
-+				.ifnum = -1
-+			}
-+		}
-+	}
-+},
-+{
-+	/*
-+	 * Fiero SC-01 (firmware v1.0.0 @ 96 kHz)
-+	 */
-+	USB_DEVICE(0x2b53, 0x0024),
-+	.driver_info = (unsigned long) &(const struct snd_usb_audio_quirk) {
-+		.vendor_name = "Fiero",
-+		.product_name = "SC-01",
-+		.ifnum = QUIRK_ANY_INTERFACE,
-+		.type = QUIRK_COMPOSITE,
-+		.data = &(const struct snd_usb_audio_quirk[]) {
-+			{
-+				.ifnum = 0,
-+				.type = QUIRK_AUDIO_STANDARD_INTERFACE
-+			},
-+			/* Playback */
-+			{
-+				.ifnum = 1,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 1,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x01,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC,
-+					.rates = SNDRV_PCM_RATE_96000,
-+					.rate_min = 96000,
-+					.rate_max = 96000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			/* Capture */
-+			{
-+				.ifnum = 2,
-+				.type = QUIRK_AUDIO_FIXED_ENDPOINT,
-+				.data = &(const struct audioformat) {
-+					.formats = SNDRV_PCM_FMTBIT_S32_LE,
-+					.channels = 2,
-+					.fmt_bits = 24,
-+					.iface = 2,
-+					.altsetting = 1,
-+					.altset_idx = 1,
-+					.endpoint = 0x82,
-+					.ep_attr = USB_ENDPOINT_XFER_ISOC |
-+						   USB_ENDPOINT_SYNC_ASYNC |
-+						   USB_ENDPOINT_USAGE_IMPLICIT_FB,
-+					.rates = SNDRV_PCM_RATE_96000,
-+					.rate_min = 96000,
-+					.rate_max = 96000,
-+					.nr_rates = 1,
-+					.rate_table = (unsigned int[]) { 96000 },
-+					.clock = 0x29
-+				}
-+			},
-+			{
-+				.ifnum = -1
-+			}
-+		}
-+	}
-+},
- {
- 	/*
- 	 * Fiero SC-01 (firmware v1.1.0)
-diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
-index d42a59609886..c4c0847a68bf 100644
---- a/sound/usb/quirks.c
-+++ b/sound/usb/quirks.c
-@@ -1911,6 +1911,10 @@ static const struct usb_audio_quirk_flags_table quirk_flags_table[] = {
- 		   QUIRK_FLAG_ALIGN_TRANSFER),
- 	DEVICE_FLG(0x1224, 0x2a25, /* Jieli Technology USB PHY 2.0 */
- 		   QUIRK_FLAG_GET_SAMPLE_RATE),
-+	DEVICE_FLG(0x2b53, 0x0023, /* Fiero SC-01 (firmware v1.0.0 @ 48 kHz) */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
-+	DEVICE_FLG(0x2b53, 0x0024, /* Fiero SC-01 (firmware v1.0.0 @ 96 kHz) */
-+		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
- 	DEVICE_FLG(0x2b53, 0x0031, /* Fiero SC-01 (firmware v1.1.0) */
- 		   QUIRK_FLAG_GENERIC_IMPLICIT_FB),
+diff --git a/kernel/signal.c b/kernel/signal.c
+index d831f0aec56e..c7dbb19219b9 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -2027,12 +2027,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
+ 	bool autoreap = false;
+ 	u64 utime, stime;
  
+-	BUG_ON(sig == -1);
++	WARN_ON_ONCE(sig == -1);
+ 
+- 	/* do_notify_parent_cldstop should have been called instead.  */
+- 	BUG_ON(task_is_stopped_or_traced(tsk));
++	/* do_notify_parent_cldstop should have been called instead.  */
++	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
+ 
+-	BUG_ON(!tsk->ptrace &&
++	WARN_ON_ONCE(!tsk->ptrace &&
+ 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
+ 
+ 	/* Wake up all pidfd waiters */
 -- 
 2.35.1
 
