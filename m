@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F2AC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8682DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238656AbiGNMpg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35960 "EHLO
+        id S239272AbiGNMpm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:45:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239489AbiGNMoL (ORCPT
+        with ESMTP id S239492AbiGNMoL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 08:44:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60B97474F5;
-        Thu, 14 Jul 2022 05:44:09 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 878A012629;
+        Thu, 14 Jul 2022 05:44:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94888B824F6;
+        by sin.source.kernel.org (Postfix) with ESMTPS id BB6D1CE26A7;
         Thu, 14 Jul 2022 12:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE585C341D0;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BC53C341DE;
         Thu, 14 Jul 2022 12:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657802645;
-        bh=KioSpP0GcyEhkA8fqdC4rA7ugQSJzAKN3mdLXJ2iR3k=;
+        bh=/vdrzpj1m7eqBV6SFnyhWrugY9ghVbbon0lym+Lzgkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qX5oSNCxn5oKuXzXjq7ny+o8UJeMwTI2ILJR4WUnKFl/tQcy71vIdMx7AKmGfTolZ
-         zloyMZMmy3WwUy7fk2Ezc4IGiIRoy0AsUOwMte3YwhWQpaUabvsSovXAVFNme+xtLR
-         tJ+EPrPgukKOmmw61WisnREPm8XYUAJQKv8c4UULj0NieSxO1bgxRQLLvgenOmJWDR
-         VYjkgYBl3mESiU4oiu135VpiSoCQsD1on/qW2Gwe2ElXUcF+1HMUZDdPHl81bgZYVo
-         YBh7XIDCRQinzAtLRZGgF+W0xrcXgi/Gsg0Ehs0xAVOD4bEnpPd0UXxtyhmYKM68gg
-         cZHfK1dVd9DHA==
+        b=EOmneFR1RJp2AUoMuvbpP7N51zc9ML7/iYWlWV0HwelsXLRZzKbbOr+t7E0iJMpT3
+         Qs4II4C3fmolb43ZukjEsB7fCA8e4wSaNC4vXkv5+cuKq7ED1MUJHZwD26RtfIKUBW
+         /jwvMcQ6S82pRkbKTxbFfb6j252dV7Bvofy91jCGusZo45+1hdvW8wByJWe+tsWHVV
+         Rea7HflVsdA6vApNmkmlftDejzvPe7YzA4Qp9AnewgW8Jvh7Ie0qiZyVxUjlTX8U+Z
+         3SbCTR7xv8uKK16SXG+5FIZkc77HO7mkxRf3i03OO1cjsCSJc7wHkM53OeGkn3s0II
+         g2QVfuIHR/U7Q==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan+linaro@kernel.org>)
-        id 1oByCR-0007EO-8E; Thu, 14 Jul 2022 14:44:11 +0200
+        id 1oByCR-0007EF-0B; Thu, 14 Jul 2022 14:44:11 +0200
 From:   Johan Hovold <johan+linaro@kernel.org>
 To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -45,10 +45,11 @@ Cc:     Andy Gross <agross@kernel.org>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>
-Subject: [PATCH v3 28/30] phy: qcom-qmp-pcie-msm8996: drop pipe clock lane suffix
-Date:   Thu, 14 Jul 2022 14:43:31 +0200
-Message-Id: <20220714124333.27643-29-johan+linaro@kernel.org>
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 25/30] phy: qcom-qmp-pcie: drop pipe clock lane suffix
+Date:   Thu, 14 Jul 2022 14:43:28 +0200
+Message-Id: <20220714124333.27643-26-johan+linaro@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714124333.27643-1-johan+linaro@kernel.org>
 References: <20220714124333.27643-1-johan+linaro@kernel.org>
@@ -64,16 +65,25 @@ adding a redundant lane-number suffix to the clock name.
 Update driver to support the new binding where the pipe clock name has
 been deprecated by instead requesting the clock by index.
 
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 ---
- drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/phy/qualcomm/phy-qcom-qmp-pcie.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-index be6a94439b6c..7b893c66cf75 100644
---- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-+++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie-msm8996.c
-@@ -892,8 +892,7 @@ int qcom_qmp_phy_pcie_msm8996_create(struct device *dev, struct device_node *np,
+diff --git a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+index 2d65e1f56bfc..3ddbb8e89f04 100644
+--- a/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
++++ b/drivers/phy/qualcomm/phy-qcom-qmp-pcie.c
+@@ -2314,7 +2314,6 @@ int qcom_qmp_phy_pcie_create(struct device *dev, struct device_node *np, int id,
+ 	struct qcom_qmp *qmp = dev_get_drvdata(dev);
+ 	struct phy *generic_phy;
+ 	struct qmp_phy *qphy;
+-	char prop_name[MAX_PROP_NAME];
+ 	int ret;
+ 
+ 	qphy = devm_kzalloc(dev, sizeof(*qphy), GFP_KERNEL);
+@@ -2374,8 +2373,7 @@ int qcom_qmp_phy_pcie_create(struct device *dev, struct device_node *np, int id,
  	if (!qphy->pcs_misc)
  		dev_vdbg(dev, "PHY pcs_misc-reg not used\n");
  
