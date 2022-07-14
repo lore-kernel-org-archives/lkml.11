@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36AA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0442CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232164AbiGNC7R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 22:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57618 "EHLO
+        id S232271AbiGNC7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 22:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbiGNC7L (ORCPT
+        with ESMTP id S232042AbiGNC7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 22:59:11 -0400
-Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1E0719C03
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R371e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VJH72kJ_1657767545;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VJH72kJ_1657767545)
+        Wed, 13 Jul 2022 22:59:10 -0400
+Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B671A048
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:59:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R731e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VJH7R.V_1657767544;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VJH7R.V_1657767544)
           by smtp.aliyun-inc.com;
-          Thu, 14 Jul 2022 10:59:06 +0800
+          Thu, 14 Jul 2022 10:59:04 +0800
 From:   Xianting Tian <xianting.tian@linux.alibaba.com>
 To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
         aou@eecs.berkeley.edu, alexandre.ghiti@canonical.com,
@@ -27,9 +27,9 @@ To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
 Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
         huanyi.xj@alibaba-inc.com,
         Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [PATCH V2 2/2] riscv: Add modules to virtual kernel memory layout dump
-Date:   Thu, 14 Jul 2022 10:59:01 +0800
-Message-Id: <20220714025901.359695-3-xianting.tian@linux.alibaba.com>
+Subject: [PATCH V2 1/2] RISC-V: Add arch_crash_save_vmcoreinfo support
+Date:   Thu, 14 Jul 2022 10:59:00 +0800
+Message-Id: <20220714025901.359695-2-xianting.tian@linux.alibaba.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
 References: <20220714025901.359695-1-xianting.tian@linux.alibaba.com>
@@ -37,36 +37,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Modules always live before the kernel, MODULES_END is fixed but
-MODULES_VADDR isn't fixed, it depends on the kernel size.
-Let's add it to virtual kernel memory layout dump.
+Add arch_crash_save_vmcoreinfo(), which exports VM layout(MODULES, VMALLOC,
+VMEMMAP and KERNEL_LINK_ADDR ranges), satp mode and ram base to vmcore.
 
-As MODULES is only defined for CONFIG_64BIT, so we dump it when
-CONFIG_64BIT.
+Default pagetable levels and PAGE_OFFSET aren't same for different kernel
+version as below. For default pagetable levels, it sets sv57 on defaultly
+in latest kernel and do fallback to try to set sv48 on boot time if sv57
+is not supported in current hardware.
 
-eg,
-MODULES_VADDR - MODULES_END
-0xffffffff01133000 - 0xffffffff80000000
+For ram base, the default value is 0x80200000 for qemu riscv64 env, 0x200000
+for riscv64 SoC platform(eg, SoC platform of RISC-V XuanTie 910 CPU).
+
+ * Linux Kernel 5.18 ~
+ *      PGTABLE_LEVELS = 5
+ *      PAGE_OFFSET = 0xff60000000000000
+ * Linux Kernel 5.17 ~
+ *      PGTABLE_LEVELS = 4
+ *      PAGE_OFFSET = 0xffffaf8000000000
+ * Linux Kernel 4.19 ~
+ *      PGTABLE_LEVELS = 3
+ *      PAGE_OFFSET = 0xffffffe000000000
+
+Since these configurations change from time to time and version to version,
+it is preferable to export them via vmcoreinfo than to change the crash's
+code frequently, it can simplify the development of crash tool.
 
 Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
 ---
- arch/riscv/mm/init.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/riscv/kernel/Makefile     |  1 +
+ arch/riscv/kernel/crash_core.c | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+)
+ create mode 100644 arch/riscv/kernel/crash_core.c
 
-diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-index d466ec670e1f..bbc9431e9042 100644
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -135,6 +135,9 @@ static void __init print_vm_layout(void)
- 		(unsigned long)VMEMMAP_END);
- 	print_ml("vmalloc", (unsigned long)VMALLOC_START,
- 		(unsigned long)VMALLOC_END);
-+	if (IS_ENABLED(CONFIG_64BIT))
-+		print_ml("modules", (unsigned long)MODULES_VADDR,
-+			(unsigned long)MODULES_END);
- 	print_ml("lowmem", (unsigned long)PAGE_OFFSET,
- 		(unsigned long)high_memory);
- 	if (IS_ENABLED(CONFIG_64BIT)) {
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index c71d6591d539..54e4183db080 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -81,6 +81,7 @@ obj-$(CONFIG_KGDB)		+= kgdb.o
+ obj-$(CONFIG_KEXEC)		+= kexec_relocate.o crash_save_regs.o machine_kexec.o
+ obj-$(CONFIG_KEXEC_FILE)	+= elf_kexec.o machine_kexec_file.o
+ obj-$(CONFIG_CRASH_DUMP)	+= crash_dump.o
++obj-$(CONFIG_CRASH_CORE)	+= crash_core.o
+ 
+ obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
+ 
+diff --git a/arch/riscv/kernel/crash_core.c b/arch/riscv/kernel/crash_core.c
+new file mode 100644
+index 000000000000..c096904dd0f3
+--- /dev/null
++++ b/arch/riscv/kernel/crash_core.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/crash_core.h>
++#include <linux/pagemap.h>
++
++void arch_crash_save_vmcoreinfo(void)
++{
++	VMCOREINFO_NUMBER(VA_BITS);
++	VMCOREINFO_NUMBER(phys_ram_base);
++
++	/* Please note VMCOREINFO_NUMBER() uses "%d", not "%x" */
++	vmcoreinfo_append_str("NUMBER(PAGE_OFFSET)=0x%lx\n", PAGE_OFFSET);
++	vmcoreinfo_append_str("NUMBER(VMALLOC_START)=0x%lx\n", VMALLOC_START);
++	vmcoreinfo_append_str("NUMBER(VMALLOC_END)=0x%lx\n", VMALLOC_END);
++	vmcoreinfo_append_str("NUMBER(VMEMMAP_START)=0x%lx\n", VMEMMAP_START);
++	vmcoreinfo_append_str("NUMBER(VMEMMAP_END)=0x%lx\n", VMEMMAP_END);
++
++	if (IS_ENABLED(CONFIG_64BIT)) {
++		vmcoreinfo_append_str("NUMBER(MODULES_VADDR)=0x%lx\n", MODULES_VADDR);
++		vmcoreinfo_append_str("NUMBER(MODULES_END)=0x%lx\n", MODULES_END);
++#ifdef CONFIG_KASAN
++		vmcoreinfo_append_str("NUMBER(KASAN_SHADOW_START)=0x%lx\n", KASAN_SHADOW_START);
++		vmcoreinfo_append_str("NUMBER(KASAN_SHADOW_END)=0x%lx\n", KASAN_SHADOW_END);
++#endif
++		vmcoreinfo_append_str("NUMBER(KERNEL_LINK_ADDR)=0x%lx\n", KERNEL_LINK_ADDR);
++		vmcoreinfo_append_str("NUMBER(ADDRESS_SPACE_END)=0x%lx\n", ADDRESS_SPACE_END);
++	}
++}
 -- 
 2.17.1
 
