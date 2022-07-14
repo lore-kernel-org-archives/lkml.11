@@ -2,165 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E8FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:22:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75A6CCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:25:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240136AbiGNPWm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 11:22:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        id S240126AbiGNPZE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 11:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240126AbiGNPWh (ORCPT
+        with ESMTP id S232376AbiGNPZD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 11:22:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005CB5F129
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:22:36 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1oC0fO-0004Zv-2k; Thu, 14 Jul 2022 17:22:14 +0200
-Message-ID: <efa997a0-f1a1-c09f-801c-80617e2f51dc@pengutronix.de>
-Date:   Thu, 14 Jul 2022 17:22:11 +0200
+        Thu, 14 Jul 2022 11:25:03 -0400
+X-Greylist: delayed 1276 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 08:25:02 PDT
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FDA7459B0;
+        Thu, 14 Jul 2022 08:25:02 -0700 (PDT)
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26EDCErI018907;
+        Thu, 14 Jul 2022 15:03:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=qcppdkim1;
+ bh=rF5r7Kypego6SgKL/SYxpyiL3ibO/l3UR6kRmq8g/xk=;
+ b=UbSOrxin8DTmKZXA6Sd49N1kWSXEAx0k6TzrcvTppbw3Am9ji+St58w8zcXIDQJm7Eu7
+ pZ/0oJIk20WDZ7xG+srmR8hOuRlAy5eLFhGXudtcPhW9/XANC6TpJMvmXttPaXsALeYI
+ hlAKVa7JiQIlzmNwoMdyeTLSF8N9gfN2oygryyj7GhymcOBlCV519eLuT8NIQILwoc+p
+ W7Ks+eZlxNI7zLOX5rjX5SKyYbXwA1bBhzSCenwkseU1ogjqYAWQ3bf63Ad3P+25wLPY
+ NndU7QJbPkCSRoE5CXBMD/GWaDFcWveHlQ62klt0AwwIbz15GlX2J/mgLtzaMVS9vyMa Pg== 
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3habpcsemc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 15:03:35 +0000
+Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
+        by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26EF3ZtB027627
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 15:03:35 GMT
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 14 Jul 2022 08:03:34 -0700
+Received: from [10.216.25.106] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 14 Jul
+ 2022 08:03:31 -0700
+Message-ID: <fb1398ed-3a75-a0f9-32b2-50c06dd0b55a@quicinc.com>
+Date:   Thu, 14 Jul 2022 20:33:28 +0530
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 2/2] wifi: brcmfmac: support brcm,ccode-map-trivial DT
- property
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] usb: dwc3: qcom: Defer dwc3-qcom probe if dwc3 isn't
+ probed properly
 Content-Language: en-US
-To:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alvin@pqrs.dk>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        van Spriel <arend@broadcom.com>
-Cc:     =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com,
-        Pengutronix Kernel Team <kernel@pengutronix.de>
-References: <20220711123005.3055300-1-alvin@pqrs.dk>
- <20220711123005.3055300-3-alvin@pqrs.dk>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220711123005.3055300-3-alvin@pqrs.dk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1657810516-31143-1-git-send-email-quic_kriskura@quicinc.com>
+ <YtAv1U1VYkhIY1GA@kroah.com>
+From:   Krishna Kurapati PSSNV <quic_kriskura@quicinc.com>
+In-Reply-To: <YtAv1U1VYkhIY1GA@kroah.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: O0VrJnQMY3cKWQWBmaOaLQbrbMWGzNqe
+X-Proofpoint-ORIG-GUID: O0VrJnQMY3cKWQWBmaOaLQbrbMWGzNqe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-14_11,2022-07-14_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0 clxscore=1015
+ impostorscore=0 mlxlogscore=850 adultscore=0 spamscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207140064
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 11.07.22 14:30, Alvin Šipraga wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> Commit a21bf90e927f ("brcmfmac: use ISO3166 country code and 0 rev as
-> fallback on some devices") introduced a fallback mechanism whereby a
-> trivial mapping from ISO3166 country codes to firmware country code and
-> revision is used on some devices. This fallback operates on the device
-> level, so it is enabled only for certain supported chipsets.
-> 
-> In general though, the firmware country codes are determined by the CLM
-> blob, which is board-specific and may vary despite the underlying
-> chipset being the same.
-> 
-> The aforementioned commit is actually a refinement of a previous commit
-> that was reverted in commit 151a7c12c4fc ("Revert "brcmfmac: use ISO3166
-> country code and 0 rev as fallback"") due to regressions with a BCM4359
-> device. The refinement restricted the fallback mechanism to specific
-> chipsets such as the BCM4345.
-> 
-> We use a chipset - CYW88359 - that the driver identifies as a BCM4359
-> too. But in our case, the CLM blob uses ISO3166 country codes
-> internally, and all with revision 0. So the trivial mapping is exactly
-> what is needed in order for the driver to sync the kernel regulatory
-> domain to the firmware. This is just a matter of how the CLM blob was
-> prepared by the hardware vendor. The same could hold for other boards
-> too.
-> 
-> Although the brcm,ccode-map device tree property is useful for cases
-> where the mapping is more complex, the trivial case invites a much
-> simpler specification. This patch adds support for parsing the
-> brcm,ccode-map-trivial device tree property. Subordinate to the more
-> specific brcm,ccode-map property, this new proprety simply informs the
-> driver that the fallback method should be used in every case.
-> 
-> In the absence of the new property in the device tree, expect no
-> functional change.
-> 
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
 
-Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-
-> ---
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 3 +++
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h   | 2 ++
->  drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c       | 6 ++++++
->  3 files changed, 11 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> index 3ae6779fe153..db45da33adfd 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-> @@ -7481,6 +7481,9 @@ int brcmf_cfg80211_wait_vif_event(struct brcmf_cfg80211_info *cfg,
->  
->  static bool brmcf_use_iso3166_ccode_fallback(struct brcmf_pub *drvr)
->  {
-> +	if (drvr->settings->trivial_ccode_map)
-> +		return true;
-> +
->  	switch (drvr->bus_if->chip) {
->  	case BRCM_CC_4345_CHIP_ID:
->  	case BRCM_CC_43602_CHIP_ID:
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-> index 15accc88d5c0..fe717cce5d55 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.h
-> @@ -38,6 +38,7 @@ extern struct brcmf_mp_global_t brcmf_mp_global;
->   * @fcmode: FWS flow control.
->   * @roamoff: Firmware roaming off?
->   * @ignore_probe_fail: Ignore probe failure.
-> + * @trivial_ccode_map: Assume firmware uses ISO3166 country codes with rev 0
->   * @country_codes: If available, pointer to struct for translating country codes
->   * @bus: Bus specific platform data. Only SDIO at the mmoment.
->   */
-> @@ -48,6 +49,7 @@ struct brcmf_mp_device {
->  	bool		roamoff;
->  	bool		iapp;
->  	bool		ignore_probe_fail;
-> +	bool		trivial_ccode_map;
->  	struct brcmfmac_pd_cc *country_codes;
->  	const char	*board_type;
->  	unsigned char	mac[ETH_ALEN];
-> diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> index 083ac58f466d..1add942462f8 100644
-> --- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> +++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
-> @@ -24,6 +24,12 @@ static int brcmf_of_get_country_codes(struct device *dev,
->  
->  	count = of_property_count_strings(np, "brcm,ccode-map");
->  	if (count < 0) {
-> +		/* If no explicit country code map is specified, check whether
-> +		 * the trivial map should be used.
-> +		 */
-> +		settings->trivial_ccode_map =
-> +			of_property_read_bool(np, "brcm,ccode-map-trivial");
-> +
->  		/* The property is optional, so return success if it doesn't
->  		 * exist. Otherwise propagate the error code.
->  		 */
-
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+On 7/14/2022 8:31 PM, Greg Kroah-Hartman wrote:
+> On Thu, Jul 14, 2022 at 08:25:16PM +0530, Krishna Kurapati wrote:
+>> On SC7180 devices, it is observed that dwc3 probing is deferred
+>> because device_links_check_suppliers() finds that '88e3000.phy'
+>> isn't ready yet.
+>>
+>> As a part of its probe call, dwc3-qcom driver checks if dwc3 core
+>> is wakeup capable or not. If the dwc3 core is wakeup capable, driver
+>> configures dwc-qcom's power domain to be always ON. Also it configures
+>> dp/dm interrupts accordingly to support wakeup from system suspend.
+>>
+>> More info regarding the same can be found at:
+>> commit d9be8d5c5b03 ("usb: dwc3: qcom: Keep power domain on to retain controller status"
+>> commit 6895ea55c385 ("usb: dwc3: qcom: Configure wakeup interrupts during suspend")
+>>
+>> In the event, dwc3 probe gets deferred and is processed after dwc3-qcom
+>> probe, driver ends up reading the wakeup capability of dwc3 core as false
+>> leading to instability in suspend/resume path.
+>>
+>> To avoid this scenario, ensure dwc3_probe is successful by checking
+>> if appropriate driver is assigned to it or not after the of_platform_populate
+>> call. If it isn't then defer dwc3-qcom probe as well.
+>>
+>> Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
+>> ---
+>>   drivers/usb/dwc3/dwc3-qcom.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+> I got 2 different copies of this change, what's the difference?
+>
+> confused,
+>
+> greg k-h
+Sorry Greg, My bad, I thought the mail sending failed the first time. So 
+I sent the same patch second time. Sorry for the confusion.
+Regards,
+Krishna,
