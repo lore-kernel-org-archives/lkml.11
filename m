@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05086CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9116BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238897AbiGNL2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        id S238907AbiGNL2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238861AbiGNL2B (ORCPT
+        with ESMTP id S238847AbiGNL2G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:28:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB4B459261
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:27:58 -0700 (PDT)
+        Thu, 14 Jul 2022 07:28:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30800599DE;
+        Thu, 14 Jul 2022 04:28:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0006CB824B7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:27:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0621BC341C8;
-        Thu, 14 Jul 2022 11:27:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F42961BFD;
+        Thu, 14 Jul 2022 11:28:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CD82C34114;
+        Thu, 14 Jul 2022 11:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657798075;
-        bh=+SPLt9VP2GO4YubuyjOhsJ0inE13AM1tjfBKmcp7OXw=;
+        s=k20201202; t=1657798080;
+        bh=N1fNSRCueq/ZQuGKF7Mf1VOJKbVklZ0O06iKTAUyTMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BQeDMfu+l230j+0OepCir8xMrGwiGH3Z6tgemP5TgJTMlzRrOh5n1/Sz8kljQnNaX
-         2TiWrCP4JKunT7ru4hRcfMFhuN4ddTQtYilKNEDFB8LomvHnmZy9NwXVph6AiZZ7Ps
-         wgHxAYrJnI4DPg2CqTm9zAIjuhqtenomSS/APSPorZux2eBasWq0oRcYIlpaLlanWa
-         kkjJqO37k9JRbzRaJMZeW4H/cP5PA0j7Z7kJONI1uo23YRMpyPIzwFi+znC3EMFdDy
-         10vOjsXXQ3p1nJkHdj3c8LmZLUVh5Bo95wnz+/wgGZWgTPwKqsgWZzDM7PA3Py5vQS
-         VVzLgQuXaRupA==
+        b=kMzUz7CD1tFQgTBqA1lYx3oX15IN1LcOyvkJ2mjldZUc+ahxb/cfLuF8DofcrfcSL
+         SzmW+dKIEGR2cIHW7xj1bbdEwkf5VPql8Fsw0WDaGPEDdolCWn8EgWqc59KhOZJIpR
+         DHQb00+urstAOR5kPkBCOlcldtaKi/NTCu/gh4bujRtr+9Ai0v+wW+BgQ5MgVB9hJk
+         c+iqK0IzeFTHiqUrrfy8lcMLO1ZJpeggFGoC4jxK4WXLiOf0gwd10EXqxhD3yg/UYi
+         sEVGqLQooX/SCGGbTgnyRzZxT/rSdm1DQ+p0Im8hKr2FkQmxuMCu4jdCRis8Pwl82r
+         yfiCOz5rguLRw==
 From:   Lee Jones <lee@kernel.org>
 To:     lee.jones@linaro.org
 Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5/8] docs: ABI: sysfs-devices-soc: Update Lee Jones' email address
-Date:   Thu, 14 Jul 2022 12:25:30 +0100
-Message-Id: <20220714112533.539910-6-lee@kernel.org>
+        Arnd Bergmann <arnd@arndb.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+Subject: [PATCH 7/8] dt-bindings: mfd: syscon: Update Lee Jones' email address
+Date:   Thu, 14 Jul 2022 12:25:32 +0100
+Message-Id: <20220714112533.539910-8-lee@kernel.org>
 X-Mailer: git-send-email 2.37.0.144.g8ac04bfd2-goog
 In-Reply-To: <20220714112533.539910-1-lee@kernel.org>
 References: <20220714112533.539910-1-lee@kernel.org>
@@ -51,77 +53,29 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Going forward, I'll be using my kernel.org for upstream work.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc: devicetree@vger.kernel.org
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Lee Jones <lee@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-devices-soc | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ Documentation/devicetree/bindings/mfd/syscon.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-devices-soc b/Documentation/ABI/testing/sysfs-devices-soc
-index ea999e292f111..5269808ec35f8 100644
---- a/Documentation/ABI/testing/sysfs-devices-soc
-+++ b/Documentation/ABI/testing/sysfs-devices-soc
-@@ -1,6 +1,6 @@
- What:		/sys/devices/socX
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		The /sys/devices/ directory contains a sub-directory for each
- 		System-on-Chip (SoC) device on a running platform. Information
-@@ -14,14 +14,14 @@ Description:
+diff --git a/Documentation/devicetree/bindings/mfd/syscon.yaml b/Documentation/devicetree/bindings/mfd/syscon.yaml
+index fb784045013f5..c10f0b577268e 100644
+--- a/Documentation/devicetree/bindings/mfd/syscon.yaml
++++ b/Documentation/devicetree/bindings/mfd/syscon.yaml
+@@ -17,7 +17,7 @@ description: |
+   and access the registers directly.
  
- What:		/sys/devices/socX/machine
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		Read-only attribute common to all SoCs. Contains the SoC machine
- 		name (e.g. Ux500).
+ maintainers:
+-  - Lee Jones <lee.jones@linaro.org>
++  - Lee Jones <lee@kernel.org>
  
- What:		/sys/devices/socX/family
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		Read-only attribute common to all SoCs. Contains SoC family name
- 		(e.g. DB8500).
-@@ -59,7 +59,7 @@ Description:
- 
- What:		/sys/devices/socX/soc_id
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		Read-only attribute supported by most SoCs. In the case of
- 		ST-Ericsson's chips this contains the SoC serial number.
-@@ -72,21 +72,21 @@ Description:
- 
- What:		/sys/devices/socX/revision
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		Read-only attribute supported by most SoCs. Contains the SoC's
- 		manufacturing revision number.
- 
- What:		/sys/devices/socX/process
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		Read-only attribute supported ST-Ericsson's silicon. Contains the
- 		the process by which the silicon chip was manufactured.
- 
- What:		/sys/bus/soc
- Date:		January 2012
--contact:	Lee Jones <lee.jones@linaro.org>
-+contact:	Lee Jones <lee@kernel.org>
- Description:
- 		The /sys/bus/soc/ directory contains the usual sub-folders
- 		expected under most buses. /sys/bus/soc/devices is of particular
+ select:
+   properties:
 -- 
 2.37.0.144.g8ac04bfd2-goog
 
