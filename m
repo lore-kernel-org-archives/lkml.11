@@ -2,73 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E277DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:15:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F61C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:16:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239728AbiGNOP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S239779AbiGNOQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239397AbiGNOPY (ORCPT
+        with ESMTP id S240323AbiGNOPw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:15:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A187D5D5A4;
-        Thu, 14 Jul 2022 07:15:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Jul 2022 10:15:52 -0400
+Received: from relay07.th.seeweb.it (relay07.th.seeweb.it [5.144.164.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8723E643D8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:15:50 -0700 (PDT)
+Received: from SoMainline.org (D57D4C6E.static.ziggozakelijk.nl [213.125.76.110])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D806616ED;
-        Thu, 14 Jul 2022 14:15:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0D4C34115;
-        Thu, 14 Jul 2022 14:15:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657808121;
-        bh=qBmZXjqke+b5VZ+6GVDTR3FwyHeU/2fCZ+RRGekqLDs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GEDiYXYP9asqFucy4QU2HoBridNPfm2W1ZdfWxhLEfe4bOmpd9AAwoNgiWWWzGjcb
-         wjhjnM8r5dEYw6UXFu3YPHaAQyFe9BKWmOYC4BFL6Xr1hVElcSD1ZXbHmDJVsjJd2p
-         2ZTL1TDTdC1Zfqu1Yf8VH/pB5tOwjyqsqbC5KV3U=
-Date:   Thu, 14 Jul 2022 16:14:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Prashant Malani <pmalani@chromium.org>
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        chrome-platform@lists.linux.dev, bleung@chromium.org,
-        heikki.krogerus@linux.intel.com,
-        Daisuke Nojiri <dnojiri@chromium.org>,
-        "Dustin L. Howett" <dustin@howett.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        by m-r2.th.seeweb.it (Postfix) with ESMTPSA id 9FEB23F72A;
+        Thu, 14 Jul 2022 16:15:47 +0200 (CEST)
+Date:   Thu, 14 Jul 2022 16:15:45 +0200
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
+        angelogioacchino.delregno@somainline.org,
+        jamipkettunen@somainline.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Kees Cook <keescook@chromium.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>
-Subject: Re: [PATCH v4 0/9] Type-C switch driver and Type-C framework updates
-Message-ID: <YtAksiKCuRZXs3fC@kroah.com>
-References: <20220711072333.2064341-1-pmalani@chromium.org>
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Tony Luck <tony.luck@intel.com>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] arm64: dts: qcom: Add device tree for Sony Xperia
+ 1 IV
+Message-ID: <20220714141545.2z65355wgjuqeuwl@SoMainline.org>
+References: <20220714123406.1919836-1-konrad.dybcio@somainline.org>
+ <20220714123406.1919836-5-konrad.dybcio@somainline.org>
+ <ef935a6f-77a2-5c9a-2cbc-0b0192aee56b@collabora.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220711072333.2064341-1-pmalani@chromium.org>
+In-Reply-To: <ef935a6f-77a2-5c9a-2cbc-0b0192aee56b@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 07:22:54AM +0000, Prashant Malani wrote:
-> This series introduces a retimer class to the USB Type-C framework,
-> It also introduces a Chrome EC (Embedded Controller) switch driver which
-> registers the aforementioned retimer switches as well as mode-switches.
+On 2022-07-14 14:51:36, AngeloGioacchino Del Regno wrote:
+[..]
+> > +&i2c14 {
+> > +	clock-frequency = <1000000>;
+> > +	status = "okay";
+> > +
+> > +	cs35l41_l: speaker-amp@40 {
 > 
-> Patch 1 and 2 introduce the retimer class and associated functions to
-> the Type-C common code.
-> 
-> Patches 3-7 add the cros-typec-switch driver.
-> 
-> Patches 8-9 update cros-ec-typec to get and use retimer switch handles.
-> 
-> Submission suggestion (as always, open to better suggestions):
-> - Patch 1 and 2 can go through the USB repo.
+> What about an even more generic audio-amplifier@40 ?
 
-Patches 1 and 2 now in my tree.
+If I understood Krzystof's comment correctly the "generic name" request
+is to describe in human terms what kind of device this is and perhaps
+what it is used for.  Since it is specifically driving a physical
+speaker on this phone, carrying the word "speaker" in the name is better
+than "audio", IMO.
 
-thanks,
+I'm indifferent as to whether amp is written out as amplifier.
 
-greg k-h
+- Marijn
+
+> > +		compatible = "cirrus,cs35l41";
+> > +		reg = <0x40>;
+> > +		interrupt-parent = <&tlmm>;
+> > +		interrupts = <182 IRQ_TYPE_LEVEL_LOW>;
+> > +		reset-gpios = <&tlmm 183 GPIO_ACTIVE_HIGH>;
+> > +		cirrus,boost-peak-milliamp = <4000>;
+> > +		cirrus,boost-ind-nanohenry = <1000>;
+> > +		cirrus,boost-cap-microfarad = <15>;
+> > +		cirrus,gpio2-src-select = <2>;
+> > +		cirrus,gpio2-output-enable;
+> > +		cirrus,asp-sdout-hiz = <3>;
+> > +		#sound-dai-cells = <1>;
+> > +	};
+> > +
+> > +	cs35l41_r: speaker-amp@41 {
+> > +		compatible = "cirrus,cs35l41";
+> > +		reg = <0x41>;
+> > +		interrupt-parent = <&tlmm>;
+> > +		interrupts = <182 IRQ_TYPE_LEVEL_LOW>;
+> > +		reset-gpios = <&tlmm 183 GPIO_ACTIVE_HIGH>;
+> > +		cirrus,boost-peak-milliamp = <4000>;
+> > +		cirrus,boost-ind-nanohenry = <1000>;
+> > +		cirrus,boost-cap-microfarad = <15>;
+> > +		cirrus,gpio2-src-select = <2>;
+> > +		cirrus,gpio2-output-enable;
+> > +		cirrus,asp-sdout-hiz = <3>;
+> > +		#sound-dai-cells = <1>;
+> > +	};
+> > +};
+> > +
