@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC12C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72608C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:00:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237795AbiGNFAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 01:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
+        id S232443AbiGNFAf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 01:00:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232139AbiGNE7S (ORCPT
+        with ESMTP id S232067AbiGNE7R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:59:18 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07DC555B0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:55:27 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4kpa8006650;
-        Thu, 14 Jul 2022 04:55:01 GMT
+        Thu, 14 Jul 2022 00:59:17 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC96B26F5
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:55:26 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4euoE025680;
+        Thu, 14 Jul 2022 04:55:16 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=WIRW1sJ7pepzLfNBTeMHfdtnRw5dlu7xYWLnGzmLpYw=;
- b=nBfMplSaDpc3p3oAdpJB9aVtSVYUQESk0R09yJHa1S3ifVQ/nNQjKYwfetLH3iSfRfpP
- 71kff5q4YmIbLI+MYfHPalCjPM/cQToD8Z1BEU2n3WG2Ez6KPnXxK99GuwfZAt5wo/+f
- lOJTLnlw0p+oSzB3qlQekbBs8m7w6aU5eeMP1+Oj0fQaKuzV9NMLAQTIDazWDMpGd64P
- nvrSzZzFtuIageeJp5Xn/X0o3l5P8cCwTbKW4cFk1UH0ytvHDI/niLKhe/IV+1c3DJmo
- j62Y+Hswl1CQwJqLH5J57GUn2enuRcQH2sF71Ua1hAHu3vWcriOeHqSQmaEYlsy45eO4 TQ== 
+ bh=c48wKRcm7y0rp/r/cs/f++BmHLe6RJAQEuNa0pYpNjs=;
+ b=q8kK1IVUXm3Qema6P62A6k2eUYFeXqpLoVkqdz6Tv97EeiXG0KOQ4Vukhyln5LdNKTo8
+ Z0RwGCO/Jrf5s/wVIizkfUPC7EZniNtqFrUfzztplf4mDahf0YKeHJ5AYfhdMG6kZpOg
+ m/jX0dL0ANRrqVJX6UHWDj1DdieIDeIpBLmZtLznVGue9FQTDrXcXKET46HGK5eBYbAL
+ V9BrFEf7qzvxfDXCuyhcdOjRWcNx4wTtP2JNZH0QS5gxqeIRvBWinU+U4jVZi32+/1nf
+ rkvG9PLTY2tRSSJjSkqFqPeP8kvbMOn3bAH0LuRmaQU8R3FFCrMHAdbhtH6+4G60ZYdP Dg== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hacdx03ds-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac1k8dsx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:55:00 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E4r81P023853;
-        Thu, 14 Jul 2022 04:55:00 GMT
+        Thu, 14 Jul 2022 04:55:16 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E4loJC020400;
+        Thu, 14 Jul 2022 04:55:15 GMT
 Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hacdx03df-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac1k8dsk-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:55:00 +0000
+        Thu, 14 Jul 2022 04:55:15 +0000
 Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E4qkRo013497;
-        Thu, 14 Jul 2022 04:54:59 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma03dal.us.ibm.com with ESMTP id 3ha4qxtu83-1
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E4qmC3013513;
+        Thu, 14 Jul 2022 04:55:14 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma03dal.us.ibm.com with ESMTP id 3ha4qxtu9e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 04:54:59 +0000
+        Thu, 14 Jul 2022 04:55:14 +0000
 Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E4swsJ28311882
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E4tDWF40501566
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 04:54:58 GMT
+        Thu, 14 Jul 2022 04:55:13 GMT
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EDAB87805F;
-        Thu, 14 Jul 2022 04:54:57 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 030EB7805C;
+        Thu, 14 Jul 2022 04:55:13 +0000 (GMT)
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1823E7805C;
-        Thu, 14 Jul 2022 04:54:51 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 23CAC7805E;
+        Thu, 14 Jul 2022 04:55:06 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.119.34])
         by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 04:54:50 +0000 (GMT)
+        Thu, 14 Jul 2022 04:55:05 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -72,847 +72,306 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Alistair Popple <apopple@nvidia.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v9 5/8] mm/demotion: Build demotion targets based on explicit memory tiers
-Date:   Thu, 14 Jul 2022 10:23:48 +0530
-Message-Id: <20220714045351.434957-6-aneesh.kumar@linux.ibm.com>
+        Jagdish Gediya <jvgediya@linux.ibm.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v9 7/8] mm/demotion: Demote pages according to allocation fallback order
+Date:   Thu, 14 Jul 2022 10:23:50 +0530
+Message-Id: <20220714045351.434957-8-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
 References: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: yW8FYHU8HW1BbziMBD80QGUswYx75RUJ
-X-Proofpoint-GUID: M5nVEsYHqGsPZ9adJUaD2QUFPXh3cZFT
+X-Proofpoint-GUID: A9It8mZ3Rjj8Iif1K3SgFNFPgDoSMmnz
+X-Proofpoint-ORIG-GUID: 0H7V6diSNqc6ksAlT_1nmXvZCpiaxCsc
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-14_02,2022-07-13_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 mlxscore=0 mlxlogscore=999 clxscore=1015
- lowpriorityscore=0 suspectscore=0 bulkscore=0 spamscore=0 adultscore=0
- impostorscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207140019
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 clxscore=1015 priorityscore=1501 mlxscore=0
+ suspectscore=0 mlxlogscore=999 impostorscore=0 adultscore=0 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207140019
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch switch the demotion target building logic to use memory tiers
-instead of NUMA distance. All N_MEMORY NUMA nodes will be placed in the
-default tier 200 and additional memory tiers will be added by drivers like
-dax kmem.
+From: Jagdish Gediya <jvgediya.oss@gmail.com>
 
-This patch builds the demotion target for a NUMA node by looking at all
-memory tiers below the tier to which the NUMA node belongs. The closest node
-in the immediately following memory tier is used as a demotion target.
+Currently, a higher tier node can only be demoted to selected
+nodes on the next lower tier as defined by the demotion path.
+This strict, hard-coded demotion order does not work in all
+use cases (e.g. some use cases may want to allow cross-socket
+demotion to another node in the same demotion tier as a fallback
+when the preferred demotion node is out of space). This demotion
+order is also inconsistent with the page allocation fallback order
+when all the nodes in a higher tier are out of space: The page
+allocation can fall back to any node from any lower tier, whereas
+the demotion order doesn't allow that currently.
 
-Since we are now only building demotion target for N_MEMORY NUMA nodes
-the CPU hotplug calls are removed in this patch.
+This patch adds support to get all the allowed demotion targets
+for a memory tier. demote_page_list() function is now modified
+to utilize this allowed node mask as the fallback allocation mask.
 
-A new memory tier can be inserted into the tier hierarchy for a new set
-of nodes without affecting the node assignment of any existing memtier,
-provided that there is enough gap in the tier ID values for the new memtier.
-
-The absolute value of tier ID of a memtier doesn't necessarily carry any meaning.
-Its value relative to other memtiers decides the level of this memtier in the tier
-hierarchy.
-
-For now, This patch supports hardcoded tier ID values which are 300, 200 and 100 for
-memory tiers.
-
-Suggested-by: Wei Xu <weixugc@google.com>
+Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
- include/linux/memory-tiers.h |  13 ++
- include/linux/migrate.h      |  13 --
- mm/memory-tiers.c            | 227 ++++++++++++++++++++
- mm/migrate.c                 | 394 -----------------------------------
- mm/vmstat.c                  |   4 -
- 5 files changed, 240 insertions(+), 411 deletions(-)
+ include/linux/memory-tiers.h | 15 ++++++-
+ mm/memory-tiers.c            | 77 +++++++++++++++++++++++++++++++++---
+ mm/vmscan.c                  | 58 ++++++++++++++++++++-------
+ 3 files changed, 129 insertions(+), 21 deletions(-)
 
 diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 9d36ff13c954..3234301c2537 100644
+index 3234301c2537..8137e9322603 100644
 --- a/include/linux/memory-tiers.h
 +++ b/include/linux/memory-tiers.h
-@@ -15,6 +15,14 @@
+@@ -3,6 +3,8 @@
+ #define _LINUX_MEMORY_TIERS_H
  
- extern bool numa_demotion_enabled;
+ #include <linux/types.h>
++#include <linux/nodemask.h>
++#include <linux/mmzone.h>
+ 
+ #ifdef CONFIG_NUMA
+ 
+@@ -17,12 +19,18 @@ extern bool numa_demotion_enabled;
  int node_create_and_set_memory_tier(int node, int tier);
-+#ifdef CONFIG_MIGRATION
-+int next_demotion_node(int node);
-+#else
-+static inline int next_demotion_node(int node)
+ #ifdef CONFIG_MIGRATION
+ int next_demotion_node(int node);
++void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
+ #else
+ static inline int next_demotion_node(int node)
+ {
+ 	return NUMA_NO_NODE;
+ }
+-#endif
++
++static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
 +{
-+	return NUMA_NO_NODE;
++	*targets = NODE_MASK_NONE;
 +}
-+#endif
++#endif /* CONFIG_MIGRATION */
  
  #else
  
-@@ -23,5 +31,10 @@ static inline int node_create_and_set_memory_tier(int node, int tier)
+@@ -36,5 +44,10 @@ static inline int next_demotion_node(int node)
  {
- 	return 0;
+ 	return NUMA_NO_NODE;
  }
 +
-+static inline int next_demotion_node(int node)
++static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
 +{
-+	return NUMA_NO_NODE;
++	*targets = NODE_MASK_NONE;
 +}
  #endif	/* CONFIG_NUMA */
  #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/include/linux/migrate.h b/include/linux/migrate.h
-index 43e737215f33..93fab62e6548 100644
---- a/include/linux/migrate.h
-+++ b/include/linux/migrate.h
-@@ -75,19 +75,6 @@ static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
- 
- #endif /* CONFIG_MIGRATION */
- 
--#if defined(CONFIG_MIGRATION) && defined(CONFIG_NUMA)
--extern void set_migration_target_nodes(void);
--extern void migrate_on_reclaim_init(void);
--extern int next_demotion_node(int node);
--#else
--static inline void set_migration_target_nodes(void) {}
--static inline void migrate_on_reclaim_init(void) {}
--static inline int next_demotion_node(int node)
--{
--        return NUMA_NO_NODE;
--}
--#endif
--
- #ifdef CONFIG_COMPACTION
- extern int PageMovable(struct page *page);
- extern void __SetPageMovable(struct page *page, struct address_space *mapping);
 diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 5706ad647136..e951f54ce56c 100644
+index bab4700bf58d..98e55600f250 100644
 --- a/mm/memory-tiers.c
 +++ b/mm/memory-tiers.c
-@@ -6,16 +6,85 @@
- #include <linux/lockdep.h>
- #include <linux/moduleparam.h>
- #include <linux/memory.h>
-+#include <linux/random.h>
- #include <linux/memory-tiers.h>
- 
-+#include "internal.h"
-+
- struct memory_tier {
+@@ -16,6 +16,7 @@ struct memory_tier {
  	struct list_head list;
  	int id;
  	nodemask_t nodelist;
++	nodemask_t lower_tier_mask;
  };
  
-+struct demotion_nodes {
-+	nodemask_t preferred;
-+};
-+
-+static void establish_migration_targets(void);
- static DEFINE_MUTEX(memory_tier_lock);
- static LIST_HEAD(memory_tiers);
-+/*
-+ * node_demotion[] examples:
-+ *
-+ * Example 1:
-+ *
-+ * Node 0 & 1 are CPU + DRAM nodes, node 2 & 3 are PMEM nodes.
-+ *
-+ * node distances:
-+ * node   0    1    2    3
-+ *    0  10   20   30   40
-+ *    1  20   10   40   30
-+ *    2  30   40   10   40
-+ *    3  40   30   40   10
-+ *
-+ * memory_tiers[0] = <empty>
-+ * memory_tiers[1] = 0-1
-+ * memory_tiers[2] = 2-3
-+ *
-+ * node_demotion[0].preferred = 2
-+ * node_demotion[1].preferred = 3
-+ * node_demotion[2].preferred = <empty>
-+ * node_demotion[3].preferred = <empty>
-+ *
-+ * Example 2:
-+ *
-+ * Node 0 & 1 are CPU + DRAM nodes, node 2 is memory-only DRAM node.
-+ *
-+ * node distances:
-+ * node   0    1    2
-+ *    0  10   20   30
-+ *    1  20   10   30
-+ *    2  30   30   10
-+ *
-+ * memory_tiers[0] = <empty>
-+ * memory_tiers[1] = 0-2
-+ * memory_tiers[2] = <empty>
-+ *
-+ * node_demotion[0].preferred = <empty>
-+ * node_demotion[1].preferred = <empty>
-+ * node_demotion[2].preferred = <empty>
-+ *
-+ * Example 3:
-+ *
-+ * Node 0 is CPU + DRAM nodes, Node 1 is HBM node, node 2 is PMEM node.
-+ *
-+ * node distances:
-+ * node   0    1    2
-+ *    0  10   20   30
-+ *    1  20   10   40
-+ *    2  30   40   10
-+ *
-+ * memory_tiers[0] = 1
-+ * memory_tiers[1] = 0
-+ * memory_tiers[2] = 2
-+ *
-+ * node_demotion[0].preferred = 2
-+ * node_demotion[1].preferred = 0
-+ * node_demotion[2].preferred = <empty>
-+ *
-+ */
-+static struct demotion_nodes *node_demotion __read_mostly;
- 
- static void insert_memory_tier(struct memory_tier *memtier)
- {
-@@ -108,6 +177,7 @@ int node_create_and_set_memory_tier(int node, int tier)
- 	current_tier = __node_get_memory_tier(node);
- 	if (!current_tier) {
- 		ret = __node_create_and_set_memory_tier(node, tier);
-+		establish_migration_targets();
- 		goto out;
- 	}
- 
-@@ -124,6 +194,8 @@ int node_create_and_set_memory_tier(int node, int tier)
- 	}
- 	if (nodes_empty(current_tier->nodelist))
- 		unregister_memory_tier(current_tier);
-+
-+	establish_migration_targets();
- out:
- 	mutex_unlock(&memory_tier_lock);
- 
-@@ -153,14 +225,152 @@ static int node_set_memory_tier(int node, int tier)
- 
- 	mutex_lock(&memory_tier_lock);
- 	memtier = __node_get_memory_tier(node);
-+	/*
-+	 * if node is already part of the tier proceed with the
-+	 * current tier value, because we might want to establish
-+	 * new migration paths now. The node might be added to a tier
-+	 * before it was made part of N_MEMORY, hence estabilish_migration_targets
-+	 * will have skipped this node.
-+	 */
- 	if (!memtier)
- 		ret = __node_set_memory_tier(node, tier);
-+	establish_migration_targets();
- 
- 	mutex_unlock(&memory_tier_lock);
- 
- 	return ret;
+ struct demotion_nodes {
+@@ -268,6 +269,24 @@ static int node_set_memory_tier(int node, int tier)
  }
  
-+#ifdef CONFIG_MIGRATION
-+/**
-+ * next_demotion_node() - Get the next node in the demotion path
-+ * @node: The starting node to lookup the next node
-+ *
-+ * Return: node id for next memory node in the demotion path hierarchy
-+ * from @node; NUMA_NO_NODE if @node is terminal.  This does not keep
-+ * @node online or guarantee that it *continues* to be the next demotion
-+ * target.
-+ */
-+int next_demotion_node(int node)
-+{
-+	struct demotion_nodes *nd;
-+	int target;
-+
-+	if (!node_demotion)
-+		return NUMA_NO_NODE;
-+
-+	nd = &node_demotion[node];
-+
-+	/*
-+	 * node_demotion[] is updated without excluding this
-+	 * function from running.
-+	 *
-+	 * Make sure to use RCU over entire code blocks if
-+	 * node_demotion[] reads need to be consistent.
-+	 */
-+	rcu_read_lock();
-+	/*
-+	 * If there are multiple target nodes, just select one
-+	 * target node randomly.
-+	 *
-+	 * In addition, we can also use round-robin to select
-+	 * target node, but we should introduce another variable
-+	 * for node_demotion[] to record last selected target node,
-+	 * that may cause cache ping-pong due to the changing of
-+	 * last target node. Or introducing per-cpu data to avoid
-+	 * caching issue, which seems more complicated. So selecting
-+	 * target node randomly seems better until now.
-+	 */
-+	target = node_random(&nd->preferred);
-+	rcu_read_unlock();
-+
-+	return target;
-+}
-+
-+/* Disable reclaim-based migration. */
-+static void __disable_all_migrate_targets(void)
-+{
-+	int node;
-+
-+	for_each_node_state(node, N_MEMORY)
-+		node_demotion[node].preferred = NODE_MASK_NONE;
-+}
-+
-+static void disable_all_migrate_targets(void)
-+{
-+	__disable_all_migrate_targets();
-+
-+	/*
-+	 * Ensure that the "disable" is visible across the system.
-+	 * Readers will see either a combination of before+disable
-+	 * state or disable+after.  They will never see before and
-+	 * after state together.
-+	 */
-+	synchronize_rcu();
-+}
-+#else
-+static void disable_all_migrate_targets(void) {}
-+#endif
-+
-+/*
-+ * Find an automatic demotion target for all memory
-+ * nodes. Failing here is OK.  It might just indicate
-+ * being at the end of a chain.
-+ */
-+static void establish_migration_targets(void)
+ #ifdef CONFIG_MIGRATION
++void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
 +{
 +	struct memory_tier *memtier;
-+	struct demotion_nodes *nd;
-+	int target = NUMA_NO_NODE, node;
-+	int distance, best_distance;
-+	nodemask_t used;
 +
-+	if (!node_demotion || !IS_ENABLED(CONFIG_MIGRATION))
-+		return;
-+
-+	disable_all_migrate_targets();
-+
-+	for_each_node_state(node, N_MEMORY) {
-+		best_distance = -1;
-+		nd = &node_demotion[node];
-+
-+		memtier = __node_get_memory_tier(node);
-+		if (!memtier || list_is_last(&memtier->list, &memory_tiers))
-+			continue;
-+		/*
-+		 * Get the next memtier to find the  demotion node list.
-+		 */
-+		memtier = list_next_entry(memtier, list);
-+
-+		/*
-+		 * find_next_best_node, use 'used' nodemask as a skip list.
-+		 * Add all memory nodes except the selected memory tier
-+		 * nodelist to skip list so that we find the best node from the
-+		 * memtier nodelist.
-+		 */
-+		nodes_andnot(used, node_states[N_MEMORY], memtier->nodelist);
-+
-+		/*
-+		 * Find all the nodes in the memory tier node list of same best distance.
-+		 * add them to the preferred mask. We randomly select between nodes
-+		 * in the preferred mask when allocating pages during demotion.
-+		 */
-+		do {
-+			target = find_next_best_node(node, &used);
-+			if (target == NUMA_NO_NODE)
-+				break;
-+
-+			distance = node_distance(node, target);
-+			if (distance == best_distance || best_distance == -1) {
-+				best_distance = distance;
-+				node_set(target, nd->preferred);
-+			} else {
-+				break;
-+			}
-+		} while (1);
-+	}
++	/*
++	 * pg_data_t.memtier updates includes a synchronize_rcu()
++	 * which ensures that we either find NULL or a valid memtier
++	 * in NODE_DATA. protect the access via rcu_read_lock();
++	 */
++	rcu_read_lock();
++	memtier = rcu_dereference(pgdat->memtier);
++	if (memtier)
++		*targets = memtier->lower_tier_mask;
++	else
++		*targets = NODE_MASK_NONE;
++	rcu_read_unlock();
 +}
 +
- static unsigned int default_memtier = DEFAULT_MEMORY_TIER;
- core_param(default_memory_tier, default_memtier, uint, 0644);
- /*
-@@ -181,6 +391,17 @@ static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
- 		return notifier_from_errno(0);
- 
- 	switch (action) {
-+	case MEM_OFFLINE:
-+		/*
-+		 * In case we are moving out of N_MEMORY. Keep the node
-+		 * in the memory tier so that when we bring memory online,
-+		 * they appear in the right memory tier. We still need
-+		 * to rebuild the demotion order.
-+		 */
-+		mutex_lock(&memory_tier_lock);
-+		establish_migration_targets();
-+		mutex_unlock(&memory_tier_lock);
-+		break;
- 	case MEM_ONLINE:
- 		/*
- 		 * We ignore the error here, if the node already have the tier
-@@ -196,6 +417,12 @@ static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
- 
- static void __init migrate_on_reclaim_init(void)
+ /**
+  * next_demotion_node() - Get the next node in the demotion path
+  * @node: The starting node to lookup the next node
+@@ -316,10 +335,19 @@ int next_demotion_node(int node)
+ /* Disable reclaim-based migration. */
+ static void __disable_all_migrate_targets(void)
  {
-+
-+	if (IS_ENABLED(CONFIG_MIGRATION)) {
-+		node_demotion = kcalloc(MAX_NUMNODES, sizeof(struct demotion_nodes),
-+					GFP_KERNEL);
-+		WARN_ON(!node_demotion);
++	struct memory_tier *memtier;
+ 	int node;
+ 
+-	for_each_node_state(node, N_MEMORY)
++	for_each_node_state(node, N_MEMORY) {
+ 		node_demotion[node].preferred = NODE_MASK_NONE;
++		/*
++		 * We are holding memory_tier_lock, it is safe
++		 * to access pgda->memtier.
++		 */
++		memtier = rcu_dereference_check(NODE_DATA(node)->memtier,
++						lockdep_is_held(&memory_tier_lock));
++		memtier->lower_tier_mask = NODE_MASK_NONE;
 +	}
- 	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
  }
  
-diff --git a/mm/migrate.c b/mm/migrate.c
-index fce7d4a9e940..c758c9c21d7d 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -2117,398 +2117,4 @@ int migrate_misplaced_page(struct page *page, struct vm_area_struct *vma,
- 	return 0;
- }
- #endif /* CONFIG_NUMA_BALANCING */
+ static void disable_all_migrate_targets(void)
+@@ -349,10 +377,26 @@ static void establish_migration_targets(void)
+ 	struct demotion_nodes *nd;
+ 	int target = NUMA_NO_NODE, node;
+ 	int distance, best_distance;
+-	nodemask_t used;
 -
--/*
-- * node_demotion[] example:
-- *
-- * Consider a system with two sockets.  Each socket has
-- * three classes of memory attached: fast, medium and slow.
-- * Each memory class is placed in its own NUMA node.  The
-- * CPUs are placed in the node with the "fast" memory.  The
-- * 6 NUMA nodes (0-5) might be split among the sockets like
-- * this:
-- *
-- *	Socket A: 0, 1, 2
-- *	Socket B: 3, 4, 5
-- *
-- * When Node 0 fills up, its memory should be migrated to
-- * Node 1.  When Node 1 fills up, it should be migrated to
-- * Node 2.  The migration path start on the nodes with the
-- * processors (since allocations default to this node) and
-- * fast memory, progress through medium and end with the
-- * slow memory:
-- *
-- *	0 -> 1 -> 2 -> stop
-- *	3 -> 4 -> 5 -> stop
-- *
-- * This is represented in the node_demotion[] like this:
-- *
-- *	{  nr=1, nodes[0]=1 }, // Node 0 migrates to 1
-- *	{  nr=1, nodes[0]=2 }, // Node 1 migrates to 2
-- *	{  nr=0, nodes[0]=-1 }, // Node 2 does not migrate
-- *	{  nr=1, nodes[0]=4 }, // Node 3 migrates to 4
-- *	{  nr=1, nodes[0]=5 }, // Node 4 migrates to 5
-- *	{  nr=0, nodes[0]=-1 }, // Node 5 does not migrate
-- *
-- * Moreover some systems may have multiple slow memory nodes.
-- * Suppose a system has one socket with 3 memory nodes, node 0
-- * is fast memory type, and node 1/2 both are slow memory
-- * type, and the distance between fast memory node and slow
-- * memory node is same. So the migration path should be:
-- *
-- *	0 -> 1/2 -> stop
-- *
-- * This is represented in the node_demotion[] like this:
-- *	{ nr=2, {nodes[0]=1, nodes[1]=2} }, // Node 0 migrates to node 1 and node 2
-- *	{ nr=0, nodes[0]=-1, }, // Node 1 dose not migrate
-- *	{ nr=0, nodes[0]=-1, }, // Node 2 does not migrate
-- */
--
--/*
-- * Writes to this array occur without locking.  Cycles are
-- * not allowed: Node X demotes to Y which demotes to X...
-- *
-- * If multiple reads are performed, a single rcu_read_lock()
-- * must be held over all reads to ensure that no cycles are
-- * observed.
-- */
--#define DEFAULT_DEMOTION_TARGET_NODES 15
--
--#if MAX_NUMNODES < DEFAULT_DEMOTION_TARGET_NODES
--#define DEMOTION_TARGET_NODES	(MAX_NUMNODES - 1)
--#else
--#define DEMOTION_TARGET_NODES	DEFAULT_DEMOTION_TARGET_NODES
--#endif
--
--struct demotion_nodes {
--	unsigned short nr;
--	short nodes[DEMOTION_TARGET_NODES];
--};
--
--static struct demotion_nodes *node_demotion __read_mostly;
--
--/**
-- * next_demotion_node() - Get the next node in the demotion path
-- * @node: The starting node to lookup the next node
-- *
-- * Return: node id for next memory node in the demotion path hierarchy
-- * from @node; NUMA_NO_NODE if @node is terminal.  This does not keep
-- * @node online or guarantee that it *continues* to be the next demotion
-- * target.
-- */
--int next_demotion_node(int node)
--{
--	struct demotion_nodes *nd;
--	unsigned short target_nr, index;
--	int target;
--
--	if (!node_demotion)
--		return NUMA_NO_NODE;
--
--	nd = &node_demotion[node];
--
--	/*
--	 * node_demotion[] is updated without excluding this
--	 * function from running.  RCU doesn't provide any
--	 * compiler barriers, so the READ_ONCE() is required
--	 * to avoid compiler reordering or read merging.
--	 *
--	 * Make sure to use RCU over entire code blocks if
--	 * node_demotion[] reads need to be consistent.
--	 */
--	rcu_read_lock();
--	target_nr = READ_ONCE(nd->nr);
--
--	switch (target_nr) {
--	case 0:
--		target = NUMA_NO_NODE;
--		goto out;
--	case 1:
--		index = 0;
--		break;
--	default:
--		/*
--		 * If there are multiple target nodes, just select one
--		 * target node randomly.
--		 *
--		 * In addition, we can also use round-robin to select
--		 * target node, but we should introduce another variable
--		 * for node_demotion[] to record last selected target node,
--		 * that may cause cache ping-pong due to the changing of
--		 * last target node. Or introducing per-cpu data to avoid
--		 * caching issue, which seems more complicated. So selecting
--		 * target node randomly seems better until now.
--		 */
--		index = get_random_int() % target_nr;
--		break;
--	}
--
--	target = READ_ONCE(nd->nodes[index]);
--
--out:
--	rcu_read_unlock();
--	return target;
--}
--
--/* Disable reclaim-based migration. */
--static void __disable_all_migrate_targets(void)
--{
--	int node, i;
--
--	if (!node_demotion)
+-	if (!node_demotion || !IS_ENABLED(CONFIG_MIGRATION))
 -		return;
--
--	for_each_online_node(node) {
--		node_demotion[node].nr = 0;
--		for (i = 0; i < DEMOTION_TARGET_NODES; i++)
--			node_demotion[node].nodes[i] = NUMA_NO_NODE;
--	}
--}
--
--static void disable_all_migrate_targets(void)
--{
--	__disable_all_migrate_targets();
--
--	/*
--	 * Ensure that the "disable" is visible across the system.
--	 * Readers will see either a combination of before+disable
--	 * state or disable+after.  They will never see before and
--	 * after state together.
--	 *
--	 * The before+after state together might have cycles and
--	 * could cause readers to do things like loop until this
--	 * function finishes.  This ensures they can only see a
--	 * single "bad" read and would, for instance, only loop
--	 * once.
--	 */
--	synchronize_rcu();
--}
--
--/*
-- * Find an automatic demotion target for 'node'.
-- * Failing here is OK.  It might just indicate
-- * being at the end of a chain.
-- */
--static int establish_migrate_target(int node, nodemask_t *used,
--				    int best_distance)
--{
--	int migration_target, index, val;
--	struct demotion_nodes *nd;
--
--	if (!node_demotion)
--		return NUMA_NO_NODE;
--
--	nd = &node_demotion[node];
--
--	migration_target = find_next_best_node(node, used);
--	if (migration_target == NUMA_NO_NODE)
--		return NUMA_NO_NODE;
--
--	/*
--	 * If the node has been set a migration target node before,
--	 * which means it's the best distance between them. Still
--	 * check if this node can be demoted to other target nodes
--	 * if they have a same best distance.
--	 */
--	if (best_distance != -1) {
--		val = node_distance(node, migration_target);
--		if (val > best_distance)
--			goto out_clear;
--	}
--
--	index = nd->nr;
--	if (WARN_ONCE(index >= DEMOTION_TARGET_NODES,
--		      "Exceeds maximum demotion target nodes\n"))
--		goto out_clear;
--
--	nd->nodes[index] = migration_target;
--	nd->nr++;
--
--	return migration_target;
--out_clear:
--	node_clear(migration_target, *used);
--	return NUMA_NO_NODE;
--}
--
--/*
-- * When memory fills up on a node, memory contents can be
-- * automatically migrated to another node instead of
-- * discarded at reclaim.
-- *
-- * Establish a "migration path" which will start at nodes
-- * with CPUs and will follow the priorities used to build the
-- * page allocator zonelists.
-- *
-- * The difference here is that cycles must be avoided.  If
-- * node0 migrates to node1, then neither node1, nor anything
-- * node1 migrates to can migrate to node0. Also one node can
-- * be migrated to multiple nodes if the target nodes all have
-- * a same best-distance against the source node.
-- *
-- * This function can run simultaneously with readers of
-- * node_demotion[].  However, it can not run simultaneously
-- * with itself.  Exclusion is provided by memory hotplug events
-- * being single-threaded.
-- */
--static void __set_migration_target_nodes(void)
--{
--	nodemask_t next_pass;
--	nodemask_t this_pass;
--	nodemask_t used_targets = NODE_MASK_NONE;
--	int node, best_distance;
--
--	/*
--	 * Avoid any oddities like cycles that could occur
--	 * from changes in the topology.  This will leave
--	 * a momentary gap when migration is disabled.
--	 */
--	disable_all_migrate_targets();
--
--	/*
--	 * Allocations go close to CPUs, first.  Assume that
--	 * the migration path starts at the nodes with CPUs.
--	 */
--	next_pass = node_states[N_CPU];
--again:
--	this_pass = next_pass;
--	next_pass = NODE_MASK_NONE;
--	/*
--	 * To avoid cycles in the migration "graph", ensure
--	 * that migration sources are not future targets by
--	 * setting them in 'used_targets'.  Do this only
--	 * once per pass so that multiple source nodes can
--	 * share a target node.
--	 *
--	 * 'used_targets' will become unavailable in future
--	 * passes.  This limits some opportunities for
--	 * multiple source nodes to share a destination.
--	 */
--	nodes_or(used_targets, used_targets, this_pass);
--
--	for_each_node_mask(node, this_pass) {
--		best_distance = -1;
--
--		/*
--		 * Try to set up the migration path for the node, and the target
--		 * migration nodes can be multiple, so doing a loop to find all
--		 * the target nodes if they all have a best node distance.
--		 */
--		do {
--			int target_node =
--				establish_migrate_target(node, &used_targets,
--							 best_distance);
--
--			if (target_node == NUMA_NO_NODE)
--				break;
--
--			if (best_distance == -1)
--				best_distance = node_distance(node, target_node);
--
--			/*
--			 * Visit targets from this pass in the next pass.
--			 * Eventually, every node will have been part of
--			 * a pass, and will become set in 'used_targets'.
--			 */
--			node_set(target_node, next_pass);
--		} while (1);
--	}
--	/*
--	 * 'next_pass' contains nodes which became migration
--	 * targets in this pass.  Make additional passes until
--	 * no more migrations targets are available.
--	 */
--	if (!nodes_empty(next_pass))
--		goto again;
--}
--
--/*
-- * For callers that do not hold get_online_mems() already.
-- */
--void set_migration_target_nodes(void)
--{
--	get_online_mems();
--	__set_migration_target_nodes();
--	put_online_mems();
--}
--
--/*
-- * This leaves migrate-on-reclaim transiently disabled between
-- * the MEM_GOING_OFFLINE and MEM_OFFLINE events.  This runs
-- * whether reclaim-based migration is enabled or not, which
-- * ensures that the user can turn reclaim-based migration at
-- * any time without needing to recalculate migration targets.
-- *
-- * These callbacks already hold get_online_mems().  That is why
-- * __set_migration_target_nodes() can be used as opposed to
-- * set_migration_target_nodes().
-- */
--#ifdef CONFIG_MEMORY_HOTPLUG
--static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
--						 unsigned long action, void *_arg)
--{
--	struct memory_notify *arg = _arg;
--
--	/*
--	 * Only update the node migration order when a node is
--	 * changing status, like online->offline.  This avoids
--	 * the overhead of synchronize_rcu() in most cases.
--	 */
--	if (arg->status_change_nid < 0)
--		return notifier_from_errno(0);
--
--	switch (action) {
--	case MEM_GOING_OFFLINE:
--		/*
--		 * Make sure there are not transient states where
--		 * an offline node is a migration target.  This
--		 * will leave migration disabled until the offline
--		 * completes and the MEM_OFFLINE case below runs.
--		 */
--		disable_all_migrate_targets();
--		break;
--	case MEM_OFFLINE:
--	case MEM_ONLINE:
--		/*
--		 * Recalculate the target nodes once the node
--		 * reaches its final state (online or offline).
--		 */
--		__set_migration_target_nodes();
--		break;
--	case MEM_CANCEL_OFFLINE:
--		/*
--		 * MEM_GOING_OFFLINE disabled all the migration
--		 * targets.  Reenable them.
--		 */
--		__set_migration_target_nodes();
--		break;
--	case MEM_GOING_ONLINE:
--	case MEM_CANCEL_ONLINE:
--		break;
--	}
--
--	return notifier_from_errno(0);
--}
--#endif
--
--void __init migrate_on_reclaim_init(void)
--{
--	node_demotion = kcalloc(nr_node_ids,
--				sizeof(struct demotion_nodes),
--				GFP_KERNEL);
--	WARN_ON(!node_demotion);
--#ifdef CONFIG_MEMORY_HOTPLUG
--	hotplug_memory_notifier(migrate_on_reclaim_callback, 100);
--#endif
--	/*
--	 * At this point, all numa nodes with memory/CPus have their state
--	 * properly set, so we can build the demotion order now.
--	 * Let us hold the cpu_hotplug lock just, as we could possibily have
--	 * CPU hotplug events during boot.
--	 */
--	cpus_read_lock();
--	set_migration_target_nodes();
--	cpus_read_unlock();
--}
- #endif /* CONFIG_NUMA */
--
--
-diff --git a/mm/vmstat.c b/mm/vmstat.c
-index 373d2730fcf2..35c6ff97cf29 100644
---- a/mm/vmstat.c
-+++ b/mm/vmstat.c
-@@ -28,7 +28,6 @@
- #include <linux/mm_inline.h>
- #include <linux/page_ext.h>
- #include <linux/page_owner.h>
--#include <linux/migrate.h>
++	nodemask_t used, lower_tier = NODE_MASK_NONE;
++
++	if (!node_demotion || !IS_ENABLED(CONFIG_MIGRATION)) {
++
++		for_each_node_state(node, N_MEMORY) {
++			/*
++			 * We are holding memory_tier_lock, it is safe
++			 * to access pgda->memtier.
++			 */
++			memtier = rcu_dereference_check(NODE_DATA(node)->memtier,
++							lockdep_is_held(&memory_tier_lock));
++			memtier->lower_tier_mask = NODE_MASK_NONE;
++		}
++		/*
++		 * Wait for read side to work with old values
++		 * or see the updated NODE_MASK_NONE;
++		 */
++		synchronize_rcu();
++		goto build_lower_tier_mask;
++	}
  
- #include "internal.h"
+ 	disable_all_migrate_targets();
  
-@@ -2060,7 +2059,6 @@ static int vmstat_cpu_online(unsigned int cpu)
- 
- 	if (!node_state(cpu_to_node(cpu), N_CPU)) {
- 		node_set_state(cpu_to_node(cpu), N_CPU);
--		set_migration_target_nodes();
+@@ -395,6 +439,29 @@ static void establish_migration_targets(void)
+ 			}
+ 		} while (1);
  	}
++build_lower_tier_mask:
++	/*
++	 * Now build the lower_tier mask for each node collecting node mask from
++	 * all memory tier below it. This allows us to fallback demotion page
++	 * allocation to a set of nodes that is closer the above selected
++	 * perferred node.
++	 */
++	list_for_each_entry(memtier, &memory_tiers, list)
++		nodes_or(lower_tier, lower_tier, memtier->nodelist);
++	/*
++	 * Removes nodes not yet in N_MEMORY.
++	 */
++	nodes_and(lower_tier, node_states[N_MEMORY], lower_tier);
++
++	list_for_each_entry(memtier, &memory_tiers, list) {
++		/*
++		 * Keep removing current tier from lower_tier nodes,
++		 * This will remove all nodes in current and above
++		 * memory tier from the lower_tier mask.
++		 */
++		nodes_andnot(lower_tier, lower_tier, memtier->nodelist);
++		memtier->lower_tier_mask = lower_tier;
++	}
+ }
  
- 	return 0;
-@@ -2085,7 +2083,6 @@ static int vmstat_cpu_dead(unsigned int cpu)
+ static unsigned int default_memtier = DEFAULT_MEMORY_TIER;
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index 3a8f78277f99..60a5235dd639 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -1460,21 +1460,34 @@ static void folio_check_dirty_writeback(struct folio *folio,
+ 		mapping->a_ops->is_dirty_writeback(folio, dirty, writeback);
+ }
+ 
+-static struct page *alloc_demote_page(struct page *page, unsigned long node)
++static struct page *alloc_demote_page(struct page *page, unsigned long private)
+ {
+-	struct migration_target_control mtc = {
+-		/*
+-		 * Allocate from 'node', or fail quickly and quietly.
+-		 * When this happens, 'page' will likely just be discarded
+-		 * instead of migrated.
+-		 */
+-		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) |
+-			    __GFP_THISNODE  | __GFP_NOWARN |
+-			    __GFP_NOMEMALLOC | GFP_NOWAIT,
+-		.nid = node
+-	};
++	struct page *target_page;
++	nodemask_t *allowed_mask;
++	struct migration_target_control *mtc;
++
++	mtc = (struct migration_target_control *)private;
++
++	allowed_mask = mtc->nmask;
++	/*
++	 * make sure we allocate from the target node first also trying to
++	 * reclaim pages from the target node via kswapd if we are low on
++	 * free memory on target node. If we don't do this and if we have low
++	 * free memory on the target memtier, we would start allocating pages
++	 * from higher memory tiers without even forcing a demotion of cold
++	 * pages from the target memtier. This can result in the kernel placing
++	 * hotpages in higher memory tiers.
++	 */
++	mtc->nmask = NULL;
++	mtc->gfp_mask |= __GFP_THISNODE;
++	target_page = alloc_migration_target(page, (unsigned long)mtc);
++	if (target_page)
++		return target_page;
+ 
+-	return alloc_migration_target(page, (unsigned long)&mtc);
++	mtc->gfp_mask &= ~__GFP_THISNODE;
++	mtc->nmask = allowed_mask;
++
++	return alloc_migration_target(page, (unsigned long)mtc);
+ }
+ 
+ /*
+@@ -1487,6 +1500,19 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
+ {
+ 	int target_nid = next_demotion_node(pgdat->node_id);
+ 	unsigned int nr_succeeded;
++	nodemask_t allowed_mask;
++
++	struct migration_target_control mtc = {
++		/*
++		 * Allocate from 'node', or fail quickly and quietly.
++		 * When this happens, 'page' will likely just be discarded
++		 * instead of migrated.
++		 */
++		.gfp_mask = (GFP_HIGHUSER_MOVABLE & ~__GFP_RECLAIM) | __GFP_NOWARN |
++			__GFP_NOMEMALLOC | GFP_NOWAIT,
++		.nid = target_nid,
++		.nmask = &allowed_mask
++	};
+ 
+ 	if (list_empty(demote_pages))
+ 		return 0;
+@@ -1494,10 +1520,12 @@ static unsigned int demote_page_list(struct list_head *demote_pages,
+ 	if (target_nid == NUMA_NO_NODE)
  		return 0;
  
- 	node_clear_state(node, N_CPU);
--	set_migration_target_nodes();
++	node_get_allowed_targets(pgdat, &allowed_mask);
++
+ 	/* Demotion ignores all cpuset and mempolicy settings */
+ 	migrate_pages(demote_pages, alloc_demote_page, NULL,
+-			    target_nid, MIGRATE_ASYNC, MR_DEMOTION,
+-			    &nr_succeeded);
++		      (unsigned long)&mtc, MIGRATE_ASYNC, MR_DEMOTION,
++		      &nr_succeeded);
  
- 	return 0;
- }
-@@ -2118,7 +2115,6 @@ void __init init_mm_internals(void)
- 
- 	start_shepherd_timer();
- #endif
--	migrate_on_reclaim_init();
- #ifdef CONFIG_PROC_FS
- 	proc_create_seq("buddyinfo", 0444, NULL, &fragmentation_op);
- 	proc_create_seq("pagetypeinfo", 0400, NULL, &pagetypeinfo_op);
+ 	if (current_is_kswapd())
+ 		__count_vm_events(PGDEMOTE_KSWAPD, nr_succeeded);
 -- 
 2.36.1
 
