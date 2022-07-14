@@ -2,84 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0CCC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF5B7CCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236695AbiGNE3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        id S235184AbiGNE30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235144AbiGNE16 (ORCPT
+        with ESMTP id S236130AbiGNE2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:27:58 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00532DAA2
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:32 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657772670;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=xQRsmn7swl66NP0Iw4Ku2ejbuHCkGHauBdCb0zlzQVE=;
-        b=ejASHl+KCFyL1imH7kiMKDXq8Wfv2Pitub7kRyvA/Twyjh7AJBnRNDc/vYFv1B7bHtSAak
-        wyslMFEobQ8ovTkit4N/LxXB7kxWANyKY30YLWrFU6QJ4pcMU0o7RA/GtCZdo/gjBuAJZo
-        hSRFcK0Ta6nbPs8e182PdB8fxxXv8CY=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [mm-unstable PATCH v7 0/8] mm, hwpoison: enable 1GB hugepage support (v7)
-Date:   Thu, 14 Jul 2022 13:24:12 +0900
-Message-Id: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+        Thu, 14 Jul 2022 00:28:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A68C2E6BB;
+        Wed, 13 Jul 2022 21:24:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E767B61E51;
+        Thu, 14 Jul 2022 04:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8458CC34114;
+        Thu, 14 Jul 2022 04:24:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772672;
+        bh=08m7YkgMf00+tBrPAp/k1bxRwMkOC+fQBhyogyRaGSI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=hFOC3vyFToJfJsLnbtKCjlvxmUTqSK1KLqbr8cm7BfaW1ZQ4vM5/R0TzJwdk7svnu
+         DQknKSqLYADSXCuayqrEOX4hvf0JVIi2AOnJ4eS8e+8rzNEYGwAXP+E4v3tT7fi2t4
+         yQFi9VkuTz9jNrmAQmHXvrgCqONPRFMHdIM2jz81O3EhOnNjsnQxVm43asQA5jJCgE
+         unqCcXvZNnETjINBzhGqNN7D3oJVVMFPnyjXnJtuAmbu3V9A8zAT9iQE1LlfZIIc2k
+         YEAGkwbm6n6QQ02K01h8rQ0gpieKVURHM0hu5o2icn49Eu5IO9mj0FUQ1Y1x6f+BXR
+         q6e3vJ76Bnnag==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 01/28] ASoC: ops: Fix off by one in range control validation
+Date:   Thu, 14 Jul 2022 00:24:02 -0400
+Message-Id: <20220714042429.281816-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Here is v7 of "enabling memory error handling on 1GB hugepage" patchset.
+From: Mark Brown <broonie@kernel.org>
 
-I applied feedbacks provided for v6 (thank you, Miaohe).
-There're a few improvements on on 3/8 and 4/8.
+[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
 
-- v1: https://lore.kernel.org/linux-mm/20220602050631.771414-1-naoya.horiguchi@linux.dev/T/#u
-- v2: https://lore.kernel.org/linux-mm/20220623235153.2623702-1-naoya.horiguchi@linux.dev/T/#u
-- v3: https://lore.kernel.org/linux-mm/20220630022755.3362349-1-naoya.horiguchi@linux.dev/T/#u
-- v4: https://lore.kernel.org/linux-mm/20220704013312.2415700-1-naoya.horiguchi@linux.dev/T/#u
-- v5: https://lore.kernel.org/linux-mm/20220708053653.964464-1-naoya.horiguchi@linux.dev/T/#u
-- v6: https://lore.kernel.org/linux-mm/20220712032858.170414-1-naoya.horiguchi@linux.dev/T/#u
+We currently report that range controls accept a range of 0..(max-min) but
+accept writes in the range 0..(max-min+1). Remove that extra +1.
 
-Thanks,
-Naoya Horiguchi
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-Summary:
+ sound/soc/soc-ops.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Naoya Horiguchi (8):
-      mm/hugetlb: check gigantic_page_runtime_supported() in return_unused_surplus_pages()
-      mm/hugetlb: make pud_huge() and follow_huge_pud() aware of non-present pud entry
-      mm, hwpoison, hugetlb: support saving mechanism of raw error pages
-      mm, hwpoison: make unpoison aware of raw error info in hwpoisoned hugepage
-      mm, hwpoison: set PG_hwpoison for busy hugetlb pages
-      mm, hwpoison: make __page_handle_poison returns int
-      mm, hwpoison: skip raw hwpoison page in freeing 1GB hugepage
-      mm, hwpoison: enable memory error handling on 1GB hugepage
+diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
+index f32ba64c5dda..e73360e9de8f 100644
+--- a/sound/soc/soc-ops.c
++++ b/sound/soc/soc-ops.c
+@@ -526,7 +526,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 		return -EINVAL;
+ 	if (mc->platform_max && tmp > mc->platform_max)
+ 		return -EINVAL;
+-	if (tmp > mc->max - mc->min + 1)
++	if (tmp > mc->max - mc->min)
+ 		return -EINVAL;
+ 
+ 	if (invert)
+@@ -547,7 +547,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
+ 			return -EINVAL;
+ 		if (mc->platform_max && tmp > mc->platform_max)
+ 			return -EINVAL;
+-		if (tmp > mc->max - mc->min + 1)
++		if (tmp > mc->max - mc->min)
+ 			return -EINVAL;
+ 
+ 		if (invert)
+-- 
+2.35.1
 
- arch/x86/mm/hugetlbpage.c |   8 ++-
- include/linux/hugetlb.h   |  17 ++++-
- include/linux/mm.h        |   2 +-
- include/linux/swapops.h   |   9 +++
- include/ras/ras_event.h   |   1 -
- mm/hugetlb.c              |  58 +++++++++++----
- mm/memory-failure.c       | 179 ++++++++++++++++++++++++++++++++++++++--------
- 7 files changed, 226 insertions(+), 48 deletions(-)
