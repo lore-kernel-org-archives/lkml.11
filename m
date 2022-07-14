@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B51EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4701AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:29:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238268AbiGNJ3m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34132 "EHLO
+        id S238294AbiGNJ3q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231805AbiGNJ2t (ORCPT
+        with ESMTP id S234808AbiGNJ3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:28:49 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD46D55B4;
-        Thu, 14 Jul 2022 02:28:47 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lk8Hj6M5tz1L8qj;
-        Thu, 14 Jul 2022 17:26:09 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 17:28:45 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <gregkh@linuxfoundation.org>, <alexander.shishkin@linux.intel.com>,
-        <leo.yan@linaro.org>, <james.clark@arm.com>, <will@kernel.org>,
-        <robin.murphy@arm.com>, <acme@kernel.org>, <peterz@infradead.org>,
-        <corbet@lwn.net>, <mathieu.poirier@linaro.org>,
-        <mark.rutland@arm.com>, <jonathan.cameron@huawei.com>,
-        <john.garry@huawei.com>
-CC:     <helgaas@kernel.org>, <lorenzo.pieralisi@arm.com>,
-        <suzuki.poulose@arm.com>, <joro@8bytes.org>,
-        <shameerali.kolothum.thodi@huawei.com>, <mingo@redhat.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>, <iommu@lists.linux.dev>,
-        <linux-doc@vger.kernel.org>, <prime.zeng@huawei.com>,
-        <liuqi115@huawei.com>, <zhangshaokun@hisilicon.com>,
-        <linuxarm@huawei.com>, <yangyicong@hisilicon.com>
-Subject: [PATCH v10 8/8] MAINTAINERS: Add maintainer for HiSilicon PTT driver
-Date:   Thu, 14 Jul 2022 17:27:10 +0800
-Message-ID: <20220714092710.53486-9-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220714092710.53486-1-yangyicong@hisilicon.com>
-References: <20220714092710.53486-1-yangyicong@hisilicon.com>
+        Thu, 14 Jul 2022 05:29:25 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D556FF70
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:29:23 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id a10so1480064ljj.5
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:29:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jU4sG0mo0OAljG7wSES/D6Zu2DuuJojhSoJOsa882Zw=;
+        b=Grxg/mWHPUcGKz59jXb0bd60gQZXJ7Hei+tlpBvvFlEQYViUTWpM+QFD814cRQt+Vw
+         RRB45E0w1xR7yse+lUkhZyTzj6PPJaHT49qoFP/3v0ziBK9nzuZZlI+G1lKprJgHA72z
+         LDZl5TAyIFI5FvOwlJGI3ZswAwSsc23l4eCjgEqStzhIeT4ryBY4V3iRiwE5LZo3Z4i5
+         SId8oKUJTtgNXBRcizuCuXmkDIScup7i8scYDxr4raj3CPpxul8E+JQYN4rfUc/YVSpD
+         4XLr5eWca2pLqDR/hGNUtbsxQ0uF33EHtdzDCQaEb1tdMRg3jF8CgyVJ0rJJEjU8Htid
+         y4Cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jU4sG0mo0OAljG7wSES/D6Zu2DuuJojhSoJOsa882Zw=;
+        b=ymYvH+rZ2RHDIDbmiuGpYCnuKxtbynL+EUb3Fy2yRhLTAs3Oi0MA3EWumbHlnOqtzn
+         /L39nggUtivikp9rE67Ptq0r7zYTXH+vlljYbenZrbJTxini7MrvwI2WLk94sVid0W+B
+         Oai8ummomhRj6Vn/z+9+yrgF41y1bykp+ZRAka4HAtj+FVePUKZp4UX+uG2ENwUKyzCt
+         m+a2PKJE/2U3TI5Im8j4jZZbL3E/NBpHVc47Tv4kf8+KWWHgP2+TFOYIaRSv/NiRNDyj
+         mcosB+GARNPdz7YJ3+HM6bkIjWAiSXxuV2K6okP7hi/LZXMjCVSmH8bvAXZBUFD/+Lb/
+         WK7w==
+X-Gm-Message-State: AJIora/sjXsLXJoONi1FET+717v6rpjdew94ut3XtFQuzIyLkMCSEJRI
+        3qwSw/br4NaqBRZDsuGKCUnGsA==
+X-Google-Smtp-Source: AGRyM1uDzQxXNKv9FXmqNr2sb7xQqh6CETrz4yVqsX1kCT6W2B6acb3r6llg6Y3sumEdw35Mlo6TUA==
+X-Received: by 2002:a2e:bd88:0:b0:25d:5282:48e4 with SMTP id o8-20020a2ebd88000000b0025d528248e4mr3863024ljq.383.1657790962267;
+        Thu, 14 Jul 2022 02:29:22 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id z8-20020a056512370800b004790506cf98sm258424lfr.303.2022.07.14.02.29.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 02:29:21 -0700 (PDT)
+Message-ID: <31674dc9-e44d-9757-6428-704bfe58902b@linaro.org>
+Date:   Thu, 14 Jul 2022 11:29:19 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 26/30] phy: qcom-qmp-combo: drop unused lane reset
+Content-Language: en-US
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220707134725.3512-1-johan+linaro@kernel.org>
+ <20220707134725.3512-27-johan+linaro@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220707134725.3512-27-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add maintainer for driver and documentation of HiSilicon PTT device.
+On 07/07/2022 15:47, Johan Hovold wrote:
+> Drop the unused lane reset pointer which isn't used by any combo PHY.
+> 
+> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  drivers/phy/qualcomm/phy-qcom-qmp-combo.c | 2 --
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fe5daf141501..4b93c59a9b68 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8965,6 +8965,13 @@ F:	Documentation/admin-guide/perf/hisi-pcie-pmu.rst
- F:	Documentation/admin-guide/perf/hisi-pmu.rst
- F:	drivers/perf/hisilicon
- 
-+HISILICON PTT DRIVER
-+M:	Yicong Yang <yangyicong@hisilicon.com>
-+L:	linux-kernel@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/trace/hisi-ptt.rst
-+F:	drivers/hwtracing/ptt/
-+
- HISILICON QM AND ZIP Controller DRIVER
- M:	Zhou Wang <wangzhou1@hisilicon.com>
- L:	linux-crypto@vger.kernel.org
--- 
-2.24.0
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
+
+Best regards,
+Krzysztof
