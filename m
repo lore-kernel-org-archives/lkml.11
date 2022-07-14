@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C04ECC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CE8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240331AbiGNQom (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:44:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
+        id S240363AbiGNQoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:44:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237816AbiGNQnj (ORCPT
+        with ESMTP id S237855AbiGNQnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 12:43:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C53FC2;
-        Thu, 14 Jul 2022 09:43:37 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B3FCDE;
+        Thu, 14 Jul 2022 09:43:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2CAC6205A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE45662061;
         Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2F63C341CA;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEAEC341D8;
         Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w1-004lQI-Tm;
+        id 1oC1w1-004lOa-Bs;
         Thu, 14 Jul 2022 12:43:29 -0400
-Message-ID: <20220714164329.755539453@goodmis.org>
+Message-ID: <20220714164329.197293499@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:43:06 -0400
+Date:   Thu, 14 Jul 2022 12:43:03 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [for-next][PATCH 10/23] tracing/iwlwifi: Use the new __vstring() helper
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org
+Subject: [for-next][PATCH 07/23] tracing/IB/hfi1: Use the new __vstring() helper
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,59 +51,39 @@ defeats the purpose of the dynamic array in the first place). Use the new
 __vstring() helper that will use a va_list and only write enough of the
 string into the ring buffer that is needed.
 
-Link: https://lkml.kernel.org/r/20220705224749.806599472@goodmis.org
+Link: https://lkml.kernel.org/r/20220705224749.239494531@goodmis.org
 
-Cc: Gregory Greenman <gregory.greenman@intel.com>
+Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
 Cc: Ingo Molnar <mingo@kernel.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Kalle Valo <kvalo@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-wireless@vger.kernel.org
-Cc: netdev@vger.kernel.org
-Acked-by: Kalle Valo <kvalo@kernel.org>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: linux-rdma@vger.kernel.org
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- .../net/wireless/intel/iwlwifi/iwl-devtrace-msg.h    | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/infiniband/hw/hfi1/trace_dbg.h | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h b/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h
-index 7dd70011fd1e..1d6c292cf545 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-devtrace-msg.h
-@@ -18,12 +18,10 @@ DECLARE_EVENT_CLASS(iwlwifi_msg_event,
- 	TP_PROTO(struct va_format *vaf),
- 	TP_ARGS(vaf),
- 	TP_STRUCT__entry(
--		__dynamic_array(char, msg, MAX_MSG_LEN)
-+		__vstring(msg, vaf->fmt, vaf->va)
- 	),
- 	TP_fast_assign(
--		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
--				       MAX_MSG_LEN, vaf->fmt,
--				       *vaf->va) >= MAX_MSG_LEN);
-+		__assign_vstr(msg, vaf->fmt, vaf->va);
- 	),
- 	TP_printk("%s", __get_str(msg))
- );
-@@ -55,14 +53,12 @@ TRACE_EVENT(iwlwifi_dbg,
- 	TP_STRUCT__entry(
- 		__field(u32, level)
- 		__string(function, function)
--		__dynamic_array(char, msg, MAX_MSG_LEN)
-+		__vstring(msg, vaf->fmt, vaf->va)
- 	),
- 	TP_fast_assign(
- 		__entry->level = level;
- 		__assign_str(function, function);
--		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
--				       MAX_MSG_LEN, vaf->fmt,
--				       *vaf->va) >= MAX_MSG_LEN);
-+		__assign_vstr(msg, vaf->fmt, vaf->va);
- 	),
- 	TP_printk("%s", __get_str(msg))
- );
+diff --git a/drivers/infiniband/hw/hfi1/trace_dbg.h b/drivers/infiniband/hw/hfi1/trace_dbg.h
+index 707f1053f0b7..582b6f68df3d 100644
+--- a/drivers/infiniband/hw/hfi1/trace_dbg.h
++++ b/drivers/infiniband/hw/hfi1/trace_dbg.h
+@@ -26,14 +26,10 @@ DECLARE_EVENT_CLASS(hfi1_trace_template,
+ 		    TP_PROTO(const char *function, struct va_format *vaf),
+ 		    TP_ARGS(function, vaf),
+ 		    TP_STRUCT__entry(__string(function, function)
+-				     __dynamic_array(char, msg, MAX_MSG_LEN)
++				     __vstring(msg, vaf->fmt, vaf->va)
+ 				     ),
+ 		    TP_fast_assign(__assign_str(function, function);
+-				   WARN_ON_ONCE(vsnprintf
+-						(__get_dynamic_array(msg),
+-						 MAX_MSG_LEN, vaf->fmt,
+-						 *vaf->va) >=
+-						MAX_MSG_LEN);
++				   __assign_vstr(msg, vaf->fmt, vaf->va);
+ 				   ),
+ 		    TP_printk("(%s) %s",
+ 			      __get_str(function),
 -- 
 2.35.1
