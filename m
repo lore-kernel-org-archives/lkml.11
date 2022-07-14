@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D96EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:08:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BF3C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:08:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238646AbiGNLIl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:08:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48552 "EHLO
+        id S238452AbiGNLIo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237787AbiGNLIg (ORCPT
+        with ESMTP id S238260AbiGNLIg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 07:08:36 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B0EB06;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3A80E89;
         Thu, 14 Jul 2022 04:08:34 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 11:08:30 -0000
+Date:   Thu, 14 Jul 2022 11:08:32 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657796911;
+        s=2020; t=1657796913;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+ZLcf42UzrkSV/bof3Qbxwul9mHnNzoBYs2ip9J07Wk=;
-        b=KW6KM9S6mSVbYb8k0QbnRSyR2v5QWha7sxS03JlkxvOM6JDzYWFRgHNJ5Y/WWMjIy7x3NK
-        2C1UPrZlnTDfx1nFfT4IHGIF2YLmLV7bkt0ltRKWlFrrLu8gB4p3w4gvLIXyHjSUAZRNgB
-        Qqv0lkBUOKRDAkDiBHKgtUKmgysvSEFye7eCy283lDIRkCpQcJiw7sEx+Zdp6yK+OClXrG
-        VRti/DWxxAChHIXytMXj+DHTqUINs4sTdrRGJjRlyILRqcyd/rvkww33g0CwoNEwgWtpc6
-        U/8G/t/XI0LLjtAj6JA9+DE4XPyhqGG5RUO5yc4HP7rkE8sBaSXIe2E8eApyfA==
+        bh=pHbjtE2rRok+PDLTLfeXHRG66lZG1VHrYTg2Mc7KRmA=;
+        b=l0o0mGVEo3aG1nm/azETnbcv912beRkDj6Mi28Wba/b0XkSKl6c3JKNyWYzfHBNDLDo7OD
+        ejtrRdDUswOYy+cwkKN1F9bi1vMHnhk8OJ+AwC1OXjv9+P8P0Q/ygTv2TZwYDMXH5kdxS2
+        y0Mn6dvB9vvh/Uf1TBfNZFakLezpNSX9PRbzqIs89M7wY4eBLlD8HjM1EDkTHYkF2CuW5Y
+        d9/qQmOKHZFL1ChgSiPIDD74CzkyfvdHGqURn0pwxAPN5zDXWIQQZwBQgmWVkUQJTEkqx/
+        arv1yr3eext0H0MEnh8tebFhbo7N2Q9aW4IF5iBMDwFKxfnsYzKZkrEiwru/GA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657796911;
+        s=2020e; t=1657796913;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+ZLcf42UzrkSV/bof3Qbxwul9mHnNzoBYs2ip9J07Wk=;
-        b=bzZ29HOvBU1+bztaE4Dd+ODI8Xq7TCu6sLCWSQ7sTpVwZYRxQ39Cmh7vQi1yR+/AVm2zZT
-        pXInb1JDsTmMxuAw==
-From:   "tip-bot2 for Thadeu Lima de Souza Cascardo" <tip-bot2@linutronix.de>
+        bh=pHbjtE2rRok+PDLTLfeXHRG66lZG1VHrYTg2Mc7KRmA=;
+        b=K//a577Lepf+k3NWFVCTMIsf0SGNcjTH5FeqbLqF0R3VvETI8ZU5WhaMD+1diBwrUTYWVs
+        GokR69ylrdBetNAw==
+From:   "tip-bot2 for Jiapeng Chong" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: x86/urgent] x86/kvm: Fix FASTOP_SIZE when return thunks are enabled
-Cc:     Linux Kernel Functional Testing <lkft@linaro.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+Subject: [tip: x86/urgent] x86/bugs: Mark retbleed_strings static
+Cc:     Abaci Robot <abaci@linux.alibaba.com>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Borislav Petkov <bp@suse.de>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <CA%2BG9fYtntg7=zWSs-dm%2Bn_AUr_u0eBOU0zrwWqMeXZ%2BSF6_bLw@mail.gmail.com>
-References: <CA%2BG9fYtntg7=zWSs-dm%2Bn_AUr_u0eBOU0zrwWqMeXZ%2BSF6_bLw@mail.gmail.com>
+In-Reply-To: <20220714072939.71162-1-jiapeng.chong@linux.alibaba.com>
+References: <20220714072939.71162-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Message-ID: <165779691047.15455.17101013839320515682.tip-bot2@tip-bot2>
+Message-ID: <165779691246.15455.16253032169822799893.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,76 +62,35 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the x86/urgent branch of tip:
 
-Commit-ID:     3652dee22a2a321d6dabe1ea0aa4b2b3c87da8dc
-Gitweb:        https://git.kernel.org/tip/3652dee22a2a321d6dabe1ea0aa4b2b3c87da8dc
-Author:        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-AuthorDate:    Wed, 13 Jul 2022 14:12:41 -03:00
+Commit-ID:     33a8573bdfeec5b746aedeea880733a4c7993158
+Gitweb:        https://git.kernel.org/tip/33a8573bdfeec5b746aedeea880733a4c7993158
+Author:        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+AuthorDate:    Thu, 14 Jul 2022 15:29:39 +08:00
 Committer:     Borislav Petkov <bp@suse.de>
-CommitterDate: Thu, 14 Jul 2022 09:59:10 +02:00
+CommitterDate: Thu, 14 Jul 2022 09:41:30 +02:00
 
-x86/kvm: Fix FASTOP_SIZE when return thunks are enabled
+x86/bugs: Mark retbleed_strings static
 
-The return thunk call makes the fastop functions larger, just like IBT
-does. Consider a 16-byte FASTOP_SIZE when CONFIG_RETHUNK is enabled.
+This symbol is not used outside of bugs.c, so mark it static.
 
-Otherwise, functions will be incorrectly aligned and when computing
-their position for differently sized operators, they will execute in the
-middle or end of a function, which may as well be an int3, leading to a
-crash like:
-
-  int3: 0000 [#1] SMP NOPTI
-  CPU: 3 PID: 1371 Comm: qemu-system-x86 Not tainted 5.15.0-41-generic #44
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1 04/01/2014
-  RIP: 0010:xaddw_ax_dx+0x9/0x10 [kvm]
-  Code: 00 0f bb d0 c3 cc cc cc cc 48 0f bb d0 c3 cc cc cc cc 0f 1f 80 00 00 00 00 0f c0 d0 c3 cc cc cc cc 66 0f c1 d0 c3 cc cc cc cc <0f> 1f 80 00 00 00 00 0f c1 d0 c3 cc cc cc cc 48 0f c1 d0 c3 cc cc
-  Call Trace:
-   <TASK>
-   ? fastop
-   x86_emulate_insn
-   x86_emulate_instruction
-   ? kvm_arch_vcpu_load
-   ? vmx_prepare_switch_to_host
-   complete_emulated_mmio
-   kvm_arch_vcpu_ioctl_run
-   kvm_vcpu_ioctl
-   ? kvm_vcpu_ioctl
-   ? __fget_files
-   ? __fget_files
-   __x64_sys_ioctl
-   do_syscall_64
-   ? syscall_exit_to_user_mode
-   ? do_syscall_64
-   ? syscall_exit_to_user_mode
-   ? __x64_sys_writev
-   ? do_syscall_64
-   ? exit_to_user_mode_prepare
-   ? syscall_exit_to_user_mode
-   ? do_syscall_64
-   ? do_syscall_64
-   ? do_syscall_64
-   ? do_syscall_64
-   entry_SYSCALL_64_after_hwframe
-  ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
-
-Fixes: aa3d480315ba ("x86: Use return-thunk in asm code")
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/CA%2BG9fYtntg7=zWSs-dm%2Bn_AUr_u0eBOU0zrwWqMeXZ%2BSF6_bLw@mail.gmail.com
+Link: https://lore.kernel.org/r/20220714072939.71162-1-jiapeng.chong@linux.alibaba.com
 ---
- arch/x86/kvm/emulate.c | 2 +-
+ arch/x86/kernel/cpu/bugs.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
-index db96bf7..d779eea 100644
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -190,7 +190,7 @@
- #define X16(x...) X8(x), X8(x)
+diff --git a/arch/x86/kernel/cpu/bugs.c b/arch/x86/kernel/cpu/bugs.c
+index 0dd0471..3a0787a 100644
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -793,7 +793,7 @@ enum retbleed_mitigation_cmd {
+ 	RETBLEED_CMD_IBPB,
+ };
  
- #define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
--#define FASTOP_SIZE (8 * (1 + HAS_KERNEL_IBT))
-+#define FASTOP_SIZE (8 * (1 + (HAS_KERNEL_IBT | IS_ENABLED(CONFIG_RETHUNK))))
- 
- struct opcode {
- 	u64 flags;
+-const char * const retbleed_strings[] = {
++static const char * const retbleed_strings[] = {
+ 	[RETBLEED_MITIGATION_NONE]	= "Vulnerable",
+ 	[RETBLEED_MITIGATION_UNRET]	= "Mitigation: untrained return thunk",
+ 	[RETBLEED_MITIGATION_IBPB]	= "Mitigation: IBPB",
