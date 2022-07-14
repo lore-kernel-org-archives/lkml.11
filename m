@@ -2,83 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84E58CCA487
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:27:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 251BEC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235871AbiGNE1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49370 "EHLO
+        id S234437AbiGNE1u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233878AbiGNE06 (ORCPT
+        with ESMTP id S235194AbiGNE1D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:26:58 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF74B2B1AF;
-        Wed, 13 Jul 2022 21:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=wvxNVC7v6IRfhPDvi+vlda/Ydr6xcl7uzGy3JRiwJsk=; b=h6zx/qtQBkYoU+/liavyngGoGQ
-        qsOPbojToSP07GYfoD4L1Rj/BdqAn48dD0TbbkCv6s0frYjwB2NxyHfS8sg/zexGgCpRPzE/TYQFN
-        Li5G/evrqQyw+eHnbHDEYkA4UPfWAFvroO4nVkNVpo0j73IBWKbiJAUxbwqIo60Snl76iyVaNU4i/
-        PwqGuaMEcrYNxkwnJJxhEXZau/ZDirtLGlKAl9iQ27dKm5Nb57sDSzijqu4zBp3yAGRrB/+7UcQNB
-        Eqroje4xhcnqhz99amuRSNTyDZf+KIL39W8xd/Abw/myVnEL3l8woK+0k4FNHzi/b7nJee72rFeH8
-        mFG3QhHQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oBqOC-00AasH-TU; Thu, 14 Jul 2022 04:23:48 +0000
-Date:   Wed, 13 Jul 2022 21:23:48 -0700
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Christoph Hellwig <hch@infradead.org>, Song Liu <song@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "anil.s.keshavamurthy@intel.com" <anil.s.keshavamurthy@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "dave@stgolabs.net" <dave@stgolabs.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Subject: Re: [PATCH bpf-next 1/3] mm/vmalloc: introduce vmalloc_exec which
- allocates RO+X memory
-Message-ID: <Ys+aVKFJaQd130Pn@infradead.org>
-References: <20220713071846.3286727-1-song@kernel.org>
- <20220713071846.3286727-2-song@kernel.org>
- <Ys6ZkDUhRZcmvPYy@infradead.org>
- <BE896037-B79C-4B38-B777-96002C5861F5@fb.com>
+        Thu, 14 Jul 2022 00:27:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5212C2BB02;
+        Wed, 13 Jul 2022 21:24:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B75D7B82372;
+        Thu, 14 Jul 2022 04:23:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F28C341CA;
+        Thu, 14 Jul 2022 04:23:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772638;
+        bh=TrRXWrkQMD56R74PiDCIB/2Sib6HRyWtjxg0iqFt938=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WGDAazUjLIzBKqnpKZMSDsDQqiJJOdwqUHhysKqOeu1Qchasu0XtOlZGRj+seRT6T
+         dIg1VCbnJBl/3lYHnjIHu3jB2RhoCOw86gOC941ODt8+fE7V/jA17khvJFumJYudQ0
+         uJkT6DzoajrwHVq/k2JFWVvWRNdno0H3N1PJAO1zIXeLzQzxl2sXcwFdnSNmH5IaQq
+         VK/jZRHXq0mLSHit4ATWgGMCGM/XuDsmHwIxMM8urqSO39z0FiBdTC5f+m+OKjLuNJ
+         9ege8LQFm/hsX7tpN+0zkOND9tRwpgmn2F9S78g/LOoyEicDPljc2chtZBCVF/LuyD
+         511kzsQaH1ViQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Keith Busch <kbusch@kernel.org>, Chris Egolf <cegolf@ugholf.net>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Sasha Levin <sashal@kernel.org>, axboe@fb.com,
+        sagi@grimberg.me, linux-nvme@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 36/41] nvme-pci: phison e16 has bogus namespace ids
+Date:   Thu, 14 Jul 2022 00:22:16 -0400
+Message-Id: <20220714042221.281187-36-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220714042221.281187-1-sashal@kernel.org>
+References: <20220714042221.281187-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BE896037-B79C-4B38-B777-96002C5861F5@fb.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 03:49:45PM +0000, Song Liu wrote:
-> 
-> 
-> > On Jul 13, 2022, at 3:08 AM, Christoph Hellwig <hch@infradead.org> wrote:
-> > 
-> > NAK.  This is not something that should be an exported public API
-> > ever.
-> 
-> Hmm.. I will remove EXPORT_SYMBOL_GPL (if we ever do a v2 of this..)
+From: Keith Busch <kbusch@kernel.org>
 
-Even without that it really is not a vmalloc API anyway.  Executable
-memory needs to be written first, so we should allocate it in that state
-and only mark it executable after that write has completed.
+[ Upstream commit 73029c9b23cf1213e5f54c2b59efce08665199e7 ]
+
+Add the quirk.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216049
+Reported-by: Chris Egolf <cegolf@ugholf.net>
+Signed-off-by: Keith Busch <kbusch@kernel.org>
+Reviewed-by: Chaitanya Kulkarni <kch@nvidia.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/nvme/host/pci.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index fe829377c7c2..ab575fdd8015 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -3432,7 +3432,8 @@ static const struct pci_device_id nvme_id_table[] = {
+ 				NVME_QUIRK_DISABLE_WRITE_ZEROES|
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+ 	{ PCI_DEVICE(0x1987, 0x5016),	/* Phison E16 */
+-		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN, },
++		.driver_data = NVME_QUIRK_IGNORE_DEV_SUBNQN |
++				NVME_QUIRK_BOGUS_NID, },
+ 	{ PCI_DEVICE(0x1b4b, 0x1092),	/* Lexar 256 GB SSD */
+ 		.driver_data = NVME_QUIRK_NO_NS_DESC_LIST |
+ 				NVME_QUIRK_IGNORE_DEV_SUBNQN, },
+-- 
+2.35.1
+
