@@ -2,104 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E7CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 21:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240989AbiGNVlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 17:41:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39884 "EHLO
+        id S240539AbiGNVne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 17:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240942AbiGNVla (ORCPT
+        with ESMTP id S240364AbiGNVnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 17:41:30 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCA532F3AE
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:41:29 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-31bf3656517so30103217b3.12
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:41:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XrLJ6t8ylgvZSQuZlmobmLCnVlZPRzZJ+MdpYtHUOJI=;
-        b=Xosv3ScUfv21//1t7/kb8Wskbr5g/+WLejRea8X/qIg4fcT6osyLtoFWd1q65TrZxz
-         feesD9cIQ72VczWllJBOl77MkiNJmE+/vXXrwJbIARFcs7H4HWsl0JvmJvI5JmzTyN3U
-         meKwZc6FIVNI5r3igtveG+zCZ1j1ojRwPdhq0ES07Nfv4SzSwQkHmjd8eu8KL6xOi/fI
-         LRi3I2xpRJ1KhOGYQW0t3TrGtTfQ0unWzgEbvygAc1GceVzHXPM/aZ/jAK7d4Y44MtL6
-         sW1lpoijWw5+VMCETqp+N8fw1Tk56Ozgw2WXd2wlnHobOp2GtLGRpppxH0EVDLF89dQE
-         6bCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XrLJ6t8ylgvZSQuZlmobmLCnVlZPRzZJ+MdpYtHUOJI=;
-        b=pAeT0RGbkmEgGPDlWyv06FAd91za4d/QdhUZlOb93WAD/Q/ayFqcBBxOdUyb5H4Bnj
-         AVkwNfsWY24rBG/BLPdYJtIq7N/Q1pjUWdKC5q+SDmknw/DaO4TIa1hAk3JhaZhVtlqG
-         UmOI3u7ffnkYv/AHBDxd1bFPoW6UX5zZwzxZYILKwOhbCvoWuAS0qkGs0MqGZen9rvaV
-         s5ns8qmQ9sWPRZZNvL9rrQmCPqWXP7K0qq0U22i/RawypgQzruXGuVv8XdyqmU+A6zLY
-         mmOB6r3mHGAvixlWO27JaCnrO3wC4tftNDhifLqiDUvwIZcZKq68EV8PE2CfnmXBv+NB
-         iW2A==
-X-Gm-Message-State: AJIora/neexVEj3ygcv9YhE21skT+EPqjCeULn2DDiiq0bt7dPd2DwB8
-        5xNn1d1eCNMnOeZruKFmbviSLCs1jaazYfU7/cY4pA==
-X-Google-Smtp-Source: AGRyM1vy8aVzUOhf/QXtZSH2ZHZaYwjbY3A577lPtx9AZ7Gv/zhEApvhp+lI7PzWDsJz53NTrxobz5jH80xVUG689vA=
-X-Received: by 2002:a81:e17:0:b0:31c:a24c:9ee6 with SMTP id
- 23-20020a810e17000000b0031ca24c9ee6mr12223353ywo.362.1657834888937; Thu, 14
- Jul 2022 14:41:28 -0700 (PDT)
+        Thu, 14 Jul 2022 17:43:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDD4C6EEB1
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:43:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657835008;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qQDjerzXJSCJFgfNtcXiHSPfeoMguzE4pEXuI+0+GjY=;
+        b=G3otsWuIQu53I2ZBQtYjqxxhCgOxCAAzhoVC9MVXd2SDi4ZGt5LblhiyQEpBu7Uu2oCzPq
+        rTX0TTRN/bc9kTC/sUfqtJdgjbBUqouyYypim3jgRMhExGPoMsj1N3kXuLsMsW8c2diUpU
+        62CUAQc8mVQd+ICqbtBM9gYeC8Buv0w=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-10-eq6rwds3PPmEOb_47aS48w-1; Thu, 14 Jul 2022 17:43:25 -0400
+X-MC-Unique: eq6rwds3PPmEOb_47aS48w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6C59A3C0D85D;
+        Thu, 14 Jul 2022 21:43:25 +0000 (UTC)
+Received: from lorien.usersys.redhat.com (unknown [10.22.33.101])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0BFD6140EBE3;
+        Thu, 14 Jul 2022 21:43:25 +0000 (UTC)
+Date:   Thu, 14 Jul 2022 17:43:23 -0400
+From:   Phil Auld <pauld@redhat.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Barry Song <21cnbao@gmail.com>,
+        Tian Tao <tiantao6@hisilicon.com>
+Subject: Re: [PATCH v4 RESEND] drivers/base: fix userspace break from using
+ bin_attributes for cpumap and cpulist
+Message-ID: <YtCN+wXGC5U0BR9U@lorien.usersys.redhat.com>
+References: <20220714183021.2924119-1-pauld@redhat.com>
+ <YtBvQUzRn5idNA5J@yury-laptop>
+ <YtCFjZJFpQCgBiyF@lorien.usersys.redhat.com>
+ <YtCLoMlYzjgBqhia@yury-laptop>
 MIME-Version: 1.0
-References: <20220518073232.526443-1-davidgow@google.com> <20220518073232.526443-2-davidgow@google.com>
- <YoS6rthXi9VRXpkg@elver.google.com> <CABVgOSmyApbC7en25ZBr7hLJye0mOnUY5ETR-VVEWmbaXq3bdQ@mail.gmail.com>
- <CANpmjNOdSy6DuO6CYZ4UxhGxqhjzx4tn0sJMbRqo2xRFv9kX6Q@mail.gmail.com> <CAGS_qxr_+KgqXRG-f9XMWsZ+ASOxSHFy9_4OZKnvS5eZAaAT7g@mail.gmail.com>
-In-Reply-To: <CAGS_qxr_+KgqXRG-f9XMWsZ+ASOxSHFy9_4OZKnvS5eZAaAT7g@mail.gmail.com>
-From:   Marco Elver <elver@google.com>
-Date:   Thu, 14 Jul 2022 23:40:53 +0200
-Message-ID: <CANpmjNP-YYB05skVuJkk9CRB=KVvS+5Yd+yTAzXC7MAkKAe4jw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] kcsan: test: Add a .kunitconfig to run KCSAN tests
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        KUnit Development <kunit-dev@googlegroups.com>,
-        kasan-dev <kasan-dev@googlegroups.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtCLoMlYzjgBqhia@yury-laptop>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022 at 22:23, Daniel Latypov <dlatypov@google.com> wrote:
+On Thu, Jul 14, 2022 at 02:33:20PM -0700 Yury Norov wrote:
+> On Thu, Jul 14, 2022 at 05:07:25PM -0400, Phil Auld wrote:
+> > Hi Yury,
+> > 
+> > On Thu, Jul 14, 2022 at 12:32:17PM -0700 Yury Norov wrote:
+> > > On Thu, Jul 14, 2022 at 02:30:21PM -0400, Phil Auld wrote:
+> > > > Using bin_attributes with a 0 size causes fstat and friends to return that 0 size.
+> > > > This breaks userspace code that retrieves the size before reading the file. Rather
+> > > > than reverting 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size
+> > > > limitation of cpumap ABI") let's put in a size value at compile time. Use direct
+> > > > comparison and a worst-case maximum to ensure compile time constants. For cpulist the
+> > > > max is on the order of NR_CPUS * (ceil(log10(NR_CPUS)) + 1) which for 8192 is 40960
+> > > > (8192 * 5). In order to get near that you'd need a system with every other CPU on one
+> > > > node or something similar. e.g. (0,2,4,8, ... ).
+> > > 
+> > > My python says:
+> > >         >>> len(str(list(range(0, 8194, 2))).replace(" ", ''))
+> > >         19931
+> > > 
+> > > Where the list looks like:
+> > >         [0,2,4,6,8,10,...,8190,8192]
+> > >         
+> > > So excluding open and close braces, max length of the cpu list is
+> > > 19929 bytes, which is almost3 times smaller than your estimation
+> > > (8192 * 7 = 57344).
+> > > 
+> > > 
+> > > For NR_CPUS == 16x8192:
+> > >         >>> len(str(list(range(0, 8194 * 16, 2))).replace(" ", '')) - 2
+> > >         403308
+> > >         >>> 8192 * 16 * 7
+> > >         917504
+> > > 
+> > > For NR_CPUS == 128x8192:
+> > >         >>> len(str(list(range(0, 8194 * 128, 2))).replace(" ", '')) - 2
+> > >         3639774
+> > >         >>> 8192 * 16 * 7
+> > >         7340032
+> > > 
+> > > Looks like it 2x overestimates for large lists, and 4x for standard
+> > > 256-bit mask.
+> > 
+> > Thanks! It's totally possible my math is wrong. But I'm not seeing a
+> > suggestion here. What would you like the formula to be?
+> > 
+> > I don't have any attachment to the numbers that are in there now. I'm not
+> > surprised it's 2x since it counts all of them. I could just divide it by 2
+> > I suppose.
+> 
+> Agree.
+> 
+> Actually, I accidentally removed the sentence below from the previous email:
+> 
+> I think there's no simple formula for this, so dividing by 2 would
+> probably be a simplest solution. 
 >
-> On Thu, May 19, 2022 at 6:24 AM Marco Elver <elver@google.com> wrote:
-> > I'd keep it simple for now, and remove both lines i.e. make non-strict
-> > the default. It's easy to just run with --kconfig_add
-> > CONFIG_KCSAN_STRICT=y, along with other variations. I know that
-> > rcutoruture uses KCSAN_STRICT=y by default, so it's already getting
-> > coverage there. ;-)
->
-> David decided to drop the parent patch (the new QEMU config) now
-> --qemu_args was merged into the kunit tree.
-> Did we want a standalone v2 of this patch?
->
-> Based on Marco's comments, we'd change:
-> * drop CONFIG_KCSAN_STRICT=y per this comment [1]
-> * drop CONFIG_KCSAN_WEAK_MEMORY per previous comments
-> Then for --qemu_args changes:
-> * add CONFIG_SMP=y explicitly to this file
-> * update the comment to show to include --qemu_args="-smp 8"
->
-> Does this sound right?
 
-Yes, sounds good to me, and thanks for remembering this. I'd prefer a
-close-to-default config.
+Right! That's what I've got now :)   I'll have a new version after I get
+it built and sanity tested.
 
-> [1] Note: there's also patches in kunit now so you could do
-> --kconfig_add=CONFIG_KCSAN_STRICT=n to explicitly disable it. This
-> wasn't possible before. Does that change what we want for the default?
+Thanks again,
+Phil
 
-I'd just have KCSAN_STRICT=n by default, and if desired it can be
-added per kconfig_add just the same way.
 
-Thanks,
--- Marco
+> > > Before, it was possible to fit ~1800 cpus into 4k page, after - 585.
+> > >
+> > 
+> > I don't understand this part. Nothing I did changes how the files are
+> > actually built I think.
+> 
+> I just meant that we'll significantly increase requirements for the
+> size.
+>  
+> > > > To simplify the math and support
+> > > > larger NR_CPUS in the future we are using NR_CPUS * 7. We also set it to a min of
+> > > > PAGE_SIZE to retain the older behavior for smaller NR_CPUS. The cpumap file wants to
+> > > > be something like NR_CPUS/4 + NR_CPUS/32, for the ","s so for simplicity we are using
+> > > > NR_CPUS/2.
+> > > 
+> > > This again overestimates almost twice. In this case, NR_CPUS * 9/32 - 1
+> > > is a precise value, if I didn't screw up. Why don't you just use it?
+> > >
+> > 
+> > I was just keeping it simple since it's used twice. But I can do it this way. 
+> > 
+> > 
+> > Cheers,
+> > Phil
+> > 
+> > > > Add a set of macros for these values to cpumask.h so they can be used in multiple places.
+> > > > Apply these to the handful of such files in drivers/base/topology.c as well as node.c.
+> > > > 
+> > > > On an 80 cpu 4-node sytem (NR_CPUS == 8192)
+> > > > 
+> > > > before:
+> > > > 
+> > > > -r--r--r--. 1 root root 0 Jul 12 14:08 /sys/devices/system/node/node0/cpulist
+> > > > -r--r--r--. 1 root root 0 Jul 11 17:25 /sys/devices/system/node/node0/cpumap
+> > > > 
+> > > > after:
+> > > > 
+> > > > -r--r--r--. 1 root root 57344 Jul 13 11:32 /sys/devices/system/node/node0/cpulist
+> > > > -r--r--r--. 1 root root  4096 Jul 13 11:31 /sys/devices/system/node/node0/cpumap
+> > > > 
+> > > > CONFIG_NR_CPUS = 16384
+> > > > -r--r--r--. 1 root root 114688 Jul 13 14:03 /sys/devices/system/node/node0/cpulist
+> > > > -r--r--r--. 1 root root   8192 Jul 13 14:02 /sys/devices/system/node/node0/cpumap
+> > > > 
+> > > > Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
+> > > > Fixes: bb9ec13d156 ("topology: use bin_attribute to break the size limitation of cpumap ABI")
+> > > > Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > > > Cc: "Rafael J. Wysocki" <rafael@kernel.org>
+> > > > Signed-off-by: Phil Auld <pauld@redhat.com>
+> > > > ---
+> > > > 
+> > > > v2: Fix cpumap size calculation. Increase multiplier for cpulist size.
+> > > > 
+> > > > v3: Add comments in code.
+> > > > 
+> > > > v4: Define constants in cpumask.h. Move comments there. Also fix
+> > > > topology.c.
+> > > > 
+> > > > 
+> > > >  drivers/base/node.c     |  4 ++--
+> > > >  drivers/base/topology.c | 32 ++++++++++++++++----------------
+> > > >  include/linux/cpumask.h | 16 ++++++++++++++++
+> > > >  3 files changed, 34 insertions(+), 18 deletions(-)
+> > > > 
+> > > > diff --git a/drivers/base/node.c b/drivers/base/node.c
+> > > > index 0ac6376ef7a1..eb0f43784c2b 100644
+> > > > --- a/drivers/base/node.c
+> > > > +++ b/drivers/base/node.c
+> > > > @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
+> > > >  	return n;
+> > > >  }
+> > > >  
+> > > > -static BIN_ATTR_RO(cpumap, 0);
+> > > > +static BIN_ATTR_RO(cpumap, CPUMAP_FILE_MAX_BYTES);
+> > > >  
+> > > >  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> > > >  				   struct bin_attribute *attr, char *buf,
+> > > > @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
+> > > >  	return n;
+> > > >  }
+> > > >  
+> > > > -static BIN_ATTR_RO(cpulist, 0);
+> > > > +static BIN_ATTR_RO(cpulist, CPULIST_FILE_MAX_BYTES);
+> > > >  
+> > > >  /**
+> > > >   * struct node_access_nodes - Access class device to hold user visible
+> > > > diff --git a/drivers/base/topology.c b/drivers/base/topology.c
+> > > > index ac6ad9ab67f9..89f98be5c5b9 100644
+> > > > --- a/drivers/base/topology.c
+> > > > +++ b/drivers/base/topology.c
+> > > > @@ -62,47 +62,47 @@ define_id_show_func(ppin, "0x%llx");
+> > > >  static DEVICE_ATTR_ADMIN_RO(ppin);
+> > > >  
+> > > >  define_siblings_read_func(thread_siblings, sibling_cpumask);
+> > > > -static BIN_ATTR_RO(thread_siblings, 0);
+> > > > -static BIN_ATTR_RO(thread_siblings_list, 0);
+> > > > +static BIN_ATTR_RO(thread_siblings, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(thread_siblings_list, CPULIST_FILE_MAX_BYTES);
+> > > >  
+> > > >  define_siblings_read_func(core_cpus, sibling_cpumask);
+> > > > -static BIN_ATTR_RO(core_cpus, 0);
+> > > > -static BIN_ATTR_RO(core_cpus_list, 0);
+> > > > +static BIN_ATTR_RO(core_cpus, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(core_cpus_list, CPULIST_FILE_MAX_BYTES);
+> > > >  
+> > > >  define_siblings_read_func(core_siblings, core_cpumask);
+> > > > -static BIN_ATTR_RO(core_siblings, 0);
+> > > > -static BIN_ATTR_RO(core_siblings_list, 0);
+> > > > +static BIN_ATTR_RO(core_siblings, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(core_siblings_list, CPULIST_FILE_MAX_BYTES);
+> > > >  
+> > > >  #ifdef TOPOLOGY_CLUSTER_SYSFS
+> > > >  define_siblings_read_func(cluster_cpus, cluster_cpumask);
+> > > > -static BIN_ATTR_RO(cluster_cpus, 0);
+> > > > -static BIN_ATTR_RO(cluster_cpus_list, 0);
+> > > > +static BIN_ATTR_RO(cluster_cpus, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(cluster_cpus_list, CPULIST_FILE_MAX_BYTES);
+> > > >  #endif
+> > > >  
+> > > >  #ifdef TOPOLOGY_DIE_SYSFS
+> > > >  define_siblings_read_func(die_cpus, die_cpumask);
+> > > > -static BIN_ATTR_RO(die_cpus, 0);
+> > > > -static BIN_ATTR_RO(die_cpus_list, 0);
+> > > > +static BIN_ATTR_RO(die_cpus, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(die_cpus_list, CPULIST_FILE_MAX_BYTES);
+> > > >  #endif
+> > > >  
+> > > >  define_siblings_read_func(package_cpus, core_cpumask);
+> > > > -static BIN_ATTR_RO(package_cpus, 0);
+> > > > -static BIN_ATTR_RO(package_cpus_list, 0);
+> > > > +static BIN_ATTR_RO(package_cpus, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(package_cpus_list, CPULIST_FILE_MAX_BYTES);
+> > > >  
+> > > >  #ifdef TOPOLOGY_BOOK_SYSFS
+> > > >  define_id_show_func(book_id, "%d");
+> > > >  static DEVICE_ATTR_RO(book_id);
+> > > >  define_siblings_read_func(book_siblings, book_cpumask);
+> > > > -static BIN_ATTR_RO(book_siblings, 0);
+> > > > -static BIN_ATTR_RO(book_siblings_list, 0);
+> > > > +static BIN_ATTR_RO(book_siblings, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(book_siblings_list, CPULIST_FILE_MAX_BYTES);
+> > > >  #endif
+> > > >  
+> > > >  #ifdef TOPOLOGY_DRAWER_SYSFS
+> > > >  define_id_show_func(drawer_id, "%d");
+> > > >  static DEVICE_ATTR_RO(drawer_id);
+> > > >  define_siblings_read_func(drawer_siblings, drawer_cpumask);
+> > > > -static BIN_ATTR_RO(drawer_siblings, 0);
+> > > > -static BIN_ATTR_RO(drawer_siblings_list, 0);
+> > > > +static BIN_ATTR_RO(drawer_siblings, CPUMAP_FILE_MAX_BYTES);
+> > > > +static BIN_ATTR_RO(drawer_siblings_list, CPULIST_FILE_MAX_BYTES);
+> > > >  #endif
+> > > >  
+> > > >  static struct bin_attribute *bin_attrs[] = {
+> > > > diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+> > > > index fe29ac7cc469..007acdb462bd 100644
+> > > > --- a/include/linux/cpumask.h
+> > > > +++ b/include/linux/cpumask.h
+> > > > @@ -1071,4 +1071,20 @@ cpumap_print_list_to_buf(char *buf, const struct cpumask *mask,
+> > > >  	[0] =  1UL							\
+> > > >  } }
+> > > >  
+> > > > +/* 
+> > > > + * Provide a valid theoretical max size for cpumap ands cpulist sysfs files to 
+> > > 
+> > > s/ands/and
+> > > 
+> > > > + * avoid breaking userspace which may allocate a buffer based on the size 
+> > > > + * reported by e.g. fstat.
+> > > > + *
+> > > > + * For cpumap NR_CPUS/2 is a simplification of NR_CPUS/4 + NR_CPUS/32. 
+> > > > + *
+> > > > + * For cpulist 7 is (ceil(log10(NR_CPUS)) + 1) allowing for NR_CPUS to be up to 
+> > > > + * 2 orders of magnitude larger than 8192. This covers a worst-case of every 
+> > > > + * other cpu being on one of two nodes for a very large NR_CPUS.
+> > > > + *
+> > > > + *  Use PAGE_SIZE as a minimum for smaller configurations. 
+> > > > + */
+> > > > +#define CPUMAP_FILE_MAX_BYTES  (((NR_CPUS >> 1) > PAGE_SIZE) ? NR_CPUS >> 1 : PAGE_SIZE)
+> > > > +#define CPULIST_FILE_MAX_BYTES  (((NR_CPUS * 7) > PAGE_SIZE) ? NR_CPUS * 7 : PAGE_SIZE)
+> > > > +
+> > > >  #endif /* __LINUX_CPUMASK_H */
+> > > > -- 
+> > > > 2.31.1
+> > > 
+> > 
+> > -- 
+> 
+
+-- 
+
