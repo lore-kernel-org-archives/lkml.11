@@ -2,88 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3C4C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF15FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:46:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237446AbiGNIp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
+        id S237407AbiGNIqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237536AbiGNIpg (ORCPT
+        with ESMTP id S237486AbiGNIqH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:45:36 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0F13DBF6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:45:31 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lk7Mg4wzQzFq4B;
-        Thu, 14 Jul 2022 16:44:31 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 16:45:28 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <akpm@linux-foundation.org>, <axboe@kernel.dk>, <neilb@suse.de>,
-        <johannes.thumshirn@wdc.com>, <jack@suse.cz>,
-        <willy@infradead.org>, <mgorman@techsingularity.net>
-CC:     <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] writeback: Cleanup inode_to_wb_is_valid()
-Date:   Thu, 14 Jul 2022 16:41:47 +0800
-Message-ID: <20220714084147.140324-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 14 Jul 2022 04:46:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FF8A402FA;
+        Thu, 14 Jul 2022 01:46:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D28DCB823C0;
+        Thu, 14 Jul 2022 08:46:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 887C1C34114;
+        Thu, 14 Jul 2022 08:46:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657788361;
+        bh=YvDXaxqtI1ZaBSWpwefeqgjLcPs3Jqvc4sIJBv80ws8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RBlFHN9Mkp0dnvOPW0m8j+KUxMrvjgdrcd7Y8kOhQBEa+5PBoJ9F7gsLXixpwyrSl
+         032eMu3WtEC35FgcQu6tlKYhSeLPLU5f+dOAbz6tQHNkG7XaBWIAdOvYbtPvQF2Ids
+         AmhfrzMs27LV4x6qnmxvFJMVVKVB6D/a0FjPyyWc=
+Date:   Thu, 14 Jul 2022 10:45:57 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Ben Hutchings <ben@decadent.org.uk>
+Cc:     kernel test robot <lkp@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        stable@vger.kernel.org
+Subject: Re: [linux-stable-rc:linux-5.10.y 7082/7120]
+ arch/x86/kernel/head_64.o: warning: objtool: xen_hypercall_mmu_update():
+ can't find starting instruction
+Message-ID: <Ys/XxcHvpgd3MbzH@kroah.com>
+References: <202207130531.SkRjrrn8-lkp@intel.com>
+ <Ys9MKAriCchlEO8S@decadent.org.uk>
+ <Ys+8ZYxkDmSCcDWv@kroah.com>
+ <Ys/TxoePQHvaYWcs@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys/TxoePQHvaYWcs@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-inode_to_wb_is_valid() is no longer used since commit fe55d563d417
-("remove inode_congested()"), remove it.
+On Thu, Jul 14, 2022 at 10:28:54AM +0200, Greg Kroah-Hartman wrote:
+> On Thu, Jul 14, 2022 at 08:49:09AM +0200, Greg Kroah-Hartman wrote:
+> > On Thu, Jul 14, 2022 at 12:50:16AM +0200, Ben Hutchings wrote:
+> > > On Wed, Jul 13, 2022 at 05:38:47AM +0800, kernel test robot wrote:
+> > > > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> > > > head:   53b881e19526bcc3e51d9668cab955c80dcf584c
+> > > > commit: 7575d3f3bbd1c68d6833b45d1b98ed182832bd44 [7082/7120] x86: Use return-thunk in asm code
+> > > > config: x86_64-rhel-8.3-syz (https://download.01.org/0day-ci/archive/20220713/202207130531.SkRjrrn8-lkp@intel.com/config)
+> > > > compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+> > > > reproduce (this is a W=1 build):
+> > > >         # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=7575d3f3bbd1c68d6833b45d1b98ed182832bd44
+> > > >         git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+> > > >         git fetch --no-tags linux-stable-rc linux-5.10.y
+> > > >         git checkout 7575d3f3bbd1c68d6833b45d1b98ed182832bd44
+> > > >         # save the config file
+> > > >         mkdir build_dir && cp config build_dir/.config
+> > > >         make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/
+> > > > 
+> > > > If you fix the issue, kindly add following tag where applicable
+> > > > Reported-by: kernel test robot <lkp@intel.com>
+> > > > 
+> > > > All warnings (new ones prefixed by >>):
+> > > > 
+> > > > >> arch/x86/kernel/head_64.o: warning: objtool: xen_hypercall_mmu_update(): can't find starting instruction
+> > > > 
+> > > > -- 
+> > > > 0-DAY CI Kernel Test Service
+> > > > https://01.org/lkp
+> > > 
+> > > Please add the following patch to fix this.  This would also be
+> > > needed for 5.15-stable.
+> > > 
+> > > Ben.
+> > > 
+> > > From: Ben Hutchings <ben@decadent.org.uk>
+> > > Date: Thu, 14 Jul 2022 00:39:33 +0200
+> > > Subject: [PATCH] x86/xen: Fix initialisation in hypercall_page after rethunk
+> > > 
+> > > The hypercall_page is special and the RETs there should not be changed
+> > > into rethunk calls (but can have SLS mitigation).  Change the initial
+> > > instructions to ret + int3 padding, as was done in upstream commit
+> > > 5b2fc51576ef "x86/ibt,xen: Sprinkle the ENDBR".
+> > > 
+> > > Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+> > > ---
+> > >  arch/x86/xen/xen-head.S | 4 ++--
+> > >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > > 
+> > > diff --git a/arch/x86/xen/xen-head.S b/arch/x86/xen/xen-head.S
+> > > index 38b73e7e54ba..2a3ef5fcba34 100644
+> > > --- a/arch/x86/xen/xen-head.S
+> > > +++ b/arch/x86/xen/xen-head.S
+> > > @@ -69,9 +69,9 @@ SYM_CODE_END(asm_cpu_bringup_and_idle)
+> > >  SYM_CODE_START(hypercall_page)
+> > >  	.rept (PAGE_SIZE / 32)
+> > >  		UNWIND_HINT_FUNC
+> > > -		.skip 31, 0x90
+> > >  		ANNOTATE_UNRET_SAFE
+> > > -		RET
+> > > +		ret
+> > > +		.skip 31, 0xcc
+> > >  	.endr
+> > >  
+> > >  #define HYPERCALL(n) \
+> > > 
+> > > 
+> > 
+> > That's really odd, I swear I tried this myself:
+> > 	https://lore.kernel.org/r/Ys2jlGMqAe6+h1SX@kroah.com
+> > 
+> > I'll go queue this up and see if that solves the issue on my side.  But
+> > see Boris's comment about how this shouldn't be an issue in the end.
+> 
+> Ah, yes, it does fix that warning, but causes this new one:
+> 	arch/x86/kernel/head_64.o: warning: objtool: .text+0x5: unreachable instruction
+> 
+> I'll keep your patch here, as it makes sense, but it does just exchange
+> one warning for another one...
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
----
- include/linux/backing-dev.h | 17 -----------------
- 1 file changed, 17 deletions(-)
+Odd, I get the build warning when I build locally, but on my build
+server, that does this as a clean build, no warnings at all.
 
-diff --git a/include/linux/backing-dev.h b/include/linux/backing-dev.h
-index d452071db572..f9f14e385582 100644
---- a/include/linux/backing-dev.h
-+++ b/include/linux/backing-dev.h
-@@ -235,18 +235,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
- 	return wb;
- }
- 
--/**
-- * inode_to_wb_is_valid - test whether an inode has a wb associated
-- * @inode: inode of interest
-- *
-- * Returns %true if @inode has a wb associated.  May be called without any
-- * locking.
-- */
--static inline bool inode_to_wb_is_valid(struct inode *inode)
--{
--	return inode->i_wb;
--}
--
- /**
-  * inode_to_wb - determine the wb of an inode
-  * @inode: inode of interest
-@@ -345,11 +333,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
- 	return &bdi->wb;
- }
- 
--static inline bool inode_to_wb_is_valid(struct inode *inode)
--{
--	return true;
--}
--
- static inline struct bdi_writeback *inode_to_wb(struct inode *inode)
- {
- 	return &inode_to_bdi(inode)->wb;
--- 
-2.17.1
+Let's see what the build systems say...
 
+greg k-h
