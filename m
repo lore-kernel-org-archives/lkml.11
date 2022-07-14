@@ -2,88 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4989C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C37C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239341AbiGNMbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45906 "EHLO
+        id S239348AbiGNMbX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:31:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239037AbiGNMbC (ORCPT
+        with ESMTP id S239296AbiGNMbE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:31:02 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2B26069A;
-        Thu, 14 Jul 2022 05:30:09 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id C1EB96601A3D;
-        Thu, 14 Jul 2022 13:30:04 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657801805;
-        bh=JVzIn5i13DB3/LDAuFTquEfvgf4d0MOmVf70FJzjMJc=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=OoAviENdLmUSvVXKjtV8pZcO9HKH6GmHsSHPis+lTpAkyhs422g+PIZEeVDWzySig
-         ueTEMOkXaenWoQSWRpkl7mU9zOOn7NaXh7bnnBtSyHL58YaJhaYzYbjDicIfWIRdcA
-         y95lrdbjBDfOx7y/r1rlAGzfzR1AhdMcsOZ4VLVYYPqh6OZfI7707HzBfj0Rs/WxId
-         NunmwCi+DVC6y+3MZCDj/+m3LphY6H/GlG01fnw/WzUCKYvU2BnJXZ7jCD9FzZuYiD
-         P2bpxjTDLHSUyMh+PgEFbtxK5ChjnPv5sWMc1RjBhiOy+BbVeq4NiBV+6TjQVcPzSm
-         2uxIivKlaPlQA==
-Message-ID: <468507bc-e10d-0d7c-aa77-bab4769efbcf@collabora.com>
-Date:   Thu, 14 Jul 2022 14:30:01 +0200
+        Thu, 14 Jul 2022 08:31:04 -0400
+X-Greylist: delayed 550 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 05:30:10 PDT
+Received: from extserv.mm-sol.com (ns.mm-sol.com [37.157.136.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C25F7606B0;
+        Thu, 14 Jul 2022 05:30:10 -0700 (PDT)
+Received: from [192.168.1.3] (unknown [195.24.90.54])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: svarbanov@mm-sol.com)
+        by extserv.mm-sol.com (Postfix) with ESMTPSA id E1860D2EE;
+        Thu, 14 Jul 2022 15:20:43 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mm-sol.com; s=201706;
+        t=1657801258; bh=4LVj1pif9xGhQ83zNU1YrSXf+HU1IGpBqh/6M1jZ6xI=;
+        h=Date:Subject:To:Cc:From:From;
+        b=dhijc7RRZUHUmpm5KmfMef7/1BIOByTeOUwnMOt7Qd6D8PfQGO+wNHmsIiq57mf8k
+         6MdHtkOvmhAqvBpE0MvmtEKJYLOo2httkxXRPuBRr7jPMfcvan78UMVJS07mSEysIV
+         /oZPT3WNk8JWXpoIE7QK/wm571Gdcubn+9cLC3mV5zOQ3X3ycTWbYvw7HyoADbh1N/
+         C+uJ1v/L0e8Ir0mhtgnFUb0aQtl1n/koW8BjT0fT43aOCYdX2RokXG7blbysLg6J3L
+         LQ4muf27gSmWv8kpRPhxCJOFVTWhiNGJE/sUAxWUBqkkO4W5UPTETkO8BYawIK5/t3
+         uCFHxcaEqsJnw==
+Message-ID: <cc7c90aa-6705-7493-2f58-5112f7d663a3@mm-sol.com>
+Date:   Thu, 14 Jul 2022 15:19:49 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/1] dt-bindings: uart: update bindings for MT8188 SoC
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
 Content-Language: en-US
-To:     kewei.xu@mediatek.com, gregkh@linuxfoundation.org,
-        robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        srv_heupstream@mediatek.com, leilk.liu@mediatek.com,
-        qii.wang@mediatek.com, liguo.zhang@mediatek.com,
-        caiyu.chen@mediatek.com, david-yh.chiu@mediatek.com
-References: <20220714104149.23343-1-kewei.xu@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220714104149.23343-1-kewei.xu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Johan Hovold <johan+linaro@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc:     Rob Herring <robh@kernel.org>,
+        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220519094646.23009-1-johan+linaro@kernel.org>
+From:   Stanimir Varbanov <svarbanov@mm-sol.com>
+In-Reply-To: <20220519094646.23009-1-johan+linaro@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 14/07/22 12:41, kewei.xu@mediatek.com ha scritto:
-> From: Kewei Xu <kewei.xu@mediatek.com>
+Hi Johan,
+
+Please take a look why we made it built-in first [1].
+
+If arguments there are still valid I don't see why to make it a module
+again.
+
+[1] https://lkml.org/lkml/2016/8/24/694
+
+On 5/19/22 12:46, Johan Hovold wrote:
+> Allow the Qualcomm PCIe controller driver to be built as a module, which
+> is useful for multi-platform kernels as well as during development.
 > 
-> Add a DT binding documentation for the MT8188 soc.
-> 
-> Signed-off-by: Kewei Xu <kewei.xu@mediatek.com>
-
-This file doesn't even exist anymore. I've converted it to json-schema, check
-out commit 22b10b33b9c6e76bc08f64e52862e68c4dc76052
-
-Regards,
-Angelo
-
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
 > ---
->   Documentation/devicetree/bindings/serial/mtk-uart.txt | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/serial/mtk-uart.txt b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> index 113b5d6a2245..e5094e1db7b4 100644
-> --- a/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> +++ b/Documentation/devicetree/bindings/serial/mtk-uart.txt
-> @@ -21,6 +21,7 @@ Required properties:
->     * "mediatek,mt8173-uart" for MT8173 compatible UARTS
->     * "mediatek,mt8183-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
->     * "mediatek,mt8186-uart", "mediatek,mt6577-uart" for MT8183 compatible UARTS
-> +  * "mediatek,mt8188-uart", "mediatek,mt6577-uart" for MT8188 compatible UARTS
->     * "mediatek,mt8192-uart", "mediatek,mt6577-uart" for MT8192 compatible UARTS
->     * "mediatek,mt8195-uart", "mediatek,mt6577-uart" for MT8195 compatible UARTS
->     * "mediatek,mt8516-uart" for MT8516 compatible UARTS
+>  drivers/pci/controller/dwc/Kconfig     |  2 +-
+>  drivers/pci/controller/dwc/pcie-qcom.c | 36 +++++++++++++++++++++++---
+>  2 files changed, 34 insertions(+), 4 deletions(-)
 > 
 
+
+-- 
+regards,
+Stan
