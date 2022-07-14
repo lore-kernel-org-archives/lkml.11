@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CE8C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A94AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240363AbiGNQoo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:44:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        id S240390AbiGNQov (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:44:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237855AbiGNQnj (ORCPT
+        with ESMTP id S238354AbiGNQnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:43:39 -0400
+        Thu, 14 Jul 2022 12:43:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78B3FCDE;
-        Thu, 14 Jul 2022 09:43:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0622185;
+        Thu, 14 Jul 2022 09:43:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DE45662061;
-        Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CEAEC341D8;
-        Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B168A6207F;
+        Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BD88C341CA;
+        Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w1-004lOa-Bs;
-        Thu, 14 Jul 2022 12:43:29 -0400
-Message-ID: <20220714164329.197293499@goodmis.org>
+        id 1oC1w2-004lSZ-Lt;
+        Thu, 14 Jul 2022 12:43:30 -0400
+Message-ID: <20220714164330.505896975@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:43:03 -0400
+Date:   Thu, 14 Jul 2022 12:43:10 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org
-Subject: [for-next][PATCH 07/23] tracing/IB/hfi1: Use the new __vstring() helper
+        Bin Liu <b-liu@ti.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org
+Subject: [for-next][PATCH 14/23] usb: musb: tracing: Use the new __vstring() helper
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,39 +51,35 @@ defeats the purpose of the dynamic array in the first place). Use the new
 __vstring() helper that will use a va_list and only write enough of the
 string into the ring buffer that is needed.
 
-Link: https://lkml.kernel.org/r/20220705224749.239494531@goodmis.org
+Link: https://lkml.kernel.org/r/20220705224750.532345354@goodmis.org
 
-Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc: Bin Liu <b-liu@ti.com>
 Cc: Ingo Molnar <mingo@kernel.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: linux-rdma@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- drivers/infiniband/hw/hfi1/trace_dbg.h | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/usb/musb/musb_trace.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hfi1/trace_dbg.h b/drivers/infiniband/hw/hfi1/trace_dbg.h
-index 707f1053f0b7..582b6f68df3d 100644
---- a/drivers/infiniband/hw/hfi1/trace_dbg.h
-+++ b/drivers/infiniband/hw/hfi1/trace_dbg.h
-@@ -26,14 +26,10 @@ DECLARE_EVENT_CLASS(hfi1_trace_template,
- 		    TP_PROTO(const char *function, struct va_format *vaf),
- 		    TP_ARGS(function, vaf),
- 		    TP_STRUCT__entry(__string(function, function)
--				     __dynamic_array(char, msg, MAX_MSG_LEN)
-+				     __vstring(msg, vaf->fmt, vaf->va)
- 				     ),
- 		    TP_fast_assign(__assign_str(function, function);
--				   WARN_ON_ONCE(vsnprintf
--						(__get_dynamic_array(msg),
--						 MAX_MSG_LEN, vaf->fmt,
--						 *vaf->va) >=
--						MAX_MSG_LEN);
-+				   __assign_vstr(msg, vaf->fmt, vaf->va);
- 				   ),
- 		    TP_printk("(%s) %s",
- 			      __get_str(function),
+diff --git a/drivers/usb/musb/musb_trace.h b/drivers/usb/musb/musb_trace.h
+index ec28b5716796..f246b14394c4 100644
+--- a/drivers/usb/musb/musb_trace.h
++++ b/drivers/usb/musb/musb_trace.h
+@@ -28,11 +28,11 @@ TRACE_EVENT(musb_log,
+ 	TP_ARGS(musb, vaf),
+ 	TP_STRUCT__entry(
+ 		__string(name, dev_name(musb->controller))
+-		__dynamic_array(char, msg, MUSB_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+ 		__assign_str(name, dev_name(musb->controller));
+-		vsnprintf(__get_str(msg), MUSB_MSG_MAX, vaf->fmt, *vaf->va);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk("%s: %s", __get_str(name), __get_str(msg))
+ );
 -- 
 2.35.1
