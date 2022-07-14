@@ -2,148 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3654C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD65DC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236732AbiGNE3u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33648 "EHLO
+        id S236739AbiGNE3y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:29:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235769AbiGNE20 (ORCPT
+        with ESMTP id S235484AbiGNE2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:28:26 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3871730F79
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:42 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657772679;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uxYP30zRX3+087a7ADNvtSYGr7OYdBOK6+qjv5apzug=;
-        b=sGAgNWl+QsPuHrDIKzPoBBx6HVHedRs64JXAKDuyH1mhvAaIvkUIwJIwreEZXvxkTNVElP
-        3c0Z6BUl/ANe58vB+qbj24Xi8DpYV0IC5ddQGxxDvHrQM+RKyM/pJ3oGzdVa9KdApisg37
-        sWcmVrsOAyW2EBgafjcV6q6BrUuw+SU=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [mm-unstable PATCH v7 2/8] mm/hugetlb: make pud_huge() and follow_huge_pud() aware of non-present pud entry
-Date:   Thu, 14 Jul 2022 13:24:14 +0900
-Message-Id: <20220714042420.1847125-3-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
-References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+        Thu, 14 Jul 2022 00:28:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1623228E0C;
+        Wed, 13 Jul 2022 21:24:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9515261E95;
+        Thu, 14 Jul 2022 04:24:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6884AC34115;
+        Thu, 14 Jul 2022 04:24:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772683;
+        bh=MThhBE+OgevlSZDjVIJEd6z5DpIYHMc9RCE/7PEP6cQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Mk+gycltGEvRZ6KF8xr1eEpES+NMEif2Qa4SaqwsWipC1So80M9jjyDyX9NrZsYTf
+         h/dwK0+LDXiGmm5/005u04fZxFfFK7Cs4/kmav25wBFutmPzOkNM8LpkQ+BnZiMJwG
+         6bwpn/5AA9p+oNk+52RfEgdXgoo7POI4IeU2DWzF0Dhkoff/S11OOM0n7aJDXv1JWO
+         PPHrtVO3B0I2pmFQmwUCpr0LTa/QYWFDDM4//EkCGBw14j9rJIP/3GJosWm5WhuNf3
+         c6gCVgcsDGJwq+4Z1E7ohhdoBHehBvaWgMGzXjXv1vY4Y2m2R+qFYR6JZnvhZzL9My
+         9EXLC1bq/DVRg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Rander Wang <rander.wang@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, cezary.rojewski@intel.com,
+        liam.r.girdwood@linux.intel.com, peter.ujfalusi@linux.intel.com,
+        ranjani.sridharan@linux.intel.com, kai.vehmanen@linux.intel.com,
+        perex@perex.cz, tiwai@suse.com, gongjun.song@intel.com,
+        alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 05/28] ASoC: Intel: sof_sdw: handle errors on card registration
+Date:   Thu, 14 Jul 2022 00:24:06 -0400
+Message-Id: <20220714042429.281816-5-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
+References: <20220714042429.281816-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-follow_pud_mask() does not support non-present pud entry now.  As long as
-I tested on x86_64 server, follow_pud_mask() still simply returns
-no_page_table() for non-present_pud_entry() due to pud_bad(), so no severe
-user-visible effect should happen.  But generally we should call
-follow_huge_pud() for non-present pud entry for 1GB hugetlb page.
+[ Upstream commit fe154c4ff376bc31041c6441958a08243df09c99 ]
 
-Update pud_huge() and follow_huge_pud() to handle non-present pud entries.
-The changes are similar to previous works for pud entries commit e66f17ff7177
-("mm/hugetlb: take page table lock in follow_huge_pmd()") and commit
-cbef8478bee5 ("mm/hugetlb: pmd_huge() returns true for non-present hugepage").
+If the card registration fails, typically because of deferred probes,
+the device properties added for headset codecs are not removed, which
+leads to kernel oopses in driver bind/unbind tests.
 
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+We already clean-up the device properties when the card is removed,
+this code can be moved as a helper and called upon card registration
+errors.
+
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Rander Wang <rander.wang@intel.com>
+Reviewed-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20220606203752.144159-4-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v2 -> v3:
-- fixed typos in subject and description,
-- added comment on pud_huge(),
-- added comment about fallback for hwpoisoned entry,
-- updated initial check about FOLL_{PIN,GET} flags.
----
- arch/x86/mm/hugetlbpage.c |  8 +++++++-
- mm/hugetlb.c              | 32 ++++++++++++++++++++++++++++++--
- 2 files changed, 37 insertions(+), 3 deletions(-)
+ sound/soc/intel/boards/sof_sdw.c | 51 ++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 22 deletions(-)
 
-diff --git a/arch/x86/mm/hugetlbpage.c b/arch/x86/mm/hugetlbpage.c
-index 509408da0da1..6b3033845c6d 100644
---- a/arch/x86/mm/hugetlbpage.c
-+++ b/arch/x86/mm/hugetlbpage.c
-@@ -30,9 +30,15 @@ int pmd_huge(pmd_t pmd)
- 		(pmd_val(pmd) & (_PAGE_PRESENT|_PAGE_PSE)) != _PAGE_PRESENT;
- }
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 0bf3e56e1d58..abe39a0ef14b 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -1323,6 +1323,33 @@ static struct snd_soc_card card_sof_sdw = {
+ 	.late_probe = sof_sdw_card_late_probe,
+ };
  
-+/*
-+ * pud_huge() returns 1 if @pud is hugetlb related entry, that is normal
-+ * hugetlb entry or non-present (migration or hwpoisoned) hugetlb entry.
-+ * Otherwise, returns 0.
-+ */
- int pud_huge(pud_t pud)
- {
--	return !!(pud_val(pud) & _PAGE_PSE);
-+	return !pud_none(pud) &&
-+		(pud_val(pud) & (_PAGE_PRESENT|_PAGE_PSE)) != _PAGE_PRESENT;
- }
- 
- #ifdef CONFIG_HUGETLB_PAGE
-diff --git a/mm/hugetlb.c b/mm/hugetlb.c
-index cf8ccee7654c..77119d93a0f9 100644
---- a/mm/hugetlb.c
-+++ b/mm/hugetlb.c
-@@ -6978,10 +6978,38 @@ struct page * __weak
- follow_huge_pud(struct mm_struct *mm, unsigned long address,
- 		pud_t *pud, int flags)
- {
--	if (flags & (FOLL_GET | FOLL_PIN))
-+	struct page *page = NULL;
-+	spinlock_t *ptl;
-+	pte_t pte;
++static void mc_dailink_exit_loop(struct snd_soc_card *card)
++{
++	struct snd_soc_dai_link *link;
++	int ret;
++	int i, j;
 +
-+	if (WARN_ON_ONCE(flags & FOLL_PIN))
- 		return NULL;
- 
--	return pte_page(*(pte_t *)pud) + ((address & ~PUD_MASK) >> PAGE_SHIFT);
-+retry:
-+	ptl = huge_pte_lock(hstate_sizelog(PUD_SHIFT), mm, (pte_t *)pud);
-+	if (!pud_huge(*pud))
-+		goto out;
-+	pte = huge_ptep_get((pte_t *)pud);
-+	if (pte_present(pte)) {
-+		page = pud_page(*pud) + ((address & ~PUD_MASK) >> PAGE_SHIFT);
-+		if (WARN_ON_ONCE(!try_grab_page(page, flags))) {
-+			page = NULL;
-+			goto out;
-+		}
-+	} else {
-+		if (is_hugetlb_entry_migration(pte)) {
-+			spin_unlock(ptl);
-+			__migration_entry_wait(mm, (pte_t *)pud, ptl);
-+			goto retry;
-+		}
++	for (i = 0; i < ARRAY_SIZE(codec_info_list); i++) {
++		if (!codec_info_list[i].exit)
++			continue;
 +		/*
-+		 * hwpoisoned entry is treated as no_page_table in
-+		 * follow_page_mask().
++		 * We don't need to call .exit function if there is no matched
++		 * dai link found.
 +		 */
++		for_each_card_prelinks(card, j, link) {
++			if (!strcmp(link->codecs[0].dai_name,
++				    codec_info_list[i].dai_name)) {
++				ret = codec_info_list[i].exit(card, link);
++				if (ret)
++					dev_warn(card->dev,
++						 "codec exit failed %d\n",
++						 ret);
++				break;
++			}
++		}
 +	}
-+out:
-+	spin_unlock(ptl);
-+	return page;
- }
++}
++
+ static int mc_probe(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = &card_sof_sdw;
+@@ -1387,6 +1414,7 @@ static int mc_probe(struct platform_device *pdev)
+ 	ret = devm_snd_soc_register_card(&pdev->dev, card);
+ 	if (ret) {
+ 		dev_err(card->dev, "snd_soc_register_card failed %d\n", ret);
++		mc_dailink_exit_loop(card);
+ 		return ret;
+ 	}
  
- struct page * __weak
+@@ -1398,29 +1426,8 @@ static int mc_probe(struct platform_device *pdev)
+ static int mc_remove(struct platform_device *pdev)
+ {
+ 	struct snd_soc_card *card = platform_get_drvdata(pdev);
+-	struct snd_soc_dai_link *link;
+-	int ret;
+-	int i, j;
+ 
+-	for (i = 0; i < ARRAY_SIZE(codec_info_list); i++) {
+-		if (!codec_info_list[i].exit)
+-			continue;
+-		/*
+-		 * We don't need to call .exit function if there is no matched
+-		 * dai link found.
+-		 */
+-		for_each_card_prelinks(card, j, link) {
+-			if (!strcmp(link->codecs[0].dai_name,
+-				    codec_info_list[i].dai_name)) {
+-				ret = codec_info_list[i].exit(card, link);
+-				if (ret)
+-					dev_warn(&pdev->dev,
+-						 "codec exit failed %d\n",
+-						 ret);
+-				break;
+-			}
+-		}
+-	}
++	mc_dailink_exit_loop(card);
+ 
+ 	return 0;
+ }
 -- 
-2.25.1
+2.35.1
 
