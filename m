@@ -2,243 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A6F3C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815D4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 19:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240508AbiGNTf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 15:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36552 "EHLO
+        id S240534AbiGNTgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 15:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238661AbiGNTf2 (ORCPT
+        with ESMTP id S240519AbiGNTgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 15:35:28 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D536558DE;
-        Thu, 14 Jul 2022 12:35:27 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id va17so5300717ejb.0;
-        Thu, 14 Jul 2022 12:35:27 -0700 (PDT)
+        Thu, 14 Jul 2022 15:36:41 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05CD5885D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 12:36:40 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id bf13so2467051pgb.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 12:36:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vChKKF9FJ4ZU9VFDMkMSil6514q54Ua6e4LyojliXfk=;
-        b=DMwrkmws8NvuOuWIlz6qCaHKSH9ufUNiQS4Sks+0iRp1wH6GMTA4wvRCsh2VELrUjx
-         mN/Wq0Iz4xbXbdbgxvP/ntipszHF0onufubKTtGss+qLQxndi5ASkec51iGQ5kg0br4I
-         GgChfcVyUXR07zbC4N137knAHlrJx2I7qAWX3Ma6SA8M36QMq6WW+IchNmbjovFsbHIp
-         3KdTLNHLqaKeHNf6sWt2QeOzsZEMO8Qsl5A8rDtNR88PTxFoAZwFkVbGrxhjspcHcsOy
-         rJim/oihY5xwyJnGfFEeYT68gHWlb1bVXOL4wrrEFAN26pI2b+sAi03E5muxk+v/cERh
-         moTA==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gsRk7t2Fg8fNdp4dpl5BvpQeyL4GIWzZfCIoGVEvJGs=;
+        b=hh1/yTdZnCsVTYD0aANJOlF973VdVa5cXEwdjStzWlwFZx2sB6o/npf0HjLO96VXXX
+         8/VfayIFFH+ueKb3Bd54td2xLD2QkQl4r58+4SiLqR8BhgUlYyNo0QBK2FXD/6Fk6Jg3
+         N4xYe1IEHXBkHxp2nRqECxvEAOpO3Kp87CdcOeV20LnPIhuKL4f1Cl95eAjcd8vIZJSt
+         jJGRGXb297hjV9l4jpCRETrsCNvDGhtlJOXaN+8w5Fqig1p0UEGXMoJSovJWFnHpjfQn
+         /bQEFW1JtymD3IOPyOvtVuyKRmxPdvROYaTaNsHiOJl0GR+bs59ZbMejxOnDrCzbBQY3
+         XRUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vChKKF9FJ4ZU9VFDMkMSil6514q54Ua6e4LyojliXfk=;
-        b=gv+6m3xplfLLp5COP/mozhqbGdqMW9mCiT2byHB5H+y6+qaPRTm4btC4RTX2AHCXxx
-         UuRUEKV3y1g4rwkboq6G7qNDNktp3Mr+tdrecSvz6tVQhWkJZXdKLMoeDrsG5CZE+YL4
-         KyGaunfYfT/BWmI3aSa9Nb6g0rDWS7NOnMCmsB5TGlx5oCAzllGhiMDesC6aas8G1S6g
-         BFBV5TXdBn/73VJRj9ajuOyb3Bx+GBh5T4lOi1RWtTtaY2+ZMeUBjsBRnyEEM5d+sUO4
-         Cia8MyWlUx0xvmEBfPpDYRQ2WqqLCbkEpTmcT1SNy3cTC1+ZH4qOfIGEuGI+UrpwdofT
-         qzlQ==
-X-Gm-Message-State: AJIora+BbhL22VihPa+dT4ZBbk2LUyNG0QseNLIBch33txORDpNjg99f
-        2/Y+h3ZuFAjtAn7m/PWBm71dQ8VPo42TEg==
-X-Google-Smtp-Source: AGRyM1vqH9Cl010mU3uO3aUBR866ANu07zId8T1BlRv9H+6NGK2RG3Jh8P+z8zygDBSQdGkftD5L7g==
-X-Received: by 2002:a17:907:7617:b0:72b:49fe:fdf7 with SMTP id jx23-20020a170907761700b0072b49fefdf7mr10631256ejc.25.1657827325723;
-        Thu, 14 Jul 2022 12:35:25 -0700 (PDT)
-Received: from erthalion.local (dslb-094-222-027-106.094.222.pools.vodafone-ip.de. [94.222.27.106])
-        by smtp.gmail.com with ESMTPSA id f13-20020a170906560d00b006fee98045cdsm1068716ejq.10.2022.07.14.12.35.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gsRk7t2Fg8fNdp4dpl5BvpQeyL4GIWzZfCIoGVEvJGs=;
+        b=b5aNGKceSYooNNZ8hQEkao0yTzPNqZeJ9VQVl/xlWM+7TvrEp6a92ZljM7AkPrNLj1
+         uUHZ30gahuy2tJWGhnC0E5OfpQcy/GkvdD1rgGSoE2MqQG01kqvY3SmkdKzZQcDvLwnT
+         IS2UzIFnxni3KPCmRH6UvAXPMUHoUTtSOxHPnY3SnPSKoZQuU5H15iBjv4LOHGDYJS2Y
+         nvM6wuk8o8WjtVwq0Zh7tL+cvZ2c+OZ2V1WpkaEkFCVke24We//k8WGpUPcFbID4XPci
+         UK7wdaCuQuhetgDp5qG8ljPKkV6BOhywQfTaBLTb4ykwtLoFUKAGdd75wgMvqtbc1YU0
+         AWAQ==
+X-Gm-Message-State: AJIora9xHP5GTxYqbwHrEt0+55SN4sODKQDCPmKGOe7r6XOiuhtw5xLg
+        gFy426g2AZA1bi3bOBDWbxSJaQ==
+X-Google-Smtp-Source: AGRyM1tT5lHblTli/9Mhvqlr+lDrujYvNGGf1erzZXg7w0/tgIkpMzNgEHD+oCWSoZfuw3mNNaZR1w==
+X-Received: by 2002:a05:6a00:1704:b0:525:714b:5c77 with SMTP id h4-20020a056a00170400b00525714b5c77mr9910448pfc.29.1657827400359;
+        Thu, 14 Jul 2022 12:36:40 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id b31-20020a631b1f000000b0041282c423e6sm1711103pgb.71.2022.07.14.12.36.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 12:35:25 -0700 (PDT)
-From:   Dmitrii Dolgov <9erthalion6@gmail.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org
-Cc:     songliubraving@fb.com, rostedt@goodmis.org, peterz@infradead.org,
-        mingo@redhat.com, mhiramat@kernel.org,
-        alexei.starovoitov@gmail.com,
-        Dmitrii Dolgov <9erthalion6@gmail.com>
-Subject: [PATCH v4 1/1] perf/kprobe: maxactive for fd-based kprobe
-Date:   Thu, 14 Jul 2022 21:34:03 +0200
-Message-Id: <20220714193403.13211-1-9erthalion6@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        Thu, 14 Jul 2022 12:36:39 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 19:36:36 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     "Yang, Weijiang" <weijiang.yang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        rick.p.edgecombe@intel.com
+Subject: Re: [PATCH 00/19] Refresh queued CET virtualization series
+Message-ID: <YtBwRIiZi262hHiE@google.com>
+References: <20220616084643.19564-1-weijiang.yang@intel.com>
+ <YqsB9upUystxvl+d@hirez.programming.kicks-ass.net>
+ <62d4f7f0-e7b2-83ad-a2c7-a90153129da2@redhat.com>
+ <Yqs7qjjbqxpw62B/@hirez.programming.kicks-ass.net>
+ <8a38488d-fb6e-72f9-3529-b098a97d8c97@redhat.com>
+ <2855f8a9-1f77-0265-f02c-b7d584bd8990@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2855f8a9-1f77-0265-f02c-b7d584bd8990@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
+On Sat, Jun 18, 2022, Yang, Weijiang wrote:
+> 
+> On 6/16/2022 11:28 PM, Paolo Bonzini wrote:
+> > If you build with !X86_KERNEL_IBT, KVM can still rely on the FPU state
+> > for U_CET state, and S_CET is saved/restored via the VMCS independent of
+> > X86_KERNEL_IBT.
+> 
+> A fundamental question is, should KVM always honor host CET enablement
+> before expose the feature to guest? i.e., check X86_KERNEL_IBT and
+> X86_SHADOW_STACK.
 
-Enable specifying maxactive for fd based kretprobe. This will be useful
-for tracing tools like bcc and bpftrace (see for example discussion [1]).
-Use highest 4 bit (bit 59-63) to allow specifying maxactive by log2.
+If there is a legitimate use case to NOT require host enablement and it's 100%
+safe to do so (within requiring hacks to the core kernel), then there's no hard
+requirement that says KVM can't virtualize a feature that's not used by the host.
 
-The original patch [2] seems to be fallen through the cracks and wasn't
-applied. I've merely rebased the work done by Song Liu, verififed it
-still works, and modified to allow specifying maxactive by log2 per
-suggestion from the discussion thread.
+It's definitely uncommon; unless I'm forgetting features, LA57 is the only feature
+that KVM fully virtualizes (as opposed to emulates in software) without requiring
+host enablement.  Ah, and good ol' MPX, which is probably the best prior are since
+it shares the same XSAVE+VMCS for user+supervisor state management.  So more than
+one, but still not very many.
 
-Note that changes in rethook implementation may render maxactive
-obsolete.
+But, requiring host "support" is the de facto standard largely because features
+tend to fall into one of three categories:
 
-[1]: https://github.com/iovisor/bpftrace/issues/835
-[2]: https://lore.kernel.org/all/20191007223111.1142454-1-songliubraving@fb.com/
+  1. The feature is always available, i.e. doesn't have a software enable/disable
+     flag.
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Dmitrii Dolgov <9erthalion6@gmail.com>
-Reviewed-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
-Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
----
-Previous discussion: https://lore.kernel.org/bpf/20220625152429.27539-1-9erthalion6@gmail.com/
+  2. The feature isn't explicitly disabled in cpufeatures / x86_capability even
+     if it's not used by the host.  E.g. MONITOR/MWAIT comes to mind where the
+     host can be configured to not use MWAIT for idle, but it's still reported
+     as supported (and for that case, KVM does have to explicitly guard against
+     X86_BUG_MONITOR).
 
-Resent with LKML in Cc instead of linux-perf-users, as it is a kernel
-change.
+  3. Require some amount of host support, e.g. exposing XSAVE without the kernel
+     knowing how to save/restore all that state wouldn't end well.
 
-Changes in v4:
-    - Allow specifying maxactive by log2
-
-Changes in v3:
-    - Set correct author
-
-Changes in v2:
-    - Fix comment about number bits for the offset
-
- include/linux/trace_events.h    |  3 ++-
- kernel/events/core.c            | 20 ++++++++++++++++----
- kernel/trace/trace_event_perf.c |  5 +++--
- kernel/trace/trace_kprobe.c     |  4 ++--
- kernel/trace/trace_probe.h      |  2 +-
- 5 files changed, 24 insertions(+), 10 deletions(-)
-
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index e6e95a9f07a5..7ca453a73252 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -850,7 +850,8 @@ extern void perf_trace_destroy(struct perf_event *event);
- extern int  perf_trace_add(struct perf_event *event, int flags);
- extern void perf_trace_del(struct perf_event *event, int flags);
- #ifdef CONFIG_KPROBE_EVENTS
--extern int  perf_kprobe_init(struct perf_event *event, bool is_retprobe);
-+extern int  perf_kprobe_init(struct perf_event *event, bool is_retprobe,
-+			     int max_active);
- extern void perf_kprobe_destroy(struct perf_event *event);
- extern int bpf_get_kprobe_info(const struct perf_event *event,
- 			       u32 *fd_type, const char **symbol,
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 23bb19716ad3..184325ff2656 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -9809,24 +9809,34 @@ static struct pmu perf_tracepoint = {
-  * PERF_PROBE_CONFIG_IS_RETPROBE if set, create kretprobe/uretprobe
-  *                               if not set, create kprobe/uprobe
-  *
-- * The following values specify a reference counter (or semaphore in the
-- * terminology of tools like dtrace, systemtap, etc.) Userspace Statically
-- * Defined Tracepoints (USDT). Currently, we use 40 bit for the offset.
-+ * PERF_UPROBE_REF_CTR_OFFSET_* specify a reference counter (or semaphore
-+ * in the terminology of tools like dtrace, systemtap, etc.) Userspace
-+ * Statically Defined Tracepoints (USDT). Currently, we use 32 bit for the
-+ * offset.
-  *
-  * PERF_UPROBE_REF_CTR_OFFSET_BITS	# of bits in config as th offset
-  * PERF_UPROBE_REF_CTR_OFFSET_SHIFT	# of bits to shift left
-+ *
-+ * PERF_KPROBE_MAX_ACTIVE_* defines log2 of max_active for kretprobe.
-+ * KRETPROBE_MAXACTIVE_MAX is 4096. We allow 4095 here to save a bit.
-  */
- enum perf_probe_config {
- 	PERF_PROBE_CONFIG_IS_RETPROBE = 1U << 0,  /* [k,u]retprobe */
- 	PERF_UPROBE_REF_CTR_OFFSET_BITS = 32,
- 	PERF_UPROBE_REF_CTR_OFFSET_SHIFT = 64 - PERF_UPROBE_REF_CTR_OFFSET_BITS,
-+	PERF_KPROBE_MAX_ACTIVE_BITS = 4,
-+	PERF_KPROBE_MAX_ACTIVE_SHIFT = 64 - PERF_KPROBE_MAX_ACTIVE_BITS,
- };
- 
- PMU_FORMAT_ATTR(retprobe, "config:0");
- #endif
- 
- #ifdef CONFIG_KPROBE_EVENTS
-+/* max_active is specified by log2, to allow larger values if needed */
-+PMU_FORMAT_ATTR(max_active_log2, "config:59-63");
-+
- static struct attribute *kprobe_attrs[] = {
-+	&format_attr_max_active_log2.attr,
- 	&format_attr_retprobe.attr,
- 	NULL,
- };
-@@ -9857,6 +9867,7 @@ static int perf_kprobe_event_init(struct perf_event *event)
- {
- 	int err;
- 	bool is_retprobe;
-+	int max_active_log2;
- 
- 	if (event->attr.type != perf_kprobe.type)
- 		return -ENOENT;
-@@ -9871,7 +9882,8 @@ static int perf_kprobe_event_init(struct perf_event *event)
- 		return -EOPNOTSUPP;
- 
- 	is_retprobe = event->attr.config & PERF_PROBE_CONFIG_IS_RETPROBE;
--	err = perf_kprobe_init(event, is_retprobe);
-+	max_active_log2 = event->attr.config >> PERF_KPROBE_MAX_ACTIVE_SHIFT;
-+	err = perf_kprobe_init(event, is_retprobe, 1U << max_active_log2);
- 	if (err)
- 		return err;
- 
-diff --git a/kernel/trace/trace_event_perf.c b/kernel/trace/trace_event_perf.c
-index a114549720d6..129000327809 100644
---- a/kernel/trace/trace_event_perf.c
-+++ b/kernel/trace/trace_event_perf.c
-@@ -245,7 +245,8 @@ void perf_trace_destroy(struct perf_event *p_event)
- }
- 
- #ifdef CONFIG_KPROBE_EVENTS
--int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
-+int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe,
-+					 int max_active)
- {
- 	int ret;
- 	char *func = NULL;
-@@ -271,7 +272,7 @@ int perf_kprobe_init(struct perf_event *p_event, bool is_retprobe)
- 
- 	tp_event = create_local_trace_kprobe(
- 		func, (void *)(unsigned long)(p_event->attr.kprobe_addr),
--		p_event->attr.probe_offset, is_retprobe);
-+		p_event->attr.probe_offset, is_retprobe, max_active);
- 	if (IS_ERR(tp_event)) {
- 		ret = PTR_ERR(tp_event);
- 		goto out;
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index 47cebef78532..3ad30cfce9c3 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1784,7 +1784,7 @@ static int unregister_kprobe_event(struct trace_kprobe *tk)
- /* create a trace_kprobe, but don't add it to global lists */
- struct trace_event_call *
- create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
--			  bool is_return)
-+			  bool is_return, int max_active)
- {
- 	enum probe_print_type ptype;
- 	struct trace_kprobe *tk;
-@@ -1799,7 +1799,7 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
- 	event = func ? func : "DUMMY_EVENT";
- 
- 	tk = alloc_trace_kprobe(KPROBE_EVENT_SYSTEM, event, (void *)addr, func,
--				offs, 0 /* maxactive */, 0 /* nargs */,
-+				offs, max_active, 0 /* nargs */,
- 				is_return);
- 
- 	if (IS_ERR(tk)) {
-diff --git a/kernel/trace/trace_probe.h b/kernel/trace/trace_probe.h
-index 92cc149af0fd..26fe21980793 100644
---- a/kernel/trace/trace_probe.h
-+++ b/kernel/trace/trace_probe.h
-@@ -376,7 +376,7 @@ extern int traceprobe_set_print_fmt(struct trace_probe *tp, enum probe_print_typ
- #ifdef CONFIG_PERF_EVENTS
- extern struct trace_event_call *
- create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
--			  bool is_return);
-+			  bool is_return, int max_active);
- extern void destroy_local_trace_kprobe(struct trace_event_call *event_call);
- 
- extern struct trace_event_call *
--- 
-2.32.0
-
+In other words, virtualizing a feature if it's disabled in the host is allowed,
+but it's rare because there just aren't many features where doing so is possible
+_and_ necessary.
