@@ -2,136 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3C4C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237463AbiGNIpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:45:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        id S237446AbiGNIp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237479AbiGNIp3 (ORCPT
+        with ESMTP id S237536AbiGNIpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:45:29 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A90540BE3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:45:21 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id l23so2158674ejr.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:45:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=DCSvqcav6l8eJQqjYpF2DaiSo2frXUVuTNeqvYGx9c4=;
-        b=Y0HLr3Jrkb2BkndbxJvh4HAc6m6j8GShL3F0YYnXwBmhROpgOg7sT8uX4/7/wgJ+f1
-         7RhYPoxXn8Yftbqtz3Lk6446MLrhopvqxJBNUV9+lQSv34hh9yprRR3l8wIQak9sSM11
-         HGNfWFkwd9belk35C8gzydc4h4jmlNGAJwvgjgS22UL3GyGhKtI+2EGtY0fMdnG75ZtN
-         +xAAP1QREWz/d8vKTAsGctxsDM6cQywYrtvujNiI+Wk4GnhoS2rpJUuYiLrGPip8RTnr
-         MiQ4moMZeume3nxa1gM5l1uCtGwoLXoFv8tkpnMsdFLOkIesEgbRcaona3ljIwb68IXZ
-         X2Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=DCSvqcav6l8eJQqjYpF2DaiSo2frXUVuTNeqvYGx9c4=;
-        b=I8MqtMzKqjQuoFcpcEmEbv1ruR4aF01Of38uLDUuSjPhr8axaCpjaioe/Y/is4zHVK
-         gPLse6x5VABNyIv/8KpH8bid58fFM6PVJ2BCzZVk2jBEDj0m0qgdLghrIjdwtqg1HFsb
-         yGWwnPmUUsG894jQ0i5SU3NPTwOW0XsiTyi+VQZXi/mf+2aSoY5AlRdpBGSqiXMHXE7i
-         LPSt3oJAX6DKICPOOa2/0aCJjpuVL22wTpIxPnB5LFeYJgqhWxN5CgW7LP9WG9gu86Hh
-         aMf4o3su9eVpmwGTOHmEZdMj8m7eHUC6u4uXNs1gF/eFtcmBmsLeQKq8N7dGGufl8zE8
-         a2jg==
-X-Gm-Message-State: AJIora8ylF9DcRJm36Pgg30kiLvxPBbA/5N1tpFWeT/P5tdtXFeB0Qyn
-        Whip4i5J9w0uIDQUUgc4MLYpT15NX2UibRYIb+PWZZqfv9i5Ig==
-X-Google-Smtp-Source: AGRyM1tGSWZeAf/bcOSZSnUFtmu/Ol3Pw434l46o5MWH60pWrYtA9fX6Dz2r/yt6iRLOqsDbpnjg95nZ2ZT5oTR3dwY=
-X-Received: by 2002:a17:907:b0a:b0:72b:3176:3fe5 with SMTP id
- h10-20020a1709070b0a00b0072b31763fe5mr7622175ejl.48.1657788318691; Thu, 14
- Jul 2022 01:45:18 -0700 (PDT)
+        Thu, 14 Jul 2022 04:45:36 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0F13DBF6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 01:45:31 -0700 (PDT)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lk7Mg4wzQzFq4B;
+        Thu, 14 Jul 2022 16:44:31 +0800 (CST)
+Received: from ubuntu1804.huawei.com (10.67.174.58) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 16:45:28 +0800
+From:   Xiu Jianfeng <xiujianfeng@huawei.com>
+To:     <akpm@linux-foundation.org>, <axboe@kernel.dk>, <neilb@suse.de>,
+        <johannes.thumshirn@wdc.com>, <jack@suse.cz>,
+        <willy@infradead.org>, <mgorman@techsingularity.net>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH -next] writeback: Cleanup inode_to_wb_is_valid()
+Date:   Thu, 14 Jul 2022 16:41:47 +0800
+Message-ID: <20220714084147.140324-1-xiujianfeng@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 14 Jul 2022 14:15:07 +0530
-Message-ID: <CA+G9fYv0N0FcYRp5irO_7TpheLcUY8LRMQbcZqwEmiRTEccEjA@mail.gmail.com>
-Subject: RETBleed: WARNING: Spectre v2 mitigation leaves CPU vulnerable to
- RETBleed attacks, data leaks possible!
-To:     open list <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>,
-        lkft-triage@lists.linaro.org
-Cc:     Borislav Petkov <bp@suse.de>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.58]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Results from Linaro=E2=80=99s test farm.
+inode_to_wb_is_valid() is no longer used since commit fe55d563d417
+("remove inode_congested()"), remove it.
 
-We are booting the i386 kernel on an x86 machine.
-With Spectre V2 patches merged into Linux mainline we have been noticing
-RETBleed: WARNING: Spectre v2 mitigation leaves CPU vulnerable to
-RETBleed attacks, data leaks possible!
-Please find the detailed boot log in the below link [1] and [2].
+Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+---
+ include/linux/backing-dev.h | 17 -----------------
+ 1 file changed, 17 deletions(-)
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+diff --git a/include/linux/backing-dev.h b/include/linux/backing-dev.h
+index d452071db572..f9f14e385582 100644
+--- a/include/linux/backing-dev.h
++++ b/include/linux/backing-dev.h
+@@ -235,18 +235,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
+ 	return wb;
+ }
+ 
+-/**
+- * inode_to_wb_is_valid - test whether an inode has a wb associated
+- * @inode: inode of interest
+- *
+- * Returns %true if @inode has a wb associated.  May be called without any
+- * locking.
+- */
+-static inline bool inode_to_wb_is_valid(struct inode *inode)
+-{
+-	return inode->i_wb;
+-}
+-
+ /**
+  * inode_to_wb - determine the wb of an inode
+  * @inode: inode of interest
+@@ -345,11 +333,6 @@ wb_get_create_current(struct backing_dev_info *bdi, gfp_t gfp)
+ 	return &bdi->wb;
+ }
+ 
+-static inline bool inode_to_wb_is_valid(struct inode *inode)
+-{
+-	return true;
+-}
+-
+ static inline struct bdi_writeback *inode_to_wb(struct inode *inode)
+ {
+ 	return &inode_to_bdi(inode)->wb;
+-- 
+2.17.1
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline
-  git_sha: 4a57a8400075bc5287c5c877702c68aeae2a033d
-  git_describe: v5.19-rc6-115-g4a57a8400075
-  kernel_version: 5.19.0-rc6
-  kernel-config: https://builds.tuxbuild.com/2Bu6unA4pJ0TotIOQ6jcNKfhmew/co=
-nfig
-  build-url: https://gitlab.com/Linaro/lkft/mirrors/torvalds/linux-mainline=
-/-/pipelines/587353280
-  artifact-location: https://builds.tuxbuild.com/2Bu6unA4pJ0TotIOQ6jcNKfhme=
-w
-  toolchain: gcc-11
-
-boot log:
----------
-[    0.000000] Linux version 5.19.0-rc6 (tuxmake@tuxmake)
-(i686-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU ld (GNU Binutils for
-Debian) 2.38) #1 SMP PREEMPT_DYNAMIC @1657744061
-[    0.000000] x86/fpu: Supporting XSAVE feature 0x001: 'x87 floating
-point registers'
-
-<trim>
-
-[    1.275957] LSM: Security Framework initializing
-[    1.275957] SELinux:  Initializing.
-[    1.275957] Mount-cache hash table entries: 2048 (order: 1, 8192
-bytes, linear)
-[    1.275957] Mountpoint-cache hash table entries: 2048 (order: 1,
-8192 bytes, linear)
-[    1.275957] CPU0: Thermal monitoring enabled (TM1)
-[    1.275957] process: using mwait in idle threads
-[    1.275957] Last level iTLB entries: 4KB 128, 2MB 8, 4MB 8
-[    1.275957] Last level dTLB entries: 4KB 64, 2MB 0, 4MB 0, 1GB 4
-[    1.275957] Spectre V1 : Mitigation: usercopy/swapgs barriers and
-__user pointer sanitization
-[    1.275957] Spectre V2 : Mitigation: Retpolines
-[    1.275957] Spectre V2 : Spectre v2 / SpectreRSB mitigation:
-Filling RSB on context switch
-[    1.275957] RETBleed: WARNING: Spectre v2 mitigation leaves CPU
-vulnerable to RETBleed attacks, data leaks possible!
-[    1.275957] RETBleed: Vulnerable
-[    1.275957] Speculative Store Bypass: Vulnerable
-[    1.275957] L1TF: Kernel not compiled for PAE. No mitigation for L1TF
-[    1.275957] MDS: Vulnerable: Clear CPU buffers attempted, no microcode
-[    1.275957] TAA: Vulnerable: Clear CPU buffers attempted, no microcode
-[    1.275957] MMIO Stale Data: Vulnerable: Clear CPU buffers
-attempted, no microcode
-[    1.275957] SRBDS: Vulnerable: No microcode
-
-Full test log link,
-[1] https://lkft.validation.linaro.org/scheduler/job/5282509#L490
-[2] https://qa-reports.linaro.org/lkft/linux-mainline-master-sanity/build/v=
-5.19-rc6-115-g4a57a8400075/testrun/10817056/suite/log-parser-boot/tests/
-
-Best regards
-Naresh Kamboju
-
---
-Linaro LKFT
-https://lkft.linaro.org
