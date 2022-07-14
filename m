@@ -2,61 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAD1C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAC48C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238929AbiGNQoH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:44:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38156 "EHLO
+        id S239922AbiGNQoJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbiGNQnh (ORCPT
+        with ESMTP id S235870AbiGNQnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 12:43:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AEBE263
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:43:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3845511D;
+        Thu, 14 Jul 2022 09:43:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAA75B8273D
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A762C341D7;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C942FB82733;
+        Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFB8C341E0;
         Thu, 14 Jul 2022 16:43:30 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w1-004lO2-5l;
+        id 1oC1w1-004lPA-Hp;
         Thu, 14 Jul 2022 12:43:29 -0400
-Message-ID: <20220714164329.013262074@goodmis.org>
+Message-ID: <20220714164329.384685373@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:43:02 -0400
+Date:   Thu, 14 Jul 2022 12:43:04 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>,
         Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Peter Chen <peter.chen@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mathias Nyman <mathias.nyman@intel.com>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Bin Liu <b-liu@ti.com>,
-        Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        Sven Eckelmann <sven@narfation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Jim Cromie <jim.cromie@gmail.com>
-Subject: [for-next][PATCH 06/23] tracing/events: Add __vstring() and __assign_vstr() helper macros
+        Paolo Abeni <pabeni@redhat.com>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        ath11k@lists.infradead.org
+Subject: [for-next][PATCH 08/23] tracing/ath: Use the new __vstring() helper
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -66,188 +50,176 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 
-There's several places that open code the following logic:
+Instead of open coding a __dynamic_array() with a fixed length (which
+defeats the purpose of the dynamic array in the first place). Use the new
+__vstring() helper that will use a va_list and only write enough of the
+string into the ring buffer that is needed.
 
-  TP_STRUCT__entry(__dynamic_array(char, msg, MSG_MAX)),
-  TP_fast_assign(vsnprintf(__get_str(msg), MSG_MAX, vaf->fmt, *vaf->va);)
+Link: https://lkml.kernel.org/r/20220705224749.430339634@goodmis.org
 
-To load a string created by variable array va_list.
-
-The main issue with this approach is that "MSG_MAX" usage in the
-__dynamic_array() portion. That actually just reserves the MSG_MAX in the
-event, and even wastes space because there's dynamic meta data also saved
-in the event to denote the offset and size of the dynamic array. It would
-have been better to just use a static __array() field.
-
-Instead, create __vstring() and __assign_vstr() that work like __string
-and __assign_str() but instead of taking a destination string to copy,
-take a format string and a va_list pointer and fill in the values.
-
-It uses the helper:
-
- #define __trace_event_vstr_len(fmt, va)	\
- ({						\
-	va_list __ap;				\
-	int __ret;				\
-						\
-	va_copy(__ap, *(va));			\
-	__ret = vsnprintf(NULL, 0, fmt, __ap);	\
-	va_end(__ap);				\
-						\
-	min(__ret, TRACE_EVENT_STR_MAX);	\
- })
-
-To figure out the length to store the string. It may be slightly slower as
-it needs to run the vsnprintf() twice, but it now saves space on the ring
-buffer.
-
-Link: https://lkml.kernel.org/r/20220705224749.053570613@goodmis.org
-
-Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc: Kalle Valo <kvalo@kernel.org>
 Cc: Ingo Molnar <mingo@kernel.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: Kalle Valo <kvalo@kernel.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Eric Dumazet <edumazet@google.com>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Arend van Spriel <aspriel@gmail.com>
-Cc: Franky Lin <franky.lin@broadcom.com>
-Cc: Hante Meuleman <hante.meuleman@broadcom.com>
-Cc: Gregory Greenman <gregory.greenman@intel.com>
-Cc: Peter Chen <peter.chen@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Mathias Nyman <mathias.nyman@intel.com>
-Cc: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc: Bin Liu <b-liu@ti.com>
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: Sven Eckelmann <sven@narfation.org>
-Cc: Johannes Berg <johannes@sipsolutions.net>
-Cc: Jim Cromie <jim.cromie@gmail.com>
+Cc: ath10k@lists.infradead.org
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: ath11k@lists.infradead.org
+Acked-by: Kalle Valo <kvalo@kernel.org>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- include/linux/trace_events.h                 | 18 ++++++++++++++++++
- include/trace/stages/stage1_struct_define.h  |  3 +++
- include/trace/stages/stage2_data_offsets.h   |  3 +++
- include/trace/stages/stage4_event_fields.h   |  3 +++
- include/trace/stages/stage5_get_offsets.h    |  4 ++++
- include/trace/stages/stage6_event_callback.h |  7 +++++++
- 6 files changed, 38 insertions(+)
+ drivers/net/wireless/ath/ath10k/trace.h  | 14 ++++----------
+ drivers/net/wireless/ath/ath11k/trace.h  |  7 ++-----
+ drivers/net/wireless/ath/ath6kl/trace.h  | 14 ++++----------
+ drivers/net/wireless/ath/trace.h         |  7 ++-----
+ drivers/net/wireless/ath/wil6210/trace.h |  7 ++-----
+ 5 files changed, 14 insertions(+), 35 deletions(-)
 
-diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
-index e6e95a9f07a5..e6f8ba52a958 100644
---- a/include/linux/trace_events.h
-+++ b/include/linux/trace_events.h
-@@ -916,6 +916,24 @@ perf_trace_buf_submit(void *raw_data, int size, int rctx, u16 type,
+diff --git a/drivers/net/wireless/ath/ath10k/trace.h b/drivers/net/wireless/ath/ath10k/trace.h
+index 4714c86bb501..64e7a767d963 100644
+--- a/drivers/net/wireless/ath/ath10k/trace.h
++++ b/drivers/net/wireless/ath/ath10k/trace.h
+@@ -52,15 +52,12 @@ DECLARE_EVENT_CLASS(ath10k_log_event,
+ 	TP_STRUCT__entry(
+ 		__string(device, dev_name(ar->dev))
+ 		__string(driver, dev_driver_string(ar->dev))
+-		__dynamic_array(char, msg, ATH10K_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+ 		__assign_str(device, dev_name(ar->dev));
+ 		__assign_str(driver, dev_driver_string(ar->dev));
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       ATH10K_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= ATH10K_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk(
+ 		"%s %s %s",
+@@ -92,16 +89,13 @@ TRACE_EVENT(ath10k_log_dbg,
+ 		__string(device, dev_name(ar->dev))
+ 		__string(driver, dev_driver_string(ar->dev))
+ 		__field(unsigned int, level)
+-		__dynamic_array(char, msg, ATH10K_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+ 		__assign_str(device, dev_name(ar->dev));
+ 		__assign_str(driver, dev_driver_string(ar->dev));
+ 		__entry->level = level;
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       ATH10K_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= ATH10K_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk(
+ 		"%s %s %s",
+diff --git a/drivers/net/wireless/ath/ath11k/trace.h b/drivers/net/wireless/ath/ath11k/trace.h
+index a02e54735e88..76560587bea0 100644
+--- a/drivers/net/wireless/ath/ath11k/trace.h
++++ b/drivers/net/wireless/ath/ath11k/trace.h
+@@ -126,15 +126,12 @@ DECLARE_EVENT_CLASS(ath11k_log_event,
+ 	TP_STRUCT__entry(
+ 		__string(device, dev_name(ab->dev))
+ 		__string(driver, dev_driver_string(ab->dev))
+-		__dynamic_array(char, msg, ATH11K_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+ 		__assign_str(device, dev_name(ab->dev));
+ 		__assign_str(driver, dev_driver_string(ab->dev));
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       ATH11K_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= ATH11K_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk(
+ 		"%s %s %s",
+diff --git a/drivers/net/wireless/ath/ath6kl/trace.h b/drivers/net/wireless/ath/ath6kl/trace.h
+index a3d3740419eb..231a94769ddb 100644
+--- a/drivers/net/wireless/ath/ath6kl/trace.h
++++ b/drivers/net/wireless/ath/ath6kl/trace.h
+@@ -253,13 +253,10 @@ DECLARE_EVENT_CLASS(ath6kl_log_event,
+ 	TP_PROTO(struct va_format *vaf),
+ 	TP_ARGS(vaf),
+ 	TP_STRUCT__entry(
+-		__dynamic_array(char, msg, ATH6KL_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       ATH6KL_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= ATH6KL_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk("%s", __get_str(msg))
+ );
+@@ -284,14 +281,11 @@ TRACE_EVENT(ath6kl_log_dbg,
+ 	TP_ARGS(level, vaf),
+ 	TP_STRUCT__entry(
+ 		__field(unsigned int, level)
+-		__dynamic_array(char, msg, ATH6KL_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+ 		__entry->level = level;
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       ATH6KL_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= ATH6KL_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk("%s", __get_str(msg))
+ );
+diff --git a/drivers/net/wireless/ath/trace.h b/drivers/net/wireless/ath/trace.h
+index ba711644d27e..9935cf475b6d 100644
+--- a/drivers/net/wireless/ath/trace.h
++++ b/drivers/net/wireless/ath/trace.h
+@@ -40,16 +40,13 @@ TRACE_EVENT(ath_log,
+ 	    TP_STRUCT__entry(
+ 		    __string(device, wiphy_name(wiphy))
+ 		    __string(driver, KBUILD_MODNAME)
+-		    __dynamic_array(char, msg, ATH_DBG_MAX_LEN)
++		    __vstring(msg, vaf->fmt, vaf->va)
+ 	    ),
  
- #endif
+ 	    TP_fast_assign(
+ 		    __assign_str(device, wiphy_name(wiphy));
+ 		    __assign_str(driver, KBUILD_MODNAME);
+-		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-					   ATH_DBG_MAX_LEN,
+-					   vaf->fmt,
+-					   *vaf->va) >= ATH_DBG_MAX_LEN);
++		    __assign_vstr(msg, vaf->fmt, vaf->va);
+ 	    ),
  
-+#define TRACE_EVENT_STR_MAX	512
-+
-+/*
-+ * gcc warns that you can not use a va_list in an inlined
-+ * function. But lets me make it into a macro :-/
-+ */
-+#define __trace_event_vstr_len(fmt, va)		\
-+({						\
-+	va_list __ap;				\
-+	int __ret;				\
-+						\
-+	va_copy(__ap, *(va));			\
-+	__ret = vsnprintf(NULL, 0, fmt, __ap);	\
-+	va_end(__ap);				\
-+						\
-+	min(__ret, TRACE_EVENT_STR_MAX);	\
-+})
-+
- #endif /* _LINUX_TRACE_EVENT_H */
- 
- /*
-diff --git a/include/trace/stages/stage1_struct_define.h b/include/trace/stages/stage1_struct_define.h
-index a16783419687..1b7bab60434c 100644
---- a/include/trace/stages/stage1_struct_define.h
-+++ b/include/trace/stages/stage1_struct_define.h
-@@ -26,6 +26,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(char, item, -1)
- 
-diff --git a/include/trace/stages/stage2_data_offsets.h b/include/trace/stages/stage2_data_offsets.h
-index 42fd1e8813ec..1b7a8f764fdd 100644
---- a/include/trace/stages/stage2_data_offsets.h
-+++ b/include/trace/stages/stage2_data_offsets.h
-@@ -32,6 +32,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
- 
-diff --git a/include/trace/stages/stage4_event_fields.h b/include/trace/stages/stage4_event_fields.h
-index e80cdc397a43..c3790ec7a453 100644
---- a/include/trace/stages/stage4_event_fields.h
-+++ b/include/trace/stages/stage4_event_fields.h
-@@ -38,6 +38,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
- 
-diff --git a/include/trace/stages/stage5_get_offsets.h b/include/trace/stages/stage5_get_offsets.h
-index 7ee5931300e6..fba4c24ed9e6 100644
---- a/include/trace/stages/stage5_get_offsets.h
-+++ b/include/trace/stages/stage5_get_offsets.h
-@@ -39,6 +39,10 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, (len) + 1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item,		\
-+		      __trace_event_vstr_len(fmt, ap))
-+
- #undef __rel_dynamic_array
- #define __rel_dynamic_array(type, item, len)				\
- 	__item_length = (len) * sizeof(type);				\
-diff --git a/include/trace/stages/stage6_event_callback.h b/include/trace/stages/stage6_event_callback.h
-index e1724f73594b..0f51f6b3ab70 100644
---- a/include/trace/stages/stage6_event_callback.h
-+++ b/include/trace/stages/stage6_event_callback.h
-@@ -24,6 +24,9 @@
- #undef __string_len
- #define __string_len(item, src, len) __dynamic_array(char, item, -1)
- 
-+#undef __vstring
-+#define __vstring(item, fmt, ap) __dynamic_array(char, item, -1)
-+
- #undef __assign_str
- #define __assign_str(dst, src)						\
- 	strcpy(__get_str(dst), (src) ? (const char *)(src) : "(null)");
-@@ -35,6 +38,10 @@
- 		__get_str(dst)[len] = '\0';				\
- 	} while(0)
- 
-+#undef __assign_vstr
-+#define __assign_vstr(dst, fmt, va)					\
-+	vsnprintf(__get_str(dst), TRACE_EVENT_STR_MAX, fmt, *(va))
-+
- #undef __bitmask
- #define __bitmask(item, nr_bits) __dynamic_array(unsigned long, item, -1)
- 
+ 	    TP_printk(
+diff --git a/drivers/net/wireless/ath/wil6210/trace.h b/drivers/net/wireless/ath/wil6210/trace.h
+index 11c989e95880..201f44612c31 100644
+--- a/drivers/net/wireless/ath/wil6210/trace.h
++++ b/drivers/net/wireless/ath/wil6210/trace.h
+@@ -70,13 +70,10 @@ DECLARE_EVENT_CLASS(wil6210_log_event,
+ 	TP_PROTO(struct va_format *vaf),
+ 	TP_ARGS(vaf),
+ 	TP_STRUCT__entry(
+-		__dynamic_array(char, msg, WIL6210_MSG_MAX)
++		__vstring(msg, vaf->fmt, vaf->va)
+ 	),
+ 	TP_fast_assign(
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       WIL6210_MSG_MAX,
+-				       vaf->fmt,
+-				       *vaf->va) >= WIL6210_MSG_MAX);
++		__assign_vstr(msg, vaf->fmt, vaf->va);
+ 	),
+ 	TP_printk("%s", __get_str(msg))
+ );
 -- 
 2.35.1
