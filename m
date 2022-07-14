@@ -2,192 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A14C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8768AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237734AbiGNE7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40956 "EHLO
+        id S237768AbiGNFAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 01:00:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237777AbiGNE7L (ORCPT
+        with ESMTP id S237780AbiGNE7N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:59:11 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E35020BE6;
-        Wed, 13 Jul 2022 21:54:45 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26DICf8f009029;
-        Wed, 13 Jul 2022 21:54:44 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=V0wHd+YqMZUYKZzruhkn8Pvhx+6eEHHJhiVDTUkOp1A=;
- b=YdiqcVkCgyGpY0L98LIJzH+KJ0l/39r8ZHpl4qJK1l17735gLNGynvTmDBCuQEIZqtlc
- JUvQ1y1/63BEXLElwYc4CPJa2YDY8az2ci0yF/AMT/gr1ua00bM3BGSHjbbmzDqlLlY4
- mINK1jB1jB8N8zBfZq8y/k09Ftp4uGdrvfQ= 
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1anam02lp2049.outbound.protection.outlook.com [104.47.57.49])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3h9h5f8w72-2
+        Thu, 14 Jul 2022 00:59:13 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650401CA
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:54:47 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E4PXa4009052;
+        Thu, 14 Jul 2022 04:54:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=/euUoNkPo/REsCw8mINu0TfXcX1H0UMv0CFE1cE4n4s=;
+ b=W1VS/2dAhnncI91D8rt7QQz0nfJaAdv/w2OSVTgL9Js1es2FrN48mQ8NNHWbr8ysjhai
+ 1Lh/I9XQKoc4kw7wlfoLW+grNOJCGjx0e2PLXXU8oX+kcqAaZAsy6UGo4dNuN4d/VPZI
+ OqOXFoxEFAXotTLDc+cC48yvnNe/7lW2epXESm3x4nB8fyzQX0c/nzTCCUa9mRMjW7Mt
+ PTOQS/GwGaffEv0DQusxVghcS8XN44zHnAVLRM9UWek4sQncQCkT9J+MFKnpmCOWB/Ps
+ PGOQLhmut1yDmiNiZjUZn443Ak0sXYlH3OsZRitWQXl3YSBb56UCp4kGlTNC6qaI1H3t 2g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac3h0p9e-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jul 2022 21:54:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Up5TZjquts6HRh9tdpi2KM92wYj7D+cInTmEDsSK+XKkI0Iwy08GvJNQUM0bGje1yA6qcdR3iqqhE4IIwAidy43hh3EURV9VzS8wevNNxF0x+6SDzzhFuBeRLuzfDzO0d+8k3CGwoSyw0leMep3du/cj/LJL9YuLmfOE2G+miFnpyumq+aDgRg4qwHnyu5ftMCV5DfTpEFFD+AEYWTzdJcvdA1e0BCZHbhKIOl/IuuiCmGM26lJ4nbifWFjSGwWiYaGvS2t3kwbughM1tFVWVCFclSN9Zs7gxQ0D7bWDM2PwM8YjXIrtB97bravhLvyfe2Cke/bKkUAF7SIdVLwolA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V0wHd+YqMZUYKZzruhkn8Pvhx+6eEHHJhiVDTUkOp1A=;
- b=NEAz/sk4oPwREercaE+a20bWMK40hgIiqisTU0PskJCY5BNfC6oYPBq8miBUjvGBhAPGc/+NNB6ldvj8U6TLusuEBCLiPzfBs831lVfVeJA784RtkuyJHBwcEU3mx0/2vGJ2wuSRJhAfhImG0iE8UBGWj0tn5eszW8blsxGBVqI36MUfPjps/dyJCQT985nsPEqwUe6Qmc8k/JgkVwt8Pesuhr5prSpoqDiBdvGQ1aMo5IGTj+YJFsrDMY2UYfaBXBJ8LDwF8chFvlFS8iAvvwFZ3dlEap2DUEdiMlqHxhPVWjSeq75VWeQsU2NYGKZQq8+eilt8cFc0tlvuu0bA8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com (2603:10b6:806:1dc::10)
- by BN6PR15MB1764.namprd15.prod.outlook.com (2603:10b6:405:4d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Thu, 14 Jul
- 2022 04:54:41 +0000
-Received: from SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1]) by SA1PR15MB5109.namprd15.prod.outlook.com
- ([fe80::5de3:3999:66df:42d1%4]) with mapi id 15.20.5438.012; Thu, 14 Jul 2022
- 04:54:41 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Christoph Hellwig <hch@infradead.org>
-CC:     Song Liu <song@kernel.org>, bpf <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-modules@vger.kernel.org" <linux-modules@vger.kernel.org>,
-        "mcgrof@kernel.org" <mcgrof@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "bp@alien8.de" <bp@alien8.de>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "naveen.n.rao@linux.ibm.com" <naveen.n.rao@linux.ibm.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "anil.s.keshavamurthy@intel.com" <anil.s.keshavamurthy@intel.com>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "dave@stgolabs.net" <dave@stgolabs.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "rick.p.edgecombe@intel.com" <rick.p.edgecombe@intel.com>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>
-Subject: Re: [PATCH bpf-next 1/3] mm/vmalloc: introduce vmalloc_exec which
- allocates RO+X memory
-Thread-Topic: [PATCH bpf-next 1/3] mm/vmalloc: introduce vmalloc_exec which
- allocates RO+X memory
-Thread-Index: AQHYlpK25UY5kW1ND0S/krM8qG//OK18E8oAgABfaYCAANKuAIAACKAA
-Date:   Thu, 14 Jul 2022 04:54:40 +0000
-Message-ID: <8AC2399B-F3B2-4F91-B18C-D9D3D5085471@fb.com>
-References: <20220713071846.3286727-1-song@kernel.org>
- <20220713071846.3286727-2-song@kernel.org> <Ys6ZkDUhRZcmvPYy@infradead.org>
- <BE896037-B79C-4B38-B777-96002C5861F5@fb.com>
- <Ys+aVKFJaQd130Pn@infradead.org>
-In-Reply-To: <Ys+aVKFJaQd130Pn@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3696.100.31)
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 35310173-57f2-4a96-e845-08da6554f649
-x-ms-traffictypediagnostic: BN6PR15MB1764:EE_
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: doAzMNhdqcg+iaZCNKfxUgnZT2soWdVXpx5fCSnYY9Jp9J5sw0VLlMnl2wX3xPiFU82P8YL1hmnWCNoZwqhQBJKJ76YIiiwbds54o/Ae1RHEbnRRtyD2XHk0HY8YAGMW0hpk4tZMYDwJyjE6SnO72M8bDZ4P3zyM+uMASOCvY8HPujX3q7WATZhRJ9Uoew+e4VDEtQnhJlyQkH5I8A1CmiMvA0boN42v9BNT5llPsdTc9rs0ZpK0ODq/IT8JoooIzF3B5wwc7yuY4qmIkdJCmdY3YbBclwfDMifrc6nUXrdCdOT39XDS8C3pCTQ6XBt9Z4v29suRajPMHh31+Dcat2gMk3raW9GUgmVHFZL8tMXT5n6GJGvX99NnESKHl9wqHTQ1NF170cJCsu2rITZ/BPOR3VruWMIlVt2qZlmi5L8HIgo7CBw/yvfSb7Ux9/6Uku3r1DeHK7fB++saZDwFJ0UHmtQ8UEI1x5I1iS5IMcPEQ5Q+87IWb1RWGTyab1tWFF9cQ+GFJnvoovyYWViC37QcPOlkYNqA6N+ynJ6d9h266nzITI71+a7Ihk4Fl1GnbFc06xlOw8T0vw74d7SmLRDQOC3b4LbGrJwF9iLP4rTs2RSANiJRQ5WSIV0y4qUckL9QyunI7R2CuT2I1NHo5qyDsuffpXxCZVt7PX+0q14CCqdB5wZyvHZYA7WVvoCokgeOaTzN8+hrCKuOccMxsg9/+cZkKmClyg6lzTiQLHMpq0ajeVZVVHjAbNNMU1R5CNpm3TGZ6Z0zX47hpP6ORbcWAsL7qIbX4Avwi3/iQLuSW1P59JcHUkvMgst0CwhtDnBroDklnGpuC6Z4UZbbhiBMjaSBXIZmCrANbWSfiYCGATn6TcXQtgx68bLd8RGO
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5109.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(39860400002)(396003)(136003)(346002)(966005)(76116006)(41300700001)(66556008)(478600001)(8676002)(71200400001)(64756008)(6512007)(66446008)(6486002)(6506007)(66946007)(91956017)(86362001)(316002)(6916009)(53546011)(54906003)(66476007)(83380400001)(4326008)(122000001)(2616005)(38070700005)(186003)(36756003)(33656002)(8936002)(5660300002)(7416002)(38100700002)(2906002)(45980500001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iQL943EOKpXWgcDfStJ3ZHK102GmBZCFOrsyyouEYL2esxqmtvkyqGFETBEv?=
- =?us-ascii?Q?blrJd8xizL4HB7YKORG4Bg7fS9Iwbpc/EdXyFBbFUTJHI/yqJ6DkwO4og3VQ?=
- =?us-ascii?Q?3C+Bc1CZFIaVPK5ZcZdv6EmQLCXjPKJgfKYQh0rIc5U00u/jD2+ViVzKvcPX?=
- =?us-ascii?Q?659acBr3t2wLDofKEmQR5QF/dtWAQ4d+jDrc5I4bA6AyS5KobpBh/2L227RS?=
- =?us-ascii?Q?RBf8kN5dBjGoLN3XwXfJBH3p7PcYW+Mo/eI9oG8s7Y/qcEAxGukt0wHE+w1D?=
- =?us-ascii?Q?y+GjWBBVCS2/RgxrhLMzuoL650Sqcmj063jvjHOUyFe5nH1uMn2uFKihodkV?=
- =?us-ascii?Q?UBOH8Xmn4B6FcalTWPl2vAcetcpihbA6EMMr75l6sxE9mFqtn5WcPngyVFoc?=
- =?us-ascii?Q?TSZ+EvNIbuA1EpfCXpohivB1Mma542kJDM+mih9u8fA701QX3QdobOkmrq95?=
- =?us-ascii?Q?sLDI/1uth6MokYLqMSYFRK/grCwkbbAQr1utdvELsGdMfd/s5LdATwTOZOY4?=
- =?us-ascii?Q?7IIQjp+I8vFcFzRxkTD+uFK/gpPa8DVA8543aT+LskZ+6IGBgDPy56Fwe/cy?=
- =?us-ascii?Q?2D79dMGYRVSG4i0HFBrO4+p+tb6w+AV3BZZJf3XxGI5PLBjyB0+4bYtyNsxN?=
- =?us-ascii?Q?iy1F0FTZnQ5u9uBmKC9H16n7gzo2khFcevNksjyuH1uC33R7kDDiGVHT0TCh?=
- =?us-ascii?Q?+NGrrFrumJp+qkerVhfOM/cj61bE0o/sjKOKSZ6jxcO6DSMQiyo2z+qEZHGw?=
- =?us-ascii?Q?Qv2mh4kbTKziKFjhsUfnzCzGD3emtMl+v2qP9HSH7QxZ//iMRY2Gr1/Kj7vP?=
- =?us-ascii?Q?41eVPtqmsFiq2mSvje1blEZwpgiY8s3fK8JKlViQCTjAM6yi0EfyW+GHWvU7?=
- =?us-ascii?Q?CKgpoCJ0GrD+0hO+Xt05n89FKdVYugUGACMcmpUk7+2AumgN68U8klzjl88X?=
- =?us-ascii?Q?mN15PLzIt+JtS+6iir++SDSuHxX6bJVNjPsm9Y0RsMXGUryU81jxPdjN6eHw?=
- =?us-ascii?Q?4xSL3TzQlV2GX1PHDqzZQ9MywOlA7V/O4SX0r/hAcJFjQydD6qpj8UWGoNgT?=
- =?us-ascii?Q?YAMzGo0DhATRNjrZ0GB4TtByuVQhZYykyuo8KPLrogFt6QQvlb3iyYK1fWKT?=
- =?us-ascii?Q?5YCe5r9hjUZTYGdJunngQEErlFRzkfVD+Zb9EEgJBsIlKuVRYgZ8dA9CBPKa?=
- =?us-ascii?Q?neuXlNceS9GmUovJMqwsNDjT5idqTSF9zwz/fzOgIDB9uir2BCrqk9JHigIb?=
- =?us-ascii?Q?xrJeYX9y7aW8YJnLCuw5yHpQcBMqdnR2jRZkCNg8Cx1UpAwvXxNX1d5L2DzE?=
- =?us-ascii?Q?Zq8OIlsCSQEIbBdlmXU/9dhwBitSBOro5sX4zBN4MFOL+OGZs8vj5F4q1yzh?=
- =?us-ascii?Q?rIjnqoVeqCzRWQEydUq6NN59dwLfLCGTsDDPTliZbFFezi3k1IG2Z3r7k6tb?=
- =?us-ascii?Q?J7v7EBHPUW9iV6ImNDGO6JlLFTe0SejoG3hsT+9BXZ4GdP0qlVvCwkoZDw0x?=
- =?us-ascii?Q?2I/gDI/yT9BSB16SYI1R+zm25YpCzPI1LOEd3d7sjPOjtxFM1G9eM2qsjf6x?=
- =?us-ascii?Q?elKsjLgcpF9SBIIrhbov6H8UIgyIt7RMBQI1Lc4EgJre6Tk5EPGETb+jbutM?=
- =?us-ascii?Q?NRUc2eneAVOY41leNRGH4sM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A067FF11929B764BA085D22AFB80AC28@namprd15.prod.outlook.com>
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5109.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35310173-57f2-4a96-e845-08da6554f649
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2022 04:54:40.9731
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eJaw49qNl/A4R6+tY3kRgffNoUQc8jDDESSG84KBjZp8u371jyTFLoH2BwiPD6h0w4lfHkxcZD7KIqx3WAUnag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR15MB1764
-X-Proofpoint-ORIG-GUID: lcxUlixPYWoj6TgcDrQHi5UwiefQxS2v
-X-Proofpoint-GUID: lcxUlixPYWoj6TgcDrQHi5UwiefQxS2v
+        Thu, 14 Jul 2022 04:54:32 +0000
+Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E4Sa5b028113;
+        Thu, 14 Jul 2022 04:54:32 GMT
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hac3h0p97-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 04:54:32 +0000
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E4qAZk013167;
+        Thu, 14 Jul 2022 04:54:31 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma04dal.us.ibm.com with ESMTP id 3h9e04uk2t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 04:54:31 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E4sTi423462244
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 04:54:29 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6BEB878060;
+        Thu, 14 Jul 2022 04:54:29 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B1EDE7805C;
+        Thu, 14 Jul 2022 04:54:22 +0000 (GMT)
+Received: from skywalker.ibmuc.com (unknown [9.43.119.34])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 14 Jul 2022 04:54:22 +0000 (GMT)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>
+Subject: [PATCH v9 1/8] mm/demotion: Add support for explicit memory tiers
+Date:   Thu, 14 Jul 2022 10:23:44 +0530
+Message-Id: <20220714045351.434957-2-aneesh.kumar@linux.ibm.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
+References: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: bbSzpaiV2dWGrVqHS793n7JQaA9J3yq7
+X-Proofpoint-ORIG-GUID: 0f-b6t9s5Ytg3oLYjQLvWlNXlGswE7r5
+Content-Transfer-Encoding: 8bit
 X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_03,2022-07-13_03,2022-06-22_01
+ definitions=2022-07-14_02,2022-07-13_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
+ malwarescore=0 mlxlogscore=999 bulkscore=0 phishscore=0 spamscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207140019
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+In the current kernel, memory tiers are defined implicitly via a
+demotion path relationship between NUMA nodes, which is created
+during the kernel initialization and updated when a NUMA node is
+hot-added or hot-removed.  The current implementation puts all
+nodes with CPU into the top tier, and builds the tier hierarchy
+tier-by-tier by establishing the per-node demotion targets based
+on the distances between nodes.
 
+This current memory tier kernel interface needs to be improved for
+several important use cases,
 
-> On Jul 13, 2022, at 9:23 PM, Christoph Hellwig <hch@infradead.org> wrote:
-> 
-> On Wed, Jul 13, 2022 at 03:49:45PM +0000, Song Liu wrote:
->> 
->> 
->>> On Jul 13, 2022, at 3:08 AM, Christoph Hellwig <hch@infradead.org> wrote:
->>> 
->>> NAK.  This is not something that should be an exported public API
->>> ever.
->> 
->> Hmm.. I will remove EXPORT_SYMBOL_GPL (if we ever do a v2 of this..)
-> 
-> Even without that it really is not a vmalloc API anyway.  
+The current tier initialization code always initializes
+each memory-only NUMA node into a lower tier.  But a memory-only
+NUMA node may have a high performance memory device (e.g. a DRAM
+device attached via CXL.mem or a DRAM-backed memory-only node on
+a virtual machine) and should be put into a higher tier.
 
-This ...
+The current tier hierarchy always puts CPU nodes into the top
+tier. But on a system with HBM or GPU devices, the
+memory-only NUMA nodes mapping these devices should be in the
+top tier, and DRAM nodes with CPUs are better to be placed into the
+next lower tier.
 
-> Executable
-> memory needs to be written first, so we should allocate it in that state
-> and only mark it executable after that write has completed.
+With current kernel higher tier node can only be demoted to selected nodes on the
+next lower tier as defined by the demotion path, not any other
+node from any lower tier.  This strict, hard-coded demotion order
+does not work in all use cases (e.g. some use cases may want to
+allow cross-socket demotion to another node in the same demotion
+tier as a fallback when the preferred demotion node is out of
+space), This demotion order is also inconsistent with the page
+allocation fallback order when all the nodes in a higher tier are
+out of space: The page allocation can fall back to any node from
+any lower tier, whereas the demotion order doesn't allow that.
 
-... and this are two separate NAKs.
+The current kernel also don't provide any interfaces for the
+userspace to learn about the memory tier hierarchy in order to
+optimize its memory allocations.
 
-For the first NAK, I agree that my version is another layer on top of 
-vmalloc. But what do you think about Peter's idea? AFAICT, that fits
-well in vmalloc logic. 
+This patch series address the above by defining memory tiers explicitly.
 
-For the second NAK, I acknowledge the concern. However, I think we 
-will need some mechanism to update text without flipping W and X bit in 
-the page table. Otherwise, set_memory_* w/ alias will fragment the 
-direct map, and cause significant performance drop over time. If this
-really doesn't work because of this concern, we will need to look into 
-other solutions discussed in LSFMMBPF [1]. 
+This patch introduce explicity memory tiers. The tier ID value
+of a memory tier is used to derive the demotion order between
+NUMA nodes.
 
-Thanks,
-Song
-[1] https://lwn.net/Articles/894557/
+For example, if we have 3 memtiers: memtier100, memtier200, memiter300
+then the memory tier order is: memtier300 -> memtier200 -> memtier100
+where memtier300 is the highest tier and memtier100 is the lowest tier.
 
+While reclaim we migrate pages from fast(higher) tiers to slow(lower)
+tiers when the fast(higher) tier is under memory pressure.
+
+This patchset introduce 3 memory tiers (memtier100, memtier200 and memtier300)
+which are created by different kernel subsystems. The default memory
+tier created by the kernel is memtier200. A kernel parameter is provided
+to override the default memory tier.
+
+Link: https://lore.kernel.org/linux-mm/CAAPL-u9Wv+nH1VOZTj=9p9S70Y3Qz3+63EkqncRDdHfubsrjfw@mail.gmail.com
+Link: https://lore.kernel.org/linux-mm/7b72ccf4-f4ae-cb4e-f411-74d055482026@linux.ibm.com
+
+Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+---
+ include/linux/memory-tiers.h | 15 +++++++
+ mm/Makefile                  |  1 +
+ mm/memory-tiers.c            | 78 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 94 insertions(+)
+ create mode 100644 include/linux/memory-tiers.h
+ create mode 100644 mm/memory-tiers.c
+
+diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
+new file mode 100644
+index 000000000000..a81dbc20e0d1
+--- /dev/null
++++ b/include/linux/memory-tiers.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_MEMORY_TIERS_H
++#define _LINUX_MEMORY_TIERS_H
++
++#ifdef CONFIG_NUMA
++
++#define MEMORY_TIER_HBM_GPU	300
++#define MEMORY_TIER_DRAM	200
++#define MEMORY_TIER_PMEM	100
++
++#define DEFAULT_MEMORY_TIER	MEMORY_TIER_DRAM
++#define MAX_MEMORY_TIER_ID	400
++
++#endif	/* CONFIG_NUMA */
++#endif  /* _LINUX_MEMORY_TIERS_H */
+diff --git a/mm/Makefile b/mm/Makefile
+index 6f9ffa968a1a..d30acebc2164 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -92,6 +92,7 @@ obj-$(CONFIG_KFENCE) += kfence/
+ obj-$(CONFIG_FAILSLAB) += failslab.o
+ obj-$(CONFIG_MEMTEST)		+= memtest.o
+ obj-$(CONFIG_MIGRATION) += migrate.o
++obj-$(CONFIG_NUMA) += memory-tiers.o
+ obj-$(CONFIG_DEVICE_MIGRATION) += migrate_device.o
+ obj-$(CONFIG_TRANSPARENT_HUGEPAGE) += huge_memory.o khugepaged.o
+ obj-$(CONFIG_PAGE_COUNTER) += page_counter.o
+diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+new file mode 100644
+index 000000000000..011877b6dbb9
+--- /dev/null
++++ b/mm/memory-tiers.c
+@@ -0,0 +1,78 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/types.h>
++#include <linux/nodemask.h>
++#include <linux/slab.h>
++#include <linux/lockdep.h>
++#include <linux/moduleparam.h>
++#include <linux/memory-tiers.h>
++
++struct memory_tier {
++	struct list_head list;
++	int id;
++	nodemask_t nodelist;
++};
++
++static DEFINE_MUTEX(memory_tier_lock);
++static LIST_HEAD(memory_tiers);
++
++static void insert_memory_tier(struct memory_tier *memtier)
++{
++	struct list_head *ent;
++	struct memory_tier *tmp_memtier;
++
++	lockdep_assert_held_once(&memory_tier_lock);
++
++	list_for_each(ent, &memory_tiers) {
++		tmp_memtier = list_entry(ent, struct memory_tier, list);
++		if (tmp_memtier->id < memtier->id) {
++			list_add_tail(&memtier->list, ent);
++			return;
++		}
++	}
++	list_add_tail(&memtier->list, &memory_tiers);
++}
++
++static struct memory_tier *register_memory_tier(unsigned int tier)
++{
++	struct memory_tier *memtier;
++
++	if (tier > MAX_MEMORY_TIER_ID)
++		return ERR_PTR(-EINVAL);
++
++	memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
++	if (!memtier)
++		return ERR_PTR(-ENOMEM);
++
++	memtier->id   = tier;
++
++	insert_memory_tier(memtier);
++
++	return memtier;
++}
++
++static unsigned int default_memtier = DEFAULT_MEMORY_TIER;
++core_param(default_memory_tier, default_memtier, uint, 0644);
++
++static int __init memory_tier_init(void)
++{
++	struct memory_tier *memtier;
++
++	/*
++	 * Register only default memory tier to hide all empty
++	 * memory tier from sysfs. Since this is early during
++	 * boot, we could avoid holding memtory_tier_lock. But
++	 * keep it simple by holding locks. So we can add lock
++	 * held debug checks in other functions.
++	 */
++	mutex_lock(&memory_tier_lock);
++	memtier = register_memory_tier(default_memtier);
++	if (IS_ERR(memtier))
++		panic("%s() failed to register memory tier: %ld\n",
++		      __func__, PTR_ERR(memtier));
++
++	/* CPU only nodes are not part of memory tiers. */
++	memtier->nodelist = node_states[N_MEMORY];
++	mutex_unlock(&memory_tier_lock);
++	return 0;
++}
++subsys_initcall(memory_tier_init);
+-- 
+2.36.1
 
