@@ -2,120 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB0DEC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4AACC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239666AbiGNMqZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:46:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35962 "EHLO
+        id S239018AbiGNMrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239253AbiGNMoH (ORCPT
+        with ESMTP id S239650AbiGNMqr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:44:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41854255AC;
-        Thu, 14 Jul 2022 05:44:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Jul 2022 08:46:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 00A6B60518
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:45:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657802702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=D+G2aBYdpaVHU1+GCJKc9Xlzh4Vv7A/JYiBlhqiWbx4=;
+        b=RSIjoNw+uJ5MxQ9boDbSGJNSpwBQmXs1FbH5G+ITh/HbQjN1vIZzCsUOl7t7T7JoUXNXbQ
+        fOogP9JCQfcrkosjj7b6mmPuPc1QKw+y10bmi7dT3RU9EZ4kYbF3ARvO8IqGkHqbPU0hcd
+        ggjJqDjS/bjg6ihZ++Sk9a2noV7aMbI=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-241-NhUgbxy5NuisEU3v6EPlOg-1; Thu, 14 Jul 2022 08:44:59 -0400
+X-MC-Unique: NhUgbxy5NuisEU3v6EPlOg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A29A461F9F;
-        Thu, 14 Jul 2022 12:44:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E59C341E7;
-        Thu, 14 Jul 2022 12:44:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657802644;
-        bh=tBb3TBcfg9s+9Nc73d6Io6kUB8boSCIbXgoJx8j5hJE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NY9+/TnIkUpxV+x8FQaV+/zdNwONZuqc+Ggv4HhrsDh7QTXvH+34ZrJLBv1gro5S6
-         C/oaNEGd1WU5Ih12JGjcE19PrOK5PoLEdLAoNiTEDeKpL58NNnJGFM88SdCP0+wN3q
-         wsACciJSBOd7zAqJiAKkMd3YUH5k4Xri29qZdeK+5itJifGqbxahD9jLpc2+bqVJ/l
-         VZsR8/bAtfATRLtpwsjYGNOu4EgizYrXNfAUK1wQTDliD3Cwm4mdXvdtqQXgUpsXFo
-         ZT44ro08Qu0MyToBojo6xPud3V9Tlfq70EBJfqpdB44Smcr2mCRu1DVzCxpyjpzf+p
-         gacoLusart4Gg==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oByCP-0007DY-MC; Thu, 14 Jul 2022 14:44:09 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 11/30] dt-bindings: phy: qcom,msm8996-qmp-pcie: deprecate reset names
-Date:   Thu, 14 Jul 2022 14:43:14 +0200
-Message-Id: <20220714124333.27643-12-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714124333.27643-1-johan+linaro@kernel.org>
-References: <20220714124333.27643-1-johan+linaro@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2B5ED395AFE7;
+        Thu, 14 Jul 2022 12:44:58 +0000 (UTC)
+Received: from amdlaptop.tlv.redhat.com (dhcp-4-238.tlv.redhat.com [10.35.4.238])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9F1E8401473;
+        Thu, 14 Jul 2022 12:44:54 +0000 (UTC)
+From:   Maxim Levitsky <mlevitsk@redhat.com>
+To:     kvm@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>
+Subject: [PATCH] KVM: SVM: fix task switch emulation on INTn instruction.
+Date:   Thu, 14 Jul 2022 15:44:53 +0300
+Message-Id: <20220714124453.188655-1-mlevitsk@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the PHY node 'reset-names' property which specified that the
-reset name should have an unnecessary "lane" suffix.
+Recently KVM's SVM code switched to re-injecting software interrupt events,
+if something prevented their delivery.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+Task switch due to task gate in the IDT, however is an exception
+to this rule, because in this case, INTn instruction causes
+a task switch intercept and its emulation completes the INTn
+emulation as well.
+
+Add a missing case to task_switch_interception for that.
+
+This fixes 32 bit kvm unit test taskswitch2.
+
+Fixes: 7e5b5ef8dca322 ("KVM: SVM: Re-inject INTn instead of retrying the insn on "failure"")
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- .../devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ arch/x86/kvm/svm/svm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-index b7b115e021d4..4e710ef75523 100644
---- a/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-+++ b/Documentation/devicetree/bindings/phy/qcom,msm8996-qmp-pcie-phy.yaml
-@@ -78,9 +78,10 @@ patternProperties:
- 
-       resets:
-         items:
--          - description: PHY (lane) reset
-+          - description: PHY reset
- 
-       reset-names:
-+        deprecated: true
-         items:
-           - enum:
-               - lane0
-@@ -100,7 +101,6 @@ patternProperties:
-       - reg
-       - clocks
-       - resets
--      - reset-names
-       - "#clock-cells"
-       - clock-output-names
-       - "#phy-cells"
-@@ -152,7 +152,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_0_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_0_PHY_BCR>;
--            reset-names = "lane0";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_0_pipe_clk_src";
-@@ -167,7 +166,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_1_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_1_PHY_BCR>;
--            reset-names = "lane1";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_1_pipe_clk_src";
-@@ -182,7 +180,6 @@ examples:
- 
-             clocks = <&gcc GCC_PCIE_2_PIPE_CLK>;
-             resets = <&gcc GCC_PCIE_2_PHY_BCR>;
--            reset-names = "lane2";
- 
-             #clock-cells = <0>;
-             clock-output-names = "pcie_2_pipe_clk_src";
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 41bd7c5aa06a1e..638dd94f6e11f6 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -2399,6 +2399,7 @@ static int task_switch_interception(struct kvm_vcpu *vcpu)
+ 			kvm_clear_exception_queue(vcpu);
+ 			break;
+ 		case SVM_EXITINTINFO_TYPE_INTR:
++		case SVM_EXITINTINFO_TYPE_SOFT:
+ 			kvm_clear_interrupt_queue(vcpu);
+ 			break;
+ 		default:
 -- 
-2.35.1
+2.34.3
 
