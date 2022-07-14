@@ -2,110 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D8BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:15:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51766C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:15:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239691AbiGNNPW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:15:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        id S239721AbiGNNP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239689AbiGNNPP (ORCPT
+        with ESMTP id S239715AbiGNNPW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:15:15 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686B249B7C;
-        Thu, 14 Jul 2022 06:15:14 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31c89111f23so16891557b3.0;
-        Thu, 14 Jul 2022 06:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MRwG+zlBQ+kmeFEt4Mjc7sgEiz7bh2APqSKI/QbwyJk=;
-        b=JX1n/jFGRiKmk8qdje4WBbxBW3K6poXkLNK7oNx7J1BajqurACE5r7MuoikJsrHlyq
-         WHslv+Mhg2/b5ZawLhmhZvZzeegJpH7HlUck0TRMdu7acvWoIq+gPAOuzTUsRCYiTHNh
-         051n6kX1f+IRKf2Q8q9/ZOzaF1pclqMdiV/6Yhiq7enWeEqBAon6e353IAhXYMcSAV1m
-         QPVdC0p0S8ZN/pChTDD8AqdgwNcSuU33NCm69+6aFXoZ4xJ5eJnp9w13uKcluXfzIY8X
-         qu0pJzKokIFX0SjPraAq0RRCAy3dfnqJkxkTlLkji9XSwut6G5rk4PGB2pHVEC58OEqT
-         JAAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MRwG+zlBQ+kmeFEt4Mjc7sgEiz7bh2APqSKI/QbwyJk=;
-        b=utmpJ3iSVQe6xU2kqO8q6WvP1HGMvEenQrpW/P6bHUbQW2DfHQt/iWvzZBHDfP6WpV
-         3LE6TkdkC+QUG0ZGWNh7YcgQztitIyfc552YetiBYnOAwfks/7NGmQ5+UBh40V2lNpFa
-         wcI2iTCplnwzZPuyYiaXd4JwveQo2cvhZoHCzcoItItlAH6lBpWB5z2ub22aoo1qmGHQ
-         xfcjp2QHg+aeYfthEQ3trjsLkH4FoppXlzDZaTD1/I5nCPtw0v21z1o7/VYneuGs0xjU
-         RcFV+0cWK6dVg3cHP4qtqmL7QPIWojjkEP6rT6fcj3P/EIEXvl3njf6AZ/v6VrU4F5Vf
-         dN9w==
-X-Gm-Message-State: AJIora/BQLCcVSjvREzDbB7Ib9y8uJX3oBbxzmQh29AQ0iUj6dEcMYTN
-        Iean75TzsHluVxqxn/9X0UJdLBYOGe2tICSkkNc=
-X-Google-Smtp-Source: AGRyM1tOHS3ptK/ixYVOdGAyBC75qeMAA3UC+i5MULVUHqOlJ3vMz2IdKDCCsZw93xwst9jve/G/9SCD6kW4WehLyT4=
-X-Received: by 2002:a81:4986:0:b0:31d:388b:d08d with SMTP id
- w128-20020a814986000000b0031d388bd08dmr9458913ywa.185.1657804513550; Thu, 14
- Jul 2022 06:15:13 -0700 (PDT)
+        Thu, 14 Jul 2022 09:15:22 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DE65072D
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:15:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657804520; x=1689340520;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=QQjS//iBPfYrLcrK7gc8rM18OwgKqFp6qRHJtrlCYdY=;
+  b=UJV2zno9nhyaiPQ+Ws6Jykh5SkyBD/QcdRJ3HZw07JxtaB6Q1FBEBdMn
+   TIcIpW/HBdoj2wDQlMNHrGcSqqKKr/FehiB5wimTyXBvVnBIglk5a9Xxc
+   6EWaFFjcY39NYZexxQcvnJsssXN/bP7dAtKtqRexPxlSlXvPl3H65tZzP
+   PKgl3+dWqcCMdJS82VFUhMi/VUj9T5N9CedPCX4OqBc+qG+RjSS+IefMz
+   idtgCwFAXRdd4wvPFhmvbtcNq2oLOiV4uVG0AoZmtmlzHHUIKiGexbva0
+   ED6nCeh/rX9UJmYZsSMyAbK8tL+Eh/M1c9PW43ERBUVW8YnaemTI8sk6v
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="371819881"
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="371819881"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 06:15:20 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="685566215"
+Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 14 Jul 2022 06:15:19 -0700
+Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oBygZ-0000hC-1X;
+        Thu, 14 Jul 2022 13:15:19 +0000
+Date:   Thu, 14 Jul 2022 21:14:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [tglx-devel:depthtracking 31/38] arch/x86/entry/entry_64.S:265:
+ Error: no such instruction: `call_thunks_debug_inc_ctxsw'
+Message-ID: <202207142159.djfGNExM-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220714122322.63663-1-tmaimon77@gmail.com> <20220714122322.63663-3-tmaimon77@gmail.com>
- <b6a0abb7-f31f-0c8a-f65e-8d61b9e72f48@linaro.org>
-In-Reply-To: <b6a0abb7-f31f-0c8a-f65e-8d61b9e72f48@linaro.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 14 Jul 2022 15:14:37 +0200
-Message-ID: <CAHp75VepYwx9FCf0-7_MO9r7WNqxiTR7MAQcwSL4oNcdgt8qEA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] pinctrl: nuvoton: add NPCM8XX pinctrl and GPIO driver
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Tomer Maimon <tmaimon77@gmail.com>,
-        Avi Fishman <avifishman70@gmail.com>,
-        Tali Perry <tali.perry1@gmail.com>,
-        Joel Stanley <joel@jms.id.au>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:29 PM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
-> On 14/07/2022 14:23, Tomer Maimon wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git depthtracking
+head:   81d2c1b17a61bfeca4b92a5d6e1fb6f5ff464826
+commit: 2732d9924d0ab04682c6cbc252e688e3e54b7847 [31/38] x86/calldepth: Add ret/call counting for debug
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220714/202207142159.djfGNExM-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git/commit/?id=2732d9924d0ab04682c6cbc252e688e3e54b7847
+        git remote add tglx-devel https://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git
+        git fetch --no-tags tglx-devel depthtracking
+        git checkout 2732d9924d0ab04682c6cbc252e688e3e54b7847
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-...
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-> > +static int npcm8xx_pinctrl_probe(struct platform_device *pdev)
-> > +{
+All errors (new ones prefixed by >>):
 
-Temporary variable, i.e.
+   arch/x86/entry/entry_64.S: Assembler messages:
+>> arch/x86/entry/entry_64.S:265: Error: no such instruction: `call_thunks_debug_inc_ctxsw'
 
-  struct device *dev = &pdev->dev;
 
-> > +     struct npcm8xx_pinctrl *pctrl;
-> > +     int ret;
-> > +
-> > +     pctrl = devm_kzalloc(&pdev->dev, sizeof(*pctrl), GFP_KERNEL);
-> > +     if (!pctrl)
-> > +             return -ENOMEM;
-> > +
-> > +     pctrl->dev = &pdev->dev;
-> > +     dev_set_drvdata(&pdev->dev, pctrl);
-> > +
-> > +     pctrl->gcr_regmap =
-> > +             syscon_regmap_lookup_by_phandle(pctrl->dev->of_node, "nuvoton,sysgcr");
-> > +     if (IS_ERR(pctrl->gcr_regmap))
-> > +             return dev_err_probe(pctrl->dev, PTR_ERR(pctrl->gcr_regmap), "Failed to find nuvoton,sysgcr property\n");
+vim +265 arch/x86/entry/entry_64.S
 
-Will help to shorten the above line(s).
+1eeb207f870f74 arch/x86/kernel/entry_64.S Denys Vlasenko  2015-02-26  257  
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  258  	/*
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  259  	 * When switching from a shallower to a deeper call stack
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  260  	 * the RSB may either underflow or use entries populated
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  261  	 * with userspace addresses. On CPUs where those concerns
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  262  	 * exist, overwrite the RSB with entries which capture
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  263  	 * speculative execution to prevent attack.
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  264  	 */
+d1c99108af3c59 arch/x86/entry/entry_64.S  David Woodhouse 2018-02-19 @265  	FILL_RETURN_BUFFER %r12, RSB_CLEAR_LOOPS, X86_FEATURE_RSB_CTXSW
+c995efd5a740d9 arch/x86/entry/entry_64.S  David Woodhouse 2018-01-12  266  
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  267  	/* restore callee-saved registers */
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  268  	popq	%r15
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  269  	popq	%r14
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  270  	popq	%r13
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  271  	popq	%r12
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  272  	popq	%rbx
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  273  	popq	%rbp
+1eeb207f870f74 arch/x86/kernel/entry_64.S Denys Vlasenko  2015-02-26  274  
+0100301bfdf56a arch/x86/entry/entry_64.S  Brian Gerst     2016-08-13  275  	jmp	__switch_to
+96c64806b4bf35 arch/x86/entry/entry_64.S  Josh Poimboeuf  2020-04-25  276  SYM_FUNC_END(__switch_to_asm)
+b9f6976bfb9491 arch/x86/entry/entry_64.S  Thomas Gleixner 2020-03-25  277  .popsection
+1eeb207f870f74 arch/x86/kernel/entry_64.S Denys Vlasenko  2015-02-26  278  
 
-> Please wrap your code according to Linux coding style - @80.
+:::::: The code at line 265 was first introduced by commit
+:::::: d1c99108af3c5992640aa2afa7d2e88c3775c06e Revert "x86/retpoline: Simplify vmexit_fill_RSB()"
+
+:::::: TO: David Woodhouse <dwmw@amazon.co.uk>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
 
 -- 
-With Best Regards,
-Andy Shevchenko
+0-DAY CI Kernel Test Service
+https://01.org/lkp
