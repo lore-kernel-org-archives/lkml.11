@@ -2,113 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DC2CCA479
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 01:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 01:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231955AbiGNB11 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 21:27:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59446 "EHLO
+        id S231977AbiGNB3P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 21:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbiGNB10 (ORCPT
+        with ESMTP id S229758AbiGNB3O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 21:27:26 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FCE20F77;
-        Wed, 13 Jul 2022 18:27:23 -0700 (PDT)
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LjxcF2fnvz1L95n;
-        Thu, 14 Jul 2022 09:24:45 +0800 (CST)
-Received: from ubuntu1804.huawei.com (10.67.174.58) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 09:26:58 +0800
-From:   Xiu Jianfeng <xiujianfeng@huawei.com>
-To:     <paul@paul-moore.com>, <jmorris@namei.org>, <serge@hallyn.com>
-CC:     <linux-security-module@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH RESEND -next] lsm_audit: Clean up redundant NULL pointer check
-Date:   Thu, 14 Jul 2022 09:24:21 +0800
-Message-ID: <20220714012421.55627-1-xiujianfeng@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 13 Jul 2022 21:29:14 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBDA6B4BF
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 18:29:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VJGv6Um_1657762149;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VJGv6Um_1657762149)
+          by smtp.aliyun-inc.com;
+          Thu, 14 Jul 2022 09:29:10 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     ogabbay@kernel.org
+Cc:     arnd@arndb.de, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>
+Subject: [PATCH -next] habanalabs: Simplify bool conversion
+Date:   Thu, 14 Jul 2022 09:29:08 +0800
+Message-Id: <20220714012908.4948-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.58]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The implements of {ip,tcp,udp,dccp,sctp,ipv6}_hdr(skb) guarantee that
-they will never return NULL, and elsewhere users don't do the check
-as well, so remove the check here.
+Fix the following coccicheck warning:
+./drivers/misc/habanalabs/gaudi2/gaudi2.c:9727:48-53: WARNING:
+conversion to bool not needed here
 
-Signed-off-by: Xiu Jianfeng <xiujianfeng@huawei.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- security/lsm_audit.c | 14 +-------------
- 1 file changed, 1 insertion(+), 13 deletions(-)
+ drivers/misc/habanalabs/gaudi2/gaudi2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/security/lsm_audit.c b/security/lsm_audit.c
-index 78a278f28e49..75cc3f8d2a42 100644
---- a/security/lsm_audit.c
-+++ b/security/lsm_audit.c
-@@ -44,9 +44,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	struct iphdr *ih;
+diff --git a/drivers/misc/habanalabs/gaudi2/gaudi2.c b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+index 98336a1a84b0..344b4dedef41 100644
+--- a/drivers/misc/habanalabs/gaudi2/gaudi2.c
++++ b/drivers/misc/habanalabs/gaudi2/gaudi2.c
+@@ -9724,7 +9724,7 @@ static int gaudi2_get_mmu_base(struct hl_device *hdev, u64 mmu_id, u32 *mmu_base
  
- 	ih = ip_hdr(skb);
--	if (ih == NULL)
--		return -EINVAL;
--
- 	ad->u.net->v4info.saddr = ih->saddr;
- 	ad->u.net->v4info.daddr = ih->daddr;
+ static void gaudi2_ack_mmu_error(struct hl_device *hdev, u64 mmu_id)
+ {
+-	bool is_pmmu = (mmu_id == HW_CAP_PMMU ? true : false);
++	bool is_pmmu = (mmu_id == HW_CAP_PMMU);
+ 	struct gaudi2_device *gaudi2 = hdev->asic_specific;
+ 	u32 mmu_base;
  
-@@ -59,8 +56,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	switch (ih->protocol) {
- 	case IPPROTO_TCP: {
- 		struct tcphdr *th = tcp_hdr(skb);
--		if (th == NULL)
--			break;
- 
- 		ad->u.net->sport = th->source;
- 		ad->u.net->dport = th->dest;
-@@ -68,8 +63,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_UDP: {
- 		struct udphdr *uh = udp_hdr(skb);
--		if (uh == NULL)
--			break;
- 
- 		ad->u.net->sport = uh->source;
- 		ad->u.net->dport = uh->dest;
-@@ -77,8 +70,6 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_DCCP: {
- 		struct dccp_hdr *dh = dccp_hdr(skb);
--		if (dh == NULL)
--			break;
- 
- 		ad->u.net->sport = dh->dccph_sport;
- 		ad->u.net->dport = dh->dccph_dport;
-@@ -86,8 +77,7 @@ int ipv4_skb_to_auditdata(struct sk_buff *skb,
- 	}
- 	case IPPROTO_SCTP: {
- 		struct sctphdr *sh = sctp_hdr(skb);
--		if (sh == NULL)
--			break;
-+
- 		ad->u.net->sport = sh->source;
- 		ad->u.net->dport = sh->dest;
- 		break;
-@@ -115,8 +105,6 @@ int ipv6_skb_to_auditdata(struct sk_buff *skb,
- 	__be16 frag_off;
- 
- 	ip6 = ipv6_hdr(skb);
--	if (ip6 == NULL)
--		return -EINVAL;
- 	ad->u.net->v6info.saddr = ip6->saddr;
- 	ad->u.net->v6info.daddr = ip6->daddr;
- 	/* IPv6 can have several extension header before the Transport header
 -- 
-2.17.1
+2.20.1.7.g153144c
 
