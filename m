@@ -2,134 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65976C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECE1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiGNJOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
+        id S237943AbiGNJOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:14:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237898AbiGNJOJ (ORCPT
+        with ESMTP id S237846AbiGNJOP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:14:09 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B112413E20;
-        Thu, 14 Jul 2022 02:13:58 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Thu, 14 Jul 2022 05:14:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C0C424BF6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657790040;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LYxCdeBgY2v7hUJ/1PTLikXLQv6Mg4flMsecglN8j6I=;
+        b=OVmJJJm/1Kdom5qeSC7NhQjKcaY4THlmGE4NkG3z2HOS84xOBLIINkb5FizmkYtG/55RCT
+        02kT+QeAzb8Zz2Ms16aFIU4CfTJy3iBAEPaxU8scdKaf9aMi/efuyOAKyR4Jj6MSD5JNTi
+        5vAgVVpFnF473szAAcRIJke29J1pDdU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-575-T1eT4Bw0O86JUH9wGS-QIQ-1; Thu, 14 Jul 2022 05:13:58 -0400
+X-MC-Unique: T1eT4Bw0O86JUH9wGS-QIQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 09B996601A34;
-        Thu, 14 Jul 2022 10:13:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657790036;
-        bh=LCp2np4oUNr3udCtCqa3Cgr4gEdFfLoRcjf1mCnppwE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e3nEIFNRJYqjXffSsU03ikRg8Puzoku7oex9P7Vnr/iet86qMKGl+OXvlNGZlvzXQ
-         RE7XW7l2KXeiJgCfovrXnxhn2gA8bhmzb7eTD4fEWZLaBxPxzySy3CpfKfxy5XTHTG
-         vPHBEynjJguF2QCMIEORvRVcP2yKjTCCzjiOTT2PIIv1zvACXwNPpP8PqnCX7dWa69
-         lVRl7muX0yuAMRnB1zKp1npZXfgg5eB8OSO+K62+K4qPJMkMGSWDk6XIPDV59J+HvW
-         jgHL51H4afWWUvQs9FdMkoIWOtX7jbPrlIh8US76krYrm1QLz+XFBHdy6Dl32LVJAZ
-         MqRSVQB3MSJVQ==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        dmitry.osipenko@collabora.com, Zhigang.Shi@liteon.com
-Cc:     krisman@collabora.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, alvaro.soliverez@collabora.com,
-        andy.shevchenko@gmail.com,
-        Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH v8 1/2] dt-bindings: Document ltrf216a light sensor bindings
-Date:   Thu, 14 Jul 2022 14:43:11 +0530
-Message-Id: <20220714091312.838152-2-shreeya.patel@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220714091312.838152-1-shreeya.patel@collabora.com>
-References: <20220714091312.838152-1-shreeya.patel@collabora.com>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E34E285A581;
+        Thu, 14 Jul 2022 09:13:57 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BB3F92166B26;
+        Thu, 14 Jul 2022 09:13:55 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 11/25] KVM: VMX: Get rid of eVMCS specific VMX controls sanitization
+Date:   Thu, 14 Jul 2022 11:13:13 +0200
+Message-Id: <20220714091327.1085353-12-vkuznets@redhat.com>
+In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree bindings for ltrf216a ambient light sensor.
+With the updated eVMCSv1 definition, there's no known 'problematic'
+controls which are exposed in VMX control MSRs but are not present in
+eVMCSv1. Get rid of VMX control MSRs filtering for KVM on Hyper-V.
 
-Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+Note: VMX control MSRs filtering for Hyper-V on KVM
+(nested_evmcs_filter_control_msr()) stays as even the updated eVMCSv1
+definition doesn't have all the features implemented by KVM and some
+fields are still missing. Moreover, nested_evmcs_filter_control_msr()
+has to support the original eVMCSv1 version when VMM wishes so.
+
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
+ arch/x86/kvm/vmx/evmcs.c | 13 -------------
+ arch/x86/kvm/vmx/evmcs.h |  1 -
+ arch/x86/kvm/vmx/vmx.c   |  5 -----
+ 3 files changed, 19 deletions(-)
 
-Changes in v7
-  - Fix the error reported by kernel test robot.
-
-Changes in v5
-  - Remove deprecated string 'ltr' from the bindings.
-
-Changes in v3
-  - Fix indentation in the example section
-
-Changes in v2
-  - Take over the maintainership for the bindings
-  - Add interrupt and power supply property in DT bindings
-
-
- .../bindings/iio/light/liteon,ltrf216a.yaml   | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-new file mode 100644
-index 000000000000..7de1b0e721ca
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: LTRF216A Ambient Light Sensor
-+
-+maintainers:
-+  - Shreeya Patel <shreeya.patel@collabora.com>
-+
-+description:
-+  Ambient light sensing with an i2c interface.
-+
-+properties:
-+  compatible:
-+    const: liteon,ltrf216a
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Regulator that provides power to the sensor.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        light-sensor@53 {
-+            compatible = "liteon,ltrf216a";
-+            reg = <0x53>;
-+            vdd-supply = <&vdd_regulator>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-+        };
-+    };
+diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+index 52a53debd806..b5cfbf7d487b 100644
+--- a/arch/x86/kvm/vmx/evmcs.c
++++ b/arch/x86/kvm/vmx/evmcs.c
+@@ -320,19 +320,6 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
+ };
+ const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
+-{
+-	vmcs_conf->cpu_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
+-	vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
+-	vmcs_conf->cpu_based_2nd_exec_ctrl &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
+-	vmcs_conf->cpu_based_3rd_exec_ctrl = 0;
+-
+-	vmcs_conf->vmexit_ctrl &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
+-	vmcs_conf->vmentry_ctrl &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
+-}
+-#endif
+-
+ bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa)
+ {
+ 	struct hv_vp_assist_page assist_page;
+diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
+index 4b809c79ae63..0feac101cce4 100644
+--- a/arch/x86/kvm/vmx/evmcs.h
++++ b/arch/x86/kvm/vmx/evmcs.h
+@@ -203,7 +203,6 @@ static inline void evmcs_load(u64 phys_addr)
+ 	vp_ap->enlighten_vmentry = 1;
+ }
+ 
+-__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
+ #else /* !IS_ENABLED(CONFIG_HYPERV) */
+ static __always_inline void evmcs_write64(unsigned long field, u64 value) {}
+ static inline void evmcs_write32(unsigned long field, u32 value) {}
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index b4915d841357..dd905ad72637 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -2689,11 +2689,6 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
+ 	vmcs_conf->vmexit_ctrl         = _vmexit_control;
+ 	vmcs_conf->vmentry_ctrl        = _vmentry_control;
+ 
+-#if IS_ENABLED(CONFIG_HYPERV)
+-	if (enlightened_vmcs)
+-		evmcs_sanitize_exec_ctrls(vmcs_conf);
+-#endif
+-
+ 	return 0;
+ }
+ 
 -- 
-2.30.2
+2.35.3
 
