@@ -2,83 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F2D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C95BCCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:23:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238761AbiGNLXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59102 "EHLO
+        id S238705AbiGNLX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238677AbiGNLWr (ORCPT
+        with ESMTP id S238691AbiGNLXl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:22:47 -0400
-Received: from sinmsgout03.his.huawei.com (sinmsgout03.his.huawei.com [119.8.177.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A4157E09;
-        Thu, 14 Jul 2022 04:22:32 -0700 (PDT)
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.156.148])
-        by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4LkBrf1MBCz9xGQ7;
-        Thu, 14 Jul 2022 19:21:22 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 13:22:26 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 12:22:22 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <damien.lemoal@opensource.wdc.com>, <joro@8bytes.org>,
-        <will@kernel.org>, <jejb@linux.ibm.com>,
-        <martin.petersen@oracle.com>, <hch@lst.de>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
-CC:     <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux.dev>,
-        <linux-scsi@vger.kernel.org>, <linuxarm@huawei.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH v6 6/6] ata: libata-scsi: Cap ata_device->max_sectors according to shost->max_sectors
-Date:   Thu, 14 Jul 2022 19:15:29 +0800
-Message-ID: <1657797329-98541-7-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
-References: <1657797329-98541-1-git-send-email-john.garry@huawei.com>
+        Thu, 14 Jul 2022 07:23:41 -0400
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624765886A;
+        Thu, 14 Jul 2022 04:23:29 -0700 (PDT)
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id CC6311C0001; Thu, 14 Jul 2022 13:23:26 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+        t=1657797806;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6QT5nX5UXBXiE8i6HmCkJes0OQrNQW7DZj7NVeDSXy0=;
+        b=IhdRsDS+o3dILqWj9iIbW+mzvQyS+T8yXxkcUAt8uVVojWKyRaVXk+++XRdfkbc7sdH8oj
+        gKuScfnSldyZxQmsKpM8jYwCNi7ngORxsNWVesVzDJCu8ZZgeCHUYjndwgPlrjV3paKZHm
+        r061Ja9dTCrCJagQ98oocEgxmBkaS6w=
+Date:   Thu, 14 Jul 2022 13:23:26 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Lee Jones <lee.jones@linaro.org>, marek.behun@nic.cz
+Cc:     linux-leds@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: LED Maintainership
+Message-ID: <20220714112326.GA16407@duo.ucw.cz>
+References: <Ys/kruf8DE4ISo8M@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="X1bOJ3K7DJ5YkBrT"
+Content-Disposition: inline
+In-Reply-To: <Ys/kruf8DE4ISo8M@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-ATA devices (struct ata_device) have a max_sectors field which is
-configured internally in libata. This is then used to (re)configure the
-associated sdev request queue max_sectors value from how it is earlier set
-in __scsi_init_queue(). In __scsi_init_queue() the max_sectors value is set
-according to shost limits, which includes host DMA mapping limits.
 
-Cap the ata_device max_sectors according to shost->max_sectors to respect
-this shost limit.
+--X1bOJ3K7DJ5YkBrT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Acked-by: Martin K. Petersen <martin.petersen@oracle.com>
----
- drivers/ata/libata-scsi.c | 1 +
- 1 file changed, 1 insertion(+)
+Hi!
 
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 86dbb1cdfabd..24a43d540d9f 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -1060,6 +1060,7 @@ int ata_scsi_dev_config(struct scsi_device *sdev, struct ata_device *dev)
- 		dev->flags |= ATA_DFLAG_NO_UNLOAD;
- 
- 	/* configure max sectors */
-+	dev->max_sectors = min(dev->max_sectors, sdev->host->max_sectors);
- 	blk_queue_max_hw_sectors(q, dev->max_sectors);
- 
- 	if (dev->class == ATA_DEV_ATAPI) {
--- 
-2.35.3
+> Not sure what's going on behind the scenes, but it looks as though the
+> LED subsystem has been left unmaintained for at least 2 months now.
 
+> Does anyone have any objection to me stepping in as temporary
+> maintainer until the situation is resolved?
+
+Yes, I'm a bit busy and would not mind help.
+
+There's a lot of easy stuff in the LED -- drivers not introducing new
+APIs -- and some quite tricky stuff -- userland API leaves... a lot to
+be desired, and we are in the middle of defining multicolor API.
+
+I wanted to ask Marek (in cc now) if he would be interested in
+helping. He knows the APIs / issues, and actually has multicolor LEDs
+he cares about. Marek, are you interested?
+
+If Marek is not interested, yes, help with the driver stuff would be
+welcome.
+
+Best regards,
+
+							Pavel
+--=20
+People of Russia, stop Putin before his war on Ukraine escalates.
+
+--X1bOJ3K7DJ5YkBrT
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYs/8rgAKCRAw5/Bqldv6
+8qPIAKCgDLaOK+oDxPPVYgY5z1KneqhDewCgwh2RI1gZ2R2SuxHFxpWq+CFaTV4=
+=Ipbn
+-----END PGP SIGNATURE-----
+
+--X1bOJ3K7DJ5YkBrT--
