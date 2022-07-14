@@ -2,114 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFFFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CAF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240874AbiGNS44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
+        id S239843AbiGNS6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240871AbiGNS4k (ORCPT
+        with ESMTP id S240897AbiGNS5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:56:40 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E1B552FDE;
-        Thu, 14 Jul 2022 11:56:39 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id bx13so3253316ljb.1;
-        Thu, 14 Jul 2022 11:56:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=I+jRCsbhWxs4TKxqJzQgQaeI3aEXSHWJMTuLT4iRT3Q=;
-        b=czNASMqeU+srNnAAhlHPGcffIbPDqRFnLihGD0XFSNfr8kR5CH1Ky3lN+XYSxsHROM
-         lQicd2XY4af6mwvtng/Tew/YAoPI0XFKCoy6y77Uv+QxvJE72PIUPA7ECnlLW4U/fL83
-         tEZwG9x9nIxYYKveeDTXicPDjd+US3yrSONZAF1FIjXhUN7ZzwTPQpQ7lBwHkDOssdq0
-         hFgrx9gH/2SB/Zgv1F9NK0j7x3pfpWLnVy6L2y76T5++DuaDg5a0JnUUNVLZNaQeg4DZ
-         5wFjRemKVGgwWzjDC65UKYvDC5cty25kA5+0sng0BqxcqE2TjFVpbSCIkleouf/RhvLq
-         8Q9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=I+jRCsbhWxs4TKxqJzQgQaeI3aEXSHWJMTuLT4iRT3Q=;
-        b=FfBxvs8VtP7VAVjtJPNZ7tw63J+tIrTejkO7pkXImuIl3mG7PlQMxBgaqS2msSu/s3
-         opjSNvVNxAo2Z8vsG0db+GXSfelDv32LV3dps6uxKk4SvKuUrOfckeVAN9V7UQW9IdPd
-         PK4M/KZ4EJGLr55oGwVceIH1dXM0+HRIIih5AiXDEasR6Nppb5SmAEotpmXMsXg9xhFR
-         ugLqEIgAg6xWNeg6lBHLHnraqX7Vd6vlbkYOhf3b8+pnm0VVpG8LhwQyLc7ZVz3qf7Nm
-         xbxHvy8MOOji55q1YhvuoY6Ve3hhmCIpxYIGweicS7S+oqm8hmV+GmIasJts+yIYLHfD
-         YTlg==
-X-Gm-Message-State: AJIora9LFYExt7DgpohqKgWo9RERd2i+BZ3rGatn6+YCcrEaQHKIlEIh
-        h97ySQ9W8yg/W9T8D8HDN9A=
-X-Google-Smtp-Source: AGRyM1vNpkQa0X3eFgXBGerGcc6TjM+Mj1qmUj55J5sTQRxev4jQsb4jj+WwgZdck8Km05bMmlxcHg==
-X-Received: by 2002:a2e:a608:0:b0:25d:5363:35a4 with SMTP id v8-20020a2ea608000000b0025d536335a4mr5384558ljp.132.1657824997544;
-        Thu, 14 Jul 2022 11:56:37 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-119-232.nat.spd-mgts.ru. [109.252.119.232])
-        by smtp.googlemail.com with ESMTPSA id k1-20020a2eb741000000b0025d542731ffsm401246ljo.5.2022.07.14.11.56.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 11:56:36 -0700 (PDT)
-Message-ID: <0d4f6b3a-16ab-6289-0b56-490cf8667a65@gmail.com>
-Date:   Thu, 14 Jul 2022 21:56:30 +0300
+        Thu, 14 Jul 2022 14:57:35 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A266B764
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:57:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=O6B474X8P2gxKKp7qXnpFakS0XL
+        VtX/7FNJL6iki3kU=; b=XNplPfaLVlLVZl1NYESMAVjWqAyxa/XruwrOTvEXaA7
+        HEnTSzeuh9HeTt2Yf+VmVbcD45hC2BfR1/ouh8pVtVgLfxAi2rsqgm2pwJoys1Lt
+        OH42mL9E8+AMJvrIICLq0vJv4y170xd57sJmPXKMimDhAd7aY8MFg8H6FmMJ0a8w
+        =
+Received: (qmail 704724 invoked from network); 14 Jul 2022 20:57:30 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 14 Jul 2022 20:57:30 +0200
+X-UD-Smtp-Session: l3s3148p1@4dM8ecjjRsIgAwDtxwdRAEXXn+yo/Rze
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        John Stultz <jstultz@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH v2] selftests: timers: clocksource-switch: add 'runtime' command line parameter
+Date:   Thu, 14 Jul 2022 20:57:21 +0200
+Message-Id: <20220714185721.48125-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 3/8] tegra-vde: Use vb2_find_buffer
-Content-Language: en-US
-To:     Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20220711211141.349902-1-ezequiel@vanguardiasur.com.ar>
- <20220711211141.349902-4-ezequiel@vanguardiasur.com.ar>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220711211141.349902-4-ezequiel@vanguardiasur.com.ar>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-12.07.2022 00:11, Ezequiel Garcia пишет:
-> Use the newly introduced vb2_find_buffer API to get a vb2_buffer
-> given a buffer timestamp.
-> 
-> Cc: Dmitry Osipenko <digetx@gmail.com>
-> Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-> Acked-by: Tomasz Figa <tfiga@chromium.org>
-> ---
->  drivers/media/platform/nvidia/tegra-vde/h264.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/media/platform/nvidia/tegra-vde/h264.c b/drivers/media/platform/nvidia/tegra-vde/h264.c
-> index 88f81a134ba0..204e474d57f7 100644
-> --- a/drivers/media/platform/nvidia/tegra-vde/h264.c
-> +++ b/drivers/media/platform/nvidia/tegra-vde/h264.c
-> @@ -659,20 +659,19 @@ static struct vb2_buffer *get_ref_buf(struct tegra_ctx *ctx,
->  {
->  	const struct v4l2_h264_dpb_entry *dpb = ctx->h264.decode_params->dpb;
->  	struct vb2_queue *cap_q = &ctx->fh.m2m_ctx->cap_q_ctx.q;
-> -	int buf_idx = -1;
-> +	struct vb2_buffer *vb = NULL;
->  
->  	if (dpb[dpb_idx].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
-> -		buf_idx = vb2_find_timestamp(cap_q,
-> -					     dpb[dpb_idx].reference_ts, 0);
-> +		vb = vb2_find_buffer(cap_q, dpb[dpb_idx].reference_ts);
->  
->  	/*
->  	 * If a DPB entry is unused or invalid, address of current destination
->  	 * buffer is returned.
->  	 */
-> -	if (buf_idx < 0)
-> +	if (!vb)
->  		return &dst->vb2_buf;
->  
-> -	return vb2_get_buffer(cap_q, buf_idx);
-> +	return vb;
->  }
->  
->  static int tegra_vde_validate_vb_size(struct tegra_ctx *ctx,
+So the user can decide how long the test should run.
 
-Acked-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Acked-by: John Stultz <jstultz@google.com>
+---
+
+Change since V1:
+* added the new parameter to the help printout
+
+ tools/testing/selftests/timers/clocksource-switch.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/tools/testing/selftests/timers/clocksource-switch.c b/tools/testing/selftests/timers/clocksource-switch.c
+index 5256e6215980..577e4b74211a 100644
+--- a/tools/testing/selftests/timers/clocksource-switch.c
++++ b/tools/testing/selftests/timers/clocksource-switch.c
+@@ -124,17 +124,22 @@ int main(int argc, char **argv)
+ 	char orig_clk[512];
+ 	int count, i, status, opt;
+ 	int do_sanity_check = 1;
++	int runtime = 60;
+ 	pid_t pid;
+ 
+ 	/* Process arguments */
+-	while ((opt = getopt(argc, argv, "s")) != -1) {
++	while ((opt = getopt(argc, argv, "st:")) != -1) {
+ 		switch (opt) {
+ 		case 's':
+ 			do_sanity_check = 0;
+ 			break;
++		case 't':
++			runtime = atoi(optarg);
++			break;
+ 		default:
+-			printf("Usage: %s [-s]\n", argv[0]);
++			printf("Usage: %s [-s] [-t <secs>]\n", argv[0]);
+ 			printf("	-s: skip sanity checks\n");
++			printf("	-t: Number of seconds to run\n");
+ 			exit(-1);
+ 		}
+ 	}
+@@ -167,7 +172,7 @@ int main(int argc, char **argv)
+ 	printf("Running Asynchronous Switching Tests...\n");
+ 	pid = fork();
+ 	if (!pid)
+-		return run_tests(60);
++		return run_tests(runtime);
+ 
+ 	while (pid != waitpid(pid, &status, WNOHANG))
+ 		for (i = 0; i < count; i++)
+-- 
+2.35.1
+
