@@ -2,59 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8EACCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC47C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiGNMHh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49118 "EHLO
+        id S239152AbiGNMHm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238980AbiGNMGg (ORCPT
+        with ESMTP id S239003AbiGNMGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:06:36 -0400
+        Thu, 14 Jul 2022 08:06:37 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B75C9FC
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719565C9FA
         for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:06:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88AABB824DD
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C3E7B824E1
         for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 12:06:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81254C341CF;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 818D2C341D0;
         Thu, 14 Jul 2022 12:06:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657800390;
-        bh=gcA9dOS6rwcNmQfl8nke3c+qO7FUQU/QyXIVIH9SjiU=;
+        bh=kp22WVyJ8hn3YbHi+EgLuYcggIAQWpbc8D/KBpf/UN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sN3mwrVk2ZJrJEs3O1JYU5A0HKKO1m+I1ALTOeFIpI9xLW7iNMJvgiL1qE5gtXSOE
-         PFbF+sg2RdBlhUjNifw+V2P63CgH7qMkuCBRuttgTPhQ7IUyY06ZZzQ1Hc3Vk/TUtr
-         dkbnkurk1dIo15btmQpZl/RTAq/3j+MFnWh4ibBVShlUFwVrIOU89jQ5Utp/RCV5Ge
-         3y1WMRvA+8mbi+svaf/TywgAfS9Zpf2SODKaD8Lf5Z/YLjWzYNpjLEl8yu9AmHDS1Q
-         ATz2g9msqPS1ON0e733T+vKGgfFXAeqR4PD6hdQW7/IH97VZw3Pa7jUIucf0taJXKv
-         iyp5iHIddixLA==
+        b=n+jmakYzM3ydD4xAbxjEjIFBUOywb3gDCdCualPh0TBzt1wm8+7+i71Mt53J1ULEm
+         99562AtJWmf/tbk7UnAEXeeanIC3MfPB4NFPFu0+xJARb0T+rH3twHGmWO+BDfk2g4
+         gakimnuaqKfMZ6lv8M4KawJLsdt/dhMfDtttuXBRUaxIeZqgU6ZlcNgn3AgMMEXyF6
+         i+YOmPLiijUIarTXfkPiwLYdP2GdM+dnhyRZjrXmSUOLEcJsLKGA1G9qZWC04sEScH
+         ow48AOtQfBW7Da+3cf34kdFeZupE6xu9OzNCyAeQZX/ONS97ljLNEbLrxblIcI8uA0
+         aeJxpP7S5kiQg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oBxbw-0059sw-0B;
+        id 1oBxbw-0059tR-6p;
         Thu, 14 Jul 2022 13:06:28 +0100
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alan Previn <alan.previn.teres.alexis@intel.com>,
+        Chris Wilson <chris.p.wilson@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Michal Wajdeczko <michal.wajdeczko@intel.com>,
         Prathap Kumar Valsan <prathap.kumar.valsan@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        Vinay Belgaumkar <vinay.belgaumkar@intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 10/21] drm/i915/guc: use kernel-doc for enum intel_guc_tlb_inval_mode
-Date:   Thu, 14 Jul 2022 13:06:15 +0100
-Message-Id: <de22e315b5a9041610a6659616cdac50273e1b01.1657800199.git.mchehab@kernel.org>
+Subject: [PATCH v2 19/21] drm/i915/gt: document TLB cache invalidation functions
+Date:   Thu, 14 Jul 2022 13:06:24 +0100
+Message-Id: <912156cd83488daf0c600f56442245bbe36ba37f.1657800199.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1657800199.git.mchehab@kernel.org>
 References: <cover.1657800199.git.mchehab@kernel.org>
@@ -65,8 +61,7 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Transform the comments for intel_guc_tlb_inval_mode into a
-kernel-doc markup.
+Add a description for the kAPI functions inside intel_tlb.c.
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
@@ -74,36 +69,76 @@ Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v2 00/21] at: https://lore.kernel.org/all/cover.1657800199.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/i915/gt/intel_tlb.c | 36 +++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-index 2e39d8df4c82..14e35a2f8306 100644
---- a/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-+++ b/drivers/gpu/drm/i915/gt/uc/abi/guc_actions_abi.h
-@@ -190,15 +190,18 @@ enum intel_guc_tlb_invalidation_type {
- 	INTEL_GUC_TLB_INVAL_GUC = 0x3,
- };
+diff --git a/drivers/gpu/drm/i915/gt/intel_tlb.c b/drivers/gpu/drm/i915/gt/intel_tlb.c
+index 15ed83226676..aa2e0086ae88 100644
+--- a/drivers/gpu/drm/i915/gt/intel_tlb.c
++++ b/drivers/gpu/drm/i915/gt/intel_tlb.c
+@@ -146,6 +146,18 @@ static void mmio_invalidate_full(struct intel_gt *gt)
+ 	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
+ }
  
--/*
-- * 0: Heavy mode of Invalidation:
 +/**
-+ * enum intel_guc_tlb_inval_mode - define the mode for TLB cache invlidation
++ * intel_gt_invalidate_tlb_full - do full TLB cache invalidation
++ * @gt: GT structure
++ * @seqno: sequence number
 + *
-+ * @INTEL_GUC_TLB_INVAL_MODE_HEAVY: Heavy Invalidation Mode.
-  * The pipeline of the engine(s) for which the invalidation is targeted to is
-  * blocked, and all the in-flight transactions are guaranteed to be Globally
-- * Observed before completing the TLB invalidation
-- * 1: Lite mode of Invalidation:
-+ * Observed before completing the TLB invalidation.
-+ * @INTEL_GUC_TLB_INVAL_MODE_LITE: Light Invalidation Mode.
-  * TLBs of the targeted engine(s) are immediately invalidated.
-  * In-flight transactions are NOT guaranteed to be Globally Observed before
-  * completing TLB invalidation.
++ * Do a full TLB cache invalidation if the @seqno is bigger than the last
++ * full TLB cache invalidation.
 + *
-  * Light Invalidation Mode is to be used only when
-  * it can be guaranteed (by SW) that the address translations remain invariant
-  * for the in-flight transactions across the TLB invalidation. In other words,
++ * Note:
++ * The TLB cache invalidation logic depends on GEN-specific registers.
++ * It currently supports GEN8 to GEN12 and GuC-based TLB cache invalidation.
++ */
+ void intel_gt_invalidate_tlb_full(struct intel_gt *gt, u32 seqno)
+ {
+ 	intel_wakeref_t wakeref;
+@@ -220,6 +232,17 @@ static bool mmio_invalidate_range(struct intel_gt *gt, u64 start, u64 length)
+ 	return err == 0;
+ }
+ 
++/**
++ * intel_gt_invalidate_tlb_range - do full TLB cache invalidation
++ * @gt: GT structure
++ * @start: range start
++ * @length: range length
++ *
++ * Do a selected TLB cache invalidation on a range pointed by @start
++ * with @length size.
++ *
++ * Only some GuC-based GPUs can do a selective cache invalidation.
++ */
+ bool intel_gt_invalidate_tlb_range(struct intel_gt *gt,
+ 				   u64 start, u64 length)
+ {
+@@ -247,12 +270,25 @@ bool intel_gt_invalidate_tlb_range(struct intel_gt *gt,
+ 	return true;
+ }
+ 
++/**
++ * intel_gt_init_tlb - initialize TLB-specific vars
++ * @gt: GT structure
++ *
++ * TLB cache invalidation logic internally uses some resources that require
++ * initialization. Should be called before doing any TLB cache invalidation.
++ */
+ void intel_gt_init_tlb(struct intel_gt *gt)
+ {
+ 	mutex_init(&gt->tlb.invalidate_lock);
+ 	seqcount_mutex_init(&gt->tlb.seqno, &gt->tlb.invalidate_lock);
+ }
+ 
++/**
++ * intel_gt_fini_tlb - initialize TLB-specific vars
++ * @gt: GT structure
++ *
++ * Frees any resources needed by TLB cache invalidation logic.
++ */
+ void intel_gt_fini_tlb(struct intel_gt *gt)
+ {
+ 	mutex_destroy(&gt->tlb.invalidate_lock);
 -- 
 2.36.1
 
