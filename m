@@ -2,189 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1B7C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3AECC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237527AbiGNHs1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:48:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        id S237729AbiGNHtd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:49:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237612AbiGNHrn (ORCPT
+        with ESMTP id S237754AbiGNHtH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:47:43 -0400
-Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DAB3AB23;
-        Thu, 14 Jul 2022 00:47:15 -0700 (PDT)
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 78BA21A2049;
-        Thu, 14 Jul 2022 09:47:14 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 12BDE1A2034;
-        Thu, 14 Jul 2022 09:47:14 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 6AD0F180327D;
-        Thu, 14 Jul 2022 15:47:12 +0800 (+08)
-From:   Richard Zhu <hongxing.zhu@nxp.com>
-To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
-        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
-        francesco.dolcini@toradex.com
-Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, linux-imx@nxp.com
-Subject: [PATCH v15 17/17] PCI: imx6: Reformat suspend callback to keep symmetric with resume
-Date:   Thu, 14 Jul 2022 15:31:09 +0800
-Message-Id: <1657783869-19194-18-git-send-email-hongxing.zhu@nxp.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
-References: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Thu, 14 Jul 2022 03:49:07 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59D53D5AF
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:47:48 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id r10so1421087wrv.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7ENpXGCfOojvm5HzOOGlSlXEcDNquLj89EnJRW1uV9Q=;
+        b=nUIszvOV1SKjyeh8V1EgkwL9bn2jp22IcQ3+c3ojYV+nzi0p+mLCG7Ue02wZTN7AY5
+         W+LvGiQNM9HDeXQjrbMjtPYecghemrptI57XVUikoryzIr5j9TJQk71ozidRZiRhGDSi
+         9WE9+xlpI/uRMDXMpQ8C97hNrdNJfK2o1r30GkimCfZd0mCHSmr8R8duA1eKDyPlp/dX
+         afRBwh9WVSPxUeslnWkaQY61cF6gc7mwhKSe2IoTMQ1fTEdyhiDC2mFz+dpljHYxBzu7
+         4nSoyxyyQirGp7LWyeh17EV1tnKC4/01bPTk/33UQWQ3OC9QqpJLgArO6h/BDHbnM42o
+         fnbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7ENpXGCfOojvm5HzOOGlSlXEcDNquLj89EnJRW1uV9Q=;
+        b=NOR3pWxbW2TutuxVO69qQAATAEPhdUp8LDrOooOXujKZ0jaE6ChBAOpefw10WJpoT0
+         5TAc/bVROsFUBp43xfa91x/OnaImsS+5VtuPC8feL5JCfBU8yabghJahCmwjXT2QT/Cd
+         SDI+uQza8wqYhdIh2GHeC4P3Th6klCibPyhjHbwTTrB4Tha0xgeMhq5Hh/vTo7eJTQ+L
+         SX8GC1i+a6URHsQ8zKHlG/dwgh6Onm4t2DT+WSAn5A0xMDL21cUO9FCJOUMEVaLxXJlX
+         uHZ/Z+MtljBxPHZlrzDC9QFoCCreGlDsxBt1nLIfkF1O0I9+Y+E2gEATgkkUebLDPR4e
+         jwyQ==
+X-Gm-Message-State: AJIora+mhFu3uIscdfzrWnOnnPVaWWjm5jCJOiWWgmGr/YZpWZkO2nlz
+        zXfMZAP/TVBhWHVPCSp8C/fdsyFOAS9bz4iN
+X-Google-Smtp-Source: AGRyM1uDdySWT3c/cpFu8Pnqq0wuG6SVeWWLxZrIqlrgJPrAUJHwG0dFVm3ZUMPnYVJ6yFIYRxKDiA==
+X-Received: by 2002:adf:f006:0:b0:21d:7bf3:1f2e with SMTP id j6-20020adff006000000b0021d7bf31f2emr7384440wro.593.1657784866861;
+        Thu, 14 Jul 2022 00:47:46 -0700 (PDT)
+Received: from rainbowdash.office.codethink.co.uk ([167.98.27.226])
+        by smtp.gmail.com with ESMTPSA id p19-20020a05600c359300b003a300452f7fsm1161638wmq.32.2022.07.14.00.47.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 00:47:46 -0700 (PDT)
+From:   Ben Dooks <ben.dooks@sifive.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>,
+        Ben Dooks <ben.dooks@sifive.com>
+Subject: [PATCH] kernel/hung_task: fix address space of proc_dohung_task_timeout_secs
+Date:   Thu, 14 Jul 2022 08:47:44 +0100
+Message-Id: <20220714074744.189017-1-ben.dooks@sifive.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Create imx6_pcie_stop_link() and imx6_pcie_host_exit() functions.
-Encapsulate clocks, regulators disables and PHY uninitialization into
-imx6_pcie_host_exit().
+The proc_dohung_task_timeout_secs() function is incorrectly marked
+as having a __user buffer as argument 3. However this is not the
+case and it is casing multiple sparse warnings. Fix the following
+warnings by removing __user from the argument:
 
-To keep suspend/resume symmetric as much as possible, invoke these two
-new created functions in suspend callback.
+kernel/hung_task.c:237:52: warning: incorrect type in argument 3 (different address spaces)
+kernel/hung_task.c:237:52:    expected void *
+kernel/hung_task.c:237:52:    got void [noderef] __user *buffer
+kernel/hung_task.c:287:35: warning: incorrect type in initializer (incompatible argument 3 (different address spaces))
+kernel/hung_task.c:287:35:    expected int ( [usertype] *proc_handler )( ... )
+kernel/hung_task.c:287:35:    got int ( * )( ... )
+kernel/hung_task.c:295:35: warning: incorrect type in initializer (incompatible argument 3 (different address spaces))
+kernel/hung_task.c:295:35:    expected int ( [usertype] *proc_handler )( ... )
+kernel/hung_task.c:295:35:    got int ( * )( ... )
 
-To be symmetric with imx6_pcie_host_exit(), move imx6_pcie_clk_enable()
-to imx6_pcie_host_init() from imx6_pcie_deassert_core_reset().
-
-Link: https://lore.kernel.org/r/1656645935-1370-18-git-send-email-hongxing.zhu@nxp.com
-Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 ---
- drivers/pci/controller/dwc/pci-imx6.c | 62 ++++++++++++++++-----------
- 1 file changed, 37 insertions(+), 25 deletions(-)
+ kernel/hung_task.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 21e9101f63f0..b7a7e3465f28 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -703,13 +703,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+diff --git a/kernel/hung_task.c b/kernel/hung_task.c
+index cff3ae8c818f..bb2354f73ded 100644
+--- a/kernel/hung_task.c
++++ b/kernel/hung_task.c
+@@ -229,7 +229,7 @@ static long hung_timeout_jiffies(unsigned long last_checked,
+  * Process updating of timeout sysctl
+  */
+ static int proc_dohung_task_timeout_secs(struct ctl_table *table, int write,
+-				  void __user *buffer,
++				  void *buffer,
+ 				  size_t *lenp, loff_t *ppos)
  {
- 	struct dw_pcie *pci = imx6_pcie->pci;
- 	struct device *dev = pci->dev;
--	int ret;
--
--	ret = imx6_pcie_clk_enable(imx6_pcie);
--	if (ret) {
--		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
--		return ret;
--	}
- 
- 	switch (imx6_pcie->drvdata->variant) {
- 	case IMX8MQ:
-@@ -904,6 +897,14 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	return 0;
- }
- 
-+static void imx6_pcie_stop_link(struct dw_pcie *pci)
-+{
-+	struct device *dev = pci->dev;
-+
-+	/* Turn off PCIe LTSSM */
-+	imx6_pcie_ltssm_disable(dev);
-+}
-+
- static int imx6_pcie_host_init(struct pcie_port *pp)
- {
- 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-@@ -923,11 +924,17 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 	imx6_pcie_assert_core_reset(imx6_pcie);
- 	imx6_pcie_init_phy(imx6_pcie);
- 
-+	ret = imx6_pcie_clk_enable(imx6_pcie);
-+	if (ret) {
-+		dev_err(dev, "unable to enable pcie clocks: %d\n", ret);
-+		goto err_reg_disable;
-+	}
-+
- 	if (imx6_pcie->phy) {
- 		ret = phy_power_on(imx6_pcie->phy);
- 		if (ret) {
- 			dev_err(dev, "pcie phy power up failed\n");
--			goto err_reg_disable;
-+			goto err_clk_disable;
- 		}
- 	}
- 
-@@ -941,24 +948,40 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
- 		ret = phy_init(imx6_pcie->phy);
- 		if (ret) {
- 			dev_err(dev, "waiting for phy ready timeout!\n");
--			goto err_clk_disable;
-+			goto err_phy_off;
- 		}
- 	}
- 	imx6_setup_phy_mpll(imx6_pcie);
- 
- 	return 0;
- 
--err_clk_disable:
--	imx6_pcie_clk_disable(imx6_pcie);
- err_phy_off:
- 	if (imx6_pcie->phy)
- 		phy_power_off(imx6_pcie->phy);
-+err_clk_disable:
-+	imx6_pcie_clk_disable(imx6_pcie);
- err_reg_disable:
- 	if (imx6_pcie->vpcie)
- 		regulator_disable(imx6_pcie->vpcie);
- 	return ret;
- }
- 
-+static void imx6_pcie_host_exit(struct pcie_port *pp)
-+{
-+	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
-+	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
-+
-+	if (imx6_pcie->phy) {
-+		if (phy_power_off(imx6_pcie->phy))
-+			dev_err(pci->dev, "unable to power off PHY\n");
-+		phy_exit(imx6_pcie->phy);
-+	}
-+	imx6_pcie_clk_disable(imx6_pcie);
-+
-+	if (imx6_pcie->vpcie)
-+		regulator_disable(imx6_pcie->vpcie);
-+}
-+
- static const struct dw_pcie_host_ops imx6_pcie_host_ops = {
- 	.host_init = imx6_pcie_host_init,
- };
-@@ -1008,25 +1031,14 @@ static void imx6_pcie_pm_turnoff(struct imx6_pcie *imx6_pcie)
- static int imx6_pcie_suspend_noirq(struct device *dev)
- {
- 	struct imx6_pcie *imx6_pcie = dev_get_drvdata(dev);
-+	struct pcie_port *pp = &imx6_pcie->pci->pp;
- 
- 	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_SUPPORTS_SUSPEND))
- 		return 0;
- 
- 	imx6_pcie_pm_turnoff(imx6_pcie);
--	imx6_pcie_ltssm_disable(dev);
--	imx6_pcie_clk_disable(imx6_pcie);
--	switch (imx6_pcie->drvdata->variant) {
--	case IMX8MM:
--		if (phy_power_off(imx6_pcie->phy))
--			dev_err(dev, "unable to power off PHY\n");
--		phy_exit(imx6_pcie->phy);
--		break;
--	default:
--		break;
--	}
--
--	if (imx6_pcie->vpcie)
--		regulator_disable(imx6_pcie->vpcie);
-+	imx6_pcie_stop_link(imx6_pcie->pci);
-+	imx6_pcie_host_exit(pp);
- 
- 	return 0;
- }
+ 	int ret;
 -- 
-2.25.1
+2.35.1
 
