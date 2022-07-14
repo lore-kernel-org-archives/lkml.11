@@ -2,87 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26374C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:51:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9ECAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240001AbiGNNu5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:50:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47230 "EHLO
+        id S240153AbiGNNvC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240062AbiGNNuZ (ORCPT
+        with ESMTP id S240070AbiGNNu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:50:25 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3511261734
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-Id:
-        Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=LBBAH8XdZRmaTV7zM6ta6Rvn55sV/KRTIAedB2vOTEM=; b=RhwQHoUYE9gZWHnvUkGvmtvFal
-        gFg6JrNCgbyTmPYFF9ZSfeYGXpZKKBKr4Wu2qFzVKcjVsMomKNG04FER2FN0grjtDxMs3BxuV/M6E
-        Dk65SFGsqjvMwIGV3FVYU5ReG6hDR7IPvwQ7Yo6miKha1LHsNUlp4e0h3LFIX9FgvHnYaxfHR+SE8
-        9yXiW7rjeUSH6qFes+6+FePHtMzzx5+v86lylV+10/Z2RUzUyYvOgkAcpg7t1/uby9b4LZLXVgHUp
-        VwzL0KahmTJN0L6xktbavY4vRs1XnmuWcViJrP3026pE+62KnwexusCleckmDr5etzQk1/7vTkCEE
-        8XiHv01w==;
-Received: from [177.139.47.106] (helo=localhost.localdomain)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oBzEL-00GQUY-WE; Thu, 14 Jul 2022 15:50:14 +0200
-From:   =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>
-To:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?=27Christian=20K=C3=B6nig=27?= <christian.koenig@amd.com>,
-        'Pan Xinhui' <Xinhui.Pan@amd.com>,
-        Hawking Zhang <Hawking.Zhang@amd.com>,
-        Tao Zhou <tao.zhou1@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Jack Xiao <Jack.Xiao@amd.com>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     kernel-dev@igalia.com,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>
-Subject: [PATCH] drm/amdgpu: Clarify asics naming in Kconfig options
-Date:   Thu, 14 Jul 2022 10:49:50 -0300
-Message-Id: <20220714134950.9564-1-andrealmeid@igalia.com>
-X-Mailer: git-send-email 2.37.0
+        Thu, 14 Jul 2022 09:50:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 388635A2C8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657806619;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PLuRafkZtBCywSVSqljKS2EN4kWDFVZJDuGnWhXhD1Y=;
+        b=ECRxEZOdBaaZIBB2xiUo6rNYQaajb6helCoL5PQAPXYMFeuu9gCWeEMb/jXUvMB/15kg19
+        8fv+DtNT6m0dd6TRe/jLiMjTh3hdPxlFyZQcYuKPwRE3EME+v3OR3oHnKJNLJ6pUmAIY1J
+        qepjkGfaFE4Foo55Gi0wqEQA5/FmUjg=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-53-Y14et7kcOuq2Vk8uW19zUQ-1; Thu, 14 Jul 2022 09:50:16 -0400
+X-MC-Unique: Y14et7kcOuq2Vk8uW19zUQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4D96A811766;
+        Thu, 14 Jul 2022 13:50:15 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5DB012166B2B;
+        Thu, 14 Jul 2022 13:50:13 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Siddharth Chandrasekaran <sidcha@amazon.de>,
+        Yuan Yao <yuan.yao@linux.intel.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v8 18/39] KVM: x86: hyper-v: Introduce fast guest_hv_cpuid_has_l2_tlb_flush() check
+Date:   Thu, 14 Jul 2022 15:49:08 +0200
+Message-Id: <20220714134929.1125828-19-vkuznets@redhat.com>
+In-Reply-To: <20220714134929.1125828-1-vkuznets@redhat.com>
+References: <20220714134929.1125828-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clarify which architecture those asics acronyms refers to.
+Introduce a helper to quickly check if KVM needs to handle VMCALL/VMMCALL
+from L2 in L0 to process L2 TLB flush requests.
 
-Signed-off-by: André Almeida <andrealmeid@igalia.com>
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- drivers/gpu/drm/amd/amdgpu/Kconfig | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/hyperv.c           | 6 ++++++
+ arch/x86/kvm/hyperv.h           | 7 +++++++
+ 3 files changed, 14 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/Kconfig b/drivers/gpu/drm/amd/amdgpu/Kconfig
-index 74a8105fd2c0..7777d55275de 100644
---- a/drivers/gpu/drm/amd/amdgpu/Kconfig
-+++ b/drivers/gpu/drm/amd/amdgpu/Kconfig
-@@ -4,7 +4,7 @@ config DRM_AMDGPU_SI
- 	depends on DRM_AMDGPU
- 	help
- 	  Choose this option if you want to enable experimental support
--	  for SI asics.
-+	  for SI (Southern Islands) asics.
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 2e64f7618ab5..58d1edd7ae8b 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -642,6 +642,7 @@ struct kvm_vcpu_hv {
+ 		u32 enlightenments_eax; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EAX */
+ 		u32 enlightenments_ebx; /* HYPERV_CPUID_ENLIGHTMENT_INFO.EBX */
+ 		u32 syndbg_cap_eax; /* HYPERV_CPUID_SYNDBG_PLATFORM_CAPABILITIES.EAX */
++		u32 nested_features_eax; /* HYPERV_CPUID_NESTED_FEATURES.EAX */
+ 	} cpuid_cache;
  
- 	  SI is already supported in radeon. Experimental support for SI
- 	  in amdgpu will be disabled by default and is still provided by
-@@ -16,7 +16,8 @@ config DRM_AMDGPU_CIK
- 	bool "Enable amdgpu support for CIK parts"
- 	depends on DRM_AMDGPU
- 	help
--	  Choose this option if you want to enable support for CIK asics.
-+	  Choose this option if you want to enable support for CIK (Sea
-+	  Islands) asics.
+ 	struct kvm_vcpu_hv_tlb_flush_fifo tlb_flush_fifo[HV_NR_TLB_FLUSH_FIFOS];
+diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
+index da1f1f508a5c..4ddf1a71ea43 100644
+--- a/arch/x86/kvm/hyperv.c
++++ b/arch/x86/kvm/hyperv.c
+@@ -2229,6 +2229,12 @@ void kvm_hv_set_cpuid(struct kvm_vcpu *vcpu)
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = entry->eax;
+ 	else
+ 		hv_vcpu->cpuid_cache.syndbg_cap_eax = 0;
++
++	entry = kvm_find_cpuid_entry(vcpu, HYPERV_CPUID_NESTED_FEATURES, 0);
++	if (entry)
++		hv_vcpu->cpuid_cache.nested_features_eax = entry->eax;
++	else
++		hv_vcpu->cpuid_cache.nested_features_eax = 0;
+ }
  
- 	  CIK is already supported in radeon. Support for CIK in amdgpu
- 	  will be disabled by default and is still provided by radeon.
+ int kvm_hv_set_enforce_cpuid(struct kvm_vcpu *vcpu, bool enforce)
+diff --git a/arch/x86/kvm/hyperv.h b/arch/x86/kvm/hyperv.h
+index 892c252b9bc3..0985c4beb69e 100644
+--- a/arch/x86/kvm/hyperv.h
++++ b/arch/x86/kvm/hyperv.h
+@@ -170,6 +170,13 @@ static inline void kvm_hv_vcpu_empty_flush_tlb(struct kvm_vcpu *vcpu)
+ 	kfifo_reset_out(&tlb_flush_fifo->entries);
+ }
+ 
++static inline bool guest_hv_cpuid_has_l2_tlb_flush(struct kvm_vcpu *vcpu)
++{
++	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
++
++	return hv_vcpu && (hv_vcpu->cpuid_cache.nested_features_eax & HV_X64_NESTED_DIRECT_FLUSH);
++}
++
+ static inline bool kvm_hv_is_tlb_flush_hcall(struct kvm_vcpu *vcpu)
+ {
+ 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 -- 
-2.37.0
+2.35.3
 
