@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D982DCCA486
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:34:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0616C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:34:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237135AbiGNEev (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:34:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45536 "EHLO
+        id S237365AbiGNEez (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:34:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237547AbiGNEdP (ORCPT
+        with ESMTP id S237030AbiGNEd2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:33:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB9C3A4A0;
-        Wed, 13 Jul 2022 21:25:56 -0700 (PDT)
+        Thu, 14 Jul 2022 00:33:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE9D23A4AF;
+        Wed, 13 Jul 2022 21:25:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C637DB82381;
-        Thu, 14 Jul 2022 04:25:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7057DC34115;
-        Thu, 14 Jul 2022 04:25:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39A8BB8237C;
+        Thu, 14 Jul 2022 04:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF85DC341CD;
+        Thu, 14 Jul 2022 04:25:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772753;
-        bh=NS6Ip8n5acsijBVdlEeG+w91FXwLAGrzmxhdKFH/fpk=;
+        s=k20201202; t=1657772756;
+        bh=qkcI0ibRvlGXIrDjkDBd+8nMkl5CVlAV+udAK+KaoWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7JN/mzCy6gI9G+pT8Ud2AjqQztqCYCgoUU9wZ5ZMeLD5ZqLQ9Dry7GfuxNdvGFjP
-         YPsoJ4/nGzCOpXqRz9yxtiCD2mHs3P3bzm6nkm7THU6hRz6ZLviL+DjfSRIUFywupY
-         rq2BQ9VzJ31332np9GYHbnmP4vvn2JHzumlyXHCvl5W89Ta+MQxn/Cv4eTb5VNGwU4
-         F+X415QDuqUIY8+TgLv+IFz/6663GWR3TXU3ItmC8r/+bnjeStUmbE9DXbe/nTRu/q
-         93BWn+G4xEv8ohdEycGuFsWlRYegZVx28QErhz4Wj4JTsyO1O/f2j3/UvgsMEoD2nO
-         UdZz8EqqZgI0Q==
+        b=pAkpsrz1FbT9k3H6dWQLoxBA8ykPnX2f+irL8WGjbsnwgVlmF07qvK+q/8swUAj7v
+         ZHY9DENte2uZ9LU8egyadidX9nxz993qAdd2omsnsWQmHy8lEvXQeU2BaiBiKdp2k0
+         CDyoPqHq/97dVaOo3l3foaNvK1vG8Wn1hK2nGALSU+RpBfH7BPJlOYi9sxaq4rJNUr
+         uCS6ocuZZQp+0c+06iH6fo3AasnsZzh79lS7nyB9HLu/2pWO6FK0EugOJqN7bjIil3
+         T5Grpy+t8oOQR17rOQ+qHGt/4bGDFfz3iPfyGztXVpwgdzffGDnzynA5zBb9EhkQVe
+         Cn7NzHi8SWilw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
         Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.10 05/15] ASoC: dapm: Initialise kcontrol data for mux/demux controls
-Date:   Thu, 14 Jul 2022 00:25:30 -0400
-Message-Id: <20220714042541.282175-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, rf@opensource.cirrus.com,
+        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
+        alsa-devel@alsa-project.org, patches@opensource.cirrus.com
+Subject: [PATCH AUTOSEL 5.10 07/15] ASoC: madera: Fix event generation for OUT1 demux
+Date:   Thu, 14 Jul 2022 00:25:32 -0400
+Message-Id: <20220714042541.282175-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042541.282175-1-sashal@kernel.org>
 References: <20220714042541.282175-1-sashal@kernel.org>
@@ -54,55 +55,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-[ Upstream commit 11d7a12f7f50baa5af9090b131c9b03af59503e7 ]
+[ Upstream commit e3cabbef3db8269207a6b8808f510137669f8deb ]
 
-DAPM keeps a copy of the current value of mux/demux controls,
-however this value is only initialised in the case of autodisable
-controls. This leads to false notification events when first
-modifying a DAPM kcontrol that has a non-zero default.
-
-Autodisable controls are left as they are, since they already
-initialise the value, and there would be more work required to
-support autodisable muxes where the first option isn't disabled
-and/or that isn't the default.
-
-Technically this issue could affect mixer/switch elements as well,
-although not on any of the devices I am currently running. There
-is also a little more work to do to address the issue there due to
-that side supporting stereo controls, so that has not been tackled
-in this patch.
+madera_out1_demux_put returns the value of
+snd_soc_dapm_mux_update_power, which returns a 1 if a path was found for
+the kcontrol. This is obviously different to the expected return a 1 if
+the control was updated value. This results in spurious notifications to
+user-space. Update the handling to only return a 1 when the value is
+changed.
 
 Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220623105120.1981154-1-ckeepax@opensource.cirrus.com
+Link: https://lore.kernel.org/r/20220623105120.1981154-4-ckeepax@opensource.cirrus.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/soc-dapm.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ sound/soc/codecs/madera.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
-index f2f7f2dde93c..754c1f16ee83 100644
---- a/sound/soc/soc-dapm.c
-+++ b/sound/soc/soc-dapm.c
-@@ -62,6 +62,8 @@ struct snd_soc_dapm_widget *
- snd_soc_dapm_new_control_unlocked(struct snd_soc_dapm_context *dapm,
- 			 const struct snd_soc_dapm_widget *widget);
+diff --git a/sound/soc/codecs/madera.c b/sound/soc/codecs/madera.c
+index 680f31a6493a..a74c9b28368b 100644
+--- a/sound/soc/codecs/madera.c
++++ b/sound/soc/codecs/madera.c
+@@ -618,7 +618,13 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
+ end:
+ 	snd_soc_dapm_mutex_unlock(dapm);
  
-+static unsigned int soc_dapm_read(struct snd_soc_dapm_context *dapm, int reg);
+-	return snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	ret = snd_soc_dapm_mux_update_power(dapm, kcontrol, mux, e, NULL);
++	if (ret < 0) {
++		dev_err(madera->dev, "Failed to update demux power state: %d\n", ret);
++		return ret;
++	}
 +
- /* dapm power sequences - make this per codec in the future */
- static int dapm_up_seq[] = {
- 	[snd_soc_dapm_pre] = 1,
-@@ -442,6 +444,9 @@ static int dapm_kcontrol_data_alloc(struct snd_soc_dapm_widget *widget,
++	return change;
+ }
+ EXPORT_SYMBOL_GPL(madera_out1_demux_put);
  
- 			snd_soc_dapm_add_path(widget->dapm, data->widget,
- 					      widget, NULL, NULL);
-+		} else if (e->reg != SND_SOC_NOPM) {
-+			data->value = soc_dapm_read(widget->dapm, e->reg) &
-+				      (e->mask << e->shift_l);
- 		}
- 		break;
- 	default:
 -- 
 2.35.1
 
