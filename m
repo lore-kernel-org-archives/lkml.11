@@ -2,118 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70257C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239834AbiGNPB1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 11:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39450 "EHLO
+        id S239854AbiGNPBj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 11:01:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239817AbiGNPB0 (ORCPT
+        with ESMTP id S239849AbiGNPBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 11:01:26 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2EF45E33B;
-        Thu, 14 Jul 2022 08:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SD+E46jleghc1zhKhR9PveNf5aZVNxzYDkkNEuLw6xs=; b=jPDf1sXvRlPt3kdJgvEDxX2uey
-        IoOgOI2HYUqGtfmOWtAn/eLsTaubeRmEpDtlThTCaZPwh0qo4P1axzKtPseySrD5Z6TKVVf6Gx+J8
-        gwHyY7HD7pLZ1C4EqAV8nJIwcWGj3NENks9j2m0vCDOYMwuT0t/E8/6AY7TNYUuCW6X3CRo4Li2Mg
-        xHCkAj6UAHswTSl4wssGSfxEJ09ev0/AyK87B61JTyjy5th087ygs0og9jduneGmc4yOxzyUrwNim
-        vtVDigEUVgARQqcOg7FQ/RTTbMkFszxNB9lNYZHadrXPaLU5tdUk2FYt8K8vRzOMUWBB0z3KTOu63
-        yl6BYIoA==;
-Received: from [177.139.47.106] (helo=[192.168.15.109])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oC0L8-00GV8X-3S; Thu, 14 Jul 2022 17:01:18 +0200
-Message-ID: <8bfd13a7-ed02-00dd-63a1-7144f2e55ef0@igalia.com>
-Date:   Thu, 14 Jul 2022 12:00:59 -0300
+        Thu, 14 Jul 2022 11:01:37 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A0C6068A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:01:34 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id y11so3259876lfs.6
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:01:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:content-language:to:from
+         :subject:content-transfer-encoding;
+        bh=MIvJ+dTvC2QCMrwX9S6dc6CiUQzlyJP9LJtRNfIgjKM=;
+        b=rCN5/JSlxwK3J4+DDpco0pWRJRIt0odUB/5Yp/Qahsjwi0O6HfyyaVCZaa3WLkj/+k
+         r97rotwWMIKWo22DGvWqQmlfCdZZppvzaodyD/zTkiHv016EomPgp+IRX0KIedZselw4
+         cy2ClqGNDaI+jZwC/0IaVjtEaBqKKmtlXn7FN0Rqo/tBszN4yTxqDltpYgKh+pmWYsEG
+         4I+t6q370K1wcg3hxFI1QG1RFdPJa5JkzimCprcGIzhRCdWAU2uvD5QU+E+kZ2xDMASD
+         h52l741rzmXFMTDkcEEB/Vzh920ybH50dSWXzY+qWyISo8bYptYTmnPnIFl2FP6E0gbd
+         WMXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:from:subject:content-transfer-encoding;
+        bh=MIvJ+dTvC2QCMrwX9S6dc6CiUQzlyJP9LJtRNfIgjKM=;
+        b=T6AvTuc4Rn1N/MrjXwProLTsp9qbrCNc3ITGyfsBUUY0KRtrZUCBCrFIc1Et2vp8jl
+         XNUFoJeuqu8CPgePJ/iZFUzsKP9sOrk4w8BFI48AjA3u7vV7JETnT3esh6DFLd669ZxB
+         sngm+3L1VGg1iPx7MkUbmpzp+xj7R7r2BcidwdXdUJ/IEp5Uo87o55nOB/agFNTrng1E
+         hEM5L+xNH0wTbGtjTqCHx1fJC6Pm9q26PU+MuYmdJ/nOb8Gje0aZRgg+O1BjEV0Nf4DQ
+         R+ngFRa2jzRlsr2oQJOnKQu4OJLLVjE9qdpD3pEUnR2Rt4eEqAF2Jo8xxkK7ek9u/+sd
+         J/2g==
+X-Gm-Message-State: AJIora9jhnftlt4V2kmSFwsqb5y7VQtjXuVxx0YidH2RXiBJb+1CH2wH
+        BYmuCe66K1cQjqsrGiAGQFwo8/FO4Bu1VA==
+X-Google-Smtp-Source: AGRyM1tXfnUyMCAtrzJ677sUr0DbtxIm368B1UCe2FmPYt3SweTXtKsvKLUf5tKTzmeLxKxkyU7LEw==
+X-Received: by 2002:ac2:4e12:0:b0:489:ddbe:83c5 with SMTP id e18-20020ac24e12000000b00489ddbe83c5mr5754993lfr.371.1657810892811;
+        Thu, 14 Jul 2022 08:01:32 -0700 (PDT)
+Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
+        by smtp.gmail.com with ESMTPSA id u15-20020a05651220cf00b0047920d89606sm396700lfr.187.2022.07.14.08.01.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 08:01:31 -0700 (PDT)
+Message-ID: <e759045a-bc01-c194-35ad-42b534ccaa01@linaro.org>
+Date:   Thu, 14 Jul 2022 17:01:29 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [RFC] futex2: add NUMA awareness
 Content-Language: en-US
-To:     Andrey Semashev <andrey.semashev@gmail.com>
-Cc:     linux-api@vger.kernel.org, fweimer@redhat.com,
-        linux-kernel@vger.kernel.org, Darren Hart <dvhart@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        libc-alpha@sourceware.org, Davidlohr Bueso <dave@stgolabs.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-References: <36a8f60a-69b2-4586-434e-29820a64cd88@igalia.com>
- <74ba5239-27b0-299e-717c-595680cd52f9@gmail.com>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
-In-Reply-To: <74ba5239-27b0-299e-717c-595680cd52f9@gmail.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Question: regmap_field_write() - why using update?
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andrey,
+Hi guys,
 
-Thanks for the feedback.
+I am converting my driver using MMIO to regmap from readl/writel and to
+my surprise I found that regmap_field_write() does not behave the same
+as regmap_write(). I would expect that they are the same, except one
+operates on fields.
 
-Às 08:01 de 14/07/22, Andrey Semashev escreveu:
-> On 7/14/22 06:18, André Almeida wrote:
-[...]
->>
->> Feedback? Who else should I CC?
-> 
-> Just a few questions:
-> 
-> Do I understand correctly that notifiers won't be able to wake up
-> waiters unless they know on which node they are waiting?
-> 
+However regmap_field_write() uses an update method [1] which means it
+reads and performs update. regmap_write() simply writes without a read.
 
-If userspace is using NUMA_FLAG, yes. Otherwise all futexes would be
-located in the default node, and userspace doesn't need to know which
-one is the default.
+I find it inconsistent and a bit confusing. Any reasons for such
+behavior so I won't send a patch which breaks 100 of devices?
 
-> Is it possible to wait on a futex on different nodes?
+[1]
+https://elixir.bootlin.com/linux/latest/source/include/linux/regmap.h#L1307
 
-Yes, given that you specify `.hint = id` with the proper node id.
-
-> 
-> Is it possible to wake waiters on a futex on all nodes? When a single
-> (or N, where N is not "all") waiter is woken, which node is selected? Is
-> there a rotation of nodes, so that nodes are not skewed in terms of
-> notified waiters?
-
-Regardless of which node the waiter process is running, what matter is
-in which node the futex hash table is. So for instance if we have:
-
-	struct futex32_numa f = {.value = 0, hint = 2};
-
-And now we add some waiters for this futex:
-
-Thread 1, running on node 3:
-
-	futex_wait(&f, 0, FUTEX_NUMA | FUTEX_32, NULL);
-
-Thread 2, running on node 0:
-
-	futex_wait(&f, 0, FUTEX_NUMA | FUTEX_32, NULL);
-
-Thread 3, running on node 2:
-
-	futex_wait(&f, 0, FUTEX_NUMA | FUTEX_32, NULL);
-
-And then, Thread 4, running on node 3:
-
-	futex_wake(&f, 2, FUTEX_NUMA | FUTEX_32);
-
-Now, two waiter would wake up (e.g. T1 and T3, node 3 and 2) and they
-are from different nodes. futex_wake() doesn't provide guarantees of
-which waiter will be selected, so I can't say which node would be
-selected. There's no policy for fairness/starvation for futex_wake(). Do
-you think this would be important for the NUMA case?
-
-Let me know if this clarifies your questions.
+Best regards,
+Krzysztof
