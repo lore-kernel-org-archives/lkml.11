@@ -2,165 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 994BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:22:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6FDC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:22:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237881AbiGNQWg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S238022AbiGNQWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:22:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiGNQWa (ORCPT
+        with ESMTP id S235646AbiGNQWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:22:30 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 261CC62496
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:22:29 -0700 (PDT)
+        Thu, 14 Jul 2022 12:22:32 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF91962494
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:22:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657815749; x=1689351749;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=H7HDPGwlOFF7Yq4G5L3GwQFJTE8YQ724tcND/EmRbRo=;
-  b=cqHgphymBtrLZLARnMvJdxF1sZBso/hrbA4qe7GN6eUmqb9JXAOy8eRQ
-   1Qi9gq/IgzPcJ0nP/xlcZhEBSkUUVtVK+XzYYCHkLoz583HGwCLGMigW4
-   fpKGEKS3wGggekPwpr9KN9//z5bm5pd+Tra5/ImKwfJucI5NFBf1znmbU
-   5LRnvur64ybpf3/j8cCoICHLSbzH12dzHSMHKH5Muej5nILfnO45BM3v5
-   065LPfwyuABBA75Gkyuh8VcNZmO85vcL0/R1SSbYWOWhc9QJP4nPAfRug
-   Vm4gxmMPdGmbD63gsWgbySnv6+7Xz+0afY6/9nHmxaakSwHwdrccr5K6u
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="286699858"
+  t=1657815750; x=1689351750;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=chXGxij14yz9RDImAqjuwivX5bwn03mJi+ZsjScjEuo=;
+  b=JUkKilsJeeLrjux3WZExCCw4htLRTYZ/W2nVPSz6Q3gkX3oiMnXc8hRr
+   /qUs9ueYzORxOHycdDxD8DqIOG7WQQgsWpQYfmYXSg71j+laLVtpvVP1Z
+   B8vCT/KmmRiUUC7s3SbwDPXC8LfKOLhp+FubZ0yPK7tS6GOmxxz9zcMn0
+   m90xXZxqvawRKfAYps4rHRKhFeDz7cAwS7abGtbYs088u4wr5GK6JIOVL
+   8oOPqQGA85yA+Ze0WTc0JrjOV5Alr4m5H62F3S1gakwos3INjL+ewIf6D
+   0w/NEAgZybon0HLQjkzg0WhrGrMV6T5i4ICP+T8PTCxEfvDxN58gFdjSd
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="283119225"
 X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="286699858"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 09:22:28 -0700
+   d="scan'208";a="283119225"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 09:22:30 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="738332920"
+   d="scan'208";a="593424634"
 Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Jul 2022 09:22:27 -0700
+  by orsmga007.jf.intel.com with ESMTP; 14 Jul 2022 09:22:27 -0700
 Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
         (envelope-from <lkp@intel.com>)
-        id 1oC1be-0000qz-JY;
+        id 1oC1be-0000rA-NX;
         Thu, 14 Jul 2022 16:22:26 +0000
-Date:   Fri, 15 Jul 2022 00:21:33 +0800
+Date:   Fri, 15 Jul 2022 00:21:30 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     William Tu <u9012063@gmail.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        0day robot <lkp@intel.com>
-Subject: drivers/net/vmxnet3/vmxnet3_drv.c:1557:13: warning: variable
- 'delta_len' set but not used
-Message-ID: <202207150027.C0HuxMn8-lkp@intel.com>
+To:     Nicholas Piggin <npiggin@gmail.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "linux-kernel @ vger . kernel . org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 07/12] locking/qspinlock: remove arch
+ qspinlock_paravirt.h includes
+Message-ID: <202207150003.29YhgBtE-lkp@intel.com>
+References: <20220713070704.308394-8-npiggin@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220713070704.308394-8-npiggin@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220714-210938/William-Tu/vmxnet3-Add-XDP-support/20220707-213553
-head:   4340e33d0526f1a236e07f564ab630fe1df9a776
-commit: 4340e33d0526f1a236e07f564ab630fe1df9a776 vmxnet3: Add XDP support.
-date:   3 hours ago
-config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20220715/202207150027.C0HuxMn8-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+Hi Nicholas,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on tip/locking/core]
+[also build test WARNING on tip/x86/core powerpc/next linus/master v5.19-rc6 next-20220714]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Nicholas-Piggin/locking-qspinlock-simplify-code-generation/20220713-151009
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git eae6d58d67d9739be5f7ae2dbead1d0ef6528243
+config: i386-randconfig-a004 (https://download.01.org/0day-ci/archive/20220715/202207150003.29YhgBtE-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e61b9c556267086ef9b743a0b57df302eef831b)
 reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/4340e33d0526f1a236e07f564ab630fe1df9a776
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/87679eeea9f1939c252d16df3ac6a01bf9daaa60
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review UPDATE-20220714-210938/William-Tu/vmxnet3-Add-XDP-support/20220707-213553
-        git checkout 4340e33d0526f1a236e07f564ab630fe1df9a776
+        git fetch --no-tags linux-review Nicholas-Piggin/locking-qspinlock-simplify-code-generation/20220713-151009
+        git checkout 87679eeea9f1939c252d16df3ac6a01bf9daaa60
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/locking/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
-   drivers/net/vmxnet3/vmxnet3_drv.c: In function '__vmxnet3_run_xdp':
->> drivers/net/vmxnet3/vmxnet3_drv.c:1557:13: warning: variable 'delta_len' set but not used [-Wunused-but-set-variable]
-    1557 |         int delta_len;
-         |             ^~~~~~~~~
->> drivers/net/vmxnet3/vmxnet3_drv.c:1556:18: warning: variable 'delta' set but not used [-Wunused-but-set-variable]
-    1556 |         int err, delta;
-         |                  ^~~~~
+   In file included from kernel/locking/qspinlock.c:29:
+   kernel/locking/qspinlock_stat.h:36:9: warning: no previous prototype for function 'lockevent_read' [-Wmissing-prototypes]
+   ssize_t lockevent_read(struct file *file, char __user *user_buf,
+           ^
+   kernel/locking/qspinlock_stat.h:36:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   ssize_t lockevent_read(struct file *file, char __user *user_buf,
+   ^
+   static 
+   kernel/locking/qspinlock.c:705:1: warning: no previous prototype for function '__pv_queued_spin_unlock_slowpath' [-Wmissing-prototypes]
+   __pv_queued_spin_unlock_slowpath(struct qspinlock *lock, u8 locked)
+   ^
+   kernel/locking/qspinlock.c:704:11: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   __visible void
+             ^
+             static 
+>> kernel/locking/qspinlock.c:749:16: warning: no previous prototype for function '__pv_queued_spin_unlock' [-Wmissing-prototypes]
+   __visible void __pv_queued_spin_unlock(struct qspinlock *lock)
+                  ^
+   kernel/locking/qspinlock.c:749:11: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   __visible void __pv_queued_spin_unlock(struct qspinlock *lock)
+             ^
+             static 
+   3 warnings generated.
 
 
-vim +/delta_len +1557 drivers/net/vmxnet3/vmxnet3_drv.c
+vim +/__pv_queued_spin_unlock +749 kernel/locking/qspinlock.c
 
-  1546	
-  1547	static int
-  1548	__vmxnet3_run_xdp(struct vmxnet3_rx_queue *rq, void *data, int data_len,
-  1549			  int headroom, int frame_sz, bool *need_xdp_flush)
-  1550	{
-  1551		struct xdp_frame *xdpf;
-  1552		void *buf_hard_start;
-  1553		struct xdp_buff xdp;
-  1554		struct page *page;
-  1555		void *orig_data;
-> 1556		int err, delta;
-> 1557		int delta_len;
-  1558		u32 act;
-  1559	
-  1560		buf_hard_start = data;
-  1561		xdp_init_buff(&xdp, frame_sz, &rq->xdp_rxq);
-  1562		xdp_prepare_buff(&xdp, buf_hard_start, headroom, data_len, false);
-  1563		orig_data = xdp.data;
-  1564	
-  1565		act = bpf_prog_run_xdp(rq->xdp_bpf_prog, &xdp);
-  1566		rq->stats.xdp_packets++;
-  1567	
-  1568		switch (act) {
-  1569		case XDP_DROP:
-  1570			rq->stats.xdp_drops++;
-  1571			break;
-  1572		case XDP_PASS:
-  1573			delta = xdp.data - orig_data;
-  1574			delta_len = (xdp.data_end - xdp.data) - data_len;
-  1575			/* FIXME */
-  1576			break;
-  1577		case XDP_TX:
-  1578			xdpf = xdp_convert_buff_to_frame(&xdp);
-  1579			if (!xdpf ||
-  1580			    vmxnet3_xdp_xmit_back(rq->adapter, xdpf, NULL)) {
-  1581				rq->stats.xdp_drops++;
-  1582			} else {
-  1583				rq->stats.xdp_tx++;
-  1584			}
-  1585			break;
-  1586		case XDP_ABORTED:
-  1587			trace_xdp_exception(rq->adapter->netdev, rq->xdp_bpf_prog,
-  1588					    act);
-  1589			rq->stats.xdp_aborted++;
-  1590			break;
-  1591		case XDP_REDIRECT:
-  1592			page = alloc_page(GFP_ATOMIC);
-  1593			if (!page) {
-  1594				rq->stats.rx_buf_alloc_failure++;
-  1595				return XDP_DROP;
-  1596			}
-  1597			xdp_init_buff(&xdp, PAGE_SIZE, &rq->xdp_rxq);
-  1598			xdp_prepare_buff(&xdp, page_address(page),
-  1599					 XDP_PACKET_HEADROOM,
-  1600					 data_len, false);
-  1601			memcpy(xdp.data, data, data_len);
-  1602			err = xdp_do_redirect(rq->adapter->netdev, &xdp,
-  1603					      rq->xdp_bpf_prog);
-  1604			if (!err) {
-  1605				rq->stats.xdp_redirects++;
-  1606			} else {
-  1607				__free_page(page);
-  1608				rq->stats.xdp_drops++;
-  1609			}
-  1610			*need_xdp_flush = true;
-  1611			break;
-  1612		default:
-  1613			bpf_warn_invalid_xdp_action(rq->adapter->netdev,
-  1614						    rq->xdp_bpf_prog, act);
-  1615			break;
-  1616		}
-  1617		return act;
-  1618	}
-  1619	
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  699  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  700  /*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  701   * PV versions of the unlock fastpath and slowpath functions to be used
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  702   * instead of queued_spin_unlock().
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  703   */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  704  __visible void
+91668ee1ed703d7 Nicholas Piggin 2022-07-13 @705  __pv_queued_spin_unlock_slowpath(struct qspinlock *lock, u8 locked)
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  706  {
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  707  	struct qnode *node;
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  708  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  709  	if (unlikely(locked != _Q_SLOW_VAL)) {
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  710  		WARN(!debug_locks_silent,
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  711  		     "pvqspinlock: lock 0x%lx has corrupted value 0x%x!\n",
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  712  		     (unsigned long)lock, atomic_read(&lock->val));
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  713  		return;
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  714  	}
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  715  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  716  	/*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  717  	 * A failed cmpxchg doesn't provide any memory-ordering guarantees,
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  718  	 * so we need a barrier to order the read of the node data in
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  719  	 * pv_unhash *after* we've read the lock being _Q_SLOW_VAL.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  720  	 *
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  721  	 * Matches the cmpxchg() in pv_wait_head_or_lock() setting _Q_SLOW_VAL.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  722  	 */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  723  	smp_rmb();
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  724  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  725  	/*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  726  	 * Since the above failed to release, this must be the SLOW path.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  727  	 * Therefore start by looking up the blocked node and unhashing it.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  728  	 */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  729  	node = pv_unhash(lock);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  730  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  731  	/*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  732  	 * Now that we have a reference to the (likely) blocked qnode,
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  733  	 * release the lock.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  734  	 */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  735  	smp_store_release(&lock->locked, 0);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  736  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  737  	/*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  738  	 * At this point the memory pointed at by lock can be freed/reused,
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  739  	 * however we can still use the qnode to kick the CPU.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  740  	 * The other vCPU may not really be halted, but kicking an active
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  741  	 * vCPU is harmless other than the additional latency in completing
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  742  	 * the unlock.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  743  	 */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  744  	lockevent_inc(pv_kick_unlock);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  745  	pv_kick(node->cpu);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  746  }
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  747  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  748  #ifndef __pv_queued_spin_unlock
+91668ee1ed703d7 Nicholas Piggin 2022-07-13 @749  __visible void __pv_queued_spin_unlock(struct qspinlock *lock)
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  750  {
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  751  	u8 locked;
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  752  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  753  	/*
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  754  	 * We must not unlock if SLOW, because in that case we must first
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  755  	 * unhash. Otherwise it would be possible to have multiple @lock
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  756  	 * entries, which would be BAD.
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  757  	 */
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  758  	locked = cmpxchg_release(&lock->locked, _Q_LOCKED_VAL, 0);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  759  	if (likely(locked == _Q_LOCKED_VAL))
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  760  		return;
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  761  
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  762  	__pv_queued_spin_unlock_slowpath(lock, locked);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  763  }
+87679eeea9f1939 Nicholas Piggin 2022-07-13  764  EXPORT_SYMBOL(__pv_queued_spin_unlock);
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  765  #endif
+91668ee1ed703d7 Nicholas Piggin 2022-07-13  766  
 
 -- 
 0-DAY CI Kernel Test Service
