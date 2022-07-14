@@ -2,68 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42E63CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:55:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E926ECCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239096AbiGNLzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:55:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
+        id S239114AbiGNL4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:56:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiGNLzV (ORCPT
+        with ESMTP id S229472AbiGNL4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:55:21 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F7132B85;
-        Thu, 14 Jul 2022 04:55:19 -0700 (PDT)
-Received: from nazgul.tnic (unknown [193.86.92.180])
+        Thu, 14 Jul 2022 07:56:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E422F649;
+        Thu, 14 Jul 2022 04:56:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id DF55C1EC04C2;
-        Thu, 14 Jul 2022 13:55:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657799714;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=VigSIAP0vMooED+iGpln09ZtL2HUkXcMkFxO04zQRFc=;
-        b=qlemYsAJq/zsR7aF/InNlmVZnmbXsupJ6sQI+8ovCd2BfHD0pmalslGdL64IkWQDm12Y6f
-        ugFUEhilLs3vMlx/rvCrdKzde5qVJuv6HjgAhPq4sMeWRu9Ja96ctisAUTKVGqhBlD+tbw
-        HN+rqBPo8VKNRvFj8Zkmmkg5x58bpB8=
-Date:   Thu, 14 Jul 2022 13:54:29 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org, x86@kernel.org,
-        stable@vger.kernel.org, Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Linux Kernel Functional Testing <lkft@linaro.org>
-Subject: Re: [PATCH] x86/kvm: fix FASTOP_SIZE when return thunks are enabled
-Message-ID: <YtAD9S/9L6nT2OFw@nazgul.tnic>
-References: <20220713171241.184026-1-cascardo@canonical.com>
- <Ys/ncSnSFEST4fgL@worktop.programming.kicks-ass.net>
- <976510d2-c7ad-2108-27e0-4c3b82c210f1@redhat.com>
- <YtACcLRLs3qlwbbV@kroah.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BCDDE61DC2;
+        Thu, 14 Jul 2022 11:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF3A1C34115;
+        Thu, 14 Jul 2022 11:56:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657799772;
+        bh=kbzF1kLHKSnjmvKzE1B04rfZDRLuGvWeaRxAyzu0zY0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uioFVVvM4CuB8Cfy1Wnkf0bsSPSHmBvnbY490+p6SfkOQX6vhrUtS24R5msgi5usq
+         cA3Xc1SA0NIvYeMeKdeXm0fZzsqjQUhSB5lh/0ZBrrknNeWEy+luAprEs+7k8P4FXC
+         VEIdpUj1dX0hZ1/OYjjXwxoQ5wYAdMqv/uHCQCJWvNQiG3q2mA4TdMDKtpkiCsXbXA
+         0CEE/mj7VbAn3XIDOdamhnWbM/aoAathcKyKQAWDboc28+B+khvq+yCBlrE3drLLD9
+         VsF1WEzRCilGtsV8TLPoWiCrKtFetAVMx2AMyNXgrZmXgLbl9t93TqInfFIoSW4oTM
+         t+StI/FtsJN/g==
+Received: by pali.im (Postfix)
+        id 5249C12EF; Thu, 14 Jul 2022 13:56:09 +0200 (CEST)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Cc:     linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 2/4] doc: gpio-mvebu: Add information about Armada 38x and Armada 39x
+Date:   Thu, 14 Jul 2022 13:55:13 +0200
+Message-Id: <20220714115515.5748-2-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220714115515.5748-1-pali@kernel.org>
+References: <20220714115515.5748-1-pali@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YtACcLRLs3qlwbbV@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 01:48:00PM +0200, Greg Kroah-Hartman wrote:
-> Shouldn't this go through the x86-urgent tree with the other retbleed
-> fixes?
+Armada 38x and Armada 39x should use compatible string "marvel,armadaxp-gpio".
 
-I zapped the simpler version I had in tip:x86/urgent so that Paolo can
-route this one without conflicts to Linus.
+Signed-off-by: Pali Rohár <pali@kernel.org>
+---
+ Documentation/devicetree/bindings/gpio/gpio-mvebu.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thx.
-
+diff --git a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+index 0fc6700ed800..3bc8f5caf328 100644
+--- a/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
++++ b/Documentation/devicetree/bindings/gpio/gpio-mvebu.txt
+@@ -10,7 +10,7 @@ Required properties:
+     should be used for the Discovery MV78200.
+ 
+     "marvel,armadaxp-gpio" should be used for all Armada XP SoCs
+-    (MV78230, MV78260, MV78460).
++    (MV78230, MV78260, MV78460), Armada 38x and Armada 39x.
+ 
+     "marvell,armada-8k-gpio" should be used for the Armada 7K and 8K
+     SoCs (either from AP or CP), see
 -- 
-Regards/Gruss,
-    Boris.
+2.20.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
