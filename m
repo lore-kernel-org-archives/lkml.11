@@ -2,82 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E0F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2548C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:33:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238882AbiGNLcz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:32:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43664 "EHLO
+        id S238909AbiGNLc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:32:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238846AbiGNLcx (ORCPT
+        with ESMTP id S238881AbiGNLc4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:32:53 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 554592DD3
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:32:51 -0700 (PDT)
-Received: from mail-yb1-f181.google.com ([209.85.219.181]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MJEIl-1nrFXe1cVv-00Kdya for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022
- 13:32:49 +0200
-Received: by mail-yb1-f181.google.com with SMTP id k85so67651ybk.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:32:49 -0700 (PDT)
-X-Gm-Message-State: AJIora9jBdx+mBTMyZaubzaIQgJY8D54/cGv83xlL1SSLXHYtnfCT8jS
-        2Lnt+SJiVlL9HffWkWHVqCBmyXWg/Biu2SdZVYM=
-X-Google-Smtp-Source: AGRyM1vE8JYz3xOgLE6KMkE+pATDrszzSzapNzY6x8GDhIEZ6wBc62gMnHue2h6Xki51q87PhzPcJR5Wjmahm7Wormg=
-X-Received: by 2002:a25:7c41:0:b0:66d:766a:4815 with SMTP id
- x62-20020a257c41000000b0066d766a4815mr8111642ybc.480.1657798367361; Thu, 14
- Jul 2022 04:32:47 -0700 (PDT)
+        Thu, 14 Jul 2022 07:32:56 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794F32DD3;
+        Thu, 14 Jul 2022 04:32:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657798374; x=1689334374;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WtBev9dHMwuukNjd40pA16rIrhzGg5WZruaX/rRQtr4=;
+  b=SdYBnnIRNt5+zeZfIl1/br5o78Qce+7WsUE8Es6PdhbsQu6+Ha5Z0sLb
+   Fq9Hw8ojxyWICYawYLlRh0JDHgYoKl9uIXPLQFCAb2ktL4sgnAFOD2b1U
+   4uRdNYUGg+dYPxvSSpDet7c/1blGabS1zlUKXkv4twPJpiOcj51ZERItq
+   hWABd67Leio3AhGbKqqCfS37AorOOlhcO2GkoN8F7zr+Ajn0W5blQO7F0
+   so5JZr5uF9afFnq4szyk5EnOR1D2fcu9UexMiiXMPigQ14EeOB5K560uN
+   X4HgoC/cXpIlQC3GpWEl51ew6VfzcJkGnKVYL8fNFmcdZu1kx9z7LMRSz
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10407"; a="349454318"
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="349454318"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 04:32:53 -0700
+X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
+   d="scan'208";a="842112922"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 04:32:51 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oBx5M-001DC3-0A;
+        Thu, 14 Jul 2022 14:32:48 +0300
+Date:   Thu, 14 Jul 2022 14:32:47 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Luca Ellero <luca.ellero@brickedbrain.com>
+Cc:     dmitry.torokhov@gmail.com, daniel@zonque.org,
+        m.felsch@pengutronix.de, u.kleine-koenig@pengutronix.de,
+        mkl@pengutronix.de, miquel.raynal@bootlin.com, imre.deak@nokia.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Luca Ellero <l.ellero@asem.it>
+Subject: Re: [PATCH 1/3] ads7846: don't report pressure for ads7845
+Message-ID: <Ys/+37mzoi++8MDW@smile.fi.intel.com>
+References: <20220714084319.107334-1-luca.ellero@brickedbrain.com>
+ <20220714084319.107334-2-luca.ellero@brickedbrain.com>
 MIME-Version: 1.0
-References: <20220708094950.41944-1-zhengqi.arch@bytedance.com> <20220708094950.41944-2-zhengqi.arch@bytedance.com>
-In-Reply-To: <20220708094950.41944-2-zhengqi.arch@bytedance.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 14 Jul 2022 13:32:30 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2kgVikkKBZLa31XUopEFa9ykLS=qxiH=qiFD8HtUvw=A@mail.gmail.com>
-Message-ID: <CAK8P3a2kgVikkKBZLa31XUopEFa9ykLS=qxiH=qiFD8HtUvw=A@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] arm64: run softirqs on the per-CPU IRQ stack
-To:     Qi Zheng <zhengqi.arch@bytedance.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:RFExNZXlg809pui/N6iIRljogisu+/zTQgOhqu9NNeiGV7mQ54S
- B/IqDbPHE78JAO9nBpz3OI1FuPohdUTEcQo7P0bry5YCM0ep8EvL75hAef63Vt/Rb2n2lWI
- eJzfX1qWIs5v833Kth60ixXiItD+n9xSE7cD773EjZBiJNNUk3FRXTUBU7yG7n0utWF/IhW
- uQYeWEGlG7q2cRH8H04yg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UyCmE2kLzG0=:e05QBLm5ryVI+UCaVJpMgj
- gz/YRKaOPNixDJ7px4XEY4MJ6Rh4WFcQQDa8fcktr5rm3629CFTX2mm98zD0zdePlri4NqV/U
- 0ky+zQZ5vD/zWPyH1M/S1qHEFbp4Y2rN9h6wP8NcgbRlqF3ayVMuZ9NIKjqxPhVN3xr+uQFpj
- ZROX2gXxsSs1sE/1zDtJ7Ew9FhFisbE3rPNZKO5UcMVgoNojK1jaT0WIdeGUtAYYSjucwAYoW
- nENyMLFvs3ZPWXuHcqtld4qxEwsiQC/oPYiLPrM1L/xMOjbss65XjLy6lwr+gN51OApvmZK6L
- zmSwVFwer9l/E0j9dQKzcLXC2FpvAqyHmS40Z4E51W/G4/6NuDUrd4zbyNHFbiRHjZj69QCfC
- hbfbZWbwoZw5ofzJCxcrZyG4+YAemz6HlwQxxywkQoZlOd8StgFIuI/8mJcQBPdvOPSShlqHc
- Jcji4pgUGvNr/EOJV3zQOke0ajFnZ8DGCp2iyqZWQIaZCYeDNIL+wtEz2Bu1g2dQgAkbh+f0D
- vGVda7Mbzoodeu8P0VJ11B89AkUS0xoGjetgmfQ3DUDtCFwa5qGI/bJmvefWm3u1GwLD/PD87
- o3x6Mc8QZpSEyvnxOHGxRpfvOXvDWtlMBUNAFRA9k/0kgtYniyVvjSTsU8c93CVh+T0pax/Vl
- Mv+6lGU/t+6XzVeXNKjzzKuTF+C0O9IfZByGhI/I76TJi4vlN9rQXDGucMdXArfk1tvZ7EERj
- a18AOTzooY3dHQt18Xp/k/XGD1Jz/87PRVtGSAANGSM2De8ZLiGxLNueIyDLU5z19FiXnb2+8
- g4izuGB2Nk8ff+l1lFrlrLmiQzimGDCPbQkeK7+rpxNOfVs6MVr+mGV+Kpl7wZ52P3bXUcgJ6
- bb2hNlkpUhqPbTXr9g3A==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220714084319.107334-2-luca.ellero@brickedbrain.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 11:49 AM Qi Zheng <zhengqi.arch@bytedance.com> wrote:
->
-> Currently arm64 supports per-CPU IRQ stack, but softirqs
-> are still handled in the task context.
->
-> Since any call to local_bh_enable() at any level in the task's
-> call stack may trigger a softirq processing run, which could
-> potentially cause a task stack overflow if the combined stack
-> footprints exceed the stack's size, let's run these softirqs
-> on the IRQ stack as well.
->
-> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+On Thu, Jul 14, 2022 at 10:43:17AM +0200, Luca Ellero wrote:
+> From: Luca Ellero <l.ellero@asem.it>
+> 
+> ADS7845 doesn't support pressure.
+> This patch avoids the following error reported by libinput-list-devices:
+> "ADS7845 Touchscreen: kernel bug: device has min == max on ABS_PRESSURE"
 
-This seems like a nice improvement, and this version addresses
-my concern I raised on the RFC version.
+Missed period, otherwise looks good.
 
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+
+> Signed-off-by: Luca Ellero <l.ellero@asem.it>
+> ---
+>  drivers/input/touchscreen/ads7846.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
+> index bed68a68f330..24605c40d039 100644
+> --- a/drivers/input/touchscreen/ads7846.c
+> +++ b/drivers/input/touchscreen/ads7846.c
+> @@ -1316,8 +1316,9 @@ static int ads7846_probe(struct spi_device *spi)
+>  			pdata->y_min ? : 0,
+>  			pdata->y_max ? : MAX_12BIT,
+>  			0, 0);
+> -	input_set_abs_params(input_dev, ABS_PRESSURE,
+> -			pdata->pressure_min, pdata->pressure_max, 0, 0);
+> +	if (ts->model != 7845)
+> +		input_set_abs_params(input_dev, ABS_PRESSURE,
+> +				pdata->pressure_min, pdata->pressure_max, 0, 0);
+>  
+>  	/*
+>  	 * Parse common framework properties. Must be done here to ensure the
+> -- 
+> 2.25.1
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
