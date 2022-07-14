@@ -2,146 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCB9CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65976C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237900AbiGNJOc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        id S237910AbiGNJOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:14:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237892AbiGNJOI (ORCPT
+        with ESMTP id S237898AbiGNJOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:14:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 495AF1AF33
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790033;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NkdjbmoNnDxWYR3z6tS+XiCrlq2oKH7PyMNJMWXhrn0=;
-        b=SwF+EUuXXkSzrUjFRIJHHY4zpiZ2oPWXgJegG3b5MxKTJTb2AFDxyb/cNiWzSh2TQGTMCd
-        J9lrhePLzBi9nLRy4hFSeRDM0dDdZNA4xjD11/M6F0H5WqQlFsqR5aJKHSn7w96K5bI28M
-        wuveCt4G/l47M1zvW/K0dY9FJDWKZDk=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-489-azQKX1tZOVuTouxp4747rQ-1; Thu, 14 Jul 2022 05:13:50 -0400
-X-MC-Unique: azQKX1tZOVuTouxp4747rQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 14 Jul 2022 05:14:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B112413E20;
+        Thu, 14 Jul 2022 02:13:58 -0700 (PDT)
+Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5BBF885A581;
-        Thu, 14 Jul 2022 09:13:50 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 152152166B2A;
-        Thu, 14 Jul 2022 09:13:47 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 08/25] KVM: selftests: Switch to updated eVMCSv1 definition
-Date:   Thu, 14 Jul 2022 11:13:10 +0200
-Message-Id: <20220714091327.1085353-9-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+        (Authenticated sender: shreeya)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 09B996601A34;
+        Thu, 14 Jul 2022 10:13:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657790036;
+        bh=LCp2np4oUNr3udCtCqa3Cgr4gEdFfLoRcjf1mCnppwE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e3nEIFNRJYqjXffSsU03ikRg8Puzoku7oex9P7Vnr/iet86qMKGl+OXvlNGZlvzXQ
+         RE7XW7l2KXeiJgCfovrXnxhn2gA8bhmzb7eTD4fEWZLaBxPxzySy3CpfKfxy5XTHTG
+         vPHBEynjJguF2QCMIEORvRVcP2yKjTCCzjiOTT2PIIv1zvACXwNPpP8PqnCX7dWa69
+         lVRl7muX0yuAMRnB1zKp1npZXfgg5eB8OSO+K62+K4qPJMkMGSWDk6XIPDV59J+HvW
+         jgHL51H4afWWUvQs9FdMkoIWOtX7jbPrlIh8US76krYrm1QLz+XFBHdy6Dl32LVJAZ
+         MqRSVQB3MSJVQ==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        dmitry.osipenko@collabora.com, Zhigang.Shi@liteon.com
+Cc:     krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com,
+        andy.shevchenko@gmail.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v8 1/2] dt-bindings: Document ltrf216a light sensor bindings
+Date:   Thu, 14 Jul 2022 14:43:11 +0530
+Message-Id: <20220714091312.838152-2-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220714091312.838152-1-shreeya.patel@collabora.com>
+References: <20220714091312.838152-1-shreeya.patel@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update Enlightened VMCS definition in selftests from KVM.
+Add devicetree bindings for ltrf216a ambient light sensor.
 
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
 ---
- .../selftests/kvm/include/x86_64/evmcs.h      | 45 +++++++++++++++++--
- 1 file changed, 42 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/evmcs.h b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-index 3c9260f8e116..58db74f68af2 100644
---- a/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/evmcs.h
-@@ -203,14 +203,25 @@ struct hv_enlightened_vmcs {
- 		u32 reserved:30;
- 	} hv_enlightenments_control;
- 	u32 hv_vp_id;
--
-+	u32 padding32_2;
- 	u64 hv_vm_id;
- 	u64 partition_assist_page;
- 	u64 padding64_4[4];
- 	u64 guest_bndcfgs;
--	u64 padding64_5[7];
-+	u64 guest_ia32_perf_global_ctrl;
-+	u64 guest_ia32_s_cet;
-+	u64 guest_ssp;
-+	u64 guest_ia32_int_ssp_table_addr;
-+	u64 guest_ia32_lbr_ctl;
-+	u64 padding64_5[2];
- 	u64 xss_exit_bitmap;
--	u64 padding64_6[7];
-+	u64 encls_exiting_bitmap;
-+	u64 host_ia32_perf_global_ctrl;
-+	u64 tsc_multiplier;
-+	u64 host_ia32_s_cet;
-+	u64 host_ssp;
-+	u64 host_ia32_int_ssp_table_addr;
-+	u64 padding64_6;
- };
- 
- #define HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE                     0
-@@ -656,6 +667,18 @@ static inline int evmcs_vmread(uint64_t encoding, uint64_t *value)
- 	case VIRTUAL_PROCESSOR_ID:
- 		*value = current_evmcs->virtual_processor_id;
- 		break;
-+	case HOST_IA32_PERF_GLOBAL_CTRL:
-+		*value = current_evmcs->host_ia32_perf_global_ctrl;
-+		break;
-+	case GUEST_IA32_PERF_GLOBAL_CTRL:
-+		*value = current_evmcs->guest_ia32_perf_global_ctrl;
-+		break;
-+	case ENCLS_EXITING_BITMAP:
-+		*value = current_evmcs->encls_exiting_bitmap;
-+		break;
-+	case TSC_MULTIPLIER:
-+		*value = current_evmcs->tsc_multiplier;
-+		break;
- 	default: return 1;
- 	}
- 
-@@ -1169,6 +1192,22 @@ static inline int evmcs_vmwrite(uint64_t encoding, uint64_t value)
- 		current_evmcs->virtual_processor_id = value;
- 		current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_XLAT;
- 		break;
-+	case HOST_IA32_PERF_GLOBAL_CTRL:
-+		current_evmcs->host_ia32_perf_global_ctrl = value;
-+		current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1;
-+		break;
-+	case GUEST_IA32_PERF_GLOBAL_CTRL:
-+		current_evmcs->guest_ia32_perf_global_ctrl = value;
-+		current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1;
-+		break;
-+	case ENCLS_EXITING_BITMAP:
-+		current_evmcs->encls_exiting_bitmap = value;
-+		current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2;
-+		break;
-+	case TSC_MULTIPLIER:
-+		current_evmcs->tsc_multiplier = value;
-+		current_evmcs->hv_clean_fields &= ~HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2;
-+		break;
- 	default: return 1;
- 	}
- 
+Changes in v7
+  - Fix the error reported by kernel test robot.
+
+Changes in v5
+  - Remove deprecated string 'ltr' from the bindings.
+
+Changes in v3
+  - Fix indentation in the example section
+
+Changes in v2
+  - Take over the maintainership for the bindings
+  - Add interrupt and power supply property in DT bindings
+
+
+ .../bindings/iio/light/liteon,ltrf216a.yaml   | 49 +++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+new file mode 100644
+index 000000000000..7de1b0e721ca
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+@@ -0,0 +1,49 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/liteon,ltrf216a.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: LTRF216A Ambient Light Sensor
++
++maintainers:
++  - Shreeya Patel <shreeya.patel@collabora.com>
++
++description:
++  Ambient light sensing with an i2c interface.
++
++properties:
++  compatible:
++    const: liteon,ltrf216a
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@53 {
++            compatible = "liteon,ltrf216a";
++            reg = <0x53>;
++            vdd-supply = <&vdd_regulator>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
++        };
++    };
 -- 
-2.35.3
+2.30.2
 
