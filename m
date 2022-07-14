@@ -2,104 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59889C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA009C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 05:02:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235381AbiGNFCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 01:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45008 "EHLO
+        id S237581AbiGNFCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 01:02:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237758AbiGNE75 (ORCPT
+        with ESMTP id S235858AbiGNE77 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:59:57 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330441F2F3;
-        Wed, 13 Jul 2022 21:56:40 -0700 (PDT)
+        Thu, 14 Jul 2022 00:59:59 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91881F604;
+        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id y14-20020a17090a644e00b001ef775f7118so7195258pjm.2;
+        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657774600; x=1689310600;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=lo8m1CDkPXiL9g2nnCBXYZuPow5p7LgdYRNIqe9SssU=;
-  b=VEj6W8tdTJTFMw7g9YxfsqSjv5sk5mmsBENSvtC7c7GF4RDorbmHYsEw
-   eFRG/A6DulzW6dgHxNCxlKW5NtkgdInlWo+nTVdVwQvLtL9YelMKLxU5E
-   O1SBs/k1uBkOBTWG2OFOWUmiDhEqYEoewUi9bwuZC01EZEyZHKB6zQrun
-   k=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 13 Jul 2022 21:56:40 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2022 21:56:39 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Jul 2022 21:56:39 -0700
-Received: from hu-rkollals-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 13 Jul 2022 21:56:36 -0700
-From:   Rohith Kollalsi <quic_rkollals@quicinc.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Rohith Kollalsi" <quic_rkollals@quicinc.com>
-Subject: [PATCH v2] usb: dwc3: core: Do not perform GCTL_CORE_SOFTRESET during bootup
-Date:   Thu, 14 Jul 2022 10:26:25 +0530
-Message-ID: <20220714045625.20377-1-quic_rkollals@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3XqwSVcbb9SNK7x/sWrwPwBFr5F6BGp/JwEon2mZrVk=;
+        b=P348rrdn7T5kYz2X3RAIhcop6zscRlqzSFEJfvHz/EHDUg6n4TmF493nncgb39jhki
+         +1UHrhqCw0l+g/L7AiFT7GcpLcNUOXSgWjA5esYQXGMsElssKWWuOA3ZRnWcOM6tTXag
+         Jhvmf7ZbLlX5tylcNA9sN7TaDUYVM89FxySn/XqsQJEgY0fd8LJJBERWr3+WSUx3qG2c
+         he5YEy3dn4XY/nYQGbxJ4qkiJIsnIl6BcX6s6RJbIGGMPUV2uz3acqDFzAICd7DjA491
+         3VYK8NkcdCVc/QaxvEaD4SivsyBntGKbc8qrZeHoQ6W3lgEB39fPifWbC6e4Es+W7hBM
+         bjwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3XqwSVcbb9SNK7x/sWrwPwBFr5F6BGp/JwEon2mZrVk=;
+        b=TGNAPg1KBFH4SNsMiUBMcIxYkacKGzqNUpo675ceYe5mQ1AFA9LalqhfU0/iz/XBe7
+         NCr7r5gZWu3+IoUzoPPx8uGcQrpfe3DWcZf5jVfA7LgY3sqCqLZbYgsT3khFLeOc2wrR
+         6G3ka7YHKeg6MJIE+//BP2GGuh5cOm4tjqyEr2xR46R/LyCSORXA9wvC+bVjH6KUf93+
+         LZWZQnNO2xRLyIlIA1JCTRohna/wcViGHLlpw4V2+YyaAnlEnEQg7HO2jPJ7t8Zj9NAL
+         dcO+m7C6hrIIojgva430sH0FB52byUfFQdDlrFPS3cjp+J43mrviBzKZcA6/eNW0x6xF
+         lIHA==
+X-Gm-Message-State: AJIora+szPWD9JYZCb5RJGX48aCLTxbboqckLv05G8/CT+BZ96ZejGvf
+        iLxYzSqahfd/cK7cRSOBWN4=
+X-Google-Smtp-Source: AGRyM1vR/ayn5IWrvE2UjQQvJ4olCUUXwUgyU1CWXvJDfOEua9aBkb2D/f/KyZLEmhAev2NyHEDc2Q==
+X-Received: by 2002:a17:90a:c088:b0:1ef:b85c:576b with SMTP id o8-20020a17090ac08800b001efb85c576bmr14203728pjs.237.1657774602374;
+        Wed, 13 Jul 2022 21:56:42 -0700 (PDT)
+Received: from fedora.. ([103.230.106.53])
+        by smtp.gmail.com with ESMTPSA id u9-20020a1709026e0900b0016bdd124d46sm320845plk.288.2022.07.13.21.56.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jul 2022 21:56:41 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     chuck.lever@oracle.com
+Cc:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, edumazet@google.com,
+        jakub@cloudflare.com, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com, songliubraving@fb.com,
+        yhs@fb.com, syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: Re: [PATCH v1] net: Add distinct sk_psock field
+Date:   Thu, 14 Jul 2022 10:55:17 +0600
+Message-Id: <20220714045517.185599-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <165772238175.1757.4978340330606055982.stgit@oracle-102.nfsv4.dev>
+References: <165772238175.1757.4978340330606055982.stgit@oracle-102.nfsv4.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-According to the programming guide, it is recommended to
-perform a GCTL_CORE_SOFTRESET only when switching the mode
-from device to host or host to device. However, it is found
-that during bootup when __dwc3_set_mode() is called for the
-first time, GCTL_CORESOFTRESET is done with suspendable bit(BIT 17)
-of DWC3_GUSB3PIPECTL set. This some times leads to issues
-like controller going into bad state and controller registers
-reading value zero. Until GCTL_CORESOFTRESET is done and
-run/stop bit is set core initialization is not complete.
-Setting suspendable bit of DWC3_GUSB3PIPECTL and then
-performing GCTL_CORESOFTRESET is therefore not recommended.
-Avoid this by only performing the reset if current_dr_role is set,
-that is, when doing subsequent role switching.
+On Wed, 13 Jul 2022 10:26:21 -0400 Chuck Lever wrote:
+> The sk_psock facility populates the sk_user_data field with the
+> address of an extra bit of metadata. User space sockets never
+> populate the sk_user_data field, so this has worked out fine.
+> 
+> However, kernel socket consumers such as the RPC client and server
+> do populate the sk_user_data field. The sk_psock() function cannot
+> tell that the content of sk_user_data does not point to psock
+> metadata, so it will happily return a pointer to something else,
+> cast to a struct sk_psock.
+> 
+> Thus kernel socket consumers and psock currently cannot co-exist.
+> 
+> We could educate sk_psock() to return NULL if sk_user_data does
+> not point to a struct sk_psock. However, a more general solution
+> that enables full co-existence psock and other uses of sk_user_data
+> might be more interesting.
+> 
+> Move the struct sk_psock address to its own pointer field so that
+> the contents of the sk_user_data field is preserved.
+> 
+> Reviewed-by: Hannes Reinecke <hare@suse.de>
+> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 
-Fixes: f88359e1588b ("usb: dwc3: core: Do core softreset when switch mode")
-Signed-off-by: Rohith Kollalsi <quic_rkollals@quicinc.com>
----
-v2: Explaining the scenario in a better way in the comment before
-    GCTL.CoreSoftReset.
+The patch seems to fix the syzbot bug: 
+[syzbot] KASAN: slab-out-of-bounds Read in sk_psock_get
+Reported-by: syzbot+1fa91bcd05206ff8cbb5@syzkaller.appspotmail.com
+As the reproducer no longer triggers the warning.
 
- drivers/usb/dwc3/core.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
-index 050b2ba5986d..c5c238ab3083 100644
---- a/drivers/usb/dwc3/core.c
-+++ b/drivers/usb/dwc3/core.c
-@@ -158,9 +158,13 @@ static void __dwc3_set_mode(struct work_struct *work)
- 		break;
- 	}
- 
--	/* For DRD host or device mode only */
--	if ((DWC3_IP_IS(DWC3) || DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
--	    dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG) {
-+	/*
-+	 * When current_dr_role is not set, there's no role switching.
-+	 * Only perform GCTL.CoreSoftReset when there's DRD role switching.
-+	 */
-+	if (dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
-+			DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
-+			dwc->desired_dr_role != DWC3_GCTL_PRTCAP_OTG)) {
- 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
- 		reg |= DWC3_GCTL_CORESOFTRESET;
- 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
--- 
-2.17.1
-
+Tested-by: Khalid Masum <khalid.masum.92@gmail.com>
