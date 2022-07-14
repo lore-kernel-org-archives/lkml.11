@@ -2,78 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A48D4CCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54CA2C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237659AbiGNJoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:44:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50782 "EHLO
+        id S238390AbiGNJoX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229897AbiGNJoP (ORCPT
+        with ESMTP id S229897AbiGNJoU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:44:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3D381260F;
-        Thu, 14 Jul 2022 02:44:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6287B61F68;
-        Thu, 14 Jul 2022 09:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C93C34115;
-        Thu, 14 Jul 2022 09:44:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657791853;
-        bh=AaG5DijCBCbZIPwIggTULO+h15a919z2ZS94dMzJroY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lbIP8/t/lBeB+OdaUEhX2HsSDs06lOpzNUScj7RaB7i/msLrjMmTTqB2d2NF+3Qzm
-         4JuGWMqkXa4D6vUvwE/zFCsVuowFSGC5wkfuvJl/S2QHtdJT/21/FzZ1bJVTkSU/ox
-         90iF1pBXes8zbxXd8kwlU7M8DJptdOYmvvF1DfpZB1kVaFHcaGdmgRhhS4ONArmNxE
-         p7tDJ0+fir60cv6cVKu7aGLiZeE0nJtMLrlGXBhkALr+CzxWNIUgXZW6DFK6iaBPmF
-         4k0/Pmgkv+GnGQ79B+Ok3pobjvVAif/I32B/sLFixvL/f5LqPdKWF9X98X+tOpNxVC
-         GorCtotJOL/sA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oBvOM-00057B-1x; Thu, 14 Jul 2022 11:44:18 +0200
-Date:   Thu, 14 Jul 2022 11:44:18 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/30] phy: qcom,qmp: fix dt-bindings and deprecate
- lane suffix
-Message-ID: <Ys/lct4Dc0o426xy@hovoldconsulting.com>
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <Ys/QBPJmkWO6O3Fw@hovoldconsulting.com>
- <5187985c-7f86-320b-aee9-a1107c8ce0a7@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5187985c-7f86-320b-aee9-a1107c8ce0a7@linaro.org>
+        Thu, 14 Jul 2022 05:44:20 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB47C11C1A;
+        Thu, 14 Jul 2022 02:44:17 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=guwen@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VJImA7W_1657791845;
+Received: from localhost(mailfrom:guwen@linux.alibaba.com fp:SMTPD_---0VJImA7W_1657791845)
+          by smtp.aliyun-inc.com;
+          Thu, 14 Jul 2022 17:44:14 +0800
+From:   Wen Gu <guwen@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] net/smc: Introduce virtually contiguous buffers for SMC-R
+Date:   Thu, 14 Jul 2022 17:43:59 +0800
+Message-Id: <1657791845-1060-1-git-send-email-guwen@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 11:31:22AM +0200, Krzysztof Kozlowski wrote:
-> On 14/07/2022 10:12, Johan Hovold wrote:
+On long-running enterprise production servers, high-order contiguous
+memory pages are usually very rare and in most cases we can only get
+fragmented pages.
 
-> > Any further comments to this series?
-> > 
-> > Vinod, I noticed there was a conflict when rebasing on linux-next due to
-> > commit 85d43a69db2d ("dt-bindings: phy: qcom,qmp: add IPQ8074 PCIe Gen3
-> > PHY binding").
-> > 
-> 
-> I got few comments. Apologies for a slow review, I am a bit overloaded.
+When replacing TCP with SMC-R in such production scenarios, attempting
+to allocate high-order physically contiguous sndbufs and RMBs may result
+in frequent memory compaction, which will cause unexpected hung issue
+and further stability risks.
 
-Heh, no worries. Review within a week is awesome.
+So this patch set is aimed to allow SMC-R link group to use virtually
+contiguous sndbufs and RMBs to avoid potential issues mentioned above.
+Whether to use physically or virtually contiguous buffers can be set
+by sysctl smcr_buf_type.
 
-Thanks for taking another look.
+Note that using virtually contiguous buffers will bring an acceptable
+performance regression, which can be mainly divided into two parts:
 
-Johan
+1) regression in data path, which is brought by additional address
+   translation of sndbuf by RNIC in Tx. But in general, translating
+   address through MTT is fast. According to qperf test, this part
+   regression is basically less than 10% in latency and bandwidth.
+   (see patch 5/6 for details)
+
+2) regression in buffer initialization and destruction path, which is
+   brought by additional MR operations of sndbufs. But thanks to link
+   group buffer reuse mechanism, the impact of this kind of regression
+   decreases as times of buffer reuse increases.
+
+Patch set overview:
+- Patch 1/6 and 2/6 mainly about simplifying and optimizing DMA sync
+  operation, which will reduce overhead on the data path, especially
+  when using virtually contiguous buffers;
+- Patch 3/6 and 4/6 introduce a sysctl smcr_buf_type to set the type
+  of buffers in new created link group;
+- Patch 5/6 allows SMC-R to use virtually contiguous sndbufs and RMBs,
+  including buffer creation, destruction, MR operation and access;
+- patch 6/6 extends netlink attribute for buffer type of SMC-R link group;
+
+v1->v2:
+- Patch 5/6 fixes build issue on 32bit;
+- Patch 3/6 adds description of new sysctl in smc-sysctl.rst;
+
+Guangguan Wang (2):
+  net/smc: remove redundant dma sync ops
+  net/smc: optimize for smc_sndbuf_sync_sg_for_device and
+    smc_rmb_sync_sg_for_cpu
+
+Wen Gu (4):
+  net/smc: Introduce a sysctl for setting SMC-R buffer type
+  net/smc: Use sysctl-specified types of buffers in new link group
+  net/smc: Allow virtually contiguous sndbufs or RMBs for SMC-R
+  net/smc: Extend SMC-R link group netlink attribute
+
+ Documentation/networking/smc-sysctl.rst |  13 ++
+ include/net/netns/smc.h                 |   1 +
+ include/uapi/linux/smc.h                |   1 +
+ net/smc/af_smc.c                        |  68 +++++++--
+ net/smc/smc_clc.c                       |   8 +-
+ net/smc/smc_clc.h                       |   2 +-
+ net/smc/smc_core.c                      | 246 +++++++++++++++++++++-----------
+ net/smc/smc_core.h                      |  20 ++-
+ net/smc/smc_ib.c                        |  44 +++++-
+ net/smc/smc_ib.h                        |   2 +
+ net/smc/smc_llc.c                       |  33 +++--
+ net/smc/smc_rx.c                        |  92 +++++++++---
+ net/smc/smc_sysctl.c                    |  11 ++
+ net/smc/smc_tx.c                        |  10 +-
+ 14 files changed, 404 insertions(+), 147 deletions(-)
+
+-- 
+1.8.3.1
+
