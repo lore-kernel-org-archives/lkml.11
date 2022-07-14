@@ -2,163 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1EDC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:49:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B63C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:52:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237748AbiGNHtk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45040 "EHLO
+        id S237700AbiGNHw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237797AbiGNHtL (ORCPT
+        with ESMTP id S237666AbiGNHwE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:49:11 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AEF63D5BD
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:47:49 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id w12so1294678edd.13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=j4QfK2iQAnum2nLeQTWlegafxzZD5NZOg4pgJLg01dE=;
-        b=Ob/iDl7slzxs6s1Nb24Ut1I908w4BBEZs3y45dQIbbgQRW2Bchged3fvN70UJ+fyWa
-         VI7tpv0BXfNCh4vxB8vUl++0/hQclfaaGz6EZN71BRZam77903CT2hFzVAJ0yRN3mhJW
-         O32U9HZ+kpLGobXtM3iBZgHBIAl0ME2xRb9uaNjN7UmxuBSbylu2heXjW2zF6ZUjw/b1
-         wCfHNXH9+Fl2Ub65sYkqbFd32O8V2UX26XELw47ntiFYJN4/kV1FsaHBJoRLtwPbyH00
-         CIG5gPaobIxJR9q7lzP+He4mAC2SQbJ/fmC/Guau+FgzWfunLqMXAZ/yw4X7H1sM97Tz
-         QNiQ==
+        Thu, 14 Jul 2022 03:52:04 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE094357CE
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:49:20 -0700 (PDT)
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com [209.85.218.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id DEBCE3FD77
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:49:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1657784957;
+        bh=ru92NeW5g35ZFxOqI1Jb++780ZQeradGocVi2TLd6GE=;
+        h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type;
+        b=g13IB5JXyA6usMn+yicdbwvdKqAV8utUuASTGnea4z5SfBTJeDxEU5QFWVu1dg+sa
+         /LO2GlIPSGyzr8aq6KOPp/hyLUMdi8disAhLOr/bDp5kDF9W0chlC6y+5uBkCK1wK3
+         +GHNhc317wHryPqDzbQYpqBBWTXIe01p/DcnzN3gfG8JhyTkHcyO7AZR/jjx4A1ihb
+         U1s/9ZrQ3bEOMJc/R719W2VntQI+jhLRmjBiOb09KeoHsH2CAfy3UnbNMKN3I2oLNF
+         sibPXSBGRXQqErdeaYTPuoqLILXn53PIOdkinflw1W/yQxnwPugjNgaySNy1mSBB/e
+         eEA79pnie+hag==
+Received: by mail-ej1-f71.google.com with SMTP id qw8-20020a1709066a0800b0072abb95c0caso424085ejc.15
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:49:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=j4QfK2iQAnum2nLeQTWlegafxzZD5NZOg4pgJLg01dE=;
-        b=TLk7cKo5NQzBsMIOYFiXViPLXxm28rELIMo5UNvKVYw6RnRwr2H2mHs038RIm8J4/z
-         M5KT5G8pCLrZCKW35Px1W18vdlgCyEwHGXNY5nKK2a1GQvEyGyd2tt8ymMdcs0lDCAxK
-         Ugr+6wk4VM5sVnSV5RQSeRkzL7dbpAPJV06A43J+bd76u9EcQbuksWc+NoWnbLHWo6WT
-         H5UBQZrlx4FFUozaKcRzPNHzQY87jY1T/sxNuuhz6jdkR9SmmULX4x7XLz7tkX+wMxsa
-         /5cZSI0KEs8AZdyzAqeK1ceP1O70fRoT1vuFJ/yY2eYsYq8P/2Frei/5fHu4hEW3VqMg
-         l32w==
-X-Gm-Message-State: AJIora8lCXa5q0RQx45QT+JnjzTnESzsHOus9gHu2bShQlgU7SFs4fZ+
-        E+rh8zhqtxNC+PhhC0LnY05jN9zDesTrKsW+/jpGkQ==
-X-Google-Smtp-Source: AGRyM1tMHx1easLYFa9xYvefclce1EiBewHWg20ENwcZg56sE6aT7znvw62lycVMsNnzxTeLelmexmFPGb0ofeGxrV8=
-X-Received: by 2002:a05:6402:2812:b0:43a:9041:d5db with SMTP id
- h18-20020a056402281200b0043a9041d5dbmr10342886ede.208.1657784867856; Thu, 14
- Jul 2022 00:47:47 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ru92NeW5g35ZFxOqI1Jb++780ZQeradGocVi2TLd6GE=;
+        b=FKxVlkA2YlqNhCU2O4hpZ7D3aNvrpl99TjuLIT14JX3CiKvMROZ8xhpGgk4+ANpbx1
+         jA94WXPknqHfsZ+lMbWLyoC4c3hfeUD0BsLNRKa/IAnnCsdIzUCTPx9iWOeb5+U1cmtj
+         5hC1x2EC6P6p0unn8sb771hapwigAh2Wtnet+GkRqfwwy2b1l+vYU2svB1gsKXrDy/xc
+         Gmp2qixirYa76wcARrguM98DOD2f/lMW2mkaLEsPlXW2rQ0eTo989Ql/3n3foSBAhz/F
+         SqzadP9sltSlSORVWN1QBma11fXZUSifD6fiBUj1Ci9RmVIV/U8/06oovB8Fg9MqsAG0
+         zhsw==
+X-Gm-Message-State: AJIora9tkW6ReAhWzxGVk02+mSxM4fRGvdndRbJLesLW+TIPnl1JDrVP
+        bRUF2aILKQTKo2vv3eekoNnAUzOHClfBBLfzjdS9x2ro9Ppm7ZTgXL2bKueSctspee0vM8SrgMb
+        cFN6jj66Wxv5E3PODmIOrYBQxl0A9YcNHMBeD/eJqdQ==
+X-Received: by 2002:a17:906:7386:b0:715:7024:3df7 with SMTP id f6-20020a170906738600b0071570243df7mr7641895ejl.543.1657784957531;
+        Thu, 14 Jul 2022 00:49:17 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u0i3ByKydjHXecFgiEiZThLjzaR73ohdpt+ID4N4aAM1yy7oR5xNprhfnWRNlPexiKJoYvlg==
+X-Received: by 2002:a17:906:7386:b0:715:7024:3df7 with SMTP id f6-20020a170906738600b0071570243df7mr7641880ejl.543.1657784957322;
+        Thu, 14 Jul 2022 00:49:17 -0700 (PDT)
+Received: from localhost ([2001:67c:1560:8007::aac:c1b6])
+        by smtp.gmail.com with ESMTPSA id y2-20020a170906524200b0072a66960843sm375935ejm.51.2022.07.14.00.49.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 00:49:16 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 09:49:15 +0200
+From:   Andrea Righi <andrea.righi@canonical.com>
+To:     Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>
+Cc:     "H. Peter Anvin" <hpa@zytor.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        x86@kernel.org, linux-um@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2][RESEND] x86/entry: build thunk_$(BITS) only if
+ CONFIG_PREEMPTION=y
+Message-ID: <Ys/Ke7EWjcX+ZlXO@arighi-desktop>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 14 Jul 2022 13:17:36 +0530
-Message-ID: <CA+G9fYuxp2Ge1JGwuXase633r8_7zPZkxrD6doCKi6aYY3mfPw@mail.gmail.com>
-Subject: [next] Kernel panic - not syncing: swiotlb_init_remap: nslabs = 0 too small
-To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
-        linux-mm <linux-mm@kvack.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Christoph Hellwig <hch@lst.de>,
-        "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>, conor@kernel.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Please ignore this email if it is already reported]
+With CONFIG_PREEMPTION disabled, arch/x86/entry/thunk_$(BITS).o becomes
+an empty object file.
 
-Linux next-20220713 boot failed on arm, arm64, x86_64 and i386 [1].
+With some old versions of binutils (i.e., 2.35.90.20210113-1ubuntu1) the
+GNU assembler doesn't generate a symbol table for empty object files and
+objtool fails with the following error when a valid symbol table cannot
+be found:
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+  arch/x86/entry/thunk_64.o: warning: objtool: missing symbol table
 
-metadata:
-  git_ref: master
-  git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-  git_sha: 4662b7adea50bb62e993a67f611f3be625d3df0d
-  git_describe: next-20220713
-  kernel_version: 5.19.0-rc6
-  kernel-config: https://builds.tuxbuild.com/2BtFIR2DegCrbRCCTSZF93YVeiO/config
-  build-url: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next/-/pipelines/586982028
-  artifact-location: https://builds.tuxbuild.com/2BtFIR2DegCrbRCCTSZF93YVeiO
-  vmlinux.xz: https://builds.tuxbuild.com/2BtFIR2DegCrbRCCTSZF93YVeiO/vmlinux.xz
-  System.map: https://builds.tuxbuild.com/2BtFIR2DegCrbRCCTSZF93YVeiO/System.map
-  toolchain: gcc-11
+To prevent this from happening, build thunk_$(BITS).o only if
+CONFIG_PREEMPTION is enabled.
 
-Here is the boot log output from arm64 juno-r2 device.
+BugLink: https://bugs.launchpad.net/bugs/1911359
+Fixes: 320100a5ffe5 ("x86/entry: Remove the TRACE_IRQS cruft")
+Signed-off-by: Andrea Righi <andrea.righi@canonical.com>
+---
+ arch/x86/entry/Makefile   | 3 ++-
+ arch/x86/entry/thunk_32.S | 2 --
+ arch/x86/entry/thunk_64.S | 4 ----
+ arch/x86/um/Makefile      | 3 ++-
+ 4 files changed, 4 insertions(+), 8 deletions(-)
 
-[    0.000000] Booting Linux on physical CPU 0x0000000100 [0x410fd033]
-[    0.000000] Linux version 5.19.0-rc6-next-20220713
-(tuxmake@tuxmake) (aarch64-linux-gnu-gcc (Debian 11.3.0-3) 11.3.0, GNU
-ld (GNU Binutils for Debian) 2.38) #1 SMP PREEMPT @1657717522
-[    0.000000] Machine model: ARM Juno development board (r2)
-[    0.000000] earlycon: pl11 at MMIO 0x000000007ff80000 (options '')
-[    0.000000] printk: bootconsole [pl11] enabled
-[    0.000000] efi: UEFI not found.
-[    0.000000] NUMA: No NUMA configuration found
-[    0.000000] NUMA: Faking a node at [mem
-0x0000000080000000-0x00000009ffffffff]
-[    0.000000] NUMA: NODE_DATA [mem 0x9fefd1b40-0x9fefd3fff]
-[    0.000000] Zone ranges:
-[    0.000000]   DMA      [mem 0x0000000080000000-0x00000000ffffffff]
-[    0.000000]   DMA32    empty
-[    0.000000]   Normal   [mem 0x0000000100000000-0x00000009ffffffff]
-[    0.000000] Movable zone start for each node
-[    0.000000] Early memory node ranges
-[    0.000000]   node   0: [mem 0x0000000080000000-0x00000000feffffff]
-[    0.000000]   node   0: [mem 0x0000000880000000-0x00000009ffffffff]
-[    0.000000] Initmem setup node 0 [mem 0x0000000080000000-0x00000009ffffffff]
-[    0.000000] On node 0, zone Normal: 4096 pages in unavailable ranges
-[    0.000000] cma: Reserved 32 MiB at 0x00000000fd000000
-[    0.000000] psci: probing for conduit method from DT.
-[    0.000000] psci: PSCIv1.1 detected in firmware.
-[    0.000000] psci: Using standard PSCI v0.2 function IDs
-[    0.000000] psci: Trusted OS migration not required
-[    0.000000] psci: SMC Calling Convention v1.0
-[    0.000000] percpu: Embedded 30 pages/cpu s82856 r8192 d31832 u122880
-[    0.000000] Detected VIPT I-cache on CPU0
-[    0.000000] CPU features: detected: ARM erratum 843419
-[    0.000000] CPU features: detected: ARM erratum 845719
-[    0.000000] Fallback order for Node 0: 0
-[    0.000000] Built 1 zonelists, mobility grouping on.  Total pages: 2060288
-[    0.000000] Policy zone: Normal
-[    0.000000] Kernel command line: console=ttyAMA0,115200n8
-root=/dev/nfs rw
-nfsroot=10.66.16.120:/var/lib/lava/dispatcher/tmp/5283518/extract-nfsrootfs-ulkeoqdy,tcp,hard,vers=3,wsize=65536
-earlycon=pl011,0x7ff80000 console_msg_format=syslog earlycon
-default_hugepagesz=2M hugepages=256
-sky2.mac_address=0x00,0x02,0xF7,0x00,0x68,0x51 ip=dhcp
-<6>[    0.000000] Dentry cache hash table entries: 1048576 (order: 11,
-8388608 bytes, linear)
-<6>[    0.000000] Inode-cache hash table entries: 524288 (order: 10,
-4194304 bytes, linear)
-<6>[    0.000000] mem auto-init: stack:off, heap alloc:off, heap free:off
-<0>[    0.000000] Kernel panic - not syncing: swiotlb_init_remap:
-nslabs = 0 too small
-<4>[    0.000000] CPU: 0 PID: 0 Comm: swapper Not tainted
-5.19.0-rc6-next-20220713 #1
-<4>[    0.000000] Hardware name: ARM Juno development board (r2) (DT)
-<4>[    0.000000] Call trace:
-<4>[    0.000000]  dump_backtrace+0xe8/0x130
-<4>[    0.000000]  show_stack+0x24/0x60
-<4>[    0.000000]  dump_stack_lvl+0x8c/0xb8
-<4>[    0.000000]  dump_stack+0x18/0x34
-<4>[    0.000000]  panic+0x188/0x38c
-<4>[    0.000000]  swiotlb_init_remap+0x50/0x54
-<4>[    0.000000]  swiotlb_init+0x20/0x2c
-<4>[    0.000000]  mem_init+0x38/0x48
-<4>[    0.000000]  start_kernel+0x448/0x738
-<4>[    0.000000]  __primary_switched+0xb8/0xc0
-<0>[    0.000000] ---[ end Kernel panic - not syncing:
-swiotlb_init_remap: nslabs = 0 too small ]---
+ChangeLog (v1 -> v2):
+ - rebased to the latest kernel
+ - do not break UML build
 
-Full test log link,
-[1] https://lkft.validation.linaro.org/scheduler/job/5283518#L582
+diff --git a/arch/x86/entry/Makefile b/arch/x86/entry/Makefile
+index eeadbd7d92cc..ca2fe186994b 100644
+--- a/arch/x86/entry/Makefile
++++ b/arch/x86/entry/Makefile
+@@ -11,12 +11,13 @@ CFLAGS_REMOVE_common.o		= $(CC_FLAGS_FTRACE)
+ 
+ CFLAGS_common.o			+= -fno-stack-protector
+ 
+-obj-y				:= entry.o entry_$(BITS).o thunk_$(BITS).o syscall_$(BITS).o
++obj-y				:= entry.o entry_$(BITS).o syscall_$(BITS).o
+ obj-y				+= common.o
+ 
+ obj-y				+= vdso/
+ obj-y				+= vsyscall/
+ 
++obj-$(CONFIG_PREEMPTION)	+= thunk_$(BITS).o
+ obj-$(CONFIG_IA32_EMULATION)	+= entry_64_compat.o syscall_32.o
+ obj-$(CONFIG_X86_X32_ABI)	+= syscall_x32.o
+ 
+diff --git a/arch/x86/entry/thunk_32.S b/arch/x86/entry/thunk_32.S
+index 7591bab060f7..ff6e7003da97 100644
+--- a/arch/x86/entry/thunk_32.S
++++ b/arch/x86/entry/thunk_32.S
+@@ -29,10 +29,8 @@ SYM_CODE_START_NOALIGN(\name)
+ SYM_CODE_END(\name)
+ 	.endm
+ 
+-#ifdef CONFIG_PREEMPTION
+ 	THUNK preempt_schedule_thunk, preempt_schedule
+ 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
+ 	EXPORT_SYMBOL(preempt_schedule_thunk)
+ 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
+-#endif
+ 
+diff --git a/arch/x86/entry/thunk_64.S b/arch/x86/entry/thunk_64.S
+index 505b488fcc65..f38b07d2768b 100644
+--- a/arch/x86/entry/thunk_64.S
++++ b/arch/x86/entry/thunk_64.S
+@@ -31,14 +31,11 @@ SYM_FUNC_END(\name)
+ 	_ASM_NOKPROBE(\name)
+ 	.endm
+ 
+-#ifdef CONFIG_PREEMPTION
+ 	THUNK preempt_schedule_thunk, preempt_schedule
+ 	THUNK preempt_schedule_notrace_thunk, preempt_schedule_notrace
+ 	EXPORT_SYMBOL(preempt_schedule_thunk)
+ 	EXPORT_SYMBOL(preempt_schedule_notrace_thunk)
+-#endif
+ 
+-#ifdef CONFIG_PREEMPTION
+ SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
+ 	popq %r11
+ 	popq %r10
+@@ -53,4 +50,3 @@ SYM_CODE_START_LOCAL_NOALIGN(__thunk_restore)
+ 	RET
+ 	_ASM_NOKPROBE(__thunk_restore)
+ SYM_CODE_END(__thunk_restore)
+-#endif
+diff --git a/arch/x86/um/Makefile b/arch/x86/um/Makefile
+index ba5789c35809..a8cde4e8ab11 100644
+--- a/arch/x86/um/Makefile
++++ b/arch/x86/um/Makefile
+@@ -28,7 +28,8 @@ else
+ 
+ obj-y += syscalls_64.o vdso/
+ 
+-subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o ../entry/thunk_64.o
++subarch-y = ../lib/csum-partial_64.o ../lib/memcpy_64.o
++subarch-$(CONFIG_PREEMPTION) += ../entry/thunk_64.o
+ 
+ endif
+ 
+-- 
+2.34.1
 
-Best regards
-Naresh Kamboju
-
-
---
-Linaro LKFT
-https://lkft.linaro.org
