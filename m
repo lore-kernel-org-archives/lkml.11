@@ -2,90 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A667CCA47C
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C5BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237850AbiGNJOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35908 "EHLO
+        id S237952AbiGNJOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237777AbiGNJNz (ORCPT
+        with ESMTP id S237835AbiGNJN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:13:55 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C15E012D13
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:50 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id bx13so1453431ljb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YSaLOo3uvJc2rTh7KMA4aG1KJJmXpp9TQCunK6o1eqo=;
-        b=HJzl40vM7NVVmag2wEVD3j2ELJbEz1mUFz/1ap7mFAMQwyfApIwYNtlbvTWCrbCn8N
-         lzrtQdsRm2ayRKGoP5XtjVzY1mq4/LkkC5kXHIA39KRhfobj5JaZ1sskXswRLHmHBGqf
-         W2/P0P74h3+SAUgsLq/7HhM2aBi4BxlQ9teduoRxgVmZiPqey4ad1AhtDcwCgz+L1U8s
-         2PBuAIhjsB0wyzP2VZVxH9F6vtMBteHpZBt6uWHUeidw36EN0789FKGF2zx4MoYiOTjr
-         ABCojRIwRNPutNy9wZr3BXmZiOQSB6lQ73gQZudS7cFdFzemVopZBhThpzOWd+Jjm6vw
-         3VhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YSaLOo3uvJc2rTh7KMA4aG1KJJmXpp9TQCunK6o1eqo=;
-        b=pnbhNbkRff2T1aPi92s18T8WSgGa1qNjfW2xKKnqTzJW0KHw+rm0ox/Mx3VouHBOvF
-         mvAObluDZwfFRaVjoTNZ5XotUkVT4UBW6Ysceyy4BID2YKTcemYTlMJVzo5fMCrg8oxm
-         ak14rYJpffBi8IYusUtoXgyFixKooZzz7fSAJUiUkviNH3kHx2uev1IVGWyxUA/rjTz6
-         sjd8ws1enL3XZmigxSon9J6ol7IlSYpqMoPOiXS4zCNlo6fEGmVyqP5hQI3tIhenzZTE
-         Y2bvMrmiTdVBFVKoWZZlxnk/tTWo0cAZ8FlO5Z9QmlW/5qdITDPx1BJK2W5G9Y7vSFvB
-         D0gQ==
-X-Gm-Message-State: AJIora8OUw3Lw2cNDAU22GXbpgfIHeClA1JGh9L1MiyAaOfJHcHv2S8Z
-        0u8ny27AtVAEP3sq9m84RwbMLA==
-X-Google-Smtp-Source: AGRyM1vuqxlGG04+b96O84F7+W2zXY/cg945cr6JRYD7Cm7ZFVyOiQd+TX4lD9N+ST50d4dEeWDl0g==
-X-Received: by 2002:a05:651c:243:b0:25d:9aa4:d7c9 with SMTP id x3-20020a05651c024300b0025d9aa4d7c9mr1363015ljn.35.1657790028879;
-        Thu, 14 Jul 2022 02:13:48 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id t3-20020a2e8e63000000b0025d4866b2c7sm183253ljk.4.2022.07.14.02.13.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:13:48 -0700 (PDT)
-Message-ID: <6e3f32b1-ab9f-13de-19ce-1433c6d74119@linaro.org>
-Date:   Thu, 14 Jul 2022 11:13:46 +0200
+        Thu, 14 Jul 2022 05:13:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 868C013F84
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657790032;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zkmUqYebDCoxCikEkNiHntJGISLehnedVjztWQR6/tA=;
+        b=FXLFUePOEKQ6P2PF4UQiZD/ex4No7PAbEBP7GpYTNjEM9KvnkiCMjQRV0hvlOIbBq8pv1B
+        15CBIUJ5HhXbX74ugSTZUbQQc39ozrV+kJ3aHKgrSwyteUnj68+ESec5675gfk5qKWAm+S
+        O6yOv6IDiD78Yhp0uegeI1wDkuJN2O8=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-558-LqcTnO11OGi__aaSCwbIrA-1; Thu, 14 Jul 2022 05:13:48 -0400
+X-MC-Unique: LqcTnO11OGi__aaSCwbIrA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C7BE03C01DE2;
+        Thu, 14 Jul 2022 09:13:47 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8919A2166B26;
+        Thu, 14 Jul 2022 09:13:45 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 07/25] KVM: selftests: Add ENCLS_EXITING_BITMAP{,HIGH} VMCS fields
+Date:   Thu, 14 Jul 2022 11:13:09 +0200
+Message-Id: <20220714091327.1085353-8-vkuznets@redhat.com>
+In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 10/30] dt-bindings: phy: qcom,msm8996-qmp-pcie:
- deprecate PIPE clock names
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-11-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707134725.3512-11-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/2022 15:47, Johan Hovold wrote:
-> Deprecate the PHY node 'clock-names' property which specified that the
-> PIPE clock name should have an unnecessary "lane" suffix.
-> 
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+The updated Enlightened VMCS definition has 'encls_exiting_bitmap'
+field which needs mapping to VMCS, add the missing encoding.
 
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ tools/testing/selftests/kvm/include/x86_64/vmx.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index cc3604f8f1d3..5292d30fb7f2 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -208,6 +208,8 @@ enum vmcs_field {
+ 	VMWRITE_BITMAP_HIGH		= 0x00002029,
+ 	XSS_EXIT_BITMAP			= 0x0000202C,
+ 	XSS_EXIT_BITMAP_HIGH		= 0x0000202D,
++	ENCLS_EXITING_BITMAP		= 0x0000202E,
++	ENCLS_EXITING_BITMAP_HIGH	= 0x0000202F,
+ 	TSC_MULTIPLIER			= 0x00002032,
+ 	TSC_MULTIPLIER_HIGH		= 0x00002033,
+ 	GUEST_PHYSICAL_ADDRESS		= 0x00002400,
+-- 
+2.35.3
 
-
-Best regards,
-Krzysztof
