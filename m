@@ -2,143 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F53EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6117C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 17:00:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238630AbiGNQ4X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57158 "EHLO
+        id S235412AbiGNRAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 13:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239839AbiGNQ4D (ORCPT
+        with ESMTP id S229920AbiGNRAD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:56:03 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B9BE54CBD
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:56:01 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id z12so3369261wrq.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:56:01 -0700 (PDT)
+        Thu, 14 Jul 2022 13:00:03 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE81812AB9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:02 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id y4so3226354edc.4
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nU0WVVbdgEc789G5a6s5LocA0QeCbC2E3DQ5sHk48Y8=;
-        b=IYzHDmH6TgdKlf033EfO1Bg7jNq4Zm8uLryO7o6yzv6Ii23qReYyoXEWZNdJN4wNBz
-         91CunxhQuK2D4gOwqIQIPlvaMskTJn7ZqteC4EL4/6gPBvpJkKZAGc3wGrtaJG9IxL1a
-         CB6noJky+hMahbL7giTw4QO2UCSHzu3CTOHUm7EF2V1L2UClKHK+r40pTMyRCWXgwEcC
-         +5R7j+/v2Xc3nW2EhkvgoQgVYu7cXbbRPBdQJqhy0NF2Ua1NcIxp2VMipbNQTsSp1Lfy
-         2DWAETiTz1VZ9n+vIBEjZlwLH54b4etHBnO4sCojLtvP+erRugR8wUTqVr8wd9Mi967+
-         yWTA==
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UkKAKPPtro79xKHDPBehtihMhR7Lh7lQwIdzYzaJOZw=;
+        b=Mr94LDjwnV8nGBNNVAJX0c9LMeMtH4cDpRa5fj+6lq8ilb1VFMXaD3H2Ik9nf7Im9V
+         XZyhuuiBGMSLiEDZ8jkg99ghi7VhgSI6uCGroUHirIu1a+9FR19M3SveBO6J6ruu/gBv
+         73wvSSvqkb+WbC+/4GP+cysrOXahEAqgw1UYI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=nU0WVVbdgEc789G5a6s5LocA0QeCbC2E3DQ5sHk48Y8=;
-        b=XKjGTbGRsRJpvwIeEgddSwBa9RJbh3Zbi4ArKwq09El/Vbo6VOVik84yHQ71No/HUl
-         m2McEw4wJa3kkB/TcMP2nWSGbmHP5MheDmyIs3SgM44l6UR9UB2ARK6m/8r1l6OpPPdA
-         n3L6KAcBIjNdIt08nzehqeWKnJWq3OR4HyqCrLT+jbySWS2puJr7i7AAr0EMu318D/oZ
-         Ja7KpSKT3PClBHtw727ZfALgdIs2Pthwd53wowy082idmAk/FFf13UmzNk4dV8fv4ZJC
-         erpNdSyatx5FiEfI82jZ4D2y1rLclhv7ZLJa6PBWxq8+1vGbI/0Y4RWU3pwd+25ZBHDT
-         ZLlA==
-X-Gm-Message-State: AJIora+hu/T9EkMZ6sAuaEQPtYS7cSiYyd/Kkv+o5fNg7zxPRQ0dpgUW
-        CXlsqSBFt4QyCBmvFXqtDqOx1Q==
-X-Google-Smtp-Source: AGRyM1s90qNS8RahfDcyAz6R2NLl80gXy4ylX6MoZ40JpBSVeuXHVLVvAuPqfZ3uGCFbPVq6lPH2Xw==
-X-Received: by 2002:a5d:6da3:0:b0:21d:cde7:cb7 with SMTP id u3-20020a5d6da3000000b0021dcde70cb7mr227704wrs.683.1657817760912;
-        Thu, 14 Jul 2022 09:56:00 -0700 (PDT)
-Received: from localhost ([31.134.121.151])
-        by smtp.gmail.com with ESMTPSA id l29-20020a05600c1d1d00b003a2e27fc275sm2797092wms.12.2022.07.14.09.56.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:56:00 -0700 (PDT)
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Janghyuck Kim <janghyuck.kim@samsung.com>,
-        Cho KyongHo <pullip.cho@samsung.com>,
-        Daniel Mentz <danielmentz@google.com>,
-        David Virag <virag.david003@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 6/6] iommu/exynos: Enable default VM instance on SysMMU v7
-Date:   Thu, 14 Jul 2022 19:55:50 +0300
-Message-Id: <20220714165550.8884-7-semen.protsenko@linaro.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220714165550.8884-1-semen.protsenko@linaro.org>
-References: <20220714165550.8884-1-semen.protsenko@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UkKAKPPtro79xKHDPBehtihMhR7Lh7lQwIdzYzaJOZw=;
+        b=WN6HGbRUNjeUXtpBoeebE2EfZXgrmBuJXgNH9FvoQ+jhFjudvBaSx2lU6mTVUT5lFa
+         F3Vtz1EjklvDtie+4tNZw+6wtGxaZOUoZudK98V32/HSxT5gH5AtwleCq61fJfv7g98V
+         fSpfBMyU4tX3oFqHPbWQTSftkmtFOQZLGA8bD1nKBiMYjPrk7nFZqs8nuW+RHQpoqDBR
+         yDGa8rk4FcqQffg8de3TK38Ykrgfb8dIQaLriyTMpgSq3pfvw8q0VGtQOQo6AUM2bTUT
+         DqWRtmfdNOMsDGJNm7iduoF2I+NzSJY5JTJ7qZ/zqXkKAITu990eST9EMT+MhYgd4++N
+         tBLQ==
+X-Gm-Message-State: AJIora8OQZNx4w5AV+bq4l8d2jizabiOAiMIzZVINENLlXYbfpiWwQyf
+        t9EYvcOmVowlWZhIchJGhiNHRffPsBtp9euQbuI=
+X-Google-Smtp-Source: AGRyM1si/yxHtjxWyL0QTeGsxw7L7QzihPvpPhtimktQArUZc7WzQCCFuQlrqEcjgszQrw86inQv1w==
+X-Received: by 2002:aa7:cac7:0:b0:43a:c5ba:24a6 with SMTP id l7-20020aa7cac7000000b0043ac5ba24a6mr13293233edt.84.1657818001142;
+        Thu, 14 Jul 2022 10:00:01 -0700 (PDT)
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com. [209.85.128.47])
+        by smtp.gmail.com with ESMTPSA id zk8-20020a17090733c800b00705cd37fd5asm895181ejb.72.2022.07.14.10.00.00
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 10:00:00 -0700 (PDT)
+Received: by mail-wm1-f47.google.com with SMTP id f24-20020a1cc918000000b003a30178c022so1392546wmb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 10:00:00 -0700 (PDT)
+X-Received: by 2002:a7b:cd97:0:b0:3a2:dfcf:dd2d with SMTP id
+ y23-20020a7bcd97000000b003a2dfcfdd2dmr15971099wmj.68.1657817517167; Thu, 14
+ Jul 2022 09:51:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220712183238.844813653@linuxfoundation.org> <CA+G9fYtntg7=zWSs-dm+n_AUr_u0eBOU0zrwWqMeXZ+SF6_bLw@mail.gmail.com>
+ <eb63e4ce-843f-c840-060e-6e15defd3c4d@roeck-us.net> <CAHk-=wj5cOA+fbGeV15kvwe6YGT54Wsk8F2UGoekVQLTPJz_pw@mail.gmail.com>
+ <CAHk-=wgq1soM4gudypWLVQdYuvJbXn38LtvJMtnLZX+RTypqLg@mail.gmail.com> <Ys/bYJ2bLVfNBjFI@nazgul.tnic>
+In-Reply-To: <Ys/bYJ2bLVfNBjFI@nazgul.tnic>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 14 Jul 2022 09:51:40 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjdafFUFwwQNvNQY_D32CBXnp6_V=DL2FpbbdstVxafow@mail.gmail.com>
+Message-ID: <CAHk-=wjdafFUFwwQNvNQY_D32CBXnp6_V=DL2FpbbdstVxafow@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/78] 5.15.55-rc1 review
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kvm list <kvm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        stable <stable@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Slade Watkins <slade@sladewatkins.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
+        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to enable SysMMU v7 with VM register layout, at least the
-default VM instance (n=0) must be enabled, in addition to enabling the
-SysMMU itself. To do so, add corresponding write to MMU_CTRL_VM[0]
-register, before writing to MMU_CTRL register.
+On Thu, Jul 14, 2022 at 2:02 AM Borislav Petkov <bp@alien8.de> wrote:
+>
+> I'm guessing you're thinking of cutting an -rc7 so that people can test
+> the whole retbleed mitigation disaster an additional week?
 
-Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-Changes in v3:
-  - Reworked for using plain writel()
-  - Added Marek's Acked-by tag
+Oh, absolutely. Doing an -rc7 is normal.
 
-Changes in v2:
-  - Extracted VM enabling code to the separate function
-  - Used new SysMMU read/write functions to access the registers
+Right now the question isn't whether an rc7 happens, but whether we'll
+need an rc8. We'll see.
 
- drivers/iommu/exynos-iommu.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Oh, I do hate the hw-embargoed stuff that doesn't get all the usual
+testing in all our automation.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index fc9ef3ff0057..8e18984a0c4f 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -135,6 +135,8 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- #define CFG_SYSSEL	(1 << 22) /* System MMU 3.2 only */
- #define CFG_FLPDCACHE	(1 << 20) /* System MMU 3.2+ only */
- 
-+#define CTRL_VM_ENABLE			BIT(0)
-+#define CTRL_VM_FAULT_MODE_STALL	BIT(3)
- #define CAPA0_CAPA1_EXIST		BIT(11)
- #define CAPA1_VCR_ENABLED		BIT(14)
- 
-@@ -163,6 +165,7 @@ static u32 lv2ent_offset(sysmmu_iova_t iova)
- /* v7.x registers */
- #define REG_V7_CAPA0		0x870
- #define REG_V7_CAPA1		0x874
-+#define REG_V7_CTRL_VM		0x8000
- 
- #define has_sysmmu(dev)		(dev_iommu_priv_get(dev) != NULL)
- 
-@@ -548,6 +551,18 @@ static void __sysmmu_init_config(struct sysmmu_drvdata *data)
- 	writel(cfg, data->sfrbase + REG_MMU_CFG);
- }
- 
-+static void __sysmmu_enable_vid(struct sysmmu_drvdata *data)
-+{
-+	u32 ctrl;
-+
-+	if (MMU_MAJ_VER(data->version) < 7 || !data->has_vcr)
-+		return;
-+
-+	ctrl = readl(data->sfrbase + REG_V7_CTRL_VM);
-+	ctrl |= CTRL_VM_ENABLE | CTRL_VM_FAULT_MODE_STALL;
-+	writel(ctrl, data->sfrbase + REG_V7_CTRL_VM);
-+}
-+
- static void __sysmmu_enable(struct sysmmu_drvdata *data)
- {
- 	unsigned long flags;
-@@ -558,6 +573,7 @@ static void __sysmmu_enable(struct sysmmu_drvdata *data)
- 	writel(CTRL_BLOCK, data->sfrbase + REG_MMU_CTRL);
- 	__sysmmu_init_config(data);
- 	__sysmmu_set_ptbase(data, data->pgtable);
-+	__sysmmu_enable_vid(data);
- 	writel(CTRL_ENABLE, data->sfrbase + REG_MMU_CTRL);
- 	data->active = true;
- 	spin_unlock_irqrestore(&data->lock, flags);
--- 
-2.30.2
-
+             Linus
