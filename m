@@ -2,94 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7537C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 20:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433F8C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 20:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240195AbiGNUZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 16:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44660 "EHLO
+        id S232405AbiGNU2i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 16:28:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231793AbiGNUZs (ORCPT
+        with ESMTP id S231521AbiGNU2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 16:25:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F27D71E3E4;
-        Thu, 14 Jul 2022 13:25:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BE8A6222E;
-        Thu, 14 Jul 2022 20:25:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F839C34115;
-        Thu, 14 Jul 2022 20:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657830346;
-        bh=FhIKhIYhRK71ucJvwaPwDTehtabRlgM5Sr6TUUsrpgY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FzCWQTznCPdsJxZOTczXvJx5TTOzK27deQ7SBg4/OtI1DglpOHA9o7H4JFkBlqMCE
-         FDTDIbvd/RmSnELUw01L4uXNaSzRH8LvHanOUuEOi148ruZU4UYOjh/LOulyfP5mQf
-         pwBxx/lYri9z6BZQR9xei5jDYNo/Emaip0Ow3ygDbn2G5UQbm/lhKpX7aPyIkDBR64
-         1hPDguOHVh88XzLpzBmbe0n4Lgco/7ofBOumLRKK2Dz+xuhuzNZVZvbtAeOcuAvPz0
-         xoxbOMhS93UctLq+Sc4aQlH/vzLa7jatULlm8RkSWBQ97n8mfOdxjGOBN+X5IUisdh
-         bLFxwzd9ZWIEQ==
-Date:   Thu, 14 Jul 2022 22:25:41 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Pavel Machek <pavel@ucw.cz>, linux-leds@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: LED Maintainership
-Message-ID: <20220714222541.232eadfb@thinkpad>
-In-Reply-To: <YtAIm+X2XchcSkFX@google.com>
-References: <Ys/kruf8DE4ISo8M@google.com>
-        <20220714112326.GA16407@duo.ucw.cz>
-        <YtAIm+X2XchcSkFX@google.com>
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Thu, 14 Jul 2022 16:28:34 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C869130;
+        Thu, 14 Jul 2022 13:28:32 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26EKOcT1005810;
+        Thu, 14 Jul 2022 13:28:30 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=R1fqD8NdYDIP/7qdQGOAUQJIMNyUOgqBmZgaTEw8CUk=;
+ b=ALqwEaT833nYPneBe/hSCgRY8O9O87E0qAaf+zfJrcvxJs+/21+51quXzpPpOxMvZf7k
+ cfUwtbSXDajXQ3pUhGQq2n1i5cnrQiierGpzfyUo4XFPz8SuE8hR/xkAql2787Pf6XQ1
+ z9lpit9nHqgDpxhB9kLF0Pp+KUIKyKWtJ3M= 
+Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2169.outbound.protection.outlook.com [104.47.59.169])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hat59r0tc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jul 2022 13:28:30 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LviofQIbkG+zBVcMvK15jBmJ8b3tXEdCCDetHsrx1EM97UrqjIo7/6jOFbtHpCioKK+xhv3yzbkhs1s3O8wf9KPtFOu9s7f0qoS/puTvH/1yvZkwOGB/+aSxVI3VZChC0m1d9B6hYc5C2v0n260sqcezou2yRt17nXeTQo90X6t7Z4PQVAX1ezHsmYvRq4YlwT1zg/YuMezrjfvnRb5k1sxEUHUVKhoRm6J6i7aQPfQz9R1y1ZMO60dXR0KEYx+oKgM4ohcaDgtANDWRsE7opPrDpY5raM7LiwPRMyeP9NsVeuD5xEb495n6YctPSojENVS5JQxvK0cB9RWGtHCcTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=R1fqD8NdYDIP/7qdQGOAUQJIMNyUOgqBmZgaTEw8CUk=;
+ b=hzk8VOoIFu5w83+oDQLqofm+IHb3KdGo7EoyFOkJeHNu3egF9+YTvZpjd0zfIyJy0A66W69cV7L+KMCMNCuuhRDu7oXjMU/bzQ009sZZUelJSbsoXU45m36sUL2h975WLkWSb+9AsUbpD8tcFZ+bh7ab0oFCqU1b3mmKbOdwLaYIu3iaeiFWJ9L3maETiLBhPiEneuUQRdG2bjH/NvsF45ZgUmEeIPu0BpgTVqWwMyCHxzgT9L5op80D17+tVFOX9RXlh538eAl7LV8RomsF1hhRbYT60F0AYfI2ZvtVuNSN0+AHEMaEqy4nKvqR/cGfE14owgmAiMfGJCQYOi8fEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by BYAPR15MB2312.namprd15.prod.outlook.com (2603:10b6:a02:91::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.14; Thu, 14 Jul
+ 2022 20:28:28 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5438.014; Thu, 14 Jul 2022
+ 20:28:28 +0000
+Message-ID: <3aa0c96c-d42e-631b-5b4e-a5f67f0fc3e0@fb.com>
+Date:   Thu, 14 Jul 2022 13:28:25 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH] bpf: fix check against plain integer v 'NULL'
+Content-Language: en-US
+To:     Ben Dooks <ben.dooks@sifive.com>, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Sudip Mukherjee <sudip.mukherjee@sifive.com>,
+        Jude Onyenegecha <jude.onyenegecha@sifive.com>
+References: <20220714100322.260467-1-ben.dooks@sifive.com>
+From:   Yonghong Song <yhs@fb.com>
+In-Reply-To: <20220714100322.260467-1-ben.dooks@sifive.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0359.namprd03.prod.outlook.com
+ (2603:10b6:a03:39c::34) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6a3bef3b-01e9-4e3d-ac44-08da65d76908
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2312:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uHPoPD4JKebAj9j2IfOWXiTYm0UcGJeCHiqDEE0RYh5CK6kTTIhmxcNd8IFL7ZnD7FzGmUgw/MU9hnnaYS9qGaGdMT9BFW6vj2SB05wjUG1pzStRosY5KPn4Pqx8/OfosxwNm3loiY7xBqeAZ9fQ677olfAZggIBLbRXCnqgFpq7vFZDpHrzBLWWV+L+cDpX7HVcjdxYeC+uNnmeg7BPXz3/hnef5gZlynVvmiKW4Uc0b3SztdqjY1HdQpV3tVqhhLGKg8dUtwcglYoWwvp4CAOYEV0sVk//WHHad0yejbr8zWTUGm/iZABgO4ERpvsQgC3uQduqYn9EM880F34gqaeD0wkXdJiSWhcQwj6pzmmfQqGF0v/uCJvHKhhR7Ax389kSwPQ5SO6m/IydJRmsbL6X5QlEiQ0rQlJjNtMgfSribV29Wp1UPuJQUDkhmO9xvLbpd9SVlrtZm2UUeVB0ePR1otQcVFQtJ8dKQwk213RveoVfMI6ePq84LOaUL6sKbnxRXOPRqEYRj/Hc6PMpzEisGZNzjWdUUHCPrKmNpgjYswPG4MNDwgnRuCpxNFoLfXgAsqtXG5mdE69trKPcnsUSu6d3xf6PKaDLdHwOXOEvO8y21/HZk32uw7Zx/ZTQbMgG8vNMQAs+B0rlSwH9kvFKTXQ7vt/6qvdmH7SDROtVkGVPjIXGysTcFOgHDwb0Bcip384feQr2lB5oZ949jPQQITSDBcFxSM/sezJVlH4+45OCkCqknclBKEOjzayZ6UH7Ow30RcQMwdM3TQRyJDyoyCUtNeJbc6pbU2jovzosVXr4eO0wdoINrOeFo2afnQW5koJ/hRXHEXEpIYdCy4Ps5jWXxjiVdFbwDNtHGGs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(366004)(136003)(346002)(376002)(31696002)(86362001)(36756003)(38100700002)(31686004)(83380400001)(186003)(2616005)(4744005)(6666004)(41300700001)(8936002)(5660300002)(53546011)(6506007)(478600001)(6486002)(6512007)(66946007)(4326008)(8676002)(66476007)(66556008)(54906003)(2906002)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?V2hRR1ZPeWcvdzdlME5uR0c3NmFVeVhQWHNwQjByaDdrUHVMb2lGQjJzYVVJ?=
+ =?utf-8?B?R1JORUw2MHBXUDNaQWVoNExXL2RNd0xJT3NwMlBtRmppMTE0b0gvSWJ2RmZB?=
+ =?utf-8?B?SlRIenFtMCt1OXNBR1RqOHY0bGRURWZDTEl6dFJLZnZlSXFmcVFPZjhpZElJ?=
+ =?utf-8?B?MXByaG5Yd21ETHJKZFhVcWlLQzVQeFdKcXlUZnY1eVhqMlV0ckJFVEF4aWI5?=
+ =?utf-8?B?b1lJQWdWNXQ0WWR5MUdFL1dHa2p5Y3FweEJhb21EQ09oSXRxcWYzeTlTdUlL?=
+ =?utf-8?B?ZHp3ZGh6alR4cGsrNWcyWE9NM2lDMlhRcWZ5SjhjWHd2K2FQa001TUU2U3px?=
+ =?utf-8?B?emlhc294aUFFeHovYjRKUVEreEpKbGN6SnpxeVhkSnVKYWxDODNEamxXWm5s?=
+ =?utf-8?B?T21IblZ4VDMvTGZvL0dvTkFQLzhRYlJQTERScVI5U0NzRVI1cWx3b2hxRXkw?=
+ =?utf-8?B?c2pHRFczNFZTemd3aUpPaG1kUHFPT28wU1VxdENKMzNoaGR2ZTFnMWJueFNh?=
+ =?utf-8?B?ZWN4OHhZWlZQdkxJRVE1dVorRlpmV25MTlFjRllrZjA2SUJDU2RIU2syTzRP?=
+ =?utf-8?B?NE1qeS8yMzcwQk1ndXFUTURrM1dJYU5vWStBR1greEpMdXBYbnpTNzMzdjFm?=
+ =?utf-8?B?dlF5dlFlSTZMSS9UT3l1Z2N6dlRIWWNKUGVKYTMxTFFLR3FPcStRdTBqcW9J?=
+ =?utf-8?B?ZGkvOFR5ZjhveDNaYUx1VUlxWGU3Yk9WcGtkNzFMajF1NFJjVGd5V1c5T0c2?=
+ =?utf-8?B?ZGR2THZtSk53cEhJMnc2ZlBiUU85NHZqV1Rja1pKNFZYZzVlNlJpWmY4czl5?=
+ =?utf-8?B?V3ZNNTJ5dlZ1QTVUNXpPQy9tTGsvcEtUN3l1RmxvRW1sVHhTcTd2OGdzK2ha?=
+ =?utf-8?B?bTF2YkNGSnE0dkNqNlFYcDRnSXJzTVNOWHhSQjVOU1RaNk1zYi9pRU9Vc2Qr?=
+ =?utf-8?B?Vk5sNkJtbEpVOVRkWEJKMXpBWVdwbXdCUitJSDNsQjh4L0pkeDl4eUE1SUFq?=
+ =?utf-8?B?NzYwaVBMblA0RG4wTlF5c2w0d2NKc1JxNi9XVFQvWkdTNDUxWXd6RnNKeXAx?=
+ =?utf-8?B?b0tDb2Q5YzVEM1BxQ2kxNzQycWd0Zm1RU0xaUE56VFUxaFRlelJmeko1REJ3?=
+ =?utf-8?B?OVFsT2g5ZFRCZHVadi91RWNtNVJDZjdTK2hXUkhZZ2pkUUcrZEdTcW1RdThN?=
+ =?utf-8?B?ZmJiVGZvTVhrKzNneFdUSE1RcTUreFBXT0xSMis2QnRDL0g1MGcyMktqWUlM?=
+ =?utf-8?B?dzhYcVh2QVpCeG1mUUNMVlhBWTdkajBnalQzVGxMeXFxS0VSUVVUcmZjMm9N?=
+ =?utf-8?B?QmpmT2dXYzFJc0crcnZWRkhGT2ZxeEdPd1NCNGc4UVpWWldsTmo5UTgzQThS?=
+ =?utf-8?B?VzVURnJqV1VxcGRWMkszZlAzaXRlaVJ2dVR0MlFKcllkK3JZeWt1eVU1aGZ4?=
+ =?utf-8?B?S3lkMi9kL3FyNEVZQ093Zjl6UmU5ZkJQUVJqMnB6ZTMrSzdDUWoreTUwdGRJ?=
+ =?utf-8?B?VDczZmxaZDd0aCs5cm1rSVNWcDBzeWdhQzJTYS9jWUJUYk1IV3JnVCtURThk?=
+ =?utf-8?B?OWRTSTArTE51eHJnYUg3UXlidnN5YWRieTk0UXNqTWdhSHZUd0o2UUUzNE54?=
+ =?utf-8?B?bm5FT2ZSS3k0WlI0MkRwSTg2bHY2WmttRWJtcHBKcHE4c3hOdlV1cEY1dE5o?=
+ =?utf-8?B?endSZFBRSjd4eUZ1WXRzMFVaTSsrVGF1Y1ArdlRBV01XYnNNOXM4emQ0TlNG?=
+ =?utf-8?B?U3JYRllRTEI4bDVqcHByaEswRllrUkhERTMxSG8yNnMxLzFtbTZ4ZVdEU1da?=
+ =?utf-8?B?S3hsUTN6b2orRitzZGFjdWErT3A4YU9pdHQxYnBzc1B5c0FIUUp0QVpnekNW?=
+ =?utf-8?B?SURkYzlKaHFQWFpxNEU4M0d0bjRhZWxxaHc5S2VBdURTSDRQa3pVUDhtUjZw?=
+ =?utf-8?B?cStFdmR6WDdQaE1nSG1VVUV0dk9kVDRZUklscys4M1dyK0UvMUx6K3h4bG55?=
+ =?utf-8?B?MERyeTFLamdYSkpmUHNHVkVwVmpHakN1M2M3OGtaZ1d3bGdMM1VsNGtPYnVJ?=
+ =?utf-8?B?TW55azZRc0VXY0l0ZDloT2dxZG9aV0t0OUhNRENlYWtaMnVtR0E1K0tQOEVO?=
+ =?utf-8?B?Rk15dGU0aEZNbEdMcEtmOHBBS2tQbnRWd0NMQWVvdDBHdkVKWm1nQ24wM3l5?=
+ =?utf-8?B?R0E9PQ==?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6a3bef3b-01e9-4e3d-ac44-08da65d76908
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2022 20:28:28.1990
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PH2DP1YYkZMfqsV+GBjiU5vdJSsIgNirnzJ1k6WBB3ymh9DRSrmCBSk9JNa6NsMf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2312
+X-Proofpoint-GUID: _Aojwhe6HoXsFw0umcIPr-a3SqvP3jIi
+X-Proofpoint-ORIG-GUID: _Aojwhe6HoXsFw0umcIPr-a3SqvP3jIi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-14_17,2022-07-14_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022 13:14:19 +0100
-Lee Jones <lee.jones@linaro.org> wrote:
 
-> On Thu, 14 Jul 2022, Pavel Machek wrote:
->=20
-> > Hi!
-> >  =20
-> > > Not sure what's going on behind the scenes, but it looks as though the
-> > > LED subsystem has been left unmaintained for at least 2 months now. =
-=20
-> >  =20
-> > > Does anyone have any objection to me stepping in as temporary
-> > > maintainer until the situation is resolved? =20
-> >=20
-> > Yes, I'm a bit busy and would not mind help.
-> >=20
-> > There's a lot of easy stuff in the LED -- drivers not introducing new
-> > APIs -- and some quite tricky stuff -- userland API leaves... a lot to
-> > be desired, and we are in the middle of defining multicolor API.
-> >=20
-> > I wanted to ask Marek (in cc now) if he would be interested in
-> > helping. He knows the APIs / issues, and actually has multicolor LEDs
-> > he cares about. Marek, are you interested?
-> >=20
-> > If Marek is not interested, yes, help with the driver stuff would be
-> > welcome. =20
->=20
-> No problem.  The offer still stands.
->=20
-> I guess Marek and I aren't mutually exclusive either.
->=20
-> Any harm in us both helping out (if Marek is also interested that is)?
 
-Hello Lee, Pavel,
+On 7/14/22 3:03 AM, Ben Dooks wrote:
+> When checking with sparse, btf_show_type_value() is causing a
+> warning about checking integer vs NULL when the macro is passed
+> a pointer, due to the 'value != 0' check. Stop sparse complaining
+> about any type-casting by adding a cast to the typeof(value).
+> 
+> This fixes the following sparse warnings:
+> 
+> kernel/bpf/btf.c:2579:17: warning: Using plain integer as NULL pointer
+> kernel/bpf/btf.c:2581:17: warning: Using plain integer as NULL pointer
+> kernel/bpf/btf.c:3407:17: warning: Using plain integer as NULL pointer
+> kernel/bpf/btf.c:3758:9: warning: Using plain integer as NULL pointer
+> 
+> Signed-off-by: Ben Dooks <ben.dooks@sifive.com>
 
-I am interested, but unfortunately I won't have much time for reviewing
-patches until september.
-
-=46rom september, I would be open to co-maintaining.
-
-Marek
+Acked-by: Yonghong Song <yhs@fb.com>
