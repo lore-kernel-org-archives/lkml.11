@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EAE6C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E79C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235870AbiGNQtZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:49:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
+        id S239417AbiGNQt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:49:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240028AbiGNQs4 (ORCPT
+        with ESMTP id S232389AbiGNQsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:48:56 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D74691FD
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:46:28 -0700 (PDT)
+        Thu, 14 Jul 2022 12:48:46 -0400
+Received: from mx0.riseup.net (mx0.riseup.net [198.252.153.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BD8691C2
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:46:22 -0700 (PDT)
 Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
          client-signature RSA-PSS (2048 bits) client-digest SHA256)
         (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4LkL3V1QCczDqJC;
-        Thu, 14 Jul 2022 16:46:14 +0000 (UTC)
+        by mx0.riseup.net (Postfix) with ESMTPS id 4LkL3L33Z7z9sP3;
+        Thu, 14 Jul 2022 16:46:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1657817174; bh=DN6suon3TLYpHGgeo/Qz0TzseaZOBH64/Hro/CUPXMA=;
+        t=1657817166; bh=7ZIyFiuFgYNUa17wM136mhJTJfJP2BZyJxk+lgVG18A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ms7WgxQbypt0b1qjg8StkDCtFoB/Y/+DxKkGPUjj211LSm+aZGuqeInSk3CRdWfjp
-         g0Gt+Vj5xxC9MTyTln1kcDyLUvjNQm7kspjScS0F4NIbqqCtG5IJUEdOUCyB1n9XQ3
-         1MFWgQzzK2d7wpc1ARQItZDvRxfXxB323MAQcv+0=
-X-Riseup-User-ID: 39D20A01FAC4C6CE88B26DF60B0505227F3A81DB12ABDEB88706861C003CA16B
+        b=Y+uzNfg6XiOpBuZSLVzEP2p3SN9sRea2J7hilAEY4nZMrhmUY1n+PfxmoatQGvpOz
+         I63z0VMk1uhdQ1j9QkgoRTa7PNW3NPINy4qOU4tb7+tB2EJAueeNnwfFMenlcZ+iPz
+         fqNm7CpRF6JVE785RYsGsPSpKHxKEZWwEaeGfrV8=
+X-Riseup-User-ID: 4D0773E2CA694B3310900D5C7D2DFB5E6AB547B05B4D989EE8DE07658CBFC1D2
 Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4LkL3N3jFHz5vW1;
-        Thu, 14 Jul 2022 16:46:08 +0000 (UTC)
+         by fews1.riseup.net (Postfix) with ESMTPSA id 4LkL3D20jbz5vW1;
+        Thu, 14 Jul 2022 16:45:59 +0000 (UTC)
 From:   =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
 To:     Harry Wentland <harry.wentland@amd.com>,
         Leo Li <sunpeng.li@amd.com>,
@@ -48,9 +48,9 @@ Cc:     amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
         tales.aparecida@gmail.com,
         =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>
-Subject: [PATCH 07/12] drm/amd/display: Remove unused value0 variable
-Date:   Thu, 14 Jul 2022 13:45:02 -0300
-Message-Id: <20220714164507.561751-7-mairacanal@riseup.net>
+Subject: [PATCH 06/12] drm/amd/display: Remove unused variables from dml_rq_dlg_get_dlg_params
+Date:   Thu, 14 Jul 2022 13:45:01 -0300
+Message-Id: <20220714164507.561751-6-mairacanal@riseup.net>
 In-Reply-To: <20220714164507.561751-1-mairacanal@riseup.net>
 References: <20220714164507.561751-1-mairacanal@riseup.net>
 MIME-Version: 1.0
@@ -60,43 +60,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the variable value0 from the function
-dcn10_link_encoder_update_mst_stream_allocation_table.
+Remove the variables dispclk_delay_subtotal and dppclk_delay_subtotal from
+the function dml_rq_dlg_get_dlg_params.
 
 This was pointed by clang with the following warning:
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn10/dcn10_link_encoder.c:1223:11:
-warning: variable 'value0' set but not used [-Wunused-but-set-variable]
-        uint32_t value0 = 0;
-                 ^
-1 warning generated.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/display_rq_dlg_calc_31.c:920:15:
+warning: variable 'dispclk_delay_subtotal' set but not used [-Wunused-but-set-variable]
+        unsigned int dispclk_delay_subtotal;
+                     ^
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/display_rq_dlg_calc_31.c:919:15:
+warning: variable 'dppclk_delay_subtotal' set but not used [-Wunused-but-set-variable]
+        unsigned int dppclk_delay_subtotal;
+                     ^
+2 warnings generated.
 
 Signed-off-by: Maíra Canal <mairacanal@riseup.net>
 ---
- drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c | 3 ---
- 1 file changed, 3 deletions(-)
+ .../dc/dml/dcn31/display_rq_dlg_calc_31.c     | 19 -------------------
+ 1 file changed, 19 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
-index fbccb7263ad2..ea7d89bc293f 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn10/dcn10_link_encoder.c
-@@ -1220,7 +1220,6 @@ void dcn10_link_encoder_update_mst_stream_allocation_table(
- 	const struct link_mst_stream_allocation_table *table)
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+index c94cf6e01e25..66b82e4f05c6 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/display_rq_dlg_calc_31.c
+@@ -866,7 +866,6 @@ static void dml_rq_dlg_get_dlg_params(
  {
- 	struct dcn10_link_encoder *enc10 = TO_DCN10_LINK_ENC(enc);
--	uint32_t value0 = 0;
- 	uint32_t value1 = 0;
- 	uint32_t value2 = 0;
- 	uint32_t slots = 0;
-@@ -1322,8 +1321,6 @@ void dcn10_link_encoder_update_mst_stream_allocation_table(
- 	do {
- 		udelay(10);
+ 	const display_pipe_source_params_st *src = &e2e_pipe_param[pipe_idx].pipe.src;
+ 	const display_pipe_dest_params_st *dst = &e2e_pipe_param[pipe_idx].pipe.dest;
+-	const display_output_params_st *dout = &e2e_pipe_param[pipe_idx].dout;
+ 	const display_clocks_and_cfg_st *clks = &e2e_pipe_param[pipe_idx].clks_cfg;
+ 	const scaler_ratio_depth_st *scl = &e2e_pipe_param[pipe_idx].pipe.scale_ratio_depth;
+ 	const scaler_taps_st *taps = &e2e_pipe_param[pipe_idx].pipe.scale_taps;
+@@ -916,9 +915,6 @@ static void dml_rq_dlg_get_dlg_params(
+ 	unsigned int vupdate_width;
+ 	unsigned int vready_offset;
  
--		value0 = REG_READ(DP_MSE_SAT_UPDATE);
+-	unsigned int dppclk_delay_subtotal;
+-	unsigned int dispclk_delay_subtotal;
 -
- 		REG_GET(DP_MSE_SAT_UPDATE,
- 				DP_MSE_SAT_UPDATE, &value1);
+ 	unsigned int vstartup_start;
+ 	unsigned int dst_x_after_scaler;
+ 	unsigned int dst_y_after_scaler;
+@@ -1037,21 +1033,6 @@ static void dml_rq_dlg_get_dlg_params(
+ 	vupdate_width = dst->vupdate_width;
+ 	vready_offset = dst->vready_offset;
  
+-	dppclk_delay_subtotal = mode_lib->ip.dppclk_delay_subtotal;
+-	dispclk_delay_subtotal = mode_lib->ip.dispclk_delay_subtotal;
+-
+-	if (scl_enable)
+-		dppclk_delay_subtotal += mode_lib->ip.dppclk_delay_scl;
+-	else
+-		dppclk_delay_subtotal += mode_lib->ip.dppclk_delay_scl_lb_only;
+-
+-	dppclk_delay_subtotal += mode_lib->ip.dppclk_delay_cnvc_formatter + src->num_cursors * mode_lib->ip.dppclk_delay_cnvc_cursor;
+-
+-	if (dout->dsc_enable) {
+-		double dsc_delay = get_dsc_delay(mode_lib, e2e_pipe_param, num_pipes, pipe_idx); // FROM VBA
+-		dispclk_delay_subtotal += dsc_delay;
+-	}
+-
+ 	vstartup_start = dst->vstartup_start;
+ 	if (interlaced) {
+ 		if (vstartup_start / 2.0 - (double) (vready_offset + vupdate_width + vupdate_offset) / htotal <= vblank_end / 2.0)
 -- 
 2.36.1
 
