@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FD14C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8731CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240246AbiGNQoz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
+        id S239737AbiGNQo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:44:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238379AbiGNQnn (ORCPT
+        with ESMTP id S238312AbiGNQnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 12:43:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1A621AB
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:43:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1317B6326;
+        Thu, 14 Jul 2022 09:43:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E73EC62073
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0806C34114;
-        Thu, 14 Jul 2022 16:43:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EFB762071;
+        Thu, 14 Jul 2022 16:43:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47314C341CA;
+        Thu, 14 Jul 2022 16:43:32 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w2-004lT8-Rs;
-        Thu, 14 Jul 2022 12:43:30 -0400
-Message-ID: <20220714164330.696225912@goodmis.org>
+        id 1oC1w3-004lUo-DG;
+        Thu, 14 Jul 2022 12:43:31 -0400
+Message-ID: <20220714164331.246724058@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:43:11 -0400
+Date:   Thu, 14 Jul 2022 12:43:14 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Fred Herard <fred.herard@oracle.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [for-next][PATCH 15/23] scsi: iscsi: tracing: Use the new __vstring() helper
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [for-next][PATCH 18/23] mac80211: tracing: Use the new __vstring() helper
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +54,41 @@ defeats the purpose of the dynamic array in the first place). Use the new
 __vstring() helper that will use a va_list and only write enough of the
 string into the ring buffer that is needed.
 
-Link: https://lkml.kernel.org/r/20220705224750.715763972@goodmis.org
+Link: https://lkml.kernel.org/r/20220705224751.271015450@goodmis.org
 
-Cc: Fred Herard <fred.herard@oracle.com>
+Cc: Johannes Berg <johannes@sipsolutions.net>
 Cc: Ingo Molnar <mingo@kernel.org>
 Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Martin K. Petersen <martin.petersen@oracle.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- include/trace/events/iscsi.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/mac80211/trace_msg.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/include/trace/events/iscsi.h b/include/trace/events/iscsi.h
-index 87408faf6e4e..8ff2a3ca5d75 100644
---- a/include/trace/events/iscsi.h
-+++ b/include/trace/events/iscsi.h
-@@ -26,12 +26,12 @@ DECLARE_EVENT_CLASS(iscsi_log_msg,
+diff --git a/net/mac80211/trace_msg.h b/net/mac80211/trace_msg.h
+index 40141df09f25..c9dbe9aab7bd 100644
+--- a/net/mac80211/trace_msg.h
++++ b/net/mac80211/trace_msg.h
+@@ -24,13 +24,11 @@ DECLARE_EVENT_CLASS(mac80211_msg_event,
+ 	TP_ARGS(vaf),
  
  	TP_STRUCT__entry(
- 		__string(dname, 	dev_name(dev)		)
--		__dynamic_array(char,	msg, ISCSI_MSG_MAX	)
-+		__vstring(msg,		vaf->fmt, vaf->va)
+-		__dynamic_array(char, msg, MAX_MSG_LEN)
++		__vstring(msg, vaf->fmt, vaf->va)
  	),
  
  	TP_fast_assign(
- 		__assign_str(dname, dev_name(dev));
--		vsnprintf(__get_str(msg), ISCSI_MSG_MAX, vaf->fmt, *vaf->va);
+-		WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
+-				       MAX_MSG_LEN, vaf->fmt,
+-				       *vaf->va) >= MAX_MSG_LEN);
 +		__assign_vstr(msg, vaf->fmt, vaf->va);
  	),
  
- 	TP_printk("%s: %s",__get_str(dname),  __get_str(msg)
+ 	TP_printk("%s", __get_str(msg))
 -- 
 2.35.1
