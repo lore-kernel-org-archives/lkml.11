@@ -2,197 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4884C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46988C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237555AbiGNMNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S238708AbiGNMNz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:13:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238411AbiGNMNh (ORCPT
+        with ESMTP id S238644AbiGNMNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:13:37 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5382DEA;
-        Thu, 14 Jul 2022 05:13:37 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E3efQ1018415;
-        Thu, 14 Jul 2022 05:13:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=S50ojiroZ1r/0/PPBdwCdzqkGePj2RtjkHHmNjQqNMU=;
- b=ZpA6HTTOnGUa3VoRd6VBbOQONINXdUmVQMbFjdt5IhqYBJBxnx48pICzim/Mrbi9etnp
- EmwdjuSKHNCE7lY5/WwZhXGbdNMENVKvdht5gs+OmMj1S29VFSsxTH9JTT8xSWhmPANB
- SC+wiNRs7KbenXt2Lexp1Bi88ub3EdD9nwYAtJuKlXJqxxEa9goRJTPeyT0hFdHeuqaI
- 1RB/OF2O8jgxO4g4XEzVDHVhy9sS3ww1bTBVjssnjqXvbnf+RYNzJvm3mjiwr9FnDnwm
- yEezzsQNpawC/vlFHLFCgh4gRVffblLCFB4yKhNO92QaboO3w7ioW+ifMuazSBFI6jo3 DQ== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3habegsk5j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 05:13:33 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 Jul
- 2022 05:12:23 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 14 Jul 2022 05:12:23 -0700
-Received: from localhost.localdomain (unknown [10.110.150.170])
-        by maili.marvell.com (Postfix) with ESMTP id 75F343F704D;
-        Thu, 14 Jul 2022 05:12:23 -0700 (PDT)
-From:   Wojciech Bartczak <wbartczak@marvell.com>
-To:     <wbartczak@marvell.com>, <linux-kernel@vger.kernel.org>
-CC:     <wbartczak@gmail.com>, Piyush Malgujar <pmalgujar@marvell.com>,
-        "Sunil Goutham" <sgoutham@marvell.com>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH 1/2] dt-bindings: mailbox : marvell,mbox: Add bindings
-Date:   Thu, 14 Jul 2022 05:12:12 -0700
-Message-ID: <20220714121215.22931-2-wbartczak@marvell.com>
+        Thu, 14 Jul 2022 08:13:49 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4993FDFCE;
+        Thu, 14 Jul 2022 05:13:45 -0700 (PDT)
+Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LkCzy3k91zFq24;
+        Thu, 14 Jul 2022 20:12:46 +0800 (CST)
+Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
+ dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 20:13:43 +0800
+Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
+ (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Jul
+ 2022 20:13:42 +0800
+From:   Ren Zhijie <renzhijie2@huawei.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <konrad.dybcio@somainline.org>, <mturquette@baylibre.com>,
+        <sboyd@kernel.org>, <jonathan@marek.ca>, <robert.foss@linaro.org>,
+        <vkoul@kernel.org>
+CC:     <linux-arm-msm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Ren Zhijie <renzhijie2@huawei.com>
+Subject: [PATCH -next] clk: qcom: fix build error initializer element is not constant
+Date:   Thu, 14 Jul 2022 20:11:44 +0800
+Message-ID: <20220714121144.71062-1-renzhijie2@huawei.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220714121215.22931-1-wbartczak@marvell.com>
-References: <20220714121215.22931-1-wbartczak@marvell.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: -WNRLDvgd4WPXGNREzpu8r2WknynHCR7
-X-Proofpoint-ORIG-GUID: -WNRLDvgd4WPXGNREzpu8r2WknynHCR7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_10,2022-07-14_01,2022-06-22_01
+X-Originating-IP: [10.67.175.34]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500008.china.huawei.com (7.185.36.147)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds device tree binding for Marvell Message Handling Unit
-(MHU) controller.
+CONFIG_CC_VERSION_TEXT="x86_64-linux-gnu-gcc (Ubuntu 7.4.0-1ubuntu1~18.04.1) 7.4.0"
+make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
 
-Signed-off-by: Wojciech Bartczak <wbartczak@marvell.com>
+drivers/clk/qcom/gpucc-sm8350.c:111:2: error: initializer element is not constant
+  gpu_cc_parent,
+  ^~~~~~~~~~~~~
+drivers/clk/qcom/gpucc-sm8350.c:111:2: note: (near initialization for ‘gpu_cc_parent_data_0[0]’)
+drivers/clk/qcom/gpucc-sm8350.c:126:2: error: initializer element is not constant
+  gpu_cc_parent,
+  ^~~~~~~~~~~~~
+drivers/clk/qcom/gpucc-sm8350.c:126:2: note: (near initialization for ‘gpu_cc_parent_data_1[0]’)
+make[3]: *** [drivers/clk/qcom/gpucc-sm8350.o] Error 1
+
+It seems that nested constant initializer is not supported in GCC 7.4.0. For portability resons, we should fix it.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 160758b05ab1 ("clk: qcom: add support for SM8350 GPUCC")
+Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
 ---
- .../mailbox/marvell,mbox-mailbox.yaml         | 112 ++++++++++++++++++
- 1 file changed, 112 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mailbox/marvell,mbox-mailbox.yaml
+ drivers/clk/qcom/gpucc-sm8350.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/mailbox/marvell,mbox-mailbox.yaml b/Documentation/devicetree/bindings/mailbox/marvell,mbox-mailbox.yaml
-new file mode 100644
-index 0000000000000000000000000000000000000000..d9a6e14dcb12da6c3a9db2dfafc075ccefa8711c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mailbox/marvell,mbox-mailbox.yaml
-@@ -0,0 +1,112 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mailbox/marvell,mbox-mailbox.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Marvell Message Handling Unit
-+
-+maintainers:
-+  - Wojciech Bartczak <wbartczak@marvell.com>
-+  - Piyush Malgujar <pmalgujar@marvell.com>
-+
-+description:
-+  The Marvell's Message Handling Unit is a mailbox controller
-+  with a single channel used to communicate with System Control Processor.
-+  Driver supports series of cn9x and cn10x SoC.
-+  Sole purpose of the link is to exchange SCMI related data with SCP.
-+  The link has hardwired configuration, it uses simple notification scheme
-+  over shared memory block to push data back and forth.
-+  Interrupts used by mailbox may be configured in two ways,
-+  as SPI interrupts, then driver uses platform device forntend.
-+  Other way is to use PCI bus frontend with LPI interrupts.
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: marvell,mbox
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    items:
-+      - description: interrupt type
-+        const: 0
-+      - description: interrupt number
-+      - description: interrupt trigger type
-+        const: 1
-+
-+  '#mbox-cells':
-+    description: Index of the channel
-+    const: 1
-+
-+  shmem:
-+    description:
-+      List of phandle pointing to the shared memory area between SCP and AP.
-+      The area is used to exchange additional information not covered by SCMI.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - '#mbox-cells'
-+  - shmem
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    soc@0 {
-+      reg = <0 0>;
-+       #address-cells = <2>;
-+       #size-cells = <2>;
-+
-+      sram@36,0 {
-+        compatible = "cpc-shmem";
-+        reg = <0x86d0 0xdd400 0 0x200>;
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+        ranges = <0 0x0 0x86d0 0xdd400 0x200>;
-+
-+        scp_to_cpu0: scp-shmame@0 {
-+          compatible = "cpc-shmem";
-+          reg = <0x0 0x0 0x200>;
-+        };
-+      };
-+
-+      mailbox0: mailbox@28,0 {
-+        #mbox-cells = <1>;
-+        compatible = "marvell,mbox";
-+        reg = <0xe000 0 0 0>;
-+        shmem = <&scp_to_cpu0>;
-+      };
-+    };
-+  - |
-+    soc@1 {
-+      reg = <1 0>;
-+       #address-cells = <2>;
-+       #size-cells = <2>;
-+
-+      sram@36,0 {
-+        compatible = "cpc-shmem";
-+        reg = <0x86d0 0xdd400 0 0x200>;
-+        #address-cells = <2>;
-+        #size-cells = <1>;
-+        ranges = <0 0x0 0x86d0 0xdd400 0x200>;
-+
-+        scp_to_cpu1: scp-shmame@1 {
-+          compatible = "cpc-shmem";
-+          reg = <0x0 0x0 0x200>;
-+        };
-+      };
-+
-+      mailbox1: mailbox@82c000000000 {
-+        #mbox-cells = <1>;
-+        compatible = "marvell,mbox";
-+        reg = <0x82c0 0x00000000 0x0 0x100000>;
-+        interrupt-parent = <&gic0>;
-+        interrupts = <0 59 1>;
-+        shmem = <&scp_to_cpu1>;
-+      };
-+    };
+diff --git a/drivers/clk/qcom/gpucc-sm8350.c b/drivers/clk/qcom/gpucc-sm8350.c
+index d13fa813d190..5367ce654ac9 100644
+--- a/drivers/clk/qcom/gpucc-sm8350.c
++++ b/drivers/clk/qcom/gpucc-sm8350.c
+@@ -108,7 +108,7 @@ static const struct parent_map gpu_cc_parent_map_0[] = {
+ };
+ 
+ static const struct clk_parent_data gpu_cc_parent_data_0[] = {
+-	gpu_cc_parent,
++	{ .fw_name = "bi_tcxo" },
+ 	{ .hw = &gpu_cc_pll0.clkr.hw },
+ 	{ .hw = &gpu_cc_pll1.clkr.hw },
+ 	{ .fw_name = "gcc_gpu_gpll0_clk_src" },
+@@ -123,7 +123,7 @@ static const struct parent_map gpu_cc_parent_map_1[] = {
+ };
+ 
+ static const struct clk_parent_data gpu_cc_parent_data_1[] = {
+-	gpu_cc_parent,
++	{ .fw_name = "bi_tcxo" },
+ 	{ .hw = &gpu_cc_pll1.clkr.hw },
+ 	{ .fw_name = "gcc_gpu_gpll0_clk_src" },
+ 	{ .fw_name = "gcc_gpu_gpll0_div_clk_src" },
 -- 
 2.17.1
 
