@@ -2,237 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12ECFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86ACFC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233162AbiGNEVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:21:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        id S233544AbiGNEWb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:22:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229506AbiGNEVR (ORCPT
+        with ESMTP id S232089AbiGNEW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:21:17 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F326275E6
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:21:16 -0700 (PDT)
-Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com [209.85.160.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 4F0293F11B
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 04:21:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1657772472;
-        bh=gLGjvAf35BUVmn3iIkA3RJp5YnCNYkqDmKk9zXo1YLY=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=IDeRW8HJisPdAdwvax9f1PKsCQ2mpCAJ4pwwc0aCVGROuJl7zi1NnoT5RGoRqvcsO
-         8nkybOV483S+InDM18vFGfhee3MpJEuwBa0okrrIlNZQvkFKCc/ind+Sdk5LkkecT9
-         Hc+mnsPTYpJO+ZWuWg0WGFvyuxUjVqNqmzjKvwCSO8TIFXg3W+ytqCo5/+nczGaw46
-         o8ajKdOrC9XQhLd990FDPb+7XuswVEya/yFeHHFxFKSi7kcPtiUVsv7ASUaU1kMmyi
-         rovoobwOF+hsZZw5ZJ3s6BFupX+eQ0lzI6MFew+w1rx/fp0g+2Ni5N7mtfO45iLiMd
-         1HFhqO5LFhoNg==
-Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-10cbee08af9so558362fac.0
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:21:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gLGjvAf35BUVmn3iIkA3RJp5YnCNYkqDmKk9zXo1YLY=;
-        b=hHWaBw+hkv/KyNLGeYPmbS9v4CPdkE8qJv/AI2MXBjQ1w9GveAMJNbTVgz8WxEER+s
-         HxaC76uhyOYYl5RaR20TDoSzOYa1HMsgELCIrEoPMIjP1Y4M2juki39zLqOubAmr1TBx
-         xT62kBjnMbldBsfrSLczcHVL5lcHj8BgNBjhL6IVBUTuJQ1j1ytkqITmg6iCUKFBYk95
-         MVN1yf6v5infnbym6fxGFck2P2ZTWJGp1q8tlcwRmh/E3Q5QAnATUQwgx1SgimzysT9p
-         SLj6uR831ALUSQ7t89rzUe4/ugehKzIfAZFHN0N1BJbm5hktF25swBemJGZ99bPjsBFa
-         UBFw==
-X-Gm-Message-State: AJIora/uVdTDHZTRjYEX2rMOef59KO6ZDJZCnfclCRij2qpFLbW9dIOF
-        7PMM3gJ25Yc5RpRcqvCQs4myK5A60OlA98iGYhtkdAMxT414OukdqtZCPhneyMhZY7OrgTR7EEv
-        zJ47Ty6go8QgNXAAEMpXq2lylZJpO6mwKB10qRerPjtghA4hHFllBKfO3qg==
-X-Received: by 2002:a05:6870:51ce:b0:101:c7e3:d7a5 with SMTP id b14-20020a05687051ce00b00101c7e3d7a5mr6364355oaj.176.1657772470879;
-        Wed, 13 Jul 2022 21:21:10 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tKNvLh7SEIeuZkckzQOcFULrkCMGK3QBez3svkc5HKqfbQEq5mWOMzOWnY1ennttSqrq5jFcv2P2ZOCjO2dw0=
-X-Received: by 2002:a05:6870:51ce:b0:101:c7e3:d7a5 with SMTP id
- b14-20020a05687051ce00b00101c7e3d7a5mr6364343oaj.176.1657772470597; Wed, 13
- Jul 2022 21:21:10 -0700 (PDT)
+        Thu, 14 Jul 2022 00:22:26 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF94275FD;
+        Wed, 13 Jul 2022 21:22:25 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E3mxpZ020551;
+        Thu, 14 Jul 2022 04:22:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2021-07-09;
+ bh=AlN9Hp9+KlkquTPFGxnks1+pPt0aRkDB5DYGzzm4jiU=;
+ b=p0zPeU27Jc6IYtHMxRc7JY5EUenLxKOhMbYWucU9HvWwpAOsOr7Zfy8E+GnTCyLLNbOh
+ 058G5i7jePXTiXAog7mNARVk2idEsSpnftL9rVb5BQXhZwZMTRYQNFScLSZ0IAfzUfrn
+ NT4sb6smbosEVjWVNjRVAaLpGkz4HRhi/OcvSV8ydPktGXUIQtPpD+SEgaCYIPj6Q/Zr
+ fqztWyiQEsMk3oiT44IFVwfoKbdNuh1T7s37ewNH5aAyC/vbpTm09BgogCVLlYVdlhXw
+ ZPWaPz5fvFJnifC43POPl7W5MSjlLqMVXBU6kor3YT2q+p2Uw4DStMUELmhB0z+qjWg3 sw== 
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h71xrkxs3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 04:22:15 +0000
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 26E4Ax3Z001091;
+        Thu, 14 Jul 2022 04:22:14 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7045au23-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 14 Jul 2022 04:22:14 +0000
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 26E4MD5D024736;
+        Thu, 14 Jul 2022 04:22:13 GMT
+Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
+        by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com with ESMTP id 3h7045au20-1;
+        Thu, 14 Jul 2022 04:22:13 +0000
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     Bart Van Assche <bvanassche@acm.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Avri Altman <avri.altman@wdc.com>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Bean Huo <beanhuo@micron.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yue Hu <huyue2@yulong.com>
+Subject: Re: [PATCH] scsi: ufs: ufshcd: Drop loglevel of WriteBoost message
+Date:   Thu, 14 Jul 2022 00:22:08 -0400
+Message-Id: <165777180152.4401.10494313651978409350.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220709000027.3929970-1-bjorn.andersson@linaro.org>
+References: <20220709000027.3929970-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-References: <73afa23f-73a0-81ed-c194-fbbd864a097f@nvidia.com> <20220713181621.GA840944@bhelgaas>
-In-Reply-To: <20220713181621.GA840944@bhelgaas>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Thu, 14 Jul 2022 12:20:59 +0800
-Message-ID: <CAAd53p5+te7N+E+JtCxLQU_X+0scgkuusDncCqzL1Xzhym0a6A@mail.gmail.com>
-Subject: Re: [PATCH V2] PCI/ASPM: Save/restore L1SS Capability for suspend/resume
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     Vidya Sagar <vidyas@nvidia.com>, bhelgaas@google.com,
-        lorenzo.pieralisi@arm.com, refactormyself@gmail.com, kw@linux.com,
-        rajatja@google.com, kenny@panix.com, treding@nvidia.com,
-        jonathanh@nvidia.com, abhsahu@nvidia.com, sagupta@nvidia.com,
-        benchuanggli@gmail.com, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kthota@nvidia.com,
-        mmaddireddy@nvidia.com, sagar.tv@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-GUID: JIh9csJSE7p0J26esIo00Xrce3KvZAPV
+X-Proofpoint-ORIG-GUID: JIh9csJSE7p0J26esIo00Xrce3KvZAPV
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:16 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
->
-> [+cc Kai-Heng]
->
-> On Wed, Jul 13, 2022 at 11:29:42PM +0530, Vidya Sagar wrote:
-> > Hi,
-> > @Kenneth, Could you please verify it on your laptop one last time?
-> >
-> > @Bjorn, Could you please review this change in the meanwhile?
->
-> Seems like this may be related to Kai-Heng's patch:
-> https://lore.kernel.org/r/20220509073639.2048236-1-kai.heng.feng@canonical.com
-> since he specifically mentioned L1SS.
+On Fri, 8 Jul 2022 17:00:27 -0700, Bjorn Andersson wrote:
 
-Yes, to make L1ss restore successful on system resume this patch is also needed.
+> Commit '3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")'
+> changed the log level of the write boost enable/disable notification
+> from debug to info, this results in a lot of noise in the kernel log
+> during normal operation.
+> 
+> Drop it back to debug level to avoid this.
+> 
+> [...]
 
-Kai-Heng
+Applied to 5.19/scsi-fixes, thanks!
 
->
-> I applied Kai-Heng's patch for v5.20 yesterday, but I haven't worked
-> out the connection to this patch.  But if you want Kenneth to test
-> this, it should probably be on top of Kai-Heng's patch so we're
-> testing something close to the eventual result.
->
-> > On 7/5/2022 11:30 AM, Vidya Sagar wrote:
-> > > External email: Use caution opening links or attachments
-> > >
-> > >
-> > > Previously ASPM L1 Substates control registers (CTL1 and CTL2) weren't
-> > > saved and restored during suspend/resume leading to L1 Substates
-> > > configuration being lost post-resume.
-> > >
-> > > Save the L1 Substates control registers so that the configuration is
-> > > retained post-resume.
-> > >
-> > > Signed-off-by: Vidya Sagar <vidyas@nvidia.com>
-> > > Tested-by: Abhishek Sahu <abhsahu@nvidia.com>
-> > > ---
-> > > Hi,
-> > > Kenneth R. Crudup <kenny@panix.com>, Could you please verify this patch
-> > > on your laptop (Dell XPS 13) one last time?
-> > > IMHO, the regression observed on your laptop with an old version of the patch
-> > > could be due to a buggy old version BIOS in the laptop.
-> > >
-> > > Thanks,
-> > > Vidya Sagar
-> > >
-> > >   drivers/pci/pci.c       |  7 +++++++
-> > >   drivers/pci/pci.h       |  4 ++++
-> > >   drivers/pci/pcie/aspm.c | 44 +++++++++++++++++++++++++++++++++++++++++
-> > >   3 files changed, 55 insertions(+)
-> > >
-> > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> > > index cfaf40a540a8..aca05880aaa3 100644
-> > > --- a/drivers/pci/pci.c
-> > > +++ b/drivers/pci/pci.c
-> > > @@ -1667,6 +1667,7 @@ int pci_save_state(struct pci_dev *dev)
-> > >                  return i;
-> > >
-> > >          pci_save_ltr_state(dev);
-> > > +       pci_save_aspm_l1ss_state(dev);
-> > >          pci_save_dpc_state(dev);
-> > >          pci_save_aer_state(dev);
-> > >          pci_save_ptm_state(dev);
-> > > @@ -1773,6 +1774,7 @@ void pci_restore_state(struct pci_dev *dev)
-> > >           * LTR itself (in the PCIe capability).
-> > >           */
-> > >          pci_restore_ltr_state(dev);
-> > > +       pci_restore_aspm_l1ss_state(dev);
-> > >
-> > >          pci_restore_pcie_state(dev);
-> > >          pci_restore_pasid_state(dev);
-> > > @@ -3489,6 +3491,11 @@ void pci_allocate_cap_save_buffers(struct pci_dev *dev)
-> > >          if (error)
-> > >                  pci_err(dev, "unable to allocate suspend buffer for LTR\n");
-> > >
-> > > +       error = pci_add_ext_cap_save_buffer(dev, PCI_EXT_CAP_ID_L1SS,
-> > > +                                           2 * sizeof(u32));
-> > > +       if (error)
-> > > +               pci_err(dev, "unable to allocate suspend buffer for ASPM-L1SS\n");
-> > > +
-> > >          pci_allocate_vc_save_buffers(dev);
-> > >   }
-> > >
-> > > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> > > index e10cdec6c56e..92d8c92662a4 100644
-> > > --- a/drivers/pci/pci.h
-> > > +++ b/drivers/pci/pci.h
-> > > @@ -562,11 +562,15 @@ void pcie_aspm_init_link_state(struct pci_dev *pdev);
-> > >   void pcie_aspm_exit_link_state(struct pci_dev *pdev);
-> > >   void pcie_aspm_pm_state_change(struct pci_dev *pdev);
-> > >   void pcie_aspm_powersave_config_link(struct pci_dev *pdev);
-> > > +void pci_save_aspm_l1ss_state(struct pci_dev *dev);
-> > > +void pci_restore_aspm_l1ss_state(struct pci_dev *dev);
-> > >   #else
-> > >   static inline void pcie_aspm_init_link_state(struct pci_dev *pdev) { }
-> > >   static inline void pcie_aspm_exit_link_state(struct pci_dev *pdev) { }
-> > >   static inline void pcie_aspm_pm_state_change(struct pci_dev *pdev) { }
-> > >   static inline void pcie_aspm_powersave_config_link(struct pci_dev *pdev) { }
-> > > +static inline void pci_save_aspm_l1ss_state(struct pci_dev *dev) { }
-> > > +static inline void pci_restore_aspm_l1ss_state(struct pci_dev *dev) { }
-> > >   #endif
-> > >
-> > >   #ifdef CONFIG_PCIE_ECRC
-> > > diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
-> > > index a96b7424c9bc..2c29fdd20059 100644
-> > > --- a/drivers/pci/pcie/aspm.c
-> > > +++ b/drivers/pci/pcie/aspm.c
-> > > @@ -726,6 +726,50 @@ static void pcie_config_aspm_l1ss(struct pcie_link_state *link, u32 state)
-> > >                                  PCI_L1SS_CTL1_L1SS_MASK, val);
-> > >   }
-> > >
-> > > +void pci_save_aspm_l1ss_state(struct pci_dev *dev)
-> > > +{
-> > > +       int aspm_l1ss;
-> > > +       struct pci_cap_saved_state *save_state;
-> > > +       u32 *cap;
-> > > +
-> > > +       if (!pci_is_pcie(dev))
-> > > +               return;
-> > > +
-> > > +       aspm_l1ss = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_L1SS);
-> > > +       if (!aspm_l1ss)
-> > > +               return;
-> > > +
-> > > +       save_state = pci_find_saved_ext_cap(dev, PCI_EXT_CAP_ID_L1SS);
-> > > +       if (!save_state)
-> > > +               return;
-> > > +
-> > > +       cap = (u32 *)&save_state->cap.data[0];
-> > > +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, cap++);
-> > > +       pci_read_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, cap++);
-> > > +}
-> > > +
-> > > +void pci_restore_aspm_l1ss_state(struct pci_dev *dev)
-> > > +{
-> > > +       int aspm_l1ss;
-> > > +       struct pci_cap_saved_state *save_state;
-> > > +       u32 *cap;
-> > > +
-> > > +       if (!pci_is_pcie(dev))
-> > > +               return;
-> > > +
-> > > +       aspm_l1ss = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_L1SS);
-> > > +       if (!aspm_l1ss)
-> > > +               return;
-> > > +
-> > > +       save_state = pci_find_saved_ext_cap(dev, PCI_EXT_CAP_ID_L1SS);
-> > > +       if (!save_state)
-> > > +               return;
-> > > +
-> > > +       cap = (u32 *)&save_state->cap.data[0];
-> > > +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL2, *cap++);
-> > > +       pci_write_config_dword(dev, aspm_l1ss + PCI_L1SS_CTL1, *cap++);
-> > > +}
-> > > +
-> > >   static void pcie_config_aspm_dev(struct pci_dev *pdev, u32 val)
-> > >   {
-> > >          pcie_capability_clear_and_set_word(pdev, PCI_EXP_LNKCTL,
-> > > --
-> > > 2.17.1
-> > >
+[1/1] scsi: ufs: ufshcd: Drop loglevel of WriteBoost message
+      https://git.kernel.org/mkp/scsi/c/2ae57c995003
+
+-- 
+Martin K. Petersen	Oracle Linux Engineering
