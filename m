@@ -2,269 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8544AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 13:14:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239688AbiGNNOq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 09:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40902 "EHLO
+        id S239703AbiGNNOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 09:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231989AbiGNNOm (ORCPT
+        with ESMTP id S239687AbiGNNOq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 09:14:42 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726CF46D9C;
-        Thu, 14 Jul 2022 06:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=XhHZFllZttK/nD0DghuHkAh2pYiQ6FVFXSwybTv29+M=; b=qMmQN49rflM5nNAbrtDJndAePo
-        JkZBQa4twrJ30algsJoMebfheMEDj3dvPEMTjEs61ybh448PVs7S0+evyXujJGkfhp7wgK79OppbE
-        cCooS75r3gjqj/ZScAe2awt8ja6AKbOT4KewCHmroR/G1/ijtcEN72ocsBK9ST6g7z/N825vnPwzc
-        JOYlQY25cgg9yjfCbNn6Uq0ubwzMRXNUQS+QkE7WRJBB+X5wnhUASoqG4zGCxgillM9vUW+FsdPOQ
-        CHM9C/bOghoqyPT+jjqxBWQ2cW5xzxp2tqHjc3ujH4SxkkQbk+ad6JzrWibSHcYDYN9BWQtXqB3P8
-        m41ydZB/IdGkY+6AIu7TaMMKeDn+CSbJhCW0MpdZ0F/GbPv+Nk0jRny1sYD5T16Owx14keLT2KYZA
-        plnf9k103TAWyYqoAm+NvkZ8XBNU8U+x5pnsLR1dX157HFtvGhuk3UqC7jet6yMfQ47VhizhWY6FJ
-        VYCpzwf6nnyFzsuk7aXNhqaaq/eQgw2CrSGCP/UUcIrsVBnq/P/RhsAknlBv6SAtJxYJO/uIxLkaz
-        rqxQhYNl/QKeGbgPZqjbxVIbASa5vd4SVYqAIq5zWFH7Th28K90znIIM/IzQF4uiee/j3MWXgba0E
-        O6Xoocfx3t4MpX4rpyWgt8jiXFYI/Cf6unHSMamZE=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
-Subject: Re: [PATCH v5 10/11] net/9p: add p9_msg_buf_size()
-Date:   Thu, 14 Jul 2022 15:14:31 +0200
-Message-ID: <1784081.3E5Dq0oo6N@silver>
-In-Reply-To: <Ys8wqPbA5eogtvmG@codewreck.org>
-References: <cover.1657636554.git.linux_oss@crudebyte.com> <5564296.oo812IJUPE@silver>
- <Ys8wqPbA5eogtvmG@codewreck.org>
+        Thu, 14 Jul 2022 09:14:46 -0400
+Received: from wp126.webpack.hosteurope.de (wp126.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8485::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0993946D9C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 06:14:44 -0700 (PDT)
+Received: from p5098d998.dip0.t-ipconnect.de ([80.152.217.152] helo=hermes.fivetechno.de); authenticated
+        by wp126.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1oByfy-0001bF-4V; Thu, 14 Jul 2022 15:14:42 +0200
+X-Virus-Scanned: by amavisd-new 2.12.2 using newest ClamAV at
+        linuxbbg.five-lan.de
+Received: from [192.168.34.101] (p5098d998.dip0.t-ipconnect.de [80.152.217.152])
+        (authenticated bits=0)
+        by hermes.fivetechno.de (8.15.2/8.16.1/SUSE Linux 0.8) with ESMTPSA id 26EDEd4W012445
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Thu, 14 Jul 2022 15:14:40 +0200
+Message-ID: <3b808af9-5bbc-0b58-860e-dbb8ac1e3be9@fivetechno.de>
+Date:   Thu, 14 Jul 2022 15:14:39 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] arm64: dts: rockchip: Fix SD card init on rk3399-nanopi4
+Content-Language: de-DE
+To:     =?UTF-8?Q?Christian_Kohlsch=c3=bctter?= 
+        <christian@kohlschutter.com>, Robin Murphy <robin.murphy@arm.com>
+Cc:     =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <C639AD88-77A1-4485-BAEA-2FF8FC15A844@kohlschutter.com>
+ <12878108.O9o76ZdvQC@diego> <103b714c-b07c-f016-1062-84bd94786b22@arm.com>
+ <9AF1E75F-5947-49B0-887D-82C426527B99@kohlschutter.com>
+From:   Markus Reichl <m.reichl@fivetechno.de>
+Organization: five technologies GmbH
+In-Reply-To: <9AF1E75F-5947-49B0-887D-82C426527B99@kohlschutter.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;m.reichl@fivetechno.de;1657804484;885ebedc;
+X-HE-SMSGID: 1oByfy-0001bF-4V
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mittwoch, 13. Juli 2022 22:52:56 CEST Dominique Martinet wrote:
-> Christian Schoenebeck wrote on Wed, Jul 13, 2022 at 03:06:01PM +0200:
-> > > > +	case P9_TWALK:
-> > > > +		BUG_ON(strcmp("ddT", fmt));
-> > > > +		va_arg(ap, int32_t);
-> > > > +		va_arg(ap, int32_t);
-> > > > +		{
-> > > > +			uint i, nwname = max(va_arg(ap, int), 0);
-> > > 
-> > > I was about to say that the max is useless as for loop would be cut
-> > > short, but these are unsigned... So the code in protocol.c p9pdu_vwritef
-> > > 'T' has a bug (int cast directly to uint16): do you want to fix it or
-> > > shall I go ahead?
-> > 
-> > I'd either send a separate patch today for fixing 'T', or if you want
-> > to handle it by yourself, then just go ahead.
+Hi Christian,Am 14.07.22 um 14:14 schrieb Christian Kohlschütter:
+>> Am 14.07.2022 um 13:41 schrieb Robin Murphy <robin.murphy@arm.com>:
+>> 
+>> On 2022-07-14 00:41, Heiko Stübner wrote:
+>>> Hi Christian,
+>>> Am Donnerstag, 14. Juli 2022, 00:22:23 CEST schrieb Christian Kohlschütter:
+>>>> mmc/SD-card initialization may sometimes fail on NanoPi r4s with
+>>>> "mmc1: problem reading SD Status register" /
+>>>> "mmc1: error -110 whilst initialising SD card"
+>>>> 
+>>>> Moreover, rebooting would also sometimes hang.
+>>>> 
+>>> Nit: here the commit message should continue with something like:
+>>> -----
+>>> This is caused by the vcc3v0-sd regulator referencing the wrong gpio.
+>>> Fix the regulator to use the correct pin and drop the always-on property.
+>>> -----
+>>>> Signed-off-by: Christian Kohlschütter <christian@kohlschutter.com>
+>>>> ---
+>>>>  arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi | 6 +++---
+>>>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>>> 
+>>>> diff --git a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+>>>> index 8c0ff6c96e03..91789801ab03 100644
+>>>> --- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+>>>> +++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+>>>> @@ -67,10 +67,10 @@ vcc1v8_s3: vcc1v8-s3 {
+>>>>  	vcc3v0_sd: vcc3v0-sd {
+>>>>  		compatible = "regulator-fixed";
+>>>>  		enable-active-high;
+>>>> -		gpio = <&gpio0 RK_PA1 GPIO_ACTIVE_HIGH>;
+>>>> +		gpio = <&gpio0 RK_PD6 GPIO_ACTIVE_HIGH>;
+>>> The interesting question would be how nano-pi-specific that gpio is.
+>>> I.e. this is the rk3399-nanopi4.dtsi that is shared by multiple board types,
+>>> so can you check in schematics if gpio0-d6 is always used on all of them?
+>> 
+>> On the R4S schematic, this is GPIO0_A1 same as the others. GPIO0 doesn't even have a bank D on RK3399, it only goes up to B5 :/
+>> 
+>>> Thanks
+>>> Heiko
+>>>>  		pinctrl-names = "default";
+>>>>  		pinctrl-0 = <&sdmmc0_pwr_h>;
+>>>> -		regulator-always-on;
+>>>> +		regulator-boot-on;
+>>>>  		regulator-min-microvolt = <3000000>;
+>>>>  		regulator-max-microvolt = <3000000>;
+>>>>  		regulator-name = "vcc3v0_sd";
+>>>> @@ -580,7 +580,7 @@ wifi_reg_on_h: wifi-reg_on-h {
+>>>>    	sdmmc {
+>>>>  		sdmmc0_det_l: sdmmc0-det-l {
+>>>> -			rockchip,pins = <0 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>;
+>>>> +			rockchip,pins = <0 RK_PD6 RK_FUNC_GPIO &pcfg_pull_up>;
+>> 
+>> ...and claiming the card detect is on the same non-existent pin as the regulator enable is clearly even more wrong.
+>> 
+>> Is this another case where a UHS card is involved, such that VCC_SDIO gets left at 1.8V after a reboot, so subsequent attempts to do the initial handshake where the card is expecting 3V logic levels fail? (AKA the Tinkerboard problem). Hobbling the regulator such that Linux can never actually turn VCC3V0_SD off, thus the card never gets reset, might appear to "work", but isn't the right thing to do.
+>> 
+>> Robin.
 > 
-> I'd appreciate if you have time, doesn't make much difference though
+> Right, this is all very strange.
+> 
+> Indeed, I have a UHS card and the problem you describe.
+> I've actually looked into the other RK3399 dts files to come up with that patch (e.g. rk3399-roc-pc.dtsi, which does this; also see [1])
 
-Looking closer at this separate issue; there is probably nothing to fix. 'T'
-(and 'R') in p9pdu_vwritef() pulls an 'int' argument from the stack. But the
-actual variable is passed here:
+rk3399-roc-pc uses GPIO4-D6 for SDMMC0_PWR to enable VCC3V0_SD.
 
-struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
-			      const unsigned char * const *wnames, int clone)
-{
-    ...
-    req = p9_client_rpc(clnt, P9_TWALK, "ddT", oldfid->fid, fid->fid,
-                        nwname, wnames);
-    ...
-}
+> 
+> I understand that we should do the right thing, but I am by no means sure what the "right" thing for this problem is.
+> That said, I wished someone with expertise and authority in the mmc/rockchip community would fix this for good.
+> 
+> There are several patches around this 1.8V/3V voltage dance that do work, get used by several distributions but didn't get merged to mainline because, well, there could be a better right thing to do (like [2], which is also still needed when using mainline u-boot).
+> 
+> Given the state of this issue, at least aligning the code to match another board's fix — which already is in the mainline kernel — seems a sensible approach to me. It unblocks users like me who would perhaps otherwise just give up on using these devices.
+> 
+> [1] https://lore.kernel.org/linux-mmc/3364813.APbW32NlgJ@phil/T/#m1b23cd2c43b600b5a6f084461ae53e482ad65316
+> [2] https://patchwork.kernel.org/project/linux-mmc/patch/AM3PR03MB09664161A7FA2BD68B2800A7AC620@AM3PR03MB0966.eurprd03.prod.outlook.com/
+> 
+> 
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
 
-So the variable being passed was already uint16_t, which made me re-aware why
-this is working anyway: Because C and C++ have this nice language hack that
-any variadic integer variable smaller than 'int' is automatically casted to
-'int' before being passed.
-
-I mean I could clamp the pulled argument like:
-
-diff --git a/net/9p/protocol.c b/net/9p/protocol.c
-index 3754c33e2974..5fd1e948c86a 100644
---- a/net/9p/protocol.c
-+++ b/net/9p/protocol.c
-@@ -441,7 +441,7 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
-                        }
-                        break;
-                case 'T':{
--                               uint16_t nwname = va_arg(ap, int);
-+                               uint16_t nwname = clamp_t(int, va_arg(ap, int), 0, USHRT_MAX);
-                                const char **wnames = va_arg(ap, const char **);
- 
-                                errcode = p9pdu_writef(pdu, proto_version, "w",
-@@ -462,7 +462,7 @@ p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
-                        }
-                        break;
-                case 'R':{
--                               uint16_t nwqid = va_arg(ap, int);
-+                               uint16_t nwqid = clamp_t(int, va_arg(ap, int), 0, USHRT_MAX);
-                                struct p9_qid *wqids =
-                                    va_arg(ap, struct p9_qid *);
-
-But it's pretty much pointless overhead. Another option would be to change
-va_arg(ap, int) -> va_arg(ap, uint16_t), just to make it more clear what was
-pushed from the other side.
-
-Which probably also means I can simply drop the max() call in this patch 10
-here as well.
-
-For the 'R' case: I haven't found the spot where this is actually used.
-
-> > > > +	case P9_TCREATE:
-> > > > +		BUG_ON(strcmp("dsdb?s", fmt));
-> > > > +		va_arg(ap, int32_t);
-> > > > +		{
-> > > > +			const char *name = va_arg(ap, const char *);
-> > > > +			if ((c->proto_version != p9_proto_2000u) &&
-> > > > +			    (c->proto_version != p9_proto_2000L))
-> > > 
-> > > (I don't think 9p2000.L can call TCREATE, but it doesn't really hurt
-> > > either)
-> > 
-> > Yes, Tcreate is only 9p2000 and 9p2000.u. Semantically this particular
-> > check here means "if proto == 9p.2000". I can't remember anymore why I
-> > came up with this inverted form here. I'll change it to "if
-> > (c->proto_version == p9_proto_legacy)".
-> 
-> Sounds good.
-> 
-> > > > +	case P9_TRENAMEAT:
-> > > if we have trenameat we probably want trename, tunlinkat as well?
-> > > What's your criteria for counting individually vs slapping 8k at it?
-> > > 
-> > > In this particular case, oldname/newname are single component names
-> > > within a directory so this is capped at 2*(4+256), that could easily fit
-> > > in 4k without bothering.
-> > 
-> > I have not taken the Linux kernel's current filename limit NAME_MAX
-> > (255) as basis, in that case you would be right. Instead I looked up
-> > what the maximum filename length among file systems in general was,
-> > and saw that ReiserFS supports up to slightly below 4k? So I took 4k
-> > as basis for the calculation used here, and the intention was to make
-> > this code more future proof. Because revisiting this code later on
-> > always takes quite some time and always has this certain potential to
-> > miss out details.
-> 
-> hmm, that's pretty deeply engrained into the VFS but I guess it might
-> change eventually, yes.
-> 
-> I don't mind as long as we're consistent (cf. unlink/mkdir below), in
-> practice measuring doesn't cost much.
-
-OK, I also make that more clear from the commit log then that 4k was taken as
-basis and why.
-
-> > Independent of the decision; additionally it might make sense to add
-> > something like:
-> > 
-> > #if NAME_MAX > 255
-> > # error p9_msg_buf_size() needs adjustments
-> > #endif
-> 
-> That's probably an understatement but I don't mind either way, it
-> doesn't hurt.
-> 
-> > > > +		BUG_ON(strcmp("dsds", fmt));
-> > > > +		va_arg(ap, int32_t);
-> > > > +		{
-> > > > +			const char *oldname = va_arg(ap, const char *);
-> > > > +			va_arg(ap, int32_t);
-> > > > +			{
-> > > > +				const char *newname = va_arg(ap, const char *);
-> > > 
-> > > (style nitpick) I don't see the point of nesting another level of
-> > > indentation here, it feels cleaner to declare oldname/newname at the
-> > > start of the block and be done with it.
-> > 
-> > Because  va_arg(ap, int32_t);  must remain between those two
-> > declarations, and I think either the compiler or style check script
-> > was barking at me. But I will recheck, if possible I will remove the
-> > additional block scope here.
-> 
-> Yes, I think it'd need to look like this:
-> 
-> 	case foo:
-> 		BUG_ON(...)
-> 		va_arg(ap, int32_t);
-> 		{
-> 			const char *oldname = va_arg(ap, const char *);
-> 			const char *newname;
-> 			va_arg(ap, int32_t);
-> 			newname = va_arg(ap, const_char *);
-> 			...
-> 		}
-> or
-> 		{
-> 			const char *oldname, *newname;
-> 			oldname = va_arg(ap, const char *);
-> 			va_arg(ap, int32_t)
-> 			newname = va_arg(ap, const char *);
-> 			...
-> 		}
-> 
-> I guess the later is slightly easier on the eyes
-
-Ah yes, that's your win there.
-
-> > > > +	/* small message types */
-> > > 
-> > > ditto: what's your criteria for 4k vs 8k?
-> > 
-> > As above, 4k being the basis for directory entry names, plus PATH_MAX
-> > (4k) as basis for maximum path length.
-> > 
-> > However looking at it again, if NAME_MAX == 4k was assumed exactly,
-> > then Tsymlink would have the potential to exceed 8k, as it has name[s]
-> > and symtgt[s] plus the other fields.
-> 
-> yes.
-> 
-> > > > +	case P9_TSTAT:
-> > > this is just fid[4], so 4k is more than enough
-> > 
-> > I guess that was a typo and should have been Twstat instead?
-> 
-> Ah, had missed this because 9p2000.L's version of stat[n] is fixed size.
-> Sounds good.
-> 
-> > > > +	case P9_RSTAT:
-> > > also fixed size 4+4+8+8+8+8+8+8+4 -- fits in 4k.
-> > 
-> > Rstat contains stat[n] which in turn contains variable-length string
-> > fields (filename, owner name, group name)
-> 
-> Right, same mistake.
-> 
-> > > > +	case P9_TSYMLINK:
-> > > that one has symlink target which can be arbitrarily long (filesystem
-> > > specific, 4k is the usual limit for linux but some filesystem I don't
-> > > know might handle more -- it might be worth going through the trouble of
-> > > going through it.
-> > 
-> > Like mentioned above, if exactly NAME_MAX == 4k was assumed, then
-> > Tsymlink may even be >8k.
-> 
-> And all the other remarks are 'yes if we assume bigger NAME_MAX' -- I'm
-> happy either way.
-> 
-> > > rest all looks ok to me.
-> > 
-> > Thanks for the review! I know, that's really a dry patch to look
-> > at. :)
-> 
-> Thanks for writing it in the first place ;)
-> 
-> --
-> Dominique
-
-
-
-
+Gruß,
+-- 
+Markus Reichl
