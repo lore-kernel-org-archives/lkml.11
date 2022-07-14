@@ -2,92 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9290CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9168FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 02:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232591AbiGNCQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 22:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32866 "EHLO
+        id S230353AbiGNCXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 22:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiGNCQI (ORCPT
+        with ESMTP id S229531AbiGNCXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 22:16:08 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F1F1E3F5;
-        Wed, 13 Jul 2022 19:16:06 -0700 (PDT)
-Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LjykN2DFgzFq1x;
-        Thu, 14 Jul 2022 10:15:08 +0800 (CST)
-Received: from dggpemm500019.china.huawei.com (7.185.36.180) by
- dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 10:15:47 +0800
-Received: from k04.huawei.com (10.67.174.115) by
- dggpemm500019.china.huawei.com (7.185.36.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 10:15:47 +0800
-From:   Pu Lehui <pulehui@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
-        Pu Lehui <pulehui@huawei.com>
-Subject: [PATCH bpf-next v2 2/3] tools: runqslower: build and use lightweight bootstrap version of bpftool
-Date:   Thu, 14 Jul 2022 10:46:11 +0800
-Message-ID: <20220714024612.944071-3-pulehui@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220714024612.944071-1-pulehui@huawei.com>
-References: <20220714024612.944071-1-pulehui@huawei.com>
+        Wed, 13 Jul 2022 22:23:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C57D1F2C6
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 19:22:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAA4661DA7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:22:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B594C3411E;
+        Thu, 14 Jul 2022 02:22:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657765378;
+        bh=ItcGA7/dhxXIJq7TylmxzfE+dFvsuHcRuQOMvhzSjto=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n/9/io+1zJwADGP14tDvnzZsbia2PEvU5OUMCF/j5g+TAapI8JnkPuKQZwO8NGOgk
+         lPn4fc7hY6HQjwlz2YdBbq1zuuXaC0Wd9wxOpej7aRgRRZ6dg56KR+42bVDS/naThM
+         yy9WMQ4cE/yftvcVpduyOxXiLYLVYCLW5diRIIj9pt9KYdU2eSxsmE7aQbS8lxuEWR
+         Np7R1/kvH/WdwXqSDuPk3PSnrMH5eCdiIfUUyqP/hzGXk7cDQV1tXFpLav81yf7NHe
+         o4X9xTPBunZ3iP0l+SjyI4lyp302s07xNlw/hOumkzZELdWiQJlaH03y1KPT/HEHWw
+         5SOp7JrSO7N4A==
+Date:   Thu, 14 Jul 2022 02:22:54 +0000
+From:   Tzung-Bi Shih <tzungbi@kernel.org>
+To:     Tim Van Patten <timvp@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, rrangel@chromium.org,
+        robbarnes@google.com, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        chrome-platform@lists.linux.dev
+Subject: Re: [PATCH v2] platform/chrome: cros_ec: Send host event for
+ prepare/complete
+Message-ID: <Ys99/jJW8hzXOqg1@google.com>
+References: <20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid>
+ <Ys40uw4QIe4fQKA/@google.com>
+ <CANkg5eyehcECGeDHBEsxR=iOoyMwzkcpvX+oRxy7PJPYLD=VuQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.115]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500019.china.huawei.com (7.185.36.180)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANkg5eyehcECGeDHBEsxR=iOoyMwzkcpvX+oRxy7PJPYLD=VuQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tools/runqslower use bpftool for vmlinux.h, skeleton, and static linking
-only. So we can use lightweight bootstrap version of bpftool to handle
-these, and it will be faster.
+On Wed, Jul 13, 2022 at 12:05:14PM -0600, Tim Van Patten wrote:
+> This patch changes *when* the EC outputs the host command that indicates
+> the AP is starting suspend and finishing resume, due to the change (in this
+> patch) when the AP sends that host command.   This makes the EC's logs more
+> accurate when correlating them with the AP's logs in regards to when
+> suspend is started and resume is completed.   Previously, those events were
+> sent when suspend/resume were already in progress.
 
-Signed-off-by: Pu Lehui <pulehui@huawei.com>
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/bpf/runqslower/Makefile | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+I see.
 
-diff --git a/tools/bpf/runqslower/Makefile b/tools/bpf/runqslower/Makefile
-index da6de16a3dfb..8b3d87b82b7a 100644
---- a/tools/bpf/runqslower/Makefile
-+++ b/tools/bpf/runqslower/Makefile
-@@ -4,7 +4,7 @@ include ../../scripts/Makefile.include
- OUTPUT ?= $(abspath .output)/
- 
- BPFTOOL_OUTPUT := $(OUTPUT)bpftool/
--DEFAULT_BPFTOOL := $(BPFTOOL_OUTPUT)bpftool
-+DEFAULT_BPFTOOL := $(BPFTOOL_OUTPUT)bootstrap/bpftool
- BPFTOOL ?= $(DEFAULT_BPFTOOL)
- LIBBPF_SRC := $(abspath ../../lib/bpf)
- BPFOBJ_OUTPUT := $(OUTPUT)libbpf/
-@@ -86,6 +86,5 @@ $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(BPFOBJ_OU
- 	$(Q)$(MAKE) $(submake_extras) -C $(LIBBPF_SRC) OUTPUT=$(BPFOBJ_OUTPUT) \
- 		    DESTDIR=$(BPFOBJ_OUTPUT) prefix= $(abspath $@) install_headers
- 
--$(DEFAULT_BPFTOOL): $(BPFOBJ) | $(BPFTOOL_OUTPUT)
--	$(Q)$(MAKE) $(submake_extras) -C ../bpftool OUTPUT=$(BPFTOOL_OUTPUT)   \
--		    ARCH= CROSS_COMPILE= CC=$(HOSTCC) LD=$(HOSTLD)
-+$(DEFAULT_BPFTOOL): | $(BPFTOOL_OUTPUT)
-+	$(Q)$(MAKE) $(submake_extras) -C ../bpftool OUTPUT=$(BPFTOOL_OUTPUT) bootstrap
--- 
-2.25.1
+> We'd also like to keep the new logs emitted by the AP to make it clearer
+> when the AP is starting suspend and completing resume, so we can correlate
+> it with the EC logs more easily.   This should aid debugging and timing
+> analysis.   Since it only occurs during suspend/resume, it shouldn't flood
+> the logs and follows the logging of other driver PM functions.
+> 
+> I didn't see concerns in [1] have been addressed.
+> 
+> 
+> I replied to the first email stating why we want to keep the log message
+> (and reiterated it above).   What's the correct process to indicate we
+> don't want to make the change requested in [1]?
 
+I didn't see the message in the v1 thread[2].  What did you mean by
+"first email"?  Checked my mbox but got nothing.
+
+Also, I found the message didn't show in [3].  I'm not sure what happened
+but perhaps you should use plain text next time (see [4])?
+
+[2]: https://patchwork.kernel.org/project/chrome-platform/patch/20220701095421.1.I78ded92e416b55de31975686d34b2058d4761c07@changeid/
+[3]: https://patchwork.kernel.org/project/chrome-platform/patch/20220706205136.v2.1.Ic7a7c81f880ab31533652e0928aa6e687bb268b5@changeid/
+[4]: https://www.kernel.org/doc/html/latest/process/submitting-patches.html#no-mime-no-links-no-compression-no-attachments-just-plain-text
