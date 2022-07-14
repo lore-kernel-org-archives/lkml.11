@@ -2,88 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48372C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE0FC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 11:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239140AbiGNL4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 07:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39632 "EHLO
+        id S239120AbiGNL5q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 07:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239115AbiGNL4R (ORCPT
+        with ESMTP id S238003AbiGNL5n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 07:56:17 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960485C354;
-        Thu, 14 Jul 2022 04:56:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Jul 2022 07:57:43 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F73C5C362;
+        Thu, 14 Jul 2022 04:57:39 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 04B7CCE2696;
-        Thu, 14 Jul 2022 11:56:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36B3C34114;
-        Thu, 14 Jul 2022 11:56:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657799772;
-        bh=kMHYnrEnWCDRZLx3w2/b7o5Qlq/C+lrcPobY/5NWAME=;
-        h=From:To:Cc:Subject:Date:From;
-        b=GjRXKN9g5LMFI0DX13xliVDcHGudOPZvUDepRt2Uw1pAe75XfnDZ/vKod5jO6OtnF
-         v+Uz/mIgbF0zCjRqEj0f85s4hNAiyPeQ63L5zPiGBHCCDjTBvnBXJICkXQ0fNjJWeG
-         /YQjkuJ+Q812pCWUiG2XfnJ6C8EHKo0B1pmjUR95WJezFk3fj14fpuvlQ92fJCtRoE
-         g9Eur6CDSq9HolDsx90so4jZ+VwZgjFegxZ1hD6AD6KY9lXfAkG8xoxEj6B+Dfkrhr
-         wXT/vyFoN57IZBLXUYafzSChpyOF8o1tDWlro15PgE25EjpljtzOc4yxDf7GFV7qHl
-         Gp8D1R5iayPCg==
-Received: by pali.im (Postfix)
-        id E7DF01295; Thu, 14 Jul 2022 13:56:08 +0200 (CEST)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Cc:     linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 1/4] gpio: mvebu: Fix check for pwm support on non-A8K platforms
-Date:   Thu, 14 Jul 2022 13:55:12 +0200
-Message-Id: <20220714115515.5748-1-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 433AD6601A3B;
+        Thu, 14 Jul 2022 12:57:37 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657799858;
+        bh=2viWGbCfExA/tWGEf8o0sIu0spzfJUPHwjKHCwMZ8QI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=EEikQaXTSB2NOfx2y1x+0VfJ4xdH2VrKYXTbbP9EmMC5RLbPYSkxCbuuEuNwD9dgJ
+         Ie/0/NTP14exe0g2Gz8fH9vR906iG3QPToKxSVur+23Y+X15k9rPlfivjD48HuaU+s
+         qZwwBrRacfVi86iXglemjk2PJHGT1f6Q/USp/8E+qMRBPfSy03E0qp093ODbHzAnuv
+         xj6QHqmqUCUclM4F71BBEN78VrxjL2MH+vzpFSY9Dom5jUwdhJRzwtVYBNrTSYpwZS
+         oPNR4m3+L/ghQYhU32xE4ETANyIrZAPozqVN9EDuNIt8wRsu1szPpqYueYyTWfqLzm
+         Ox0VBllhp0q3Q==
+Message-ID: <3b74cc48-2e18-3ad1-613c-fb90fced5d7d@collabora.com>
+Date:   Thu, 14 Jul 2022 13:57:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [V10,5/7] mtk-jpegenc: add jpeg encode worker interface
+Content-Language: en-US
+To:     "kyrie.wu" <kyrie.wu@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        nicolas.dufresne@collabora.com, wenst@chromium.org
+Cc:     Project_Global_Chrome_Upstream_Group@mediatek.com,
+        linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Tomasz Figa <tfiga@chromium.org>, xia.jiang@mediatek.com,
+        maoguang.meng@mediatek.com, srv_heupstream@mediatek.com
+References: <20220627025625.8956-1-irui.wang@mediatek.com>
+ <20220627025625.8956-6-irui.wang@mediatek.com>
+ <46eaafc0-478e-8a74-cf8b-dd1f236df035@collabora.com>
+ <f8091b62835e99bac2450076c02a39c057a23ad8.camel@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <f8091b62835e99bac2450076c02a39c057a23ad8.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pwm support incompatible with Armada 80x0/70x0 API is not only in
-Armada 370, but also in Armada XP, 38x and 39x. So basically every non-A8K
-platform. Fix check for pwm support appropriately.
+Il 14/07/22 10:51, kyrie.wu ha scritto:
+> On Tue, 2022-07-05 at 15:27 +0200, AngeloGioacchino Del Regno wrote:
+>> Il 27/06/22 04:56, Irui Wang ha scritto:
+>>> From: kyrie wu <kyrie.wu@mediatek.com>
+>>>
+>>> Add jpeg encoding worker to ensure that two HWs
+>>> run in parallel in MT8195.
+>>>
+>>> Signed-off-by: kyrie wu <kyrie.wu@mediatek.com>
+>>> ---
+>>>    .../platform/mediatek/jpeg/mtk_jpeg_core.c    | 208
+>>> ++++++++++++++++--
+>>>    .../platform/mediatek/jpeg/mtk_jpeg_core.h    |  30 ++-
+>>>    .../platform/mediatek/jpeg/mtk_jpeg_enc_hw.c  |  39 +++-
+>>>    3 files changed, 240 insertions(+), 37 deletions(-)
+>>>
+>>> diff --git a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+>>> b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+>>> index 0c5c85a112ca..544673a527a0 100644
+>>> --- a/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+>>> +++ b/drivers/media/platform/mediatek/jpeg/mtk_jpeg_core.c
+>>
+>> ..snip..
+>>
 
-Fixes: 85b7d8abfec7 ("gpio: mvebu: add pwm support for Armada 8K/7K")
-Signed-off-by: Pali Rohár <pali@kernel.org>
----
- drivers/gpio/gpio-mvebu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+..snip..
 
-diff --git a/drivers/gpio/gpio-mvebu.c b/drivers/gpio/gpio-mvebu.c
-index 2db19cd640a4..70a22b68c034 100644
---- a/drivers/gpio/gpio-mvebu.c
-+++ b/drivers/gpio/gpio-mvebu.c
-@@ -793,8 +793,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
- 	u32 offset;
- 	u32 set;
- 
--	if (of_device_is_compatible(mvchip->chip.of_node,
--				    "marvell,armada-370-gpio")) {
-+	if (mvchip->soc_variant != MVEBU_GPIO_SOC_VARIANT_A8K) {
- 		/*
- 		 * There are only two sets of PWM configuration registers for
- 		 * all the GPIO lines on those SoCs which this driver reserves
--- 
-2.20.1
+>>> @@ -218,30 +222,37 @@ static irqreturn_t
+>>> mtk_jpegenc_hw_irq_handler(int irq, void *priv)
+>>>    
+>>>    	cancel_delayed_work(&jpeg->job_timeout_work);
+>>>    
+>>> +	ctx = jpeg->hw_param.curr_ctx;
+>>> +	src_buf = jpeg->hw_param.src_buffer;
+>>> +	dst_buf = jpeg->hw_param.dst_buffer;
+>>> +	v4l2_m2m_buf_copy_metadata(src_buf, dst_buf, true);
+>>> +
+>>>    	irq_status = readl(jpeg->reg_base + JPEG_ENC_INT_STS) &
+>>>    		JPEG_ENC_INT_STATUS_MASK_ALLIRQ;
+>>>    	if (irq_status)
+>>>    		writel(0, jpeg->reg_base + JPEG_ENC_INT_STS);
+>>> -	if (!(irq_status & JPEG_ENC_INT_STATUS_DONE))
+>>> -		return IRQ_NONE;
+>>> -
+>>> -	ctx = v4l2_m2m_get_curr_priv(master_jpeg->m2m_dev);
+>>> -	if (!ctx) {
+>>> -		v4l2_err(&master_jpeg->v4l2_dev, "Context is NULL\n");
+>>> -		return IRQ_HANDLED;
+>>> +	if (!(irq_status & JPEG_ENC_INT_STATUS_DONE)) {
+>>> +		dev_err(jpeg->dev, " Not JPEG_ENC_INT_STATUS_DONE\n");
+>>
+>> Please be more descriptive in error messages. Also, should this
+>> really be
+>> a dev_err?!?
+> maybe dev_warn is right, I will fix it.
+> 
 
+I think that v4l2_err() would be more appropriate.
+
+Regards,
+Angelo
