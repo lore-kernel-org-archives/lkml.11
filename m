@@ -2,97 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3343BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20539C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:36:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237939AbiGNJgR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:36:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
+        id S238179AbiGNJgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237814AbiGNJgM (ORCPT
+        with ESMTP id S237999AbiGNJgs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:36:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 970E03718E;
-        Thu, 14 Jul 2022 02:36:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19AF5B823DA;
-        Thu, 14 Jul 2022 09:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73595C34115;
-        Thu, 14 Jul 2022 09:36:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657791368;
-        bh=6MIUuvwdVpJ4tK1rbwNOev3l1SYrBB/w4GMGLdGU6sU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rLubpj75G9oFRJH1WLpBEJaKWFTpChk/WQIOVn6p+VOolGCbg405INhs9InkfmAgX
-         0YJVvED8VC2/6Rcm6tpLhKnPPEvyA8GAEBWJ/9fSnKl8o5FoCjXuehwB7jNhmOFvVb
-         a9kcfiXani+hCEfiAE8Zm67PQ5rlvVhOLK7twbiUz+WWWoP5fn6def4yK0LyZqBsIu
-         9MqyOAfLhOBeS59D23Brrpb081+fPRu406W+0f1Wc1lHhjZDLmpM4uTyj9cgTTfzMC
-         XPc5EoYNgBVFIloNs8yEIaQ8w/jS1YbG8J5dl2RsGAO4PAD8lvR0bSYDUVauvL8ymx
-         Lx+Gq63UMGfqg==
-Received: by pali.im (Postfix)
-        id 6763F1295; Thu, 14 Jul 2022 11:36:05 +0200 (CEST)
-Date:   Thu, 14 Jul 2022 11:36:05 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: marvell: Fix compatible strings for Armada
- 3720 boards
-Message-ID: <20220714093605.wdyrcxehg2ij5lvx@pali>
-References: <20220713125644.3117-1-pali@kernel.org>
- <a9e1ccb7-6caa-2f7c-b879-b3ff4945794c@linaro.org>
- <20220713200336.addvyfjhakrx72am@pali>
- <7a4fba17-9c71-a4e6-643a-62aa0dfd4774@linaro.org>
+        Thu, 14 Jul 2022 05:36:48 -0400
+Received: from mailgw01.horizon.ai (mailgw01.horizon.ai [42.62.85.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F6463342F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:36:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; d=horizon.ai; s=bj; c=relaxed/simple;
+        q=dns/txt; i=@horizon.ai; t=1657791403; x=2521705003;
+        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=OJt4NS1MaZe0Gy/eJ5TjQNiRFmcdRAyWJkkG/Fj2eAg=;
+        b=cws8Nmsd3iqNBTL56APR0UgeNHVCqOYAIjxRRR8+7ClKsiuOnbFyHxBQArOAZHYY
+        Dg1ptMjmM9kJiz58xZS98/tiBu6unvBHAXC36ctgIYjSVGpsWLALs1bZIQPF+Uir
+        C1z8ggR3dT8z8xZBf8su6NE8EUS9Uo2VGlEhp7/u8PU=;
+X-AuditID: 0a090144-31781700000015ea-32-62cfe3aa1c61
+Received: from mailgw01.horizon.ai ( [10.9.15.112])
+        by mailgw01.horizon.ai (Anti-spam for msg) with SMTP id 26.94.05610.AA3EFC26; Thu, 14 Jul 2022 17:36:42 +0800 (HKT)
+Received: from MBP (10.9.0.13) by exchange004.hobot.cc (10.9.15.112) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.27; Thu, 14 Jul 2022
+ 17:36:41 +0800
+References: <20220714031645.28004-1-schspa@gmail.com>
+ <CAJhGHyD=7t+-Env=Wim-3atq=qJg1j5EKiTvsbqhX1xCdi27Wg@mail.gmail.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Zhaohui Shi <zhaohui.shi@horizon.ai>
+To:     Lai Jiangshan <jiangshanlai@gmail.com>
+CC:     Tejun Heo <tj@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "Peter Zijlstra" <peterz@infradead.org>
+Subject: Re: [PATCH v3] workqueue: Use active mask for new worker when pool
+ is DISASSOCIATED
+Date:   Thu, 14 Jul 2022 16:58:46 +0800
+In-Reply-To: <CAJhGHyD=7t+-Env=Wim-3atq=qJg1j5EKiTvsbqhX1xCdi27Wg@mail.gmail.com>
+Message-ID: <m2tu7kkpcp.fsf@horizon.ai>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <7a4fba17-9c71-a4e6-643a-62aa0dfd4774@linaro.org>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain
+X-Originating-IP: [10.9.0.13]
+X-ClientProxiedBy: exchange002.hobot.cc (10.9.15.111) To exchange004.hobot.cc
+ (10.9.15.112)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLLMWRmVeSWpSXmKPExsXCxclfoLvq8fkkg7XfrS0u75rDZnG89wCT
+        xa/lRxkdmD02r9Dy2LSqk83j8ya5AOYoLpuU1JzMstQifbsEroxHM+6zFZzQr/g0MayB8aNS
+        FyMnh4SAicSbZ7uYuxi5OIQEVjJK9LUsZIdwzjNKXH6zhAmkSkigRmLhyQ42EFtUQFliy575
+        7CA2m4CWRP+yv2BxESB7b+dTMJtZIFfi3IbdLCC2sECcxPtzD8HmsAioSqxcdQbM5hQIlPh4
+        ZTdYPa+AusTR1z+ZIWxBiZMzn7BAzJGQOPjiBTPEDcoSTVs/M0NcLSvx+eZxNgg7VuJZ03Sm
+        CYyCs5C0z0LSvoCRaRWjcG5iZk56uYGhXkZ+UWZVfp5eYuYmRnCIMrrsYPy24KPeIUYmDsZD
+        jBIczEoivN2HziUJ8aYkVlalFuXHF5XmpBYfYpTmYFES571kdiRJSCA9sSQ1OzW1ILUIJsvE
+        wSnVwNS81JrRkoH/1L1F2/eVstq89jPk/nbh59H+2dF7jRlk9JTKlqrGVcrsuLxw/zp7nz9V
+        SobLuLsWT3Mz1kpcsZNFqla1wN3ONsn054rdZ05c5Nc+U7/ns4n94SfMsxasVsle6PrwxoET
+        B9zkvAMbax7qit1aI7voeJN059a5O8Kzo7+sZy1R/6u8tUlf28lN9sXKWvO7kTM287P1Lwov
+        feCm3nIra5H3qauhUXcK0mLe27L37/hjq7LCftr9FwYiSvZN/bpXSxZ0i6ioObYFn0xcuvFl
+        1zfxrD2rjy6KbHxXFWGW/unQ+pjUrcztIUUmyzs7QtmLTtVZGqhz8E65vHzWyTeTNH8Wlkob
+        hk5PV2Ipzkg01GIuKk4EAHfavn/AAgAA
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thursday 14 July 2022 08:56:12 Krzysztof Kozlowski wrote:
-> On 13/07/2022 22:03, Pali Rohár wrote:
-> > On Wednesday 13 July 2022 21:42:43 Krzysztof Kozlowski wrote:
-> >> On 13/07/2022 14:56, Pali Rohár wrote:
-> >>> All Armada 3720 boards have Armada 3720 processor which is of Armada 3700
-> >>> family and do not have Armada 3710 processor. So none of them should have
-> >>> compatible string for Armada 3710 processor.
-> >>>
-> >>> Fix compatible string for all these boards by removing wrong processor
-> >>> string "marvell,armada3710" and adding family string "marvell,armada3700"
-> >>> as the last one. (Note that this is same way how are defined Armada 3710
-> >>> DTS files).
-> >>
-> >> Please do not introduce some changes just in DTS, but start from the
-> >> bindings. Someone wrote the bindings like that and expected to be that
-> >> way, so first change the bindings with proper rationale. Then change the
-> >> DTS files.
-> >>
-> >>
-> >> Best regards,
-> >> Krzysztof
-> > 
-> > Ok, I tried to update bindings and fix example in it, see patch:
-> > https://lore.kernel.org/linux-devicetree/20220713200123.22612-1-pali@kernel.org/
-> 
-> The reason you used here should be expressed in that commit as well
 
-Which I exactly did (Armada 3700 = famity, Armada 3720 = SoC, Armada
-3720 DB is name of the board with Armada 3720 SoC, so correctly indicate
-SoC in example). So what else?
+Lai Jiangshan <jiangshanlai@gmail.com> writes:
 
-> because you change the ABI and affect other users (projects, systems).
-> 
-> Best regards,
-> Krzysztof
+> On Thu, Jul 14, 2022 at 11:16 AM Schspa Shi <schspa@gmail.com> wrote:
+>>
+>> When CPU-[un]hotplugs, all workers will be bound to active CPU via
+>> unbind_workers().
+>>
+>> But the unbound worker still has a chance to create a new worker, which
+>> has bound the newly created task to pool->attrs->cpumask. But the CPU has
+>> been unplugged.
+>>
+>> Please refer to the following scenarios.
+>>
+>>            CPU0                                  CPU1
+>> ------------------------------------------------------------------
+>> sched_cpu_deactivate(cpu_active_mask clear)
+>> workqueue_offline_cpu(work pool POOL_DISASSOCIATED)
+>>   -- all worker will migrate to another cpu --
+>>                                     worker_thread
+>>                                     -- will create new worker if
+>>                                        pool->worklist is not empty
+>>                                        create_worker()
+>>                                      -- new kworker will bound to CPU0
+>
+> How will the new kworker bound to CPU0?  Could you give more details?
+>
+
+It's because we use pool->attrs->cpumask for the newly created worker
+to bind it to CPU0.
+
+Please note that the CPU0 marked here does not correspond to the
+fault log below, maybe I should change this CPU0 to CPU3, then it
+can be correspond to the exception log below.
+
+
+> Since the pool is POOL_DISASSOCIATED and kthread_is_per_cpu() will
+> be false for the new worker. ttwu() will put it on a fallback CPU IIUC
+> (see select_task_rq()).
+>
+
+It won't put it on a fallback CPU, is_cpu_allowed() will use
+cpu_online_mask to check if a kthread can running on this CPU, we
+need cpu_active_mask in this case.
+
+see:
+static inline bool is_cpu_allowed(struct task_struct *p, int cpu)
+{
+	...
+	/* KTHREAD_IS_PER_CPU is always allowed. */
+	if (kthread_is_per_cpu(p))
+		return cpu_online(cpu);
+	...
+}
+
+>>                                (pool->attrs->cpumask will be mask of CPU0).
+>>       kworker/0:x will running on rq
+>>
+>> sched_cpu_dying
+>>   if (rq->nr_running != 1 || rq_has_pinned_tasks(rq))
+>>     WARN(true, "Dying CPU not properly vacated!");
+>>       ---------OOPS-------------
+>>
+>
+>
+>> The stack trace of the bad running task was dumped via the following patch:
+>> Link: https://lore.kernel.org/all/20220519161125.41144-1-schspa@gmail.com/
+>> And I think this debug patch needs to be added to the mainline,
+>> it can help us to debug this kind of problem
+>>
+>> To fix it, we can use cpu_active_mask when work pool is DISASSOCIATED.
+>
+> use wq_unbound_cpumask.
+>
+
+Yes, I forgot to change this.
+
+>>
+>> Signed-off-by: Schspa Shi <schspa@gmail.com>
+>
+> Please solo CC Peter, as:
+>
+> CC: Peter Zijlstra <peterz@infradead.org>
+>
+
+OK, thanks for reminding me.
+
+>>
+>> --
+>>
+>> Changelog:
+>> v1 -> v2:
+>>         - Move worker task bind to worker_attach_to_pool, remove extra
+>>         wq_pool_attach_mutex added.
+>>         - Add a timing diagram to make this question clearer.
+>> v2 -> v3:
+>>         - Add missing PF_NO_SETAFFINITY, use cpumask_intersects to
+>>         avoid setting bad mask for unbound work pool as Lai Jiangshan
+>>         advised.
+>>         - Call kthread_set_pre_cpu correctly for unbound worker.
+>> ---
+>>  kernel/workqueue.c | 16 +++++++++++-----
+>>  1 file changed, 11 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+>> index 1ea50f6be843..b3e9289d9640 100644
+>> --- a/kernel/workqueue.c
+>> +++ b/kernel/workqueue.c
+>> @@ -1860,8 +1860,16 @@ static struct worker *alloc_worker(int node)
+>>  static void worker_attach_to_pool(struct worker *worker,
+>>                                    struct worker_pool *pool)
+>>  {
+>> +       const struct cpumask *cpu_mask;
+>> +
+>>         mutex_lock(&wq_pool_attach_mutex);
+>>
+>> +       if (cpumask_intersects(pool->attrs->cpumask, cpu_active_mask))
+>> +               cpu_mask = pool->attrs->cpumask;
+>> +       else
+>> +               cpu_mask = wq_unbound_cpumask;
+>> +
+>> +       set_cpus_allowed_ptr(worker->task, cpu_mask);
+>>         /*
+>>          * The wq_pool_attach_mutex ensures %POOL_DISASSOCIATED remains
+>>          * stable across this function.  See the comments above the flag
+>> @@ -1870,10 +1878,8 @@ static void worker_attach_to_pool(struct worker *worker,
+>>         if (pool->flags & POOL_DISASSOCIATED)
+>>                 worker->flags |= WORKER_UNBOUND;
+>>         else
+>> -               kthread_set_per_cpu(worker->task, pool->cpu);
+>> -
+>> -       if (worker->rescue_wq)
+>> -               set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask);
+>> +               kthread_set_per_cpu(worker->task,
+>> +                               cpu_mask == wq_unbound_cpumask ? -1 : pool->cpu);
+>
+> Only workers for percpu pool need to set kthread_set_per_cpu().
+> So it is already handled in the above code, the branch is unneeded.
+>
+Change this to something like fellowing.
+
+	if (pool->flags & POOL_DISASSOCIATED)
+		worker->flags |= WORKER_UNBOUND;
+	else if (cpu_mask == pool->attrs->cpumask)
+    	kthread_set_per_cpu(worker->task, pool->cpu);
+
+I add this because we will set it = -1 on unbind_workers too.
+static void unbind_workers(int cpu)
+{
+	...
+			for_each_pool_worker(worker, pool) {
+				kthread_set_per_cpu(worker->task, -1);
+				WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
+			}
+    ...
+}
+
+>>
+>>         list_add_tail(&worker->node, &pool->workers);
+>>         worker->pool = pool;
+>> @@ -1952,8 +1958,8 @@ static struct worker *create_worker(struct worker_pool *pool)
+>>                 goto fail;
+>>
+>>         set_user_nice(worker->task, pool->attrs->nice);
+>> -       kthread_bind_mask(worker->task, pool->attrs->cpumask);
+>>
+>> +       worker->task->flags |= PF_NO_SETAFFINITY;
+>>         /* successful, attach the worker to the pool */
+>>         worker_attach_to_pool(worker, pool);
+>>
+>> --
+>> 2.29.0
+>>
+
+
+-- 
+BRs
+Zhaohui Shi
