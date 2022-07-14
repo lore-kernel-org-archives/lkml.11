@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1871BCCA486
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 969E8C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:27:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235340AbiGNE0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S234718AbiGNE1E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:27:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234296AbiGNE0O (ORCPT
+        with ESMTP id S234805AbiGNE0X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:26:14 -0400
+        Thu, 14 Jul 2022 00:26:23 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECFCDF5C;
-        Wed, 13 Jul 2022 21:23:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D03F4E62;
+        Wed, 13 Jul 2022 21:23:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1988961E9F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EA1261E8B;
+        Thu, 14 Jul 2022 04:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 029DAC36AE2;
         Thu, 14 Jul 2022 04:23:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A330C34114;
-        Thu, 14 Jul 2022 04:23:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772617;
-        bh=1rsOjCzTzZZGjsOkD4VV/Yi0b4wpzhVrNjevvk3ABTM=;
+        s=k20201202; t=1657772620;
+        bh=4gMtC4MYtfMUqBlVzbxPARmIcm3jbCbjydwDO9lrlSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a0eWmvhnKXT66j3KY3xkdg+1bP5R8N3VbbKbpw0w5ofrd4cBP0/4y994FTrGMM3go
-         h4QaOq/2KdWvE/nBt+CfsjALwH2vOaPrcrIumkYywofl/496WvVpklZF3z1bNA7FlD
-         d3t5C0OgfIz6hv7NA8X6ZIMerZeoZaZMBQeJZDSwcqcyXN/hKQ9WFURZhrm2nid+Y6
-         biC/JAPYIuKYNzlNOUo36JcIEr1zG1bhg3JXEa48D2iJS4ZokZqYX3w1b8g8OtB7H2
-         4skdvSOL2Cz7w4GCMz6uvw2zio0P2XPivAjbipXCRgCBwI2ELYI5TgHYRB92NmWMDQ
-         NmGFaLc353bNg==
+        b=oO+w7z5Gdl2gWfgz/qmvgMEgHVTRMei1FATiCy1LJoaHDWywhedbJ5JGbFJmNpojD
+         DwNUhbQNLHffh5NuwwbvFOHkRKdKsTILGhFD9aHiYzv/ZC5NA3gJfBJRc7Lz/sfLMo
+         TIyWtKlAKFjfITifOnt2TeJNXqIvxeaAAGmTWy7lptCh4ZOpJ6ox8HX6RjsNK4XUxd
+         rI4nnf7FDFdRm9dTHLr3dsRByKy17GP+wo+lw5L89i7F7+htSlFt4pFqfhL0/A4ppp
+         08wn/ky1qqugNolvt5DHnD3YW9/i4MD0kkUKfLqOV0sg5XIp4MP4PpTr8YPXvxp8TP
+         FhC8wLH7k+F0A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juergen Gross <jgross@suse.com>, Borislav Petkov <bp@suse.de>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, brijesh.singh@amd.com,
-        kirill.shutemov@linux.intel.com, michael.roth@amd.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, thomas.lendacky@amd.com
-Subject: [PATCH AUTOSEL 5.18 29/41] x86: Clear .brk area at early boot
-Date:   Thu, 14 Jul 2022 00:22:09 -0400
-Message-Id: <20220714042221.281187-29-sashal@kernel.org>
+Cc:     Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mcoquelin.stm32@gmail.com,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 31/41] ARM: dts: stm32: use the correct clock source for CEC on stm32mp151
+Date:   Thu, 14 Jul 2022 00:22:11 -0400
+Message-Id: <20220714042221.281187-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220714042221.281187-1-sashal@kernel.org>
 References: <20220714042221.281187-1-sashal@kernel.org>
@@ -54,41 +55,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+From: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
 
-[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
+[ Upstream commit 78ece8cce1ba0c3f3e5a7c6c1b914b3794f04c44 ]
 
-The .brk section has the same properties as .bss: it is an alloc-only
-section and should be cleared before being used.
+The peripheral clock of CEC is not LSE but CEC.
 
-Not doing so is especially a problem for Xen PV guests, as the
-hypervisor will validate page tables (check for writable page tables
-and hypervisor private bits) before accepting them to be used.
-
-Make sure .brk is initially zero by letting clear_bss() clear the brk
-area, too.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
+Signed-off-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/head64.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm/boot/dts/stm32mp151.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 2e10a33778cf..92eae95f1a0b 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -425,6 +425,8 @@ void __init clear_bss(void)
- {
- 	memset(__bss_start, 0,
- 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
-+	memset(__brk_base, 0,
-+	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
- }
- 
- static unsigned long get_cmd_line_ptr(void)
+diff --git a/arch/arm/boot/dts/stm32mp151.dtsi b/arch/arm/boot/dts/stm32mp151.dtsi
+index f9aa9af31efd..4eda6c5ae4cf 100644
+--- a/arch/arm/boot/dts/stm32mp151.dtsi
++++ b/arch/arm/boot/dts/stm32mp151.dtsi
+@@ -565,7 +565,7 @@ cec: cec@40016000 {
+ 			compatible = "st,stm32-cec";
+ 			reg = <0x40016000 0x400>;
+ 			interrupts = <GIC_SPI 94 IRQ_TYPE_LEVEL_HIGH>;
+-			clocks = <&rcc CEC_K>, <&clk_lse>;
++			clocks = <&rcc CEC_K>, <&rcc CEC>;
+ 			clock-names = "cec", "hdmi-cec";
+ 			status = "disabled";
+ 		};
 -- 
 2.35.1
 
