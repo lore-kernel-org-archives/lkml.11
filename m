@@ -2,101 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A45C9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:30:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D07C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:30:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240732AbiGNSaO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:30:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46540 "EHLO
+        id S240686AbiGNSaY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240698AbiGNSaE (ORCPT
+        with ESMTP id S240725AbiGNSaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:30:04 -0400
-Received: from sinmsgout02.his.huawei.com (sinmsgout02.his.huawei.com [119.8.177.37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22E06B252;
-        Thu, 14 Jul 2022 11:30:01 -0700 (PDT)
-Received: from fraeml715-chm.china.huawei.com (unknown [172.18.156.207])
-        by sinmsgout02.his.huawei.com (SkyGuard) with ESMTP id 4LkNL60NFLz9v7J0;
-        Fri, 15 Jul 2022 02:29:01 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 20:29:51 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 19:29:48 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <jejb@linux.ibm.com>, <martin.petersen@oracle.com>
-CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, Xiang Chen <chenxiang66@hisilicon.com>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 5/5] scsi: libsas: Resume SAS host for phy reset or enable via sysfs
-Date:   Fri, 15 Jul 2022 02:23:22 +0800
-Message-ID: <1657823002-139010-6-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1657823002-139010-1-git-send-email-john.garry@huawei.com>
-References: <1657823002-139010-1-git-send-email-john.garry@huawei.com>
+        Thu, 14 Jul 2022 14:30:09 -0400
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA93E42AF2;
+        Thu, 14 Jul 2022 11:30:07 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id l11so4616325ybu.13;
+        Thu, 14 Jul 2022 11:30:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y0+bILqu9jQVoYb8CF1e/89i5yu39wGWofBIgq96ox8=;
+        b=IaiSotiQwAF/6Hcu8GmlaNcJPPAYZw2QoBoD+x0nJoVJtEuuJtYC/1KHjSwZPA5O7p
+         Ve2XIqyDVpZK3d64bFjw1opfRo/+9BvVmz2JK57NGdroLRQyk8D4YwERvGVWU5ugaqla
+         JrUpjxIHIHjhrUhD3U+qAWbIa0KCEh0qiL7Zkjvl4NxQ43Z18eKqQA57S25NYJIMEcOE
+         zpOF7zcnQF6HaSRgRtAaEgPkfemcuM23Q96TwiWQlHbwZYN3QJ08Lk4JjEaxqZsX+VvW
+         7tjGonWE9/HcAGeAKIi2pNtlleZKXzhcBHBTI+9obIKFZnkdVo6IkcTLyQ8AVUgfnqRr
+         69/g==
+X-Gm-Message-State: AJIora9gh/XU6AMrsy7ZgAXzlFqQXzTEtFxTv7tuv7Cq4S7mCAx9Zvxd
+        7hFs9Qg+VYnh5hvmBL4pvg381hcsx2nIYhjmFM+AkQkQ
+X-Google-Smtp-Source: AGRyM1shh0wh14uRaOPlkqUQrcl3rlcOa8Nn+Hxf76DosO6El2PLRyopbfiHMLJ236C2z0OweXpeuAb8g4jrEBlYi+s=
+X-Received: by 2002:a25:664f:0:b0:66c:d0f4:36cc with SMTP id
+ z15-20020a25664f000000b0066cd0f436ccmr9720865ybm.482.1657823407268; Thu, 14
+ Jul 2022 11:30:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20220707180953.605246-1-wse@tuxedocomputers.com> <e67b965e-60a2-516c-9aa9-ff98a9645ec5@redhat.com>
+In-Reply-To: <e67b965e-60a2-516c-9aa9-ff98a9645ec5@redhat.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Thu, 14 Jul 2022 20:29:56 +0200
+Message-ID: <CAJZ5v0h31uy6Yp3iyoZN1HnE6AWibyYVm1b8rUy=K0J0y3h-kg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] ACPI: video: Force backlight native for some TongFang devices
+To:     Hans de Goede <hdegoede@redhat.com>,
+        Werner Sembach <wse@tuxedocomputers.com>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+On Wed, Jul 13, 2022 at 7:25 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 7/7/22 20:09, Werner Sembach wrote:
+> > The TongFang PF5PU1G, PF4NU1F, PF5NU1G, and PF5LUXG/TUXEDO BA15 Gen10,
+> > Pulse 14/15 Gen1, and Pulse 15 Gen2 have the same problem as the Clevo
+> > NL5xRU and NL5xNU/TUXEDO Aura 15 Gen1 and Gen2:
+> > They have a working native and video interface. However the default
+> > detection mechanism first registers the video interface before
+> > unregistering it again and switching to the native interface during boot.
+> > This results in a dangling SBIOS request for backlight change for some
+> > reason, causing the backlight to switch to ~2% once per boot on the first
+> > power cord connect or disconnect event. Setting the native interface
+> > explicitly circumvents this buggy behaviour by avoiding the unregistering
+> > process.
+> >
+> > Signed-off-by: Werner Sembach <wse@tuxedocomputers.com>
+> > Cc: stable@vger.kernel.org
+>
+> Thanks, the series looks good to me:
+>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+>
+> for the series.
 
-Currently if a phy reset or enable phy is issued via sysfs when controller
-is suspended, those operations will be ignored as SAS_HA_REGISTERED is
-cleared. If RPM is enabled then we may aggressively suspend automatically.
-In this case it may be difficult to enable or reset a phy via sysfs, so
-resume the host in these scenarios.
-
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/scsi/libsas/sas_init.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/scsi/libsas/sas_init.c b/drivers/scsi/libsas/sas_init.c
-index dc35f0f8eae3..e4f77072a58d 100644
---- a/drivers/scsi/libsas/sas_init.c
-+++ b/drivers/scsi/libsas/sas_init.c
-@@ -531,6 +531,7 @@ static int queue_phy_reset(struct sas_phy *phy, int hard_reset)
- 	if (!d)
- 		return -ENOMEM;
- 
-+	pm_runtime_get_sync(ha->dev);
- 	/* libsas workqueue coordinates ata-eh reset with discovery */
- 	mutex_lock(&d->event_lock);
- 	d->reset_result = 0;
-@@ -544,6 +545,7 @@ static int queue_phy_reset(struct sas_phy *phy, int hard_reset)
- 	if (rc == 0)
- 		rc = d->reset_result;
- 	mutex_unlock(&d->event_lock);
-+	pm_runtime_put_sync(ha->dev);
- 
- 	return rc;
- }
-@@ -558,6 +560,7 @@ static int queue_phy_enable(struct sas_phy *phy, int enable)
- 	if (!d)
- 		return -ENOMEM;
- 
-+	pm_runtime_get_sync(ha->dev);
- 	/* libsas workqueue coordinates ata-eh reset with discovery */
- 	mutex_lock(&d->event_lock);
- 	d->enable_result = 0;
-@@ -571,6 +574,7 @@ static int queue_phy_enable(struct sas_phy *phy, int enable)
- 	if (rc == 0)
- 		rc = d->enable_result;
- 	mutex_unlock(&d->event_lock);
-+	pm_runtime_put_sync(ha->dev);
- 
- 	return rc;
- }
--- 
-2.35.3
-
+Both patches applied as 5.20 material, thanks!
