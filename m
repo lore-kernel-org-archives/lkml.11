@@ -2,215 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BFC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:15:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbiGNHP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S237451AbiGNHPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:15:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237121AbiGNHPA (ORCPT
+        with ESMTP id S237430AbiGNHPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:15:00 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB19357E3;
-        Thu, 14 Jul 2022 00:14:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657782887; x=1689318887;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=35WuII/EC61wobzGDYsfz1aMrY82iRk2q8VNpEasuGg=;
-  b=TBYN9TIslQH37UpzSM8wNKp8es/ar1fHdvOKwBKFLPRZEAYUFfQG5Trv
-   8pmTI8de8FkaSSTEVgddv9FPCbV+wps0cGVJN0cTAbw0uBvYeLKJcOT8E
-   H1NhDsHrGKtrnBOHIZTC11eNy88ym5EADzgCTGbWcQkI4WjMpcaXHq+ii
-   0=;
-Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 14 Jul 2022 00:14:47 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 00:14:46 -0700
-Received: from zijuhu-gv.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 14 Jul 2022 00:14:44 -0700
-From:   Zijun Hu <quic_zijuhu@quicinc.com>
-To:     <marcel@holtmann.org>, <johan.hedberg@gmail.com>,
-        <luiz.dentz@gmail.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <luiz.von.dentz@intel.com>, <quic_zijuhu@quicinc.com>
-CC:     <linux-kernel@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <netdev@vger.kernel.org>
-Subject: [PATCH v1] Bluetooth: Fix cvsd sco setup failure
-Date:   Thu, 14 Jul 2022 15:14:40 +0800
-Message-ID: <1657782880-28234-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Thu, 14 Jul 2022 03:15:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD2F13F2F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 00:15:06 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lk5KS64QBz1L8mV;
+        Thu, 14 Jul 2022 15:12:28 +0800 (CST)
+Received: from [10.67.102.169] (10.67.102.169) by
+ canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 15:15:04 +0800
+CC:     <yangyicong@hisilicon.com>, Josh Don <joshdon@google.com>,
+        Chen Yu <yu.c.chen@intel.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/5] sched/fair: ignore SIS_UTIL when has idle core
+To:     Abel Wu <wuyun.abel@bytedance.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <20220712082036.5130-1-wuyun.abel@bytedance.com>
+ <20220712082036.5130-2-wuyun.abel@bytedance.com>
+ <8e7d75d4-613e-f35e-e932-323789666fb1@huawei.com>
+ <4dde05be-8470-5984-0a30-ba077b9fe6bd@bytedance.com>
+From:   Yicong Yang <yangyicong@huawei.com>
+Message-ID: <e8a59a8f-1e0c-2bb6-2d1b-4e76f5c511f5@huawei.com>
+Date:   Thu, 14 Jul 2022 15:15:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+In-Reply-To: <4dde05be-8470-5984-0a30-ba077b9fe6bd@bytedance.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.102.169]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A cvsd sco setup failure issue is reported as shown by
-below btmon log, it firstly tries to set up cvsd esco with
-S3/S2/S1 configs sequentially, but these attempts are all
-failed with error code "Unspecified Error (0x1f)", then it
-tries to set up cvsd sco with D1 config, unfortunately, it
-still fails to set up sco with error code
-"Invalid HCI Command Parameters (0x12)", this error code
-terminates attempt with remaining D0 config and marks overall
-sco/esco setup failure.
+On 2022/7/14 14:58, Abel Wu wrote:
+> 
+> On 7/14/22 2:19 PM, Yicong Yang Wrote:
+>> On 2022/7/12 16:20, Abel Wu wrote:
+>>> When SIS_UTIL is enabled, SIS domain scan will be skipped if
+>>> the LLC is overloaded. Since the overloaded status is checked
+>>> in the load balancing at LLC level, the interval is llc_size
+>>> miliseconds. The duration might be long enough to affect the
+>>> overall system throughput if idle cores are out of reach in
+>>> SIS domain scan.
+>>>
+>>> Signed-off-by: Abel Wu <wuyun.abel@bytedance.com>
+>>> ---
+>>>   kernel/sched/fair.c | 15 +++++++++------
+>>>   1 file changed, 9 insertions(+), 6 deletions(-)
+>>>
+>>> diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+>>> index a78d2e3b9d49..cd758b3616bd 100644
+>>> --- a/kernel/sched/fair.c
+>>> +++ b/kernel/sched/fair.c
+>>> @@ -6392,16 +6392,19 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+>>>       struct sched_domain *this_sd;
+>>>       u64 time = 0;
+>>>   -    this_sd = rcu_dereference(*this_cpu_ptr(&sd_llc));
+>>> -    if (!this_sd)
+>>> -        return -1;
+>>> -
+>>>       cpumask_and(cpus, sched_domain_span(sd), p->cpus_ptr);
+>>>   -    if (sched_feat(SIS_PROP) && !has_idle_core) {
+>>> +    if (has_idle_core)
+>>> +        goto scan;
+>>> +
+>>> +    if (sched_feat(SIS_PROP)) {
+>>>           u64 avg_cost, avg_idle, span_avg;
+>>>           unsigned long now = jiffies;
+>>>   +        this_sd = rcu_dereference(*this_cpu_ptr(&sd_llc));
+>>> +        if (!this_sd)
+>>> +            return -1;
+>>> +
+>>
+>> I don't follow the change here. True that this_sd is used only in SIS_PROP, but it seems irrelevant with your
+>> commit. Does the position of this make any performance difference?
+> 
+> No, this change doesn't make much difference to performance. Are
+> you suggesting that I should make this a separate patch?
+> 
 
-It is wrong D1/D0 @retrans_effort 0x01 within @esco_param_cvsd
-that causes D1 config failure with error code
-"Invalid HCI Command Parameters (0x12)", D1/D0 sco @retrans_effort
-must not be 0x01 based on spec, so fix this issue by changing D1/D0
-@retrans_effort from 0x01 to 0xff as present @sco_param_cvsd.
+It just makes me think that dereference is unnecessary if this_cpu and target locates in
+the same LLC, since it's already been passed. But since you noticed no difference it may
+have little effect. :)
 
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3405 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 10
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x0380
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3406 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3408 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3409 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 7
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x0380
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3410 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3416 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3417 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 7
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x03c8
-          EV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3419 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3426 [hci0]
-        Status: Unspecified Error (0x1f)
-        Handle: 4
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: eSCO (0x02)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: CVSD (0x02)
-< HCI Command: Setup Synchrono.. (0x01|0x0028) plen 17  #3427 [hci0]
-        Handle: 3
-        Transmit bandwidth: 8000
-        Receive bandwidth: 8000
-        Max latency: 65535
-        Setting: 0x0060
-          Input Coding: Linear
-          Input Data Format: 2's complement
-          Input Sample Size: 16-bit
-          # of bits padding at MSB: 0
-          Air Coding Format: CVSD
-        Retransmission effort: Optimize for power consumption (0x01)
-        Packet type: 0x03c4
-          HV3 may be used
-          2-EV3 may not be used
-          3-EV3 may not be used
-          2-EV5 may not be used
-          3-EV5 may not be used
-> HCI Event: Command Status (0x0f) plen 4               #3428 [hci0]
-      Setup Synchronous Connection (0x01|0x0028) ncmd 1
-        Status: Success (0x00)
-> HCI Event: Synchronous Connect Comp.. (0x2c) plen 17  #3429 [hci0]
-        Status: Invalid HCI Command Parameters (0x12)
-        Handle: 0
-        Address: 14:3F:A6:47:56:15 (OUI 14-3F-A6)
-        Link type: SCO (0x00)
-        Transmission interval: 0x00
-        Retransmission window: 0x00
-        RX packet length: 0
-        TX packet length: 0
-        Air mode: u-law log (0x00)
-
-Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
-Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
----
- net/bluetooth/hci_conn.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 7829433d54c1..2627d5ac15d6 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -45,8 +45,8 @@ static const struct sco_param esco_param_cvsd[] = {
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
- 	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
- 	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
- };
- 
- static const struct sco_param sco_param_cvsd[] = {
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, a Linux Foundation Collaborative Project
-
+> Thanks,
+> Abel
+> 
+>>
+>> Thanks.
+>>
+>>>           /*
+>>>            * If we're busy, the assumption that the last idle period
+>>>            * predicts the future is flawed; age away the remaining
+>>> @@ -6436,7 +6439,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, bool
+>>>                   return -1;
+>>>           }
+>>>       }
+>>> -
+>>> +scan:
+>>>       for_each_cpu_wrap(cpu, cpus, target + 1) {
+>>>           if (has_idle_core) {
+>>>               i = select_idle_core(p, cpu, cpus, &idle_cpu);
+>>>
+> .
