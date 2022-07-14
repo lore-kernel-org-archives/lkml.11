@@ -2,126 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B056CCA486
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48285CCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237232AbiGNEbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:31:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
+        id S237270AbiGNEbO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:31:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237227AbiGNE3w (ORCPT
+        with ESMTP id S237233AbiGNE3y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:52 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E084F31DFF
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:25:07 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657772706;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XRf9R0o+fSMZ5LBdaxhYZP7PNoN9BepwjSvwbf2mACk=;
-        b=wzJaSUq+cq2c/g7wOTMheofahuoQLC/lJySne8NngV8YOHuAPY31JeADHfGWPWMqTm3wQA
-        Ixki1i7UdSNcr2KkhLOOeoxTZb5F6aIR/JB0CyUkd7X0prMPH9JnaSQZ5eDKI2qJoIjNJ5
-        FqdNfTOfdndIk0HbG8CCQgtT31c9cuI=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [mm-unstable PATCH v7 8/8] mm, hwpoison: enable memory error handling on 1GB hugepage
-Date:   Thu, 14 Jul 2022 13:24:20 +0900
-Message-Id: <20220714042420.1847125-9-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
-References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+        Thu, 14 Jul 2022 00:29:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B89D432046;
+        Wed, 13 Jul 2022 21:25:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ABC8B61E4E;
+        Thu, 14 Jul 2022 04:25:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23DA5C385A2;
+        Thu, 14 Jul 2022 04:25:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772707;
+        bh=ejnKotZB6Y2TMNzJtjiQwLLGKsKmTL1udkyokr7DcUk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=n2DDHHF6DCZIgkV3fmFo28HzgmokMQZRYSFC1pPbfBPSMxkQKe0a8bC5msrHK28ao
+         ZL6RMS94pKx+R7MlgB5e6Xc8wjBDHi+0o1nSW1P5Ds65URxcStulqrbqesF+UL6Twr
+         jKqUg7pFXRJRrBSghYzQQsgk8PI8MtxVidMkFW4tNMoLdn3eqpxYWuy/jSixEQCsqZ
+         lBbBNohbRKtZoY3C2EIG+O7QO2xblYC45RaMxBbLDadXzdry3PoK/+F6FwIpacrMhe
+         Kj5rbMP3UsCBTDsP8lBAE2HeWZhhuc7zN+34xjioq2LmAKagkvXryoum4FddNSTL+6
+         10qwUKZY8lKcw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 15/28] ASoC: dapm: Initialise kcontrol data for mux/demux controls
+Date:   Thu, 14 Jul 2022 00:24:16 -0400
+Message-Id: <20220714042429.281816-15-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
+References: <20220714042429.281816-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Now error handling code is prepared, so remove the blocking code and
-enable memory error handling on 1GB hugepage.
+[ Upstream commit 11d7a12f7f50baa5af9090b131c9b03af59503e7 ]
 
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+DAPM keeps a copy of the current value of mux/demux controls,
+however this value is only initialised in the case of autodisable
+controls. This leads to false notification events when first
+modifying a DAPM kcontrol that has a non-zero default.
+
+Autodisable controls are left as they are, since they already
+initialise the value, and there would be more work required to
+support autodisable muxes where the first option isn't disabled
+and/or that isn't the default.
+
+Technically this issue could affect mixer/switch elements as well,
+although not on any of the devices I am currently running. There
+is also a little more work to do to address the issue there due to
+that side supporting stereo controls, so that has not been tackled
+in this patch.
+
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220623105120.1981154-1-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mm.h      |  1 -
- include/ras/ras_event.h |  1 -
- mm/memory-failure.c     | 16 ----------------
- 3 files changed, 18 deletions(-)
+ sound/soc/soc-dapm.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index 7668831c919f..b0e83835184e 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -3241,7 +3241,6 @@ enum mf_action_page_type {
- 	MF_MSG_DIFFERENT_COMPOUND,
- 	MF_MSG_HUGE,
- 	MF_MSG_FREE_HUGE,
--	MF_MSG_NON_PMD_HUGE,
- 	MF_MSG_UNMAP_FAILED,
- 	MF_MSG_DIRTY_SWAPCACHE,
- 	MF_MSG_CLEAN_SWAPCACHE,
-diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
-index d0337a41141c..cbd3ddd7c33d 100644
---- a/include/ras/ras_event.h
-+++ b/include/ras/ras_event.h
-@@ -360,7 +360,6 @@ TRACE_EVENT(aer_event,
- 	EM ( MF_MSG_DIFFERENT_COMPOUND, "different compound page after locking" ) \
- 	EM ( MF_MSG_HUGE, "huge page" )					\
- 	EM ( MF_MSG_FREE_HUGE, "free huge page" )			\
--	EM ( MF_MSG_NON_PMD_HUGE, "non-pmd-sized huge page" )		\
- 	EM ( MF_MSG_UNMAP_FAILED, "unmapping failed page" )		\
- 	EM ( MF_MSG_DIRTY_SWAPCACHE, "dirty swapcache page" )		\
- 	EM ( MF_MSG_CLEAN_SWAPCACHE, "clean swapcache page" )		\
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index 3721de624b98..d86b5acd5754 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -765,7 +765,6 @@ static const char * const action_page_types[] = {
- 	[MF_MSG_DIFFERENT_COMPOUND]	= "different compound page after locking",
- 	[MF_MSG_HUGE]			= "huge page",
- 	[MF_MSG_FREE_HUGE]		= "free huge page",
--	[MF_MSG_NON_PMD_HUGE]		= "non-pmd-sized huge page",
- 	[MF_MSG_UNMAP_FAILED]		= "unmapping failed page",
- 	[MF_MSG_DIRTY_SWAPCACHE]	= "dirty swapcache page",
- 	[MF_MSG_CLEAN_SWAPCACHE]	= "clean swapcache page",
-@@ -1887,21 +1886,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+diff --git a/sound/soc/soc-dapm.c b/sound/soc/soc-dapm.c
+index 47b85ba5b7d6..b957049bae33 100644
+--- a/sound/soc/soc-dapm.c
++++ b/sound/soc/soc-dapm.c
+@@ -62,6 +62,8 @@ struct snd_soc_dapm_widget *
+ snd_soc_dapm_new_control_unlocked(struct snd_soc_dapm_context *dapm,
+ 			 const struct snd_soc_dapm_widget *widget);
  
- 	page_flags = head->flags;
++static unsigned int soc_dapm_read(struct snd_soc_dapm_context *dapm, int reg);
++
+ /* dapm power sequences - make this per codec in the future */
+ static int dapm_up_seq[] = {
+ 	[snd_soc_dapm_pre] = 1,
+@@ -442,6 +444,9 @@ static int dapm_kcontrol_data_alloc(struct snd_soc_dapm_widget *widget,
  
--	/*
--	 * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
--	 * simply disable it. In order to make it work properly, we need
--	 * make sure that:
--	 *  - conversion of a pud that maps an error hugetlb into hwpoison
--	 *    entry properly works, and
--	 *  - other mm code walking over page table is aware of pud-aligned
--	 *    hwpoison entries.
--	 */
--	if (huge_page_size(page_hstate(head)) > PMD_SIZE) {
--		action_result(pfn, MF_MSG_NON_PMD_HUGE, MF_IGNORED);
--		res = -EBUSY;
--		goto out;
--	}
--
- 	if (!hwpoison_user_mappings(p, pfn, flags, head)) {
- 		action_result(pfn, MF_MSG_UNMAP_FAILED, MF_IGNORED);
- 		res = -EBUSY;
+ 			snd_soc_dapm_add_path(widget->dapm, data->widget,
+ 					      widget, NULL, NULL);
++		} else if (e->reg != SND_SOC_NOPM) {
++			data->value = soc_dapm_read(widget->dapm, e->reg) &
++				      (e->mask << e->shift_l);
+ 		}
+ 		break;
+ 	default:
 -- 
-2.25.1
+2.35.1
 
