@@ -2,99 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B52C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240302AbiGNQrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41686 "EHLO
+        id S240472AbiGNQrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240022AbiGNQqp (ORCPT
+        with ESMTP id S240299AbiGNQqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:46:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE69A6BC19;
-        Thu, 14 Jul 2022 09:45:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EA3A62054;
-        Thu, 14 Jul 2022 16:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C01FC34114;
-        Thu, 14 Jul 2022 16:44:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657817069;
-        bh=iM0sHba9YtLd8lM6n792MFUeeIeWthKKRCzYAJSsaiI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=USWNvHsK5uZ9X+4GaAJNb0zO9c3mkeZ86qiWdqvOkTD44X3QZKGFcMEUyEIeLfA+v
-         YJPHd/yQYytXaHZv8jbcb+tVdV1nnLM89TJ2LaFpb2AYkZ0g3e9cF+BXLF8uP2AXz7
-         7YaV7oPnUHP5yNHgtGSENcQC1QWRAntFMiRRXXXgFV+KU9LzFSczBWiqhomPo+DDzt
-         GO+JG3l9jawbqON4ewGl8EKpghvT9dwxqJNtIFFPTwt+2hwjgaA/g26HIs96iz74W+
-         DeZYARD50imniZKQFLyh6j1Bh83dVykm9MgjMiqZgppEGJCeXyu83pS9QKfC7gaMZV
-         a5C7y/75wGXjw==
-From:   SeongJae Park <sj@kernel.org>
-To:     Jianglei Nie <niejianglei2021@163.com>
-Cc:     sj@kernel.org, akpm@linux-foundation.org, damon@lists.linux.dev,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] mm/damon/reclaim: fix potential memory leak in damon_reclaim_init()
-Date:   Thu, 14 Jul 2022 16:44:27 +0000
-Message-Id: <20220714164427.157184-1-sj@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220714063746.2343549-1-niejianglei2021@163.com>
-References: 
+        Thu, 14 Jul 2022 12:46:48 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 774256BC22
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:45:06 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id 23so2060232pgc.8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:45:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cUy4dG3fHsJ4SmPiGIKKf+s2etnhg2CaO8tWHfnew6k=;
+        b=qFrAePObL9zJKcAFx6A40IJ7c2tm0SuhEJ5Ox0+AxY+d0M1j68JBpolQ+cVCgFlofs
+         ztx5H64bPLN0DuR+vs1vR3ZzkFWtNCTxuR3+ysMaBxGFf7hDvU9kfn04AuC/AvLHnRLb
+         z4mqHiHU7bC98PdqJHlQSx9yM7oWdsRL1TPimD3n7MpbH7XtuyDQugCC2GUR3tW6JuMN
+         adf1iNLARNVoJf0k2a+qXDXJRSxIz6y+Cq5sr65CozVTzjwWWvs9uYhoCOvYqKKFhjL4
+         JuhNAizTOLm6WnGSTX/0k5KWnnHhs7ERLIS5tqdU7kKcynr+YJsHFSrAJuTMrnkv8T32
+         wE6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cUy4dG3fHsJ4SmPiGIKKf+s2etnhg2CaO8tWHfnew6k=;
+        b=mNUUIPUaU55DyqGHiWhYUE5TmVG8IvO7R2bAxzvM4FL79JONzEtgpdiYcHDUVVWrc7
+         W8AjJvndyz2hXlEG/T8Tcch5eWnMafL7jZ4+UO2Ma6K7ujPMmHIOPKTgx2HuaYkcu+Ji
+         /zhmfBhYX/8J2cn7QtkyP4JULJj4lZzcJczHYf25EYGN6AZACyVkHgkNTqWzQiVsmPyp
+         b2LGDVEW6gjI7KPq2OOJHxeXBDE6C/avitrJVYyEASG9GCvlSYD+ZQ7v4HNE0nVR2pz3
+         lxhpnZG/8+BOFDz0VlQCe7bo2c/Bj/nvAEwGhlsJyEPJfmymDUCX3z48hezWcfkNXHv5
+         nEnQ==
+X-Gm-Message-State: AJIora/Nnc/V203IeKNtGu3thHAwc4WgeQB+a6rKaNcu59/hYP1S5Dzp
+        R+Lxd2l5Xlhkda6dGlE22+EB9Q==
+X-Google-Smtp-Source: AGRyM1s5sAs61Xc615KUQJNZ6FNV/5FHFVrLm7UNuh79jl46ajdZqoF9CeEdkDs8in3PgVusQ0EkAw==
+X-Received: by 2002:a62:e919:0:b0:51e:7b6e:5a3b with SMTP id j25-20020a62e919000000b0051e7b6e5a3bmr9369884pfh.78.1657817105601;
+        Thu, 14 Jul 2022 09:45:05 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id n6-20020a170902d2c600b0016be527753bsm1737053plc.264.2022.07.14.09.45.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 09:45:05 -0700 (PDT)
+Message-ID: <2ca14dec-6e87-2e9a-80f7-0790f6e1f7cf@kernel.dk>
+Date:   Thu, 14 Jul 2022 10:45:04 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH] io_uring: Use atomic_long_try_cmpxchg in __io_account_mem
+Content-Language: en-US
+To:     Uros Bizjak <ubizjak@gmail.com>, io-uring@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Pavel Begunkov <asml.silence@gmail.com>
+References: <20220714163301.67794-1-ubizjak@gmail.com>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220714163301.67794-1-ubizjak@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jianglei,
-
-On Thu, 14 Jul 2022 14:37:46 +0800 Jianglei Nie <niejianglei2021@163.com> wrote:
-
-> damon_reclaim_init() allocates a memory chunk for ctx with
-> damon_new_ctx(). When damon_select_ops() fails, ctx is not released, which
-> will lead to a memory leak.
+On 7/14/22 10:33 AM, Uros Bizjak wrote:
+> Use atomic_long_try_cmpxchg instead of
+> atomic_long_cmpxchg (*ptr, old, new) == old in __io_account_mem.
+> x86 CMPXCHG instruction returns success in ZF flag, so this
+> change saves a compare after cmpxchg (and related move
+> instruction in front of cmpxchg).
 > 
-> We should release the ctx with damon_destroy_ctx() when damon_select_ops()
-> fails to fix the memory leak.
-
-Thank you for this patch!
-
-I think below tags would be better to be added.
-
-Fixes: 4d69c3457821 ("mm/damon/reclaim: use damon_select_ops() instead of damon_{v,p}a_set_operations()")
-Cc: <stable@vger.kernel.org> # 5.18.x
-
+> Also, atomic_long_try_cmpxchg implicitly assigns old *ptr value
+> to "old" when cmpxchg fails, enabling further code simplifications.
 > 
-> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
+> No functional change intended.
 
-Reviewed-by: SeongJae Park <sj@kernel.org>
+This will be io_uring/rsrc.c for the for-next branches, but it'll apply
+directly as that with a slight offset:
 
+checking file io_uring/rsrc.c
+Hunk #1 succeeded at 56 (offset -10448 lines).
 
-Thanks,
-SJ
+I'll do that, thanks.
 
-> ---
->  mm/damon/reclaim.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
-> index 4b07c29effe9..0b3c7396cb90 100644
-> --- a/mm/damon/reclaim.c
-> +++ b/mm/damon/reclaim.c
-> @@ -441,8 +441,10 @@ static int __init damon_reclaim_init(void)
->  	if (!ctx)
->  		return -ENOMEM;
->  
-> -	if (damon_select_ops(ctx, DAMON_OPS_PADDR))
-> +	if (damon_select_ops(ctx, DAMON_OPS_PADDR)) {
-> +		damon_destroy_ctx(ctx);
->  		return -EINVAL;
-> +	}
->  
->  	ctx->callback.after_wmarks_check = damon_reclaim_after_wmarks_check;
->  	ctx->callback.after_aggregation = damon_reclaim_after_aggregation;
-> -- 
-> 2.25.1
+-- 
+Jens Axboe
+
