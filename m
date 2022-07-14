@@ -2,105 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A452EC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B056CCA486
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235699AbiGNEbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:31:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
+        id S237232AbiGNEbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:31:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235641AbiGNE33 (ORCPT
+        with ESMTP id S237227AbiGNE3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676A631DEA;
-        Wed, 13 Jul 2022 21:25:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B740561E8B;
-        Thu, 14 Jul 2022 04:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01998C34114;
-        Thu, 14 Jul 2022 04:25:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772704;
-        bh=JG031+SIFPqD7zsmkiMMSaalhVUkd4njI1+DibBd8D0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A2bScdU0+i25KMkQ9ghHWKtGHiHwDeibjH+HgztOkOw38LEIh6uKAloWPzj1Gb55K
-         emcTPm/5A+hWVFjHZC+ITyrX8QUEXRcnvGHntQnyUQFteFumP0t22hYGYkEnubmKf/
-         sl26YQ3697hVFd0UHPPMdvKS5EmKMnODDccbOGTIbMdQE1Cz2jhK+5S0EQ4Zf4AMZi
-         MSHFapP1to12uGZaJ3AuQvZd2w5DasQ5k6sbC6lUpV/Y4HHku8XRZRuQ1nCne9RzND
-         3iZOKco1WGUeAvkoh4DSmsCotzZNXyEWicDZXqz0PpwMQz8Q/sqdKOO1fE0Wg227k4
-         qRqVXVeJxlZEA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, simont@opensource.cirrus.com,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 5.15 13/28] ASoC: wm5110: Fix DRE control
-Date:   Thu, 14 Jul 2022 00:24:14 -0400
-Message-Id: <20220714042429.281816-13-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
+        Thu, 14 Jul 2022 00:29:52 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E084F31DFF
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:25:07 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772706;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XRf9R0o+fSMZ5LBdaxhYZP7PNoN9BepwjSvwbf2mACk=;
+        b=wzJaSUq+cq2c/g7wOTMheofahuoQLC/lJySne8NngV8YOHuAPY31JeADHfGWPWMqTm3wQA
+        Ixki1i7UdSNcr2KkhLOOeoxTZb5F6aIR/JB0CyUkd7X0prMPH9JnaSQZ5eDKI2qJoIjNJ5
+        FqdNfTOfdndIk0HbG8CCQgtT31c9cuI=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 8/8] mm, hwpoison: enable memory error handling on 1GB hugepage
+Date:   Thu, 14 Jul 2022 13:24:20 +0900
+Message-Id: <20220714042420.1847125-9-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Charles Keepax <ckeepax@opensource.cirrus.com>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit 0bc0ae9a5938d512fd5d44f11c9c04892dcf4961 ]
+Now error handling code is prepared, so remove the blocking code and
+enable memory error handling on 1GB hugepage.
 
-The DRE controls on wm5110 should return a value of 1 if the DRE state
-is actually changed, update to fix this.
-
-Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
-Link: https://lore.kernel.org/r/20220621102041.1713504-2-ckeepax@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- sound/soc/codecs/wm5110.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ include/linux/mm.h      |  1 -
+ include/ras/ras_event.h |  1 -
+ mm/memory-failure.c     | 16 ----------------
+ 3 files changed, 18 deletions(-)
 
-diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
-index 5c2d45d05c97..7c6e01720d65 100644
---- a/sound/soc/codecs/wm5110.c
-+++ b/sound/soc/codecs/wm5110.c
-@@ -413,6 +413,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	unsigned int rnew = (!!ucontrol->value.integer.value[1]) << mc->rshift;
- 	unsigned int lold, rold;
- 	unsigned int lena, rena;
-+	bool change = false;
- 	int ret;
+diff --git a/include/linux/mm.h b/include/linux/mm.h
+index 7668831c919f..b0e83835184e 100644
+--- a/include/linux/mm.h
++++ b/include/linux/mm.h
+@@ -3241,7 +3241,6 @@ enum mf_action_page_type {
+ 	MF_MSG_DIFFERENT_COMPOUND,
+ 	MF_MSG_HUGE,
+ 	MF_MSG_FREE_HUGE,
+-	MF_MSG_NON_PMD_HUGE,
+ 	MF_MSG_UNMAP_FAILED,
+ 	MF_MSG_DIRTY_SWAPCACHE,
+ 	MF_MSG_CLEAN_SWAPCACHE,
+diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
+index d0337a41141c..cbd3ddd7c33d 100644
+--- a/include/ras/ras_event.h
++++ b/include/ras/ras_event.h
+@@ -360,7 +360,6 @@ TRACE_EVENT(aer_event,
+ 	EM ( MF_MSG_DIFFERENT_COMPOUND, "different compound page after locking" ) \
+ 	EM ( MF_MSG_HUGE, "huge page" )					\
+ 	EM ( MF_MSG_FREE_HUGE, "free huge page" )			\
+-	EM ( MF_MSG_NON_PMD_HUGE, "non-pmd-sized huge page" )		\
+ 	EM ( MF_MSG_UNMAP_FAILED, "unmapping failed page" )		\
+ 	EM ( MF_MSG_DIRTY_SWAPCACHE, "dirty swapcache page" )		\
+ 	EM ( MF_MSG_CLEAN_SWAPCACHE, "clean swapcache page" )		\
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 3721de624b98..d86b5acd5754 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -765,7 +765,6 @@ static const char * const action_page_types[] = {
+ 	[MF_MSG_DIFFERENT_COMPOUND]	= "different compound page after locking",
+ 	[MF_MSG_HUGE]			= "huge page",
+ 	[MF_MSG_FREE_HUGE]		= "free huge page",
+-	[MF_MSG_NON_PMD_HUGE]		= "non-pmd-sized huge page",
+ 	[MF_MSG_UNMAP_FAILED]		= "unmapping failed page",
+ 	[MF_MSG_DIRTY_SWAPCACHE]	= "dirty swapcache page",
+ 	[MF_MSG_CLEAN_SWAPCACHE]	= "clean swapcache page",
+@@ -1887,21 +1886,6 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
  
- 	snd_soc_dapm_mutex_lock(dapm);
-@@ -440,8 +441,8 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 		goto err;
- 	}
+ 	page_flags = head->flags;
  
--	ret = regmap_update_bits(arizona->regmap, ARIZONA_DRE_ENABLE,
--				 mask, lnew | rnew);
-+	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
-+				       mask, lnew | rnew, &change);
- 	if (ret) {
- 		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
- 		goto err;
-@@ -454,6 +455,9 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
- 	if (!rnew && rold)
- 		wm5110_clear_pga_volume(arizona, mc->rshift);
- 
-+	if (change)
-+		ret = 1;
-+
- err:
- 	snd_soc_dapm_mutex_unlock(dapm);
- 
+-	/*
+-	 * TODO: hwpoison for pud-sized hugetlb doesn't work right now, so
+-	 * simply disable it. In order to make it work properly, we need
+-	 * make sure that:
+-	 *  - conversion of a pud that maps an error hugetlb into hwpoison
+-	 *    entry properly works, and
+-	 *  - other mm code walking over page table is aware of pud-aligned
+-	 *    hwpoison entries.
+-	 */
+-	if (huge_page_size(page_hstate(head)) > PMD_SIZE) {
+-		action_result(pfn, MF_MSG_NON_PMD_HUGE, MF_IGNORED);
+-		res = -EBUSY;
+-		goto out;
+-	}
+-
+ 	if (!hwpoison_user_mappings(p, pfn, flags, head)) {
+ 		action_result(pfn, MF_MSG_UNMAP_FAILED, MF_IGNORED);
+ 		res = -EBUSY;
 -- 
-2.35.1
+2.25.1
 
