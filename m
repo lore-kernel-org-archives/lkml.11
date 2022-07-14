@@ -2,185 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0ACCCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87EACCA47C
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 22:44:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240836AbiGNWlz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 18:41:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50978 "EHLO
+        id S232054AbiGNWoV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 18:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240739AbiGNWlv (ORCPT
+        with ESMTP id S229481AbiGNWoS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 18:41:51 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5141C71BE5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 15:41:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657838510; x=1689374510;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=gZOMQWgLFBRi+y3k9o04QzaH/U1GVVLuwgNaNi71QTU=;
-  b=hm9T5Yv5QIMybgiZpax9zI4jEfuHaaFRmSnYqMoS0DhsGBQg2KRrKs1P
-   pkzjytz0pxHc1WseHMvyHXf0MW9fCWi7rdZqx6HApiqL7CC8A6/ZyI+lF
-   5PwDx25Z5bkfhBPKwd7YDf7O+wPYAm4sFkesjS9klOY/gz4DvXxbbk7Gv
-   dHFF0T+BptqRGOu0RCyiSSaZefjdYkyyf5tPdRlAaiIZjN1pOfQiq4o8s
-   OZhtgYnfj1kW+iAYokFNf5p1pFxE/uqS6V8t0ohmxMma8S90lnAvoSRE5
-   l9kX7jstXnrDrRZhxqE8K2ZUGgh5k49pj3b4VNv3zN+Tn1p26xVK+jE66
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="268671344"
-X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="268671344"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 15:41:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="923259715"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 14 Jul 2022 15:41:48 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oC7Wl-0001EV-Cy;
-        Thu, 14 Jul 2022 22:41:47 +0000
-Date:   Fri, 15 Jul 2022 06:40:47 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tom Lendacky <thomas.lendacky@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>
-Subject: drivers/virt/coco/sev-guest/sev-guest.c:709:17: sparse: sparse:
- incorrect type in argument 1 (different address spaces)
-Message-ID: <202207150617.jqwQ0Rpz-lkp@intel.com>
+        Thu, 14 Jul 2022 18:44:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8CAC66AF6;
+        Thu, 14 Jul 2022 15:44:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E333B829DF;
+        Thu, 14 Jul 2022 22:44:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDE5DC34114;
+        Thu, 14 Jul 2022 22:44:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657838654;
+        bh=ZTNaD7TTclpn13DZH9gmDu/kVHAK0vU6nq05MFNP/OI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OeQS1awqXop0peSKh0A2dyghSIgn/D6oI+ww24QPmvMecatn8NjCA7FnNbTxEA1a/
+         jFfq/8eoAnF4reSH3Zx5kRBPZtq+YrIOM8HKBzJObtP2Ce3WAxlCRQiGY63uEN5Hen
+         DXyg1enx4YljQAw7SN2WDuLqa7+SvA0Tirs62KT5LpVuYOAhBNesaRbael/3jB9R3e
+         Ipu0Z9Ok3f1qtPoAtUizrTvfyKyZgfT1XWtlp8dlj7SLkFReNxP74nx3isQPvw2C6h
+         h0ATw8BT5o2FV9ZpvVEjQMzburXRmJx+x+EICrJ/Hog1ZVlmG8L60Q+0d9vLU8VYyC
+         PbhWXmyYeRo0w==
+From:   SeongJae Park <sj@kernel.org>
+To:     roger.pau@citrix.com
+Cc:     axboe@kernel.dk, boris.ostrovsky@oracle.com, jgross@suse.com,
+        mheyne@amazon.de, xen-devel@lists.xenproject.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        SeongJae Park <sj@kernel.org>, stable@vger.kernel.org
+Subject: [PATCH v2] xen-blkback: fix persistent grants negotiation
+Date:   Thu, 14 Jul 2022 22:44:10 +0000
+Message-Id: <20220714224410.51147-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Tom,
+Persistent grants feature can be used only when both backend and the
+frontend supports the feature.  The feature was always supported by
+'blkback', but commit aac8a70db24b ("xen-blkback: add a parameter for
+disabling of persistent grants") has introduced a parameter for
+disabling it runtime.
 
-First bad commit (maybe != root cause):
+To avoid the parameter be updated while being used by 'blkback', the
+commit caches the parameter into 'vbd->feature_gnt_persistent' in
+'xen_vbd_create()', and then check if the guest also supports the
+feature and finally updates the field in 'connect_ring()'.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9bd572ec7a66b56e1aed896217ff311d981cf575
-commit: d63670d23e60f00210635ca7c62bce27bec55f1b virt: sevguest: Rename the sevguest dir and files to sev-guest
-date:   3 months ago
-config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220715/202207150617.jqwQ0Rpz-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d63670d23e60f00210635ca7c62bce27bec55f1b
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout d63670d23e60f00210635ca7c62bce27bec55f1b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/virt/coco/sev-guest/
+However, 'connect_ring()' could be called before 'xen_vbd_create()', so
+later execution of 'xen_vbd_create()' can wrongly overwrite 'true' to
+'vbd->feature_gnt_persistent'.  As a result, 'blkback' could try to use
+'persistent grants' feature even if the guest doesn't support the
+feature.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+This commit fixes the issue by moving the parameter value caching to
+'xen_blkif_alloc()', which allocates the 'blkif'.  Because the struct
+embeds 'vbd' object, which will be used by 'connect_ring()' later, this
+should be called before 'connect_ring()' and therefore this should be
+the right and safe place to do the caching.
 
+Fixes: aac8a70db24b ("xen-blkback: add a parameter for disabling of persistent grants")
+Cc: <stable@vger.kernel.org> # 5.10.x
+Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
+Signed-off-by: SeongJae Park <sj@kernel.org>
+---
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/virt/coco/sev-guest/sev-guest.c:709:17: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected void volatile [noderef] __iomem *addr @@     got struct snp_secrets_page_layout *[assigned] layout @@
-   drivers/virt/coco/sev-guest/sev-guest.c:709:17: sparse:     expected void volatile [noderef] __iomem *addr
-   drivers/virt/coco/sev-guest/sev-guest.c:709:17: sparse:     got struct snp_secrets_page_layout *[assigned] layout
+Changes from v1[1]
+- Avoid the behavioral change[2]
+- Rebase on latest xen/tip/linux-next
+- Re-work by SeongJae Park <sj@kernel.org>
+- Cc stable@
 
-vim +709 drivers/virt/coco/sev-guest/sev-guest.c
+[1] https://lore.kernel.org/xen-devel/20220106091013.126076-1-mheyne@amazon.de/
+[2] https://lore.kernel.org/xen-devel/20220121102309.27802-1-sj@kernel.org/
 
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  627  
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  628  static int __init sev_guest_probe(struct platform_device *pdev)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  629  {
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  630  	struct snp_secrets_page_layout *layout;
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  631  	struct sev_guest_platform_data *data;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  632  	struct device *dev = &pdev->dev;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  633  	struct snp_guest_dev *snp_dev;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  634  	struct miscdevice *misc;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  635  	int ret;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  636  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  637  	if (!dev->platform_data)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  638  		return -ENODEV;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  639  
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  640  	data = (struct sev_guest_platform_data *)dev->platform_data;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  641  	layout = (__force void *)ioremap_encrypted(data->secrets_gpa, PAGE_SIZE);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  642  	if (!layout)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  643  		return -ENODEV;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  644  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  645  	ret = -ENOMEM;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  646  	snp_dev = devm_kzalloc(&pdev->dev, sizeof(struct snp_guest_dev), GFP_KERNEL);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  647  	if (!snp_dev)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  648  		goto e_unmap;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  649  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  650  	ret = -EINVAL;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  651  	snp_dev->vmpck = get_vmpck(vmpck_id, layout, &snp_dev->os_area_msg_seqno);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  652  	if (!snp_dev->vmpck) {
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  653  		dev_err(dev, "invalid vmpck id %d\n", vmpck_id);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  654  		goto e_unmap;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  655  	}
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  656  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  657  	/* Verify that VMPCK is not zero. */
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  658  	if (is_vmpck_empty(snp_dev)) {
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  659  		dev_err(dev, "vmpck id %d is null\n", vmpck_id);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  660  		goto e_unmap;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  661  	}
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  662  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  663  	platform_set_drvdata(pdev, snp_dev);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  664  	snp_dev->dev = dev;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  665  	snp_dev->layout = layout;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  666  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  667  	/* Allocate the shared page used for the request and response message. */
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  668  	snp_dev->request = alloc_shared_pages(dev, sizeof(struct snp_guest_msg));
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  669  	if (!snp_dev->request)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  670  		goto e_unmap;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  671  
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  672  	snp_dev->response = alloc_shared_pages(dev, sizeof(struct snp_guest_msg));
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  673  	if (!snp_dev->response)
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  674  		goto e_free_request;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  675  
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  676  	snp_dev->certs_data = alloc_shared_pages(dev, SEV_FW_BLOB_MAX_SIZE);
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  677  	if (!snp_dev->certs_data)
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  678  		goto e_free_response;
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  679  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  680  	ret = -EIO;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  681  	snp_dev->crypto = init_crypto(snp_dev, snp_dev->vmpck, VMPCK_KEY_LEN);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  682  	if (!snp_dev->crypto)
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  683  		goto e_free_cert_data;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  684  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  685  	misc = &snp_dev->misc;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  686  	misc->minor = MISC_DYNAMIC_MINOR;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  687  	misc->name = DEVICE_NAME;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  688  	misc->fops = &snp_guest_fops;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  689  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  690  	/* initial the input address for guest request */
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  691  	snp_dev->input.req_gpa = __pa(snp_dev->request);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  692  	snp_dev->input.resp_gpa = __pa(snp_dev->response);
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  693  	snp_dev->input.data_gpa = __pa(snp_dev->certs_data);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  694  
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  695  	ret =  misc_register(misc);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  696  	if (ret)
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  697  		goto e_free_cert_data;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  698  
-2bf93ffbb97e061 drivers/virt/coco/sevguest/sevguest.c Tom Lendacky  2022-04-20  699  	dev_info(dev, "Initialized SEV guest driver (using vmpck_id %d)\n", vmpck_id);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  700  	return 0;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  701  
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  702  e_free_cert_data:
-d80b494f7123174 drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  703  	free_shared_pages(snp_dev->certs_data, SEV_FW_BLOB_MAX_SIZE);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  704  e_free_response:
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  705  	free_shared_pages(snp_dev->response, sizeof(struct snp_guest_msg));
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  706  e_free_request:
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  707  	free_shared_pages(snp_dev->request, sizeof(struct snp_guest_msg));
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  708  e_unmap:
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07 @709  	iounmap(layout);
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  710  	return ret;
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  711  }
-fce96cf0443083e drivers/virt/coco/sevguest/sevguest.c Brijesh Singh 2022-03-07  712  
+ drivers/block/xen-blkback/xenbus.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-:::::: The code at line 709 was first introduced by commit
-:::::: fce96cf0443083e37455eff8f78fd240c621dae3 virt: Add SEV-SNP guest driver
-
-:::::: TO: Brijesh Singh <brijesh.singh@amd.com>
-:::::: CC: Borislav Petkov <bp@suse.de>
-
+diff --git a/drivers/block/xen-blkback/xenbus.c b/drivers/block/xen-blkback/xenbus.c
+index 97de13b14175..16c6785d260c 100644
+--- a/drivers/block/xen-blkback/xenbus.c
++++ b/drivers/block/xen-blkback/xenbus.c
+@@ -157,6 +157,11 @@ static int xen_blkif_alloc_rings(struct xen_blkif *blkif)
+ 	return 0;
+ }
+ 
++/* Enable the persistent grants feature. */
++static bool feature_persistent = true;
++module_param(feature_persistent, bool, 0644);
++MODULE_PARM_DESC(feature_persistent, "Enables the persistent grants feature");
++
+ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
+ {
+ 	struct xen_blkif *blkif;
+@@ -181,6 +186,8 @@ static struct xen_blkif *xen_blkif_alloc(domid_t domid)
+ 	__module_get(THIS_MODULE);
+ 	INIT_WORK(&blkif->free_work, xen_blkif_deferred_free);
+ 
++	blkif->vbd.feature_gnt_persistent = feature_persistent;
++
+ 	return blkif;
+ }
+ 
+@@ -472,12 +479,6 @@ static void xen_vbd_free(struct xen_vbd *vbd)
+ 	vbd->bdev = NULL;
+ }
+ 
+-/* Enable the persistent grants feature. */
+-static bool feature_persistent = true;
+-module_param(feature_persistent, bool, 0644);
+-MODULE_PARM_DESC(feature_persistent,
+-		"Enables the persistent grants feature");
+-
+ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+ 			  unsigned major, unsigned minor, int readonly,
+ 			  int cdrom)
+@@ -520,8 +521,6 @@ static int xen_vbd_create(struct xen_blkif *blkif, blkif_vdev_t handle,
+ 	if (bdev_max_secure_erase_sectors(bdev))
+ 		vbd->discard_secure = true;
+ 
+-	vbd->feature_gnt_persistent = feature_persistent;
+-
+ 	pr_debug("Successful creation of handle=%04x (dom=%u)\n",
+ 		handle, blkif->domid);
+ 	return 0;
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
