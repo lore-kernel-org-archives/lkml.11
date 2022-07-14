@@ -2,173 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D45ECCA47B
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8711AC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235167AbiGNIcs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:32:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56030 "EHLO
+        id S231309AbiGNIc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbiGNIcq (ORCPT
+        with ESMTP id S235239AbiGNIcv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:32:46 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4735D286FC;
-        Thu, 14 Jul 2022 01:32:46 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26E8KdgM009136;
-        Thu, 14 Jul 2022 08:32:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=cFaZ3Vr+W+qoOMpxojUcyA/iKf9/1eOSRbI4B3P7F/c=;
- b=nt1TayDtGYqdMLhuAYZpBAFy69vVbx7FqKiJ4gVCEW+edIeDfeQE99uofv+mHtkYpJPx
- LI/yiBzLyT0hfEl6ntQc+E/ycXGUJ4XlmAbv0aOznKAbhvaGnXtBYFbniFzrOJ0n3kic
- 1LO5JDH5GlCkPuoEg9awmt+3fGdTjikQzlwmnLS5S4Suq/wqWiUhqgnEyQO7nWHt4msE
- WJanPbSHkwlxogfeH8ZDh3tEKTbY5EU/wWD87d2HDjh4qBeeDEUdM8aJCoLPbagaq/4F
- DlMyMuTfTRNgvHxFHbYdI0Zt1LkxRjUlxyGxf1Ve8UKigjpfIzURpn0U0ERJUWINH6XB 4A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hafj5886v-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 08:32:45 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26E8VbWi024298;
-        Thu, 14 Jul 2022 08:32:45 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hafj5886c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 08:32:44 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26E8KEAu022880;
-        Thu, 14 Jul 2022 08:32:43 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03ams.nl.ibm.com with ESMTP id 3h71a8xsxu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Jul 2022 08:32:43 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26E8Wep421234126
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 14 Jul 2022 08:32:40 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EE11AAE04D;
-        Thu, 14 Jul 2022 08:32:39 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 380F5AE045;
-        Thu, 14 Jul 2022 08:32:39 +0000 (GMT)
-Received: from [9.171.80.107] (unknown [9.171.80.107])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 14 Jul 2022 08:32:39 +0000 (GMT)
-Message-ID: <d62d2844-1d3b-4a0a-73dc-8ed961d9e22e@linux.ibm.com>
-Date:   Thu, 14 Jul 2022 10:37:21 +0200
+        Thu, 14 Jul 2022 04:32:51 -0400
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC16286FC;
+        Thu, 14 Jul 2022 01:32:49 -0700 (PDT)
+Received: by mail-wm1-x32b.google.com with SMTP id y22-20020a7bcd96000000b003a2e2725e89so784983wmj.0;
+        Thu, 14 Jul 2022 01:32:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:subject:to:cc:message-id:in-reply-to:references
+         :mime-version;
+        bh=6xc+YDuIfvXxIC+O6+IU1kPpAw3fGddKU5daN249fsU=;
+        b=cZHYBUMkLjdNB0YKczZHY6aivyAMJ/ONJAWluY9qjPBVx5u4hBDOHZOMmbfhFGsB8g
+         qtRa4zJ3lrmOnt5z0hMpYJkVXDNJGi2bXc9IhmINx8WBRitdTpw7QCxqCB6aRVaiPbDY
+         4hpAy8TWsht1pMdzeL3OQgWbBur6XaSPGlcv5LjR0noVfYOfszM7M5FAfh3jaaw+ifMT
+         a+6cfV+HposCMlDoNTRyWlD83B9zkgttCwSkYizb2FgzrCYs0v8Bc4SZM8Cmv7CVIauH
+         YrxjGjX/w2zBSllpltL+Qh+R2uSE2+G6gh00BpQqandCHSqzpgdKz0jSffeZ6rLiyjPQ
+         BlZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
+         :references:mime-version;
+        bh=6xc+YDuIfvXxIC+O6+IU1kPpAw3fGddKU5daN249fsU=;
+        b=KwMVLf+FQ7Zl0JnsX1f8wbcBch2TxqBktNWUY5Bp6ybjxA+q5jRzadJcXtAVmVF9iF
+         LlKhYx+08RGIeuCBMi6vA6OpzdOvsdrotIC/gFQbFZjOja7k24w2CCvNv4W/xOSqlXg7
+         LPryfujqOggIeWCbqG5WPY4uzSTnfUpguYM+viSDywWecSDWIbnPo78MgcqWSFK9RJTP
+         HyBazgq7vOW1cTpaUdJM9UUyCFiGeoJ0P6VKxFobQFiAant8aKdxQaYIHgLCfihr+g8r
+         YfEAnfM4GEozHahpEtcZjJBnDRzy87MInYqb5Y6+0r8N8HNdI3u+7jOn7HlY7U3WT3vH
+         SGvA==
+X-Gm-Message-State: AJIora+SVE7kFJnH1gXHyFeQach5HKn0WfVkxHVLPHhM9nz/iDZH0sk0
+        oQKeTAptBa+yJf4H2jgpqSBrHXZVDO/gkqAm
+X-Google-Smtp-Source: AGRyM1vdlBeARWA3UmGrtweL6mLA0mTff+K0S9p3U2jsCdAcpdyZhaSYEp4Awg1PDAEmk6gjejkubg==
+X-Received: by 2002:a05:600c:4ece:b0:3a1:7816:31a7 with SMTP id g14-20020a05600c4ece00b003a1781631a7mr7898848wmq.76.1657787568186;
+        Thu, 14 Jul 2022 01:32:48 -0700 (PDT)
+Received: from [192.168.214.247] (185-165-241-34.hosted-by-worldstream.net. [185.165.241.34])
+        by smtp.gmail.com with ESMTPSA id z3-20020a5d4c83000000b0021baf5e590dsm849370wrs.71.2022.07.14.01.32.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 01:32:47 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 12:32:34 +0400
+From:   Yassine Oudjana <yassine.oudjana@gmail.com>
+Subject: Re: [PATCH 2/6] clk: qcom: msm8996-cpu: Statically define PLL
+ dividers
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <A250FR.22DB6BQXIGPX1@gmail.com>
+In-Reply-To: <CAA8EJpq4YYdeXVtYORaDROiFLRL6p-_jmjx3mj4JtrYDhik3hQ@mail.gmail.com>
+References: <20220621160621.24415-1-y.oudjana@protonmail.com>
+        <20220621160621.24415-3-y.oudjana@protonmail.com>
+        <CAA8EJpq4YYdeXVtYORaDROiFLRL6p-_jmjx3mj4JtrYDhik3hQ@mail.gmail.com>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v12 3/3] KVM: s390: resetting the Topology-Change-Report
-Content-Language: en-US
-To:     Janosch Frank <frankja@linux.ibm.com>,
-        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
-        kvm@vger.kernel.org
-Cc:     linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        borntraeger@de.ibm.com, cohuck@redhat.com, david@redhat.com,
-        thuth@redhat.com, imbrenda@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, wintera@linux.ibm.com, seiden@linux.ibm.com,
-        nrb@linux.ibm.com
-References: <20220711084148.25017-1-pmorel@linux.ibm.com>
- <20220711084148.25017-4-pmorel@linux.ibm.com>
- <58016efc-9053-b743-05d6-4ace4dcdc2a8@linux.ibm.com>
- <a268d8b7-bbd8-089d-896c-e4e3e4167e46@linux.ibm.com>
- <87c5514b-4971-b283-912c-573ab1b4d636@linux.ibm.com>
- <0c73fc23-2cfe-86c6-b91d-77a73bc435b4@linux.ibm.com>
- <7cd9cf5b-d91e-f676-48e9-abbea94d62e0@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <7cd9cf5b-d91e-f676-48e9-abbea94d62e0@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3wf5Hd9fRwDZNOqeZQWPDcGxUZaUvdtq
-X-Proofpoint-ORIG-GUID: Is-kOT_28PLR2_9gy_lvOfAUFGYpUObM
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-14_06,2022-07-13_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- priorityscore=1501 mlxscore=0 bulkscore=0 phishscore=0 malwarescore=0
- spamscore=0 impostorscore=0 mlxlogscore=999 adultscore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207140033
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-
-On 7/13/22 11:01, Janosch Frank wrote:
-> On 7/12/22 13:17, Pierre Morel wrote:
->>
->>
->> On 7/12/22 10:47, Janis Schoetterl-Glausch wrote:
->>> On 7/12/22 09:24, Pierre Morel wrote:
->>>>
->>>>
-
-...
-
->> kernel.
->>
->> In userland we check any wrong selector before the instruction goes back
->> to the guest.
+On Tue, Jun 21 2022 at 20:02:28 +0300, Dmitry Baryshkov 
+<dmitry.baryshkov@linaro.org> wrote:
+> On Tue, 21 Jun 2022 at 19:07, Yassine Oudjana 
+> <yassine.oudjana@gmail.com> wrote:
+>> 
+>>  From: Yassine Oudjana <y.oudjana@protonmail.com>
+>> 
+>>  This will allow for adding them to clk_parent_data arrays
+>>  in an upcoming patch.
+>> 
+>>  Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+>>  ---
+>>   drivers/clk/qcom/clk-cpu-8996.c | 66 
+>> +++++++++++++++++++++------------
+>>   1 file changed, 42 insertions(+), 24 deletions(-)
+>> 
+>>  diff --git a/drivers/clk/qcom/clk-cpu-8996.c 
+>> b/drivers/clk/qcom/clk-cpu-8996.c
+>>  index 5dc68dc3621f..217f9392c23d 100644
+>>  --- a/drivers/clk/qcom/clk-cpu-8996.c
+>>  +++ b/drivers/clk/qcom/clk-cpu-8996.c
+>>  @@ -135,6 +135,34 @@ static struct clk_alpha_pll pwrcl_pll = {
+>>          },
+>>   };
+>> 
+>>  +static struct clk_fixed_factor pwrcl_pll_postdiv = {
+>>  +       .mult = 1,
+>>  +       .div = 2,
+>>  +       .hw.init = &(struct clk_init_data){
+>>  +               .name = "pwrcl_pll_postdiv",
+>>  +               .parent_data = &(const struct clk_parent_data){
+>>  +                       .hw = &pwrcl_pll.clkr.hw
+>>  +               },
+>>  +               .num_parents = 1,
+>>  +               .ops = &clk_fixed_factor_ops,
+>>  +               .flags = CLK_SET_RATE_PARENT,
+>>  +       },
+>>  +};
+>>  +
+>>  +static struct clk_fixed_factor perfcl_pll_postdiv = {
+>>  +       .mult = 1,
+>>  +       .div = 2,
+>>  +       .hw.init = &(struct clk_init_data){
+>>  +               .name = "perfcl_pll_postdiv",
+>>  +               .parent_data = &(const struct clk_parent_data){
+>>  +                       .hw = &perfcl_pll.clkr.hw
+>>  +               },
+>>  +               .num_parents = 1,
+>>  +               .ops = &clk_fixed_factor_ops,
+>>  +               .flags = CLK_SET_RATE_PARENT,
+>>  +       },
+>>  +};
+>>  +
+>>   static const struct pll_vco alt_pll_vco_modes[] = {
+>>          VCO(3,  250000000,  500000000),
+>>          VCO(2,  500000000,  750000000),
+>>  @@ -261,7 +289,7 @@ static struct clk_cpu_8996_mux pwrcl_smux = {
+>>                  .name = "pwrcl_smux",
+>>                  .parent_names = (const char *[]){
+>>                          "xo",
+>>  -                       "pwrcl_pll_main",
+>>  +                       "pwrcl_pll_postdiv",
+>>                  },
+>>                  .num_parents = 2,
+>>                  .ops = &clk_cpu_8996_mux_ops,
+>>  @@ -277,7 +305,7 @@ static struct clk_cpu_8996_mux perfcl_smux = {
+>>                  .name = "perfcl_smux",
+>>                  .parent_names = (const char *[]){
+>>                          "xo",
+>>  -                       "perfcl_pll_main",
+>>  +                       "perfcl_pll_postdiv",
+>>                  },
+>>                  .num_parents = 2,
+>>                  .ops = &clk_cpu_8996_mux_ops,
+>>  @@ -354,32 +382,25 @@ static int 
+>> qcom_cpu_clk_msm8996_register_clks(struct device *dev,
+>>   {
+>>          int i, ret;
+>> 
+>>  -       perfcl_smux.pll = clk_hw_register_fixed_factor(dev, 
+>> "perfcl_pll_main",
+>>  -                                                      "perfcl_pll",
+>>  -                                                      
+>> CLK_SET_RATE_PARENT,
+>>  -                                                      1, 2);
+>>  -       if (IS_ERR(perfcl_smux.pll)) {
+>>  -               dev_err(dev, "Failed to initialize 
+>> perfcl_pll_main\n");
+>>  -               return PTR_ERR(perfcl_smux.pll);
+>>  +       ret = devm_clk_hw_register(dev, &pwrcl_pll_postdiv.hw);
 > 
-> I opt for passing the lower selectors down for QEMU to handle.
+> No need to. I'd suggest picking up the
+> devm_clk_hw_register_fixed_factor patch from my patchset and using
+> this API.
 
-OK
-
-> 
->>
->>> But that's only relevant if STSI can be extended without a 
->>> capability, which is why I asked about that.
->>
->> Logicaly any change, extension, in the architecture should be signaled
->> by a facility bit or something.
->>
->>>
->>>> Even testing the facility or PV in the kernel is for my opinion 
->>>> arguable in the case we do not do any treatment in the kernel.
-> 
-> That's actually a good point.
-> 
-> New instruction interceptions for PV will need to be enabled by KVM via 
-> a switch somewhere since the UV can't rely on the fact that KVM will 
-> correctly handle it without an enablement.
-> 
-> 
-> So please remove the pv check
-
-OK
+I did it this way to be able to define it statically in the
+`parent_data` arrays of the secondary muxes in patch 6/6. How
+would I do it this way? Do I define global `static struct clk_hw *`s
+for the postdivs and use them in the `parent_data` arrays, or
+perhaps un-constify the arrays and insert the returned
+`struct clk_hw *`s into them here? Also can you send a link to
+your patch? or is it already applied?
 
 > 
-
-...
-
->>>>>>     +static int kvm_s390_set_topology(struct kvm *kvm, struct 
->>>>>> kvm_device_attr *attr)
->>>>>
->>>>> kvm_s390_set_topology_changed maybe?
->>>>> kvm_s390_get_topology_changed below then.
+>>  +       if (ret) {
+>>  +               dev_err(dev, "Failed to register pwrcl_pll_postdiv: 
+>> %d", ret);
+>>  +               return ret;
+>>          }
+>> 
+>>  -       pwrcl_smux.pll = clk_hw_register_fixed_factor(dev, 
+>> "pwrcl_pll_main",
+>>  -                                                     "pwrcl_pll",
+>>  -                                                     
+>> CLK_SET_RATE_PARENT,
+>>  -                                                     1, 2);
+>>  -       if (IS_ERR(pwrcl_smux.pll)) {
+>>  -               dev_err(dev, "Failed to initialize 
+>> pwrcl_pll_main\n");
+>>  -               clk_hw_unregister(perfcl_smux.pll);
+>>  -               return PTR_ERR(pwrcl_smux.pll);
+>>  +       ret = devm_clk_hw_register(dev, &perfcl_pll_postdiv.hw);
+>>  +       if (ret) {
+>>  +               dev_err(dev, "Failed to register 
+>> perfcl_pll_postdiv: %d", ret);
+>>  +               return ret;
+>>          }
+>> 
+>>  +       pwrcl_smux.pll = &pwrcl_pll_postdiv.hw;
+>>  +       perfcl_smux.pll = &perfcl_pll_postdiv.hw;
+>>  +
+>>          for (i = 0; i < ARRAY_SIZE(cpu_msm8996_clks); i++) {
+>>                  ret = devm_clk_register_regmap(dev, 
+>> cpu_msm8996_clks[i]);
+>>  -               if (ret) {
+>>  -                       clk_hw_unregister(perfcl_smux.pll);
+>>  -                       clk_hw_unregister(pwrcl_smux.pll);
+>>  +               if (ret)
+>>                          return ret;
+>>  -               }
+>>          }
+>> 
+>>          clk_alpha_pll_configure(&perfcl_pll, regmap, &hfpll_config);
+>>  @@ -409,9 +430,6 @@ static int 
+>> qcom_cpu_clk_msm8996_unregister_clks(void)
+>>          if (ret)
+>>                  return ret;
+>> 
+>>  -       clk_hw_unregister(perfcl_smux.pll);
+>>  -       clk_hw_unregister(pwrcl_smux.pll);
+>>  -
+>>          return 0;
+>>   }
+>> 
+>>  --
+>>  2.36.1
+>> 
 > 
-> kvm_s390_set_topology_change_indication
 > 
-> It's long but it's rarely used.
-> Maybe shorten topology to "topo"
-
-OK
-I use
-kvm_s390_get_topo_change_indication()
+> --
+> With best wishes
+> Dmitry
 
 
-Thanks.
-
-Regards,
-Pierre
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
