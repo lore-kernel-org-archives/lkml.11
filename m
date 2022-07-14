@@ -2,133 +2,151 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE83C43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47388CCA47C
 	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237872AbiGNJOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36128 "EHLO
+        id S237887AbiGNJOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237800AbiGNJNu (ORCPT
+        with ESMTP id S237802AbiGNJNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 05:13:50 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3971BDE;
-        Thu, 14 Jul 2022 02:13:48 -0700 (PDT)
-Received: from localhost.localdomain (unknown [IPv6:2405:201:10:3153:7fbd:8a7b:29b6:89fb])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E39DAF5BB
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:13:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657790027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FKgds0yCW63Fm75RE7cov5eu8kqmNA9zEFDIYKGcaWM=;
+        b=jBATlOAPP4uS92YGpsAIUcYKWe5jPEvtgS2mm8zEDY8PDvb3RQSeABvI+x6F0BkeH0wF30
+        lqZ0suC6VSgIjMaa7KqvRHCgSmFcMJVVEebUhYakd9Bu60/VhDYlLBwRPnZJ7RD/msnqne
+        3rBfHQhAqelM027zaELqjVPs/tgeqiI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-304-ujK4qpuuOrewxrQbKyJWeQ-1; Thu, 14 Jul 2022 05:13:43 -0400
+X-MC-Unique: ujK4qpuuOrewxrQbKyJWeQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: shreeya)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id DCC6A66015AA;
-        Thu, 14 Jul 2022 10:13:43 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657790026;
-        bh=LkOHAPElpBGmw5W/o7Ewpw77hnBq4cbeXMEaxiKzSzc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PFDG5gUN1tp7H34JrmcXnUESQrImKDIcibEYqZJr3O7AbquD6EOQDgkAZfuC7uwXp
-         27WAMe6t8LhKVVcfX8UPYDLQemWahJmqkI9d3zGGAcsCOHYM03vku0Cc7i68Vm09Vb
-         iSu3rw/4Zy5f4vd+xHpXVjyOePOUB+stbd1BBMxJckPRY04oYLKFzoUKOorW0zg9SV
-         Objblu1g05994nEngrhyLyzw8wLEaKHyRyWyMNsHNBaeb5mnIzbbNSsSWS+fgO+2uX
-         CWfIxKDtKCUnCAYrh1W+NJdknE7dgCFJ3+/wpyFigGrepaKzC6yQQFwKhaS78N5USF
-         ZAkN2C6qWcM6g==
-From:   Shreeya Patel <shreeya.patel@collabora.com>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        dmitry.osipenko@collabora.com, Zhigang.Shi@liteon.com
-Cc:     krisman@collabora.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com, alvaro.soliverez@collabora.com,
-        andy.shevchenko@gmail.com,
-        Shreeya Patel <shreeya.patel@collabora.com>
-Subject: [PATCH v8 0/2] Add LTRF216A Driver
-Date:   Thu, 14 Jul 2022 14:43:10 +0530
-Message-Id: <20220714091312.838152-1-shreeya.patel@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E930485A581;
+        Thu, 14 Jul 2022 09:13:42 +0000 (UTC)
+Received: from fedora.redhat.com (unknown [10.40.194.135])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E0F722166B26;
+        Thu, 14 Jul 2022 09:13:40 +0000 (UTC)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>
+Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 05/25] KVM: nVMX: Support several new fields in eVMCSv1
+Date:   Thu, 14 Jul 2022 11:13:07 +0200
+Message-Id: <20220714091327.1085353-6-vkuznets@redhat.com>
+In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patchset adds support for ltrf216a Ambient Light Sensor
-and documents the DT bindings for the same.
+Enlightened VMCS v1 definition was updated with new fields, add
+support for them for Hyper-V on KVM.
 
-Changes in v8
-  - Add caching mechanism to restore register state after h/w resume.
-  - Add callback functions and disable locking in regmap config.
-  - Update mutex comment as per it's current scope in the driver.
-  - Add Shreeya as author of the driver.
-  - Make some minor cleanups.
+Note: SSP, CET and Guest LBR features are not supported by KVM yet
+and 'struct vmcs12' has no corresponding fields.
 
-Changes in v7
-  - Add regmap support.
-  - Fix runtime power management implementation.
-  - Fix the ordering of devm and non-devm functions.
-  - Use DEFINE_RUNTIME_DEV_PM_OPS macro
-  - Fix the error reported by kernel test robot for bindings.
+Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+---
+ arch/x86/kvm/vmx/nested.c | 31 +++++++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
 
-Changes in v6
-  - Fix some errors reported by kernel test robot.
-  - Add protocol details for the datasheet link.
-  - Remove useless assignments.
-  - Add unit details for read data delay macro.
-  - Use pm_sleep_ptr().
-
-Changes in v5
-  - Add power management support.
-  - Add reset functionality.
-  - Use readx_poll_timeout() to get data.
-  - Cleanup some of the redundant code.
-  - Update int_time_fac after I2C write is successful.
-  - Rename mutex to lock.
-  - Use Reverse Xmas tree pattern for all variable definitions.
-  - Improve error handling messages and add error codes.
-  - Add one more MODULE_AUTHOR.
-  - Remove cleardata which was reading data for infrared light.
-  - Remove patch for deprecated vendor prefix [PATCH v4 3/3].
-  - Remove deprecated string from DT binding document.
-
-Changes in v4
-  - Add more descriptive comment for mutex lock
-  - Fix mutex locking in read_raw()
-  - Use i2c_smbus_read_i2c_block_data()
-
-Changes in v3
-  - Use u16 instead of u8 for int_time_fac
-  - Reorder headers in ltrf216a.c file
-  - Remove int_time_mapping table and use int_time_available
-  - Fix indentation in the bindings file.
-
-Changes in v2
-  - Add support for 25ms and 50ms integration time.
-  - Rename some of the macros as per names given in datasheet
-  - Add a comment for the mutex lock
-  - Use read_avail callback instead of attributes and set the
-    appropriate _available bit.
-  - Use FIELD_PREP() at appropriate places.
-  - Add a constant lookup table for integration time and reg val
-  - Use BIT() macro for magic numbers.
-  - Improve error handling at few places.
-  - Use get_unaligned_le24() and div_u64()
-  - Use probe_new() callback and devm functions
-  - Return errors in probe using dev_err_probe()
-  - Use DEFINE_SIMPLE_DEV_PM_OPS()
-  - Correct the formula for lux to use 0.45 instead of 0.8
-  - Add interrupt and power supply property in DT bindings
-  - Add vendor prefix name as per the alphabetical order.
-
-Shreeya Patel (2):
-  dt-bindings: Document ltrf216a light sensor bindings
-  iio: light: Add support for ltrf216a sensor
-
- .../bindings/iio/light/liteon,ltrf216a.yaml   |  49 ++
- drivers/iio/light/Kconfig                     |  11 +
- drivers/iio/light/Makefile                    |   1 +
- drivers/iio/light/ltrf216a.c                  | 522 ++++++++++++++++++
- 4 files changed, 583 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
- create mode 100644 drivers/iio/light/ltrf216a.c
-
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 778f82015f03..4fc84f0f5875 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -1603,6 +1603,10 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
+ 		vmcs12->guest_rflags = evmcs->guest_rflags;
+ 		vmcs12->guest_interruptibility_info =
+ 			evmcs->guest_interruptibility_info;
++		/*
++		 * Not present in struct vmcs12:
++		 * vmcs12->guest_ssp = evmcs->guest_ssp;
++		 */
+ 	}
+ 
+ 	if (unlikely(!(hv_clean_fields &
+@@ -1649,6 +1653,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
+ 		vmcs12->host_fs_selector = evmcs->host_fs_selector;
+ 		vmcs12->host_gs_selector = evmcs->host_gs_selector;
+ 		vmcs12->host_tr_selector = evmcs->host_tr_selector;
++		vmcs12->host_ia32_perf_global_ctrl = evmcs->host_ia32_perf_global_ctrl;
++		/*
++		 * Not present in struct vmcs12:
++		 * vmcs12->host_ia32_s_cet = evmcs->host_ia32_s_cet;
++		 * vmcs12->host_ssp = evmcs->host_ssp;
++		 * vmcs12->host_ia32_int_ssp_table_addr = evmcs->host_ia32_int_ssp_table_addr;
++		 */
+ 	}
+ 
+ 	if (unlikely(!(hv_clean_fields &
+@@ -1716,6 +1727,8 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
+ 		vmcs12->tsc_offset = evmcs->tsc_offset;
+ 		vmcs12->virtual_apic_page_addr = evmcs->virtual_apic_page_addr;
+ 		vmcs12->xss_exit_bitmap = evmcs->xss_exit_bitmap;
++		vmcs12->encls_exiting_bitmap = evmcs->encls_exiting_bitmap;
++		vmcs12->tsc_multiplier = evmcs->tsc_multiplier;
+ 	}
+ 
+ 	if (unlikely(!(hv_clean_fields &
+@@ -1763,6 +1776,13 @@ static void copy_enlightened_to_vmcs12(struct vcpu_vmx *vmx, u32 hv_clean_fields
+ 		vmcs12->guest_bndcfgs = evmcs->guest_bndcfgs;
+ 		vmcs12->guest_activity_state = evmcs->guest_activity_state;
+ 		vmcs12->guest_sysenter_cs = evmcs->guest_sysenter_cs;
++		vmcs12->guest_ia32_perf_global_ctrl = evmcs->guest_ia32_perf_global_ctrl;
++		/*
++		 * Not present in struct vmcs12:
++		 * vmcs12->guest_ia32_s_cet = evmcs->guest_ia32_s_cet;
++		 * vmcs12->guest_ia32_lbr_ctl = evmcs->guest_ia32_lbr_ctl;
++		 * vmcs12->guest_ia32_int_ssp_table_addr = evmcs->guest_ia32_int_ssp_table_addr;
++		 */
+ 	}
+ 
+ 	/*
+@@ -1865,12 +1885,23 @@ static void copy_vmcs12_to_enlightened(struct vcpu_vmx *vmx)
+ 	 * evmcs->vm_exit_msr_store_count = vmcs12->vm_exit_msr_store_count;
+ 	 * evmcs->vm_exit_msr_load_count = vmcs12->vm_exit_msr_load_count;
+ 	 * evmcs->vm_entry_msr_load_count = vmcs12->vm_entry_msr_load_count;
++	 * evmcs->guest_ia32_perf_global_ctrl = vmcs12->guest_ia32_perf_global_ctrl;
++	 * evmcs->host_ia32_perf_global_ctrl = vmcs12->host_ia32_perf_global_ctrl;
++	 * evmcs->encls_exiting_bitmap = vmcs12->encls_exiting_bitmap;
++	 * evmcs->tsc_multiplier = vmcs12->tsc_multiplier;
+ 	 *
+ 	 * Not present in struct vmcs12:
+ 	 * evmcs->exit_io_instruction_ecx = vmcs12->exit_io_instruction_ecx;
+ 	 * evmcs->exit_io_instruction_esi = vmcs12->exit_io_instruction_esi;
+ 	 * evmcs->exit_io_instruction_edi = vmcs12->exit_io_instruction_edi;
+ 	 * evmcs->exit_io_instruction_eip = vmcs12->exit_io_instruction_eip;
++	 * evmcs->host_ia32_s_cet = vmcs12->host_ia32_s_cet;
++	 * evmcs->host_ssp = vmcs12->host_ssp;
++	 * evmcs->host_ia32_int_ssp_table_addr = vmcs12->host_ia32_int_ssp_table_addr;
++	 * evmcs->guest_ia32_s_cet = vmcs12->guest_ia32_s_cet;
++	 * evmcs->guest_ia32_lbr_ctl = vmcs12->guest_ia32_lbr_ctl;
++	 * evmcs->guest_ia32_int_ssp_table_addr = vmcs12->guest_ia32_int_ssp_table_addr;
++	 * evmcs->guest_ssp = vmcs12->guest_ssp;
+ 	 */
+ 
+ 	evmcs->guest_es_selector = vmcs12->guest_es_selector;
 -- 
-2.30.2
+2.35.3
 
