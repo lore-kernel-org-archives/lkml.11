@@ -2,98 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D16CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20074C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 15:32:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240248AbiGNP2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 11:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35406 "EHLO
+        id S240264AbiGNPcV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 11:32:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240242AbiGNP2s (ORCPT
+        with ESMTP id S240242AbiGNPcS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 11:28:48 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33E9F11C2F
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:28:44 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id e16so2147738pfm.11
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:28:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=1WXbs9Fy2MWdbGl25z8Oh8hLkXQ1fFvb9A9F5gVezUs=;
-        b=SpCvPVu6C2PQfOt5+oRsi+icyQphag5PHEyWURhyDMjx2nGjQyavgX82qKJ6wR+z9N
-         lJmcCb1xqCw17MwHGLiO/8SP6t3esyVR5KN0vGDVGAm/XYOukuPQXF1fn+5FmmejPDKy
-         LAVDeZAcV/wWvkGCAzsaHmi0G5/duan7jR5eJXAt5I/V+kztGE/dd1GyLsMnABnVI7ei
-         HWciE0epXZrqWzI2LB9Frd8TYCE2hwns7igroFHj/tnZwKFyzPXVM/Hwi7MQH1SkV/4P
-         hBVctZ92B3WcfVTLsvKl0MHzsdneS3nlknF7pD70YQKnYnwHP/1FPx3GfXywCAKjeAil
-         KzeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=1WXbs9Fy2MWdbGl25z8Oh8hLkXQ1fFvb9A9F5gVezUs=;
-        b=vZpMBKmxN5IrtQFVGWo7vd10v9pSYmR4/dCzbnxVf9nCF4mNJ9O1aXB4qpLCOixia+
-         RJK6NiqqcuVkH/MZQ498xoRw+/9VE00KdNtKBuuCBxVp6gBKtPSHzRN0yPG17zExscR5
-         8nEAkjrpN9iNp/lRnCuoh7wLWvIfaZm5RGzvrdHPFoVf+5EEwr9clvlelUXrmX3IFuT/
-         8k6x99Vi7Ya4FYVxxKMyUyOwKuWI52A8Njh8a+giZnyt6aaOkPpEFkxOCbymkgEnKGpj
-         FK7QkUX+/q2YDpAboUpCnCjuGicx0jsbpnx/zKpCD81M/S2LGhRP6/ltoExiUlWQOS61
-         eyUw==
-X-Gm-Message-State: AJIora+p4QmXnrKOzvqBpRZxrKAbUwEQXzT5adw9x5+zDxx+sGQ/FhLD
-        h+ZxONPE725IVoviEW3d5v/ihrwL+aunXw==
-X-Google-Smtp-Source: AGRyM1sT/B6Ji2BMAdZI5CJbIYsJ1bZpMHfyva4mzP6hjrXz0RiSEK03YMSpytRXkYKiZpU7sx2f4g==
-X-Received: by 2002:a65:49c8:0:b0:415:e89d:ea1a with SMTP id t8-20020a6549c8000000b00415e89dea1amr8174459pgs.266.1657812523278;
-        Thu, 14 Jul 2022 08:28:43 -0700 (PDT)
-Received: from ArchLinux (ec2-13-59-0-164.us-east-2.compute.amazonaws.com. [13.59.0.164])
-        by smtp.gmail.com with ESMTPSA id f1-20020a170902860100b0016bfa097927sm1584352plo.249.2022.07.14.08.28.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 08:28:42 -0700 (PDT)
-References: <20220707090501.55483-1-schspa@gmail.com>
- <0320c5f9-cbda-1652-1f97-24d1a22fb298@gmail.com>
- <YtAqsyjlvmfDokH/@worktop.programming.kicks-ass.net>
-User-agent: mu4e 1.7.5; emacs 28.1
-From:   Schspa Shi <schspa@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Lai Jiangshan <jiangshanlai@gmail.com>, tj@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] workqueue: Use active mask for new worker when pool is
- DISASSOCIATED
-Date:   Thu, 14 Jul 2022 23:17:59 +0800
-In-reply-to: <YtAqsyjlvmfDokH/@worktop.programming.kicks-ass.net>
-Message-ID: <m2y1wvd87z.fsf@gmail.com>
+        Thu, 14 Jul 2022 11:32:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E9074E872
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 08:32:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657812737;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=i502PM0O/OlY29v6cnUOooQWCagGvvGnM9S0JROCFo5sfogyvOjdnQqSKZCzdW88GaAy7A
+        aEs3M0BDs9nBtO3DFVucyAlpE1KemRGEmVciF3SeMjcQLKyYTC2DhjMmMErunWCu1AgHKB
+        3khqvwbQkitZZeZY1cXOugvxYo3xrjc=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-8fFvEyqwPh-gVVMUFPYLew-1; Thu, 14 Jul 2022 11:32:11 -0400
+X-MC-Unique: 8fFvEyqwPh-gVVMUFPYLew-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5095C811E75;
+        Thu, 14 Jul 2022 15:32:10 +0000 (UTC)
+Received: from virtlab701.virt.lab.eng.bos.redhat.com (virtlab701.virt.lab.eng.bos.redhat.com [10.19.152.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D29822166B2B;
+        Thu, 14 Jul 2022 15:32:09 +0000 (UTC)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     kvm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        "Maciej S . Szmigiero" <maciej.szmigiero@oracle.com>
+Subject: Re: [PATCH] KVM: SVM: fix task switch emulation on INTn instruction.
+Date:   Thu, 14 Jul 2022 11:32:07 -0400
+Message-Id: <20220714153208.1424311-1-pbonzini@redhat.com>
+In-Reply-To: <20220714124453.188655-1-mlevitsk@redhat.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Queued, thanks.
 
-Peter Zijlstra <peterz@infradead.org> writes:
+Paolo
 
-> On Wed, Jul 13, 2022 at 05:52:58PM +0800, Lai Jiangshan wrote:
->> 
->> 
->> CC Peter.
->> Peter has changed the CPU binding code in workqueue.c.
->
-> [ 1622.829091] WARNING: CPU: 3 PID: 31 at kernel/sched/core.c:7756 sched_cpu_dying+0x74/0x204
-> [ 1622.829374] CPU: 3 PID: 31 Comm: migration/3 Tainted: P           O      5.10.59-rt52 #2
-> 									^^^^^^^^^^^^^^^^^^^^^
->
-> I think we can ignore this as being some ancient kernel. Please try
-> something recent.
-
-I have merged all the workqueue changes from
-Link: https://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-stable-rt.git/log/kernel/workqueue.c?h=v5.10-rt
-
-And this problem can still reproduce.
-
-I checked the patch from master tree too, it seems there is no existed
-patch can fix this problem.
-
-Or are there any scheduler, process management related patches that
-might fix this problem?
-
--- 
-BRs
-Schspa Shi
