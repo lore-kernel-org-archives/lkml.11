@@ -2,108 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B59C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B17DCCA480
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238319AbiGNMZW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:25:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
+        id S238558AbiGNM2D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238338AbiGNMZU (ORCPT
+        with ESMTP id S231721AbiGNM17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:25:20 -0400
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77F1C13CDF
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:25:19 -0700 (PDT)
-Received: by mail-lf1-x12b.google.com with SMTP id t1so2509081lft.8
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:25:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=UAISHAEdFVrlD0jxKyM5zQLMrlcB/02LXtemSFlb+NA=;
-        b=lZ4oPLkoM0XsCmrt2j2WvAGHL1dQG/d3o57V/EVGyuoIlE2nhCF7MQl928MJVH0Jco
-         B1uGn+wlRSpHrdqwqT1YXoqQbuxsnaxfhxMwVzP+/LCIQkCLUAVEPGhIrmsp5Uvlf2VS
-         Rer7OiIZaWVdhutyp72kufBp5jIxSn7EGHoDvjRG+wJFOUE/YmW/wI/7WUTKxrKzehjN
-         mHATs9OZp3/JyUGouFPMx14VyCBtX9VbQfXcdkEYVQoKqTIW3WzK2Hq8wtRwT8SrV1FG
-         PTi0Fwv/CqLR8G7G0mNrtIB2up9Hl1I7tDTKYsS/7zkjdM5B4Y/tou7OLR7Z9hVEvLgv
-         1xbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=UAISHAEdFVrlD0jxKyM5zQLMrlcB/02LXtemSFlb+NA=;
-        b=EvMsh4HlB/ukyy3ZrSWA3pcI2Ncfx6sk91+229tW1UdnIsbM/n+81sz+LUXs2b1Xap
-         2XM6QjV5Vm72ucA5eSfDzxDlnuD04hqfX63/VcWEe3Ld7ka5YNYa27xGd5hzlRA4Xe+m
-         OFrx9jv8O6wWBVoGSh0MWDUZvRouhsAQkTA2IYNJKtWAdKtB/fF76FreTcBvZM1/Jo7U
-         iCY9gkCMoxwYYxTf7/evBLf+V91bSaZfpajGb5aT1tn9wBY5bDwZa7ZYNV8stKk7r5dy
-         uWY+19QpUkpJma+c7wKi0/GSa/yDF1ASroLmjCepnalcsRDwRcv0iWa26lEDCGa7bu3R
-         GJYQ==
-X-Gm-Message-State: AJIora+/f4DTGaQE//lO/wwQg35xWsdb9L93PNEgph0HKZSsYT/YNWEE
-        ucLC391GNJWJF+8istacBSgVQw==
-X-Google-Smtp-Source: AGRyM1tgVAG2WbRC05BYv5gYDhp3L3f7Xdrc/NVH4u3GitjcJDD4Nji3mEnw/+wi1a18EfPoBWHSSA==
-X-Received: by 2002:a05:6512:398e:b0:481:154b:a92 with SMTP id j14-20020a056512398e00b00481154b0a92mr5535358lfu.110.1657801517877;
-        Thu, 14 Jul 2022 05:25:17 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id w1-20020a05651c118100b002554dce4048sm262276ljo.53.2022.07.14.05.25.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 05:25:15 -0700 (PDT)
-Message-ID: <b6a0abb7-f31f-0c8a-f65e-8d61b9e72f48@linaro.org>
-Date:   Thu, 14 Jul 2022 14:25:12 +0200
+        Thu, 14 Jul 2022 08:27:59 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445021CFC3;
+        Thu, 14 Jul 2022 05:27:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-transfer-encoding:
+         in-reply-to:references;
+        bh=0Q3bhArdusZeLQoNXIpOd+baan20fcaHIGQ/15fTlTU=;
+        b=CKomOUxGi4koCxEQnepKxzV/0On8S9ZJ9lfh9sIGTzG9ibVmiF4lZXbvLUACkP5bRjKtgmzmIGvIK
+         luF05zE7ddkTcVKXDkYcWrf0TRsjRIyrME1PK5xSXsHmUyQ2GFnfCu1jF842NLKQeUDRdbF1X96wv1
+         GNCOSmPd4FvB/r3sSv1BX3nLGYhvyMdfPA5TFt4FwmbXWjVmmZshShuDtG0tLS2uWhYBqVruq/8fGu
+         7K2S8qdW3u+6NOsubIXjfHIcoGAHchvCftwtaSTSfz5zbDxQOnRCcCgbQd21ZalZmpN0V6xTIQ2Spz
+         bXH95oMck3U1bt6OjLFQTQootToj7Ng==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.010508)], BW: [Enabled, t: (0.000020,0.000001)], RTDA: [Enabled, t: (0.079403), Hit: No, Details: v2.40.0; Id: 15.52k6in.1g7uar8jn.1m6s8; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from h-e2.ddg ([85.143.252.66])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Thu, 14 Jul 2022 15:27:23 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, system@metrotek.ru
+Subject: [PATCH 2/2] dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
+Date:   Thu, 14 Jul 2022 15:26:57 +0300
+Message-Id: <20220714122657.17972-3-i.bornyakov@metrotek.ru>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220714122657.17972-1-i.bornyakov@metrotek.ru>
+References: <20220714122657.17972-1-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 2/2] pinctrl: nuvoton: add NPCM8XX pinctrl and GPIO
- driver
-Content-Language: en-US
-To:     Tomer Maimon <tmaimon77@gmail.com>, avifishman70@gmail.com,
-        tali.perry1@gmail.com, joel@jms.id.au, venture@google.com,
-        yuenn@google.com, benjaminfair@google.com,
-        linus.walleij@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, j.neuschaefer@gmx.net,
-        zhengbin13@huawei.com
-Cc:     openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220714122322.63663-1-tmaimon77@gmail.com>
- <20220714122322.63663-3-tmaimon77@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220714122322.63663-3-tmaimon77@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 14:23, Tomer Maimon wrote:
-> Add pinctrl and GPIO controller driver support to Arbel BMC NPCM8XX SoC.
-> 
-> Arbel BMC NPCM8XX pinctrl driver based on Poleg NPCM7XX, except the
-> pin mux mapping difference the NPCM8XX GPIO supports adjust debounce
-> period time.
-> 
-> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Add Device Tree Binding doc for Lattice ECP5 FPGA manager using slave
+SPI to load .bit formatted uncompressed bitstream image.
 
-> +
-> +static int npcm8xx_pinctrl_probe(struct platform_device *pdev)
-> +{
-> +	struct npcm8xx_pinctrl *pctrl;
-> +	int ret;
-> +
-> +	pctrl = devm_kzalloc(&pdev->dev, sizeof(*pctrl), GFP_KERNEL);
-> +	if (!pctrl)
-> +		return -ENOMEM;
-> +
-> +	pctrl->dev = &pdev->dev;
-> +	dev_set_drvdata(&pdev->dev, pctrl);
-> +
-> +	pctrl->gcr_regmap =
-> +		syscon_regmap_lookup_by_phandle(pctrl->dev->of_node, "nuvoton,sysgcr");
-> +	if (IS_ERR(pctrl->gcr_regmap))
-> +		return dev_err_probe(pctrl->dev, PTR_ERR(pctrl->gcr_regmap), "Failed to find nuvoton,sysgcr property\n");
+Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+---
+ .../fpga/lattice,ecp5-spi-fpga-mgr.yaml       | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
 
-Please wrap your code according to Linux coding style - @80.
+diff --git a/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
+new file mode 100644
+index 000000000000..79868f9c84e2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/fpga/lattice,ecp5-spi-fpga-mgr.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/fpga/lattice,ecp5-spi-fpga-mgr.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Lattice ECP5 FPGA manager.
++
++maintainers:
++  - Ivan Bornyakov <i.bornyakov@metrotek.ru>
++
++description:
++  Device Tree Bindings for Lattice ECP5 FPGA Manager using slave SPI to
++  load the uncompressed bitstream in .bit format.
++
++properties:
++  compatible:
++    enum:
++      - lattice,ecp5-spi-fpga-mgr
++
++  reg:
++    description: SPI chip select
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 60000000
++
++  program-gpios:
++    description:
++      A GPIO line connected to PROGRAMN (active low) pin of the device.
++      Initiates configuration sequence.
++    maxItems: 1
++
++  init-gpios:
++    description:
++      A GPIO line connected to INITN (active low) pin of the device.
++      Indicates the FPGA is ready to be configured.
++    maxItems: 1
++
++  done-gpios:
++    description:
++      A GPIO line connected to DONE (active high) pin of the device.
++      Indicates that the configuration sequence is complete.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - program-gpios
++  - init-gpios
++  - done-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    spi {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            fpga_mgr@0 {
++                    compatible = "lattice,ecp5-spi-fpga-mgr";
++                    spi-max-frequency = <20000000>;
++                    reg = <0>;
++                    program-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
++                    init-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
++                    done-gpios = <&gpio3 2 GPIO_ACTIVE_HIGH>;
++            };
++    };
+-- 
+2.37.0
 
 
-Best regards,
-Krzysztof
