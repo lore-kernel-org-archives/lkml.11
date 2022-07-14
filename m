@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F24C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E277DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:15:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238584AbiGNOPY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:15:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54666 "EHLO
+        id S239728AbiGNOP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239276AbiGNOPP (ORCPT
+        with ESMTP id S239397AbiGNOPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:15:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43145E31E;
-        Thu, 14 Jul 2022 07:15:13 -0700 (PDT)
+        Thu, 14 Jul 2022 10:15:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A187D5D5A4;
+        Thu, 14 Jul 2022 07:15:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80761616D1;
-        Thu, 14 Jul 2022 14:15:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5935BC34114;
-        Thu, 14 Jul 2022 14:15:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D806616ED;
+        Thu, 14 Jul 2022 14:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F0D4C34115;
+        Thu, 14 Jul 2022 14:15:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657808112;
-        bh=ufp535Bz6aEEtkB+7zy8idwzIK4dKpRNCbUtNVDlnvM=;
+        s=korg; t=1657808121;
+        bh=qBmZXjqke+b5VZ+6GVDTR3FwyHeU/2fCZ+RRGekqLDs=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a4bKW1U7dflUBjmnBNrnhh6KZz0OvWufqHW/NBezlQc2bQgMz3enuGtr97hlif6ad
-         mMldqC0PuJyMbm91jEKBYbGgQVFMbM4ppIe7vvTfBX6J8kj9h4c12zE7d//x0W1tZx
-         vQ/9OZuSzXSFuaRC9NTYMvuluTaXyAWPo8iKnH3c=
-Date:   Thu, 14 Jul 2022 16:13:13 +0200
+        b=GEDiYXYP9asqFucy4QU2HoBridNPfm2W1ZdfWxhLEfe4bOmpd9AAwoNgiWWWzGjcb
+         wjhjnM8r5dEYw6UXFu3YPHaAQyFe9BKWmOYC4BFL6Xr1hVElcSD1ZXbHmDJVsjJd2p
+         2ZTL1TDTdC1Zfqu1Yf8VH/pB5tOwjyqsqbC5KV3U=
+Date:   Thu, 14 Jul 2022 16:14:10 +0200
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     Prashant Malani <pmalani@chromium.org>
 Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
@@ -42,7 +42,7 @@ Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
         Kees Cook <keescook@chromium.org>,
         Sebastian Reichel <sebastian.reichel@collabora.com>
 Subject: Re: [PATCH v4 0/9] Type-C switch driver and Type-C framework updates
-Message-ID: <YtAkeQ1Do7CuM/PR@kroah.com>
+Message-ID: <YtAksiKCuRZXs3fC@kroah.com>
 References: <20220711072333.2064341-1-pmalani@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -66,13 +66,8 @@ On Mon, Jul 11, 2022 at 07:22:54AM +0000, Prashant Malani wrote:
 > 
 > Submission suggestion (as always, open to better suggestions):
 > - Patch 1 and 2 can go through the USB repo.
-> - Patch 3-9 can go through the chrome-platform repo. Since they depend
->   on patches 1 and 2, we can create an "topic branch" off of usb-next
->   once Patch 1 and 2 are submitted, and then apply Patches 3-9 on top
->   of that "topic branch" before merging it back into chrome-platform's
->   for-next branch
 
-That's a mess, I can just take all of them into my tree if you want.
+Patches 1 and 2 now in my tree.
 
 thanks,
 
