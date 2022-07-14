@@ -2,118 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1F0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E19AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237505AbiGNKCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
+        id S237391AbiGNKDL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236997AbiGNKB4 (ORCPT
+        with ESMTP id S231927AbiGNKDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:01:56 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF99050040;
-        Thu, 14 Jul 2022 03:01:53 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id sz17so2464592ejc.9;
-        Thu, 14 Jul 2022 03:01:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hnb6dmJVJ8w+0s7YTlnQHUZqrxFXtH+uKxV3IXY9L40=;
-        b=BBvvyLCcMtbUvehMM2snxdWnz/o57eYWts/1kZVSRIHaFo8g/gbOmGiq9dzzXSEEY0
-         6k4yuafUZ2DfJIEW7EXBBiY3yx2jCIGEhmOmjKP22SZ2e7TgfdMAJQzTzlknpq7BJRQS
-         t0Au1FhwOBHM91G0Z5KDYb4F2wkMK+fgnJ3LWNwr3DFNSpSj5lwo7K6OcDA/AydjV3WY
-         TcPh8k6afACQV76dCekexaxcFLiJWupnOa88OtAJSPDck8XhHjtEs7aFXNcAex8PuneQ
-         Y56Aaf/JVTGK+EuNVOJRRp0XHITuunFgYTU/qdIqOwhC5n6+5k0aZvAG5x03pLaYXI76
-         Arpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hnb6dmJVJ8w+0s7YTlnQHUZqrxFXtH+uKxV3IXY9L40=;
-        b=rcA457bD/FrEtLcD+hmNWfHGC1hlmeUNn8j4q2mWD7QpfzdmILTCjcrqbJmNv0W0gt
-         HMWfAGkmvXDiVgNTNkvmOaAidi4rH9bC8k9xkC1TdgsXS0IH/XdDlYpeSTtVKkb/SXZB
-         SBapDPjmIez/cMA71P79KMp1JGFyc8mgm06GMmdtkjbGzeFSUsqcchLg18NL5fM6cnRa
-         X/qdM1/Y4UlNWXi0QFdUORYhc5FVyc3upfoqBsLoNoYmqqj+Ai3H5eK/Hz7HXBk+0kKz
-         gnzbycWKVuO0So3o3uT3GM7vRr5wjMmi9fLMue9Pc4gGMhW1q1fKX0t0scR6od6tUSaG
-         uLwg==
-X-Gm-Message-State: AJIora87U2g0Ak8Cy9knbWr5W80wyUFWWwTpSAkgPCa4VjXVw6SRz2Km
-        bIhxQ9Q5OFewgjdIeM/IWHIppPjw+zk6PbWW03s=
-X-Google-Smtp-Source: AGRyM1sCQn8e+iDOsrWhFzdhSNCJDhCc4UgyWLSakUOGtksbk5r0HgvpK3Fsmib9vFWsJBhOgZej6MmBSRRPHyBcaPw=
-X-Received: by 2002:a17:907:971a:b0:72b:6bab:abc2 with SMTP id
- jg26-20020a170907971a00b0072b6bababc2mr8046604ejc.551.1657792912428; Thu, 14
- Jul 2022 03:01:52 -0700 (PDT)
+        Thu, 14 Jul 2022 06:03:07 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F6F950066
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:03:05 -0700 (PDT)
+Received: from [10.20.42.19] (unknown [10.20.42.19])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx_9LO6c9iMN8dAA--.22168S3;
+        Thu, 14 Jul 2022 18:02:55 +0800 (CST)
+Subject: Re: [PATCH V14 14/15] irqchip / ACPI: Introduce ACPI_IRQ_MODEL_LPIC
+ for LoongArch
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+References: <1656837932-18257-1-git-send-email-lvjianmin@loongson.cn>
+ <1656837932-18257-15-git-send-email-lvjianmin@loongson.cn>
+ <87y1x5krjd.wl-maz@kernel.org>
+ <f76927be-8c8c-5bbe-ef5c-a63f4a09b29c@loongson.cn>
+Message-ID: <bfbd08d6-6f09-3ddb-0fdf-8c459352cf0f@loongson.cn>
+Date:   Thu, 14 Jul 2022 18:02:54 +0800
+User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20220714013131.12648-1-zhouzhouyi@gmail.com> <87tu7k6o7n.fsf@jogness.linutronix.de>
-In-Reply-To: <87tu7k6o7n.fsf@jogness.linutronix.de>
-From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
-Date:   Thu, 14 Jul 2022 18:01:41 +0800
-Message-ID: <CAABZP2x-OiwX7-nRvdPz0NU1D5kgUoL4MQOgTqLK1KgLcrZ5DA@mail.gmail.com>
-Subject: Re: [PATCH linux-next] powerpc: use raw_smp_processor_id in arch_touch_nmi_watchdog
-To:     John Ogness <john.ogness@linutronix.de>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        paulus@samba.org, Nicholas Piggin <npiggin@gmail.com>,
-        ldufour@linux.ibm.com, pmladek@suse.com, Julia.Lawall@inria.fr,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, lance@osuosl.org,
-        "Paul E. McKenney" <paulmck@kernel.org>, rcu <rcu@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <f76927be-8c8c-5bbe-ef5c-a63f4a09b29c@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9Dx_9LO6c9iMN8dAA--.22168S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxWry5Zr1ktrWxWr4fKr1xKrg_yoW5Xw4kpF
+        4vkFy5ArWUJw1xXry7Ww1Uury5Za4ftayjqF1fJ3ZrAr4DGrnFgFyUWryq9FWUCr48Gw1j
+        vr15tF47uFn8AFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Y1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr4
+        1lF7I21c0EjII2zVCS5cI20VAGYxC7Mxk0xIA0c2IEe2xFo4CEbIxvr21lc2xSY4AK6svP
+        MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_XrWUJr1UMxC20s026xCaFVCjc4
+        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+        17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+        IF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
+        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thank John for correcting me ;-)
 
-On Thu, Jul 14, 2022 at 5:25 PM John Ogness <john.ogness@linutronix.de> wrote:
->
-> On 2022-07-14, Zhouyi Zhou <zhouzhouyi@gmail.com> wrote:
-> > use raw_smp_processor_id() in arch_touch_nmi_watchdog
-> > because when called from watchdog, the cpu is preemptible.
->
-> I would expect the correct solution is to make it a non-migration
-> section. Something like the below (untested) patch.
-I applied your patch (I have made a tiny modification by removing the
-return statement after "goto out;") and
-passed the test in the ppc VM of Open Source Lab of Oregon State University.
 
-Tested-by: Zhouyi Zhou <zhouzhouyi@gmail.com>
+On 2022/7/8 上午11:17, Jianmin Lv wrote:
+> 
+> 
+> On 2022/7/7 下午8:59, Marc Zyngier wrote:
+>> On Sun, 03 Jul 2022 09:45:31 +0100,
+>> Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>>>
+>>> For LoongArch, ACPI_IRQ_MODEL_LPIC is introduced, and then the
+>>> callback acpi_get_gsi_domain_id and acpi_gsi_to_irq_fallback are
+>>> implemented.
+>>>
+>>> The acpi_get_gsi_domain_id callback returns related fwnode handle
+>>> of irqdomain for different GSI range.
+>>>
+>>> The acpi_gsi_to_irq_fallback will create new mapping for gsi when
+>>> the mapping of it is not found.
+>>>
+>>> Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+>>> ---
+>>>   drivers/acpi/bus.c                  |  3 +++
+>>>   drivers/irqchip/irq-loongarch-cpu.c | 37 
+>>> +++++++++++++++++++++++++++++++++++++
+>>>   include/linux/acpi.h                |  1 +
+>>>   3 files changed, 41 insertions(+)
+>>>
+>>> diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+>>> index 86fa61a..63fbf00 100644
+>>> --- a/drivers/acpi/bus.c
+>>> +++ b/drivers/acpi/bus.c
+>>> @@ -1145,6 +1145,9 @@ static int __init acpi_bus_init_irq(void)
+>>>       case ACPI_IRQ_MODEL_PLATFORM:
+>>>           message = "platform specific model";
+>>>           break;
+>>> +    case ACPI_IRQ_MODEL_LPIC:
+>>> +        message = "LPIC";
+>>> +        break;
+>>>       default:
+>>>           pr_info("Unknown interrupt routing model\n");
+>>>           return -ENODEV;
+>>> diff --git a/drivers/irqchip/irq-loongarch-cpu.c 
+>>> b/drivers/irqchip/irq-loongarch-cpu.c
+>>> index c2f7411..1b241d7 100644
+>>> --- a/drivers/irqchip/irq-loongarch-cpu.c
+>>> +++ b/drivers/irqchip/irq-loongarch-cpu.c
+>>> @@ -15,6 +15,41 @@
+>>>   static struct irq_domain *irq_domain;
+>>> +static int lpic_gsi_to_irq(u32 gsi)
+>>> +{
+>>> +    /* Only pch irqdomain transferring is required for LoongArch. */
+>>> +    if (gsi >= GSI_MIN_PCH_IRQ && gsi <= GSI_MAX_PCH_IRQ)
+>>> +        return acpi_register_gsi(NULL, gsi, ACPI_LEVEL_SENSITIVE, 
+>>> ACPI_ACTIVE_HIGH);
+>>> +    return -1;
+>>
+>> The expected return value on failure is 0 (which indicates that no
+>> interrupt was mapped). Here, things will break as acpi_gsi_to_irq()
+>> stores the result as unsigned, and compares the result to 0.
+>>
+> 
+> Ok, thanks, I'll change the return value to 0 on failure and change 
+> return type to unsigned int.
+> 
+> 
 
-Many Thanks
-Kindly Regards
-Zhouyi
->
-> John Ogness
->
-> diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
-> index bfc27496fe7e..9d34aa809241 100644
-> --- a/arch/powerpc/kernel/watchdog.c
-> +++ b/arch/powerpc/kernel/watchdog.c
-> @@ -450,17 +450,23 @@ static enum hrtimer_restart watchdog_timer_fn(struct hrtimer *hrtimer)
->  void arch_touch_nmi_watchdog(void)
->  {
->         unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
-> -       int cpu = smp_processor_id();
-> +       int cpu;
->         u64 tb;
->
-> -       if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
-> +       cpu = get_cpu();
-> +
-> +       if (!cpumask_test_cpu(cpu, &watchdog_cpumask)) {
-> +               goto out;
->                 return;
-I think we should remove the return statement here.
-> +       }
->
->         tb = get_tb();
->         if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
->                 per_cpu(wd_timer_tb, cpu) = tb;
->                 wd_smp_clear_cpu_pending(cpu);
->         }
-> +out:
-> +       put_cpu();
->  }
->  EXPORT_SYMBOL(arch_touch_nmi_watchdog);
+Hi, Marc, if the return type is changed to unsigned int, the return type 
+of the fallback handler in the patch:
+ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
+
+should be changed to unsigned int too, yes?
+
+>>     M.
+>>
+
