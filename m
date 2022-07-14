@@ -2,164 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A53C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:05:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB631C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 10:07:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238024AbiGNKFM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 06:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45348 "EHLO
+        id S237969AbiGNKHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 06:07:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237954AbiGNKFF (ORCPT
+        with ESMTP id S237851AbiGNKHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 06:05:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C05711802
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:05:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657793103;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pZukeJfWxGjsKWF/4S6GKDIHJ91TQp/gFtK06z9SPK0=;
-        b=FTfWz+VH6o9Cznzg05eyYCLDqZYc4Dqvy05+FXLndyZGMShAbZtRljKTYHeJWqzMwfFNON
-        f5KFbkDZoI+nUVAMi/E/GXleTiZt48SNegv7c0nHBaaaCCCuIEM9gBiCqAcjr+qNu6y9AE
-        7W5esVOnbIKijWCblB3Or6eMqfuIZq8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-471-fHiJV7-9MEicobO3qgbJmg-1; Thu, 14 Jul 2022 06:05:02 -0400
-X-MC-Unique: fHiJV7-9MEicobO3qgbJmg-1
-Received: by mail-wm1-f72.google.com with SMTP id z20-20020a1c4c14000000b003a3020da654so355143wmf.5
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:05:01 -0700 (PDT)
+        Thu, 14 Jul 2022 06:07:01 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD08911C3F
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:06:59 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id t25so1969746lfg.7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 03:06:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=oOBAiv4m4zZgCi9RT6omzssmkOXhUIRC7hVNaWRM+pw=;
+        b=GuXZXMtlUhn/bYZtCECHZ0J/zYySlyaVpfZP/teUhiOplpvCh9edmjN6uhbm3lL3Vv
+         +EDGGkd+YbSyMtthfbb7KShBEE7PKdlSR/z2zhPaOctGQPhNRCFnJ7pm3gB9jSw9tUPc
+         GxjppDlh1cqy7OHt2X9G0hMCFMPDhCIlSX15ZNrjQ6P4D2QZ1PA1So8oFFhWWUPb7boa
+         +cmAEg+gBJRYQaKFbG62AQGCV2ekA89MdBFpJZabdJof7TI18DSk0qifxNLInE//Kemh
+         6pIUi8xymgPMZ7b4NFCvBNLCXSvhlb4Uk1/IJly1j13IDE4/o62Nf7p+iKWZzL11CiSm
+         lRJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=pZukeJfWxGjsKWF/4S6GKDIHJ91TQp/gFtK06z9SPK0=;
-        b=wYynDXgHfQD/d/144ajUe9q8OJmpkysnB/V9VxbrqJjBtenbytA8yvynKFp0inm+Rp
-         07JTLkEpd42fY2bd9CYxDC9Gk4grazXnhGq6pbgx6eqfq2EuzEuQa77fPy7GLoHXBv3q
-         XCqCgdyovdv9JWaxTRYag3cGk7ql6TBqYADvv6xPBhkcUD5LGBMvNtycUAbgiqlns7zT
-         nG7OqlkeQbX7vTry5WyVNPAhTkopNwDi591ZiuhJhgAecgpZG7vIHRNuPQ1MoEthKINR
-         6cp/4JzAjbU26I61ogJ0+TVUi4m6Qr/tlZuJgokFlDvClu4+R2bIORu9+Fo7PMouCJdo
-         NQeg==
-X-Gm-Message-State: AJIora904P9nQr1/xMsOn7XiBGL+iQW/JYC0AB0A1ERHpeFNyjeNdpwu
-        2RUqDeYBWH2dzOyIN3SztJc/CcNsExMSXszf0f9qHwM5YiRImVhCYr7uCs0ItAqgao6N6iHO0gb
-        oJNjbR+RZhhffRBE/fBF2CKJ8
-X-Received: by 2002:a05:600c:4e01:b0:3a3:342:5f55 with SMTP id b1-20020a05600c4e0100b003a303425f55mr1167441wmq.150.1657793100872;
-        Thu, 14 Jul 2022 03:05:00 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uaYKOw/xVQD+N7QimS7BnLIZAWrepCTmCCq9vI5Z98RdXmLv8WjKO4avlhaezsUHQyS4iMjA==
-X-Received: by 2002:a05:600c:4e01:b0:3a3:342:5f55 with SMTP id b1-20020a05600c4e0100b003a303425f55mr1167417wmq.150.1657793100658;
-        Thu, 14 Jul 2022 03:05:00 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id i16-20020a05600c355000b003a2f88b2559sm4687381wmq.44.2022.07.14.03.04.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 03:05:00 -0700 (PDT)
-Message-ID: <f098f8965176dfe5c65a4faf6769283c14c484a7.camel@redhat.com>
-Subject: Re: [PATCH v4 11/25] KVM: VMX: Get rid of eVMCS specific VMX
- controls sanitization
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 14 Jul 2022 13:04:58 +0300
-In-Reply-To: <20220714091327.1085353-12-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
-         <20220714091327.1085353-12-vkuznets@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=oOBAiv4m4zZgCi9RT6omzssmkOXhUIRC7hVNaWRM+pw=;
+        b=C2JDxqHRfRrvrizgwoiOh4N+MgUmOodHaI26S6JTMEd1vRau/VuRhoOHW4DYencb+/
+         doFiBLhM0MSS7ifX/yy28HA6YBrJ9DesrUurken8Mq6Lw3HYmdJnQN6tBN59lpijd7ux
+         df8i7C33XoAO+LoJs3pPx19B3yiELPCAyJN20EmN5SXmvNeJnmObx7973sYPutVp+Lk9
+         fiQJfa6CMwvyO+HT8l508hyOgVJW3czWJzDZHY5CcUng25IbB77i2bDAcAZkWXGlmBzS
+         tFZu1lkN5HcyFjqT4ClzojXYGmEbKeVKH5yyPBHf1kqLWqvZgviTwi9H7KNwzanlO9xr
+         8f6w==
+X-Gm-Message-State: AJIora/sGL8vwPVjMn7sCFGOCiXvDZD/OusEEKNDJcb58TmUBj1KQQaQ
+        r+kxm2JcbQXkRQHzH30q8pcosw==
+X-Google-Smtp-Source: AGRyM1ugycvHaKsXPFMNFG8NES1FUWy518rOmpZZEGCyhQq0Hc3UIsLnZ8+OGalwUyO7nc2wfFv6Qg==
+X-Received: by 2002:a05:6512:32c8:b0:48a:10da:b204 with SMTP id f8-20020a05651232c800b0048a10dab204mr3072556lfg.183.1657793218102;
+        Thu, 14 Jul 2022 03:06:58 -0700 (PDT)
+Received: from [192.168.1.211] ([37.153.55.125])
+        by smtp.gmail.com with ESMTPSA id z20-20020a2eb534000000b0025d6ecbc897sm203733ljm.46.2022.07.14.03.06.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jul 2022 03:06:57 -0700 (PDT)
+Message-ID: <463723ee-f155-3bd9-7180-fb0271a19eb6@linaro.org>
+Date:   Thu, 14 Jul 2022 13:06:56 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 0/6] clk: qcom: msm8996-cpu: Cleanup and migrate to
+ parent_data
+Content-Language: en-GB
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220621160621.24415-1-y.oudjana@protonmail.com>
+ <Ys85+7rYjQOSPvD/@builder.lan>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+In-Reply-To: <Ys85+7rYjQOSPvD/@builder.lan>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-14 at 11:13 +0200, Vitaly Kuznetsov wrote:
-> With the updated eVMCSv1 definition, there's no known 'problematic'
-> controls which are exposed in VMX control MSRs but are not present in
-> eVMCSv1. Get rid of VMX control MSRs filtering for KVM on Hyper-V.
+On 14/07/2022 00:32, Bjorn Andersson wrote:
+> On Tue 21 Jun 11:06 CDT 2022, Yassine Oudjana wrote:
+> 
+>> This series includes some cleanup of the MSM8996 CPU clock driver, as well as
+>> migration from parent_names to parent_data for all of its clocks. The DT schema
+>> is also fixed in this series to show the actual clocks consumed by the clock
+>> controller and pass checks.
+> 
+> This series looks almost ready to be merged, could you (or Dmitry?)
+> update the two outstanding items?
 
-I think it still might be worth it, mentioning at least in the commit message,
-that as you said, the all known HyperV versions, either don't expose the 
-new fields by not setting bits in the VMX feature controls, 
-or support the new eVMCS revision.
-
-But anyway:
-
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-
-Best regards,
-	Maxim Levitsky
+I have acked the patch 2 and sent the slightly updated revision of 
+patch6 (together with the rest of small changes).
 
 > 
-> Note: VMX control MSRs filtering for Hyper-V on KVM
-> (nested_evmcs_filter_control_msr()) stays as even the updated eVMCSv1
-> definition doesn't have all the features implemented by KVM and some
-> fields are still missing. Moreover, nested_evmcs_filter_control_msr()
-> has to support the original eVMCSv1 version when VMM wishes so.
+> Thanks,
+> Bjorn
 > 
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/vmx/evmcs.c | 13 -------------
->  arch/x86/kvm/vmx/evmcs.h |  1 -
->  arch/x86/kvm/vmx/vmx.c   |  5 -----
->  3 files changed, 19 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
-> index 52a53debd806..b5cfbf7d487b 100644
-> --- a/arch/x86/kvm/vmx/evmcs.c
-> +++ b/arch/x86/kvm/vmx/evmcs.c
-> @@ -320,19 +320,6 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
->  };
->  const unsigned int nr_evmcs_1_fields = ARRAY_SIZE(vmcs_field_to_evmcs_1);
->  
-> -#if IS_ENABLED(CONFIG_HYPERV)
-> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf)
-> -{
-> -       vmcs_conf->cpu_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_EXEC_CTRL;
-> -       vmcs_conf->pin_based_exec_ctrl &= ~EVMCS1_UNSUPPORTED_PINCTRL;
-> -       vmcs_conf->cpu_based_2nd_exec_ctrl &= ~EVMCS1_UNSUPPORTED_2NDEXEC;
-> -       vmcs_conf->cpu_based_3rd_exec_ctrl = 0;
-> -
-> -       vmcs_conf->vmexit_ctrl &= ~EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
-> -       vmcs_conf->vmentry_ctrl &= ~EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
-> -}
-> -#endif
-> -
->  bool nested_enlightened_vmentry(struct kvm_vcpu *vcpu, u64 *evmcs_gpa)
->  {
->         struct hv_vp_assist_page assist_page;
-> diff --git a/arch/x86/kvm/vmx/evmcs.h b/arch/x86/kvm/vmx/evmcs.h
-> index 4b809c79ae63..0feac101cce4 100644
-> --- a/arch/x86/kvm/vmx/evmcs.h
-> +++ b/arch/x86/kvm/vmx/evmcs.h
-> @@ -203,7 +203,6 @@ static inline void evmcs_load(u64 phys_addr)
->         vp_ap->enlighten_vmentry = 1;
->  }
->  
-> -__init void evmcs_sanitize_exec_ctrls(struct vmcs_config *vmcs_conf);
->  #else /* !IS_ENABLED(CONFIG_HYPERV) */
->  static __always_inline void evmcs_write64(unsigned long field, u64 value) {}
->  static inline void evmcs_write32(unsigned long field, u32 value) {}
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index b4915d841357..dd905ad72637 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -2689,11 +2689,6 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
->         vmcs_conf->vmexit_ctrl         = _vmexit_control;
->         vmcs_conf->vmentry_ctrl        = _vmentry_control;
->  
-> -#if IS_ENABLED(CONFIG_HYPERV)
-> -       if (enlightened_vmcs)
-> -               evmcs_sanitize_exec_ctrls(vmcs_conf);
-> -#endif
-> -
->         return 0;
->  }
->  
+>>
+>> Yassine Oudjana (6):
+>>    clk: qcom: msm8996-cpu: Rename DIV_2_INDEX to SMUX_INDEX
+>>    clk: qcom: msm8996-cpu: Statically define PLL dividers
+>>    clk: qcom: msm8996-cpu: Unify cluster order
+>>    clk: qcom: msm8996-cpu: Convert secondary muxes to clk_regmap_mux
+>>    dt-bindings: clock: qcom,msm8996-apcc: Fix clocks
+>>    clk: qcom: msm8996-cpu: Use parent_data for all clocks
+>>
+>>   .../bindings/clock/qcom,msm8996-apcc.yaml     |  15 +-
+>>   drivers/clk/qcom/clk-cpu-8996.c               | 235 ++++++++++--------
+>>   2 files changed, 140 insertions(+), 110 deletions(-)
+>>
+>> -- 
+>> 2.36.1
+>>
 
 
+-- 
+With best wishes
+Dmitry
