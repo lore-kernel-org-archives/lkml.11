@@ -2,130 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAFBC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A452EC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237360AbiGNEbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
+        id S235699AbiGNEbG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:31:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiGNE30 (ORCPT
+        with ESMTP id S235641AbiGNE33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:26 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D6031DD4
-        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:25:03 -0700 (PDT)
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657772701;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QFGu2TWdKctYd3jzQb7mcIpilK5qcQQipmt2wnr4Teg=;
-        b=X5Y7ADJtRLRlG8Hoy8Xid5t/PtUaUJdq5UHQ5PPCu3LL68/j93w3CesxPKtcqAnywdK5Kq
-        k1xfExT3M7VNgAXkK/Grlf2AO78LpJJKq2lw6VIFfaRoP0wz3y1/s0rJJXXbV6usFO8rAu
-        zK7P5ELEEt7xmWa6st/unT9NT5CpW8I=
-From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
-To:     linux-mm@kvack.org
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Liu Shixin <liushixin2@huawei.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Oscar Salvador <osalvador@suse.de>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Naoya Horiguchi <naoya.horiguchi@nec.com>,
-        linux-kernel@vger.kernel.org
-Subject: [mm-unstable PATCH v7 7/8] mm, hwpoison: skip raw hwpoison page in freeing 1GB hugepage
-Date:   Thu, 14 Jul 2022 13:24:19 +0900
-Message-Id: <20220714042420.1847125-8-naoya.horiguchi@linux.dev>
-In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
-References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+        Thu, 14 Jul 2022 00:29:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676A631DEA;
+        Wed, 13 Jul 2022 21:25:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B740561E8B;
+        Thu, 14 Jul 2022 04:25:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01998C34114;
+        Thu, 14 Jul 2022 04:25:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657772704;
+        bh=JG031+SIFPqD7zsmkiMMSaalhVUkd4njI1+DibBd8D0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A2bScdU0+i25KMkQ9ghHWKtGHiHwDeibjH+HgztOkOw38LEIh6uKAloWPzj1Gb55K
+         emcTPm/5A+hWVFjHZC+ITyrX8QUEXRcnvGHntQnyUQFteFumP0t22hYGYkEnubmKf/
+         sl26YQ3697hVFd0UHPPMdvKS5EmKMnODDccbOGTIbMdQE1Cz2jhK+5S0EQ4Zf4AMZi
+         MSHFapP1to12uGZaJ3AuQvZd2w5DasQ5k6sbC6lUpV/Y4HHku8XRZRuQ1nCne9RzND
+         3iZOKco1WGUeAvkoh4DSmsCotzZNXyEWicDZXqz0PpwMQz8Q/sqdKOO1fE0Wg227k4
+         qRqVXVeJxlZEA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, simont@opensource.cirrus.com,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 13/28] ASoC: wm5110: Fix DRE control
+Date:   Thu, 14 Jul 2022 00:24:14 -0400
+Message-Id: <20220714042429.281816-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
+References: <20220714042429.281816-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Naoya Horiguchi <naoya.horiguchi@nec.com>
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Currently if memory_failure() (modified to remove blocking code with
-subsequent patch) is called on a page in some 1GB hugepage, memory error
-handling fails and the raw error page gets into leaked state.  The impact
-is small in production systems (just leaked single 4kB page), but this
-limits the testability because unpoison doesn't work for it.
-We can no longer create 1GB hugepage on the 1GB physical address range
-with such leaked pages, that's not useful when testing on small systems.
+[ Upstream commit 0bc0ae9a5938d512fd5d44f11c9c04892dcf4961 ]
 
-When a hwpoison page in a 1GB hugepage is handled, it's caught by the
-PageHWPoison check in free_pages_prepare() because the 1GB hugepage is
-broken down into raw error pages before coming to this point:
+The DRE controls on wm5110 should return a value of 1 if the DRE state
+is actually changed, update to fix this.
 
-        if (unlikely(PageHWPoison(page)) && !order) {
-                ...
-                return false;
-        }
-
-Then, the page is not sent to buddy and the page refcount is left 0.
-
-Originally this check is supposed to work when the error page is freed from
-page_handle_poison() (that is called from soft-offline), but now we are
-opening another path to call it, so the callers of __page_handle_poison()
-need to handle the case by considering the return value 0 as success. Then
-page refcount for hwpoison is properly incremented so unpoison works.
-
-Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
-Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Link: https://lore.kernel.org/r/20220621102041.1713504-2-ckeepax@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-v2 -> v3:
-- remove "res = MF_FAILED" in try_memory_failure_hugetlb (by Miaohe)
----
- mm/memory-failure.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ sound/soc/codecs/wm5110.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/mm/memory-failure.c b/mm/memory-failure.c
-index c8fa3643791c..3721de624b98 100644
---- a/mm/memory-failure.c
-+++ b/mm/memory-failure.c
-@@ -1084,7 +1084,6 @@ static int me_huge_page(struct page_state *ps, struct page *p)
- 		res = truncate_error_page(hpage, page_to_pfn(p), mapping);
- 		unlock_page(hpage);
- 	} else {
--		res = MF_FAILED;
- 		unlock_page(hpage);
- 		/*
- 		 * migration entry prevents later access on error hugepage,
-@@ -1092,9 +1091,11 @@ static int me_huge_page(struct page_state *ps, struct page *p)
- 		 * subpages.
- 		 */
- 		put_page(hpage);
--		if (__page_handle_poison(p) > 0) {
-+		if (__page_handle_poison(p) >= 0) {
- 			page_ref_inc(p);
- 			res = MF_RECOVERED;
-+		} else {
-+			res = MF_FAILED;
- 		}
+diff --git a/sound/soc/codecs/wm5110.c b/sound/soc/codecs/wm5110.c
+index 5c2d45d05c97..7c6e01720d65 100644
+--- a/sound/soc/codecs/wm5110.c
++++ b/sound/soc/codecs/wm5110.c
+@@ -413,6 +413,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 	unsigned int rnew = (!!ucontrol->value.integer.value[1]) << mc->rshift;
+ 	unsigned int lold, rold;
+ 	unsigned int lena, rena;
++	bool change = false;
+ 	int ret;
+ 
+ 	snd_soc_dapm_mutex_lock(dapm);
+@@ -440,8 +441,8 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 		goto err;
  	}
  
-@@ -1874,10 +1875,11 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
- 	 */
- 	if (res == 0) {
- 		unlock_page(head);
--		res = MF_FAILED;
--		if (__page_handle_poison(p) > 0) {
-+		if (__page_handle_poison(p) >= 0) {
- 			page_ref_inc(p);
- 			res = MF_RECOVERED;
-+		} else {
-+			res = MF_FAILED;
- 		}
- 		action_result(pfn, MF_MSG_FREE_HUGE, res);
- 		return res == MF_RECOVERED ? 0 : -EBUSY;
+-	ret = regmap_update_bits(arizona->regmap, ARIZONA_DRE_ENABLE,
+-				 mask, lnew | rnew);
++	ret = regmap_update_bits_check(arizona->regmap, ARIZONA_DRE_ENABLE,
++				       mask, lnew | rnew, &change);
+ 	if (ret) {
+ 		dev_err(arizona->dev, "Failed to set DRE: %d\n", ret);
+ 		goto err;
+@@ -454,6 +455,9 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
+ 	if (!rnew && rold)
+ 		wm5110_clear_pga_volume(arizona, mc->rshift);
+ 
++	if (change)
++		ret = 1;
++
+ err:
+ 	snd_soc_dapm_mutex_unlock(dapm);
+ 
 -- 
-2.25.1
+2.35.1
 
