@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5D1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:45:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E4CC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:45:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238270AbiGNQpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:45:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
+        id S240439AbiGNQpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238374AbiGNQnn (ORCPT
+        with ESMTP id S238444AbiGNQnn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 14 Jul 2022 12:43:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1308F6300
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F076352
         for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:43:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1159662060
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9593A6205D
         for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 16:43:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76765C34114;
-        Thu, 14 Jul 2022 16:43:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C72AC341CD;
+        Thu, 14 Jul 2022 16:43:33 +0000 (UTC)
 Received: from rostedt by gandalf.local.home with local (Exim 4.95)
         (envelope-from <rostedt@goodmis.org>)
-        id 1oC1w3-004lVN-J9;
-        Thu, 14 Jul 2022 12:43:31 -0400
-Message-ID: <20220714164331.428296150@goodmis.org>
+        id 1oC1w4-004lX5-4V;
+        Thu, 14 Jul 2022 12:43:32 -0400
+Message-ID: <20220714164331.975324271@goodmis.org>
 User-Agent: quilt/0.66
-Date:   Thu, 14 Jul 2022 12:43:15 -0400
+Date:   Thu, 14 Jul 2022 12:43:18 -0400
 From:   Steven Rostedt <rostedt@goodmis.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
+        "Masami Hiramatsu (Google)" <mhiramat@kernel.org>,
         Tom Zanussi <zanussi@kernel.org>,
         Linyu Yuan <quic_linyyuan@quicinc.com>
-Subject: [for-next][PATCH 19/23] tracing: eprobe: Add missing log index
+Subject: [for-next][PATCH 22/23] selftests/ftrace: Add test case for GRP/ only input
 References: <20220714164256.403842845@goodmis.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,29 +46,59 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Linyu Yuan <quic_linyyuan@quicinc.com>
 
-Add trace_probe_log_set_index(1) to allow report correct error
-if user input wrong SYSTEM.EVENT format.
+Add kprobe and eprobe event test for new GRP/ only format.
 
-Link: https://lore.kernel.org/all/1656296348-16111-2-git-send-email-quic_linyyuan@quicinc.com/
+Link: https://lore.kernel.org/all/1656296348-16111-5-git-send-email-quic_linyyuan@quicinc.com/
 
+Acked-by: Masami Hiramatsu (Google) <mhiramat@kernel.org>
 Reviewed-by: Tom Zanussi <zanussi@kernel.org>
 Signed-off-by: Linyu Yuan <quic_linyyuan@quicinc.com>
 Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 ---
- kernel/trace/trace_eprobe.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../ftrace/test.d/dynevent/add_remove_eprobe.tc          | 9 ++++++++-
+ .../ftrace/test.d/dynevent/add_remove_kprobe.tc          | 7 +++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace_eprobe.c b/kernel/trace/trace_eprobe.c
-index 7d4478525c66..b805b570305f 100644
---- a/kernel/trace/trace_eprobe.c
-+++ b/kernel/trace/trace_eprobe.c
-@@ -881,6 +881,7 @@ static int __trace_eprobe_create(int argc, const char *argv[])
- 	if (!is_good_name(event) || !is_good_name(group))
- 		goto parse_error;
+diff --git a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
+index 60c02b482be8..c300eb020262 100644
+--- a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
++++ b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_eprobe.tc
+@@ -1,7 +1,7 @@
+ #!/bin/sh
+ # SPDX-License-Identifier: GPL-2.0
+ # description: Generic dynamic event - add/remove eprobe events
+-# requires: dynamic_events events/syscalls/sys_enter_openat "e[:[<group>/]<event>] <attached-group>.<attached-event> [<args>]":README
++# requires: dynamic_events events/syscalls/sys_enter_openat "<attached-group>.<attached-event> [<args>]":README
  
-+	trace_probe_log_set_index(1);
- 	sys_event = argv[1];
- 	ret = traceprobe_parse_event_name(&sys_event, &sys_name, buf2,
- 					  sys_event - argv[1]);
+ echo 0 > events/enable
+ 
+@@ -87,4 +87,11 @@ echo "-:eprobes/$EPROBE $SYSTEM/$EVENT $OPTIONS" >> dynamic_events
+ ! grep -q "$EPROBE" dynamic_events
+ ! test -d events/eprobes/$EPROBE
+ 
++if grep -q "e\[:\[<group>/]\[<event>]]" README; then
++	echo "e:mygroup/ $SYSTEM/$EVENT $OPTIONS" >> dynamic_events
++	test -d events/mygroup
++	echo "-:mygroup/" >> dynamic_events
++	! test -d events/mygroup
++fi
++
+ clear_trace
+diff --git a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_kprobe.tc b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_kprobe.tc
+index b4da41d126d5..13d43f40a6fc 100644
+--- a/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_kprobe.tc
++++ b/tools/testing/selftests/ftrace/test.d/dynevent/add_remove_kprobe.tc
+@@ -23,4 +23,11 @@ grep -q myevent1 dynamic_events
+ 
+ echo > dynamic_events
+ 
++if grep -q "p\[:\[<group>/]\[<event>]]" README; then
++	echo "p:mygroup/ $PLACE" >> dynamic_events
++	test -d events/mygroup
++	echo "-:mygroup/" >> dynamic_events
++	! test -d events/mygroup
++fi
++
+ clear_trace
 -- 
 2.35.1
