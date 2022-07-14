@@ -2,93 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1248BC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B710C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238554AbiGNQMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:12:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
+        id S232509AbiGNQOM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:14:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238516AbiGNQMu (ORCPT
+        with ESMTP id S238967AbiGNQOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:12:50 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E42DE564FA
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:12:49 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id j27so1798001qtv.4
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:12:49 -0700 (PDT)
+        Thu, 14 Jul 2022 12:14:10 -0400
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C25183B8
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:14:08 -0700 (PDT)
+Received: by mail-qk1-x734.google.com with SMTP id w1so1338954qkj.12
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:14:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=maine.edu; s=google;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=CZLFeaVS7vWOEfaeQkprgU1KCxlSQm00dIhPzGkGGKU=;
-        b=LDDvkmSjKKbscVokOXbYzqcdRhJ4gYz0B5kwXLAji/c8LxVZopE/LU4tDWJxFiBdFv
-         owHKoL6rACGJmSckOjybjEjGktTvBk2e7KWkvSxEyKN0vwqpX7aQPB5SZlyUsOcXESQ6
-         PVSrVS53MAGy33w5GcuejKTTOBQeb/xek54pw=
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i0zBfnxSR+XSC3TWRrXeBSbIPtooMElqlO0E5qJfqHY=;
+        b=AicyMAMtAJ/Z0UOW+5U7FPyH3YduEHw66mxNzKFt83q0UgYAuUktYuRnKY19VdiPow
+         4zfsat974n37jCNFKnsLH9/F4qaV+PE1XPU9u0SIwjfBQTysVePz8O+XxnErKvNaDgiu
+         B6UXUzyoUci5m5SWoI7T8vrnf7LVgnHKkhSIP1jw7bO/0tDqO8N8Oi4VAgjs25g+rcE2
+         odBX+nEFF0Xbxb+m8zVMh527QH0F0m5j7i9tZFDD0Ig16MMX4/MvAnXOIv5T8zfTlLMy
+         ySDyz1mZ4Hp1aPxQhKxow7eFeA5Vr+P4b2Evt5h50OiqKtfSZj7aczQ7eu45G70ATrZ7
+         TGLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=CZLFeaVS7vWOEfaeQkprgU1KCxlSQm00dIhPzGkGGKU=;
-        b=0pU3zh5Z7nExGJZYKQeV/a76grdAJBfs2yKYVisJpwhLsxZ+v81qvEI6Fol58ei0ty
-         E+baC1L23TkntXZpCdIuEtSHMeJJVDMpkBtbzRGivguIHueE92vKXMGbjQen1SNVPcwa
-         0maAoncHrBFWAZ4ZnwrcqEs8Y96N4kxCE6vn+VWpBIvxdVl4dWFRXFXiuwfAatts5368
-         OhTe6KW3FKZgV2AXL98lBRs8myGz5CrQEX0UlaPLON6VtPWplnMCzVfgr3ie7A2I9uVM
-         /bH9/j/1iufXTJbkRynQNzk2JFLcKubNJutcw5K0qlBkzVisDYNe3yTGkjBfpUTQq9Zx
-         /JuA==
-X-Gm-Message-State: AJIora9cKWvDgOaIyH7pp0ojxKczmO8AzcvoN3tcIWxKlbKpNwVOT03w
-        5sbeHrrL6i6btyZWkgz5cTxPSCPI1wpAdg==
-X-Google-Smtp-Source: AGRyM1sKc1UZIwcvXiITIgT3O8TjGW5qevBlln9Z5/qySGu99Qq2GdSQh0Mo9EfBNAkt+5zRlxwhxw==
-X-Received: by 2002:a05:622a:c6:b0:31e:b32c:a280 with SMTP id p6-20020a05622a00c600b0031eb32ca280mr8777918qtw.211.1657815168945;
-        Thu, 14 Jul 2022 09:12:48 -0700 (PDT)
-Received: from macbook-air.local (weaver.eece.maine.edu. [130.111.218.23])
-        by smtp.gmail.com with ESMTPSA id bp13-20020a05622a1b8d00b0031e9fa40c2esm1880404qtb.27.2022.07.14.09.12.47
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i0zBfnxSR+XSC3TWRrXeBSbIPtooMElqlO0E5qJfqHY=;
+        b=subEEe3Q2WMOV44FzM+sA1NX/Rv6Y3ZrW0ivzD+IsrD5u+ueoPsfJfQbjubRB4eQRx
+         a5xnAnXtOymyvZ/qcIf6Ky4BM4PPbLUiJg0Q/0FYpaPiVIXLJJFY6q16TiTcvTiudUQd
+         63ni9cYiYYlfm3eHNNpfE11ZWPovblQBQDkqqahg/O2Lqb/eCjCXxlh9vt5+uDuT55zh
+         2IDQb5oodOsHq9YxyfKZYDBRIwfpgorSCMvGfcecEUyKAfpuUxLfuma+OUni+jPsTFmF
+         qHOogOzXUqrtlTwX8fkbzneHmYbM2N/eEGFgt6E9pDohbio09CRmNpsFWsGcV1VE1xwQ
+         8ksg==
+X-Gm-Message-State: AJIora+ux/tYH+fZXZuLh5G8WRqp2gKEc9C7pAY+g8y9fPTsLa/Kjagf
+        svjdqnAzSITCeHF675K84NdyVA==
+X-Google-Smtp-Source: AGRyM1s87BgBAU1CqOQNE5w2MmJYKyfCjer37D9d4I2vq4RoVsg++iiHKfpOrCrnZDIDFNUm7HsPkw==
+X-Received: by 2002:a05:620a:22ef:b0:6b5:9a48:fa67 with SMTP id p15-20020a05620a22ef00b006b59a48fa67mr6604165qki.567.1657815247782;
+        Thu, 14 Jul 2022 09:14:07 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id cp4-20020a05622a420400b0031eb393aa45sm1690067qtb.40.2022.07.14.09.14.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:12:48 -0700 (PDT)
-From:   Vince Weaver <vincent.weaver@maine.edu>
-X-Google-Original-From: Vince Weaver <vince@maine.edu>
-Date:   Thu, 14 Jul 2022 12:12:42 -0400 (EDT)
-To:     "Liang, Kan" <kan.liang@linux.intel.com>
-cc:     Vince Weaver <vincent.weaver@maine.edu>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: Re: [perf] unchecked MSR access error: WRMSR to 0x689 in
- intel_pmu_lbr_restore
-In-Reply-To: <0e3b3e6e-53b9-b426-71cd-911d3ecbfc24@linux.intel.com>
-Message-ID: <15f85765-ff2f-5d32-5991-06ef225706f0@maine.edu>
-References: <66961a7d-a6d8-2536-9ed3-68c2e7f4e03d@maine.edu> <e71fa75-a718-ffb-c3f3-40cccf77ba9b@maine.edu> <4b15d3d1-389b-fee4-d1b9-8732859e3696@linux.intel.com> <20220711221658.4gpkizopmftpnav6@guptapa-desk> <32ccdda1-63bf-746e-48fb-935fa58285b1@maine.edu>
- <20220712204830.kvblayj37s3udt4b@guptapa-desk> <487465e6-b034-f08-907-de37a0a173b5@maine.edu> <0e3b3e6e-53b9-b426-71cd-911d3ecbfc24@linux.intel.com>
+        Thu, 14 Jul 2022 09:14:07 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH 0/4] Counter updates and cleanups for 5.20
+Date:   Thu, 14 Jul 2022 12:07:11 -0400
+Message-Id: <cover.1657813472.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 12 Jul 2022, Liang, Kan wrote:
+First set of Counter updates and cleanups for 5.20
 
-> 
-> Could you please apply the below patch, reboot to the patched kernel and
-> share the dmesg log?
+Only a couple changes this cycle, all involving the 104-QUAD-8 driver.
 
-here's the info with your patch applied:
+The 104-QUAD-8 driver is refactored to utilize iomap() and respective
+ioread8()/iowrite8() I/O memory accessor calls. This allows some
+significant cleanup of magic numbers, replacing them with a more
+straight-forward approach of accessing named register structures.
 
-[    0.000000] microcode: microcode updated early to revision 0x28, date = 2019-11-12
-...
-[    1.460296] NO HLE NO RTM. LBR has tsx 0
-[    1.468217] Haswell events, 16-deep LBR, full-width counters, Intel PMU driver.
-[    1.472292] ... version:                3
-[    1.476275] ... bit width:              48
-[    1.480275] ... generic registers:      4
-[    1.484276] ... value mask:             0000ffffffffffff
-[    1.488277] ... max period:             00007fffffffffff
-[    1.492277] ... fixed-purpose events:   3
-[    1.496271] ... event mask:             000000070000000f
+The Counter git repository has moved to a new host
+<https://git.linaro.org/people/william.gray/counter.git/> and the
+MAINTAINTERS file updated accordingly along with my latest contact
+information. Syed Nayyar Waris is no longer available to maintain the
+104-QUAD-8 driver so the 104-QUAD-8 drivers maintainers list is updated
+as well to reflect the departure.
 
-Vince
+William Breathitt Gray (4):
+  MAINTAINERS: Update info for William Breathitt Gray
+  counter: 104-quad-8: Utilize iomap interface
+  counter: 104-quad-8: Implement and utilize register structures
+  MAINTAINERS: Update 104-QUAD-8 driver maintainers list
+
+ MAINTAINERS                  |  29 +++--
+ drivers/counter/104-quad-8.c | 203 ++++++++++++++++++++---------------
+ 2 files changed, 130 insertions(+), 102 deletions(-)
+
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.36.1
+
