@@ -2,219 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 146BFC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 01:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14424C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 01:24:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231545AbiGNBTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 13 Jul 2022 21:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55814 "EHLO
+        id S231736AbiGNBY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 13 Jul 2022 21:24:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231499AbiGNBTL (ORCPT
+        with ESMTP id S229844AbiGNBYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 13 Jul 2022 21:19:11 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640C8DFC0;
-        Wed, 13 Jul 2022 18:19:02 -0700 (PDT)
-X-UUID: 838f550898a84d178dcdf8aefba2ddcc-20220714
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:3bb6d723-eaff-4165-9f88-3dd939a4c920,OB:10,L
-        OB:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:54
-X-CID-INFO: VERSION:1.1.8,REQID:3bb6d723-eaff-4165-9f88-3dd939a4c920,OB:10,LOB
-        :0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:54,FILE:0,RULE:Release_HamU,ACT
-        ION:release,TS:54
-X-CID-META: VersionHash:0f94e32,CLOUDID:d1b66dd7-5d6d-4eaf-a635-828a3ee48b7c,C
-        OID:d439a670ee54,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 838f550898a84d178dcdf8aefba2ddcc-20220714
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <biao.huang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1557293866; Thu, 14 Jul 2022 09:18:56 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Thu, 14 Jul 2022 09:18:55 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 14 Jul 2022 09:18:54 +0800
-Message-ID: <1d30edbe1761bea511f6619d934e550e05ac4f7a.camel@mediatek.com>
-Subject: Re: [PATCH net v4 1/3] stmmac: dwmac-mediatek: fix clock issue
-From:   Biao Huang <biao.huang@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>,
-        David Miller <davem@davemloft.net>
-CC:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        <netdev@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>,
-        Jisheng Zhang <jszhang@kernel.org>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
-Date:   Thu, 14 Jul 2022 09:18:54 +0800
-In-Reply-To: <c8fdfa7b-f4eb-8308-4064-b868ce945e3a@gmail.com>
-References: <20220713101002.10970-1-biao.huang@mediatek.com>
-         <20220713101002.10970-2-biao.huang@mediatek.com>
-         <c8fdfa7b-f4eb-8308-4064-b868ce945e3a@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Wed, 13 Jul 2022 21:24:25 -0400
+Received: from mail105.syd.optusnet.com.au (mail105.syd.optusnet.com.au [211.29.132.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BFA28205D6;
+        Wed, 13 Jul 2022 18:24:24 -0700 (PDT)
+Received: from dread.disaster.area (pa49-181-2-147.pa.nsw.optusnet.com.au [49.181.2.147])
+        by mail105.syd.optusnet.com.au (Postfix) with ESMTPS id 8827310E976F;
+        Thu, 14 Jul 2022 11:24:23 +1000 (AEST)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1oBnaX-000bgE-9j; Thu, 14 Jul 2022 11:24:21 +1000
+Date:   Thu, 14 Jul 2022 11:24:21 +1000
+From:   Dave Chinner <david@fromorbit.com>
+To:     Oliver Sang <oliver.sang@intel.com>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Dave Chinner <dchinner@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-xfs@vger.kernel.org,
+        lkp@lists.01.org, lkp@intel.com
+Subject: Re: [xfs]  47a6df7cd3: Assertion_failed
+Message-ID: <20220714012421.GO3861211@dread.disaster.area>
+References: <Ys0gqOUcLr+2dle5@xsang-OptiPlex-9020>
+ <20220712214745.GL3861211@dread.disaster.area>
+ <Ys5lVZF3V53LQ+Ty@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Ys5lVZF3V53LQ+Ty@xsang-OptiPlex-9020>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=e9dl9Yl/ c=1 sm=1 tr=0 ts=62cf7048
+        a=ivVLWpVy4j68lT4lJFbQgw==:117 a=ivVLWpVy4j68lT4lJFbQgw==:17
+        a=kj9zAlcOel0A:10 a=RgO8CyIxsXoA:10 a=QyXUC8HyAAAA:8 a=7-415B0cAAAA:8
+        a=Nusv4dcQFhBjhKgVRc0A:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Matthias,
-	Thanks for your comments~
-
-On Wed, 2022-07-13 at 14:11 +0200, Matthias Brugger wrote:
+On Wed, Jul 13, 2022 at 02:25:25PM +0800, Oliver Sang wrote:
+> hi Dave,
 > 
-> On 13/07/2022 12:10, Biao Huang wrote:
-> > The pm_runtime takes care of the clock handling in current
-> > stmmac drivers, and dwmac-mediatek implement the
-> > mediatek_dwmac_clks_config() as the callback for pm_runtime.
+> On Wed, Jul 13, 2022 at 07:47:45AM +1000, Dave Chinner wrote:
+> > > 
+> > > If you fix the issue, kindly add following tag
+> > > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > > 
+> > > 
+> > > [   94.271323][ T9089] XFS (sda5): Mounting V5 Filesystem
+> > > [   94.369992][ T9089] XFS (sda5): Ending clean mount
+> > > [   94.376046][ T9089] xfs filesystem being mounted at /fs/scratch supports timestamps until 2038 (0x7fffffff)
+> > > [  112.154792][  T311] xfs/076       IPMI BMC is not supported on this machine, skip bmc-watchdog setup!
+> > > [  112.154805][  T311]
+> > > [  161.426026][T29384] XFS: Assertion failed: xfs_is_shutdown(mp) || list_empty(&tp->t_dfops), file: fs/xfs/xfs_trans.c, line: 951
+> > > [  161.437713][T29384] ------------[ cut here ]------------
+> > > [  161.443155][T29384] kernel BUG at fs/xfs/xfs_message.c:110!
+> > > [  161.448854][T29384] invalid opcode: 0000 [#1] SMP KASAN PTI
+> > > [  161.454536][T29384] CPU: 1 PID: 29384 Comm: touch Not tainted 5.16.0-rc5-00001-g47a6df7cd317 #1
 > > 
-> > Then, stripping duplicated clocks handling in old init()/exit()
-> > to fix clock issue in suspend/resume test.
+> > 5.16-rc5? Seems like a really old kernel to be testing....
 > > 
-> > As to clocks in probe/remove, vendor need symmetric handling to
-> > ensure clocks balance.
-> > 
-> > Test pass, including suspend/resume and ko insertion/remove.
-> > 
-> > Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level
-> > clocks management")
-> > Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-> > ---
-> >   .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 49 ++++++++----
-> > -------
-> >   1 file changed, 21 insertions(+), 28 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > index 6ff88df58767..ca8ab290013c 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
-> > @@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct
-> > platform_device *pdev, void *priv)
-> >   		}
-> >   	}
-> >   
-> > -	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
-> > -	if (ret) {
-> > -		dev_err(plat->dev, "failed to enable clks, err = %d\n",
-> > ret);
-> > -		return ret;
-> > -	}
-> > -
-> > -	ret = clk_prepare_enable(plat->rmii_internal_clk);
-> > -	if (ret) {
-> > -		dev_err(plat->dev, "failed to enable rmii internal clk,
-> > err = %d\n", ret);
-> > -		goto err_clk;
-> > -	}
-> > -
-> >   	return 0;
-> > -
-> > -err_clk:
-> > -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
-> > -	return ret;
-> > -}
-> > -
-> > -static void mediatek_dwmac_exit(struct platform_device *pdev, void
-> > *priv)
-> > -{
-> > -	struct mediatek_dwmac_plat_data *plat = priv;
-> > -	const struct mediatek_dwmac_variant *variant = plat->variant;
-> > -
-> > -	clk_disable_unprepare(plat->rmii_internal_clk);
-> > -	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
-> >   }
-> >   
-> >   static int mediatek_dwmac_clks_config(void *priv, bool enabled)
-> > @@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct
-> > platform_device *pdev,
-> >   	plat->addr64 = priv_plat->variant->dma_bit_mask;
-> >   	plat->bsp_priv = priv_plat;
-> >   	plat->init = mediatek_dwmac_init;
-> > -	plat->exit = mediatek_dwmac_exit;
-> >   	plat->clks_config = mediatek_dwmac_clks_config;
-> >   	if (priv_plat->variant->dwmac_fix_mac_speed)
-> >   		plat->fix_mac_speed = priv_plat->variant-
-> > >dwmac_fix_mac_speed;
-> > @@ -712,13 +686,32 @@ static int mediatek_dwmac_probe(struct
-> > platform_device *pdev)
-> >   	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
-> >   	mediatek_dwmac_init(pdev, priv_plat);
-> >   
-> > +	ret = mediatek_dwmac_clks_config(priv_plat, true);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> >   	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
-> >   	if (ret) {
-> >   		stmmac_remove_config_dt(pdev, plat_dat);
-> > -		return ret;
-> > +		goto err_drv_probe;
-> >   	}
-> >   
-> >   	return 0;
-> > +
-> > +err_drv_probe:
-> > +	mediatek_dwmac_clks_config(priv_plat, false);
-> > +	return ret;
-> > +}
-> > +
-> > +static int mediatek_dwmac_remove(struct platform_device *pdev)
-> > +{
-> > +	struct mediatek_dwmac_plat_data *priv_plat =
-> > get_stmmac_bsp_priv(&pdev->dev);
-> > +	int ret;
-> > +
-> > +	ret = stmmac_pltfr_remove(pdev);
-> > +	mediatek_dwmac_clks_config(priv_plat, false);
-> > +
+> > Does this reproduce on a current 5.19-rc6 kernel?
 > 
-> We enalbe the clocks after calling stmmac_probe_config_dt(), so we
-> should 
-> disable them before calling stmmac_pltfr_remove(), correct?
-> 
-> Other then that:
-> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+> yes, it's still reproducible. however, it's actually random on both 47a6df7cd3
+> and 5.19-rc6, as below.
+> it's clean on 40 runs of v5.16-rc5,
+> on 47a6df7cd3, it's reproduced 9 times out of 40 runs,
 
-To ensure the hw configuration in stmmac_pltfr_remove behavior
-normally, we should disable clocks after stmmac_pltfr_remove.
+Of course, 47a6df7cd3 introduced the ASSERT that is firing. You'll
+never see the failure on kernels before this, even if the issue is
+occurring. It also points out this isn't a new issue, it's been
+around since before we added detection of it.
 
-And there is no order requirement between clocks configured by 
-stmmac_probe_config_dt/stmmac_remove_config_dt and clocks
-configured by mediatek_dwmac_clks_config, so it's safe for
-current snippet.
+> on v5.19-rc6, it's reprodced 7 times out of 20 runs.
 
-Best Regards!
-Biao
+Hmmm. I've just run 50 iterations here on my 5.19-rc6 based VMs
+and I haven't seen a single failure. So it's not failing regularly
+here which means it is influenced by environmental factors.
 
-> 
-> > +	return ret;
-> >   }
-> >   
-> >   static const struct of_device_id mediatek_dwmac_match[] = {
-> > @@ -733,7 +726,7 @@ MODULE_DEVICE_TABLE(of, mediatek_dwmac_match);
-> >   
-> >   static struct platform_driver mediatek_dwmac_driver = {
-> >   	.probe  = mediatek_dwmac_probe,
-> > -	.remove = stmmac_pltfr_remove,
-> > +	.remove = mediatek_dwmac_remove,
-> >   	.driver = {
-> >   		.name           = "dwmac-mediatek",
-> >   		.pm		= &stmmac_pltfr_pm_ops,
+How big are the disks you are testing with?
 
+Cheers,
+
+Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
