@@ -2,103 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E204CC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F02C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 08:42:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236807AbiGNImD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 04:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38138 "EHLO
+        id S237408AbiGNImS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 04:42:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiGNImB (ORCPT
+        with ESMTP id S236564AbiGNImM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 04:42:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C035F87;
-        Thu, 14 Jul 2022 01:41:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54A51B823E0;
-        Thu, 14 Jul 2022 08:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EFE8C34115;
-        Thu, 14 Jul 2022 08:41:50 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Huacai Chen <chenhuacai@gmail.com>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        linux-mips@vger.kernel.org, linux-sh@vger.kernel.org,
-        Huacai Chen <chenhuacai@loongson.cn>, stable@vger.kernel.org
-Subject: [PATCH V2 2/3] LoongArch: cpuinfo: Fix a warning for CONFIG_CPUMASK_OFFSTACK
-Date:   Thu, 14 Jul 2022 16:41:35 +0800
-Message-Id: <20220714084136.570176-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220714084136.570176-1-chenhuacai@loongson.cn>
-References: <20220714084136.570176-1-chenhuacai@loongson.cn>
+        Thu, 14 Jul 2022 04:42:12 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD19D3D5A7;
+        Thu, 14 Jul 2022 01:42:03 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R341e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VJIOffY_1657788120;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0VJIOffY_1657788120)
+          by smtp.aliyun-inc.com;
+          Thu, 14 Jul 2022 16:42:01 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     thierry.reding@gmail.com
+Cc:     jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next] soc/tegra: cbb: Remove unnecessary print function dev_err()
+Date:   Thu, 14 Jul 2022 16:41:58 +0800
+Message-Id: <20220714084158.33521-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_CPUMASK_OFFSTACK and CONFIG_DEBUG_PER_CPU_MAPS is selected,
-cpu_max_bits_warn() generates a runtime warning similar as below while
-we show /proc/cpuinfo. Fix this by using nr_cpu_ids (the runtime limit)
-instead of NR_CPUS to iterate CPUs.
+platform_get_irq()<--platform_get_irq_optional()
+platform_get_irq_optional() return non-zero IRQ number on success,
+negative error number on failure, if IRQ number is 0, return -EINVAL.
+so the function platform_get_irq() never returns 0, and the print function
+dev_err() is redundant because platform_get_irq() already prints an error.
 
-[    3.052463] ------------[ cut here ]------------
-[    3.059679] WARNING: CPU: 3 PID: 1 at include/linux/cpumask.h:108 show_cpuinfo+0x5e8/0x5f0
-[    3.070072] Modules linked in: efivarfs autofs4
-[    3.076257] CPU: 0 PID: 1 Comm: systemd Not tainted 5.19-rc5+ #1052
-[    3.084034] Hardware name: Loongson Loongson-3A5000-7A1000-1w-V0.1-CRB/Loongson-LS3A5000-7A1000-1w-EVB-V1.21, BIOS Loongson-UDK2018-V2.0.04082-beta7 04/27
-[    3.099465] Stack : 9000000100157b08 9000000000f18530 9000000000cf846c 9000000100154000
-[    3.109127]         9000000100157a50 0000000000000000 9000000100157a58 9000000000ef7430
-[    3.118774]         90000001001578e8 0000000000000040 0000000000000020 ffffffffffffffff
-[    3.128412]         0000000000aaaaaa 1ab25f00eec96a37 900000010021de80 900000000101c890
-[    3.138056]         0000000000000000 0000000000000000 0000000000000000 0000000000aaaaaa
-[    3.147711]         ffff8000339dc220 0000000000000001 0000000006ab4000 0000000000000000
-[    3.157364]         900000000101c998 0000000000000004 9000000000ef7430 0000000000000000
-[    3.167012]         0000000000000009 000000000000006c 0000000000000000 0000000000000000
-[    3.176641]         9000000000d3de08 9000000001639390 90000000002086d8 00007ffff0080286
-[    3.186260]         00000000000000b0 0000000000000004 0000000000000000 0000000000071c1c
-[    3.195868]         ...
-[    3.199917] Call Trace:
-[    3.203941] [<90000000002086d8>] show_stack+0x38/0x14c
-[    3.210666] [<9000000000cf846c>] dump_stack_lvl+0x60/0x88
-[    3.217625] [<900000000023d268>] __warn+0xd0/0x100
-[    3.223958] [<9000000000cf3c90>] warn_slowpath_fmt+0x7c/0xcc
-[    3.231150] [<9000000000210220>] show_cpuinfo+0x5e8/0x5f0
-[    3.238080] [<90000000004f578c>] seq_read_iter+0x354/0x4b4
-[    3.245098] [<90000000004c2e90>] new_sync_read+0x17c/0x1c4
-[    3.252114] [<90000000004c5174>] vfs_read+0x138/0x1d0
-[    3.258694] [<90000000004c55f8>] ksys_read+0x70/0x100
-[    3.265265] [<9000000000cfde9c>] do_syscall+0x7c/0x94
-[    3.271820] [<9000000000202fe4>] handle_syscall+0xc4/0x160
-[    3.281824] ---[ end trace 8b484262b4b8c24c ]---
+Eliminate the follow coccicheck warnings:
+./drivers/soc/tegra/cbb/tegra-cbb.c:142:3-10: line 142 is redundant because platform_get_irq() already prints an error
+./drivers/soc/tegra/cbb/tegra-cbb.c:152:2-9: line 152 is redundant because platform_get_irq() already prints an error
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 ---
- arch/loongarch/kernel/proc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/tegra/cbb/tegra-cbb.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/arch/loongarch/kernel/proc.c b/arch/loongarch/kernel/proc.c
-index e0b5f3b031b1..b12a1f21f864 100644
---- a/arch/loongarch/kernel/proc.c
-+++ b/arch/loongarch/kernel/proc.c
-@@ -106,7 +106,7 @@ static void *c_start(struct seq_file *m, loff_t *pos)
- {
- 	unsigned long i = *pos;
+diff --git a/drivers/soc/tegra/cbb/tegra-cbb.c b/drivers/soc/tegra/cbb/tegra-cbb.c
+index d200937353c7..aa9fcbd5d4a7 100644
+--- a/drivers/soc/tegra/cbb/tegra-cbb.c
++++ b/drivers/soc/tegra/cbb/tegra-cbb.c
+@@ -138,20 +138,16 @@ int tegra_cbb_get_irq(struct platform_device *pdev, unsigned int *nonsec_irq,
  
--	return i < NR_CPUS ? (void *)(i + 1) : NULL;
-+	return i < nr_cpu_ids ? (void *)(i + 1) : NULL;
- }
+ 	if (num_intr == 2) {
+ 		irq = platform_get_irq(pdev, index);
+-		if (irq <= 0) {
+-			dev_err(&pdev->dev, "failed to get non-secure IRQ: %d\n", irq);
++		if (irq < 0)
+ 			return -ENOENT;
+-		}
  
- static void *c_next(struct seq_file *m, void *v, loff_t *pos)
+ 		*nonsec_irq = irq;
+ 		index++;
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, index);
+-	if (irq <= 0) {
+-		dev_err(&pdev->dev, "failed to get secure IRQ: %d\n", irq);
++	if (irq < 0)
+ 		return -ENOENT;
+-	}
+ 
+ 	*sec_irq = irq;
+ 
 -- 
-2.31.1
+2.20.1.7.g153144c
 
