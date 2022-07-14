@@ -2,89 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FB7CCA482
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C78CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229506AbiGNJMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33046 "EHLO
+        id S231131AbiGNJNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:13:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237690AbiGNJLt (ORCPT
+        with ESMTP id S229835AbiGNJNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:11:49 -0400
-X-Greylist: delayed 2399 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 02:11:48 PDT
-Received: from sinsgout.his.huawei.com (sinsgout.his.huawei.com [119.8.179.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2FB22B34;
-        Thu, 14 Jul 2022 02:11:48 -0700 (PDT)
-Received: from sinmsgout03.his.huawei.com (unknown [172.28.115.130])
-        by sinsgout.his.huawei.com (SkyGuard) with ESMTP id 4Lk6CX1llBz3Z9D9;
-        Thu, 14 Jul 2022 15:52:24 +0800 (CST)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.156.208])
-        by sinmsgout03.his.huawei.com (SkyGuard) with ESMTP id 4Lk6B94QXHz9xGQ7;
-        Thu, 14 Jul 2022 15:51:13 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 14 Jul 2022 09:52:14 +0200
-Received: from [10.126.173.191] (10.126.173.191) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 14 Jul 2022 08:52:13 +0100
-Message-ID: <8a9d9c72-65c1-cb7d-80d7-4ac2b65871fe@huawei.com>
-Date:   Thu, 14 Jul 2022 08:52:15 +0100
+        Thu, 14 Jul 2022 05:13:09 -0400
+Received: from mail-sz.amlogic.com (mail-sz.amlogic.com [211.162.65.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AACF322B34;
+        Thu, 14 Jul 2022 02:13:08 -0700 (PDT)
+Received: from [10.88.19.41] (10.88.19.41) by mail-sz.amlogic.com (10.28.11.5)
+ with Microsoft SMTP Server id 15.1.2176.2; Thu, 14 Jul 2022 17:13:06 +0800
+Message-ID: <79ff63fc-dbd7-bc31-ebe7-7d15d121add1@amlogic.com>
+Date:   Thu, 14 Jul 2022 17:13:06 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH v5 0/5] DMA mapping changes for SCSI core
-To:     "Martin K. Petersen" <martin.petersen@oracle.com>
-CC:     Christoph Hellwig <hch@lst.de>, <damien.lemoal@opensource.wdc.com>,
-        <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
-        <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-ide@vger.kernel.org>, <iommu@lists.linux-foundation.org>,
-        <iommu@lists.linux.dev>, <linux-scsi@vger.kernel.org>,
-        <linuxarm@huawei.com>
-References: <1656590892-42307-1-git-send-email-john.garry@huawei.com>
- <b5f80062-e8ef-9597-1b0c-393140950dfb@huawei.com>
- <20220706134447.GA23753@lst.de> <yq1y1x47jgn.fsf@ca-mkp.ca.oracle.com>
- <5fd4814a-81b1-0e71-58e0-57a747eb684e@huawei.com>
- <yq135f4xul0.fsf@ca-mkp.ca.oracle.com>
-From:   John Garry <john.garry@huawei.com>
-In-Reply-To: <yq135f4xul0.fsf@ca-mkp.ca.oracle.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH 4/4] dt-binding:perf: Add Amlogic DDR PMU
+Content-Language: en-US
+To:     Robin Murphy <robin.murphy@arm.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <devicetree@vger.kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chris Healy <cphealy@gmail.com>
+References: <20220712063641.2790997-1-jiucheng.xu@amlogic.com>
+ <20220712063641.2790997-4-jiucheng.xu@amlogic.com>
+ <94ab770b-8a8a-4299-a54e-2ff77afb9e04@arm.com>
+From:   Jiucheng Xu <jiucheng.xu@amlogic.com>
+In-Reply-To: <94ab770b-8a8a-4299-a54e-2ff77afb9e04@arm.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.126.173.191]
-X-ClientProxiedBy: lhreml725-chm.china.huawei.com (10.201.108.76) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+X-Originating-IP: [10.88.19.41]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 04:10, Martin K. Petersen wrote:
 
-Hi Martin,
-
->> So I set max hw sectors at this ‘opt’ mapping size to ensure that we
->> get no mappings which exceed this size. Indeed, I think max sectors is
->> 128Kb today for my host, which would be same as dma_opt_mapping_size()
->> value with an IOMMU enabled. And I find that only a small % of request
->> size may exceed this 128kb size, but it still has a big performance
->> impact.
-> The purpose of the soft limit is to pick the appropriate I/O size
-> (i.e. for best performance). The purpose of the hard limit is to ensure
-> we don't submit something the hardware can't handle or describe.
-> 
-> IOW, the hard limit is not about performance at all. The hard limit is
-> mainly relevant for things that are way bigger than anything we'd issue
-> as regular filesystem I/O such as multi-megabyte firmware images, etc.
-> 
-> It's perfectly fine for firmware download performance to be
-> "suboptimal". What is typically more important in that scenario is that
-> the firmware image makes it inside a single I/O.
-
-OK, fine. I've improved the next version such that the DMA mapping opt 
-limit only affects the max_sectors default.
-
-Thanks,
-John
+On 7/12/2022 8:54 PM, Robin Murphy wrote:
+> [ EXTERNAL EMAIL ]
+>
+> On 2022-07-12 07:36, Jiucheng Xu wrote:
+>> Add binding documentation for the Amlogic G12 series DDR
+>> performance monitor unit.
+>>
+>> Signed-off-by: Jiucheng Xu <jiucheng.xu@amlogic.com>
+>> ---
+>>   .../devicetree/bindings/perf/aml-ddr-pmu.yaml | 51 +++++++++++++++++++
+>>   MAINTAINERS                                   |  1 +
+>>   2 files changed, 52 insertions(+)
+>>   create mode 100644 
+>> Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml 
+>> b/Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml
+>> new file mode 100644
+>> index 000000000000..c586b4ab4009
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml
+>> @@ -0,0 +1,51 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/perf/aml-ddr-pmu.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Amlogic G12 DDR performance monitor
+>> +
+>> +maintainers:
+>> +  - Jiucheng Xu <jiucheng.xu@amlogic.com>
+>> +
+>> +properties:
+>> +  compatible:
+>> +    oneOf:
+>> +      - enum:
+>> +          - aml,g12-ddr-pmu
+>> +      - items:
+>> +          - enum:
+>> +              - aml,g12-ddr-pmu
+>> +          - const: aml,g12-ddr-pmu
+>
+> Judging by what the driver actually implements, this should probably be:
+>
+>   compatible:
+>     items:
+>       - enum:
+>         - amlogic,g12a-ddr-pmu
+>         - amlogic,g12b-ddr-pmu
+>         - amlogic,sm1-ddr-pmu
+>       - const: amlogic,g12-ddr-pmu
+>
+> There doesn't seem much point in allowing only the common compatible 
+> without a SoC-specific identifier. Note also that "aml," is not the 
+> documented vendor prefix.
+Okay, I finally know what you mean.
+>
+>> +
+>> +  reg:
+>> +    maxItems: 2
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +required:
+>> +  - compatible
+>> +  - model
+>
+> Remove this, and use the compatible strings properly as above.
+Okay. I will make the change.
+>
+>> +  - dmc_nr
+>> +  - chann_nr
+>
+> I suspect those could probably be inferred from the correct compatible 
+> string, but if not (i.e. within one SoC you have multiple PMUs 
+> supporting the same events but with different numbers of usable 
+> channels), then document what exactly they mean.
+>
+Yes, as you mentioned, these could be inferred from the compatible 
+string. I will make the change.
+>> +  - reg
+>> +  - interrupts
+>> +  - interrupt-names
+>
+> As mentioned in the driver review, if you really want to use a named 
+> interrupt (which should usually be unnecessary when there's only one), 
+> it has to be a defined name. DT is not a mechanism for overriding what 
+> Linux shows in /proc/interrupts.
+>
+> Thanks,
+> Robin.
+>
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +          ddr_pmu: ddr_pmu {
+>> +                  compatible = "amlogic,g12-ddr-pmu";
+>> +                  model = "g12a";
+>> +                  dmc_nr = <1>;
+>> +                  chann_nr = <4>;
+>> +                  reg = <0x0 0xff638000 0x0 0x100
+>> +                         0x0 0xff638c00 0x0 0x100>;
+>> +                  interrupts = <GIC_SPI 52 IRQ_TYPE_EDGE_RISING>;
+>> +                  interrupt-names = "ddr_pmu";
+>> +          };
+>> +    };
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index fd2a56a339b4..ac0a1df4622d 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -1055,6 +1055,7 @@ M:    Jiucheng Xu <jiucheng.xu@amlogic.com>
+>>   S:    Supported
+>>   W:    http://www.amlogic.com
+>>   F:    Documentation/admin-guide/perf/aml-ddr-pmu.rst
+>> +F:    Documentation/devicetree/bindings/perf/aml-ddr-pmu.yaml
+>>   F:    drivers/perf/amlogic/
+>>   F:    include/soc/amlogic/
+>
