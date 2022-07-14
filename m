@@ -2,94 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90E87C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40A3ECCA481
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:43:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239066AbiGNOnE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:43:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
+        id S239189AbiGNOnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:43:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238585AbiGNOnC (ORCPT
+        with ESMTP id S239171AbiGNOnK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:43:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AC293ED42
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 07:43:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22B7DB825E9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 14:43:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60954C34114;
-        Thu, 14 Jul 2022 14:42:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657809778;
-        bh=jjrMgZQq1XsJbSW7CU6liOlUgrPrHGDYv1Ifuo6HFMk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gTNJmCbjBbEz2d4Lt5n4pVIsOjkdsoQ89Gy1FyiBYZ0RL1GLtvJhktLq/TV8tQ882
-         fEE+v7u0qbdCAJzlJKsu+UuM7WYIqWu2LVbdLSOBt9/q78XbiatNW+mIdAl+cHHW/u
-         bq9mSjDzt2gsOcHdYX5IKz1Xvs0kAyizVEEhL0uKc3XhCguL/18LjM4sgWLxqamv35
-         0+LaAlTUN3YY/rZ7LIFgIOcuOYUEXNF1LsFeNGPJpCuQuL+EpAWdFduq1B9SZGMN5q
-         lxG9LbnicD4ISKhdzCbKmpKgD9jJbQtCsybOTcHYT5oSq/eH2UwuQX4kthZbL7cvb1
-         6F4XsZk7YAabw==
-Date:   Thu, 14 Jul 2022 15:42:54 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Naresh Solanki <naresh.solanki@9elements.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Patrick Rudolph <patrick.rudolph@9elements.com>
-Subject: Re: [PATCH v4 2/4] dt-bindings: regulator: add bindings for
- output-supply
-Message-ID: <YtArbh4a40cACRMt@sirena.org.uk>
-References: <20220707081826.953449-1-Naresh.Solanki@9elements.com>
- <20220707081826.953449-3-Naresh.Solanki@9elements.com>
- <20220714141041.GB2229197-robh@kernel.org>
- <YtAkwcwXaQqZV75d@sirena.org.uk>
- <CAL_JsqKu_HCDoPBTcVdVV2JyD_8p3+cbrNC0u6VrK85vWZmt3Q@mail.gmail.com>
+        Thu, 14 Jul 2022 10:43:10 -0400
+X-Greylist: delayed 1798 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 14 Jul 2022 07:43:07 PDT
+Received: from vps-vb.mhejs.net (vps-vb.mhejs.net [37.28.154.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1492458870;
+        Thu, 14 Jul 2022 07:43:07 -0700 (PDT)
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1oBzEp-0000eY-FW; Thu, 14 Jul 2022 15:50:43 +0200
+Message-ID: <52d44630-21ad-1291-4185-40d5728eaea6@maciej.szmigiero.name>
+Date:   Thu, 14 Jul 2022 15:50:37 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="oQHsJMAUAz/nS20D"
-Content-Disposition: inline
-In-Reply-To: <CAL_JsqKu_HCDoPBTcVdVV2JyD_8p3+cbrNC0u6VrK85vWZmt3Q@mail.gmail.com>
-X-Cookie: The devil finds work for idle glands.
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH] KVM: SVM: fix task switch emulation on INTn instruction.
+Content-Language: en-US
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        linux-kernel@vger.kernel.org, Jim Mattson <jmattson@google.com>,
+        kvm@vger.kernel.org
+References: <20220714124453.188655-1-mlevitsk@redhat.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+In-Reply-To: <20220714124453.188655-1-mlevitsk@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 14.07.2022 14:44, Maxim Levitsky wrote:
+> Recently KVM's SVM code switched to re-injecting software interrupt events,
+> if something prevented their delivery.
+> 
+> Task switch due to task gate in the IDT, however is an exception
+> to this rule, because in this case, INTn instruction causes
+> a task switch intercept and its emulation completes the INTn
+> emulation as well.
+> 
+> Add a missing case to task_switch_interception for that.
+> 
+> This fixes 32 bit kvm unit test taskswitch2.
+> 
+> Fixes: 7e5b5ef8dca322 ("KVM: SVM: Re-inject INTn instead of retrying the insn on "failure"")
+> 
+> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+> ---
 
---oQHsJMAUAz/nS20D
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+That's a good catch, your patch looks totally sensible to me.
+People running Win 3.x or OS/2 on top of KVM will surely be grateful for it :)
 
-On Thu, Jul 14, 2022 at 08:23:39AM -0600, Rob Herring wrote:
-> On Thu, Jul 14, 2022 at 8:14 AM Mark Brown <broonie@kernel.org> wrote:
+Reviewed-by: Maciej S. Szmigiero <maciej.szmigiero@oracle.com>
 
-> > It's a description of a power supply output from their system (system as
-> > a whole, not power provisioned within the system).
-
-> Well, that's a better commit message than the original, but I still
-> don't understand.
-
-Consider for example a BMC (IIRC that's what their specific product is),
-a bench supply or some automated test equipment.  Part of the function
-for these systems is to provide power to other systems which would be
-represented as a root or wall supply in the description of the system
-that actually uses the supply if it were described using DT.
-
---oQHsJMAUAz/nS20D
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLQK20ACgkQJNaLcl1U
-h9B/sgf9EkCm4L6tNRqrnWQ9pXqIeEHZp/FwCsI1JLpPCeXN9cQ1tg6zBjI+z3o2
-gSJI6AVHux+KEsmg1rlC57g0TNcQxwJHG7ebssyICBI0FCqSdYIvL+hDksXryOzT
-/CxUhcECsz9UV1qNnuE8N1GY79sN5ih9xKTf/dgSr6xH/we7mohwCTdnexqhfpY6
-9RYf8W/JYpbbDDlMTuPSo7otUBJe+guwrSy3/R7+UOTo1T6xfFKGHGWV6fLhw5pP
-DXq5ajHCj+N7iJerSk1/2Oj33dlDyWG0XtaAJRutq65EImskta+OdBPQm2lRAgzq
-43Ms17jgbzPNB8eH+AXoP69lPGacrQ==
-=VKkS
------END PGP SIGNATURE-----
-
---oQHsJMAUAz/nS20D--
+Thanks,
+Maciej
