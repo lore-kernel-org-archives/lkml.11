@@ -2,94 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B8FC43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:27:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA16C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232888AbiGNJ1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        id S238016AbiGNJ1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237987AbiGNJ0c (ORCPT
+        with ESMTP id S238280AbiGNJ0f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:26:32 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2860B38A9
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:25:34 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id n18so1845526lfq.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:25:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=G4SHg0v0UTb3/wETQ9utchWc9oSi737vagHnYZzNcEw=;
-        b=UJosXSDIOCQA7CkfHPIk2bFFsaniJh806Rdc+4td/6efm/F2x6bc3R55hxcASp6xE3
-         dssT7wZsAC7leRWDQccu9BJzy7qRRpTat5Yd0n57bc/IeHc2dY1eh/EYztXAyeQ4HJVb
-         HG4t7yhI0gWLcZJzQf1fwWoubI+NisWFwBvJhzcdA49YL4WAN8nlqwFJftVqjrlW652O
-         yovL8Bppc6/qJzzH/O6rzCntep+1VbeYhRWaKmjVWXRqLN5SjF5e/cwRMC31XZJKVWxE
-         h17p0U+6GgnDHT/4EFr8TWcAu+4gFFePea91v55PVpyg0fgT95pHkUzAzQaWD8XjOLyB
-         vogQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G4SHg0v0UTb3/wETQ9utchWc9oSi737vagHnYZzNcEw=;
-        b=YJjNmDSviSOmRtHP/8bW1LbxMlDr1RGXMOvO9d7+D5XHQ/L+dGwly7/+CkE6vApvvi
-         7DzrvB2h7TvAJcJhX4IzVigry6KncLkq78C3cFHMFl11yxG0E+3hvC7Pk9ZQPHJgFDhI
-         kVWmCL2uxs/gN620nLN+r4Ow8ku/uoSoOpFrzi4KIsxeoGXphlf3MVKPtQcXzX3X8RUy
-         +ZsQuX8tFmR/ZI9bsbRMeSiT1cSom012vr8tKQxrIRbUJVdBWEUQoUMktFiiCuh1uaUW
-         JgLwVew8s+wepqoY+ReV5CdYppBxaUOvT7D6XMLIu3m9U1FgDGB6yhwusvvlthUGR/Hh
-         Pixg==
-X-Gm-Message-State: AJIora8hT5j21TQJuteVhY09dbeO12lZ8BrmWfjasjccOnqawLaN26nT
-        Ki8LgNrIK7JTPTZcnxktIWVktg==
-X-Google-Smtp-Source: AGRyM1ua6lLzYbEzTJQNV0u3KzfC8NiZH61p3CYrMfOwp61n3WD6zdS8uA7jQ6LgHPcEUmLg9bK8Bw==
-X-Received: by 2002:ac2:5590:0:b0:489:f4a2:5526 with SMTP id v16-20020ac25590000000b00489f4a25526mr5095824lfg.116.1657790732574;
-        Thu, 14 Jul 2022 02:25:32 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id s10-20020a2e2c0a000000b0025d70efeaaasm184639ljs.75.2022.07.14.02.25.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 02:25:32 -0700 (PDT)
-Message-ID: <8e564b29-50e2-aa83-7a21-f28d37b384d3@linaro.org>
-Date:   Thu, 14 Jul 2022 11:25:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 22/30] dt-bindings: phy: qcom,qmp-usb: add missing
- qcom,sc7180-qmp-usb3-phy schema
-Content-Language: en-US
-To:     Johan Hovold <johan+linaro@kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220707134725.3512-1-johan+linaro@kernel.org>
- <20220707134725.3512-23-johan+linaro@kernel.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220707134725.3512-23-johan+linaro@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Thu, 14 Jul 2022 05:26:35 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4507CF1A
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:26:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id BBA6834B79;
+        Thu, 14 Jul 2022 09:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657790767; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2NwB9/81lvuQa67kl1UAGviK/dw5NIlEVN0/I8KZbQE=;
+        b=xvPhEWSZ04fste5fKshzJF/7ZGkSmE+71bHdxKPCLBJ1si27tVtz+Snfo2VtPwVyY3cewk
+        pgNHI3scJfGhFuMUckV23WoQ4ZoCZRXUQ2J+iAQDJ7k9N2Q1kF6FAvCXQrYAjrbZg10ohP
+        xDnuUO8G/VmSMKfeAr189un9dWPufRE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657790767;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2NwB9/81lvuQa67kl1UAGviK/dw5NIlEVN0/I8KZbQE=;
+        b=V9jUYqHWe+qU+6Cu2dyQRKkQQy4Ae42RVv56byYNZK6i99jdvKiOxfuOw5g3pChogIdURU
+        iAxEUOdKacKqjtAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8D73413A61;
+        Thu, 14 Jul 2022 09:26:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id I9SeIS/hz2K7KQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Thu, 14 Jul 2022 09:26:07 +0000
+Date:   Thu, 14 Jul 2022 11:26:07 +0200
+Message-ID: <87sfn4vyds.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Mark Brown <broonie@kernel.org>, <alsa-devel@alsa-project.org>,
+        <patches@opensource.cirrus.com>, <linux-kernel@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: Re: [PATCH v8 01/14] ALSA: hda: hda_cs_dsp_ctl: Add Library to support CS_DSP ALSA controls
+In-Reply-To: <87tu7kvzav.wl-tiwai@suse.de>
+References: <20220630002335.366545-1-vitalyr@opensource.cirrus.com>
+        <20220630002335.366545-2-vitalyr@opensource.cirrus.com>
+        <87v8s0vzfv.wl-tiwai@suse.de>
+        <87tu7kvzav.wl-tiwai@suse.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/07/2022 15:47, Johan Hovold wrote:
-> The "qcom,sc7180-qmp-usb3-phy" compatible is apparently used to describe
-> a combo PHY where only the USB part is used. Specifically, only a single
-> reset is used.
+On Thu, 14 Jul 2022 11:06:16 +0200,
+Takashi Iwai wrote:
 > 
-> 4ad7d7eeed3a ("dt-bindings: phy: qcom,qmp-usb3-dp: Add support for SC7180")
-> 94c34600b617 ("dt-bindings: phy: qcom,qmp-usb3-dp-phy: move usb3 compatibles back to qcom,qmp-phy.yaml")
-> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
-> ---
+> On Thu, 14 Jul 2022 11:03:16 +0200,
+> Takashi Iwai wrote:
+> > 
+> > On Thu, 30 Jun 2022 02:23:22 +0200,
+> > Vitaly Rodionov wrote:
+> > > --- a/sound/pci/hda/Kconfig
+> > > +++ b/sound/pci/hda/Kconfig
+> > > @@ -94,6 +94,10 @@ config SND_HDA_PATCH_LOADER
+> > >  config SND_HDA_SCODEC_CS35L41
+> > >  	tristate
+> > >  
+> > > +config SND_HDA_CS_DSP_CONTROLS
+> > > +	tristate
+> > > +	depends on CS_DSP
+> > > +
+> > >  config SND_HDA_SCODEC_CS35L41_I2C
+> > >  	tristate "Build CS35L41 HD-audio side codec support for I2C Bus"
+> > >  	depends on I2C
+> > 
+> > This change alone doesn't give anything useful, unfortunately.
+> > 
+> > The above form (without prompt) is basically only to be "selected" by
+> > others.  And when selected, the "depends" there is just ignored, so
+> > it's useless.
+> > 
+> > That is, a proper way would be something like:
+> > 
+> > config SND_HDA_CS_DSP_CONTROLS
+> > 	tristate
+> > 
+> > config SND_HDA_SCODEC_CS35L41
+> > 	....
+> > 	select SND_HDA_CS_DSP_CONTROLS if CS_DSP
+> > 
+> > ... if you want / need to enable CONFIG_SND_HDA_CS_DSP_CONTROLS
+> > conditionally.
+> 
+> And now I see that the patch 4 has those selects (but select both
+> SND_HDA_CS_DSP_CONTROLS and CS_DSP).  So what we need here is to drop
+> the superfluous "depends on CS_DSP" and mention in the description
+> that the Kconfig will be actually enabled in the later patch.
+
+But no need for resubmission; I fixed this locally.
+
+So I applied up to the patch 8.  At patch 9, it can't build because of
+the lack of ASoC side change.
+
+Still waiting for *ANY* reaction from Mark...  Sigh.
 
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+thanks,
 
-
-Best regards,
-Krzysztof
+Takashi
