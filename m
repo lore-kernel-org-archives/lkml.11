@@ -2,203 +2,341 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788F2C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9639C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 07:47:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233065AbiGNHrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 03:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42918 "EHLO
+        id S237533AbiGNHrR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 03:47:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234625AbiGNHq7 (ORCPT
+        with ESMTP id S236682AbiGNHrA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 03:46:59 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAD337196;
-        Thu, 14 Jul 2022 00:46:57 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 15:46:45 +0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1657784816;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1TJviPunlwH7RxQV4jVLO1pPXI9F2og9+lwfZ75k6+g=;
-        b=OKMxJzzUX/eSiaPlxOT6jOv1GE3aUntvTUhYa/zLy2CJbOPuL7nAwGJXJ8p5NWffeqB118
-        YTbQyjLtSsm/NH6anB6VLWIOm/CcVlhhocIHHlNwmTBehCgatSEn1F4yO/M8UNl/aXO16n
-        reyCtQJBf8EZKXDfUHbKAMrUCx3bEwQ=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Tao Zhou <tao.zhou@linux.dev>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org, Tao Zhou <tao.zhou@linux.dev>
-Subject: Re: [PATCH V5 01/16] rv: Add Runtime Verification (RV) interface
-Message-ID: <Ys/J5fLaojYeiVzL@geo.homenetwork>
-References: <cover.1657745645.git.bristot@kernel.org>
- <442b03c687c298b25c79aa5a16ec7fb2aef0f2c9.1657745645.git.bristot@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <442b03c687c298b25c79aa5a16ec7fb2aef0f2c9.1657745645.git.bristot@kernel.org>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+        Thu, 14 Jul 2022 03:47:00 -0400
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 179CB1FCC0;
+        Thu, 14 Jul 2022 00:46:58 -0700 (PDT)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 615451A2051;
+        Thu, 14 Jul 2022 09:46:57 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id ED2781A2047;
+        Thu, 14 Jul 2022 09:46:56 +0200 (CEST)
+Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
+        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 5092B180222A;
+        Thu, 14 Jul 2022 15:46:55 +0800 (+08)
+From:   Richard Zhu <hongxing.zhu@nxp.com>
+To:     l.stach@pengutronix.de, bhelgaas@google.com, robh+dt@kernel.org,
+        broonie@kernel.org, lorenzo.pieralisi@arm.com, festevam@gmail.com,
+        francesco.dolcini@toradex.com
+Cc:     hongxing.zhu@nxp.com, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de, linux-imx@nxp.com
+Subject: [PATCH v15 02/17] PCI: imx6: Move PHY management functions together
+Date:   Thu, 14 Jul 2022 15:30:54 +0800
+Message-Id: <1657783869-19194-3-git-send-email-hongxing.zhu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
+References: <1657783869-19194-1-git-send-email-hongxing.zhu@nxp.com>
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:17:17PM +0200,
-Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-[...]
+Collect imx6_pcie_init_phy(), imx7d_pcie_wait_for_phy_pll_lock(), and
+imx6_setup_phy_mpll() earlier with other PHY-related code.  No functional
+change intended.
 
-> +void put_task_monitor_slot(int slot)
-> +{
-> +	lockdep_assert_held(&rv_interface_lock);
-> +
-> +	if (slot < 0 || slot > RV_PER_TASK_MONITORS) {
+Link: https://lore.kernel.org/r/1656645935-1370-3-git-send-email-hongxing.zhu@nxp.com
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Lucas Stach <l.stach@pengutronix.de>
+Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 256 +++++++++++++-------------
+ 1 file changed, 128 insertions(+), 128 deletions(-)
 
-slot is the array index that should be 0 here. The up bound is not bigger
-than 0 because the element of array now is RV_PER_TASK_MONITORS. 
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 8653ca8cbfb9..e63eb6380020 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -296,6 +296,134 @@ static int pcie_phy_write(struct imx6_pcie *imx6_pcie, int addr, u16 data)
+ 	return 0;
+ }
+ 
++static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
++{
++	switch (imx6_pcie->drvdata->variant) {
++	case IMX8MM:
++		/*
++		 * The PHY initialization had been done in the PHY
++		 * driver, break here directly.
++		 */
++		break;
++	case IMX8MQ:
++		/*
++		 * TODO: Currently this code assumes external
++		 * oscillator is being used
++		 */
++		regmap_update_bits(imx6_pcie->iomuxc_gpr,
++				   imx6_pcie_grp_offset(imx6_pcie),
++				   IMX8MQ_GPR_PCIE_REF_USE_PAD,
++				   IMX8MQ_GPR_PCIE_REF_USE_PAD);
++		/*
++		 * Regarding the datasheet, the PCIE_VPH is suggested
++		 * to be 1.8V. If the PCIE_VPH is supplied by 3.3V, the
++		 * VREG_BYPASS should be cleared to zero.
++		 */
++		if (imx6_pcie->vph &&
++		    regulator_get_voltage(imx6_pcie->vph) > 3000000)
++			regmap_update_bits(imx6_pcie->iomuxc_gpr,
++					   imx6_pcie_grp_offset(imx6_pcie),
++					   IMX8MQ_GPR_PCIE_VREG_BYPASS,
++					   0);
++		break;
++	case IMX7D:
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
++				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL, 0);
++		break;
++	case IMX6SX:
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
++				   IMX6SX_GPR12_PCIE_RX_EQ_MASK,
++				   IMX6SX_GPR12_PCIE_RX_EQ_2);
++		fallthrough;
++	default:
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
++				   IMX6Q_GPR12_PCIE_CTL_2, 0 << 10);
++
++		/* configure constant input signal to the pcie ctrl and phy */
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
++				   IMX6Q_GPR12_LOS_LEVEL, 9 << 4);
++
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
++				   IMX6Q_GPR8_TX_DEEMPH_GEN1,
++				   imx6_pcie->tx_deemph_gen1 << 0);
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
++				   IMX6Q_GPR8_TX_DEEMPH_GEN2_3P5DB,
++				   imx6_pcie->tx_deemph_gen2_3p5db << 6);
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
++				   IMX6Q_GPR8_TX_DEEMPH_GEN2_6DB,
++				   imx6_pcie->tx_deemph_gen2_6db << 12);
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
++				   IMX6Q_GPR8_TX_SWING_FULL,
++				   imx6_pcie->tx_swing_full << 18);
++		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
++				   IMX6Q_GPR8_TX_SWING_LOW,
++				   imx6_pcie->tx_swing_low << 25);
++		break;
++	}
++
++	imx6_pcie_configure_type(imx6_pcie);
++}
++
++static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
++{
++	u32 val;
++	struct device *dev = imx6_pcie->pci->dev;
++
++	if (regmap_read_poll_timeout(imx6_pcie->iomuxc_gpr,
++				     IOMUXC_GPR22, val,
++				     val & IMX7D_GPR22_PCIE_PHY_PLL_LOCKED,
++				     PHY_PLL_LOCK_WAIT_USLEEP_MAX,
++				     PHY_PLL_LOCK_WAIT_TIMEOUT))
++		dev_err(dev, "PCIe PLL lock timeout\n");
++}
++
++static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
++{
++	unsigned long phy_rate = clk_get_rate(imx6_pcie->pcie_phy);
++	int mult, div;
++	u16 val;
++
++	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_IMX6_PHY))
++		return 0;
++
++	switch (phy_rate) {
++	case 125000000:
++		/*
++		 * The default settings of the MPLL are for a 125MHz input
++		 * clock, so no need to reconfigure anything in that case.
++		 */
++		return 0;
++	case 100000000:
++		mult = 25;
++		div = 0;
++		break;
++	case 200000000:
++		mult = 25;
++		div = 1;
++		break;
++	default:
++		dev_err(imx6_pcie->pci->dev,
++			"Unsupported PHY reference clock rate %lu\n", phy_rate);
++		return -EINVAL;
++	}
++
++	pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &val);
++	val &= ~(PCIE_PHY_MPLL_MULTIPLIER_MASK <<
++		 PCIE_PHY_MPLL_MULTIPLIER_SHIFT);
++	val |= mult << PCIE_PHY_MPLL_MULTIPLIER_SHIFT;
++	val |= PCIE_PHY_MPLL_MULTIPLIER_OVRD;
++	pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, val);
++
++	pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &val);
++	val &= ~(PCIE_PHY_ATEOVRD_REF_CLKDIV_MASK <<
++		 PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT);
++	val |= div << PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT;
++	val |= PCIE_PHY_ATEOVRD_EN;
++	pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, val);
++
++	return 0;
++}
++
+ static void imx6_pcie_reset_phy(struct imx6_pcie *imx6_pcie)
+ {
+ 	u16 tmp;
+@@ -500,19 +628,6 @@ static int imx6_pcie_enable_ref_clk(struct imx6_pcie *imx6_pcie)
+ 	return ret;
+ }
+ 
+-static void imx7d_pcie_wait_for_phy_pll_lock(struct imx6_pcie *imx6_pcie)
+-{
+-	u32 val;
+-	struct device *dev = imx6_pcie->pci->dev;
+-
+-	if (regmap_read_poll_timeout(imx6_pcie->iomuxc_gpr,
+-				     IOMUXC_GPR22, val,
+-				     val & IMX7D_GPR22_PCIE_PHY_PLL_LOCKED,
+-				     PHY_PLL_LOCK_WAIT_USLEEP_MAX,
+-				     PHY_PLL_LOCK_WAIT_TIMEOUT))
+-		dev_err(dev, "PCIe PLL lock timeout\n");
+-}
+-
+ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ {
+ 	struct dw_pcie *pci = imx6_pcie->pci;
+@@ -635,121 +750,6 @@ static void imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
+ 	}
+ }
+ 
+-static void imx6_pcie_init_phy(struct imx6_pcie *imx6_pcie)
+-{
+-	switch (imx6_pcie->drvdata->variant) {
+-	case IMX8MM:
+-		/*
+-		 * The PHY initialization had been done in the PHY
+-		 * driver, break here directly.
+-		 */
+-		break;
+-	case IMX8MQ:
+-		/*
+-		 * TODO: Currently this code assumes external
+-		 * oscillator is being used
+-		 */
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr,
+-				   imx6_pcie_grp_offset(imx6_pcie),
+-				   IMX8MQ_GPR_PCIE_REF_USE_PAD,
+-				   IMX8MQ_GPR_PCIE_REF_USE_PAD);
+-		/*
+-		 * Regarding the datasheet, the PCIE_VPH is suggested
+-		 * to be 1.8V. If the PCIE_VPH is supplied by 3.3V, the
+-		 * VREG_BYPASS should be cleared to zero.
+-		 */
+-		if (imx6_pcie->vph &&
+-		    regulator_get_voltage(imx6_pcie->vph) > 3000000)
+-			regmap_update_bits(imx6_pcie->iomuxc_gpr,
+-					   imx6_pcie_grp_offset(imx6_pcie),
+-					   IMX8MQ_GPR_PCIE_VREG_BYPASS,
+-					   0);
+-		break;
+-	case IMX7D:
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+-				   IMX7D_GPR12_PCIE_PHY_REFCLK_SEL, 0);
+-		break;
+-	case IMX6SX:
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+-				   IMX6SX_GPR12_PCIE_RX_EQ_MASK,
+-				   IMX6SX_GPR12_PCIE_RX_EQ_2);
+-		fallthrough;
+-	default:
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+-				   IMX6Q_GPR12_PCIE_CTL_2, 0 << 10);
+-
+-		/* configure constant input signal to the pcie ctrl and phy */
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR12,
+-				   IMX6Q_GPR12_LOS_LEVEL, 9 << 4);
+-
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
+-				   IMX6Q_GPR8_TX_DEEMPH_GEN1,
+-				   imx6_pcie->tx_deemph_gen1 << 0);
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
+-				   IMX6Q_GPR8_TX_DEEMPH_GEN2_3P5DB,
+-				   imx6_pcie->tx_deemph_gen2_3p5db << 6);
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
+-				   IMX6Q_GPR8_TX_DEEMPH_GEN2_6DB,
+-				   imx6_pcie->tx_deemph_gen2_6db << 12);
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
+-				   IMX6Q_GPR8_TX_SWING_FULL,
+-				   imx6_pcie->tx_swing_full << 18);
+-		regmap_update_bits(imx6_pcie->iomuxc_gpr, IOMUXC_GPR8,
+-				   IMX6Q_GPR8_TX_SWING_LOW,
+-				   imx6_pcie->tx_swing_low << 25);
+-		break;
+-	}
+-
+-	imx6_pcie_configure_type(imx6_pcie);
+-}
+-
+-static int imx6_setup_phy_mpll(struct imx6_pcie *imx6_pcie)
+-{
+-	unsigned long phy_rate = clk_get_rate(imx6_pcie->pcie_phy);
+-	int mult, div;
+-	u16 val;
+-
+-	if (!(imx6_pcie->drvdata->flags & IMX6_PCIE_FLAG_IMX6_PHY))
+-		return 0;
+-
+-	switch (phy_rate) {
+-	case 125000000:
+-		/*
+-		 * The default settings of the MPLL are for a 125MHz input
+-		 * clock, so no need to reconfigure anything in that case.
+-		 */
+-		return 0;
+-	case 100000000:
+-		mult = 25;
+-		div = 0;
+-		break;
+-	case 200000000:
+-		mult = 25;
+-		div = 1;
+-		break;
+-	default:
+-		dev_err(imx6_pcie->pci->dev,
+-			"Unsupported PHY reference clock rate %lu\n", phy_rate);
+-		return -EINVAL;
+-	}
+-
+-	pcie_phy_read(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, &val);
+-	val &= ~(PCIE_PHY_MPLL_MULTIPLIER_MASK <<
+-		 PCIE_PHY_MPLL_MULTIPLIER_SHIFT);
+-	val |= mult << PCIE_PHY_MPLL_MULTIPLIER_SHIFT;
+-	val |= PCIE_PHY_MPLL_MULTIPLIER_OVRD;
+-	pcie_phy_write(imx6_pcie, PCIE_PHY_MPLL_OVRD_IN_LO, val);
+-
+-	pcie_phy_read(imx6_pcie, PCIE_PHY_ATEOVRD, &val);
+-	val &= ~(PCIE_PHY_ATEOVRD_REF_CLKDIV_MASK <<
+-		 PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT);
+-	val |= div << PCIE_PHY_ATEOVRD_REF_CLKDIV_SHIFT;
+-	val |= PCIE_PHY_ATEOVRD_EN;
+-	pcie_phy_write(imx6_pcie, PCIE_PHY_ATEOVRD, val);
+-
+-	return 0;
+-}
+-
+ static int imx6_pcie_wait_for_speed_change(struct imx6_pcie *imx6_pcie)
+ {
+ 	struct dw_pcie *pci = imx6_pcie->pci;
+-- 
+2.25.1
 
-So up bound check is 'slot > RV_PER_TASK_MONITORS-1'.
-
-[...]
-
-> +/*
-> + * interface for enabling/disabling a monitor.
-> + */
-> +static ssize_t monitor_enable_write_data(struct file *filp, const char __user *user_buf,
-> +					 size_t count, loff_t *ppos)
-> +{
-> +	struct rv_monitor_def *mdef = filp->private_data;
-> +	int retval;
-> +	bool val;
-> +
-> +	retval = kstrtobool_from_user(user_buf, count, &val);
-> +	if (retval)
-> +		return retval;
-> +
-> +	retval = count;
-> +
-> +	mutex_lock(&rv_interface_lock);
-> +
-> +	if (val)
-> +		retval = enable_monitor(mdef);
-> +	else
-> +		retval = disable_monitor(mdef);
-> +
-> +	mutex_unlock(&rv_interface_lock);
-> +
-> +	return retval ? retval : count;
-
-Feel that this can be written `return retval ? : count;`
-
-[...]
-
-> +static void *enabled_monitors_start(struct seq_file *m, loff_t *pos)
-> +{
-> +	struct rv_monitor_def *m_def;
-> +	loff_t l;
-> +
-> +	mutex_lock(&rv_interface_lock);
-> +
-> +	if (list_empty(&rv_monitors_list))
-> +		return NULL;
-> +
-> +	m_def = list_entry(&rv_monitors_list, struct rv_monitor_def, list);
-> +
-> +	for (l = 0; l <= *pos; ) {
-> +		m_def = enabled_monitors_next(m, m_def, &l);
-> +		if (!m_def)
-> +			break;
-
-Is this check is inversed. enabled_monitors_start() will stop at first
-enabled monitor, then enabled_monitors_next() do loop to next. Check
-like the above, enabled_monitors_start() will loop to the last monitor.
-But I doubt myself I do not mention/see it. Sorry for these.
-
-the check is:
-
-  if (m_def)
-     break;
-
-[...]
-
-> +static ssize_t
-> +enabled_monitors_write(struct file *filp, const char __user *user_buf,
-> +		      size_t count, loff_t *ppos)
-> +{
-> +	char buff[MAX_RV_MONITOR_NAME_SIZE + 2];
-> +	struct rv_monitor_def *mdef;
-> +	int retval = -EINVAL;
-> +	bool enable = true;
-> +	char *ptr = buff;
-> +	int len;
-> +
-> +	if (count < 1 || count > MAX_RV_MONITOR_NAME_SIZE + 2)
-
-@count would not include '\0'. That the max val of @count is
-MAX_RV_MONITOR_NAME_SIZE+1. So the up bound check of @count is
-`count > MAX_RV_MONITOR_NAME_SIZE + 1`.
-
-Thanks,
-Tao
-> +		return -EINVAL;
-> +
-> +	memset(buff, 0, sizeof(buff));
-> +
-> +	retval = simple_write_to_buffer(buff, sizeof(buff) - 1, ppos, user_buf, count);
-> +	if (!retval)
-> +		return -EFAULT;
-> +
-> +	ptr = strim(buff);
-> +
-> +	if (ptr[0] == '!') {
-> +		enable = false;
-> +		ptr++;
-> +	}
-> +
-> +	len = strlen(ptr);
-> +	if (!len)
-> +		return count;
-> +
-> +	mutex_lock(&rv_interface_lock);
-> +
-> +	retval = -EINVAL;
-> +
-> +	list_for_each_entry(mdef, &rv_monitors_list, list) {
-> +		if (strcmp(ptr, mdef->monitor->name) != 0)
-> +			continue;
-> +
-> +		/*
-> +		 * Monitor found!
-> +		 */
-> +		if (enable)
-> +			retval = enable_monitor(mdef);
-> +		else
-> +			retval = disable_monitor(mdef);
-> +
-> +		if (!retval)
-> +			retval = count;
-> +
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&rv_interface_lock);
-> +	return retval;
-> +}
