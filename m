@@ -2,117 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C973C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A571C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 16:33:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239578AbiGNQc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:32:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59354 "EHLO
+        id S239714AbiGNQdN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 12:33:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231500AbiGNQcy (ORCPT
+        with ESMTP id S231500AbiGNQdL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 12:32:54 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB0C65D47
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 09:32:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657816374; x=1689352374;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hrSSjMWo8WckyvVnXPS6RM06bADQr4nBTt9NDV+S++0=;
-  b=Us9dBHy5ebxu/FzHMuyLYZptao6XZvNloKQS88s72ylvPVgxkG6o5YL9
-   S14tcxV4LA+A6XPQM6MakCyo2JuNFLAicDo6AhZcdWT0IDlLbIJ/JjmAS
-   nzXD/l4v1KZUwK74ATnuHdGBn1JKgFEkc++oN3OZ+cO6mN8/ExGFp/DTY
-   cbA5jOmEJQ/2zYAtv+9cm5XdQ4BCFpzeW+Io3E+ikAniakzZyzrnv+BVb
-   IjSm8r42I7H8+r7FqfQM/9j2w+aFnH7aC5QUD2DXoCq+4jH3Fxn5+m4Wv
-   1yCLRrmGMNaX/abn1ef52ACmH5tHbFYHkz5kV/2/+nHq4498BbC04vYgQ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="347245445"
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="347245445"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2022 09:32:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,271,1650956400"; 
-   d="scan'208";a="571162785"
-Received: from lkp-server01.sh.intel.com (HELO fd2c14d642b4) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 14 Jul 2022 09:32:28 -0700
-Received: from kbuild by fd2c14d642b4 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oC1lL-0000sA-8v;
-        Thu, 14 Jul 2022 16:32:27 +0000
-Date:   Fri, 15 Jul 2022 00:32:06 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dani Liberman <dliberman@habana.ai>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Oded Gabbay <ogabbay@kernel.org>
-Subject: [ogabbay:habanalabs-next 1/3]
- drivers/misc/habanalabs/common/debugfs.c:599:9: warning: function
- 'hl_engine_data_sprintf' might be a candidate for 'gnu_printf' format
- attribute
-Message-ID: <202207150057.RUJOxIhW-lkp@intel.com>
+        Thu, 14 Jul 2022 12:33:11 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3FB8655BE;
+        Thu, 14 Jul 2022 09:33:10 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y4so3132436edc.4;
+        Thu, 14 Jul 2022 09:33:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KKGLBgoJENP1ndNirJV7mLartfrtHoCd/+TqG/AV5qY=;
+        b=TWc/HlV7tLW63L6eBsecKG7ffiJp5KmdklZzPVp52OOlajkhFqdxQBiO/arOmuBy+U
+         jp10Pn3Qh2AaMcNlY2rcn3adC4xNRsOAK0/goL7EoOIhRS1cPRYgDpEqF0jECZGZWwH/
+         6L/6GoY3nM/oGaoMOXlo83InapnSkCMH+iGytkca9C1ke7Dm7TXOJLCSly8zLUTfygVO
+         /Q7fpEK+Yy7EpHIC3xyS2HztCbijfO7/tEdSby5aU3eQniSB7os4PBE4QqGCifc0/Lef
+         sZAeRZsvoakNsyHEw9cjkRAfo62eEuHVjQ7WOFvO6OhiCvhxvG8tb/XDVtVQW8r/Pd1X
+         I7qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KKGLBgoJENP1ndNirJV7mLartfrtHoCd/+TqG/AV5qY=;
+        b=ERssPa4ltsLYSnh1C9D5wJDHZsX2RTh28XMsGJhv1phB2hCXaw1EoH9IHJ9T7vhJSl
+         kpq9pM/NP0ejO1SbPIHm5uWEJni7kJHQbtXmXnp5c15AfAy/7oMKRJ3j6MO1Gp1nGgIp
+         9jNEyB3/EZLtO67vDRyQkix3RbrAOdS3qxpXZcuhVCvVc4R0Pea37+ZhUA3QDJOrbUED
+         b67ErkMX4dIZ+xlGcyf9Ap4HqfTO6+ea2acyFufjQXNhm6kx/NZkXuAMVTh3V4Wh7P0e
+         c56gyqrw291OG9pUNnqn7CLo2W7g1bp+2rUE582b+gV6ihVWIeRVCuQJ1qJMi/6ehusS
+         MxPw==
+X-Gm-Message-State: AJIora/bFkAP3AHEwfNGFhVDgNW37qFRw4lewdnAj/UVywEsBJKyYnY/
+        51t2j34dEmVMVFBVGv8uFn0O+IYcVM8=
+X-Google-Smtp-Source: AGRyM1tsh9pFzJTqkVz9D0nqsNb4uGzzg7MShuzr3IgiW57if2wZoqh2oINU2uJ1UtkIJS/+yPl4uQ==
+X-Received: by 2002:a05:6402:3202:b0:43a:86f5:a930 with SMTP id g2-20020a056402320200b0043a86f5a930mr13173571eda.389.1657816389164;
+        Thu, 14 Jul 2022 09:33:09 -0700 (PDT)
+Received: from localhost.localdomain ([46.248.82.114])
+        by smtp.gmail.com with ESMTPSA id lr3-20020a170906fb8300b006feb479fcb4sm877682ejb.44.2022.07.14.09.33.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 09:33:08 -0700 (PDT)
+From:   Uros Bizjak <ubizjak@gmail.com>
+To:     io-uring@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Uros Bizjak <ubizjak@gmail.com>, Jens Axboe <axboe@kernel.dk>,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH] io_uring: Use atomic_long_try_cmpxchg in __io_account_mem
+Date:   Thu, 14 Jul 2022 18:33:01 +0200
+Message-Id: <20220714163301.67794-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git habanalabs-next
-head:   0339d759da283025aa01ba72cb7e5b6df9978670
-commit: b916f64dace37d374de75823a203749caf30fd7c [1/3] habanalabs: removed seq_file parameter from is_idle asic functions
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220715/202207150057.RUJOxIhW-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git/commit/?id=b916f64dace37d374de75823a203749caf30fd7c
-        git remote add ogabbay https://git.kernel.org/pub/scm/linux/kernel/git/ogabbay/linux.git
-        git fetch --no-tags ogabbay habanalabs-next
-        git checkout b916f64dace37d374de75823a203749caf30fd7c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/misc/
+Use atomic_long_try_cmpxchg instead of
+atomic_long_cmpxchg (*ptr, old, new) == old in __io_account_mem.
+x86 CMPXCHG instruction returns success in ZF flag, so this
+change saves a compare after cmpxchg (and related move
+instruction in front of cmpxchg).
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Also, atomic_long_try_cmpxchg implicitly assigns old *ptr value
+to "old" when cmpxchg fails, enabling further code simplifications.
 
-All warnings (new ones prefixed by >>):
+No functional change intended.
 
-   drivers/misc/habanalabs/common/debugfs.c: In function 'hl_engine_data_sprintf':
->> drivers/misc/habanalabs/common/debugfs.c:599:9: warning: function 'hl_engine_data_sprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     599 |         str_size = vsnprintf(NULL, 0, fmt, args) + 1;
-         |         ^~~~~~~~
-   drivers/misc/habanalabs/common/debugfs.c:604:17: warning: function 'hl_engine_data_sprintf' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]
-     604 |                 vsnprintf(e->buf + e->actual_size, str_size, fmt, args);
-         |                 ^~~~~~~~~
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: Jens Axboe <axboe@kernel.dk>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+---
+ fs/io_uring.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-
-vim +599 drivers/misc/habanalabs/common/debugfs.c
-
-   589	
-   590	void hl_engine_data_sprintf(struct engines_data *e, const char *fmt, ...)
-   591	{
-   592		va_list args;
-   593		int str_size;
-   594	
-   595		va_start(args, fmt);
-   596		/* Calculate formatted string length. Assuming each string is null terminated, hence
-   597		 * increment result by 1
-   598		 */
- > 599		str_size = vsnprintf(NULL, 0, fmt, args) + 1;
-   600		va_end(args);
-   601	
-   602		if ((e->actual_size + str_size) < e->allocated_buf_size) {
-   603			va_start(args, fmt);
-   604			vsnprintf(e->buf + e->actual_size, str_size, fmt, args);
-   605			va_end(args);
-   606		}
-   607	
-   608		/* Need to update the size even when not updating destination buffer to get the exact size
-   609		 * of all input strings
-   610		 */
-   611		e->actual_size += str_size;
-   612	
-
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index a01ea49f3017..9f82904dcdae 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -10504,14 +10504,13 @@ static inline int __io_account_mem(struct user_struct *user,
+ 	/* Don't allow more pages than we can safely lock */
+ 	page_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+ 
++	cur_pages = atomic_long_read(&user->locked_vm);
+ 	do {
+-		cur_pages = atomic_long_read(&user->locked_vm);
+ 		new_pages = cur_pages + nr_pages;
+ 		if (new_pages > page_limit)
+ 			return -ENOMEM;
+-	} while (atomic_long_cmpxchg(&user->locked_vm, cur_pages,
+-					new_pages) != cur_pages);
+-
++	} while (!atomic_long_try_cmpxchg(&user->locked_vm,
++					  &cur_pages, new_pages));
+ 	return 0;
+ }
+ 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.35.3
+
