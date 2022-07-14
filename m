@@ -2,164 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8950C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:49:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 770C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235547AbiGOPtf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        id S240847AbiGNSwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 14:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232977AbiGOPtd (ORCPT
+        with ESMTP id S240850AbiGNSwG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:49:33 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E29F1583F
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:49:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657900172; x=1689436172;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tMJM0gpoSjUX4klaDrEskeTxkKDpiAsTsQ/4ST94qrE=;
-  b=RrWUt7migTCSoVRGh5yXmXwqBYDVBhnC9AEnwH59V/xkp21J4nLqtx7Y
-   7ejLgtRBE4fly2jRtjubiX86T6Avg11UeyO3SWOk0FUs0W6jhn7avOpPT
-   slI/XoXNEyV6qhIzGDLOVrUmfQnDVABwKIvqbGKMN/O/9591zn97ot/z2
-   E0nNLGFTa2c476/YxyoowT/keG0PuUOrpofuyFSXYgFOLXlnce8YOqPAt
-   uN1FrEDUG3y3fs9S7sVNiF2Xm/NKOxGpjA5eEdx/efeJxu5SJ08f7801w
-   v2yRfYDM2uZtMAbu/ljmwhBbPlOpmjTlsOJ5/IKXVn2DVJeh1uJ1vIDuu
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="265615124"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="265615124"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 08:49:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="686000927"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Jul 2022 08:49:31 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCNZK-0000M7-DE;
-        Fri, 15 Jul 2022 15:49:30 +0000
-Date:   Fri, 15 Jul 2022 23:48:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [arm-integrator:kernel-in-vmalloc-v5.19-rc1 25/35]
- arch/mips/include/asm/io.h:114:27: error: conflicting types for
- 'virt_to_phys'; have 'phys_addr_t(const volatile void *)' {aka 'long long
- unsigned int(const volatile void *)'}
-Message-ID: <202207152323.Zu5bzaHS-lkp@intel.com>
+        Thu, 14 Jul 2022 14:52:06 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F346BC18
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:52:04 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id x10so2746725ljj.11
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=49yEzsvmawtcLnUgC2yQBZE5eXJRfHTmZ4ZvW7x4v9c=;
+        b=hrGmrdgdTvFHno5/QTxcHC3PCTGFb4gMP0U3KyLiK9V2rGqR/D85NhUJ3AZjXLs1px
+         rhLgTtPhGrvFuxgJ/VgsBqaKSFfGKYm86IOtWYefA+6glY1VXTK/qhDap+UY22HHfkNJ
+         vZ8IsiZVaNaPX6Bbq5+Onmw3sjeRLKhphF2ZSOZHpBFaOUOVbz/xHQumxKLL7L6/aIUF
+         tuzj3oGVfUiAqbuY3tRsL/pn23F+Noxex/K0jaFxhwYCEKn+7ZWIqaUaJ3hbigFN3a/J
+         rBaYTIDRpFkX4InPJ1RYICmFjai5MTVDl99l64L3k3G0E/nLBcbEzOH6EDOQ+IEVixmq
+         E6jg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=49yEzsvmawtcLnUgC2yQBZE5eXJRfHTmZ4ZvW7x4v9c=;
+        b=rh5WOlDJ1rr2cqQogjiMSilBlofDCgsAWzpNHLMUZhpx/jKHfUmOaTD0U19Sq8ZAzu
+         329Qmi/vtaovIFW1KS16aWPyJQ5BBWmPXxc40fGmxFeuKxJNEEY34bav3u/SHMrFLTFA
+         +s+GmNOPi461PIQYZAeME7K0Xa1PP2gKDPvG3BmBa0gSJ8puOGr6NeTPJDu+AzXlhXCm
+         4BVybWaQR8WWwu92t6Ltp7r1AAmoyi4Y7fLW5u7XuaHiFP5JXUYgCvu5r2npRok6PpaS
+         ZD0K3ygnpsxzMUUNGa6kIAhwIa1GGXiR19Tn+MIH7V7Vp+70uwRRJak0PjG1Zwr3JeGe
+         yfJw==
+X-Gm-Message-State: AJIora89sogsC+wRdc8XBCvIgjOp46NBDce6sefUU0yt00Lkp1VoYp76
+        lIUrhuOPRnKe7KtpLjgUgMpxXKMOCOS1c4ppyl9aNA==
+X-Google-Smtp-Source: AGRyM1v5WFvUhT4uy7cRgZ3s0XpRydE/lwxo9oq/CznFK8qS3NKe4Z/vQPPAvwjdNxDpqCwbMDMfWzcGpf04XwFb+u0=
+X-Received: by 2002:a2e:a5cb:0:b0:25d:7a70:2891 with SMTP id
+ n11-20020a2ea5cb000000b0025d7a702891mr5388267ljp.295.1657824723053; Thu, 14
+ Jul 2022 11:52:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220714185514.7d1a2ac9@canb.auug.org.au> <Ys/42uMzQy+CFTGI@debian>
+ <YtA+127QgRifnRBZ@dev-arch.thelio-3990X> <CADVatmOTNA8uVqDEx6kp=+_O=wEhV2jbS9-frct-c4ZqBxcspg@mail.gmail.com>
+In-Reply-To: <CADVatmOTNA8uVqDEx6kp=+_O=wEhV2jbS9-frct-c4ZqBxcspg@mail.gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Thu, 14 Jul 2022 11:51:51 -0700
+Message-ID: <CAKwvOdmS2SugAzRSmQzWAmRgz642KEgTtOw5O3TvZwFSHU-fPQ@mail.gmail.com>
+Subject: Re: linux-next: Tree for Jul 14
+To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+Cc:     Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git kernel-in-vmalloc-v5.19-rc1
-head:   144435741b0a6f31403d3084103678da3b4f9d11
-commit: f9b8d36b54a1776051d8adb548924d14cbe57535 [25/35] MIPS: Make virt_to_pfn() a static inline
-config: mips-bigsur_defconfig (https://download.01.org/0day-ci/archive/20220715/202207152323.Zu5bzaHS-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git/commit/?id=f9b8d36b54a1776051d8adb548924d14cbe57535
-        git remote add arm-integrator https://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-integrator.git
-        git fetch --no-tags arm-integrator kernel-in-vmalloc-v5.19-rc1
-        git checkout f9b8d36b54a1776051d8adb548924d14cbe57535
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips prepare
+(Moving Stephen, linux-next, and lkml to bcc)
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Thu, Jul 14, 2022 at 9:22 AM Sudip Mukherjee
+<sudipm.mukherjee@gmail.com> wrote:
+>
+> Hi Nathan,
+>
+> On Thu, Jul 14, 2022 at 5:05 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > Hi Sudip,
+> >
+> >
+> > In the future, consider CC'ing our mailing list (llvm@lists.linux.dev)
+> > for any clang related issues so that we can get them taken care of ASAP,
+> > we have a MAINTAINERS entry for a reason :) thank you for testing with
+> > clang; the more people that use it, hopefully the easier it will be to
+> > get things unbroken.
+>
+> Sure. I run arm, arm64, powerpc and x86_64 allmodconfigs with clang
+> (along with gcc) every night for mainline, started with linux-next
+> from today. Trying to setup the mips build also, I will mail llvm list
+> asking for help with the mips build.
+> Currently I only monitor the clang output from x86_64 as thats the one
+> which builds. If you want I can send the other reports also.
 
-All errors (new ones prefixed by >>):
+Hi Sudip!
+Right on, nice to hear from you.  Consider filing bugs in our issue tracker
+https://github.com/ClangBuiltLinux/linux/issues (consider taking a
+peak to see which are already known issues and commenting on those
+rather than filing new ones, time permitting), and joining our meeting
+(next one in two weeks) see https://clangbuiltlinux.github.io/ for
+calendar invite and meeting link.
 
-   In file included from arch/mips/include/asm/page.h:73,
-                    from arch/mips/include/asm/io.h:29,
-                    from include/linux/io.h:13,
-                    from arch/mips/include/asm/mips-cps.h:11,
-                    from arch/mips/include/asm/smp-ops.h:16,
-                    from arch/mips/include/asm/smp.h:21,
-                    from include/linux/smp.h:113,
-                    from arch/mips/include/asm/cpu-type.h:12,
-                    from arch/mips/include/asm/timex.h:19,
-                    from include/linux/timex.h:67,
-                    from include/linux/time32.h:13,
-                    from include/linux/time.h:60,
-                    from include/linux/compat.h:10,
-                    from arch/mips/kernel/asm-offsets.c:12:
-   arch/mips/include/asm/page.h: In function 'virt_to_pfn':
-   arch/mips/include/asm/page.h:262:40: error: implicit declaration of function 'virt_to_phys'; did you mean 'virt_to_pfn'? [-Werror=implicit-function-declaration]
-     262 |         return (unsigned long)PFN_DOWN(virt_to_phys(kaddr));
-         |                                        ^~~~~~~~~~~~
-   include/linux/pfn.h:20:27: note: in definition of macro 'PFN_DOWN'
-      20 | #define PFN_DOWN(x)     ((x) >> PAGE_SHIFT)
-         |                           ^
-   arch/mips/include/asm/io.h: At top level:
->> arch/mips/include/asm/io.h:114:27: error: conflicting types for 'virt_to_phys'; have 'phys_addr_t(const volatile void *)' {aka 'long long unsigned int(const volatile void *)'}
-     114 | static inline phys_addr_t virt_to_phys(const volatile void *x)
-         |                           ^~~~~~~~~~~~
-   arch/mips/include/asm/page.h:262:40: note: previous implicit declaration of 'virt_to_phys' with type 'int()'
-     262 |         return (unsigned long)PFN_DOWN(virt_to_phys(kaddr));
-         |                                        ^~~~~~~~~~~~
-   include/linux/pfn.h:20:27: note: in definition of macro 'PFN_DOWN'
-      20 | #define PFN_DOWN(x)     ((x) >> PAGE_SHIFT)
-         |                           ^
-   arch/mips/kernel/asm-offsets.c:26:6: warning: no previous prototype for 'output_ptreg_defines' [-Wmissing-prototypes]
-      26 | void output_ptreg_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:78:6: warning: no previous prototype for 'output_task_defines' [-Wmissing-prototypes]
-      78 | void output_task_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:92:6: warning: no previous prototype for 'output_thread_info_defines' [-Wmissing-prototypes]
-      92 | void output_thread_info_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:108:6: warning: no previous prototype for 'output_thread_defines' [-Wmissing-prototypes]
-     108 | void output_thread_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:136:6: warning: no previous prototype for 'output_thread_fpu_defines' [-Wmissing-prototypes]
-     136 | void output_thread_fpu_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:179:6: warning: no previous prototype for 'output_mm_defines' [-Wmissing-prototypes]
-     179 | void output_mm_defines(void)
-         |      ^~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:240:6: warning: no previous prototype for 'output_sc_defines' [-Wmissing-prototypes]
-     240 | void output_sc_defines(void)
-         |      ^~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:253:6: warning: no previous prototype for 'output_signal_defined' [-Wmissing-prototypes]
-     253 | void output_signal_defined(void)
-         |      ^~~~~~~~~~~~~~~~~~~~~
-   arch/mips/kernel/asm-offsets.c:346:6: warning: no previous prototype for 'output_kvm_defines' [-Wmissing-prototypes]
-     346 | void output_kvm_defines(void)
-         |      ^~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-   make[2]: *** [scripts/Makefile.build:117: arch/mips/kernel/asm-offsets.s] Error 1
-   make[2]: Target 'missing-syscalls' not remade because of errors.
-   make[1]: *** [arch/mips/Makefile:408: archprepare] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+> I have added Lukas if you both think
+> it will be good to collaborate.
 
-
-vim +114 arch/mips/include/asm/io.h
-
-dfad83cb7193ef Florian Fainelli 2021-03-30  113  
-dfad83cb7193ef Florian Fainelli 2021-03-30 @114  static inline phys_addr_t virt_to_phys(const volatile void *x)
-dfad83cb7193ef Florian Fainelli 2021-03-30  115  {
-dfad83cb7193ef Florian Fainelli 2021-03-30  116  	return __virt_to_phys(x);
-dfad83cb7193ef Florian Fainelli 2021-03-30  117  }
-dfad83cb7193ef Florian Fainelli 2021-03-30  118  
-
-:::::: The code at line 114 was first introduced by commit
-:::::: dfad83cb7193effb6c853a5c7337ac2274a2e2fc MIPS: Add support for CONFIG_DEBUG_VIRTUAL
-
-:::::: TO: Florian Fainelli <f.fainelli@gmail.com>
-:::::: CC: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-
+Ah, yeah, Lukas is an old friend. Hi Lukas!
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+~Nick Desaulniers
