@@ -2,109 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69EF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A180C43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 12:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238496AbiGNMH6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 08:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48848 "EHLO
+        id S238826AbiGNMID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 08:08:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238979AbiGNMGi (ORCPT
+        with ESMTP id S239153AbiGNMGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 08:06:38 -0400
+        Thu, 14 Jul 2022 08:06:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4925C9C1;
-        Thu, 14 Jul 2022 05:06:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 288435C9C7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 05:06:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D954B824E6;
-        Thu, 14 Jul 2022 12:06:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E05F2C36AEB;
-        Thu, 14 Jul 2022 12:06:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C037B824A3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 12:06:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC669C341C6;
+        Thu, 14 Jul 2022 12:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657800390;
-        bh=Jh3Kqp3PsRoCdV/mDv7WITLyqYY/AxdJ08g/jrYtT8s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OIgjqA3dm1ZNcOs4sigMBewggrVchZpVTA5rNuae+XM7YrjOQHNW9/uymVQfTZDu9
-         Xxi0CncfiWX3qzNg0VM5v0h4yf6r/fp0ZbaKiHiocTVTEU4AKBTXHyDwKXA421eSs6
-         PFQ/48Ul/D/UNepuw+Yx03bwVqEsN0vHzE9ihZzdTRjMxUBvOsfx01M+SYgiB0sk6k
-         pf/vJ6rMebk8cNf53NU2TFIU0VWQnPNWU6YojkyrNyDhGXnX4Xzep3yXrY3qPwcVvF
-         ChOV3jdrTXnDovNmFCdrCyOLJ34wyvUwN6SaPSzogeSgmqYwa2zqftFBvbow6Ak34a
-         SOyTtnfKEslWg==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1oBxbv-0059se-RS;
-        Thu, 14 Jul 2022 13:06:27 +0100
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dave Airlie <airlied@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Fei Yang <fei.yang@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH v2 04/21] drm/i915/gt: Only invalidate TLBs exposed to user manipulation
-Date:   Thu, 14 Jul 2022 13:06:09 +0100
-Message-Id: <c0ab69f803cfe439f9218d0c0a930eae563dee83.1657800199.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657800199.git.mchehab@kernel.org>
-References: <cover.1657800199.git.mchehab@kernel.org>
+        s=k20201202; t=1657800403;
+        bh=Hx7EerRWspqOHGQhu1Nyu8KtBaepz8d9zyknE3mK94U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SGn1Fryl60GNhiXiHxGknPX80PVIEE1YqHxRdSgS/mMZ4eSuyKgyOAp07GmOa/WLy
+         d0xCI7cs730a0586zkVV5n+5TX7MzGcskiHpmKEIkZwJJaHdxew7feRSGAOV8bUnT4
+         E7uEi007P9nR82eIwtkUF43L8glDoL1PCVjReJ44/0FWsxt7DT78bNGR+fSfEg6LTe
+         ffcGL3OU9HTH5hjJTWMay/kpD4udC1pWbTmVpHvMQubvymgwltVLl6BnvA7shMYqLK
+         eENDLcqLQEwQYcQiFvhDXdP8vfsr1JdMEHNQ5nb1eDRu+JHTABU4zgUEQxVHqadC71
+         4NoK3R/PhcO9A==
+Date:   Thu, 14 Jul 2022 13:06:38 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Kees Cook <keescook@chromium.org>, peterz@infradead.org
+Subject: Re: [PATCH] lkdtm: cfi: add test for HW landing pad CFI
+Message-ID: <YtAGzqfT9EkYTFBm@sirena.org.uk>
+References: <20220713151815.295520-1-mark.rutland@arm.com>
+ <Ys7vRTThFVNz7moO@sirena.org.uk>
+ <Ys/+qghGmH4kK4DN@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vUqi5N6saZo+b+5S"
+Content-Disposition: inline
+In-Reply-To: <Ys/+qghGmH4kK4DN@FVFF77S0Q05N>
+X-Cookie: The devil finds work for idle glands.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris.p.wilson@intel.com>
 
-Don't flush TLBs when the buffer is only used in the GGTT under full
-control of the kernel, as there's no risk of concurrent access
-and stale access from prefetch.
+--vUqi5N6saZo+b+5S
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-We only need to invalidate the TLB if they are accessible by the user.
-That helps to reduce the performance regression introduced by TLB
-invalidate logic.
+On Thu, Jul 14, 2022 at 12:31:54PM +0100, Mark Rutland wrote:
+> On Wed, Jul 13, 2022 at 05:13:57PM +0100, Mark Brown wrote:
 
-Cc: stable@vger.kernel.org
-Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
-Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-Cc: Fei Yang <fei.yang@intel.com>
-Cc: Andi Shyti <andi.shyti@linux.intel.com>
-Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+> > Not sure that worrying about that at this point isn't making perfect the
+> > enemy of good though, it could be dealt with later.  Perhaps just put
+> > the offset behind a #define to make it a tiny bit more discoverable?
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v2 00/21] at: https://lore.kernel.org/all/cover.1657800199.git.mchehab@kernel.org/
+> How about I just add a comment for now? e.g.
 
- drivers/gpu/drm/i915/i915_vma.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> 	/*
+> 	 * Skip past a landing pad instruction.
+> 	 * On arm64 all instructions are 4-byte aligned, and x86's ENDBR is 4
+> 	 * bytes.
+> 	 */
 
-diff --git a/drivers/gpu/drm/i915/i915_vma.c b/drivers/gpu/drm/i915/i915_vma.c
-index ef3b04c7e153..646f419b2035 100644
---- a/drivers/gpu/drm/i915/i915_vma.c
-+++ b/drivers/gpu/drm/i915/i915_vma.c
-@@ -538,7 +538,8 @@ int i915_vma_bind(struct i915_vma *vma,
- 				   bind_flags);
- 	}
- 
--	set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
-+	if (bind_flags & I915_VMA_LOCAL_BIND)
-+		set_bit(I915_BO_WAS_BOUND_BIT, &vma->obj->flags);
- 
- 	atomic_or(bind_flags, &vma->flags);
- 	return 0;
--- 
-2.36.1
+I'd rather have something that will definitely either fail or skip the
+test so it can't silently pass, if people need to look at the source to
+discover this there's more chance they'll mistakenly think things are
+working.  Something like
 
+#ifdef __aarch64__
+#define LANDING_PAD_SKIP 4
+#elif defined (__x86_64__)
+#define LANDING_PAD_SKIP 4
+#endif
+
+then #ifdef LANDING_PAD_SKIP around the test perhaps?
+
+--vUqi5N6saZo+b+5S
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLQBs0ACgkQJNaLcl1U
+h9D0fwf+LE6b2NeOigHSnJohAeum7jXyIHODkNDIDNZRs5B4vZve48iAYxGL0buI
+6tCNF9HOBP4tloeq3Mnwo4kIk3A3kXDXPhzfBAXbyhJc/M4G2DQTJi6tNtonwZEW
+64hkhk5mP9S4g881UDyoOmIEQLUHIYgo7dECOWIIbvUUs1oBMB+yiSSPHfjxYIp8
+spULH1c4KaLnXpKq/CSDo4ZRxbzLPDvWVoGu5JscTvy5+VfcB9BvT08QeNbnLWSi
+9t8uXmisRHS9MvlWy8YRmsTv6CticLzc/p0aZBMWC+fT/NFEds524C+XBqQxfwbq
+nxyCydp9+WZPuZIB60PA/v/FpdbBKg==
+=suLk
+-----END PGP SIGNATURE-----
+
+--vUqi5N6saZo+b+5S--
