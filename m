@@ -2,115 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806E9C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C56CCA47B
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 09:16:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238072AbiGNJQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 05:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38466 "EHLO
+        id S238083AbiGNJQd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 05:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237871AbiGNJPw (ORCPT
+        with ESMTP id S237995AbiGNJQA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 05:15:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 063C446D8A
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 02:14:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657790061;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ygN09/Et0x9AXxOLKNcgOKq7+SIjoPvaEFk+cetSQ+s=;
-        b=AyRe3wURieowuyAtbAp5OBFwI+gI4qJE2s//FMHqWWPTb8LltJJcEYohKpTBHHWS1OKhC7
-        NsPQMQ1JmgszjRrIHan2cmL9ZpUeeEFECURviRYTDspCVPlO9JgZ4rnhM0ca9QhBbhUelE
-        GmxvoMIDaWslSguz8K8ee2YNFWmSzQA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-668-ImxbPXs0Nourh8Mjop-Dqw-1; Thu, 14 Jul 2022 05:14:18 -0400
-X-MC-Unique: ImxbPXs0Nourh8Mjop-Dqw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4B520185A794;
-        Thu, 14 Jul 2022 09:14:18 +0000 (UTC)
-Received: from fedora.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0A2E02166B26;
-        Thu, 14 Jul 2022 09:14:15 +0000 (UTC)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 19/25] KVM: VMX: Adjust CR3/INVPLG interception for EPT=y at runtime, not setup
-Date:   Thu, 14 Jul 2022 11:13:21 +0200
-Message-Id: <20220714091327.1085353-20-vkuznets@redhat.com>
-In-Reply-To: <20220714091327.1085353-1-vkuznets@redhat.com>
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
+        Thu, 14 Jul 2022 05:16:00 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2997E474CA;
+        Thu, 14 Jul 2022 02:14:46 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lk7zL1TvPzhZ94;
+        Thu, 14 Jul 2022 17:11:58 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 14 Jul 2022 17:14:34 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 14 Jul
+ 2022 17:14:33 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
+CC:     <logang@deltatee.com>, <dan.j.williams@intel.com>,
+        <hans.verkuil@cisco.com>, <alexandre.belloni@free-electrons.com>,
+        <gregkh@linuxfoundation.org>, <viro@zeniv.linux.org.uk>
+Subject: [PATCH RESEND] chardev: fix error handling in cdev_device_add()
+Date:   Thu, 14 Jul 2022 17:23:55 +0800
+Message-ID: <20220714092355.991306-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+If dev->devt is not set, cdev_add() will not be called, so if device_add()
+fails, cdev_del() is not needed. Fix this by checking dev->devt in error
+case.
 
-Clear the CR3 and INVLPG interception controls at runtime based on
-whether or not EPT is being _used_, as opposed to clearing the bits at
-setup if EPT is _supported_ in hardware, and then restoring them when EPT
-is not used.  Not mucking with the base config will allow using the base
-config as the starting point for emulating the VMX capability MSRs.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Jim Mattson <jmattson@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Fixes: 233ed09d7fda ("chardev: add helper function to register char devs with a struct device")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- arch/x86/kvm/vmx/vmx.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ fs/char_dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 9771c771c8f5..eca6875d6732 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -2501,13 +2501,8 @@ static __init int setup_vmcs_config(struct vmcs_config *vmcs_conf,
- 	rdmsr_safe(MSR_IA32_VMX_EPT_VPID_CAP,
- 		&vmx_cap->ept, &vmx_cap->vpid);
+diff --git a/fs/char_dev.c b/fs/char_dev.c
+index ba0ded7842a7..3f667292608c 100644
+--- a/fs/char_dev.c
++++ b/fs/char_dev.c
+@@ -547,7 +547,7 @@ int cdev_device_add(struct cdev *cdev, struct device *dev)
+ 	}
  
--	if (_cpu_based_2nd_exec_control & SECONDARY_EXEC_ENABLE_EPT) {
--		/* CR3 accesses and invlpg don't need to cause VM Exits when EPT
--		   enabled */
--		_cpu_based_exec_control &= ~(CPU_BASED_CR3_LOAD_EXITING |
--					     CPU_BASED_CR3_STORE_EXITING |
--					     CPU_BASED_INVLPG_EXITING);
--	} else if (vmx_cap->ept) {
-+	if (!(_cpu_based_2nd_exec_control & SECONDARY_EXEC_ENABLE_EPT) &&
-+	    vmx_cap->ept) {
- 		pr_warn_once("EPT CAP should not exist if not support "
- 				"1-setting enable EPT VM-execution control\n");
+ 	rc = device_add(dev);
+-	if (rc)
++	if (rc && dev->devt)
+ 		cdev_del(cdev);
  
-@@ -4264,10 +4259,11 @@ static u32 vmx_exec_control(struct vcpu_vmx *vmx)
- 		exec_control |= CPU_BASED_CR8_STORE_EXITING |
- 				CPU_BASED_CR8_LOAD_EXITING;
- #endif
--	if (!enable_ept)
--		exec_control |= CPU_BASED_CR3_STORE_EXITING |
--				CPU_BASED_CR3_LOAD_EXITING  |
--				CPU_BASED_INVLPG_EXITING;
-+	/* No need to intercept CR3 access or INVPLG when using EPT. */
-+	if (enable_ept)
-+		exec_control &= ~(CPU_BASED_CR3_LOAD_EXITING |
-+				  CPU_BASED_CR3_STORE_EXITING |
-+				  CPU_BASED_INVLPG_EXITING);
- 	if (kvm_mwait_in_guest(vmx->vcpu.kvm))
- 		exec_control &= ~(CPU_BASED_MWAIT_EXITING |
- 				CPU_BASED_MONITOR_EXITING);
+ 	return rc;
 -- 
-2.35.3
+2.25.1
 
