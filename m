@@ -2,353 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19035C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:30:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACAFBC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237291AbiGNEat (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60860 "EHLO
+        id S237360AbiGNEbA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:31:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237165AbiGNE3V (ORCPT
+        with ESMTP id S235227AbiGNE30 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:29:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0E63191F;
-        Wed, 13 Jul 2022 21:25:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A10E861E51;
-        Thu, 14 Jul 2022 04:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C639DC341C6;
-        Thu, 14 Jul 2022 04:24:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772701;
-        bh=Oq7MFp+9EbBfXsG+8LyCMYbE6sRp6KgYoNoYOPIDKxQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kl+Y6qOxwFcuyhNRp2TExA97WnckDU+90q05eiUyrqlBLIbJ2VGN6Dn9A9XiDfvBP
-         znkJTU2gI8U5m9I/0hvBDxvfpuhspMYOPIWoeBi9cLDqmJ4OgaS7fB4qJgeotPiczL
-         JVuozouj/dSkQUByLpgcsrlt9IkLF/sIuIMLwKutu7jF1Oll0dR+kiBTJiPCn22dp/
-         Wc9pD4yEgQjZt4dvRs+HgUrSWxgye7odS6rIw/8lJzrHl6pzLyHvi7q2DJYUb6CC17
-         grh6sVbRIF6KbjTyGRK+uo/mJmv2PWXEUNxdd6W2qu10uxbjpZE6Dg8b2UQKGoR2DM
-         5qT/S5NbiqavA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Judy Hsiao <judyhsiao@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, heiko@sntech.de,
-        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 12/28] ASoC: rockchip: i2s: switch BCLK to GPIO
-Date:   Thu, 14 Jul 2022 00:24:13 -0400
-Message-Id: <20220714042429.281816-12-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042429.281816-1-sashal@kernel.org>
-References: <20220714042429.281816-1-sashal@kernel.org>
+        Thu, 14 Jul 2022 00:29:26 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D6031DD4
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:25:03 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772701;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QFGu2TWdKctYd3jzQb7mcIpilK5qcQQipmt2wnr4Teg=;
+        b=X5Y7ADJtRLRlG8Hoy8Xid5t/PtUaUJdq5UHQ5PPCu3LL68/j93w3CesxPKtcqAnywdK5Kq
+        k1xfExT3M7VNgAXkK/Grlf2AO78LpJJKq2lw6VIFfaRoP0wz3y1/s0rJJXXbV6usFO8rAu
+        zK7P5ELEEt7xmWa6st/unT9NT5CpW8I=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 7/8] mm, hwpoison: skip raw hwpoison page in freeing 1GB hugepage
+Date:   Thu, 14 Jul 2022 13:24:19 +0900
+Message-Id: <20220714042420.1847125-8-naoya.horiguchi@linux.dev>
+In-Reply-To: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
+References: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Judy Hsiao <judyhsiao@chromium.org>
+From: Naoya Horiguchi <naoya.horiguchi@nec.com>
 
-[ Upstream commit a5450aba737dae3ee1a64b282e609d8375d6700c ]
+Currently if memory_failure() (modified to remove blocking code with
+subsequent patch) is called on a page in some 1GB hugepage, memory error
+handling fails and the raw error page gets into leaked state.  The impact
+is small in production systems (just leaked single 4kB page), but this
+limits the testability because unpoison doesn't work for it.
+We can no longer create 1GB hugepage on the 1GB physical address range
+with such leaked pages, that's not useful when testing on small systems.
 
-We discoverd that the state of BCLK on, LRCLK off and SD_MODE on
-may cause the speaker melting issue. Removing LRCLK while BCLK
-is present can cause unexpected output behavior including a large
-DC output voltage as described in the Max98357a datasheet.
+When a hwpoison page in a 1GB hugepage is handled, it's caught by the
+PageHWPoison check in free_pages_prepare() because the 1GB hugepage is
+broken down into raw error pages before coming to this point:
 
-In order to:
-  1. prevent BCLK from turning on by other component.
-  2. keep BCLK and LRCLK being present at the same time
+        if (unlikely(PageHWPoison(page)) && !order) {
+                ...
+                return false;
+        }
 
-This patch switches BCLK to GPIO func before LRCLK output, and
-configures BCLK func back during LRCLK is output.
+Then, the page is not sent to buddy and the page refcount is left 0.
 
-Without this fix, BCLK is turned on 11 ms earlier than LRCK by the
-da7219.
-With this fix, BCLK is turned on only 0.4 ms earlier than LRCK by
-the rockchip codec.
+Originally this check is supposed to work when the error page is freed from
+page_handle_poison() (that is called from soft-offline), but now we are
+opening another path to call it, so the callers of __page_handle_poison()
+need to handle the case by considering the return value 0 as success. Then
+page refcount for hwpoison is properly incremented so unpoison works.
 
-Signed-off-by: Judy Hsiao <judyhsiao@chromium.org>
-Link: https://lore.kernel.org/r/20220615045643.3137287-1-judyhsiao@chromium.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Naoya Horiguchi <naoya.horiguchi@nec.com>
+Reviewed-by: Miaohe Lin <linmiaohe@huawei.com>
 ---
- sound/soc/rockchip/rockchip_i2s.c | 160 ++++++++++++++++++++++++------
- 1 file changed, 129 insertions(+), 31 deletions(-)
+v2 -> v3:
+- remove "res = MF_FAILED" in try_memory_failure_hugetlb (by Miaohe)
+---
+ mm/memory-failure.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/rockchip/rockchip_i2s.c b/sound/soc/rockchip/rockchip_i2s.c
-index 2880a0537646..bde0ceaf100d 100644
---- a/sound/soc/rockchip/rockchip_i2s.c
-+++ b/sound/soc/rockchip/rockchip_i2s.c
-@@ -13,6 +13,7 @@
- #include <linux/of_gpio.h>
- #include <linux/of_device.h>
- #include <linux/clk.h>
-+#include <linux/pinctrl/consumer.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
- #include <linux/spinlock.h>
-@@ -55,8 +56,40 @@ struct rk_i2s_dev {
- 	const struct rk_i2s_pins *pins;
- 	unsigned int bclk_ratio;
- 	spinlock_t lock; /* tx/rx lock */
-+	struct pinctrl *pinctrl;
-+	struct pinctrl_state *bclk_on;
-+	struct pinctrl_state *bclk_off;
- };
- 
-+static int i2s_pinctrl_select_bclk_on(struct rk_i2s_dev *i2s)
-+{
-+	int ret = 0;
-+
-+	if (!IS_ERR(i2s->pinctrl) && !IS_ERR_OR_NULL(i2s->bclk_on))
-+		ret = pinctrl_select_state(i2s->pinctrl,
-+				     i2s->bclk_on);
-+
-+	if (ret)
-+		dev_err(i2s->dev, "bclk enable failed %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int i2s_pinctrl_select_bclk_off(struct rk_i2s_dev *i2s)
-+{
-+
-+	int ret = 0;
-+
-+	if (!IS_ERR(i2s->pinctrl) && !IS_ERR_OR_NULL(i2s->bclk_off))
-+		ret = pinctrl_select_state(i2s->pinctrl,
-+				     i2s->bclk_off);
-+
-+	if (ret)
-+		dev_err(i2s->dev, "bclk disable failed %d\n", ret);
-+
-+	return ret;
-+}
-+
- static int i2s_runtime_suspend(struct device *dev)
- {
- 	struct rk_i2s_dev *i2s = dev_get_drvdata(dev);
-@@ -93,38 +126,49 @@ static inline struct rk_i2s_dev *to_info(struct snd_soc_dai *dai)
- 	return snd_soc_dai_get_drvdata(dai);
- }
- 
--static void rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
-+static int rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
- {
- 	unsigned int val = 0;
- 	int retry = 10;
-+	int ret = 0;
- 
- 	spin_lock(&i2s->lock);
- 	if (on) {
--		regmap_update_bits(i2s->regmap, I2S_DMACR,
--				   I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_ENABLE);
-+		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
-+				I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_ENABLE);
-+		if (ret < 0)
-+			goto end;
- 
--		regmap_update_bits(i2s->regmap, I2S_XFER,
--				   I2S_XFER_TXS_START | I2S_XFER_RXS_START,
--				   I2S_XFER_TXS_START | I2S_XFER_RXS_START);
-+		ret = regmap_update_bits(i2s->regmap, I2S_XFER,
-+				I2S_XFER_TXS_START | I2S_XFER_RXS_START,
-+				I2S_XFER_TXS_START | I2S_XFER_RXS_START);
-+		if (ret < 0)
-+			goto end;
- 
- 		i2s->tx_start = true;
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index c8fa3643791c..3721de624b98 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -1084,7 +1084,6 @@ static int me_huge_page(struct page_state *ps, struct page *p)
+ 		res = truncate_error_page(hpage, page_to_pfn(p), mapping);
+ 		unlock_page(hpage);
  	} else {
- 		i2s->tx_start = false;
- 
--		regmap_update_bits(i2s->regmap, I2S_DMACR,
--				   I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_DISABLE);
-+		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
-+				I2S_DMACR_TDE_ENABLE, I2S_DMACR_TDE_DISABLE);
-+		if (ret < 0)
-+			goto end;
- 
- 		if (!i2s->rx_start) {
--			regmap_update_bits(i2s->regmap, I2S_XFER,
--					   I2S_XFER_TXS_START |
--					   I2S_XFER_RXS_START,
--					   I2S_XFER_TXS_STOP |
--					   I2S_XFER_RXS_STOP);
-+			ret = regmap_update_bits(i2s->regmap, I2S_XFER,
-+					I2S_XFER_TXS_START |
-+					I2S_XFER_RXS_START,
-+					I2S_XFER_TXS_STOP |
-+					I2S_XFER_RXS_STOP);
-+			if (ret < 0)
-+				goto end;
- 
- 			udelay(150);
--			regmap_update_bits(i2s->regmap, I2S_CLR,
--					   I2S_CLR_TXC | I2S_CLR_RXC,
--					   I2S_CLR_TXC | I2S_CLR_RXC);
-+			ret = regmap_update_bits(i2s->regmap, I2S_CLR,
-+					I2S_CLR_TXC | I2S_CLR_RXC,
-+					I2S_CLR_TXC | I2S_CLR_RXC);
-+			if (ret < 0)
-+				goto end;
- 
- 			regmap_read(i2s->regmap, I2S_CLR, &val);
- 
-@@ -139,44 +183,57 @@ static void rockchip_snd_txctrl(struct rk_i2s_dev *i2s, int on)
- 			}
- 		}
- 	}
-+end:
- 	spin_unlock(&i2s->lock);
-+	if (ret < 0)
-+		dev_err(i2s->dev, "lrclk update failed\n");
-+
-+	return ret;
- }
- 
--static void rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
-+static int rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
- {
- 	unsigned int val = 0;
- 	int retry = 10;
-+	int ret = 0;
- 
- 	spin_lock(&i2s->lock);
- 	if (on) {
--		regmap_update_bits(i2s->regmap, I2S_DMACR,
-+		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
- 				   I2S_DMACR_RDE_ENABLE, I2S_DMACR_RDE_ENABLE);
-+		if (ret < 0)
-+			goto end;
- 
--		regmap_update_bits(i2s->regmap, I2S_XFER,
-+		ret = regmap_update_bits(i2s->regmap, I2S_XFER,
- 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START,
- 				   I2S_XFER_TXS_START | I2S_XFER_RXS_START);
-+		if (ret < 0)
-+			goto end;
- 
- 		i2s->rx_start = true;
- 	} else {
- 		i2s->rx_start = false;
- 
--		regmap_update_bits(i2s->regmap, I2S_DMACR,
-+		ret = regmap_update_bits(i2s->regmap, I2S_DMACR,
- 				   I2S_DMACR_RDE_ENABLE, I2S_DMACR_RDE_DISABLE);
-+		if (ret < 0)
-+			goto end;
- 
- 		if (!i2s->tx_start) {
--			regmap_update_bits(i2s->regmap, I2S_XFER,
-+			ret = regmap_update_bits(i2s->regmap, I2S_XFER,
- 					   I2S_XFER_TXS_START |
- 					   I2S_XFER_RXS_START,
- 					   I2S_XFER_TXS_STOP |
- 					   I2S_XFER_RXS_STOP);
--
-+			if (ret < 0)
-+				goto end;
- 			udelay(150);
--			regmap_update_bits(i2s->regmap, I2S_CLR,
-+			ret = regmap_update_bits(i2s->regmap, I2S_CLR,
- 					   I2S_CLR_TXC | I2S_CLR_RXC,
- 					   I2S_CLR_TXC | I2S_CLR_RXC);
--
-+			if (ret < 0)
-+				goto end;
- 			regmap_read(i2s->regmap, I2S_CLR, &val);
--
- 			/* Should wait for clear operation to finish */
- 			while (val) {
- 				regmap_read(i2s->regmap, I2S_CLR, &val);
-@@ -188,7 +245,12 @@ static void rockchip_snd_rxctrl(struct rk_i2s_dev *i2s, int on)
- 			}
- 		}
- 	}
-+end:
- 	spin_unlock(&i2s->lock);
-+	if (ret < 0)
-+		dev_err(i2s->dev, "lrclk update failed\n");
-+
-+	return ret;
- }
- 
- static int rockchip_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
-@@ -426,17 +488,26 @@ static int rockchip_i2s_trigger(struct snd_pcm_substream *substream,
- 	case SNDRV_PCM_TRIGGER_RESUME:
- 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
- 		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
--			rockchip_snd_rxctrl(i2s, 1);
-+			ret = rockchip_snd_rxctrl(i2s, 1);
- 		else
--			rockchip_snd_txctrl(i2s, 1);
-+			ret = rockchip_snd_txctrl(i2s, 1);
-+		/* Do not turn on bclk if lrclk open fails. */
-+		if (ret < 0)
-+			return ret;
-+		i2s_pinctrl_select_bclk_on(i2s);
- 		break;
- 	case SNDRV_PCM_TRIGGER_SUSPEND:
- 	case SNDRV_PCM_TRIGGER_STOP:
- 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
--		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE)
--			rockchip_snd_rxctrl(i2s, 0);
--		else
--			rockchip_snd_txctrl(i2s, 0);
-+		if (substream->stream == SNDRV_PCM_STREAM_CAPTURE) {
-+			if (!i2s->tx_start)
-+				i2s_pinctrl_select_bclk_off(i2s);
-+			ret = rockchip_snd_rxctrl(i2s, 0);
+-		res = MF_FAILED;
+ 		unlock_page(hpage);
+ 		/*
+ 		 * migration entry prevents later access on error hugepage,
+@@ -1092,9 +1091,11 @@ static int me_huge_page(struct page_state *ps, struct page *p)
+ 		 * subpages.
+ 		 */
+ 		put_page(hpage);
+-		if (__page_handle_poison(p) > 0) {
++		if (__page_handle_poison(p) >= 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
 +		} else {
-+			if (!i2s->rx_start)
-+				i2s_pinctrl_select_bclk_off(i2s);
-+			ret = rockchip_snd_txctrl(i2s, 0);
-+		}
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -737,6 +808,33 @@ static int rockchip_i2s_probe(struct platform_device *pdev)
++			res = MF_FAILED;
+ 		}
  	}
  
- 	i2s->bclk_ratio = 64;
-+	i2s->pinctrl = devm_pinctrl_get(&pdev->dev);
-+	if (IS_ERR(i2s->pinctrl))
-+		dev_err(&pdev->dev, "failed to find i2s pinctrl\n");
-+
-+	i2s->bclk_on = pinctrl_lookup_state(i2s->pinctrl,
-+				   "bclk_on");
-+	if (IS_ERR_OR_NULL(i2s->bclk_on))
-+		dev_err(&pdev->dev, "failed to find i2s default state\n");
-+	else
-+		dev_dbg(&pdev->dev, "find i2s bclk state\n");
-+
-+	i2s->bclk_off = pinctrl_lookup_state(i2s->pinctrl,
-+				  "bclk_off");
-+	if (IS_ERR_OR_NULL(i2s->bclk_off))
-+		dev_err(&pdev->dev, "failed to find i2s gpio state\n");
-+	else
-+		dev_dbg(&pdev->dev, "find i2s bclk_off state\n");
-+
-+	i2s_pinctrl_select_bclk_off(i2s);
-+
-+	i2s->playback_dma_data.addr = res->start + I2S_TXDR;
-+	i2s->playback_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-+	i2s->playback_dma_data.maxburst = 4;
-+
-+	i2s->capture_dma_data.addr = res->start + I2S_RXDR;
-+	i2s->capture_dma_data.addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
-+	i2s->capture_dma_data.maxburst = 4;
- 
- 	dev_set_drvdata(&pdev->dev, i2s);
- 
+@@ -1874,10 +1875,11 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 	 */
+ 	if (res == 0) {
+ 		unlock_page(head);
+-		res = MF_FAILED;
+-		if (__page_handle_poison(p) > 0) {
++		if (__page_handle_poison(p) >= 0) {
+ 			page_ref_inc(p);
+ 			res = MF_RECOVERED;
++		} else {
++			res = MF_FAILED;
+ 		}
+ 		action_result(pfn, MF_MSG_FREE_HUGE, res);
+ 		return res == MF_RECOVERED ? 0 : -EBUSY;
 -- 
-2.35.1
+2.25.1
 
