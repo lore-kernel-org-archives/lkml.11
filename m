@@ -2,65 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BCF0C43334
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2010CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 14:13:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239968AbiGNONA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 10:13:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50498 "EHLO
+        id S232304AbiGNONU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 10:13:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240319AbiGNOMb (ORCPT
+        with ESMTP id S239185AbiGNONI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 10:12:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A539853D34;
-        Thu, 14 Jul 2022 07:12:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 14 Jul 2022 10:13:08 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3380F57265;
+        Thu, 14 Jul 2022 07:13:07 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 598EBB8257C;
-        Thu, 14 Jul 2022 14:12:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91CAAC34114;
-        Thu, 14 Jul 2022 14:12:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657807948;
-        bh=ArZBoOm8jvPL7I5/Gjx7tFExl/co+JVWFRZ85SkiT68=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tsQGIV+R2LrtzUKUiTHv524wMXWQ0+CCkh7VAveaA9h1cpyyQ4jHdjUMcgRxAEGzu
-         hkMUpf7qOz9dZvjg8UeA/MRkI44tcgjWKMG7ktbr2tCXZsL5tBDJRTHHwhlev3ciWm
-         Fi9ZTldnK7PqwO8KfusnwZsy+jBpkFVkF6+t9+jw=
-Date:   Thu, 14 Jul 2022 16:09:21 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Andrey Strachuk <strochuk@ispras.ru>
-Cc:     Peter Chen <peter.chen@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
-Subject: Re: [PATCH] usb: remove useless condition _ep_queue()
-Message-ID: <YtAjkUtY7QoJ0SAp@kroah.com>
-References: <20220711152503.17657-1-strochuk@ispras.ru>
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id B6EFC6601A3B;
+        Thu, 14 Jul 2022 15:13:04 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657807985;
+        bh=K1pAx4yUym6fPpWmvpm8rAcGNbLZfMNPgYQz3MOq/KM=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KkuVebcLx9P3YNSG5CYljp9B98IOxqVxAVxR3Z5DXxVLFCO+yM9qMTKuKQxVkUg0x
+         pxpEm2JYS8pt7RkXL8eG4YquZ2Q/pIF3pUQ9QIpecnHutC6jxUFr4mIyJplFhnpAma
+         AKqpbRQh/9D5UXVYx79cdq5cynV3pV8Q/Nk9xehoS4cucN25RG8a0HNRaWpdipcs2R
+         PeOV6P3gCzUcTCi22FNwHoG+fgblDAhXkGhVr9pPito0xY66ujKkrbRY8Jlh183eQy
+         wvUmwpMItZTzcRGfLOgoK9qXCmwUM154IToVD4OsPNoHHiXfMJc540R5WZdVutvGK/
+         LYYyPSkRARddw==
+Message-ID: <6991dcc6-5902-a9ed-78c4-c7bd4f60f91c@collabora.com>
+Date:   Thu, 14 Jul 2022 16:13:02 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220711152503.17657-1-strochuk@ispras.ru>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v9 5/8] ASoC: mediatek: mt8186: add machine driver with
+ mt6366, da7219 and max98357
+Content-Language: en-US
+To:     Jiaxin Yu <jiaxin.yu@mediatek.com>, broonie@kernel.org,
+        robh+dt@kernel.org
+Cc:     aaronyu@google.com, matthias.bgg@gmail.com, trevor.wu@mediatek.com,
+        tzungbi@google.com, julianbraha@gmail.com,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220712150442.32504-1-jiaxin.yu@mediatek.com>
+ <20220712150442.32504-6-jiaxin.yu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220712150442.32504-6-jiaxin.yu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 11, 2022 at 06:25:03PM +0300, Andrey Strachuk wrote:
-> Comparison of 'ep' with NULL is useless since
-> 'ep' is a result of container_of and cannot be NULL
-> in any reasonable scenario.
+Il 12/07/22 17:04, Jiaxin Yu ha scritto:
+> Add support for mt8186 board with mt6366, da7219 and max98357.
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Signed-off-by: Andrey Strachuk <strochuk@ispras.ru>
-> Fixes: 2dbc5c4c8314 ("usb: chipidea: get rid of camelcase names")
+> Signed-off-by: Jiaxin Yu <jiaxin.yu@mediatek.com>
 > ---
->  drivers/usb/chipidea/udc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>   sound/soc/mediatek/Kconfig                    |   16 +
+>   sound/soc/mediatek/mt8186/Makefile            |    1 +
+>   .../mt8186/mt8186-mt6366-da7219-max98357.c    | 1002 +++++++++++++++++
+>   3 files changed, 1019 insertions(+)
+>   create mode 100644 sound/soc/mediatek/mt8186/mt8186-mt6366-da7219-max98357.c
+> 
 
-Subject line is wrong :(
+> +
+> +static int mt8186_mt6366_da7219_max98357_dev_probe(struct platform_device *pdev)
+> +{
+> +	struct snd_soc_card *card;
+> +	struct snd_soc_dai_link *dai_link;
+> +	struct mt8186_mt6366_da7219_max98357_priv *priv;
+> +	struct device_node *platform_node, *headset_codec, *playback_codec;
+> +	int ret, i;
+> +
+> +	card = (struct snd_soc_card *)of_device_get_match_data(&pdev->dev);
 
-Also this is not a "Fix".
+You don't really need this cast, plus, you can use device_get_match_data() instead.
 
+After that:
+
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
