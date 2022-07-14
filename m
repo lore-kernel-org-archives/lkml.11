@@ -2,102 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0CCC43334
+	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 04:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236654AbiGNE3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 00:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
+        id S236695AbiGNE3H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 00:29:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235888AbiGNE1t (ORCPT
+        with ESMTP id S235144AbiGNE16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 00:27:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1B22DA90;
-        Wed, 13 Jul 2022 21:24:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D48561E4E;
-        Thu, 14 Jul 2022 04:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD70EC3411C;
-        Thu, 14 Jul 2022 04:24:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657772668;
-        bh=/2pmWpsVb3YISeukyVRtCFdnmizGRc8cLQqLOLoJegU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=exPvIyuvexfeDpqxyBknko09u53Oug8CYeG8lmH20Y+GyVVJrkzER7RMEVL50xR0I
-         j/mVIwaS4dq/3JlnBP5CLvXisbe8KxubD4B8oh8ApyE6F5gW3xKJj3d4N6sDHVnu3j
-         Z/vrem31VjU9Mc+gLLasD+/rgZKRNoyjcV5ljtNu9PIHpkco5jwYmnwD005NSj/Opp
-         p9q+bvKG+9ZkbzaPzMvFJLeOMw9ZrewXSba9Hc0sCi5VTCS3F+Q7speg4wQ/4XQHJ6
-         VHl1HvRFFa0vMSZG2ugR3krK8Rq66B7hocOLXuqF0iKFXJ7Z3Lm6YHE+v+/QkxLcpR
-         m8cqRDILR5A3Q==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>, ebiederm@xmission.com,
-        keescook@chromium.org, oleg@redhat.com, tglx@linutronix.de,
-        peterz@infradead.org
-Subject: [PATCH AUTOSEL 5.18 41/41] signal handling: don't use BUG_ON() for debugging
-Date:   Thu, 14 Jul 2022 00:22:21 -0400
-Message-Id: <20220714042221.281187-41-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220714042221.281187-1-sashal@kernel.org>
-References: <20220714042221.281187-1-sashal@kernel.org>
+        Thu, 14 Jul 2022 00:27:58 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00532DAA2
+        for <linux-kernel@vger.kernel.org>; Wed, 13 Jul 2022 21:24:32 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657772670;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=xQRsmn7swl66NP0Iw4Ku2ejbuHCkGHauBdCb0zlzQVE=;
+        b=ejASHl+KCFyL1imH7kiMKDXq8Wfv2Pitub7kRyvA/Twyjh7AJBnRNDc/vYFv1B7bHtSAak
+        wyslMFEobQ8ovTkit4N/LxXB7kxWANyKY30YLWrFU6QJ4pcMU0o7RA/GtCZdo/gjBuAJZo
+        hSRFcK0Ta6nbPs8e182PdB8fxxXv8CY=
+From:   Naoya Horiguchi <naoya.horiguchi@linux.dev>
+To:     linux-mm@kvack.org
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Liu Shixin <liushixin2@huawei.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        linux-kernel@vger.kernel.org
+Subject: [mm-unstable PATCH v7 0/8] mm, hwpoison: enable 1GB hugepage support (v7)
+Date:   Thu, 14 Jul 2022 13:24:12 +0900
+Message-Id: <20220714042420.1847125-1-naoya.horiguchi@linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+Here is v7 of "enabling memory error handling on 1GB hugepage" patchset.
 
-[ Upstream commit a382f8fee42ca10c9bfce0d2352d4153f931f5dc ]
+I applied feedbacks provided for v6 (thank you, Miaohe).
+There're a few improvements on on 3/8 and 4/8.
 
-These are indeed "should not happen" situations, but it turns out recent
-changes made the 'task_is_stopped_or_trace()' case trigger (fix for that
-exists, is pending more testing), and the BUG_ON() makes it
-unnecessarily hard to actually debug for no good reason.
+- v1: https://lore.kernel.org/linux-mm/20220602050631.771414-1-naoya.horiguchi@linux.dev/T/#u
+- v2: https://lore.kernel.org/linux-mm/20220623235153.2623702-1-naoya.horiguchi@linux.dev/T/#u
+- v3: https://lore.kernel.org/linux-mm/20220630022755.3362349-1-naoya.horiguchi@linux.dev/T/#u
+- v4: https://lore.kernel.org/linux-mm/20220704013312.2415700-1-naoya.horiguchi@linux.dev/T/#u
+- v5: https://lore.kernel.org/linux-mm/20220708053653.964464-1-naoya.horiguchi@linux.dev/T/#u
+- v6: https://lore.kernel.org/linux-mm/20220712032858.170414-1-naoya.horiguchi@linux.dev/T/#u
 
-It's been that way for a long time, but let's make it clear: BUG_ON() is
-not good for debugging, and should never be used in situations where you
-could just say "this shouldn't happen, but we can continue".
-
-Use WARN_ON_ONCE() instead to make sure it gets logged, and then just
-continue running.  Instead of making the system basically unusuable
-because you crashed the machine while potentially holding some very core
-locks (eg this function is commonly called while holding 'tasklist_lock'
-for writing).
-
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Thanks,
+Naoya Horiguchi
 ---
- kernel/signal.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Summary:
 
-diff --git a/kernel/signal.c b/kernel/signal.c
-index e43bc2a692f5..75cc2339d83e 100644
---- a/kernel/signal.c
-+++ b/kernel/signal.c
-@@ -2031,12 +2031,12 @@ bool do_notify_parent(struct task_struct *tsk, int sig)
- 	bool autoreap = false;
- 	u64 utime, stime;
- 
--	BUG_ON(sig == -1);
-+	WARN_ON_ONCE(sig == -1);
- 
-- 	/* do_notify_parent_cldstop should have been called instead.  */
-- 	BUG_ON(task_is_stopped_or_traced(tsk));
-+	/* do_notify_parent_cldstop should have been called instead.  */
-+	WARN_ON_ONCE(task_is_stopped_or_traced(tsk));
- 
--	BUG_ON(!tsk->ptrace &&
-+	WARN_ON_ONCE(!tsk->ptrace &&
- 	       (tsk->group_leader != tsk || !thread_group_empty(tsk)));
- 
- 	/* Wake up all pidfd waiters */
--- 
-2.35.1
+Naoya Horiguchi (8):
+      mm/hugetlb: check gigantic_page_runtime_supported() in return_unused_surplus_pages()
+      mm/hugetlb: make pud_huge() and follow_huge_pud() aware of non-present pud entry
+      mm, hwpoison, hugetlb: support saving mechanism of raw error pages
+      mm, hwpoison: make unpoison aware of raw error info in hwpoisoned hugepage
+      mm, hwpoison: set PG_hwpoison for busy hugetlb pages
+      mm, hwpoison: make __page_handle_poison returns int
+      mm, hwpoison: skip raw hwpoison page in freeing 1GB hugepage
+      mm, hwpoison: enable memory error handling on 1GB hugepage
 
+ arch/x86/mm/hugetlbpage.c |   8 ++-
+ include/linux/hugetlb.h   |  17 ++++-
+ include/linux/mm.h        |   2 +-
+ include/linux/swapops.h   |   9 +++
+ include/ras/ras_event.h   |   1 -
+ mm/hugetlb.c              |  58 +++++++++++----
+ mm/memory-failure.c       | 179 ++++++++++++++++++++++++++++++++++++++--------
+ 7 files changed, 226 insertions(+), 48 deletions(-)
