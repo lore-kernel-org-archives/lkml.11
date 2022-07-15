@@ -2,183 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A883CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:10:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:12:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbiGOUKL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        id S231258AbiGOUMF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiGOUKK (ORCPT
+        with ESMTP id S229970AbiGOUL7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:10:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA8A4B0F4
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:10:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0816AB82E4C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 20:10:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37A72C341C0;
-        Fri, 15 Jul 2022 20:10:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657915805;
-        bh=HJoPFEFLh4BbRDqJRXWZVqcGp9gCtdCVTUp8CpfJo00=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e9jtgz8TBxYvw4iLTMWuVKyJqUZQlf1rMd3lHZeDy9NOj7+AjOr0DQBgGiLocunWW
-         T1wdkDyQrlbYzIM28qPdLQn3yBt2YHC+/XVOstYOgBF4oUtiliRLinfsNZOUP+60nM
-         yYCtzrLVDM8yxKWNS7ldpXaLXzplYV1JQkumDFQC0CfWv16eZXeNcB9wVopjaCnswv
-         tRFRZuWmoGbGLOO2TYemv38NF3+VupdTxCmnbj1h7Av9QLIosoXDcW7q9GUJ6KWG3m
-         5ea5qBAGcVw6nWX6Er71OXbwY3h7k/TtlyhudFqUkFe2NA26bu1/H4WvopUnZWtWuV
-         zWc3+xRZG1vyQ==
-Date:   Fri, 15 Jul 2022 13:10:03 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Subject: Re: <instantiation>:3:3: error: invalid instruction mnemonic
- 'annotate_unret_safe'
-Message-ID: <YtHJm0Uiv4c7ihTf@dev-arch.thelio-3990X>
-References: <202207160308.NAwtZPxG-lkp@intel.com>
+        Fri, 15 Jul 2022 16:11:59 -0400
+Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8040367C89
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:11:58 -0700 (PDT)
+Received: from martin by viti.kaiser.cx with local (Exim 4.89)
+        (envelope-from <martin@viti.kaiser.cx>)
+        id 1oCRfC-0006TK-7c; Fri, 15 Jul 2022 22:11:50 +0200
+Date:   Fri, 15 Jul 2022 22:11:50 +0200
+From:   Martin Kaiser <martin@kaiser.cx>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH] staging: r888eu: use dynamic allocation for efuse buffer
+Message-ID: <20220715201150.nnbdfc4tgj67zyic@viti.kaiser.cx>
+References: <20220713075804.140986-1-martin@kaiser.cx>
+ <5445d915-0c6c-b84f-158e-160e7645cbbd@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202207160308.NAwtZPxG-lkp@intel.com>
+In-Reply-To: <5445d915-0c6c-b84f-158e-160e7645cbbd@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+Sender: Martin Kaiser <martin@viti.kaiser.cx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 03:22:46AM +0800, kernel test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   9b59ec8d50a1f28747ceff9a4f39af5deba9540e
-> commit: 9bb2ec608a209018080ca262f771e6a9ff203b6f objtool: Update Retpoline validation
-> date:   3 weeks ago
-> config: i386-randconfig-a011-20220704 (https://download.01.org/0day-ci/archive/20220716/202207160308.NAwtZPxG-lkp@intel.com/config)
-> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 2da550140aa98cf6a3e96417c87f1e89e3a26047)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9bb2ec608a209018080ca262f771e6a9ff203b6f
->         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->         git fetch --no-tags linus master
->         git checkout 9bb2ec608a209018080ca262f771e6a9ff203b6f
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> <instantiation>:3:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:11:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:19:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:27:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:35:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:43:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:51:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:59:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:67:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:75:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:83:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:91:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:99:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:107:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:115:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:123:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
->     ^
->    <instantiation>:131:3: error: invalid instruction mnemonic 'annotate_unret_safe'
->      ANNOTATE_UNRET_SAFE
->      ^~~~~~~~~~~~~~~~~~~
->    arch/x86/kernel/../../x86/xen/xen-head.S:26:2: note: while in macro instantiation
->     .rept ((1 << 12) / 32)
+Hi Pavel,
 
-Looks like https://git.kernel.org/tip/3131ef39fb03bbde237d0b8260445898f3dfda5b
-should take care of this (not clang specific, GCC errors too with the
-same configuration).
+Thus wrote Pavel Skripkin (paskripkin@gmail.com):
 
-Cheers,
-Nathan
+> Hi Martin,
+
+> Martin Kaiser <martin@kaiser.cx> says:
+> > Use kmalloc to allocate the efuse buffer in ReadAdapterInfo8188EU and
+> > free it on exit. This is better than using a 512 byte array on the stack.
+
+> > It's ok to drop the __aligned(4) qualifier. kmalloc aligns to
+> > ARCH_KMALLOC_MINALIGN, this is at least 8 bytes.
+
+> > Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Suggested-by: Larry Finger <Larry.Finger@lwfinger.net>
+> > Signed-off-by: Martin Kaiser <martin@kaiser.cx>
+> > ---
+> >   drivers/staging/r8188eu/hal/usb_halinit.c | 8 ++++++--
+> >   1 file changed, 6 insertions(+), 2 deletions(-)
+
+> > diff --git a/drivers/staging/r8188eu/hal/usb_halinit.c b/drivers/staging/r8188eu/hal/usb_halinit.c
+> > index 8902dda7b8d8..421fe7c40390 100644
+> > --- a/drivers/staging/r8188eu/hal/usb_halinit.c
+> > +++ b/drivers/staging/r8188eu/hal/usb_halinit.c
+> > @@ -926,7 +926,7 @@ void ReadAdapterInfo8188EU(struct adapter *Adapter)
+> >   {
+> >   	struct eeprom_priv *eeprom = &Adapter->eeprompriv;
+> >   	struct led_priv *ledpriv = &Adapter->ledpriv;
+> > -	u8 efuse_buf[EFUSE_MAP_LEN_88E] __aligned(4);
+> > +	u8 *efuse_buf;
+> >   	u8 eeValue;
+> >   	int res;
+> > @@ -937,7 +937,10 @@ void ReadAdapterInfo8188EU(struct adapter *Adapter)
+> >   	eeprom->bautoload_fail_flag	= !(eeValue & EEPROM_EN);
+> > -	memset(efuse_buf, 0xFF, sizeof(efuse_buf));
+> > +	efuse_buf = kmalloc(EFUSE_MAP_LEN_88E, GFP_KERNEL);
+> > +	if (!efuse_buf)
+> > +		return;
+
+> I think, it worth returning an error to caller. Functions right after the
+> allocation do initialization, so leaving fields as-is seems to be dangerous
+
+yes, that makes sense. We could refuse to load the driver in this case.
+
+Larry and Greg already accepted the patch as is, I'll add error handling
+in a separate patch.
+
+Thanks,
+   Martin
