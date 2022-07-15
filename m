@@ -2,107 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84EC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:03:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1273C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235027AbiGRNDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:03:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53216 "EHLO
+        id S235067AbiGRNDW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:03:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234888AbiGRNDQ (ORCPT
+        with ESMTP id S229774AbiGRNDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 18 Jul 2022 09:03:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94AF1A471
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:03:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658149391;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TcEMTaB7xAKJTL0h0LjPI2dPleMaM3KdN7Sj0rKKqlU=;
-        b=hziSAIabwfurBdlMSoRNXjNZmHsfBiqF/uZ0jN1qh0vjsY1EYQBzClGXYr7Lit0JlRUgCb
-        dmQGADvokGBhwtRIhgBbI33+ajSx/XSu/Qq9UOGI2fr26iHMSuKRsZvrIkxTOFgrQRJtNv
-        FeOTZ+j+LfvdCl0q45iNmyI/QfQ4/XM=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-663-JIDVGr4kP-aUeBFG_ycyrg-1; Mon, 18 Jul 2022 09:03:07 -0400
-X-MC-Unique: JIDVGr4kP-aUeBFG_ycyrg-1
-Received: by mail-wr1-f69.google.com with SMTP id c7-20020adfc6c7000000b0021db3d6961bso2004102wrh.23
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:03:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=TcEMTaB7xAKJTL0h0LjPI2dPleMaM3KdN7Sj0rKKqlU=;
-        b=uVsk7vAVOOc3fo5Q93Kw4jul+J6YFHwFYpxjevQzaMZirRWGtNDeQUyWyi7Uw9cah6
-         fAnEn7o10RsasjfhMgu6eZXpD+gjy5ndcUVps630tqiUQn4XohjJ7iMFDlWrxMaM02MK
-         eGgPLRrQnBwkq2Cbfepg78F+GcY/RzEzKneVLCofd/luapcQFYiiwYYMhpYt3oagPJwE
-         1ZiIWbnFpkuzsc6mrRSJyhAQAsT5OvZM/vn/l9wkdscy0+dnH0KPpUfE2lbAtcWywvpD
-         L99SIn16XMYsQBrV/kLoS4+6pnqBfO21eZ3AWPj5eJWltUtSJHSeBg7cwEeK2iYDjZ3/
-         C7sg==
-X-Gm-Message-State: AJIora9vl4u50aD1Ehl5Qo9WVCJxG5bbWnqdVUferQ2hGxWlr0NwamhA
-        VUKGFu90fLUyYhUZp0mYjkr2cvSNNcZB1dz0wlHLX5PLoxXVXm3NZykR0HOtE3zA8onj2jBbCXr
-        Cg2EOvQ4/R6k/dBHSLcp6N0hq
-X-Received: by 2002:a05:600c:1f16:b0:3a3:214c:a85e with SMTP id bd22-20020a05600c1f1600b003a3214ca85emr39476wmb.95.1658149386368;
-        Mon, 18 Jul 2022 06:03:06 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1upa5txyGo3VOx+mVbSu4SrZBRbL944pvx+WCPaDiEcZcCpcHclrXUGGcrP3tyGHYvxGIrbwQ==
-X-Received: by 2002:a05:600c:1f16:b0:3a3:214c:a85e with SMTP id bd22-20020a05600c1f1600b003a3214ca85emr39452wmb.95.1658149386109;
-        Mon, 18 Jul 2022 06:03:06 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c705:7400:6b3a:a74a:bd53:a018? (p200300cbc70574006b3aa74abd53a018.dip0.t-ipconnect.de. [2003:cb:c705:7400:6b3a:a74a:bd53:a018])
-        by smtp.gmail.com with ESMTPSA id p42-20020a05600c1daa00b003a30f84a9aasm10906417wms.26.2022.07.18.06.03.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jul 2022 06:03:05 -0700 (PDT)
-Message-ID: <0c67010a-7d5f-567c-a300-0c75f1c47cb9@redhat.com>
-Date:   Mon, 18 Jul 2022 15:03:05 +0200
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68156BF53;
+        Mon, 18 Jul 2022 06:03:11 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1658149373tewd1ljf
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 21:02:50 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000000
+X-QQ-FEAT: MbRi8nWEoaZu3SJ8oD7aDH5D4190Q3e+iCesuFvAspGXqe/14tFEbxCAUGyN6
+        LBqqJdZkl3XiGuWP+qip5Wg8JaamUv/zn5NWIkvBlmU+On9A6c1gjED4mprB+sNWbL7Ei+d
+        8HLUqzLAfYbZ6y1ADftEBykpze43svum1QubwSXCGIOJAHU1xe/UgNDkyMrE5NNeMA/un2g
+        WuyhOELLBZOH+8nrLYc9/bliCaB5dP2qdZlmrXnxjmxl3Xxov3LGKRkmjV/oXBzgQEUWiDE
+        xgRBAyXy/hwSTBZKWcy7sRDIuCg6MRyzZNZTVsdzqNpmkqk7lWphNbwky4ax5SN6BzA/4W7
+        NGFsQNAEC9bsxFcmOarCh9XV2NvdGG6sI+TO9+6N2g+yTahwdn0ROSaeN6bwABQ+3gd5Oca
+        AVjcGGIzBAQ=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     ganapathi017@gmail.com
+Cc:     amitkarwar@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] mwifiex: Fix comment typo
+Date:   Fri, 15 Jul 2022 13:00:53 +0800
+Message-Id: <20220715050053.24382-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] mm: remove unneeded PageAnon check in
- restore_exclusive_pte()
-Content-Language: en-US
-To:     Miaohe Lin <linmiaohe@huawei.com>, akpm@linux-foundation.org
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20220716081816.10752-1-linmiaohe@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220716081816.10752-1-linmiaohe@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 16.07.22 10:18, Miaohe Lin wrote:
-> When code reaches here, the page must be !PageAnon. There's no need to
-> check PageAnon again. Remove it.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> ---
->  mm/memory.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/mm/memory.c b/mm/memory.c
-> index f671b2dce1fe..d98f89cee3e9 100644
-> --- a/mm/memory.c
-> +++ b/mm/memory.c
-> @@ -753,7 +753,7 @@ static void restore_exclusive_pte(struct vm_area_struct *vma,
->  		 * Currently device exclusive access only supports anonymous
->  		 * memory so the entry shouldn't point to a filebacked page.
->  		 */
-> -		WARN_ON_ONCE(!PageAnon(page));
-> +		WARN_ON_ONCE(1);
->  
->  	set_pte_at(vma->vm_mm, address, ptep, pte);
->  
+The double `the' is duplicated in line 1540, remove one.
 
-Reviewed-by: David Hildenbrand <david@redhat.com>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/net/wireless/marvell/mwifiex/sdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
+index 1a886978ed5d..b8dc3b5c9ad9 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sdio.c
++++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
+@@ -1537,7 +1537,7 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
+ /*
+  * This function decode sdio aggreation pkt.
+  *
+- * Based on the the data block size and pkt_len,
++ * Based on the data block size and pkt_len,
+  * skb data will be decoded to few packets.
+  */
+ static void mwifiex_deaggr_sdio_pkt(struct mwifiex_adapter *adapter,
 -- 
-Thanks,
-
-David / dhildenb
+2.35.1
 
