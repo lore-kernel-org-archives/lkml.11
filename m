@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C7B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:30:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC01BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234563AbiGOLaI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:30:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
+        id S234703AbiGOLaM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:30:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232881AbiGOL3e (ORCPT
+        with ESMTP id S232893AbiGOL3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:29:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 938F664D3;
-        Fri, 15 Jul 2022 04:28:41 -0700 (PDT)
+        Fri, 15 Jul 2022 07:29:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F936E09F;
+        Fri, 15 Jul 2022 04:28:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F27E7B82B72;
-        Fri, 15 Jul 2022 11:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 372BCC34115;
-        Fri, 15 Jul 2022 11:28:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F715B82B9C;
+        Fri, 15 Jul 2022 11:28:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C83C3411E;
+        Fri, 15 Jul 2022 11:28:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657884518;
-        bh=chfXvT3Kw9OdeX3QrMS/wQpa5pJxeEVlUHF+qmPGx8o=;
+        s=korg; t=1657884521;
+        bh=xStRHoffTtxu5I7bWMKYORj8Bgll5IRF43GVx8/Osds=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nIXIvsGqJQSDfkfdA5Ct5BuNNtf85HQLj8rBjMgxlEJ8xgFxusngnVdyfTEnBLed/
-         lF/k2fMAqp2vSt96Vm3pbhsRROOnPDkUHGdqUEs08mNZofOpoxZ7tE5xH8foiwDsl7
-         PbQ2mI7vlrNKMLXev0JSLVT7OnLMSHby+ONY+Wdg=
+        b=dyznh9HEHJRgrbvod7ruOjdrBSCmQB7YfPX/gErJILzIfH6GDMvpHLE0iFUAj9dRt
+         ja5qnyErLMC7zjaiPGU1pDhOjpBwxZcFTyQjXvfDOSMDGb4ba7WvgQyIMr3m/OEB0p
+         CzzAvk62EeqsNcS/fVdzFzWvxHHXVmHUSjl2E4zY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.10.131
-Date:   Fri, 15 Jul 2022 13:28:27 +0200
-Message-Id: <165788450638244@kroah.com>
+Subject: Re: Linux 5.15.55
+Date:   Fri, 15 Jul 2022 13:28:33 +0200
+Message-Id: <1657884512246178@kroah.com>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <165788450619772@kroah.com>
-References: <165788450619772@kroah.com>
+In-Reply-To: <1657884512211161@kroah.com>
+References: <1657884512211161@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -47,23 +47,23 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index b0a35378803d..53f1a45ae69b 100644
+index f8dc156aa302..c95f0f59885f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 10
--SUBLEVEL = 130
-+SUBLEVEL = 131
+ PATCHLEVEL = 15
+-SUBLEVEL = 54
++SUBLEVEL = 55
  EXTRAVERSION =
- NAME = Dare mighty things
+ NAME = Trick or Treat
  
 diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-index 8d096ca770b0..92e8ca56f566 100644
+index 6eb067777703..b72b387c08ef 100644
 --- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
 +++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -683,7 +683,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+@@ -685,7 +685,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
  	hw->timing0 = BF_GPMI_TIMING0_ADDRESS_SETUP(addr_setup_cycles) |
  		      BF_GPMI_TIMING0_DATA_HOLD(data_hold_cycles) |
  		      BF_GPMI_TIMING0_DATA_SETUP(data_setup_cycles);
