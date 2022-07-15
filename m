@@ -2,86 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0683CCA482
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D668C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:56:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234639AbiGOQ4L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39188 "EHLO
+        id S234780AbiGOQ4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234399AbiGOQ4I (ORCPT
+        with ESMTP id S234399AbiGOQ4x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 12:56:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB9479EF7;
-        Fri, 15 Jul 2022 09:56:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E392B82D61;
-        Fri, 15 Jul 2022 16:56:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BFD6C34115;
-        Fri, 15 Jul 2022 16:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657904164;
-        bh=nElAzVIAv0nLtGkLSpnk4sOMhdMwLfbRx9XjW5h8H4M=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=raha1B32W4+ZrSGPi+rMQqE1vCSRzVr95GlL6ZOL7TWkdUwO6kNztk8j1xBSrYFxE
-         cgxYyveCQu3xsRiD8tVpMOUmfSd7srNQDXDSEkQLJwVCDZArTqjBT4vGKLo9yz/7PS
-         XFQJyG89a+DuNaA5QASqdmpGZSP2OcZsGtOMIlhKUTvMQH53nYHQ9SWjPoDOiYJing
-         Vd0X03m+WFJ4aTdlD/Z/aAzPvo0MoU9qwA9RjAXLJnJ5Oa06UBkmWxIWQGsuoYUBrM
-         9A1al3M41cZ1btJQr+GAAi7PRq7psCN1ZPCKom11veCBksJ1W0XJJpMjwVBXjL9GVs
-         8+tbTj6T3oT1Q==
-Date:   Fri, 15 Jul 2022 11:56:01 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] PCI: qcom: Add support for modular builds
-Message-ID: <20220715165601.GA1139849@bhelgaas>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9ef036db-2ac8-2723-93de-ac841d94ba51@linaro.org>
+        Fri, 15 Jul 2022 12:56:53 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A4A779EF7;
+        Fri, 15 Jul 2022 09:56:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657904212; x=1689440212;
+  h=from:to:cc:subject:date:message-id;
+  bh=s/vt8de6ZqMbsy1G9Q4hDjZjo+KRTtwTS4CtWJfFUz0=;
+  b=JmOnPMt2ia8iL6x+DjCcjsZhvJU5MVLf0WzbV/v48KM6ru8vqsRrXeAs
+   ewvBZcdzzm1cxoCzeqFyGX3C1KzXSeTg7oxqJv1pURpI9xgGFb9Hhi2Sn
+   wWA97S7Yo42kOnqAgQHKCv8nq0bwB5rGe5JB3JlkuC4rL9faFyp037f2a
+   ULcJaeZnyRBElNJdkkRWBiOfqvpIu4t8BiFr3GbhGHEcUhyrpq71hTF7i
+   0+waGaOvzvTKvF64aqtQ4sjBBCvMIsKNjmFS4lgGdwZ8uEWPEyA/2oM2T
+   ntHa/Pug4K/pScOhZ4UEQdA1M69vk/K9pygVTSuM/sJ7scERiCXxJnCLo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="286979391"
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="286979391"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 09:56:46 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="593794543"
+Received: from srpawnik.iind.intel.com ([10.99.123.68])
+  by orsmga007.jf.intel.com with ESMTP; 15 Jul 2022 09:56:44 -0700
+From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+To:     rafael@kernel.org, srinivas.pandruvada@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, linux-pm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, sumeet.r.pawnikar@intel.com
+Subject: [PATCH v2] powercap: RAPL: Add Power Limit4 support for Alder Lake-N and Raptor Lake-P
+Date:   Fri, 15 Jul 2022 22:22:28 +0530
+Message-Id: <20220715165228.28044-1-sumeet.r.pawnikar@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 04:05:41PM +0300, Dmitry Baryshkov wrote:
-> On 14/07/2022 15:19, Stanimir Varbanov wrote:
-> > Please take a look why we made it built-in first [1].
-> > 
-> > If arguments there are still valid I don't see why to make it a module
-> > again.
-> > 
-> > [1] https://lkml.org/lkml/2016/8/24/694
-> 
-> It looks like there is a move to make all non-essential drivers buildable as
-> modules. For example, the Kirin, dra7xx, Meson PCI controllers are now
-> buildable as modules. So I think we can follow that and allow building the
-> pcie-qcom as a module.
+Add Alder Lake-N and Raptor Lake-P to the list of processor models
+for which Power Limit4 is supported by the Intel RAPL driver.
 
-IIUC the arguments in [1] are that:
+Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/powercap/intel_rapl_msr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-  - Kconfig is bool, so it can't be built as a module
-  - there's no sensible use case for unbind
+diff --git a/drivers/powercap/intel_rapl_msr.c b/drivers/powercap/intel_rapl_msr.c
+index 9d23984d8931..bc6adda58883 100644
+--- a/drivers/powercap/intel_rapl_msr.c
++++ b/drivers/powercap/intel_rapl_msr.c
+@@ -140,7 +140,9 @@ static const struct x86_cpu_id pl4_support_ids[] = {
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_TIGERLAKE_L, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_L, X86_FEATURE_ANY },
++	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_N, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE, X86_FEATURE_ANY },
++	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE_P, X86_FEATURE_ANY },
+ 	{}
+ };
+ 
+-- 
+2.17.1
 
-Those described the situation at the time, and there's no point in
-having .remove() and using module_platform_driver() if Kconfig is
-bool.
-
-But they don't seem like arguments for why the driver couldn't be
-*made* modular.
-
-I think drivers *should* be modular unless there's a technical reason
-they can't be.
-
-Bjorn
