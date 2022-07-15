@@ -2,112 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3D1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 21:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A56C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 21:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231162AbiGOVK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 17:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
+        id S230414AbiGOVOa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 17:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231782AbiGOVKI (ORCPT
+        with ESMTP id S229513AbiGOVO2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 17:10:08 -0400
-Received: from mr4.vodafonemail.de (mr4.vodafonemail.de [145.253.228.164])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A0197AB0D
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 14:10:06 -0700 (PDT)
-Received: from smtp.vodafone.de (unknown [10.0.0.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        by mr4.vodafonemail.de (Postfix) with ESMTPS id 4Ll3gR4Wv7z1y3d;
-        Fri, 15 Jul 2022 21:01:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arcor.de;
-        s=vfde-mb-mr2-21dec; t=1657918883;
-        bh=g0bZNQ/qAGzQLRkN3t2THCJbsEj5rzgZ60pOMTH7Mao=;
-        h=Date:From:To:Subject:Message-ID:References:Content-Type:
-         In-Reply-To:From;
-        b=RhBsweNS+Px1w+brCGcYvdNy6c+SqURr/fXm/i3BR68wsmOck6Gf+6VMpK92azfa9
-         v+N0hBwQgTqULfBxo46CvwWsfg+SRP8g+sFfXzuVLPJKwqg3kByK1nNiMZLw1PoScu
-         zv2ltNpU6PnZjxKqUI1OXWr+Pva46z28G888dTQU=
-Received: from arcor.de (p3ee2ce05.dip0.t-ipconnect.de [62.226.206.5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp.vodafone.de (Postfix) with ESMTPSA id 4Ll3g24xSkzHnHl;
-        Fri, 15 Jul 2022 21:00:59 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 23:00:45 +0200
-From:   Reinhard Speyerer <rspmn@arcor.de>
-To:     Frans Klaver <fransklaver@gmail.com>
-Cc:     Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Frans Klaver <frans.klaver@vislink.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v2] usb: serial: qcserial: add EM9191 support
-Message-ID: <YtHVfc40VGbB2Tkz@arcor.de>
-References: <20220715095623.28002-1-frans.klaver@vislink.com>
+        Fri, 15 Jul 2022 17:14:28 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D75B32B186;
+        Fri, 15 Jul 2022 14:14:26 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id ss3so11006791ejc.11;
+        Fri, 15 Jul 2022 14:14:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4jnwaKSFrPbXm7tPbqUxltJNzUOl5SncKSIZVs8IUH8=;
+        b=MIxtPAOXNa3uDXY0po8014F6W7nVRoyldH4pwU/j7Kbxvo1E59SnG2+ky8TFIVwaIG
+         Ka+yFnIM4OwmPsd6fllxxWBjgu/DiVxR0zyYT9F+Dx7rhSvQAefgq516sW+l6nKceZYp
+         SuNvicXRj8hEZUHBxPHzB88PASocLl6Xy4jDd4fnh/z0IiiGnKoghc0J5e9woTauaxxn
+         sGvOX0YVuo/DnEoTkt1It7FRYhPxsC1BBFbJrpmLD6B6OcFITsieVYYdknu0qj/iJdnB
+         QEkSYc+vYh41gHeKI2BH+d93PQD4HT8Ocsty2jWV23gmVx5FMo7++QHZy/WCF1aoL4Bl
+         obLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4jnwaKSFrPbXm7tPbqUxltJNzUOl5SncKSIZVs8IUH8=;
+        b=ZGYM1ClpF99Y1zM7KDCtdti2luS26LgdQfRc1wwb+2Via7mGa22pjMHFTWlHO1oLS5
+         XKE+On/ViKi6dbjMAx5pRegBSxWx9+VbAXoflfTPaAVJJKDE1Euv1zt6pgtO5s6CwLZA
+         8CkgAWTNyBFw4KogMHtIRgVGsCZ0KGMB6nwZz/H9fwhPvDxoXEsIRu4CG1/JawzTBsT1
+         HsGGOC+VZ9/E/d1uwjmq/BTrrmH+nWxWILG729R4p4XJ0E6+1cz7fphWtaWagk+Dz2Ee
+         KNfw8BzR4T47QTlf9ItdS4VZSpnZaDBirdAEPHYZTN7Eu115F6v8YBXMf+DfJGUwwhbD
+         6WtA==
+X-Gm-Message-State: AJIora9RZHi/cSj/UmU286bAvTSBpIE/FSsDtgjyHRIQ6aVW2852U5en
+        2w++8+Vc7vJKIZ8TAEL5ZxE=
+X-Google-Smtp-Source: AGRyM1ulZ1t7kEN0uGVJ52lXzet5jxCPqjmayE79wtwiZYAxUE/4rkT527PV0ow3/GrOcaywwPDQWA==
+X-Received: by 2002:a17:907:7d8b:b0:726:aad6:f421 with SMTP id oz11-20020a1709077d8b00b00726aad6f421mr15046466ejc.80.1657919665403;
+        Fri, 15 Jul 2022 14:14:25 -0700 (PDT)
+Received: from junglepc.fritz.box (h081217087223.dyn.cm.kabsi.at. [81.217.87.223])
+        by smtp.gmail.com with ESMTPSA id ez7-20020a056402450700b0043a87e6196esm3488624edb.6.2022.07.15.14.14.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 14:14:25 -0700 (PDT)
+From:   Sotir Danailov <sndanailov@gmail.com>
+To:     corbet@lwn.net
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bagasdotme@gmail.com, rdunlap@infradead.org,
+        Sotir Danailov <sndanailov@gmail.com>
+Subject: [PATCH v3] Documentation: process: Update email client instructions for Thunderbird
+Date:   Fri, 15 Jul 2022 23:13:07 +0200
+Message-Id: <20220715211307.9358-1-sndanailov@gmail.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715095623.28002-1-frans.klaver@vislink.com>
-X-purgate-type: clean
-X-purgate: clean
-X-purgate-size: 2507
-X-purgate-ID: 155817::1657918881-11F7A23F-EC5999A9/0/0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 11:56:23AM +0200, Frans Klaver wrote:
-> From: Frans Klaver <frans.klaver@vislink.com>
-> 
-> Support for QDL mode is already present for EM9191 modules, but the
-> non-QDL mode appears to be missing. Add it now.
-> 
-> T:  Bus=03 Lev=03 Prnt=04 Port=01 Cnt=02 Dev#= 17 Spd=480 MxCh= 0
-> D:  Ver= 2.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-> P:  Vendor=1199 ProdID=90d3 Rev=00.06
-> S:  Manufacturer=Sierra Wireless, Incorporated
-> S:  Product=Sierra Wireless EM9191
-> S:  SerialNumber=8W0463003002A114
-> C:  #Ifs= 4 Cfg#= 1 Atr=a0 MxPwr=500mA
-> I:  If#=0x0 Alt= 0 #EPs= 1 Cls=02(commc) Sub=0e Prot=00 Driver=cdc_mbim
-> I:  If#=0x1 Alt= 1 #EPs= 2 Cls=0a(data ) Sub=00 Prot=02 Driver=cdc_mbim
-> I:  If#=0x3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=qcserial
-> I:  If#=0x4 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=qcserial
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Frans Klaver <frans.klaver@vislink.com>
-> ---
-> I noticed an e-mail address discrepancy that git-send-email didn't
-> magically fix for me. No change otherwise.
-> 
->  drivers/usb/serial/qcserial.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
-> index 586ef5551e76e..73f6d3a37c0c4 100644
-> --- a/drivers/usb/serial/qcserial.c
-> +++ b/drivers/usb/serial/qcserial.c
-> @@ -166,6 +166,7 @@ static const struct usb_device_id id_table[] = {
->  	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
->  	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
->  	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
-> +	{DEVICE_SWI(0x1199, 0x90d3)},	/* Sierra Wireless EM9191 */
->  	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
->  	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
->  	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
+The instructions don't match with the current Thunderbird interface.
+Clarification on using external extensions.
+New information on how to avoid writing HTML emails.
+Tell user to restart Thunderbird after modifications.
 
-Hi Frans,
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+Signed-off-by: Sotir Danailov <sndanailov@gmail.com>
+---
+Changelog since v2:
+ - tell user to restart Thunderbird after modifications
+ - unnecessary comment on older versions for "External Editor"
 
-the qcserial driver used in the usb-devices output above does not seem
-to be built from the mainline qcserial.c with your patch applied as USB
-interface 4 is ignored by the QCSERIAL_SWI layout.
+Changelog since v1:
+ - better external extensions explanation
+ - information on avoiding HTML emails
 
-To avoid potential side effects in case Sierra Wireless adds a vendor class
-USB interface 2 not intended to be used with qcserial.c it might be best
-to use a new QCSERIAL_SWI2 layout similar to what has been done in
-their MBPL drivers mentioned here
-https://forum.sierrawireless.com/t/rc7620-and-linux-driver/24308/ .
+v2: https://lore.kernel.org/linux-doc/20220714131152.12709-1-sndanailov@gmail.com/
+v1: https://lore.kernel.org/linux-doc/20220713225037.1201-1-sndanailov@gmail.com/
 
-Regards,
-Reinhard
+ Documentation/process/email-clients.rst | 69 +++++++++++++++++--------
+ 1 file changed, 47 insertions(+), 22 deletions(-)
+
+diff --git a/Documentation/process/email-clients.rst b/Documentation/process/email-clients.rst
+index 16586f6cc888..fc2c46f3f82d 100644
+--- a/Documentation/process/email-clients.rst
++++ b/Documentation/process/email-clients.rst
+@@ -277,36 +277,61 @@ Thunderbird (GUI)
+ Thunderbird is an Outlook clone that likes to mangle text, but there are ways
+ to coerce it into behaving.
+ 
++After doing the modifications, this includes installing the extensions,
++you need to restart Thunderbird.
++
+ - Allow use of an external editor:
+-  The easiest thing to do with Thunderbird and patches is to use an
+-  "external editor" extension and then just use your favorite ``$EDITOR``
+-  for reading/merging patches into the body text.  To do this, download
+-  and install the extension, then add a button for it using
+-  :menuselection:`View-->Toolbars-->Customize...` and finally just click on it
+-  when in the :menuselection:`Compose` dialog.
+-
+-  Please note that "external editor" requires that your editor must not
+-  fork, or in other words, the editor must not return before closing.
+-  You may have to pass additional flags or change the settings of your
+-  editor. Most notably if you are using gvim then you must pass the -f
+-  option to gvim by putting ``/usr/bin/gvim -f`` (if the binary is in
+-  ``/usr/bin``) to the text editor field in :menuselection:`external editor`
+-  settings. If you are using some other editor then please read its manual
+-  to find out how to do this.
++
++  The easiest thing to do with Thunderbird and patches is to use extensions
++  which open your favorite external editor.
++
++  Here are some example extensions which are capable of doing this.
++
++  - "External Editor Revived"
++
++    https://github.com/Frederick888/external-editor-revived
++
++    https://addons.thunderbird.net/en-GB/thunderbird/addon/external-editor-revived/
++
++    It requires installing a "native messaging host".
++    Please read the wiki which can be found here:
++    https://github.com/Frederick888/external-editor-revived/wiki
++
++  - "External Editor"
++
++    https://github.com/exteditor/exteditor
++
++    To do this, download and install the extension, then open the
++    :menuselection:`compose` window, add a button for it using
++    :menuselection:`View-->Toolbars-->Customize...`
++    then just click on the new button when you wish to use the external editor.
++
++    Please note that "External Editor" requires that your editor must not
++    fork, or in other words, the editor must not return before closing.
++    You may have to pass additional flags or change the settings of your
++    editor. Most notably if you are using gvim then you must pass the -f
++    option to gvim by putting ``/usr/bin/gvim --nofork"`` (if the binary is in
++    ``/usr/bin``) to the text editor field in :menuselection:`external editor`
++    settings. If you are using some other editor then please read its manual
++    to find out how to do this.
+ 
+ To beat some sense out of the internal editor, do this:
+ 
+-- Edit your Thunderbird config settings so that it won't use ``format=flowed``.
+-  Go to :menuselection:`edit-->preferences-->advanced-->config editor` to bring up
+-  the thunderbird's registry editor.
++- Edit your Thunderbird config settings so that it won't use ``format=flowed``!
++  Go to your main window and find the button for your main dropdown menu.
++  :menuselection:`Main Menu-->Preferences-->General-->Config Editor...`
++  to bring up the thunderbird's registry editor.
+ 
+-- Set ``mailnews.send_plaintext_flowed`` to ``false``
++  - Set ``mailnews.send_plaintext_flowed`` to ``false``
+ 
+-- Set ``mailnews.wraplength`` from ``72`` to ``0``
++  - Set ``mailnews.wraplength`` from ``72`` to ``0``
+ 
+-- :menuselection:`View-->Message Body As-->Plain Text`
++- Don't write HTML messages! Go to the main window
++  :menuselection:`Main Menu-->Account Settings-->youracc@server.something-->Composition & Addressing`!
++  There you can disable the option "Compose messages in HTML format".
+ 
+-- :menuselection:`View-->Character Encoding-->Unicode (UTF-8)`
++- Open messages only as plain text! Go to the main window
++  :menuselection:`Main Menu-->View-->Message Body As-->Plain Text`!
+ 
+ TkRat (GUI)
+ ***********
+-- 
+2.37.0
+
