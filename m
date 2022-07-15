@@ -2,156 +2,289 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 865ACC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD097C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230200AbiGOGFH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 02:05:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50352 "EHLO
+        id S230227AbiGOGFY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 02:05:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229921AbiGOGFB (ORCPT
+        with ESMTP id S230207AbiGOGFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 02:05:01 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B6D474D4;
-        Thu, 14 Jul 2022 23:05:00 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id 70so3841295pfx.1;
-        Thu, 14 Jul 2022 23:05:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mrpg/XBJmJ+/oHHcv0wYb5WvP4RPml2VeSt1PW2ir9A=;
-        b=eSWaEY3f+1OdlU9shsxVx0eJd6s3PObO8gHUdhe5LS8f940c2AWX88RkvKOE7oH3kL
-         YgbRbk6/NgOed7GPSu0/fc259P0K5pzdA/DwHkLehA1RxIa3vTpPDBtd4Yv3Wm0bsaKl
-         FF40XndHp1Pw+vyBVDq5m17uy1JkqhAn4rXWXdDsCS4yRE4afy9NViORUrmur9F5QN7E
-         FSuPO+WF4pk6J0IqiNxEegSeov2HVPOA3Q7bW9lGjOBQlhawqAi/V19MRkf5kWxR0J7Q
-         +qbGJ9Hh8JidkYTiw5gexzKyKpxjhJhBhMGd1NU5X6VW7zvfe6uD8YR+oMpDsk4kqGZS
-         TG4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mrpg/XBJmJ+/oHHcv0wYb5WvP4RPml2VeSt1PW2ir9A=;
-        b=bcIOnDZfBleltWBSueq5zp4Opb6O4JajsNam6XUbZYNSABBWxFpvf/qy/trteQvt2s
-         o9+ZidYKNlSVLGusm7jvN/RdoAwvbh9ZmzrO/9oNS/8E6yn3my4NmsEaUpZBopxpU6G9
-         PU+DlIdHd+EIauKoVm+M4apr3QhiG3ykMC3aEYvWk7JNUKqqQXeGeXinjcNxwWjhEW8+
-         8jRKvJ7lHnJE4c3Uepn2hR8zzon38vNBbnmJ4v+5hfnhVM9/Ryrr8/4ZnUmMcKSFcS+x
-         9qWI5ciYk+GQVqzY6egsYzK/jqO7zYgH9JEkkZ9KGqqKKKLGhH6r/vxsPsebRyBKR9CU
-         reww==
-X-Gm-Message-State: AJIora/EXpEliSH29lcrClUzKiQMOumm1S3+f6r/lOwd1GxaYmiITDJ8
-        wl2WGcaQS7K0YRcimfRoB1RDY8gbOGZUaA==
-X-Google-Smtp-Source: AGRyM1tjJeVzzQccY1rwn9TNJo8Y8S/zWMwQaieNIT6zWqwGdtppVR9GOaAYOzXU8PbxggA4I/ryfg==
-X-Received: by 2002:aa7:9256:0:b0:52a:cbf7:43ea with SMTP id 22-20020aa79256000000b0052acbf743eamr12147695pfp.7.1657865099393;
-        Thu, 14 Jul 2022 23:04:59 -0700 (PDT)
-Received: from cloud-MacBookPro ([2601:646:8201:c2e0:310b:ff49:22f8:d171])
-        by smtp.gmail.com with ESMTPSA id x9-20020a170902b40900b0016a1e2d148csm2535146plr.32.2022.07.14.23.04.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 23:04:58 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 23:04:57 -0700
-From:   binyi <dantengknight@gmail.com>
-To:     Joe Perches <joe@perches.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Manish Chopra <manishc@marvell.com>, GR-Linux-NIC-Dev@marvell.com,
-        Coiby Xu <coiby.xu@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] staging: qlge: Fix indentation issue under long for
- loop
-Message-ID: <20220715060457.GA2928@cloud-MacBookPro>
-References: <20220710210418.GA148412@cloud-MacBookPro>
- <20220712134610.GO2338@kadam>
- <1d6fd2b271dfa0514ccb914c032e362bc4f669fa.camel@perches.com>
+        Fri, 15 Jul 2022 02:05:20 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2077.outbound.protection.outlook.com [40.107.243.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C0748C91
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:05:18 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bSznLMLae73FuniZMIfG/rxg8SyLTH4vNSjDoQB+0juYA6fUZd+64Dzu73N35rqZOXyE26/pUpVynHZMFG8fHiRMEMHybFfQvGN187+DIXZEU7vVZIToAYRJzKTsHOg/AfyPvxDyLJagXHCsCMBGd0gSIypLqA2qwLD0pF9T0K1z/WZMfv8zosnjG8b8dD7L+Vv9dVkslBraclGkQrz96w8eJjgNNKiSlXSxHkPk5wC96IVut8aDF9UVSNXxzwIWv05FDexMQihHAx6Zp4IeXj4GBZrnmSvqf4Sp9z9Vpa1AB2qzEgvgRnWY0pTwNVXHsgjafdxo6egXgWjxlq+ZMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3GDFdPN9OF52+LIFQHaVd5VRmKLWd8aw+FJYMO0CmYo=;
+ b=VcY7e6f/9CvVg3EG+0+9p1SItkVkHces3Gt0feacc/iiHcOR0a8DU8hnphy5/IxOGFrwVUhQrHpz0NlqXCisr9L6ta4JCcKNQfOR6weT7+7YjGwQ3ML9y0eImVzvFwpNMDnTR87tccVvDb2yrImiJ1bKdFunz+PJOfK80lznkdpMquP9luGVTyUq3mfdpzVm31MA+r+crtQY/GLOlJ6HvqMWozNAj9B6cKCpTo7MB4umoXTkIFBRmkreRljs9xeP8iKkdYEmwzYJoXhyOBrVs4QsTDKpp+l1z559L2qBByV1FSVbzLmFQon5FZgdQ6w9dU5M4z05dIY0jTgtKtWoag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3GDFdPN9OF52+LIFQHaVd5VRmKLWd8aw+FJYMO0CmYo=;
+ b=B2fCYoS85i4SnmDRAtiYVNV0RX5mhieAvRCV3WaXLsp0YJPXGqtu+sHQ7q5gV+Zk8+T3DCC4xsCdBuLCe8qqSTD4TpGmzQkBZDEaQUNhQ4KGO+bwGfdcxGKOLo2DBmuuOTQuSi88s5K/YWtLcgYudhL7L4PODAd17rHat6AmzGuXn13fuZpBWQuQ+23MbCNcARYoN9P28vEHLSwSF/t7u2ov5iyl9YfXfDwYKGDVJo67tWmmZxNwjNu62+qjLgZ6IOAbUKyOjpU3YbwBj/Q6em+Z+QmOjzflrQY6ar1RQ6hgCZyUqSbWLDgLEf/vb1mjg2jslodZMWOLLjqpqzCTFg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com (2603:10b6:a03:134::26)
+ by BYAPR12MB3127.namprd12.prod.outlook.com (2603:10b6:a03:d8::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.12; Fri, 15 Jul
+ 2022 06:05:16 +0000
+Received: from BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7]) by BYAPR12MB3176.namprd12.prod.outlook.com
+ ([fe80::eca6:a4a7:e2b2:27e7%5]) with mapi id 15.20.5417.020; Fri, 15 Jul 2022
+ 06:05:16 +0000
+References: <20220714045351.434957-1-aneesh.kumar@linux.ibm.com>
+ <20220714045351.434957-7-aneesh.kumar@linux.ibm.com>
+User-agent: mu4e 1.6.9; emacs 27.1
+From:   Alistair Popple <apopple@nvidia.com>
+To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
+Subject: Re: [PATCH v9 6/8] mm/demotion: Add pg_data_t member to track node
+ memory tier details
+Date:   Fri, 15 Jul 2022 15:49:00 +1000
+In-reply-to: <20220714045351.434957-7-aneesh.kumar@linux.ibm.com>
+Message-ID: <878rouap2e.fsf@nvdebian.thelocal>
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR13CA0195.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c3::20) To BYAPR12MB3176.namprd12.prod.outlook.com
+ (2603:10b6:a03:134::26)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1d6fd2b271dfa0514ccb914c032e362bc4f669fa.camel@perches.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e2aec3d5-9e63-4d81-ff82-08da6627fced
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3127:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Nuj0mjx2VEeWdogw8uwRt6poM8VUJ2zPWRhNpAeS8utNRANIOLPww1JZAi2zQcEAIkrn6HtGyo0m8Xvj8GzhHDHUqI8Ql3VzsMzNi5hcOk5zzYtyNMvJMvOnLXS2+FXNXyq1RrvVL+eXE4EyulV3lUu1J1NaFIQEvCSIHKep8cbWc+DHOz4vXlvby27BlWXI3WFZYL2adguIybROVrLxGy5Qe1JKI13yGsi007JewH6rpbRjLMYizirEFfZE8BmpyOyr2mBotNVGG0WdduBlf2wuVO4Q2qxcCEV/qib6Kn3AgLDdqcQJECJFjd2yyXYXawrD121KKvnlbwUDX4cIR7L2wiL0zhjNAKhyUqQy3oBm8pkAyLfDaGhv9WOIPrDV0obthwmZMNd7AYp3BAJI9aPjbOOSGcyMBmZF2Dqs/IaH/Fz3Hxeax/NDgE1ocaeTbyImkhnRvKmQ8Epj8KElqwKU8JGda4+Gl5VBqpwj8r333M3dxaUwWfDk0LZwgtTNDCOGkIY9NpXHSuVdXhfWYsqI3V+ws2WbLrHyLc1qpGT6yqE35cgDZ40X1PLMsC6GsascnW/xe67Uh9Ylx28qdsENyFErUEoLC0EXn3Q230Ocggi7HJJQp8PQIXYlFJfiPaScjnjsum4tkmlDqMnAXZ7DhLBMp6bmgHSpjKqjOoRFLv76t4HCG7P+i7ypMUoAYzJx9bWf8LD7NrtFeHzol2LakznB6/Q5JXqmxfAYgBObuthpTicpR9Jlc5c+12pZt8pVryCcuVf4U1Ks+gkBjQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB3176.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(136003)(396003)(346002)(376002)(39860400002)(6916009)(316002)(83380400001)(86362001)(54906003)(66946007)(6486002)(41300700001)(478600001)(6666004)(186003)(6512007)(26005)(4326008)(7416002)(66556008)(66476007)(6506007)(5660300002)(8676002)(8936002)(2906002)(38100700002)(9686003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?oddLV339NhQVmoomA8NzvnsdWcApUdfQw7XoRqbhrZwOnJ9gKKReeMQ6UHIa?=
+ =?us-ascii?Q?MuwwzCXXCIygZKVBIk42r+BfOCweOVdeiXnI2rprx6QolWjM1GKVLjEsCnhA?=
+ =?us-ascii?Q?2c+7ecEodA9/PxfXCNXdTo5o+bsAtAvpXXCUXJHGhQk4LcOepX34g0KYO8Lj?=
+ =?us-ascii?Q?Xo6BzzX45lGS4s1WUhT5T8s3TJJisCa5nsx1liIuWbdrmR5QPZdwlaoSuCs2?=
+ =?us-ascii?Q?cWY86kpj04d9dZ1hC8nhGepXUJ9L1/TUznDw4R6vP0IeOf4Ml+0Fvn+Yagkp?=
+ =?us-ascii?Q?qQIiXYbRchzfuAkIbh/Wse/X8utR1sNjFPiWSrrFsigILilZB2YTzE1eAZgW?=
+ =?us-ascii?Q?K/VrXUDiBfVvseUtLBWdoZPrrjrA6i0FeS/uZlVp9PRgSSm1y7kAtkFaZZr8?=
+ =?us-ascii?Q?F7K2RYl9AoPMSjIzaPwYipnVwXjorec/fsiGkY2OnKXEH3DW1yLT21Va/p0R?=
+ =?us-ascii?Q?dXiJmHe+H0rnYnDMzO3q9v3f81PyETbPFl7pJ3fMOOgpxb04h1QgE7zemnTO?=
+ =?us-ascii?Q?IdjAZKOu4L12yHa6M61Rexdr6ScxW47ceVk9kuN9td6X8pYmx/N2DEJGfu7G?=
+ =?us-ascii?Q?wE5ozrFMEFNBqLSnMCmY+bb82QMrtFmRv0ujImdHs2C0/4cElMMeWJTSCf/H?=
+ =?us-ascii?Q?KREc3Yhg8nD/Z8CFSANa7MmPh7sCOqbdD7dItVo1MnQA0pH6rWsTh2IbQa+7?=
+ =?us-ascii?Q?gCxsHfKd5oKIVCfs+Pd7PtLKJirNj5Pu7IqVy2yT9oXozRI+Iy+bCe+tMckK?=
+ =?us-ascii?Q?y2qT1MeQ5u+bIA2Rw/xPUx8wbqkSLpjwV08jy3QiMH/RZEQilsp0yVRshJRV?=
+ =?us-ascii?Q?dzQEvNQunhwJq2/r3ZdpCDJxyrIAWu7y+7zaYEeJ7/ILhOuNTF2KvyUnutm/?=
+ =?us-ascii?Q?iKuLfQJp/dYv0DdR6FdiER4nDwgfo32JG2RViDxbTwf2GOVW0sZk4/jKr9fM?=
+ =?us-ascii?Q?zenw30AZ1LAmDq148oHWPhz8IbjyM7Nk5i5ZRwuZFqLi5bxQHxWdH00no+8a?=
+ =?us-ascii?Q?0LI1883d81s2tTV/HeGLdW1DBc2wI3N7Azzj5kpA4e8OjRMShhEglwNkUM4C?=
+ =?us-ascii?Q?dSd6ltQcKTucANmIuyQ9eS7J5Av4pfsWigFGsFcoklXp/bFTkA47dAFTNLgs?=
+ =?us-ascii?Q?dhaUCDanCSOOVw0e7fol88ck48JNXOo8xwBGEfhkHkIyQMHuC3QmMq/ECIR4?=
+ =?us-ascii?Q?Tr+nKttYuDopct5Pc5yU+FU7W2NgS9MqqOUMyNBq3vCkvZI6XJ6OikwzADRB?=
+ =?us-ascii?Q?w6koRCZiBm7g+aqr81hVQHvr557eUTznDvhoinjDnVs1nGzZ99bShWiO6SlK?=
+ =?us-ascii?Q?Et7CiqSH5VjIbvRPX1VmNkT/wYkp4jh4PWZJkmR59AlnEPsZ7hLRH4pSGBCo?=
+ =?us-ascii?Q?wbQ/5BH7B8HX+nnx6zZeekSpk4gcDpPXiD12DiYHDtmu7WMI+xhx/EPeyWaW?=
+ =?us-ascii?Q?5CbpzV/Ld9ra+oMnEdiTCbYH8eq7wGi5PKCRuSozMnnnGZucSGpIZMP6teI2?=
+ =?us-ascii?Q?/hfVt53/nu2WCZJKiOx847WLtGQh43/BHNq2yFEQJJW2/SzX7SND1C7RrmpA?=
+ =?us-ascii?Q?EfWsDqIQLxI1+NXLPg/4dVNkzgHS7Xa+5PyAj9nf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2aec3d5-9e63-4d81-ff82-08da6627fced
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB3176.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 06:05:16.0497
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XH4SpNsxPrHm+JmCVyhPrTYGqFUSIQMpWs5VbKS6KnfyD7sDrIs+vwPBKpHZzSNbe7xFkRjR/wJUnNXwosG6Tw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3127
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 07:14:55AM -0700, Joe Perches wrote:
-> On Tue, 2022-07-12 at 16:46 +0300, Dan Carpenter wrote:
-> > On Sun, Jul 10, 2022 at 02:04:18PM -0700, Binyi Han wrote:
-> > > Fix indentation issue to adhere to Linux kernel coding style,
-> > > Issue found by checkpatch. Change the long for loop into 3 lines. And
-> > > optimize by avoiding the multiplication.
-> > 
-> > There is no possible way this optimization helps benchmarks.  Better to
-> > focus on readability.
-> 
-> I think removing the multiply _improves_ readability.
-> 
-> > > diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
-> []
-> > > @@ -3007,10 +3007,12 @@ static int qlge_start_rx_ring(struct qlge_adapter *qdev, struct rx_ring *rx_ring
-> > >  		tmp = (u64)rx_ring->lbq.base_dma;
-> > >  		base_indirect_ptr = rx_ring->lbq.base_indirect;
-> > >  
-> > > -		for (page_entries = 0; page_entries <
-> > > -			MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); page_entries++)
-> > > -				base_indirect_ptr[page_entries] =
-> > > -					cpu_to_le64(tmp + (page_entries * DB_PAGE_SIZE));
-> > > +		for (page_entries = 0;
-> > > +		     page_entries < MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN);
-> > > +		     page_entries++) {
-> > > +			base_indirect_ptr[page_entries] = cpu_to_le64(tmp);
-> > > +			tmp += DB_PAGE_SIZE;
-> > 
-> > I've previously said that using "int i;" is clearer here.  You would
-> > kind of expect "page_entries" to be the number of entries, so it's kind
-> > of misleading.  In other words, it's not just harmless wordiness and
-> > needless exposition, it's actively bad.
-> 
-> Likely true.
-> 
 
-I agree it could be misleading. But if "page_entries" is in the for loop I
-would assume it's some kind of index variable, and still it provides some
-information (page entry) for the index, probably page_entry_idx could be
-better name but still makes the for loop a very long one. I guess I would
-leave it be.
+"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
 
-> > I would probably just put it on one line:
-> > 
-> > 		for (i = 0; i MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); i++)
-> > 			base_indirect_ptr[i] = cpu_to_le64(tmp + (i * DB_PAGE_SIZE));
-> > 
-> > But if you want to break it up you could do:
-> > 
-> > 		for (i = 0; i MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN); i++)
-> > 			base_indirect_ptr[i] = cpu_to_le64(tmp +
-> > 							   (i * DB_PAGE_SIZE));
-> > 
-> > "tmp" is kind of a bad name.  Also "base_indirect_ptr" would be better
-> > as "base_indirect".
-> 
-> tmp is a poor name here.  Maybe dma would be better.
-> 
+> Also update different helpes to use NODE_DATA()->memtier. Since
+> node specific memtier can change based on the reassignment of
+> NUMA node to a different memory tiers, accessing NODE_DATA()->memtier
+> needs to happen under an rcu read lock or memory_tier_lock.
+>
+> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+> ---
+>  include/linux/mmzone.h |  3 ++
+>  mm/memory-tiers.c      | 64 +++++++++++++++++++++++++++++++-----------
+>  2 files changed, 50 insertions(+), 17 deletions(-)
+>
+> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
+> index aab70355d64f..353812495a70 100644
+> --- a/include/linux/mmzone.h
+> +++ b/include/linux/mmzone.h
+> @@ -928,6 +928,9 @@ typedef struct pglist_data {
+>  	/* Per-node vmstats */
+>  	struct per_cpu_nodestat __percpu *per_cpu_nodestats;
+>  	atomic_long_t		vm_stat[NR_VM_NODE_STAT_ITEMS];
+> +#ifdef CONFIG_NUMA
+> +	struct memory_tier __rcu *memtier;
+> +#endif
+>  } pg_data_t;
+>
+>  #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
+> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+> index e951f54ce56c..bab4700bf58d 100644
+> --- a/mm/memory-tiers.c
+> +++ b/mm/memory-tiers.c
+> @@ -7,6 +7,7 @@
+>  #include <linux/moduleparam.h>
+>  #include <linux/memory.h>
+>  #include <linux/random.h>
+> +#include <linux/rcupdate.h>
+>  #include <linux/memory-tiers.h>
+>
+>  #include "internal.h"
+> @@ -124,18 +125,23 @@ static struct memory_tier *register_memory_tier(unsigned int tier)
+>  static void unregister_memory_tier(struct memory_tier *memtier)
+>  {
+>  	list_del(&memtier->list);
+> -	kfree(memtier);
+> +	kfree_rcu(memtier);
+>  }
+>
+>  static struct memory_tier *__node_get_memory_tier(int node)
+>  {
+> -	struct memory_tier *memtier;
+> +	pg_data_t *pgdat;
+>
+> -	list_for_each_entry(memtier, &memory_tiers, list) {
+> -		if (node_isset(node, memtier->nodelist))
+> -			return memtier;
+> -	}
+> -	return NULL;
+> +	pgdat = NODE_DATA(node);
+> +	if (!pgdat)
+> +		return NULL;
+> +	/*
+> +	 * Since we hold memory_tier_lock, we can avoid
+> +	 * RCU read locks when accessing the details. No
+> +	 * parallel updates are possible here.
+> +	 */
+> +	return rcu_dereference_check(pgdat->memtier,
+> +				     lockdep_is_held(&memory_tier_lock));
+>  }
+>
+>  static struct memory_tier *__get_memory_tier_from_id(int id)
+> @@ -149,6 +155,33 @@ static struct memory_tier *__get_memory_tier_from_id(int id)
+>  	return NULL;
+>  }
+>
+> +/*
+> + * Called with memory_tier_lock. Hence the device references cannot
+> + * be dropped during this function.
+> + */
+> +static void memtier_node_set(int node, struct memory_tier *memtier)
+> +{
+> +	pg_data_t *pgdat;
+> +	struct memory_tier *current_memtier;
+> +
+> +	pgdat = NODE_DATA(node);
+> +	if (!pgdat)
+> +		return;
+> +	/*
+> +	 * Make sure we mark the memtier NULL before we assign the new memory tier
+> +	 * to the NUMA node. This make sure that anybody looking at NODE_DATA
+> +	 * finds a NULL memtier or the one which is still valid.
+> +	 */
+> +	current_memtier = rcu_dereference_check(pgdat->memtier,
+> +						lockdep_is_held(&memory_tier_lock));
+> +	rcu_assign_pointer(pgdat->memtier, NULL);
+> +	if (current_memtier)
+> +		node_clear(node, current_memtier->nodelist);
 
-Yeah, I think so.
+It seems odd to me that you would update the current memtier prior to
+the synchronize_rcu(). I suppose it's really memory_tier_lock that
+protects the details like ->nodelist, but is there any reason not do the
+update after anyway?
 
-> MAX_DB_PAGES_PER_BQ(QLGE_BQ_LEN) is also a poorly named macro
-> where all the existing uses are QLGE_BQ_LEN.
-> 
-> And there's base_indirect_ptr and base_indirect_dma in the struct
-> so just base_indirect might not be the best.
-> 
-> 		tmp = (u64)rx_ring->lbq.base_dma;
-> 		base_indirect_ptr = rx_ring->lbq.base_indirect;
-> 
-> And clarity is good.
-> Though here, clarity to value for effort though is dubious.
-> 
-> btw: this code got moved to staging 3 years ago.
-> 
-> Maybe it's getting closer to removal time.
-> 
+> +	synchronize_rcu();
+> +	node_set(node, memtier->nodelist);
+> +	rcu_assign_pointer(pgdat->memtier, memtier);
+> +}
+> +
+>  static int __node_create_and_set_memory_tier(int node, int tier)
+>  {
+>  	int ret = 0;
+> @@ -162,7 +195,7 @@ static int __node_create_and_set_memory_tier(int node, int tier)
+>  			goto out;
+>  		}
+>  	}
+> -	node_set(node, memtier->nodelist);
+> +	memtier_node_set(node, memtier);
+>  out:
+>  	return ret;
+>  }
+> @@ -184,14 +217,7 @@ int node_create_and_set_memory_tier(int node, int tier)
+>  	if (current_tier->id == tier)
+>  		goto out;
+>
+> -	node_clear(node, current_tier->nodelist);
+> -
+>  	ret = __node_create_and_set_memory_tier(node, tier);
+> -	if (ret) {
+> -		/* reset it back to older tier */
+> -		node_set(node, current_tier->nodelist);
+> -		goto out;
+> -	}
+>  	if (nodes_empty(current_tier->nodelist))
+>  		unregister_memory_tier(current_tier);
+>
+> @@ -213,7 +239,7 @@ static int __node_set_memory_tier(int node, int tier)
+>  		ret = -EINVAL;
+>  		goto out;
+>  	}
+> -	node_set(node, memtier->nodelist);
+> +	memtier_node_set(node, memtier);
+>  out:
+>  	return ret;
+>  }
+> @@ -428,6 +454,7 @@ static void __init migrate_on_reclaim_init(void)
+>
+>  static int __init memory_tier_init(void)
+>  {
+> +	int node;
+>  	struct memory_tier *memtier;
+>
+>  	/*
+> @@ -444,7 +471,10 @@ static int __init memory_tier_init(void)
+>  		      __func__, PTR_ERR(memtier));
+>
+>  	/* CPU only nodes are not part of memory tiers. */
+> -	memtier->nodelist = node_states[N_MEMORY];
+> +	for_each_node_state(node, N_MEMORY) {
+> +		rcu_assign_pointer(NODE_DATA(node)->memtier, memtier);
+> +		node_set(node, memtier->nodelist);
 
-That sounds sad.
+Similar comment here - the order seems opposite to what I'd expect.
+Shouldn't memtier->nodelist be fully initialised prior to making it
+visible with rcu_assign_pointer()?
 
-Thank you for reviewing!
-
-Best,
-Binyi
+> +	}
+>  	mutex_unlock(&memory_tier_lock);
+>
+>  	migrate_on_reclaim_init();
