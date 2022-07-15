@@ -2,68 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC62C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98AEFC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234237AbiGOMZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 08:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
+        id S233003AbiGOM1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 08:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbiGOMZy (ORCPT
+        with ESMTP id S229725AbiGOM1B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 08:25:54 -0400
-Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 539EC814B2;
-        Fri, 15 Jul 2022 05:25:53 -0700 (PDT)
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oCKOG-00082w-00; Fri, 15 Jul 2022 14:25:52 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id BAF77C0499; Fri, 15 Jul 2022 14:24:36 +0200 (CEST)
-Date:   Fri, 15 Jul 2022 14:24:36 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-mips@vger.kernel.org, fancer.lancer@gmail.com,
-        gerg@kernel.org, open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] MIPS: Fixed __debug_virt_addr_valid()
-Message-ID: <20220715122436.GA2705@alpha.franken.de>
-References: <20220714222514.1570617-1-f.fainelli@gmail.com>
+        Fri, 15 Jul 2022 08:27:01 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F487820C2;
+        Fri, 15 Jul 2022 05:27:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657888021; x=1689424021;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9PzAlK3XwGr2L3CaJM9u4+5spJ/TFu+eRcQmE0ngfMc=;
+  b=ri0utD3vBK7XltfRMdNdHU93QoviRT+gD8aZjwX627ETx+7rOtxk41qE
+   aEI3oVu+zrkPv7wWkZrv644BUb18Z+WHgW4TDSag5NUHbXObzhfqMpKAf
+   ymHYXoz4MlGFu+kOdQWihgeT84aZAE8fv6XEf+TwCVTEZDJgdo6VaZgtw
+   g=;
+Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
+  by alexa-out.qualcomm.com with ESMTP; 15 Jul 2022 05:27:01 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 05:27:00 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 15 Jul 2022 05:26:20 -0700
+Received: from hu-kshivnan-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 15 Jul 2022 05:26:17 -0700
+From:   Shivnandan Kumar <quic_kshivnan@quicinc.com>
+To:     <rafael@kernel.org>, <len.brown@intel.com>, <pavel@ucw.cz>
+CC:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        "Shivnandan Kumar" <quic_kshivnan@quicinc.com>
+Subject: [PATCH v4]PM: QoS: Add check to make sure CPU freq is non-negative
+Date:   Fri, 15 Jul 2022 17:55:39 +0530
+Message-ID: <20220715122539.3978614-1-quic_kshivnan@quicinc.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220714222514.1570617-1-f.fainelli@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 03:25:12PM -0700, Florian Fainelli wrote:
-> It is permissible for kernel code to call virt_to_phys() against virtual
-> addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
-> types. Rewrite the test condition to ensure that the kernel virtual
-> addresses are above PAGE_OFFSET which they must be, and below KSEG2
-> where the non-linear mapping starts.
-> 
-> For EVA, there is not much that we can do given the linear address range
-> that is offered, so just return any virtual address as being valid.
-> 
-> Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
-> to be valid as well.
-> 
-> Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
-> Changes in v2:
-> 
-> - handle lack of HIGHMEM and EVA
-> 
->  arch/mips/mm/physaddr.c | 14 ++++----------
->  1 file changed, 4 insertions(+), 10 deletions(-)
+	CPU frequency should never be negative.
+	If some client driver calls freq_qos_update_request with
+	negative value which will be very high in absolute terms,
+	then qos driver sets max CPU freq at fmax as it considers
+	it's absolute value but it will add plist node with negative
+	priority. plist node has priority from INT_MIN (highest)
+	to INT_MAX(lowest). Once priority is set as negative,
+	another client will not be able to reduce CPU frequency.
+	Adding check to make sure CPU freq is non-negative will
+	fix this problem.
 
-applied to mips-next.
+Signed-off-by: Shivnandan Kumar <quic_kshivnan@quicinc.com>
+---
+v3->v4
+	-used 0 instead of FREQ_QOS_MIN_DEFAULT_VALUE
+v2->v3 
+	-changed commit text
+v1->v2
+	-addressed comments from Rafael
+	-changed commit text accordingly
+ kernel/power/qos.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thomas.
-
+diff --git a/kernel/power/qos.c b/kernel/power/qos.c
+index ec7e1e85923e..af51ed6d45ef 100644
+--- a/kernel/power/qos.c
++++ b/kernel/power/qos.c
+@@ -531,7 +531,7 @@ int freq_qos_add_request(struct freq_constraints *qos,
+ {
+ 	int ret;
+ 
+-	if (IS_ERR_OR_NULL(qos) || !req)
++	if (IS_ERR_OR_NULL(qos) || !req || value < 0)
+ 		return -EINVAL;
+ 
+ 	if (WARN(freq_qos_request_active(req),
+@@ -563,7 +563,7 @@ EXPORT_SYMBOL_GPL(freq_qos_add_request);
+  */
+ int freq_qos_update_request(struct freq_qos_request *req, s32 new_value)
+ {
+-	if (!req)
++	if (!req || new_value < 0)
+ 		return -EINVAL;
+ 
+ 	if (WARN(!freq_qos_request_active(req),
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.25.1
+
