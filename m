@@ -2,152 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B43A9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:34:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DB9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232815AbiGOIe0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:34:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57264 "EHLO
+        id S232791AbiGOIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:37:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232745AbiGOIeQ (ORCPT
+        with ESMTP id S229904AbiGOIhx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:34:16 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976B32A412
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:34:15 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id bu42so6785509lfb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:34:15 -0700 (PDT)
+        Fri, 15 Jul 2022 04:37:53 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D388148F;
+        Fri, 15 Jul 2022 01:37:52 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id bp15so7764195ejb.6;
+        Fri, 15 Jul 2022 01:37:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=a9XRqXHxQeqHgzxMR3XBbO4lnwgsjCZAWCSiuY+LFq4=;
-        b=L/VSt+//pCHUgmC2XJNpaJzs7B1wIvaPRUFDXi+rTW21A9pMGPmUda1JnQ+sUbC6Vn
-         L/kjZqWVz8zpvqEgQK8pyvrSuSKTDkBfofqgYPrcr9/HY5Za3cjdi6ce/XoRwNxLc9qH
-         VGJxCrrOyY/e0ZjEj8Q+AvXFeA8EKgUBk+NIueJ9pGCvfFOHx778Z96CuFf5qVFdccOc
-         ZLnLWrXawOo/PxQubfgGPgRJIR0rhMc8DSfF7shOVZS9CNk0SwGA86lznFU97YAWQtZM
-         0JlAIpV2SwrQbNV2PMm3aIWwuwGEV9cVwgVtLKQibagMWlDf+odU25sXqslmwuvmljUf
-         fgGA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=J+9HGyAEN1pJBy/DvkM1mQBg4p/Yv310qvcslrhu09s=;
+        b=JC/CN8/YNPAb3xeJKIC11lCCMeEU/VxDQx2T1pDL52lQoM/jzoztfMlEhLRro3Vhlb
+         kY60LkLuxx9rha+J+HJZ2973tRFMSnzPvLsTj4waeut50jKWsnppfI+9ZeM90YbcgWZQ
+         b+6YTajzdkdwH9xDX7fn4630x2iF7LJ+wSDOd8uIGMPxIRojPS/cW8F06gu/S+QQahAx
+         J/Bn6dOyezVJz7uxTxETNKu99SWsYMTZedE3SvqvRJ1kvBWVOoDNNf4bJveeiV9zCVdp
+         67DfvfiTKKYrX4eWYHszXNRg9I7MmQwaefT1U323W9km3Tudb2D5w5XomdX/IcbKS/pI
+         hKLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=a9XRqXHxQeqHgzxMR3XBbO4lnwgsjCZAWCSiuY+LFq4=;
-        b=KWUUYk+VDNn17y2v+/JZ2uz5CvJvxQ+J1oLwp3yQ9f3lECok805Vd6X1sxdlAOMHA5
-         Uls+PYGeMgvlpDbfwmxhXPGdUComZ+MDvdQst1tCOyHcxYPmT+xGKpsUq8ieqgHSDzQT
-         p6ilm9rtP9fdLaSaFgr12n1TFNvB0Y2J/G8r/5VOOCeN8cAujkczBI+l6Ed1xW7eyJ28
-         Q4c264xmfzJMSPojJVc+Q0+JkUjdxBG7FfWFXMAzu7X2FW3xVq0w4yu0Q5esdJFQMyDQ
-         yh+0tvKVDfJV2tlwJhH4r/4QuuuXtDeLvjtkMApZbCN5R6aFc+OW8byjtBbdLnntU1Dl
-         zjHg==
-X-Gm-Message-State: AJIora8LJJpbBhK2PTcMP5KW6zks6CAg9FqidBKQy/wN7QGVuusMeuNf
-        qSRoiShhxj0mqmMflSbjiaRnkcmqWh68726tRsxteQ==
-X-Google-Smtp-Source: AGRyM1uXGIv2oypdMMb0kZdiNq2tc6jrAqle0xF0fVdanjMwSKuuGriweh5n3wFGSKTHxeth1/RswnNTKELc0XOzZQQ=
-X-Received: by 2002:a05:6512:2315:b0:489:cbc1:886a with SMTP id
- o21-20020a056512231500b00489cbc1886amr6859122lfu.428.1657874053862; Fri, 15
- Jul 2022 01:34:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220714010021.1786616-1-mw@semihalf.com> <YtAMw7Sp06Kiv9PK@shell.armlinux.org.uk>
- <CAPv3WKcxH=b01ikuUESczWeX8SJjc2fg3GjSCp7Q8p72uSt_og@mail.gmail.com> <YtByJhYpo5BzX4GV@shell.armlinux.org.uk>
-In-Reply-To: <YtByJhYpo5BzX4GV@shell.armlinux.org.uk>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Fri, 15 Jul 2022 10:34:04 +0200
-Message-ID: <CAPv3WKdS-ocj_1uMC-aaw_QQ01FCb2xs-FyV2HHRG_Epd6V0CA@mail.gmail.com>
-Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
- CPU/DSA ports
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=J+9HGyAEN1pJBy/DvkM1mQBg4p/Yv310qvcslrhu09s=;
+        b=Osy+JyvSLbIXXSmrkd7cQgS+l6WXecDodQzhDQqgSQfID7uF4lO8Oa2aMJOMXhI06G
+         C80uw8agVhP1EG/qS4cGZHFTw0Yg+J9YmOwW8c1OQeDzY6AA2Pv23q/W/fEakcSFb+yU
+         MCLmRmzW04bqWy9z10lDtMQBEv8fLCoGgetyzEoI8+zVpSy0Gcl8wz4bflzNo7m/8Zpe
+         N+T5MklQ0PjbpggkKBaAk98IZ0Cnnj6EDBFNTfxOFsOCn+fzbS5gaGZishBzrJDaOYui
+         O56jpdRcpyjSHuAZGWl2YvSvo4wXlNRjlLmjQzrmIR3/bJozqWEFIz3ObYcPpFW1CQEH
+         UqMg==
+X-Gm-Message-State: AJIora8QnsK4G+J8qtPjklaNDVNyUmjekDl6/WJuw0jgCpOOfKGGvtdY
+        M+3ni4Gn/oGuFYfudjDpiHM=
+X-Google-Smtp-Source: AGRyM1sOd2xLAIMyNxCPTpgA4BENx/7gDvju2Nyj7biBYkl+P8YLZQvFrPHxlxBgGXTUrPNSDK3JdQ==
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id e8-20020a17090658c800b006fe91d518d2mr12658988ejs.190.1657874270785;
+        Fri, 15 Jul 2022 01:37:50 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id p19-20020a056402075300b0043a7cdfac46sm2385948edy.23.2022.07.15.01.37.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 01:37:50 -0700 (PDT)
+Message-ID: <62d1275e.1c69fb81.f16fe.51e0@mx.google.com>
+X-Google-Original-Message-ID: <YtDMqUgQ3X4utM6Z@Ansuel-xps.>
+Date:   Fri, 15 Jul 2022 04:10:49 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Eric Biggers' <ebiggers@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] crypto: lib/arc4 - expose library interface
+References: <20220714051221.22525-1-ansuelsmth@gmail.com>
+ <YtDLMmwffn6p/rSV@sol.localdomain>
+ <872b3792d96946b48236120a057b99bc@AcuMS.aculab.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <872b3792d96946b48236120a057b99bc@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Russell,
-
-czw., 14 lip 2022 o 21:44 Russell King (Oracle)
-<linux@armlinux.org.uk> napisa=C5=82(a):
->
-> On Thu, Jul 14, 2022 at 07:18:57PM +0200, Marcin Wojtas wrote:
-> > Hi Russell,
-> >
-> > czw., 14 lip 2022 o 14:32 Russell King (Oracle)
-> > <linux@armlinux.org.uk> napisa=C5=82(a):
+On Fri, Jul 15, 2022 at 07:39:48AM +0000, David Laight wrote:
+> From: Eric Biggers
+> > Sent: 15 July 2022 03:05
+> > 
+> > On Thu, Jul 14, 2022 at 07:12:21AM +0200, Christian Marangi wrote:
+> > > Permit to compile the arc4 crypto lib without any user. This is required
+> > > by the backports project [1] that require this lib for any wireless
+> > > driver.
 > > >
-> > > On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
-> > > > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX set=
-ting")
-> > > > stopped relying on SPEED_MAX constant and hardcoded speed settings
-> > > > for the switch ports and rely on phylink configuration.
-> > > >
-> > > > It turned out, however, that when the relevant code is called,
-> > > > the mac_capabilites of CPU/DSA port remain unset.
-> > > > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
-> > > > dsa_tree_setup_switches(), which precedes setting the caps in
-> > > > phylink_get_caps down in the chain of dsa_tree_setup_ports().
-> > > >
-> > > > As a result the mac_capabilites are 0 and the default speed for CPU=
-/DSA
-> > > > port is 10M at the start. To fix that execute phylink_get_caps() ca=
-llback
-> > > > which fills port's mac_capabilities before they are processed.
-> > > >
-> > > > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX set=
-ting")
-> > > > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > > [1] https://backports.wiki.kernel.org/index.php/Main_Page
 > > >
-> > > Please don't merge this - the plan is to submit the RFC series I sent=
- on
-> > > Wednesday which deletes this code, and I'd rather not re-spin the ser=
-ies
-> > > and go through the testing again because someone else changed the cod=
-e.
-> >
-> > Thank for the heads-up. Are you planning to resend the series or
-> > willing to get it merged as-is? I have perhaps one comment, but I can
-> > apply it later as a part of fwnode_/device_ migration.
-> >
+> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > > ---
+> > >  lib/crypto/Kconfig | 6 +++++-
+> > >  1 file changed, 5 insertions(+), 1 deletion(-)
 > > >
-> > > Marcin - please can you test with my RFC series, which can be found a=
-t:
+> > > diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
+> > > index 2082af43d51f..2dfc785a7817 100644
+> > > --- a/lib/crypto/Kconfig
+> > > +++ b/lib/crypto/Kconfig
+> > > @@ -6,7 +6,11 @@ config CRYPTO_LIB_AES
+> > >  	tristate
 > > >
-> > > https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/
+> > >  config CRYPTO_LIB_ARC4
+> > > -	tristate
+> > > +	tristate "ARC4 library interface"
+> > > +	help
+> > > +	  Enable the ARC4 library interface. This interface is mainly
+> > > +	  used by wireless drivers and is required by the backports
+> > > +	  project.
 > > >
-> >
-> > The thing is my v2 of DSA fwnode_/device_ migration is tested and
-> > ready to send. There will be conflicts (rather easy) with your
-> > patchset - I volunteer to resolve it this way or another, depending on
-> > what lands first. I have 2 platforms to test it with + also ACPI case
-> > locally.
-> >
-> > I'd like to make things as smooth as possible and make it before the
-> > upcoming merge window - please share your thoughts on this.
->
-> I've also been trying to get the mv88e6xxx PCS conversion in, but
-> it's been held up because there's a fundamental problem in DSA that
-> this series is addressing.
->
-> This series is addressing a faux pas on my part, where I had forgotten
-> that phylink doesn't get used in DSA unless firmware specifies a
-> fixed-link (or a PHY) - in other words when the firmware lacks a
-> description of the link.
->
-> So, what do we do...
+> > >  config CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+> > >  	bool
+> > 
+> > I don't think this is appropriate for upstream, as the upstream kernel doesn't
+> > support out-of-tree code.  This is also an internal API that can change from one
+> > kernel version to the next.
+> 
+> Out-of-tree code always has to allow for arbitrary changes to
+> kernel interfaces between kernel versions.
+> So the fact that the API might change isn't relevant.
+> The continual API changes keep some of us in a job :-)
+> 
+> (It has to be said that if I needed RC4 I'd probably add a local copy.)
 >
 
-Ok, thanks. I tested your patchset in 2 setups with multiple
-combinations - all worked fine, so this patch can be abandoned.
+Wonder if I can ask you some advice about the topic... I understand that
+this cannot be merged upstream.
 
-I already rebased my series on top of yours, so I'll submit my v2 this way.
+So the correct solution would be having a copy of the arc4 lib in
+backports?
 
-Best regards,
-Marcin
+-- 
+	Ansuel
