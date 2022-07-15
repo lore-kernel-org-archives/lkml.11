@@ -2,128 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2284C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178DEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:30:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234610AbiGRM3Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        id S234484AbiGRMa1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234537AbiGRM3V (ORCPT
+        with ESMTP id S233110AbiGRMaY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:29:21 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E95B66
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:29:20 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lmh645hLpz1M7xh;
-        Mon, 18 Jul 2022 20:26:36 +0800 (CST)
-Received: from [10.67.110.176] (10.67.110.176) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 18 Jul 2022 20:29:17 +0800
-Subject: Re: [PATCH -next,v2] nvmem: core: Fix memleak in nvmem_register()
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        <gregkh@linuxfoundation.org>
-CC:     <linux-kernel@vger.kernel.org>, <gongruiqi1@huawei.com>,
-        <wangweiyang2@huawei.com>
-References: <20220716095257.2752110-1-cuigaosheng1@huawei.com>
- <9029caa7-beea-34f6-7f9b-b2b230c3baeb@linaro.org>
-From:   cuigaosheng <cuigaosheng1@huawei.com>
-Message-ID: <81b18902-fb45-74b2-ec58-84b468ee9bf1@huawei.com>
-Date:   Mon, 18 Jul 2022 20:29:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Mon, 18 Jul 2022 08:30:24 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DB69FF7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:30:20 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1658147384tla2pq15
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 20:29:42 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: MFQNDABwGMnG3QsZatbGD4I1WiXIyJyAzMqiZ/sq9ymsqWHZaTxRD8C1sUp0j
+        weG4VLNP13F2upYyDFzGL4ign7OARYznrnjudfnKh1ZVprTt24A8h9HhTU9/dRKtbTBFgSQ
+        mFndtoV5zqDneUISK4eV3Oeo2lKWSN1c/ylTD1PyA2/TC14bhmPTyYOyfnRG/b4ymvD+37j
+        OTMHw0m7Z9x+Q+lJSLvduZSYWfGIyIVMouR0V4gwtAljd1epyXtWUhkPJjxEUIG5HHaKEwd
+        VxBzNrFb0Qb/47npqGwhB7N2eJnyLU639Kop8RUKj1msJIQMp+uGHhwkDggwWbGX7krXLKb
+        zt4Ut0Tum387alsqj4PcBLMSK3J5aLr3YE5gYtg/vFc7r36F/SCvkvqCD4bFsRTtjjMp+vW
+        mx+dqcRadG0=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     haojian.zhuang@gmail.com
+Cc:     daniel@zonque.org, robert.jarzmik@free.fr, linux@armlinux.org.uk,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] ARM: pxa: hx4700: Fix comment typo
+Date:   Fri, 15 Jul 2022 12:27:45 +0800
+Message-Id: <20220715042745.14883-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <9029caa7-beea-34f6-7f9b-b2b230c3baeb@linaro.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.110.176]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks for your ideas,
+The double `the' is duplicated in line 33, remove one.
 
-I have made another patch, moving nvmem_validate_keepouts() after
-device_register() and let the device core deal with cleaning name in
-error cases, it's a better option for the issue.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/arm/mach-pxa/hx4700-pcmcia.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/arch/arm/mach-pxa/hx4700-pcmcia.c b/arch/arm/mach-pxa/hx4700-pcmcia.c
+index e2331dfe427d..860b78aed18c 100644
+--- a/arch/arm/mach-pxa/hx4700-pcmcia.c
++++ b/arch/arm/mach-pxa/hx4700-pcmcia.c
+@@ -30,7 +30,7 @@ static int hx4700_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
+ 	/*
+ 	 * IRQ type must be set before soc_pcmcia_hw_init() calls request_irq().
+ 	 * The asic3 default IRQ type is level trigger low level detect, exactly
+-	 * the the signal present on GPIOD4_CF_nCD when a CF card is inserted.
++	 * the signal present on GPIOD4_CF_nCD when a CF card is inserted.
+ 	 * If the IRQ type is not changed, the asic3 interrupt handler will loop
+ 	 * repeatedly because it is unable to clear the level trigger interrupt.
+ 	 */
+-- 
+2.35.1
 
-在 2022/7/18 19:44, Srinivas Kandagatla 写道:
->
->
-> On 16/07/2022 10:52, Gaosheng Cui wrote:
->> dev_set_name will alloc memory for nvmem->dev.kobj.name in
->> nvmem_register, when nvmem_validate_keepouts failed, nvmem's
->> memory will be freed and return, but nobody will free memory
->> for nvmem->dev.kobj.name, there will be memleak, so moving
->> dev_set_name after nvmem_validate_keepouts to fix it.
->>
->> Fixes: de0534df9347 ("nvmem: core: fix error handling while 
->> validating keepout regions")
->> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
->> ---
->>   drivers/nvmem/core.c | 28 ++++++++++++++--------------
->>   1 file changed, 14 insertions(+), 14 deletions(-)
->>
->> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
->> index 1e3c754efd0d..a5d75edf509d 100644
->> --- a/drivers/nvmem/core.c
->> +++ b/drivers/nvmem/core.c
->> @@ -808,20 +808,6 @@ struct nvmem_device *nvmem_register(const struct 
->> nvmem_config *config)
->>       else if (!config->no_of_node)
->>           nvmem->dev.of_node = config->dev->of_node;
->>   -    switch (config->id) {
->> -    case NVMEM_DEVID_NONE:
->> -        dev_set_name(&nvmem->dev, "%s", config->name);
->> -        break;
->> -    case NVMEM_DEVID_AUTO:
->> -        dev_set_name(&nvmem->dev, "%s%d", config->name, nvmem->id);
->> -        break;
->> -    default:
->> -        dev_set_name(&nvmem->dev, "%s%d",
->> -                 config->name ? : "nvmem",
->> -                 config->name ? config->id : nvmem->id);
->> -        break;
->> -    }
->> -
->>       nvmem->read_only = device_property_present(config->dev, 
->> "read-only") ||
->>                  config->read_only || !nvmem->reg_write;
->>   @@ -838,6 +824,20 @@ struct nvmem_device *nvmem_register(const 
->> struct nvmem_config *config)
->>           }
->>       }
->>   +    switch (config->id) {
->> +    case NVMEM_DEVID_NONE:
->> +        dev_set_name(&nvmem->dev, "%s", config->name);
->> +        break;
->> +    case NVMEM_DEVID_AUTO:
->> +        dev_set_name(&nvmem->dev, "%s%d", config->name, nvmem->id);
->> +        break;
->> +    default:
->> +        dev_set_name(&nvmem->dev, "%s%d",
->> +                 config->name ? : "nvmem",
->> +                 config->name ? config->id : nvmem->id);
->> +        break;
->> +    }
->> +
-> The issue with this approach is that dev_err messages in 
-> nvmem_validate_keepouts() will show up without device name setup.
->
-> I think better option is to move nvmem_validate_keepouts() after 
-> device_register() and let the device core deal with cleaning name in 
-> error cases.
->
-> --srini
->
->>       dev_dbg(&nvmem->dev, "Registering nvmem device %s\n", 
->> config->name);
->>         rval = device_register(&nvmem->dev);
-> .
