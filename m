@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC0AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB903C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232796AbiGOX0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:26:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
+        id S232822AbiGOX0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:26:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232434AbiGOX0P (ORCPT
+        with ESMTP id S232478AbiGOX0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:26:15 -0400
-X-Greylist: delayed 1820 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:58 PDT
+        Fri, 15 Jul 2022 19:26:17 -0400
+X-Greylist: delayed 1825 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:26:01 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495F195B0C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E20495B16
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:26:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=03PxLEg7NiaMvhSBPzBFP/XCwo9SFsyuKqJNcoKWY/4=; b=FNoOh
-        ADE4Hg8xvSWs3nC3arwY3n/D4KpC24+zbudVWzCQzQ9Jt44t0D4LfPFv3WNSlveHgFc6/KI89jp4e
-        LC0pEv1M5mVVRvKv+N7xBo9IjLpOl+pyG+ci+ZFb00tI3deorUKHOt6ymu9Zazq4QzWQsBXP3PhGF
-        2FTl5gNBAbd+9kOPgN6LEW+UHH9eTFypF8WmTbSoX4MxMbEAU7uZO4++cR3Fb04edNhHoWl3J/WaW
-        qzP1rvKlrtZ2sASOR7SA6QFTOU6CcyuZMfLSKmYNzTLM2CprP6GhQJR9/AXSBVavTNCZgOZ7RWKrJ
-        xLhnwIfB3xkgI3w00xTLP83GSiuGw==;
-Message-Id: <ebca00c2659755411269303881aad5da8590eefe.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=j9ZK5/8em2J09Xvp8SH5yLZ1F2h2S7F/vFPCjrQUVs4=; b=Df7kV
+        EVpO6S9AG0idczWFWt1AImgG2NplBHukeLmzSFnZC7zUX9wtEIcglKKRuUDg0dDKtj0lUvrMgimY5
+        iu8Cq/F3i1AsiU7VVm3kbWR+hIXX/K+kCzrgLBAvgKH+597k30WnK3/NvoL1Lc9ghRBkKPAoiLGPE
+        oW4wxluZEeFRB6Vfl2KZz9zwr9QZW9RGbjLTibWg4Gj9+I8h/aTwqvFUqMDJVgbKbkUkV7kVlddVS
+        iN2oS40bmeTnHEwb/hkxWq5z+2MZCZqHvG56b9aNKr+wyIFjGTDyp5Hnk+jySSzmwIzxAVdwXs58y
+        zcYn9dj+NvD+SszImuyieCMUqQQzA==;
+Message-Id: <bd6be891cf67e867688e8c8796d06408bfafa0d9.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:22 +0200
-Subject: [PATCH v6 05/11] 9p/trans_virtio: support larger msize values
+Date:   Fri, 15 Jul 2022 23:32:34 +0200
+Subject: [PATCH v6 09/11] net/9p: add p9_msg_buf_size()
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -41,138 +41,230 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The virtio transport supports by default a 9p 'msize' of up to
-approximately 500 kB. This patch adds support for larger 'msize'
-values by resizing the amount of scatter/gather lists if required.
+This new function calculates a buffer size suitable for holding the
+intended 9p request or response. For rather small message types (which
+applies to almost all 9p message types actually) simply use hard coded
+values. For some variable-length and potentially large message types
+calculate a more precise value according to what data is actually
+transmitted to avoid unnecessarily huge buffers.
 
-To be more precise, for the moment this patch increases the 'msize'
-limit for the virtio transport to slightly below 4 MB, virtio
-transport actually supports much more (tested successfully with an
-experimental QEMU version and some dirty 9p Linux client hacks up
-to msize=128MB), but client still uses linear buffers, which in
-turn are limited to KMALLOC_MAX_SIZE (4M).
+So p9_msg_buf_size() divides the individual 9p message types into 3
+message size categories:
 
+  - dynamically calculated message size (i.e. potentially large)
+  - 8k hard coded message size
+  - 4k hard coded message size
+
+As for the latter two hard coded message types: for most 9p message
+types it is pretty obvious whether they would always fit into 4k or
+8k. But for some of them it depends on the maximum directory entry
+name length allowed by OS and filesystem for determining into which
+of the two size categories they would fit into. Currently Linux
+supports directory entry names up to NAME_MAX (255), however when
+comparing the limitation of individual filesystems, ReiserFS
+theoretically supports up to slightly below 4k long names. So in
+order to make this code more future proof, and as revisiting it
+later on is a bit tedious and has the potential to miss out details,
+the decision [1] was made to take 4k as basis as for max. name length.
+
+Link: https://lore.kernel.org/all/5564296.oo812IJUPE@silver/ [1]
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
+ net/9p/protocol.c | 167 ++++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/protocol.h |   2 +
+ 2 files changed, 169 insertions(+)
 
-I am not sure if it is safe the way SG lists are resized here. I "think"
-Dominique said before there should be no concurrency here, but probably
-deserves a revisit.
-
- net/9p/trans_virtio.c | 79 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 79 insertions(+)
-
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 5ac533f83322..921caa022570 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -36,6 +36,16 @@
- #include <linux/virtio_9p.h>
- #include "trans_common.h"
+diff --git a/net/9p/protocol.c b/net/9p/protocol.c
+index 3754c33e2974..1b7fea87fbe9 100644
+--- a/net/9p/protocol.c
++++ b/net/9p/protocol.c
+@@ -23,6 +23,173 @@
  
-+/*
-+ * Maximum amount of virtio descriptors allowed per virtio round-trip
-+ * message.
-+ *
-+ * This effectively limits msize to (slightly below) 4M, virtio transport
-+ * actually supports much more, but client still uses linear buffers, which
-+ * in turn are limited to KMALLOC_MAX_SIZE (4M).
-+ */
-+#define VIRTIO_MAX_DESCRIPTORS 1024
+ #include <trace/events/9p.h>
+ 
++/* len[2] text[len] */
++#define P9_STRLEN(s) \
++	(2 + min_t(size_t, s ? strlen(s) : 0, USHRT_MAX))
 +
- /**
-  * struct virtqueue_sg - (chained) scatter gather lists for virtqueue data
-  * transmission
-@@ -203,6 +213,31 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
- 	return vq_sg;
- }
- 
 +/**
-+ * vq_sg_resize - resize passed virtqueue scatter/gather lists to the passed
-+ * amount of lists
-+ * @_vq_sg: scatter/gather lists to be resized
-+ * @nsgl: new amount of scatter/gather lists
++ * p9_msg_buf_size - Returns a buffer size sufficiently large to hold the
++ * intended 9p message.
++ * @c: client
++ * @type: message type
++ * @fmt: format template for assembling request message
++ * (see p9pdu_vwritef)
++ * @ap: variable arguments to be fed to passed format template
++ * (see p9pdu_vwritef)
++ *
++ * Note: Even for response types (P9_R*) the format template and variable
++ * arguments must always be for the originating request type (P9_T*).
 + */
-+static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
++size_t p9_msg_buf_size(struct p9_client *c, enum p9_msg_t type,
++			const char *fmt, va_list ap)
 +{
-+	struct virtqueue_sg *vq_sg;
++	/* size[4] type[1] tag[2] */
++	const int hdr = 4 + 1 + 2;
++	/* ename[s] errno[4] */
++	const int rerror_size = hdr + P9_ERRMAX + 4;
++	/* ecode[4] */
++	const int rlerror_size = hdr + 4;
++	const int err_size =
++		c->proto_version == p9_proto_2000L ? rlerror_size : rerror_size;
 +
-+	BUG_ON(!_vq_sg || !nsgl);
-+	vq_sg = *_vq_sg;
-+	if (vq_sg->nsgl == nsgl)
-+		return 0;
++	static_assert(NAME_MAX <= 4*1024, "p9_msg_buf_size() currently assumes "
++				  "a max. allowed directory entry name length of 4k");
 +
-+	/* lazy resize implementation for now */
-+	vq_sg = vq_sg_alloc(nsgl);
-+	if (!vq_sg)
-+		return -ENOMEM;
++	switch (type) {
 +
-+	kfree(*_vq_sg);
-+	*_vq_sg = vq_sg;
-+	return 0;
-+}
++	/* message types not used at all */
++	case P9_TERROR:
++	case P9_TLERROR:
++	case P9_TAUTH:
++	case P9_RAUTH:
++		BUG();
 +
- /**
-  * p9_virtio_close - reclaim resources of a channel
-  * @client: client instance
-@@ -774,6 +809,10 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
- 	struct virtio_chan *chan;
- 	int ret = -ENOENT;
- 	int found = 0;
-+#if !defined(CONFIG_ARCH_NO_SG_CHAIN)
-+	size_t npages;
-+	size_t nsgl;
-+#endif
- 
- 	if (devname == NULL)
- 		return -EINVAL;
-@@ -796,6 +835,46 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
- 		return ret;
- 	}
- 
-+	/*
-+	 * if user supplied an 'msize' option that's larger than what this
-+	 * transport supports by default, then try to allocate more sg lists
-+	 */
-+	if (client->msize > client->trans_maxsize) {
-+#ifdef CONFIG_ARCH_NO_SG_CHAIN
-+		pr_info("limiting 'msize' to %d because architecture does not "
-+			"support chained scatter gather lists\n",
-+			client->trans_maxsize);
-+#else
-+		npages = DIV_ROUND_UP(client->msize, PAGE_SIZE);
-+		if (npages > VIRTIO_MAX_DESCRIPTORS)
-+			npages = VIRTIO_MAX_DESCRIPTORS;
-+		if (npages > chan->p9_max_pages) {
-+			npages = chan->p9_max_pages;
-+			pr_info("limiting 'msize' as it would exceed the max. "
-+				"of %lu pages allowed on this system\n",
-+				chan->p9_max_pages);
++	/* variable length & potentially large message types */
++	case P9_TATTACH:
++		BUG_ON(strcmp("ddss?u", fmt));
++		va_arg(ap, int32_t);
++		va_arg(ap, int32_t);
++		{
++			const char *uname = va_arg(ap, const char *);
++			const char *aname = va_arg(ap, const char *);
++			/* fid[4] afid[4] uname[s] aname[s] n_uname[4] */
++			return hdr + 4 + 4 + P9_STRLEN(uname) + P9_STRLEN(aname) + 4;
 +		}
-+		nsgl = DIV_ROUND_UP(npages, SG_USER_PAGES_PER_LIST);
-+		if (nsgl > chan->vq_sg->nsgl) {
-+			/*
-+			 * if resize fails, no big deal, then just continue with
-+			 * whatever we got
-+			 */
-+			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
-+				/*
-+				 * decrement 2 pages as both 9p request and 9p reply have
-+				 * to fit into the virtio round-trip message
-+				 */
-+				client->trans_maxsize =
-+					PAGE_SIZE *
-+					clamp_t(int,
-+						(nsgl * SG_USER_PAGES_PER_LIST) - 2,
-+						0, VIRTIO_MAX_DESCRIPTORS - 2);
++	case P9_TWALK:
++		BUG_ON(strcmp("ddT", fmt));
++		va_arg(ap, int32_t);
++		va_arg(ap, int32_t);
++		{
++			uint i, nwname = va_arg(ap, int);
++			size_t wname_all;
++			const char **wnames = va_arg(ap, const char **);
++			for (i = 0, wname_all = 0; i < nwname; ++i) {
++				wname_all += P9_STRLEN(wnames[i]);
++			}
++			/* fid[4] newfid[4] nwname[2] nwname*(wname[s]) */
++			return hdr + 4 + 4 + 2 + wname_all;
++		}
++	case P9_RWALK:
++		BUG_ON(strcmp("ddT", fmt));
++		va_arg(ap, int32_t);
++		va_arg(ap, int32_t);
++		{
++			uint nwname = va_arg(ap, int);
++			/* nwqid[2] nwqid*(wqid[13]) */
++			return max_t(size_t, hdr + 2 + nwname * 13, err_size);
++		}
++	case P9_TCREATE:
++		BUG_ON(strcmp("dsdb?s", fmt));
++		va_arg(ap, int32_t);
++		{
++			const char *name = va_arg(ap, const char *);
++			if (c->proto_version == p9_proto_legacy) {
++				/* fid[4] name[s] perm[4] mode[1] */
++				return hdr + 4 + P9_STRLEN(name) + 4 + 1;
++			} else {
++				va_arg(ap, int32_t);
++				va_arg(ap, int);
++				{
++					const char *ext = va_arg(ap, const char *);
++					/* fid[4] name[s] perm[4] mode[1] extension[s] */
++					return hdr + 4 + P9_STRLEN(name) + 4 + 1 + P9_STRLEN(ext);
++				}
 +			}
 +		}
-+#endif /* CONFIG_ARCH_NO_SG_CHAIN */
-+	}
++	case P9_TLCREATE:
++		BUG_ON(strcmp("dsddg", fmt));
++		va_arg(ap, int32_t);
++		{
++			const char *name = va_arg(ap, const char *);
++			/* fid[4] name[s] flags[4] mode[4] gid[4] */
++			return hdr + 4 + P9_STRLEN(name) + 4 + 4 + 4;
++		}
++	case P9_RREAD:
++	case P9_RREADDIR:
++		BUG_ON(strcmp("dqd", fmt));
++		va_arg(ap, int32_t);
++		va_arg(ap, int64_t);
++		{
++			const int32_t count = va_arg(ap, int32_t);
++			/* count[4] data[count] */
++			return max_t(size_t, hdr + 4 + count, err_size);
++		}
++	case P9_TWRITE:
++		BUG_ON(strcmp("dqV", fmt));
++		va_arg(ap, int32_t);
++		va_arg(ap, int64_t);
++		{
++			const int32_t count = va_arg(ap, int32_t);
++			/* fid[4] offset[8] count[4] data[count] */
++			return hdr + 4 + 8 + 4 + count;
++		}
++	case P9_TRENAMEAT:
++		BUG_ON(strcmp("dsds", fmt));
++		va_arg(ap, int32_t);
++		{
++			const char *oldname, *newname;
++			oldname = va_arg(ap, const char *);
++			va_arg(ap, int32_t);
++			newname = va_arg(ap, const char *);
++			/* olddirfid[4] oldname[s] newdirfid[4] newname[s] */
++			return hdr + 4 + P9_STRLEN(oldname) + 4 + P9_STRLEN(newname);
++		}
++	case P9_TSYMLINK:
++		BUG_ON(strcmp("dssg", fmt));
++		va_arg(ap, int32_t);
++		{
++			const char *name = va_arg(ap, const char *);
++			const char *symtgt = va_arg(ap, const char *);
++			/* fid[4] name[s] symtgt[s] gid[4] */
++			return hdr + 4 + P9_STRLEN(name) + P9_STRLEN(symtgt) + 4;
++		}
 +
- 	client->trans = (void *)chan;
- 	client->status = Connected;
- 	chan->client = client;
++	case P9_RERROR:
++		return rerror_size;
++	case P9_RLERROR:
++		return rlerror_size;
++
++	/* small message types */
++	case P9_TWSTAT:
++	case P9_RSTAT:
++	case P9_RREADLINK:
++	case P9_TXATTRWALK:
++	case P9_TXATTRCREATE:
++	case P9_TLINK:
++	case P9_TMKDIR:
++	case P9_TMKNOD:
++	case P9_TRENAME:
++	case P9_TUNLINKAT:
++	case P9_TLOCK:
++		return 8 * 1024;
++
++	/* tiny message types */
++	default:
++		return 4 * 1024;
++
++	}
++}
++
+ static int
+ p9pdu_writef(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);
+ 
+diff --git a/net/9p/protocol.h b/net/9p/protocol.h
+index 6d719c30331a..ad2283d1f96b 100644
+--- a/net/9p/protocol.h
++++ b/net/9p/protocol.h
+@@ -8,6 +8,8 @@
+  *  Copyright (C) 2008 by IBM, Corp.
+  */
+ 
++size_t p9_msg_buf_size(struct p9_client *c, enum p9_msg_t type,
++			const char *fmt, va_list ap);
+ int p9pdu_vwritef(struct p9_fcall *pdu, int proto_version, const char *fmt,
+ 		  va_list ap);
+ int p9pdu_readf(struct p9_fcall *pdu, int proto_version, const char *fmt, ...);
 -- 
 2.30.2
 
