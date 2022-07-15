@@ -2,111 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39106CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B42B8CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232839AbiGONms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 09:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        id S232848AbiGONnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 09:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229835AbiGONmq (ORCPT
+        with ESMTP id S232707AbiGONm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 09:42:46 -0400
-Received: from hi1smtp01.de.adit-jv.com (smtp1.de.adit-jv.com [93.241.18.167])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFC77D790;
-        Fri, 15 Jul 2022 06:42:45 -0700 (PDT)
-Received: from hi2exch02.adit-jv.com (hi2exch02.adit-jv.com [10.72.92.28])
+        Fri, 15 Jul 2022 09:42:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608CD7E006;
+        Fri, 15 Jul 2022 06:42:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by hi1smtp01.de.adit-jv.com (Postfix) with ESMTPS id 5D2035202EB;
-        Fri, 15 Jul 2022 15:42:43 +0200 (CEST)
-Received: from vmlxhi-182.localdomain (10.72.92.119) by hi2exch02.adit-jv.com
- (10.72.92.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2308.27; Fri, 15 Jul
- 2022 15:42:43 +0200
-Date:   Fri, 15 Jul 2022 15:42:37 +0200
-From:   Michael Rodin <mrodin@de.adit-jv.com>
-To:     Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>
-CC:     Michael Rodin <mrodin@de.adit-jv.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-renesas-soc@vger.kernel.org>, <michael@rodin.online>,
-        <erosca@de.adit-jv.com>
-Subject: Re: [PATCH v2 0/3] Improve error handling in the rcar-vin driver
-Message-ID: <20220715134237.GA1114456@vmlxhi-182.localdomain>
-References: <YqEO3/KekkZhVjW+@oden.dyn.berto.se>
- <20220628180024.451258-1-mrodin@de.adit-jv.com>
- <YsQIbr9QYGBDoIWT@oden.dyn.berto.se>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F01A162398;
+        Fri, 15 Jul 2022 13:42:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53D97C34115;
+        Fri, 15 Jul 2022 13:42:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657892576;
+        bh=P0r+WyTdBh5LeL1cNNOS1KB7VpTH+2BmbnnTUuDAZI4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=CYMRp1EOv1X1CMDDhb7eRuJtSK4/dzz7Rntvp5/ETBQrJYc5x2SNAa6Buw5BDj4Zi
+         WEGpyixwENFE3MpJoOTW+/SsgbzQ9P5zl+9L+9NYyfm/bCUEYRfjHrk8yd9MtenKzI
+         e4+TqHrC/+UxES8t8sgWvcBFbijgs7m4K4WAIXBiYDgf64U47BiJBGbvGwkUwnX1JX
+         5t4P3FZofldTt8KqBvTuNYPVCBLpB+1+djfmLgdTxjMhqsPR2iWC3l0XnVoMaVQHs9
+         fd/tZ0VWYOHKSrjrSVKMesFAjIwWxtWg0OIABbee1L2cNmit87qoEhZwKVny6atJgO
+         VS3h4Q4l7gaUQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oCLav-0006M6-M9; Fri, 15 Jul 2022 15:43:01 +0200
+Date:   Fri, 15 Jul 2022 15:43:01 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Krishna chaitanya chundru <quic_krichai@quicinc.com>
+Cc:     helgaas@kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mka@chromium.org, quic_vbadigan@quicinc.com,
+        quic_hemantk@quicinc.com, quic_nitegupt@quicinc.com,
+        quic_skananth@quicinc.com, quic_ramkri@quicinc.com,
+        manivannan.sadhasivam@linaro.org, swboyd@chromium.org,
+        dmitry.baryshkov@linaro.org,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v4 1/2] PCI: qcom: Add system PM support
+Message-ID: <YtFu5YKdMPqqpZk8@hovoldconsulting.com>
+References: <1656684800-31278-1-git-send-email-quic_krichai@quicinc.com>
+ <1657118425-10304-1-git-send-email-quic_krichai@quicinc.com>
+ <1657118425-10304-2-git-send-email-quic_krichai@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YsQIbr9QYGBDoIWT@oden.dyn.berto.se>
-X-Originating-IP: [10.72.92.119]
-X-ClientProxiedBy: hi2exch02.adit-jv.com (10.72.92.28) To
- hi2exch02.adit-jv.com (10.72.92.28)
+In-Reply-To: <1657118425-10304-2-git-send-email-quic_krichai@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Niklas, Hans,
-
-On Tue, Jul 05, 2022 at 11:46:22AM +0200, Niklas Söderlund wrote:
-> Hi Michael,
+On Wed, Jul 06, 2022 at 08:10:24PM +0530, Krishna chaitanya chundru wrote:
+> Add suspend and resume pm callbacks.
 > 
-> Thanks for your persistent work with this series.
-
-Thank you for the feedback!
-
-> On 2022-06-28 20:00:19 +0200, Michael Rodin wrote:
-> > Hello,
-> > 
-> > this series is a followup to the other series [1] started by Niklas Söderlund
-> > where only the first patch has been merged. The overall idea is to be more
-> > compliant with the Renesas hardware manual which requires a reset or stop
-> > of capture in the VIN module before reset of CSI2. Another goal is to be
-> > more resilient with respect to non-critical CSI2 errors so the driver does
-> > not end in an endless restart loop. Compared to the previous version [2] of
-> > this series the patch 3 is replaced based on the conclusion in [3] so now
-> > userspace has to take care of figuring out if a transfer error was harmless
-> > or unrecoverable. Other patches are adapted accordingly so no assumptions
-> > about criticality of transfer errors are made in the kernel and the
-> > decision is left up to userspace.
+> When system suspends, and if the link is in L1ss, disable the clocks
+> and power down the phy so that system enters into low power state to
+> save the maximum power. And when the system resumes, enable the clocks
+> back and power on phy if they are disabled in the suspend path.
 > 
-> I like this solution as it truly pushes the decision to user-space. What 
-> bugs me a little bit is that we don't have a way to communicate errors 
-> that we know are unrecoverable (it was for this case the work in this 
-> area started) and ones that could be recoverable (the use-case added on 
-> top).
-
-Yes, it's not nice that V4L2_EVENT_XFER_ERROR does not tell userspace
-whether an error is recoverable (i.e. the event can be ignored) or not
-(i.e. a restart of streaming is required) but the other possible option
-would be (as concluded in [3]) to implement a frame timeout monitoring
-thread in v4l2 core. I am not sure if it is possible to implement this
-second option cleanly...
-
-> I would also like to hear what Hans thinks as he had good suggestions 
-> for how to handle the cases we know can't be recovers in [4].
-
-A a new function vb2_queue_error_with_event() suggested by Hans seems to be
-redundant now, since it would not be used by rcar-vin (unless we implement
-frame timeout monitoring in the v4l2 core). Or do you have an idea, which
-drivers could be the first users of it, e.g. staging/media/imx I mentioned
-before?
-
-> > 
-> > [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__lore.kernel.org_linux-2Drenesas-2Dsoc_20211108160220.767586-2D1-2Dniklas.soderlund-2Brenesas-40ragnatech.se_&d=DwIDAw&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=sWsgk3pKkv5GeIDM2RZlPY8TjNFU2D0oBeOj6QNBadE&m=ecX7IwfatUO7SNPiyQ6x_8K9t2eWJf3y8GNuNHJ_0W0&s=Cli6jADEgMmCOLVoFekRRXzmty9WBXtoSF9utZJNMXY&e=
-> > [2] https://urldefense.proofpoint.com/v2/url?u=https-3A__lore.kernel.org_all_1652983210-2D1194-2D1-2Dgit-2Dsend-2Demail-2Dmrodin-40de.adit-2Djv.com_&d=DwIDAw&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=sWsgk3pKkv5GeIDM2RZlPY8TjNFU2D0oBeOj6QNBadE&m=ecX7IwfatUO7SNPiyQ6x_8K9t2eWJf3y8GNuNHJ_0W0&s=6CysfSY0OoAenEwCzigeyPOb8vyaa4GgzkJSR-ny83U&e=
-> > [3] https://urldefense.proofpoint.com/v2/url?u=https-3A__lore.kernel.org_all_YqEO3-252FKekkZhVjW-2B-40oden.dyn.berto.se_&d=DwIDAw&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=sWsgk3pKkv5GeIDM2RZlPY8TjNFU2D0oBeOj6QNBadE&m=ecX7IwfatUO7SNPiyQ6x_8K9t2eWJf3y8GNuNHJ_0W0&s=67JE_QR4x7omrtC7wzbpn2OgW75TAR80-R8WQyE-bVo&e=
+> we are doing this only when link is in l1ss but not in L2/L3 as
+> no where we are forcing link to L2/L3 by sending PME turn off.
 > 
-> 4. https://urldefense.proofpoint.com/v2/url?u=https-3A__lore.kernel.org_all_1fddc966-2D5a23-2D63b4-2D185e-2Dc17aa6d65b54-40xs4all.nl_&d=DwIDAw&c=euGZstcaTDllvimEN8b7jXrwqOf-v5A_CdpgnVfiiMM&r=sWsgk3pKkv5GeIDM2RZlPY8TjNFU2D0oBeOj6QNBadE&m=ecX7IwfatUO7SNPiyQ6x_8K9t2eWJf3y8GNuNHJ_0W0&s=I18yWgde2UKZY4AiwB5s-Lf12eebHOcHFZFOlTcO2oQ&e=
-> 
-> -- 
-> Kind Regards,
-> Niklas Söderlund
+> is_suspended flag indicates if the clocks are disabled in the suspend
+> path or not. And this flag is being used to restrict the access to
+> config space, dbi etc when clock are turned-off.
+ 
+> Changes since v3:
+> 	- Powering down the phy in suspend and powering it on resume to
+> 	  acheive maximum power savings.
+> Changes since v2:
+> 	- Replaced the enable, disable clks ops with suspend and resume
+> 	- Renamed support_pm_opsi flag  with supports_system_suspend.
+> Changes since v1:
+> 	- Fixed compilation errors.
 
--- 
-Best Regards,
-Michael
+Changelogs typically go below the --- line below so that they don't end
+up in the git logs.
+ 
+> Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+> ---
+>  drivers/pci/controller/dwc/pcie-qcom.c | 85 ++++++++++++++++++++++++++++++++++
+>  1 file changed, 85 insertions(+)
+
+> +static int qcom_pcie_resume_2_7_0(struct qcom_pcie *pcie)
+> +{
+> +	struct qcom_pcie_resources_2_7_0 *res = &pcie->res.v2_7_0;
+> +	int ret;
+> +
+> +	clk_prepare_enable(res->pipe_clk);
+
+Note that pipe clock management has now been removed from this driver.
+
+Please consider rebasing on this branch:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/log/?h=pci/ctrl/qcom
+
+> +
+> +	ret = clk_bulk_prepare_enable(res->num_clks, res->clks);
+> +
+> +	phy_power_on(pcie->phy);
+> +
+> +	return ret;
+> +}
+
+Johan
