@@ -2,83 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C412DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25ADEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233947AbiGRNnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38760 "EHLO
+        id S234980AbiGRNoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230298AbiGRNnt (ORCPT
+        with ESMTP id S230298AbiGRNoE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:43:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B5AB2F
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:43:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0733961620
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D37DC341C0;
-        Mon, 18 Jul 2022 13:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658151827;
-        bh=fvMrWGN2+Z3EMUKa7NqYc4Z5CPh6SQ2Vx2v8jNnb1mk=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=r/GpiRrMEeBcPsr+e0cU4ZjAjKEVWXpiiKEmrWSelg+DxSWVFRiq0KfHQrjA2y8nf
-         KI6DlZAKmHTubgr0cl1XZFKsehsfmRcLaM+zJZv5bd5ySUyhQeSlm/xbgbzZzXho1D
-         +Ga7pcrAPE3IT4+1eV65JHNa3CIMVIC4kzjXh1AETvniw6eIr5WUUy+Jz7a1ZUJU5a
-         KUPzhexrEOD18pqWqRlO7c7PelqaXm6ou0Imbha320sqXjEw0OALecysf7MUSIlos3
-         EkuuLsSO+/O2E8OukEnwcIiuIOYxl/bc3Pcbpb0fwnrGQUb+s/jNRUxZqNZwm7CVpH
-         KnNN0uJjnxMCQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     ansuelsmth@gmail.com, linux-kernel@vger.kernel.org,
-        rafael@kernel.org, gregkh@linuxfoundation.org
-In-Reply-To: <20220715201032.19507-1-ansuelsmth@gmail.com>
-References: <20220715201032.19507-1-ansuelsmth@gmail.com>
-Subject: Re: [PATCH] regmap: permit to set reg_update_bits with bulk implementation
-Message-Id: <165815182610.53791.17547202213321860152.b4-ty@kernel.org>
-Date:   Mon, 18 Jul 2022 14:43:46 +0100
+        Mon, 18 Jul 2022 09:44:04 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7767C2BD
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:43:59 -0700 (PDT)
+X-QQ-mid: bizesmtp78t1658151835tnq0bkhj
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 21:43:53 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: r/cTxDoDoiF3HCrEHCv9biv9VXFbohB0C5Cp9KHCi5ERz3Du3npci8/OyTrwA
+        8udCmJBCfOtws/rtSqyzme0eeE2NXce5nY7vFTECU2kxNFrls05Xu7XqEYZ5y4WAlMwUj+G
+        2YNj6NhITif9Y6PzZMvfhieqwh1TqzdVerXUMJlv9W0KFjejYmfndRXDlMALfTO2SkxQlVA
+        Jd3auJd+AEUdGX5fE1xbMAfBfYQVf2UqJT5woE/Hr8cKtP7lPv6UamuvwLzd3kihC3Z4G7J
+        tlGZndqXb9WUcSWqrvXzuZzmurLOsEGjDeQu2iDjJsOEWuYmqMHYi7O/cbOzE2Qm35latC+
+        xuOS6HJwIJP/ozcI5J/WkhM/hmbean6/4/S8TOPIkZ8VIhMzH+OwKXsYw6IqjGMsCGxCzsp
+        Ot1V1QRF7FqhFOc0T0Y3sw==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     openipmi-developer@lists.sourceforge.net
+Cc:     minyard@acm.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] ipmi: Fix comment typo
+Date:   Fri, 15 Jul 2022 13:41:56 +0800
+Message-Id: <20220715054156.6342-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Jul 2022 22:10:32 +0200, Christian Marangi wrote:
-> A regmap may still require to set a custom reg_update_bits instead of
-> relying to the regmap_bus_read/write general function.
-> 
-> Permit to set it in the map if provided by the regmap config.
-> 
-> 
+The double `the' is duplicated in line 4360, remove one.
 
-Applied to
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/char/ipmi/ipmi_msghandler.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index 703433493c85..c8a3b208f923 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -4357,7 +4357,7 @@ static int handle_oem_get_msg_cmd(struct ipmi_smi *intf,
+ 
+ 			/*
+ 			 * The message starts at byte 4 which follows the
+-			 * the Channel Byte in the "GET MESSAGE" command
++			 * Channel Byte in the "GET MESSAGE" command
+ 			 */
+ 			recv_msg->msg.data_len = msg->rsp_size - 4;
+ 			memcpy(recv_msg->msg_data, &msg->rsp[4],
+-- 
+2.35.1
 
-Thanks!
-
-[1/1] regmap: permit to set reg_update_bits with bulk implementation
-      commit: 739f872e48d47c97fa17a86a7b3356771b75240c
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
