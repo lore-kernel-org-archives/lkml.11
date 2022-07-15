@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88EB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A176C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231835AbiGOUof (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:44:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59418 "EHLO
+        id S231893AbiGOUog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231724AbiGOUnh (ORCPT
+        with ESMTP id S231172AbiGOUnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:43:37 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 702358AB23
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:11 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31cd7ade3d6so47724117b3.3
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:11 -0700 (PDT)
+        Fri, 15 Jul 2022 16:43:42 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F1088CF6
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:13 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id z9-20020a170903018900b0016c39b2c1ffso2603243plg.12
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=uHLk8sP9TUeSc2rn7/8IPGb+aPXTg7ugp0ISqgDN96A=;
-        b=KeZRj2deakl9NGv9O7J1SKPGb0YlgEbwYWWshX4tKITStFBSy26TO0J/+020rcFQU4
-         ATlMzDDM5BzTOQ0yTY7nj8IOZrkiJW8zonaWccNOwHtc6ZQW2ddNHPlWzcO5N5T8j3jZ
-         f2zfe+aHgT4HuqyVnyK9dW+UmxzTAPLatI+f3YA5lQMUb7EvIUly4a8dYrbd1vIIJEU0
-         AQsgE7Fo5G8gXxyFq2bBCkKYpvbZvWWQHz4Mepbly8aoz3cJM/ruuSVs3hWVHJVqjH5l
-         rKIA+ZNrDD0PA85iLH+chdXufGipccXUSF4K2NQhSQpfNJOoI6twD1B+WhYWIDAJjdj4
-         xbGg==
+        bh=+/Hl6diEcpv68R5ZyPgxncUp9rh4Fpf21LQcaLalimI=;
+        b=FC0ju37p+E7liqnc4QvCx8YksJDlX3SEDPJZQCjJ9NM7lo7DhYgwlsOWyFImudR+3C
+         wLrVHyNKArsfRlEYh7YELRgseYxZ7NbmJr6F7GZZAk3MaqGiN/u3M7SktqSUw5j/eir7
+         I8MhxwXDDcH5ODfwkNtr8p4YcFiJzQJe5QyHRwnklJoKbcPtXcQ6wIHdcVvVGlaejni+
+         7uE6ircmjv6egRz7Km6R0EatynA4wMDaL5STDf0k4hK+Jq+a2qdNCSl+QjrC+qXWakCw
+         /Z7zYC5goZzVsMv885TqramLAlQHPJ6p+fWxzwpfSEQabwTm9prFNaIIZb9TGj8TbGka
+         wULA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=uHLk8sP9TUeSc2rn7/8IPGb+aPXTg7ugp0ISqgDN96A=;
-        b=p+pU/Cy+LAgnGUBJSp6KVjBCRNLTenQgPFOu6DSvZkM8gyZLiCzsJx/vCKt7mIpHnn
-         yq8g+bY+blYSy5CH55pqrndC1hbooXDqG36/vPmkPpZSJE/8EBouOss3LIIITohQ1VK7
-         3/xHbvB2CYsbKI7NjDY89Uxbab/dwgZDU/UozkeoxhZlAbOgGs7oL3zrHxA8Fl17et3C
-         UsX6aPzRfqCUI2+V7EGcoE87q940ikUWgjhJJ+wMfL0I2ymwBfLV2G6qaJuGDvM2cNme
-         4Y6IFRmlr1p7Ck/xmRVuXeoQd6BMgICSzEVcZ/JokDQUXLR8GIO2wfYY4NYKA8gnjKL1
-         gd6A==
-X-Gm-Message-State: AJIora/A6gj2D8ThFVce1H8sRFNeMNCgJ7qVC9JgNqkyV2fqLsxLvLS1
-        knCGX683Q/1JwCiWld/SCbiq1RihwjU=
-X-Google-Smtp-Source: AGRyM1tuG3QjMI1RKqKnmHGFaRTp34Se2KtLlMTHsC09ZDUJXO9dTYNabG3X9vbIDipMsKW360k5FQBUNyI=
+        bh=+/Hl6diEcpv68R5ZyPgxncUp9rh4Fpf21LQcaLalimI=;
+        b=cVHd8Eljf++G64MrVhESq0XlGi0zbM8aXRCw7PkmaDgZP4atv9r0Pv/7ahjokbLMGv
+         C3MEha8+GcYIykMNYcb+y1N3cW+kXIXY7TsVoFXpkRQzT8lAVJolxc3eeFzaCmZiDbgg
+         FvZjTkzUoJRk8Uy9xVYuFdnKcp0zP1fBGkXTFuXduJqUxPhe3G3GMcchMoNwzDM7atMP
+         Raia+Z0VVsthZqxJ183qikdZW/xxWHPqmGywiolN7EUeztjj+s9LmwUCWx21CvW2lExz
+         dK/BqSNQ5Wh7Z7vc4Dap/oxPz8fboNtRe7fhnlciVo94UbjZqm+Oq41MwZ0UZwl82wf9
+         UgxA==
+X-Gm-Message-State: AJIora/4DPWpI5iwnX+TzIq+JJdcNHDDJaLjr/MgGnaiW7pbYu/I23MW
+        KVGLDeEg+a5R1BCUTFQr9cYVB3F0vPc=
+X-Google-Smtp-Source: AGRyM1vcO8jYRjq9TX4fOwss+c/pHBOk+ai+EFZgri7cHuMtD7JFri6OxYrNuLLu1npI2t2mL6cELq/R4/o=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:55:0:b0:66f:cdfc:d74 with SMTP id
- 82-20020a250055000000b0066fcdfc0d74mr8865821yba.346.1657917779510; Fri, 15
- Jul 2022 13:42:59 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:aa7:9e84:0:b0:52a:e224:a0d0 with SMTP id
+ p4-20020aa79e84000000b0052ae224a0d0mr15921474pfq.13.1657917793159; Fri, 15
+ Jul 2022 13:43:13 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 15 Jul 2022 20:42:17 +0000
+Date:   Fri, 15 Jul 2022 20:42:25 +0000
 In-Reply-To: <20220715204226.3655170-1-seanjc@google.com>
-Message-Id: <20220715204226.3655170-16-seanjc@google.com>
+Message-Id: <20220715204226.3655170-24-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220715204226.3655170-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v2 15/24] KVM: x86: Hoist nested event checks above event
- injection logic
+Subject: [PATCH v2 23/24] KVM: selftests: Use uapi header to get VMX and SVM
+ exit reasons/codes
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,139 +68,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Perform nested event checks before re-injecting exceptions/events into
-L2.  If a pending exception causes VM-Exit to L1, re-injecting events
-into vmcs02 is premature and wasted effort.  Take care to ensure events
-that need to be re-injected are still re-injected if checking for nested
-events "fails", i.e. if KVM needs to force an immediate entry+exit to
-complete the to-be-re-injecteed event.
-
-Keep the "can_inject" logic the same for now; it too can be pushed below
-the nested checks, but is a slightly riskier change (see past bugs about
-events not being properly purged on nested VM-Exit).
-
-Add and/or modify comments to better document the various interactions.
-Of note is the comment regarding "blocking" previously injected NMIs and
-IRQs if an exception is pending.  The old comment isn't wrong strictly
-speaking, but it failed to capture the reason why the logic even exists.
+Include the vmx.h and svm.h uapi headers that KVM so kindly provides
+instead of manually defining all the same exit reasons/code.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/x86.c | 89 +++++++++++++++++++++++++++-------------------
- 1 file changed, 53 insertions(+), 36 deletions(-)
+ .../selftests/kvm/include/x86_64/svm_util.h   |  7 +--
+ .../selftests/kvm/include/x86_64/vmx.h        | 51 +------------------
+ 2 files changed, 4 insertions(+), 54 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 5aaa1d8de0b3..9e20d34d856d 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -9657,53 +9657,70 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
+diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+index a339b537a575..7aee6244ab6a 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
++++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
+@@ -9,15 +9,12 @@
+ #ifndef SELFTEST_KVM_SVM_UTILS_H
+ #define SELFTEST_KVM_SVM_UTILS_H
  
- static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
- {
-+	bool can_inject = !kvm_event_needs_reinjection(vcpu);
- 	int r;
--	bool can_inject = true;
- 
--	/* try to reinject previous events if any */
-+	/*
-+	 * Process nested events first, as nested VM-Exit supercedes event
-+	 * re-injection.  If there's an event queued for re-injection, it will
-+	 * be saved into the appropriate vmc{b,s}12 fields on nested VM-Exit.
-+	 */
-+	if (is_guest_mode(vcpu))
-+		r = kvm_check_nested_events(vcpu);
-+	else
-+		r = 0;
- 
--	if (vcpu->arch.exception.injected) {
-+	/*
-+	 * Re-inject exceptions and events *especially* if immediate entry+exit
-+	 * to/from L2 is needed, as any event that has already been injected
-+	 * into L2 needs to complete its lifecycle before injecting a new event.
-+	 *
-+	 * Don't re-inject an NMI or interrupt if there is a pending exception.
-+	 * This collision arises if an exception occurred while vectoring the
-+	 * injected event, KVM intercepted said exception, and KVM ultimately
-+	 * determined the fault belongs to the guest and queues the exception
-+	 * for injection back into the guest.
-+	 *
-+	 * "Injected" interrupts can also collide with pending exceptions if
-+	 * userspace ignores the "ready for injection" flag and blindly queues
-+	 * an interrupt.  In that case, prioritizing the exception is correct,
-+	 * as the exception "occurred" before the exit to userspace.  Trap-like
-+	 * exceptions, e.g. most #DBs, have higher priority than interrupts.
-+	 * And while fault-like exceptions, e.g. #GP and #PF, are the lowest
-+	 * priority, they're only generated (pended) during instruction
-+	 * execution, and interrupts are recognized at instruction boundaries.
-+	 * Thus a pending fault-like exception means the fault occurred on the
-+	 * *previous* instruction and must be serviced prior to recognizing any
-+	 * new events in order to fully complete the previous instruction.
-+	 */
-+	if (vcpu->arch.exception.injected)
- 		kvm_inject_exception(vcpu);
--		can_inject = false;
--	}
-+	else if (vcpu->arch.exception.pending)
-+		; /* see above */
-+	else if (vcpu->arch.nmi_injected)
-+		static_call(kvm_x86_inject_nmi)(vcpu);
-+	else if (vcpu->arch.interrupt.injected)
-+		static_call(kvm_x86_inject_irq)(vcpu, true);
++#include <asm/svm.h>
 +
- 	/*
--	 * Do not inject an NMI or interrupt if there is a pending
--	 * exception.  Exceptions and interrupts are recognized at
--	 * instruction boundaries, i.e. the start of an instruction.
--	 * Trap-like exceptions, e.g. #DB, have higher priority than
--	 * NMIs and interrupts, i.e. traps are recognized before an
--	 * NMI/interrupt that's pending on the same instruction.
--	 * Fault-like exceptions, e.g. #GP and #PF, are the lowest
--	 * priority, but are only generated (pended) during instruction
--	 * execution, i.e. a pending fault-like exception means the
--	 * fault occurred on the *previous* instruction and must be
--	 * serviced prior to recognizing any new events in order to
--	 * fully complete the previous instruction.
-+	 * Exceptions that morph to VM-Exits are handled above, and pending
-+	 * exceptions on top of injected exceptions that do not VM-Exit should
-+	 * either morph to #DF or, sadly, override the injected exception.
- 	 */
--	else if (!vcpu->arch.exception.pending) {
--		if (vcpu->arch.nmi_injected) {
--			static_call(kvm_x86_inject_nmi)(vcpu);
--			can_inject = false;
--		} else if (vcpu->arch.interrupt.injected) {
--			static_call(kvm_x86_inject_irq)(vcpu, true);
--			can_inject = false;
--		}
--	}
+ #include <stdint.h>
+ #include "svm.h"
+ #include "processor.h"
+ 
+-#define SVM_EXIT_EXCP_BASE	0x040
+-#define SVM_EXIT_HLT		0x078
+-#define SVM_EXIT_MSR		0x07c
+-#define SVM_EXIT_VMMCALL	0x081
 -
- 	WARN_ON_ONCE(vcpu->arch.exception.injected &&
- 		     vcpu->arch.exception.pending);
+ struct svm_test_data {
+ 	/* VMCB */
+ 	struct vmcb *vmcb; /* gva */
+diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+index 99fa1410964c..e4206f69b716 100644
+--- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
++++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
+@@ -8,6 +8,8 @@
+ #ifndef SELFTEST_KVM_VMX_H
+ #define SELFTEST_KVM_VMX_H
  
- 	/*
--	 * Call check_nested_events() even if we reinjected a previous event
--	 * in order for caller to determine if it should require immediate-exit
--	 * from L2 to L1 due to pending L1 events which require exit
--	 * from L2 to L1.
-+	 * Bail if immediate entry+exit to/from the guest is needed to complete
-+	 * nested VM-Enter or event re-injection so that a different pending
-+	 * event can be serviced (or if KVM needs to exit to userspace).
-+	 *
-+	 * Otherwise, continue processing events even if VM-Exit occurred.  The
-+	 * VM-Exit will have cleared exceptions that were meant for L2, but
-+	 * there may now be events that can be injected into L1.
- 	 */
--	if (is_guest_mode(vcpu)) {
--		r = kvm_check_nested_events(vcpu);
--		if (r < 0)
--			goto out;
--	}
-+	if (r < 0)
-+		goto out;
++#include <asm/vmx.h>
++
+ #include <stdint.h>
+ #include "processor.h"
+ #include "apic.h"
+@@ -100,55 +102,6 @@
+ #define VMX_EPT_VPID_CAP_AD_BITS		0x00200000
  
- 	/* try to inject new event if pending */
- 	if (vcpu->arch.exception.pending) {
+ #define EXIT_REASON_FAILED_VMENTRY	0x80000000
+-#define EXIT_REASON_EXCEPTION_NMI	0
+-#define EXIT_REASON_EXTERNAL_INTERRUPT	1
+-#define EXIT_REASON_TRIPLE_FAULT	2
+-#define EXIT_REASON_INTERRUPT_WINDOW	7
+-#define EXIT_REASON_NMI_WINDOW		8
+-#define EXIT_REASON_TASK_SWITCH		9
+-#define EXIT_REASON_CPUID		10
+-#define EXIT_REASON_HLT			12
+-#define EXIT_REASON_INVD		13
+-#define EXIT_REASON_INVLPG		14
+-#define EXIT_REASON_RDPMC		15
+-#define EXIT_REASON_RDTSC		16
+-#define EXIT_REASON_VMCALL		18
+-#define EXIT_REASON_VMCLEAR		19
+-#define EXIT_REASON_VMLAUNCH		20
+-#define EXIT_REASON_VMPTRLD		21
+-#define EXIT_REASON_VMPTRST		22
+-#define EXIT_REASON_VMREAD		23
+-#define EXIT_REASON_VMRESUME		24
+-#define EXIT_REASON_VMWRITE		25
+-#define EXIT_REASON_VMOFF		26
+-#define EXIT_REASON_VMON		27
+-#define EXIT_REASON_CR_ACCESS		28
+-#define EXIT_REASON_DR_ACCESS		29
+-#define EXIT_REASON_IO_INSTRUCTION	30
+-#define EXIT_REASON_MSR_READ		31
+-#define EXIT_REASON_MSR_WRITE		32
+-#define EXIT_REASON_INVALID_STATE	33
+-#define EXIT_REASON_MWAIT_INSTRUCTION	36
+-#define EXIT_REASON_MONITOR_INSTRUCTION 39
+-#define EXIT_REASON_PAUSE_INSTRUCTION	40
+-#define EXIT_REASON_MCE_DURING_VMENTRY	41
+-#define EXIT_REASON_TPR_BELOW_THRESHOLD 43
+-#define EXIT_REASON_APIC_ACCESS		44
+-#define EXIT_REASON_EOI_INDUCED		45
+-#define EXIT_REASON_EPT_VIOLATION	48
+-#define EXIT_REASON_EPT_MISCONFIG	49
+-#define EXIT_REASON_INVEPT		50
+-#define EXIT_REASON_RDTSCP		51
+-#define EXIT_REASON_PREEMPTION_TIMER	52
+-#define EXIT_REASON_INVVPID		53
+-#define EXIT_REASON_WBINVD		54
+-#define EXIT_REASON_XSETBV		55
+-#define EXIT_REASON_APIC_WRITE		56
+-#define EXIT_REASON_INVPCID		58
+-#define EXIT_REASON_PML_FULL		62
+-#define EXIT_REASON_XSAVES		63
+-#define EXIT_REASON_XRSTORS		64
+-#define LAST_EXIT_REASON		64
+ 
+ enum vmcs_field {
+ 	VIRTUAL_PROCESSOR_ID		= 0x00000000,
 -- 
 2.37.0.170.g444d1eabd0-goog
 
