@@ -2,102 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 14 Jul 2022 18:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D3EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240847AbiGNSwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 14:52:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
+        id S229663AbiGOPyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 11:54:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240850AbiGNSwG (ORCPT
+        with ESMTP id S229510AbiGOPyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 14:52:06 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F346BC18
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:52:04 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id x10so2746725ljj.11
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 11:52:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=49yEzsvmawtcLnUgC2yQBZE5eXJRfHTmZ4ZvW7x4v9c=;
-        b=hrGmrdgdTvFHno5/QTxcHC3PCTGFb4gMP0U3KyLiK9V2rGqR/D85NhUJ3AZjXLs1px
-         rhLgTtPhGrvFuxgJ/VgsBqaKSFfGKYm86IOtWYefA+6glY1VXTK/qhDap+UY22HHfkNJ
-         vZ8IsiZVaNaPX6Bbq5+Onmw3sjeRLKhphF2ZSOZHpBFaOUOVbz/xHQumxKLL7L6/aIUF
-         tuzj3oGVfUiAqbuY3tRsL/pn23F+Noxex/K0jaFxhwYCEKn+7ZWIqaUaJ3hbigFN3a/J
-         rBaYTIDRpFkX4InPJ1RYICmFjai5MTVDl99l64L3k3G0E/nLBcbEzOH6EDOQ+IEVixmq
-         E6jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=49yEzsvmawtcLnUgC2yQBZE5eXJRfHTmZ4ZvW7x4v9c=;
-        b=rh5WOlDJ1rr2cqQogjiMSilBlofDCgsAWzpNHLMUZhpx/jKHfUmOaTD0U19Sq8ZAzu
-         329Qmi/vtaovIFW1KS16aWPyJQ5BBWmPXxc40fGmxFeuKxJNEEY34bav3u/SHMrFLTFA
-         +s+GmNOPi461PIQYZAeME7K0Xa1PP2gKDPvG3BmBa0gSJ8puOGr6NeTPJDu+AzXlhXCm
-         4BVybWaQR8WWwu92t6Ltp7r1AAmoyi4Y7fLW5u7XuaHiFP5JXUYgCvu5r2npRok6PpaS
-         ZD0K3ygnpsxzMUUNGa6kIAhwIa1GGXiR19Tn+MIH7V7Vp+70uwRRJak0PjG1Zwr3JeGe
-         yfJw==
-X-Gm-Message-State: AJIora89sogsC+wRdc8XBCvIgjOp46NBDce6sefUU0yt00Lkp1VoYp76
-        lIUrhuOPRnKe7KtpLjgUgMpxXKMOCOS1c4ppyl9aNA==
-X-Google-Smtp-Source: AGRyM1v5WFvUhT4uy7cRgZ3s0XpRydE/lwxo9oq/CznFK8qS3NKe4Z/vQPPAvwjdNxDpqCwbMDMfWzcGpf04XwFb+u0=
-X-Received: by 2002:a2e:a5cb:0:b0:25d:7a70:2891 with SMTP id
- n11-20020a2ea5cb000000b0025d7a702891mr5388267ljp.295.1657824723053; Thu, 14
- Jul 2022 11:52:03 -0700 (PDT)
+        Fri, 15 Jul 2022 11:54:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991E261D5C;
+        Fri, 15 Jul 2022 08:54:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A0962135;
+        Fri, 15 Jul 2022 15:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F4EBC34115;
+        Fri, 15 Jul 2022 15:54:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657900456;
+        bh=5daCr9QK24Hj+RUwhhq6jII9Hqcph8xnR3ZzTxWqL1Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=eYpNxXxCNO7Q/dPoOq3aAeCPsQ3Az8oDxckCVf2lTsgFb1OwUbsRgPl7L32GEa4YC
+         9t8kbfwtOxmJGEVdh7pR6jQjjBzEamEfqblSQtxndBRnmhX+emy6GsfUAjk7BavTEp
+         ooh+TU5bskMLvEd2hQwsBkvqG0pkqbGkJ/hb8CyRagp+RHHonYcGJMbAfpymKp3zV7
+         TDntmKYo0lSQoD62KovtiMX8SD2u1uI+29K3PYjaAM3ZwrsRWvaZbY+jAWW8nOGm60
+         AgCOZb9EOmrR702cJ8fKuW+WKT0lVV6A4hnImGxj/qyI5hA6dhoI8fgmUbPlxmMiiu
+         AZAHUibkIm5Hg==
+Date:   Fri, 15 Jul 2022 16:54:05 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     "Mahapatra, Amit Kumar" <amit.kumar-mahapatra@amd.com>
+Cc:     Amit Kumar Mahapatra <amit.kumar-mahapatra@xilinx.com>,
+        "p.yadav@ti.com" <p.yadav@ti.com>,
+        "miquel.raynal@bootlin.com" <miquel.raynal@bootlin.com>,
+        "richard@nod.at" <richard@nod.at>,
+        "vigneshr@ti.com" <vigneshr@ti.com>,
+        "git@xilinx.com" <git@xilinx.com>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "michael@walle.cc" <michael@walle.cc>,
+        "linux-mtd@lists.infradead.org" <linux-mtd@lists.infradead.org>,
+        "git (AMD-Xilinx)" <git@amd.com>
+Subject: Re: [RFC PATCH 1/2] spi: Add multiple CS support for a single SPI
+ device
+Message-ID: <YtGNnT2cP5HIayp3@sirena.org.uk>
+References: <20220606112607.20800-1-amit.kumar-mahapatra@xilinx.com>
+ <20220606112607.20800-2-amit.kumar-mahapatra@xilinx.com>
+ <YqHfccvhy7e5Bc6m@sirena.org.uk>
+ <DM6PR12MB2809F6C7D80B60556218D627DCB59@DM6PR12MB2809.namprd12.prod.outlook.com>
+ <YrRXTrYN3BuShbzg@sirena.org.uk>
+ <DM6PR12MB28091BEB013B6F1903B5CDE3DC8B9@DM6PR12MB2809.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220714185514.7d1a2ac9@canb.auug.org.au> <Ys/42uMzQy+CFTGI@debian>
- <YtA+127QgRifnRBZ@dev-arch.thelio-3990X> <CADVatmOTNA8uVqDEx6kp=+_O=wEhV2jbS9-frct-c4ZqBxcspg@mail.gmail.com>
-In-Reply-To: <CADVatmOTNA8uVqDEx6kp=+_O=wEhV2jbS9-frct-c4ZqBxcspg@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 14 Jul 2022 11:51:51 -0700
-Message-ID: <CAKwvOdmS2SugAzRSmQzWAmRgz642KEgTtOw5O3TvZwFSHU-fPQ@mail.gmail.com>
-Subject: Re: linux-next: Tree for Jul 14
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     Nathan Chancellor <nathan@kernel.org>, llvm@lists.linux.dev,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="WLnYk1lIzSJ4ADtF"
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB28091BEB013B6F1903B5CDE3DC8B9@DM6PR12MB2809.namprd12.prod.outlook.com>
+X-Cookie: You dialed 5483.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-(Moving Stephen, linux-next, and lkml to bcc)
 
-On Thu, Jul 14, 2022 at 9:22 AM Sudip Mukherjee
-<sudipm.mukherjee@gmail.com> wrote:
->
-> Hi Nathan,
->
-> On Thu, Jul 14, 2022 at 5:05 PM Nathan Chancellor <nathan@kernel.org> wrote:
-> >
-> > Hi Sudip,
-> >
-> >
-> > In the future, consider CC'ing our mailing list (llvm@lists.linux.dev)
-> > for any clang related issues so that we can get them taken care of ASAP,
-> > we have a MAINTAINERS entry for a reason :) thank you for testing with
-> > clang; the more people that use it, hopefully the easier it will be to
-> > get things unbroken.
->
-> Sure. I run arm, arm64, powerpc and x86_64 allmodconfigs with clang
-> (along with gcc) every night for mainline, started with linux-next
-> from today. Trying to setup the mips build also, I will mail llvm list
-> asking for help with the mips build.
-> Currently I only monitor the clang output from x86_64 as thats the one
-> which builds. If you want I can send the other reports also.
+--WLnYk1lIzSJ4ADtF
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hi Sudip!
-Right on, nice to hear from you.  Consider filing bugs in our issue tracker
-https://github.com/ClangBuiltLinux/linux/issues (consider taking a
-peak to see which are already known issues and commenting on those
-rather than filing new ones, time permitting), and joining our meeting
-(next one in two weeks) see https://clangbuiltlinux.github.io/ for
-calendar invite and meeting link.
+On Fri, Jul 15, 2022 at 03:35:49PM +0000, Mahapatra, Amit Kumar wrote:
 
-> I have added Lukas if you both think
-> it will be good to collaborate.
+> > That doesn't address the issue, the issue is checking that the driver c=
+an
+> > support multiple chip selects.
 
-Ah, yeah, Lukas is an old friend. Hi Lukas!
--- 
-Thanks,
-~Nick Desaulniers
+> To address this issue, in spi core we will check the number of items=20
+> in the "reg" property of the flash node(which is nothing but the=20
+> number of chip selects) against the "num-cs" property of the spi=20
+> controller(which is total number of chip selects supported by the=20
+> controller). If the number of items mentioned in the "reg" property=20
+> is greater than "num-cs" value then we error out.
+
+> For eg.,
+
+> rc =3D of_property_read_variable_u32_array(nc, "reg", &cs[0], 1,=20
+> 						SPI_CS_CNT_MAX);
+> if(rc > ctlr->num_chipselect) {
+> 	dev_err(&ctlr->dev, "%pOF has invalid 'reg' property (%d)\n",=20
+> 							nc, rc);
+> 	return -EINVAL;
+> }
+
+This would check that the controller has at least the number of chip
+selects specified but it would not check that the controller is actually
+capable of using more than one chip select at once.  We should be
+validating both that the chip selects are available and that the
+controller can do something useful with them (and probably have an
+implementation in the core for doing so via GPIO).
+
+--WLnYk1lIzSJ4ADtF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLRjZ0ACgkQJNaLcl1U
+h9DvNgf8CXWe2TL7deZzQsKFmwm4r44oFp98ORLdX9fjwHjXyvyWACyJHEKdf/DO
+Tpngc2qCEoBpumurCNRrB8sUI7w6GoikYd0Q25+u6ggKF1Qr5bgkPr+jWVyEx9PY
+XoJDU5nqv7GTLDkc88KG1pf3yyebiJfkyG1ZckcE0Gi7CMtVjTbPTJ9D+wFptMQM
+FiHctGpxjWx6GNDefyyO7Rdc7f0brEiDy5WoRoLGRlF2RoKGOEUtjtPBNkoFQVSl
+ldtIrzip4BxzLTfeDayqEyi2MRHqYlpYCH6gtlMVsRGwNq2fNejEa3KhSo4evar3
+vql8mcvRgsrJgTDzC/aBH1VojkTC0A==
+=AAV5
+-----END PGP SIGNATURE-----
+
+--WLnYk1lIzSJ4ADtF--
