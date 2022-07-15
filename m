@@ -2,83 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95317CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:55:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4E87C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 11:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234408AbiGRLzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 07:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44478 "EHLO
+        id S234457AbiGRLzw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 07:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230182AbiGRLzC (ORCPT
+        with ESMTP id S229535AbiGRLzt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 07:55:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94A710FEE;
-        Mon, 18 Jul 2022 04:55:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C63FB810F4;
-        Mon, 18 Jul 2022 11:55:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2576C341CB;
-        Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658145299;
-        bh=JrABNSLBquy6UY/twSBJ4EF3aY/YoAKKA7YOdQp+hPI=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=eU6hGtxN2gwE8ynRAS+EAHsjFJ0UwHP/GyZ0E3go6jkwxyG0Tup0InjkXZ8B13d3e
-         gp5yHkB2opoi+QEinmXKMPSfE2zVz1qt5xUXfPbsQh5wuI3lpf3s2fDAhORUqB7QH4
-         V+NdDDgRaI2AbkLOxWpwuU1tI1MHc3scPwJ80XfwJkoiCfh1nX8sjVbiD8u4DO4UuA
-         HzDtmebHfE2QLYWbKZDR8js3pxOMmNF7MOJ/wzRjbNDPp/6ggqTeZz01LJq2FbmONM
-         5ZOKs25SmINbrXvuogLcbo9AJD6ddUpdMQN2yjtacoJpZSSJPRTg9IX/cheKnKoUWV
-         thtAg6UXsDpnQ==
-Content-Type: text/plain; charset="utf-8"
+        Mon, 18 Jul 2022 07:55:49 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C87D823177
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 04:55:44 -0700 (PDT)
+X-QQ-mid: bizesmtp73t1658145336tq5j77rk
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 19:55:35 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: tyV+f0f3wWdqykYe5zQ7mwRy9UwHLWPO8Uv42zkLwW+tZ33nKlElnTElPdVFb
+        Bmo9UjblvyzgZnUaXDwd2g04trnMZCA5zixxjiic1DKLIAVlwOTC8AGNEbyJO026xT78aIk
+        uZSCn8n13vREfV3sKStCbhhMPUvCZHf1bPz1bZRs4CEwneJMJHZLZg7Ha0tbnw2tFzL9dXS
+        QBZXg8SMfq/HmcRFpW826v04ZbmF8THezYSKGLCiWfahJzmpKhql/Y1nJONygyJhpEwygUG
+        OC4ls9XqCPc2HuyXm2AoBr92hcZJssPtWh9kHpNr/auk7e9W6pUJLlBPLr3UxmsNluH+hWf
+        1xK9wlvjanGTS6cNcvCdlj9xwt9SEIk77ApupeWOLU5MyAFGQOOrtAj9c326oBnJwNDCDCZ
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     paulus@samba.org
+Cc:     mpe@ellerman.id.au, benh@kernel.crashing.org, nick.child@ibm.com,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] powerpc/sysdev: Fix comment typo
+Date:   Fri, 15 Jul 2022 11:52:50 +0800
+Message-Id: <20220715035250.5978-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [v2] wifi: p54: add missing parentheses in p54_flush()
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220714134831.106004-1-subkhankulov@ispras.ru>
-References: <20220714134831.106004-1-subkhankulov@ispras.ru>
-To:     Rustam Subkhankulov <subkhankulov@ispras.ru>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        Rustam Subkhankulov <subkhankulov@ispras.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165814529503.17539.8245171776508092662.kvalo@kernel.org>
-Date:   Mon, 18 Jul 2022 11:54:56 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rustam Subkhankulov <subkhankulov@ispras.ru> wrote:
+The double `is' is duplicated in line 110, remove one.
 
-> The assignment of the value to the variable total in the loop
-> condition must be enclosed in additional parentheses, since otherwise,
-> in accordance with the precedence of the operators, the conjunction
-> will be performed first, and only then the assignment.
-> 
-> Due to this error, a warning later in the function after the loop may
-> not occur in the situation when it should.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> 
-> Signed-off-by: Rustam Subkhankulov <subkhankulov@ispras.ru>
-> Fixes: 0d4171e2153b ("p54: implement flush callback")
-> Acked-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/powerpc/sysdev/cpm2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Patch applied to wireless-next.git, thanks.
-
-bcfd9d7f6840 wifi: p54: add missing parentheses in p54_flush()
-
+diff --git a/arch/powerpc/sysdev/cpm2.c b/arch/powerpc/sysdev/cpm2.c
+index 3f130312b6e9..915f4d3991c3 100644
+--- a/arch/powerpc/sysdev/cpm2.c
++++ b/arch/powerpc/sysdev/cpm2.c
+@@ -107,7 +107,7 @@ EXPORT_SYMBOL(cpm_command);
+  * memory mapped space.
+  * The baud rate clock is the system clock divided by something.
+  * It was set up long ago during the initial boot phase and is
+- * is given to us.
++ * given to us.
+  * Baud rate clocks are zero-based in the driver code (as that maps
+  * to port numbers).  Documentation uses 1-based numbering.
+  */
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220714134831.106004-1-subkhankulov@ispras.ru/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.35.1
 
