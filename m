@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 414DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CE35C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbiGOHGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 03:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41152 "EHLO
+        id S231828AbiGOHGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 03:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231195AbiGOHGL (ORCPT
+        with ESMTP id S231211AbiGOHGM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 03:06:11 -0400
+        Fri, 15 Jul 2022 03:06:12 -0400
 Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 02C9D61DBC
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:06:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 123556EE9E
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:06:07 -0700 (PDT)
 Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxWeDQEdFiyyogAA--.1717S8;
-        Fri, 15 Jul 2022 15:05:58 +0800 (CST)
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxWeDQEdFiyyogAA--.1717S3;
+        Fri, 15 Jul 2022 15:05:55 +0800 (CST)
 From:   Jianmin Lv <lvjianmin@loongson.cn>
 To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
@@ -25,17 +25,17 @@ Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Jiaxun Yang <jiaxun.yang@flygoat.com>,
         Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V15 06/15] irqchip: Add Loongson PCH LPC controller support
-Date:   Fri, 15 Jul 2022 15:05:42 +0800
-Message-Id: <1657868751-30444-7-git-send-email-lvjianmin@loongson.cn>
+Subject: [PATCH V15 01/15] ACPICA: MADT: Add LoongArch APICs support
+Date:   Fri, 15 Jul 2022 15:05:37 +0800
+Message-Id: <1657868751-30444-2-git-send-email-lvjianmin@loongson.cn>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
 References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
-X-CM-TRANSID: AQAAf9AxWeDQEdFiyyogAA--.1717S8
-X-Coremail-Antispam: 1UD129KBjvJXoW3JFW8Ww4xuF1kCrWxuryrCrg_yoWfZr15pF
-        W5Z347Xr4UXF4jqr1kCa1UZrWayw1fKayjka93Ga43Jr9rZryvkF1vvFnruFs8AF4agFWa
-        vFsxtFy8uF1UA3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvj1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+X-CM-TRANSID: AQAAf9AxWeDQEdFiyyogAA--.1717S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxXrWDKF17KF4xWF4UZF4DCFg_yoW7Jry3pF
+        Wjg343Gw4UXFWftr1aqay8A3W3Ja4rAFn7Wws3Ca43XrnrKrWUZFWvyr17GFZxJa1rtay3
+        ZF10v3W8Wa1xArJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
         w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
         IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
         87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
@@ -44,10 +44,10 @@ X-Coremail-Antispam: 1UD129KBjvJXoW3JFW8Ww4xuF1kCrWxuryrCrg_yoWfZr15pF
         vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
         04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
         0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
-        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxV
-        AFwI0_Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWU
-        JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoO
-        J5UUUUU
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
+        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
+        DUUUUU=
 X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -55,301 +55,176 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Huacai Chen <chenhuacai@loongson.cn>
 
-PCH-LPC stands for "LPC Interrupts" that described in Section 24.3 of
-"Loongson 7A1000 Bridge User Manual". For more information please refer
-Documentation/loongarch/irq-chip-model.rst.
+LoongArch-specific interrupt controllers (similar to APIC) are added
+in the next revision of ACPI Specification (current revision is 6.4),
+which including CORE_PIC (CPUINTC), LIO_PIC (LIOINTC), EIO_PIC (EIOINTC),
+HT_PIC (HTVECINTC), BIO_PIC (PCHINTC), LPC_PIC (PCHLPC) and MSI_PIC
+(PCHMSI). This patch add their definition.
 
-Co-developed-by: Jianmin Lv <lvjianmin@loongson.cn>
+ACPI changes of LoongArch-specific interrupt controllers have already
+been approved in the ECRs, and will be public in the next revision of
+ACPI Specification.
+
+Reference: https://mantis.uefi.org/mantis/view.php?id=2203
+Reference: https://mantis.uefi.org/mantis/view.php?id=2313
+
+Above links needs login(available for ASWG), so the following link(
+the ECR file for adding LoongArch APICs into ACPI spec) is provided
+for public:
+
+https://github.com/lvjianmin-loongson/acpica/blob/master/Add%20APIC%20Structures%20for%20Loongarch%20in%20MADT-rev3.pdf
+
 Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
 Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
 ---
- arch/loongarch/include/asm/irq.h       |   4 +-
- arch/loongarch/kernel/irq.c            |   1 -
- drivers/irqchip/Kconfig                |   8 ++
- drivers/irqchip/Makefile               |   1 +
- drivers/irqchip/irq-loongson-pch-lpc.c | 208 +++++++++++++++++++++++++++++++++
- 5 files changed, 219 insertions(+), 3 deletions(-)
- create mode 100644 drivers/irqchip/irq-loongson-pch-lpc.c
+ include/acpi/actbl2.h | 127 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 125 insertions(+), 2 deletions(-)
 
-diff --git a/arch/loongarch/include/asm/irq.h b/arch/loongarch/include/asm/irq.h
-index ace3ea6..48c0ce4 100644
---- a/arch/loongarch/include/asm/irq.h
-+++ b/arch/loongarch/include/asm/irq.h
-@@ -104,7 +104,7 @@ struct irq_domain *eiointc_acpi_init(struct irq_domain *parent,
+diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h
+index 655102b..323bdd6 100644
+--- a/include/acpi/actbl2.h
++++ b/include/acpi/actbl2.h
+@@ -865,7 +865,14 @@ enum acpi_madt_type {
+ 	ACPI_MADT_TYPE_GENERIC_REDISTRIBUTOR = 14,
+ 	ACPI_MADT_TYPE_GENERIC_TRANSLATOR = 15,
+ 	ACPI_MADT_TYPE_MULTIPROC_WAKEUP = 16,
+-	ACPI_MADT_TYPE_RESERVED = 17,	/* 17 to 0x7F are reserved */
++	ACPI_MADT_TYPE_CORE_PIC = 17,
++	ACPI_MADT_TYPE_LIO_PIC = 18,
++	ACPI_MADT_TYPE_HT_PIC = 19,
++	ACPI_MADT_TYPE_EIO_PIC = 20,
++	ACPI_MADT_TYPE_MSI_PIC = 21,
++	ACPI_MADT_TYPE_BIO_PIC = 22,
++	ACPI_MADT_TYPE_LPC_PIC = 23,
++	ACPI_MADT_TYPE_RESERVED = 24,	/* 24 to 0x7F are reserved */
+ 	ACPI_MADT_TYPE_OEM_RESERVED = 0x80	/* 0x80 to 0xFF are reserved for OEM use */
+ };
  
- struct irq_domain *htvec_acpi_init(struct irq_domain *parent,
- 					struct acpi_madt_ht_pic *acpi_htvec);
--struct irq_domain *pch_lpc_acpi_init(struct irq_domain *parent,
-+int pch_lpc_acpi_init(struct irq_domain *parent,
- 					struct acpi_madt_lpc_pic *acpi_pchlpc);
- struct irq_domain *pch_msi_acpi_init(struct irq_domain *parent,
- 					struct acpi_madt_msi_pic *acpi_pchmsi);
-@@ -121,7 +121,7 @@ struct irq_domain *pch_pic_acpi_init(struct irq_domain *parent,
+@@ -1096,7 +1103,123 @@ struct acpi_madt_multiproc_wakeup_mailbox {
  
- extern struct irq_domain *cpu_domain;
- extern struct irq_domain *liointc_domain;
--extern struct irq_domain *pch_lpc_domain;
-+extern struct fwnode_handle *pch_lpc_handle;
- extern struct irq_domain *pch_msi_domain[MAX_IO_PICS];
- extern struct irq_domain *pch_pic_domain[MAX_IO_PICS];
+ #define ACPI_MP_WAKE_COMMAND_WAKEUP    1
  
-diff --git a/arch/loongarch/kernel/irq.c b/arch/loongarch/kernel/irq.c
-index b34b8d7..07d6059 100644
---- a/arch/loongarch/kernel/irq.c
-+++ b/arch/loongarch/kernel/irq.c
-@@ -27,7 +27,6 @@
- 
- struct irq_domain *cpu_domain;
- struct irq_domain *liointc_domain;
--struct irq_domain *pch_lpc_domain;
- struct irq_domain *pch_msi_domain[MAX_IO_PICS];
- struct irq_domain *pch_pic_domain[MAX_IO_PICS];
- 
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 1f23a6b..c1d527f 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -591,6 +591,14 @@ config LOONGSON_PCH_MSI
- 	help
- 	  Support for the Loongson PCH MSI Controller.
- 
-+config LOONGSON_PCH_LPC
-+	bool "Loongson PCH LPC Controller"
-+	depends on MACH_LOONGSON64
-+	default (MACH_LOONGSON64 && LOONGARCH)
-+	select IRQ_DOMAIN_HIERARCHY
-+	help
-+	  Support for the Loongson PCH LPC Controller.
+-/* 17: OEM data */
++/* Values for Version field above */
 +
- config MST_IRQ
- 	bool "MStar Interrupt Controller"
- 	depends on ARCH_MEDIATEK || ARCH_MSTARV7 || COMPILE_TEST
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index 5b67450..242b8b3 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -108,6 +108,7 @@ obj-$(CONFIG_LOONGSON_HTPIC)		+= irq-loongson-htpic.o
- obj-$(CONFIG_LOONGSON_HTVEC)		+= irq-loongson-htvec.o
- obj-$(CONFIG_LOONGSON_PCH_PIC)		+= irq-loongson-pch-pic.o
- obj-$(CONFIG_LOONGSON_PCH_MSI)		+= irq-loongson-pch-msi.o
-+obj-$(CONFIG_LOONGSON_PCH_LPC)		+= irq-loongson-pch-lpc.o
- obj-$(CONFIG_MST_IRQ)			+= irq-mst-intc.o
- obj-$(CONFIG_SL28CPLD_INTC)		+= irq-sl28cpld.o
- obj-$(CONFIG_MACH_REALTEK_RTL)		+= irq-realtek-rtl.o
-diff --git a/drivers/irqchip/irq-loongson-pch-lpc.c b/drivers/irqchip/irq-loongson-pch-lpc.c
-new file mode 100644
-index 0000000..3f51184
---- /dev/null
-+++ b/drivers/irqchip/irq-loongson-pch-lpc.c
-@@ -0,0 +1,208 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Loongson LPC Interrupt Controller support
-+ *
-+ * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
-+ */
-+
-+#define pr_fmt(fmt) "lpc: " fmt
-+
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/irqchip.h>
-+#include <linux/irqchip/chained_irq.h>
-+#include <linux/irqdomain.h>
-+#include <linux/kernel.h>
-+
-+/* Registers */
-+#define LPC_INT_CTL		0x00
-+#define LPC_INT_ENA		0x04
-+#define LPC_INT_STS		0x08
-+#define LPC_INT_CLR		0x0c
-+#define LPC_INT_POL		0x10
-+#define LPC_COUNT		16
-+
-+/* LPC_INT_CTL */
-+#define LPC_INT_CTL_EN		BIT(31)
-+
-+struct pch_lpc {
-+	void __iomem		*base;
-+	struct irq_domain	*lpc_domain;
-+	raw_spinlock_t		lpc_lock;
-+	u32			saved_reg_ctl;
-+	u32			saved_reg_ena;
-+	u32			saved_reg_pol;
++enum acpi_madt_core_pic_version {
++	ACPI_MADT_CORE_PIC_VERSION_NONE = 0,
++	ACPI_MADT_CORE_PIC_VERSION_V1 = 1,
++	ACPI_MADT_CORE_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
 +};
 +
-+struct fwnode_handle *pch_lpc_handle;
-+
-+static void lpc_irq_ack(struct irq_data *d)
-+{
-+	unsigned long flags;
-+	struct pch_lpc *priv = d->domain->host_data;
-+
-+	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
-+	writel(0x1 << d->hwirq, priv->base + LPC_INT_CLR);
-+	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
-+}
-+
-+static void lpc_irq_mask(struct irq_data *d)
-+{
-+	unsigned long flags;
-+	struct pch_lpc *priv = d->domain->host_data;
-+
-+	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
-+	writel(readl(priv->base + LPC_INT_ENA) & (~(0x1 << (d->hwirq))),
-+			priv->base + LPC_INT_ENA);
-+	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
-+}
-+
-+static void lpc_irq_unmask(struct irq_data *d)
-+{
-+	unsigned long flags;
-+	struct pch_lpc *priv = d->domain->host_data;
-+
-+	raw_spin_lock_irqsave(&priv->lpc_lock, flags);
-+	writel(readl(priv->base + LPC_INT_ENA) | (0x1 << (d->hwirq)),
-+			priv->base + LPC_INT_ENA);
-+	raw_spin_unlock_irqrestore(&priv->lpc_lock, flags);
-+}
-+
-+static int lpc_irq_set_type(struct irq_data *d, unsigned int type)
-+{
-+	u32 val;
-+	u32 mask = 0x1 << (d->hwirq);
-+	struct pch_lpc *priv = d->domain->host_data;
-+
-+	if (!(type & IRQ_TYPE_LEVEL_MASK))
-+		return 0;
-+
-+	val = readl(priv->base + LPC_INT_POL);
-+
-+	if (type == IRQ_TYPE_LEVEL_HIGH)
-+		val |= mask;
-+	else
-+		val &= ~mask;
-+
-+	writel(val, priv->base + LPC_INT_POL);
-+
-+	return 0;
-+}
-+
-+static const struct irq_chip pch_lpc_irq_chip = {
-+	.name			= "PCH LPC",
-+	.irq_mask		= lpc_irq_mask,
-+	.irq_unmask		= lpc_irq_unmask,
-+	.irq_ack		= lpc_irq_ack,
-+	.irq_set_type		= lpc_irq_set_type,
-+	.flags			= IRQCHIP_SKIP_SET_WAKE,
++enum acpi_madt_lio_pic_version {
++	ACPI_MADT_LIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_LIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_LIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
 +};
 +
-+static void lpc_irq_dispatch(struct irq_desc *desc)
-+{
-+	u32 pending, bit;
-+	struct irq_chip *chip = irq_desc_get_chip(desc);
-+	struct pch_lpc *priv = irq_desc_get_handler_data(desc);
-+
-+	chained_irq_enter(chip, desc);
-+
-+	pending = readl(priv->base + LPC_INT_ENA);
-+	pending &= readl(priv->base + LPC_INT_STS);
-+	if (!pending)
-+		spurious_interrupt();
-+
-+	while (pending) {
-+		bit = __ffs(pending);
-+
-+		generic_handle_domain_irq(priv->lpc_domain, bit);
-+		pending &= ~BIT(bit);
-+	}
-+	chained_irq_exit(chip, desc);
-+}
-+
-+static int pch_lpc_map(struct irq_domain *d, unsigned int irq,
-+			irq_hw_number_t hw)
-+{
-+	irq_set_chip_and_handler(irq, &pch_lpc_irq_chip, handle_level_irq);
-+	return 0;
-+}
-+
-+static const struct irq_domain_ops pch_lpc_domain_ops = {
-+	.map 		= pch_lpc_map,
-+	.translate	= irq_domain_translate_twocell,
++enum acpi_madt_eio_pic_version {
++	ACPI_MADT_EIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_EIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_EIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
 +};
 +
-+static void pch_lpc_reset(struct pch_lpc *priv)
-+{
-+	/* Enable the LPC interrupt, bit31: en  bit30: edge */
-+	writel(LPC_INT_CTL_EN, priv->base + LPC_INT_CTL);
-+	writel(0, priv->base + LPC_INT_ENA);
-+	/* Clear all 18-bit interrpt bit */
-+	writel(GENMASK(17, 0), priv->base + LPC_INT_CLR);
-+}
++enum acpi_madt_ht_pic_version {
++	ACPI_MADT_HT_PIC_VERSION_NONE = 0,
++	ACPI_MADT_HT_PIC_VERSION_V1 = 1,
++	ACPI_MADT_HT_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
 +
-+static int pch_lpc_disabled(struct pch_lpc *priv)
-+{
-+	return (readl(priv->base + LPC_INT_ENA) == 0xffffffff) &&
-+			(readl(priv->base + LPC_INT_STS) == 0xffffffff);
-+}
++enum acpi_madt_bio_pic_version {
++	ACPI_MADT_BIO_PIC_VERSION_NONE = 0,
++	ACPI_MADT_BIO_PIC_VERSION_V1 = 1,
++	ACPI_MADT_BIO_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
 +
-+int __init pch_lpc_acpi_init(struct irq_domain *parent,
-+					struct acpi_madt_lpc_pic *acpi_pchlpc)
-+{
-+	int parent_irq;
-+	struct pch_lpc *priv;
-+	struct irq_fwspec fwspec;
-+	struct fwnode_handle *irq_handle;
++enum acpi_madt_msi_pic_version {
++	ACPI_MADT_MSI_PIC_VERSION_NONE = 0,
++	ACPI_MADT_MSI_PIC_VERSION_V1 = 1,
++	ACPI_MADT_MSI_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
 +
-+	if (!acpi_pchlpc)
-+		return -EINVAL;
++enum acpi_madt_lpc_pic_version {
++	ACPI_MADT_LPC_PIC_VERSION_NONE = 0,
++	ACPI_MADT_LPC_PIC_VERSION_V1 = 1,
++	ACPI_MADT_LPC_PIC_VERSION_RESERVED = 2	/* 2 and greater are reserved */
++};
 +
-+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
++/* Core Interrupt Controller */
 +
-+	raw_spin_lock_init(&priv->lpc_lock);
++struct acpi_madt_core_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u32 processor_id;
++	u32 core_id;
++	u32 flags;
++};
 +
-+	priv->base = ioremap(acpi_pchlpc->address, acpi_pchlpc->size);
-+	if (!priv->base)
-+		goto free_priv;
++/* Legacy I/O Interrupt Controller */
 +
-+	if (pch_lpc_disabled(priv)) {
-+		pr_err("Failed to get LPC status\n");
-+		goto iounmap_base;
-+	}
++struct acpi_madt_lio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade[2];
++	u32 cascade_map[2];
++};
 +
-+	irq_handle = irq_domain_alloc_named_fwnode("lpcintc");
-+	if (!irq_handle) {
-+		pr_err("Unable to allocate domain handle\n");
-+		goto iounmap_base;
-+	}
++/* Extend I/O Interrupt Controller */
 +
-+	priv->lpc_domain = irq_domain_create_linear(irq_handle, LPC_COUNT,
-+					&pch_lpc_domain_ops, priv);
-+	if (!priv->lpc_domain) {
-+		pr_err("Failed to create IRQ domain\n");
-+		goto free_irq_handle;
-+	}
-+	pch_lpc_reset(priv);
++struct acpi_madt_eio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u8 cascade;
++	u8 node;
++	u64 node_map;
++};
 +
-+	fwspec.fwnode = parent->fwnode;
-+	fwspec.param[0] = acpi_pchlpc->cascade + GSI_MIN_PCH_IRQ;
-+	fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
-+	fwspec.param_count = 2;
-+	parent_irq = irq_create_fwspec_mapping(&fwspec);
-+	irq_set_chained_handler_and_data(parent_irq, lpc_irq_dispatch, priv);
++/* HT Interrupt Controller */
 +
-+	pch_lpc_handle = irq_handle;
-+	return 0;
++struct acpi_madt_ht_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade[8];
++};
 +
-+free_irq_handle:
-+	irq_domain_free_fwnode(irq_handle);
-+iounmap_base:
-+	iounmap(priv->base);
-+free_priv:
-+	kfree(priv);
++/* Bridge I/O Interrupt Controller */
 +
-+	return -ENOMEM;
-+}
++struct acpi_madt_bio_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u16 id;
++	u16 gsi_base;
++};
++
++/* MSI Interrupt Controller */
++
++struct acpi_madt_msi_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 msg_address;
++	u32 start;
++	u32 count;
++};
++
++/* LPC Interrupt Controller */
++
++struct acpi_madt_lpc_pic {
++	struct acpi_subtable_header header;
++	u8 version;
++	u64 address;
++	u16 size;
++	u8 cascade;
++};
++
++/* 80: OEM data */
+ 
+ struct acpi_madt_oem_data {
+ 	u8 oem_data[0];
 -- 
 1.8.3.1
 
