@@ -2,82 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5663BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:57:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC32C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 21:09:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229705AbiGOU5h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45172 "EHLO
+        id S229688AbiGOVJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 17:09:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiGOU5g (ORCPT
+        with ESMTP id S229951AbiGOVJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:57:36 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC83463934
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:57:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657918655; x=1689454655;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=TtuzAApJTU9hGEQXjVipEzK3N3TBAUeeSEWLjmWbJF8=;
-  b=IYk+A3fd9IDbhSSlEhjlWtjnGrgwjwco6uN4sEp0vhfaJci1uzlKrIev
-   hH29UQ8Dey68szHIUwo6FAlfOnZBL5LXrvoCNb/nw+vW1zaMbaogMyZj+
-   E0e975OVCdnKh1fViy+6bovBVGG17NAgRsyq4wRrVmGq9Vqvf6y/BsqUW
-   ToIZLrnxYfiAXZtx8PTQnGMS0BKbemPPyqGJ05DQZ8WUnqNOMpUHy85yi
-   6i8WKI1xrYFuWRkOCW1RZAi5m79wGzEl6i9MaBJinO9zOtXynZnHRSzsS
-   P80rBu7mK9LFVRuCPc41jZ72cmrDkC6q2y9mYFNEMwCII4Eca5hMiJUyL
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="268919561"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="268919561"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 13:57:35 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="654496590"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Jul 2022 13:57:33 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 06FFF1A0; Fri, 15 Jul 2022 23:57:41 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Takashi Iwai <tiwai@suse.de>, alsa-devel@alsa-project.org,
+        Fri, 15 Jul 2022 17:09:22 -0400
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BC570E49
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 14:09:17 -0700 (PDT)
+Received: by mail-wr1-x436.google.com with SMTP id r2so7331495wrs.3
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 14:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uxbEsFkRpuwGSHkFCYXm35Pz3gor1PXEdEjjZ4dDIso=;
+        b=ECmqWgF0/iWw8OYnFSCpnZrLQzFvpZ5Wlcl8Qk4xM83h11NVTftDk+p8Mlq3jY/MyJ
+         42oTvGWj10aYYQNuw+YtlAau9zvQuI0CRMe0jLmVk4CeyQgBCuc7UDrMjIGMl9WvkLqs
+         u9BO3xzcLDJoyFV6dvjCTQU09yhh+vQoTuEd18/Y4pxcWJ6PxFjT+W1WhTmYaHR5c61t
+         867vz+XfF4iEbP8YgZFSDFGzMjjj34jaKb0s41Yf+y54i38dafN3VN0BhW5oa8YmTD6L
+         Des2VcZw8kC5oDAQySjKol5oMfJEddJldCRPz+4Rz9dlKnJtggvCix2mdT0CojHikeW+
+         hvOg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=uxbEsFkRpuwGSHkFCYXm35Pz3gor1PXEdEjjZ4dDIso=;
+        b=sRfyclBl9UFSLjOv0ieUkFB+oR60y5kfibI8QRo7dbx+5nr2v7aCx7sEBRVujEmd6f
+         diaToY3qUHN1BVmE5LuwUOD4VOHcwAg1RIH6Ec9WLCH8pg/Y0v9soAv3WY/aXQnnXoOX
+         mfhnDF9UDOiFSOhMlFojF1DvWdT6IPUhvHg67KE6RDTs/HL3qjIBYTDOG//u86WrAC5v
+         mrD9V+d80BK6ZlvFi66nLIZQnygGn4NJRTB2FnmgkOwEj5zANoTuDxvPO+o9wxWAgYYK
+         iuvZZSpV9b0y4aYbb97zuPJTFZB4VTFHkZjaB1IRje3ft0it72fWY4VKS4bpOa5G6Lum
+         b1uA==
+X-Gm-Message-State: AJIora87xpNLmax8paPgV26UsBVYCosuaL8i5dsqZHmgyZj1plRYQn3K
+        ShQyecKlipsr+dh/UG4uOUMMDGzjhi0siw==
+X-Google-Smtp-Source: AGRyM1tfI/a0XswTl9zWy7klWOZegxdyf+AgVvsQqVZ2RN6hG8W2eCK3caMais/j2oseH5w5i6M4xw==
+X-Received: by 2002:a5d:64c7:0:b0:21d:a742:5e2c with SMTP id f7-20020a5d64c7000000b0021da7425e2cmr14376966wri.178.1657919355571;
+        Fri, 15 Jul 2022 14:09:15 -0700 (PDT)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:a223:f4b3:40c9:43fa])
+        by smtp.gmail.com with ESMTPSA id b14-20020a5d40ce000000b0021a56cda047sm4567752wrq.60.2022.07.15.14.09.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 14:09:14 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     quic_manafm@quicinc.com, rui.zhang@intel.com, amitk@kernel.org,
+        lukasz.luba@arm.com, linux-pm@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] ALSA: isa: Use INVALID_HWIRQ definition
-Date:   Fri, 15 Jul 2022 23:57:37 +0300
-Message-Id: <20220715205737.83076-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+Subject: [PATCH v3 1/4] thermal/core: Encapsulate the trip point crossed function
+Date:   Fri, 15 Jul 2022 23:09:08 +0200
+Message-Id: <20220715210911.714479-1-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use specific definition for invalid IRQ. It makes the
-code uniform in respect to the constant used for that.
-No functional change intended.
+The routine where the trip point crossed is detected is a strategic
+place where different processing will happen. Encapsulate the code in
+a function, so all specific actions related with a trip point crossed
+can be grouped.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- sound/isa/sscape.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/thermal/thermal_core.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-diff --git a/sound/isa/sscape.c b/sound/isa/sscape.c
-index 0bc0025f7c19..9adaf91045e9 100644
---- a/sound/isa/sscape.c
-+++ b/sound/isa/sscape.c
-@@ -140,8 +140,7 @@ struct soundscape {
- 	unsigned char midi_vol;
- };
+diff --git a/drivers/thermal/thermal_core.c b/drivers/thermal/thermal_core.c
+index cdc0552e8c42..d9f771b15ed8 100644
+--- a/drivers/thermal/thermal_core.c
++++ b/drivers/thermal/thermal_core.c
+@@ -358,6 +358,25 @@ static void handle_critical_trips(struct thermal_zone_device *tz,
+ 		tz->ops->critical(tz);
+ }
  
--#define INVALID_IRQ  ((unsigned)-1)
--
-+#define INVALID_IRQ  ((unsigned)INVALID_HWIRQ)
- 
- static inline struct soundscape *get_card_soundscape(struct snd_card *c)
++static void handle_thermal_trip_crossed(struct thermal_zone_device *tz, int trip,
++					int trip_temp, int trip_hyst, enum thermal_trip_type trip_type)
++{
++	if (tz->last_temperature == THERMAL_TEMP_INVALID)
++		return;
++
++	if (tz->last_temperature < trip_temp &&
++	    tz->temperature >= trip_temp) {
++		thermal_notify_tz_trip_up(tz->id, trip,
++					  tz->temperature);
++	}
++
++	if (tz->last_temperature >= trip_temp &&
++	    tz->temperature < (trip_temp - trip_hyst)) {
++		thermal_notify_tz_trip_down(tz->id, trip,
++					    tz->temperature);
++	}
++}
++
+ static void handle_thermal_trip(struct thermal_zone_device *tz, int trip)
  {
+ 	enum thermal_trip_type type;
+@@ -372,16 +391,7 @@ static void handle_thermal_trip(struct thermal_zone_device *tz, int trip)
+ 	if (tz->ops->get_trip_hyst)
+ 		tz->ops->get_trip_hyst(tz, trip, &hyst);
+ 
+-	if (tz->last_temperature != THERMAL_TEMP_INVALID) {
+-		if (tz->last_temperature < trip_temp &&
+-		    tz->temperature >= trip_temp)
+-			thermal_notify_tz_trip_up(tz->id, trip,
+-						  tz->temperature);
+-		if (tz->last_temperature >= trip_temp &&
+-		    tz->temperature < (trip_temp - hyst))
+-			thermal_notify_tz_trip_down(tz->id, trip,
+-						    tz->temperature);
+-	}
++	handle_thermal_trip_crossed(tz, trip, trip_temp, hyst, type);
+ 
+ 	if (type == THERMAL_TRIP_CRITICAL || type == THERMAL_TRIP_HOT)
+ 		handle_critical_trips(tz, trip, type);
 -- 
-2.35.1
+2.25.1
 
