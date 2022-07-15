@@ -2,73 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6FBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:24:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 422CBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241219AbiGOCYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 22:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37796 "EHLO
+        id S241251AbiGOC1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 22:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiGOCX7 (ORCPT
+        with ESMTP id S229541AbiGOC1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 22:23:59 -0400
-Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EE6EF22B39
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 19:23:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=ZFrL+
-        esrBW1XZQlSQnIERY71zAGJkbXasx766tTW6l4=; b=IpNlXPq6CDsKy0qkFPlNv
-        9KXIteCV5Vhw7Cqw5gzsvFGBmcoJFrH5UTnmmsa+PhY0aSV6HbgusTRymgRdj8cy
-        YpNTmMwupKEuSx4NBDs1WdPRDqGnkDjqWqP7MJO2FL9IJ9JP0VQ6gYU51krooC1L
-        YtgxoE5aUPc8difBKfTTfo=
-Received: from localhost.localdomain (unknown [111.48.58.12])
-        by smtp10 (Coremail) with SMTP id DsCowACHRhegz9BiBfDLNA--.47419S2;
-        Fri, 15 Jul 2022 10:23:30 +0800 (CST)
-From:   Jiangshan Yi <13667453960@163.com>
-To:     luisbg@kernel.org, salah.triki@gmail.com
-Cc:     linux-kernel@vger.kernel.org,
-        Jiangshan Yi <yijiangshan@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>
-Subject: [PATCH] fs/befs: Fix spelling typo in comment
-Date:   Fri, 15 Jul 2022 10:23:00 +0800
-Message-Id: <20220715022300.427979-1-13667453960@163.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 14 Jul 2022 22:27:11 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E90122B39;
+        Thu, 14 Jul 2022 19:27:08 -0700 (PDT)
+Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LkZvt2q8FzlVxh;
+        Fri, 15 Jul 2022 10:25:30 +0800 (CST)
+Received: from huawei.com (10.175.127.227) by dggpeml500021.china.huawei.com
+ (7.185.36.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
+ 2022 10:27:06 +0800
+From:   Baokun Li <libaokun1@huawei.com>
+To:     <stable@vger.kernel.org>, <linux-ext4@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <tytso@mit.edu>,
+        <adilger.kernel@dilger.ca>, <jack@suse.cz>,
+        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
+        <enwlinux@gmail.com>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>, <yebin10@huawei.com>, <yukuai3@huawei.com>,
+        <libaokun1@huawei.com>, Hulk Robot <hulkci@huawei.com>
+Subject: [PATCH 4.19] ext4: fix race condition between ext4_ioctl_setflags and ext4_fiemap
+Date:   Fri, 15 Jul 2022 10:39:28 +0800
+Message-ID: <20220715023928.2701166-1-libaokun1@huawei.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DsCowACHRhegz9BiBfDLNA--.47419S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrury7Jr47ZFy5GrWxZw1xGrg_yoW3Xwb_CF
-        s2y3yxZ3yUtr4rtw48K39aqF1Fyw42gw15Grn8GrZIg3y7Aan8Xa95trWSya4DWr4Iga98
-        WFWDJFykuF17JjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnc_-DUUUUU==
-X-Originating-IP: [111.48.58.12]
-X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/xtbBthU-+11uPoYsUQAAsR
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500021.china.huawei.com (7.185.36.21)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiangshan Yi <yijiangshan@kylinos.cn>
+This patch and problem analysis is based on v4.19 LTS.
+The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
+is incorporated in v5.7-rc1. This patch avoids this problem by switching
+to iomap in ext4_fiemap.
 
-Fix spelling typo in comment.
+Hulk Robot reported a BUG on stable 4.19.252:
+==================================================================
+kernel BUG at fs/ext4/extents_status.c:762!
+invalid opcode: 0000 [#1] SMP KASAN PTI
+CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
+RIP: 0010:ext4_es_cache_extent+0x30e/0x370
+[...]
+Call Trace:
+ ext4_cache_extents+0x238/0x2f0
+ ext4_find_extent+0x785/0xa40
+ ext4_fiemap+0x36d/0xe90
+ do_vfs_ioctl+0x6af/0x1200
+[...]
+==================================================================
 
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+Above issue may happen as follows:
+-------------------------------------
+           cpu1		    cpu2
+_____________________|_____________________
+do_vfs_ioctl
+ ext4_ioctl
+  ext4_ioctl_setflags
+   ext4_ind_migrate
+                        do_vfs_ioctl
+                         ioctl_fiemap
+                          ext4_fiemap
+                           ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
+                           ext4_fill_fiemap_extents
+    down_write(&EXT4_I(inode)->i_data_sem);
+    ext4_ext_check_inode
+    ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
+    memset(ei->i_data, 0, sizeof(ei->i_data))
+    up_write(&EXT4_I(inode)->i_data_sem);
+                            down_read(&EXT4_I(inode)->i_data_sem);
+                            ext4_find_extent
+                             ext4_cache_extents
+                              ext4_es_cache_extent
+                               BUG_ON(end < lblk)
+
+We can easily reproduce this problem with the syzkaller testcase:
+```
+02:37:07 executing program 3:
+r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
+ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
+mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
+r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
+ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
+ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
+```
+
+To solve this issue, we use __generic_block_fiemap() instead of
+generic_block_fiemap() and add inode_lock_shared to avoid race condition.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Baokun Li <libaokun1@huawei.com>
 ---
- fs/befs/linuxvfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/extents.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/fs/befs/linuxvfs.c b/fs/befs/linuxvfs.c
-index be383fa46b12..9d6b3d17cb2a 100644
---- a/fs/befs/linuxvfs.c
-+++ b/fs/befs/linuxvfs.c
-@@ -785,7 +785,7 @@ static int befs_show_options(struct seq_file *m, struct dentry *root)
- 	return 0;
+diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
+index 6c492fca60c4..38aaf48e94cb 100644
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -5198,13 +5198,18 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
+ 			return error;
+ 	}
+ 
++	inode_lock_shared(inode);
+ 	/* fallback to generic here if not in extents fmt */
+-	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)))
+-		return generic_block_fiemap(inode, fieinfo, start, len,
++	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
++		error = __generic_block_fiemap(inode, fieinfo, start, len,
+ 			ext4_get_block);
++		goto out_unlock;
++	}
+ 
+-	if (fiemap_check_flags(fieinfo, EXT4_FIEMAP_FLAGS))
+-		return -EBADR;
++	if (fiemap_check_flags(fieinfo, EXT4_FIEMAP_FLAGS)) {
++		error = -EBADR;
++		goto out_unlock;
++	}
+ 
+ 	if (fieinfo->fi_flags & FIEMAP_FLAG_XATTR) {
+ 		error = ext4_xattr_fiemap(inode, fieinfo);
+@@ -5225,6 +5230,8 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
+ 		error = ext4_fill_fiemap_extents(inode, start_blk,
+ 						 len_blks, fieinfo);
+ 	}
++out_unlock:
++	inode_unlock_shared(inode);
+ 	return error;
  }
  
--/* This function has the responsibiltiy of getting the
-+/* This function has the responsibility of getting the
-  * filesystem ready for unmounting.
-  * Basically, we free everything that we allocated in
-  * befs_read_inode
 -- 
-2.25.1
+2.31.1
 
