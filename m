@@ -2,65 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D80C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA3D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbiGORqM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 13:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S230143AbiGORqR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 13:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbiGORpi (ORCPT
+        with ESMTP id S231171AbiGORpi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 13:45:38 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B85F2F642
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:45:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E86C2F648;
+        Fri, 15 Jul 2022 10:45:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF85F622D5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 17:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6184AC36AEF;
-        Fri, 15 Jul 2022 17:45:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AF62622D7;
+        Fri, 15 Jul 2022 17:45:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 81284C341C6;
+        Fri, 15 Jul 2022 17:45:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657907134;
-        bh=upDQS3vqXsVzxg+tNckdGACur/G8xxuSK67U6Jd7Iq0=;
+        s=k20201202; t=1657907132;
+        bh=FyPG+4RcSMR/dedX+rYqABXXPto7sVlruQczqb3797k=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=O1ap3U8X5XGojDmbf0JSsjtmMNbjIYIOdG6tjkoOH0/emJC9ieL5VciXlS3DZF9F8
-         zRlybQGtcDBoy5xq73HsGYa0z5n/K7+nA/JN0rFru73YH4VgKt3NcPjW8+jDVQP/zo
-         yLz82cz9CjeOsnfSll4WOIN4/hTq9Cbf50cUvx6nMyrNpcbuj4XtgOd5ws3GOqglU3
-         Hl2PCrii/F2v61/esS4Vx2kwgXszn9z2N1yrPX6eeJOd6H4VCWbXdn4lDRpbM5NCY0
-         H+dIpgO/0SJBK2fX2sOeikwzJ3GyeriRmD8CWc8FhaCKkpE/Ik/cUhiig5PeUY+j6X
-         WlVPl87GPo1fA==
+        b=RYXs0G5qZrqHFdIQjgqjPIfw5hZMhy37Aw1o+D2kNvmDk5e61gWqS4H3fhDVj22nf
+         fiTO9ITwsTflZpxDCdz5YzgzlZRBH5luWtpau7eCRzGtgQMJcn3xTd4ZFecHr6QQki
+         PAFWuV2O44Tf2Pl9o0Gr2dNxoTuS7DJz2ss8TvHChxVBcPUHiU2rY02ofKdWFEkraI
+         RDnOwsnWdeZyLPNywUbWc9xhPaxI9qlXidTL3SCIM6sPhlczpXPVjoobDAGJGwXvvi
+         HwHs84RZgs2LERgzpzOVyCNIKcrn0nUTW1ISvrr8qdusifou9tFhnvVFbmLjWNPjrJ
+         Vu2+VTyWmDSMA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4809BE4522F;
-        Fri, 15 Jul 2022 17:45:34 +0000 (UTC)
-Subject: Re: [GIT PULL] xen: branch for v5.19-rc7
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6F79FE4521F;
+        Fri, 15 Jul 2022 17:45:32 +0000 (UTC)
+Subject: Re: [GIT PULL] Ceph fix for 5.19-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220715060019.5197-1-jgross@suse.com>
-References: <20220715060019.5197-1-jgross@suse.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220715060019.5197-1-jgross@suse.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git for-linus-5.19a-rc7-tag
-X-PR-Tracked-Commit-Id: 166d3863231667c4f64dee72b77d1102cdfad11f
+In-Reply-To: <20220715163845.14481-1-idryomov@gmail.com>
+References: <20220715163845.14481-1-idryomov@gmail.com>
+X-PR-Tracked-List-Id: <ceph-devel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220715163845.14481-1-idryomov@gmail.com>
+X-PR-Tracked-Remote: https://github.com/ceph/ceph-client.git tags/ceph-for-5.19-rc7
+X-PR-Tracked-Commit-Id: fac47b43c760ea90e64b895dba60df0327be7775
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 339f74e38f53c83b5715abd28f7002b66731d917
-Message-Id: <165790713429.27298.14101332307075836483.pr-tracker-bot@kernel.org>
-Date:   Fri, 15 Jul 2022 17:45:34 +0000
-To:     Juergen Gross <jgross@suse.com>
-Cc:     torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        xen-devel@lists.xenproject.org, sstabellini@kernel.org
+X-PR-Merge-Commit-Id: 1ce9d792e8ef286ed03b151b9bdfcd921e04a988
+Message-Id: <165790713245.27298.4072793540229036138.pr-tracker-bot@kernel.org>
+Date:   Fri, 15 Jul 2022 17:45:32 +0000
+To:     Ilya Dryomov <idryomov@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 15 Jul 2022 08:00:19 +0200:
+The pull request you sent on Fri, 15 Jul 2022 18:38:45 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/xen/tip.git for-linus-5.19a-rc7-tag
+> https://github.com/ceph/ceph-client.git tags/ceph-for-5.19-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/339f74e38f53c83b5715abd28f7002b66731d917
+https://git.kernel.org/torvalds/c/1ce9d792e8ef286ed03b151b9bdfcd921e04a988
 
 Thank you!
 
