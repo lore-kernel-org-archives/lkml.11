@@ -2,104 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D982CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CFC7CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230239AbiGOQA3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:00:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59988 "EHLO
+        id S232141AbiGOQAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231555AbiGOQAZ (ORCPT
+        with ESMTP id S231555AbiGOQAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 12:00:25 -0400
-Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08D526D54C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:24 -0700 (PDT)
-Received: by mail-il1-x134.google.com with SMTP id w16so2266901ilh.0
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:24 -0700 (PDT)
+        Fri, 15 Jul 2022 12:00:44 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE50A6C119
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:43 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id o7so8497908lfq.9
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=rmpoX4O37nbYIxBzqGyioBhgmV198F5GjgDovHlcPks=;
-        b=Qnu6EHnngw29XzGoUyf2ygFYP9hsNXagG+JPTBHSaraI2ZXnkmcSfbd/pfPLQIsS8g
-         eQNkS+N6COBmRi0CHjx4cJ9hpeesikzuh6xGsGTR+1DYfMM4OzK5+g5d+XCl3FeBUGKb
-         KIKWT10sLnDsWPR5vv5FZqPxJMxRyy+Fys9Hnjcimgfv3fTkMv8py84EMCUHY6BifeNN
-         DbjuxA/zKCZfWMHjYVOnThcyr41Wd+Em7AxoC4kkfbI2DNHguIqkDdraIPDTXRkr4td5
-         pZerhaKmbsrSZbZBSKriK79KDv4JyvH/+7mVhuCa3CsnqL9Z2X9xyGiAOlhry+ME6/DR
-         rykA==
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mIopSGAH3mTa/L5EYVPega0Li+O294uXD/7Fiv3FbZo=;
+        b=r4EXCR1lFsBKKqZK7VFCnZQxznNws5DThf7w05STlutfX+LxffmlXJic/kW2E8qg/t
+         DKPrUlO9a6Fj5qLYbChTFy8tqbHhexn0eRkqmzSLhR9/ydpqDlfX6E2chixJYgGCo1tb
+         U+LLFeu+Ny7iDvnZVGlwd+spWQXWmt7nN1n8/4dhM2zarAE/zp31gIWgbSM/Yz7UgMF4
+         Mt7sfJMLM9Z1LuZhgh/pmrHXMYSUfyi+SzOn4Bi7VzyAZKnW55TBHhX0BLKBE5Dqb+NA
+         JTNTjZRuFAhm8s7vz0JToq48xP8eV/mebB4yv5uTU5PSfKtpqknn2nngKrvn1Q3LBx8R
+         FLZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=rmpoX4O37nbYIxBzqGyioBhgmV198F5GjgDovHlcPks=;
-        b=7VxRqBmJeJP4g3nXRkSQeVmSXZP+689ppAwRjGZsPYMrVtICNGavgydsp4ok5qTMxs
-         GDi0tuS3VS5jM4fJOlrUNYqRjtgY751C0bsOmzopZXDafBB31Mj/eLUYZFoyNeO9uX3g
-         8dXlkKSnvp86FKOPc9D0bUU02X0hDMhGs5IQevkhzzITZxSI4Ij9/jvbS4XXY6luehpw
-         pFp9yxl6GIPjpNAIaEGO/6yLT5rEpPN6frpwr1QBp660PtsS8+rHK7pscjWMCUub5bHD
-         lB1yZ0jayv+0Y4WlkDVxTF92lZ+matjWClBncETAIZGHemUcpmZZ7hWY8j5MQ/E49abY
-         90Eg==
-X-Gm-Message-State: AJIora+EqmPRibBWzascZ9HjhcjYrUJPQ+mdcUzChjJNMCdn4Ey8AGyc
-        GzhMT0d/PUuT4/cUCE0kqnorVw==
-X-Google-Smtp-Source: AGRyM1tQ9KmDcbdBM6tbIkW5FHvjXmLg/s444KN5ra6tgSKQGB679jWHox2sheILd7kuqfqa4WOHjg==
-X-Received: by 2002:a05:6e02:1d95:b0:2dc:4746:6a2d with SMTP id h21-20020a056e021d9500b002dc47466a2dmr7107157ila.322.1657900818837;
-        Fri, 15 Jul 2022 09:00:18 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id k7-20020a0566022a4700b0067becf1978csm147064iov.4.2022.07.15.09.00.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 09:00:18 -0700 (PDT)
-Message-ID: <8a9adb78-d9bb-a511-e4c1-c94cca392c9b@kernel.dk>
-Date:   Fri, 15 Jul 2022 10:00:17 -0600
+        bh=mIopSGAH3mTa/L5EYVPega0Li+O294uXD/7Fiv3FbZo=;
+        b=0QoWnhgowMwVDo0Hf6TRHFxQfXjs2Iw7Hfo0+04nW28Y2G94NheuIRLH5mlP6cuo6n
+         hjpgjrKjkZaxcTabvuvqblYsU1mcnjoVFT2ucQgXUcw98dIWxwYmQ6/upB+hzIiFNLTF
+         xnWUaoRvIWdYgP/Hwka4Yx7G0s+s78axjxDy5wl4NIl6mFkhfTR57lme7R8Gx3ZYA1Hq
+         iAvwb36qOXr0UoOKvk+RiXlfjCk+fJSi5umpY1RkJOxMjAub79I9Ar2pjIqVw+Y3fl28
+         gujQIuyVxKSyXb1vcZdBXPCht1lOKY8evWtggAu1GVqjH8tAnnwD1/U6rSbpYt7coxmU
+         LZnA==
+X-Gm-Message-State: AJIora/uEOrrfgzWdR8xkgLzltzRm/m57Pf7QJ/pBmiJkeKJjHbLQYyV
+        LXhvTzloHR/acmf6lWyXJ2qZXw==
+X-Google-Smtp-Source: AGRyM1sy8e8fPJdsNFqKUZ3+IuaUwVfbMDgUo5p1mH0WqHRT0w0vw/BcUr3AlC/CEkBL043+uaOgvA==
+X-Received: by 2002:a05:6512:3e15:b0:489:e882:12c7 with SMTP id i21-20020a0565123e1500b00489e88212c7mr8640328lfv.0.1657900842057;
+        Fri, 15 Jul 2022 09:00:42 -0700 (PDT)
+Received: from dmaluka.office.semihalf.net ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id c12-20020a056512238c00b0047968606114sm959772lfv.111.2022.07.15.09.00.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 09:00:40 -0700 (PDT)
+From:   Dmytro Maluka <dmy@semihalf.com>
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Rong L Liu <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Dmitry Torokhov <dtor@google.com>,
+        Dmytro Maluka <dmy@semihalf.com>
+Subject: [PATCH 0/3] KVM: Fix oneshot interrupts forwarding
+Date:   Fri, 15 Jul 2022 17:59:25 +0200
+Message-Id: <20220715155928.26362-1-dmy@semihalf.com>
+X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 5/5] io_uring: remove ring quiesce for
- io_uring_register
-Content-Language: en-US
-To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>,
-        Usama Arif <usama.arif@bytedance.com>
-Cc:     io-uring@vger.kernel.org, asml.silence@gmail.com,
-        linux-kernel@vger.kernel.org, fam.zheng@bytedance.com
-References: <20220204145117.1186568-1-usama.arif@bytedance.com>
- <20220204145117.1186568-6-usama.arif@bytedance.com>
- <20220715154444.GA17123@blackbody.suse.cz>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <20220715154444.GA17123@blackbody.suse.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/15/22 9:44 AM, Michal Koutn? wrote:
-> Hello.
-> 
-> On Fri, Feb 04, 2022 at 02:51:17PM +0000, Usama Arif <usama.arif@bytedance.com> wrote:
->> -	percpu_ref_resurrect(ref);
->> [...]
->> -		percpu_ref_reinit(&ctx->refs);
-> 
-> It seems to me that this patch could have also changed
-> 
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -1911,7 +1911,7 @@ static __cold struct io_ring_ctx *io_ring_ctx_alloc(struct io_uring_params *p)
->         ctx->dummy_ubuf->ubuf = -1UL;
-> 
->         if (percpu_ref_init(&ctx->refs, io_ring_ctx_ref_free,
-> -                           PERCPU_REF_ALLOW_REINIT, GFP_KERNEL))
-> +                           0, GFP_KERNEL))
->                 goto err;
-> 
->         ctx->flags = p->flags;
-> 
-> Or are there any plans to still use the reinit/resurrect functionality
-> of the percpu counter?
+The existing KVM mechanism for forwarding of level-triggered interrupts
+using resample eventfd doesn't work quite correctly in the case of
+interrupts that are handled in a Linux guest as oneshot interrupts
+(IRQF_ONESHOT). Such an interrupt is acked to the device in its
+threaded irq handler, i.e. later than it is acked to the interrupt
+controller (EOI at the end of hardirq), not earlier. The existing KVM
+code doesn't take that into account, which results in erroneous extra
+interrupts in the guest caused by premature re-assert of an
+unacknowledged IRQ by the host.
 
-Ah yes indeed, good catch! Would you mind sending that as an actual
-patch?
+This patch series fixes this issue (for now on x86 only) by checking if
+the interrupt is unmasked when we receive irq ack (EOI) and, in case if
+it's masked, postponing resamplefd notify until the guest unmasks it.
+
+Patches 1 and 2 implement the prerequisites needed for KVM irqfd to
+know the interrupt mask state. Patch 3 implements the actual fix:
+postponing resamplefd notify in KVM irqfd until the irq is unmasked.
+
+Please see individual patches for more details.
+
+Dmytro Maluka (3):
+  KVM: x86: Move kvm_(un)register_irq_mask_notifier() to generic KVM
+  KVM: x86: Add kvm_irq_is_masked()
+  KVM: irqfd: Postpone resamplefd notify for oneshot interrupts
+
+ arch/x86/include/asm/kvm_host.h | 11 +-----
+ arch/x86/kvm/i8259.c            | 11 ++++++
+ arch/x86/kvm/ioapic.c           | 11 ++++++
+ arch/x86/kvm/ioapic.h           |  1 +
+ arch/x86/kvm/irq_comm.c         | 34 +++++++++---------
+ include/linux/kvm_host.h        | 13 +++++++
+ include/linux/kvm_irqfd.h       | 14 ++++++++
+ virt/kvm/eventfd.c              | 63 +++++++++++++++++++++++++++++++++
+ virt/kvm/irqchip.c              | 34 ++++++++++++++++++
+ 9 files changed, 164 insertions(+), 28 deletions(-)
 
 -- 
-Jens Axboe
+2.37.0.170.g444d1eabd0-goog
 
