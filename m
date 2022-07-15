@@ -2,79 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BADC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 499BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232858AbiGOLKa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:10:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
+        id S233250AbiGOLK4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232671AbiGOLKT (ORCPT
+        with ESMTP id S233339AbiGOLKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:10:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C81B85FBD;
-        Fri, 15 Jul 2022 04:10:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3E74B82B46;
-        Fri, 15 Jul 2022 11:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4C530C341C8;
-        Fri, 15 Jul 2022 11:10:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657883414;
-        bh=mGE/HM+veDHotiSgM1jxrcojqkZr0cRHNOIPIdNLF+4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MEkM8HFw6IpUHv+MlY/N4aq1Q2crRj6mty3ukWFif0dw5u94iq3Z61ZQRwRU/0AR4
-         +zP2XFePpYNNMfdOntOpb6NIagyWa4EGCjYurGM7HkRH9EVetEkTqykuytnL//YrFu
-         p5p7iPCYom690W9qSK7xc8+kF/KaSGNQAsCHaBaWCGJs+4T0m+fFXzYC5ESrr6OGm2
-         ZtwYC/PEYSL0gPxN0Cdwo8z7h71g+UQEIKdjbjIWTHkwwdPPglPY175MwoyKWA2kR/
-         IHrnW9wbC35F07DgD22vIUW6TsgjYIM6PqiyVZ04YwA8lTbtru7Jj1GNbrTggTl0rb
-         /tcFJOCcinYdQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2FB25E45230;
-        Fri, 15 Jul 2022 11:10:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 15 Jul 2022 07:10:45 -0400
+Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 43E8487C33
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 04:10:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cydZm
+        lZhSk+JBLjhav67ZXf+fCTQCxLg7ins/X8dtkw=; b=h8u2hiIgIZXunSdvJXs2W
+        6K00/s6JWQ7n9GMmoX4s6vI5sTkHoeAjicuDfkneZncOftQt8d2a+T9DZa2Qdv0j
+        Js2Hmf9/k2XBjXZ4YUbGqX+v1ADJ8FHlfWZU8cDOdjqtBd+TdjcFvjLu1E0VgflW
+        Lz6xXlG8kW0dBF7u67c+8c=
+Received: from localhost.localdomain (unknown [124.16.139.61])
+        by smtp2 (Coremail) with SMTP id DMmowAC3x_8jS9Fi0vOyEw--.59040S2;
+        Fri, 15 Jul 2022 19:10:28 +0800 (CST)
+From:   Liang He <windhl@126.com>
+To:     lgirdwood@gmail.com, broonie@kernel.org,
+        linux-kernel@vger.kernel.org, windhl@126.com
+Subject: [PATCH] regulator: of: Fix refcount leak bug in of_get_regulation_constraints()
+Date:   Fri, 15 Jul 2022 19:10:27 +0800
+Message-Id: <20220715111027.391032-1-windhl@126.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net/sched: sch_cbq: Delete unused delay_timer
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165788341419.15583.12654886663403136630.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Jul 2022 11:10:14 +0000
-References: <20220713204051.32551-1-yepeilin.cs@gmail.com>
-In-Reply-To: <20220713204051.32551-1-yepeilin.cs@gmail.com>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        peilin.ye@bytedance.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, cong.wang@bytedance.com
+X-CM-TRANSID: DMmowAC3x_8jS9Fi0vOyEw--.59040S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrKFy8tw43KF1UXryrXFy5urg_yoWkAFcEkw
+        nxG3WxJrsrZr47GF92va1qy3s8tr1vgF47Xa1xtFWfJr1jya45Jw17Z347A39rZ3y7Ar92
+        vwnrJwsFkr1Y9jkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRWWl97UUUUU==
+X-Originating-IP: [124.16.139.61]
+X-CM-SenderInfo: hzlqvxbo6rjloofrz/1tbi7QU-F1pEAZ3xlgAAsl
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+We should call the of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Fixes: 40e20d68bb3f ("regulator: of: Add support for parsing regulator_state for suspend state")
+Signed-off-by: Liang He <windhl@126.com>
+---
+I think no matter what the 'suspend_state' value is, it should call
+of_node_put() when 'suspend_np' is not NULL as it will be replaced
+in 'continue' to next loop.
 
-On Wed, 13 Jul 2022 13:40:51 -0700 you wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> delay_timer has been unused since commit c3498d34dd36 ("cbq: remove
-> TCA_CBQ_OVL_STRATEGY support").  Delete it.
-> 
-> Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
-> 
-> [...]
+ drivers/regulator/of_regulator.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Here is the summary with links:
-  - [net-next] net/sched: sch_cbq: Delete unused delay_timer
-    https://git.kernel.org/netdev/net-next/c/88b3822cdf2f
-
-You are awesome, thank you!
+diff --git a/drivers/regulator/of_regulator.c b/drivers/regulator/of_regulator.c
+index f54d4f176882..e12b681c72e5 100644
+--- a/drivers/regulator/of_regulator.c
++++ b/drivers/regulator/of_regulator.c
+@@ -264,8 +264,12 @@ static int of_get_regulation_constraints(struct device *dev,
+ 		}
+ 
+ 		suspend_np = of_get_child_by_name(np, regulator_states[i]);
+-		if (!suspend_np || !suspend_state)
++		if (!suspend_np)
+ 			continue;
++		if (!suspend_state) {
++			of_node_put(suspend_np);
++			continue;
++		}
+ 
+ 		if (!of_property_read_u32(suspend_np, "regulator-mode",
+ 					  &pval)) {
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
