@@ -2,212 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC3DCCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DECCCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235624AbiGORUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 13:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56690 "EHLO
+        id S235672AbiGORVD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 13:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234994AbiGORUk (ORCPT
+        with ESMTP id S235652AbiGORVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 13:20:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03CBB79682
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657905639;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PTK4goQcbNMUtE6aJiq+7EgmXb2x5IDyZNvU93q4GVI=;
-        b=WED9835j/4K4uHSalJd4jiuJSAzC0WhxBrvpxP4yyxaDn8gku9BfAoKkBDeNNAXR/T8tpR
-        tOInADxIOwq5JcJSGmG7ba29j/mAIrtcUG0FEfFbJObCBXCsZCatuV+Y/5038qmvhQNflB
-        rxb9XZOln11gs7PZSNLiPGBS1xmN1Cg=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-587-8ijHpdezNc6eEvZr5NSlhg-1; Fri, 15 Jul 2022 13:20:37 -0400
-X-MC-Unique: 8ijHpdezNc6eEvZr5NSlhg-1
-Received: by mail-qk1-f200.google.com with SMTP id x22-20020a05620a259600b006b552a69231so3869647qko.18
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:20:37 -0700 (PDT)
+        Fri, 15 Jul 2022 13:21:01 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D32D79682;
+        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y141so5181216pfb.7;
+        Fri, 15 Jul 2022 10:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
+        b=QYRuWFCmTvZa/x5P+uESITLhb+SAnK3Ep6RjijQpXs9D9HQ6zQtjDb73w8plJ7rrTN
+         jl9TfKRIr00Y3U4c2O7IK+l52IfmISjdi5DVoOjQuaZRup6uS7Zr3K0ncXMTg8Qth2S+
+         YjK81IU2OOpN0VPXjCGK9FYDqDEur07qD4W2lFxHiX7RFLZstkKrPM9XjqL7l2cJ6kur
+         SeL7QRXbm8BwPLNS/cwAAkRIow9e+DD8dHprPzQ/rc36raoPBVQv/Ar1FXytFjBJP3os
+         gqEOZlIgjrszm0i74uR/LUDHByRmKG4im7M5Tqfx5rz+s8jfFMTlNp4BawIxEr2QvlQF
+         1jUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PTK4goQcbNMUtE6aJiq+7EgmXb2x5IDyZNvU93q4GVI=;
-        b=sKDUlf5gLGZzmox7/g4rPGbqu/SEBoTjDvSQoVUcVUxLaQpwr7mQgoT9+oqhnEPMJV
-         ILo8xYOAIipPAIHy/rD0yBVQGUndj5Yz4saH8aIGeQIbrQgiGkztndZvqYU35ql1QWqS
-         jy2ARV8YURUwsXX8VV1Elflc6tRPU18W1E9cTmPHrGb2D0uT5W+35iz6KokOo+ayah5N
-         9uraXyTsj2HTyPCKFwX79yl0ZLwSx5ki9wPoX9kL64d7Zs+jvcfJxLtVSli+HVBJwIJX
-         q5q30cAD8oob8iYTfVoc5mFB/VM04jw8gUBlIcCVxvW7Kqg2x0ZyvAJnKXD087cEMFZn
-         CrVg==
-X-Gm-Message-State: AJIora/gQwZECU9qpZ2Y4vOCYRvcTQXJU11rg9rJwOkFEwU4oxHbEW3e
-        l0vR/PyGqQFovx/Mrmppp4RZg+S5uqDhDGGoZc2vZBxYADS0STneFnm2KooW2UXhsduf6FnboWx
-        wztus6NYBrF+oAmNro9AT+Z9w
-X-Received: by 2002:a05:622a:313:b0:31e:bb0b:4748 with SMTP id q19-20020a05622a031300b0031ebb0b4748mr13265064qtw.439.1657905637150;
-        Fri, 15 Jul 2022 10:20:37 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uOHJxrwYjG93/qRUTPsx6ZXOpHvxvgIjaBzPJoHTHPeCWsXmeiQ/5HBEzj58cZRgTurllH0g==
-X-Received: by 2002:a05:622a:313:b0:31e:bb0b:4748 with SMTP id q19-20020a05622a031300b0031ebb0b4748mr13265042qtw.439.1657905636896;
-        Fri, 15 Jul 2022 10:20:36 -0700 (PDT)
-Received: from xz-m1.local (bras-base-aurron9127w-grc-37-74-12-30-48.dsl.bell.ca. [74.12.30.48])
-        by smtp.gmail.com with ESMTPSA id bp13-20020a05622a1b8d00b0031e9fa40c2esm4208168qtb.27.2022.07.15.10.20.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 10:20:36 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 13:20:35 -0400
-From:   Peter Xu <peterx@redhat.com>
-To:     James Houghton <jthoughton@google.com>
-Cc:     Mike Kravetz <mike.kravetz@oracle.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        David Hildenbrand <david@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Mina Almasry <almasrymina@google.com>,
-        Jue Wang <juew@google.com>,
-        Manish Mishra <manish.mishra@nutanix.com>,
-        "Dr . David Alan Gilbert" <dgilbert@redhat.com>,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH 20/26] hugetlb: add support for high-granularity
- UFFDIO_CONTINUE
-Message-ID: <YtGh46Jr0EGpqW7s@xz-m1.local>
-References: <20220624173656.2033256-1-jthoughton@google.com>
- <20220624173656.2033256-21-jthoughton@google.com>
- <YtGUARcBHxLU0axU@xz-m1.local>
- <CADrL8HXYab_VJS=Y0h2OSiCrj2pYbDJME2P=Tsn9jcDRbcqR1g@mail.gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=v35aC/SET8Nt1lF58i2LVSGI7TVYKhXpN56HeHPhY4A=;
+        b=LP2izyH7hW0MLFzJzz0Ef5EJ4OgRAvvcH93cR/cO4FoSL8qG1i6CW/mr/G5BLErdDQ
+         VbF8UOGP0F4wT19qSr+jr4aipnj2BHp1Yg8GJzD6qPAK2HmdWgXftaJAQhDBMZDAPPrT
+         9GcZh8RXn3bNM47Mwf5suWbzn6CU4etzvUPQw3TVNI+9nDi/a+UA33Lb+LNAAM9m2o3S
+         NY760hBsoO3SQ612IJawTzDHkkjryq8NufXYibGCg4qrqgyTnYxQwld/mebt5W5vBwEU
+         HWwl+ccgTJsJi0IvXK16yJbXXHXQ/Wxv0GgTw0feD9MrFdMuGvMzqt2OZ9vVWqlLAn2S
+         zN+A==
+X-Gm-Message-State: AJIora9W2A+BJbF9s98oZEDVMwzbaWV4+xrdjsmf2Y0tzbCnXS6FZMWM
+        cxtHVojxsUbMoKHdt72zLdo=
+X-Google-Smtp-Source: AGRyM1vINHbIiII2lUdhE4U0lB3RwsmwOrfFF+r+w8TiBpauAFR5zNUGcFsSpEsGUrmUqgFtL4r48A==
+X-Received: by 2002:a05:6a00:993:b0:52a:dd93:f02d with SMTP id u19-20020a056a00099300b0052add93f02dmr15211567pfg.12.1657905659970;
+        Fri, 15 Jul 2022 10:20:59 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id ot8-20020a17090b3b4800b001ef89019352sm13427194pjb.3.2022.07.15.10.20.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jul 2022 10:20:58 -0700 (PDT)
+Message-ID: <a5b55fb3-3326-eb3c-99e6-3fd6b7e4c2fe@gmail.com>
+Date:   Fri, 15 Jul 2022 10:20:55 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CADrL8HXYab_VJS=Y0h2OSiCrj2pYbDJME2P=Tsn9jcDRbcqR1g@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [net-next: PATCH v2 1/8] net: phy: fixed_phy: switch to fwnode_
+ API
+Content-Language: en-US
+To:     Marcin Wojtas <mw@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, netdev@vger.kernel.org
+Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, gjb@semihalf.com, jaz@semihalf.com,
+        tn@semihalf.com, Samer.El-Haj-Mahmoud@arm.com,
+        upstream@semihalf.com
+References: <20220715085012.2630214-1-mw@semihalf.com>
+ <20220715085012.2630214-2-mw@semihalf.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220715085012.2630214-2-mw@semihalf.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 09:58:10AM -0700, James Houghton wrote:
-> On Fri, Jul 15, 2022 at 9:21 AM Peter Xu <peterx@redhat.com> wrote:
-> >
-> > On Fri, Jun 24, 2022 at 05:36:50PM +0000, James Houghton wrote:
-> > > The changes here are very similar to the changes made to
-> > > hugetlb_no_page, where we do a high-granularity page table walk and
-> > > do accounting slightly differently because we are mapping only a piece
-> > > of a page.
-> > >
-> > > Signed-off-by: James Houghton <jthoughton@google.com>
-> > > ---
-> > >  fs/userfaultfd.c        |  3 +++
-> > >  include/linux/hugetlb.h |  6 +++--
-> > >  mm/hugetlb.c            | 54 +++++++++++++++++++++-----------------
-> > >  mm/userfaultfd.c        | 57 +++++++++++++++++++++++++++++++----------
-> > >  4 files changed, 82 insertions(+), 38 deletions(-)
-> > >
-> > > diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
-> > > index e943370107d0..77c1b8a7d0b9 100644
-> > > --- a/fs/userfaultfd.c
-> > > +++ b/fs/userfaultfd.c
-> > > @@ -245,6 +245,9 @@ static inline bool userfaultfd_huge_must_wait(struct userfaultfd_ctx *ctx,
-> > >       if (!ptep)
-> > >               goto out;
-> > >
-> > > +     if (hugetlb_hgm_enabled(vma))
-> > > +             goto out;
-> > > +
-> >
-> > This is weird.  It means we'll never wait for sub-page mapping enabled
-> > vmas.  Why?
-> >
+On 7/15/22 01:50, Marcin Wojtas wrote:
+> This patch allows to use fixed_phy driver and its helper
+> functions without Device Tree dependency, by swtiching from
+> of_ to fwnode_ API.
 > 
-> `ret` is true in this case, so we're actually *always* waiting.
-
-Aha!  Then I think that's another problem, sorry. :) See Below.
-
+> Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> ---
+>  include/linux/phy_fixed.h   |  4 +-
+>  drivers/net/mdio/of_mdio.c  |  2 +-
+>  drivers/net/phy/fixed_phy.c | 39 +++++++-------------
+>  3 files changed, 17 insertions(+), 28 deletions(-)
 > 
-> > Not to mention hugetlb_hgm_enabled() currently is simply VM_SHARED, so it
-> > means we'll stop waiting for all shared hugetlbfs uffd page faults..
-> >
-> > I'd expect in the in-house postcopy tests you should see vcpu threads
-> > spinning on the page faults until it's serviced.
-> >
-> > IMO we still need to properly wait when the pgtable doesn't have the
-> > faulted address covered.  For sub-page mapping it'll probably need to walk
-> > into sub-page levels.
-> 
-> Ok, SGTM. I'll do that for the next version. I'm not sure of the
-> consequences of returning `true` here when we should be returning
-> `false`.
+> diff --git a/include/linux/phy_fixed.h b/include/linux/phy_fixed.h
+> index 52bc8e487ef7..449a927231ec 100644
+> --- a/include/linux/phy_fixed.h
+> +++ b/include/linux/phy_fixed.h
+> @@ -19,7 +19,7 @@ extern int fixed_phy_add(unsigned int irq, int phy_id,
+>  			 struct fixed_phy_status *status);
+>  extern struct phy_device *fixed_phy_register(unsigned int irq,
+>  					     struct fixed_phy_status *status,
+> -					     struct device_node *np);
+> +					     struct fwnode_handle *fwnode);
 
-We've put ourselves onto the wait queue, if another concurrent
-UFFDIO_CONTINUE happened and pte is already installed, I think this thread
-could be waiting forever on the next schedule().
+I think this ought to require a forward declaration of struct fwnode_handle and a removal of the forward declaration of device_node.
 
-The solution should be the same - walking the sub-page pgtable would work,
-afaict.
+With that fixes:
 
-[...]
-
-> > > @@ -6239,14 +6241,16 @@ int hugetlb_mcopy_atomic_pte(struct mm_struct *dst_mm,
-> > >        * registered, we firstly wr-protect a none pte which has no page cache
-> > >        * page backing it, then access the page.
-> > >        */
-> > > -     if (!huge_pte_none_mostly(huge_ptep_get(dst_pte)))
-> > > +     if (!hugetlb_pte_none_mostly(dst_hpte))
-> > >               goto out_release_unlock;
-> > >
-> > > -     if (vm_shared) {
-> > > -             page_dup_file_rmap(page, true);
-> > > -     } else {
-> > > -             ClearHPageRestoreReserve(page);
-> > > -             hugepage_add_new_anon_rmap(page, dst_vma, dst_addr);
-> > > +     if (new_mapping) {
-> >
-> > IIUC you wanted to avoid the mapcount accountings when it's the sub-page
-> > that was going to be mapped.
-> >
-> > Is it a must we get this only from the caller?  Can we know we're doing
-> > sub-page mapping already here and make a decision with e.g. dst_hpte?
-> >
-> > It looks weird to me to pass this explicitly from the caller, especially
-> > that's when we don't really have the pgtable lock so I'm wondering about
-> > possible race conditions too on having stale new_mapping values.
-> 
-> The only way to know what the correct value for `new_mapping` should
-> be is to know if we had to change the hstate-level P*D to non-none to
-> service this UFFDIO_CONTINUE request. I'll see if there is a nice way
-> to do that check in `hugetlb_mcopy_atomic_pte`.
-> Right now there is no
-
-Would "new_mapping = dest_hpte->shift != huge_page_shift(hstate)" work (or
-something alike)?
-
-> race, because we synchronize on the per-hpage mutex.
-
-Yeah not familiar with that mutex enough to tell, as long as that mutex
-guarantees no pgtable update (hmm, then why we need the pgtable lock
-here???) then it looks fine.
-
-[...]
-
-> > > @@ -335,12 +337,16 @@ static __always_inline ssize_t __mcopy_atomic_hugetlb(struct mm_struct *dst_mm,
-> > >       copied = 0;
-> > >       page = NULL;
-> > >       vma_hpagesize = vma_kernel_pagesize(dst_vma);
-> > > +     if (use_hgm)
-> > > +             vma_altpagesize = PAGE_SIZE;
-> >
-> > Do we need to check the "len" to know whether we should use sub-page
-> > mapping or original hpage size?  E.g. any old UFFDIO_CONTINUE code will
-> > still want the old behavior I think.
-> 
-> I think that's a fair point; however, if we enable HGM and the address
-> and len happen to be hstate-aligned
-
-The address can, but len (note! not "end" here) cannot?
-
-> , we basically do the same thing as
-> if HGM wasn't enabled. It could be a minor performance optimization to
-> do `vma_altpagesize=vma_hpagesize` in that case, but in terms of how
-> the page tables are set up, the end result would be the same.
-
-Thanks,
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Peter Xu
-
+Florian
