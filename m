@@ -2,120 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:51:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:52:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234818AbiGOLvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
+        id S234828AbiGOLw3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234795AbiGOLvf (ORCPT
+        with ESMTP id S231439AbiGOLw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:51:35 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E302889EAF;
-        Fri, 15 Jul 2022 04:51:33 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LkqPy2cJKz1L8vs;
-        Fri, 15 Jul 2022 19:48:54 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
- 2022 19:51:30 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <hawk@kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
-        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
-        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
-        <petrm@nvidia.com>, <arnd@arndb.de>, <dsahern@kernel.org>,
-        <talalahmad@google.com>, <keescook@chromium.org>,
-        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH v4,bpf-next] bpf: Don't redirect packets with invalid pkt_len
-Date:   Fri, 15 Jul 2022 19:55:59 +0800
-Message-ID: <20220715115559.139691-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 15 Jul 2022 07:52:27 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1528389EA7;
+        Fri, 15 Jul 2022 04:52:26 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E906522175;
+        Fri, 15 Jul 2022 13:52:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1657885944;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qHIQnN1CQKPRNKNPt8IY1glg9IKOeRpM3quFOgpAShQ=;
+        b=a0Hu8QXzwVmoABu7ntZQG/hoBsyTlCS7wQCMUZ5BChTxeQyggZrNPCzsvB0E+ke2Kn8mHA
+        WV47FoCkiQxBpIjOBV6/q/FxZDS7yI1/RoqKZCg8VJp9VkGJcDglkZpM+BwkqA9qqKCyBk
+        nn0N9Oy34YwynrNe+7UXznhWafk0slg=
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 15 Jul 2022 13:52:23 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Sherry Sun <sherry.sun@nxp.com>
+Cc:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: writing a 1 and then a 0 to
+ trigger a break character
+In-Reply-To: <AS8PR04MB8404B8E3EB0FFCEE8ADDA283928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+References: <20220715025944.11076-1-sherry.sun@nxp.com>
+ <20220715025944.11076-3-sherry.sun@nxp.com>
+ <509669b26b5899088e9b77ed94d103ee@walle.cc>
+ <AS8PR04MB840448675E64E4FCDEEF91A1928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <e2560f01fd1731ea2422d82c97efcc6f@walle.cc>
+ <AS8PR04MB8404B8E3EB0FFCEE8ADDA283928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <61c525fc87d6586c024cd6e42fcf876d@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-skbs, that is, the flow->head is null.
-The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-run a bpf prog which redirects empty skbs.
-So we should determine whether the length of the packet modified by bpf
-prog or others like bpf_prog_test is valid before forwarding it directly.
+Am 2022-07-15 11:18, schrieb Sherry Sun:
+>> Am 2022-07-15 09:20, schrieb Sherry Sun:
+>> >> Subject: Re: [PATCH 2/2] tty: serial: fsl_lpuart: writing a 1 and
+>> >> then a 0 to trigger a break character
+>> >>
+>> >> Hi,
+>> >>
+>> >> Am 2022-07-15 04:59, schrieb Sherry Sun:
+>> >> > According to the lpuart reference manual, need to writing a 1 and
+>> >> > then a
+>> >> > 0 to the UARTCTRL_SBK field queues a break character in the
+>> >> > transmit data stream. Only writing a 1 cannot trigger the break
+>> >> > character, so fix it.
+>> >>
+>> >> I don't think this is correct. The tty core will already call this:
+>> >>    .break_ctl(port, 1)
+>> >>    usleep()
+>> >>    .break_ctl(port, 0)
+>> >>
+>> >> So you'll have your 1->0 transition.
+>> >>
+>> >> My RM from the LS1028A says the following:
+>> >>
+>> >> | Writing a 1 and then a 0 to SBK queues a break character in the
+>> >> | transmit data stream. Additional break characters of 10 to 13, or
+>> >> | 13 to 16 if LPUART_STATBRK13] is set, bit times of logic 0 are
+>> >> | queued
+>> >> as
+>> >> | long as SBK is set. Depending on the timing of the set and clear of
+>> >> | SBK relative to the information currently being transmitted, a
+>> >> second
+>> >> | break character may be queued before software clears SBK.
+>> >>
+>> >> To me it seems that setting the SBK bit just pulls the TX line low
+>> >> and releasing it will return to normal transmitter mode.
+>> >>
+>> >
+>> > Hi Michael,
+>> >
+>> > Actually set break_ctl(tty, -1) then break_ctl(tty, 0) is only done in
+>> > the send_break() function.
+>> > If we call TIOCSBRK from user space, it will only set break_ctl(tty,
+>> > -1) without break_ctl(tty, 0).
+>> 
+>> That is expected. no? There is also the TIOCCBRK which will clear the
+>> break. TIOCSBRK will just turn the break on.
+>> 
+>> I'm not sure if the break is already transmitted when the SBK bit
+>> is set, though. Is that your problem here? I'd need to check that
+>> on the real hardware.
+>> 
+> 
+> Hi Michael,
+> 
+> Seems we have the different understanding of the break_ctl(port,ctl)
+> callback. The original break_ctl(tty,-1) in lpuart will not send the
+> break signal until we call break_ctl(tty,0).
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+That is not correct. The TX linue goes low as soon as the SBK bit
+is set. See below.
 
-Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
-v3: modify debug print
-v2: need move checking to convert___skb_to_skb and add debug info
-v1: should not check len in fast path
+> Per my understanding of
+> "If ctl is nonzero, the break signal should be transmitted", call
+> break_ctl(tty,-1) is enough the send one break signal, now my patch
+> makes the behavior align with my understanding.
 
- include/linux/skbuff.h | 8 ++++++++
- net/bpf/test_run.c     | 3 +++
- net/core/dev.c         | 1 +
- 3 files changed, 12 insertions(+)
+As I said, Greg should clarify here.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index f6a27ab19202..82e8368ba6e6 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2459,6 +2459,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
- 
- #endif /* NET_SKBUFF_DATA_USES_OFFSET */
- 
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	if (WARN_ONCE(!skb->len, "%s\n", __func__))
-+		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-+#endif /* CONFIG_DEBUG_NET */
-+}
-+
- /*
-  *	Add data to an sk_buff
-  */
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 2ca96acbc50a..dc9dc0bedca0 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
- {
- 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
- 
-+	if (!skb->len)
-+		return -EINVAL;
-+
- 	if (!__skb)
- 		return 0;
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index d588fd0a54ce..716df64fcfa5 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 	bool again = false;
- 
- 	skb_reset_mac_header(skb);
-+	skb_assert_len(skb);
- 
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
- 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
--- 
-2.17.1
+In any case, I've checked the hardware (LS1028A) and as soon as you
+set the SBK bit, the TX line goes low (TTL levels) as expected. It
+will go to high again as soon as you clear the bit again.
 
+So to me it seems there is nothing wrong here. Also have a look
+at man ioctl_tty:
+
+        TIOCSBRK
+               Turn break on, that is, start sending zero bits.
+
+        TIOCCBRK
+               Turn break off, that is, stop sending zero bits.
+
+So to send one break "character", you need to do ioctl(TIOCSBRK)
+followed by an ioctl(TIOCCBRK).
+
+-michael
+
+> And my understanding of break_ctl(tty,0) is that it will terminate the
+> break signal send requirement which has not been done instead of
+> cooperate with break_ctl(tty,-1) to finish one break character send
+> behavior.
+> 
+>    | break_ctl(port,ctl)
+>    | Control the transmission of a break signal.  If ctl is
+>    | nonzero, the break signal should be transmitted.  The signal
+>    | should be terminated when another call is made with a zero
+>    | ctl.
+> 
+> Best regards
+> Sherry
+> 
+> 
+>> > And from the definition of .break_ctl(port,ctl), the callback is used
+>> > to Control the transmission of a break
+>> > signal(Documentation/driver-api/serial/driver.rst), if ctl is nonzero,
+>> > it should queues a break character. I don't think it is reasonable to
+>> > call break_ctl() twice in order to send one break signal.
+>> 
+>> Maybe Gred can correct me, but to me it seems like the .break_ctl()
+>> will set the *state* according to the argument, that is either
+>> turning it on or turning it off (Except if TTY_DRIVER_HARDWARE_BREAK
+>> is set, but that doesn't seem to be supported by the ioctl interface.)
+>> 
+>> > Also I have tried other uart IP, such as drivers/tty/serial/imx.c, it
+>> > also queues a break character if we call break_ctl() once. So I
+>> > believe the break_ctl() in lpuart driver should be fixed.
