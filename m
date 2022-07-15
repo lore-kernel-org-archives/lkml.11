@@ -2,99 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50446C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 805C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240976AbiGOCiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 22:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44010 "EHLO
+        id S240880AbiGOCq7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 22:46:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiGOCiF (ORCPT
+        with ESMTP id S232185AbiGOCq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 22:38:05 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8D705481E6
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 19:38:03 -0700 (PDT)
-Received: from lingfengzhe-ms7c94.loongson.cn (unknown [10.90.50.23])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxf+ME09BiLbsfAA--.64763S2;
-        Fri, 15 Jul 2022 10:37:56 +0800 (CST)
-From:   Qi Hu <huqi@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>,
-        WANG Xuerui <kernel@xen0n.name>,
-        Oleg Nesterov <oleg@redhat.com>
-Cc:     Xu Li <lixu@loongson.cn>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>, Qi Hu <huqi@loongson.cn>
-Subject: [PATCH v2] LoongArch: Fix missing fcsr in ptrace's fpr_set
-Date:   Fri, 15 Jul 2022 10:37:53 +0800
-Message-Id: <20220715023753.436226-1-huqi@loongson.cn>
-X-Mailer: git-send-email 2.37.0
+        Thu, 14 Jul 2022 22:46:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F4565D52;
+        Thu, 14 Jul 2022 19:46:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A0A29B82A63;
+        Fri, 15 Jul 2022 02:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E37C34114;
+        Fri, 15 Jul 2022 02:46:48 +0000 (UTC)
+Date:   Thu, 14 Jul 2022 22:46:46 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Song Liu <songliubraving@fb.com>
+Cc:     Song Liu <song@kernel.org>, Networking <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        "mhiramat@kernel.org" <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 bpf-next 3/5] ftrace: introduce
+ FTRACE_OPS_FL_SHARE_IPMODIFY
+Message-ID: <20220714224646.62d49e36@rorschach.local.home>
+In-Reply-To: <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
+References: <20220602193706.2607681-1-song@kernel.org>
+        <20220602193706.2607681-4-song@kernel.org>
+        <20220713203343.4997eb71@rorschach.local.home>
+        <AA1D9833-DF67-4AFD-815C-DD89AB57B3A2@fb.com>
+        <20220714204817.2889e280@rorschach.local.home>
+        <6A7EF1C7-471B-4652-99C1-87C72C223C59@fb.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dxf+ME09BiLbsfAA--.64763S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7uryrtF1UJw4rWF1rXw1xuFg_yoW8XFWrpr
-        ZxAas3Wr4rGFWSvr4Dt3yv9ryDX3s2gFyS9393J3WfAwnrXrs8XryjyFZ2vFW2y348Wayx
-        XF9Y9r4YyFsFqaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkv14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
-        WxJr0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2Wl
-        Yx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbV
-        WUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK6svP
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
-        W8JwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI
-        42IY6I8E87Iv6xkF7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
-X-CM-SenderInfo: pkxtxqxorr0wxvrqhubq/1tbiAQAICV3QvP1zwwACs+
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In file ptrace.c, function fpr_set does not copy fcsr data from ubuf
-to kbuf. That's the reason why fcsr cannot be modified by ptrace.
+On Fri, 15 Jul 2022 02:04:33 +0000
+Song Liu <songliubraving@fb.com> wrote:
 
-This patch fixs this problem and allows users using ptrace to modify
-the fcsr.
+> > What I'm suggesting is that a DIRECT ops will never set IPMODIFY.  
+> 
+> Aha, this the point I misunderstood. I thought DIRECT ops would always
+> set IPMODIFY (as it does now). 
 
-Co-developed-by: Xu Li <lixu@loongson.cn>
-Signed-off-by: Qi Hu <huqi@loongson.cn>
----
-V1 -> V2: Change Signed-off-by to Co-developed-by in the commit message.
----
- arch/loongarch/kernel/ptrace.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+My fault. I was probably not being clear when I was suggesting that
+DIRECT should *act* like an IPMODIFY, but never explicitly stated that
+it should not set the IPMODIFY flag.
 
-diff --git a/arch/loongarch/kernel/ptrace.c b/arch/loongarch/kernel/ptrace.c
-index e6ab87948e1d..dc2b82ea894c 100644
---- a/arch/loongarch/kernel/ptrace.c
-+++ b/arch/loongarch/kernel/ptrace.c
-@@ -193,7 +193,7 @@ static int fpr_set(struct task_struct *target,
- 		   const void *kbuf, const void __user *ubuf)
- {
- 	const int fcc_start = NUM_FPU_REGS * sizeof(elf_fpreg_t);
--	const int fcc_end = fcc_start + sizeof(u64);
-+	const int fcsr_start = fcc_start + sizeof(u64);
- 	int err;
- 
- 	BUG_ON(count % sizeof(elf_fpreg_t));
-@@ -209,10 +209,12 @@ static int fpr_set(struct task_struct *target,
- 	if (err)
- 		return err;
- 
--	if (count > 0)
--		err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
--					  &target->thread.fpu.fcc,
--					  fcc_start, fcc_end);
-+	err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
-+				  &target->thread.fpu.fcc, fcc_start,
-+				  fcc_start + sizeof(u64));
-+	err |= user_regset_copyin(&pos, &count, &kbuf, &ubuf,
-+				  &target->thread.fpu.fcsr, fcsr_start,
-+				  fcsr_start + sizeof(u32));
- 
- 	return err;
- }
--- 
-2.37.0
+The only reason it does today was to make it easy to act like an
+IPMODIFY (because it set the flag). But I'm now suggesting to get rid
+of that and just make DIRECT act like an IPMDOFIY as there can only be
+one of them on a function, but now we have some cases where DIRECT can
+work with IPMODIFY via the callbacks.
 
+-- Steve
