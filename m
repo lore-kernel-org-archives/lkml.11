@@ -2,130 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B9CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 03:13:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A37CCCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 03:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241234AbiGODNS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 23:13:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        id S232724AbiGODSL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 23:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiGODNQ (ORCPT
+        with ESMTP id S229809AbiGODSI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 23:13:16 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A052CC91;
-        Thu, 14 Jul 2022 20:13:15 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id 23so3273293pgc.8;
-        Thu, 14 Jul 2022 20:13:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=0kNvzHNczTALecfT9wto6CsS50awskOSoxCbfvaNPgc=;
-        b=d6rOttoave+cYYycQLZVtn7+6/EvvZMoC4KlEKnu5+Iy0CvIZB6RZvM+yDNYgjVsg2
-         zExWP1Kt2mvHL2caS42uLQwLfFdIGT+vt+VNkOv6EFVEz1IJ1Ei1z/SUwomvWvL9yqs/
-         LsfjR3vwcHDm1bfvDdBsjVXVCIzYFoJ6KMcatcAC61WXc2/vMcOjiKCXnv0z+ZYpPW1D
-         29300GYk48m1QvWYlTwrWUJ2ga8Ap1QJw6DN92YdxZnF6aT4PwJr+48L7OzWyifSHnIo
-         bBliGjA2A7iI1JHvd2yG0VTITazqxx3xOm38zhCb9ZIUiYeXEPs2TlvdcILgJvPCljIq
-         R2+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=0kNvzHNczTALecfT9wto6CsS50awskOSoxCbfvaNPgc=;
-        b=QN1KHrm48rAJD5fzBNOgZjhfCzLL8XI17G9WwVqedi0xmXJr+o4BaGjxNFXWcshhUC
-         CmHS6PrTCfGBrnbZ9z4vGHmXJ+SL//YgSGSzEtX6lBI19hHyXLtjSBs9HctMfkGtO8ml
-         0X9hX9AlLkBpQXtn1QQ5jdSmNs+WGL0Jk1Lk3arotJV5+ANfLEgRLd7sS7cRoK04QdK5
-         b3hxuKptjV7JNBQnFwgpsHI5UcaJeOqyfLIA1IDX2EmNzpCp490SxVhvM69ihquIZeOd
-         rPXrHv86Nkbp/d28j3C/DMopZHJJHhmRfkIGHsxWayrIdb6LHd94G3taAg8koCq+59N7
-         L0+Q==
-X-Gm-Message-State: AJIora/SCLgVhagKduoZ2Bldj4py96FUWu4qtip08JTEn/nvRD2iAyXq
-        /rHgr7ZE3NSmYeZkhSv0VcQ+s5MPcxY=
-X-Google-Smtp-Source: AGRyM1vK5uqkhNs5DYoiUnUKiOfj2RRKOpP4xHProAEOYr/w1Br1ZQPpNcitPwDkSe+/qgFCXMCFZg==
-X-Received: by 2002:a63:2051:0:b0:412:6d61:ab0a with SMTP id r17-20020a632051000000b004126d61ab0amr10627004pgm.52.1657854794876;
-        Thu, 14 Jul 2022 20:13:14 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id d12-20020a170903230c00b0016c6a6d8967sm2236563plh.83.2022.07.14.20.13.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 20:13:14 -0700 (PDT)
-Message-ID: <d95d1afe-655c-3526-0c7e-949dfad8c6ba@gmail.com>
-Date:   Thu, 14 Jul 2022 20:13:12 -0700
+        Thu, 14 Jul 2022 23:18:08 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C1AC76E85;
+        Thu, 14 Jul 2022 20:18:07 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Lkc1X0yKrz1L943;
+        Fri, 15 Jul 2022 11:15:28 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
+ 2022 11:18:03 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hawk@kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
+        <petrm@nvidia.com>, <arnd@arndb.de>, <dsahern@kernel.org>,
+        <talalahmad@google.com>, <keescook@chromium.org>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH v3,bpf-next] bpf: Don't redirect packets with invalid pkt_len
+Date:   Fri, 15 Jul 2022 11:22:33 +0800
+Message-ID: <20220715032233.230507-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH V12 01/20] uapi: simplify __ARCH_FLOCK{,64}_PAD a little
-Content-Language: en-US
-To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
-        gregkh@linuxfoundation.org, hch@lst.de, nathan@kernel.org,
-        naresh.kamboju@linaro.org
-Cc:     linux-arch@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        heiko@sntech.de
-References: <20220405071314.3225832-1-guoren@kernel.org>
- <20220405071314.3225832-2-guoren@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220405071314.3225832-2-guoren@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
 
-On 4/5/2022 12:12 AM, guoren@kernel.org wrote:
-> From: Christoph Hellwig <hch@lst.de>
-> 
-> Don't bother to define the symbols empty, just don't use them.
-> That makes the intent a little more clear.
-> 
-> Remove the unused HAVE_ARCH_STRUCT_FLOCK64 define and merge the
-> 32-bit mips struct flock into the generic one.
-> 
-> Add a new __ARCH_FLOCK_EXTRA_SYSID macro following the style of
-> __ARCH_FLOCK_PAD to avoid having a separate definition just for
-> one architecture.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Guo Ren <guoren@kernel.org>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-> Tested-by: Heiko Stuebner <heiko@sntech.de>
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+v2: need move checking to convert___skb_to_skb and add debug info
+v1: should not check len in fast path
 
-Being late to this, but this breaks the perf build for me using a MIPS 
-toolchain with the following:
+ include/linux/skbuff.h | 11 +++++++++++
+ net/bpf/test_run.c     |  3 +++
+ net/core/dev.c         |  1 +
+ 3 files changed, 15 insertions(+)
 
-   CC 
-/home/fainelli/work/buildroot/output/bmips/build/linux-custom/tools/perf/trace/beauty/fcntl.o
-In file included from 
-../../../../host/mipsel-buildroot-linux-gnu/sysroot/usr/include/asm/fcntl.h:77,
-                  from ../include/uapi/linux/fcntl.h:5,
-                  from trace/beauty/fcntl.c:10:
-../include/uapi/asm-generic/fcntl.h:188:8: error: redefinition of 
-'struct flock'
-  struct flock {
-         ^~~~~
-In file included from ../include/uapi/linux/fcntl.h:5,
-                  from trace/beauty/fcntl.c:10:
-../../../../host/mipsel-buildroot-linux-gnu/sysroot/usr/include/asm/fcntl.h:63:8: 
-note: originally defined here
-  struct flock {
-         ^~~~~
-make[6]: *** 
-[/home/fainelli/work/buildroot/output/bmips/build/linux-custom/tools/build/Makefile.build:97: 
-/home/fainelli/work/buildroot/output/bmips/build/linux-custom/tools/perf/trace/beauty/fcntl.o] 
-Error 1
-
-the kernel headers are set to 4.1.31 which is arguably old but 
-toolchains using newer kernel headers do not fare much better either 
-unfortunately as I tried a toolchain with kernel headers 4.9.x.
-
-I will start doing more regular MIPS builds of the perf tools since that 
-seems to escape our testing.
-
-Thanks!
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index f6a27ab19202..8ea41ad0786b 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2459,6 +2459,17 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
+ 
+ #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+ 
++static inline void skb_assert_len(struct sk_buff *skb)
++{
++#ifdef CONFIG_DEBUG_NET
++	if (unlikely(!skb->len)) {
++		pr_err("%s\n", __func__);
++		skb_dump(KERN_ERR, skb, false);
++		WARN_ON_ONCE(1);
++	}
++#endif /* CONFIG_DEBUG_NET */
++}
++
+ /*
+  *	Add data to an sk_buff
+  */
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 2ca96acbc50a..dc9dc0bedca0 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ {
+ 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ 
++	if (!skb->len)
++		return -EINVAL;
++
+ 	if (!__skb)
+ 		return 0;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d588fd0a54ce..716df64fcfa5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ 	bool again = false;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_assert_len(skb);
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+ 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
 -- 
-Florian
+2.17.1
+
