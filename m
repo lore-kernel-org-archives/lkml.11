@@ -2,208 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB210CCA485
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE3ABC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 20:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235752AbiGRU4e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 16:56:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55056 "EHLO
+        id S235932AbiGRU46 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 16:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231673AbiGRU4c (ORCPT
+        with ESMTP id S235375AbiGRU44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 16:56:32 -0400
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AAD32D1C9;
-        Mon, 18 Jul 2022 13:56:32 -0700 (PDT)
-Received: by mail-il1-f171.google.com with SMTP id h16so6694282ila.2;
-        Mon, 18 Jul 2022 13:56:32 -0700 (PDT)
+        Mon, 18 Jul 2022 16:56:56 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEB7B2D1C9
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:56:55 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id g19-20020a9d1293000000b0061c7bfda5dfso9879775otg.1
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 13:56:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KtI4BCeOWThxZjOmQgxVm4koZgluey3sle1qSuO2+5c=;
+        b=ZKmaB+crK0BerwFXSmevFclc0XnCZ5K9FTG0NZAwHG121SfjnuDqDrTCA89jFuvXHC
+         L9X1pa2NcaBOUk905nmom+8X0VHVhecaMrK7JOGPjcY57T9FCi7l2f19cjzUgKoGBvzD
+         D2q0i6dfAobf5oT0Z929u8n61QkgqT+SdxqB7U7ncDBrST4Q3Y/HAhJpxH4RjMr1HbAT
+         RYO+sYrlXyePnWfqS9eCAfTkXs5DyLWXPTt0edfbHz7yYBVtC96s30O0hTxiSDl/AotN
+         gGNX8XiCYVEV7Czueelk3O98ToxcgKpfsoCmQ+IH4TSydDG/Bnws6Dls9b/zhW8sLide
+         QN6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=w+SGKaM5PYTsp4dhMAWOhMPFfu9JfJuU7ytqSJNiIms=;
-        b=5TPnRoEzSr838C4NPVwGBRquPX8VJZW0P7Fy3FrLhuYEGan4DZTOiBGtOWcts8n+bN
-         d/CRR35YV5+5SzxIXzrTg8CfvO5VOXuKbci2jDTrbPV9CHM1qtXAmVz99Cym488wTvOw
-         cOPaqoc3h6RzIhD4fe7LPM4wZvuM+9AOPMe5opF/UclyqhOCop2+H2U+ISCDI+9/zB9x
-         +lDVWgVqCVBAeosQAebfVpmcQ7Kq38CC8bERkS3wdcrL0+/wo+mDgjZvLF39T69caUj0
-         YKiEpnOS4przGuOwuNiJ4vXEJTIynpr5lMWg/i70Cos5zyRyZWxl9OIbjsW4AL3/dxh8
-         HO3A==
-X-Gm-Message-State: AJIora8akNrTXShGObzknVBaQpz3bOKrpLgl5RcoaC9d1ergyNwpB5nw
-        ledptN1MXPG7FsHCu826uA==
-X-Google-Smtp-Source: AGRyM1uPgmdQ612VJUv7DoaDaQzxx0K/+K4/OCALhKicgiTopdQ9Q9lnfZD+zIBNMNlHcAaLbS8awA==
-X-Received: by 2002:a92:7f12:0:b0:2d9:1e05:6310 with SMTP id a18-20020a927f12000000b002d91e056310mr14135053ild.317.1658177791313;
-        Mon, 18 Jul 2022 13:56:31 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id c10-20020a02a60a000000b0033ebf04f624sm5970875jam.152.2022.07.18.13.56.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KtI4BCeOWThxZjOmQgxVm4koZgluey3sle1qSuO2+5c=;
+        b=dCxJNeBLxTKf4/Rh7DRTUCUk8Tb/YZn+xR2Bk0EneAmWZ4WwpWTfQUIzwHwydB4fHz
+         WoXIZhywcoseBebu8FHLoVczKsT/2q10JXbLcYFAnuAvJs5I8se8Ufrr3bL/UW+VvOt6
+         hSEihitXRJU6v3rFUm4/eUZXJQiAswPMFlBVGR+0lRdTavslZCke5FqXw+JmlJq2vgGW
+         56NLecgkRkx6yEWvFPWJ21nbApwCrtVC/B0BQRq6zwgUpvb71QGLKU3Ae7Ul4wWnDoY1
+         yF/ETi09HOnuGURtzhg+4xTpq9/v4qVtTZY6Hn06x/eoz//vlfviIk5xNS7sI6fO5MWi
+         5K8A==
+X-Gm-Message-State: AJIora9WHGSPKRKqhCsV23krvdc8MQOlS/Sn+kdzFog0/2l+t5QLfc3i
+        jfv+hloaWguclA77tBK8oWE0ow==
+X-Google-Smtp-Source: AGRyM1vy8HybHOdsbc4hElRNtYQZ0XM2oeyBoFh+w2bOR8ozgmVtF9e9YkHJBGlyf76HZqT/TsY2yw==
+X-Received: by 2002:a05:6830:6517:b0:614:d582:77d7 with SMTP id cm23-20020a056830651700b00614d58277d7mr12062999otb.323.1658177815107;
+        Mon, 18 Jul 2022 13:56:55 -0700 (PDT)
+Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
+        by smtp.gmail.com with ESMTPSA id l8-20020a4ab2c8000000b0035eb4e5a6cbsm5252065ooo.33.2022.07.18.13.56.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 13:56:30 -0700 (PDT)
-Received: (nullmailer pid 3538882 invoked by uid 1000);
-        Mon, 18 Jul 2022 20:56:27 -0000
-Date:   Mon, 18 Jul 2022 14:56:27 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Anjelique Melendez <quic_amelende@quicinc.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        corbet@lwn.net, sre@kernel.org, agross@kernel.org,
-        bjorn.andersson@linaro.org, krzysztof.kozlowski+dt@linaro.org,
-        vkoul@kernel.org, linux-doc@vger.kernel.org,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Collins <quic_collinsd@quicinc.com>
-Subject: Re: [PATCH v3 1/2] dt-bindings: power: reset: qcom-pon: update "reg"
- property details
-Message-ID: <20220718205627.GA3535152-robh@kernel.org>
-References: <20220713193350.29796-1-quic_amelende@quicinc.com>
- <20220713193350.29796-2-quic_amelende@quicinc.com>
- <c129c748-4306-da64-fc18-2d224b2fc97c@linaro.org>
- <ffb31b6f-8ed3-e890-976d-64a48478d404@quicinc.com>
+        Mon, 18 Jul 2022 13:56:54 -0700 (PDT)
+From:   William Breathitt Gray <william.gray@linaro.org>
+To:     linus.walleij@linaro.org, brgl@bgdev.pl
+Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <william.gray@linaro.org>,
+        John Hentges <jhentges@accesio.com>,
+        Jay Dolan <jay.dolan@accesio.com>,
+        Fred Eckert <Frede@cmslaser.com>,
+        Paul Demetrotion <pdemetrotion@winsystems.com>,
+        techsupport@winsystems.com,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v3 0/6] gpio: Implement and utilize register structures for ISA drivers
+Date:   Fri, 15 Jul 2022 14:52:22 -0400
+Message-Id: <cover.1657907849.git.william.gray@linaro.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ffb31b6f-8ed3-e890-976d-64a48478d404@quicinc.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 12:57:09PM -0700, Anjelique Melendez wrote:
-> 
-> 
-> On 7/14/2022 4:48 AM, Krzysztof Kozlowski wrote:
-> > On 13/07/2022 21:33, Anjelique Melendez wrote:
-> >> From: David Collins <quic_collinsd@quicinc.com>
-> >>
-> >> Update the description of "reg" property to add the PON_PBS base
-> >> address along with PON_HLOS base address.  Also add "reg-names"
-> >> property description.
-> >>
-> >> Signed-off-by: David Collins <quic_collinsd@quicinc.com>
-> >> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
-> >> ---
-> >>  Documentation/devicetree/bindings/power/reset/qcom,pon.yaml | 73 ++++++++++++++++++++++++++++--
-> >>  1 file changed, 69 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> >> index 353f155d..562fe308 100644
-> >> --- a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> >> +++ b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-> >> @@ -15,18 +15,26 @@ description: |
-> >>  
-> >>    This DT node has pwrkey and resin as sub nodes.
-> >>  
-> >> -allOf:
-> >> -  - $ref: reboot-mode.yaml#
-> >> -
-> >>  properties:
-> >>    compatible:
-> >>      enum:
-> >>        - qcom,pm8916-pon
-> >>        - qcom,pms405-pon
-> >>        - qcom,pm8998-pon
-> >> +      - qcom,pmk8350-pon
-> >>  
-> >>    reg:
-> >> -    maxItems: 1
-> >> +    description: |
-> >> +      Specifies the SPMI base address for the PON (power-on) peripheral.  For
-> >> +      PMICs that have the PON peripheral (GEN3) split into PON_HLOS and PON_PBS
-> >> +      (e.g. PMK8350), this can hold addresses of both PON_HLOS and PON_PBS
-> >> +      peripherals.  In that case, the PON_PBS address needs to be specified to
-> >> +      facilitate software debouncing on some PMIC.
-> > 
-> > You miss here min and maxItems
-> ACK
-> > 
-> >> +
-> >> +  reg-names:
-> >> +    description: |
-> >> +      For PON GEN1 and GEN2, it should be "pon". For PON GEN3 it should include
-> >> +      "hlos" and optionally "pbs".
-> > 
-> > Skip description. You miss here min and maxItems.
-> > 
-> > See
-> > https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L57
-> > for examples.
-> ACK
-> > 
-> > 
-> >>  
-> >>    pwrkey:
-> >>      type: object
-> >> @@ -42,6 +50,63 @@ required:
-> >>  
-> >>  unevaluatedProperties: false
-> >>  
-> >> +allOf:
-> >> +  - $ref: reboot-mode.yaml#
-> >> +  - if:
-> >> +      properties:
-> >> +        compatible:
-> >> +          contains:
-> >> +            const: qcom,pm8916-pon
-> >> +    then:
-> >> +      properties:
-> >> +        reg:
-> >> +          maxItems: 1
-> >> +        reg-names:
-> >> +          items:
-> >> +            - const: pon
-> >> +
-> >> +  - if:
-> >> +      properties:
-> >> +        compatible:
-> >> +          contains:
-> >> +            const: qcom,pms405-pon
-> >> +    then:
-> >> +      properties:
-> >> +        reg:
-> >> +          maxItems: 1
-> >> +        reg-names:
-> >> +          items:
-> >> +            - const: pon
-> >> +
-> >> +  - if:
-> >> +      properties:
-> >> +        compatible:
-> >> +          contains:
-> >> +            const: qcom,pm8998-pon
-> >> +    then:
-> >> +      properties:
-> >> +        reg:
-> >> +          maxItems: 1
-> >> +        reg-names:
-> >> +          items:
-> >> +            - const: pon
-> > 
-> > No clue why you made three if statements. This is one if for all three
-> > variants.
-> > 
-> Sorry about that was not sure how to combine the if statements originally.
-> Found that you could do:
-> 
-> - if:
->       properties:
->         compatible:
->           contains:
->             enum:
->               - qcom,pm8916-pon
->               - qcom,pms405-pon
->               - qcom,pm8998-pon
->     then:
->      ...
-> 
-> I was wondering if for the "qcom,pmk8350-pon" compatible would you rather
-> have the if statement the way it is or have it follow the same pattern as
-> above i.e.
-> 
-> contains:
->   const: qcom,pmk8350-pon
-> 
-> vs
-> 
-> contains:
->   enum:
->     - qcom,pmk8350-pon
+Changes in v3:
+ - Updated contact information in MAINTAINERS
+ - Added help text for GPIO_I8255 Kconfig option
+ - Move include/linux/gpio/i8255.h to drivers/gpio/gpio-i8255.h
+ - Include "gpio-i8255.h" instead of <linux/gpio/i8255.h>
+ - Include linux/types.h instead of linux/compiler_types.h
+ - Add underscores for *PORTC_LOWER* and *PORTC_UPPER* defines
+ - Move (offset % 8) expression to a port_offset const above the io_port
+   const in i8255_direction_mask(); this should help optimize assembly
+   instructions on some architectures
+ - Implement an opaque i8255_state struct to organize and access i8255
+   device states; this replaces the control_state array passed to
+   various i8255 library functions in previous patchsets
+ - Implement and provide a i8255_state_init() function to initialize the
+   i8255_state struct for a consumer
+ - Use a spinlock within i8255 library functions to protect access to
+   i8255 states and synchronize I/O operations; a spinlock is used so
+   that these functions may be used within an interrupt context
+ - Export the i8255 library symbols within a new I8255 namespace
+ - Update the 104-dio-48e, 104-idi-48, gpio-mm drivers to use the new
+   i8255_state struct and I8255 namespace
 
-The former. If only 1 possibility, use 'const'.
+The PC104/ISA drivers were updated to use I/O memory accessor calls such
+as ioread8()/iowrite8() in a previous patch series [0]. This
+patchset is a continuation of the effort to improve the code readability
+and reduce magic numbers by implementing and utilizing named register
+data structures.
 
-Rob
+One of the benefits is that we can now observe more easily similarities
+in devices that share similar interfaces; such as the i8255 interfaces
+used by the 104-DIO-48E, 104-IDI-48, and GPIO-MM drivers -- as well as
+the similar interface used by the 104-IDIO-16 and PCI-IDIO-16 drivers.
+
+A new module supporting the Intel 8255 interface is introduced to
+consolidate the common code found among the 104-DIO-48E, 104-IDI-48, and
+GPIO-MM drivers.
+
+[0] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
+
+William Breathitt Gray (6):
+  gpio: ws16c48: Implement and utilize register structures
+  gpio: 104-idio-16: Implement and utilize register structures
+  gpio: i8255: Introduce the Intel 8255 interface library module
+  gpio: 104-dio-48e: Implement and utilize register structures
+  gpio: 104-idi-48: Implement and utilize register structures
+  gpio: gpio-mm: Implement and utilize register structures
+
+ MAINTAINERS                     |   6 +
+ drivers/gpio/Kconfig            |  13 ++
+ drivers/gpio/Makefile           |   1 +
+ drivers/gpio/gpio-104-dio-48e.c | 248 ++++++++-------------------
+ drivers/gpio/gpio-104-idi-48.c  | 141 +++++++--------
+ drivers/gpio/gpio-104-idio-16.c |  58 +++++--
+ drivers/gpio/gpio-gpio-mm.c     | 202 +++++-----------------
+ drivers/gpio/gpio-i8255.c       | 292 ++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-i8255.h       |  47 +++++
+ drivers/gpio/gpio-ws16c48.c     | 119 +++++++++----
+ 10 files changed, 657 insertions(+), 470 deletions(-)
+ create mode 100644 drivers/gpio/gpio-i8255.c
+ create mode 100644 drivers/gpio/gpio-i8255.h
+
+
+base-commit: f2906aa863381afb0015a9eb7fefad885d4e5a56
+-- 
+2.36.1
+
