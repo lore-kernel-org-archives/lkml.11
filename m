@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE71FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E28BCCA481
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230361AbiGOXzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
+        id S231177AbiGOXz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiGOXzh (ORCPT
+        with ESMTP id S230158AbiGOXzn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:55:37 -0400
-X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:36 PDT
+        Fri, 15 Jul 2022 19:55:43 -0400
+X-Greylist: delayed 1798 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:41 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE48F904F1;
-        Fri, 15 Jul 2022 16:55:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71438951FE;
+        Fri, 15 Jul 2022 16:55:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=adbnppDOpR2pSf1fyqV1a5+XH92C5PMB+isbfy2BuqQ=; b=Tqw+g
-        CSA1qb5rguxXuXVt9wQ2I2zXlCt4HioQBdMLlpd9xiFP16I54x0aW/I8nFhdFfZgcnF/emsENsmNH
-        BoGHuh69xK9abgrSEb8gJVVXhi7CQgVjDBl/uQgxmXD3FqaOXbkBDZZtAIFnKi6ZxZ5ENhu39oJjm
-        gKr2Xa0Uw2Qz36sYveGRICY/FcxeTelIjQIVkOM0GiVOZ8TH+3Dz6sTSEq/dv9TRN3+LqZQ2eWWyU
-        CA0bwghwvr1UK0ZP0RUkx+ZKg1ZqrJkLNRos9Fbd9fPoTci35t9q4hKm3kzPmYzuFvv6+NTTpBhss
-        kwv5x0yHY83M5pGzn2BWJaet+Fcag==;
-Message-Id: <9431a25fe4b37fd12cecbd715c13af71f701f220.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=l7nuWYxWUVjm0xFc+FYu5FtE4ko865NXIUjDmd1KE7k=; b=Xjhw3
+        PWfy8PH+g/wF6G0m0ESFeDBNMWHRfUUJZz3snzevmakUa5jsGmyrWCJjSvo84gJrzlTsmFp7LR73V
+        d3SPyxmTMJ6ZRvJqyrHp+cKXZjd5sMCKOKN5RoAdiR+liKNPdk2N9THnK4BQuscMeCdSmXK+1y+ji
+        OMw3Umg47NTppEhX8V3lpAmIRPs0zooGDeOJ3Hj+Vfpn7RTDMp2vVEwkVWmTO0rNEkknGFVVcSLra
+        hKaU8WERWqpXJSr2tqqnOCG4VznQMOKmyjWQm0snDDgP2xqPxU1XkWJNlfjZG9RuB/KKZUQzzH/0E
+        XqYdCA4krtoSqxTfEc0wTdRDyFI3Q==;
+Message-Id: <79d24310226bc4eb037892b5c097ec4ad4819a03.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:28 +0200
-Subject: [PATCH v6 07/11] net/9p: split message size argument into 't_size'
- and 'r_size' pair
+Date:   Fri, 15 Jul 2022 23:33:09 +0200
+Subject: [PATCH v6 10/11] net/9p: add 'pooled_rbuffers' flag to struct
+ p9_trans_module
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -42,88 +42,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Refactor 'max_size' argument of p9_tag_alloc() and 'req_size' argument
-of p9_client_prepare_req() both into a pair of arguments 't_size' and
-'r_size' respectively to allow handling the buffer size for request and
-reply separately from each other.
+This is a preparatory change for the subsequent patch: the RDMA
+transport pulls the buffers for its 9p response messages from a
+shared pool. [1] So this case has to be considered when choosing
+an appropriate response message size in the subsequent patch.
 
+Link: https://lore.kernel.org/all/Ys3jjg52EIyITPua@codewreck.org/ [1]
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- net/9p/client.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ include/net/9p/transport.h | 5 +++++
+ net/9p/trans_fd.c          | 1 +
+ net/9p/trans_rdma.c        | 1 +
+ net/9p/trans_virtio.c      | 1 +
+ net/9p/trans_xen.c         | 1 +
+ 5 files changed, 9 insertions(+)
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 20054addd81b..32a8f2f43479 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -255,24 +255,26 @@ static struct kmem_cache *p9_req_cache;
-  * p9_tag_alloc - Allocate a new request.
-  * @c: Client session.
-  * @type: Transaction type.
-- * @max_size: Maximum packet size for this request.
-+ * @t_size: Buffer size for holding this request.
-+ * @r_size: Buffer size for holding server's reply on this request.
-  *
-  * Context: Process context.
-  * Return: Pointer to new request.
-  */
- static struct p9_req_t *
--p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
-+p9_tag_alloc(struct p9_client *c, int8_t type, uint t_size, uint r_size)
- {
- 	struct p9_req_t *req = kmem_cache_alloc(p9_req_cache, GFP_NOFS);
--	int alloc_msize = min(c->msize, max_size);
-+	int alloc_tsize = min(c->msize, t_size);
-+	int alloc_rsize = min(c->msize, r_size);
- 	int tag;
- 
- 	if (!req)
- 		return ERR_PTR(-ENOMEM);
- 
--	if (p9_fcall_init(c, &req->tc, alloc_msize))
-+	if (p9_fcall_init(c, &req->tc, alloc_tsize))
- 		goto free_req;
--	if (p9_fcall_init(c, &req->rc, alloc_msize))
-+	if (p9_fcall_init(c, &req->rc, alloc_rsize))
- 		goto free;
- 
- 	p9pdu_reset(&req->tc);
-@@ -678,7 +680,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
- }
- 
- static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
--					      int8_t type, int req_size,
-+					      int8_t type, uint t_size, uint r_size,
- 					      const char *fmt, va_list ap)
- {
- 	int err;
-@@ -694,7 +696,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
- 	if (c->status == BeginDisconnect && type != P9_TCLUNK)
- 		return ERR_PTR(-EIO);
- 
--	req = p9_tag_alloc(c, type, req_size);
-+	req = p9_tag_alloc(c, type, t_size, r_size);
- 	if (IS_ERR(req))
- 		return req;
- 
-@@ -731,7 +733,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
- 	struct p9_req_t *req;
- 
- 	va_start(ap, fmt);
--	req = p9_client_prepare_req(c, type, c->msize, fmt, ap);
-+	req = p9_client_prepare_req(c, type, c->msize, c->msize, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
-@@ -829,7 +831,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
- 	/* We allocate a inline protocol data of only 4k bytes.
- 	 * The actual content is passed in zero-copy fashion.
+diff --git a/include/net/9p/transport.h b/include/net/9p/transport.h
+index ff842f963071..766ec07c9599 100644
+--- a/include/net/9p/transport.h
++++ b/include/net/9p/transport.h
+@@ -19,6 +19,10 @@
+  * @list: used to maintain a list of currently available transports
+  * @name: the human-readable name of the transport
+  * @maxsize: transport provided maximum packet size
++ * @pooled_rbuffers: currently only set for RDMA transport which pulls the
++ *                   response buffers from a shared pool, and accordingly
++ *                   we're less flexible when choosing the response message
++ *                   size in this case
+  * @def: set if this transport should be considered the default
+  * @create: member function to create a new connection on this transport
+  * @close: member function to discard a connection on this transport
+@@ -38,6 +42,7 @@ struct p9_trans_module {
+ 	struct list_head list;
+ 	char *name;		/* name of transport */
+ 	int maxsize;		/* max message size of transport */
++	bool pooled_rbuffers;
+ 	int def;		/* this transport should be default */
+ 	struct module *owner;
+ 	int (*create)(struct p9_client *client,
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 8f8f95e39b03..eecbb5332bea 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -1081,6 +1081,7 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
+ static struct p9_trans_module p9_tcp_trans = {
+ 	.name = "tcp",
+ 	.maxsize = MAX_SOCK_BUF,
++	.pooled_rbuffers = false,
+ 	.def = 0,
+ 	.create = p9_fd_create_tcp,
+ 	.close = p9_fd_close,
+diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
+index 88e563826674..24f287baee70 100644
+--- a/net/9p/trans_rdma.c
++++ b/net/9p/trans_rdma.c
+@@ -739,6 +739,7 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
+ static struct p9_trans_module p9_rdma_trans = {
+ 	.name = "rdma",
+ 	.maxsize = P9_RDMA_MAXSIZE,
++	.pooled_rbuffers = true,
+ 	.def = 0,
+ 	.owner = THIS_MODULE,
+ 	.create = rdma_create_trans,
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index 52d00cb3c105..d47b28b3f02a 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -1011,6 +1011,7 @@ static struct p9_trans_module p9_virtio_trans = {
  	 */
--	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, fmt, ap);
-+	req = p9_client_prepare_req(c, type, P9_ZC_HDR_SZ, P9_ZC_HDR_SZ, fmt, ap);
- 	va_end(ap);
- 	if (IS_ERR(req))
- 		return req;
+ 	.maxsize = PAGE_SIZE *
+ 		((VIRTQUEUE_SG_NSGL_DEFAULT * SG_USER_PAGES_PER_LIST) - 3),
++	.pooled_rbuffers = false,
+ 	.def = 1,
+ 	.owner = THIS_MODULE,
+ };
+diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
+index 833cd3792c51..3434a080abfa 100644
+--- a/net/9p/trans_xen.c
++++ b/net/9p/trans_xen.c
+@@ -246,6 +246,7 @@ static irqreturn_t xen_9pfs_front_event_handler(int irq, void *r)
+ static struct p9_trans_module p9_xen_trans = {
+ 	.name = "xen",
+ 	.maxsize = 1 << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT - 2),
++	.pooled_rbuffers = false,
+ 	.def = 1,
+ 	.create = p9_xen_create,
+ 	.close = p9_xen_close,
 -- 
 2.30.2
 
