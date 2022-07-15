@@ -2,149 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 422CBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:27:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9A1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 02:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241251AbiGOC1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 22:27:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S241294AbiGOC1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 22:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiGOC1L (ORCPT
+        with ESMTP id S229541AbiGOC1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 22:27:11 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E90122B39;
-        Thu, 14 Jul 2022 19:27:08 -0700 (PDT)
-Received: from dggpeml500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LkZvt2q8FzlVxh;
-        Fri, 15 Jul 2022 10:25:30 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by dggpeml500021.china.huawei.com
- (7.185.36.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
- 2022 10:27:06 +0800
-From:   Baokun Li <libaokun1@huawei.com>
-To:     <stable@vger.kernel.org>, <linux-ext4@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <tytso@mit.edu>,
-        <adilger.kernel@dilger.ca>, <jack@suse.cz>,
-        <ritesh.list@gmail.com>, <lczerner@redhat.com>,
-        <enwlinux@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <yi.zhang@huawei.com>, <yebin10@huawei.com>, <yukuai3@huawei.com>,
-        <libaokun1@huawei.com>, Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH 4.19] ext4: fix race condition between ext4_ioctl_setflags and ext4_fiemap
-Date:   Fri, 15 Jul 2022 10:39:28 +0800
-Message-ID: <20220715023928.2701166-1-libaokun1@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        Thu, 14 Jul 2022 22:27:44 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70757538B;
+        Thu, 14 Jul 2022 19:27:43 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id 70so3500387pfx.1;
+        Thu, 14 Jul 2022 19:27:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=2PHQEHiPUK5/kMXd0Tiaa/2KkMXqEO7YBVcbpRdWkzU=;
+        b=IEJMJOhzDLt+yfASXyPdeXR1oGGTsGDx3vl/pKDJYU0fM7xGoEYifRYmndgoDBn8V+
+         8KaH2UOTKaWNm2bcmSVrDZgCQRS5bZdc/JErVv0oiKI4D779tqf8qqqo8Y4iLSedLKu6
+         KJvBrd7MyyR0lBJJ++sR+EsLWE8c5/Kb5Z0fTJPJtZS1NwarGIQrRHk8mNKtsfmdVnsk
+         DdHkjkVUI3Go5QJOuWJ7tFYeVZyOTWJ1DVFRKCXBlPEbNV+fVinpn4yVP5n1HJQodgh9
+         gnwtaOMTLLw/5pbt9rN0/tXbYqausx/cGWYNWZ3PmgEiWfJZrxEj2bcNKssaqRx0mKTs
+         9LaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2PHQEHiPUK5/kMXd0Tiaa/2KkMXqEO7YBVcbpRdWkzU=;
+        b=anzorEmxO85UsEOGY79quda28Vup/O9mu/0P2oIsBhYfxOUJPiVm5chHxphIUi+qG8
+         4JKlUTYDfFuNQ2NdgKL7kYaFgHDjNzvTWC5SPjdUkoc7IK7oy4kcH7iMkaO0zqc19Ov6
+         hEebLt4VbY2sACEh5DmypErbaGEDKMBy4gjp9JnDMGrQ/Jj85i6pIOeVGDj3GkGptVle
+         hWNJ4bjSksMCBcYYStGk9+gXIKB4HVU7U5iqbIG/X7qYXz9/D7dUu2eeEfJNP0HpFm2p
+         mGQ1NyDrUwmqzIrqCUkQMX+c+u8jZJ/nkh6eRtPnlINY5r+zs4qkH0dUbANz428TkgjW
+         u73g==
+X-Gm-Message-State: AJIora8lPZykhRvvBAWD4qPP2kEntgbVxTreeZ7C766wrU0aAjiVrjT1
+        ZbEJ8hknm2iWb1TTMIHV398=
+X-Google-Smtp-Source: AGRyM1tFpAPO14ibbARmvlyA7Dm2i3y8ihIra24Y5oG5D9v2V9oCrT80IZwFQQ8AdtfnaIGZOBL3gA==
+X-Received: by 2002:a63:9547:0:b0:408:be53:b599 with SMTP id t7-20020a639547000000b00408be53b599mr10179125pgn.463.1657852063244;
+        Thu, 14 Jul 2022 19:27:43 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id v22-20020a631516000000b0040caab35e5bsm1998257pgl.89.2022.07.14.19.27.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 19:27:42 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 11:27:41 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Max Filippov <jcmvbkbc@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer:X86 ARCHITECTURE..." <x86@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>, Chris Zankel <chris@zankel.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Nick Child <nick.child@ibm.com>,
+        Niklas Schnelle <schnelle@linux.ibm.com>,
+        Matthew Rosato <mjrosato@linux.ibm.com>,
+        Pierre Morel <pmorel@linux.ibm.com>,
+        Kees Cook <keescook@chromium.org>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "open list:ALPHA PORT" <linux-alpha@vger.kernel.org>,
+        "open list:IA64 (Itanium) PL..." <linux-ia64@vger.kernel.org>,
+        "open list:M68K ARCHITECTURE" <linux-m68k@lists.linux-m68k.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        "open list:SPARC + UltraSPAR..." <sparclinux@vger.kernel.org>,
+        "open list:TENSILICA XTENSA PORT (xtensa)" 
+        <linux-xtensa@linux-xtensa.org>, linux-pci@vger.kernel.org,
+        Linux-Arch <linux-arch@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+Subject: Re: [RFC PATCH 1/2] asm-generic: Remove pci.h copying code out to
+ architectures
+Message-ID: <YtDQnQOeDF6RID4g@antec>
+References: <20220714214657.2402250-1-shorne@gmail.com>
+ <20220714214657.2402250-2-shorne@gmail.com>
+ <CAMo8BfKkGRHiFq1vu1ZKkURkUqC+Ee7D42yuKrCeDF+578s9cw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500021.china.huawei.com (7.185.36.21)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMo8BfKkGRHiFq1vu1ZKkURkUqC+Ee7D42yuKrCeDF+578s9cw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch and problem analysis is based on v4.19 LTS.
-The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
-is incorporated in v5.7-rc1. This patch avoids this problem by switching
-to iomap in ext4_fiemap.
+On Thu, Jul 14, 2022 at 06:45:27PM -0700, Max Filippov wrote:
+> On Thu, Jul 14, 2022 at 2:47 PM Stafford Horne <shorne@gmail.com> wrote:
+> >
+> > The generic pci.h header provides a definition of pci_get_legacy_ide_irq
+> > which is used by architectures that use PC-style interrupt numbers.
+> >
+> > This patch removes the old pci.h in order to make room for a new
+> > pci.h to be used by arm64, riscv, openrisc, etc.
+> >
+> > The existing code in pci.h is moved out to architectures.
+> >
+> > Suggested-by: Arnd Bergmann <arnd@arndb.de>
+> > Link: https://lore.kernel.org/lkml/CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com/
+> > Signed-off-by: Stafford Horne <shorne@gmail.com>
+> > ---
+> >  arch/alpha/include/asm/pci.h   |  1 -
+> >  arch/ia64/include/asm/pci.h    |  1 -
+> >  arch/m68k/include/asm/pci.h    |  7 +++++--
+> >  arch/powerpc/include/asm/pci.h |  1 -
+> >  arch/s390/include/asm/pci.h    |  6 +++++-
+> >  arch/sparc/include/asm/pci.h   |  5 ++++-
+> >  arch/x86/include/asm/pci.h     |  6 ++++--
+> >  arch/xtensa/include/asm/pci.h  |  6 ++++--
+> >  include/asm-generic/pci.h      | 17 -----------------
+> >  9 files changed, 22 insertions(+), 28 deletions(-)
+> >  delete mode 100644 include/asm-generic/pci.h
+> 
+> [...]
+> 
+> > diff --git a/arch/xtensa/include/asm/pci.h b/arch/xtensa/include/asm/pci.h
+> > index 8e2b48a268db..f57ede61f5db 100644
+> > --- a/arch/xtensa/include/asm/pci.h
+> > +++ b/arch/xtensa/include/asm/pci.h
+> > @@ -43,7 +43,9 @@
+> >  #define ARCH_GENERIC_PCI_MMAP_RESOURCE 1
+> >  #define arch_can_pci_mmap_io()         1
+> >
+> > -/* Generic PCI */
+> > -#include <asm-generic/pci.h>
+> 
+> Ok.
+> 
+> > +static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+> > +{
+> > +       return channel ? 15 : 14;
+> > +}
+> 
+> This addition does not make sense for the xtensa as it isn't even possible
+> to enable PNP support (the only user of this function) on xtensa.
 
-Hulk Robot reported a BUG on stable 4.19.252:
-==================================================================
-kernel BUG at fs/ext4/extents_status.c:762!
-invalid opcode: 0000 [#1] SMP KASAN PTI
-CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
-RIP: 0010:ext4_es_cache_extent+0x30e/0x370
-[...]
-Call Trace:
- ext4_cache_extents+0x238/0x2f0
- ext4_find_extent+0x785/0xa40
- ext4_fiemap+0x36d/0xe90
- do_vfs_ioctl+0x6af/0x1200
-[...]
-==================================================================
+Thanks for your feedback, this is the kind of feedback I was hoping to fish out
+with this patch.  I will look into completely removing this then.
 
-Above issue may happen as follows:
--------------------------------------
-           cpu1		    cpu2
-_____________________|_____________________
-do_vfs_ioctl
- ext4_ioctl
-  ext4_ioctl_setflags
-   ext4_ind_migrate
-                        do_vfs_ioctl
-                         ioctl_fiemap
-                          ext4_fiemap
-                           ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
-                           ext4_fill_fiemap_extents
-    down_write(&EXT4_I(inode)->i_data_sem);
-    ext4_ext_check_inode
-    ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
-    memset(ei->i_data, 0, sizeof(ei->i_data))
-    up_write(&EXT4_I(inode)->i_data_sem);
-                            down_read(&EXT4_I(inode)->i_data_sem);
-                            ext4_find_extent
-                             ext4_cache_extents
-                              ext4_es_cache_extent
-                               BUG_ON(end < lblk)
-
-We can easily reproduce this problem with the syzkaller testcase:
-```
-02:37:07 executing program 3:
-r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
-ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
-mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
-r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
-ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
-ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
-```
-
-To solve this issue, we use __generic_block_fiemap() instead of
-generic_block_fiemap() and add inode_lock_shared to avoid race condition.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Baokun Li <libaokun1@huawei.com>
----
- fs/ext4/extents.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/fs/ext4/extents.c b/fs/ext4/extents.c
-index 6c492fca60c4..38aaf48e94cb 100644
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -5198,13 +5198,18 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
- 			return error;
- 	}
- 
-+	inode_lock_shared(inode);
- 	/* fallback to generic here if not in extents fmt */
--	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)))
--		return generic_block_fiemap(inode, fieinfo, start, len,
-+	if (!(ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS))) {
-+		error = __generic_block_fiemap(inode, fieinfo, start, len,
- 			ext4_get_block);
-+		goto out_unlock;
-+	}
- 
--	if (fiemap_check_flags(fieinfo, EXT4_FIEMAP_FLAGS))
--		return -EBADR;
-+	if (fiemap_check_flags(fieinfo, EXT4_FIEMAP_FLAGS)) {
-+		error = -EBADR;
-+		goto out_unlock;
-+	}
- 
- 	if (fieinfo->fi_flags & FIEMAP_FLAG_XATTR) {
- 		error = ext4_xattr_fiemap(inode, fieinfo);
-@@ -5225,6 +5230,8 @@ int ext4_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
- 		error = ext4_fill_fiemap_extents(inode, start_blk,
- 						 len_blks, fieinfo);
- 	}
-+out_unlock:
-+	inode_unlock_shared(inode);
- 	return error;
- }
- 
--- 
-2.31.1
-
+-Stafford
