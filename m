@@ -2,250 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5998DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:29:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiGOQ3c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
+        id S233595AbiGOQ3g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:29:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233356AbiGOQ3V (ORCPT
+        with ESMTP id S233314AbiGOQ3V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 12:29:21 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B284237D0;
-        Fri, 15 Jul 2022 09:29:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657902560; x=1689438560;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Yd5dATdWcgi5iFQh7VwJ69l17xqkQ/Eaq6hTAVdJgSI=;
-  b=ORozKc/pOzwl06UXkLmCHAMG/iqaCjfiGiymsuGNhRbAf0mrC7y/Pe8+
-   7NWS8M1f/eQeXA3L1Fd1MlFE/NfpRpOibMMYQGO/A2i0BC2GsaGziQQP/
-   7PqrrDVyYRHbaIBiLs0Ap30iofkOKBH+KLpOXKQz1/G/GmtASK9Aj6JQ3
-   5LZAE/dXitYhN7tH7kn57gam4Fg3zjJwK8a2fI0TUEH3viWOs5AmPn3G4
-   N8u5eQ08BYLI0DXJ6gXF9xWrAdE09npx8sMZqAuvpqZd1ioxcgBzDZ6oX
-   N/HzTqSYLOpJTqJi44DbwiuppI/dCORyQ9C6KMZpCYsEtoZDCM536EpR1
-   w==;
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="168040855"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jul 2022 09:29:14 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 15 Jul 2022 09:29:14 -0700
-Received: from ryan-Precision-5560.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 15 Jul 2022 09:29:14 -0700
-From:   <Ryan.Wanner@microchip.com>
-To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Ryan Wanner" <Ryan.Wanner@microchip.com>
-Subject: [PATCH v3 2/2] ASoC: dt-bindings: atmel-classd: PDMIC convert to json-schema
-Date:   Fri, 15 Jul 2022 09:29:22 -0700
-Message-ID: <20220715162922.660859-3-Ryan.Wanner@microchip.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220715162922.660859-1-Ryan.Wanner@microchip.com>
-References: <20220715162922.660859-1-Ryan.Wanner@microchip.com>
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BAA22BE7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:29:18 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id f2so7409831wrr.6
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:29:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g4utnIEpgUH8SrFacOeGCRYGCTX0362lTOZoYsGdnLU=;
+        b=OzC/9QXaaDqxoCP/B7s3PFEoW1r/3BL4QbU0Itu4yM/SSqwTf9zl3vnXpqm6D9/wLg
+         u9IULLjrR/XGDkdPfCpFCJs5/QboFpLuQOffp2IKLY+TcH8l8BzzHthtTM5hML+jlRHO
+         FG6Cxp7CivJKWEJLvCIuG26LkXP6sxJbO1IKctA1ERVcnJsmcMUdeLVDCwMA4onz9+H1
+         1MNjc+56N5uGO0uP7FpLmEqEBd9LvV4yyBSj2q2kCVBKFG5yQDPjhzHOHdM+unWA77AD
+         SzvLrlWu0scXmQGI3iWJ+50TPqZt4sVHUFRyHKBkMNQSgWZ1mUzUSIa7VQPGG7NvSDCO
+         TFOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g4utnIEpgUH8SrFacOeGCRYGCTX0362lTOZoYsGdnLU=;
+        b=LSo+C3+3fDInxC9uL02xJeFthEvAbxCeL9sgFIjQsX06x+yQFm+mCmvHcSeYm3OH8I
+         39p1gv6aP5/0pEkPyawCnHALm8+yoOGrwGA8J786thG/p4CQ1qkQKjlG9zHO5qaFC32Z
+         wQ2Gz4bq91opREz11WN7xpM5vvUNxE7nFHZXAIzN7hQ/nt0X/c+AS8bCXpEpnpeHIpVs
+         Qxi+AdRIzPE7FHzWUYBDrhWsIyN2oyORGEuU2ylCG9160f5TmEr+A5xbSeukY14xIdZw
+         HiQYJ1V/dBESQEPoyzBU2Oj8bDknx/9RoVl9jMaBBAQjCKxoLtUwJ+TDtl0QQkuqBEEi
+         K6XQ==
+X-Gm-Message-State: AJIora8fqHg1Y8ynqZJk4XObD5aLCmL8uobwdzev6bvTZs8UnkHhBnkN
+        UGct9GIYB0ICqc50cOKXMpCOCQ==
+X-Google-Smtp-Source: AGRyM1tSF48yUDKFkMabG1ZK0Ufn2HDShLc1rfkqldFR9s050thAUB7FUGwV6hpIfcU96gErNHiZ9Q==
+X-Received: by 2002:a05:6000:16cb:b0:21d:7b9e:d0af with SMTP id h11-20020a05600016cb00b0021d7b9ed0afmr13306509wrf.139.1657902556488;
+        Fri, 15 Jul 2022 09:29:16 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id h7-20020adffd47000000b0021d650e4df4sm4283198wrs.87.2022.07.15.09.29.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 09:29:16 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 17:29:13 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de,
+        chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com
+Subject: Re: [PATCH v5 13/13] video: backlight: mt6370: Add MediaTek MT6370
+ support
+Message-ID: <20220715162913.5ewxwhv6jtdgt3c2@maple.lan>
+References: <20220715112607.591-1-peterwu.pub@gmail.com>
+ <20220715112607.591-14-peterwu.pub@gmail.com>
+ <ec3bdfb8-0e42-a772-28b1-165811872afa@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ec3bdfb8-0e42-a772-28b1-165811872afa@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryan Wanner <Ryan.Wanner@microchip.com>
+On Fri, Jul 15, 2022 at 02:38:45PM +0200, AngeloGioacchino Del Regno wrote:
+> Il 15/07/22 13:26, ChiaEn Wu ha scritto:
+> > From: ChiaEn Wu <chiaen_wu@richtek.com>
+> >
+> > MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
+> > with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
+> > driver, display bias voltage supply, one general purpose LDO, and the
+> > USB Type-C & PD controller complies with the latest USB Type-C and PD
+> > standards.
+> >
+> > This adds support for MediaTek MT6370 Backlight driver. It's commonly used
+> > to drive the display WLED. There are 4 channels inside, and each channel
+> > supports up to 30mA of current capability with 2048 current steps in
+> > exponential or linear mapping curves.
+> >
+> > Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+>
+> Hello ChiaEn,
+>
+> I propose to move this one to drivers/leds (or drivers/pwm) and, instead of
+> registering a backlight device, register a PWM device.
+>
+> This way you will be able to reuse the generic backlight-pwm driver, as you'd
+> be feeding the PWM device exposed by this driver to the generic one: this will
+> most importantly make it easy to chain it with MTK_DISP_PWM (mtk-pwm-disp)
+> with a devicetree that looks like...
 
-Convert Atmel PDMIC devicetree binding to json-schema.
-Change file naming to match json-schema naming.
+Out of interest, does MT6370 have the same structure for backlights as the prior
+systems using mtk-pwm-disp or was mtk-pwm-disp simply a normal(-ish) PWM
+that relied on something on the board for all the constant current
+driver hardware?
 
-Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
----
-v1 -> v2:
-- Fix title.
-- Removed trivial descriptions.
-- Fix formatting.
-v2 -> v3:
-- Correct location for description.
-- Correct dts example indentation.
 
- .../bindings/sound/atmel,sama5d2-pdmic.yaml   | 98 +++++++++++++++++++
- .../devicetree/bindings/sound/atmel-pdmic.txt | 55 -----------
- 2 files changed, 98 insertions(+), 55 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
- delete mode 100644 Documentation/devicetree/bindings/sound/atmel-pdmic.txt
+>
+> 	pwmleds-disp {
+> 		compatible = "pwm-leds";
+>
+> 		disp_led: disp-pwm {
+> 			label = "backlight-pwm";
+> 			pwms = <&pwm0 0 500000>;
+> 			max-brightness = <1024>;
+> 		};
+> 	};
+>
+> 	backlight_lcd0: backlight {
+> 		compatible = "led-backlight";
+> 		leds = <&disp_led>, <&pmic_bl_led>;
+> 		default-brightness-level = <300>;
+> 	};
 
-diff --git a/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml b/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
-new file mode 100644
-index 000000000000..f320b561f24c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/sound/atmel,sama5d2-pdmic.yaml
-@@ -0,0 +1,98 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright (C) 2022 Microchip Technology, Inc. and its subsidiaries
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/sound/atmel,sama5d2-pdmic.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Atmel PDMIC decoder
-+
-+maintainers:
-+  - Claudiu Beznea <claudiu.beznea@microchip.com>
-+
-+description:
-+  Atmel Pulse Density Modulation Interface Controller
-+  (PDMIC) peripheral is a mono PDM decoder module
-+  that decodes an incoming PDM sample stream.
-+
-+properties:
-+  compatible:
-+    const: atmel,sama5d2-pdmic
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    items:
-+      - description: peripheral clock
-+      - description: generated clock
-+
-+  clock-names:
-+    items:
-+      - const: pclk
-+      - const: gclk
-+
-+  dmas:
-+    maxItems: 1
-+
-+  dma-names:
-+    const: rx
-+
-+  atmel,mic-min-freq:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The minimal frequency that the microphone supports.
-+
-+  atmel,mic-max-freq:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      The maximal frequency that the microphone supports.
-+
-+  atmel,model:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    default: PDMIC
-+    description: The user-visible name of this sound card.
-+
-+  atmel,mic-offset:
-+    $ref: /schemas/types.yaml#/definitions/int32
-+    default: 0
-+    description: The offset that should be added.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - dmas
-+  - dma-names
-+  - clock-names
-+  - clocks
-+  - atmel,mic-min-freq
-+  - atmel,mic-max-freq
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/dma/at91.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+
-+    pdmic: sound@f8018000 {
-+        compatible = "atmel,sama5d2-pdmic";
-+        reg = <0xf8018000 0x124>;
-+        interrupts = <48 IRQ_TYPE_LEVEL_HIGH 7>;
-+        dmas = <&dma0
-+                (AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1)
-+                | AT91_XDMAC_DT_PERID(50))>;
-+        dma-names = "rx";
-+        clocks = <&pdmic_clk>, <&pdmic_gclk>;
-+        clock-names = "pclk", "gclk";
-+        pinctrl-names = "default";
-+        pinctrl-0 = <&pinctrl_pdmic_default>;
-+        atmel,model = "PDMIC@sama5d2_xplained";
-+        atmel,mic-min-freq = <1000000>;
-+        atmel,mic-max-freq = <3246000>;
-+        atmel,mic-offset = <0x0>;
-+    };
-diff --git a/Documentation/devicetree/bindings/sound/atmel-pdmic.txt b/Documentation/devicetree/bindings/sound/atmel-pdmic.txt
-deleted file mode 100644
-index e0875f17c229..000000000000
---- a/Documentation/devicetree/bindings/sound/atmel-pdmic.txt
-+++ /dev/null
-@@ -1,55 +0,0 @@
--* Atmel PDMIC driver under ALSA SoC architecture
--
--Required properties:
--- compatible
--	Should be "atmel,sama5d2-pdmic".
--- reg
--	Should contain PDMIC registers location and length.
--- interrupts
--	Should contain the IRQ line for the PDMIC.
--- dmas
--	One DMA specifiers as described in atmel-dma.txt and dma.txt files.
--- dma-names
--	Must be "rx".
--- clock-names
--	Required elements:
--	- "pclk"	peripheral clock
--	- "gclk"	generated clock
--- clocks
--	Must contain an entry for each required entry in clock-names.
--	Please refer to clock-bindings.txt.
--- atmel,mic-min-freq
--	The minimal frequency that the micphone supports.
--- atmel,mic-max-freq
--	The maximal frequency that the micphone supports.
--
--Optional properties:
--- pinctrl-names, pinctrl-0
--	Please refer to pinctrl-bindings.txt.
--- atmel,model
--	The user-visible name of this sound card.
--	The default value is "PDMIC".
--- atmel,mic-offset
--	The offset that should be added.
--	The range is from -32768 to 32767.
--	The default value is 0.
--
--Example:
--	pdmic@f8018000 {
--				compatible = "atmel,sama5d2-pdmic";
--				reg = <0xf8018000 0x124>;
--				interrupts = <48 IRQ_TYPE_LEVEL_HIGH 7>;
--				dmas = <&dma0
--					(AT91_XDMAC_DT_MEM_IF(0) | AT91_XDMAC_DT_PER_IF(1)
--					| AT91_XDMAC_DT_PERID(50))>;
--				dma-names = "rx";
--				clocks = <&pdmic_clk>, <&pdmic_gclk>;
--				clock-names = "pclk", "gclk";
--
--				pinctrl-names = "default";
--				pinctrl-0 = <&pinctrl_pdmic_default>;
--				atmel,model = "PDMIC @ sama5d2_xplained";
--				atmel,mic-min-freq = <1000000>;
--				atmel,mic-max-freq = <3246000>;
--				atmel,mic-offset = <0x0>;
--	};
--- 
-2.34.1
+I think this proposal has to start with the devicetree bindings rather
+than the driver. Instead I think the question is: does this proposal
+result in DT bindings that better describe the underlying hardware?
 
+This device has lots of backlight centric features (OCP, OVP, single
+control with multiple outputs, exponential curves, etc) and its not
+clear where they would fit into the "PWM" bindings.
+
+Come to think of it I'm also a little worried also about the whole linear
+versus exponential curve thing since I thought LED drivers were required
+to use exponential curves.
+
+
+Daniel.
