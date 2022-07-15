@@ -2,85 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC48C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B29CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:10:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235302AbiGOOID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 10:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
+        id S231563AbiGOOKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 10:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235253AbiGOOH7 (ORCPT
+        with ESMTP id S231184AbiGOOKp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 10:07:59 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB7CB6871A
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 07:07:51 -0700 (PDT)
-Received: from fsav115.sakura.ne.jp (fsav115.sakura.ne.jp [27.133.134.242])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26FE7SDI047462;
-        Fri, 15 Jul 2022 23:07:28 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav115.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp);
- Fri, 15 Jul 2022 23:07:28 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26FE7SnE047455
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 15 Jul 2022 23:07:28 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <6d84da13-8c7b-129e-a40c-cadc80a609f4@I-love.SAKURA.ne.jp>
-Date:   Fri, 15 Jul 2022 23:07:27 +0900
+        Fri, 15 Jul 2022 10:10:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C06768719;
+        Fri, 15 Jul 2022 07:10:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E76E260A10;
+        Fri, 15 Jul 2022 14:10:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAAFDC34115;
+        Fri, 15 Jul 2022 14:10:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657894242;
+        bh=kj4NlOqJqu0Eo6svXbTTcXeN2gwq/QeqbAMzhuAB04A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hrS7rNNWglr3i7GG8Pv6TyZOA0bF5OoOoTlexqNeuS4qER+zreY2m54z1+fmW7WnF
+         ZSgiYxmuZ1NyrKk/kV8sEutwL5ABk/0vUsDR6b3V2gYQerAH7Dv9++okJhsZdVu1Gt
+         KSHTfOp3t6R78EWDgN4gEsqy4QuP7RX2t/OFYbtc=
+Date:   Fri, 15 Jul 2022 16:10:39 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Baokun Li <libaokun1@huawei.com>
+Cc:     stable@vger.kernel.org, linux-ext4@vger.kernel.org, tytso@mit.edu,
+        adilger.kernel@dilger.ca, jack@suse.cz, ritesh.list@gmail.com,
+        lczerner@redhat.com, enwlinux@gmail.com,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com,
+        yebin10@huawei.com, yukuai3@huawei.com,
+        Hulk Robot <hulkci@huawei.com>
+Subject: Re: [PATCH 4.19] ext4: fix race condition between
+ ext4_ioctl_setflags and ext4_fiemap
+Message-ID: <YtF1XygwvIo2Dwae@kroah.com>
+References: <20220715023928.2701166-1-libaokun1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] ARM: spectre-v2: fix smp_processor_id() warning
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Marc Zyngier <maz@kernel.org>, Tony Lindgren <tony@atomide.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Dmitry Vyukov <dvyukov@google.com>
-References: <795c9463-452e-bf64-1cc0-c318ccecb1da@I-love.SAKURA.ne.jp>
- <e5bdea6c767d3a8260360afaddab5f7c@kernel.org>
- <YrMhVAev9wMAA8tl@shell.armlinux.org.uk>
- <421c1ca9-f553-4c0a-d963-2fdeb270dbcc@I-love.SAKURA.ne.jp>
- <fa786d1c-db06-f7f1-9ac9-6a468c1e8d81@I-love.SAKURA.ne.jp>
- <3188347c-3375-b728-cd08-ea4421d823cd@I-love.SAKURA.ne.jp>
- <YtFte2mTbfkMkRpJ@shell.armlinux.org.uk>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <YtFte2mTbfkMkRpJ@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220715023928.2701166-1-libaokun1@huawei.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/15 22:36, Russell King (Oracle) wrote:
-> On Fri, Jul 15, 2022 at 10:09:01PM +0900, Tetsuo Handa wrote:
->> syzbot is reporting that CONFIG_HARDEN_BRANCH_PREDICTOR=y +
->> CONFIG_DEBUG_PREEMPT=y on ARM32 causes "BUG: using smp_processor_id() in
->> preemptible code" message [1], for this check was not designed to handle
->> attempts to access kernel memory like
->>
->>   ----------
->>   int main() { return *(char *) -1; }
->>   ----------
->>
->> . Although Russell King commented that this BUG: message might help finding
->> possible exploit attempts [2], this is not a kernel's problem that worth
->> giving up fuzz testing.
+On Fri, Jul 15, 2022 at 10:39:28AM +0800, Baokun Li wrote:
+> This patch and problem analysis is based on v4.19 LTS.
+> The d3b6f23f7167("ext4: move ext4_fiemap to use iomap framework") patch
+> is incorporated in v5.7-rc1. This patch avoids this problem by switching
+> to iomap in ext4_fiemap.
 > 
-> But shutting up a valid warning when the real problem is still there is
-> also not acceptable.
+> Hulk Robot reported a BUG on stable 4.19.252:
+> ==================================================================
+> kernel BUG at fs/ext4/extents_status.c:762!
+> invalid opcode: 0000 [#1] SMP KASAN PTI
+> CPU: 7 PID: 2845 Comm: syz-executor Not tainted 4.19.252 #46
+> RIP: 0010:ext4_es_cache_extent+0x30e/0x370
+> [...]
+> Call Trace:
+>  ext4_cache_extents+0x238/0x2f0
+>  ext4_find_extent+0x785/0xa40
+>  ext4_fiemap+0x36d/0xe90
+>  do_vfs_ioctl+0x6af/0x1200
+> [...]
+> ==================================================================
+> 
+> Above issue may happen as follows:
+> -------------------------------------
+>            cpu1		    cpu2
+> _____________________|_____________________
+> do_vfs_ioctl
+>  ext4_ioctl
+>   ext4_ioctl_setflags
+>    ext4_ind_migrate
+>                         do_vfs_ioctl
+>                          ioctl_fiemap
+>                           ext4_fiemap
+>                            ext4_test_inode_flag(inode, EXT4_INODE_EXTENTS)
+>                            ext4_fill_fiemap_extents
+>     down_write(&EXT4_I(inode)->i_data_sem);
+>     ext4_ext_check_inode
+>     ext4_clear_inode_flag(inode, EXT4_INODE_EXTENTS)
+>     memset(ei->i_data, 0, sizeof(ei->i_data))
+>     up_write(&EXT4_I(inode)->i_data_sem);
+>                             down_read(&EXT4_I(inode)->i_data_sem);
+>                             ext4_find_extent
+>                              ext4_cache_extents
+>                               ext4_es_cache_extent
+>                                BUG_ON(end < lblk)
+> 
+> We can easily reproduce this problem with the syzkaller testcase:
+> ```
+> 02:37:07 executing program 3:
+> r0 = openat(0xffffffffffffff9c, &(0x7f0000000040)='./file0\x00', 0x26e1, 0x0)
+> ioctl$FS_IOC_FSSETXATTR(r0, 0x40086602, &(0x7f0000000080)={0x17e})
+> mkdirat(0xffffffffffffff9c, &(0x7f00000000c0)='./file1\x00', 0x1ff)
+> r1 = openat(0xffffffffffffff9c, &(0x7f0000000100)='./file1\x00', 0x0, 0x0)
+> ioctl$FS_IOC_FIEMAP(r1, 0xc020660b, &(0x7f0000000180)={0x0, 0x1, 0x0, 0xef3, 0x6, []}) (async, rerun: 32)
+> ioctl$FS_IOC_FSSETXATTR(r1, 0x40086602, &(0x7f0000000140)={0x17e}) (rerun: 32)
+> ```
+> 
+> To solve this issue, we use __generic_block_fiemap() instead of
+> generic_block_fiemap() and add inode_lock_shared to avoid race condition.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Baokun Li <libaokun1@huawei.com>
+> ---
+>  fs/ext4/extents.c | 15 +++++++++++----
+>  1 file changed, 11 insertions(+), 4 deletions(-)
 
-Then, at least for now can we stop emitting the BUG: string? I showed an idea at
-https://lkml.kernel.org/r/fa786d1c-db06-f7f1-9ac9-6a468c1e8d81@I-love.SAKURA.ne.jp
-but I got no response.
+What is the git commit id of this change in Linus's tree?
 
-Since syzkaller stops fuzz testing upon encountering BUG: or WARNING: string,
-ARM32 might be failing to find other bugs for 491 days due to this problem.
+If it is not in Linus's tree, why not?
 
-If you don't want to stop emitting this BUG: string, we might want to teach
-syzkaller to build ARM32 kernels with CONFIG_HARDEN_BRANCH_PREDICTOR=n.
+confused,
 
+greg k-h
