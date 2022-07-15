@@ -2,231 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6BCC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF92C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234126AbiGOIw1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        id S234156AbiGOIw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233254AbiGOIvb (ORCPT
+        with ESMTP id S233906AbiGOIwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:51:31 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001C67BE3F
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:52 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id t1so6769460lft.8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fezBfQAJ2Jc7g4+Nk8PG5Lswj+jW8kXFPL2QSLPMg9I=;
-        b=rzw3ryPC9hPJVQEddHD6sIN07bCLWZ+7xexAZCwSN0fdkxSWGggvu0wwZABHG7Zxlz
-         fOXQZxWSI6Z9FkWwoztaKyinsqC45qiKqWLO/hpg84vEbYAviBeQBSPoGs3G8itffhJV
-         Sspi+9GSj6/4bTv26ly7dufqYaJmq7mz/9ntQnO6H0w9ghdOS2nnog5CQ+Ixo1U0QNkk
-         w9hZpbjPcHXsE+r5bYuCi2FrnbtUCvTadE+CCt+YWwfpNuT9H1TnKAC2qDHKICNRA1Xg
-         eVvltOXKfcZ8rxHC+6lJS4hrLKeBA4lGH+DFT+rBLz0MFfyFUJKpgCQdM24bgB2Kai0e
-         nbuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fezBfQAJ2Jc7g4+Nk8PG5Lswj+jW8kXFPL2QSLPMg9I=;
-        b=lim/RR5cmD3EcrzSIyaFwpt+Wvq/JAKkoXoyOFUannYpRNGnKD4Y0Esns8ywV38mAY
-         EbBiP4YCsDi1MzLPhlnhpCtkRBGV+t03dY78JDajM2/sixbeQu7QqDtXBjSqs7FZv3LZ
-         bXNOx0FEwzVuQtrUz5c2jZBFqzOHD9r80r6hTfxB/jx5s3RulzCJilUkDAJpdA25JPLT
-         RY+z5er/621O/FgWo3kE7WezpxmnNQej8Vlx35VFrU9mz+W7fagfTL0UEnaftlzI/uAO
-         bOS1NyaDbzl7Omw37Ff02HgsQlAp99gOIk1q0q4MYdxMX63fdUl6la5SZa0qj6ri+Chi
-         cg4g==
-X-Gm-Message-State: AJIora+QEmtua9Yqxi/Pc2Ud1Tbx2eG4Cm31McvIkg+bkHoIeDKyuMRx
-        nplrW46qRDBDWuZGvrEgrk8rBZGnVg2DDQ==
-X-Google-Smtp-Source: AGRyM1tJ2ITwJs8M2KuFzKSj3rn0UjsLc2ZbkOPICf/e+RhQbzA1sT5YPMhqJIgUjJPuYr/DjTxafg==
-X-Received: by 2002:a05:6512:2527:b0:489:ec08:7ada with SMTP id be39-20020a056512252700b00489ec087adamr7203114lfb.621.1657875050824;
-        Fri, 15 Jul 2022 01:50:50 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id e4-20020a2e9e04000000b0025d773448basm667846ljk.23.2022.07.15.01.50.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 01:50:50 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
-        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH v2 8/8] net: dsa: mv88e6xxx: switch to device_/fwnode_ APIs
-Date:   Fri, 15 Jul 2022 10:50:12 +0200
-Message-Id: <20220715085012.2630214-9-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20220715085012.2630214-1-mw@semihalf.com>
-References: <20220715085012.2630214-1-mw@semihalf.com>
+        Fri, 15 Jul 2022 04:52:43 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52A7E84EE3;
+        Fri, 15 Jul 2022 01:51:35 -0700 (PDT)
+X-UUID: d721200affec4765846b864848f39bc9-20220715
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:34ea4b4a-b427-491f-97f1-0940e2b80b57,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:51
+X-CID-INFO: VERSION:1.1.8,REQID:34ea4b4a-b427-491f-97f1-0940e2b80b57,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
+        N:release,TS:51
+X-CID-META: VersionHash:0f94e32,CLOUDID:b1b695d7-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:9a8e9ef91b98,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:0,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: d721200affec4765846b864848f39bc9-20220715
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <ck.hu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1312067785; Fri, 15 Jul 2022 16:51:29 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Fri, 15 Jul 2022 16:51:27 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 15 Jul 2022 16:51:27 +0800
+Message-ID: <05e7ace27af21d141c1ecd79fb45f6e5e9d32582.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   CK Hu <ck.hu@mediatek.com>
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, <chunkuang.hu@kernel.org>,
+        <p.zabel@pengutronix.de>, <daniel@ffwll.ch>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
+        <airlied@linux.ie>
+CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
+        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
+        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-fbdev@vger.kernel.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Fri, 15 Jul 2022 16:51:27 +0800
+In-Reply-To: <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support both DT and ACPI in future, modify the
-mv88e6xx driver  code to use device_/fwnode_ equivalent routines.
-No functional change is introduced by this patch.
+Hi, Bo-Chen:
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 57 ++++++++++----------
- 1 file changed, 27 insertions(+), 30 deletions(-)
+On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> This patch adds a embedded displayport driver for the MediaTek mt8195
+> SoC.
+> 
+> It supports the MT8195, the embedded DisplayPort units. It offers
+> DisplayPort 1.4 with up to 4 lanes.
+> 
+> The driver creates a child device for the phy. The child device will
+> never exist without the parent being active. As they are sharing a
+> register range, the parent passes a regmap pointer to the child so
+> that
+> both can work with the same register range. The phy driver sets
+> device
+> data that is read by the parent to get the phy device that can be
+> used
+> to control the phy properties.
+> 
+> This driver is based on an initial version by
+> Jitao shi <jitao.shi@mediatek.com>
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 1baf07b3284b..ca9ae691573e 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3312,7 +3312,7 @@ static int mv88e6xxx_setup_upstream_port(struct mv88e6xxx_chip *chip, int port)
- 
- static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- {
--	struct device_node *phy_handle = NULL;
-+	struct fwnode_handle *phy_handle = NULL;
- 	struct dsa_switch *ds = chip->ds;
- 	struct dsa_port *dp;
- 	int tx_amp;
-@@ -3499,15 +3499,15 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
- 
- 	if (chip->info->ops->serdes_set_tx_amplitude) {
- 		if (dp)
--			phy_handle = of_parse_phandle(to_of_node(dp->fwnode), "phy-handle", 0);
-+			phy_handle = fwnode_find_reference(dp->fwnode, "phy-handle", 0);
- 
--		if (phy_handle && !of_property_read_u32(phy_handle,
--							"tx-p2p-microvolt",
--							&tx_amp))
-+		if (!IS_ERR(phy_handle) && !fwnode_property_read_u32(phy_handle,
-+								     "tx-p2p-microvolt",
-+								     &tx_amp))
- 			err = chip->info->ops->serdes_set_tx_amplitude(chip,
- 								port, tx_amp);
--		if (phy_handle) {
--			of_node_put(phy_handle);
-+		if (!IS_ERR(phy_handle)) {
-+			fwnode_handle_put(phy_handle);
- 			if (err)
- 				return err;
- 		}
-@@ -3891,10 +3891,11 @@ static int mv88e6xxx_mdio_write(struct mii_bus *bus, int phy, int reg, u16 val)
- }
- 
- static int mv88e6xxx_mdio_register(struct mv88e6xxx_chip *chip,
--				   struct device_node *np,
-+				   struct fwnode_handle *fwnode,
- 				   bool external)
- {
- 	static int index;
-+	struct device_node *np = to_of_node(fwnode);
- 	struct mv88e6xxx_mdio_bus *mdio_bus;
- 	struct mii_bus *bus;
- 	int err;
-@@ -3973,18 +3974,18 @@ static void mv88e6xxx_mdios_unregister(struct mv88e6xxx_chip *chip)
- }
- 
- static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
--				    struct device_node *np)
-+				    struct fwnode_handle *fwnode)
- {
--	struct device_node *child;
-+	struct fwnode_handle *child;
- 	int err;
- 
- 	/* Always register one mdio bus for the internal/default mdio
- 	 * bus. This maybe represented in the device tree, but is
- 	 * optional.
- 	 */
--	child = of_get_child_by_name(np, "mdio");
-+	child = fwnode_get_named_child_node(fwnode, "mdio");
- 	err = mv88e6xxx_mdio_register(chip, child, false);
--	of_node_put(child);
-+	fwnode_handle_put(child);
- 	if (err)
- 		return err;
- 
-@@ -3992,13 +3993,13 @@ static int mv88e6xxx_mdios_register(struct mv88e6xxx_chip *chip,
- 	 * which say they are compatible with the external mdio
- 	 * bus.
- 	 */
--	for_each_available_child_of_node(np, child) {
--		if (of_device_is_compatible(
--			    child, "marvell,mv88e6xxx-mdio-external")) {
-+	fwnode_for_each_available_child_node(fwnode, child) {
-+		if (fwnode_property_match_string(child, "compatible",
-+						 "marvell,mv88e6xxx-mdio-external") == 0) {
- 			err = mv88e6xxx_mdio_register(chip, child, true);
- 			if (err) {
- 				mv88e6xxx_mdios_unregister(chip);
--				of_node_put(child);
-+				fwnode_handle_put(child);
- 				return err;
- 			}
- 		}
-@@ -6975,20 +6976,16 @@ static SIMPLE_DEV_PM_OPS(mv88e6xxx_pm_ops, mv88e6xxx_suspend, mv88e6xxx_resume);
- static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- {
- 	struct dsa_mv88e6xxx_pdata *pdata = mdiodev->dev.platform_data;
-+	struct fwnode_handle *fwnode = dev_fwnode(&mdiodev->dev);
- 	const struct mv88e6xxx_info *compat_info = NULL;
- 	struct device *dev = &mdiodev->dev;
--	struct device_node *np = dev->of_node;
- 	struct mv88e6xxx_chip *chip;
- 	int port;
- 	int err;
- 
--	if (!np && !pdata)
--		return -EINVAL;
--
--	if (np)
--		compat_info = of_device_get_match_data(dev);
--
--	if (pdata) {
-+	if (fwnode)
-+		compat_info = device_get_match_data(dev);
-+	else if (pdata) {
- 		compat_info = pdata_device_get_match_data(dev);
- 
- 		if (!pdata->netdev)
-@@ -7045,9 +7042,9 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	mv88e6xxx_phy_init(chip);
- 
- 	if (chip->info->ops->get_eeprom) {
--		if (np)
--			of_property_read_u32(np, "eeprom-length",
--					     &chip->eeprom_len);
-+		if (fwnode)
-+			device_property_read_u32(dev, "eeprom-length",
-+						 &chip->eeprom_len);
- 		else
- 			chip->eeprom_len = pdata->eeprom_len;
- 	}
-@@ -7058,8 +7055,8 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out;
- 
--	if (np) {
--		chip->irq = of_irq_get(np, 0);
-+	if (fwnode) {
-+		chip->irq = fwnode_irq_get(fwnode, 0);
- 		if (chip->irq == -EPROBE_DEFER) {
- 			err = chip->irq;
- 			goto out;
-@@ -7097,7 +7094,7 @@ static int mv88e6xxx_probe(struct mdio_device *mdiodev)
- 	if (err)
- 		goto out_g1_atu_prob_irq;
- 
--	err = mv88e6xxx_mdios_register(chip, np);
-+	err = mv88e6xxx_mdios_register(chip, fwnode);
- 	if (err)
- 		goto out_g1_vtu_prob_irq;
- 
--- 
-2.29.0
+[snip]
+
+> +static void mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
+> +{
+> +	ssize_t ret;
+> +	u8 sink_count;
+> +	u8 link_status[DP_LINK_STATUS_SIZE] = {};
+> +	u32 sink_count_reg = DP_SINK_COUNT_ESI;
+> +	u32 link_status_reg = DP_LANE0_1_STATUS;
+> +
+> +	ret = drm_dp_dpcd_readb(&mtk_dp->aux, sink_count_reg,
+> &sink_count);
+
+According to your last reply, if drm_dp_dpcd_readb() fail, we could
+skip below statement. So this just for error checking? If so, the next
+drm_dp_dpcd_read() would also do the error checking, so the checking
+here is redundant.
+
+Regards,
+CK
+
+> +	if (ret < 1) {
+> +		drm_err(mtk_dp->drm_dev, "Read sink count failed\n");
+> +		return;
+> +	}
+> +
+> +	drm_dbg(mtk_dp->drm_dev,
+> +		"read sink count from dpcd: %d\n", sink_count);
+> +
+> +	ret = drm_dp_dpcd_read(&mtk_dp->aux, link_status_reg,
+> link_status,
+> +			       sizeof(link_status));
+> +	if (!ret) {
+> +		drm_err(mtk_dp->drm_dev, "Read link status failed\n");
+> +		return;
+> +	}
+> +
+> +	if (!drm_dp_channel_eq_ok(link_status, mtk_dp-
+> >train_info.lane_count)) {
+> +		drm_err(mtk_dp->drm_dev, "Channel EQ failed\n");
+> +		return;
+> +	}
+> +
+> +	if (link_status[1] & DP_REMOTE_CONTROL_COMMAND_PENDING)
+> +		drm_dp_dpcd_writeb(&mtk_dp->aux,
+> DP_DEVICE_SERVICE_IRQ_VECTOR,
+> +				   DP_REMOTE_CONTROL_COMMAND_PENDING);
+> +}
+> +
 
