@@ -2,36 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B384C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC0AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232776AbiGOX0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:26:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
+        id S232796AbiGOX0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiGOX0O (ORCPT
+        with ESMTP id S232434AbiGOX0P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:26:14 -0400
-X-Greylist: delayed 3818 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:55 PDT
+        Fri, 15 Jul 2022 19:26:15 -0400
+X-Greylist: delayed 1820 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:58 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADB193681
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495F195B0C
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=Hw21+wotN9D+Z0hozfXdxMixZLaL8X+liJ1Yr85K26w=; b=bqWSW
-        qbwnSAzZLNuFJSgHqSN5Y4TsADurVnQgQSFB2/HIn4nBAUBs3+WkBLrMm2qzJ2UPi4321tNQydAd2
-        RB4XN5OzHSU+prD1liYj2ZUzkZ+19AUtxiBM1cjz6+Tbemc/8bfEi9sDRuy5knxsYMVObjiX8L4VU
-        m5L6tghyISEgbPk6x0KjG/nRnQlUy5tZLIMhGHGtySTQWla0Gv/HjHK0gGWcTF/QoI8RF1mkW8+Pl
-        0gYP4wFQQHGP/au1wFlnxiztj8ugX1k1LJqbLyoXUG/VIN4X9b+FAEVxIAvrSp8XfKK36ldXaViou
-        0srlmunzvZRDYfticUqCBCeZXfQmg==;
-Message-Id: <6e0f8699c793357f0c6e6fb3bbab249142b9ef6c.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=03PxLEg7NiaMvhSBPzBFP/XCwo9SFsyuKqJNcoKWY/4=; b=FNoOh
+        ADE4Hg8xvSWs3nC3arwY3n/D4KpC24+zbudVWzCQzQ9Jt44t0D4LfPFv3WNSlveHgFc6/KI89jp4e
+        LC0pEv1M5mVVRvKv+N7xBo9IjLpOl+pyG+ci+ZFb00tI3deorUKHOt6ymu9Zazq4QzWQsBXP3PhGF
+        2FTl5gNBAbd+9kOPgN6LEW+UHH9eTFypF8WmTbSoX4MxMbEAU7uZO4++cR3Fb04edNhHoWl3J/WaW
+        qzP1rvKlrtZ2sASOR7SA6QFTOU6CcyuZMfLSKmYNzTLM2CprP6GhQJR9/AXSBVavTNCZgOZ7RWKrJ
+        xLhnwIfB3xkgI3w00xTLP83GSiuGw==;
+Message-Id: <ebca00c2659755411269303881aad5da8590eefe.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:15 +0200
-Subject: [PATCH v6 02/11] 9p/trans_virtio: turn amount of sg lists into
- runtime info
+Date:   Fri, 15 Jul 2022 23:32:22 +0200
+Subject: [PATCH v6 05/11] 9p/trans_virtio: support larger msize values
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -42,125 +41,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The size of scatter/gather lists used by the virtio transport is
-currently hard coded. Refactor this to using a runtime variable.
+The virtio transport supports by default a 9p 'msize' of up to
+approximately 500 kB. This patch adds support for larger 'msize'
+values by resizing the amount of scatter/gather lists if required.
+
+To be more precise, for the moment this patch increases the 'msize'
+limit for the virtio transport to slightly below 4 MB, virtio
+transport actually supports much more (tested successfully with an
+experimental QEMU version and some dirty 9p Linux client hacks up
+to msize=128MB), but client still uses linear buffers, which in
+turn are limited to KMALLOC_MAX_SIZE (4M).
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- net/9p/trans_virtio.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+
+I am not sure if it is safe the way SG lists are resized here. I "think"
+Dominique said before there should be no concurrency here, but probably
+deserves a revisit.
+
+ net/9p/trans_virtio.c | 79 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
 
 diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 2693e618080c..18bdfa64b934 100644
+index 5ac533f83322..921caa022570 100644
 --- a/net/9p/trans_virtio.c
 +++ b/net/9p/trans_virtio.c
-@@ -36,7 +36,7 @@
+@@ -36,6 +36,16 @@
  #include <linux/virtio_9p.h>
  #include "trans_common.h"
  
--#define VIRTQUEUE_NUM	128
-+#define VIRTQUEUE_DEFAULT_NUM	128
++/*
++ * Maximum amount of virtio descriptors allowed per virtio round-trip
++ * message.
++ *
++ * This effectively limits msize to (slightly below) 4M, virtio transport
++ * actually supports much more, but client still uses linear buffers, which
++ * in turn are limited to KMALLOC_MAX_SIZE (4M).
++ */
++#define VIRTIO_MAX_DESCRIPTORS 1024
++
+ /**
+  * struct virtqueue_sg - (chained) scatter gather lists for virtqueue data
+  * transmission
+@@ -203,6 +213,31 @@ static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
+ 	return vq_sg;
+ }
  
- /* a single mutex to manage channel initialization and attachment */
- static DEFINE_MUTEX(virtio_9p_lock);
-@@ -54,6 +54,7 @@ static atomic_t vp_pinned = ATOMIC_INIT(0);
-  * @vc_wq: wait queue for waiting for thing to be added to ring buf
-  * @p9_max_pages: maximum number of pinned pages
-  * @sg: scatter gather list which is used to pack a request (protected?)
-+ * @sg_n: amount of elements in sg array
-  * @chan_list: linked list of channels
-  *
-  * We keep all per-channel information in a structure.
-@@ -78,6 +79,7 @@ struct virtio_chan {
- 	unsigned long p9_max_pages;
- 	/* Scatterlist: can be too big for stack. */
- 	struct scatterlist *sg;
-+	size_t sg_n;
- 	/**
- 	 * @tag: name to identify a mount null terminated
- 	 */
-@@ -270,12 +272,12 @@ p9_virtio_request(struct p9_client *client, struct p9_req_t *req)
- 	out_sgs = in_sgs = 0;
- 	/* Handle out VirtIO ring buffers */
- 	out = pack_sg_list(chan->sg, 0,
--			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
-+			   chan->sg_n, req->tc.sdata, req->tc.size);
- 	if (out)
- 		sgs[out_sgs++] = chan->sg;
++/**
++ * vq_sg_resize - resize passed virtqueue scatter/gather lists to the passed
++ * amount of lists
++ * @_vq_sg: scatter/gather lists to be resized
++ * @nsgl: new amount of scatter/gather lists
++ */
++static int vq_sg_resize(struct virtqueue_sg **_vq_sg, unsigned int nsgl)
++{
++	struct virtqueue_sg *vq_sg;
++
++	BUG_ON(!_vq_sg || !nsgl);
++	vq_sg = *_vq_sg;
++	if (vq_sg->nsgl == nsgl)
++		return 0;
++
++	/* lazy resize implementation for now */
++	vq_sg = vq_sg_alloc(nsgl);
++	if (!vq_sg)
++		return -ENOMEM;
++
++	kfree(*_vq_sg);
++	*_vq_sg = vq_sg;
++	return 0;
++}
++
+ /**
+  * p9_virtio_close - reclaim resources of a channel
+  * @client: client instance
+@@ -774,6 +809,10 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 	struct virtio_chan *chan;
+ 	int ret = -ENOENT;
+ 	int found = 0;
++#if !defined(CONFIG_ARCH_NO_SG_CHAIN)
++	size_t npages;
++	size_t nsgl;
++#endif
  
- 	in = pack_sg_list(chan->sg, out,
--			  VIRTQUEUE_NUM, req->rc.sdata, req->rc.capacity);
-+			  chan->sg_n, req->rc.sdata, req->rc.capacity);
- 	if (in)
- 		sgs[out_sgs + in_sgs++] = chan->sg + out;
- 
-@@ -447,14 +449,14 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 
- 	/* out data */
- 	out = pack_sg_list(chan->sg, 0,
--			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
-+			   chan->sg_n, req->tc.sdata, req->tc.size);
- 
- 	if (out)
- 		sgs[out_sgs++] = chan->sg;
- 
- 	if (out_pages) {
- 		sgs[out_sgs++] = chan->sg + out;
--		out += pack_sg_list_p(chan->sg, out, VIRTQUEUE_NUM,
-+		out += pack_sg_list_p(chan->sg, out, chan->sg_n,
- 				      out_pages, out_nr_pages, offs, outlen);
+ 	if (devname == NULL)
+ 		return -EINVAL;
+@@ -796,6 +835,46 @@ p9_virtio_create(struct p9_client *client, const char *devname, char *args)
+ 		return ret;
  	}
  
-@@ -466,13 +468,13 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
- 	 * allocated memory and payload onto the user buffer.
- 	 */
- 	in = pack_sg_list(chan->sg, out,
--			  VIRTQUEUE_NUM, req->rc.sdata, in_hdr_len);
-+			  chan->sg_n, req->rc.sdata, in_hdr_len);
- 	if (in)
- 		sgs[out_sgs + in_sgs++] = chan->sg + out;
- 
- 	if (in_pages) {
- 		sgs[out_sgs + in_sgs++] = chan->sg + out + in;
--		in += pack_sg_list_p(chan->sg, out + in, VIRTQUEUE_NUM,
-+		in += pack_sg_list_p(chan->sg, out + in, chan->sg_n,
- 				     in_pages, in_nr_pages, offs, inlen);
- 	}
- 
-@@ -574,13 +576,14 @@ static int p9_virtio_probe(struct virtio_device *vdev)
- 		goto fail;
- 	}
- 
--	chan->sg = kmalloc_array(VIRTQUEUE_NUM,
-+	chan->sg = kmalloc_array(VIRTQUEUE_DEFAULT_NUM,
- 				 sizeof(struct scatterlist), GFP_KERNEL);
- 	if (!chan->sg) {
- 		pr_err("Failed to allocate virtio 9P channel\n");
- 		err = -ENOMEM;
- 		goto out_free_chan_shallow;
- 	}
-+	chan->sg_n = VIRTQUEUE_DEFAULT_NUM;
- 
- 	chan->vdev = vdev;
- 
-@@ -593,7 +596,7 @@ static int p9_virtio_probe(struct virtio_device *vdev)
- 	chan->vq->vdev->priv = chan;
- 	spin_lock_init(&chan->lock);
- 
--	sg_init_table(chan->sg, VIRTQUEUE_NUM);
-+	sg_init_table(chan->sg, chan->sg_n);
- 
- 	chan->inuse = false;
- 	if (virtio_has_feature(vdev, VIRTIO_9P_MOUNT_TAG)) {
-@@ -777,7 +780,7 @@ static struct p9_trans_module p9_virtio_trans = {
- 	 * that are not at page boundary, that can result in an extra
- 	 * page in zero copy.
- 	 */
--	.maxsize = PAGE_SIZE * (VIRTQUEUE_NUM - 3),
-+	.maxsize = PAGE_SIZE * (VIRTQUEUE_DEFAULT_NUM - 3),
- 	.def = 1,
- 	.owner = THIS_MODULE,
- };
++	/*
++	 * if user supplied an 'msize' option that's larger than what this
++	 * transport supports by default, then try to allocate more sg lists
++	 */
++	if (client->msize > client->trans_maxsize) {
++#ifdef CONFIG_ARCH_NO_SG_CHAIN
++		pr_info("limiting 'msize' to %d because architecture does not "
++			"support chained scatter gather lists\n",
++			client->trans_maxsize);
++#else
++		npages = DIV_ROUND_UP(client->msize, PAGE_SIZE);
++		if (npages > VIRTIO_MAX_DESCRIPTORS)
++			npages = VIRTIO_MAX_DESCRIPTORS;
++		if (npages > chan->p9_max_pages) {
++			npages = chan->p9_max_pages;
++			pr_info("limiting 'msize' as it would exceed the max. "
++				"of %lu pages allowed on this system\n",
++				chan->p9_max_pages);
++		}
++		nsgl = DIV_ROUND_UP(npages, SG_USER_PAGES_PER_LIST);
++		if (nsgl > chan->vq_sg->nsgl) {
++			/*
++			 * if resize fails, no big deal, then just continue with
++			 * whatever we got
++			 */
++			if (!vq_sg_resize(&chan->vq_sg, nsgl)) {
++				/*
++				 * decrement 2 pages as both 9p request and 9p reply have
++				 * to fit into the virtio round-trip message
++				 */
++				client->trans_maxsize =
++					PAGE_SIZE *
++					clamp_t(int,
++						(nsgl * SG_USER_PAGES_PER_LIST) - 2,
++						0, VIRTIO_MAX_DESCRIPTORS - 2);
++			}
++		}
++#endif /* CONFIG_ARCH_NO_SG_CHAIN */
++	}
++
+ 	client->trans = (void *)chan;
+ 	client->status = Connected;
+ 	chan->client = client;
 -- 
 2.30.2
 
