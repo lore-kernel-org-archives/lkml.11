@@ -2,251 +2,236 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04774C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:01:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C11CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:02:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbiGOQBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:01:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60686 "EHLO
+        id S231184AbiGOQCs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:02:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232745AbiGOQA7 (ORCPT
+        with ESMTP id S233382AbiGOQCG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 12:00:59 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 057CE6E8BB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:54 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id t25so8514776lfg.7
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 09:00:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6PvTZQ45Z0LZ1z1mI3Km4s/20uCm/f1rKAHjk57ZZk8=;
-        b=X5YO4csQqPan1hqJ4ywB5/7ABfqBnMBowXP4ayNMlBt4V+h/PIZmINY/jCxDJDQGAm
-         /8SOHrHLa/sVo5ZQPSnK9diHS0b2GeeZbRrRgnYp68jI5GXiNmoCfgvb6sqvoda4yLPt
-         j+5mqOBSkDYknzg/7l5iLcSqBg9WRX4+OvstF732nLI7pTgA0rSPpfWaxF9Lam1wdSig
-         Q+tGkEqka1o0EbJlKP4iypS8s+4kk+va5bura3M2iitnQBm6PrXyr6oLo6s7ulbJRNei
-         1NllHMhQBtpkc+Uzbu05HdCxQf8GnEmw8zvCz7CwhB67lKDyW+u0fGT3SwGURVrSH3AI
-         VTrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6PvTZQ45Z0LZ1z1mI3Km4s/20uCm/f1rKAHjk57ZZk8=;
-        b=P1gZ9app7PjoqxmVuFxpk8GZw3ghyXPzwCzIoiioaONk5HlX5yq85t2uu0flLawWBv
-         6Epa/s6ZbaAKNB6LFN+qGkywnRHfUDM10nDLoNIzrQKeqVbOmVP7JrWINFZ3pLbP+9ir
-         UWlqVKSR/j2D24b205KClJ9NhpqMuZPP7oKndRCa7fhnYkHte2D4VGV50i55A5pp2Jzl
-         lj3WnK6GQTEcsn/TmgpWtUrPtKkpQhnL4z59ctR9FrgmJSg1Nl6pPS7a886+tqKfqmLu
-         4lFxd9iHtLTn2zKPapwPzHVQf9r1C7tziFXaG3mN2NwZZX0DFytf6xG0j+YZ+zwKOE/a
-         sZLQ==
-X-Gm-Message-State: AJIora+fTJWFZU+zVv8JrR6RySEjPIa/gCgsR8DkxLYRjOYm3jkULtgz
-        DAeWi2bGACrz/uV1frxNveCOhw==
-X-Google-Smtp-Source: AGRyM1uTpv9co3mlZ+OhXk00VcEkV9xpnVsHMD0Bsl48TyFRViM/iA5Ha3jUNDd0xu0Ybg21ZkkOlQ==
-X-Received: by 2002:a05:6512:3d15:b0:489:d97d:8927 with SMTP id d21-20020a0565123d1500b00489d97d8927mr8657272lfv.80.1657900852352;
-        Fri, 15 Jul 2022 09:00:52 -0700 (PDT)
-Received: from dmaluka.office.semihalf.net ([83.142.187.84])
-        by smtp.gmail.com with ESMTPSA id c12-20020a056512238c00b0047968606114sm959772lfv.111.2022.07.15.09.00.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 09:00:51 -0700 (PDT)
-From:   Dmytro Maluka <dmy@semihalf.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
-        Eric Auger <eric.auger@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Rong L Liu <rong.l.liu@intel.com>,
-        Zhenyu Wang <zhenyuw@linux.intel.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Dmitry Torokhov <dtor@google.com>,
-        Dmytro Maluka <dmy@semihalf.com>
-Subject: [PATCH 3/3] KVM: irqfd: Postpone resamplefd notify for oneshot interrupts
-Date:   Fri, 15 Jul 2022 17:59:28 +0200
-Message-Id: <20220715155928.26362-4-dmy@semihalf.com>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-In-Reply-To: <20220715155928.26362-1-dmy@semihalf.com>
-References: <20220715155928.26362-1-dmy@semihalf.com>
+        Fri, 15 Jul 2022 12:02:06 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2526747BE;
+        Fri, 15 Jul 2022 09:02:03 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26FFL0YF010551;
+        Fri, 15 Jul 2022 16:01:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=Nc7U3jMNz3s5relVkPSuzWGxkTEQWd++fvh2MPtZbDU=;
+ b=KQoMl8eYhN6d6yRs668JUFyi3p0AiiMq0OLhbenyevAzQ1dRl1Pn2sUWq1EOyxg3GTY+
+ 4vkUAPlwg9vHxfY+YnChBcVItus4fUCjgMg4LnFV7wjc1f6WCKJZnOvT7XdhNwWo0624
+ h6gPlUfhBhSdNzhOf3cIr4OIZHp8q4FBKMmtXQw9Oo9z0reD03HKMe1ex9mItzEqRWFR
+ OfSSo5lIsKPVhkBXSvBHTfOGeG22u/a4lYMx+dzNPeSDwouOzNjbO2kWZg7icVWTTiAy
+ J7rS8n3jKT6NmPVv1HrTgiEyN6SFl2XJI8igH1EN+G25O6BdpC5xtFRm9n0OR19rcZKO 7Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hbat68vfn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 16:01:40 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26FFkLSm026424;
+        Fri, 15 Jul 2022 16:01:40 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hbat68vf5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 16:01:39 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26FFp5vB021358;
+        Fri, 15 Jul 2022 16:01:39 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma02dal.us.ibm.com with ESMTP id 3h9am58svk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 16:01:39 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26FG1bhc35914158
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 15 Jul 2022 16:01:37 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B64D1136053;
+        Fri, 15 Jul 2022 16:01:37 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0F72413604F;
+        Fri, 15 Jul 2022 16:01:36 +0000 (GMT)
+Received: from [9.47.158.152] (unknown [9.47.158.152])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 15 Jul 2022 16:01:36 +0000 (GMT)
+Message-ID: <3a9196b3-c510-0c32-8b70-572d9c4fe69d@linux.ibm.com>
+Date:   Fri, 15 Jul 2022 12:01:36 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v5 4/6] tpm: of: Make of-tree specific function commonly
+ available
+Content-Language: en-US
+To:     Jarkko Sakkinen <jarkko@kernel.org>
+Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
+        nasastry@in.ibm.com, mpe@ellerman.id.au,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>
+References: <20220706152329.665636-1-stefanb@linux.ibm.com>
+ <20220706152329.665636-5-stefanb@linux.ibm.com> <YsuTRny45aBxGjm5@kernel.org>
+From:   Stefan Berger <stefanb@linux.ibm.com>
+In-Reply-To: <YsuTRny45aBxGjm5@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Ad0o9E6xukVBHUz222-CjzD2D4HlvqOu
+X-Proofpoint-ORIG-GUID: ZqRm3DHERDE5hNRQwUZcbTuvmXWwlZGl
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-15_08,2022-07-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 mlxscore=0 phishscore=0 clxscore=1015
+ priorityscore=1501 impostorscore=0 adultscore=0 bulkscore=0 spamscore=0
+ suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207150068
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The existing KVM mechanism for forwarding of level-triggered interrupts
-using resample eventfd doesn't work quite correctly in the case of
-interrupts that are handled in a Linux guest as oneshot interrupts
-(IRQF_ONESHOT). Such an interrupt is acked to the device in its
-threaded irq handler, i.e. later than it is acked to the interrupt
-controller (EOI at the end of hardirq), not earlier.
 
-Linux keeps such interrupt masked until its threaded handler finishes,
-to prevent the EOI from re-asserting an unacknowledged interrupt.
-However, with KVM + vfio (or whatever is listening on the resamplefd)
-we don't check that the interrupt is still masked in the guest at the
-moment of EOI. Resamplefd is notified regardless, so vfio prematurely
-unmasks the host physical IRQ, thus a new (unwanted) physical interrupt
-is generated in the host and queued for injection to the guest.
 
-The fact that the virtual IRQ is still masked doesn't prevent this new
-physical IRQ from being propagated to the guest, because:
+On 7/10/22 23:04, Jarkko Sakkinen wrote:
+> On Wed, Jul 06, 2022 at 11:23:27AM -0400, Stefan Berger wrote:
+>> Simplify tpm_read_log_of() by moving reusable parts of the code into
+>> an inline function that makes it commonly available so it can be
+>> used also for kexec support. Call the new of_tpm_get_sml_parameters()
+>> function from the TPM Open Firmware driver.
+>>
+>> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
+>> Cc: Jarkko Sakkinen <jarkko@kernel.org>
+>> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+>> Cc: Rob Herring <robh+dt@kernel.org>
+>> Cc: Frank Rowand <frowand.list@gmail.com>
+>>
+>> ---
+>> v4:
+>>   - converted to inline function
+>> ---
+>>   drivers/char/tpm/eventlog/of.c | 31 +++++--------------------------
+>>   include/linux/tpm.h            | 27 +++++++++++++++++++++++++++
+>>   2 files changed, 32 insertions(+), 26 deletions(-)
+>>
+>> diff --git a/drivers/char/tpm/eventlog/of.c b/drivers/char/tpm/eventlog/of.c
+>> index a9ce66d09a75..f9462d19632e 100644
+>> --- a/drivers/char/tpm/eventlog/of.c
+>> +++ b/drivers/char/tpm/eventlog/of.c
+>> @@ -12,6 +12,7 @@
+>>   
+>>   #include <linux/slab.h>
+>>   #include <linux/of.h>
+>> +#include <linux/tpm.h>
+>>   #include <linux/tpm_eventlog.h>
+>>   
+>>   #include "../tpm.h"
+>> @@ -20,11 +21,10 @@
+>>   int tpm_read_log_of(struct tpm_chip *chip)
+>>   {
+>>   	struct device_node *np;
+>> -	const u32 *sizep;
+>> -	const u64 *basep;
+>>   	struct tpm_bios_log *log;
+>>   	u32 size;
+>>   	u64 base;
+>> +	int ret;
+>>   
+>>   	log = &chip->log;
+>>   	if (chip->dev.parent && chip->dev.parent->of_node)
+>> @@ -35,30 +35,9 @@ int tpm_read_log_of(struct tpm_chip *chip)
+>>   	if (of_property_read_bool(np, "powered-while-suspended"))
+>>   		chip->flags |= TPM_CHIP_FLAG_ALWAYS_POWERED;
+>>   
+>> -	sizep = of_get_property(np, "linux,sml-size", NULL);
+>> -	basep = of_get_property(np, "linux,sml-base", NULL);
+>> -	if (sizep == NULL && basep == NULL)
+>> -		return -ENODEV;
+>> -	if (sizep == NULL || basep == NULL)
+>> -		return -EIO;
+>> -
+>> -	/*
+>> -	 * For both vtpm/tpm, firmware has log addr and log size in big
+>> -	 * endian format. But in case of vtpm, there is a method called
+>> -	 * sml-handover which is run during kernel init even before
+>> -	 * device tree is setup. This sml-handover function takes care
+>> -	 * of endianness and writes to sml-base and sml-size in little
+>> -	 * endian format. For this reason, vtpm doesn't need conversion
+>> -	 * but physical tpm needs the conversion.
+>> -	 */
 
-1. It is not guaranteed that the vIRQ will remain masked by the time
-   when vfio signals the trigger eventfd.
-2. KVM marks this IRQ as pending (e.g. setting its bit in the virtual
-   IRR register of IOAPIC on x86), so after the vIRQ is unmasked, this
-   new pending interrupt is injected by KVM to the guest anyway.
 
-There are observed at least 2 user-visible issues caused by those
-extra erroneous pending interrupts for oneshot irq in the guest:
+Jarkko,
 
-1. System suspend aborted due to a pending wakeup interrupt from
-   ChromeOS EC (drivers/platform/chrome/cros_ec.c).
-2. Annoying "invalid report id data" errors from ELAN0000 touchpad
-   (drivers/input/mouse/elan_i2c_core.c), flooding the guest dmesg
-   every time the touchpad is touched.
+  can I apply your R-b tag after putting this lost comment back into the 
+inline function?
+    Stefan
 
-This patch fixes the issue on x86 by checking if the interrupt is
-unmasked when we receive irq ack (EOI) and, in case if it's masked,
-postponing resamplefd notify until the guest unmasks it.
-
-Important notes:
-
-1. It doesn't fix the issue for other archs yet, due to some missing
-   KVM functionality needed by this patch:
-     - calling mask notifiers is implemented for x86 only
-     - irqchip ->is_masked() is implemented for x86 only
-
-2. It introduces an additional spinlock locking in the resample notify
-   path, since we are no longer just traversing an RCU list of irqfds
-   but also updating the resampler state. Hopefully this locking won't
-   noticeably slow down anything for anyone.
-
-Regarding #2, there may be an alternative solution worth considering:
-extend KVM irqfd (userspace) API to send mask and unmask notifications
-directly to vfio/whatever, in addition to resample notifications, to
-let vfio check the irq state on its own. There is already locking on
-vfio side (see e.g. vfio_platform_unmask()), so this way we would avoid
-introducing any additional locking. Also such mask/unmask notifications
-could be useful for other cases.
-
-Link: https://lore.kernel.org/kvm/31420943-8c5f-125c-a5ee-d2fde2700083@semihalf.com/
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Dmytro Maluka <dmy@semihalf.com>
----
- include/linux/kvm_irqfd.h | 14 ++++++++++++
- virt/kvm/eventfd.c        | 45 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
-
-diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
-index dac047abdba7..01754a1abb9e 100644
---- a/include/linux/kvm_irqfd.h
-+++ b/include/linux/kvm_irqfd.h
-@@ -19,6 +19,16 @@
-  * resamplefd.  All resamplers on the same gsi are de-asserted
-  * together, so we don't need to track the state of each individual
-  * user.  We can also therefore share the same irq source ID.
-+ *
-+ * A special case is when the interrupt is still masked at the moment
-+ * an irq ack is received. That likely means that the interrupt has
-+ * been acknowledged to the interrupt controller but not acknowledged
-+ * to the device yet, e.g. it might be a Linux guest's threaded
-+ * oneshot interrupt (IRQF_ONESHOT). In this case notifying through
-+ * resamplefd is postponed until the guest unmasks the interrupt,
-+ * which is detected through the irq mask notifier. This prevents
-+ * erroneous extra interrupts caused by premature re-assert of an
-+ * unacknowledged interrupt by the resamplefd listener.
-  */
- struct kvm_kernel_irqfd_resampler {
- 	struct kvm *kvm;
-@@ -28,6 +38,10 @@ struct kvm_kernel_irqfd_resampler {
- 	 */
- 	struct list_head list;
- 	struct kvm_irq_ack_notifier notifier;
-+	struct kvm_irq_mask_notifier mask_notifier;
-+	bool masked;
-+	bool pending;
-+	spinlock_t lock;
- 	/*
- 	 * Entry in list of kvm->irqfd.resampler_list.  Use for sharing
- 	 * resamplers among irqfds on the same gsi.
-diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
-index 50ddb1d1a7f0..9ff47ac33790 100644
---- a/virt/kvm/eventfd.c
-+++ b/virt/kvm/eventfd.c
-@@ -75,6 +75,44 @@ irqfd_resampler_ack(struct kvm_irq_ack_notifier *kian)
- 	kvm_set_irq(kvm, KVM_IRQFD_RESAMPLE_IRQ_SOURCE_ID,
- 		    resampler->notifier.gsi, 0, false);
- 
-+	spin_lock(&resampler->lock);
-+	if (resampler->masked) {
-+		resampler->pending = true;
-+		spin_unlock(&resampler->lock);
-+		return;
-+	}
-+	spin_unlock(&resampler->lock);
-+
-+	idx = srcu_read_lock(&kvm->irq_srcu);
-+
-+	list_for_each_entry_srcu(irqfd, &resampler->list, resampler_link,
-+	    srcu_read_lock_held(&kvm->irq_srcu))
-+		eventfd_signal(irqfd->resamplefd, 1);
-+
-+	srcu_read_unlock(&kvm->irq_srcu, idx);
-+}
-+
-+static void
-+irqfd_resampler_mask(struct kvm_irq_mask_notifier *kimn, bool masked)
-+{
-+	struct kvm_kernel_irqfd_resampler *resampler;
-+	struct kvm *kvm;
-+	struct kvm_kernel_irqfd *irqfd;
-+	int idx;
-+
-+	resampler = container_of(kimn,
-+			struct kvm_kernel_irqfd_resampler, mask_notifier);
-+	kvm = resampler->kvm;
-+
-+	spin_lock(&resampler->lock);
-+	resampler->masked = masked;
-+	if (masked || !resampler->pending) {
-+		spin_unlock(&resampler->lock);
-+		return;
-+	}
-+	resampler->pending = false;
-+	spin_unlock(&resampler->lock);
-+
- 	idx = srcu_read_lock(&kvm->irq_srcu);
- 
- 	list_for_each_entry_srcu(irqfd, &resampler->list, resampler_link,
-@@ -98,6 +136,8 @@ irqfd_resampler_shutdown(struct kvm_kernel_irqfd *irqfd)
- 	if (list_empty(&resampler->list)) {
- 		list_del(&resampler->link);
- 		kvm_unregister_irq_ack_notifier(kvm, &resampler->notifier);
-+		kvm_unregister_irq_mask_notifier(kvm, resampler->mask_notifier.irq,
-+						 &resampler->mask_notifier);
- 		kvm_set_irq(kvm, KVM_IRQFD_RESAMPLE_IRQ_SOURCE_ID,
- 			    resampler->notifier.gsi, 0, false);
- 		kfree(resampler);
-@@ -367,11 +407,16 @@ kvm_irqfd_assign(struct kvm *kvm, struct kvm_irqfd *args)
- 			INIT_LIST_HEAD(&resampler->list);
- 			resampler->notifier.gsi = irqfd->gsi;
- 			resampler->notifier.irq_acked = irqfd_resampler_ack;
-+			resampler->mask_notifier.func = irqfd_resampler_mask;
-+			kvm_irq_is_masked(kvm, irqfd->gsi, &resampler->masked);
-+			spin_lock_init(&resampler->lock);
- 			INIT_LIST_HEAD(&resampler->link);
- 
- 			list_add(&resampler->link, &kvm->irqfds.resampler_list);
- 			kvm_register_irq_ack_notifier(kvm,
- 						      &resampler->notifier);
-+			kvm_register_irq_mask_notifier(kvm, irqfd->gsi,
-+						       &resampler->mask_notifier);
- 			irqfd->resampler = resampler;
- 		}
- 
--- 
-2.37.0.170.g444d1eabd0-goog
-
+>> -	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
+>> -	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
+>> -		size = be32_to_cpup((__force __be32 *)sizep);
+>> -		base = be64_to_cpup((__force __be64 *)basep);
+>> -	} else {
+>> -		size = *sizep;
+>> -		base = *basep;
+>> -	}
+>> +	ret = of_tpm_get_sml_parameters(np, &base, &size);
+>> +	if (ret < 0)
+>> +		return ret;
+>>   
+>>   	if (size == 0) {
+>>   		dev_warn(&chip->dev, "%s: Event log area empty\n", __func__);
+>> diff --git a/include/linux/tpm.h b/include/linux/tpm.h
+>> index dfeb25a0362d..b3dff255bc58 100644
+>> --- a/include/linux/tpm.h
+>> +++ b/include/linux/tpm.h
+>> @@ -460,4 +460,31 @@ static inline struct tpm_chip *tpm_default_chip(void)
+>>   	return NULL;
+>>   }
+>>   #endif
+>> +
+>> +#ifdef CONFIG_OF
+>> +static inline int of_tpm_get_sml_parameters(struct device_node *np,
+>> +					    u64 *base, u32 *size)
+>> +{
+>> +	const u32 *sizep;
+>> +	const u64 *basep;
+>> +
+>> +	sizep = of_get_property(np, "linux,sml-size", NULL);
+>> +	basep = of_get_property(np, "linux,sml-base", NULL);
+>> +	if (sizep == NULL && basep == NULL)
+>> +		return -ENODEV;
+>> +	if (sizep == NULL || basep == NULL)
+>> +		return -EIO;
+>> +
+>> +	if (of_property_match_string(np, "compatible", "IBM,vtpm") < 0 &&
+>> +	    of_property_match_string(np, "compatible", "IBM,vtpm20") < 0) {
+>> +		*size = be32_to_cpup((__force __be32 *)sizep);
+>> +		*base = be64_to_cpup((__force __be64 *)basep);
+>> +	} else {
+>> +		*size = *sizep;
+>> +		*base = *basep;
+>> +	}
+>> +	return 0;
+>> +}
+>> +#endif
+>> +
+>>   #endif
+>> -- 
+>> 2.35.1
+>>
+> 
+> 
+> Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+> 
+> BR, Jarkko
+> 
+> _______________________________________________
+> kexec mailing list
+> kexec@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/kexec
