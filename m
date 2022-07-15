@@ -2,98 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2558C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBB6CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:57:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234966AbiGOQ5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39490 "EHLO
+        id S235010AbiGOQ5V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:57:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234734AbiGOQ46 (ORCPT
+        with ESMTP id S234986AbiGOQ5S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 12:56:58 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6255F7AB1F;
-        Fri, 15 Jul 2022 09:56:57 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id y8so7074176eda.3;
-        Fri, 15 Jul 2022 09:56:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y+DDDWv8vNM5PdR14plMoRMklo8MIh+lniAAcBYuf10=;
-        b=qV4xJmyOIfgtqLCC4K8RkabXNksmOb8+rPBWPdJ8dU82l45EO0JX09/X4v66i1XfSj
-         PD2kBzcqdCXZo8oieUmvpIZyJd+WxKLvXHHrWpAJawhN5C5RWSo/lzOdWdYMrRqMUunr
-         8nwLtwC8lV3/ZS+diAAM7eCdU4Sor1sbJ9rLlrd+GZ5suVE4ZvntTatxbqIUn2VaMDnZ
-         gkKr1dQ7j4wqKUyP6F4G582PCLJ2sSg15jRodBOncfpyHUmr8CjSkLyto3PYPI5EJxzs
-         W/gbzOfcwoHo/qu4TSlVsuywdu8oOgH5/cnjcBIPwLk7EO4iwNALZ8oUNCwRedjeTozc
-         XVJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y+DDDWv8vNM5PdR14plMoRMklo8MIh+lniAAcBYuf10=;
-        b=SjmeQ4MAv71OrY/3nMUzJXukCqTIYz0eOPByQDdsX9zv7WsdYHWde0M6rlbyUVIQU1
-         pzL7xnvo1qzdMqt5oCe2Of5yZXDXRW79y6g+ktkuKrgDwF0By+pxXKVcB7WsIBLS0ghG
-         SPKiqx5bxm2KPHnvHAqiiL8jEU4FSP3xObG1eLjLowIt7iNSGdFSDRc2dXj/Qkcp/JkV
-         7L4qJIosLlaqk2xLx6oxK5IsekHV/j7SKiTAf2fFGK4aQyq1PbXwDK8gm+Jc59EF6GW7
-         7TB2dSKeFth5d429I01APhHLgjEINcWbz9IrvWHduXWIZHCVnr0ZTuG/F3BGyaXVazb/
-         qnKQ==
-X-Gm-Message-State: AJIora9hwiHSGAp+y3PscloQPocjBjC49dAhAM5bHrlUKw3KPaMCbjfr
-        Mree6RUsH8Ht66FkTv6VLNp1cb102SAmJzkxpEA=
-X-Google-Smtp-Source: AGRyM1t5U0NQTYmztP5y3p4mrePMiL4H99HoxqbYm+yMB3ZIFmWMdoA4GfQLBP3dljrdl79ooGNQNNh89/szlJySGR0=
-X-Received: by 2002:a05:6402:1c01:b0:43a:f714:bcbe with SMTP id
- ck1-20020a0564021c0100b0043af714bcbemr20619834edb.14.1657904215610; Fri, 15
- Jul 2022 09:56:55 -0700 (PDT)
+        Fri, 15 Jul 2022 12:57:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324E07AB3F;
+        Fri, 15 Jul 2022 09:57:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6C8C6221F;
+        Fri, 15 Jul 2022 16:57:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1399BC34115;
+        Fri, 15 Jul 2022 16:57:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657904236;
+        bh=lTXY5Gcc+Y7ick0QSIPmtVgKN3YWDrJFLRIIWMaoFj0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kTp24Ltg2XWxJiXYdG9XYpFHTTqgCUqwgMMfL6BYpuQSq26ew5b8oZ2x/IghY71/b
+         XwcEJmNXHQETPLW3PQYySu5z+ozk8eQWtKRbGqT52xY24ZSnY6xxyR5f0MzmcfNW2R
+         HW6rt3Ox1sFJHsOw4suNBbGdmg+XJmG5EGzeLC14QmT252240mhJHjDJAhM/CWc7uq
+         Ay0CfdCLJkWPQQeCppM/UjXGhlq+Ac9IPq0clb8YDm2uLLhnfQTf+y/5vGLyRMFfVG
+         76LlP05DgmuaMwfkrgzY06xhdZIKDqNrgXpiBzVuo4CPa7pC/MD/kw9Zdf6cxgS5a0
+         st4AVTEwyHkmg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1oCOcz-0007XA-KN; Fri, 15 Jul 2022 18:57:22 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>
+Subject: [PATCH] arm64: dts: qcom: sc8280xp: fix usb_1 ssphy irq
+Date:   Fri, 15 Jul 2022 18:53:44 +0200
+Message-Id: <20220715165344.28822-1-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220714024612.944071-1-pulehui@huawei.com>
-In-Reply-To: <20220714024612.944071-1-pulehui@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 15 Jul 2022 09:56:44 -0700
-Message-ID: <CAEf4BzZ_L+94O00mMDUh8ps8RTF=kcvX1zS5ocK8fPk4uw-_kg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 0/3] Use lightweigt version of bpftool
-To:     Pu Lehui <pulehui@huawei.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 7:16 PM Pu Lehui <pulehui@huawei.com> wrote:
->
-> Currently, samples/bpf, tools/runqslower and bpf/iterators use bpftool
-> for vmlinux.h, skeleton, and static linking only. We can uselightweight
-> bootstrap version of bpftool to handle these, and it will be faster.
->
-> v2:
-> - make libbpf and bootstrap bpftool independent. and make it simple.
->
+Fix the usb_1 SS PHY interrupt, which was mistakingly replaced with one
+of the usb_2 PHY interrupts.
 
-Quentin, does this patch set look good to you?
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> v1: https://lore.kernel.org/bpf/20220712030813.865410-1-pulehui@huawei.com
->
-> Pu Lehui (3):
->   samples: bpf: Fix cross-compiling error by using bootstrap bpftool
->   tools: runqslower: build and use lightweight bootstrap version of
->     bpftool
->   bpf: iterators: build and use lightweight bootstrap version of bpftool
->
->  kernel/bpf/preload/iterators/Makefile | 10 +++-------
->  samples/bpf/Makefile                  | 10 ++++------
->  tools/bpf/runqslower/Makefile         |  7 +++----
->  3 files changed, 10 insertions(+), 17 deletions(-)
->
-> --
-> 2.25.1
->
+Hi Bjorn,
+
+I pointed this one out during the review of the base dtsi:
+
+	https://lore.kernel.org/lkml/YqDHjTkD%2FQZFS2Ub@hovoldconsulting.com/
+
+but it never made it into the final submission.
+
+This patch should be applied before the series I posted this morning:
+
+	https://lore.kernel.org/lkml/20220715070248.19078-1-johan+linaro@kernel.org/
+
+Johan
+
+
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+index a10af542942b..ee62556a1481 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+@@ -1384,7 +1384,7 @@ usb_1: usb@a8f8800 {
+ 			interrupts-extended = <&intc GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
+ 					      <&pdc 12 IRQ_TYPE_EDGE_BOTH>,
+ 					      <&pdc 13 IRQ_TYPE_EDGE_BOTH>,
+-					      <&pdc 16 IRQ_TYPE_LEVEL_HIGH>;
++					      <&pdc 136 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-names = "hs_phy_irq", "dp_hs_phy_irq",
+ 					  "dm_hs_phy_irq", "ss_phy_irq";
+ 
+-- 
+2.35.1
+
