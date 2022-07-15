@@ -2,60 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5986C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:47:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234687AbiGOLrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41144 "EHLO
+        id S232763AbiGOLsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234580AbiGOLrn (ORCPT
+        with ESMTP id S229475AbiGOLsl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:47:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEBF89A93;
-        Fri, 15 Jul 2022 04:47:42 -0700 (PDT)
+        Fri, 15 Jul 2022 07:48:41 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D987639B
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 04:48:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34B3CB82B72;
-        Fri, 15 Jul 2022 11:47:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A567C341C6;
-        Fri, 15 Jul 2022 11:47:38 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 43BADCE2EEE
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 11:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED09DC34115;
+        Fri, 15 Jul 2022 11:48:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657885659;
-        bh=8pAt/EJziwJeBex/Oeo6RgjbtM2GLBwfpHRN/ZjIqwI=;
+        s=k20201202; t=1657885716;
+        bh=mKWhPThcZmP1RLWqrhqBF+ZhH0KatTGFVjzBtLtdpu4=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=McJkORLjvYNFldM9l8kt9HPlNnM3lYAsDQEj1hukwO5p8EQIN/TG2ejIb3/iQ9Gzr
-         OrBvJ2B7rYOhSt9PtwnPelubVad092XWojCfWfz2pEqE5cGi5Dsrc6/qc10br6SY7L
-         OrCwq9YTbx8ERQCHNSjIyLLEFxc7Js1NpZz05cylUREbk7VhCA7TlPD422axqun5YR
-         DSQex7es1tchmP9cNXQXyyzIjXdswnPfZ8De6JJTHa8pH+tr3kjq6ULchkpGmjLRWP
-         wi1lnYM4CoSGCUB2/LILferLs5VYRnKGy1oG7KWfVa/YUsN6wMAqeI/4iuz3wgWgpM
-         vQcjW4w06D6Pw==
-Date:   Fri, 15 Jul 2022 17:17:35 +0530
+        b=eERiyrRXCg7lr+J2REf2VMzZc1HPKXbJtpBbKd+r+lOBbsWRGYbwiN1+jREtEsA3M
+         RSGqId2uDmoYE7OmEa0udZULdp+WAYVYIHTFP3aiNYz9K5TXJgkhUaFKaAdi80WmFN
+         VrJDjMHfKUFYKf1Hw7MjZt5WPmLSlg+XJeLxH9QRO4nx6T98It2tAAilvmf6FVx1f3
+         CHcdv96gAldK6MS9LUfRSGpkFkyNqxRopxjXPmdrddqs+Cgp4DZYmxN1T7hFMS8hEM
+         trd5cCVZd5XX5+rg8ZsUo93P2lyvkuCwajbIFzu3PnEpC8XXdHrY76jAT6c1nB0KE+
+         tn6jiZAlXd3+g==
+Date:   Fri, 15 Jul 2022 17:18:32 +0530
 From:   Vinod Koul <vkoul@kernel.org>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
+To:     Samuel Holland <samuel@sholland.org>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Geis <pgwipeout@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
         Kishon Vijay Abraham I <kishon@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: phy: mediatek: tphy: add compatible for
- mt8188
-Message-ID: <YtFT171BBEXKMTpo@matsya>
-References: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-phy@lists.infradead.org, linux-rockchip@lists.infradead.org
+Subject: Re: [PATCH] phy: rockchip-inno-usb2: Ignore OTG IRQs in host mode
+Message-ID: <YtFUEGgOGEQy7duZ@matsya>
+References: <20220708061434.38115-1-samuel@sholland.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
+In-Reply-To: <20220708061434.38115-1-samuel@sholland.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 08-07-22, 14:58, Chunfeng Yun wrote:
-> Add compatible for mt8188
+On 08-07-22, 01:14, Samuel Holland wrote:
+> When the OTG port is fixed to host mode, the driver does not request its
+> IRQs, nor does it enable those IRQs in hardware. Similarly, the driver
+> should ignore the OTG port IRQs when handling the shared interrupt.
+> 
+> Otherwise, it would update the extcon based on an ID pin which may be in
+> an undefined state, or try to queue a uninitialized work item.
 
 Applied, thanks
 
