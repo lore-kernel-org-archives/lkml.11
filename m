@@ -2,135 +2,275 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB83CCA47B
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 00:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC12C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 00:22:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241146AbiGOAQa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 20:16:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47024 "EHLO
+        id S241152AbiGOAWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 20:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232908AbiGOAQ2 (ORCPT
+        with ESMTP id S241031AbiGOAWR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 20:16:28 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AAC7390A;
-        Thu, 14 Jul 2022 17:16:27 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so10074392pjo.3;
-        Thu, 14 Jul 2022 17:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ryMqKrFOWmulx+usQjaVLAbS6tanQBrcDmxZy2Wn8Ow=;
-        b=WpJbgubDO1Up93xBl3imotvDec2cYsqi2W6eIoG/qvmrWL1zcf4mHFoJL/iIXVKe+2
-         +37oClF7n4FZHAk568mhDexpYrLwgrIB0We8gqLxg/35+LLi0Lbz4/7T8QCuLO7myGtJ
-         DZ0QOrJPB85/G3AEFaC5DnIX1RDEuvvXv+e0DwDkyPryTlr76AOD29sAkIvL9A0VymPu
-         qUwWHandJ5H89xnNpbN2XbfJOTFixlDvfKsLfrsY/XliwjCbpUnvcO6VRt3RfOPGnSkD
-         +QdSstiJeXqsDkQ/4jf8QL/m0lUQ5tatZxKaoehGowaA/zUEbThm5+GftI9Fl6LcuQbu
-         1uCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=ryMqKrFOWmulx+usQjaVLAbS6tanQBrcDmxZy2Wn8Ow=;
-        b=HSyP0oqr8muUYYlW+NnV1WxBJRbedhHHtdiLwCR+6EzY4d+7THYq6YkAMMxm00Cv8x
-         /0HT6CUDun/jXd4/AffhklOGlC7ZAzjz2gdPUyDFrzJMppVCmWKFwoUQRshUSPb0lksK
-         u7YunEUgaOgEBvJLaFSGryOx+GaasZ8dKAA0fAxAnCllNcwVk3YTi0WL1GNOd/psTyIY
-         DYLHLNZcUS7nIGXZjrP/I1xVwHhZBnpTByGXkIT+Lq7jhGqPZU79Z9F0aIffZ0KTUbEW
-         E+p6KGklbOA8T9cw/qgPxHrDVaWKZYzBnxLwimn62urpNFCkGa07vQIwYvZFcv1V1CB5
-         IlYQ==
-X-Gm-Message-State: AJIora+6X+1EzLpYQ78fWovOWtA1epRhsVzMa53U3vNjij7v8FbTnjtl
-        AWFHRrTj/alAeG49h+u2r1s=
-X-Google-Smtp-Source: AGRyM1ttYQ73IjzLNZZlvdgQfNR0XtEKpWrB7+ld2YjGhtuyaTRH0c7yRUqyB+khHAyO8NTOIj1HYA==
-X-Received: by 2002:a17:903:228d:b0:16c:56e4:8640 with SMTP id b13-20020a170903228d00b0016c56e48640mr10735069plh.90.1657844186994;
-        Thu, 14 Jul 2022 17:16:26 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id z9-20020a631909000000b0041992864d69sm1924222pgl.77.2022.07.14.17.16.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 17:16:26 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 14 Jul 2022 17:16:25 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Jeongik Cha <jeongik@google.com>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, adelva@google.com,
-        kernel-team@android.com, jaeman@google.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] wifi: mac80211_hwsim: fix race condition in pending
- packet
-Message-ID: <20220715001625.GA594816@roeck-us.net>
-References: <20220704084354.3556326-1-jeongik@google.com>
+        Thu, 14 Jul 2022 20:22:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 486A266BB9
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 17:22:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657844534;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JDKBdO2ynojitcW0UwD3EnMXjp2f1L6/iJQpfcNZFPM=;
+        b=PtnqULuIHBD3o/pYJRqNQgRPRoJbX5eB5eBvP5+ZM4tba9SHj/HzY36iGy1eOW0bGxeh/y
+        r/OXEEFao8vxEFxHPx0n9Trl9flpkuz4fW8z//GLuOyLLKUOhsXpudyUQGQkBpUHykOiqa
+        2jNCCiXbJ+PrJsKaRi2hdFpb708KhP4=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-108-tIbxiXzvM4-kc2o0I5BDCQ-1; Thu, 14 Jul 2022 20:22:08 -0400
+X-MC-Unique: tIbxiXzvM4-kc2o0I5BDCQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 530FC3C01E15;
+        Fri, 15 Jul 2022 00:22:08 +0000 (UTC)
+Received: from [10.64.54.37] (vpn2-54-37.bne.redhat.com [10.64.54.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9448D40885A1;
+        Fri, 15 Jul 2022 00:22:03 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH] KVM: selftests: Double check on the current CPU in
+ rseq_test
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvmarm@lists.cs.columbia.edu, kvm@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mathieu.desnoyers@efficios.com, shuah@kernel.org, maz@kernel.org,
+        oliver.upton@linux.dev, shan.gavin@gmail.com
+References: <20220714080642.3376618-1-gshan@redhat.com>
+ <cd5d029c-b396-45ef-917b-92e054659623@redhat.com>
+ <YtA3s0VRj3x7vO7B@google.com>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <be806f9c-861a-8da8-d42e-1d4271c3a326@redhat.com>
+Date:   Fri, 15 Jul 2022 12:21:42 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220704084354.3556326-1-jeongik@google.com>
+In-Reply-To: <YtA3s0VRj3x7vO7B@google.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 04, 2022 at 05:43:54PM +0900, Jeongik Cha wrote:
-> A pending packet uses a cookie as an unique key, but it can be duplicated
-> because it didn't use atomic operators.
-> 
-> And also, a pending packet can be null in hwsim_tx_info_frame_received_nl
-> due to race condition with mac80211_hwsim_stop.
-> 
-> For this,
->  * Use an atomic type and operator for a cookie
->  * Add a lock around the loop for pending packets
-> 
-> Signed-off-by: Jeongik Cha <jeongik@google.com>
+Hi Paolo and Sean,
 
-Building i386:allyesconfig ... failed
+On 7/15/22 1:35 AM, Sean Christopherson wrote:
+> On Thu, Jul 14, 2022, Paolo Bonzini wrote:
+>> On 7/14/22 10:06, Gavin Shan wrote:
+>>> In rseq_test, there are two threads created. Those two threads are
+>>> 'main' and 'migration_thread' separately. We also have the assumption
+>>> that non-migration status on 'migration-worker' thread guarantees the
+>>> same non-migration status on 'main' thread. Unfortunately, the assumption
+>>> isn't true. The 'main' thread can be migrated from one CPU to another
+>>> one between the calls to sched_getcpu() and READ_ONCE(__rseq.cpu_id).
+>>> The following assert is raised eventually because of the mismatched
+>>> CPU numbers.
+>>>
+>>> The issue can be reproduced on arm64 system occasionally.
+>>
+>> Hmm, this does not seem a correct patch - the threads are already
+>> synchronizing using seq_cnt, like this:
+>>
+>> 	migration			main
+>> 	----------------------		--------------------------------
+>> 	seq_cnt = 1
+>> 	smp_wmb()
+>> 					snapshot = 0
+>> 					smp_rmb()
+>> 					cpu = sched_getcpu() reads 23
+>> 	sched_setaffinity()
+>> 					rseq_cpu = __rseq.cpuid reads 35
+>> 					smp_rmb()
+>> 					snapshot != seq_cnt -> retry
+>> 	smp_wmb()
+>> 	seq_cnt = 2
+>>
+>> sched_setaffinity() is guaranteed to block until the task is enqueued on an
+>> allowed CPU.
+> 
+> Yes, and retrying could suppress detection of kernel bugs that this test is intended
+> to catch.
+> 
+
+Well, I don't think migration_worker() does correct thing, if I'm understanding
+correctly. The intention seems to force migration on 'main' thread by 'migration'
+thread?  If that is the case, I don't think the following function call has correct
+parameters.
+
+     r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
+
+     it should be something like:
+
+     r = sched_setaffinity(getpid(), sizeof(allowed_mask), &allowed_mask);
+
+If we're using sched_setaffinity(0, ...) in the 'migration' thread, the CPU
+affinity of 'main' thread won't be affected. It means 'main' thread can be
+migrated from one CPU to another at any time, even in the following point:
+
+     int main(...)
+     {
+           :
+           /*
+            * migration can happen immediately after sched_getcpu(). If
+            * CPU affinity of 'main' thread is sticky to one particular
+            * CPU, which 'migration' thread supposes to do, then there
+            * should have no migration.
+            */
+           cpu = sched_getcpu();
+           rseq_cpu = READ_ONCE(__rseq.cpu_id);
+           :
+     }
+
+So I think the correct fix is to have sched_setaffinity(getpid(), ...) ?
+Please refer to the manpage.
+
+    https://man7.org/linux/man-pages/man2/sched_setaffinity.2.html
+    'If pid is zero, then the calling thread is used'
+
+>> Can you check that smp_rmb() and smp_wmb() generate correct instructions on
+>> arm64?
+> 
+> That seems like the most likely scenario (or a kernel bug), I distinctly remember
+> the barriers provided by tools/ being rather bizarre.
+> 
+
+I don't see any problems for smp_rmb() and smp_wmb() in my case. They have
+been translated to correct instructions, as expected.
+
+#define smp_mb()        asm volatile("dmb ish" ::: "memory")
+#define smp_wmb()       asm volatile("dmb ishst" ::: "memory")
+#define smp_rmb()       asm volatile("dmb ishld" ::: "memory")
+
 --------------
-Error log:
 
-drivers/net/wireless/mac80211_hwsim.c: In function 'mac80211_hwsim_tx_frame_nl':
-drivers/net/wireless/mac80211_hwsim.c:1431:37: error: cast to pointer from integer of different size
+One more experiment for sched_setaffinity(). I run the following program,
+the CPU affinity of 'main' thread isn't changed, until the correct
+parameter is used, to have sched_setaffinity(getpid(), ...).
 
-Also seen in other 32-bit builds.
+sched_setaffinity(0, ...)
+-------------------------
+[root@virtlab-arm01 tmp]# ./a
+thread_func: cpu=0
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+thread_func: cpu=1
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+main: mask=0x000000ff
+   :
 
-Bisect log attached.
+sched_setaffinity(getpid(), ...)
+--------------------------------
+thread_func: cpu=198
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+main: mask=0x00000001
+thread_func: cpu=198
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+main: mask=0x00000002
+   :
 
-Guenter
+#define _GNU_SOURCE
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <sched.h>
 
----
-# bad: [37b355fdaf31ee18bda9a93c2a438dc1cbf57ec9] Add linux-next specific files for 20220714
-# good: [32346491ddf24599decca06190ebca03ff9de7f8] Linux 5.19-rc6
-git bisect start 'HEAD' 'v5.19-rc6'
-# bad: [6d30dd0872599b7004e26330fc2e476ad900e7f6] Merge branch 'drm-next' of git://git.freedesktop.org/git/drm/drm.git
-git bisect bad 6d30dd0872599b7004e26330fc2e476ad900e7f6
-# good: [6134a5c4db991084f2f7c2da6c6cf400e42e3a99] Merge branch 'docs-next' of git://git.lwn.net/linux.git
-git bisect good 6134a5c4db991084f2f7c2da6c6cf400e42e3a99
-# bad: [f6268862d21dc3233ced91b848a55b6dfa8d438b] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
-git bisect bad f6268862d21dc3233ced91b848a55b6dfa8d438b
-# good: [6d1ce9c03880c28a4a48f94d4a2dcb2e57c1b88e] net: phylink: fix SGMII inband autoneg enable
-git bisect good 6d1ce9c03880c28a4a48f94d4a2dcb2e57c1b88e
-# good: [480e10a33cdb7282f9ec91065fb624c0cd2f758f] Merge branch 'devfreq-next' of git://git.kernel.org/pub/scm/linux/kernel/git/chanwoo/linux.git
-git bisect good 480e10a33cdb7282f9ec91065fb624c0cd2f758f
-# good: [cfc6c2fcb686afdaea5bbca6f3dbb27815a23878] Merge branch 'phy-mxl-gpy-version-fix-and-improvements'
-git bisect good cfc6c2fcb686afdaea5bbca6f3dbb27815a23878
-# good: [8bc65d38ee466897a264c9e336fe21058818b1b1] wifi: nl80211: retrieve EHT related elements in AP mode
-git bisect good 8bc65d38ee466897a264c9e336fe21058818b1b1
-# good: [8f8df82f9cc2e76b48ba7cec3d08f4295e8f6ebb] Merge branch 'thermal/linux-next' of git://git.kernel.org/pub/scm/linux/kernel/git/thermal/linux.git
-git bisect good 8f8df82f9cc2e76b48ba7cec3d08f4295e8f6ebb
-# good: [2635d2a8d4664b665bc12e15eee88e9b1b40ae7b] IB: Fix spelling of 'writable'
-git bisect good 2635d2a8d4664b665bc12e15eee88e9b1b40ae7b
-# good: [c18bd03474a070e80fee20f0628fd0a6728c2475] Merge branch 'next' of git://git.kernel.org/pub/scm/linux/kernel/git/teigland/linux-dlm.git
-git bisect good c18bd03474a070e80fee20f0628fd0a6728c2475
-# good: [3c512307de4097aaaab3f4741c7a98fe88afa469] wifi: nl80211: fix sending link ID info of associated BSS
-git bisect good 3c512307de4097aaaab3f4741c7a98fe88afa469
-# bad: [736002fb6a09861c2663596011371884a8b7c0dd] Merge tag 'wireless-next-2022-07-13' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next
-git bisect bad 736002fb6a09861c2663596011371884a8b7c0dd
-# good: [37babce9127f3145366a8f36334f24afa9a5d196] wifi: mac80211: Use the bitmap API to allocate bitmaps
-git bisect good 37babce9127f3145366a8f36334f24afa9a5d196
-# bad: [58b6259d820d63c2adf1c7541b54cce5a2ae6073] wifi: mac80211_hwsim: add back erroneously removed cast
-git bisect bad 58b6259d820d63c2adf1c7541b54cce5a2ae6073
-# bad: [4ee186fa7e40ae06ebbfbad77e249e3746e14114] wifi: mac80211_hwsim: fix race condition in pending packet
-git bisect bad 4ee186fa7e40ae06ebbfbad77e249e3746e14114
-# first bad commit: [4ee186fa7e40ae06ebbfbad77e249e3746e14114] wifi: mac80211_hwsim: fix race condition in pending packet
+#define NR_CPUS	8
+static int thread_exit = 0;
+
+static void *thread_func(void *data)
+{
+	cpu_set_t allowed_mask;
+	int ret, i;
+
+	for (i = 0; i < NR_CPUS; i++) {
+		CPU_ZERO(&allowed_mask);
+		CPU_SET(i, &allowed_mask);
+#if 1
+		sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
+#else
+                 sched_setaffinity(getpid(), sizeof(allowed_mask), &allowed_mask);
+#endif
+		fprintf(stdout, "%s: cpu=%d\n", __func__, sched_getcpu());
+
+		sleep(1);
+	}
+
+	thread_exit = 1;
+	return NULL;
+}
+
+int main(int argc, char **argv)
+{
+	pthread_t thread;
+	cpu_set_t allowed_mask;
+	int mask, i, count = 0;
+
+	pthread_create(&thread, NULL, thread_func, NULL);
+
+	while (!thread_exit) {
+		usleep(100000);
+
+		mask = 0;
+		sched_getaffinity(0, sizeof(allowed_mask), &allowed_mask);
+		for (i = 0; i < NR_CPUS; i++) {
+			if (CPU_ISSET(i, &allowed_mask))
+				mask |= (1 << i);
+		}
+
+		fprintf(stdout, "%s: mask=0x%08x\n", __func__, mask);
+	}
+
+	return 0;
+}
+
+
+Thanks,
+Gavin
+
+
