@@ -2,238 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 00:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0310EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 00:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241101AbiGOAFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 20:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40406 "EHLO
+        id S241066AbiGOAHp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 20:07:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241063AbiGOAFP (ORCPT
+        with ESMTP id S241063AbiGOAHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 20:05:15 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622E8735B6;
-        Thu, 14 Jul 2022 17:05:13 -0700 (PDT)
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id A2DB69DA;
-        Fri, 15 Jul 2022 02:05:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1657843510;
-        bh=eUrWlueduRgSkr9QAPg6mJaG55bmEBeshRDPqeUsPhM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=t+ys3+MLbVdT5iTS6NTWCpHz2R2ecFFLvH78hMoP1bCBqV2mo10mZexYRSrVHjbYU
-         GWBBMHR6M0jGcPcPiCqI/Nzq2TqdHia5FWD5f6IlWXqxDTqAmebfa/q0yV+gzc68RV
-         BI5KJTGx+8rBVCIso+Dsuboay3jPlBa6SC4PgyVw=
-Date:   Fri, 15 Jul 2022 03:04:39 +0300
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc:     Sebastian Fricke <sebastian.fricke@collabora.com>,
-        linux-media@vger.kernel.org, jernej.skrabec@gmail.com,
-        knaerzche@gmail.com, kernel@collabora.com,
-        bob.beckett@collabora.com, ezequiel@vanguardiasur.com.ar,
-        mchehab@kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        linux-staging@lists.linux.dev, Jonas Karlman <jonas@kwiboo.se>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Ming Qian <ming.qian@nxp.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Ricardo Ribalda <ribalda@chromium.org>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>
-Subject: Re: [PATCH 1/6] media: v4l2: Add NV15 pixel format
-Message-ID: <YtCvF+kAfeiTduW+@pendragon.ideasonboard.com>
-References: <20220713162449.133738-1-sebastian.fricke@collabora.com>
- <20220713162449.133738-2-sebastian.fricke@collabora.com>
- <Ys8OzDzXmmCHI9qb@pendragon.ideasonboard.com>
- <acded11db2957b4e9d4f8df44f82dc1babe7aae0.camel@collabora.com>
+        Thu, 14 Jul 2022 20:07:42 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9410B735B7
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 17:07:41 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id r1so1821764plo.10
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 17:07:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=65ZFtNVWUgEiF7UjYBW3wJFLdAL4nYqOOHa7JvHA8WU=;
+        b=Cx+YWv/0WnqJlHWBJO4ViQ7pmcAB0a4hbQ+/CkHGRwYpsJx9jaiq0vzjKM8lHE/63m
+         iwuX07fFLDTSFmCTGyKuMeses4pJ7kxDi8jqgL7QmmOAmxOa0Soadz57SCcwDkwoZ/5Q
+         +ny4PUYcNNaeRozeqGWOFCh2oLurbJrHPhJYJdfRXDuPiFJ5CBgXlYcJBuK77gfKOr9u
+         iljHPkUBt7QEoT21x1/i9QZ6BUr650/AM6F3m2W6WCJV7wKFfjrAbh8InrO7p+Pb+QS0
+         fqcNPvUTJlMxmFB3E9wMFZBGNTqB46mZY0EA6fkbPUy/5ktlNQT7Xsf2Ldt89d3/5nMt
+         t44g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=65ZFtNVWUgEiF7UjYBW3wJFLdAL4nYqOOHa7JvHA8WU=;
+        b=rzbas1P0/Vbhd53MUHxyaVwNm7KW0twCiOWRNF1jbtiPbdhh7PoLiN/VbO6RtK/qbY
+         y/w8bflCZji6DJuLgc0fxXfYr8AEPLVtb3XmGncswR8cJxN1OzjsybaFC2syV2a3w3XL
+         RAZZfEGXgMEOgxFzCyZoNqSCcOEUeFSXpsm51iNOG3a5QDJXKpODN3QGN11gq9wQnpEM
+         vzXB7Yhx/WE3rKYtyW0dg9I+Gi978osIALkILVvMtb6ss7PnWrWXAwI6eoEWVRCjymQj
+         Ck4ZvNVgRepIJRIkNOdQ3vEEykvrBx8n+ggAcUpS+3zi8iUpBIf2YJs04OFCHVWEOZJQ
+         893w==
+X-Gm-Message-State: AJIora/rKuVAYqtsAne2JMETvhy8I/mouixXwn23xQBKY4iwIuYlGMoK
+        JPNwiK2knZfEC7fYvk+C7h/4f4o2YBqjvFE=
+X-Google-Smtp-Source: AGRyM1synz6vvMtc0xIeREFmxNLc/HRvNgN5GbyzFF97yB0fCjIby07rgYyEt4zAn0f6REg01IAiow==
+X-Received: by 2002:a17:90b:1a8b:b0:1f0:817:3afc with SMTP id ng11-20020a17090b1a8b00b001f008173afcmr19051698pjb.213.1657843661109;
+        Thu, 14 Jul 2022 17:07:41 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id 64-20020a621543000000b005289753448fsm2297208pfv.123.2022.07.14.17.07.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jul 2022 17:07:40 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     eli.billauer@gmail.com, arnd@arndb.de, gregkh@linuxfoundation.org
+Cc:     linux-kernel@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH v5 RESEND] char: xillybus: Check endpoint type at probe time
+Date:   Fri, 15 Jul 2022 08:07:30 +0800
+Message-Id: <20220715000730.1875055-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <acded11db2957b4e9d4f8df44f82dc1babe7aae0.camel@collabora.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 09:02:38AM -0400, Nicolas Dufresne wrote:
-> Le mercredi 13 juillet 2022 à 21:28 +0300, Laurent Pinchart a écrit :
-> > Hi Sebastian and Jonas,
-> > 
-> > Thank you for the patch.
-> > 
-> > On Wed, Jul 13, 2022 at 06:24:46PM +0200, Sebastian Fricke wrote:
-> > > From: Jonas Karlman <jonas@kwiboo.se>
-> > > 
-> > > Add the NV15 pixel format used by the Rockchip Video Decoder for 10-bit
-> > > buffers.
-> > > 
-> > > NV15 is a packed 10-bit 4:2:0 Y/CbCr format similar to P010 and P210 but
-> > > has no padding between components. Instead, luminance and chrominance
-> > > samples are grouped into 4s so that each group is packed into an integer
-> > > number of bytes:
-> > > 
-> > > YYYY = UVUV = 4 * 10 bits = 40 bits = 5 bytes
-> > > 
-> > > The '15' suffix refers to the optimum effective bits per pixel which is
-> > > achieved when the total number of luminance samples is a multiple of 8
-> > > for NV15.
-> > > 
-> > > Signed-off-by: Jonas Karlman <jonas@kwiboo.se>
-> > > Signed-off-by: Sebastian Fricke <sebastian.fricke@collabora.com>
-> > > ---
-> > >  .../media/v4l/pixfmt-yuv-planar.rst           | 53 +++++++++++++++++++
-> > >  drivers/media/v4l2-core/v4l2-common.c         |  2 +
-> > >  drivers/media/v4l2-core/v4l2-ioctl.c          |  1 +
-> > >  include/uapi/linux/videodev2.h                |  1 +
-> > >  4 files changed, 57 insertions(+)
-> > > 
-> > > diff --git a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> > > index a900ff66911a..42ab3fe4667f 100644
-> > > --- a/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> > > +++ b/Documentation/userspace-api/media/v4l/pixfmt-yuv-planar.rst
-> > > @@ -79,6 +79,13 @@ All components are stored with the same number of bits per component.
-> > >        - Cr, Cb
-> > >        - Yes
-> > >        - Linear
-> > > +    * - V4L2_PIX_FMT_NV15
-> > > +      - 'NV15'
-> > > +      - 15
-> > > +      - 4:2:0
-> > > +      - Cb, Cr
-> > > +      - Yes
-> > > +      - Linear
-> > >      * - V4L2_PIX_FMT_NV12M
-> > >        - 'NM12'
-> > >        - 8
-> > > @@ -176,6 +183,7 @@ horizontally.
-> > >  
-> > >  .. _V4L2-PIX-FMT-NV12:
-> > >  .. _V4L2-PIX-FMT-NV21:
-> > > +.. _V4L2-PIX-FMT-NV15:
-> > >  .. _V4L2-PIX-FMT-NV12M:
-> > >  .. _V4L2-PIX-FMT-NV21M:
-> > >  .. _V4L2-PIX-FMT-P010:
-> > > @@ -570,6 +578,51 @@ Data in the 10 high bits, zeros in the 6 low bits, arranged in little endian ord
-> > >        - Cb\ :sub:`11`
-> > >        - Cr\ :sub:`11`
-> > >  
-> > > +.. _V4L2_PIX_FMT_NV15:
-> > > +
-> > > +NV15
-> > > +----
-> > > +
-> > > +Like P010 but a packed 10-bit 4:2:0 semi-planar Y/CbCr format without padding between components.
-> > 
-> > "packed 10-bit semi-planar" sounds confusing, as "packed YUV" usually
-> > refers to YUYV-style formats, but I'm not sure how to express that
-> > better.
-> 
-> Perhaps:
-> 
-> "Similar to P010 (10-bit 4:":0 semi-planer Y/CbCr), though unlike P010, the
-> there is not padding between components."
-> 
-> > > +Instead, luminance and chrominance samples are grouped into 4s so that each group is packed into an integer
-> > > +number of bytes:
-> > 
-> > Could you please wrap the description at 80 columns ?
-> > 
-> > > +YYYY = UVUV = 4 * 10 bits = 40 bits = 5 bytes
-> > > +
-> > > +.. flat-table:: Sample 4x4 NV15 Image
-> > > +    :header-rows:  0
-> > > +    :stub-columns: 0
-> > > +
-> > > +    * - start + 0:
-> > > +      - Y'\ :sub:`00`
-> > > +      - Y'\ :sub:`01`
-> > > +      - Y'\ :sub:`02`
-> > > +      - Y'\ :sub:`03`
-> > > +    * - start + 8:
-> > > +      - Y'\ :sub:`10`
-> > > +      - Y'\ :sub:`11`
-> > > +      - Y'\ :sub:`12`
-> > > +      - Y'\ :sub:`13`
-> > > +    * - start + 16:
-> > > +      - Y'\ :sub:`20`
-> > > +      - Y'\ :sub:`21`
-> > > +      - Y'\ :sub:`22`
-> > > +      - Y'\ :sub:`23`
-> > > +    * - start + 24:
-> > > +      - Y'\ :sub:`30`
-> > > +      - Y'\ :sub:`31`
-> > > +      - Y'\ :sub:`32`
-> > > +      - Y'\ :sub:`33`
-> > > +    * - start + 32:
-> > > +      - Cb\ :sub:`00`
-> > > +      - Cr\ :sub:`00`
-> > > +      - Cb\ :sub:`01`
-> > > +      - Cr\ :sub:`01`
-> > > +    * - start + 40:
-> > > +      - Cb\ :sub:`10`
-> > > +      - Cr\ :sub:`10`
-> > > +      - Cb\ :sub:`11`
-> > > +      - Cr\ :sub:`11`
-> > 
-> > This doesn't look right. You need to describe the data at the bit level,
-> > so show how the 10-bit samples are packed into bytes.
-> 
-> A word of NV15 is 40 bits, so 1 word of NV12 is 5 bytes, 4 pixels. I believe
-> there is no choice here but to describe 4 pixels for Y plane, and 4 pixels for
-> CbCr plane. This might be a bit big though.
+The driver submits bulk urb without checking the endpoint type is
+actually bulk.
 
-I agree, it may not be the prettiest, but I'd rather have a larger table
-than a format that is understood differently by different drivers. Been
-there, done that, not again :-)
+[    3.108690] usb 1-1: BOGUS urb xfer, pipe 3 != type 1
+[    3.108983] WARNING: CPU: 0 PID: 211 at drivers/usb/core/urb.c:503 usb_submit_urb+0xcd9/0x18b0
+[    3.110976] RIP: 0010:usb_submit_urb+0xcd9/0x18b0
+[    3.115318] Call Trace:
+[    3.115452]  <TASK>
+[    3.115570]  try_queue_bulk_in+0x43c/0x6e0 [xillyusb]
+[    3.115838]  xillyusb_probe+0x488/0x1230 [xillyusb]
 
-> > > +
-> > >  .. raw:: latex
-> > >  
-> > >      \endgroup
-> > > diff --git a/drivers/media/v4l2-core/v4l2-common.c b/drivers/media/v4l2-core/v4l2-common.c
-> > > index 1e38ad8906a2..23a0cb02ea3a 100644
-> > > --- a/drivers/media/v4l2-core/v4l2-common.c
-> > > +++ b/drivers/media/v4l2-core/v4l2-common.c
-> > > @@ -262,6 +262,8 @@ const struct v4l2_format_info *v4l2_format_info(u32 format)
-> > >  		/* YUV planar formats */
-> > >  		{ .format = V4L2_PIX_FMT_NV12,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 2 },
-> > >  		{ .format = V4L2_PIX_FMT_NV21,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 2 },
-> > > +		{ .format = V4L2_PIX_FMT_NV15,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 5, 5, 0, 0 }, .hdiv = 2, .vdiv = 2,
-> > > +		  .block_w = { 4, 2, 0, 0 }, .block_h = { 1, 1, 0, 0 } },
-> > >  		{ .format = V4L2_PIX_FMT_NV16,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
-> > >  		{ .format = V4L2_PIX_FMT_NV61,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 2, .vdiv = 1 },
-> > >  		{ .format = V4L2_PIX_FMT_NV24,    .pixel_enc = V4L2_PIXEL_ENC_YUV, .mem_planes = 1, .comp_planes = 2, .bpp = { 1, 2, 0, 0 }, .hdiv = 1, .vdiv = 1 },
-> > > diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-> > > index e2526701294e..9e5510cb255e 100644
-> > > --- a/drivers/media/v4l2-core/v4l2-ioctl.c
-> > > +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-> > > @@ -1302,6 +1302,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
-> > >  	case V4L2_PIX_FMT_M420:		descr = "YUV 4:2:0 (M420)"; break;
-> > >  	case V4L2_PIX_FMT_NV12:		descr = "Y/CbCr 4:2:0"; break;
-> > >  	case V4L2_PIX_FMT_NV21:		descr = "Y/CrCb 4:2:0"; break;
-> > > +	case V4L2_PIX_FMT_NV15:		descr = "10-bit Y/CbCr 4:2:0 (Packed)"; break;
-> > >  	case V4L2_PIX_FMT_NV16:		descr = "Y/CbCr 4:2:2"; break;
-> > >  	case V4L2_PIX_FMT_NV61:		descr = "Y/CrCb 4:2:2"; break;
-> > >  	case V4L2_PIX_FMT_NV24:		descr = "Y/CbCr 4:4:4"; break;
-> > > diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-> > > index 5a73b92ffe4d..47ff34d6b79f 100644
-> > > --- a/include/uapi/linux/videodev2.h
-> > > +++ b/include/uapi/linux/videodev2.h
-> > > @@ -598,6 +598,7 @@ struct v4l2_pix_format {
-> > >  /* two planes -- one Y, one Cr + Cb interleaved  */
-> > >  #define V4L2_PIX_FMT_NV12    v4l2_fourcc('N', 'V', '1', '2') /* 12  Y/CbCr 4:2:0  */
-> > >  #define V4L2_PIX_FMT_NV21    v4l2_fourcc('N', 'V', '2', '1') /* 12  Y/CrCb 4:2:0  */
-> > > +#define V4L2_PIX_FMT_NV15    v4l2_fourcc('N', 'V', '1', '5') /* 15  Y/CbCr 4:2:0 10-bit packed */
-> > >  #define V4L2_PIX_FMT_NV16    v4l2_fourcc('N', 'V', '1', '6') /* 16  Y/CbCr 4:2:2  */
-> > >  #define V4L2_PIX_FMT_NV61    v4l2_fourcc('N', 'V', '6', '1') /* 16  Y/CrCb 4:2:2  */
-> > >  #define V4L2_PIX_FMT_NV24    v4l2_fourcc('N', 'V', '2', '4') /* 24  Y/CbCr 4:4:4  */
+Add a check at probe time to fix the bug.
 
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+Changes in v5:
+    - Delete the misused function kfree()
+Changes in v4:
+    - Use function xillyusb_check_endpoint() to check the endpoint in
+      xillyusb_setup_base_eps()
+Changes in v3:
+    - Check the endpoint type more earlier
+Changes in v2:
+    - Check the endpoint type at probe time
+---
+ drivers/char/xillybus/xillyusb.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/drivers/char/xillybus/xillyusb.c b/drivers/char/xillybus/xillyusb.c
+index 39bcbfd908b4..b1bac2fdb42a 100644
+--- a/drivers/char/xillybus/xillyusb.c
++++ b/drivers/char/xillybus/xillyusb.c
+@@ -167,6 +167,7 @@ struct xillyusb_dev {
+ 	struct device		*dev; /* For dev_err() and such */
+ 	struct kref		kref;
+ 	struct workqueue_struct	*workq;
++	struct usb_interface *intf;
+ 
+ 	int error;
+ 	spinlock_t error_lock; /* protect @error */
+@@ -1890,8 +1891,31 @@ static const struct file_operations xillyusb_fops = {
+ 	.poll       = xillyusb_poll,
+ };
+ 
++static int xillyusb_check_endpoint(struct xillyusb_dev *xdev, u8 addr)
++{
++	int i;
++	struct usb_host_interface *if_desc = xdev->intf->altsetting;
++
++	for (i = 0; i < if_desc->desc.bNumEndpoints; i++) {
++		struct usb_endpoint_descriptor *ep = &if_desc->endpoint[i].desc;
++
++		if (ep->bEndpointAddress != addr)
++			continue;
++
++		if ((usb_pipein(addr) && usb_endpoint_is_bulk_in(ep)) ||
++			(usb_pipeout(addr) && usb_endpoint_is_bulk_out(ep)))
++			return 0;
++	}
++
++	return -EINVAL;
++}
++
+ static int xillyusb_setup_base_eps(struct xillyusb_dev *xdev)
+ {
++	if (xillyusb_check_endpoint(xdev, IN_EP_NUM | USB_DIR_IN) ||
++		xillyusb_check_endpoint(xdev, MSG_EP_NUM | USB_DIR_OUT))
++		return -EINVAL;
++
+ 	xdev->msg_ep = endpoint_alloc(xdev, MSG_EP_NUM | USB_DIR_OUT,
+ 				      bulk_out_work, 1, 2);
+ 	if (!xdev->msg_ep)
+@@ -1963,6 +1987,8 @@ static int setup_channels(struct xillyusb_dev *xdev,
+ 			chan->out_log2_element_size = out_desc & 0x0f;
+ 			chan->out_log2_fifo_size =
+ 				((out_desc >> 8) & 0x1f) + 16;
++			if (xillyusb_check_endpoint(xdev, (i+2) | USB_DIR_OUT))
++				return -EINVAL;
+ 		}
+ 	}
+ 
+@@ -2126,6 +2152,7 @@ static int xillyusb_probe(struct usb_interface *interface,
+ 	mutex_init(&xdev->process_in_mutex);
+ 	mutex_init(&xdev->msg_mutex);
+ 
++	xdev->intf = interface;
+ 	xdev->udev = usb_get_dev(interface_to_usbdev(interface));
+ 	xdev->dev = &interface->dev;
+ 	xdev->error = 0;
 -- 
-Regards,
+2.25.1
 
-Laurent Pinchart
