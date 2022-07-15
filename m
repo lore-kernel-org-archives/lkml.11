@@ -2,54 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD39CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC62C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:26:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233384AbiGOMZ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 08:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
+        id S234237AbiGOMZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 08:25:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232868AbiGOMZy (ORCPT
+        with ESMTP id S229771AbiGOMZy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 08:25:54 -0400
 Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 53967814AF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 539EC814B2;
         Fri, 15 Jul 2022 05:25:53 -0700 (PDT)
 Received: from uucp (helo=alpha)
         by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1oCKOG-00082w-01; Fri, 15 Jul 2022 14:25:52 +0200
+        id 1oCKOG-00082w-00; Fri, 15 Jul 2022 14:25:52 +0200
 Received: by alpha.franken.de (Postfix, from userid 1000)
-        id D46CCC054D; Fri, 15 Jul 2022 14:24:58 +0200 (CEST)
-Date:   Fri, 15 Jul 2022 14:24:58 +0200
+        id BAF77C0499; Fri, 15 Jul 2022 14:24:36 +0200 (CEST)
+Date:   Fri, 15 Jul 2022 14:24:36 +0200
 From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-mips@vger.kernel.org, Hauke Mehrtens <hauke@hauke-m.de>,
-        =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] MIPS: BCM47XX: Add support for Netgear WNR3500L v2
-Message-ID: <20220715122458.GB2705@alpha.franken.de>
-References: <20220714211302.1391015-1-f.fainelli@gmail.com>
+Cc:     linux-mips@vger.kernel.org, fancer.lancer@gmail.com,
+        gerg@kernel.org, open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] MIPS: Fixed __debug_virt_addr_valid()
+Message-ID: <20220715122436.GA2705@alpha.franken.de>
+References: <20220714222514.1570617-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220714211302.1391015-1-f.fainelli@gmail.com>
+In-Reply-To: <20220714222514.1570617-1-f.fainelli@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 02:13:01PM -0700, Florian Fainelli wrote:
-> Add support for the Netgear WNR3500L v2 router based on the BCM47186
-> chipset and supporting 802.11n Wi-Fi.
+On Thu, Jul 14, 2022 at 03:25:12PM -0700, Florian Fainelli wrote:
+> It is permissible for kernel code to call virt_to_phys() against virtual
+> addresses that are in KSEG0 or KSEG1 and we need to be dealing with both
+> types. Rewrite the test condition to ensure that the kernel virtual
+> addresses are above PAGE_OFFSET which they must be, and below KSEG2
+> where the non-linear mapping starts.
 > 
+> For EVA, there is not much that we can do given the linear address range
+> that is offered, so just return any virtual address as being valid.
+> 
+> Finally, when HIGHMEM is not enabled, all virtual addresses are assumed
+> to be valid as well.
+> 
+> Fixes: dfad83cb7193 ("MIPS: Add support for CONFIG_DEBUG_VIRTUAL")
 > Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 > ---
->  arch/mips/bcm47xx/board.c                          |  2 ++
->  arch/mips/bcm47xx/buttons.c                        | 10 ++++++++++
->  arch/mips/bcm47xx/leds.c                           | 11 +++++++++++
->  arch/mips/bcm47xx/workarounds.c                    |  1 +
->  arch/mips/include/asm/mach-bcm47xx/bcm47xx_board.h |  1 +
->  5 files changed, 25 insertions(+)
+> Changes in v2:
+> 
+> - handle lack of HIGHMEM and EVA
+> 
+>  arch/mips/mm/physaddr.c | 14 ++++----------
+>  1 file changed, 4 insertions(+), 10 deletions(-)
 
 applied to mips-next.
 
