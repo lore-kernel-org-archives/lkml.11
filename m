@@ -2,231 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FF6CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6707FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230392AbiGOHGC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 03:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
+        id S231535AbiGOHGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 03:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiGOHFx (ORCPT
+        with ESMTP id S230479AbiGOHGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 03:05:53 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A20473902
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:05:50 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id u13so6423263lfn.5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=edM+VSgZuPwkNgVUT8py67tbaaITMsjlVWVkcCDQAsA=;
-        b=PGglcyklYCODqhqZomhrvcCPMC/MKauEc1hIuD04gsXdjA8fEVonnXExSjLSLi5B7K
-         HiQr4SMDje4DNpD2c/sEnFCJRxiVK5yrYLSzAi2uimE3Qhc+vXDcQ3UnxChwGU/jm+6r
-         yaqIlV8ehPMvSvPYqO3o8peRoRZEqAzaYLObFflVPa7w88wV+jxUawvuHiHbqd3YPrpH
-         EYFEmwIeNN5mX8pxwKgPNQHH3+RMvJoGPQX2qzbJ+RwJYIriacRLffF72knAhR6Y++oG
-         mDHZk9IOZbFJWFiGlB6RGePG5uBK/BDFxMpqSG9zlzrlbgI8bZ+pLHajRAZLtQOzKIUG
-         COYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=edM+VSgZuPwkNgVUT8py67tbaaITMsjlVWVkcCDQAsA=;
-        b=WRvQe0zCjT+0BbtRzH+hLSj2NIBvf+BmDX814UFiSdGV/+w8EZ8WWPCCFGWbGM2uh0
-         AU8jThwXASVROS6KEb7W5ia+qKd4Ed44/fDiv7BUOpmmp87HTBI3RjxqaHvWX2V5GuZM
-         ZwWrOhTyx5gJ6Er3TJZSs9aLwN5l8uKrom3el/eMWqjfjAQxXYGVUbBn08CTq/qyL/QY
-         W3jdmW8ZxJW2i1pFCxf4D/ue1WqnUmi4mV0DasU3y0bAVr3Q/Jp2yOSNDowAnnMmeIoc
-         44jega3Y6SJjBL8cIqqd3wSgoftueVKpaKQ6aFGk50jjx0hK8Dj6a3cfut5tvavirUjd
-         N2bQ==
-X-Gm-Message-State: AJIora+6r40Qb1wHknmLOfHK0YdJnTa0+pNe+xCgjDETpe3BpItBd7cw
-        cy8vkO8zWb2AesjL24P7wynD5A==
-X-Google-Smtp-Source: AGRyM1t2QQxl/yaaeAHwsPu1s24eahAxTzedj3rFOTcpWst+PXEshlEEMsPrVqxOrATaYvQNybQo/g==
-X-Received: by 2002:a05:6512:1054:b0:489:d273:be3a with SMTP id c20-20020a056512105400b00489d273be3amr7553671lfb.615.1657868748174;
-        Fri, 15 Jul 2022 00:05:48 -0700 (PDT)
-Received: from [10.0.0.8] (fwa5da9-171.bb.online.no. [88.93.169.171])
-        by smtp.gmail.com with ESMTPSA id v1-20020a05651203a100b00489d18e39bfsm753939lfp.288.2022.07.15.00.05.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 00:05:47 -0700 (PDT)
-Message-ID: <573830b4-096c-a227-6c14-9fe59771e56c@linaro.org>
-Date:   Fri, 15 Jul 2022 09:05:45 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/3] arm64: dts: qcom: msm8916-samsung-e2015: Add initial
- common dtsi
-Content-Language: en-US
-To:     "Lin, Meng-Bo" <linmengbo0689@protonmail.com>,
-        devicetree@vger.kernel.org
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Nikita Travkin <nikita@trvn.ru>,
-        ~postmarketos/upstreaming@lists.sr.ht
-References: <20220714200308.22138-1-linmengbo0689@protonmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220714200308.22138-1-linmengbo0689@protonmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 15 Jul 2022 03:06:08 -0400
+Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 94E3328710
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:06:06 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (unknown [10.2.5.46])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxWeDQEdFiyyogAA--.1717S7;
+        Fri, 15 Jul 2022 15:05:58 +0800 (CST)
+From:   Jianmin Lv <lvjianmin@loongson.cn>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, loongarch@lists.linux.dev,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Huacai Chen <chenhuacai@loongson.cn>
+Subject: [PATCH V15 05/15] LoongArch: Use ACPI_GENERIC_GSI for gsi handling
+Date:   Fri, 15 Jul 2022 15:05:41 +0800
+Message-Id: <1657868751-30444-6-git-send-email-lvjianmin@loongson.cn>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
+References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
+X-CM-TRANSID: AQAAf9AxWeDQEdFiyyogAA--.1717S7
+X-Coremail-Antispam: 1UD129KBjvJXoWxGF4DKry7tw1rZw47AFW8Zwb_yoW5AF48pr
+        4S9FnrJr4SqF18ZrW8t3s5uayUXryxKayIqa15J348J3srur1YvFn5Ar97XFy5tayrXrW8
+        Z3s5CFy5Jay3A3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E
+        87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
+        04k20xvE74AGY7Cv6cx26ryrJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F4
+        0E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFyl
+        IxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUCVW8JwCI42IY6xIIjxv20xvEc7CjxV
+        AFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j
+        6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHU
+        DUUUUU=
+X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 14/07/2022 22:05, Lin, Meng-Bo wrote:
-> Samsung Galaxy E5, E7 and Grand Max are smartphones using the MSM8916 SoC
-> released in 2015.
-> 
-> e2015 and a2015 are similar, with some differences in accelerometer,
-> MUIC and Vibrator. The common parts are shared in
-> msm8916-samsung-a2015-common.dtsi to reduce duplication.
-> 
-> Add a common device tree for with initial support for:
-> 
-> - GPIO keys and vibrator
-> - Hall sensor (except Grand Max)
-> - SDHCI (internal and external storage)
-> - USB Device Mode
-> - UART (on USB connector via the SM5504 MUIC)
-> - WCNSS (WiFi/BT)
-> - Regulators
-> - S3FWRN5 NFC (except Grand Max)
-> 
-> The three devices (and all other variants of E5/E7/Grand Max released in
-> 2015) are very similar, with some differences in display, touchscreen,
-> sensors and NFC. The common parts are shared in
-> msm8916-samsung-e2015-common.dtsi to reduce duplication.
-> 
-> Unfortunately, some E5/E7/Grand Max were released with outdated 32-bit
-> only firmware and never received any update from Samsung. Since the 32-bit
-> TrustZone firmware is signed there seems to be no way currently to
-> actually boot this device tree on arm64 Linux on those variants at the
-> moment.
-> 
-> However, it is possible to use this device tree by compiling an ARM32
-> kernel instead. The device tree can be easily built on ARM32 with
-> an #include and it works really well there. To avoid confusion for others
-> it is still better to add this device tree on arm64. Otherwise it's easy
-> to forget to update this one when making some changes that affect all
-> MSM8916 devices.
-> 
-> Maybe someone finds a way to boot ARM64 Linux on those device at some
-> point. In this case I expect that this device tree can be simply used
-> as-is.
-> 
-> Co-developed-by: Stephan Gerhold <stephan@gerhold.net>
-> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> Signed-off-by: Lin, Meng-Bo <linmengbo0689@protonmail.com>
+For LoongArch, generic gsi code(driver/acpi/irq.c) can be
+reused after following patchs:
 
-Please thread your patches (which is by default with git-send-email, so
-just don't disable it). Without it you are making life of reviewer much
-more difficult.
+APCI: irq: Add support for multiple GSI domains
+ACPI: irq: Allow acpi_gsi_to_irq() to have an arch-specific fallback
 
-> ---
->  arch/arm64/boot/dts/qcom/Makefile             |  3 ++
->  .../qcom/msm8916-samsung-e2015-common.dtsi    | 39 +++++++++++++++++++
->  .../boot/dts/qcom/msm8916-samsung-e5.dts      | 24 ++++++++++++
->  .../boot/dts/qcom/msm8916-samsung-e7.dts      | 29 ++++++++++++++
->  .../dts/qcom/msm8916-samsung-grandmax.dts     | 36 +++++++++++++++++
->  5 files changed, 131 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/qcom/msm8916-samsung-e2015-common.dtsi
->  create mode 100644 arch/arm64/boot/dts/qcom/msm8916-samsung-e5.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/msm8916-samsung-e7.dts
->  create mode 100644 arch/arm64/boot/dts/qcom/msm8916-samsung-grandmax.dts
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/Makefile b/arch/arm64/boot/dts/qcom/Makefile
-> index 2f8aec2cc6db..941494553b9e 100644
-> --- a/arch/arm64/boot/dts/qcom/Makefile
-> +++ b/arch/arm64/boot/dts/qcom/Makefile
-> @@ -15,6 +15,9 @@ dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-longcheer-l8910.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-mtp.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-a3u-eur.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-a5u-eur.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-e5.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-e7.dtb
-> +dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-grandmax.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-j5.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-samsung-serranove.dtb
->  dtb-$(CONFIG_ARCH_QCOM)	+= msm8916-wingtech-wt88047.dtb
-> diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-e2015-common.dtsi b/arch/arm64/boot/dts/qcom/msm8916-samsung-e2015-common.dtsi
-> new file mode 100644
-> index 000000000000..373154ee2643
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-e2015-common.dtsi
-> @@ -0,0 +1,39 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +#include "msm8916-samsung-a2015-common.dtsi"
-> +
-> +/ {
-> +	i2c-muic {
-> +		/* SM5504 MUIC instead of SM5502 */
-> +		/delete-node/ extcon@25;
-> +
-> +		muic: extcon@14 {
-> +			compatible = "siliconmitus,sm5504-muic";
-> +			reg = <0x14>;
-> +
-> +			interrupt-parent = <&msmgpio>;
-> +			interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-> +
-> +			pinctrl-names = "default";
-> +			pinctrl-0 = <&muic_int_default>;
-> +		};
-> +	};
-> +
-> +	vibrator: vibrator {
-> +		compatible = "gpio-vibrator";
-> +		enable-gpios = <&msmgpio 76 GPIO_ACTIVE_HIGH>;
-> +
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&motor_en_default>;
-> +	};
-> +};
-> +
-> +&msmgpio {
-> +	motor_en_default: motor-en-default {
-> +		pins = "gpio76";
-> +		function = "gpio";
-> +
-> +		drive-strength = <2>;
-> +		bias-disable;
-> +	};
-> +};
-> diff --git a/arch/arm64/boot/dts/qcom/msm8916-samsung-e5.dts b/arch/arm64/boot/dts/qcom/msm8916-samsung-e5.dts
-> new file mode 100644
-> index 000000000000..777eb934eb4b
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/qcom/msm8916-samsung-e5.dts
-> @@ -0,0 +1,24 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +/dts-v1/;
-> +
-> +#include "msm8916-samsung-e2015-common.dtsi"
-> +
-> +/*
-> + * NOTE: The original firmware from Samsung can only boot ARM32 kernels on some
-> + * variants.
-> + * Unfortunately, the firmware is signed and cannot be replaced easily.
-> + * There seems to be no way to boot ARM64 kernels on 32-bit devices at the
-> + * moment, even though the hardware would support it.
-> + *
-> + * However, it is possible to use this device tree by compiling an ARM32 kernel
-> + * instead. For clarity and build testing this device tree is maintained next
-> + * to the other MSM8916 device trees. However, it is actually used through
-> + * arch/arm/boot/dts/qcom-msm8916-samsung-e5.dts
-> + */
-> +
-> +/ {
-> +	model = "Samsung Galaxy E5";
-> +	compatible = "samsung,e5", "qcom,msm8916";
+So, config ACPI_GENERIC_GSI for LoongArch with removing the gsi code
+in arch directory.
 
-You miss bindings document.
+Signed-off-by: Jianmin Lv <lvjianmin@loongson.cn>
+---
+ arch/loongarch/Kconfig       |  1 +
+ arch/loongarch/kernel/acpi.c | 65 --------------------------------------------
+ 2 files changed, 1 insertion(+), 65 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
+index 1920d52..7f98fc0 100644
+--- a/arch/loongarch/Kconfig
++++ b/arch/loongarch/Kconfig
+@@ -112,6 +112,7 @@ config LOONGARCH
+ 	select TRACE_IRQFLAGS_SUPPORT
+ 	select USE_PERCPU_NUMA_NODE_ID
+ 	select ZONE_DMA32
++	select ACPI_GENERIC_GSI if ACPI
+ 
+ config 32BIT
+ 	bool
+diff --git a/arch/loongarch/kernel/acpi.c b/arch/loongarch/kernel/acpi.c
+index bb729ee..03aa145 100644
+--- a/arch/loongarch/kernel/acpi.c
++++ b/arch/loongarch/kernel/acpi.c
+@@ -25,7 +25,6 @@
+ int acpi_strict = 1; /* We have no workarounds on LoongArch */
+ int num_processors;
+ int disabled_cpus;
+-enum acpi_irq_model_id acpi_irq_model = ACPI_IRQ_MODEL_PLATFORM;
+ 
+ u64 acpi_saved_sp;
+ 
+@@ -33,70 +32,6 @@
+ 
+ #define PREFIX			"ACPI: "
+ 
+-int acpi_gsi_to_irq(u32 gsi, unsigned int *irqp)
+-{
+-	if (irqp != NULL)
+-		*irqp = acpi_register_gsi(NULL, gsi, -1, -1);
+-	return (*irqp >= 0) ? 0 : -EINVAL;
+-}
+-EXPORT_SYMBOL_GPL(acpi_gsi_to_irq);
+-
+-int acpi_isa_irq_to_gsi(unsigned int isa_irq, u32 *gsi)
+-{
+-	if (gsi)
+-		*gsi = isa_irq;
+-	return 0;
+-}
+-
+-/*
+- * success: return IRQ number (>=0)
+- * failure: return < 0
+- */
+-int acpi_register_gsi(struct device *dev, u32 gsi, int trigger, int polarity)
+-{
+-	struct irq_fwspec fwspec;
+-
+-	switch (gsi) {
+-	case GSI_MIN_CPU_IRQ ... GSI_MAX_CPU_IRQ:
+-		fwspec.fwnode = liointc_domain->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_CPU_IRQ;
+-		fwspec.param_count = 1;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-
+-	case GSI_MIN_LPC_IRQ ... GSI_MAX_LPC_IRQ:
+-		if (!pch_lpc_domain)
+-			return -EINVAL;
+-
+-		fwspec.fwnode = pch_lpc_domain->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_LPC_IRQ;
+-		fwspec.param[1] = acpi_dev_get_irq_type(trigger, polarity);
+-		fwspec.param_count = 2;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-
+-	case GSI_MIN_PCH_IRQ ... GSI_MAX_PCH_IRQ:
+-		if (!pch_pic_domain[0])
+-			return -EINVAL;
+-
+-		fwspec.fwnode = pch_pic_domain[0]->fwnode;
+-		fwspec.param[0] = gsi - GSI_MIN_PCH_IRQ;
+-		fwspec.param[1] = IRQ_TYPE_LEVEL_HIGH;
+-		fwspec.param_count = 2;
+-
+-		return irq_create_fwspec_mapping(&fwspec);
+-	}
+-
+-	return -EINVAL;
+-}
+-EXPORT_SYMBOL_GPL(acpi_register_gsi);
+-
+-void acpi_unregister_gsi(u32 gsi)
+-{
+-
+-}
+-EXPORT_SYMBOL_GPL(acpi_unregister_gsi);
+-
+ void __init __iomem * __acpi_map_table(unsigned long phys, unsigned long size)
+ {
+ 
+-- 
+1.8.3.1
+
