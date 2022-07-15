@@ -2,73 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A96C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:48:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F91C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233029AbiGOIsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
+        id S232461AbiGOItX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232934AbiGOIsi (ORCPT
+        with ESMTP id S230258AbiGOItV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:48:38 -0400
-Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B2E9820E8;
-        Fri, 15 Jul 2022 01:47:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=m4hKf
-        BL4nqs53oqPJrYtedixI9QUO8tbMKID97bcLtQ=; b=nGSiZat0lo8s5aZbxB5l2
-        2E4bJMot39JFljAszn5zg+aCCy5zWkGSpkB4F/F7BtrTAhBozqaAPpwzxl3hFh1y
-        0yusMN6VMvNj2OQCs4W0v+JspmvjLnIJ3gLsEMmCxzZS5NbsOKfVRjwrZVd5ijPt
-        CCzzON/hPoJgyY7VnqUhJs=
-Received: from localhost.localdomain (unknown [111.48.58.12])
-        by smtp13 (Coremail) with SMTP id EcCowAB3kp+fKdFiiizJNg--.6037S2;
-        Fri, 15 Jul 2022 16:47:30 +0800 (CST)
-From:   Jiangshan Yi <13667453960@163.com>
-To:     pbonzini@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiangshan Yi <yijiangshan@kylinos.cn>,
-        k2ci <kernel-bot@kylinos.cn>
-Subject: [PATCH] KVM: Fix spelling typo in comment
-Date:   Fri, 15 Jul 2022 16:47:12 +0800
-Message-Id: <20220715084712.998150-1-13667453960@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Jul 2022 04:49:21 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E2525F5;
+        Fri, 15 Jul 2022 01:49:20 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oCH09-000nut-Kc; Fri, 15 Jul 2022 18:48:47 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:48:45 +0800
+Date:   Fri, 15 Jul 2022 16:48:45 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H . Peter Anvin" <hpa@zytor.com>, linux-crypto@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] crypto: x86/blowfish: remove redundant assignment to
+ variable nytes
+Message-ID: <YtEp7Ubl+fnCBePR@gondor.apana.org.au>
+References: <20220707080546.151730-1-colin.i.king@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowAB3kp+fKdFiiizJNg--.6037S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrury7Jr47ZFy5Jw4rGw47XFb_yoWDZrb_Z3
-        Z3Gw4xWrWrGFs3Zr1vkFsIyF1Igw4UGFWjvF95Aryaqa98Aws8Gw4kZr1ava4UGrWI9Fs3
-        Zas5W34rGw12gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0U5r7UUUUU==
-X-Originating-IP: [111.48.58.12]
-X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbizQI-+1c7NglsvwAAsL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220707080546.151730-1-colin.i.king@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiangshan Yi <yijiangshan@kylinos.cn>
+On Thu, Jul 07, 2022 at 09:05:46AM +0100, Colin Ian King wrote:
+> Variable nbytes is being assigned a value that is never read, it is
+> being re-assigned in the next statement in the while-loop. The
+> assignment is redundant and can be removed.
+> 
+> Cleans up clang scan-build warnings, e.g.:
+> arch/x86/crypto/blowfish_glue.c:147:10: warning: Although the value
+> stored to 'nbytes' is used in the enclosing expression, the value
+> is never actually read from 'nbytes'
+> 
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>  arch/x86/crypto/blowfish_glue.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Fix spelling typo in comment.
-
-Reported-by: k2ci <kernel-bot@kylinos.cn>
-Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
----
- include/linux/kvm_host.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 83cf7fd842e0..3fd6c198d222 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1311,7 +1311,7 @@ bool kvm_gfn_to_pfn_cache_check(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
-  *                 -EFAULT for an untranslatable guest physical address.
-  *
-  * This will attempt to refresh a gfn_to_pfn_cache. Note that a successful
-- * returm from this function does not mean the page can be immediately
-+ * return from this function does not mean the page can be immediately
-  * accessed because it may have raced with an invalidation. Callers must
-  * still lock and check the cache status, as this function does not return
-  * with the lock still held to permit access.
+Patch applied.  Thanks.
 -- 
-2.25.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
