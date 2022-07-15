@@ -2,157 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A815C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 09:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DF4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 09:07:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234064AbiGOJDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 05:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54544 "EHLO
+        id S232704AbiGOJHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 05:07:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232081AbiGOJDf (ORCPT
+        with ESMTP id S232400AbiGOJHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 05:03:35 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8261265DA
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 02:03:32 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id z12so5870614wrq.7
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 02:03:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=HBnANm3Q5A2PJY9aeSUc7ohmvMH+myjaxt+W7/dm5Xg=;
-        b=A3EIJdWC+rs1GD+oMHlvaDHnlloFu2pxTrMInfDEm2SmomsWLOXswFlzOUFn06jYQm
-         zInzhuki4SyfxHOv4+GDkhBWkX3eEz9jQuobWcrQ8N1+StmqvouMfheHLjipKEM3q4Nk
-         2CPNUOoQbC9XiiKxHI6l2pUMu5lgzsj024BgOonGpZ9iXrayFRSZbqgx1whl6u2tshGb
-         GXTyb0WrKGKNZZogtFVe8nn8ZCHvyniI3iZ7fqOVZW97iNJv1VyUHoagKQdQEZ+Up0s+
-         iX+GbhJg++bcEP/zpXYIOoS8q7BxTCSreUUd1sWG2y2tStyNRna4lSHFgMpR13UzJEvG
-         EUPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=HBnANm3Q5A2PJY9aeSUc7ohmvMH+myjaxt+W7/dm5Xg=;
-        b=iteVsD9tjYVHorls8R3RCaM/Tjiwy1SzIp67zeIIYVO6YfEebpBoayiKDhsRDUNRuY
-         nNDB3+vCyJxCRFVY2LLvAbyyMbkGxbYdY4mc9QCRcIiOaCmf+72XubkNPywBPVeUDl9B
-         W3umBuwkzh/KAdnGYwhVouG8VFxvVFByCv+z5ED02r2osRF3pt01NhammvRj78ORHeyR
-         xwG1op2612fdNbfUicj/HBVPHnRhQI2H8zMo8MJ6+NfNJgsp4Q15GNi3UFuQ++STl/hF
-         uVB8KXgGC5K0DVvl5q4JtFNLVKA3Q87WmHz79vW9IGLgaamkyZ8g4U+CCgRX/Tf35Cc8
-         qYhA==
-X-Gm-Message-State: AJIora/ewa2PqYtPMQsyWXqHgLlM3PDbADowl7MXHJyET4aT5l8QronJ
-        tYsN4jYrIDLTDGHpXkthK1oABajan6aJPg==
-X-Google-Smtp-Source: AGRyM1vXdCEdArP+QaQdNEY6f2R87CoZt3nA6uoWQy+wb3N7Q4yvWxRhVv7rpzO5yYN3RA5l97tp0w==
-X-Received: by 2002:adf:9ccf:0:b0:21d:6df9:cb28 with SMTP id h15-20020adf9ccf000000b0021d6df9cb28mr12003871wre.499.1657875810984;
-        Fri, 15 Jul 2022 02:03:30 -0700 (PDT)
-Received: from fedora ([2a01:e0a:1d2:1f90:be95:f3a2:4d99:a3b3])
-        by smtp.gmail.com with ESMTPSA id j9-20020a05600c190900b003a2fde6ef62sm4979101wmq.7.2022.07.15.02.03.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 02:03:30 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 11:03:23 +0200
-From:   Matthieu CHARETTE <matthieu.charette@gmail.com>
-Subject: Re: [PATCH] drm: Fix EDID firmware load on resume
-To:     =?iso-8859-1?b?QW5kcuk=?= Almeida <andrealmeid@igalia.com>
-Cc:     maarten.lankhorst@linux.intel.com, mripard@kernel.org,
-        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Message-Id: <N512FR.B1R49X9JM9FW2@gmail.com>
-In-Reply-To: <120a8dc1-7e5c-85da-e087-10d21fedbf20@igalia.com>
-References: <WKTLER.NFH5CX2O259Q@gmail.com>
-        <120a8dc1-7e5c-85da-e087-10d21fedbf20@igalia.com>
-X-Mailer: geary/40.0
+        Fri, 15 Jul 2022 05:07:16 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 194A425F0
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 02:07:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1657876035; x=1689412035;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xt3Cr4DjUR6uWFdmfg6tQgONs9dbD7Y0B6+swnrcj5A=;
+  b=0v3pd8U36mrZGDKEadWYu1MPoIyaD9lwdZ6W3a6C0E1N5G8tp2V9sE3F
+   Ou/CFUWggITIM7IkHg54QgTZ4PjWFEqYvz/UtlMEahAF4nYOln5n6iYU5
+   TiYAoaRDRKQQO5CU1PmvF12DGnhp/b9r3MYUkNoASI1ln0zBQVNe33wIg
+   fVPbDXx2z+mghr1Zai1ChNsu6/RcxnKIpA1IuSCX7dpNR8Pzav/qPegyA
+   btWDjj9GbOpAkTPvgIi7BZepTXSUnHR24MJurbxrcJONFqQ3ei48MZn5e
+   WZ1UquLssAc6suNQpw/9FPSsfp5ivWrM0MijW2Mtn9kC29snvdCJ9gIsJ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.92,273,1650956400"; 
+   d="scan'208";a="104601118"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jul 2022 02:07:15 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 15 Jul 2022 02:07:15 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 15 Jul 2022 02:07:12 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>
+CC:     <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] ASoC: atmel_ssc_dai: remove #ifdef CONFIG_PM
+Date:   Fri, 15 Jul 2022 12:09:39 +0300
+Message-ID: <20220715090939.1679963-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Remove #ifdef CONFIG_PM and use pm_ptr() instead.
 
-Sorry, my email client removed every tab. I will send the v2 in a new=20
-thread.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ sound/soc/atmel/atmel_ssc_dai.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
-Thanks.
-
-Matthieu
-
-On Thu, Jul 14 2022 at 11:23:10 AM -0300, Andr=E9 Almeida=20
-<andrealmeid@igalia.com> wrote:
-> Hi Matthieu,
->=20
-> Thanks for your patch.
->=20
-> =C0s 11:58 de 06/07/22, Matthieu CHARETTE escreveu:
->>  Loading an EDID using drm.edid_firmware parameter makes resume to=20
->> fail
->>  after firmware cache is being cleaned. This is because edid_load()=20
->> use a
->>  temporary device to request the firmware. This cause the EDID=20
->> firmware
->>  not to be cached from suspend. And, requesting the EDID firmware=20
->> return
->>  an error during resume.
->>  So the request_firmware() call should use a permanent device for=20
->> each
->>  connector. Also, we should cache the EDID even if no monitor is
->>  connected, in case it's plugged while suspended.
->>=20
->>  Signed-off-by: Matthieu CHARETTE <matthieu.charette@gmail.com>
->>  ---
->>  drivers/gpu/drm/drm_connector.c | 9 ++++
->>  drivers/gpu/drm/drm_edid_load.c | 81=20
->> ++++++++++++++++++++++++++++-----
->>  include/drm/drm_connector.h | 12 +++++
->>  include/drm/drm_edid.h | 3 ++
->>  4 files changed, 94 insertions(+), 11 deletions(-)
->>=20
->>  diff --git a/drivers/gpu/drm/drm_connector.c
->>  b/drivers/gpu/drm/drm_connector.c
->>  index 1c48d162c77e..e8819ebf1c4b 100644
->>  --- a/drivers/gpu/drm/drm_connector.c
->>  +++ b/drivers/gpu/drm/drm_connector.c
->>  @@ -31,6 +31,7 @@
->>  #include <drm/drm_privacy_screen_consumer.h>
->>  #include <drm/drm_sysfs.h>
->>=20
->>  +#include <linux/platform_device.h>
->>  #include <linux/uaccess.h>
->>=20
->>  #include "drm_crtc_internal.h"
->>  @@ -289,6 +290,9 @@ int drm_connector_init(struct drm_device *dev,
->>=20
->>   drm_connector_get_cmdline_mode(connector);
->>=20
->>  + connector->edid_load_pdev =3D NULL;
->>  + drm_cache_edid_firmware(connector);
->>  +
->>   /* We should add connectors at the end to avoid upsetting the=20
->> connector
->>    * index too much.
->>    */
->>  @@ -473,6 +477,11 @@ void drm_connector_cleanup(struct drm_connector
->>  *connector)
->>    connector->tile_group =3D NULL;
->>   }
->>=20
->>  + if (connector->edid_load_pdev) {
->>  + platform_device_unregister(connector->edid_load_pdev);
->>  + connector->edid_load_pdev =3D NULL;
->>  + }
->>  +
->=20
-> The indentation of your patch is wrong in different places, like in=20
-> this
-> if here. It should be like
->=20
-> + if (connector->edid_load_pdev) {
-> + 	platform_device_unregister(connector->edid_load_pdev);
-> + 	connector->edid_load_pdev =3D NULL;
-> + }
->=20
-> ./scripts/checkpatch.pl can help you detect those issues for your v2
->=20
-> Thanks,
-> 	Andr=E9
-
+diff --git a/sound/soc/atmel/atmel_ssc_dai.c b/sound/soc/atmel/atmel_ssc_dai.c
+index 8aae0beadcfe..e868b7e028d6 100644
+--- a/sound/soc/atmel/atmel_ssc_dai.c
++++ b/sound/soc/atmel/atmel_ssc_dai.c
+@@ -762,7 +762,6 @@ static int atmel_ssc_trigger(struct snd_pcm_substream *substream,
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_PM
+ static int atmel_ssc_suspend(struct snd_soc_component *component)
+ {
+ 	struct atmel_ssc_info *ssc_p;
+@@ -821,10 +820,6 @@ static int atmel_ssc_resume(struct snd_soc_component *component)
+ 
+ 	return 0;
+ }
+-#else /* CONFIG_PM */
+-#  define atmel_ssc_suspend	NULL
+-#  define atmel_ssc_resume	NULL
+-#endif /* CONFIG_PM */
+ 
+ #define ATMEL_SSC_FORMATS (SNDRV_PCM_FMTBIT_S8     | SNDRV_PCM_FMTBIT_S16_LE |\
+ 			  SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
+@@ -859,8 +854,8 @@ static struct snd_soc_dai_driver atmel_ssc_dai = {
+ 
+ static const struct snd_soc_component_driver atmel_ssc_component = {
+ 	.name			= "atmel-ssc",
+-	.suspend		= atmel_ssc_suspend,
+-	.resume			= atmel_ssc_resume,
++	.suspend		= pm_ptr(atmel_ssc_suspend),
++	.resume			= pm_ptr(atmel_ssc_resume),
+ 	.legacy_dai_naming	= 1,
+ };
+ 
+-- 
+2.34.1
 
