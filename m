@@ -2,172 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04956CCA482
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231307AbiGOP6b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:58:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
+        id S231371AbiGOQAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229510AbiGOP62 (ORCPT
+        with ESMTP id S229510AbiGOQAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:58:28 -0400
-Received: from mail-il1-x132.google.com (mail-il1-x132.google.com [IPv6:2607:f8b0:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C5A86A9E1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:58:27 -0700 (PDT)
-Received: by mail-il1-x132.google.com with SMTP id w16so2264200ilh.0
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=njHUUTRkwNmezhjrHml0mpe3Yz515QMHQkK9aErxP34=;
-        b=HNVXW1r1X+A7eh+QQhT/jKYYaWKylGxr9yzFRK/bECvW8S+9f6RpcR2ig3YUEbqjg2
-         izLKurM2kjUOn12ZTHxWvTiE7W/NTbQkOROc4shmRYtOO35gETP9LoazMvRlUhpyqiIF
-         Ng9ROxuXXVhoVojpT2lWG2rTlQe4hiDUnF6KThJqac1YVNEIKUGdMxFlvZDaL4GKdrbE
-         JaAFV8cTYnKnpAEp3rJGzO+9und1R9Iu3QlqGhYO2nPRnbBgsK8m133VN9fJ2nagL1F/
-         9JhrzJzCRtMLvSoHbg9UU/0Nr5sutj2nlgiK9uBV0pZx/LQR0QyNdMGYv6aTDsV/O+7j
-         UNYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=njHUUTRkwNmezhjrHml0mpe3Yz515QMHQkK9aErxP34=;
-        b=ws5VeE2P80nKjzR7luCXMxDxGskJcvlxKP9Ev0M1AIRH2KBLKIZJ1G9CR97nxLIqlo
-         30GdbyNbjitM4FQVNPpXepk7YvEmU7pgHci5D33i0okqQpGiF6wc96t7CpLXLzEmQkGz
-         CPQiwJnE9TNrye5J3k9wngYbjWKEXNRJTTlGIRlFoLXdWgbBAeDELn3FgyshpFIxmWR3
-         GLuoJ1sY3D85Z+oJi6xwMoJuTH/EB54BS/gx7wxH9KfrDJwAn6EFCtzoLtoSqORDFgmD
-         wWccDsvBPAFS+VTTuwXc204k8xHW5pFF1YdCiooP0VAmQG/6Cv9LucSm21/R1QbVPned
-         qCtw==
-X-Gm-Message-State: AJIora8Wu0ab823IEPfZNwQVQ+Eu7cUGZl5ZkjTOCnoeCLRjAapB1dDr
-        cEH2FMqWLgovTxninAtO/Tjq//Ilf31/Ow==
-X-Google-Smtp-Source: AGRyM1vfYuTFCuR3ahysJXP4YouQC50dvGwPmjhXLczZkazqXOvo9kytNyAd01U6EKPYOpWy9M9nDw==
-X-Received: by 2002:a05:6e02:190a:b0:2dc:852c:bb4a with SMTP id w10-20020a056e02190a00b002dc852cbb4amr7721800ilu.208.1657900706818;
-        Fri, 15 Jul 2022 08:58:26 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id f96-20020a0284e9000000b0033cbbf0b762sm2089065jai.116.2022.07.15.08.58.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 08:58:26 -0700 (PDT)
-Message-ID: <26d913ea-7aa0-467d-4caf-a93f8ca5b3ff@kernel.dk>
-Date:   Fri, 15 Jul 2022 09:58:24 -0600
+        Fri, 15 Jul 2022 12:00:10 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241E958C;
+        Fri, 15 Jul 2022 09:00:09 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C617334706;
+        Fri, 15 Jul 2022 16:00:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657900807; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PmxgdbvxN1/lfrPzGsVJbbJYjv4n4eZUn1st8Pyud1c=;
+        b=Pp7kVSGsWY466CZ1qFGSNRDkhPmHn/u9goTaAqs2/WE8qQOHSHmG+BNk3IRkqT9Yt++P2R
+        g3aKdXGwyrby2L4UmhbAIEzDIxmc09knKMXBzXD/og4vcJCd50+z/Ti41ckR9z/fV9klD1
+        zWd2d6WjWHKfY2LDq/1DEzAZYnqZ+K4=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657900807;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PmxgdbvxN1/lfrPzGsVJbbJYjv4n4eZUn1st8Pyud1c=;
+        b=/hSNKCiAIoNQ9mboeeqD94aXqaTdvW2Sp2lj+FfzOYmCyn15JPqbejyqYWq4OEf/TfsUBX
+        BDuLuwo1UjJAJnAg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B846513AC3;
+        Fri, 15 Jul 2022 16:00:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id tLP0LAeP0WLeZgAAMHmgww
+        (envelope-from <bp@suse.de>); Fri, 15 Jul 2022 16:00:07 +0000
+Date:   Fri, 15 Jul 2022 18:00:00 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        the arch/x86 maintainers <x86@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>,
+        stable <stable@vger.kernel.org>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH v2] x86/speculation: Use DECLARE_PER_CPU for
+ x86_spec_ctrl_current
+Message-ID: <YtGPAG0ZBqvotud1@zn.tnic>
+References: <20220713152436.2294819-1-nathan@kernel.org>
+ <20220714143005.73c71cf8@kernel.org>
+ <CAHk-=wi+O_3+uef45jxj1+GhT+H0vXs9iz8rpjk49vCiyLS4DA@mail.gmail.com>
+ <20220714145652.22cf4878@kernel.org>
+ <CAHk-=wgqJFV45497fBfc1HS3Oaoqi3pfenZ0XM3uqFGYz8wTQQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [LKP] Re: [io_uring] 584b0180f0:
- phoronix-test-suite.fio.SequentialWrite.IO_uring.Yes.Yes.1MB.DefaultTestDirectory.mb_s
- -10.2% regression
-Content-Language: en-US
-To:     Yin Fengwei <fengwei.yin@intel.com>,
-        kernel test robot <oliver.sang@intel.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, io-uring@vger.kernel.org,
-        lkp@lists.01.org, lkp@intel.com
-References: <20220527092432.GE11731@xsang-OptiPlex-9020>
- <2085bfef-a91c-8adb-402b-242e8c5d5c55@kernel.dk>
- <0d60aa42-a519-12ad-3c69-72ed12398865@intel.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <0d60aa42-a519-12ad-3c69-72ed12398865@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHk-=wgqJFV45497fBfc1HS3Oaoqi3pfenZ0XM3uqFGYz8wTQQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/12/22 2:06 AM, Yin Fengwei wrote:
-> Hi Jens,
-> 
-> On 5/27/2022 9:50 PM, Jens Axboe wrote:
->> I'm a bit skeptical on this, but I'd like to try and run the test case.
->> Since it's just a fio test case, why can't I find it somewhere? Seems
->> very convoluted to have to setup lkp-tests just for this. Besides, I
->> tried, but it doesn't work on aarch64...
-> Recheck this regression report. The regression could be reproduced if
-> the following config file is used with fio (tag: fio-3.25) :
-> 
-> 	[global]
-> 	rw=write
-> 	ioengine=io_uring
-> 	iodepth=64
-> 	size=1g
-> 	direct=1
-> 	buffered=1
-> 	startdelay=5
-> 	force_async=4
-> 	ramp_time=5
-> 	runtime=20
-> 	time_based
-> 	clat_percentiles=0
-> 	disable_lat=1
-> 	disable_clat=1
-> 	disable_slat=1
-> 	filename=test_fiofile
-> 	[test]
-> 	name=test
-> 	bs=1M
-> 	stonewall
-> 
-> Just FYI, a small change to commit: 584b0180f0f4d67d7145950fe68c625f06c88b10:
-> 
-> diff --git a/fs/io_uring.c b/fs/io_uring.c
-> index 969f65de9972..616d857f8fc6 100644
-> --- a/fs/io_uring.c
-> +++ b/fs/io_uring.c
-> @@ -3181,8 +3181,13 @@ static int io_prep_rw(struct io_kiocb *req, const struct io_uring_sqe *sqe)
->  {
->         struct kiocb *kiocb = &req->rw.kiocb;
->         unsigned ioprio;
-> +       struct file *file = req->file;
->         int ret;
-> 
-> +       if (likely(file && (file->f_mode & FMODE_WRITE)))
-> +               if (!io_req_ffs_set(req))
-> +                       req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
-> +
->         kiocb->ki_pos = READ_ONCE(sqe->off);
-> 
->         ioprio = READ_ONCE(sqe->ioprio);
-> 
-> could make regression gone. No idea how req->flags impact the write
-> performance. Thanks.
+On Thu, Jul 14, 2022 at 03:14:53PM -0700, Linus Torvalds wrote:
+> Anyway, I cherry-picked Nathan's patch from my clang tree and pushed
+> it out as commit db886979683a ("x86/speculation: Use DECLARE_PER_CPU
+> for x86_spec_ctrl_current").
 
-I can't really explain that either, at least not immediately. I tried
-running with and without that patch, and don't see any difference here.
-In terms of making this more obvious, does the below also fix it for
-you?
+... and I've zapped it from my lineup.
 
-And what filesystem is this being run on?
-
-
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index a01ea49f3017..797fad99780d 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -4269,9 +4269,6 @@ static int io_rw_init_file(struct io_kiocb *req, fmode_t mode)
- 	if (unlikely(!file || !(file->f_mode & mode)))
- 		return -EBADF;
- 
--	if (!io_req_ffs_set(req))
--		req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
--
- 	kiocb->ki_flags = iocb_flags(file);
- 	ret = kiocb_set_rw_flags(kiocb, req->rw.flags);
- 	if (unlikely(ret))
-@@ -8309,7 +8306,13 @@ static bool io_assign_file(struct io_kiocb *req, unsigned int issue_flags)
- 	else
- 		req->file = io_file_get_normal(req, req->cqe.fd);
- 
--	return !!req->file;
-+	if (unlikely(!req->file))
-+		return false;
-+
-+	if (!io_req_ffs_set(req))
-+		req->flags |= io_file_get_flags(file) << REQ_F_SUPPORT_NOWAIT_BIT;
-+
-+	return true;
- }
- 
- static int io_issue_sqe(struct io_kiocb *req, unsigned int issue_flags)
+Thx.
 
 -- 
-Jens Axboe
+Regards/Gruss,
+    Boris.
 
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
