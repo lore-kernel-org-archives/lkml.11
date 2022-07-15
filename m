@@ -2,110 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50925C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E7FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232892AbiGOIjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
+        id S233068AbiGOIjV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:39:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230300AbiGOIi6 (ORCPT
+        with ESMTP id S232915AbiGOIjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:38:58 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFBC222AE;
-        Fri, 15 Jul 2022 01:38:56 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D9A7C6601A3F;
-        Fri, 15 Jul 2022 09:38:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1657874335;
-        bh=xceY5L9JgEvByY8nXCTLgaBCnqvDhcWlIlGmTkrx17k=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TqlX6/gCeHEiZoI0yoHG+QC5sbGN3BKmS5kgMokC+Wf5J2LWsFFqOi2HA2YX4wuh4
-         rn2kkegT3gCv1F/+wbt5Q4rebneP3gep0ampKjPzTQgNdl9ohLXHiDhP5foQ0DC+uj
-         iB8aHJkjpB553i7OjjqK9xJu6JBSOEe5Nkd8RXFU19cJjbPbiPQKijjToAwgol3dOI
-         E/GbVxqPcHnq7YLmp0bWRWnae/8rvz4bC6F6wgv8R/h4038I6OrUizvscjwZPu9mbP
-         9vj2L9BH6MkfET0UMPcaqt4hXWZjCX1aFSBvAeXb2CiD1350CTuc9EAIWrKrmd4uMm
-         6+28pJslpu5CQ==
-Message-ID: <86c06111-9c9d-804e-32ec-df4f3d4a8376@collabora.com>
-Date:   Fri, 15 Jul 2022 10:38:51 +0200
+        Fri, 15 Jul 2022 04:39:11 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56BFE51416;
+        Fri, 15 Jul 2022 01:39:09 -0700 (PDT)
+Received: from mail-ot1-f51.google.com ([209.85.210.51]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mhl4Q-1nYpMx1O9A-00dosM; Fri, 15 Jul 2022 10:39:07 +0200
+Received: by mail-ot1-f51.google.com with SMTP id k8-20020a9d4b88000000b0061c7f8c4f77so2095004otf.10;
+        Fri, 15 Jul 2022 01:39:06 -0700 (PDT)
+X-Gm-Message-State: AJIora9ZfrV3bdROid6AD8wQL3PFzt++iQ2xe4ScwhMuGWO2zhZ88xap
+        t260M3+xVdEyWttA+X/tktJ88qKp3/feYInthCI=
+X-Google-Smtp-Source: AGRyM1tHW75qCujFy97ODmosD9Zq5/ZJz8LFlR+pPafKBIRkIjZ9IOLEvm6nWkFKYL4KxpjirK2nvE70QWAIuDMflXk=
+X-Received: by 2002:a25:73d1:0:b0:66e:aee4:feb3 with SMTP id
+ o200-20020a2573d1000000b0066eaee4feb3mr13106300ybc.452.1657872578352; Fri, 15
+ Jul 2022 01:09:38 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v13 3/3] mmc: mediatek: add support for SDIO eint wakup
- IRQ
-Content-Language: en-US
-To:     Axe Yang <axe.yang@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        Yong Mao <yong.mao@mediatek.com>
-References: <20220623090445.1401-1-axe.yang@mediatek.com>
- <20220623090445.1401-4-axe.yang@mediatek.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220623090445.1401-4-axe.yang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20220714214657.2402250-1-shorne@gmail.com> <20220714214657.2402250-3-shorne@gmail.com>
+In-Reply-To: <20220714214657.2402250-3-shorne@gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 15 Jul 2022 10:09:21 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2_HKMf8nMcSkK1_jyCEHEdzz=YiRmPvN+ACbPTafXJzA@mail.gmail.com>
+Message-ID: <CAK8P3a2_HKMf8nMcSkK1_jyCEHEdzz=YiRmPvN+ACbPTafXJzA@mail.gmail.com>
+Subject: Re: [RFC PATCH 2/2] asm-generic: Add new pci.h and use it
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        David Woodhouse <dwmw2@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Nt52xjsJzLfJbx6bRziB8rKjrlCwthE2G6HtbRBCsNBt/zs2mo2
+ R+zxCpzWBn+E9PRIJX9sfMfdZ2jE2MFo0nx40nPnt/KwgS5rY+jNF8OTtCszYlSR+DvY55Q
+ N8/Q53v9N0+VyQGEsBoArO6QqUcFEg0pTflRtXN7VtD5MerfYTdmUDGldG1AzUHDwPbTmi3
+ 2XGtKEqTZPyfR9FDnGlLQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rYyucx0ZdqI=:rPmF0o7ogy9z6EtFl7IA7Q
+ j/McKn5R/FIJ0+0/sN20bcGfqmONXGRRmTvP7LVDrzKVPveFiTULe2gkPGKzEkIMczsZ5RZvl
+ 2qYhOPZUmtYqEuJuabNpBpo6Ciykp0/kmTYiAjaYljvlLqGx/sjmDJv6HdULJUAsWMxpjYTEw
+ wsLC6xmeEzESPYpluUHhPsnR2XwmvqmcUUAubC9D+3MChqbfdxuHk4O5bTF7Kcoj5dsg3NW3H
+ jHhynwT7qRT4p6eF/tfG9aMTSbVtRJp4x+MaVitnAiRiaXFYXPYu+9qPIoPbQy2VMUN3EPipF
+ mWqHH6dB3xR1Ae8RZSNT+F0fbyCVM1a2FEHANAUzCa0MnyKl0Q7/hjpXMWrQCwYwc6UjiN89N
+ 1CEL9hsDTTUS3U1b6iEXEDqL69G6UjtteEhaVhR1FVPXL1PlBJTzbzohRUUE/jOsyfUU37+YX
+ ABfFnIC4BlyUxk89Q911u0a7585RD+s8UKrdT8gJRs+UlwDoxRsmY1ZBS5APZHoitpwjKX4II
+ GVkpT6RNrvY+dpS5Hk3vxeQKAKEof3tBzwMwECk2HCNk2V/JPZbi0aW/6RMnLo/8VlfcBx8YO
+ llwJmiSN2P/fnVe5RAJV7QnjUAHzqoammocfEl+BqQgxSeafNHxGrps7iNU/McitKPXbY+clj
+ 8Z17D1VcrZK6CvDi/nvZn2Ka/uwr1IAOc5wLsojfRnxu5oagPNk3X8CUVxQCdkbzOxkVa3qbJ
+ y2uMIRgmjD8TOC8qLtcSVSXhEyKPZl7XihFDKfea7sRGSYcX/tzvtJAaOBvtOrf5so5j9NZ0B
+ Yrnhjjk/dXEqVvWfvTphGhuO9rc1KnZpNW3RqdRW/oxg5dKKzmgd/l40PX0Od75ZSo2X/CTKH
+ hS4ccGAbxSsDH/Ehbh4Q==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 23/06/22 11:04, Axe Yang ha scritto:
-> Add support for eint IRQ when MSDC is used as an SDIO host. This
-> feature requires SDIO device support async IRQ function. With this
-> feature, SDIO host can be awakened by SDIO card in suspend state,
-> without additional pin.
-> 
-> MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
-> turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
-> resume, switch GPIO function back to DAT1 mode then turn on clock.
-> 
-> Some device tree property should be added or modified in MSDC node
-> to support SDIO eint IRQ. Pinctrls "state_eint" is mandatory. Since
-> this feature depends on asynchronous interrupts, "wakeup-source",
-> "keep-power-in-suspend" and "cap-sdio-irq" flags are necessary, and
-> the interrupts list should be extended(the interrupt named with
-> sdio_wakeup):
->          &mmcX {
-> 		...
-> 		interrupt-names = "msdc", "sdio_wakeup";
-> 		interrupts-extended = <...>,
->                                	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
->                  ...
->                  pinctrl-names = "default", "state_uhs", "state_eint";
->                  ...
->                  pinctrl-2 = <&mmc2_pins_eint>;
->                  ...
->                  cap-sdio-irq;
-> 		keep-power-in-suspend;
-> 		wakeup-source;
->                  ...
->          };
-> 
-> Co-developed-by: Yong Mao <yong.mao@mediatek.com>
-> Signed-off-by: Yong Mao <yong.mao@mediatek.com>
-> Signed-off-by: Axe Yang <axe.yang@mediatek.com>
+On Thu, Jul 14, 2022 at 11:46 PM Stafford Horne <shorne@gmail.com> wrote:
+>
+> The asm/pci.h used for many newer architectures share similar
+> definitions.  Move the common parts to asm-generic/pci.h to allow for
+> sharing code.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+This looks very nice, thanks for doing it!
+
+> Two things to note are:
+>
+>  - isa_dma_bridge_buggy, traditionally this is defined in asm/dma.h but
+>    these architectures avoid creating that file and add the definition
+>    to asm/pci.h.
+
+I would prefer if we could just kill off this variable for non-x86, as it's
+only set to a nonzero value in two implementations that are both
+x86-specific and most of the references are gone. That does not have
+to be part of this series though, if you don't want to address it here, just
+add a comment to the new pci.h file.
+
+>  - ARCH_GENERIC_PCI_MMAP_RESOURCE, csky does not define this so we
+>    undefine it after including asm-generic/pci.h.  Why doesn't csky
+>    define it?
+
+Adding David Woodhouse to Cc, as he introduced this interface. As I
+understand it, this was meant as a replacement for the old
+architecture specific pci_mmap_page_range interface, and is ideally
+used everywhere.
+
+It's probably something that slipped through the review of csky and
+should have been there.
+
+As an aside, it seems the pci_mmap_page_range() cleanup was
+left almost complete, with sparc being the only one left after
+David Miller found a problem with the generic code. Not sure if
+this was ever resolved:
+https://lore.kernel.org/lkml/1519887203.622.3.camel@infradead.org/t/#u
+
+> +#ifndef PCIBIOS_MIN_IO
+> +#define PCIBIOS_MIN_IO         0
+> +#endif
+> +
+> +#define PCIBIOS_MIN_MEM                0
+
+We should probably #ifdef both of these for consistency.
+
+> +static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
+> +{
+> +       /* no legacy ide irq support */
+> +       return -ENODEV;
+> +}
+
+And this can just go away now, according to what we found.
+
+        Arnd
