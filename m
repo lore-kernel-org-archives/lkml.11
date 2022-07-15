@@ -2,107 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADD2C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232677AbiGOWXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 18:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
+        id S229559AbiGOWZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 18:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232508AbiGOWXj (ORCPT
+        with ESMTP id S231466AbiGOWZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 18:23:39 -0400
+        Fri, 15 Jul 2022 18:25:34 -0400
 Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4541A7;
-        Fri, 15 Jul 2022 15:23:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626A265D6E;
+        Fri, 15 Jul 2022 15:25:33 -0700 (PDT)
 Received: by nautica.notk.org (Postfix, from userid 108)
-        id 90C58C022; Sat, 16 Jul 2022 00:23:33 +0200 (CEST)
+        id 1ED10C01D; Sat, 16 Jul 2022 00:25:32 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657923813; bh=PA1XLzA+X+7Omx/bLhTMXHBWmn+90LA2dEeJ5jfpAvg=;
+        t=1657923932; bh=EgCvy39owjpXR/ZA9X5SA+DJCioLvCBh4wrj89/LUI0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WUJBYGl+CgPAzZc8RMrI6fXDv7ua37rO5Pmj7gVOC+1wytTZOnsdCF+B71Q4BtFsO
-         PGyg5C8RfUniW5WvH1lgGuOgjmb4sVVm4FP51Gbot9ai36g2kpvFeg08UBoclGoerT
-         ybMN8inxYEmOL8J0UjEVdeWW9XD8HHQnFBp5UzbRPWy4mgr2owuVS3C5JL5ydGDHpT
-         lLWBlqoUmtjj8u0o+uDMzJoxYpjnX8LMEey2Zbc1vUg2mpGi3f6azj+wHsq+Ih3iEk
-         SYSYfvcpZ5YPTgJPL8Bh0/jdWxRZ1OotmInLQNurRTSktIANssTkHHSQJcIPk4Wl9h
-         1kHWwUcZumKGg==
+        b=zzWYzGHRPvfgEUFFDK2Szh9uTznbiTgpaGHc/BEXdmXF0giRP8bCW+ZN5GI+yfcyc
+         L2KobqZkPJG0yCCrhhExbAKrdThiOhsyzBUpQVytkEutRCHDSs6AJ61+WILfJ89KzM
+         EiHRTHKbw8bLTQjbmG4V93Weh/QsGExkPI11dteVYYjMNYCKxlLGA8p1rMOGqqvnFR
+         gOx2+k8BHYuDISsR9PPZUTC/oegpEn2ecDB75YOX6ASTple5jabwGIjYMGcbSGELNo
+         FbJLrJs07vnwjcHgjl6oYZkZ+9Soel43DfVJtYknWCpc2aU4LbWmutjF/z/zszQ+75
+         3VLVTDOmogQXA==
 Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 246B1C009;
-        Sat, 16 Jul 2022 00:23:28 +0200 (CEST)
+        by nautica.notk.org (Postfix) with ESMTPS id 0B840C009;
+        Sat, 16 Jul 2022 00:25:27 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657923812; bh=PA1XLzA+X+7Omx/bLhTMXHBWmn+90LA2dEeJ5jfpAvg=;
+        t=1657923931; bh=EgCvy39owjpXR/ZA9X5SA+DJCioLvCBh4wrj89/LUI0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VfUMDNihhK0WiIVpdCa40ke/0w0jNUShNaLNI6EvWrDYSCWqJwrk5xvDhIl8GN7ru
-         b46YKkqbsrzLGou3BeuZm1fWLpX5AaUtSn6jq6QHEwoGoJ++4mm/2OEukBTiYtxah+
-         b1pUu29AyYq31TQTYSRYrw9XaNrGdDK+i7hXonr3A4yGSJTZZlTy0dMSQ809FRDeb4
-         NGCnasGXs0vGCrKYCoW/qHGT2M3Gl4i0teZh9vfFhIUFA00814SicWL83owsUNVHGo
-         9igP884sOxZrRwmHhQVrfdC9ZLWynuatSUPyMtzz76xaaff+yz93v0dpmqO0C1y1Vj
-         lnkAtAQOJs6mw==
+        b=b82VBKymA8c4i+j+YO6hmXXGQPWmVA0PJF/K1vh9zGzGQnihIPcNuKiIA67zTIF3o
+         G5/SkDa8ixeWt4GjHigD1Q6o1Gk1lR6T3uoYS8MnO03YgM4NTCtAdEwZU+xRez8+zg
+         zSs6a1gd6IyX0NhDWTfeJkpmvORij87nikRaJJmc6Vk/CV/0TL6a6SOE/WptDbNua3
+         U+PISoNV2z8i/IzRbNBD8WTG7qipA9bQyutuscE1FuFAlA/FYI7UtFqdT+sbpojP1K
+         W+tOsDpAm1rPJ90cDNQVpApvkqN9N0nYQ1dd4jengLH064ogb90GPg6IasQl3eubN7
+         fKkYn8nimRYsQ==
 Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 2bb1e746;
-        Fri, 15 Jul 2022 22:23:24 +0000 (UTC)
-Date:   Sat, 16 Jul 2022 07:23:09 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Tyler Hicks <tyhicks@linux.microsoft.com>
-Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 9127998f;
+        Fri, 15 Jul 2022 22:25:25 +0000 (UTC)
+Date:   Sat, 16 Jul 2022 07:25:10 +0900
+From:   asmadeus@codewreck.org
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, tomasbortoli@gmail.com,
         v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net/9p: Initialize the iounit field during fid
- creation
-Message-ID: <YtHozaPd8UV4fRX8@codewreck.org>
-References: <20220710141402.803295-1-tyhicks@linux.microsoft.com>
+Subject: Re: [PATCH] net: 9p: fix possible refcount leak in p9_read_work()
+Message-ID: <YtHpRizqDf7+4WVb@codewreck.org>
+References: <20220712104438.30800-1-hbh25y@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220710141402.803295-1-tyhicks@linux.microsoft.com>
+In-Reply-To: <20220712104438.30800-1-hbh25y@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tyler Hicks wrote on Sun, Jul 10, 2022 at 09:14:02AM -0500:
-> Ensure that the fid's iounit field is set to zero when a new fid is
-> created. Certain 9P operations, such as OPEN and CREATE, allow the
-> server to reply with an iounit size which the client code assigns to the
-> p9_fid struct shortly after the fid is created by p9_fid_create(). On
-> the other hand, an XATTRWALK operation doesn't allow for the server to
-> specify an iounit value. The iounit field of the newly allocated p9_fid
-> struct remained uninitialized in that case. Depending on allocation
-> patterns, the iounit value could have been something reasonable that was
-> carried over from previously freed fids or, in the worst case, could
-> have been arbitrary values from non-fid related usages of the memory
-> location.
+Hangyu Hua wrote on Tue, Jul 12, 2022 at 06:44:38PM +0800:
+> p9_req_put need to be called when m->rreq->rc.sdata is NULL to avoid
+> possible refcount leak.
 > 
-> The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
-> after the uninitialized iounit field resulted in the typical sequence of
-> two getxattr(2) syscalls, one to get the size of an xattr and another
-> after allocating a sufficiently sized buffer to fit the xattr value, to
-> hit an unexpected ERANGE error in the second call to getxattr(2). An
-> uninitialized iounit field would sometimes force rsize to be smaller
-> than the xattr value size in p9_client_read_once() and the 9P server in
-> WSL refused to chunk up the READ on the attr_fid and, instead, returned
-> ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
-> the READ and this problem goes undetected there.
-> 
-> Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
+> Fixes: 728356dedeff ("9p: Add refcount to p9_req_t")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
 
-Thanks for the v2, looks good to me and tested quickly so I've queued it
-up.
-(and thanks all the fixes lately and for the reminder, too many patches
-lately I thought I had already taken it... Feel free to send 'pings' on
-the list)
+I realize I didn't reply to this -- I've reworded the commit message a
+bit and queued it for 5.20:
+https://github.com/martinetd/linux/commit/4ac7573e1f9333073fa8d303acc941c9b7ab7f61
 
-Since the next merge window is close (probably starts next week-ish) I
-won't bother with a separate PR for 5.19; it's been 12 years it can wait
-another week.
+I'll have a look at the RDMA path you pointed at once I can find time to
+make this adapter work, and will credit you for it as well
 
 --
 Dominique
