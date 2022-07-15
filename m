@@ -2,79 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:56:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11A8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbiGOX4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:56:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
+        id S230047AbiGOX4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:56:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiGOXzy (ORCPT
+        with ESMTP id S231768AbiGOX4Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:55:54 -0400
-X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:51 PDT
-Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE83904F3;
-        Fri, 15 Jul 2022 16:55:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
-        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=3fYK9aLEk4+QTiWncARzWNrEsKD8KVzMmkos5F1PmkE=; b=YozSq
-        IEKWWCG3bc8gT6t0ihYNaBBuhPv305blQonV/EXBYDFysPyPUhKKg381HXh56M7I7qFNvaMJuGwTT
-        5iFC8S+v4El1BSGtKhaJnW3AQeovKnVDHsoF81RtELueuH9rVyfNWp4nommA68wYRs52o8y+8iIJA
-        WtB/z1LpwZJ0VYR1oFs7ZUuIXUCTFEwCJLiYsIARE21IWOU8J3IBDtUVP90tCQ5yS7nzbQn5HaYkh
-        WI6fivKHZhd/Mwr3a8h4XuNCj+ziz43uljA9zgbpI2Scm+zVm0kpYZn2RGHINdxmM+Q9bYncXZId8
-        p/snZJ9Xg7GK3GqolB5CvED2LNAOQ==;
-Message-Id: <3f23191d21032e7c14852b1e1a4ae26417a36739.1657920926.git.linux_oss@crudebyte.com>
-In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
-References: <cover.1657920926.git.linux_oss@crudebyte.com>
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:30 +0200
-Subject: [PATCH v6 08/11] 9p: add P9_ERRMAX for 9p2000 and 9p2000.u
-To:     v9fs-developer@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
+        Fri, 15 Jul 2022 19:56:24 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CA4097A28;
+        Fri, 15 Jul 2022 16:56:18 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26FKnKIH011904;
+        Fri, 15 Jul 2022 16:55:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=zao8aTZgqvrUe+ImKMEBtGS2B7kydB+wCjILluFRoCo=;
+ b=bwiAzEnJl82k8rNHHa0TKedVjNCqs+uJp4rALa9KcSS0XbLBq5Ryvmf11T1pP5PwNrwu
+ u+UMBzCWcBlNh/NUdbBru/Nv46DFASX8Az/mJHeJ2WZpYZdSBu1scpCtUVJZjQKyta6a
+ ErcVewBlQVbVQgoXF5HbzK61NiDm5Hf15zc= 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hae0wchpw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 16:55:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=feKasl3z7fkjhBVjblAUhshJyOhFnlmg3MtR5JetTZDHoJgfjwQXR4Eufm54LZqluhZLUKtzq7Jn4b5m1R39iNqa2zlzDa0ZyTUUBh4ADUYIRQpXYM1Np2Pgo1aCXw9bpvo4K5DCkG+RS7sB12ZcEq61tRcRK+eA51uXhYWFf1cjiF6lqRUA36ejCxfBEAhPezyt6EoR10tBXJgKS0FWJG2DPo8XJCl8QHws/i3dtfTq4umGb7HpdT4/iT5coeZ/lK7OAsxY5uwhiicgPTgobBpntrweW/BNQWsApLJ+DjSzltO5n4DEn5QWsKMybJ7kcq58Jsqf4ClJX2Kc4bgo6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=zao8aTZgqvrUe+ImKMEBtGS2B7kydB+wCjILluFRoCo=;
+ b=ln+wGYczaCRyueLAyPLCeQyLNtmzftK3bI2P8kl9T01/ApAzySl8+pGQhhzuoi+MkPyZXy3+rXArdQv4sxlR2E8eCj4R7SPZ4UMNC7isPKD38LlLBDylZ83x7HcVlWvz1H+4oPJDnfgGEa8bf0PcANaMnYAOB4RwZ2dBPEcdMbSqLbja/0g0JYQjqxNVEjM6jag8IiWtlukDTunxLoNl3an3HQbNufNoQqI8YMn20BYHibvQmxPBJqqTpfG/y+3jccARcqyMa6BbwnIS7uE1/nyDl6xiVoTC3/O7prze7kn9v/LeEtOHqmlBOlRPuyllnNRnMmpthCX3Wr2WRu708w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
+ by BYAPR15MB2693.namprd15.prod.outlook.com (2603:10b6:a03:155::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.26; Fri, 15 Jul
+ 2022 23:55:43 +0000
+Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23]) by SN6PR1501MB2064.namprd15.prod.outlook.com
+ ([fe80::9568:e5d9:b8ab:bb23%6]) with mapi id 15.20.5438.017; Fri, 15 Jul 2022
+ 23:55:43 +0000
+Message-ID: <e8415c81-070d-304e-4068-885f3ec3cbb8@fb.com>
+Date:   Fri, 15 Jul 2022 16:55:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH bpf-next v6 01/23] selftests/bpf: fix config for CLS_BPF
+Content-Language: en-US
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-2-benjamin.tissoires@redhat.com>
+From:   Yonghong Song <yhs@fb.com>
+In-Reply-To: <20220712145850.599666-2-benjamin.tissoires@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR03CA0130.namprd03.prod.outlook.com
+ (2603:10b6:a03:33c::15) To SN6PR1501MB2064.namprd15.prod.outlook.com
+ (2603:10b6:805:d::27)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c48b15b9-cbbd-43b7-2aeb-08da66bd878a
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2693:EE_
+X-FB-Source: Internal
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +Kf8h6hyX6VeF39JxiP8pw4Mz2u+mGAdUj8KDU/q6qTbIDNEfdDH+GZ/rShCEB4W0TmpiuLeW60C+foFJHCY0CHBynBcSmqErjypQH4d8EBVe0RgVTI3Bzw/i94WnIU55BEcWGD/lyMsOZ7IBiM+lftFuJzGj8oG3p2VIhdsSh/ppSIpGHLmAgp1SRhkho+gPm4VwepeHU2TS9XXsRSNQvHEBqzdRdSnPhh51ugDB+E8mntN1lFbHSkZyhsrKtELl2TmRAiH5BneRmVgYv2Y7gN43Lh5hWUBJ4G8TV9x2n+sPaRf8JBXnhsrKId3qYJQ2JiFmKXphjVKZl4tubK3wYfNgP7Mtg7GXSm28W/YmSBznWEhLvh8YhGeV5o6al3kX5PDdLHNSKzqKuJjkJGKEHiSUI/upbiYTSUUf9EBzRsBQ79iWriTItvLAOQDdOyO+vtQCjanc9WOpHj/cIMjv6D2hmlpxPvC9xmayyF9JjKJokZe7kvGKRxRuRaO0BHmid70FFiWRJUHKIBdL3vubuyawH28ZEWr5hrhF7hgvvn0MgEt69YGvt8FOJqlbQ73PwBQT+QlJEqemT7UHMiTZ+bIt1TL/go5KcgTW5kNDxrDIDxHVsbTEn2UC2wEeAwWp91VUmZryHTuQlTKxpl6SHWLg5xVEwmt/ID7+26ei3GX/t3iQPcgmbnrICH2KcL8jmLjFg0Bt1pBoohGX1/49L8brvxzUvtNMrUD60JSWhAyFNRSS5fvoAps3FLCHkS6KO0ZoUFH2KXd+o3h5gFopXS/8Bow0ELuoJe77SiJzSH73OoaK9ISRZakeWHK14gm8THIUwBUomgc/HnlZkKqazxC5U79MmXYZcelYTSIP26SqU6CalF3Nnhbv1xBvyEw
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(136003)(366004)(346002)(2906002)(316002)(8936002)(921005)(8676002)(66946007)(7416002)(66556008)(110136005)(4326008)(4744005)(66476007)(36756003)(41300700001)(86362001)(186003)(31696002)(53546011)(6512007)(6486002)(31686004)(6506007)(38100700002)(2616005)(478600001)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZmdHRjVsZGkrZzRCNlR2YU1aSjNWYlVWc2ZYOUhTRmZkL1BqL3RSUStHRXkz?=
+ =?utf-8?B?MnNlWVVrRzdlOU1pY0lPV01SWlBlVkRhd05OdjFyQWtKdzZUUkxRaVdJbmt3?=
+ =?utf-8?B?YTFnT2RuNG9BU1dWbnVBRFdRZDdCcEZwVFdvYWorOUgxS3A5ZERHQ0FoTUNB?=
+ =?utf-8?B?OUVBMGtXajZMeGp0T21VL1hPL1lOTTNJS1lBeXlPYnVqNEdPdlAvZUhRajEz?=
+ =?utf-8?B?dE5NWEFYMnNkSlVFNWl3T0Zwb240S2tkZ3dEWUVXV3NqYlI1VGhrc0hrVHVX?=
+ =?utf-8?B?Q1ppWkFVUVR2UjBGUlFvNUdJN1F5N3JBQUV3a2dWL1Q0cjRQR1JTOGJpYVds?=
+ =?utf-8?B?YUxkTE5WMWV0Ulh3NW5Pc29IM1poeE9qSXF3ajZXblVGemRma2YrM25UbW84?=
+ =?utf-8?B?NnQzSnFtOTVPdDNZTjBkYWxjQ3ZNRnY3clJsd3ZkeW1VVEVhQ3NTQ2xyZm5F?=
+ =?utf-8?B?ZnBmOTUvbndkUFhZOFMzTFpaUUQxVklNMnZoWHBJeFo0VHdiSTRmazhIK09z?=
+ =?utf-8?B?cmxWWUFHajRYWjhUdDVJQkdrcXd2VXNjNU5zYnFpdWIzUVdiUXQ0S21UTDE1?=
+ =?utf-8?B?OVJSYkRxNjcxWnNyZ05JbUtVMWNrWWkybEFjRllVSkdUdWIwSENmSitNYnlk?=
+ =?utf-8?B?dmJuYXJDQWZNZmk3MkNDdlozRTI5UDZXQ3h0dTMxd1RPbWJDQmFsMEFJWUc3?=
+ =?utf-8?B?VWNYWWxjeVpsaWVYZ2lrYWJMZHB2RG1wR25jNDJzb0FwQWE3UXYyUWJ3SmZN?=
+ =?utf-8?B?YzMyN0lWZE5qek5EeUk5cGN5L2FqMVAyVE54bVQxSkRPSEtaWlZXalBQazNL?=
+ =?utf-8?B?c3lYZnVDNiszeEVUOWdLK3RSQXFoVmZmbGJCTTYrR0t1RVI5V25NUk9hU0I4?=
+ =?utf-8?B?WnA2STJ3MUFJSTR3ZWMyNVBOUHBYU2dNd2V1ZUxFOXpZdEJpTS9NMTliU3dy?=
+ =?utf-8?B?R2FJRHVNQ0dpZlI4RklZMTVCNFA0S2c1aE9JRnMvbUduR2NHSmREM1FNMkVu?=
+ =?utf-8?B?TFQ2dUpNKzVoQmozeFptbDQvU0IvS3ZYWkYxMHdnOXNhYy94Z1h0dy8yamhy?=
+ =?utf-8?B?SEkyUm8rR3diQ1p2Qkxrd09BRVp5SkpJVFkyM3JVNFF1TXd3ZERvZFpIb1Nv?=
+ =?utf-8?B?K2pEdExvM2lHUytYWDRkcWEvNHpGckFVRWMraUtmU0FPcDhNaWVzTzhBRkI4?=
+ =?utf-8?B?aDQwelRLSFBtakZtU1Y1MCsxMUtDdjJjZzFKcXJ1T2ZaTk5LWi9GeGxUbjBM?=
+ =?utf-8?B?MURZUUFlUUZ3bTJtdjcxOUIyNk9HVDNYUEtCVytyMEw4TEhOOTNSVVdSc0Z5?=
+ =?utf-8?B?MEoxL3VQQWowRFRJemN3by9QOEY0eEQxazF4YTN3Q0YyRFpPRVJ6ZElFTThs?=
+ =?utf-8?B?TWJURTc0ejR6bjNvVFRwMWUwMEtad1VOd0RqRWU2aWQ5ZzZsbW1SN3NKbjEz?=
+ =?utf-8?B?Ny9iajdnb0pTS0lRbHgyYTZlWGVWMC9xT3d2T0JJTkxyVzlOOW5pWGtEVXFa?=
+ =?utf-8?B?WmtBSHVIY1ZEeWtIdzFzdmU3UVZYSkhVL2phNWx6M0RjWXRNS3hlejZqU04r?=
+ =?utf-8?B?bG9Sa00wU2ZyVkFDWWVmbmd4SG9QRGI3Szh2WVdRQ0syWXN3MFV6cEpPUDlS?=
+ =?utf-8?B?ZzRxdjZPUGhYVk9NWm1SVTQxMmdjZlZPMnZXRHIwbzROeC9HRno3aU81bXls?=
+ =?utf-8?B?ckp1RkhmZGx3dVJmTFozYkJtWlkvbUEwRmtZMG0yWFErWTdJSWthMGFJelhn?=
+ =?utf-8?B?emhQcHJ2aHBUd0lHZnNrNCs5ekowME8vVHlhVGk3QTIvQmZvOG5aNm1TbXVM?=
+ =?utf-8?B?T0NaNTdIS25pTDVJV2FZWHVSL1QvdEZ3azJWVU4yYTVaQVFaUE4rdlVoQlBk?=
+ =?utf-8?B?emphQ2c0eUt3T3pFNFNQWEpLQzFTazMybW8rTVJ4SzEvMEIwbnZqK2RxNFEr?=
+ =?utf-8?B?bWx3VXRVbzMrUi9xTXlicXZPQkVxOWN2TEVwclBybTRVTzV2OG90bWt0Vkl1?=
+ =?utf-8?B?cHBRMk02NDkzZ0ZkUzB4RUpxcEVFd1c4cWEvbi80Q3VmUXh1SHlJN2ZmRjBO?=
+ =?utf-8?B?dUNnRE5va0VyMFJlRHpvMWpFd3N5TU43TDIrd3VhelNGQTlkblZqbGhRM2tR?=
+ =?utf-8?B?SE03T3k2eWFlM2tneUp2dDRPSWlSS1g5UkJ5RUZlNis1QzBpcmwvL0dIWmdw?=
+ =?utf-8?B?V3c9PQ==?=
+X-OriginatorOrg: fb.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c48b15b9-cbbd-43b7-2aeb-08da66bd878a
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 23:55:43.7052
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: /jzn4hlBYHrNA3eWjVDKiFXVtJj5h5Cc8cUc1PgHY6tTa9AFZfKD4IedA1KiYNwk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2693
+X-Proofpoint-GUID: 6ZZGH_6ZGNW4cDRpbsaYUX3ZwO50IFK8
+X-Proofpoint-ORIG-GUID: 6ZZGH_6ZGNW4cDRpbsaYUX3ZwO50IFK8
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-15_15,2022-07-15_01,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add P9_ERRMAX macro to 9P protocol header which reflects the maximum
-error string length of Rerror replies for 9p2000 and 9p2000.u protocol
-versions. Unfortunately a maximum error string length is not defined by
-the 9p2000 spec, picking 128 as value for now, as this seems to be a
-common max. size for POSIX error strings in practice.
 
-9p2000.L protocol version uses Rlerror replies instead which does not
-contain an error string.
 
-Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
----
+On 7/12/22 7:58 AM, Benjamin Tissoires wrote:
+> When running test_progs under the VM (with vmtest.sh), some tests are
+> failing because the classifier bpf is not available.
+> 
+> Given that the script doesn't load that particular module, make it
+> part of vmlinux.
+> 
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-This could probably be merged with the next patch, on doubt I posted it
-separately as squashing is easy. The advantage of a separate patch is
-making the discussion of the chosen value of max. 128 bytes more
-prominent.
-
- include/net/9p/9p.h | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
-index 24a509f559ee..13abe013af21 100644
---- a/include/net/9p/9p.h
-+++ b/include/net/9p/9p.h
-@@ -331,6 +331,9 @@ enum p9_qid_t {
- /* size of header for zero copy read/write */
- #define P9_ZC_HDR_SZ 4096
- 
-+/* maximum length of an error string */
-+#define P9_ERRMAX 128
-+
- /**
-  * struct p9_qid - file system entity information
-  * @type: 8-bit type &p9_qid_t
--- 
-2.30.2
-
+Acked-by: Yonghong Song <yhs@fb.com>
