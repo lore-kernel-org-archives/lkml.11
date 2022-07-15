@@ -2,87 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27EEFCCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAF6CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230152AbiGOSzN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 14:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36388 "EHLO
+        id S230308AbiGOS4D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 14:56:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiGOSzK (ORCPT
+        with ESMTP id S229597AbiGOS4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 14:55:10 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1012E6B9;
-        Fri, 15 Jul 2022 11:55:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=VSI08QL3zOcYcSXc4Zml7HpuS/20FxcTomrvHdgOTaE=; b=c1odVyZNW30ww9ohbjmFkmSTTY
-        sPKVXAMoqxdvFFOjIiw5K8QrsACAD9PaWHFIKpsR1DTQvbhH+X8QlfM7SvVMJMPGCc+EZ/9GWrB9/
-        dH/IOypF29o9QCeoVcdUeuxUgKXYVqSitI33OnGI1Uoi0npv5M7aWmxR8AMjXApOO34r/3WOBv1Ch
-        HxoAk19Py715q9803K+VVVDyetOppFWKbnv6y0QX15Tvxza9+mQDHR+qQpb5e7uCDqucmWXFUMbtx
-        uNOoG7McX4u9QLpKB4Xkcp/rbgbPvOqKtAIBtlifkFw/M5KfBR6HeZtJ3GvMs6shoT322xBnsKCzJ
-        ZkojPzRQ==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oCQSu-009XtJ-CX; Fri, 15 Jul 2022 18:55:04 +0000
-Message-ID: <1bd8c899-6675-d3cf-3f3b-bea48e216c9f@infradead.org>
-Date:   Fri, 15 Jul 2022 11:55:02 -0700
+        Fri, 15 Jul 2022 14:56:01 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45EDC26110;
+        Fri, 15 Jul 2022 11:56:01 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id h132so5162113pgc.10;
+        Fri, 15 Jul 2022 11:56:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=txNDrk9pGz6uXD/rzBLEuIe+526tTagKyY+blkSYT/c=;
+        b=hBa/KZV1VsmsfbAJShL0fRQke5T9Fodc9DS10V+7Js/uchvw/e4wuzdhgCl6IA7nXJ
+         2E9328A+1VJgmwOprC5pNFDJ5IF1yz1qTZ01qwDBkW4W08+XKdc5qti8MXyAVSkOzN3J
+         Npa8q8uXUwEMj01BRhYd8tUOXGMpuYchQewEKe3kPg2LcIivziFRLWpyC2VUyjrtlZ8O
+         UJ6XE92l2X5IL1IKWGUOqKp8uTZVeK5bn4KFiSHb99OyyP1FgDHBkySEhsYoleR2NLdx
+         JkZoVVCF+nQTvodv3wxWgbChzqnu30jtJnoSL/njjTukYGn717pNGnm3xieOpW/AhSWF
+         gAKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=txNDrk9pGz6uXD/rzBLEuIe+526tTagKyY+blkSYT/c=;
+        b=5gxzu3BIMY6RmCL59Kn4Pe587L+TYt2/qkfyTTUrJjGpPi8I7/dKHkt7HSDEnSB7p8
+         nvc149a28j10onRruM6Twpc64GLdIpjDDPw5D6ps2GM6rp7Loa012Gh6a0FICGkI/+si
+         zdUc4SukbHM0AUg5PzmmqqAGm7ady/fG+zjtyHPZEmupRLOGJv4BfnUMGpR2S4YT/VSy
+         0Fvl2ZcvL+yglfC435J+YBA9NYjuwutIdmvNKGF6bflY6BbGme3MjNUh3+/5+pFqOXw2
+         hiiicDgYBCizo76m22qYKcCcqEiR+ciAoy0u2fZVncf5PAY7CFd19NQpC3pQjEzqMHXv
+         ZTew==
+X-Gm-Message-State: AJIora+8SgNGL/BH4tBBLHXwgIX9rlZBm14no0EhsFs4hDiZ+/bynZ/0
+        eOkv/54Rw2kup6cC+7rDTZ3mklL6utw=
+X-Google-Smtp-Source: AGRyM1vqAMemFePL0Rs384dOpVs+hjs41yGbA+QMSgCOMDS0RVu8TMtfNQPELQKX7JiOmm9QekB6cQ==
+X-Received: by 2002:a62:b514:0:b0:525:1ccd:4506 with SMTP id y20-20020a62b514000000b005251ccd4506mr15295958pfe.8.1657911360327;
+        Fri, 15 Jul 2022 11:56:00 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id b132-20020a621b8a000000b0052a75004c51sm4310943pfb.146.2022.07.15.11.55.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 11:55:59 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     hch@lst.de, nathan@kernel.org, naresh.kamboju@linaro.org,
+        linux-mips@vger.kernel.org, linux-arch@vger.kernel.org,
+        heiko@sntech.de, Florian Fainelli <f.fainelli@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Guo Ren <guoren@kernel.org>
+Subject: [PATCH] tools: Fixed MIPS builds due to struct flock re-definition
+Date:   Fri, 15 Jul 2022 11:55:49 -0700
+Message-Id: <20220715185551.3951955-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] Documentation: process: Update email client
- instructions for Thunderbird
-Content-Language: en-US
-To:     Sotir Danailov <sndanailov@gmail.com>, corbet@lwn.net
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bagasdotme@gmail.com
-References: <20220714131152.12709-1-sndanailov@gmail.com>
- <ae06388f-a062-132b-ee61-8ad68f227970@infradead.org>
- <efca1b16-2492-fa68-119b-8c3cfa05cadb@gmail.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <efca1b16-2492-fa68-119b-8c3cfa05cadb@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Building perf for MIPS failed after 9f79b8b72339 ("uapi: simplify
+__ARCH_FLOCK{,64}_PAD a little") with the following error:
 
+  CC
+/home/fainelli/work/buildroot/output/bmips/build/linux-custom/tools/perf/trace/beauty/fcntl.o
+In file included from
+../../../../host/mipsel-buildroot-linux-gnu/sysroot/usr/include/asm/fcntl.h:77,
+                 from ../include/uapi/linux/fcntl.h:5,
+                 from trace/beauty/fcntl.c:10:
+../include/uapi/asm-generic/fcntl.h:188:8: error: redefinition of
+'struct flock'
+ struct flock {
+        ^~~~~
+In file included from ../include/uapi/linux/fcntl.h:5,
+                 from trace/beauty/fcntl.c:10:
+../../../../host/mipsel-buildroot-linux-gnu/sysroot/usr/include/asm/fcntl.h:63:8:
+note: originally defined here
+ struct flock {
+        ^~~~~
 
-On 7/15/22 01:11, Sotir Danailov wrote:
-> Thank you for taking the time!
-> I didn't expect the original author to participate. :D
-> I probably should've sent a cc to you and others as well, sorry about that!
-> Didn't do my research good enough I guess.
-> 
-> On Fri 15 07 2022 01:18, Randy Dunlap wrote:
->>
->> Does thunderbird v91.11.0 qualify as newer or older?
->>
->> I tried to use the external-editor-revived yesterday with v1 of the patch..
->> no success.
-> 
-> Do you think that the whole section about the
-> old "External Editor" extension should be removed?
+This is due to the local copy under
+tools/include/uapi/asm-generic/fcntl.h including the toolchain's kernel
+headers which already define 'struct flock' and define
+HAVE_ARCH_STRUCT_FLOCK to future inclusions make a decision as to
+whether re-defining 'struct flock' is appropriate or not.
 
-No, I don't. It's useful IMO.
+Make sure what do not re-define 'struct flock'
+when HAVE_ARCH_STRUCT_FLOCK is already defined.
 
->> v2 of the patch has more useful info (about native-messaging), so I installed
->> that and still not happy.
->> After pressing "External Editor" in a tbird reply window, nothing happens.
->>
->> Wait -- hold everything!  Exiting tbird and reloading it
->> fixed all problems. :)
-> 
-> I probably should add in the document that the user should
-> restart Thunderbird after all modifications, just to be sure.
+Fixes: 9f79b8b72339 ("uapi: simplify __ARCH_FLOCK{,64}_PAD a little")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ tools/include/uapi/asm-generic/fcntl.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Please.
-
-Thanks.
-
+diff --git a/tools/include/uapi/asm-generic/fcntl.h b/tools/include/uapi/asm-generic/fcntl.h
+index 0197042b7dfb..312881aa272b 100644
+--- a/tools/include/uapi/asm-generic/fcntl.h
++++ b/tools/include/uapi/asm-generic/fcntl.h
+@@ -185,6 +185,7 @@ struct f_owner_ex {
+ 
+ #define F_LINUX_SPECIFIC_BASE	1024
+ 
++#ifndef HAVE_ARCH_STRUCT_FLOCK
+ struct flock {
+ 	short	l_type;
+ 	short	l_whence;
+@@ -209,5 +210,6 @@ struct flock64 {
+ 	__ARCH_FLOCK64_PAD
+ #endif
+ };
++#endif /* HAVE_ARCH_STRUCT_FLOCK */
+ 
+ #endif /* _ASM_GENERIC_FCNTL_H */
 -- 
-~Randy
+2.25.1
+
