@@ -2,90 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7110C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448E0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:35:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232118AbiGOWeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 18:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
+        id S231728AbiGOWf0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 18:35:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiGOWeI (ORCPT
+        with ESMTP id S230144AbiGOWfY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 18:34:08 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC758B7E4
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:34:06 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id d16so8523913wrv.10
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:34:06 -0700 (PDT)
+        Fri, 15 Jul 2022 18:35:24 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAB86B26A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:35:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wOP2A2FeSpHI1WPKlFbVK/7JXB5FOqAuroR4HnQVIN8=;
-        b=yU9E9Wg5JswBO9l8eJlendpb+vPlcQCfr4Y5vU+yHGP3wDLUgKEGxGWipU0CuHSSzZ
-         5QKHvpmDNEq9bU/xfGJ+UwJXQT469Plvf2uL9Zm6VDXbbrXjx+cQQjvqxEuUYUkq01qh
-         OwwgXhE/YJ1RnarjTa0CQ056VFpGpq/ADeoQeTU2+c5bTgLrvtUDMC/aEL4UoLgW6hwj
-         S4+S2PYLtE9ld6VXyNFmIMibuL1v/MC6kY3iSNPX+HdmuXCVG4dvSFiZaTNw2/4YnUKQ
-         510GDbFsryCi08oVM816gquWyJLJ1oJbCl+ywjPxCCemAmwx5uYLsiD4Sxdh/mvczme7
-         toog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=wOP2A2FeSpHI1WPKlFbVK/7JXB5FOqAuroR4HnQVIN8=;
-        b=oC0CX8DQppyuWH9/qoymDczPFjRjWRC9+hCA2FAWq2oXDr+lZwqPLpHFAAUTnRSric
-         pc7QfswMQNWlVck4JC+NxcewSEQ+OD5JDJR99IlTe2O9dAoKaoMXm2m2Igw6eUnlJQIQ
-         i02qA8fJTbm3875AtAQu0AstXlEhSsYpWL9ZSq3HIA/Vg2M72lwXRenp8K+g9jufRxqm
-         08+AdjZrejGfr6KQSIxa1i6bg5hKowrgdsZ8hc0ZuGHHLiq8FonkbpTNqMyZaCmquzUn
-         kVBvrLumjrxpOXx3/DDgqjzbgM2eFPH5ORETXDyFyk+MWOYr0/LekMxD9pbkr41UvqQG
-         T8jQ==
-X-Gm-Message-State: AJIora+eJaZf/Rl1wZ2H76IFyptX5s1b+JBWBeQZhYXgpRsNTqBlsExl
-        ChyBgHPtZ3eReqteILlUKR7ujuyTNWZwQQ==
-X-Google-Smtp-Source: AGRyM1tbT9XekkCh3jRlzFprRNajmItl/jpNcqdWw/6Y7rtttT4qARHLc7X74MPURYIChJNKmgjbmQ==
-X-Received: by 2002:a5d:64cc:0:b0:21d:a4bd:fdbe with SMTP id f12-20020a5d64cc000000b0021da4bdfdbemr14234254wri.580.1657924445455;
-        Fri, 15 Jul 2022 15:34:05 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:a223:f4b3:40c9:43fa? ([2a05:6e02:1041:c10:a223:f4b3:40c9:43fa])
-        by smtp.googlemail.com with ESMTPSA id r16-20020a5d52d0000000b0021dabdc381fsm4719388wrv.22.2022.07.15.15.34.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 15 Jul 2022 15:34:04 -0700 (PDT)
-Message-ID: <b00b14a5-0e8d-bf64-de02-2551eb5df6df@linaro.org>
-Date:   Sat, 16 Jul 2022 00:34:02 +0200
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1657924523; x=1689460523;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=Z0oFswyC/YbNkGH8IOxwbYw/Sv54sKTTQJpfl46exPo=;
+  b=MdQ6yE7IyQ74g2/KmDltx1z+cN3uFGSx/TuAaJA6jT87U19VE81XXpoR
+   VxwSQDTSZVBHTi4wYjntIWZjtgshpT1qOJpds+YJY8sQJfS+UXqJqTtRg
+   +N4TPTQKL/lyNnPcFd+Xxk2ywCP66oXqdMDQiKVAZXdkfFg1fJlp0H4Pi
+   c=;
+Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Jul 2022 15:35:22 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 15:35:22 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Fri, 15 Jul 2022 15:35:22 -0700
+Received: from [10.110.97.72] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 15 Jul
+ 2022 15:35:20 -0700
+Message-ID: <c628e868-5c73-ca4b-1f99-60cc149806bf@quicinc.com>
+Date:   Fri, 15 Jul 2022 15:35:19 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] clocksource: arm_global_timer: fix Kconfig "its" grammar
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
 Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     Patrice Chotard <patrice.chotard@foss.st.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel@lists.infradead.org
-References: <20220715015852.12523-1-rdunlap@infradead.org>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220715015852.12523-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From:   Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     <clg@kaod.org>, <linux-kernel@vger.kernel.org>,
+        <linux-mtd@lists.infradead.org>, <p.yadav@ti.com>,
+        <quic_ggregory@quicinc.com>, <quic_jiles@quicinc.com>,
+        <tudor.ambarus@microchip.com>
+References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
+ <20220711095042.2095360-1-michael@walle.cc>
+ <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
+ <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
+ <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
+ <00f0c9d480ef5a414f1c34492661bd9e@walle.cc>
+ <63cedfce-34bb-ed63-3871-75a6c3dd5d73@quicinc.com>
+ <6be710bb5c1bf0449e54a54b78f6f7a0@walle.cc>
+ <47c01d768ea56edc9a2f9d317af7b495@walle.cc>
+ <114fcde6-bdf7-68ee-d031-35a916027aee@quicinc.com>
+ <b42cb229-f241-6e29-a138-29023ce316d9@quicinc.com>
+In-Reply-To: <b42cb229-f241-6e29-a138-29023ce316d9@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 15/07/2022 03:58, Randy Dunlap wrote:
-> Use the possessive "its" instead of the contraction "it's"
-> where appropriate.
+Hi Michael,
+
+On 7/15/2022 1:15 PM, Jae Hyun Yoo wrote:
+> Hi Michael,
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: linux-arm-kernel@lists.infradead.org
-> ---
+> On 7/14/2022 7:30 AM, Jae Hyun Yoo wrote:
+>> On 7/14/2022 7:21 AM, Michael Walle wrote:
+>>> Am 2022-07-14 16:16, schrieb Michael Walle:
+>>>> Am 2022-07-14 15:47, schrieb Jae Hyun Yoo:
+>>>>> On 7/14/2022 12:41 AM, Michael Walle wrote:
+>>>>>> What does "doesn't boot at all" mean? Are there any kernel startup
+>>>>>> messages?
+>>>>>
+>>>>> I'm sharing the error messages below.
+>>>>
+>>>> Thanks.
+>>>>
+>>>>> [    0.748594] spi-nor spi0.0: w25q512nwq (65536 Kbytes)
+>>>>> [    0.865216] spi-aspeed-smc 1e620000.spi: CE0 read buswidth:4 
+>>>>> [0x406c0741]
+>>>>> [    0.872833] ------------[ cut here ]------------
+>>>>> [    0.877984] WARNING: CPU: 1 PID: 1 at drivers/mtd/mtdcore.c:583
+>>>>> add_mtd_device+0x28c/0x53c
+>>>>> [    0.887237] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
+>>>>> 5.15.43-AUTOINC-dirty-23801a6 #1
+>>>>
+>>>> Could you please try it on the latest (vanilla) linux-next?
+>>>
+>>> or spi-nor/next [1] as there are quite a lot of changes. The
+>>> patches shall be based on that.
+>>
+>> Okay. Let me try that. I tested it using 5.15.43 with back-ported
+>> spi-nor patches from the latest. I'll back-port more changes from
+>> the spi-nor/next and will test the INFO(0xef6020, 0, 0, 0) setting
+>> again.
+> 
+> I tested the setting again after cherry picking all SPI relating changes
+> from the 'for-next' branch of
+> git://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi repository.
+> 
+> No luck! It's still making the same warning dump at 'add_mtd_device'
+> since 'mtd->erasesize' is checked as 0.
+> 
+> I traced it further to check if the erasesize is properly parsed from
+> the sfdp and checked that erase map seems parsed and initialized
+> correctly in 'spi_nor_parse_bfpt' but problem is, a target
+> mtd->erasesize is not properly selected in 'spi_nor_select_erase' since
+> the 'wanted_size' variable is initialized as sector size of info table
+> so a selected target mtd->erasesize is also 0 so looks like it's the
+> reason why it can't initialize mtd device if we use
+> INFO(0xef6020, 0, 0, 0).
+> 
+> Also, checked that the mtd->erasesize is set to 4096 if I enable
+> CONFIG_MTD_SPI_NOR_USE_4K_SECTORS so the SPI flash can be initialized 
+> with the INFO(0xef6020, 0, 0, 0) setting but, it should cover even when
+> the configuration is not enabled. I think, this patch should go as it
+> is. The erasesize selecting issue could be fixed using a separate
+> patch.
+> 
+> Are you still sure that the INFO(0xef6020, 0, 0, 0) works in the
+> latest spi-next?
 
-Applied, thanks
+I also tried to fix the issue and made a fix like below.
 
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index 502967c76c5f..f8a020f80a56 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -2117,7 +2117,7 @@ spi_nor_select_uniform_erase(struct 
+spi_nor_erase_map *map,
+                  * If the current erase size is the one, stop here:
+                  * we have found the right uniform Sector Erase command.
+                  */
+-               if (tested_erase->size == wanted_size) {
++               if (wanted_size && tested_erase->size == wanted_size) {
+                         erase = tested_erase;
+                         break;
+                 }
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+Tested that it makes the INFO(0xef6020, 0, 0, 0) setting work and a
+selected mtd->erasesize is 65536 which is what I expected for this
+device.
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+Not sure if it's a right fix or not. Please review and let me know if
+it's good to submit or not.
+
+Thanks,
+
+Jae
+
+> Thanks,
+> 
+> Jae
+> 
+>> -Jae
+>>
+>>> -michael
+>>>
+>>> [1] 
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git#spi-nor/next
