@@ -2,138 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A2AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764D9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:16:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232873AbiGOWPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 18:15:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S232000AbiGOWQ3 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 18:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232022AbiGOWPf (ORCPT
+        with ESMTP id S232067AbiGOWQR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 18:15:35 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE088FD6C
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:12:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657923168; x=1689459168;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mFX8Tq4zQFBWK4EPQZCIzTDcZ5Mo77njE5GD1C9WHPM=;
-  b=QUBfGh7dpSebpLr+m6MPM/n2XW7e6MJ8wOMo57I2B1wON4fAq7ruG+GC
-   LoEtT+iG2W9JvLGJu11haOtH4XQ2k8ZsPBZt9kMs0NXxLa+uXe6NtQsT2
-   JF8Nk1rD86N20BvapF9UUe9foHDdWiIMVO9Zj4XqXsuu+M/NjPck9JafA
-   cHFWZwuVJEONpnVV28bkgKN+3tWzNzEh5tfxW0IV9RrDDv1/GsVPrOyS3
-   ZDvJoTiecakOG2O6eUiduK7aXLp2G8jOI/0qxCMvV/XRjD+uUG3OCvsUl
-   Cp5nuXcAGbE784XylHyKdHHKZsyp6BM5XMWaVqmTPEY3fU27FR248sqN7
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="347597627"
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="347597627"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 15:12:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="546815602"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga003.jf.intel.com with ESMTP; 15 Jul 2022 15:12:46 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCTYD-0000nY-Sk;
-        Fri, 15 Jul 2022 22:12:45 +0000
-Date:   Sat, 16 Jul 2022 06:12:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [paulmck-rcu:joel.2022.07.14a] BUILD REGRESSION
- 37d0460c40e7e364151894260d483ade68b1de34
-Message-ID: <62d1e638.vu5Pg3TX+uGBl7As%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 15 Jul 2022 18:16:17 -0400
+Received: from relay.hostedemail.com (smtprelay0011.hostedemail.com [216.40.44.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B590F07
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:16:16 -0700 (PDT)
+Received: from omf13.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay12.hostedemail.com (Postfix) with ESMTP id 358A512095E;
+        Fri, 15 Jul 2022 22:16:15 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf13.hostedemail.com (Postfix) with ESMTPA id 01E912000D;
+        Fri, 15 Jul 2022 22:16:05 +0000 (UTC)
+Message-ID: <f6ab40860cd4f8079e6e169c7d6465f211b8dbd3.camel@perches.com>
+Subject: Re: [PATCH v2 24/39] drm/i915: dvo_sil164.c: use SPDX header
+From:   Joe Perches <joe@perches.com>
+To:     Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org
+Date:   Fri, 15 Jul 2022 15:16:05 -0700
+In-Reply-To: <YtHdp6ju3IfjF8Bq@intel.com>
+References: <cover.1657699522.git.mchehab@kernel.org>
+         <002a8d51244a70572744de86cacbdae293e7d503.1657699522.git.mchehab@kernel.org>
+         <YtHdp6ju3IfjF8Bq@intel.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+X-Stat-Signature: 9shq7dagh5qa1dpwkohcwaxcpnds4xbk
+X-Rspamd-Server: rspamout07
+X-Rspamd-Queue-Id: 01E912000D
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19aezajI8aTJN8t18DoGrRvtF8w07Xpt2A=
+X-HE-Tag: 1657923365-889008
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/paulmck/linux-rcu.git joel.2022.07.14a
-branch HEAD: 37d0460c40e7e364151894260d483ade68b1de34  rcutorture: Add test code for call_rcu_lazy()
+On Fri, 2022-07-15 at 17:35 -0400, Rodrigo Vivi wrote:
+> On Wed, Jul 13, 2022 at 09:12:12AM +0100, Mauro Carvalho Chehab wrote:
+> > This file is licensed with MIT license.	Change its license text
+> > to use SPDX.
+> > 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+> 
+> Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
 
-Error/Warning reports:
+Not exactly the MIT license as it's missing "or copyright holders"
+> 
+> > ---
+> > 
+> > To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+> > See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
+> > 
+> >  drivers/gpu/drm/i915/display/dvo_sil164.c | 32 +++++------------------
+> >  1 file changed, 6 insertions(+), 26 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/i915/display/dvo_sil164.c b/drivers/gpu/drm/i915/display/dvo_sil164.c
+> > index 0dfa0a0209ff..12974f7c9dc1 100644
+> > --- a/drivers/gpu/drm/i915/display/dvo_sil164.c
+> > +++ b/drivers/gpu/drm/i915/display/dvo_sil164.c
+> > @@ -1,30 +1,10 @@
+> > -/**************************************************************************
+> > +// SPDX-License-Identifier: MIT
+> >  
+> > -Copyright © 2006 Dave Airlie
+> > -
+> > -All Rights Reserved.
+> > -
+> > -Permission is hereby granted, free of charge, to any person obtaining a
+> > -copy of this software and associated documentation files (the
+> > -"Software"), to deal in the Software without restriction, including
+> > -without limitation the rights to use, copy, modify, merge, publish,
+> > -distribute, sub license, and/or sell copies of the Software, and to
+> > -permit persons to whom the Software is furnished to do so, subject to
+> > -the following conditions:
+> > -
+> > -The above copyright notice and this permission notice (including the
+> > -next paragraph) shall be included in all copies or substantial portions
+> > -of the Software.
+> > -
+> > -THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+> > -OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+> > -MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
+> > -IN NO EVENT SHALL THE AUTHOR
 
-https://lore.kernel.org/lkml/202207150959.APaZTo2Q-lkp@intel.com
-https://lore.kernel.org/llvm/202207150859.kU3p78eN-lkp@intel.com
+Missing "Authors or copyright holders"
 
-Error/Warning: (recently discovered and may have been fixed)
+> > BE LIABLE FOR
+> > -ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+> > -TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+> > -SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+> > -
+> > -**************************************************************************/
+> > +/*
+> > + * Copyright © 2006 Dave Airlie
+> > + *
+> > + * All Rights Reserved.
+> > + */
+> >  
+> >  #include "intel_display_types.h"
+> >  #include "intel_dvo_dev.h"
+> > -- 
+> > 2.36.1
+> > 
 
-kernel/rcu/rcuscale.c:819:14: error: call to undeclared function 'rcu_lazy_get_jiffies_till_flush'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-kernel/rcu/rcuscale.c:819:28: error: implicit declaration of function 'rcu_lazy_get_jiffies_till_flush' [-Werror=implicit-function-declaration]
-kernel/rcu/rcuscale.c:822:17: error: implicit declaration of function 'rcu_lazy_set_jiffies_till_flush' [-Werror=implicit-function-declaration]
-kernel/rcu/rcuscale.c:822:3: error: call to undeclared function 'rcu_lazy_set_jiffies_till_flush'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- x86_64-randconfig-a002
-|   |-- kernel-rcu-rcuscale.c:error:implicit-declaration-of-function-rcu_lazy_get_jiffies_till_flush
-|   `-- kernel-rcu-rcuscale.c:error:implicit-declaration-of-function-rcu_lazy_set_jiffies_till_flush
-`-- x86_64-randconfig-a013
-    |-- kernel-rcu-rcuscale.c:error:implicit-declaration-of-function-rcu_lazy_get_jiffies_till_flush
-    `-- kernel-rcu-rcuscale.c:error:implicit-declaration-of-function-rcu_lazy_set_jiffies_till_flush
-clang_recent_errors
-|-- arm-randconfig-r015-20220714
-|   |-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_get_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|   `-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_set_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|-- hexagon-randconfig-r041-20220714
-|   |-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_get_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-|   `-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_set_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-`-- x86_64-randconfig-a012
-    |-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_get_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-    `-- kernel-rcu-rcuscale.c:error:call-to-undeclared-function-rcu_lazy_set_jiffies_till_flush-ISO-C99-and-later-do-not-support-implicit-function-declarations
-
-elapsed time: 1417m
-
-configs tested: 33
-configs skipped: 2
-
-gcc tested configs:
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-m68k                             allyesconfig
-powerpc                           allnoconfig
-mips                             allyesconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                                defconfig
-i386                             allyesconfig
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a001
-i386                          randconfig-a003
-i386                          randconfig-a005
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-x86_64                        randconfig-a015
-i386                          randconfig-a016
-um                             i386_defconfig
-um                           x86_64_defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-x86_64                              defconfig
-
-clang tested configs:
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220714
-hexagon              randconfig-r041-20220714
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
