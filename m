@@ -2,219 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE5DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A74C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:57:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230315AbiGOS4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 14:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37178 "EHLO
+        id S229629AbiGOS5c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 14:57:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiGOS42 (ORCPT
+        with ESMTP id S229538AbiGOS5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 14:56:28 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 590102DAA2;
-        Fri, 15 Jul 2022 11:56:27 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26FEs6KC031633;
-        Fri, 15 Jul 2022 18:55:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=9wiYGNZN6tmOdPV5LNB6z205KdtgihGjwpgjz9fRBbk=;
- b=jFD7Hkisz/gPy41HLTpPLMM5U77kczSFF3ZFB79T5ucz2iQz1QwBy7FifKXHP0+2mjvA
- SvQthBAWzbHnJUwsdhF1OUVoqLG0N/F6XlFU/8ZrLs0P2Ym4pkDQg8Bgqv3P/wlqMnLj
- nf6mHWQhP55Cfi9J3H3bH1Y/2VMbm8Kv5EknSQgbX32zoHmSgqKfffAtGU3UWInqjso3
- lAQ2+pv5nIucn9jVkOwCwU4AXT1k1yv1dcfoGlZ8eLxh1TsInX8v60COR+0vvKiPOXbH
- IiT6NUaicyx/a0ctE80OqJRkBvaqtKHH2GMJW9Teg6tabEbvwHGf4rdwBav4568fFbes uQ== 
-Received: from apblrppmta02.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hawhwjt6t-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Jul 2022 18:55:52 +0000
-Received: from pps.filterd (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26FItmTU001945;
-        Fri, 15 Jul 2022 18:55:48 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTPS id 3h72rjjuc2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 15 Jul 2022 18:55:48 +0000
-Received: from APBLRPPMTA02.qualcomm.com (APBLRPPMTA02.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26FItmW8001940;
-        Fri, 15 Jul 2022 18:55:48 GMT
-Received: from hu-sgudaval-hyd.qualcomm.com (hu-vnivarth-hyd.qualcomm.com [10.213.111.166])
-        by APBLRPPMTA02.qualcomm.com (PPS) with ESMTP id 26FItmej001939;
-        Fri, 15 Jul 2022 18:55:48 +0000
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 3994820)
-        id 6992C410F; Sat, 16 Jul 2022 00:25:47 +0530 (+0530)
-From:   Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, gregkh@linuxfoundation.org,
-        jirislaby@kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     quic_msavaliy@quicinc.com, dianders@chromium.org, mka@chromium.org,
-        swboyd@chromium.org,
-        Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
-Subject: [V6] tty: serial: qcom-geni-serial: Fix get_clk_div_rate() which otherwise could return a sub-optimal clock rate.
-Date:   Sat, 16 Jul 2022 00:25:43 +0530
-Message-Id: <1657911343-1909-1-git-send-email-quic_vnivarth@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: b5i3boycqfCgB3ZPaLuNrhL0z4vbzPI6
-X-Proofpoint-ORIG-GUID: b5i3boycqfCgB3ZPaLuNrhL0z4vbzPI6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-15_10,2022-07-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 mlxscore=0
- phishscore=0 priorityscore=1501 spamscore=0 malwarescore=0 mlxlogscore=999
- adultscore=0 bulkscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207150084
+        Fri, 15 Jul 2022 14:57:30 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DB33B969
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 11:57:28 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id fd6so7440044edb.5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 11:57:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=cGwhK/ZtvSr9wwZc7/rNFgjUf04Hq4lw/c5RyLtXhv4=;
+        b=n30FiJMdCmOAUiVxpAmFVASHuizhc6AX2acGIQrmGWi2ITlMu7dy5tY3GAusQZCwUX
+         mClk0//XWWNtoKOlVDp3bevjwUCPlPu6qT58ckogGwW3fiPwV3AnX1JH80Tcv/qvJxbD
+         dd2hnpWUh+kbDnSUzqOnXj71sddyRZYkIlR5uwqBsXNmW8E86IjtsWgCOCj96w7UTJh1
+         ekclrrbo31eDkn55oa2xD7ZY8kZCRduEeNmKBSZ3yK6cNK/PRrM+v1/yUUWmbSW8KzBk
+         1G3I9oE8dPOml71Mav31UBLpfptw3Ree6F9LzjmopmoauGHoWKXK8zG7iMIjoX2r53ev
+         BDow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=cGwhK/ZtvSr9wwZc7/rNFgjUf04Hq4lw/c5RyLtXhv4=;
+        b=P3i1lad+Yz7Ln4Ex/IkC+bi1/c7C377rFboLbXDijFu++4EzpxDLEGgFf2f1vkvoex
+         nSt9cTYXPzBeKQPlIWr6CNA/bGzkP2/LAkWfOegURMrDG7QgOmB2+om800ejnanQpFUd
+         0QVxm88j5mG1DTAknMcGRlTmUXWPkZAECUrv6pTy6P0AVFViS1sltAuJ0vc2ABcnpJWr
+         EfgV+kzW0QkRWLiwp3OONn028dEcSOck/lkiwLTMMGML/nX9SlJATiG+pAv4Bubii8bD
+         LhUmlWW5nyfdALomCb4WSBKCEHZaEvkrbylpyal2tMQiqfSP0doOcBVwW0ajQpH2NwDt
+         QvBQ==
+X-Gm-Message-State: AJIora/xMhmU00Tz2mgr8Od0AsA8xeuOnB9mi0dNMb8bOe+17eo4kYON
+        u/nlwNOM/Rer8F0ue2wfVBkErA==
+X-Google-Smtp-Source: AGRyM1sNSdrb4hPilLYMF0OeyZKR2sc7pz98xPbz2HQO6R2iT7Hy2/VCmJFBU0H7V8xJJER7HTBMcw==
+X-Received: by 2002:a05:6402:40d6:b0:43a:cc69:1db9 with SMTP id z22-20020a05640240d600b0043acc691db9mr20997614edb.380.1657911447021;
+        Fri, 15 Jul 2022 11:57:27 -0700 (PDT)
+Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
+        by smtp.gmail.com with ESMTPSA id o18-20020a170906769200b00726abf9a32bsm2329648ejm.138.2022.07.15.11.57.25
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Jul 2022 11:57:25 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH v4] arm64: dts: rockchip: Fix SD card init on
+ rk3399-nanopi4
+From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
+        <christian@kohlschutter.com>
+In-Reply-To: <17a4c6f6-d79c-a7b2-860f-e5944b778f9f@arm.com>
+Date:   Fri, 15 Jul 2022 20:57:24 +0200
+Cc:     wens@kernel.org, =?utf-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Markus Reichl <m.reichl@fivetechno.de>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Linux MMC List <linux-mmc@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <BEEF9E7B-E8A9-4E33-B53B-72D72F9EA536@kohlschutter.com>
+References: <C639AD88-77A1-4485-BAEA-2FF8FC15A844@kohlschutter.com>
+ <12878108.O9o76ZdvQC@diego> <103b714c-b07c-f016-1062-84bd94786b22@arm.com>
+ <9AF1E75F-5947-49B0-887D-82C426527B99@kohlschutter.com>
+ <590f7a08-a6ca-be54-4254-363343642a52@arm.com>
+ <A6B896E5-CD25-4441-B6A5-0BE1FA284B2C@kohlschutter.com>
+ <A9634366-A012-43D2-B253-8BB9BF6005C7@kohlschutter.com>
+ <CAGb2v65Ehbu1wrib2CzF1fDZuD3fHZQDhKfVusyUF9KnxTvi+Q@mail.gmail.com>
+ <5ca9bd94-54d9-04f8-0098-a56ffb6f5fe1@arm.com>
+ <502b3fbe-3077-407e-6010-a8cb3ffce7d6@arm.com>
+ <449292CA-CE60-4B90-90F7-295FBFEAB3F8@kohlschutter.com>
+ <73F9AED0-D2A8-4294-B6E1-1B92D2A36529@kohlschutter.com>
+ <115AD6A4-021B-4879-BFB5-BC7689A0203E@kohlschutter.com>
+ <17a4c6f6-d79c-a7b2-860f-e5944b778f9f@arm.com>
+To:     Robin Murphy <robin.murphy@arm.com>
+X-Mailer: Apple Mail (2.3696.100.31)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the logic around call to clk_round_rate(), for some corner conditions,
-get_clk_div_rate() could return an sub-optimal clock rate. Also, if an
-exact clock rate was not found lowest clock was being returned.
+> Am 15.07.2022 um 20:11 schrieb Robin Murphy <robin.murphy@arm.com>:
+>=20
+> On 2022-07-15 18:16, Christian Kohlsch=C3=BCtter wrote:
+>> OK, this took me a while to figure out.
+>> When no undervoltage limit is configured, I can reliably trigger the =
+initialization bug upon boot.
+>> When the limit is set to 3.0V, it rarely occurs, but just after I =
+send the v3 patch, I was able to reproduce...
+>=20
+> Well this has to be in the running for "weirdest placebo ever"... :/
+>=20
+> All it actually seems to achieve is printing an error[1] (this is =
+after all a tiny 5-pin fixed-voltage LDO regulator, not an intelligent =
+PMIC), and if that makes an appreciable difference then there has to be =
+some kind of weird timing condition at play. Maybe regulator_register() =
+ends up turning it off and on again rapidly enough that the card sees a =
+voltage brownout and glitches, and adding more delay by printing to the =
+console somewhere in the middle gives it enough time to act as a proper =
+power cycle with no ill effect?
 
-Search for suitable clock rate in 2 steps
-a) exact match or within 2% tolerance
-b) within 5% tolerance
-This also takes care of corner conditions.
+That's definitely something between placebo and homeopathy :-)
 
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Fixes: c2194bc999d4 ("tty: serial: qcom-geni-serial: Remove uart frequency table. Instead, find suitable frequency with call to clk_round_rate")
-Signed-off-by: Vijaya Krishna Nivarthi <quic_vnivarth@quicinc.com>
----
-v6: moved logging to caller function
-v5: corrected format specifiers for logs
-v4: replaced pr_dbg calls with dev_dbg
-v3: simplified algorithm further, fixed robot compile warnings
-v2: removed minor optimisations to make more readable
-v1: intial patch contained slightly complicated logic
----
- drivers/tty/serial/qcom_geni_serial.c | 88 +++++++++++++++++++++--------------
- 1 file changed, 53 insertions(+), 35 deletions(-)
+I can confirm that setting a limit higher than 3.0V still works, which =
+means that the one time incident where it still crashed means that =
+there's indeed a timing issue at play, and adding that undervoltage =
+statement (unlike the ramp-delay configs that I also tried) added just =
+enough of a delay that made it work 99 out of 100 times.
 
-diff --git a/drivers/tty/serial/qcom_geni_serial.c b/drivers/tty/serial/qcom_geni_serial.c
-index 2e23b65..624ffe1 100644
---- a/drivers/tty/serial/qcom_geni_serial.c
-+++ b/drivers/tty/serial/qcom_geni_serial.c
-@@ -943,52 +943,63 @@ static int qcom_geni_serial_startup(struct uart_port *uport)
- 	return 0;
- }
- 
--static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
--			unsigned int sampling_rate, unsigned int *clk_div)
-+static unsigned long find_clk_rate_in_tol(struct clk *clk, unsigned int desired_clk,
-+			unsigned int *clk_div, unsigned int percent_tol)
- {
--	unsigned long ser_clk;
--	unsigned long desired_clk;
--	unsigned long freq, prev;
-+	unsigned long freq;
- 	unsigned long div, maxdiv;
--	int64_t mult;
--
--	desired_clk = baud * sampling_rate;
--	if (!desired_clk) {
--		pr_err("%s: Invalid frequency\n", __func__);
--		return 0;
--	}
-+	u64 mult;
-+	unsigned long offset, abs_tol, achieved;
- 
-+	abs_tol = div_u64((u64)desired_clk * percent_tol, 100);
- 	maxdiv = CLK_DIV_MSK >> CLK_DIV_SHFT;
--	prev = 0;
--
--	for (div = 1; div <= maxdiv; div++) {
--		mult = div * desired_clk;
--		if (mult > ULONG_MAX)
-+	div = 1;
-+	while (div <= maxdiv) {
-+		mult = (u64)div * desired_clk;
-+		if (mult != (unsigned long)mult)
- 			break;
- 
--		freq = clk_round_rate(clk, (unsigned long)mult);
--		if (!(freq % desired_clk)) {
--			ser_clk = freq;
--			break;
--		}
-+		offset = div * abs_tol;
-+		freq = clk_round_rate(clk, mult - offset);
- 
--		if (!prev)
--			ser_clk = freq;
--		else if (prev == freq)
-+		/* Can only get lower if we're done */
-+		if (freq < mult - offset)
- 			break;
- 
--		prev = freq;
--	}
-+		/*
-+		 * Re-calculate div in case rounding skipped rates but we
-+		 * ended up at a good one, then check for a match.
-+		 */
-+		div = DIV_ROUND_CLOSEST(freq, desired_clk);
-+		achieved = DIV_ROUND_CLOSEST(freq, div);
-+		if (achieved <= desired_clk + abs_tol &&
-+		    achieved >= desired_clk - abs_tol) {
-+			*clk_div = div;
-+			return freq;
-+		}
- 
--	if (!ser_clk) {
--		pr_err("%s: Can't find matching DFS entry for baud %d\n",
--								__func__, baud);
--		return ser_clk;
-+		div = DIV_ROUND_UP(freq, desired_clk);
- 	}
- 
--	*clk_div = ser_clk / desired_clk;
--	if (!(*clk_div))
--		*clk_div = 1;
-+	return 0;
+> If you just whack something like an mdelay(500) at around that point =
+in set_machine_constraints(), without the DT property, does it have the =
+same effect?
+Adding a delay for vcc3v0_sd works, which is great! (patch below)
+
+Is there an existing path from device-tree parser to regular/core.c that =
+we can use to specify this delay specifically for this regulator?
+Also, what delay should we choose to make sure it works all the time and =
+not just 99 out of 100 times?
+
+Best,
+Christian
+
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index c4d844ffad7a..0e15ec2548f4 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -1483,6 +1483,11 @@ static int set_machine_constraints(struct =
+regulator_dev *rdev)
+                          "IC does not support requested over voltage =
+limits\n");
+        }
+=20
++if(!strncmp(rdev_get_name(rdev),"vcc3v0_sd",sizeof("vcc3v0_sd"))) {
++       rdev_err(rdev, "DELAY: %s\n", rdev_get_name(rdev));
++       mdelay(500);
 +}
 +
-+static unsigned long get_clk_div_rate(struct clk *clk, unsigned int baud,
-+			unsigned int sampling_rate, unsigned int *clk_div)
-+{
-+	unsigned long ser_clk;
-+	unsigned long desired_clk;
-+
-+	desired_clk = baud * sampling_rate;
-+	if (!desired_clk)
-+		return 0;
-+
-+	/*
-+	 * try to find a clock rate within 2% tolerance, then within 5%
-+	 */
-+	ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 2);
-+	if (!ser_clk)
-+		ser_clk = find_clk_rate_in_tol(clk, desired_clk, clk_div, 5);
- 
- 	return ser_clk;
- }
-@@ -1023,8 +1034,15 @@ static void qcom_geni_serial_set_termios(struct uart_port *uport,
- 
- 	clk_rate = get_clk_div_rate(port->se.clk, baud,
- 		sampling_rate, &clk_div);
--	if (!clk_rate)
-+	if (!clk_rate) {
-+		dev_err(port->se.dev,
-+			"Couldn't find suitable clock rate for %lu\n",
-+			baud * sampling_rate);
- 		goto out_restart_rx;
-+	}
-+
-+	dev_dbg(port->se.dev, "desired_rate-%lu, clk_rate-%lu, clk_div-%u\n",
-+			baud * sampling_rate, clk_rate, clk_div);
- 
- 	uport->uartclk = clk_rate;
- 	dev_pm_opp_set_rate(uport->dev, clk_rate);
--- 
-Qualcomm INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum, hosted by the Linux Foundation.
+        if (rdev->constraints->under_voltage_detection)
+                ret =3D handle_notify_limits(rdev,
+                                           =
+ops->set_under_voltage_protection,
+
 
