@@ -2,58 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24BDEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A96C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:48:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232391AbiGOIsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39020 "EHLO
+        id S233029AbiGOIsz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:48:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232048AbiGOIsi (ORCPT
+        with ESMTP id S232934AbiGOIsi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 04:48:38 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A26CD9F;
-        Fri, 15 Jul 2022 01:48:34 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oCGzp-000nua-UL; Fri, 15 Jul 2022 18:48:27 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:48:26 +0800
-Date:   Fri, 15 Jul 2022 16:48:26 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Andrew Davis <afd@ti.com>
-Cc:     Nishanth Menon <nm@ti.com>, Vignesh Raghavendra <vigneshr@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] crypto: sa2ul - Set the supported_algos bits
- individually
-Message-ID: <YtEp2uafxm1X9gVZ@gondor.apana.org.au>
-References: <20220706191144.26437-1-afd@ti.com>
+Received: from m12-17.163.com (m12-17.163.com [220.181.12.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B2E9820E8;
+        Fri, 15 Jul 2022 01:47:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=m4hKf
+        BL4nqs53oqPJrYtedixI9QUO8tbMKID97bcLtQ=; b=nGSiZat0lo8s5aZbxB5l2
+        2E4bJMot39JFljAszn5zg+aCCy5zWkGSpkB4F/F7BtrTAhBozqaAPpwzxl3hFh1y
+        0yusMN6VMvNj2OQCs4W0v+JspmvjLnIJ3gLsEMmCxzZS5NbsOKfVRjwrZVd5ijPt
+        CCzzON/hPoJgyY7VnqUhJs=
+Received: from localhost.localdomain (unknown [111.48.58.12])
+        by smtp13 (Coremail) with SMTP id EcCowAB3kp+fKdFiiizJNg--.6037S2;
+        Fri, 15 Jul 2022 16:47:30 +0800 (CST)
+From:   Jiangshan Yi <13667453960@163.com>
+To:     pbonzini@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiangshan Yi <yijiangshan@kylinos.cn>,
+        k2ci <kernel-bot@kylinos.cn>
+Subject: [PATCH] KVM: Fix spelling typo in comment
+Date:   Fri, 15 Jul 2022 16:47:12 +0800
+Message-Id: <20220715084712.998150-1-13667453960@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220706191144.26437-1-afd@ti.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EcCowAB3kp+fKdFiiizJNg--.6037S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrury7Jr47ZFy5Jw4rGw47XFb_yoWDZrb_Z3
+        Z3Gw4xWrWrGFs3Zr1vkFsIyF1Igw4UGFWjvF95Aryaqa98Aws8Gw4kZr1ava4UGrWI9Fs3
+        Zas5W34rGw12gjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU0U5r7UUUUU==
+X-Originating-IP: [111.48.58.12]
+X-CM-SenderInfo: bprtllyxuvjmiwq6il2tof0z/1tbizQI-+1c7NglsvwAAsL
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 06, 2022 at 02:11:43PM -0500, Andrew Davis wrote:
-> Setting these individually gives a better picture of supported
-> functions at a glance. Plus if the list changes an unwanted
-> one will not accidentally get set with GENMASK.
-> 
-> Signed-off-by: Andrew Davis <afd@ti.com>
-> ---
-> 
-> Changes from v1:
->  - Split these two patches from the DTS changes
-> 
->  drivers/crypto/sa2ul.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
+From: Jiangshan Yi <yijiangshan@kylinos.cn>
 
-All applied.  Thanks.
+Fix spelling typo in comment.
+
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: Jiangshan Yi <yijiangshan@kylinos.cn>
+---
+ include/linux/kvm_host.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 83cf7fd842e0..3fd6c198d222 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -1311,7 +1311,7 @@ bool kvm_gfn_to_pfn_cache_check(struct kvm *kvm, struct gfn_to_pfn_cache *gpc,
+  *                 -EFAULT for an untranslatable guest physical address.
+  *
+  * This will attempt to refresh a gfn_to_pfn_cache. Note that a successful
+- * returm from this function does not mean the page can be immediately
++ * return from this function does not mean the page can be immediately
+  * accessed because it may have raced with an invalidation. Callers must
+  * still lock and check the cache status, as this function does not return
+  * with the lock still held to permit access.
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.25.1
+
