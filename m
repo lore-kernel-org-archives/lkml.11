@@ -2,83 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F260EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3BCC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:17:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230442AbiGOGQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 02:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
+        id S229788AbiGOGRJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 02:17:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230367AbiGOGPp (ORCPT
+        with ESMTP id S229504AbiGOGRH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 02:15:45 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5845F774B1;
-        Thu, 14 Jul 2022 23:14:30 -0700 (PDT)
-From:   John Ogness <john.ogness@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1657865668;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SEFrGRzx2HRmzhJ7UPpw8gHa4O4qj4ywFqjMDBC7ZXg=;
-        b=DUixPfAjTwHcZ91MSA7eJganvqbUgueXazFi+F1VBlI8C/krnKmID0y5WVAHljpGP8s8Nh
-        kAMrhh1laSaViMucwqFzRZ3L1Hbue11PPQ89k7F6ceU6i02Ruc4uzrKldELGEhrBPXYpSh
-        EhjWZ6dR0fnxrBHvgSZX3ipXAcl7IgFC83Voh/j5YEWSsVBUHpXm5rx/DyFQQUlBaDNCBH
-        d27RZuI/IvZmM1m03YnTwd3tZeUJX9tZb92VpKmxSjtWl3GadEcTbTLlSUlIWUHyvlsnay
-        qq+AzH7F2OtwEq3l+06dfOA5cSyN4Qv9Lin6utPnsb04GcVYde/suiTlb4zk5w==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1657865668;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SEFrGRzx2HRmzhJ7UPpw8gHa4O4qj4ywFqjMDBC7ZXg=;
-        b=VhykZswD1fCTN4vsmaBG/oZCrHvXluGEhdQmSywaFUKeqVY9BE4UurdnzBZ86f4x4sVqJo
-        jEDCXaqELswn29AQ==
-To:     todd.e.brandt@linux.intel.com,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Petr Mladek <pmladek@suse.com>, rafael.j.wysocki@intel.com,
-        len.brown@intel.com
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
- (printk issue)
-In-Reply-To: <472f7fc2d44d781edb64f19f9970fe50eec79c1f.camel@linux.intel.com>
-References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
- <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
- <87czegxccb.fsf@jogness.linutronix.de>
- <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
- <87tu7qvx1q.fsf@jogness.linutronix.de>
- <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
- <87o7xwbuoy.fsf@jogness.linutronix.de> <Ysvbp8vz7R9hDNqx@alley>
- <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
- <c60f5634e8605cb4c2ef4646b6e511e6135bea48.camel@linux.intel.com>
- <7d79e9877d63cdb74144f38d8736959281b562cc.camel@linux.intel.com>
- <875yk0908j.fsf@jogness.linutronix.de>
- <472f7fc2d44d781edb64f19f9970fe50eec79c1f.camel@linux.intel.com>
-Date:   Fri, 15 Jul 2022 08:20:27 +0206
-Message-ID: <8735f2x5q4.fsf@jogness.linutronix.de>
+        Fri, 15 Jul 2022 02:17:07 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7EF1DB3
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:17:05 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lkh1C0SQDzlVvF;
+        Fri, 15 Jul 2022 14:15:27 +0800 (CST)
+Received: from localhost.localdomain (10.175.112.125) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Jul 2022 14:17:03 +0800
+From:   Yuanzheng Song <songyuanzheng@huawei.com>
+To:     <sj@kernel.org>, <akpm@linux-foundation.org>
+CC:     <damon@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] mm/damon/reclaim: fix 'enabled' is incorrectly set because 'system_wq' is not initialized
+Date:   Fri, 15 Jul 2022 06:16:09 +0000
+Message-ID: <20220715061609.48463-1-songyuanzheng@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.112.125]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-14, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
-> I ran with your fix on 30 systems. On the 7 machines where this
-> problem appears, the patch fixes it completely. On the 23 machines
-> where this problem does not appear, there are no issues or
-> regressions.
->
-> Fix verified, thank you!
+The 'enabled' will be incorrectly set because the 'system_wq'
+might not initialized yet. This results in 'enabled=true',
+but the 'damon_reclaim_timer' is inactive. So fix it by moving
+the judgment logic of the 'damon_reclaim_initialized' to the
+start position of the enable_store().
 
-I have posted [0] an official patch for 5.19-rc7. For the posted
-version, I added more information to the commit message and comments.
+Fixes: 294928293813 ("mm/damon/reclaim: schedule 'damon_reclaim_timer' only after 'system_wq' is initialized")
+Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
+---
+ mm/damon/reclaim.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Todd, thanks for reporting and testing!
+diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+index e69b807fefe4..b13d5a02bf2e 100644
+--- a/mm/damon/reclaim.c
++++ b/mm/damon/reclaim.c
+@@ -374,13 +374,14 @@ static bool damon_reclaim_initialized;
+ static int damon_reclaim_enabled_store(const char *val,
+ 		const struct kernel_param *kp)
+ {
+-	int rc = param_set_bool(val, kp);
+-
+-	if (rc < 0)
+-		return rc;
++	int rc;
+ 
+ 	/* system_wq might not initialized yet */
+ 	if (!damon_reclaim_initialized)
++		return -EINVAL;
++
++	rc = param_set_bool(val, kp);
++	if (rc < 0)
+ 		return rc;
+ 
+ 	schedule_delayed_work(&damon_reclaim_timer, 0);
+-- 
+2.25.1
 
-John
-
-[0] https://lore.kernel.org/lkml/20220715061042.373640-1-john.ogness@linutronix.de
