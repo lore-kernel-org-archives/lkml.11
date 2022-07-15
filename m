@@ -2,69 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB32C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:06:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEA5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231750AbiGOXGP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
+        id S231883AbiGOXGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiGOXGM (ORCPT
+        with ESMTP id S229580AbiGOXGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:06:12 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC2F8B48F
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:06:11 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id n16-20020a056e02141000b002dabb875f0aso3489296ilo.10
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:06:11 -0700 (PDT)
+        Fri, 15 Jul 2022 19:06:35 -0400
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34028B49A;
+        Fri, 15 Jul 2022 16:06:34 -0700 (PDT)
+Received: by mail-io1-f45.google.com with SMTP id p128so5009671iof.1;
+        Fri, 15 Jul 2022 16:06:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=7VxCdsY3RYz1KoElXYwvbRCxsMp3bsrtHeLkwilP1iQ=;
-        b=J5TowqiSHJSA7ZcmZpGU9FmT3L+5H10qyzOe2oHvybMiB1Stwsy+v42LP94OYOAQQ9
-         UtV0DyC3HKXmw3rjc6JSns0ES8YoVhDvk78dMGc73ckJTT0U4QCZYHRZH2JGlk/zG9cz
-         TztaN5VOCoHez5PJCzHx2kLQzy2rXL2iZVE7MYbSmWBH4CU2m5/Ny6mRK3mn4g4cN0+F
-         RRKJOAx7dvrW/oahJcOFQsj34jhIozC22lQmABXyrWeF7v2VIGieR1KSGIFokzHF80xc
-         4VULadsr8iBCWrySbDUyKQm4CVMXCQhhgwOus6+cvUBZfrh3u04NRr/SgUWKMpeSGkwA
-         NBdg==
-X-Gm-Message-State: AJIora87fjk/oJAVvlrXwPG2t2mTsjQ+seB3ksgxl7QTQtJm/gyWaxCn
-        dTB6ElIcMIuZyyvuLvMIfBcZgo3t8cwE1L6PmCuIegCqp5R9
-X-Google-Smtp-Source: AGRyM1sLyoMIrDFtN03wEjcFQ6/TfatVEyim8uM5OpRo0EK1yiA+K+5W6Qse0BCFEY41/V9z4O+6px02EeTgK6D9PezMnaNg56tB
-MIME-Version: 1.0
-X-Received: by 2002:a5d:8459:0:b0:669:4fab:2f86 with SMTP id
- w25-20020a5d8459000000b006694fab2f86mr7858389ior.84.1657926370854; Fri, 15
- Jul 2022 16:06:10 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 16:06:10 -0700
-In-Reply-To: <20220715225546.1354-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000660b1305e3e010c4@google.com>
-Subject: Re: [syzbot] INFO: trying to register non-static key in ieee80211_do_stop
-From:   syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=YDlkhqWKsbJBSkGChagGjsv3FbYi9c+x2tAtlYBYcqs=;
+        b=LExJW4pi4GcUClBF//o6HyygHymcmueSxFiZ7WATlXvnJ02P3NwRFFJWuIIwJarE0v
+         5GG+9FbWCnjlVoC7SUYwJjz8iJ69VV00SM2NjYJDcYyrAlGLjk5+Sg1r1rwObGKwDaFG
+         h7065MUqgWlyrDK16a96exS9M1DbcZBcLK6qihBjV4hwfRayololRO4hnPJdQ8ogXNOd
+         CZV5OAuLvRw84myD2byWAf+EJ1Ck9Tl29nkTs5Sv2YEaH74cDnyxpbsMsO1HbhCyxj67
+         h2v42Vu8qloFXEYWI7pMQAq61W6a67vJktrNuuEGQ1ImwFGbzjlF4G0+gQoWzkNrsjk4
+         1Ozw==
+X-Gm-Message-State: AJIora/1JztSBNUAAFYt0SiwgKKlz7Sr+Yn7WbPu0X9XlYnKi2g6MXT7
+        bUt1xQu8bQoFni6ZaD0+hQ==
+X-Google-Smtp-Source: AGRyM1sUbyT8G+qLwBnGuz9wxAX+YT+GbATzT32jX5qUjf9gpXjD6N6hWKSTZmNym1N+6hLf7WDI3Q==
+X-Received: by 2002:a05:6638:3586:b0:33c:9df7:6dec with SMTP id v6-20020a056638358600b0033c9df76decmr8832917jal.175.1657926393834;
+        Fri, 15 Jul 2022 16:06:33 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id v20-20020a02b094000000b0033c836fe144sm2453075jah.85.2022.07.15.16.06.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 16:06:33 -0700 (PDT)
+Received: (nullmailer pid 1631479 invoked by uid 1000);
+        Fri, 15 Jul 2022 23:06:28 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+In-Reply-To: <20220715215954.1449214-4-sean.anderson@seco.com>
+References: <20220715215954.1449214-1-sean.anderson@seco.com> <20220715215954.1449214-4-sean.anderson@seco.com>
+Subject: Re: [PATCH net-next v3 03/47] dt-bindings: net: Convert FMan MAC bindings to yaml
+Date:   Fri, 15 Jul 2022 17:06:28 -0600
+Message-Id: <1657926388.246596.1631478.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Fri, 15 Jul 2022 17:59:10 -0400, Sean Anderson wrote:
+> This converts the MAC portion of the FMan MAC bindings to yaml.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+> 
+> Changes in v3:
+> - Incorperate some minor changes into the first FMan binding commit
+> 
+> Changes in v2:
+> - New
+> 
+>  .../bindings/net/fsl,fman-dtsec.yaml          | 145 ++++++++++++++++++
+>  .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
+>  2 files changed, 146 insertions(+), 127 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+> 
 
-syzbot has tested the proposed patch but the reproducer is still triggering an issue:
-SYZFATAL: executor failed NUM times: failed to create temp dir: mkdir ./syzkaller-testdir2ADDR: read-only file system
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-2022/07/15 23:05:48 SYZFATAL: executor failed 11 times: failed to create temp dir: mkdir ./syzkaller-testdir2570391515: read-only file system
-[   81.505213][   T47
+yamllint warnings/errors:
 
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.example.dtb: ethernet@e8000: 'phy-connection-type', 'phy-handle' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
 
-Tested on:
+doc reference errors (make refcheckdocs):
 
-commit:         9b59ec8d Merge tag 'riscv-for-linus-5.19-rc7' of git:/..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-console output: https://syzkaller.appspot.com/x/log.txt?x=17a34994080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3cc990589d31f8d6
-dashboard link: https://syzkaller.appspot.com/bug?extid=eceab52db7c4b961e9d6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1577b5b2080000
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
