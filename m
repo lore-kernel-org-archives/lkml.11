@@ -2,36 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E28BCCA481
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF2AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231177AbiGOXz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:55:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S230158AbiGOX4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230158AbiGOXzn (ORCPT
+        with ESMTP id S230114AbiGOXzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:55:43 -0400
-X-Greylist: delayed 1798 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:41 PDT
+        Fri, 15 Jul 2022 19:55:54 -0400
+X-Greylist: delayed 1799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:55:51 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71438951FE;
-        Fri, 15 Jul 2022 16:55:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FE83904F3;
+        Fri, 15 Jul 2022 16:55:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=l7nuWYxWUVjm0xFc+FYu5FtE4ko865NXIUjDmd1KE7k=; b=Xjhw3
-        PWfy8PH+g/wF6G0m0ESFeDBNMWHRfUUJZz3snzevmakUa5jsGmyrWCJjSvo84gJrzlTsmFp7LR73V
-        d3SPyxmTMJ6ZRvJqyrHp+cKXZjd5sMCKOKN5RoAdiR+liKNPdk2N9THnK4BQuscMeCdSmXK+1y+ji
-        OMw3Umg47NTppEhX8V3lpAmIRPs0zooGDeOJ3Hj+Vfpn7RTDMp2vVEwkVWmTO0rNEkknGFVVcSLra
-        hKaU8WERWqpXJSr2tqqnOCG4VznQMOKmyjWQm0snDDgP2xqPxU1XkWJNlfjZG9RuB/KKZUQzzH/0E
-        XqYdCA4krtoSqxTfEc0wTdRDyFI3Q==;
-Message-Id: <79d24310226bc4eb037892b5c097ec4ad4819a03.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=3fYK9aLEk4+QTiWncARzWNrEsKD8KVzMmkos5F1PmkE=; b=YozSq
+        IEKWWCG3bc8gT6t0ihYNaBBuhPv305blQonV/EXBYDFysPyPUhKKg381HXh56M7I7qFNvaMJuGwTT
+        5iFC8S+v4El1BSGtKhaJnW3AQeovKnVDHsoF81RtELueuH9rVyfNWp4nommA68wYRs52o8y+8iIJA
+        WtB/z1LpwZJ0VYR1oFs7ZUuIXUCTFEwCJLiYsIARE21IWOU8J3IBDtUVP90tCQ5yS7nzbQn5HaYkh
+        WI6fivKHZhd/Mwr3a8h4XuNCj+ziz43uljA9zgbpI2Scm+zVm0kpYZn2RGHINdxmM+Q9bYncXZId8
+        p/snZJ9Xg7GK3GqolB5CvED2LNAOQ==;
+Message-Id: <3f23191d21032e7c14852b1e1a4ae26417a36739.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:33:09 +0200
-Subject: [PATCH v6 10/11] net/9p: add 'pooled_rbuffers' flag to struct
- p9_trans_module
+Date:   Fri, 15 Jul 2022 23:32:30 +0200
+Subject: [PATCH v6 08/11] 9p: add P9_ERRMAX for 9p2000 and 9p2000.u
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -42,92 +41,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is a preparatory change for the subsequent patch: the RDMA
-transport pulls the buffers for its 9p response messages from a
-shared pool. [1] So this case has to be considered when choosing
-an appropriate response message size in the subsequent patch.
+Add P9_ERRMAX macro to 9P protocol header which reflects the maximum
+error string length of Rerror replies for 9p2000 and 9p2000.u protocol
+versions. Unfortunately a maximum error string length is not defined by
+the 9p2000 spec, picking 128 as value for now, as this seems to be a
+common max. size for POSIX error strings in practice.
 
-Link: https://lore.kernel.org/all/Ys3jjg52EIyITPua@codewreck.org/ [1]
+9p2000.L protocol version uses Rlerror replies instead which does not
+contain an error string.
+
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- include/net/9p/transport.h | 5 +++++
- net/9p/trans_fd.c          | 1 +
- net/9p/trans_rdma.c        | 1 +
- net/9p/trans_virtio.c      | 1 +
- net/9p/trans_xen.c         | 1 +
- 5 files changed, 9 insertions(+)
 
-diff --git a/include/net/9p/transport.h b/include/net/9p/transport.h
-index ff842f963071..766ec07c9599 100644
---- a/include/net/9p/transport.h
-+++ b/include/net/9p/transport.h
-@@ -19,6 +19,10 @@
-  * @list: used to maintain a list of currently available transports
-  * @name: the human-readable name of the transport
-  * @maxsize: transport provided maximum packet size
-+ * @pooled_rbuffers: currently only set for RDMA transport which pulls the
-+ *                   response buffers from a shared pool, and accordingly
-+ *                   we're less flexible when choosing the response message
-+ *                   size in this case
-  * @def: set if this transport should be considered the default
-  * @create: member function to create a new connection on this transport
-  * @close: member function to discard a connection on this transport
-@@ -38,6 +42,7 @@ struct p9_trans_module {
- 	struct list_head list;
- 	char *name;		/* name of transport */
- 	int maxsize;		/* max message size of transport */
-+	bool pooled_rbuffers;
- 	int def;		/* this transport should be default */
- 	struct module *owner;
- 	int (*create)(struct p9_client *client,
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index 8f8f95e39b03..eecbb5332bea 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -1081,6 +1081,7 @@ p9_fd_create(struct p9_client *client, const char *addr, char *args)
- static struct p9_trans_module p9_tcp_trans = {
- 	.name = "tcp",
- 	.maxsize = MAX_SOCK_BUF,
-+	.pooled_rbuffers = false,
- 	.def = 0,
- 	.create = p9_fd_create_tcp,
- 	.close = p9_fd_close,
-diff --git a/net/9p/trans_rdma.c b/net/9p/trans_rdma.c
-index 88e563826674..24f287baee70 100644
---- a/net/9p/trans_rdma.c
-+++ b/net/9p/trans_rdma.c
-@@ -739,6 +739,7 @@ rdma_create_trans(struct p9_client *client, const char *addr, char *args)
- static struct p9_trans_module p9_rdma_trans = {
- 	.name = "rdma",
- 	.maxsize = P9_RDMA_MAXSIZE,
-+	.pooled_rbuffers = true,
- 	.def = 0,
- 	.owner = THIS_MODULE,
- 	.create = rdma_create_trans,
-diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
-index 52d00cb3c105..d47b28b3f02a 100644
---- a/net/9p/trans_virtio.c
-+++ b/net/9p/trans_virtio.c
-@@ -1011,6 +1011,7 @@ static struct p9_trans_module p9_virtio_trans = {
- 	 */
- 	.maxsize = PAGE_SIZE *
- 		((VIRTQUEUE_SG_NSGL_DEFAULT * SG_USER_PAGES_PER_LIST) - 3),
-+	.pooled_rbuffers = false,
- 	.def = 1,
- 	.owner = THIS_MODULE,
- };
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index 833cd3792c51..3434a080abfa 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -246,6 +246,7 @@ static irqreturn_t xen_9pfs_front_event_handler(int irq, void *r)
- static struct p9_trans_module p9_xen_trans = {
- 	.name = "xen",
- 	.maxsize = 1 << (XEN_9PFS_RING_ORDER + XEN_PAGE_SHIFT - 2),
-+	.pooled_rbuffers = false,
- 	.def = 1,
- 	.create = p9_xen_create,
- 	.close = p9_xen_close,
+This could probably be merged with the next patch, on doubt I posted it
+separately as squashing is easy. The advantage of a separate patch is
+making the discussion of the chosen value of max. 128 bytes more
+prominent.
+
+ include/net/9p/9p.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 24a509f559ee..13abe013af21 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -331,6 +331,9 @@ enum p9_qid_t {
+ /* size of header for zero copy read/write */
+ #define P9_ZC_HDR_SZ 4096
+ 
++/* maximum length of an error string */
++#define P9_ERRMAX 128
++
+ /**
+  * struct p9_qid - file system entity information
+  * @type: 8-bit type &p9_qid_t
 -- 
 2.30.2
 
