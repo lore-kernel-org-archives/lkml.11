@@ -2,107 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A32CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:21:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1762C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:22:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235402AbiGRNVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
+        id S235404AbiGRNWT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:22:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235382AbiGRNVw (ORCPT
+        with ESMTP id S234474AbiGRNWS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:21:52 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E07248E4
-        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:21:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658150511; x=1689686511;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=t54h+03DTals7K9cEuEjuoCsltxBcdxS92lbUylXBc8=;
-  b=BEAJABlXUVgYws/TJp3k3kMktpAxKWiVqa6iP15Lo9G6GAXUBXqrw1M4
-   tEF8X+s6QBdG4JE0hKSzKF3l/WG5L94pmTAEiwiuLLqSEPInNy2ofwtfS
-   +nP9DgP7Eo42fGO50ZXXPwzim/WtNb0cQd+8J4dpkwDoxnXANPNYwMlmo
-   f6BJa3jAIlo2Z67eAfNn23nkdDo5dxryurHpwVrvqnkh/IUIejA0rH8Ug
-   pG1RyPiOhsb8g+sSXxWO1engYnLkcF/Y7S9qxsZvVcXiywTN7TR8knk0t
-   EgZvEBFO5h5i8O1n7luHNSp7RBtEQk1p6DGKnQaeYkJUIM4OJg8TK+Tm2
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="266622262"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="266622262"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:21:51 -0700
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="686732431"
-Received: from smyint-mobl1.amr.corp.intel.com (HELO [10.212.107.15]) ([10.212.107.15])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:21:49 -0700
-Message-ID: <de7c7b5d-267b-25c7-6695-cd9e47a0217d@linux.intel.com>
-Date:   Mon, 18 Jul 2022 14:21:47 +0100
+        Mon, 18 Jul 2022 09:22:18 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B4E5248E4
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 06:22:14 -0700 (PDT)
+X-QQ-mid: bizesmtp67t1658150513tr550luw
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 21:21:50 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000000
+X-QQ-FEAT: +bXiSo2NuBd9WaWHuSP8maq7+K/rGilFjsIUzYuFnDmWeFbwKfnBWyLGSaW0c
+        QzQ6SoGrFLGaTk/aAEo6aRhsijiMnWswHxW2xm6ECEjkYlSGuxOOtl4q39CpaQXQI3o2hWg
+        YlTZhn+IhNbF2YCkBnHB7h8GU2/ImkgSxyYuL9EPJgOJXQy3WPIvDCbygBKmhJgUc+v8Jja
+        D8MJlXlImEKhTa7tkS7L8CAJj4IJiWZjHS1T7k/BEweihd7DyntgWcqs6MmI19sd6eJOtRI
+        meNjgZ1FBBrO2s/qDCLB6rNKXm0FHXMtreIbcuaJEQil7xqF2hWpe6LKbO3d+yfIhhs9RZV
+        D513iq8u95mrc9V36UDPbyNQzAcJg3FWmmJI8dmN6j2xwrtW6CTPf5mOeXHF3mVfYtY3LSU
+        1XWntNTeBbo=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     daniel@ffwll.ch
+Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, John.C.Harrison@Intel.com,
+        matthew.d.roper@intel.com, matthew.brost@intel.com,
+        andi.shyti@linux.intel.com, michal.winiarski@intel.com,
+        zhou1615@umn.edu, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] drm/i915/selftests: Fix comment typo
+Date:   Fri, 15 Jul 2022 13:19:53 +0800
+Message-Id: <20220715051953.31424-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 02/21] drm/i915/gt: document
- with_intel_gt_pm_if_awake()
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1657800199.git.mchehab@kernel.org>
- <1ed105f9fd605e1ccdaecc18c394c17eaec1035e.1657800199.git.mchehab@kernel.org>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <1ed105f9fd605e1ccdaecc18c394c17eaec1035e.1657800199.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The double `wait' is duplicated in line 974, remove one.
 
-On 14/07/2022 13:06, Mauro Carvalho Chehab wrote:
-> Add a kernel-doc markup to document this new macro.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v2 00/21] at: https://lore.kernel.org/all/cover.1657800199.git.mchehab@kernel.org/
-> 
->   drivers/gpu/drm/i915/gt/intel_gt_pm.h | 7 +++++++
->   1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/i915/gt/intel_gt_pm.h b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-> index a334787a4939..4d4caf612fdc 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-> +++ b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-> @@ -55,6 +55,13 @@ static inline void intel_gt_pm_might_put(struct intel_gt *gt)
->   	for (tmp = 1, intel_gt_pm_get(gt); tmp; \
->   	     intel_gt_pm_put(gt), tmp = 0)
->   
-> +/**
-> + * with_intel_gt_pm_if_awake - if GT is PM awake, get a reference to prevent
-> + *	it to sleep, run some code and then put the reference away.
-> + *
-> + * @gt: pointer to the gt
-> + * @wf: pointer to a temporary wakeref.
-> + */
->   #define with_intel_gt_pm_if_awake(gt, wf) \
->   	for (wf = intel_gt_pm_get_if_awake(gt); wf; intel_gt_pm_put_async(gt), wf = 0)
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/gpu/drm/i915/selftests/i915_request.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Maybe say in kerneldoc the put is async. Although for me documenting 
-trivial helpers is a bit over the top by anyway..
+diff --git a/drivers/gpu/drm/i915/selftests/i915_request.c b/drivers/gpu/drm/i915/selftests/i915_request.c
+index c56a0c2cd2f7..ec05f578a698 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_request.c
++++ b/drivers/gpu/drm/i915/selftests/i915_request.c
+@@ -971,7 +971,7 @@ static struct i915_vma *empty_batch(struct drm_i915_private *i915)
+ 	if (err)
+ 		goto err;
+ 
+-	/* Force the wait wait now to avoid including it in the benchmark */
++	/* Force the wait now to avoid including it in the benchmark */
+ 	err = i915_vma_sync(vma);
+ 	if (err)
+ 		goto err_pin;
+-- 
+2.35.1
 
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-
-Regards,
-
-Tvrtko
