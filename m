@@ -2,101 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC65CCA482
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7920C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231175AbiGOTZx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 15:25:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        id S231216AbiGOT1a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 15:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230097AbiGOTZu (ORCPT
+        with ESMTP id S230097AbiGOT13 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 15:25:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B58E474E8;
-        Fri, 15 Jul 2022 12:25:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657913150; x=1689449150;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=JdfVHR10lo0JUuwh5Hg2jSl0DSPLHy6Ry8sIafkrYXg=;
-  b=etsv1ZKRAFNKFW7bdWwAHmQJoQACyh2Id0utsSUZuedvQnLcgQ5V9McG
-   QqbVJeNmNvlBTFgDzXbsEgfK+vKN0f2AnJ88GKcq730JWB/OiXwb6+hcw
-   ugn2v4ntMEO3c1Y4NMuRAETHVxeuYhGOHz0IElOK/7OG6RZ7lb8Zpipjp
-   QVFZHt7zCY246qu3FUgkJc8SxsCCYo+tSdfIIKu0LXwlpYiByMmdfQetJ
-   pY3+/YrqEX+72gNkQKuCWBMNbuxxCsIaGQIVZSBRmioPsH1WeullWxTZ1
-   CsmwTv1zxnqMwabqIencY7Rmgu6OXdlFHoVpKj/gDeTBqtnBu4FHu01P6
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="285910235"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="285910235"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:25:49 -0700
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="773088655"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:25:44 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oCQwW-001JCM-1H;
-        Fri, 15 Jul 2022 22:25:40 +0300
-Date:   Fri, 15 Jul 2022 22:25:40 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v2 3/8] net: dsa: switch to device_/fwnode_ APIs
-Message-ID: <YtG/NFKC6a0oPTcd@smile.fi.intel.com>
-References: <20220715085012.2630214-1-mw@semihalf.com>
- <20220715085012.2630214-4-mw@semihalf.com>
+        Fri, 15 Jul 2022 15:27:29 -0400
+X-Greylist: delayed 2264 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 12:27:29 PDT
+Received: from baldur.buserror.net (baldur.buserror.net [165.227.176.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0423B47BB7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 12:27:28 -0700 (PDT)
+Received: from [2601:449:8480:af0::c75e]
+        by baldur.buserror.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <oss@buserror.net>)
+        id 1oCQHK-000HM6-99; Fri, 15 Jul 2022 13:43:05 -0500
+Message-ID: <794910a5b6902ec637b3341ad19fc9fde9e2d24a.camel@buserror.net>
+From:   Scott Wood <oss@buserror.net>
+To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Date:   Fri, 15 Jul 2022 13:43:04 -0500
+In-Reply-To: <20220709124305.17559-1-pali@kernel.org>
+References: <20220709124305.17559-1-pali@kernel.org>
+Organization: Red Hat
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715085012.2630214-4-mw@semihalf.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2601:449:8480:af0::c75e
+X-SA-Exim-Rcpt-To: pali@kernel.org, mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org, linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+X-SA-Exim-Mail-From: oss@buserror.net
+Subject: Re: [PATCH] powerpc/85xx: Fix description of MPC85xx and P1/P2
+ boards options
+X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
+X-SA-Exim-Scanned: Yes (on baldur.buserror.net)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 10:50:07AM +0200, Marcin Wojtas wrote:
-> In order to support both ACPI and DT, modify the generic
-> DSA code to use device_/fwnode_ equivalent routines.
-> Drop using port's dn field and use only fwnode - update
-> all dependent drivers.
-> Because support for more generic fwnode is added,
-> replace '_of' suffix with '_fw' in related routines.
-> No functional change is introduced by this patch.
+On Sat, 2022-07-09 at 14:43 +0200, Pali Rohár wrote:
+> More MPC85xx and P1/P2 boards options have incorrect description. Fix them
+> to include list of all boards for which they enable/disable support.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+>  arch/powerpc/platforms/85xx/Kconfig | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
 
-It's a bit too narrow text in the commit message, can you use more width?
+Acked-by: Scott Wood <oss@buserror.net>
 
-...
-
-> -		ret = of_get_phy_mode(dsa_to_port(ds, 5)->dn, &interface);
-> +		ret = of_get_phy_mode(to_of_node(dsa_to_port(ds, 5)->fwnode), &interface);
-
-So, I believe this is expected to be a temporary change and something like
-fwnode_get_phy_mode() is on its way, correct?
-
-...
-
-> -			phy_handle = of_parse_phandle(dp->dn, "phy-handle", 0);
-> +			phy_handle = of_parse_phandle(to_of_node(dp->fwnode), "phy-handle", 0);
-
-This can be translated to fwnode_find_reference(), but it might require more
-changes.
-
-Actually you may start from converting drivers one-by-one to fwnode
-APIs (as much as it's possible), and then do with a library call. Up to you.
-
--- 
-With Best Regards,
-Andy Shevchenko
+-Scott
 
 
