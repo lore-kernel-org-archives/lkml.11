@@ -2,130 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40113CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:28:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 929DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232305AbiGOM2T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 08:28:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
+        id S232427AbiGOM24 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 08:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234052AbiGOM2E (ORCPT
+        with ESMTP id S234794AbiGOM2h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 08:28:04 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE83D82FA3;
-        Fri, 15 Jul 2022 05:28:02 -0700 (PDT)
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26F8p324004117;
-        Fri, 15 Jul 2022 11:59:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=jReLj1U1PfgtLm6EGtYmbWuSw29A3TL63GS9rbvxQog=;
- b=QESqGkIg02S/xv+yiUSWyTr1p9rzFAe8J0Rs5eoxWKzPdXS6C2W/7A87seG2/qBpu2Dv
- aPEOLCVsG/gn+AHAxdkh0ts7Iypig3WQq4UDihFiY9EJZF/T8isLpT8ZnPVialZRY6UG
- oVUYQvWmNT43865czD1aDk4abnBwE5QQ8jkkwhvn9PichLiwZw6iWuYeiDo8L4b1ehAk
- 4iUuEC9WwAkte5tbs52OKtQgPzb3STV7hCN0EqV7PEDJsNIg9N/8XvNgQ+0Z6NSOTrd2
- ODSRERKh+mdsWdMsUxVs69PyAivoXUmwZr273FpoTDfCR53OzZmdhVErknz6HkXddQGM cQ== 
-Received: from apblrppmta01.qualcomm.com (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hay68sdt5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 15 Jul 2022 11:59:49 +0000
-Received: from pps.filterd (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26FBxiqr007357;
-        Fri, 15 Jul 2022 11:59:44 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTPS id 3h72rjjfhx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 15 Jul 2022 11:59:44 +0000
-Received: from APBLRPPMTA01.qualcomm.com (APBLRPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26FBxiG7007352;
-        Fri, 15 Jul 2022 11:59:44 GMT
-Received: from hu-sgudaval-hyd.qualcomm.com (hu-krichai-hyd.qualcomm.com [10.213.110.37])
-        by APBLRPPMTA01.qualcomm.com (PPS) with ESMTP id 26FBxi4Y007351;
-        Fri, 15 Jul 2022 11:59:44 +0000
-Received: by hu-sgudaval-hyd.qualcomm.com (Postfix, from userid 4058933)
-        id 38B7A42E3; Fri, 15 Jul 2022 17:29:43 +0530 (+0530)
-From:   Krishna chaitanya chundru <quic_krichai@quicinc.com>
-To:     helgaas@kernel.org
-Cc:     linux-pci@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mka@chromium.org,
-        quic_vbadigan@quicinc.com, quic_hemantk@quicinc.com,
-        quic_nitegupt@quicinc.com, quic_skananth@quicinc.com,
-        quic_ramkri@quicinc.com, manivannan.sadhasivam@linaro.org,
-        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
-        Krishna chaitanya chundru <quic_krichai@quicinc.com>,
-        Stanimir Varbanov <svarbanov@mm-sol.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v3] PCI: qcom: Allow L1 and its sub states
-Date:   Fri, 15 Jul 2022 17:29:25 +0530
-Message-Id: <1657886366-32685-1-git-send-email-quic_krichai@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: P4UbRrN_ykF2fK_iu9iffInOk0goZs4j
-X-Proofpoint-ORIG-GUID: P4UbRrN_ykF2fK_iu9iffInOk0goZs4j
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-15_04,2022-07-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
- mlxlogscore=891 spamscore=0 malwarescore=0 suspectscore=0 mlxscore=0
- adultscore=0 impostorscore=0 priorityscore=1501 clxscore=1011
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207150053
+        Fri, 15 Jul 2022 08:28:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6187D10BB;
+        Fri, 15 Jul 2022 05:28:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01048B82BE8;
+        Fri, 15 Jul 2022 12:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AD41C34115;
+        Fri, 15 Jul 2022 12:28:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657888112;
+        bh=1WQoyyAkCDerK4uyFTm/h5bbBttlBNT3gkioRS+yT4Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GtQSWdXWimjAGo9or4zJmG2+2tsw4HN0iHXYVpGNl89aAImmBwL64ArkXHldkKw/I
+         bcGKV1BefgjFF++jixQWnTgaMAnTUx8lGwKv3eYOFFrIY+GqVy/tGdfDlatSjypDVc
+         +vNamPpzPcODKA8y0sUT7EAT3OscJ3cLneHRmJW1uRzXNbqIsz+QM4pHW49ed/CAIc
+         OzrC8zBQmDWAwzBwC+DVCMcnKnbGza6fopTQEAf2C671TLy8PZ8J/rxRHDMRNvH8XG
+         MAs5rUAFiO6gPN0z/i+rNACDwsqCh+Rd5zXlYGkjChseWipB5euOtoGEXkSYm3sJNc
+         QA2OvVZlCct8g==
+Date:   Fri, 15 Jul 2022 13:28:26 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Aishwarya TCV <Aishwarya.TCV@arm.com>
+Subject: Re: FVP: kernel BUG at arch/arm64/kernel/traps.c:497 - Internal
+ error: Oops - BUG: 0
+Message-ID: <YtFdarmJKQbV2Wz8@sirena.org.uk>
+References: <CA+G9fYtOX-6=f70FA5PuDVA=kX=2L4spXKXS8=LHkUphafXowg@mail.gmail.com>
+ <Ys1g8PH4M2W7Z50U@sirena.org.uk>
+ <CA+G9fYu7mJ6X3_xhboODP_cjABE4QTJCON_NMduQ60x4Z7N78Q@mail.gmail.com>
+ <Ys/9TSV5muvKXN6W@FVFF77S0Q05N>
+ <YtABEDylGJkYLXrJ@sirena.org.uk>
+ <YtASzuHo1MXe5LJH@FVFF77S0Q05N.cambridge.arm.com>
+ <YtAU1AHLLgK/v7RP@FVFF77S0Q05N.cambridge.arm.com>
+ <YtAcW9DRrdun/pW9@FVFF77S0Q05N.cambridge.arm.com>
+ <CA+G9fYvmrraS7ANdRA0XDoM-u-oVvcHFWsrFuBya9Es_WN3fkw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="H1Sr8Wku87tqrIFD"
+Content-Disposition: inline
+In-Reply-To: <CA+G9fYvmrraS7ANdRA0XDoM-u-oVvcHFWsrFuBya9Es_WN3fkw@mail.gmail.com>
+X-Cookie: You dialed 5483.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow L1 and its sub-states in the qcom pcie driver.
-By default this is disabled in the qcom specific hardware.
-So enabling it explicitly only for controllers belonging to
-2_7_0.
 
-This patch will not affect any link capability registers, this
-will allow the link transitions to L1 and its sub states only
-if they are already supported.
+--H1Sr8Wku87tqrIFD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-----
+On Thu, Jul 14, 2022 at 07:35:50PM +0530, Naresh Kamboju wrote:
+> On Thu, 14 Jul 2022 at 19:09, Mark Rutland <mark.rutland@arm.com> wrote:
 
-Changes since v1 & v2:
-	- Update in the commit text only.
----
- drivers/pci/controller/dwc/pcie-qcom.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+> > When *only* using the initial loading into memory, that blows up in sta=
+ckdepot
+> > and with a subsequent bogus pointer dereference (full log below), and w=
+hen
+> > loaded via semihosting that just works. Note that my kernel is based on=
+ the
+> > arm64 for-next/core branch, which itself is based on v5.19-rc3.
 
-diff --git a/drivers/pci/controller/dwc/pcie-qcom.c b/drivers/pci/controller/dwc/pcie-qcom.c
-index a7202f0..5ef444f 100644
---- a/drivers/pci/controller/dwc/pcie-qcom.c
-+++ b/drivers/pci/controller/dwc/pcie-qcom.c
-@@ -41,6 +41,9 @@
- #define L23_CLK_RMV_DIS				BIT(2)
- #define L1_CLK_RMV_DIS				BIT(1)
- 
-+#define PCIE20_PARF_PM_CTRL			0x20
-+#define REQ_NOT_ENTR_L1				BIT(5)
-+
- #define PCIE20_PARF_PHY_CTRL			0x40
- #define PHY_CTRL_PHY_TX0_TERM_OFFSET_MASK	GENMASK(20, 16)
- #define PHY_CTRL_PHY_TX0_TERM_OFFSET(x)		((x) << 16)
-@@ -1261,6 +1264,11 @@ static int qcom_pcie_init_2_7_0(struct qcom_pcie *pcie)
- 	val |= BIT(4);
- 	writel(val, pcie->parf + PCIE20_PARF_MHI_CLOCK_RESET_CTRL);
- 
-+	/* Enable L1 and L1ss */
-+	val = readl(pcie->parf + PCIE20_PARF_PM_CTRL);
-+	val &= ~REQ_NOT_ENTR_L1;
-+	writel(val, pcie->parf + PCIE20_PARF_PM_CTRL);
-+
- 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
- 		val = readl(pcie->parf + PCIE20_PARF_AXI_MSTR_WR_ADDR_HALT);
- 		val |= BIT(31);
--- 
-2.7.4
+> > Naresh, please can you fix your boot flow before reporting any further =
+issues?
+>=20
+> Yes.
 
+If you don't *need* to use u-boot for any reason then it might be worth
+looking into using EDK2 instead, it will dynamically place loaded images
+so you don't need to worry about size issues unless you actually run out
+of memory which is a whole other problem.
+
+--H1Sr8Wku87tqrIFD
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLRXWkACgkQJNaLcl1U
+h9Dsggf8CuVIwr2J6sCd8w1lFG4bdwpcsGZVeZQTGRFo7mhscUcQA/DVbERphMa5
+rm/R+juwkEXldiHj1CHQvCBsNsW3a8WuDVVx5BWgiSuwFmKUmr95T4Sj2mNsCXPb
+T3qKNT9Ub1TA/h1zIpo53co/2p4kl+BaQO9cQm64TTuP4ACX+X8wH7q8oSp/kC2n
+/Xux0I+gA/BX2U6ppSGaIdBvck/hl5kF4NSaMx6kcojedaX/lpQjdZxUTOsz6rVj
+DfJ7E2nB38IVH+QJor1+274rd+zPrUNaHJRhKmuEtLMQb+iiSvRBq7se5lHVHFen
+JxJtedtwJe2QJQkEjSvrSoH6dM3/6Q==
+=hWus
+-----END PGP SIGNATURE-----
+
+--H1Sr8Wku87tqrIFD--
