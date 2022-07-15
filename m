@@ -2,66 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEAD0C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1503DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232904AbiGOIta (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:49:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41504 "EHLO
+        id S231503AbiGOIug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232351AbiGOIt1 (ORCPT
+        with ESMTP id S229758AbiGOIuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:49:27 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8629113D0C;
-        Fri, 15 Jul 2022 01:49:26 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oCH0i-000o0Y-VR; Fri, 15 Jul 2022 18:49:22 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:49:21 +0800
-Date:   Fri, 15 Jul 2022 16:49:21 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Vladis Dronov <vdronov@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Simo Sorce <simo@redhat.com>
-Subject: Re: [PATCH v4] crypto: fips - make proc files report fips module
- name and version
-Message-ID: <YtEqEYUZ4LH+dFS8@gondor.apana.org.au>
-References: <20220620131618.952133-1-vdronov@redhat.com>
- <20220708123313.119812-1-vdronov@redhat.com>
+        Fri, 15 Jul 2022 04:50:32 -0400
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com [209.85.216.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51C3820FB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:30 -0700 (PDT)
+Received: by mail-pj1-f66.google.com with SMTP id z12-20020a17090a7b8c00b001ef84000b8bso10976773pjc.1
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UKbfSg7TrsohuBtUBfw/4JYHhjgKNHMy0QyToUGRqo4=;
+        b=MVe3bzT9P970JDITY89GgaUVVChs35oUDcUlSR2XBfTIU7gdzkntmEkKHmiSgGbChG
+         XJk8C+twd3ahEw7nNgp8g7wPrygjiqr1sGPT4jnoR22P5fHmONfy+4Sl+wcRluIGzLUT
+         okPbnRglK+qFLfcCxUqsuI6MdY3hmZPcmC8PhQ4499IYY+483gU8jeD0aUAn1nmUiO1f
+         +EJ1k0B2i/zERkv2UeBIr2kGEQO+6Y++8afmkX9owDUt4Q9ntAIzUS+KHfU1Q/2/WvMA
+         gT20r/Dhl0VgnonUk2JMRqOHu+IJsGLUGpK4rtsk41pnNQloOV28GsyFRDBWpuIMEtVL
+         ulwg==
+X-Gm-Message-State: AJIora8oJYuTIp7s2XIMGeB+QM824pP/U5JYiSiqvlLuF+RZD7IuUgT3
+        b3YLMtZqxIJKJ+hRQLD57A==
+X-Google-Smtp-Source: AGRyM1sVKKvlZlyVUtJgYEChzMynl/kOSor1qJE2p4LSUK5/y28sNLLG4lYcfa6bl8Ir1+jbRFoMYw==
+X-Received: by 2002:a17:902:e74a:b0:16c:3bdf:26bd with SMTP id p10-20020a170902e74a00b0016c3bdf26bdmr13125985plf.116.1657875030231;
+        Fri, 15 Jul 2022 01:50:30 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.53.107])
+        by smtp.gmail.com with ESMTPSA id h29-20020aa796dd000000b0052a198c2046sm3237477pfq.203.2022.07.15.01.50.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 01:50:29 -0700 (PDT)
+From:   sunliming <sunliming@kylinos.cn>
+To:     rostedt@goodmis.org, mhiramat@kernel.org, beaub@linux.microsoft.com
+Cc:     linux-kernel@vger.kernel.org, kelulanainsley@gmail.com,
+        sunliming <sunliming@kylinos.cn>
+Subject: [PATCH] user_events: make data_file and status_file static
+Date:   Fri, 15 Jul 2022 16:50:15 +0800
+Message-Id: <20220715085015.248932-1-sunliming@kylinos.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220708123313.119812-1-vdronov@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 08, 2022 at 02:33:13PM +0200, Vladis Dronov wrote:
-> FIPS 140-3 introduced a requirement for the FIPS module to return
-> information about itself, specifically a name and a version. These
-> values must match the values reported on FIPS certificates.
-> 
-> This patch adds two files to read a name and a version from:
-> 
-> /proc/sys/crypto/fips_name
-> /proc/sys/crypto/fips_version
-> 
-> v2: removed redundant parentheses in config entries.
-> v3: move FIPS_MODULE_* defines to fips.c where they are used.
-> v4: return utsrelease.h inclusion
-> 
-> Signed-off-by: Simo Sorce <simo@redhat.com>
-> Signed-off-by: Vladis Dronov <vdronov@redhat.com>
-> ---
->  crypto/Kconfig | 21 +++++++++++++++++++++
->  crypto/fips.c  | 35 ++++++++++++++++++++++++++++++-----
->  2 files changed, 51 insertions(+), 5 deletions(-)
+Variables data_file and status_file are not used outside of example.c,
+so marks them static.
 
-Patch applied.  Thanks.
+Signed-off-by: sunliming <sunliming@kylinos.cn>
+---
+ samples/user_events/example.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/samples/user_events/example.c b/samples/user_events/example.c
+index 4f5778e441c0..13b514bc03e9 100644
+--- a/samples/user_events/example.c
++++ b/samples/user_events/example.c
+@@ -15,8 +15,8 @@
+ #include <linux/user_events.h>
+ 
+ /* Assumes debugfs is mounted */
+-const char *data_file = "/sys/kernel/debug/tracing/user_events_data";
+-const char *status_file = "/sys/kernel/debug/tracing/user_events_status";
++static const char *data_file = "/sys/kernel/debug/tracing/user_events_data";
++static const char *status_file = "/sys/kernel/debug/tracing/user_events_status";
+ 
+ static int event_status(char **status)
+ {
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.25.1
+
