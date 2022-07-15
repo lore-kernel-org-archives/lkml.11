@@ -2,167 +2,431 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1140ECCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E455C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232147AbiGOXVj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:21:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47994 "EHLO
+        id S232191AbiGOXZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232200AbiGOXVS (ORCPT
+        with ESMTP id S232067AbiGOXZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:21:18 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A8D8936AB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:21:17 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id o10-20020a655bca000000b00412787983b3so3386427pgr.12
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=Gm/0I1+T32HiDACucIVWpxGQ1jktv79snrS7GRo/K1s=;
-        b=AoKRujIk2kfCrBAADBgWJNrhbBLYrqc9+T6UYemN6kjvloos9C1+APFaUJZDghTYoK
-         /gl5cf9LBxTnHKhFZihttuUm2Uw8gxHirDUmfoOBef0mS2z12msrFebej17FU4GFuxYc
-         Jc6FLU3SMuhlLrgd91eBSLAv8SNc2g6ZHtFYmIgR0Zd1z6H+d04deiwFm6sR0O5j1oqP
-         xrkV8tVUqiuGUTu9hZoHGz3v+FjoF16oG3R0to+BKmD7r2pdRWKzqSXZeTFEFBvBLOp7
-         06dK7Fq/kNzH0ebilO4dVQPsqEhGUZtn5dHy5uG3jXdG4uhiRvKzRBePbz3VVABSpJJX
-         XKAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=Gm/0I1+T32HiDACucIVWpxGQ1jktv79snrS7GRo/K1s=;
-        b=iLbEHud4IYgCLmeZWdEmN9S7JQyMmCx0bd470FUoGP1b00UbMzGeeC1AAqi6Qa1Bbu
-         N6mUgLDdOv5AgkTCcBoQIJEQ2YYyDqF87aslu9hlz8lonB1+t7QcWHVw+3HJYUu76GuY
-         YIimM5YN2iKLI6PaNsYXDlTYmIMrBnQrEeamhIy1iQksW/otuqA4RWt5a+VvTmN2o3OF
-         dzQcS6SkWswlINmFsmCab/Cqp2A0NU3czstYh7kcqgbTmTogJ/TXOS4jiqlQ6Qh30UPf
-         rKSkvM5Qep3Xl+9ENF3Ks1yjKbX70s3Sgk7+wYvGyPSKgTFj/trVretUFhcxbLWH67Ww
-         MZxQ==
-X-Gm-Message-State: AJIora886xqsElqmoG7lNTKKjgKPNNNqX17AnLJDqaWs9i06XO1O9+YT
-        8DGM5Cl7OSu7X8chulDbw6uByPVvcbc=
-X-Google-Smtp-Source: AGRyM1sMGARc3J88SzpEf/kmJghkGEoGICMquk6J2DXH7vDBKPf1zVie0uMCNACtGtbHCAHC2vYQvaygYd0=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a63:cb:0:b0:40c:a2b4:4890 with SMTP id
- 194-20020a6300cb000000b0040ca2b44890mr14137493pga.304.1657927276873; Fri, 15
- Jul 2022 16:21:16 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 15 Jul 2022 23:21:07 +0000
-In-Reply-To: <20220715232107.3775620-1-seanjc@google.com>
-Message-Id: <20220715232107.3775620-5-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220715232107.3775620-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH 4/4] KVM: selftests: Add an option to run vCPUs while
- disabling dirty logging
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mingwei Zhang <mizhang@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 15 Jul 2022 19:25:32 -0400
+X-Greylist: delayed 1790 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:30 PDT
+Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF6D550B4;
+        Fri, 15 Jul 2022 16:25:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
+        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
+        Content-Description; bh=TlUHUSVli7MkTxHNSLF7L2fiDCe+zp9tykQKCi0ZaE8=; b=fpvB4
+        hSV95+AyyCgkny1uHfGGqGUhpwUquT1l45QtAVwhD8SfMMuEMZzScDiNXfWtbF/FE45YW3c+yuD5j
+        T7VQ+c3r18257LdJhcjsOO5cdWtCtw/Q0GOr6irapVvptydrjTdhyAFNxqzfE+lVcDI80/piLzwZo
+        sq4pgExXKMDHC/ZFdnkAnL8uXKEM9BUIatbjeyagSHjornyYxCIY3edC17RD53NN50PYgnzXR++Zn
+        tomehgoSZvpLTTqmImkPWhhFzJzFHhezJyHnddlbKut3p2EOFfc9ofl4sh8YeTFOP2Kr4Usrakfrb
+        WYbfqLYoPsFt0gIWaod5qoAq/epHQ==;
+Message-Id: <9143e82dadd0e2728a5f1ac6a877d12387f82761.1657920926.git.linux_oss@crudebyte.com>
+In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
+References: <cover.1657920926.git.linux_oss@crudebyte.com>
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+Date:   Fri, 15 Jul 2022 23:32:17 +0200
+Subject: [PATCH v6 03/11] 9p/trans_virtio: introduce struct virtqueue_sg
+To:     v9fs-developer@lists.sourceforge.net
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Nikolay Kichukov <nikolay@oldum.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a command line option to dirty_log_perf_test to run vCPUs for the
-entire duration of disabling dirty logging.  By default, the test stops
-running runs vCPUs before disabling dirty logging, which is faster but
-less interesting as it doesn't stress KVM's handling of contention
-between page faults and the zapping of collapsible SPTEs.  Enabling the
-flag also lets the user verify that KVM is indeed rebuilding zapped SPTEs
-as huge pages by checking KVM's pages_{1g,2m,4k} stats.  Without vCPUs to
-fault in the zapped SPTEs, the stats will show that KVM is zapping pages,
-but they never show whether or not KVM actually allows huge pages to be
-recreated.
+The amount of elements in a scatter/gather list is limited to
+approximately 128 elements. To allow going beyond that limit
+with subsequent patches, pave the way by turning the one-
+dimensional sg list array into a two-dimensional array, i.e:
 
-Note!  Enabling the flag can _significantly_ increase runtime, especially
-if the thread that's disabling dirty logging doesn't have a dedicated
-pCPU, e.g. if all pCPUs are used to run vCPUs.
+  sg[128]
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+becomes
+
+  sgl[nsgl][SG_MAX_SINGLE_ALLOC]
+
+As the value of 'nsgl' is exactly (still) 1 in this commit
+and the compile-time (compiler and architecture dependent)
+value of 'SG_MAX_SINGLE_ALLOC' equals approximately the
+previous hard coded 128 elements, this commit is therefore
+more of a preparatory refactoring then actual behaviour
+change.
+
+A custom struct virtqueue_sg is defined instead of using
+shared API struct sg_table, because the latter would not
+allow to resize the table after allocation. sg_append_table
+API OTOH would not fit either, because it requires a list
+of pages beforehand upon allocation. And both APIs only
+support all-or-nothing allocation.
+
+Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- .../selftests/kvm/dirty_log_perf_test.c       | 30 +++++++++++++++++--
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ net/9p/trans_virtio.c | 193 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 147 insertions(+), 46 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/dirty_log_perf_test.c b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-index 808a36dbf0c0..f99e39a672d3 100644
---- a/tools/testing/selftests/kvm/dirty_log_perf_test.c
-+++ b/tools/testing/selftests/kvm/dirty_log_perf_test.c
-@@ -59,6 +59,7 @@ static void arch_cleanup_vm(struct kvm_vm *vm)
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index 18bdfa64b934..5ac533f83322 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -36,7 +36,31 @@
+ #include <linux/virtio_9p.h>
+ #include "trans_common.h"
  
- static int nr_vcpus = 1;
- static uint64_t guest_percpu_mem_size = DEFAULT_PER_VCPU_MEM_SIZE;
-+static bool run_vcpus_while_disabling_dirty_logging;
- 
- /* Host variables */
- static u64 dirty_log_manual_caps;
-@@ -109,8 +110,13 @@ static void vcpu_worker(struct perf_test_vcpu_args *vcpu_args)
- 				ts_diff.tv_nsec);
- 		}
- 
-+		/*
-+		 * Keep running the guest while dirty logging is being disabled
-+		 * (iteration is negative) so that vCPUs are accessing memory
-+		 * for the entire duration of zapping collapsible SPTEs.
-+		 */
- 		while (current_iteration == READ_ONCE(iteration) &&
--		       !READ_ONCE(host_quit)) {}
-+		       READ_ONCE(iteration) >= 0 && !READ_ONCE(host_quit)) {}
- 	}
- 
- 	avg = timespec_div(total, vcpu_last_completed_iteration[vcpu_idx]);
-@@ -302,6 +308,14 @@ static void run_test(enum vm_guest_mode mode, void *arg)
- 		}
- 	}
- 
-+	/*
-+	 * Run vCPUs while dirty logging is being disabled to stress disabling
-+	 * in terms of both performance and correctness.  Opt-in via command
-+	 * line as this significantly increases time to disable dirty logging.
-+	 */
-+	if (run_vcpus_while_disabling_dirty_logging)
-+		WRITE_ONCE(iteration, -1);
+-#define VIRTQUEUE_DEFAULT_NUM	128
++/**
++ * struct virtqueue_sg - (chained) scatter gather lists for virtqueue data
++ * transmission
++ * @nsgl: amount of elements (in first dimension) of array field @sgl
++ * @sgl: two-dimensional array, i.e. sgl[nsgl][SG_MAX_SINGLE_ALLOC]
++ */
++struct virtqueue_sg {
++	unsigned int nsgl;
++	struct scatterlist *sgl[];
++};
 +
- 	/* Disable dirty logging */
- 	clock_gettime(CLOCK_MONOTONIC, &start);
- 	disable_dirty_logging(vm, p->slots);
-@@ -309,7 +323,11 @@ static void run_test(enum vm_guest_mode mode, void *arg)
- 	pr_info("Disabling dirty logging time: %ld.%.9lds\n",
- 		ts_diff.tv_sec, ts_diff.tv_nsec);
++/*
++ * Default value for field nsgl in struct virtqueue_sg, which defines the
++ * initial virtio data transmission capacity when this virtio transport is
++ * probed.
++ */
++#define VIRTQUEUE_SG_NSGL_DEFAULT 1
++
++/* maximum value for field nsgl in struct virtqueue_sg */
++#define VIRTQUEUE_SG_NSGL_MAX						\
++	((PAGE_SIZE - sizeof(struct virtqueue_sg)) /			\
++	sizeof(struct scatterlist *))					\
++
++/* last entry per sg list is used for chaining (pointer to next list) */
++#define SG_USER_PAGES_PER_LIST	(SG_MAX_SINGLE_ALLOC - 1)
  
--	/* Tell the vcpu thread to quit */
-+	/*
-+	 * Tell the vCPU threads to quit.  No need to manually check that vCPUs
-+	 * have stopped running after disabling dirty logging, the join will
-+	 * wait for them to exit.
-+	 */
- 	host_quit = true;
- 	perf_test_join_vcpu_threads(nr_vcpus);
+ /* a single mutex to manage channel initialization and attachment */
+ static DEFINE_MUTEX(virtio_9p_lock);
+@@ -53,8 +77,7 @@ static atomic_t vp_pinned = ATOMIC_INIT(0);
+  * @ring_bufs_avail: flag to indicate there is some available in the ring buf
+  * @vc_wq: wait queue for waiting for thing to be added to ring buf
+  * @p9_max_pages: maximum number of pinned pages
+- * @sg: scatter gather list which is used to pack a request (protected?)
+- * @sg_n: amount of elements in sg array
++ * @vq_sg: table of scatter gather lists, which are used to pack a request
+  * @chan_list: linked list of channels
+  *
+  * We keep all per-channel information in a structure.
+@@ -77,9 +100,7 @@ struct virtio_chan {
+ 	 * will be placing it in each channel.
+ 	 */
+ 	unsigned long p9_max_pages;
+-	/* Scatterlist: can be too big for stack. */
+-	struct scatterlist *sg;
+-	size_t sg_n;
++	struct virtqueue_sg *vq_sg;
+ 	/**
+ 	 * @tag: name to identify a mount null terminated
+ 	 */
+@@ -96,6 +117,92 @@ static unsigned int rest_of_page(void *data)
+ 	return PAGE_SIZE - offset_in_page(data);
+ }
  
-@@ -349,6 +367,9 @@ static void help(char *name)
- 	       "     Warning: a low offset can conflict with the loaded test code.\n");
- 	guest_modes_help();
- 	printf(" -n: Run the vCPUs in nested mode (L2)\n");
-+	printf(" -e: Run vCPUs while dirty logging is being disabled.  This\n"
-+	       "     can significantly increase runtime, especially if there\n"
-+	       "     isn't a dedicated pCPU for the main thread.\n");
- 	printf(" -b: specify the size of the memory region which should be\n"
- 	       "     dirtied by each vCPU. e.g. 10M or 3G.\n"
- 	       "     (default: 1G)\n");
-@@ -385,8 +406,11 @@ int main(int argc, char *argv[])
++/**
++ * vq_sg_page - returns user page for given page index
++ * @vq_sg: scatter gather lists used by this transport
++ * @page: user page index across all scatter gather lists
++ */
++static struct scatterlist *vq_sg_page(struct virtqueue_sg *vq_sg, size_t page)
++{
++	unsigned int node = page / SG_USER_PAGES_PER_LIST;
++	unsigned int leaf = page % SG_USER_PAGES_PER_LIST;
++	BUG_ON(node >= vq_sg->nsgl);
++	return &vq_sg->sgl[node][leaf];
++}
++
++/**
++ * vq_sg_npages - returns total number of individual user pages in passed
++ * scatter gather lists
++ * @vq_sg: scatter gather lists to be counted
++ */
++static size_t vq_sg_npages(struct virtqueue_sg *vq_sg)
++{
++	return vq_sg->nsgl * SG_USER_PAGES_PER_LIST;
++}
++
++/**
++ * vq_sg_free - free all memory previously allocated for @vq_sg
++ * @vq_sg: scatter gather lists to be freed
++ */
++static void vq_sg_free(struct virtqueue_sg *vq_sg)
++{
++	unsigned int i;
++
++	if (!vq_sg)
++		return;
++
++	for (i = 0; i < vq_sg->nsgl; ++i) {
++		kfree(vq_sg->sgl[i]);
++	}
++	kfree(vq_sg);
++}
++
++/**
++ * vq_sg_alloc - allocates and returns @nsgl scatter gather lists
++ * @nsgl: amount of scatter gather lists to be allocated
++ * If @nsgl is larger than one then chained lists are used if supported by
++ * architecture.
++ */
++static struct virtqueue_sg *vq_sg_alloc(unsigned int nsgl)
++{
++	struct virtqueue_sg *vq_sg;
++	unsigned int i;
++
++	BUG_ON(!nsgl || nsgl > VIRTQUEUE_SG_NSGL_MAX);
++#ifdef CONFIG_ARCH_NO_SG_CHAIN
++	if (WARN_ON_ONCE(nsgl > 1))
++		return NULL;
++#endif
++
++	vq_sg = kzalloc(sizeof(struct virtqueue_sg) +
++			nsgl * sizeof(struct scatterlist *),
++			GFP_KERNEL);
++
++	if (!vq_sg)
++		return NULL;
++
++	vq_sg->nsgl = nsgl;
++
++	for (i = 0; i < nsgl; ++i) {
++		vq_sg->sgl[i] = kmalloc_array(
++			SG_MAX_SINGLE_ALLOC, sizeof(struct scatterlist),
++			GFP_KERNEL
++		);
++		if (!vq_sg->sgl[i]) {
++			vq_sg_free(vq_sg);
++			return NULL;
++		}
++		sg_init_table(vq_sg->sgl[i], SG_MAX_SINGLE_ALLOC);
++		if (i) {
++			/* chain the lists */
++			sg_chain(vq_sg->sgl[i - 1], SG_MAX_SINGLE_ALLOC,
++				 vq_sg->sgl[i]);
++		}
++	}
++	sg_mark_end(&vq_sg->sgl[nsgl - 1][SG_MAX_SINGLE_ALLOC - 1]);
++	return vq_sg;
++}
++
+ /**
+  * p9_virtio_close - reclaim resources of a channel
+  * @client: client instance
+@@ -158,9 +265,8 @@ static void req_done(struct virtqueue *vq)
  
- 	guest_modes_append_default();
+ /**
+  * pack_sg_list - pack a scatter gather list from a linear buffer
+- * @sg: scatter/gather list to pack into
++ * @vq_sg: scatter/gather lists to pack into
+  * @start: which segment of the sg_list to start at
+- * @limit: maximum segment to pack data to
+  * @data: data to pack into scatter/gather list
+  * @count: amount of data to pack into the scatter/gather list
+  *
+@@ -170,11 +276,12 @@ static void req_done(struct virtqueue *vq)
+  *
+  */
  
--	while ((opt = getopt(argc, argv, "ghi:p:m:nb:f:v:os:x:")) != -1) {
-+	while ((opt = getopt(argc, argv, "eghi:p:m:nb:f:v:os:x:")) != -1) {
- 		switch (opt) {
-+		case 'e':
-+			/* 'e' is for evil. */
-+			run_vcpus_while_disabling_dirty_logging = true;
- 		case 'g':
- 			dirty_log_manual_caps = 0;
- 			break;
+-static int pack_sg_list(struct scatterlist *sg, int start,
+-			int limit, char *data, int count)
++static int pack_sg_list(struct virtqueue_sg *vq_sg, int start,
++			char *data, int count)
+ {
+ 	int s;
+ 	int index = start;
++	size_t limit = vq_sg_npages(vq_sg);
+ 
+ 	while (count) {
+ 		s = rest_of_page(data);
+@@ -182,13 +289,13 @@ static int pack_sg_list(struct scatterlist *sg, int start,
+ 			s = count;
+ 		BUG_ON(index >= limit);
+ 		/* Make sure we don't terminate early. */
+-		sg_unmark_end(&sg[index]);
+-		sg_set_buf(&sg[index++], data, s);
++		sg_unmark_end(vq_sg_page(vq_sg, index));
++		sg_set_buf(vq_sg_page(vq_sg, index++), data, s);
+ 		count -= s;
+ 		data += s;
+ 	}
+ 	if (index-start)
+-		sg_mark_end(&sg[index - 1]);
++		sg_mark_end(vq_sg_page(vq_sg, index - 1));
+ 	return index-start;
+ }
+ 
+@@ -208,21 +315,21 @@ static int p9_virtio_cancelled(struct p9_client *client, struct p9_req_t *req)
+ /**
+  * pack_sg_list_p - Just like pack_sg_list. Instead of taking a buffer,
+  * this takes a list of pages.
+- * @sg: scatter/gather list to pack into
++ * @vq_sg: scatter/gather lists to pack into
+  * @start: which segment of the sg_list to start at
+- * @limit: maximum number of pages in sg list.
+  * @pdata: a list of pages to add into sg.
+  * @nr_pages: number of pages to pack into the scatter/gather list
+  * @offs: amount of data in the beginning of first page _not_ to pack
+  * @count: amount of data to pack into the scatter/gather list
+  */
+ static int
+-pack_sg_list_p(struct scatterlist *sg, int start, int limit,
++pack_sg_list_p(struct virtqueue_sg *vq_sg, int start,
+ 	       struct page **pdata, int nr_pages, size_t offs, int count)
+ {
+ 	int i = 0, s;
+ 	int data_off = offs;
+ 	int index = start;
++	size_t limit = vq_sg_npages(vq_sg);
+ 
+ 	BUG_ON(nr_pages > (limit - start));
+ 	/*
+@@ -235,15 +342,16 @@ pack_sg_list_p(struct scatterlist *sg, int start, int limit,
+ 			s = count;
+ 		BUG_ON(index >= limit);
+ 		/* Make sure we don't terminate early. */
+-		sg_unmark_end(&sg[index]);
+-		sg_set_page(&sg[index++], pdata[i++], s, data_off);
++		sg_unmark_end(vq_sg_page(vq_sg, index));
++		sg_set_page(vq_sg_page(vq_sg, index++), pdata[i++], s,
++			    data_off);
+ 		data_off = 0;
+ 		count -= s;
+ 		nr_pages--;
+ 	}
+ 
+ 	if (index-start)
+-		sg_mark_end(&sg[index - 1]);
++		sg_mark_end(vq_sg_page(vq_sg, index - 1));
+ 	return index - start;
+ }
+ 
+@@ -271,15 +379,13 @@ p9_virtio_request(struct p9_client *client, struct p9_req_t *req)
+ 
+ 	out_sgs = in_sgs = 0;
+ 	/* Handle out VirtIO ring buffers */
+-	out = pack_sg_list(chan->sg, 0,
+-			   chan->sg_n, req->tc.sdata, req->tc.size);
++	out = pack_sg_list(chan->vq_sg, 0, req->tc.sdata, req->tc.size);
+ 	if (out)
+-		sgs[out_sgs++] = chan->sg;
++		sgs[out_sgs++] = vq_sg_page(chan->vq_sg, 0);
+ 
+-	in = pack_sg_list(chan->sg, out,
+-			  chan->sg_n, req->rc.sdata, req->rc.capacity);
++	in = pack_sg_list(chan->vq_sg, out, req->rc.sdata, req->rc.capacity);
+ 	if (in)
+-		sgs[out_sgs + in_sgs++] = chan->sg + out;
++		sgs[out_sgs + in_sgs++] = vq_sg_page(chan->vq_sg, out);
+ 
+ 	err = virtqueue_add_sgs(chan->vq, sgs, out_sgs, in_sgs, req,
+ 				GFP_ATOMIC);
+@@ -448,16 +554,15 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 	out_sgs = in_sgs = 0;
+ 
+ 	/* out data */
+-	out = pack_sg_list(chan->sg, 0,
+-			   chan->sg_n, req->tc.sdata, req->tc.size);
++	out = pack_sg_list(chan->vq_sg, 0, req->tc.sdata, req->tc.size);
+ 
+ 	if (out)
+-		sgs[out_sgs++] = chan->sg;
++		sgs[out_sgs++] = vq_sg_page(chan->vq_sg, 0);
+ 
+ 	if (out_pages) {
+-		sgs[out_sgs++] = chan->sg + out;
+-		out += pack_sg_list_p(chan->sg, out, chan->sg_n,
+-				      out_pages, out_nr_pages, offs, outlen);
++		sgs[out_sgs++] = vq_sg_page(chan->vq_sg, out);
++		out += pack_sg_list_p(chan->vq_sg, out, out_pages,
++				      out_nr_pages, offs, outlen);
+ 	}
+ 
+ 	/*
+@@ -467,15 +572,14 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 	 * Arrange in such a way that server places header in the
+ 	 * allocated memory and payload onto the user buffer.
+ 	 */
+-	in = pack_sg_list(chan->sg, out,
+-			  chan->sg_n, req->rc.sdata, in_hdr_len);
++	in = pack_sg_list(chan->vq_sg, out, req->rc.sdata, in_hdr_len);
+ 	if (in)
+-		sgs[out_sgs + in_sgs++] = chan->sg + out;
++		sgs[out_sgs + in_sgs++] = vq_sg_page(chan->vq_sg, out);
+ 
+ 	if (in_pages) {
+-		sgs[out_sgs + in_sgs++] = chan->sg + out + in;
+-		in += pack_sg_list_p(chan->sg, out + in, chan->sg_n,
+-				     in_pages, in_nr_pages, offs, inlen);
++		sgs[out_sgs + in_sgs++] = vq_sg_page(chan->vq_sg, out + in);
++		in += pack_sg_list_p(chan->vq_sg, out + in, in_pages,
++				     in_nr_pages, offs, inlen);
+ 	}
+ 
+ 	BUG_ON(out_sgs + in_sgs > ARRAY_SIZE(sgs));
+@@ -576,14 +680,12 @@ static int p9_virtio_probe(struct virtio_device *vdev)
+ 		goto fail;
+ 	}
+ 
+-	chan->sg = kmalloc_array(VIRTQUEUE_DEFAULT_NUM,
+-				 sizeof(struct scatterlist), GFP_KERNEL);
+-	if (!chan->sg) {
++	chan->vq_sg = vq_sg_alloc(VIRTQUEUE_SG_NSGL_DEFAULT);
++	if (!chan->vq_sg) {
+ 		pr_err("Failed to allocate virtio 9P channel\n");
+ 		err = -ENOMEM;
+ 		goto out_free_chan_shallow;
+ 	}
+-	chan->sg_n = VIRTQUEUE_DEFAULT_NUM;
+ 
+ 	chan->vdev = vdev;
+ 
+@@ -596,8 +698,6 @@ static int p9_virtio_probe(struct virtio_device *vdev)
+ 	chan->vq->vdev->priv = chan;
+ 	spin_lock_init(&chan->lock);
+ 
+-	sg_init_table(chan->sg, chan->sg_n);
+-
+ 	chan->inuse = false;
+ 	if (virtio_has_feature(vdev, VIRTIO_9P_MOUNT_TAG)) {
+ 		virtio_cread(vdev, struct virtio_9p_config, tag_len, &tag_len);
+@@ -646,7 +746,7 @@ static int p9_virtio_probe(struct virtio_device *vdev)
+ out_free_vq:
+ 	vdev->config->del_vqs(vdev);
+ out_free_chan:
+-	kfree(chan->sg);
++	vq_sg_free(chan->vq_sg);
+ out_free_chan_shallow:
+ 	kfree(chan);
+ fail:
+@@ -741,7 +841,7 @@ static void p9_virtio_remove(struct virtio_device *vdev)
+ 	kobject_uevent(&(vdev->dev.kobj), KOBJ_CHANGE);
+ 	kfree(chan->tag);
+ 	kfree(chan->vc_wq);
+-	kfree(chan->sg);
++	vq_sg_free(chan->vq_sg);
+ 	kfree(chan);
+ 
+ }
+@@ -780,7 +880,8 @@ static struct p9_trans_module p9_virtio_trans = {
+ 	 * that are not at page boundary, that can result in an extra
+ 	 * page in zero copy.
+ 	 */
+-	.maxsize = PAGE_SIZE * (VIRTQUEUE_DEFAULT_NUM - 3),
++	.maxsize = PAGE_SIZE *
++		((VIRTQUEUE_SG_NSGL_DEFAULT * SG_USER_PAGES_PER_LIST) - 3),
+ 	.def = 1,
+ 	.owner = THIS_MODULE,
+ };
 -- 
-2.37.0.170.g444d1eabd0-goog
+2.30.2
 
