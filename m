@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A3DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234991AbiGOODa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 10:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
+        id S235155AbiGOODf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 10:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233202AbiGOODW (ORCPT
+        with ESMTP id S234025AbiGOODW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 10:03:22 -0400
-Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F316465
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C478F26AC1
         for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 07:03:20 -0700 (PDT)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by albert.telenet-ops.be with bizsmtp
-        id vS3K270064C55Sk06S3KUy; Fri, 15 Jul 2022 16:03:19 +0200
+        by laurent.telenet-ops.be with bizsmtp
+        id vS3J2700R4C55Sk01S3JMp; Fri, 15 Jul 2022 16:03:18 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oCLuY-003gpg-KX; Fri, 15 Jul 2022 16:03:18 +0200
+        id 1oCLuY-003gpc-7b; Fri, 15 Jul 2022 16:03:18 +0200
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1oCLuY-00EDeq-5w; Fri, 15 Jul 2022 16:03:18 +0200
+        id 1oCLuX-00EDej-Nj; Fri, 15 Jul 2022 16:03:17 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Pantelis Antoniou <pantelis.antoniou@konsulko.com>,
         Frank Rowand <frowand.list@gmail.com>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH 2/2] of: overlay: Simplify of_overlay_fdt_apply() tail
-Date:   Fri, 15 Jul 2022 16:03:15 +0200
-Message-Id: <6a3357a8f7f29704350e3ffae768ee8a462b54d3.1657893306.git.geert+renesas@glider.be>
+Subject: [PATCH 1/2] of: overlay: Move devicetree_corrupt() check up
+Date:   Fri, 15 Jul 2022 16:03:14 +0200
+Message-Id: <c91ce7112eb5167ea46a43d8a980e76b920010ba.1657893306.git.geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1657893306.git.geert+renesas@glider.be>
 References: <cover.1657893306.git.geert+renesas@glider.be>
@@ -44,42 +44,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It does not hurt to fill in the changeset id while the mutex is still
-held.  After doing so, the function tails for the success and failure
-cases become identical, so they can be unified.
+There is no point in doing several preparatory steps in
+of_overlay_fdt_apply(), only to see of_overlay_apply() return early
+because of a corrupt device tree.
+
+Move the check for a corrupt device tree from of_overlay_apply() to
+of_overlay_fdt_apply(), to check for this as early as possible.
 
 Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 ---
- drivers/of/overlay.c | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ drivers/of/overlay.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/of/overlay.c b/drivers/of/overlay.c
-index 84a8d402009cb3b2..bd8ff4df723da217 100644
+index 4044ddcb02c60a58..84a8d402009cb3b2 100644
 --- a/drivers/of/overlay.c
 +++ b/drivers/of/overlay.c
-@@ -1043,20 +1043,15 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
- 	 * goto err_free_ovcs.  Instead, the caller of of_overlay_fdt_apply()
- 	 * can call of_overlay_remove();
- 	 */
--
--	mutex_unlock(&of_mutex);
--	of_overlay_mutex_unlock();
--
- 	*ret_ovcs_id = ovcs->id;
--
--	return ret;
-+	goto out_unlock;
+@@ -903,12 +903,6 @@ static int of_overlay_apply(struct overlay_changeset *ovcs)
+ {
+ 	int ret = 0, ret_revert, ret_tmp;
  
- err_free_ovcs:
- 	free_overlay_changeset(ovcs);
- 
-+out_unlock:
- 	mutex_unlock(&of_mutex);
- 	of_overlay_mutex_unlock();
+-	if (devicetree_corrupt()) {
+-		pr_err("devicetree state suspect, refuse to apply overlay\n");
+-		ret = -EBUSY;
+-		goto out;
+-	}
 -
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(of_overlay_fdt_apply);
+ 	ret = of_resolve_phandles(ovcs->overlay_root);
+ 	if (ret)
+ 		goto out;
+@@ -983,6 +977,11 @@ int of_overlay_fdt_apply(const void *overlay_fdt, u32 overlay_fdt_size,
+ 
+ 	*ret_ovcs_id = 0;
+ 
++	if (devicetree_corrupt()) {
++		pr_err("devicetree state suspect, refuse to apply overlay\n");
++		return -EBUSY;
++	}
++
+ 	if (overlay_fdt_size < sizeof(struct fdt_header) ||
+ 	    fdt_check_header(overlay_fdt)) {
+ 		pr_err("Invalid overlay_fdt header\n");
 -- 
 2.25.1
 
