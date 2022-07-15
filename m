@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C53C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:30:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FB22C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232865AbiGOL35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46064 "EHLO
+        id S233798AbiGOLaD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:30:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234548AbiGOL3X (ORCPT
+        with ESMTP id S229499AbiGOL33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:29:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C60DD88CEF;
-        Fri, 15 Jul 2022 04:28:28 -0700 (PDT)
+        Fri, 15 Jul 2022 07:29:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF877B16;
+        Fri, 15 Jul 2022 04:28:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C8FEB82B72;
-        Fri, 15 Jul 2022 11:28:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F95C34115;
-        Fri, 15 Jul 2022 11:28:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B4D86229D;
+        Fri, 15 Jul 2022 11:28:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B030C341C0;
+        Fri, 15 Jul 2022 11:28:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657884505;
-        bh=y1rUdaTP7fmd4J4KivWB9UK1GvKq8oiv2nMTGi8iY+Y=;
+        s=korg; t=1657884513;
+        bh=vp1cVpr7c7zxLwHC81smniOEpRs4T8fxGs1VDAnDwjg=;
         h=From:To:Cc:Subject:Date:From;
-        b=q4cUzex5SLpQsSrJauevH6IQDYhJcLmktbUeJx0c/Ys+HZu4eAxJoPM8oeXTBnI1f
-         urpooerUIlJ9rUMrjgtqWhxt04c3luiE47lsqdnN5iv6lKjLuUtr8HrSKu23x1d0Os
-         8GcfaHKi7ahrSWjULmESp+/uZQvuO1EmTbBaKS7s=
+        b=E4lDoFwYDzFs5oJqcMkOlp/yqcICnf89kNBJriOznlmRbk/LFeFsZmhptbUhFg11k
+         b7t8i929glhrdEsmfG6h/vu9REIXqQZuMV/HeR154gKMsCKk3Upw4K2N8OSZr7fidr
+         qaznXfOQN3U7NM57N+ymWJBL70EwUnwgzK1K3S3g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 5.4.206
-Date:   Fri, 15 Jul 2022 13:28:21 +0200
-Message-Id: <16578845024622@kroah.com>
+Subject: Linux 5.10.131
+Date:   Fri, 15 Jul 2022 13:28:26 +0200
+Message-Id: <165788450619772@kroah.com>
 X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,12 +44,12 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 5.4.206 kernel.
+I'm announcing the release of the 5.10.131 kernel.
 
-All users of the 5.4 kernel series must upgrade.
+All users of the 5.10 kernel series must upgrade.
 
-The updated 5.4.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.4.y
+The updated 5.10.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
 and can be browsed at the normal kernel.org git web browser:
 	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
@@ -65,5 +65,5 @@ greg k-h
 
 Greg Kroah-Hartman (2):
       Revert "mtd: rawnand: gpmi: Fix setting busy timeout setting"
-      Linux 5.4.206
+      Linux 5.10.131
 
