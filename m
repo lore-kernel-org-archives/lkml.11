@@ -2,95 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FBFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 05:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D178EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 05:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229667AbiGOFeO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 01:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S229600AbiGOFj3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 01:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229551AbiGOFeI (ORCPT
+        with ESMTP id S229622AbiGOFj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 01:34:08 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961C6357FD;
-        Thu, 14 Jul 2022 22:34:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1657863245; x=1689399245;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CvNvujJBORl3tcnve2CJMhHc6+JmB5rOIHaaoKSpvxM=;
-  b=LwYKxcQ6QaY1uvQisH/uuBmpJ+iyRXoxDXVVVwyWIIWJLmT0UcDIR0/m
-   AfhB8TEmAvslcKmkUvk0tFenAhgkHI4u1j7b9YLyHee5sSpVYWUT6QLOp
-   fagzDlXi+AVJCJ6IwEgXvZjf1klRtfwrAOjoJGLQUjmB1xKXnKjCazBL9
-   ENhuS7QTqDUuqZqHNeZFeJ1Xh27Gsjl1rUNDrx4hg6wgFH/Kke4OPASuc
-   7NfLLM8oNvulLE0Zi6SnI/PmD3SvSJ/5U6kCyYqfkPvcU8NLHfJ05hATE
-   2Nf/zOYcgFx5r1nJn0WFbXxxaEjGA7K7JdWD3jgwyg+PwjlZQX+WUxKxH
-   A==;
-X-IronPort-AV: E=Sophos;i="5.92,272,1650956400"; 
-   d="scan'208";a="172235119"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Jul 2022 22:34:04 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 14 Jul 2022 22:34:03 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 14 Jul 2022 22:33:56 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <llvm@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Nathan Chancellor" <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Arnd Bergmann <arnd@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [Patch net-next] net: dsa: microchip: fix Clang -Wunused-const-variable warning on 'ksz_dt_ids'
-Date:   Fri, 15 Jul 2022 11:03:34 +0530
-Message-ID: <20220715053334.5986-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 15 Jul 2022 01:39:26 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF705509C
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 22:39:25 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id b12-20020a5edc0c000000b0067b8030caa8so1834759iok.0
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 22:39:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=l2QAeekmVrp5Pj3poxHb1l2Iy+FrpOT/BOM8hDiG4Rk=;
+        b=4ORfZ+oZYYByLQc8IVQn6oHXdRqD7cTi7vWaVzGsggK69j+K/7LzCD6Vj9n2dYKrxP
+         9L4Et5I5SVPhurDQ+ntWWjhj0Gg5PNhUqQbwQQWUD6rFOctHpMmJp/Vsq2SkJh2RGjDx
+         XY1sqa/fnKLKbE2XmtCVQCkkzUrBqJuN84ZJGcc4iydpTub5X1EENIKp869yqOzB7t56
+         whfiUSVyGUS3Kxw3KIixoEL0qoKBQLS5ya25+0UMyYYNkEit4+cyPBvpopKV+jGFjMKz
+         aYBJyt+HGj55UASFwU5DZ2IPxbXiR+bq3podOrEZl2WCw2MxPoCe2zZNcA18LjaSjO7S
+         0dFg==
+X-Gm-Message-State: AJIora89KHIkvJRW1h8jpprnHwXlOldH8asZL4tyRhV5CiRyYzIr7chW
+        MZXbkONv10XqeJfvYCPvsSaSU+K1znoia+/Q33ZS2je0AiIX
+X-Google-Smtp-Source: AGRyM1vSSfzbRa9xmuhDZdZmSstgn1akAOKI0dDkXGpeqqr34jtiRzZTlUfK5wOkW4HY2cQSfWuPT/sXFk2cMmK9xs7N4VXo5U9/
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-Received: by 2002:a92:8748:0:b0:2d9:3f81:d0b7 with SMTP id
+ d8-20020a928748000000b002d93f81d0b7mr6164423ilm.310.1657863564449; Thu, 14
+ Jul 2022 22:39:24 -0700 (PDT)
+Date:   Thu, 14 Jul 2022 22:39:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d85ed905e3d1707e@google.com>
+Subject: [syzbot] upstream test error: INFO: trying to register non-static key
+ in ieee80211_do_stop
+From:   syzbot <syzbot+82d7f0e2f7a45da561c5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch removes the of_match_ptr() pointer when dereferencing the
-ksz_dt_ids which produce the unused variable warning.
+Hello,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Suggested-by: Arnd Bergmann <arnd@kernel.org>
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+syzbot found the following issue on:
+
+HEAD commit:    e5d523f1ae8f ubsan: disable UBSAN_DIV_ZERO for clang
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11e0ab1c080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=970ac5ffe160d24
+dashboard link: https://syzkaller.appspot.com/bug?extid=82d7f0e2f7a45da561c5
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+82d7f0e2f7a45da561c5@syzkaller.appspotmail.com
+
+netdevsim netdevsim0 netdevsim1 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
+netdevsim netdevsim0 netdevsim0 (unregistering): unset [1, 0] type 2 family 0 port 6081 - 0
+INFO: trying to register non-static key.
+The code is fine but needs lockdep annotation, or maybe
+you didn't initialize this object before use?
+turning off the locking correctness validator.
+CPU: 2 PID: 3695 Comm: kworker/u16:3 Not tainted 5.19.0-rc6-syzkaller-00272-ge5d523f1ae8f #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: netns cleanup_net
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ assign_lock_key kernel/locking/lockdep.c:979 [inline]
+ register_lock_class+0xf30/0x1130 kernel/locking/lockdep.c:1292
+ __lock_acquire+0x10a/0x5660 kernel/locking/lockdep.c:4932
+ lock_acquire kernel/locking/lockdep.c:5665 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5630
+ __raw_spin_lock_bh include/linux/spinlock_api_smp.h:126 [inline]
+ _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:178
+ spin_lock_bh include/linux/spinlock.h:354 [inline]
+ ieee80211_do_stop+0xc3/0x1ff0 net/mac80211/iface.c:380
+ ieee80211_stop+0xc5/0x610 net/mac80211/iface.c:680
+ __dev_close_many+0x1b6/0x2e0 net/core/dev.c:1516
+ dev_close_many+0x22c/0x630 net/core/dev.c:1541
+ dev_close net/core/dev.c:1567 [inline]
+ dev_close+0x16d/0x210 net/core/dev.c:1561
+ cfg80211_shutdown_all_interfaces+0x96/0x1f0 net/wireless/core.c:273
+ ieee80211_remove_interfaces+0xed/0x820 net/mac80211/iface.c:2212
+ ieee80211_unregister_hw+0x47/0x1f0 net/mac80211/main.c:1400
+ mac80211_hwsim_del_radio drivers/net/wireless/mac80211_hwsim.c:3964 [inline]
+ hwsim_exit_net+0x50e/0xca0 drivers/net/wireless/mac80211_hwsim.c:4731
+ ops_exit_list+0xb0/0x170 net/core/net_namespace.c:162
+ cleanup_net+0x4ea/0xb00 net/core/net_namespace.c:594
+ process_one_work+0x996/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+device hsr_slave_0 left promiscuous mode
+device hsr_slave_1 left promiscuous mode
+batman_adv: batadv0: Interface deactivated: batadv_slave_0
+batman_adv: batadv0: Removing interface: batadv_slave_0
+batman_adv: batadv0: Interface deactivated: batadv_slave_1
+batman_adv: batadv0: Removing interface: batadv_slave_1
+device bridge_slave_1 left promiscuous mode
+bridge0: port 2(bridge_slave_1) entered disabled state
+device bridge_slave_0 left promiscuous mode
+bridge0: port 1(bridge_slave_0) entered disabled state
+device veth1_macvtap left promiscuous mode
+device veth0_macvtap left promiscuous mode
+device veth1_vlan left promiscuous mode
+device veth0_vlan left promiscuous mode
+team0 (unregistering): Port device team_slave_1 removed
+team0 (unregistering): Port device team_slave_0 removed
+bond0 (unregistering): (slave bond_slave_1): Releasing backup interface
+bond0 (unregistering): (slave bond_slave_0): Releasing backup interface
+bond0 (unregistering): Released all slaves
+
+
 ---
- drivers/net/dsa/microchip/ksz_spi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 4844830dca72..05bd089795f8 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -215,7 +215,7 @@ static struct spi_driver ksz_spi_driver = {
- 	.driver = {
- 		.name	= "ksz-switch",
- 		.owner	= THIS_MODULE,
--		.of_match_table = of_match_ptr(ksz_dt_ids),
-+		.of_match_table = ksz_dt_ids,
- 	},
- 	.id_table = ksz_spi_ids,
- 	.probe	= ksz_spi_probe,
-
-base-commit: 6e6fbb72e48ba3da229ff2158cf0d26aa50a218a
--- 
-2.36.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
