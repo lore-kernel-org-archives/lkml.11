@@ -2,255 +2,600 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 995BEC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6177C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:58:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234983AbiGON6W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 09:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        id S235024AbiGON63 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 09:58:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229629AbiGON6D (ORCPT
+        with ESMTP id S233420AbiGON6N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 09:58:03 -0400
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F8AC820E2;
-        Fri, 15 Jul 2022 06:58:02 -0700 (PDT)
-Received: by mail-oi1-x22b.google.com with SMTP id i126so6160797oih.4;
-        Fri, 15 Jul 2022 06:58:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=pWWv1KjyLTxceoIzSgy/J2oEMl6lFWv01sP88AzTVPo=;
-        b=hy6A+q4WFgzT0FtJwgri6Gva45SKUhbqrX+TC2oEBddixiPv7wdKlHSAdBnQfupc/7
-         Yym9Wmt4saQj9DK2MkwAcJlZe2T5h/5+gIwPQuJVrDoovWg6VOL6poCmKkxNncp1DKtM
-         YUJfJyRdi2d0GUlIxB5OM/snsNXqsKyV4qT457NjwNvvtfs3ZEPbAP+rWeusaFogisiq
-         nQtMgMi6937mFeZeOmXXb5gCKdjeOhrYq9owTM7sRuy9SZG40VuITyrep7+Fn0D/gj/e
-         cHJWJ/2AgI1nYOgQK5nDxJs4c9LhMy638pIAk+Ult+MszOYmb79700XjDWA6dFBG73+x
-         9Geg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=pWWv1KjyLTxceoIzSgy/J2oEMl6lFWv01sP88AzTVPo=;
-        b=YElVnnbXS6W9FY9mbeRMVdW+plQNRdtPKLMm3SPYU1ozqk9vXt1nqn8+4hozq6EXoH
-         8ZF9r21QOyK61vYfi246/IzfJyuEN3HdGXiBZ8xDTTsl84irH9WTH5dqflkxAh/YxU56
-         +Vq4C3ifQ0DEztAx4ErtVgAvFlRE95XUuxGTP+JUSqLoocL51HSt+WHFQkKpO/1HxiNd
-         X5adxu+dJ0yUiTnsgdLec5KKOUNSNJtYMqhJzITplw0v3uxxD2W9aZF70G8zU6idhhci
-         siDsyOfYLQsgyvmQCAAiMEs0wcsI/zSr9lEBLkopKFvo4HBdqmjc9uHpp9JbDnj/wmlw
-         5xxw==
-X-Gm-Message-State: AJIora/3A8X9aSnRGx0IGrJCVlXURYZJJpzrmkyBM8VOKCUderSTP+Jc
-        XIDJ3KGcYIlQu3utbydv9Fk=
-X-Google-Smtp-Source: AGRyM1sDdKwE/nzapTw7FtXptc62bmMajKWpwknjCsW6on5LO+kQEKuNpxWGAUWKzgoFtLOAEDAIKA==
-X-Received: by 2002:aca:43d5:0:b0:339:e447:fe2f with SMTP id q204-20020aca43d5000000b00339e447fe2fmr10220246oia.113.1657893481311;
-        Fri, 15 Jul 2022 06:58:01 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id er10-20020a056870c88a00b0010cbd1baf5esm2261951oab.51.2022.07.15.06.58.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 06:58:01 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 06:58:00 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Tian Tao <tiantao6@hisilicon.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v5] drivers/base: fix userspace break from using
- bin_attributes for cpumap and cpulist
-Message-ID: <YtFyaMWfYtjrsrSI@yury-laptop>
-References: <20220715134924.3466194-1-pauld@redhat.com>
+        Fri, 15 Jul 2022 09:58:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C6C820DB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 06:58:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8341CB82C6D
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:58:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDBF2C341C6;
+        Fri, 15 Jul 2022 13:57:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657893479;
+        bh=TFJOvJEmmejbfMzmQJ2HbGyYlmPdgsK7EGW8ZWm/uyk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qFq8gGt3yYRWtr8yT1nayc9GxyFzvoPiD4t7kXVhJh+vmo41fcxxjbn4Q2ds2DiMk
+         T7w4SDfAoKjF2rEy9p0n+bUW4lEDn1TJpOjWtCKw1q5q4kS7LILH45Ei1pG2DsLOJx
+         YKiFQPaWDpLJ2Tv6mJSwkuyntPNfLFm1TSynF8cu3Q3Cvzt8UMfDa5gpbTov7eNKnc
+         iV3QYnyS5GGgO1cvNWFuxSgg2Cb1qMpu7DeoS/E9RkiPQhh9b/nYfmhKONkP5YNidW
+         uU9RDEtCPgOKIDmJ4r4onZV3+lxro5pfssSwboHYbpRVBaeLxz45zjC9LgvLAjQVWl
+         BN1l4EWklu8+w==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        kasan-dev@googlegroups.com, Anup Patel <anup@brainfault.org>
+Subject: [PATCH v5 2/2] riscv: turn pgtable_l4|[l5]_enabled to static key for RV64
+Date:   Fri, 15 Jul 2022 21:48:47 +0800
+Message-Id: <20220715134847.2190-3-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220715134847.2190-1-jszhang@kernel.org>
+References: <20220715134847.2190-1-jszhang@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715134924.3466194-1-pauld@redhat.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 09:49:24AM -0400, Phil Auld wrote:
-> Using bin_attributes with a 0 size causes fstat and friends to return that
-> 0 size. This breaks userspace code that retrieves the size before reading
-> the file. Rather than reverting 75bd50fa841 ("drivers/base/node.c: use
-> bin_attribute to break the size limitation of cpumap ABI") let's put in a
-> size value at compile time.
-> 
-> For cpulist the maximum size is on the order of
-> 	NR_CPUS * (ceil(log10(NR_CPUS)) + 1)/2
-> 
-> which for 8192 is 20480 (8192 * 5)/2. In order to get near that you'd need
-> a system with every other CPU on one node. For example: (0,2,4,8, ... ).
-> To simplify the math and support larger NR_CPUS in the future we are using
-> (NR_CPUS * 7)/2. We also set it to a min of PAGE_SIZE to retain the older
-> behavior for smaller NR_CPUS.
-> 
-> The cpumap file the size works out to be NR_CPUS/4 + NR_CPUS/32 - 1
-> (or NR_CPUS * 9/32 - 1) including the ","s.
-> 
-> Add a set of macros for these values to cpumask.h so they can be used in
-> multiple places. Apply these to the handful of such files in
-> drivers/base/topology.c as well as node.c.
-> 
-> As an example, on an 80 cpu 4-node system (NR_CPUS == 8192):
-> 
-> before:
-> 
-> -r--r--r--. 1 root root 0 Jul 12 14:08 system/node/node0/cpulist
-> -r--r--r--. 1 root root 0 Jul 11 17:25 system/node/node0/cpumap
-> 
-> after:
-> 
-> -r--r--r--. 1 root root 28672 Jul 13 11:32 system/node/node0/cpulist
-> -r--r--r--. 1 root root  4096 Jul 13 11:31 system/node/node0/cpumap
-> 
-> CONFIG_NR_CPUS = 16384
-> -r--r--r--. 1 root root 57344 Jul 13 14:03 system/node/node0/cpulist
-> -r--r--r--. 1 root root  4607 Jul 13 14:02 system/node/node0/cpumap
-> 
-> The actual number of cpus doesn't matter for the reported size since they
-> are based on NR_CPUS.
-> 
-> Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
-> Fixes: bb9ec13d156 ("topology: use bin_attribute to break the size limitation of cpumap ABI")
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Yury Norov <yury.norov@gmail.com>
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Phil Auld <pauld@redhat.com>
+On a specific HW platform, pgtable_l4|[l5]_enabled won't change after
+boot, and the check sits at hot code path, this characteristic makes it
+suitable for optimization with static key.
 
-Acked-by: Yury Norov <yury.norov@gmail.com> (for include/linux/cpumask.h)
+_pgtable_l4|[l5]_enabled is used very early during boot, even is used
+with MMU off, so the static key mechanism isn't ready. For this case,
+we use another static key _pgtable_lx_ready to indicate whether we
+have finalised pgtable_l4|[l5]_enabled or not, then fall back to
+_pgtable_l4|[l5]_enabled_early bool.
 
-> ---
-> v2: Fix cpumap size calculation. Increase multiplier for cpulist size.
-> 
-> v3: Add comments in code.
-> 
-> v4: Define constants in cpumask.h. Move comments there. Also fix
-> topology.c.
-> 
-> v5: Fixed math based on Yury's corrections.
-> 
->  drivers/base/node.c     |  4 ++--
->  drivers/base/topology.c | 32 ++++++++++++++++----------------
->  include/linux/cpumask.h | 18 ++++++++++++++++++
->  3 files changed, 36 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/base/node.c b/drivers/base/node.c
-> index 0ac6376ef7a1..eb0f43784c2b 100644
-> --- a/drivers/base/node.c
-> +++ b/drivers/base/node.c
-> @@ -45,7 +45,7 @@ static inline ssize_t cpumap_read(struct file *file, struct kobject *kobj,
->  	return n;
->  }
->  
-> -static BIN_ATTR_RO(cpumap, 0);
-> +static BIN_ATTR_RO(cpumap, CPUMAP_FILE_MAX_BYTES);
->  
->  static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
->  				   struct bin_attribute *attr, char *buf,
-> @@ -66,7 +66,7 @@ static inline ssize_t cpulist_read(struct file *file, struct kobject *kobj,
->  	return n;
->  }
->  
-> -static BIN_ATTR_RO(cpulist, 0);
-> +static BIN_ATTR_RO(cpulist, CPULIST_FILE_MAX_BYTES);
->  
->  /**
->   * struct node_access_nodes - Access class device to hold user visible
-> diff --git a/drivers/base/topology.c b/drivers/base/topology.c
-> index ac6ad9ab67f9..89f98be5c5b9 100644
-> --- a/drivers/base/topology.c
-> +++ b/drivers/base/topology.c
-> @@ -62,47 +62,47 @@ define_id_show_func(ppin, "0x%llx");
->  static DEVICE_ATTR_ADMIN_RO(ppin);
->  
->  define_siblings_read_func(thread_siblings, sibling_cpumask);
-> -static BIN_ATTR_RO(thread_siblings, 0);
-> -static BIN_ATTR_RO(thread_siblings_list, 0);
-> +static BIN_ATTR_RO(thread_siblings, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(thread_siblings_list, CPULIST_FILE_MAX_BYTES);
->  
->  define_siblings_read_func(core_cpus, sibling_cpumask);
-> -static BIN_ATTR_RO(core_cpus, 0);
-> -static BIN_ATTR_RO(core_cpus_list, 0);
-> +static BIN_ATTR_RO(core_cpus, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(core_cpus_list, CPULIST_FILE_MAX_BYTES);
->  
->  define_siblings_read_func(core_siblings, core_cpumask);
-> -static BIN_ATTR_RO(core_siblings, 0);
-> -static BIN_ATTR_RO(core_siblings_list, 0);
-> +static BIN_ATTR_RO(core_siblings, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(core_siblings_list, CPULIST_FILE_MAX_BYTES);
->  
->  #ifdef TOPOLOGY_CLUSTER_SYSFS
->  define_siblings_read_func(cluster_cpus, cluster_cpumask);
-> -static BIN_ATTR_RO(cluster_cpus, 0);
-> -static BIN_ATTR_RO(cluster_cpus_list, 0);
-> +static BIN_ATTR_RO(cluster_cpus, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(cluster_cpus_list, CPULIST_FILE_MAX_BYTES);
->  #endif
->  
->  #ifdef TOPOLOGY_DIE_SYSFS
->  define_siblings_read_func(die_cpus, die_cpumask);
-> -static BIN_ATTR_RO(die_cpus, 0);
-> -static BIN_ATTR_RO(die_cpus_list, 0);
-> +static BIN_ATTR_RO(die_cpus, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(die_cpus_list, CPULIST_FILE_MAX_BYTES);
->  #endif
->  
->  define_siblings_read_func(package_cpus, core_cpumask);
-> -static BIN_ATTR_RO(package_cpus, 0);
-> -static BIN_ATTR_RO(package_cpus_list, 0);
-> +static BIN_ATTR_RO(package_cpus, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(package_cpus_list, CPULIST_FILE_MAX_BYTES);
->  
->  #ifdef TOPOLOGY_BOOK_SYSFS
->  define_id_show_func(book_id, "%d");
->  static DEVICE_ATTR_RO(book_id);
->  define_siblings_read_func(book_siblings, book_cpumask);
-> -static BIN_ATTR_RO(book_siblings, 0);
-> -static BIN_ATTR_RO(book_siblings_list, 0);
-> +static BIN_ATTR_RO(book_siblings, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(book_siblings_list, CPULIST_FILE_MAX_BYTES);
->  #endif
->  
->  #ifdef TOPOLOGY_DRAWER_SYSFS
->  define_id_show_func(drawer_id, "%d");
->  static DEVICE_ATTR_RO(drawer_id);
->  define_siblings_read_func(drawer_siblings, drawer_cpumask);
-> -static BIN_ATTR_RO(drawer_siblings, 0);
-> -static BIN_ATTR_RO(drawer_siblings_list, 0);
-> +static BIN_ATTR_RO(drawer_siblings, CPUMAP_FILE_MAX_BYTES);
-> +static BIN_ATTR_RO(drawer_siblings_list, CPULIST_FILE_MAX_BYTES);
->  #endif
->  
->  static struct bin_attribute *bin_attrs[] = {
-> diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> index fe29ac7cc469..4592d0845941 100644
-> --- a/include/linux/cpumask.h
-> +++ b/include/linux/cpumask.h
-> @@ -1071,4 +1071,22 @@ cpumap_print_list_to_buf(char *buf, const struct cpumask *mask,
->  	[0] =  1UL							\
->  } }
->  
-> +/*
-> + * Provide a valid theoretical max size for cpumap and cpulist sysfs files
-> + * to avoid breaking userspace which may allocate a buffer based on the size
-> + * reported by e.g. fstat.
-> + *
-> + * for cpumap NR_CPUS * 9/32 - 1 should be an exact length.
-> + *
-> + * For cpulist 7 is (ceil(log10(NR_CPUS)) + 1) allowing for NR_CPUS to be up
-> + * to 2 orders of magnitude larger than 8192. And then we divide by 2 to
-> + * cover a worst-case of every other cpu being on one of two nodes for a
-> + * very large NR_CPUS.
-> + *
-> + *  Use PAGE_SIZE as a minimum for smaller configurations.
-> + */
-> +#define CPUMAP_FILE_MAX_BYTES  ((((NR_CPUS * 9)/32 - 1) > PAGE_SIZE) \
-> +					? (NR_CPUS * 9)/32 - 1 : PAGE_SIZE)
-> +#define CPULIST_FILE_MAX_BYTES  (((NR_CPUS * 7)/2 > PAGE_SIZE) ? (NR_CPUS * 7)/2 : PAGE_SIZE)
-> +
->  #endif /* __LINUX_CPUMASK_H */
-> -- 
-> 2.31.1
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Reviewed-by: Anup Patel <anup@brainfault.org>
+---
+ arch/riscv/include/asm/pgalloc.h    | 16 ++++----
+ arch/riscv/include/asm/pgtable-32.h |  3 ++
+ arch/riscv/include/asm/pgtable-64.h | 60 ++++++++++++++++++---------
+ arch/riscv/include/asm/pgtable.h    |  5 +--
+ arch/riscv/kernel/cpu.c             |  4 +-
+ arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
+ arch/riscv/mm/kasan_init.c          | 16 ++++----
+ 7 files changed, 103 insertions(+), 65 deletions(-)
+
+diff --git a/arch/riscv/include/asm/pgalloc.h b/arch/riscv/include/asm/pgalloc.h
+index 947f23d7b6af..0280eeb4756f 100644
+--- a/arch/riscv/include/asm/pgalloc.h
++++ b/arch/riscv/include/asm/pgalloc.h
+@@ -41,7 +41,7 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
+ 
+ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
+ {
+-	if (pgtable_l4_enabled) {
++	if (pgtable_l4_enabled()) {
+ 		unsigned long pfn = virt_to_pfn(pud);
+ 
+ 		set_p4d(p4d, __p4d((pfn << _PAGE_PFN_SHIFT) | _PAGE_TABLE));
+@@ -51,7 +51,7 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
+ static inline void p4d_populate_safe(struct mm_struct *mm, p4d_t *p4d,
+ 				     pud_t *pud)
+ {
+-	if (pgtable_l4_enabled) {
++	if (pgtable_l4_enabled()) {
+ 		unsigned long pfn = virt_to_pfn(pud);
+ 
+ 		set_p4d_safe(p4d,
+@@ -61,7 +61,7 @@ static inline void p4d_populate_safe(struct mm_struct *mm, p4d_t *p4d,
+ 
+ static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, p4d_t *p4d)
+ {
+-	if (pgtable_l5_enabled) {
++	if (pgtable_l5_enabled()) {
+ 		unsigned long pfn = virt_to_pfn(p4d);
+ 
+ 		set_pgd(pgd, __pgd((pfn << _PAGE_PFN_SHIFT) | _PAGE_TABLE));
+@@ -71,7 +71,7 @@ static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, p4d_t *p4d)
+ static inline void pgd_populate_safe(struct mm_struct *mm, pgd_t *pgd,
+ 				     p4d_t *p4d)
+ {
+-	if (pgtable_l5_enabled) {
++	if (pgtable_l5_enabled()) {
+ 		unsigned long pfn = virt_to_pfn(p4d);
+ 
+ 		set_pgd_safe(pgd,
+@@ -82,7 +82,7 @@ static inline void pgd_populate_safe(struct mm_struct *mm, pgd_t *pgd,
+ #define pud_alloc_one pud_alloc_one
+ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long addr)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return __pud_alloc_one(mm, addr);
+ 
+ 	return NULL;
+@@ -91,7 +91,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long addr)
+ #define pud_free pud_free
+ static inline void pud_free(struct mm_struct *mm, pud_t *pud)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		__pud_free(mm, pud);
+ }
+ 
+@@ -100,7 +100,7 @@ static inline void pud_free(struct mm_struct *mm, pud_t *pud)
+ #define p4d_alloc_one p4d_alloc_one
+ static inline p4d_t *p4d_alloc_one(struct mm_struct *mm, unsigned long addr)
+ {
+-	if (pgtable_l5_enabled) {
++	if (pgtable_l5_enabled()) {
+ 		gfp_t gfp = GFP_PGTABLE_USER;
+ 
+ 		if (mm == &init_mm)
+@@ -120,7 +120,7 @@ static inline void __p4d_free(struct mm_struct *mm, p4d_t *p4d)
+ #define p4d_free p4d_free
+ static inline void p4d_free(struct mm_struct *mm, p4d_t *p4d)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		__p4d_free(mm, p4d);
+ }
+ 
+diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
+index 59ba1fbaf784..1ef52079179a 100644
+--- a/arch/riscv/include/asm/pgtable-32.h
++++ b/arch/riscv/include/asm/pgtable-32.h
+@@ -17,6 +17,9 @@
+ 
+ #define MAX_POSSIBLE_PHYSMEM_BITS 34
+ 
++#define pgtable_l5_enabled() 0
++#define pgtable_l4_enabled() 0
++
+ /*
+  * rv32 PTE format:
+  * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
+index 5c2aba5efbd0..edfff00d8ca3 100644
+--- a/arch/riscv/include/asm/pgtable-64.h
++++ b/arch/riscv/include/asm/pgtable-64.h
+@@ -8,18 +8,38 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/const.h>
++#include <linux/jump_label.h>
+ #include <asm/errata_list.h>
+ 
+-extern bool pgtable_l4_enabled;
+-extern bool pgtable_l5_enabled;
++extern bool _pgtable_l5_enabled_early;
++extern bool _pgtable_l4_enabled_early;
++extern struct static_key_false _pgtable_l5_enabled;
++extern struct static_key_false _pgtable_l4_enabled;
++extern struct static_key_false _pgtable_lx_ready;
++
++static __always_inline bool pgtable_l5_enabled(void)
++{
++	if (static_branch_likely(&_pgtable_lx_ready))
++		return static_branch_likely(&_pgtable_l5_enabled);
++	else
++		return _pgtable_l5_enabled_early;
++}
++
++static __always_inline bool pgtable_l4_enabled(void)
++{
++	if (static_branch_likely(&_pgtable_lx_ready))
++		return static_branch_likely(&_pgtable_l4_enabled);
++	else
++		return _pgtable_l4_enabled_early;
++}
+ 
+ #define PGDIR_SHIFT_L3  30
+ #define PGDIR_SHIFT_L4  39
+ #define PGDIR_SHIFT_L5  48
+ #define PGDIR_SIZE_L3   (_AC(1, UL) << PGDIR_SHIFT_L3)
+ 
+-#define PGDIR_SHIFT     (pgtable_l5_enabled ? PGDIR_SHIFT_L5 : \
+-		(pgtable_l4_enabled ? PGDIR_SHIFT_L4 : PGDIR_SHIFT_L3))
++#define PGDIR_SHIFT     (pgtable_l5_enabled() ? PGDIR_SHIFT_L5 : \
++		(pgtable_l4_enabled() ? PGDIR_SHIFT_L4 : PGDIR_SHIFT_L3))
+ /* Size of region mapped by a page global directory */
+ #define PGDIR_SIZE      (_AC(1, UL) << PGDIR_SHIFT)
+ #define PGDIR_MASK      (~(PGDIR_SIZE - 1))
+@@ -191,7 +211,7 @@ static inline struct page *pud_page(pud_t pud)
+ #define mm_p4d_folded  mm_p4d_folded
+ static inline bool mm_p4d_folded(struct mm_struct *mm)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return false;
+ 
+ 	return true;
+@@ -200,7 +220,7 @@ static inline bool mm_p4d_folded(struct mm_struct *mm)
+ #define mm_pud_folded  mm_pud_folded
+ static inline bool mm_pud_folded(struct mm_struct *mm)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return false;
+ 
+ 	return true;
+@@ -235,7 +255,7 @@ static inline unsigned long _pmd_pfn(pmd_t pmd)
+ 
+ static inline void set_p4d(p4d_t *p4dp, p4d_t p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		*p4dp = p4d;
+ 	else
+ 		set_pud((pud_t *)p4dp, (pud_t){ p4d_val(p4d) });
+@@ -243,7 +263,7 @@ static inline void set_p4d(p4d_t *p4dp, p4d_t p4d)
+ 
+ static inline int p4d_none(p4d_t p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return (p4d_val(p4d) == 0);
+ 
+ 	return 0;
+@@ -251,7 +271,7 @@ static inline int p4d_none(p4d_t p4d)
+ 
+ static inline int p4d_present(p4d_t p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return (p4d_val(p4d) & _PAGE_PRESENT);
+ 
+ 	return 1;
+@@ -259,7 +279,7 @@ static inline int p4d_present(p4d_t p4d)
+ 
+ static inline int p4d_bad(p4d_t p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return !p4d_present(p4d);
+ 
+ 	return 0;
+@@ -267,7 +287,7 @@ static inline int p4d_bad(p4d_t p4d)
+ 
+ static inline void p4d_clear(p4d_t *p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		set_p4d(p4d, __p4d(0));
+ }
+ 
+@@ -283,7 +303,7 @@ static inline unsigned long _p4d_pfn(p4d_t p4d)
+ 
+ static inline pud_t *p4d_pgtable(p4d_t p4d)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return (pud_t *)pfn_to_virt(p4d_val(p4d) >> _PAGE_PFN_SHIFT);
+ 
+ 	return (pud_t *)pud_pgtable((pud_t) { p4d_val(p4d) });
+@@ -300,7 +320,7 @@ static inline struct page *p4d_page(p4d_t p4d)
+ #define pud_offset pud_offset
+ static inline pud_t *pud_offset(p4d_t *p4d, unsigned long address)
+ {
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		return p4d_pgtable(*p4d) + pud_index(address);
+ 
+ 	return (pud_t *)p4d;
+@@ -308,7 +328,7 @@ static inline pud_t *pud_offset(p4d_t *p4d, unsigned long address)
+ 
+ static inline void set_pgd(pgd_t *pgdp, pgd_t pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		*pgdp = pgd;
+ 	else
+ 		set_p4d((p4d_t *)pgdp, (p4d_t){ pgd_val(pgd) });
+@@ -316,7 +336,7 @@ static inline void set_pgd(pgd_t *pgdp, pgd_t pgd)
+ 
+ static inline int pgd_none(pgd_t pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return (pgd_val(pgd) == 0);
+ 
+ 	return 0;
+@@ -324,7 +344,7 @@ static inline int pgd_none(pgd_t pgd)
+ 
+ static inline int pgd_present(pgd_t pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return (pgd_val(pgd) & _PAGE_PRESENT);
+ 
+ 	return 1;
+@@ -332,7 +352,7 @@ static inline int pgd_present(pgd_t pgd)
+ 
+ static inline int pgd_bad(pgd_t pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return !pgd_present(pgd);
+ 
+ 	return 0;
+@@ -340,13 +360,13 @@ static inline int pgd_bad(pgd_t pgd)
+ 
+ static inline void pgd_clear(pgd_t *pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		set_pgd(pgd, __pgd(0));
+ }
+ 
+ static inline p4d_t *pgd_pgtable(pgd_t pgd)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return (p4d_t *)pfn_to_virt(pgd_val(pgd) >> _PAGE_PFN_SHIFT);
+ 
+ 	return (p4d_t *)p4d_pgtable((p4d_t) { pgd_val(pgd) });
+@@ -364,7 +384,7 @@ static inline struct page *pgd_page(pgd_t pgd)
+ #define p4d_offset p4d_offset
+ static inline p4d_t *p4d_offset(pgd_t *pgd, unsigned long address)
+ {
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		return pgd_pgtable(*pgd) + p4d_index(address);
+ 
+ 	return (p4d_t *)pgd;
+diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+index 1d1be9d9419c..3eaa01d880b9 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -63,8 +63,8 @@
+  * position vmemmap directly below the VMALLOC region.
+  */
+ #ifdef CONFIG_64BIT
+-#define VA_BITS		(pgtable_l5_enabled ? \
+-				57 : (pgtable_l4_enabled ? 48 : 39))
++#define VA_BITS		(pgtable_l5_enabled() ? \
++				57 : (pgtable_l4_enabled() ? 48 : 39))
+ #else
+ #define VA_BITS		32
+ #endif
+@@ -834,7 +834,6 @@ extern uintptr_t _dtb_early_pa;
+ #define dtb_early_pa	_dtb_early_pa
+ #endif /* CONFIG_XIP_KERNEL */
+ extern u64 satp_mode;
+-extern bool pgtable_l4_enabled;
+ 
+ void paging_init(void);
+ void misc_mem_init(void);
+diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+index fba9e9f46a8c..9b3697a97e41 100644
+--- a/arch/riscv/kernel/cpu.c
++++ b/arch/riscv/kernel/cpu.c
+@@ -143,9 +143,9 @@ static void print_mmu(struct seq_file *f)
+ #if defined(CONFIG_32BIT)
+ 	strncpy(sv_type, "sv32", 5);
+ #elif defined(CONFIG_64BIT)
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		strncpy(sv_type, "sv57", 5);
+-	else if (pgtable_l4_enabled)
++	else if (pgtable_l4_enabled())
+ 		strncpy(sv_type, "sv48", 5);
+ 	else
+ 		strncpy(sv_type, "sv39", 5);
+diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+index d466ec670e1f..11708cdb7094 100644
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -44,10 +44,16 @@ u64 satp_mode __ro_after_init = SATP_MODE_32;
+ #endif
+ EXPORT_SYMBOL(satp_mode);
+ 
+-bool pgtable_l4_enabled = IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_XIP_KERNEL);
+-bool pgtable_l5_enabled = IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_XIP_KERNEL);
+-EXPORT_SYMBOL(pgtable_l4_enabled);
+-EXPORT_SYMBOL(pgtable_l5_enabled);
++DEFINE_STATIC_KEY_FALSE(_pgtable_l4_enabled);
++DEFINE_STATIC_KEY_FALSE(_pgtable_l5_enabled);
++DEFINE_STATIC_KEY_FALSE(_pgtable_lx_ready);
++EXPORT_SYMBOL(_pgtable_l4_enabled);
++EXPORT_SYMBOL(_pgtable_l5_enabled);
++EXPORT_SYMBOL(_pgtable_lx_ready);
++bool _pgtable_l4_enabled_early = IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_XIP_KERNEL);
++bool _pgtable_l5_enabled_early = IS_ENABLED(CONFIG_64BIT) && !IS_ENABLED(CONFIG_XIP_KERNEL);
++EXPORT_SYMBOL(_pgtable_l4_enabled_early);
++EXPORT_SYMBOL(_pgtable_l5_enabled_early);
+ 
+ phys_addr_t phys_ram_base __ro_after_init;
+ EXPORT_SYMBOL(phys_ram_base);
+@@ -585,26 +591,26 @@ static void __init create_p4d_mapping(p4d_t *p4dp,
+ }
+ 
+ #define pgd_next_t		p4d_t
+-#define alloc_pgd_next(__va)	(pgtable_l5_enabled ?			\
+-		pt_ops.alloc_p4d(__va) : (pgtable_l4_enabled ?		\
++#define alloc_pgd_next(__va)	(pgtable_l5_enabled() ?			\
++		pt_ops.alloc_p4d(__va) : (pgtable_l4_enabled() ?		\
+ 		pt_ops.alloc_pud(__va) : pt_ops.alloc_pmd(__va)))
+-#define get_pgd_next_virt(__pa)	(pgtable_l5_enabled ?			\
+-		pt_ops.get_p4d_virt(__pa) : (pgd_next_t *)(pgtable_l4_enabled ?	\
++#define get_pgd_next_virt(__pa)	(pgtable_l5_enabled() ?			\
++		pt_ops.get_p4d_virt(__pa) : (pgd_next_t *)(pgtable_l4_enabled() ?	\
+ 		pt_ops.get_pud_virt(__pa) : (pud_t *)pt_ops.get_pmd_virt(__pa)))
+ #define create_pgd_next_mapping(__nextp, __va, __pa, __sz, __prot)	\
+-				(pgtable_l5_enabled ?			\
++				(pgtable_l5_enabled() ?			\
+ 		create_p4d_mapping(__nextp, __va, __pa, __sz, __prot) : \
+-				(pgtable_l4_enabled ?			\
++				(pgtable_l4_enabled() ?			\
+ 		create_pud_mapping((pud_t *)__nextp, __va, __pa, __sz, __prot) :	\
+ 		create_pmd_mapping((pmd_t *)__nextp, __va, __pa, __sz, __prot)))
+-#define fixmap_pgd_next		(pgtable_l5_enabled ?			\
+-		(uintptr_t)fixmap_p4d : (pgtable_l4_enabled ?		\
++#define fixmap_pgd_next		(pgtable_l5_enabled() ?			\
++		(uintptr_t)fixmap_p4d : (pgtable_l4_enabled() ?		\
+ 		(uintptr_t)fixmap_pud : (uintptr_t)fixmap_pmd))
+-#define trampoline_pgd_next	(pgtable_l5_enabled ?			\
+-		(uintptr_t)trampoline_p4d : (pgtable_l4_enabled ?	\
++#define trampoline_pgd_next	(pgtable_l5_enabled() ?			\
++		(uintptr_t)trampoline_p4d : (pgtable_l4_enabled() ?	\
+ 		(uintptr_t)trampoline_pud : (uintptr_t)trampoline_pmd))
+-#define early_dtb_pgd_next	(pgtable_l5_enabled ?			\
+-		(uintptr_t)early_dtb_p4d : (pgtable_l4_enabled ?	\
++#define early_dtb_pgd_next	(pgtable_l5_enabled() ?			\
++		(uintptr_t)early_dtb_p4d : (pgtable_l4_enabled() ?	\
+ 		(uintptr_t)early_dtb_pud : (uintptr_t)early_dtb_pmd))
+ #else
+ #define pgd_next_t		pte_t
+@@ -710,14 +716,14 @@ static __init pgprot_t pgprot_from_va(uintptr_t va)
+ #if defined(CONFIG_64BIT) && !defined(CONFIG_XIP_KERNEL)
+ static void __init disable_pgtable_l5(void)
+ {
+-	pgtable_l5_enabled = false;
++	_pgtable_l5_enabled_early = false;
+ 	kernel_map.page_offset = PAGE_OFFSET_L4;
+ 	satp_mode = SATP_MODE_48;
+ }
+ 
+ static void __init disable_pgtable_l4(void)
+ {
+-	pgtable_l4_enabled = false;
++	_pgtable_l4_enabled_early = false;
+ 	kernel_map.page_offset = PAGE_OFFSET_L3;
+ 	satp_mode = SATP_MODE_39;
+ }
+@@ -846,11 +852,11 @@ static void __init create_fdt_early_page_table(pgd_t *pgdir, uintptr_t dtb_pa)
+ 			   PGDIR_SIZE,
+ 			   IS_ENABLED(CONFIG_64BIT) ? PAGE_TABLE : PAGE_KERNEL);
+ 
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		create_p4d_mapping(early_dtb_p4d, DTB_EARLY_BASE_VA,
+ 				   (uintptr_t)early_dtb_pud, P4D_SIZE, PAGE_TABLE);
+ 
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		create_pud_mapping(early_dtb_pud, DTB_EARLY_BASE_VA,
+ 				   (uintptr_t)early_dtb_pmd, PUD_SIZE, PAGE_TABLE);
+ 
+@@ -992,11 +998,11 @@ asmlinkage void __init setup_vm(uintptr_t dtb_pa)
+ 
+ #ifndef __PAGETABLE_PMD_FOLDED
+ 	/* Setup fixmap P4D and PUD */
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		create_p4d_mapping(fixmap_p4d, FIXADDR_START,
+ 				   (uintptr_t)fixmap_pud, P4D_SIZE, PAGE_TABLE);
+ 	/* Setup fixmap PUD and PMD */
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		create_pud_mapping(fixmap_pud, FIXADDR_START,
+ 				   (uintptr_t)fixmap_pmd, PUD_SIZE, PAGE_TABLE);
+ 	create_pmd_mapping(fixmap_pmd, FIXADDR_START,
+@@ -1004,10 +1010,10 @@ asmlinkage void __init setup_vm(uintptr_t dtb_pa)
+ 	/* Setup trampoline PGD and PMD */
+ 	create_pgd_mapping(trampoline_pg_dir, kernel_map.virt_addr,
+ 			   trampoline_pgd_next, PGDIR_SIZE, PAGE_TABLE);
+-	if (pgtable_l5_enabled)
++	if (pgtable_l5_enabled())
+ 		create_p4d_mapping(trampoline_p4d, kernel_map.virt_addr,
+ 				   (uintptr_t)trampoline_pud, P4D_SIZE, PAGE_TABLE);
+-	if (pgtable_l4_enabled)
++	if (pgtable_l4_enabled())
+ 		create_pud_mapping(trampoline_pud, kernel_map.virt_addr,
+ 				   (uintptr_t)trampoline_pmd, PUD_SIZE, PAGE_TABLE);
+ #ifdef CONFIG_XIP_KERNEL
+@@ -1196,6 +1202,15 @@ static void __init reserve_crashkernel(void)
+ 	crashk_res.end = crash_base + crash_size - 1;
+ }
+ 
++static void __init riscv_finalise_pgtable_lx(void)
++{
++	if (_pgtable_l5_enabled_early)
++		static_branch_enable(&_pgtable_l5_enabled);
++	if (_pgtable_l4_enabled_early)
++		static_branch_enable(&_pgtable_l4_enabled);
++	static_branch_enable(&_pgtable_lx_ready);
++}
++
+ void __init paging_init(void)
+ {
+ 	setup_bootmem();
+@@ -1207,6 +1222,7 @@ void __init misc_mem_init(void)
+ 	early_memtest(min_low_pfn << PAGE_SHIFT, max_low_pfn << PAGE_SHIFT);
+ 	arch_numa_init();
+ 	sparse_init();
++	riscv_finalise_pgtable_lx();
+ 	zone_sizes_init();
+ 	reserve_crashkernel();
+ 	memblock_dump_all();
+diff --git a/arch/riscv/mm/kasan_init.c b/arch/riscv/mm/kasan_init.c
+index a22e418dbd82..356044498e8a 100644
+--- a/arch/riscv/mm/kasan_init.c
++++ b/arch/riscv/mm/kasan_init.c
+@@ -209,15 +209,15 @@ static void __init kasan_populate_p4d(pgd_t *pgd,
+ 		set_pgd(pgd, pfn_pgd(PFN_DOWN(__pa(base_p4d)), PAGE_TABLE));
+ }
+ 
+-#define kasan_early_shadow_pgd_next			(pgtable_l5_enabled ?	\
++#define kasan_early_shadow_pgd_next			(pgtable_l5_enabled() ?	\
+ 				(uintptr_t)kasan_early_shadow_p4d :		\
+-							(pgtable_l4_enabled ?	\
++							(pgtable_l4_enabled() ?	\
+ 				(uintptr_t)kasan_early_shadow_pud :		\
+ 				(uintptr_t)kasan_early_shadow_pmd))
+ #define kasan_populate_pgd_next(pgdp, vaddr, next, early)			\
+-		(pgtable_l5_enabled ?						\
++		(pgtable_l5_enabled() ?						\
+ 		kasan_populate_p4d(pgdp, vaddr, next, early) :			\
+-		(pgtable_l4_enabled ?						\
++		(pgtable_l4_enabled() ?						\
+ 			kasan_populate_pud(pgdp, vaddr, next, early) :		\
+ 			kasan_populate_pmd((pud_t *)pgdp, vaddr, next)))
+ 
+@@ -274,7 +274,7 @@ asmlinkage void __init kasan_early_init(void)
+ 				(__pa((uintptr_t)kasan_early_shadow_pte)),
+ 				PAGE_TABLE));
+ 
+-	if (pgtable_l4_enabled) {
++	if (pgtable_l4_enabled()) {
+ 		for (i = 0; i < PTRS_PER_PUD; ++i)
+ 			set_pud(kasan_early_shadow_pud + i,
+ 				pfn_pud(PFN_DOWN
+@@ -282,7 +282,7 @@ asmlinkage void __init kasan_early_init(void)
+ 					PAGE_TABLE));
+ 	}
+ 
+-	if (pgtable_l5_enabled) {
++	if (pgtable_l5_enabled()) {
+ 		for (i = 0; i < PTRS_PER_P4D; ++i)
+ 			set_p4d(kasan_early_shadow_p4d + i,
+ 				pfn_p4d(PFN_DOWN
+@@ -393,9 +393,9 @@ static void __init kasan_shallow_populate_p4d(pgd_t *pgdp,
+ }
+ 
+ #define kasan_shallow_populate_pgd_next(pgdp, vaddr, next)			\
+-		(pgtable_l5_enabled ?						\
++		(pgtable_l5_enabled() ?						\
+ 		kasan_shallow_populate_p4d(pgdp, vaddr, next) :			\
+-		(pgtable_l4_enabled ?						\
++		(pgtable_l4_enabled() ?						\
+ 		kasan_shallow_populate_pud(pgdp, vaddr, next) :			\
+ 		kasan_shallow_populate_pmd(pgdp, vaddr, next)))
+ 
+-- 
+2.34.1
+
