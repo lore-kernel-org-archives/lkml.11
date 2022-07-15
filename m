@@ -2,1217 +2,518 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1DCCCA481
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D266BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231724AbiGOL2R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:28:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
+        id S234004AbiGOL21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232344AbiGOL10 (ORCPT
+        with ESMTP id S234305AbiGOL12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:27:26 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583BB88F12;
-        Fri, 15 Jul 2022 04:27:21 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id 89-20020a17090a09e200b001ef7638e536so11271075pjo.3;
-        Fri, 15 Jul 2022 04:27:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K33rLB6DGvF9cfDTQ4Vx/57WmFMD9/ZvqfJKnqH2i/8=;
-        b=SnyK4u2LmtP7bxjZMnYgbDpPj9h9Iv34YaKabwFpMrOg4CKwSzJumQpNq6EnYvs7qu
-         Dtt6lcLgiMKjqtahgbdAH4T01cGkjY/KSKs6UIv5Q04a8fPDahG1sJjMrxpCtR9Bcff+
-         8F0i1NI2x9SuhBGiuLKEl5mN4qrjkClnHpNUgGyImWlX9i3tVyJpu0avRubbk7p9CvF4
-         cmwuxwqVjx2/Ie9uxcMOTujAbEsVyBwMFlmgwO7/3uMikEmTNdI+3qdDrJIkQrv/V9fJ
-         GKvG0+J8o0p3agAyB2Z8RvpS0B8cz2ghkMl6Vn7T13gu54dow5BYyLhnAFlqci4W+QQy
-         IAWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K33rLB6DGvF9cfDTQ4Vx/57WmFMD9/ZvqfJKnqH2i/8=;
-        b=oY+zGGxwFSGlwUQz/ECQeJ1b3ga7YjcqRbpmJmiRtu6xw2CPwajl46fcQjKHSH/GDo
-         xAJVS03yNeeOcI0/yu1Eo8BKS+uD/aib0ZhoFrNdM9mvYvepa6yCa0fpyknv+nuv/0AU
-         qmHUzmmbbT8zRjLZuCjLmk/zt1Ou98a0rAjEOeZECsIViTnLFbYkTfnHF8eUkcY/oauV
-         CkpdJo/q5Ei5jHCj3RRavRrGtJBMZuk1TpTPJQTtLELjvnhbMfo+/xv6r8obqpWlMDqN
-         dlmQmAKttHPg+VnHSVz3jsuNiEFXJsC2xhROSyvGzpCVqcH2LgTdgVf9GFPFDbDXiKh0
-         M3sw==
-X-Gm-Message-State: AJIora+eHP+4T/I7f15AV7EyuX4ikpt6eg+FpjzcJIVUNL7gbzxOAP6A
-        ulEzEb7kMeMX/zxz16Qb7d0=
-X-Google-Smtp-Source: AGRyM1u6T0+Pc5dNfQqyGBK2JNlI85+pD6YFt/MN4+m+Bn7/1uz8oN+42aifmdfELsAOD9JggddE/w==
-X-Received: by 2002:a17:90b:28d:b0:1f0:47:ca83 with SMTP id az13-20020a17090b028d00b001f00047ca83mr21077605pjb.176.1657884441316;
-        Fri, 15 Jul 2022 04:27:21 -0700 (PDT)
-Received: from RD-3580-24288.rt.l (42-72-159-86.emome-ip.hinet.net. [42.72.159.86])
-        by smtp.gmail.com with ESMTPSA id a5-20020aa78e85000000b00525b61f4792sm3550604pfr.109.2022.07.15.04.27.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 04:27:20 -0700 (PDT)
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
-        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
-        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
-        heikki.krogerus@linux.intel.com, deller@gmx.de
-Cc:     chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com
-Subject: [PATCH v5 10/13] power: supply: mt6370: Add MediaTek MT6370 charger driver
-Date:   Fri, 15 Jul 2022 19:26:04 +0800
-Message-Id: <20220715112607.591-11-peterwu.pub@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220715112607.591-1-peterwu.pub@gmail.com>
-References: <20220715112607.591-1-peterwu.pub@gmail.com>
+        Fri, 15 Jul 2022 07:27:28 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0453F88771
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 04:27:24 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 8BB14C01A; Fri, 15 Jul 2022 13:27:23 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657884443; bh=mILgqUO26eqTSreQ0SQtoeOfDRu9Sz1ylEU3McvwTJ0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=o2CJYMnfS5rAJ3J+IZN7XNCblXuwvwN02WmqRQRtQOVoYRzkXfqh5a76KTcSYoIrl
+         hp02r9mCKHPvN+eAAgqttan4BzJKuy+IHoHBswfmwOMn1uy64IwazHgiAyL/lRNuW/
+         2Yn5iEuBosD8BtJiMTxkz7DKsfmeBjTb94TZUV/ru4ZgeGlPiuYKdPyFdYzY8FHQac
+         84Z0qLv4/1pvJ6zJwYf0dizPc00LCfYRAT+p7hmKOiiHnuDESX6BueORuT6FbeeNea
+         QqzpuToisTdJTQu0kXENhqxW+yWHUCi/Gq02IMTYSnObt9wY5shCnNeOu9PG9i9LHS
+         BJJvmwNNMKJQw==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 53D47C009;
+        Fri, 15 Jul 2022 13:27:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657884441; bh=mILgqUO26eqTSreQ0SQtoeOfDRu9Sz1ylEU3McvwTJ0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0epLQkIjILAAQciXqnVCCN39ToRaoVANI8rNOIPBLzcd0R00hTdiiRUrG6ow41QwF
+         k3j3QctJBRGusygHPEKscdyrnB1BghIxDXi6lMs02cH+HuJsx0g9dcDr5sMUvbWN76
+         f0tT4s+0ZNn0m02dO62Cuk3ahRKekq+JK0Yn66OdaDXU81OgWyyx8JIvJLLa5PH5re
+         G17KKc95takSexjhU9bOikG+xajtvBEHYikqMBTeMie9P7v/Npzo1136fhu1nijIWM
+         p6gQ3/JiceTqdf5wSuvz4nh/3MOFlQIasYZM0xib4rETA8apd42wwL4fV1sfClvB/L
+         tabVG8D+HiqoA==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 75838caa;
+        Fri, 15 Jul 2022 11:27:16 +0000 (UTC)
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Christian Schoenebeck <linux_oss@crudebyte.com>
+Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
+        Dominique Martinet <asmadeus@codewreck.org>
+Subject: [PATCH v2] 9p: roll p9_tag_remove into p9_req_put
+Date:   Fri, 15 Jul 2022 20:27:04 +0900
+Message-Id: <20220715112704.2556071-1-asmadeus@codewreck.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220712060801.2487140-1-asmadeus@codewreck.org>
+References: <20220712060801.2487140-1-asmadeus@codewreck.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: ChiaEn Wu <chiaen_wu@richtek.com>
+mempool prep commit removed the awkward kref usage which didn't
+allow passing client pointer easily with the ref, so we no longer
+need a separate function to remove the tag from idr.
 
-MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
-with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
-driver, display bias voltage supply, one general purpose LDO, and the
-USB Type-C & PD controller complies with the latest USB Type-C and PD
-standards.
+This has the side benefit that it should be more robust in detecting
+leaks: umount will now properly catch unfreed requests as they still
+will be in the idr until the last ref is dropped
 
-This adds MediaTek MT6370 Charger driver support. The charger module
-of MT6370 supports High-Accuracy Voltage/Current Regulation,
-Average Input Current Regulation, Battery Temperature Sensing,
-Over-Temperature Protection, DPDM Detection for BC1.2.
-
-Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+Link: https://lkml.kernel.org/r/20220712060801.2487140-1-asmadeus@codewreck.org
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Reviewed-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
+v1->v2: restored p9_tag_remove for the idr_remove() call with lock
+as per Christian's suggestion. Thanks!
 
-v5
-- Replace unsigned int type of pwr_rdy with bool in
-  mt6370_chg_set_online()
-- Remove redundant 'else' in mt6370_chg_field_get()
-- Revise 'if-else' in mt6370_chg_field_set()
-- Revise 'if' condition in mt6370_chg_enable_irq()
-- Revise all text 'otg' --> 'OTG'
-- Revise MT6370_MIVR_IBUS_TH_100_MA --> MT6370_MIVR_IBUS_TH_100_mA
-- Revise the description of Kconfig help text
----
- drivers/power/supply/Kconfig          |   14 +
- drivers/power/supply/Makefile         |    1 +
- drivers/power/supply/mt6370-charger.c | 1062 +++++++++++++++++++++++++++++++++
- 3 files changed, 1077 insertions(+)
- create mode 100644 drivers/power/supply/mt6370-charger.c
+And yes, sorry about that 'failme'...
 
-diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
-index 1aa8323..591deb8 100644
---- a/drivers/power/supply/Kconfig
-+++ b/drivers/power/supply/Kconfig
-@@ -619,6 +619,20 @@ config CHARGER_MT6360
- 	  Average Input Current Regulation, Battery Temperature Sensing,
- 	  Over-Temperature Protection, DPDM Detection for BC1.2.
+ net/9p/client.c | 101 ++++++++++++++++++++++++------------------------
+ 1 file changed, 51 insertions(+), 50 deletions(-)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 0be19ab1f693..89c5aeb00076 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -298,7 +298,7 @@ p9_tag_alloc(struct p9_client *c, int8_t type, unsigned int max_size)
+ 	/* Init ref to two because in the general case there is one ref
+ 	 * that is put asynchronously by a writer thread, one ref
+ 	 * temporarily given by p9_tag_lookup and put by p9_client_cb
+-	 * in the recv thread, and one ref put by p9_tag_remove in the
++	 * in the recv thread, and one ref put by p9_req_put in the
+ 	 * main thread. The only exception is virtio that does not use
+ 	 * p9_tag_lookup but does not have a writer thread either
+ 	 * (the write happens synchronously in the request/zc_request
+@@ -358,21 +358,22 @@ EXPORT_SYMBOL(p9_tag_lookup);
+  *
+  * Context: Any context.
+  */
+-static int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
++static void p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
+ {
+ 	unsigned long flags;
+ 	u16 tag = r->tc.tag;
  
-+config CHARGER_MT6370
-+	tristate "MediaTek MT6370 Charger Driver"
-+	depends on MFD_MT6370
-+	depends on REGULATOR
-+	select LINEAR_RANGES
-+	help
-+	  Say Y here to enable MT6370 Charger Part.
-+	  The device supports High-Accuracy Voltage/Current Regulation,
-+	  Average Input Current Regulation, Battery Temperature Sensing,
-+	  Over-Temperature Protection, DPDM Detection for BC1.2.
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called "mt6370-charger".
-+
- config CHARGER_QCOM_SMBB
- 	tristate "Qualcomm Switch-Mode Battery Charger and Boost"
- 	depends on MFD_SPMI_PMIC || COMPILE_TEST
-diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
-index 7f02f36..8c95276 100644
---- a/drivers/power/supply/Makefile
-+++ b/drivers/power/supply/Makefile
-@@ -82,6 +82,7 @@ obj-$(CONFIG_CHARGER_MAX8997)	+= max8997_charger.o
- obj-$(CONFIG_CHARGER_MAX8998)	+= max8998_charger.o
- obj-$(CONFIG_CHARGER_MP2629)	+= mp2629_charger.o
- obj-$(CONFIG_CHARGER_MT6360)	+= mt6360_charger.o
-+obj-$(CONFIG_CHARGER_MT6370)	+= mt6370-charger.o
- obj-$(CONFIG_CHARGER_QCOM_SMBB)	+= qcom_smbb.o
- obj-$(CONFIG_CHARGER_BQ2415X)	+= bq2415x_charger.o
- obj-$(CONFIG_CHARGER_BQ24190)	+= bq24190_charger.o
-diff --git a/drivers/power/supply/mt6370-charger.c b/drivers/power/supply/mt6370-charger.c
-new file mode 100644
-index 0000000..76a8c91
---- /dev/null
-+++ b/drivers/power/supply/mt6370-charger.c
-@@ -0,0 +1,1062 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2022 Richtek Technology Corp.
-+ *
-+ * Author: ChiaEn Wu <chiaen_wu@richtek.com>
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/init.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/linear_range.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/power_supply.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/driver.h>
-+#include <linux/workqueue.h>
-+
-+#define MT6370_REG_CHG_CTRL1		0x111
-+#define MT6370_REG_CHG_CTRL2		0x112
-+#define MT6370_REG_CHG_CTRL3		0x113
-+#define MT6370_REG_CHG_CTRL4		0x114
-+#define MT6370_REG_CHG_CTRL5		0x115
-+#define MT6370_REG_CHG_CTRL6		0x116
-+#define MT6370_REG_CHG_CTRL7		0x117
-+#define MT6370_REG_CHG_CTRL8		0x118
-+#define MT6370_REG_CHG_CTRL9		0x119
-+#define MT6370_REG_CHG_CTRL10		0x11A
-+#define MT6370_REG_DEVICE_TYPE		0x122
-+#define MT6370_REG_USB_STATUS1		0x127
-+#define MT6370_REG_CHG_STAT		0x14A
-+#define MT6370_REG_FLED_EN		0x17E
-+#define MT6370_REG_CHG_STAT1		0X1D0
-+#define MT6370_REG_OVPCTRL_STAT		0x1D8
-+
-+#define MT6370_VOBST_MASK		GENMASK(7, 2)
-+#define MT6370_OTG_PIN_EN_MASK		BIT(1)
-+#define MT6370_OPA_MODE_MASK		BIT(0)
-+#define MT6370_OTG_OC_MASK		GENMASK(2, 0)
-+
-+#define MT6370_MIVR_IBUS_TH_100_mA	100000
-+#define MT6370_ADC_CHAN_IBUS		5
-+#define MT6370_ADC_CHAN_MAX		9
-+
-+enum mt6370_chg_reg_field {
-+	/* MT6370_REG_CHG_CTRL2 */
-+	F_IINLMTSEL, F_CFO_EN, F_CHG_EN,
-+	/* MT6370_REG_CHG_CTRL3 */
-+	F_IAICR, F_AICR_EN, F_ILIM_EN,
-+	/* MT6370_REG_CHG_CTRL4 */
-+	F_VOREG,
-+	/* MT6370_REG_CHG_CTRL6 */
-+	F_VMIVR,
-+	/* MT6370_REG_CHG_CTRL7 */
-+	F_ICHG,
-+	/* MT6370_REG_CHG_CTRL8 */
-+	F_IPREC,
-+	/* MT6370_REG_CHG_CTRL9 */
-+	F_IEOC,
-+	/* MT6370_REG_DEVICE_TYPE */
-+	F_USBCHGEN,
-+	/* MT6370_REG_USB_STATUS1 */
-+	F_USB_STAT, F_CHGDET,
-+	/* MT6370_REG_CHG_STAT */
-+	F_CHG_STAT, F_BOOST_STAT, F_VBAT_LVL,
-+	/* MT6370_REG_FLED_EN */
-+	F_FL_STROBE,
-+	/* MT6370_REG_CHG_STAT1 */
-+	F_CHG_MIVR_STAT,
-+	/* MT6370_REG_OVPCTRL_STAT */
-+	F_UVP_D_STAT,
-+	F_MAX
-+};
-+
-+struct mt6370_priv {
-+	struct device *dev;
-+	struct iio_channel *iio_adcs;
-+	struct mutex attach_lock;
-+	struct power_supply *psy;
-+	struct power_supply_desc *psy_desc;
-+	struct regmap *regmap;
-+	struct regmap_field *rmap_fields[F_MAX];
-+	struct regulator_dev *rdev;
-+	struct workqueue_struct *wq;
-+	struct work_struct bc12_work;
-+	struct delayed_work mivr_dwork;
-+	int attach;
-+	int psy_usb_type;
-+	bool pwr_rdy;
-+};
-+
-+enum mt6370_usb_status {
-+	MT6370_USB_STAT_NO_VBUS = 0,
-+	MT6370_USB_STAT_VBUS_FLOW_IS_UNDER_GOING,
-+	MT6370_USB_STAT_SDP,
-+	MT6370_USB_STAT_SDP_NSTD,
-+	MT6370_USB_STAT_DCP,
-+	MT6370_USB_STAT_CDP,
-+	MT6370_USB_STAT_MAX
-+};
-+
-+struct mt6370_chg_field {
-+	const char *name;
-+	const struct linear_range *range;
-+	struct reg_field field;
-+};
-+
-+enum {
-+	MT6370_RANGE_F_IAICR = 0,
-+	MT6370_RANGE_F_VOREG,
-+	MT6370_RANGE_F_VMIVR,
-+	MT6370_RANGE_F_ICHG,
-+	MT6370_RANGE_F_IPREC,
-+	MT6370_RANGE_F_IEOC,
-+	MT6370_RANGE_F_MAX
-+};
-+
-+#define MT6370_CHG_LINEAR_RANGE(_rfd, _min, _min_sel, _max_sel, _step)	\
-+[_rfd] = {								\
-+	.min = _min,							\
-+	.min_sel = _min_sel,						\
-+	.max_sel = _max_sel,						\
-+	.step = _step,							\
-+}
-+
-+/* unit: mA or mV */
-+static const struct linear_range mt6370_chg_ranges[MT6370_RANGE_F_MAX] = {
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_IAICR, 100, 0x0, 0x3F, 50),
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_VOREG, 3900, 0x0, 0x51, 10),
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_VMIVR, 3900, 0x0, 0x5F, 100),
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_ICHG, 900, 0x08, 0x31, 100),
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_IPREC, 100, 0x0, 0x0F, 50),
-+	MT6370_CHG_LINEAR_RANGE(MT6370_RANGE_F_IEOC, 100, 0x0, 0x0F, 50),
-+};
-+
-+#define MT6370_CHG_FIELD(_fd, _reg, _lsb, _msb)				\
-+[_fd] = {								\
-+	.name = #_fd,							\
-+	.range = NULL,							\
-+	.field = REG_FIELD(_reg, _lsb, _msb),				\
-+}
-+
-+#define MT6370_CHG_FIELD_RANGE(_fd, _reg, _lsb, _msb)			\
-+[_fd] = {								\
-+	.name = #_fd,							\
-+	.range = &mt6370_chg_ranges[MT6370_RANGE_##_fd],		\
-+	.field = REG_FIELD(_reg, _lsb, _msb),				\
-+}
-+
-+static const struct mt6370_chg_field mt6370_chg_fields[F_MAX] = {
-+	MT6370_CHG_FIELD(F_IINLMTSEL, MT6370_REG_CHG_CTRL2, 2, 3),
-+	MT6370_CHG_FIELD(F_CFO_EN, MT6370_REG_CHG_CTRL2, 1, 1),
-+	MT6370_CHG_FIELD(F_CHG_EN, MT6370_REG_CHG_CTRL2, 0, 0),
-+	MT6370_CHG_FIELD_RANGE(F_IAICR, MT6370_REG_CHG_CTRL3, 2, 7),
-+	MT6370_CHG_FIELD(F_AICR_EN, MT6370_REG_CHG_CTRL3, 1, 1),
-+	MT6370_CHG_FIELD(F_ILIM_EN, MT6370_REG_CHG_CTRL3, 0, 0),
-+	MT6370_CHG_FIELD_RANGE(F_VOREG, MT6370_REG_CHG_CTRL4, 1, 7),
-+	MT6370_CHG_FIELD_RANGE(F_VMIVR, MT6370_REG_CHG_CTRL6, 1, 7),
-+	MT6370_CHG_FIELD_RANGE(F_ICHG, MT6370_REG_CHG_CTRL7, 2, 7),
-+	MT6370_CHG_FIELD_RANGE(F_IPREC, MT6370_REG_CHG_CTRL8, 0, 3),
-+	MT6370_CHG_FIELD_RANGE(F_IEOC, MT6370_REG_CHG_CTRL9, 4, 7),
-+	MT6370_CHG_FIELD(F_USBCHGEN, MT6370_REG_DEVICE_TYPE, 7, 7),
-+	MT6370_CHG_FIELD(F_USB_STAT, MT6370_REG_USB_STATUS1, 4, 6),
-+	MT6370_CHG_FIELD(F_CHGDET, MT6370_REG_USB_STATUS1, 3, 3),
-+	MT6370_CHG_FIELD(F_CHG_STAT, MT6370_REG_CHG_STAT, 6, 7),
-+	MT6370_CHG_FIELD(F_BOOST_STAT, MT6370_REG_CHG_STAT, 3, 3),
-+	MT6370_CHG_FIELD(F_VBAT_LVL, MT6370_REG_CHG_STAT, 5, 5),
-+	MT6370_CHG_FIELD(F_FL_STROBE, MT6370_REG_FLED_EN, 2, 2),
-+	MT6370_CHG_FIELD(F_CHG_MIVR_STAT, MT6370_REG_CHG_STAT1, 6, 6),
-+	MT6370_CHG_FIELD(F_UVP_D_STAT, MT6370_REG_OVPCTRL_STAT, 4, 4),
-+};
-+
-+static inline int mt6370_chg_field_get(struct mt6370_priv *priv,
-+				       enum mt6370_chg_reg_field fd,
-+				       unsigned int *val)
-+{
-+	int ret;
-+	unsigned int reg_val;
-+
-+	ret = regmap_field_read(priv->rmap_fields[fd], &reg_val);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (mt6370_chg_fields[fd].range)
-+		return linear_range_get_value(mt6370_chg_fields[fd].range,
-+					      reg_val, val);
-+
-+	*val = reg_val;
-+	return 0;
-+}
-+
-+static inline int mt6370_chg_field_set(struct mt6370_priv *priv,
-+				       enum mt6370_chg_reg_field fd,
-+				       unsigned int val)
-+{
-+	int ret;
-+	bool f;
-+	const struct linear_range *r;
-+
-+	if (mt6370_chg_fields[fd].range) {
-+		r = mt6370_chg_fields[fd].range;
-+
-+		if (fd == F_VMIVR) {
-+			ret = linear_range_get_selector_high(r, val, &val, &f);
-+			if (!ret)
-+				val = r->max_sel;
-+		} else {
-+			linear_range_get_selector_within(r, val, &val);
-+		}
-+	}
-+
-+	return regmap_field_write(priv->rmap_fields[fd], val);
-+}
-+
-+enum {
-+	MT6370_CHG_STAT_READY = 0,
-+	MT6370_CHG_STAT_CHARGE_IN_PROGRESS,
-+	MT6370_CHG_STAT_DONE,
-+	MT6370_CHG_STAT_FAULT,
-+	MT6370_CHG_STAT_MAX
-+};
-+
-+enum {
-+	MT6370_ATTACH_STAT_DETACH = 0,
-+	MT6370_ATTACH_STAT_ATTACH_BC12_NOT_DONE,
-+	MT6370_ATTACH_STAT_ATTACH_BC12_DONE,
-+	MT6370_ATTACH_STAT_ATTACH_MAX
-+};
-+
-+static int mt6370_chg_otg_of_parse_cb(struct device_node *of,
-+				      const struct regulator_desc *rdesc,
-+				      struct regulator_config *rcfg)
-+{
-+	struct mt6370_priv *priv = rcfg->driver_data;
-+
-+	rcfg->ena_gpiod = fwnode_gpiod_get_index(of_fwnode_handle(of),
-+						 "enable", 0, GPIOD_OUT_LOW |
-+						 GPIOD_FLAGS_BIT_NONEXCLUSIVE,
-+						 rdesc->name);
-+	if (IS_ERR(rcfg->ena_gpiod)) {
-+		rcfg->ena_gpiod = NULL;
-+		return 0;
-+	}
-+
-+	return regmap_update_bits(priv->regmap, MT6370_REG_CHG_CTRL1,
-+				  MT6370_OTG_PIN_EN_MASK,
-+				  MT6370_OTG_PIN_EN_MASK);
-+}
-+
-+static void mt6370_chg_bc12_work_func(struct work_struct *work)
-+{
-+	struct mt6370_priv *priv = container_of(work, struct mt6370_priv,
-+						bc12_work);
-+	int ret;
-+	bool rpt_psy = false;
-+	unsigned int attach, usb_stat;
-+
-+	mutex_lock(&priv->attach_lock);
-+	attach = priv->attach;
-+
-+	switch (attach) {
-+	case MT6370_ATTACH_STAT_DETACH:
-+		usb_stat = 0;
-+		break;
-+	case MT6370_ATTACH_STAT_ATTACH_BC12_DONE:
-+		ret = mt6370_chg_field_get(priv, F_USB_STAT, &usb_stat);
-+		if (ret < 0) {
-+			dev_err(priv->dev, "Failed to get USB status\n");
-+			goto bc12_work_func_out;
-+		}
-+		break;
-+	case MT6370_ATTACH_STAT_ATTACH_BC12_NOT_DONE:
-+		ret = mt6370_chg_field_set(priv, F_USBCHGEN, attach);
-+		if (ret < 0)
-+			dev_err(priv->dev, "Failed to enable USB CHG EN\n");
-+		goto bc12_work_func_out;
-+	default:
-+		dev_err(priv->dev, "Invalid attach state\n");
-+		goto bc12_work_func_out;
-+	}
-+
-+	rpt_psy = true;
-+
-+	switch (usb_stat) {
-+	case MT6370_USB_STAT_SDP:
-+		priv->psy_desc->type = POWER_SUPPLY_TYPE_USB;
-+		priv->psy_usb_type = POWER_SUPPLY_USB_TYPE_SDP;
-+		break;
-+	case MT6370_USB_STAT_SDP_NSTD:
-+		priv->psy_desc->type = POWER_SUPPLY_TYPE_USB;
-+		priv->psy_usb_type = POWER_SUPPLY_USB_TYPE_DCP;
-+		break;
-+	case MT6370_USB_STAT_DCP:
-+		priv->psy_desc->type = POWER_SUPPLY_TYPE_USB_DCP;
-+		priv->psy_usb_type = POWER_SUPPLY_USB_TYPE_DCP;
-+		break;
-+	case MT6370_USB_STAT_CDP:
-+		priv->psy_desc->type = POWER_SUPPLY_TYPE_USB_CDP;
-+		priv->psy_usb_type = POWER_SUPPLY_USB_TYPE_CDP;
-+		break;
-+	case MT6370_USB_STAT_NO_VBUS:
-+	case MT6370_USB_STAT_VBUS_FLOW_IS_UNDER_GOING:
-+	default:
-+		priv->psy_desc->type = POWER_SUPPLY_TYPE_USB;
-+		priv->psy_usb_type = POWER_SUPPLY_USB_TYPE_UNKNOWN;
-+		break;
-+	}
-+
-+bc12_work_func_out:
-+	mutex_unlock(&priv->attach_lock);
-+
-+	if (rpt_psy)
-+		power_supply_changed(priv->psy);
-+}
-+
-+static inline void mt6370_chg_enable_irq(struct mt6370_priv *priv,
-+					 const char *irq_name, bool en)
-+{
-+	int irq_num;
-+	struct platform_device *pdev = to_platform_device(priv->dev);
-+
-+	irq_num = platform_get_irq_byname(pdev, irq_name);
-+	if (irq_num < 0)
-+		return;
-+
-+	if (en)
-+		enable_irq(irq_num);
-+	else
-+		disable_irq_nosync(irq_num);
-+}
-+
-+static int mt6370_chg_toggle_cfo(struct mt6370_priv *priv)
-+{
-+	int ret;
-+	unsigned int fl_strobe;
-+
-+	/* check if flash led in strobe mode */
-+	ret = mt6370_chg_field_get(priv, F_FL_STROBE, &fl_strobe);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get FL_STROBE_EN\n");
-+		return ret;
-+	}
-+
-+	if (fl_strobe) {
-+		dev_err(priv->dev, "Flash led is still in strobe mode\n");
-+		return ret;
-+	}
-+
-+	/* cfo off */
-+	ret = mt6370_chg_field_set(priv, F_CFO_EN, 0);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to disable CFO_EN\n");
-+		return ret;
-+	}
-+
-+	/* cfo on */
-+	ret = mt6370_chg_field_set(priv, F_CFO_EN, 1);
-+	if (ret < 0)
-+		dev_err(priv->dev, "Failed to enable CFO_EN\n");
-+
-+	return ret;
-+}
-+
-+static int mt6370_chg_read_adc_chan(struct mt6370_priv *priv, unsigned int chan,
-+				    int *val)
-+{
-+	int ret;
-+
-+	if (chan >= MT6370_ADC_CHAN_MAX)
-+		return -EINVAL;
-+
-+	ret = iio_read_channel_processed(&priv->iio_adcs[chan], val);
-+	if (ret)
-+		dev_err(priv->dev, "Failed to read ADC\n");
-+
-+	return ret;
-+}
-+
-+static void mt6370_chg_mivr_dwork_func(struct work_struct *work)
-+{
-+	struct mt6370_priv *priv = container_of(work, struct mt6370_priv,
-+						mivr_dwork.work);
-+	int ret;
-+	unsigned int mivr_stat, ibus;
-+
-+	ret = mt6370_chg_field_get(priv, F_CHG_MIVR_STAT, &mivr_stat);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get mivr state\n");
-+		goto mivr_handler_out;
-+	}
-+
-+	if (!mivr_stat)
-+		goto mivr_handler_out;
-+
-+	ret = mt6370_chg_read_adc_chan(priv, MT6370_ADC_CHAN_IBUS, &ibus);
-+	if (ret) {
-+		dev_err(priv->dev, "Failed to get ibus\n");
-+		goto mivr_handler_out;
-+	}
-+
-+	if (ibus < MT6370_MIVR_IBUS_TH_100_mA) {
-+		ret = mt6370_chg_toggle_cfo(priv);
-+		if (ret)
-+			dev_err(priv->dev, "Failed to toggle cfo\n");
-+	}
-+
-+mivr_handler_out:
-+	mt6370_chg_enable_irq(priv, "mivr", true);
-+	pm_relax(priv->dev);
-+}
-+
-+static void mt6370_chg_pwr_rdy_check(struct mt6370_priv *priv)
-+{
-+	int ret;
-+	unsigned int pwr_rdy, otg_en;
-+	union power_supply_propval val;
-+
-+	/* Check in OTG mode or not */
-+	ret = mt6370_chg_field_get(priv, F_BOOST_STAT, &otg_en);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get OTG state\n");
-+		return;
-+	}
-+
-+	if (otg_en)
-+		return;
-+
-+	ret = mt6370_chg_field_get(priv, F_UVP_D_STAT, &pwr_rdy);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get pwr_rdy state reg\n");
-+		return;
-+	}
-+
-+	val.intval = !pwr_rdy;
-+
-+	ret = power_supply_set_property(priv->psy, POWER_SUPPLY_PROP_ONLINE,
-+					&val);
-+	if (ret < 0)
-+		dev_err(priv->dev, "Failed to start attach/detach flow\n");
-+}
-+
-+static int mt6370_chg_get_online(struct mt6370_priv *priv,
-+				 union power_supply_propval *val)
-+{
-+	mutex_lock(&priv->attach_lock);
-+	val->intval = !!priv->attach;
-+	mutex_unlock(&priv->attach_lock);
-+
-+	return 0;
-+}
-+
-+static int mt6370_chg_get_status(struct mt6370_priv *priv,
-+				 union power_supply_propval *val)
-+{
-+	int ret;
-+	unsigned int chg_stat;
-+	union power_supply_propval online;
-+
-+	ret = power_supply_get_property(priv->psy, POWER_SUPPLY_PROP_ONLINE,
-+					&online);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get online status\n");
-+		return ret;
-+	}
-+
-+	if (!online.intval) {
-+		val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
-+		return 0;
-+	}
-+
-+	ret = mt6370_chg_field_get(priv, F_CHG_STAT, &chg_stat);
-+	if (ret < 0)
-+		return ret;
-+
-+	switch (chg_stat) {
-+	case MT6370_CHG_STAT_READY:
-+	case MT6370_CHG_STAT_FAULT:
-+		val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
-+		return ret;
-+	case MT6370_CHG_STAT_CHARGE_IN_PROGRESS:
-+		val->intval = POWER_SUPPLY_STATUS_CHARGING;
-+		return ret;
-+	case MT6370_CHG_STAT_DONE:
-+		val->intval = POWER_SUPPLY_STATUS_FULL;
-+		return ret;
-+	default:
-+		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
-+		return ret;
-+	}
-+}
-+
-+static int mt6370_chg_get_charge_type(struct mt6370_priv *priv,
-+				      union power_supply_propval *val)
-+{
-+	int type, ret;
-+	unsigned int chg_stat, vbat_lvl;
-+
-+	ret = mt6370_chg_field_get(priv, F_CHG_STAT, &chg_stat);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = mt6370_chg_field_get(priv, F_VBAT_LVL, &vbat_lvl);
-+	if (ret < 0)
-+		return ret;
-+
-+	switch (chg_stat) {
-+	case MT6370_CHG_STAT_CHARGE_IN_PROGRESS:
-+		if (vbat_lvl)
-+			type = POWER_SUPPLY_CHARGE_TYPE_FAST;
-+		else
-+			type = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
-+		break;
-+	case MT6370_CHG_STAT_READY:
-+	case MT6370_CHG_STAT_DONE:
-+	case MT6370_CHG_STAT_FAULT:
-+	default:
-+		type = POWER_SUPPLY_CHARGE_TYPE_NONE;
-+		break;
-+	}
-+
-+	val->intval = type;
-+
-+	return 0;
-+}
-+
-+static int mt6370_chg_get_ichg(struct mt6370_priv *priv,
-+			       union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_ICHG, &val->intval);
-+}
-+
-+static int mt6370_chg_get_max_ichg(struct mt6370_priv *priv,
-+				   union power_supply_propval *val)
-+{
-+	val->intval = linear_range_get_max_value(
-+			&mt6370_chg_ranges[MT6370_RANGE_F_ICHG]);
-+	return 0;
-+}
-+
-+static int mt6370_chg_get_cv(struct mt6370_priv *priv,
-+			     union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_VOREG, &val->intval);
-+}
-+
-+static int mt6370_chg_get_max_cv(struct mt6370_priv *priv,
-+				 union power_supply_propval *val)
-+{
-+	val->intval = linear_range_get_max_value(
-+			&mt6370_chg_ranges[MT6370_RANGE_F_VOREG]);
-+	return 0;
-+}
-+
-+static int mt6370_chg_get_aicr(struct mt6370_priv *priv,
-+			       union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_IAICR, &val->intval);
-+}
-+
-+static int mt6370_chg_get_mivr(struct mt6370_priv *priv,
-+			       union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_VMIVR, &val->intval);
-+}
-+
-+static int mt6370_chg_get_iprechg(struct mt6370_priv *priv,
-+				  union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_IPREC, &val->intval);
-+}
-+
-+static int mt6370_chg_get_ieoc(struct mt6370_priv *priv,
-+			       union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_get(priv, F_IEOC, &val->intval);
-+}
-+
-+static int mt6370_chg_set_online(struct mt6370_priv *priv,
-+				 const union power_supply_propval *val)
-+{
-+	bool pwr_rdy = !!val->intval;
-+
-+	mutex_lock(&priv->attach_lock);
-+	if (pwr_rdy == !!priv->attach) {
-+		dev_err(priv->dev, "pwr_rdy is same(%d)\n", pwr_rdy);
-+		mutex_unlock(&priv->attach_lock);
-+		return 0;
-+	}
-+
-+	priv->attach = pwr_rdy;
-+	mutex_unlock(&priv->attach_lock);
-+
-+	if (!queue_work(priv->wq, &priv->bc12_work))
-+		dev_err(priv->dev, "bc12 work has already queued\n");
-+
-+	return 0;
-+}
-+
-+static int mt6370_chg_set_ichg(struct mt6370_priv *priv,
-+			       const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_ICHG, val->intval);
-+}
-+
-+static int mt6370_chg_set_cv(struct mt6370_priv *priv,
-+			     const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_VOREG, val->intval);
-+}
-+
-+static int mt6370_chg_set_aicr(struct mt6370_priv *priv,
-+			       const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_IAICR, val->intval);
-+}
-+
-+static int mt6370_chg_set_mivr(struct mt6370_priv *priv,
-+			       const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_VMIVR, val->intval);
-+}
-+
-+static int mt6370_chg_set_iprechg(struct mt6370_priv *priv,
-+				  const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_IPREC, val->intval);
-+}
-+
-+static int mt6370_chg_set_ieoc(struct mt6370_priv *priv,
-+			       const union power_supply_propval *val)
-+{
-+	return mt6370_chg_field_set(priv, F_IEOC, val->intval);
-+}
-+
-+static int mt6370_chg_get_property(struct power_supply *psy,
-+				   enum power_supply_property psp,
-+				   union power_supply_propval *val)
-+{
-+	struct mt6370_priv *priv = power_supply_get_drvdata(psy);
-+
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_ONLINE:
-+		return mt6370_chg_get_online(priv, val);
-+	case POWER_SUPPLY_PROP_STATUS:
-+		return mt6370_chg_get_status(priv, val);
-+	case POWER_SUPPLY_PROP_CHARGE_TYPE:
-+		return mt6370_chg_get_charge_type(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
-+		return mt6370_chg_get_ichg(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
-+		return mt6370_chg_get_max_ichg(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
-+		return mt6370_chg_get_cv(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX:
-+		return mt6370_chg_get_max_cv(priv, val);
-+	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
-+		return mt6370_chg_get_aicr(priv, val);
-+	case POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT:
-+		return mt6370_chg_get_mivr(priv, val);
-+	case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
-+		return mt6370_chg_get_iprechg(priv, val);
-+	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
-+		return mt6370_chg_get_ieoc(priv, val);
-+	case POWER_SUPPLY_PROP_TYPE:
-+		val->intval = priv->psy_desc->type;
-+		return 0;
-+	case POWER_SUPPLY_PROP_USB_TYPE:
-+		val->intval = priv->psy_usb_type;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int mt6370_chg_set_property(struct power_supply *psy,
-+				   enum power_supply_property psp,
-+				   const union power_supply_propval *val)
-+{
-+	struct mt6370_priv *priv = power_supply_get_drvdata(psy);
-+
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_ONLINE:
-+		return mt6370_chg_set_online(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
-+		return mt6370_chg_set_ichg(priv, val);
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
-+		return mt6370_chg_set_cv(priv, val);
-+	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
-+		return mt6370_chg_set_aicr(priv, val);
-+	case POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT:
-+		return mt6370_chg_set_mivr(priv, val);
-+	case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
-+		return mt6370_chg_set_iprechg(priv, val);
-+	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
-+		return mt6370_chg_set_ieoc(priv, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int mt6370_chg_property_is_writeable(struct power_supply *psy,
-+					    enum power_supply_property psp)
-+{
-+	switch (psp) {
-+	case POWER_SUPPLY_PROP_ONLINE:
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
-+	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
-+	case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
-+	case POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT:
-+	case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
-+	case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
-+		return 1;
-+	default:
-+		return 0;
-+	}
-+}
-+
-+static enum power_supply_property mt6370_chg_properties[] = {
-+	POWER_SUPPLY_PROP_ONLINE,
-+	POWER_SUPPLY_PROP_STATUS,
-+	POWER_SUPPLY_PROP_CHARGE_TYPE,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
-+	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE_MAX,
-+	POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT,
-+	POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT,
-+	POWER_SUPPLY_PROP_PRECHARGE_CURRENT,
-+	POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT,
-+	POWER_SUPPLY_PROP_TYPE,
-+	POWER_SUPPLY_PROP_USB_TYPE,
-+};
-+
-+static enum power_supply_usb_type mt6370_chg_usb_types[] = {
-+	POWER_SUPPLY_USB_TYPE_UNKNOWN,
-+	POWER_SUPPLY_USB_TYPE_SDP,
-+	POWER_SUPPLY_USB_TYPE_CDP,
-+	POWER_SUPPLY_USB_TYPE_DCP,
-+};
-+
-+static struct power_supply_desc mt6370_chg_psy_desc = {
-+	.type = POWER_SUPPLY_TYPE_USB,
-+	.properties = mt6370_chg_properties,
-+	.num_properties = ARRAY_SIZE(mt6370_chg_properties),
-+	.get_property = mt6370_chg_get_property,
-+	.set_property = mt6370_chg_set_property,
-+	.property_is_writeable = mt6370_chg_property_is_writeable,
-+	.usb_types = mt6370_chg_usb_types,
-+	.num_usb_types = ARRAY_SIZE(mt6370_chg_usb_types),
-+};
-+
-+static const struct regulator_ops mt6370_chg_otg_ops = {
-+	.list_voltage = regulator_list_voltage_linear,
-+	.enable = regulator_enable_regmap,
-+	.disable = regulator_disable_regmap,
-+	.is_enabled = regulator_is_enabled_regmap,
-+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
-+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
-+	.set_current_limit = regulator_set_current_limit_regmap,
-+	.get_current_limit = regulator_get_current_limit_regmap,
-+};
-+
-+static const u32 mt6370_chg_otg_oc_ma[] = {
-+	500000, 700000, 1100000, 1300000, 1800000, 2100000, 2400000,
-+};
-+
-+static const struct regulator_desc mt6370_chg_otg_rdesc = {
-+	.of_match = "usb-otg-vbus-regulator",
-+	.of_parse_cb = mt6370_chg_otg_of_parse_cb,
-+	.name = "mt6370-usb-otg-vbus",
-+	.ops = &mt6370_chg_otg_ops,
-+	.owner = THIS_MODULE,
-+	.type = REGULATOR_VOLTAGE,
-+	.min_uV = 4425000,
-+	.uV_step = 25000,
-+	.n_voltages = 57,
-+	.vsel_reg = MT6370_REG_CHG_CTRL5,
-+	.vsel_mask = MT6370_VOBST_MASK,
-+	.enable_reg = MT6370_REG_CHG_CTRL1,
-+	.enable_mask = MT6370_OPA_MODE_MASK,
-+	.curr_table = mt6370_chg_otg_oc_ma,
-+	.n_current_limits = ARRAY_SIZE(mt6370_chg_otg_oc_ma),
-+	.csel_reg = MT6370_REG_CHG_CTRL10,
-+	.csel_mask = MT6370_OTG_OC_MASK,
-+};
-+
-+static int mt6370_chg_init_rmap_fields(struct mt6370_priv *priv)
-+{
-+	int i;
-+	const struct mt6370_chg_field *fds = mt6370_chg_fields;
-+
-+	for (i = 0; i < F_MAX; i++) {
-+		priv->rmap_fields[i] = devm_regmap_field_alloc(priv->dev,
-+							       priv->regmap,
-+							       fds[i].field);
-+		if (IS_ERR(priv->rmap_fields[i]))
-+			return dev_err_probe(priv->dev,
-+					PTR_ERR(priv->rmap_fields[i]),
-+					"Failed to allocate regmapfield[%s]\n",
-+					fds[i].name);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mt6370_chg_init_setting(struct mt6370_priv *priv)
-+{
-+	int ret;
-+
-+	/* Disable usb_chg_en */
-+	ret = mt6370_chg_field_set(priv, F_USBCHGEN, 0);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to disable usb_chg_en\n");
-+		return ret;
-+	}
-+
-+	/* ICHG/IEOC Workaround, ICHG can not be set less than 900mA */
-+	ret = mt6370_chg_field_set(priv, F_ICHG, 900);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to set ICHG to 900mA");
-+		return ret;
-+	}
-+
-+	/* Change input current limit selection to using IAICR results */
-+	ret = mt6370_chg_field_set(priv, F_IINLMTSEL, 3);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to set IINLMTSEL\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+#define MT6370_CHG_DT_PROP_DECL(_name, _type, _field)	\
-+{							\
-+	.name = "mediatek,chg-" #_name,			\
-+	.type = MT6370_PARSE_TYPE_##_type,		\
-+	.fd = _field,					\
-+}
-+
-+static int mt6370_chg_init_otg_regulator(struct mt6370_priv *priv)
-+{
-+	struct regulator_config rcfg = {
-+		.dev = priv->dev,
-+		.regmap = priv->regmap,
-+		.driver_data = priv,
-+	};
-+
-+	priv->rdev = devm_regulator_register(priv->dev, &mt6370_chg_otg_rdesc,
-+					     &rcfg);
-+
-+	return PTR_ERR_OR_ZERO(priv->rdev);
-+}
-+
-+static int mt6370_chg_init_psy(struct mt6370_priv *priv)
-+{
-+	struct power_supply_config cfg = {
-+		.drv_data = priv,
-+		.of_node = dev_of_node(priv->dev),
-+	};
-+
-+	priv->psy_desc = &mt6370_chg_psy_desc;
-+	priv->psy_desc->name = dev_name(priv->dev);
-+	priv->psy = devm_power_supply_register(priv->dev, priv->psy_desc, &cfg);
-+
-+	return PTR_ERR_OR_ZERO(priv->psy);
-+}
-+
-+static irqreturn_t mt6370_attach_i_handler(int irq, void *data)
-+{
-+	struct mt6370_priv *priv = data;
-+	unsigned int otg_en;
-+	int ret;
-+
-+	/* Check in otg mode or not */
-+	ret = mt6370_chg_field_get(priv, F_BOOST_STAT, &otg_en);
-+	if (ret < 0) {
-+		dev_err(priv->dev, "Failed to get otg state\n");
-+		return IRQ_NONE;
-+	}
-+
-+	if (otg_en)
-+		return IRQ_HANDLED;
-+
-+	mutex_lock(&priv->attach_lock);
-+	priv->attach = MT6370_ATTACH_STAT_ATTACH_BC12_DONE;
-+	mutex_unlock(&priv->attach_lock);
-+
-+	if (!queue_work(priv->wq, &priv->bc12_work))
-+		dev_err(priv->dev, "bc12 work has already queued\n");
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t mt6370_uvp_d_evt_handler(int irq, void *data)
-+{
-+	struct mt6370_priv *priv = data;
-+
-+	mt6370_chg_pwr_rdy_check(priv);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t mt6370_mivr_handler(int irq, void *data)
-+{
-+	struct mt6370_priv *priv = data;
-+
-+	pm_stay_awake(priv->dev);
-+	mt6370_chg_enable_irq(priv, "mivr", false);
-+	schedule_delayed_work(&priv->mivr_dwork, msecs_to_jiffies(200));
-+
-+	return IRQ_HANDLED;
-+}
-+
-+#define MT6370_CHG_IRQ(_name)						\
-+{									\
-+	.name = #_name,							\
-+	.handler = mt6370_##_name##_handler,				\
-+}
-+
-+static int mt6370_chg_init_irq(struct mt6370_priv *priv)
-+{
-+	int i, ret;
-+	const struct {
-+		char *name;
-+		irq_handler_t handler;
-+	} mt6370_chg_irqs[] = {
-+		MT6370_CHG_IRQ(attach_i),
-+		MT6370_CHG_IRQ(uvp_d_evt),
-+		MT6370_CHG_IRQ(mivr),
-+	};
-+
-+	for (i = 0; i < ARRAY_SIZE(mt6370_chg_irqs); i++) {
-+		ret = platform_get_irq_byname(to_platform_device(priv->dev),
-+					      mt6370_chg_irqs[i].name);
-+		if (ret < 0)
-+			return dev_err_probe(priv->dev, ret,
-+					     "Failed to get irq %s\n",
-+					     mt6370_chg_irqs[i].name);
-+
-+		ret = devm_request_threaded_irq(priv->dev, ret, NULL,
-+						mt6370_chg_irqs[i].handler,
-+						IRQF_TRIGGER_FALLING,
-+						dev_name(priv->dev),
-+						priv);
-+
-+		if (ret < 0)
-+			return dev_err_probe(priv->dev, ret,
-+					     "Failed to request irq %s\n",
-+					     mt6370_chg_irqs[i].name);
-+	}
-+
-+	return 0;
-+}
-+
-+static int mt6370_chg_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	struct mt6370_priv *priv;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->dev = &pdev->dev;
-+
-+	priv->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-+	if (!priv->regmap)
-+		return dev_err_probe(&pdev->dev, -ENODEV,
-+				     "Failed to get regmap\n");
-+
-+	ret = mt6370_chg_init_rmap_fields(priv);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "Failed to init regmap fields\n");
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	priv->iio_adcs = devm_iio_channel_get_all(priv->dev);
-+	if (IS_ERR(priv->iio_adcs))
-+		return dev_err_probe(&pdev->dev, PTR_ERR(priv->iio_adcs),
-+				     "Failed to get iio adc\n");
-+
-+	ret = mt6370_chg_init_otg_regulator(priv);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret,
-+				     "Failed to init otg regulator\n");
-+
-+	ret = mt6370_chg_init_psy(priv);
-+	if (ret)
-+		return dev_err_probe(&pdev->dev, ret, "Failed to init psy\n");
-+
-+	mutex_init(&priv->attach_lock);
-+	priv->attach = MT6370_ATTACH_STAT_DETACH;
-+
-+	priv->wq = create_singlethread_workqueue(dev_name(priv->dev));
-+	if (IS_ERR(priv->wq))
-+		return dev_err_probe(priv->dev, PTR_ERR(priv->wq),
-+				     "Failed to create workqueue\n");
-+
-+	INIT_WORK(&priv->bc12_work, mt6370_chg_bc12_work_func);
-+	INIT_DELAYED_WORK(&priv->mivr_dwork, mt6370_chg_mivr_dwork_func);
-+
-+	ret = mt6370_chg_init_setting(priv);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to init mt6370 charger setting\n");
-+		goto probe_out;
-+	}
-+
-+	ret = mt6370_chg_init_irq(priv);
-+	if (ret)
-+		goto probe_out;
-+
-+	mt6370_chg_pwr_rdy_check(priv);
-+
-+	return 0;
-+
-+probe_out:
-+	cancel_delayed_work_sync(&priv->mivr_dwork);
-+	flush_workqueue(priv->wq);
-+	destroy_workqueue(priv->wq);
-+	mutex_destroy(&priv->attach_lock);
-+
-+	return ret;
-+}
-+
-+static int mt6370_chg_remove(struct platform_device *pdev)
-+{
-+	struct mt6370_priv *priv = platform_get_drvdata(pdev);
-+
-+	cancel_delayed_work_sync(&priv->mivr_dwork);
-+	flush_workqueue(priv->wq);
-+	destroy_workqueue(priv->wq);
-+	mutex_destroy(&priv->attach_lock);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id mt6370_chg_of_match[] = {
-+	{ .compatible = "mediatek,mt6370-charger", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, mt6370_chg_of_match);
-+
-+static struct platform_driver mt6370_chg_driver = {
-+	.probe = mt6370_chg_probe,
-+	.remove = mt6370_chg_remove,
-+	.driver = {
-+		.name = "mt6370-charger",
-+		.of_match_table = mt6370_chg_of_match,
-+	},
-+};
-+module_platform_driver(mt6370_chg_driver);
-+
-+MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
-+MODULE_DESCRIPTION("MediaTek MT6370 Charger Driver");
-+MODULE_LICENSE("GPL v2");
+-	p9_debug(P9_DEBUG_MUX, "clnt %p req %p tag: %d\n", c, r, tag);
++	p9_debug(P9_DEBUG_MUX, "freeing clnt %p req %p tag: %d\n", c, r, tag);
+ 	spin_lock_irqsave(&c->lock, flags);
+ 	idr_remove(&c->reqs, tag);
+ 	spin_unlock_irqrestore(&c->lock, flags);
+-	return p9_req_put(c, r);
+ }
+ 
+ int p9_req_put(struct p9_client *c, struct p9_req_t *r)
+ {
+ 	if (refcount_dec_and_test(&r->refcount)) {
++		p9_tag_remove(c, r);
++
+ 		p9_fcall_fini(&r->tc);
+ 		p9_fcall_fini(&r->rc);
+ 		kmem_cache_free(p9_req_cache, r);
+@@ -397,7 +398,7 @@ static void p9_tag_cleanup(struct p9_client *c)
+ 	rcu_read_lock();
+ 	idr_for_each_entry(&c->reqs, req, id) {
+ 		pr_info("Tag %d still in use\n", id);
+-		if (p9_tag_remove(c, req) == 0)
++		if (p9_req_put(c, req) == 0)
+ 			pr_warn("Packet with tag %d has still references",
+ 				req->tc.tag);
+ 	}
+@@ -670,7 +671,7 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
+ 			c->trans_mod->cancelled(c, oldreq);
+ 	}
+ 
+-	p9_tag_remove(c, req);
++	p9_req_put(c, req);
+ 	return 0;
+ }
+ 
+@@ -704,7 +705,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+ 	trace_9p_client_req(c, type, req->tc.tag);
+ 	return req;
+ reterr:
+-	p9_tag_remove(c, req);
++	p9_req_put(c, req);
+ 	/* We have to put also the 2nd reference as it won't be used */
+ 	p9_req_put(c, req);
+ 	return ERR_PTR(err);
+@@ -716,7 +717,7 @@ static struct p9_req_t *p9_client_prepare_req(struct p9_client *c,
+  * @type: type of request
+  * @fmt: protocol format string (see protocol.c)
+  *
+- * Returns request structure (which client must free using p9_tag_remove)
++ * Returns request structure (which client must free using p9_req_put)
+  */
+ 
+ static struct p9_req_t *
+@@ -794,7 +795,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+ 	if (!err)
+ 		return req;
+ reterr:
+-	p9_tag_remove(c, req);
++	p9_req_put(c, req);
+ 	return ERR_PTR(safe_errno(err));
+ }
+ 
+@@ -809,7 +810,7 @@ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...)
+  * @in_hdrlen: reader header size, This is the size of response protocol data
+  * @fmt: protocol format string (see protocol.c)
+  *
+- * Returns request structure (which client must free using p9_tag_remove)
++ * Returns request structure (which client must free using p9_req_put)
+  */
+ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
+ 					 struct iov_iter *uidata,
+@@ -876,7 +877,7 @@ static struct p9_req_t *p9_client_zc_rpc(struct p9_client *c, int8_t type,
+ 	if (!err)
+ 		return req;
+ reterr:
+-	p9_tag_remove(c, req);
++	p9_req_put(c, req);
+ 	return ERR_PTR(safe_errno(err));
+ }
+ 
+@@ -1005,7 +1006,7 @@ static int p9_client_version(struct p9_client *c)
+ 
+ error:
+ 	kfree(version);
+-	p9_tag_remove(c, req);
++	p9_req_put(c, req);
+ 
+ 	return err;
+ }
+@@ -1159,7 +1160,7 @@ struct p9_fid *p9_client_attach(struct p9_client *clnt, struct p9_fid *afid,
+ 	err = p9pdu_readf(&req->rc, clnt->proto_version, "Q", &qid);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto error;
+ 	}
+ 
+@@ -1168,7 +1169,7 @@ struct p9_fid *p9_client_attach(struct p9_client *clnt, struct p9_fid *afid,
+ 
+ 	memmove(&fid->qid, &qid, sizeof(struct p9_qid));
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return fid;
+ 
+ error:
+@@ -1215,10 +1216,10 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 	err = p9pdu_readf(&req->rc, clnt->proto_version, "R", &nwqids, &wqids);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto clunk_fid;
+ 	}
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RWALK nwqid %d:\n", nwqids);
+ 
+@@ -1294,7 +1295,7 @@ int p9_client_open(struct p9_fid *fid, int mode)
+ 	fid->iounit = iounit;
+ 
+ free_and_error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1338,7 +1339,7 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags,
+ 	ofid->iounit = iounit;
+ 
+ free_and_error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1382,7 +1383,7 @@ int p9_client_fcreate(struct p9_fid *fid, const char *name, u32 perm, int mode,
+ 	fid->iounit = iounit;
+ 
+ free_and_error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1416,7 +1417,7 @@ int p9_client_symlink(struct p9_fid *dfid, const char *name,
+ 		 qid->type, qid->path, qid->version);
+ 
+ free_and_error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1436,7 +1437,7 @@ int p9_client_link(struct p9_fid *dfid, struct p9_fid *oldfid, const char *newna
+ 		return PTR_ERR(req);
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RLINK\n");
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return 0;
+ }
+ EXPORT_SYMBOL(p9_client_link);
+@@ -1460,7 +1461,7 @@ int p9_client_fsync(struct p9_fid *fid, int datasync)
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RFSYNC fid %d\n", fid->fid);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 
+ error:
+ 	return err;
+@@ -1488,7 +1489,7 @@ int p9_client_clunk(struct p9_fid *fid)
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RCLUNK fid %d\n", fid->fid);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	/* Fid is not valid even after a failed clunk
+ 	 * If interrupted, retry once then give up and
+@@ -1522,7 +1523,7 @@ int p9_client_remove(struct p9_fid *fid)
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RREMOVE fid %d\n", fid->fid);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	if (err == -ERESTARTSYS)
+ 		p9_fid_put(fid);
+@@ -1549,7 +1550,7 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
+ 	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RUNLINKAT fid %d %s\n", dfid->fid, name);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1617,7 +1618,7 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+ 			   "D", &count, &dataptr);
+ 	if (*err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		return 0;
+ 	}
+ 	if (rsize < count) {
+@@ -1632,13 +1633,13 @@ p9_client_read_once(struct p9_fid *fid, u64 offset, struct iov_iter *to,
+ 
+ 		if (n != count) {
+ 			*err = -EFAULT;
+-			p9_tag_remove(clnt, req);
++			p9_req_put(clnt, req);
+ 			return n;
+ 		}
+ 	} else {
+ 		iov_iter_advance(to, count);
+ 	}
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return count;
+ }
+ EXPORT_SYMBOL(p9_client_read_once);
+@@ -1681,7 +1682,7 @@ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+ 		*err = p9pdu_readf(&req->rc, clnt->proto_version, "d", &count);
+ 		if (*err) {
+ 			trace_9p_protocol_dump(clnt, &req->rc);
+-			p9_tag_remove(clnt, req);
++			p9_req_put(clnt, req);
+ 			break;
+ 		}
+ 		if (rsize < count) {
+@@ -1691,7 +1692,7 @@ p9_client_write(struct p9_fid *fid, u64 offset, struct iov_iter *from, int *err)
+ 
+ 		p9_debug(P9_DEBUG_9P, "<<< RWRITE count %d\n", count);
+ 
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		iov_iter_advance(from, count);
+ 		total += count;
+ 		offset += count;
+@@ -1726,7 +1727,7 @@ struct p9_wstat *p9_client_stat(struct p9_fid *fid)
+ 	err = p9pdu_readf(&req->rc, clnt->proto_version, "wS", &ignored, ret);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto error;
+ 	}
+ 
+@@ -1743,7 +1744,7 @@ struct p9_wstat *p9_client_stat(struct p9_fid *fid)
+ 		 from_kgid(&init_user_ns, ret->n_gid),
+ 		 from_kuid(&init_user_ns, ret->n_muid));
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return ret;
+ 
+ error:
+@@ -1779,7 +1780,7 @@ struct p9_stat_dotl *p9_client_getattr_dotl(struct p9_fid *fid,
+ 	err = p9pdu_readf(&req->rc, clnt->proto_version, "A", ret);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto error;
+ 	}
+ 
+@@ -1805,7 +1806,7 @@ struct p9_stat_dotl *p9_client_getattr_dotl(struct p9_fid *fid,
+ 		 ret->st_btime_sec, ret->st_btime_nsec,
+ 		 ret->st_gen, ret->st_data_version);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return ret;
+ 
+ error:
+@@ -1877,7 +1878,7 @@ int p9_client_wstat(struct p9_fid *fid, struct p9_wstat *wst)
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RWSTAT fid %d\n", fid->fid);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1909,7 +1910,7 @@ int p9_client_setattr(struct p9_fid *fid, struct p9_iattr_dotl *p9attr)
+ 		goto error;
+ 	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RSETATTR fid %d\n", fid->fid);
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1937,7 +1938,7 @@ int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb)
+ 			  &sb->files, &sb->ffree, &sb->fsid, &sb->namelen);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto error;
+ 	}
+ 
+@@ -1946,7 +1947,7 @@ int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb)
+ 		 fid->fid, sb->type, sb->bsize, sb->blocks, sb->bfree,
+ 		 sb->bavail, sb->files, sb->ffree, sb->fsid, sb->namelen);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -1974,7 +1975,7 @@ int p9_client_rename(struct p9_fid *fid,
+ 
+ 	p9_debug(P9_DEBUG_9P, "<<< RRENAME fid %d\n", fid->fid);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -2004,7 +2005,7 @@ int p9_client_renameat(struct p9_fid *olddirfid, const char *old_name,
+ 	p9_debug(P9_DEBUG_9P, "<<< RRENAMEAT newdirfid %d new name %s\n",
+ 		 newdirfid->fid, new_name);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -2040,10 +2041,10 @@ struct p9_fid *p9_client_xattrwalk(struct p9_fid *file_fid,
+ 	err = p9pdu_readf(&req->rc, clnt->proto_version, "q", attr_size);
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+-		p9_tag_remove(clnt, req);
++		p9_req_put(clnt, req);
+ 		goto clunk_fid;
+ 	}
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	p9_debug(P9_DEBUG_9P, "<<<  RXATTRWALK fid %d size %llu\n",
+ 		 attr_fid->fid, *attr_size);
+ 	return attr_fid;
+@@ -2077,7 +2078,7 @@ int p9_client_xattrcreate(struct p9_fid *fid, const char *name,
+ 		goto error;
+ 	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RXATTRCREATE fid %d\n", fid->fid);
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -2139,11 +2140,11 @@ int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset)
+ 	if (non_zc)
+ 		memmove(data, dataptr, count);
+ 
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return count;
+ 
+ free_and_error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ error:
+ 	return err;
+ }
+@@ -2175,7 +2176,7 @@ int p9_client_mknod_dotl(struct p9_fid *fid, const char *name, int mode,
+ 		 qid->type, qid->path, qid->version);
+ 
+ error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_mknod_dotl);
+@@ -2205,7 +2206,7 @@ int p9_client_mkdir_dotl(struct p9_fid *fid, const char *name, int mode,
+ 		 qid->path, qid->version);
+ 
+ error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_mkdir_dotl);
+@@ -2237,7 +2238,7 @@ int p9_client_lock_dotl(struct p9_fid *fid, struct p9_flock *flock, u8 *status)
+ 	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RLOCK status %i\n", *status);
+ error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_lock_dotl);
+@@ -2274,7 +2275,7 @@ int p9_client_getlock_dotl(struct p9_fid *fid, struct p9_getlock *glock)
+ 		 glock->type, glock->start, glock->length,
+ 		 glock->proc_id, glock->client_id);
+ error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_getlock_dotl);
+@@ -2300,7 +2301,7 @@ int p9_client_readlink(struct p9_fid *fid, char **target)
+ 	}
+ 	p9_debug(P9_DEBUG_9P, "<<< RREADLINK target %s\n", *target);
+ error:
+-	p9_tag_remove(clnt, req);
++	p9_req_put(clnt, req);
+ 	return err;
+ }
+ EXPORT_SYMBOL(p9_client_readlink);
 -- 
-2.7.4
+2.35.1
 
