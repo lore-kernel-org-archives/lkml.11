@@ -2,88 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35215CCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F91C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:38:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234632AbiGRMhQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
+        id S234660AbiGRMir (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233722AbiGRMhP (ORCPT
+        with ESMTP id S230249AbiGRMip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:37:15 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF6E65C1;
-        Mon, 18 Jul 2022 05:37:13 -0700 (PDT)
-Received: from mail-yb1-f177.google.com ([209.85.219.177]) by
- mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MpUMc-1njt3c12iK-00pvki; Mon, 18 Jul 2022 14:37:12 +0200
-Received: by mail-yb1-f177.google.com with SMTP id n74so20502470yba.3;
-        Mon, 18 Jul 2022 05:37:11 -0700 (PDT)
-X-Gm-Message-State: AJIora//zphf2uCO+KAzccnSf5DdE4gBJiDI+zau7+FX9gqK9Zm1wGAv
-        +RVBI4NJosVuqhd7TwwYhMRKnc40Xyue74SnVHk=
-X-Google-Smtp-Source: AGRyM1txCh5KSHFufIxKnjrUsQfdXMF5DhA1iW62NG52SJqnf8FXUR7Q6wJLhAzG6EEmYmN/Lvx4Nc0/ujPqwaXi97Q=
-X-Received: by 2002:a81:1914:0:b0:31c:e12a:f33a with SMTP id
- 20-20020a811914000000b0031ce12af33amr29924965ywz.209.1658144567116; Mon, 18
- Jul 2022 04:42:47 -0700 (PDT)
+        Mon, 18 Jul 2022 08:38:45 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F08CA463;
+        Mon, 18 Jul 2022 05:38:40 -0700 (PDT)
+X-QQ-mid: bizesmtp90t1658147897tcggymxm
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 20:38:15 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: lp8jUtqYSiDdRSj78y6Q9aGn5VjwF/dx4jHhwpgxYRE0Sf/tq9V596ETLvsJy
+        U4zpB334unK4JNHyW4wBx6YgA/TM0Dl1Gyma9jjQJDIQd+8iD6ihzpQEJrJQaCQ3RiOvk+O
+        2SHV+kMJaP68oZfZUKK3aHfglcztl2aED8aDMXuQbFqxS+xjVihWZ357V3eo1Ly0iGpo3Qn
+        eMuTj11tQ8wLWDSyCSAmcZdqreEEkcFpZQobMZsCapt001Bjlo94ld8t6TTHhqeTLD4LJ7e
+        CVjS0jf48HgkSxK7RrFmj3Ql4F1hj3v1IkWYA2O7sHagWqs9NqSRvruGvDwNN6bv1qWgDwR
+        F/ZtYb35sp/5Cnl7qV7mwCOoE9nup1M/OQ2vcC0VrpZyUpVS/mPhur31LkWdfDudsEvwHBx
+        N6ly0IIiugM=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     svens@linux.ibm.com
+Cc:     hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] s390/delay: Fix comment typo
+Date:   Fri, 15 Jul 2022 12:36:10 +0800
+Message-Id: <20220715043610.17229-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220623072428.33697-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220623072428.33697-1-krzysztof.kozlowski@linaro.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 18 Jul 2022 13:42:30 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a0ob26oEL=af0KpyCqA4nxHW_PaaK3azKT504Q+VrFctA@mail.gmail.com>
-Message-ID: <CAK8P3a0ob26oEL=af0KpyCqA4nxHW_PaaK3azKT504Q+VrFctA@mail.gmail.com>
-Subject: Re: [PATCH] ARM: dts: aspeed: centriq2400: drop the board
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
-        SoC Team <soc@kernel.org>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Joel Stanley <joel@jms.id.au>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:8YS31fMgF4eo7vvPsl6ANZl2UYD0nR5fAIDTRGslVe/TQV5vfik
- /Pg/+dAL/Jslw8762vSlsJ1t0CwKYvwT3R2m/fOUjx2Z4uYCRiIZdeASQnuIgz4LSkDZBYh
- OkL3erJatS6IX6eh80hOML77vbPMg/5jmmln7aJvJay7f7orwlZMQrd2UWCiri3PTcGkDGD
- k+yeWZYxHMjq/15fFs1jw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:51t5l4CIeJo=:R2lYdDN7PyKBS9Wf53NNoK
- cTneYtBECAYDqg7sxVursoDjNKhN62URw6EESffw7X526F1eouYoPW4K6V+JnOQJ4MM3Leqx4
- q7eFnVouv1Jq0RFpMCRqWdQLr14vfolsUmrfdamqz108CyZkC7Ne9/jAAOyuBVVky4Zje6lDp
- dQiQ/Nyk+tZb2CMS9fkuG8nq34PG1i50BjGDHAn9YoAfsOppBzhvYySz17bZ1+dqMNFRvRodI
- AiRgCt2F+6NB6VOeYQ1+DAKzB0Y4koHt8cugxUxjjd7AAWtkgYAIiKumWKnX9PmwfYQVZxztr
- Q2tDwzAW8KLuFAvdbHbO4vFbHMFvLvx6dJtmGn7NaI6BbVoptUPhTTZJQGSLCEhOguM+B5cBQ
- XT9LYkKITfAiI1zPyXNpX3RqmJfbmEc9ejrvzhC1KywZB67Y5mVkXwUx1G6Y4AJ4x9inGMfe2
- 4QMAzdO3LkW9Nh7+7rUlxVSVe1DgjYIMkjJiYbh+34bnyNe8qMZrE1WS4ZHLonCdlF8ah1ZwE
- 5dhyKHeLpr4D7A1gFbMgBRapTVx7xr9W+yogIEsOqOaL0uUFDLVmTj7PZSAZTvoOv+9ABjVAk
- ROtGL/olspWsqBs3uP86RlqN0cB6fiNpO3yYCtrh/sruJcfSycJsAkrBJ269U+3+G9NDGwboF
- 8RS/eLMfBXPRI3MfCod6Z+aaL1gsu87pJz5t+g0BW1Q2lUPi9XD1k7JaLsVZv6Y3lCm1koRDC
- lQhKa9YE6Zs6GBRf/kNXHseEc/3AxNkNa9VpPGa8fhdY30itDDth3Ld93ouvNbBaY3prQmkFv
- wV72UPyQwen3P1jH4Zc8R/StfB7WCttQB+vyunX9H/Am1ia96cDmtYlNtim+dqNnz24pESfTh
- IWhfCBRfCMvjkFwFED8zN3rNCQUF85PUZfEINDN5g=
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 9:24 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> The board is unmaintained and unused, according to Joel, so simply let's
-> remove it.
->
-> Link: https://lore.kernel.org/all/CACPK8XfxXi8kQr+vxta8rD6SBgxLf_oBjAH0UkPBacQta552YQ@mail.gmail.com/
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> ---
->  arch/arm/boot/dts/Makefile                    |   1 -
->  .../dts/aspeed-bmc-arm-centriq2400-rep.dts    | 225 ------------------
+The double `that' is duplicated in line 19, remove one.
 
-I found this one in my patchwork backlog. I had expected Joel it pick it up, but
-it's not in linux-next yet.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/s390/lib/delay.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Joel, should I just apply it for 5.20 or do you want to send me a pull
-request with
-this included?
+diff --git a/arch/s390/lib/delay.c b/arch/s390/lib/delay.c
+index f7f5adea8940..c32bc8f7c1fd 100644
+--- a/arch/s390/lib/delay.c
++++ b/arch/s390/lib/delay.c
+@@ -16,7 +16,7 @@ void __delay(unsigned long loops)
+         /*
+          * To end the bloody studid and useless discussion about the
+          * BogoMips number I took the liberty to define the __delay
+-         * function in a way that that resulting BogoMips number will
++         * function in a way that resulting BogoMips number will
+          * yield the megahertz number of the cpu. The important function
+          * is udelay and that is done using the tod clock. -- martin.
+          */
+-- 
+2.35.1
 
-         Arnd
+
