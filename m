@@ -2,124 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8700C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:45:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3D7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 13:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234007AbiGRNpd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 09:45:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40200 "EHLO
+        id S235217AbiGRNpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 09:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235046AbiGRNp2 (ORCPT
+        with ESMTP id S235184AbiGRNpf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 09:45:28 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8B2A192A7;
-        Mon, 18 Jul 2022 06:45:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658151927; x=1689687927;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=lWXZGlmG3SNmi4VM7l9EBpLyUGbO7uiW4f5tn6p4HqY=;
-  b=BIWRsmBRLLvZCVZ5emoiLcvhwIQlseviNBv4II8DwCjrhWR8TZYtCYwB
-   MonB1TDMGHM5AT50klrRbbIi5aCXJgapG1VDKSK/XmGe7ZMDuJpe/sCzU
-   cl2T9NjbBvemxHu+0zkGYvJAdtTZfYDzASvjZ6MgtZTX+GeHJwRVy2cyD
-   aWfNJN6BI8ED7qlavIOpng6PCq85auqKfAH2+bvmZhkCiskeQiLj24oce
-   KeDv43btNdWxpJ5AoTCrYNR7UxHA/Tg8Wsw1i9MGbR/a2GkQjlijU0JMH
-   WzI1pP5v69oXCNcziZ3zsp4elSQu3h00RPQSUgyQwvvEwpeb4dx0sEqgm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10411"; a="350183604"
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="350183604"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:45:27 -0700
-X-IronPort-AV: E=Sophos;i="5.92,281,1650956400"; 
-   d="scan'208";a="686739692"
-Received: from smyint-mobl1.amr.corp.intel.com (HELO [10.212.107.15]) ([10.212.107.15])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jul 2022 06:45:24 -0700
-Message-ID: <d51882e0-6864-7a49-ae16-f7213dc716c4@linux.intel.com>
-Date:   Mon, 18 Jul 2022 14:45:22 +0100
+        Mon, 18 Jul 2022 09:45:35 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153D71B7BC;
+        Mon, 18 Jul 2022 06:45:29 -0700 (PDT)
+X-QQ-mid: bizesmtp69t1658151911tdj95e5o
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 21:45:09 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: FVl8EHhfVR42yOTe1p83ZzYmW5d/SExUSDKTFkTBKzhCRk1NJSDQR0xKqO1C4
+        I3pGVoMFqn124lP4YcPukRWcoTUDvF+2qUp9B2rZHFeC59xHDVpsb7zsQ7tSwWhR0oHYE12
+        xpXRUtbDki5QVIT84nqJiTzXBAaeTHpU7eFohT9ZIeX45va3us/rrTTNxukZsyxF3jt49cF
+        yXEm/Pqgtag9EYK6NB6pxyxTYDxYp9oFt5z380sJMEiihPVEMMUmzGRi12n6Tm/rX2x5bay
+        CjNf591FL919pNmJF/Q/KhH59MQbp0DXoKDs3uqnRFTDoRAbMbwlWe6FsoupD5LWoq0xI0w
+        vJU3Sff/JKJR7j2xZs9fOtbMzIgoI9QQXnlMAiOgfJd3X7KJ592HFtkTdWO+4A5+PHwGc9Y
+        JikLcft9QYs=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     jikos@kernel.org
+Cc:     hdegoede@redhat.com, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] HID: lg-g15: Fix comment typo
+Date:   Fri, 15 Jul 2022 13:43:12 +0800
+Message-Id: <20220715054312.9320-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2 05/21] drm/i915/gt: Skip TLB invalidations once wedged
-Content-Language: en-US
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Dave Airlie <airlied@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Fei Yang <fei.yang@intel.com>,
-        =?UTF-8?Q?Thomas_Hellstr=c3=b6m?= 
-        <thomas.hellstrom@linux.intel.com>
-References: <cover.1657800199.git.mchehab@kernel.org>
- <f20bd21c94610dae59824b8040e5a9400de6f963.1657800199.git.mchehab@kernel.org>
-From:   Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Organization: Intel Corporation UK Plc
-In-Reply-To: <f20bd21c94610dae59824b8040e5a9400de6f963.1657800199.git.mchehab@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The double `with' is duplicated in line 769, remove one.
 
-On 14/07/2022 13:06, Mauro Carvalho Chehab wrote:
-> From: Chris Wilson <chris.p.wilson@intel.com>
-> 
-> Skip all further TLB invalidations once the device is wedged and
-> had been reset, as, on such cases, it can no longer process instructions
-> on the GPU and the user no longer has access to the TLB's in each engine.
-> 
-> That helps to reduce the performance regression introduced by TLB
-> invalidate logic.
-> 
-> Cc: stable@vger.kernel.org
-> Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/hid/hid-lg-g15.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Is the claim of a performance regression this solved based on a wedged 
-GPU which does not work any more to the extend where mmio tlb 
-invalidation requests keep timing out? If so please clarify in the 
-commit text and then it looks good to me. Even if it is IMO a very 
-borderline situation to declare something a fix.
+diff --git a/drivers/hid/hid-lg-g15.c b/drivers/hid/hid-lg-g15.c
+index b2a08233f8d5..c8f82bcbf1ab 100644
+--- a/drivers/hid/hid-lg-g15.c
++++ b/drivers/hid/hid-lg-g15.c
+@@ -766,7 +766,7 @@ static int lg_g15_probe(struct hid_device *hdev, const struct hid_device_id *id)
+ 
+ 	/*
+ 	 * Some models have multiple interfaces, we want the interface with
+-	 * with the f000.0000 application input report.
++	 * the f000.0000 application input report.
+ 	 */
+ 	rep_enum = &hdev->report_enum[HID_INPUT_REPORT];
+ 	list_for_each_entry(rep, &rep_enum->report_list, list) {
+-- 
+2.35.1
 
-Regards,
-
-Tvrtko
-
-> Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-> Cc: Fei Yang <fei.yang@intel.com>
-> Cc: Andi Shyti <andi.shyti@linux.intel.com>
-> Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v2 00/21] at: https://lore.kernel.org/all/cover.1657800199.git.mchehab@kernel.org/
-> 
->   drivers/gpu/drm/i915/gt/intel_gt.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-> index 1d84418e8676..5c55a90672f4 100644
-> --- a/drivers/gpu/drm/i915/gt/intel_gt.c
-> +++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-> @@ -934,6 +934,9 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
->   	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
->   		return;
->   
-> +	if (intel_gt_is_wedged(gt))
-> +		return;
-> +
->   	if (GRAPHICS_VER(i915) == 12) {
->   		regs = gen12_regs;
->   		num = ARRAY_SIZE(gen12_regs);
