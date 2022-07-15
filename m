@@ -2,81 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F65CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0D0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiGOHbs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 03:31:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
+        id S231992AbiGOHcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 03:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231902AbiGOHbp (ORCPT
+        with ESMTP id S231915AbiGOHcg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 03:31:45 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914877B78E;
-        Fri, 15 Jul 2022 00:31:41 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AF88C209E1;
-        Fri, 15 Jul 2022 09:31:28 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id mgWaDqviUQaR; Fri, 15 Jul 2022 09:30:53 +0200 (CEST)
-Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 213FB208A6;
-        Fri, 15 Jul 2022 08:14:55 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout2.secunet.com (Postfix) with ESMTP id 18E5C80004A;
-        Fri, 15 Jul 2022 08:14:45 +0200 (CEST)
-Received: from mbx-dresden-01.secunet.de (10.53.40.199) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Jul 2022 08:14:34 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-dresden-01.secunet.de
- (10.53.40.199) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
- 2022 08:14:34 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id CCB823180785; Fri, 15 Jul 2022 08:14:33 +0200 (CEST)
-Date:   Fri, 15 Jul 2022 08:14:33 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     <iamwjia@163.com>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: Re: [PATCH -next] xfrm: Fix couple of spellings
-Message-ID: <20220715061433.GS566407@gauss3.secunet.de>
-References: <20220713154529.53031-1-iamwjia@163.com>
+        Fri, 15 Jul 2022 03:32:36 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19E97B791;
+        Fri, 15 Jul 2022 00:32:35 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id q16so603271pgq.6;
+        Fri, 15 Jul 2022 00:32:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xhkyx9F8tVf/d1N3ebELfQNQ/kZk1tVV6FgOJJw40IY=;
+        b=C1hnfgNGaErmtt8GJW4mRcledeMDc+BKsT3jL2oNeLMSsXPO9Pc/31a/WFaNbmzdxt
+         lh2PyHvYO3Wnu77HG+VBTx5EvsI4jT3kKgzswpLCjfogL7GGYgvop/AFV0NKrth0fW1P
+         xFAmy2b2Tu455xd0ThMFark18woIImv+t7IRqdF2A2oquqj6XAXNwGheB8lExuPSbKn4
+         Er0BhTIk2CTvqJjq4tL5KG6yBejfxigoarArap/QcE/AeRAbfLRupqdEuA/Vm3sO2nd+
+         qe3LK6Dazmn3ZHuv2vOZZnUw0ScN58s+SaDqJu7p1REYYuemCUmRjlNyEN2sYPCF1Ykk
+         u+vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Xhkyx9F8tVf/d1N3ebELfQNQ/kZk1tVV6FgOJJw40IY=;
+        b=nWdRuND1Hy+cuNOTzxqzH+3QADC3fb0N44J0yj/f1QUQMovgLNCWyPG/wWFMqe47Bh
+         aXHikPAQBCub7V+wCGFTk/KQdhCB8g4V7hycVoJh4gDz48FW3sZB/cosJ/0YMtdFD6QT
+         OjT/w82o7KRTq0jS237Fh+qk8s9KFSqXy2P+C3CdvtmL+IK2egx9kNkWKyL327454kVM
+         03HzjWfM6LqXRaenEDhv090myS917inw2MMPBGIR0EOKCpXGjoCS+BO7z1TP2SfBwQ8d
+         HdK0kbjf6V2gC8SV0nmqH6QH86Uge9vhn9vnCgQbJMeoFOpylnbi9rzznwt0z5J+EInh
+         3Z4A==
+X-Gm-Message-State: AJIora+UYo9faBWFWUGVi5ndNsmqiYx7sPm0R4fery9MUQx5GCczoZla
+        ddXm3/lRxVYt0UFSlGSroaArY8QqkDkn
+X-Google-Smtp-Source: AGRyM1trd/AxNasvP2q/f2x8cI3MIE1OGA5Psan5P6i+mPcJOPVGahunHQYMVrrkmpDNNOpDgC4cYQ==
+X-Received: by 2002:aa7:88cc:0:b0:51c:319e:772c with SMTP id k12-20020aa788cc000000b0051c319e772cmr12431831pff.41.1657870355444;
+        Fri, 15 Jul 2022 00:32:35 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id x14-20020aa79ace000000b0052ad49292f0sm2962590pfp.48.2022.07.15.00.32.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 00:32:35 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     jinpu.wang@cloud.ionos.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] scsi: pm8001: Fix the warning when failing at the probe time
+Date:   Fri, 15 Jul 2022 15:32:21 +0800
+Message-Id: <20220715073221.3364198-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220713154529.53031-1-iamwjia@163.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-dresden-01.secunet.de (10.53.40.199)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 11:45:29PM +0800, iamwjia@163.com wrote:
-> From: Wang Jia <iamwjia@163.com>
-> 
-> accomodate  ==> accommodate
-> destionation  ==> destination
-> execeeds  ==> exceeds
-> informations  ==> information
-> 
-> Reported-by: Hacash Robot <hacashRobot@santino.com>
-> Signed-off-by: Wang Jia <iamwjia@163.com>
-> ---
->  net/ipv6/ah6.c     | 2 +-
->  net/ipv6/esp6.c    | 4 ++--
+When the driver fails at chip_init(), we will get the following warning:
 
-Your patch does not apply to ipsec-next, the fixes
-for net/ipv6/esp6.c are already done there.
+[    7.778705] remove_proc_entry: removing non-empty directory 'irq/21', leaking at least 'pm80xx0'
+[    7.779414] WARNING: CPU: 0 PID: 290 at fs/proc/generic.c:720 remove_proc_entry+0x389/0x3f0
+[    7.782793] RIP: 0010:remove_proc_entry+0x389/0x3f0
+[    7.790813] Call Trace:
+[    7.791284]  unregister_irq_proc+0x14c/0x170
+[    7.793043]  pci_disable_device+0x1ad/0x380
+[    7.793396]  pm8001_pci_probe+0x6d9/0xd40 [pm80xx]
 
-Please rebase your patch to ipsec-next, thanks!
+Fix this by free the irq before disabling the pci device.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+---
+ drivers/scsi/pm8001/pm8001_init.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/scsi/pm8001/pm8001_init.c b/drivers/scsi/pm8001/pm8001_init.c
+index 9b04f1a6a67d..71ade184ee6f 100644
+--- a/drivers/scsi/pm8001/pm8001_init.c
++++ b/drivers/scsi/pm8001/pm8001_init.c
+@@ -1159,6 +1159,7 @@ static int pm8001_pci_probe(struct pci_dev *pdev,
+ err_out_shost:
+ 	scsi_remove_host(pm8001_ha->shost);
+ err_out_ha_free:
++	free_irq(pm8001_ha->irq, sha);
+ 	pm8001_free(pm8001_ha);
+ err_out_free:
+ 	kfree(sha);
+-- 
+2.25.1
+
