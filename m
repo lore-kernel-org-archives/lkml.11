@@ -2,116 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8004BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 04:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9716C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 05:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiGOExH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 00:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37108 "EHLO
+        id S229926AbiGOFAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 01:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiGOExG (ORCPT
+        with ESMTP id S229706AbiGOFAn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 00:53:06 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C5378583;
-        Thu, 14 Jul 2022 21:53:05 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id j22so6997100ejs.2;
-        Thu, 14 Jul 2022 21:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:cc:references:to:in-reply-to:content-transfer-encoding;
-        bh=q64YR+dz3l8N7KWsT2gr8PSkDJ8PbvnFEtZazzJt2ik=;
-        b=TZF/1PNOgat33kGEqwm0sKjVGVoe5Z3ryywyXeqsIKSWzKkmOL8q7SB++vfy6dvlx8
-         ZGN/Tv7YraG5i0iWboYaHEQ0Ye2spd1Gq8yk0cee9BFlY5PMXd2gLigAH1ZijkgpNn4T
-         utJi24RbFfbHVVW+jFTfDk0oXtmImXkBI76XzuQlsAqwVFhb/Po7MgsvKNwZ354GuZSE
-         7DnPWe2qfQvfaphiyEASVkLYcdx7dm++u9XTPBLLbEvvaNO6/qBPxmBWT0GwQquVLs/g
-         Ln+XkLZlfpb6LhlwkW+uJsqJmEtZDN4nNtKI5qmDZXLUvcBcjrKBkbxttqhmJQtCCHry
-         m1Zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:cc:references:to:in-reply-to
-         :content-transfer-encoding;
-        bh=q64YR+dz3l8N7KWsT2gr8PSkDJ8PbvnFEtZazzJt2ik=;
-        b=mqV5DnZWB4V+dmQggmL+LH00u27tgtttJheck+rnXGAdkr+dmCnBlmvDnmowijKFgs
-         KSV2/EFfphx6iJRxOc0kWxrHJHNjpr+SbA7V2HbGaU2PWMIl4bdwiFRsCkuqR7638dZP
-         dECPWjucmgBOMqZrTu+rpJSlvXSYw3vhOxC/I9fYEgJm07Os1OHF46+PBgW9/HdZ/L4q
-         c/FI1jTkj9/K8IGq6BSCPmLWveHLEbrpapUMQ6m7foqCL11JxXXZ6PHKNewECcf4iv2d
-         gfPHpFJupcn6GTEXwQagZJmL74iqv4QSv4CfC7IKUekgmpGd+cpxHBxdP01YLq7+R4Nm
-         IcoA==
-X-Gm-Message-State: AJIora9Eyu+Og10pMPsj+Pej7GHKpIf2OCGpQ5JJ08ED+3LqW/R42B72
-        KiXAF7CJWtv2b299sb1x61U=
-X-Google-Smtp-Source: AGRyM1vJS2pPI+Aq0Nn7vFNE0vbKPvqiynIpJzvgmXsbMz9uZoZ7o1vfkFH/s3P6vTPnswF/3kekSg==
-X-Received: by 2002:a17:907:1c8f:b0:6e8:f898:63bb with SMTP id nb15-20020a1709071c8f00b006e8f89863bbmr12079765ejc.721.1657860783722;
-        Thu, 14 Jul 2022 21:53:03 -0700 (PDT)
-Received: from [192.168.0.182] ([79.119.98.153])
-        by smtp.gmail.com with ESMTPSA id b6-20020aa7cd06000000b004355998ec1asm2110036edw.14.2022.07.14.21.53.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 21:53:03 -0700 (PDT)
-Message-ID: <08a9d34b-f44e-e1f2-ebc6-4123986b3c54@gmail.com>
-Date:   Fri, 15 Jul 2022 07:53:03 +0300
+        Fri, 15 Jul 2022 01:00:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E192378581;
+        Thu, 14 Jul 2022 22:00:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77AF462246;
+        Fri, 15 Jul 2022 05:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C0E5C3411E;
+        Fri, 15 Jul 2022 05:00:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1657861240;
+        bh=Hek494Yetd3XN90he4BxOJbpQ2dkKLCIYiZNf3+pfA0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Kxxg6dz9/3aBwvkXZ/oAaWLb6NKzJXAis2DXFBUvPhL2zy1R85keS7nHBElPKZbtM
+         O65XQ6pyPng/miykZf3kmYGUkxWYT8HnUnS0tJoIRm/iNm3C7rsel2zNh+gt5VLHIc
+         gDGof+fdyvGyLtLP/cD6fWSDs0clD/lSbI+7NUIg=
+Date:   Fri, 15 Jul 2022 07:00:38 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH bpf-next v6 09/23] HID: core: store the unique system
+ identifier in hid_device
+Message-ID: <YtD0dt3MxjSozgXg@kroah.com>
+References: <20220712145850.599666-1-benjamin.tissoires@redhat.com>
+ <20220712145850.599666-10-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v8 2/2] iio: adc: ad4130: add AD4130 driver
-Content-Language: en-US
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-References: <20220715044948.434149-1-cosmin.tanislav@analog.com>
- <20220715044948.434149-3-cosmin.tanislav@analog.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-In-Reply-To: <20220715044948.434149-3-cosmin.tanislav@analog.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220712145850.599666-10-benjamin.tissoires@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/15/22 07:49, Cosmin Tanislav wrote:
-> AD4130-8 is an ultra-low power, high precision, measurement solution for
-> low bandwidth battery operated applications.
+On Tue, Jul 12, 2022 at 04:58:36PM +0200, Benjamin Tissoires wrote:
+> This unique identifier is currently used only for ensuring uniqueness in
+> sysfs. However, this could be handful for userspace to refer to a specific
+> hid_device by this id.
 > 
-> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
-> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
-> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
-> selectable filter options, smart sequencer, sensor biasing and excitation
-> options, diagnostics, and a FIFO buffer.
+> 2 use cases are in my mind: LEDs (and their naming convention), and
+> HID-BPF.
 > 
-> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ...
-> +static int ad4130_gpio_init_valid_mask(struct gpio_chip *gc,
-> +				       unsigned long *valid_mask,
-> +				       unsigned int ngpios)
-> +{
-> +	struct ad4130_state *st = gpiochip_get_data(gc);
-> +	unsigned int i;
-> +
-> +	/*
-> +	 * Output-only GPIO functionality is available on pins AIN2 through
-> +	 * AIN5. If these pins are used for anything else, do not expose them.
-> +	 */
-> +	for (i = 0; i < ngpios; i++) {
-> +		unsigned int pin = i + AD4130_AIN2_P1;
-> +		bool valid = st->pins_fn[pin] == AD4130_PIN_FN_NONE;
-> +
-> +		__assign_bit(i, valid_mask, valid);
-> +	}
-> +
-> +
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> 
 
-I missed an extra blank line here. Maybe you could fix it while
-picking the patchset up, Jonathan?
 
-> +	return 0;
-> +}
-> +
-> ...
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
