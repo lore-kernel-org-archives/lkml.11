@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC0EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B47BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:42:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231626AbiGOUmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:42:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
+        id S231526AbiGOUm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230413AbiGOUml (ORCPT
+        with ESMTP id S231522AbiGOUmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:42:41 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B8E87C3E
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:39 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31cbcba2f28so47759647b3.19
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:39 -0700 (PDT)
+        Fri, 15 Jul 2022 16:42:47 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0539687C20
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:43 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id j2-20020a2597c2000000b0064b3e54191aso4706033ybo.20
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=XaWS8LbhbBC14KHRu/UMZ0VrY5IYn1B7OmHtIsROozk=;
-        b=FxXXiG7IAizzt0hgccKAXP+W3ljcErsJLZbJeNfT7M2oIx33QM508seYqWjRWt3Gvz
-         I1fLkEyrAvAH4AL4RuCjYVswSaIEPNNRB0qnLVHCrfvSTKhs2wNTLjpUxVlx3ILUIvVw
-         hcGnO72MJ+W84VkhzA2tDsy9YpdBHAG8qnvdMSQ0cliOol5SQzxDLnPglfHyt8MItuZQ
-         38mxtL+96Argz1UQmzN4ZPg9BmOQLJfKHatFRyGbU9SLw4H/3oyM3sSrx0UpbTckkMj6
-         SUN6mq2PNlaB+kNc9fdsIKu5VOpPyFA4VbyiyDg/20KV8PvVjqYH35D7Qebor5hsci4f
-         7FdA==
+        bh=2CpovJeuRnY71/3WEgYmV3X/+gVqaILzwsGk5qWsmbA=;
+        b=CI5eECRw/t2ePq8ve65FTKwSt2kIadrOWUlem3pEqQJDu81Pg2YyoetNf/oE+wfKBI
+         UopyVVysF5uDMiduXGfWDIsKiN681CnG7/byuCseClaFFcQPW3p95aVCFGIVS1ULgrCs
+         7aXGdyzg370hIHpG0szNsdCGYhpSpQTYSjpfj71Op7j34ZFd1rrrRj8cAt3PMY2cbPvQ
+         7/nz/FyNlR6H0s28BBsGTnTeDI4R1cr+Lah0stzc4xzATBps+Pi0XHt/f9v19j4VuHyJ
+         KApSjR7vZvCa9W5704VMuvdfGieZTRsWJslq5P3cRavi8JekmKcnqbVbBGyw2urJcNan
+         VqVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=XaWS8LbhbBC14KHRu/UMZ0VrY5IYn1B7OmHtIsROozk=;
-        b=sv5E0726/Nh/NHkIrBiZF8dDUG3S0lC1j69oWtYU0Os831xDk074sBv13EYSGsgrZj
-         objdHJJaX6UELqA12E071H5+I1yNfO4OVKAlxSqDTejtYBHLC3naiwKs3zgskbxYM81g
-         l7fyc4V0PpZ3U5gZLnbyoA6H5ZDMkdOCFPo2iUh7bukwzLWicmjdLT4ykz2wyLvTUHeV
-         qZYpetabbj/WhfAgCnqcPbUi0DTvcoEJhEU4mFEkV04hqR8VRfmiGdJbtmofH152D8tJ
-         2HPSipx0gVQM1/A9I+hYL6fqto8zLi8B0viPwcXg1f1Mh9SfR41RstHkHSXZTfB3yO8l
-         aVqw==
-X-Gm-Message-State: AJIora/5isKqVbT9WdtNZo+7r5UiZQh4WxAzrhwdcn0PAM8wq2ze0HRA
-        7Az7VleK/GfUli14YPPkaPOtAyF5OdI=
-X-Google-Smtp-Source: AGRyM1usU0pP86LIERbZu4Kai+tEgErFUJB47c2GKFB2+e50nsaw7Up7PfX2doLx1/n0IaB6CFPcH/l+ehk=
+        bh=2CpovJeuRnY71/3WEgYmV3X/+gVqaILzwsGk5qWsmbA=;
+        b=MaHRP57edZrhjC+MVfV13ygF+b09sHyd1V4Sg4NB+Gki7OwJVn0Y3uRpLciFvjWdCF
+         2KJzcZwBNYvION6MkBGQWJAAEWMxpFvD/UARk1tINJD1vPoOtFpl2BDl/pMPuIWnYbui
+         XWhy23Td5mmlUxIWjdBAORGdXFh6tvDk1F3P6SFtEu6oGr1q8DKRKNCTOCji0OlzaLwV
+         1nW3SzBYon9g0pxbYNYwL/WwSstT5W6350SRThBRyjdnt9MeCy6Q+pYkwWLtuYMr62M+
+         2JKzwZBtESdPRzOijWKj/zNqkpGujPcZaBo0J19MTGyfAJcupCcpitYdsiz0my836xtq
+         ASkQ==
+X-Gm-Message-State: AJIora9RQZOYNRnBwWyiFZwoTco9iKpgO0qAeCkkYRofIiW3xva0JgOG
+        9HKdJ9+jmr3UY9epWADrcmmcD4/vPPA=
+X-Google-Smtp-Source: AGRyM1s2ivCNo7cPKGrdosGL9wj+UwFqiTQrrkTdpFKnHi8+Ltkg+XTbhNDuxIbZcmpxoP5i6PdO0lvFIHQ=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a81:88a:0:b0:31c:51cd:9e09 with SMTP id
- 132-20020a81088a000000b0031c51cd9e09mr18049167ywi.374.1657917759022; Fri, 15
- Jul 2022 13:42:39 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6902:1083:b0:66f:193f:edf with SMTP id
+ v3-20020a056902108300b0066f193f0edfmr15543284ybu.281.1657917762733; Fri, 15
+ Jul 2022 13:42:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 15 Jul 2022 20:42:05 +0000
+Date:   Fri, 15 Jul 2022 20:42:07 +0000
 In-Reply-To: <20220715204226.3655170-1-seanjc@google.com>
-Message-Id: <20220715204226.3655170-4-seanjc@google.com>
+Message-Id: <20220715204226.3655170-6-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220715204226.3655170-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v2 03/24] KVM: x86: Don't check for code breakpoints when
- emulating on exception
+Subject: [PATCH v2 05/24] KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor
+ Trap Flag
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,68 +68,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Don't check for code breakpoints during instruction emulation if the
-emulation was triggered by exception interception.  Code breakpoints are
-the highest priority fault-like exception, and KVM only emulates on
-exceptions that are fault-like.  Thus, if hardware signaled a different
-exception, then the vCPU is already passed the stage of checking for
-hardware breakpoints.
+Service TSS T-flag #DBs prior to pending MTFs, as such #DBs are higher
+priority than MTF.  KVM itself doesn't emulate TSS #DBs, and any such
+exceptions injected from L1 will be handled by hardware (or morphed to
+a fault-like exception if injection fails), but theoretically userspace
+could pend a TSS T-flag #DB in conjunction with a pending MTF.
 
-This is likely a glorified nop in terms of functionality, and is more for
-clarification and is technically an optimization.  Intel's SDM explicitly
-states vmcs.GUEST_RFLAGS.RF on exception interception is the same as the
-value that would have been saved on the stack had the exception not been
-intercepted, i.e. will be '1' due to all fault-like exceptions setting RF
-to '1'.  AMD says "guest state saved ... is the processor state as of the
-moment the intercept triggers", but that begs the question, "when does
-the intercept trigger?".
+Note, there's no known use case this fixes, it's purely to be technically
+correct with respect to Intel's SDM.
 
+Cc: Oliver Upton <oupton@google.com>
+Cc: Peter Shier <pshier@google.com>
+Fixes: 5ef8acbdd687 ("KVM: nVMX: Emulate MTF when performing instruction emulation")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/x86.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index f389691d8c04..4efdb61e60ba 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8517,8 +8517,24 @@ int kvm_skip_emulated_instruction(struct kvm_vcpu *vcpu)
- }
- EXPORT_SYMBOL_GPL(kvm_skip_emulated_instruction);
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index 2409ed8dbc71..bc5759f82a3f 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3932,15 +3932,17 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	}
  
--static bool kvm_vcpu_check_code_breakpoint(struct kvm_vcpu *vcpu, int *r)
-+static bool kvm_vcpu_check_code_breakpoint(struct kvm_vcpu *vcpu,
-+					   int emulation_type, int *r)
- {
-+	WARN_ON_ONCE(emulation_type & EMULTYPE_NO_DECODE);
-+
-+	/*
-+	 * Do not check for code breakpoints if hardware has already done the
-+	 * checks, as inferred from the emulation type.  On NO_DECODE and SKIP,
-+	 * the instruction has passed all exception checks, and all intercepted
-+	 * exceptions that trigger emulation have lower priority than code
-+	 * breakpoints, i.e. the fact that the intercepted exception occurred
-+	 * means any code breakpoints have already been serviced.
-+	 */
-+	if (emulation_type & (EMULTYPE_NO_DECODE | EMULTYPE_SKIP |
-+			      EMULTYPE_TRAP_UD | EMULTYPE_TRAP_UD_FORCED |
-+			      EMULTYPE_VMWARE_GP | EMULTYPE_PF))
-+		return false;
-+
- 	if (unlikely(vcpu->guest_debug & KVM_GUESTDBG_USE_HW_BP) &&
- 	    (vcpu->arch.guest_debug_dr7 & DR7_BP_EN_MASK)) {
- 		struct kvm_run *kvm_run = vcpu->run;
-@@ -8640,8 +8656,7 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 		 * are fault-like and are higher priority than any faults on
- 		 * the code fetch itself.
- 		 */
--		if (!(emulation_type & EMULTYPE_SKIP) &&
--		    kvm_vcpu_check_code_breakpoint(vcpu, &r))
-+		if (kvm_vcpu_check_code_breakpoint(vcpu, emulation_type, &r))
- 			return r;
- 
- 		r = x86_decode_emulated_instruction(vcpu, emulation_type,
+ 	/*
+-	 * Process any exceptions that are not debug traps before MTF.
++	 * Process exceptions that are higher priority than Monitor Trap Flag:
++	 * fault-like exceptions, TSS T flag #DB (not emulated by KVM, but
++	 * could theoretically come in from userspace), and ICEBP (INT1).
+ 	 *
+ 	 * Note that only a pending nested run can block a pending exception.
+ 	 * Otherwise an injected NMI/interrupt should either be
+ 	 * lost or delivered to the nested hypervisor in the IDT_VECTORING_INFO,
+ 	 * while delivering the pending exception.
+ 	 */
+-
+-	if (vcpu->arch.exception.pending && !vmx_get_pending_dbg_trap(vcpu)) {
++	if (vcpu->arch.exception.pending &&
++	    !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
+ 		if (vmx->nested.nested_run_pending)
+ 			return -EBUSY;
+ 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
 -- 
 2.37.0.170.g444d1eabd0-goog
 
