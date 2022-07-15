@@ -2,178 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49234C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F276CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiGOLrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        id S234652AbiGOLro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230055AbiGOLrj (ORCPT
+        with ESMTP id S234538AbiGOLrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:47:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E4E88F0B;
-        Fri, 15 Jul 2022 04:47:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F203562304;
-        Fri, 15 Jul 2022 11:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ACD8C3411E;
-        Fri, 15 Jul 2022 11:47:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657885657;
-        bh=bOhZ+ZI4CCMrYCxTvYYbqkus2jBN41LpMcdBoZMKp/g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=SDERY9zqlsrtHlvd/ExgvUcaD4kQ7ZZyzri8/3NQv5dDaUmjeTI8fcSj2HCegu/rP
-         ParWgDunpLCv4CdUCPloAJh5r+witRQgOLd5pBTI+RRRf6GO59dwT7B+qvnEyxY0TH
-         MdTultRbNQ7f6hBEe2na8NbKiNLlePVOnPCIXGImYeNk4sNXNiEpaUqt+110dm/AJd
-         kpT9bvs87G59/CEALa8mJLmKqmY47FQRwTrigRUx2FrXMW8KtLZFC/ieZQ80qJyFfX
-         g1Ynll8wssHbduvEcrfdWL/0c3LVMYxBKfrizfRPI3g9gqgB4y2k1sdekQ1+buwjuq
-         e1qT0xLPbdcpQ==
-Message-ID: <3758d3bd-7272-e907-a51a-44a21d757674@kernel.org>
-Date:   Fri, 15 Jul 2022 13:47:28 +0200
+        Fri, 15 Jul 2022 07:47:42 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5A9E88F12;
+        Fri, 15 Jul 2022 04:47:40 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E705B1474;
+        Fri, 15 Jul 2022 04:47:40 -0700 (PDT)
+Received: from [10.57.11.112] (unknown [10.57.11.112])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48E533F73D;
+        Fri, 15 Jul 2022 04:47:39 -0700 (PDT)
+Message-ID: <deddd9cc-f517-cff9-e304-e1f09c6784b7@arm.com>
+Date:   Fri, 15 Jul 2022 12:47:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V5 01/16] rv: Add Runtime Verification (RV) interface
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] cpufreq: schedutil: Move max CPU capacity to sugov_policy
 Content-Language: en-US
-To:     Tao Zhou <tao.zhou@linux.dev>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-References: <cover.1657745645.git.bristot@kernel.org>
- <442b03c687c298b25c79aa5a16ec7fb2aef0f2c9.1657745645.git.bristot@kernel.org>
- <Ys/J5fLaojYeiVzL@geo.homenetwork>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <Ys/J5fLaojYeiVzL@geo.homenetwork>
-Content-Type: text/plain; charset=UTF-8
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>
+References: <20220711124229.16516-1-lukasz.luba@arm.com>
+ <1198724e-d94f-0b7c-9c4a-90595f8426d2@arm.com>
+ <CAJZ5v0gh78z3tw6simaZ5S6dmGvDc-OE6t02N8vQYk-2eoFQgA@mail.gmail.com>
+From:   Lukasz Luba <lukasz.luba@arm.com>
+In-Reply-To: <CAJZ5v0gh78z3tw6simaZ5S6dmGvDc-OE6t02N8vQYk-2eoFQgA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/14/22 09:46, Tao Zhou wrote:
-> On Wed, Jul 13, 2022 at 11:17:17PM +0200,
-> Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
-> 
-> [...]
-> 
->> +void put_task_monitor_slot(int slot)
->> +{
->> +	lockdep_assert_held(&rv_interface_lock);
->> +
->> +	if (slot < 0 || slot > RV_PER_TASK_MONITORS) {
-> 
-> slot is the array index that should be 0 here. The up bound is not bigger
-> than 0 because the element of array now is RV_PER_TASK_MONITORS. 
-> 
-> So up bound check is 'slot > RV_PER_TASK_MONITORS-1'.
-
-fixed! (slot >= RV...)
-
-> [...]
-> 
->> +/*
->> + * interface for enabling/disabling a monitor.
->> + */
->> +static ssize_t monitor_enable_write_data(struct file *filp, const char __user *user_buf,
->> +					 size_t count, loff_t *ppos)
->> +{
->> +	struct rv_monitor_def *mdef = filp->private_data;
->> +	int retval;
->> +	bool val;
->> +
->> +	retval = kstrtobool_from_user(user_buf, count, &val);
->> +	if (retval)
->> +		return retval;
->> +
->> +	retval = count;
->> +
->> +	mutex_lock(&rv_interface_lock);
->> +
->> +	if (val)
->> +		retval = enable_monitor(mdef);
->> +	else
->> +		retval = disable_monitor(mdef);
->> +
->> +	mutex_unlock(&rv_interface_lock);
->> +
->> +	return retval ? retval : count;
-> 
-> Feel that this can be written `return retval ? : count;`
 
 
-why not...
-
-> [...]
+On 7/15/22 12:44, Rafael J. Wysocki wrote:
+> On Fri, Jul 15, 2022 at 10:47 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
+>>
+>> Hi Rafael,
+>>
+>> gentle ping.
+>>
+>> On 7/11/22 13:42, Lukasz Luba wrote:
+>>> There is no need to keep the max CPU capacity in the per_cpu instance.
+>>> Furthermore, there is no need to check and update that variable
+>>> (sg_cpu->max) everytime in the frequency change request, which is part
+>>> of hot path. Instead use struct sugov_policy to store that information.
+>>> Initialize the max CPU capacity during the setup and start callback.
+>>> We can do that since all CPUs in the same frequency domain have the same
+>>> max capacity (capacity setup and thermal pressure are based on that).
+>>>
+>>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+>>> ---
+>>>    kernel/sched/cpufreq_schedutil.c | 30 +++++++++++++++---------------
+>>>    1 file changed, 15 insertions(+), 15 deletions(-)
+>>
+>> The patch got Ack from Viresh.
+>> Could you take it?
 > 
->> +static void *enabled_monitors_start(struct seq_file *m, loff_t *pos)
->> +{
->> +	struct rv_monitor_def *m_def;
->> +	loff_t l;
->> +
->> +	mutex_lock(&rv_interface_lock);
->> +
->> +	if (list_empty(&rv_monitors_list))
->> +		return NULL;
->> +
->> +	m_def = list_entry(&rv_monitors_list, struct rv_monitor_def, list);
->> +
->> +	for (l = 0; l <= *pos; ) {
->> +		m_def = enabled_monitors_next(m, m_def, &l);
->> +		if (!m_def)
->> +			break;
-> 
-> Is this check is inversed. enabled_monitors_start() will stop at first
-> enabled monitor, then enabled_monitors_next() do loop to next. Check
-> like the above, enabled_monitors_start() will loop to the last monitor.
-> But I doubt myself I do not mention/see it. Sorry for these.
-> 
-> the check is:
-> 
->   if (m_def)
->      break;
-> 
-> [...]
+> Yes, it's there in my queue.  Same for the EM changes.
 
-
-see kernel/trace/trace_events.c:s_start...
-
->> +static ssize_t
->> +enabled_monitors_write(struct file *filp, const char __user *user_buf,
->> +		      size_t count, loff_t *ppos)
->> +{
->> +	char buff[MAX_RV_MONITOR_NAME_SIZE + 2];
->> +	struct rv_monitor_def *mdef;
->> +	int retval = -EINVAL;
->> +	bool enable = true;
->> +	char *ptr = buff;
->> +	int len;
->> +
->> +	if (count < 1 || count > MAX_RV_MONITOR_NAME_SIZE + 2)
-> 
-> @count would not include '\0'. That the max val of @count is
-> MAX_RV_MONITOR_NAME_SIZE+1. So the up bound check of @count is
-> `count > MAX_RV_MONITOR_NAME_SIZE + 1`.
-
-Fixed for v6...
-
--- Daniel
+Thank you Rafael!
