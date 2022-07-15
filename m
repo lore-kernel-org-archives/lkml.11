@@ -2,100 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 515D9CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 04:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7FCC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 04:48:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbiGOEpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 00:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60824 "EHLO
+        id S229517AbiGOEsD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 00:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiGOEpv (ORCPT
+        with ESMTP id S229441AbiGOEsB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 00:45:51 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B597A62A5B;
-        Thu, 14 Jul 2022 21:45:50 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id k19so2247994pll.5;
-        Thu, 14 Jul 2022 21:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DRHClB5BYENwtyQXEZigOp1KZKAnPunxuF0IW+oQZJU=;
-        b=mtlw8663BOcm7bg1VsTypZCWjyoLYRJZnO4+hMEzSdHzDLrvBc/Ibz/H8MOJpyNT1y
-         KvAIznkyb2xwozj55gRtbXMGM6aDxoBKSuxIG9V+rpdq1szPCxpVMcKxzWmzD9Sfu27B
-         Qdj9ZleIpjatWxy7oahzpNY30weOR+3lA8tR7MSxb5pGqfzIfSs5rTIn1NbHBWEojRpv
-         V7yUPkHE1P0tXN6MyA3zvX0EsJs09lRuDr2xk/Av+MpG6eIq9erYrgHGL8jn51rzlNoX
-         7rbI7Dp38RD1z9Mvgen76R0sfvSHbAuNLEOgOpvf47T4/eYwSUjfLzjhSVETWQM8p/x2
-         4qcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DRHClB5BYENwtyQXEZigOp1KZKAnPunxuF0IW+oQZJU=;
-        b=sUtYjMcr/7tj1YMO/VrTFf9PoVTtE6DtloJ9vofasVwYLqT8vuqD/ml9OgXfkzUCyl
-         rboWHWjf2fRbYb9Xt8BMX+soYWlhh7rlM2Gkc1ui76RsLkb+s/YmkRSof4F3ShVXAUNG
-         /5VT3JHabYgR4+FiQdD08z/qLuclzekdnDOoW0mmZ42Tgo34S6H/R+IWb2ExH16GqI8T
-         6JVBemVRDt2o2a3FJW9MD9pB5VbZNklaExKiI4kDkXEiU83GM/rFLJkR21lr/DERjS1B
-         ZOsyy8MZ7nBQJgrTXH7t4PLhFuq3TzJMBnD+VlVEXj48KaT7k0/uAMwARkR5+dkQpJ1K
-         i3AA==
-X-Gm-Message-State: AJIora+n7WGuUFhLmMwJ8Lz3H5q45eWbDWjYywPCbrK4PHe8p+tPgx3W
-        EmRxU3c70nfv+mZTgjWqhX8=
-X-Google-Smtp-Source: AGRyM1un19bitLuSvnONqwpHaQgn9j4Oq7PbkbA674hEHebtfhCF8fIvz4cxcEquCjg5tKwzKZ03dw==
-X-Received: by 2002:a17:90a:2b4a:b0:1ef:3e28:fbc8 with SMTP id y10-20020a17090a2b4a00b001ef3e28fbc8mr13304447pjc.54.1657860350117;
-        Thu, 14 Jul 2022 21:45:50 -0700 (PDT)
-Received: from [192.168.66.3] (p912131-ipoe.ipoe.ocn.ne.jp. [153.243.13.130])
-        by smtp.gmail.com with ESMTPSA id t4-20020a170902d14400b0016bfcfde685sm2349734plt.56.2022.07.14.21.45.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 21:45:49 -0700 (PDT)
-Message-ID: <2b73e71c-a927-076d-bf44-6dc4431eb3be@gmail.com>
-Date:   Fri, 15 Jul 2022 13:45:45 +0900
+        Fri, 15 Jul 2022 00:48:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D4F63914
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 21:48:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7265B82A63
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 04:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 923F3C34115;
+        Fri, 15 Jul 2022 04:47:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657860477;
+        bh=g+KJyiSQWpqbUdFfXHyoIJVfzv33K9nGlIrsNPhu8Cw=;
+        h=Date:From:To:Cc:Subject:From;
+        b=jCMVyzxNdlcuMT2uW/abxxhZQ0wFmNqbg2645KT9/VWW/NsN5bIGYpVE1wzvFK48Y
+         mI5vsSjGF6FkmRGsQVWFust+VUNyofGVSyq4F45lEC921RMoCz4wpwyjKGgOD8ooY3
+         qsAsRNECXRFNSvrQTHu4XzNFPy9CE1UyKoW/wXW8xp0TDYjqwTCAK6zvTJxslcEMGJ
+         mQZXChum88hnlnAvwVVLmkYlgXcD0XWSNkyFKCH6DTj3aDUeIN4JAbtdpfHe3LGCIM
+         S7aW9g39YlsCB2+hE0vlES6BIzZsjI+nZQ0hEqVCoMNcXL3YdU2QNiUWGigy1LN2MA
+         2MCWT4iNY06BQ==
+Date:   Fri, 15 Jul 2022 10:17:48 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [GIT PULL]: soundwire updates for v5.20-rc1
+Message-ID: <YtDxdBLgvAHG8IhG@matsya>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] AMD_SFH: Add a DMI quirk entry for Chromebooks
-Content-Language: en-US
-To:     Basavaraj Natikar <bnatikar@amd.com>
-Cc:     Basavaraj Natikar <basavaraj.natikar@amd.com>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>
-References: <20220714053752.5124-1-akihiko.odaki@gmail.com>
- <87d96692-7dbf-f846-f644-5a81f92efcb9@amd.com>
-From:   Akihiko Odaki <akihiko.odaki@gmail.com>
-In-Reply-To: <87d96692-7dbf-f846-f644-5a81f92efcb9@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="aOaSVjP4MFDG0xT4"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/15 13:41, Basavaraj Natikar wrote:
-> 
-> 
-> On 7/14/2022 11:07 AM, Akihiko Odaki wrote:
->> Google Chromebooks use Chrome OS Embedded Controller Sensor Hub instead
->> of Sensor Hub Fusion and leaves MP2 uninitialized, which disables all
->> functionalities, even including the registers necessary for feature
->> detections.
->>
->> The behavior was observed with Lenovo ThinkPad C13 Yoga.
->>
->>
-> This driver should not get loaded in chrome OS by default.
-> Could you please provide details of Chrome OS Version and Kernel version to confirm the behavior.
-> 
-> Are you enabling manually CONFIG_AMD_SFH_HID config?
-> 
-> Thanks,
-> Basavaraj
-> 
 
-I use Fedora 36, not Chrome OS. The config is enabled on Fedora's 
-generic kernel. The kernel is built from commit 
-78ca55889a549a9a194c6ec666836329b774ab6d from the upstream.
+--aOaSVjP4MFDG0xT4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Regards,
-Akihiko Odaki
+Hello Greg,
+
+Please pull to receive updates for soundwire subsystem. This is smallish
+request this time but few important changes:
+
+The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
+
+  Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/soundwire.git tags/so=
+undwire-5.20-rc1
+
+for you to fetch changes up to 3f4a70268d54c41117bc4e1bed0ba4be756735a8:
+
+  soundwire: qcom: Enable software clock gating requirement flag (2022-07-0=
+6 22:14:51 +0530)
+
+----------------------------------------------------------------
+soundwire updates for 5.20-rc1
+
+ - Core: solve the driver bind/unbind problem and remove ops pointer
+ - intel: runtime pm updates
+ - qcom: audio clock gating updates and device status checks
+
+----------------------------------------------------------------
+Pierre-Louis Bossart (4):
+      soundwire: bus_type: fix remove and shutdown support
+      soundwire: revisit driver bind/unbind and callbacks
+      soundwire: peripheral: remove useless ops pointer
+      soundwire: intel: use pm_runtime_resume() on component probe
+
+Srinivas Kandagatla (1):
+      soundwire: qcom: Check device status before reading devid
+
+Srinivasa Rao Mandadapu (3):
+      soundwire: qcom: Add support for controlling audio CGCR from HLOS
+      soundwire: qcom: Add flag for software clock gating check
+      soundwire: qcom: Enable software clock gating requirement flag
+
+ drivers/soundwire/bus.c       | 75 ++++++++++++++++++++++++---------------=
+----
+ drivers/soundwire/bus_type.c  | 38 +++++++++++++++-------
+ drivers/soundwire/intel.c     | 18 +++++++++++
+ drivers/soundwire/qcom.c      | 32 +++++++++++++++++-
+ drivers/soundwire/slave.c     |  3 +-
+ drivers/soundwire/stream.c    | 53 +++++++++++++++++++-----------
+ include/linux/soundwire/sdw.h |  8 ++---
+ 7 files changed, 157 insertions(+), 70 deletions(-)
+
+--=20
+~Vinod
+
+--aOaSVjP4MFDG0xT4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEE+vs47OPLdNbVcHzyfBQHDyUjg0cFAmLQ8XQACgkQfBQHDyUj
+g0dhIg/7BVHGyfvwJJyyw8FgAjqhOfI0zCDj6ppUWjL8HH0ONnPt86JrnApIyFoT
+0YyTBjNVXi4mGzYwZ0ww1Pv2DqR161VUXHgBxev39ISqztG6xGr9FvVYqCOwdkvP
+ilR4nxkFmdALeuPRJFz6dgcBndQY8lcHfmvsnHjwS7mOVgpgXpjg6hIkJB+tE7u0
+Cx5et7dU9+RzBNQVoiKSn791WRtU6JkvkzaANjazOIe9/CmgHnVzXeomngb5RNqZ
+7vHkta2gLqNcftm821JL0cCkSg8UIxSaS/3f20Oo0q5rHo1iwmfif9nepbb03dyD
+5yunf2OznX7cTZvXEQRGSUa7VWEKzzPC3riCSdJLHjcYsod+8ef6vgZ2huchb8yE
+2aOLrZi6z0MEcfZX9bvUHaDcrCDMEFx08cGtUnzIxvZVTmnRaO6yMCrIZ/gDI27r
+xmkAxz45xUzhhHEjZcXZu1tSdMGCM94/eK0VPyKW3iSh4pm8wRPSh8XWFTG7RK8q
+0wyvFk3Sx1RpKjp8jHTgp9H+fjEWrDxg8OAtqiHyyhMO/Z9sJcJ7fUFlHAx//vA2
+Xp7nCP4NDSAstMHYGF/2pGBvu5wVWZZ0cEDp8wMcsKNdDbKoOjvMZJjCtRL9Rnql
+Ikz1ERSD1OxEOOQso7gr36/HcLwsvXUregjV6fgZrMBitB+i2XA=
+=Jrww
+-----END PGP SIGNATURE-----
+
+--aOaSVjP4MFDG0xT4--
