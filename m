@@ -2,127 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C397ECCA479
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:30:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92450C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234546AbiGRMaw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S234340AbiGRMcC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:32:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233110AbiGRMat (ORCPT
+        with ESMTP id S230249AbiGRMcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:30:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3F2205F7;
-        Mon, 18 Jul 2022 05:30:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BBB5614E8;
-        Mon, 18 Jul 2022 12:30:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26E75C341C0;
-        Mon, 18 Jul 2022 12:30:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658147447;
-        bh=ECdxE1bsN444YLZGJxne40CdRsdsjAKrmqAIXOOtD2g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RF/u2VR6cz7S5mkBDmpzsbDbNjmr7BKs7LNKjeB05r0TTto8rLYuFdRbXFRe+u9QI
-         cLOYtLkrOV+9t6opsTPUHf6BVlan3j5F60InYEYyW9BTKM/XoQ3Lh9nFwJ857Lfr5n
-         PA05IS5/5ruRYtuWSiDFI9tjDmif6SXp0cQJCY8YJpQe768bsi+fumpQIML3lK9Cl2
-         LEPP3hi0jQJr73iGcjhhn2lZqZHIXr73WXdAyp424PvXOiPYgrlYiVtFcQFLCIsz+u
-         JOLKiVo771my9jUZ+be2INOxgyltZxeF1UIdXxgUp2C29t2mXTRV9tKPq67kdEJElv
-         ZB9RSsFs3x+IQ==
-Date:   Mon, 18 Jul 2022 15:30:43 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
-Cc:     Jianglei Nie <niejianglei2021@163.com>, jgg@ziepe.ca,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] RDMA/hfi1: fix potential memory leak in setup_base_ctxt()
-Message-ID: <YtVSc7aazgxVFHRa@unreal>
-References: <20220711070718.2318320-1-niejianglei2021@163.com>
- <1038e814-5f0d-17a3-1331-8ed24a64d597@cornelisnetworks.com>
- <YtU4eXQCVEPGnh9b@unreal>
- <be437471-0080-8e9c-978a-6029c7826335@cornelisnetworks.com>
+        Mon, 18 Jul 2022 08:32:00 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC765205F7
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:31:55 -0700 (PDT)
+X-QQ-mid: bizesmtp64t1658147496tsq7f7fx
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 20:31:34 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000020
+X-QQ-FEAT: NGMqyHdgFPa1Gj72Kw5wrqYn+EJjFCyEoyJqb7OCrR7aLICFqKVdIJFb3ATVj
+        C+akZGMII4OLL9eHCAYABUr8spJh1l4x5J3HDJIclhlgdZ3uK5TI5sYXhlR9/6lq33Z2D9c
+        K4P2Nh6uXx4L7QAXMULEBsy9xky1OJ1KkI0BB2IQGRCuqu1SPAwTKA/fN7obPKwy5m/ZRjd
+        Y+3IoPXOy9Dkld8AAFhb3LNhvls0uU50sGBojgTrIU5r9e2jP+I+oHxMNmqDWrd6RqiVltd
+        MEfarR3ZT3zvBIhdIq3E6TuSTSbe47R7h7468G30Z80YUt7kz0EM11VOd++CUYkLb7KT+tu
+        eauBgw4cP38wGC63O30hru9w4UUDBNqS+4I7frgncznO7Qwsw11rkQnXPIF1v6f6Extnhe6
+        5VHEu6cs2cQ=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     anton.ivanov@cambridgegreys.com
+Cc:     richard@nod.at, johannes@sipsolutions.net,
+        linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] um: Fix comment typo
+Date:   Fri, 15 Jul 2022 12:29:38 +0800
+Message-Id: <20220715042938.15291-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <be437471-0080-8e9c-978a-6029c7826335@cornelisnetworks.com>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 08:11:59AM -0400, Dennis Dalessandro wrote:
-> On 7/18/22 6:39 AM, Leon Romanovsky wrote:
-> > On Mon, Jul 11, 2022 at 07:52:25AM -0400, Dennis Dalessandro wrote:
-> >> On 7/11/22 3:07 AM, Jianglei Nie wrote:
-> >>> setup_base_ctxt() allocates a memory chunk for uctxt->groups with
-> >>> hfi1_alloc_ctxt_rcv_groups(). When init_user_ctxt() fails, uctxt->groups
-> >>> is not released, which will lead to a memory leak.
-> >>>
-> >>> We should release the uctxt->groups with hfi1_free_ctxt_rcv_groups()
-> >>> when init_user_ctxt() fails.
-> >>>
-> >>> Signed-off-by: Jianglei Nie <niejianglei2021@163.com>
-> >>> ---
-> >>>  drivers/infiniband/hw/hfi1/file_ops.c | 4 +++-
-> >>>  1 file changed, 3 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/infiniband/hw/hfi1/file_ops.c b/drivers/infiniband/hw/hfi1/file_ops.c
-> >>> index 2e4cf2b11653..629beff053ad 100644
-> >>> --- a/drivers/infiniband/hw/hfi1/file_ops.c
-> >>> +++ b/drivers/infiniband/hw/hfi1/file_ops.c
-> >>> @@ -1179,8 +1179,10 @@ static int setup_base_ctxt(struct hfi1_filedata *fd,
-> >>>  		goto done;
-> >>>  
-> >>>  	ret = init_user_ctxt(fd, uctxt);
-> >>> -	if (ret)
-> >>> +	if (ret) {
-> >>> +		hfi1_free_ctxt_rcv_groups(uctxt);
-> >>>  		goto done;
-> >>> +	}
-> >>>  
-> >>>  	user_init(uctxt);
-> >>>  
-> >>
-> >> Doesn't seem like this patch is correct. The free is done when the file is
-> >> closed, along with other clean up stuff. See hfi1_file_close().
-> > 
-> > Can setup_base_ctxt() be called twice for same uctxt?
-> > You are allocating rcd->groups and not releasing.
-> 
-> The first thing assign_ctxt() does is a check of the fd->uctxt and it bails with
-> -EINVAL. So effectively only once.
+The double `in' is duplicated in line 172, remove one.
 
-I'm slightly confused. How will you release rcd->groups?
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/um/kernel/physmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-assign_ctxt()
- -> setup_base_ctxt()
-   -> hfi1_alloc_ctxt_rcv_groups()
-      ,,,
-      rcd->groups = kzalloc...
-      ...
-   -> init_user_ctxt() <-- fails and leaves fd->uctx == NULL
+diff --git a/arch/um/kernel/physmem.c b/arch/um/kernel/physmem.c
+index e7c7b53a1435..91485119ae67 100644
+--- a/arch/um/kernel/physmem.c
++++ b/arch/um/kernel/physmem.c
+@@ -169,7 +169,7 @@ __uml_setup("iomem=", parse_iomem,
+ );
+ 
+ /*
+- * This list is constructed in parse_iomem and addresses filled in in
++ * This list is constructed in parse_iomem and addresses filled in
+  * setup_iomem, both of which run during early boot.  Afterwards, it's
+  * unchanged.
+  */
+-- 
+2.35.1
 
-
-...
-hfi1_file_close()
-  struct hfi1_ctxtdata *uctxt = fdata->uctxt;
-  ...
-  if (!uctxt)             <-- This is our case
-     goto done; 
-  ...
-
-done:
-  if (refcount_dec_and_test(&dd->user_refcount))
-     complete(&dd->user_comp);
-
-  cleanup_srcu_struct(&fdata->pq_srcu);
-  kfree(fdata);
-  return 0;
-
-
-
-> 
-> -Denny
-> 
-> 
