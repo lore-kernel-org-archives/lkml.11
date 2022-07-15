@@ -2,32 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9486BC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BA5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiGOX0Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52496 "EHLO
+        id S232691AbiGOX0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232408AbiGOXZr (ORCPT
+        with ESMTP id S232224AbiGOX0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:25:47 -0400
+        Fri, 15 Jul 2022 19:26:13 -0400
+X-Greylist: delayed 3800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:49 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82D7992858
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07B8951D4
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Content-ID:
-        Content-Description; bh=IDzshP1UOwc2YJpmDhWVDpcIwCbw0ukLD6sNDBszCfk=; b=BIWxZ
-        TXW1JGwyTKdX4oameCV8U8OlmIGdh+F6r2c6ZD7w91G2SYIYDWThA8deouz95HJU8wqPGP7D0hBIV
-        lfd4QREdIPBwWniSdYMkDfNaybd6heSfPoDS5sve6LTEEbPxV/2S+w1CMcc+xh0gamY5PV/K4CMq8
-        bDu7RiEMud2YTRtmf/ch4WZ42f4ddrFcYw7f4+Jh8BUYtN8ByOjHt/M3BQxqpN7a7t1vDt5dgkPSl
-        6w7hfuLKAGd7J6q9b0+MDyt8aPQVO5h0enUwOokaSwECvJwZAJh3Iobkj4LjXe4GzOwujtqiPo0xQ
-        TD9+nBCexMa3v6ZnEG9sodQ3Fv2Ww==;
-Message-Id: <cover.1657920926.git.linux_oss@crudebyte.com>
+        d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
+        Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
+        Content-Description; bh=HRgmsvyQc5R1HqZKiatrCeJDIA/6CkbTdpYiY2zKJhY=; b=Rq8Ur
+        FXiEZjgbvLBKHRYMhXFkV36zqPA0exg1NpNzlek1Qkbup154jUInbQ9KzFnnAy1DZXMM0f6Zdih1H
+        yEatOg4iZF+fb66Ivo+CwYQC5E1xXOs7j5SzlJdTACI3dNU5CKPefBhW+oZ8gWbhvw9kr+D51TTnD
+        RpSY+x6d03BH0xsxW1urFLmbBUXcDxa1vlf35WynvV4nTzlxKEcUQCf6S8ViCVsajA6H1QV4mWpCK
+        RkGrHAdsXxZW5nsXy1Qz8wHhoaN/vwXuA6e8AXh2nG8TdI7eFBvQzme4idLIRfeoxXWGL0IkVOQ2Q
+        64hJ8faeq+AMHRjCE8Uzta1nrbiOQ==;
+Message-Id: <ce9d58cc48a3bb65d4ed5b906eb5f0311030fddd.1657920926.git.linux_oss@crudebyte.com>
+In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
+References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:35:26 +0200
-Subject: [PATCH v6 00/11] remove msize limit in virtio transport
+Date:   Fri, 15 Jul 2022 23:32:20 +0200
+Subject: [PATCH v6 04/11] net/9p: add trans_maxsize to struct p9_client
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -38,164 +41,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series aims to get get rid of the current 500k 'msize' limitation in
-the 9p virtio transport, which is currently a bottleneck for performance
-of 9p mounts.
+This new field 'trans_maxsize' optionally allows transport to
+update it to reflect the actual maximum msize supported by
+allocated transport channel.
 
-To avoid confusion: it does remove the msize limit for the virtio transport,
-on 9p client level though the anticipated milestone for this series is now
-a max. 'msize' of 4 MB. See patch 5 for reason why.
+Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
+---
+ include/net/9p/client.h |  2 ++
+ net/9p/client.c         | 12 ++++++++++--
+ 2 files changed, 12 insertions(+), 2 deletions(-)
 
-This is a follow-up of the following series and discussion:
-https://lore.kernel.org/all/cover.1657636554.git.linux_oss@crudebyte.com/
-
-Latest version of this series:
-https://github.com/cschoenebeck/linux/commits/9p-virtio-drop-msize-cap
-
-
-OVERVIEW OF PATCHES:
-
-* Patches 1..6 remove the msize limitation from the 'virtio' transport
-  (i.e. the 9p 'virtio' transport itself actually supports >4MB now, tested
-  successfully with an experimental QEMU version and some dirty 9p Linux
-  client hacks up to msize=128MB).
-
-* Patches 7..11 tremendously reduce unnecessarily huge 9p message sizes and
-  therefore provide performance gain as well. So far, almost all 9p messages
-  simply allocated message buffers exactly msize large, even for messages
-  that actually just needed few bytes. So these patches make sense by
-  themselves, independent of this overall series, however for this series
-  even more, because the larger msize, the more this issue would have hurt
-  otherwise.
-
-
-PREREQUISITES:
-
-If you are testing with QEMU then please either use QEMU 6.2 or higher, or
-at least apply the following patch on QEMU side:
-
-  https://lore.kernel.org/qemu-devel/E1mT2Js-0000DW-OH@lizzy.crudebyte.com/
-
-That QEMU patch is required if you are using a user space app that
-automatically retrieves an optimum I/O block size by obeying stat's
-st_blksize, which 'cat' for instance is doing, e.g.:
-
-	time cat test_rnd.dat > /dev/null
-
-Otherwise please use a user space app for performance testing that allows
-you to force a large block size and to avoid that QEMU issue, like 'dd'
-for instance, in that case you don't need to patch QEMU.
-
-
-STILL TO DO:
-
-  1. Negotiating virtio "Queue Indirect Size" (recommended):
-
-    This series assumes a maximum amount of 1024 virtio indirect desriptors
-    to be supported by 9p server, which is true for QEMU, but probably not
-    for other 9p servers and therefore be addressed by negotiating the
-    maximum length of virtio indirect descriptor tables on virtio device
-    initialization instead. This would not only avoid issues with other 9p
-    servers, but would also allow msize of >4MB in future. Before that
-    change can be done on Linux and QEMU sides though, it first requires a
-    change to the virtio spec. Work on that on the virtio spec. is still in
-    progress:
-
-    https://github.com/oasis-tcs/virtio-spec/issues/122
-
-  2. Reduce readdir buffer sizes (optional - maybe later):
-
-    This series already reduced the message buffers for most 9p message
-    types. This does not include Treaddir though yet, which is still simply
-    using msize. It would make sense to benchmark first whether this is
-    actually an issue that hurts. If it does, then one might use already
-    existing vfs knowledge to estimate the Treaddir size, or starting with
-    some reasonable hard coded small Treaddir size first and then increasing
-    it just on the 2nd Treaddir request if there are more directory entries
-    to fetch.
-
-  3. Add more buffer caches (optional - maybe later):
-
-    p9_fcall_init() uses kmem_cache_alloc() instead of kmalloc() for very
-    large buffers to reduce latency waiting for memory allocation to
-    complete. Currently it does that only if the requested buffer size is
-    exactly msize large. As patch 10 already divided the 9p message types
-    into few message size categories, maybe it would make sense to use e.g.
-    4 separate caches for those memory category (e.g. 4k, 8k, msize/2,
-    msize). Might be worth a benchmark test.
-
-Testing and feedback appreciated!
-
-v5 -> v6:
-
-  * Fix BUG_ON(node >= VIRTQUEUE_SG_NSGL_MAX) ->
-        BUG_ON(node >= vq_sg->nsgl) in vq_sg_page().
-    [patch 3]
-
-  * Limit virtio transport to (slightly below) 4MB msize by assuming
-    VIRTIO_MAX_DESCRIPTORS = 1024. [patch 5]
-
-  * Drop previous patch "net/9p: limit 'msize' to KMALLOC_MAX_SIZE for all".
-    [OLD patch 7]
-
-  * Add static_assert(NAME_MAX <= 4k) to p9_msg_buf_size().
-    [patch 9]
-
-  * Make it more clear from the commit log how individual 9p message types
-    were distributed over the 2 hard coded message size categories.
-    [patch 9]
-
-  * Drop max() call in p9_msg_buf_size() which was superfluous.
-    [patch 9]
-
-  * Compare protocol version directly against 'p9_proto_legacy' instead of
-    inverted comparison against 'p9_proto_2000u' and 'p9_proto_2000l'.
-    [patch 9]
-
-  * Fix code style aesthetics by getting rid of an unnecessary block
-    indention. [patch 9]
-
-  * Dynamically calculate size for P9_TSYMLINK instead of using a hard
-    coded size. [patch 9]
-
-  * Fix s/P9_TSTAT/P9_TWSTAT/.
-    [patch 9]
-
-  * Add missing P9_TMKNOD, P9_TRENAME, P9_TLOCK to hard coded 8k size
-    category. [patch 9]
-
-  * Use a dedicated new bool field 'pooled_rbuffers' in struct
-    p9_trans_module instead of strcmp(c->trans_mod->name, "rdma").
-    [NEW patch 10], [patch 11]
-
-  * Allow dynamic request buffer size for RDMA transport as well.
-    [patch 11]
-
-Christian Schoenebeck (11):
-  9p/trans_virtio: separate allocation of scatter gather list
-  9p/trans_virtio: turn amount of sg lists into runtime info
-  9p/trans_virtio: introduce struct virtqueue_sg
-  net/9p: add trans_maxsize to struct p9_client
-  9p/trans_virtio: support larger msize values
-  9p/trans_virtio: resize sg lists to whatever is possible
-  net/9p: split message size argument into 't_size' and 'r_size' pair
-  9p: add P9_ERRMAX for 9p2000 and 9p2000.u
-  net/9p: add p9_msg_buf_size()
-  net/9p: add 'pooled_rbuffers' flag to struct p9_trans_module
-  net/9p: allocate appropriate reduced message buffers
-
- include/net/9p/9p.h        |   3 +
- include/net/9p/client.h    |   2 +
- include/net/9p/transport.h |   5 +
- net/9p/client.c            |  60 +++++--
- net/9p/protocol.c          | 167 +++++++++++++++++++
- net/9p/protocol.h          |   2 +
- net/9p/trans_fd.c          |   1 +
- net/9p/trans_rdma.c        |   1 +
- net/9p/trans_virtio.c      | 321 ++++++++++++++++++++++++++++++++-----
- net/9p/trans_xen.c         |   1 +
- 10 files changed, 514 insertions(+), 49 deletions(-)
-
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index ec1d1706f43c..f5718057fca4 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -87,6 +87,7 @@ struct p9_req_t {
+  * struct p9_client - per client instance state
+  * @lock: protect @fids and @reqs
+  * @msize: maximum data size negotiated by protocol
++ * @trans_maxsize: actual maximum msize supported by transport channel
+  * @proto_version: 9P protocol version to use
+  * @trans_mod: module API instantiated with this client
+  * @status: connection state
+@@ -101,6 +102,7 @@ struct p9_req_t {
+ struct p9_client {
+ 	spinlock_t lock;
+ 	unsigned int msize;
++	unsigned int trans_maxsize;
+ 	unsigned char proto_version;
+ 	struct p9_trans_module *trans_mod;
+ 	enum p9_trans_status status;
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 8bba0d9cf975..20054addd81b 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1031,6 +1031,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 		goto free_client;
+ 	}
+ 
++	/*
++	 * transport will get a chance to increase trans_maxsize (if
++	 * necessary) and it may update trans_maxsize in create() function
++	 * below accordingly to reflect the actual maximum size supported by
++	 * the allocated transport channel
++	 */
++	clnt->trans_maxsize = clnt->trans_mod->maxsize;
++
+ 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
+ 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
+ 
+@@ -1038,8 +1046,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	if (err)
+ 		goto put_trans;
+ 
+-	if (clnt->msize > clnt->trans_mod->maxsize) {
+-		clnt->msize = clnt->trans_mod->maxsize;
++	if (clnt->msize > clnt->trans_maxsize) {
++		clnt->msize = clnt->trans_maxsize;
+ 		pr_info("Limiting 'msize' to %d as this is the maximum "
+ 			"supported by transport %s\n",
+ 			clnt->msize, clnt->trans_mod->name
 -- 
 2.30.2
 
