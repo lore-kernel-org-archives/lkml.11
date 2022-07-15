@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D9AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:05:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232590AbiGOWFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 18:05:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59056 "EHLO
+        id S232609AbiGOWF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 18:05:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231941AbiGOWEE (ORCPT
+        with ESMTP id S231899AbiGOWEE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 15 Jul 2022 18:04:04 -0400
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00040.outbound.protection.outlook.com [40.107.0.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B498E4F3;
-        Fri, 15 Jul 2022 15:01:47 -0700 (PDT)
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60048.outbound.protection.outlook.com [40.107.6.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7B18E4EB;
+        Fri, 15 Jul 2022 15:01:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fuk5QLLn7JFCl8+fEkpvBJZmKOsqW8Mfqj2BBlRessVsEFfq13wHUOzd37EULdd0HJm6UMAZHZnNDP/XSawAfD6mE9F+syhj66pO5KxeY/aOgNr27loeR08QLKY9PiFeeP5AK0/uqsishLwzyuxqtUyOngPx7dNcmA8F7lj6pxoI/ZCsYQjzj4SxzehwpO+sXE6C8pIsybz1z3vB4YzZt1hlZM964TWea8gXwzO8qoVbsdz4gJkxT2wDqSyAdjOSkk2MBOqVqdwYxFbski83f+atu1awQ+pSpe9gzA9xJaTcn/sqXDgYcNi0aWD3H3FYEv+Yy1PusiJrpRJb6gGmWg==
+ b=ge1LK00p4qsx1cJb/F/1xDhD7wmq/iEhYCJsS3T3n1HO/iOWl/tNm0IxGfqeOYq7Kyz7Da1NgdqW9upsClgV9Zg1VoQkIcMADQh3b78NhEVZtW1TjitE3iTDgS/Z9dFgWqtr/UiIJvXYnlPX8i55Z7jdI44N0OvyR73/Tf6q7aHIRUnjlwMV6+8djsiOjtiuB+jKUCCBYzhWyFeHQLvpkaP4rvInOlLmohHGrIaoXNoUEu9Tfg7ThSRSEEcdWMqV0mVVWYG4ugdkMJ72+HWZI2wzYNAA8FCGdB1QLAm90Q3cqZG09TzUUQwn8Sck6jVRNeIxPRLwNOHEAVjUwb30Fw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yPsbQKyAEFveniIQIGzCajxgm6x6C6iIBd0jdZ0YqxI=;
- b=gKWmh/zlghRzIB0MHABJl2Pfl8K60+avNYCi0udSI/ehRbXEZTs8gqHFtPU2sMYypwfaMqdQ4HeTtIBUyVEHZ6v/3SpZkopa/o+iBfcFmhfjdjDvNxwkMcADaF4mr3PLYMM2jwIUlmAe+/W3iRjunUwqmPsK4Rg2FlyrG59oPD6bIcVmCd0ISzT7qnPj9NGKtmYY2AvrlFOD/teaZXvtPGhTQyCsqjkAnOhGaURnsZUb9Xz9utamAvTwqBHslybqPnXZkXkxdH1AvLmgmb/EiEuWLlr1/09RikuvY7l2/C+3hKTQ4y9TO6etW1PwpoPABGLXemRj+JwcCnbZ6ZLTng==
+ bh=t6F6kJr389oREnPSKtMqwsCZtWk3wAG2vXWfopMgx64=;
+ b=BRSUA4cI3hkV898BfyzyRrkgCOWsPKCve4pxVDMlGDMsGdUo9wb0uJejD8XvFGMShgS8pKyGGDihck4E8UgrAVs87RKSRJfbNVwqm7L1F9iJrqWX2tHZO653l6yQvWnV0tEkzK/YeyIzQrd0l2Tudt9InGHAJUDWMOiADE7TlHxfREpnfuRg3vo2xY7kspWFD8dlCRL59WpvrA0SZ9P0lkSWdz+yh9OwqFKBbdgbzPpT5MkqCAZYU4MTIIf+s5UYTkjJCBgBkrLklitQqftdftGHRBLBkYpxTPOWoy3MuyEPEoE3DJN3tHYFlSXDnmCW5DxzqPsLl5SS53J5DnPg0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yPsbQKyAEFveniIQIGzCajxgm6x6C6iIBd0jdZ0YqxI=;
- b=OU+anSSteZa//yr3QMOH7a+wIEKxa/B/7euTw43UdmABwvy2fRVI7XgWabChwRQ1U0OXRe12xbXM35KQ9TA3Bdct4fcn/fZf4VEZyvcKq3v/37ebL9ZMfHHPq4E/9tPkKQp9EufOJy23wdLSZxTq9t1QwrbUv95nmDe3lHnZOyMTtvINLMKsvvQK0Kk0IBxC7P2t2YZjwowQHAzrDhdkTStfg6GxaX/QSzmPB5pYsFYIVfFktJBAaW3MS9CBbK9yR4K+15/Ser5dHpoPNApcl9hAnitXZFHPlW/L2qb4smOWMtivkGgylHpfLk+Mft7miPf3Ej8fUhfOQ5WBw3Mmow==
+ bh=t6F6kJr389oREnPSKtMqwsCZtWk3wAG2vXWfopMgx64=;
+ b=yQK7HUcfEbXBgPMS2BggpN36aym6b5OclmccN7UowuWab7wYp8NnKmI/HQ2R8Eqk8KRV0BVKx815P/SbAO/tR5htx6cHFrMvBnCV8MLlHISP3pYqtFZXjuaNO0SEvaW0wNsB+yiDUsMmWVWgfCsbU2p53iHMzC4LE41YpO4mjGlTn49RLE6UuE0VqZkAwpXgz+ogDV7kqkG1HA7WqL5lVjL6KknK0HlVqTyyIQv7nx5ckditeIURw072up+GSq3fBoDmRG6HhU8Ow0u70+irZnTeeaPsAIUWHjnR/dV+k0aSNn/sxLh1MR4YP4foDYZ+vA9hcSPUk0P0AeB7wt68Fg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
- by AS4PR03MB8433.eurprd03.prod.outlook.com (2603:10a6:20b:518::13) with
+ by DB6PR03MB2902.eurprd03.prod.outlook.com (2603:10a6:6:34::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.19; Fri, 15 Jul
- 2022 22:01:36 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.17; Fri, 15 Jul
+ 2022 22:01:27 +0000
 Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::5c3e:4e46:703b:8558]) by VI1PR03MB4973.eurprd03.prod.outlook.com
  ([fe80::5c3e:4e46:703b:8558%7]) with mapi id 15.20.5438.015; Fri, 15 Jul 2022
- 22:01:36 +0000
+ 22:01:27 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -49,11 +49,10 @@ Cc:     Paolo Abeni <pabeni@redhat.com>,
         linux-arm-kernel@lists.infradead.org,
         Russell King <linux@armlinux.org.uk>,
         linux-kernel@vger.kernel.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Li Yang <leoyang.li@nxp.com>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH net-next v3 37/47] soc: fsl: qbman: Add CGR update function
-Date:   Fri, 15 Jul 2022 17:59:44 -0400
-Message-Id: <20220715215954.1449214-38-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [PATCH net-next v3 33/47] net: fman: Clean up error handling
+Date:   Fri, 15 Jul 2022 17:59:40 -0400
+Message-Id: <20220715215954.1449214-34-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220715215954.1449214-1-sean.anderson@seco.com>
 References: <20220715215954.1449214-1-sean.anderson@seco.com>
@@ -64,153 +63,195 @@ X-ClientProxiedBy: CH2PR10CA0009.namprd10.prod.outlook.com
  (2603:10a6:803:c5::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6822ba15-bcc2-4d1b-d5b7-08da66ad9636
-X-MS-TrafficTypeDiagnostic: AS4PR03MB8433:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48241f1c-f73b-40b8-3653-08da66ad90f6
+X-MS-TrafficTypeDiagnostic: DB6PR03MB2902:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uCtOErf1Kl2GPkcKb26DcwHzw5CLjaFdLfQkZQ5K8kzWSX9V66FGMqvvaQs5k3NMtLiQIdmPojoTao4aftOZuv7IJ0XzF2PfGfqaDfUqcHyxHsoPpjB1jp2tcajG/WCQ1WUK53IBIKWSGiReQl0/GdC6LA3XVX/oFlDluS1+VkqzCBDII5mnwHLJi0AozQ2HqWI3o+ZAiy7YV9uvhVoqE31EI2YaWcnMcMbiEhmE3i+bUrmG5vo3C//wNEa/H1sgU6eJa+RDuJ5sOS0QTzaq9Z+QQkKPb46FKWPpKx2YVJ5q/PQpc/lrB8vVpyxu/UCR+fP7O3LnAWVxKPDZcAmVRMFYfJpMkZ/m2g3gp5k1JNXrBY2H/Cl/mUVgEcuE4fjccfypjam+H8fHTv2R8KgTyvdXoeTpbnlX0AlGEPeavKgFs53tuXftVACuecG9FZY6uZc0hlT6uuqRczomKNFwecgtUlLMkvZA0VEGmFI6V7wuFgAVxjSeryBkvCMjGBxl2iSesyZSxbA/5bWIYL4aLmrJtqPFlwNbt2SEszJqjY7fMnuIiONu0k+zv/gezlFlmgW0HPSgg96LUFRD9O7NFrjNeLI/wVhNKH6oyR1YOdsQoAGBlMVqZxIpfGboYgJihEmajZNTxdVjDs91V5LnXL6zj9BCYaRMvz3cCp+5aTHa4IUd+TqyYV9wUyFKHZEuxSIhYWL8U/H8up6Q1OiQDsEiYiqlTp8Mnwk2EYcr1wjBjdFjUYCQR1bQiIu6+bGq7Bwa8ojR+hAjjNrMUYGhZdrOqKA3C1VdWLuluD7KwJk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(346002)(39850400004)(396003)(366004)(136003)(6486002)(478600001)(86362001)(6506007)(41300700001)(6666004)(52116002)(6512007)(26005)(83380400001)(2616005)(54906003)(1076003)(316002)(186003)(110136005)(66946007)(15650500001)(2906002)(7416002)(66476007)(4326008)(66556008)(44832011)(8676002)(5660300002)(8936002)(38350700002)(36756003)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: P9xGR8Ksh1zAv34zXVtzWtHL3CtSDHO4ZY2gceuLvL0mvOR7mwD/DRcGc7D97yU1e0oWYNnNJqaH1SNXK4jYHoyS9Oj+b/1DthLD6Ek+NNYwDBF4FDAHALZNo5LDOZeMqCpoRRRjG7Wl1HuLyWcZYRZjZE7jNrHgw5klWH+rcbY4Ifojek4RUOyNlWLt5t/Li8eM7edxkrNrAZzAqBICc0yKcFvLQOWWCv6Y0/UYJ4p4quv6bwEGg62kOpvlbXT3Hsgyq5vE41WnmFYlxhvbluY8mqdTihn7MLyAewZ/sZKfqLuYmnJbSIliX2v15jY27zs8haNXFy5PZxSXS6Ji4iNXh5ehxBTou1bjgurYDpCp5aAHDQOwWK/N//JDnmSTqhgRWqdfxhVlJ4fajY2afYrRCMgThIo1P4BzahkQlzEH70oQh+qzG9zs5cRQgR/Gvp9gxahyp61XcpL8BWgUZrwKqbJKrH3JCbuPiQleL+qrO05YV1fk9TLryUBCXSDSNQpYHDsSLiwYHyf3GFAW6gIpmzU3pnenxHLhIhpKIt67wW5m7B9n60ocpLXi+EDk8TbqLee4urzNd1fjHGdhH1Bkw5mPV7de4kVI0EFpTT73vNLMxxLOLJgAnOaC7UThd+wEP2y6k28qo/RmeulHSJelDuh02hBJWSi8zHb4O0fDVEaTQH+xPc4N9KfFgp68fwpS5jgFitbt5Dm9M42w26OjxAl8A0zueyLeCgaONfy5/80YuiDQsM95AjOBe2uVtUdL84mC7yR3U63syb0oWMwNy8SVutanxcVxfPHfDZ0xutgd0EccTfswBAtS/kgx
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(39840400004)(136003)(376002)(396003)(86362001)(5660300002)(83380400001)(6512007)(1076003)(107886003)(38350700002)(38100700002)(186003)(2616005)(36756003)(26005)(6486002)(52116002)(316002)(41300700001)(6666004)(478600001)(6506007)(110136005)(54906003)(2906002)(8676002)(66946007)(66476007)(66556008)(44832011)(4326008)(8936002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9dqym1mDB2M6tFNK3Chgp/tTI2b924Byn0MkKv2VQ2xdENtU4zlAzn3dQWMN?=
- =?us-ascii?Q?ldY87uJVfmXkBwohPhFt/GSNK9Lw+ESnl1cp+ZOm9wTpyfnhnLF2LhgQg3pI?=
- =?us-ascii?Q?RWV3/JhxNOjonyBy4sfshcphkTP5Lq2kEO25ceue2ITa04QtJQ+9TBdpJmDi?=
- =?us-ascii?Q?NUN6yLHP6M8l/HMCk1AoPNiXLR9r7/1HHFcQcHBLExJ4IDDgd750I0xMNjG2?=
- =?us-ascii?Q?cdpleTvbAnpxJJQttUrXNUVLvfW1VIei/WQ9T2R2stkQbhgxInj4jQF6ZaEH?=
- =?us-ascii?Q?GV1c53ZaG3Go/cF+hQI/frlUu+n029qKWmsC1JSWf4y0AfwdjZ+0VzfdHmVJ?=
- =?us-ascii?Q?mLpTcaxpCK6wt5/BvdvdioYjZYMPrr9Yvyt2hlHGQPiMzmTi3vs0vvZ2gqh1?=
- =?us-ascii?Q?enmlfsmZJcFs0Rgdbvsf+NTmNqkIiGXb6pEPu10pme6hcnvviIwp+NV+LOW+?=
- =?us-ascii?Q?nc+z4yZNkkBP1I/+CF/LAa7UXkrAB0OZtX/h2gVX+GuWsnxOaCs+s5pzBh3z?=
- =?us-ascii?Q?SbaCJU8LGF1aalC2fBg/o1nf9OY04C1NQvrG1YODcssQ3ujzk4J3dglKL91t?=
- =?us-ascii?Q?7Qk7MxJ2xpYYi5QfFb4GrhwLiDlptWJkUEX+nbhNK+1t/YjFULuVxqJZCtQl?=
- =?us-ascii?Q?5xSnYMjQtBKGDeFOwm+b2SZ8FRKYgpRhPL3dsGoCqmoIk5oRsFvNtvNgSzb6?=
- =?us-ascii?Q?9emeQWezBaA9DCJOC/bpQKjNjM4/2OfVam/sMkxOSDMuf3VdQ4tN8n6ae0JQ?=
- =?us-ascii?Q?nPgDdSyVv6cSl6H4hC1isYH+u+xAgyIpRoX8zts7xoELqheN/XTT+bgKKl9M?=
- =?us-ascii?Q?TbT2Ww6UxYZLVrvDFpLSNKqUDHRtLM451b2gt1UymK3UfYviWpxD9p4B7NwN?=
- =?us-ascii?Q?7DLAK6ffxdWc4JlcpJTLGC/b4hnwQkGBJvY0DUaF1TQm5bUSy93sK2Zv8iMg?=
- =?us-ascii?Q?ksADC8S4SaxOGaxuJrnQqQ52Wp49ri1uiNiWD6EuSpFODaKrTH5IMVL47iWQ?=
- =?us-ascii?Q?icqMlDkeSGZC5ojHRoVwnSRzsdvbL7yovcf3Ece6c29AyjF42rc2DDE69bsf?=
- =?us-ascii?Q?TjjIQHGXvS7FBZ1llEpAtVir8cSVuW+5FeJiSgHjzhf/aFrdTBfblNd7JY4N?=
- =?us-ascii?Q?nBgry0IuOCpc19f586khtHH4uYvrV4M14gVHvXXWCUw28ZXlgMCqR6t90JTo?=
- =?us-ascii?Q?k8T1Zm82Gp7m+EfiXCTPZX9Xayuhz/TZr+vCtdtlmdDV/7AiPM32G1X1Rnsn?=
- =?us-ascii?Q?4Cp+WlmYmtRETXqW4M+XjebLvBDDqFc+jWenJUQpUs/anqKNMugRXQs6y5TZ?=
- =?us-ascii?Q?LLKscyyJZwxwPnunkZH9OEJ9fgD2YY7/0Ltk1iiPlgp3NjHc0FGkDBi0pBIP?=
- =?us-ascii?Q?9SNIxdP1uo0+jD+9DesWl6UYRpA2scl4MgePCiufAEKz5dZhMrzWSaiLc3Qc?=
- =?us-ascii?Q?mWsaquQsbNzNf8NaTHX41MJunkmpRLVnwzGrnSNXh4OT/B2pTH90IkMBPhPo?=
- =?us-ascii?Q?fR5OxlIMyPs131DKYhEYjRciwciAcfmJCPimDoA7+ZwBo5yRRZ+/w1N95OT5?=
- =?us-ascii?Q?vSUhkyXLYGFZUzBO6pLhQQeWJ51QoHi1NRRpgYD+dGF6gAo2e/qGajokZEtf?=
- =?us-ascii?Q?jg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?X3ud3n1PUIDTo+ILvitoh2PYJLXxONCse6OFjfpnpgt49T3UtFwH9iceQWmn?=
+ =?us-ascii?Q?GlLwPgnwnVqCe+rNx9n5TqbWjpO0rXawBxevboRuFChb5S9lnENhIcdPmQP9?=
+ =?us-ascii?Q?NWR4oPwwImJIXsFY6ikBe/5fW39XXMUCD8lcMmpIl/YJ4IPSLie7/W9/sYeC?=
+ =?us-ascii?Q?/RgtbugFzJrUVRRMjhLZISrhdF02Bi9C575FnUYsxlPdzP8IzWHzrUfFQZ+h?=
+ =?us-ascii?Q?DiHn0oEFHqZei5EQrfV4LlFV0+v1TbYe67MabUBJfu3LcEdWCXhzh6E1CUn1?=
+ =?us-ascii?Q?/XSV2M+eWVneNPXfbQmgIP4N9lJCgUUFQDQy2RlMaHr6ebv2uqYoyUPY2+Hz?=
+ =?us-ascii?Q?vKUT6+08Im0g2YhetW7HH6WA0srf70uDR3wBQ/h9iQElSvbvGEogEicksIZX?=
+ =?us-ascii?Q?9Px8mqFoNxoBrBl257LDfzDyZXhhBUiqoIV2GPHZDSSdV5JID7MnCZxKIE8o?=
+ =?us-ascii?Q?CIKJ15JVQQYunv9kPQqLUjul+QImHFManjlKelYvCCFH91J+bWrpxcOW5WIE?=
+ =?us-ascii?Q?EKDkOG+aCMXREzrZlZnO0EbV/twJY3np2U34FNUIaAsWqpZfgwnrgqAABYvM?=
+ =?us-ascii?Q?Dcxst6rvQ2nfJe5anm5Hj6Wf3UbQmIRNwlYz3Dz7OlKhROTa/lUxMG799ugi?=
+ =?us-ascii?Q?SFnyHOrb74Zv3jnY50ofD/cIvpZQ8kaSfkR4f0g7UELMuJhfk+93AQUPgpNR?=
+ =?us-ascii?Q?v1vxvbRxk4fAo1xoxMqCNfAmMZmfgMFeHJ8uNENLonSlvlZvYnabtb4h0IGz?=
+ =?us-ascii?Q?ITIUCUtAO4jcTKQ0xdxl0oXbUJPGWHUtd0eAeifYD9gVMZTPNZdJ9HQk94qN?=
+ =?us-ascii?Q?tJdKmVKVJ7tQyOhJkEkOJHhFxdXu/b/PGkYko2wrQmypIhH4DlDfwKfYheHo?=
+ =?us-ascii?Q?q1Y/81KZc/utBx9tc3Hac/p+b/JSN8Wp1kvzOg+UQym63YeQSAAqyk17saBM?=
+ =?us-ascii?Q?o0/1t2z3EOM160Mv0wVUYTtXCR1UNrQPYZEIT55ubY1Gs146Uaos5e3O2pfo?=
+ =?us-ascii?Q?wEdmy6PzMSGo0aiBtU6i4xnyUcnVCHcdPHiDGkw7DKdtVrkAMIks+Y8raZo1?=
+ =?us-ascii?Q?BSMI7T14Wi56o61/99U3NmbVxUSGu55n14goS8TsmlvDBrvMuroIdRcUsyB2?=
+ =?us-ascii?Q?vTS+4iDe3MssYG+YVIuQpg8Sf9JyJIvScUF8kfHjM/pH1qrlmpDfFhxGFEqH?=
+ =?us-ascii?Q?NPFbdiWpm8bX41pX2e1uWcdHg1qWYEAx9+J+3KIwMKYl8Hrj9vKgvEMtBzMB?=
+ =?us-ascii?Q?VbEP6/gWQkbgY8y6oc0hl1U/2tzwJbajlNF3574yX2+iFf1OpTlUNxYnyDNt?=
+ =?us-ascii?Q?W2iOBdV9QBn2FN2AFHmZrU1o0cZ3BNJk4oIK9+8NAzag4zert+spd3CVnPNz?=
+ =?us-ascii?Q?rvrwXHrV2P6V6DqoK8Bp+JP4PQvTSixucU1v+gp/0V0rAYLuqe4GIVQOKVEi?=
+ =?us-ascii?Q?QRmaeQOsC77i/A1inQFydY0htOLWU5cqDVFQue47EVXWC5eyGO7out+I9oVu?=
+ =?us-ascii?Q?N5d1gHjPBmwh9oF4QabbtVbiLkv/bx555qMyvSX/ZWY9JxkYZv2mCA2+pKm3?=
+ =?us-ascii?Q?MsAkEXywy/g5N95+OkpWSA8MVZEvhoziB0kTgduy2/ZWzS93Y+giGLRlefi7?=
+ =?us-ascii?Q?nA=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6822ba15-bcc2-4d1b-d5b7-08da66ad9636
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48241f1c-f73b-40b8-3653-08da66ad90f6
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 22:01:36.4085
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 22:01:27.5026
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wLOtwNEG8gYy2EOtDVGVn3PZXQCT2pYywdA0lhiIcEJZ+6pQ+xNT6+pq55EmyhvJAzXW9y2Q8blLsPQc+zDDiA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR03MB8433
+X-MS-Exchange-CrossTenant-UserPrincipalName: IAnovIGUtPphlR1aTEmEkg2Qeygp+JUNWqun8WWyigdB18IMCmNzqbbLv7LuhNhUWo0u6+QNfQ0y3/XN4M0DGw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR03MB2902
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds a function to update a CGR with new parameters.
-qman_cgr_create can almost be used for this (with flags=0), but it's not
-suitable because it also registers the callback function. The _safe
-variant was modeled off of qman_cgr_delete_safe. However, we handle
-multiple arguments and a return value.
+This removes the _return label, since something like
+
+	err = -EFOO;
+	goto _return;
+
+can be replaced by the briefer
+
+	return -EFOO;
+
+Additionally, this skips going to _return_of_node_put when dev_node has
+already been put (preventing a double put).
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
-(no changes since v2)
+(no changes since v1)
 
-Changes in v2:
-- New
+ drivers/net/ethernet/freescale/fman/mac.c | 43 ++++++++---------------
+ 1 file changed, 15 insertions(+), 28 deletions(-)
 
- drivers/soc/fsl/qbman/qman.c | 47 ++++++++++++++++++++++++++++++++++++
- include/soc/fsl/qman.h       |  9 +++++++
- 2 files changed, 56 insertions(+)
-
-diff --git a/drivers/soc/fsl/qbman/qman.c b/drivers/soc/fsl/qbman/qman.c
-index eb6600aab09b..68b825ea10f1 100644
---- a/drivers/soc/fsl/qbman/qman.c
-+++ b/drivers/soc/fsl/qbman/qman.c
-@@ -2568,6 +2568,53 @@ void qman_delete_cgr_safe(struct qman_cgr *cgr)
- }
- EXPORT_SYMBOL(qman_delete_cgr_safe);
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 66a3742a862b..7b7526fd7da3 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -291,15 +291,11 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	init = of_device_get_match_data(dev);
  
-+static int qman_update_cgr(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
-+{
-+	int ret;
-+	unsigned long irqflags;
-+	struct qman_portal *p = qman_cgr_get_affine_portal(cgr);
-+
-+	if (!p)
+ 	mac_dev = devm_kzalloc(dev, sizeof(*mac_dev), GFP_KERNEL);
+-	if (!mac_dev) {
+-		err = -ENOMEM;
+-		goto _return;
+-	}
++	if (!mac_dev)
++		return -ENOMEM;
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv) {
+-		err = -ENOMEM;
+-		goto _return;
+-	}
++	if (!priv)
++		return -ENOMEM;
+ 
+ 	/* Save private information */
+ 	mac_dev->priv = priv;
+@@ -312,8 +308,7 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	if (!dev_node) {
+ 		dev_err(dev, "of_get_parent(%pOF) failed\n",
+ 			mac_node);
+-		err = -EINVAL;
+-		goto _return_of_node_put;
 +		return -EINVAL;
-+
-+	spin_lock_irqsave(&p->cgr_lock, irqflags);
-+	ret = qm_modify_cgr(cgr, 0, opts);
-+	spin_unlock_irqrestore(&p->cgr_lock, irqflags);
-+	put_affine_portal();
-+	return ret;
-+}
-+
-+struct update_cgr_params {
-+	struct qman_cgr *cgr;
-+	struct qm_mcc_initcgr *opts;
-+	int ret;
-+};
-+
-+static void qman_update_cgr_smp_call(void *p)
-+{
-+	struct update_cgr_params *params = p;
-+
-+	params->ret = qman_update_cgr(params->cgr, params->opts);
-+}
-+
-+int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts)
-+{
-+	struct update_cgr_params params = {
-+		.cgr = cgr,
-+		.opts = opts,
-+	};
-+
-+	preempt_disable();
-+	if (qman_cgr_cpus[cgr->cgrid] != smp_processor_id())
-+		smp_call_function_single(qman_cgr_cpus[cgr->cgrid],
-+					 qman_update_cgr_smp_call, &params, true);
-+	else
-+		params.ret = qman_update_cgr(cgr, opts);
-+	preempt_enable();
-+	return params.ret;
-+}
-+EXPORT_SYMBOL(qman_update_cgr_safe);
-+
- /* Cleanup FQs */
+ 	}
  
- static int _qm_mr_consume_and_match_verb(struct qm_portal *p, int v)
-diff --git a/include/soc/fsl/qman.h b/include/soc/fsl/qman.h
-index 59eeba31c192..0d3d6beb7fdb 100644
---- a/include/soc/fsl/qman.h
-+++ b/include/soc/fsl/qman.h
-@@ -1171,6 +1171,15 @@ int qman_delete_cgr(struct qman_cgr *cgr);
-  */
- void qman_delete_cgr_safe(struct qman_cgr *cgr);
+ 	of_dev = of_find_device_by_node(dev_node);
+@@ -352,28 +347,24 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	err = devm_request_resource(dev, fman_get_mem_region(priv->fman), res);
+ 	if (err) {
+ 		dev_err_probe(dev, err, "could not request resource\n");
+-		goto _return_of_node_put;
++		return err;
+ 	}
  
-+/**
-+ * qman_update_cgr_safe - Modifies a congestion group object from any CPU
-+ * @cgr: the 'cgr' object to modify
-+ * @opts: state of the CGR settings
-+ *
-+ * This will select the proper CPU and modify the CGR settings.
-+ */
-+int qman_update_cgr_safe(struct qman_cgr *cgr, struct qm_mcc_initcgr *opts);
-+
- /**
-  * qman_query_cgr_congested - Queries CGR's congestion status
-  * @cgr: the 'cgr' object to query
+ 	mac_dev->vaddr = devm_ioremap(dev, res->start, resource_size(res));
+ 	if (!mac_dev->vaddr) {
+ 		dev_err(dev, "devm_ioremap() failed\n");
+-		err = -EIO;
+-		goto _return_of_node_put;
++		return -EIO;
+ 	}
+ 	mac_dev->vaddr_end = mac_dev->vaddr + resource_size(res);
+ 
+-	if (!of_device_is_available(mac_node)) {
+-		err = -ENODEV;
+-		goto _return_of_node_put;
+-	}
++	if (!of_device_is_available(mac_node))
++		return -ENODEV;
+ 
+ 	/* Get the cell-index */
+ 	err = of_property_read_u32(mac_node, "cell-index", &val);
+ 	if (err) {
+ 		dev_err(dev, "failed to read cell-index for %pOF\n", mac_node);
+-		err = -EINVAL;
+-		goto _return_of_node_put;
++		return -EINVAL;
+ 	}
+ 	priv->cell_index = (u8)val;
+ 
+@@ -387,15 +378,13 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	if (unlikely(nph < 0)) {
+ 		dev_err(dev, "of_count_phandle_with_args(%pOF, fsl,fman-ports) failed\n",
+ 			mac_node);
+-		err = nph;
+-		goto _return_of_node_put;
++		return nph;
+ 	}
+ 
+ 	if (nph != ARRAY_SIZE(mac_dev->port)) {
+ 		dev_err(dev, "Not supported number of fman-ports handles of mac node %pOF from device tree\n",
+ 			mac_node);
+-		err = -EINVAL;
+-		goto _return_of_node_put;
++		return -EINVAL;
+ 	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(mac_dev->port); i++) {
+@@ -404,8 +393,7 @@ static int mac_probe(struct platform_device *_of_dev)
+ 		if (!dev_node) {
+ 			dev_err(dev, "of_parse_phandle(%pOF, fsl,fman-ports) failed\n",
+ 				mac_node);
+-			err = -EINVAL;
+-			goto _return_of_node_put;
++			return -EINVAL;
+ 		}
+ 
+ 		of_dev = of_find_device_by_node(dev_node);
+@@ -465,7 +453,7 @@ static int mac_probe(struct platform_device *_of_dev)
+ 	if (err < 0) {
+ 		dev_err(dev, "mac_dev->init() = %d\n", err);
+ 		of_node_put(mac_dev->phy_node);
+-		goto _return_of_node_put;
++		return err;
+ 	}
+ 
+ 	/* pause frame autonegotiation enabled */
+@@ -492,11 +480,10 @@ static int mac_probe(struct platform_device *_of_dev)
+ 		priv->eth_dev = NULL;
+ 	}
+ 
+-	goto _return;
++	return err;
+ 
+ _return_of_node_put:
+ 	of_node_put(dev_node);
+-_return:
+ 	return err;
+ }
+ 
 -- 
 2.35.1.1320.gc452695387.dirty
 
