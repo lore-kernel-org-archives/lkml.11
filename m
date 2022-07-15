@@ -2,180 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A85C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 21:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CEB6CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 21:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiGOVli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 17:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
+        id S231745AbiGOVl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 17:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229555AbiGOVlh (ORCPT
+        with ESMTP id S229555AbiGOVl5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 17:41:37 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6177687215
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 14:41:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657921296; x=1689457296;
-  h=date:from:to:cc:subject:message-id:references:
-   in-reply-to:mime-version;
-  bh=Jw5whMorOvONchlJQ3eC+LixtNaLAiKM6spNrxSFxfs=;
-  b=WTno8aOQQzX9o4sebuuhl6j7RRnSbhnyhCri70Hw42wUbmX/6RwsqN3e
-   ZaeOhl6Tf0SKI+k/RLjHYzq3mqJHgkF/3e19OuGB2DJA6etBvU7VvfbIZ
-   KptKnQRoFWGa3FXDl0WrvPmzxod4gg+FnkgJ3PMfnan9PwUjmYwHgqGsd
-   N4AP+1sTmKCwltYghrH8oFeFkFhlOuePBcLXwTRig4ZVQ7ZFP92SK+5dB
-   YDuRVIJb8rZ7kx8OLJZt1481ixtxZTJqtLecQeQpO9oRi115peLSAwTOJ
-   1MZr3RjR6M9SWeBp9Dj0W29rs995ECNpDA4n0zeT8dVuJBEx6AYiLeHMx
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="287045471"
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="287045471"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 14:41:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,275,1650956400"; 
-   d="scan'208";a="624021768"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga008.jf.intel.com with ESMTP; 15 Jul 2022 14:41:27 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 15 Jul 2022 14:41:26 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Fri, 15 Jul 2022 14:41:26 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.170)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Fri, 15 Jul 2022 14:41:26 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c1fMIEFgqclCtPjgXNBQEaA5kTF4cxIinStPN4Cm5nClzcTMJ4PherE3kkEMVHoqQTmAzrG1pDL2VmH0WOPhL7m+LoJocOts2lQ/agPX05p17lz/FlC+xM77xeqn2Nhw3e9tH6NMT0fvvsdRX/TpXYN5b0kPy9eTKOsArmYg6+ufAkdl1QcyymXDdRXAi+Vud29rbcqVNEbw4hpna1uhRYqXhVCcOyJnSdMwJxmcGdqcTgBQyo9eLlUNoFEAhymbyHq59bcX2g4BgsamTEmhed+AaYQ8B3N/9b6PMKgaY1O+Ydbp3BbJpBZrN2h6sdCxRK6oYbq1Fs9LfAcGSeVxCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1Z79sL36zUmLZtBxCEc/g53Kr6vWMgTgclcTGfABko0=;
- b=AX7TWRfOS8Hrg3Vjy+Lo92Lz+QL2wAiIl5Bv8asfrYTmy0HFzcxxG1nnNbSS47wNij9ZkEbzqGehIhvm5FBwxFnplNqYpIb91WhkbCQJb2afMHf8RkuYcz3tAbWmRNxCpwwI5441Wf+WFO3Eg3Z6BoYk5e+XsqbYM2+Pa5InBnCh+F4QPg3gfRtRYqExw+lDhSKgM2SD3DE3fcs7NeLosrBKcNQ5BlYRIztKjLILvJn9ocruDyP+6XxraodQY785PMfd1bPQW7nj9oNY6i62QHOvYjtTCNOqWtTOvh8xWPaq+hI77OL3Y9Ac9PQV6A/Mkc3WNh02ohMWdQ3aGQCD3Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from MN0PR11MB6059.namprd11.prod.outlook.com (2603:10b6:208:377::9)
- by CY5PR11MB6090.namprd11.prod.outlook.com (2603:10b6:930:2e::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.15; Fri, 15 Jul
- 2022 21:41:24 +0000
-Received: from MN0PR11MB6059.namprd11.prod.outlook.com
- ([fe80::8053:3c59:9f5d:b615]) by MN0PR11MB6059.namprd11.prod.outlook.com
- ([fe80::8053:3c59:9f5d:b615%9]) with mapi id 15.20.5417.026; Fri, 15 Jul 2022
- 21:41:24 +0000
-Date:   Fri, 15 Jul 2022 17:41:18 -0400
-From:   Rodrigo Vivi <rodrigo.vivi@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-CC:     Thomas =?iso-8859-1?Q?Hellstr=F6m?= 
-        <thomas.hellstrom@linux.intel.com>,
-        <intel-gfx@lists.freedesktop.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        <dri-devel@lists.freedesktop.org>,
-        Jasmine Newsome <jasmine.newsome@intel.com>,
-        <linux-kernel@vger.kernel.org>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>
-Subject: Re: [PATCH v2 21/39] drm/i915: fix i915_gem_ttm_move.c DOC: markup
-Message-ID: <YtHe/r0a9UM+6Q0b@intel.com>
-References: <cover.1657699522.git.mchehab@kernel.org>
- <395e3cf3bce06ad8e6c4ce0a6e713249a86f870a.1657699522.git.mchehab@kernel.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <395e3cf3bce06ad8e6c4ce0a6e713249a86f870a.1657699522.git.mchehab@kernel.org>
-X-ClientProxiedBy: SJ0PR03CA0047.namprd03.prod.outlook.com
- (2603:10b6:a03:33e::22) To MN0PR11MB6059.namprd11.prod.outlook.com
- (2603:10b6:208:377::9)
+        Fri, 15 Jul 2022 17:41:57 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81E487215;
+        Fri, 15 Jul 2022 14:41:56 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id r1so4232150plo.10;
+        Fri, 15 Jul 2022 14:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mbp4ZJOvfAyNjZhg4VKTSXbGmuQMrwZMn7tyXOtsqps=;
+        b=Mj3GeEFDab6IFnYHd8VsEJrDLwuaAKZayt58TYiHkejpIxRzRfjkcdBslUM+Aw0XLZ
+         ms5Fked8kiaBZGBKGnfixlJP4MA8uvMHxWz7RodmJHvJiHaQ+nwuxtuCfrEEGjobrrj5
+         nx3MeVP0kafBs7skAm1ElyUpuQ2AjZywt6onmxlRSDvX00aH09LnuDLx9mI9Nsg/PqS6
+         rwFPlGMp1TKXC1Z0it/5BbAhHzMXZST+zErGgDp7UIcTUfKIFKdZRjcLtttavQ9W03Zk
+         GcYZ0PG2yPy6Q69+cwxe8We5t/KP5DUUt7xGqMV+zWa/nEAUnTCmp2GRflzDlZecrctD
+         JHkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mbp4ZJOvfAyNjZhg4VKTSXbGmuQMrwZMn7tyXOtsqps=;
+        b=ZbMJcL7VskH9Op22fSXbx+GElLXT4+GXYn0BQM9rLAjUA/MwXGXuKyyjTfrrkZghrY
+         dvkSk8tKR6M46mNNUEBMjWdHdTAV1I00Dnq9si2XBDC+oCPJsTYv3osMJYaOUNvIDaQT
+         yG0rpSEfoNInWK3SKuPTZyDmdyLnYBfobkWxzRLHqtm6tIPp3m5emBD2d2e4C7COoXUC
+         +LxAxsd8nHDIit1aQZFdlJqzDn4vT+r5vTLkvfTi90pJdvWOADUHBd9UpdviH/Uf/jmm
+         XWGF828ck3wJs8QidrXkuNH5iOAjbID7inmUd4MQeApB3Fo8Tcp9IDbAgExQijl838CL
+         ExCA==
+X-Gm-Message-State: AJIora/0/MMCb+sjaVqelZ6Z/M23NseOpsDDzRsMs6B0ruz6OacbqLBS
+        +HWfyksu12yl7x2QoyURsBb60IwTPNo=
+X-Google-Smtp-Source: AGRyM1vAoes8mwHF3YEA0ACdkABUCtMDq2XrqMKU/ST7Ht0hVwKslFpfzJROnb0J7Q0BS67X6goTfw==
+X-Received: by 2002:a17:902:e750:b0:16c:761:6e96 with SMTP id p16-20020a170902e75000b0016c07616e96mr15757900plf.0.1657921316080;
+        Fri, 15 Jul 2022 14:41:56 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d9-20020aa797a9000000b0052add461d2esm4289975pfq.103.2022.07.15.14.41.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 14:41:55 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-mips@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2 0/2] MIPS: BMIPS: Improved early panic support
+Date:   Fri, 15 Jul 2022 14:37:45 -0700
+Message-Id: <20220715213747.111321-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4f893eef-44f8-4b50-3ef3-08da66aac36d
-X-MS-TrafficTypeDiagnostic: CY5PR11MB6090:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: J0ihE+cbVBWBvI6DTrfPb6ux5isMZsKAASFaERgIPCS60Zi/QNaCOSQ5hJ4N3AtYLfSP616puM910BtwB8wYbuu5DarF0RCyL5xYE7zuCqC1frZu12qYB8Ag9glsTtR7i8wIk92W8Ikuq9VSbPhkD9jVaXJZ4sG1MI4HtEeFbGnAXSKXDuaonl8H4DtYTyWXYMuruXsZGJ+cjFgTPvcYzChKjFo3dI/9yuOIknXugCbp860ye+fvOWD7pdp6IalbqvNN7yXrFl7xPizYUD+a/zkwU002m6cUj6MLbT+J2mf+Y5Q/uqbysedCtTKT1wBzcaNzEbiBUmndD/yY+6MJkDRYlxcLAwltSHP7N2FgnSCcINjZ2ZDfHn+bedVfSHkpqYdxdNyypsYZIF41oq4KwCgMhgSd6xtXfQc8J9t3c/jRFojyJIudykx3VLFug/NTuVqHPRPhu35p1EBoD1tvwMxcJkCDLGbeetoJZK/go7vmMFscYcDTVgwfDvMpASzElD1mU+6kDVahXFCHlRlyqRgBv1AshNPjh/bS9NAyzgmnG7R/FHRQzFUAlpErWFAAFaF1/Cr29Kfu110t1i6bohIKYTyhB86E7ys4bFZ1PGIPzRNwxtGMn8vTf8iY8BjHkIcU+AYkHTASOG7BPC8GinPE/u1GX8dOJ0zAJf2R8ZN1kqzagGOuXRfukxlXpyUzjROVDJGjzGWKfIZp14/VhVoT1NxqA50hWcjOjbKV2DNd31Chq3wYk6HlCojn/IpqC2fbSZ7O2oRWg98lKZk32gSJ3LkCK7E8qEv52HJ7g+A=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6059.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(366004)(39860400002)(346002)(136003)(376002)(38100700002)(44832011)(66556008)(83380400001)(8676002)(66476007)(66946007)(4326008)(2616005)(82960400001)(5660300002)(86362001)(186003)(2906002)(8936002)(6506007)(6486002)(36756003)(966005)(316002)(41300700001)(478600001)(6666004)(54906003)(6512007)(26005)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KRVK3ytz9gZiuMpNQpRJz/wG710H19Kh80vfg4TRN35FRYQWWn1fyJRfhgOY?=
- =?us-ascii?Q?ebe/k31WOnZOPDQ0U2JN7GpSUo1qIhe68ygEqyAdJtDUYMh9pzlDz7i6m+EI?=
- =?us-ascii?Q?26krRKRzR0wjeNVnWV8i+tQqWJmD6vV1LDlPqn62C5nwpwn9uE2q3JO7OZYd?=
- =?us-ascii?Q?1LZZiQSPdrELrTU8VNB6EbJTWtVSvTnNqzcB/tv7WlDDnIiJneA5TLJm6Uu2?=
- =?us-ascii?Q?tqmzUzYAIt0ywmrS2U8qdd8KuLw9eehWFhwInHoNQPxm7RDM7hPnjyk12Q8Z?=
- =?us-ascii?Q?r7+ldKOYCbDI0QhBzk7jct/7YAA9BMz43DxMeGxiOEbq2gTgqcdwTkJhnZbU?=
- =?us-ascii?Q?bL5FI+EXGGrUzjkc+HC8m4FANxI3WsmJ/Dlcmu0VrQBboWXswYFr96NMSEen?=
- =?us-ascii?Q?OQrcM9GtHeEEoYPjAfPD23aVl3VVfoF0gqMeuKLFkf7GyBxGUnncnWn0ys36?=
- =?us-ascii?Q?H5DNe6lhiOHjMW/gXNkFYKV1D1Ed+Rgky5fAoANya/ygzERrM0RczwBZrLy5?=
- =?us-ascii?Q?glo3AJINr5OPnxSMNs5khn7td6zKzzBA36C38Mb0gNkey6iKtHssalklSqdk?=
- =?us-ascii?Q?or+yeT/fyTY84zj+KW2hs8EPF2F6WGlt21cKqNKpo7Jkx4RBNu1arj0/yLkX?=
- =?us-ascii?Q?Fp0sAqfsQHYAdb4OPoFpwLqDb9Sv6ygCNOBK6FMIbOIaydJSRc5y6pg3JxX2?=
- =?us-ascii?Q?Rroniur+8ui6wWvUZSuY1GTB2OD2uf25677+//trWbUZILBLoOVXQVl9FyW1?=
- =?us-ascii?Q?R7X2WkbVNEkUDtf/VFle5AFXyV1qYFg/yzZuE3UioyQ6LfJCctWMS4UgcgQm?=
- =?us-ascii?Q?iRGgBJyzoUvnBC7qPF2Ggu5UFJ3tZNougCZzHYc2lZ6bLI5RQqZFRIxPg5K5?=
- =?us-ascii?Q?Y4+Ze0V9mFg2YFq67K/psFjaQBbmGCMFou2a7tYl57KeFDMuwbgPgGK2hDpA?=
- =?us-ascii?Q?M2me1JiGdX18ialG5LNaXrmV9QBfTIImgROtlfpBxjzt+IpGaMz2wAz2SkvF?=
- =?us-ascii?Q?yHzTUhbBCcU4O/2gZMJOm2keRkmJu5kufgihjy7o0bmV29v5yVwwbZPXZYZC?=
- =?us-ascii?Q?bopBSxMg+8hqWqja6zoQSbBYnpQx6Uc5U6OBGCp+oU32I3jGYkJrlDqRve0Y?=
- =?us-ascii?Q?lsTj7IdzfMQtsh4KB8SMW1T7KC3Mm2LNeGImFAR4mZ3c5drbsWX50wAIO4v7?=
- =?us-ascii?Q?/DhVcddd9bPTFRn8lR3epd5sTVom75UqlbEtOy3f8Y3/v3nhrFxG8a7TMIY5?=
- =?us-ascii?Q?q4JfWsIEo8NOlQBZpy7s6ePZ4QdtJ9pVxuobAqYbh/N4MjTT3lLDda5+/yZJ?=
- =?us-ascii?Q?eBlcJCSUYtN7vRw1UELKbixnhShlICgDcnKW7uULkI/sWJrIJDiyzFrSNvvE?=
- =?us-ascii?Q?6u2IxRtFSoX30h8P04YtwymVew+CI3gEGug1/RcVTFlSR+08EAPxcckE2wyX?=
- =?us-ascii?Q?8fVMuNNS0G7AEDdmrHQOnsFQiP/a504iok9o8WBpbJHPjXeD9LRv8/rT+h48?=
- =?us-ascii?Q?mQAJluXIKEN7mkwTyWGM7VvAoMWDWZBxSv+bsh1hWScwaMC9SVu0y0AymQ3f?=
- =?us-ascii?Q?BaV6E1pELQmLzVOrkK11ayoSLlodG2kHNOCNQhJHZdZRn90b6NqvzznjeBEN?=
- =?us-ascii?Q?wQ=3D=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4f893eef-44f8-4b50-3ef3-08da66aac36d
-X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6059.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2022 21:41:23.8348
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OztMN4dBrYfzwJ3dfeKm9XlhtU/i+UF5fKP0rG8FFWAFKhyziirnNe5hNBEkoIzLV9ptmIm4Dt3cJHkskz502Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR11MB6090
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 13, 2022 at 09:12:09AM +0100, Mauro Carvalho Chehab wrote:
-> The doc markup should not end with ":", as it would generate a
-> warning on Sphinx while generating the cross-reference tag.
-> 
-> Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Hi Thomas,
 
-Reviewed-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
+This patch series adds support for cfe_die() which can be used during
+early platform initialization when we do not yet have a valid DTB to
+infer an earlycon console from. This is useful while bringing up new
+platforms/DTBs as well.
 
-> ---
-> 
-> To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-> See [PATCH v2 00/39] at: https://lore.kernel.org/all/cover.1657699522.git.mchehab@kernel.org/
-> 
->  drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> index 56217d324a9b..16dd4991d527 100644
-> --- a/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> +++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm_move.c
-> @@ -20,7 +20,7 @@
->  #include "gt/intel_migrate.h"
->  
->  /**
-> - * DOC: Selftest failure modes for failsafe migration:
-> + * DOC: Selftest failure modes for failsafe migration
->   *
->   * For fail_gpu_migration, the gpu blit scheduled is always a clear blit
->   * rather than a copy blit, and then we force the failure paths as if
-> -- 
-> 2.36.1
-> 
+Thanks!
+
+Changes in v2:
+
+- ensure that we do not break multi-CPU builds by reading the CPU's PrID
+  to perform the appropriate XKS01 disabling before handing over to CFE
+
+Florian Fainelli (2):
+  MIPS: CFE: Add cfe_die()
+  MIPS: BMIPS: Utilize cfe_die() for invalid DTB
+
+ arch/mips/Kconfig                      |  1 +
+ arch/mips/bmips/setup.c                | 14 +++++-
+ arch/mips/fw/cfe/cfe_api.c             | 68 +++++++++++++++++++++++++-
+ arch/mips/include/asm/fw/cfe/cfe_api.h |  2 +
+ 4 files changed, 83 insertions(+), 2 deletions(-)
+
+-- 
+2.25.1
+
