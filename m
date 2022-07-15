@@ -2,387 +2,225 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACBCEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16564C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:52:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232374AbiGOHwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 03:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
+        id S231897AbiGOHwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 03:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231152AbiGOHwC (ORCPT
+        with ESMTP id S230173AbiGOHwh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 03:52:02 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43597968E
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:52:00 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id r186so3754009pgr.2
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=at1d9rp4s19kXJ0EYSw6JgJl62gYpx4sN3jQfQIiovc=;
-        b=LYsf9Xbf+L8oxuv26fH95NuHkxoYE+NTpsA0yA9ixEOBLupuJ7XLFQ32+fNX0iRw3N
-         mazMszzIh7vyw+JgsgagfnrMRzkuMEfAiHoDjm2oVdKn/rGLGJUU98Ydudu2wJtRvqdN
-         9WqWoPtg5icNhbZtWNB/qBI1XeeXt9IPnje+KpINUszFw4drAFlaCYWuS1T29b+PpCZ2
-         LzsVUV8o6OKhwmu6Uwi5/jhgX16X3AM1SfFV2BUOltLUE3z9eyGKdbaEEP5s0vno1rnv
-         jpf/F5ohqoY9Z09gI/374APO5uDDzhdPPoSvYqpOXyjnrco4/nKzlKmHZTWYVK0aoBMq
-         g/Ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=at1d9rp4s19kXJ0EYSw6JgJl62gYpx4sN3jQfQIiovc=;
-        b=TzCd49WtIlYCD+Q8J9OJqw3wEauWf3sEmqoB4CyW4iaLkGeuyI37JUycgSwAjME2JS
-         SICwOXe1YsoIgdfq03cln4KfFpqsFri4sf6PZLWQH94o4N/dDbF6GUnzzgSS8iJ5ceZI
-         hpuQkR2c3E0YdjuqdZy+bwkHaZFzN5I+dJKSjWX+S2ZN4wFjE+P+LddfkMgN3V9GThfm
-         efQW1FPedWAfeH6NdM1JssAzj+e3QVVdPA5axk4gNDgxnBXlY6+TU20RtCcW+Hozfl7r
-         ye+C80NR7eK2VKcZA8i7LSG203uSC28u9xY2Tu1utwC3mY/zIMFOwLyy9dgjpwp4JBKT
-         uB1g==
-X-Gm-Message-State: AJIora+3VmbUteSFnm35zyyMMfKYyYcz1TtyFlbEH6rj42/VfgL/sRyI
-        0JCK3AYAT+FUremzm1KUJsw=
-X-Google-Smtp-Source: AGRyM1u30SiiUoMtAYl12/KiykEE8kau+Ucm/Km1h7aN0ep8fQLRj9B3T/fOhWjC7b1UWwBl5WN7vQ==
-X-Received: by 2002:a63:710c:0:b0:40c:adcf:ce72 with SMTP id m12-20020a63710c000000b0040cadcfce72mr11447450pgc.310.1657871520526;
-        Fri, 15 Jul 2022 00:52:00 -0700 (PDT)
-Received: from localhost ([156.236.96.165])
-        by smtp.gmail.com with ESMTPSA id r5-20020a17090aad0500b001ec84049064sm2740051pjq.41.2022.07.15.00.51.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 15 Jul 2022 00:52:00 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 15:53:23 +0800
-From:   Yue Hu <zbestahu@gmail.com>
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>
-Cc:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 07/16] erofs: switch compressed_pages[] to bufvec
-Message-ID: <20220715155323.00005df4.zbestahu@gmail.com>
-In-Reply-To: <20220714132051.46012-8-hsiangkao@linux.alibaba.com>
-References: <20220714132051.46012-1-hsiangkao@linux.alibaba.com>
-        <20220714132051.46012-8-hsiangkao@linux.alibaba.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        Fri, 15 Jul 2022 03:52:37 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE41B77A4F;
+        Fri, 15 Jul 2022 00:52:30 -0700 (PDT)
+X-UUID: 95c87faa33c24f53b1136fcca39c7063-20220715
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:f6471752-b73b-482f-9ea8-797952906337,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:46
+X-CID-INFO: VERSION:1.1.8,REQID:f6471752-b73b-482f-9ea8-797952906337,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:46
+X-CID-META: VersionHash:0f94e32,CLOUDID:57a96164-0b3f-4b2c-b3a6-ed5c044366a0,C
+        OID:7f41dda61adb,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 95c87faa33c24f53b1136fcca39c7063-20220715
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <biao.huang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 2036495129; Fri, 15 Jul 2022 15:52:24 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 15 Jul 2022 15:52:24 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 15 Jul 2022 15:52:22 +0800
+Message-ID: <5a36c4d676b462a8652a27ce9748d4b7597eb0b2.camel@mediatek.com>
+Subject: Re: [PATCH net v4 3/3] net: stmmac: fix unbalanced ptp clock issue
+ in suspend/resume flow
+From:   Biao Huang <biao.huang@mediatek.com>
+To:     kernel test robot <lkp@intel.com>,
+        David Miller <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <llvm@lists.linux.dev>, <kbuild-all@lists.01.org>,
+        <netdev@vger.kernel.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>, <macpaul.lin@mediatek.com>,
+        "Jisheng Zhang" <jszhang@kernel.org>,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Date:   Fri, 15 Jul 2022 15:52:22 +0800
+In-Reply-To: <202207150612.B3phHNEY-lkp@intel.com>
+References: <20220713101002.10970-4-biao.huang@mediatek.com>
+         <202207150612.B3phHNEY-lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 14 Jul 2022 21:20:42 +0800
-Gao Xiang <hsiangkao@linux.alibaba.com> wrote:
+Hi,
+	This warning is fixed in v5 send, please test with v5.
 
-> Convert compressed_pages[] to bufvec in order to avoid using
-> page->private to keep onlinepage_index (decompressed offset)
-> for inplace I/O pages.
-> 
-> In the future, we only rely on folio->private to keep a countdown
-> to unlock folios and set folio_uptodate.
-> 
-> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-> ---
->  fs/erofs/zdata.c | 113 +++++++++++++++++++++++------------------------
->  fs/erofs/zdata.h |   4 +-
->  2 files changed, 57 insertions(+), 60 deletions(-)
-> 
-> diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-> index 757d352bc2c7..f2e3f07baad7 100644
-> --- a/fs/erofs/zdata.c
-> +++ b/fs/erofs/zdata.c
-> @@ -134,7 +134,7 @@ static int z_erofs_create_pcluster_pool(void)
->  
->  	for (pcs = pcluster_pool;
->  	     pcs < pcluster_pool + ARRAY_SIZE(pcluster_pool); ++pcs) {
-> -		size = struct_size(a, compressed_pages, pcs->maxpages);
-> +		size = struct_size(a, compressed_bvecs, pcs->maxpages);
->  
->  		sprintf(pcs->name, "erofs_pcluster-%u", pcs->maxpages);
->  		pcs->slab = kmem_cache_create(pcs->name, size, 0,
-> @@ -287,16 +287,16 @@ struct z_erofs_decompress_frontend {
->  
->  	struct page *candidate_bvpage;
->  	struct z_erofs_pcluster *pcl, *tailpcl;
-> -	/* a pointer used to pick up inplace I/O pages */
-> -	struct page **icpage_ptr;
->  	z_erofs_next_pcluster_t owned_head;
-> -
->  	enum z_erofs_collectmode mode;
->  
->  	bool readahead;
->  	/* used for applying cache strategy on the fly */
->  	bool backmost;
->  	erofs_off_t headoffset;
-> +
-> +	/* a pointer used to pick up inplace I/O pages */
-> +	unsigned int icur;
+Best Regards!
+Biao
 
-not a pointer?
-
->  };
+On Fri, 2022-07-15 at 06:40 +0800, kernel test robot wrote:
+> Hi Biao,
+> 
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on net/master]
+> 
+> url:    
+> https://urldefense.com/v3/__https://github.com/intel-lab-lkp/linux/commits/Biao-Huang/stmmac-dwmac-mediatek-fix-clock-issue/20220713-181044__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBAjUJw2wA$
 >  
->  #define DECOMPRESS_FRONTEND_INIT(__i) { \
-> @@ -319,24 +319,21 @@ static void z_erofs_bind_cache(struct z_erofs_decompress_frontend *fe,
->  	 */
->  	gfp_t gfp = (mapping_gfp_mask(mc) & ~__GFP_DIRECT_RECLAIM) |
->  			__GFP_NOMEMALLOC | __GFP_NORETRY | __GFP_NOWARN;
-> -	struct page **pages;
-> -	pgoff_t index;
-> +	unsigned int i;
+> base:   
+> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBA1ViIHxA$
+>   22b9c41a3fb8ef4624bcda312665937d2ba98aa7
+> config: x86_64-randconfig-a016 (
+> https://urldefense.com/v3/__https://download.01.org/0day-ci/archive/20220715/202207150612.B3phHNEY-lkp@intel.com/config__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBDrBZ7cUQ$
+>  )
+> compiler: clang version 15.0.0 (
+> https://urldefense.com/v3/__https://github.com/llvm/llvm-project__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBB4_f7rKw$
+> $  5e61b9c556267086ef9b743a0b57df302eef831b)
+> reproduce (this is a W=1 build):
+>         wget 
+> https://urldefense.com/v3/__https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBBCyTTgjA$
+>   -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # 
+> https://urldefense.com/v3/__https://github.com/intel-lab-lkp/linux/commit/f145c999bcff52c22cc849bf17f2b30c5e991c0a__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBCdfrCTBg$
 >  
->  	if (fe->mode < COLLECT_PRIMARY_FOLLOWED)
->  		return;
+>         git remote add linux-review 
+> https://urldefense.com/v3/__https://github.com/intel-lab-lkp/linux__;!!CTRNKA9wMg0ARbw!zSIorkBYIMJM_lsS_i-iPXUHkJnImzF7_legwMzhyi3I_4dNo9-GDn7_MBAnpXqSbQ$
 >  
-> -	pages = pcl->compressed_pages;
-> -	index = pcl->obj.index;
-> -	for (; index < pcl->obj.index + pcl->pclusterpages; ++index, ++pages) {
-> +	for (i = 0; i < pcl->pclusterpages; ++i) {
->  		struct page *page;
->  		compressed_page_t t;
->  		struct page *newpage = NULL;
->  
->  		/* the compressed page was loaded before */
-> -		if (READ_ONCE(*pages))
-> +		if (READ_ONCE(pcl->compressed_bvecs[i].page))
->  			continue;
->  
-> -		page = find_get_page(mc, index);
-> +		page = find_get_page(mc, pcl->obj.index + i);
->  
->  		if (page) {
->  			t = tag_compressed_page_justfound(page);
-> @@ -357,7 +354,8 @@ static void z_erofs_bind_cache(struct z_erofs_decompress_frontend *fe,
->  			}
->  		}
->  
-> -		if (!cmpxchg_relaxed(pages, NULL, tagptr_cast_ptr(t)))
-> +		if (!cmpxchg_relaxed(&pcl->compressed_bvecs[i].page, NULL,
-> +				     tagptr_cast_ptr(t)))
->  			continue;
->  
->  		if (page)
-> @@ -388,7 +386,7 @@ int erofs_try_to_free_all_cached_pages(struct erofs_sb_info *sbi,
->  	 * therefore no need to worry about available decompression users.
->  	 */
->  	for (i = 0; i < pcl->pclusterpages; ++i) {
-> -		struct page *page = pcl->compressed_pages[i];
-> +		struct page *page = pcl->compressed_bvecs[i].page;
->  
->  		if (!page)
->  			continue;
-> @@ -401,7 +399,7 @@ int erofs_try_to_free_all_cached_pages(struct erofs_sb_info *sbi,
->  			continue;
->  
->  		/* barrier is implied in the following 'unlock_page' */
-> -		WRITE_ONCE(pcl->compressed_pages[i], NULL);
-> +		WRITE_ONCE(pcl->compressed_bvecs[i].page, NULL);
->  		detach_page_private(page);
->  		unlock_page(page);
->  	}
-> @@ -411,36 +409,39 @@ int erofs_try_to_free_all_cached_pages(struct erofs_sb_info *sbi,
->  int erofs_try_to_free_cached_page(struct page *page)
->  {
->  	struct z_erofs_pcluster *const pcl = (void *)page_private(page);
-> -	int ret = 0;	/* 0 - busy */
-> +	int ret, i;
->  
-> -	if (erofs_workgroup_try_to_freeze(&pcl->obj, 1)) {
-> -		unsigned int i;
-> +	if (!erofs_workgroup_try_to_freeze(&pcl->obj, 1))
-> +		return 0;
->  
-> -		DBG_BUGON(z_erofs_is_inline_pcluster(pcl));
-> -		for (i = 0; i < pcl->pclusterpages; ++i) {
-> -			if (pcl->compressed_pages[i] == page) {
-> -				WRITE_ONCE(pcl->compressed_pages[i], NULL);
-> -				ret = 1;
-> -				break;
-> -			}
-> +	ret = 0;
-> +	DBG_BUGON(z_erofs_is_inline_pcluster(pcl));
-> +	for (i = 0; i < pcl->pclusterpages; ++i) {
-> +		if (pcl->compressed_bvecs[i].page == page) {
-> +			WRITE_ONCE(pcl->compressed_bvecs[i].page, NULL);
-> +			ret = 1;
-> +			break;
->  		}
-> -		erofs_workgroup_unfreeze(&pcl->obj, 1);
-> -
-> -		if (ret)
-> -			detach_page_private(page);
->  	}
-> +	erofs_workgroup_unfreeze(&pcl->obj, 1);
-> +	if (ret)
-> +		detach_page_private(page);
->  	return ret;
->  }
->  
->  /* page_type must be Z_EROFS_PAGE_TYPE_EXCLUSIVE */
->  static bool z_erofs_try_inplace_io(struct z_erofs_decompress_frontend *fe,
-> -				   struct page *page)
-> +				   struct z_erofs_bvec *bvec)
->  {
->  	struct z_erofs_pcluster *const pcl = fe->pcl;
->  
-> -	while (fe->icpage_ptr > pcl->compressed_pages)
-> -		if (!cmpxchg(--fe->icpage_ptr, NULL, page))
-> +	while (fe->icur > 0) {
-> +		if (!cmpxchg(&pcl->compressed_bvecs[--fe->icur].page,
-> +			     NULL, bvec->page)) {
-> +			pcl->compressed_bvecs[fe->icur] = *bvec;
->  			return true;
-> +		}
-> +	}
->  	return false;
->  }
->  
-> @@ -454,7 +455,7 @@ static int z_erofs_attach_page(struct z_erofs_decompress_frontend *fe,
->  	if (fe->mode >= COLLECT_PRIMARY &&
->  	    type == Z_EROFS_PAGE_TYPE_EXCLUSIVE) {
->  		/* give priority for inplaceio to use file pages first */
-> -		if (z_erofs_try_inplace_io(fe, bvec->page))
-> +		if (z_erofs_try_inplace_io(fe, bvec))
->  			return 0;
->  		/* otherwise, check if it can be used as a bvpage */
->  		if (fe->mode >= COLLECT_PRIMARY_FOLLOWED &&
-> @@ -648,8 +649,7 @@ static int z_erofs_collector_begin(struct z_erofs_decompress_frontend *fe)
->  	z_erofs_bvec_iter_begin(&fe->biter, &fe->pcl->bvset,
->  				Z_EROFS_INLINE_BVECS, fe->pcl->vcnt);
->  	/* since file-backed online pages are traversed in reverse order */
-> -	fe->icpage_ptr = fe->pcl->compressed_pages +
-> -			z_erofs_pclusterpages(fe->pcl);
-> +	fe->icur = z_erofs_pclusterpages(fe->pcl);
->  	return 0;
->  }
->  
-> @@ -769,7 +769,8 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
->  			goto err_out;
->  		}
->  		get_page(fe->map.buf.page);
-> -		WRITE_ONCE(fe->pcl->compressed_pages[0], fe->map.buf.page);
-> +		WRITE_ONCE(fe->pcl->compressed_bvecs[0].page,
-> +			   fe->map.buf.page);
->  		fe->mode = COLLECT_PRIMARY_FOLLOWED_NOINPLACE;
->  	} else {
->  		/* bind cache first when cached decompression is preferred */
-> @@ -927,8 +928,9 @@ static struct page **z_erofs_parse_in_bvecs(struct erofs_sb_info *sbi,
->  	*overlapped = false;
->  
->  	for (i = 0; i < pclusterpages; ++i) {
-> -		unsigned int pagenr;
-> -		struct page *page = pcl->compressed_pages[i];
-> +		struct z_erofs_bvec *bvec = &pcl->compressed_bvecs[i];
-> +		struct page *page = bvec->page;
-> +		unsigned int pgnr;
->  
->  		/* compressed pages ought to be present before decompressing */
->  		if (!page) {
-> @@ -951,21 +953,15 @@ static struct page **z_erofs_parse_in_bvecs(struct erofs_sb_info *sbi,
->  				continue;
->  			}
->  
-> -			/*
-> -			 * only if non-head page can be selected
-> -			 * for inplace decompression
-> -			 */
-> -			pagenr = z_erofs_onlinepage_index(page);
-> -
-> -			DBG_BUGON(pagenr >= pcl->nr_pages);
-> -			if (pages[pagenr]) {
-> +			pgnr = (bvec->offset + pcl->pageofs_out) >> PAGE_SHIFT;
-> +			DBG_BUGON(pgnr >= pcl->nr_pages);
-> +			if (pages[pgnr]) {
->  				DBG_BUGON(1);
-> -				SetPageError(pages[pagenr]);
-> -				z_erofs_onlinepage_endio(pages[pagenr]);
-> +				SetPageError(pages[pgnr]);
-> +				z_erofs_onlinepage_endio(pages[pgnr]);
->  				err = -EFSCORRUPTED;
->  			}
-> -			pages[pagenr] = page;
-> -
-> +			pages[pgnr] = page;
->  			*overlapped = true;
->  		}
->  
-> @@ -1067,19 +1063,19 @@ static int z_erofs_decompress_pcluster(struct super_block *sb,
->  out:
->  	/* must handle all compressed pages before actual file pages */
->  	if (z_erofs_is_inline_pcluster(pcl)) {
-> -		page = pcl->compressed_pages[0];
-> -		WRITE_ONCE(pcl->compressed_pages[0], NULL);
-> +		page = pcl->compressed_bvecs[0].page;
-> +		WRITE_ONCE(pcl->compressed_bvecs[0].page, NULL);
->  		put_page(page);
->  	} else {
->  		for (i = 0; i < pclusterpages; ++i) {
-> -			page = pcl->compressed_pages[i];
-> +			page = pcl->compressed_bvecs[i].page;
->  
->  			if (erofs_page_is_managed(sbi, page))
->  				continue;
->  
->  			/* recycle all individual short-lived pages */
->  			(void)z_erofs_put_shortlivedpage(pagepool, page);
-> -			WRITE_ONCE(pcl->compressed_pages[i], NULL);
-> +			WRITE_ONCE(pcl->compressed_bvecs[i].page, NULL);
->  		}
->  	}
->  	kfree(compressed_pages);
-> @@ -1193,7 +1189,7 @@ static struct page *pickup_page_for_submission(struct z_erofs_pcluster *pcl,
->  	int justfound;
->  
->  repeat:
-> -	page = READ_ONCE(pcl->compressed_pages[nr]);
-> +	page = READ_ONCE(pcl->compressed_bvecs[nr].page);
->  	oldpage = page;
->  
->  	if (!page)
-> @@ -1209,7 +1205,7 @@ static struct page *pickup_page_for_submission(struct z_erofs_pcluster *pcl,
->  	 * otherwise, it will go inplace I/O path instead.
->  	 */
->  	if (page->private == Z_EROFS_PREALLOCATED_PAGE) {
-> -		WRITE_ONCE(pcl->compressed_pages[nr], page);
-> +		WRITE_ONCE(pcl->compressed_bvecs[nr].page, page);
->  		set_page_private(page, 0);
->  		tocache = true;
->  		goto out_tocache;
-> @@ -1235,14 +1231,14 @@ static struct page *pickup_page_for_submission(struct z_erofs_pcluster *pcl,
->  
->  	/* the page is still in manage cache */
->  	if (page->mapping == mc) {
-> -		WRITE_ONCE(pcl->compressed_pages[nr], page);
-> +		WRITE_ONCE(pcl->compressed_bvecs[nr].page, page);
->  
->  		ClearPageError(page);
->  		if (!PagePrivate(page)) {
->  			/*
->  			 * impossible to be !PagePrivate(page) for
->  			 * the current restriction as well if
-> -			 * the page is already in compressed_pages[].
-> +			 * the page is already in compressed_bvecs[].
->  			 */
->  			DBG_BUGON(!justfound);
->  
-> @@ -1271,7 +1267,8 @@ static struct page *pickup_page_for_submission(struct z_erofs_pcluster *pcl,
->  	put_page(page);
->  out_allocpage:
->  	page = erofs_allocpage(pagepool, gfp | __GFP_NOFAIL);
-> -	if (oldpage != cmpxchg(&pcl->compressed_pages[nr], oldpage, page)) {
-> +	if (oldpage != cmpxchg(&pcl->compressed_bvecs[nr].page,
-> +			       oldpage, page)) {
->  		erofs_pagepool_add(pagepool, page);
->  		cond_resched();
->  		goto repeat;
-> diff --git a/fs/erofs/zdata.h b/fs/erofs/zdata.h
-> index a755c5a44d87..a70f1b73e901 100644
-> --- a/fs/erofs/zdata.h
-> +++ b/fs/erofs/zdata.h
-> @@ -87,8 +87,8 @@ struct z_erofs_pcluster {
->  	/* I: compression algorithm format */
->  	unsigned char algorithmformat;
->  
-> -	/* A: compressed pages (can be cached or inplaced pages) */
-> -	struct page *compressed_pages[];
-> +	/* A: compressed bvecs (can be cached or inplaced pages) */
-> +	struct z_erofs_bvec compressed_bvecs[];
->  };
->  
->  /* let's avoid the valid 32-bit kernel addresses */
+>         git fetch --no-tags linux-review Biao-Huang/stmmac-dwmac-
+> mediatek-fix-clock-issue/20220713-181044
+>         git checkout f145c999bcff52c22cc849bf17f2b30c5e991c0a
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross
+> W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> drivers/net/ethernet/stmicro/stmmac/
+> 
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+> > > drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:837:6: warning:
+> > > unused variable 'ret' [-Wunused-variable]
+> 
+>            int ret;
+>                ^
+>    1 warning generated.
+> 
+> 
+> vim +/ret +837 drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> 
+> 891434b18ec0a2 Rayagond Kokatanur 2013-03-26  820  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  821  /**
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  822   *
+> stmmac_init_tstamp_counter - init hardware timestamping counter
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  823   * @priv: driver
+> private structure
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  824   * @systime_flags:
+> timestamping flags
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  825   * Description:
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  826   * Initialize
+> hardware counter for packet timestamping.
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  827   * This is valid
+> as long as the interface is open and not suspended.
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  828   * Will be rerun
+> after resuming from suspend, case in which the timestamping
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  829   * flags updated
+> by stmmac_hwtstamp_set() also need to be restored.
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  830   */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  831  int
+> stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32
+> systime_flags)
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  832  {
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  833  	bool xmac =
+> priv->plat->has_gmac4 || priv->plat->has_xgmac;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  834  	struct
+> timespec64 now;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  835  	u32 sec_inc =
+> 0;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  836  	u64 temp = 0;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21 @837  	int ret;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  838  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  839  	if (!(priv-
+> >dma_cap.time_stamp || priv->dma_cap.atime_stamp))
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  840  		return
+> -EOPNOTSUPP;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  841  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  842  	stmmac_config_h
+> w_tstamping(priv, priv->ptpaddr, systime_flags);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  843  	priv-
+> >systime_flags = systime_flags;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  844  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  845  	/* program Sub
+> Second Increment reg */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  846  	stmmac_config_s
+> ub_second_increment(priv, priv->ptpaddr,
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  847  			
+> 		   priv->plat->clk_ptp_rate,
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  848  			
+> 		   xmac, &sec_inc);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  849  	temp =
+> div_u64(1000000000ULL, sec_inc);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  850  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  851  	/* Store sub
+> second increment for later use */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  852  	priv-
+> >sub_second_inc = sec_inc;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  853  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  854  	/* calculate
+> default added value:
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  855  	 * formula is :
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  856  	 * addend =
+> (2^32)/freq_div_ratio;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  857  	 * where,
+> freq_div_ratio = 1e9ns/sec_inc
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  858  	 */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  859  	temp =
+> (u64)(temp << 32);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  860  	priv-
+> >default_addend = div_u64(temp, priv->plat->clk_ptp_rate);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  861  	stmmac_config_a
+> ddend(priv, priv->ptpaddr, priv->default_addend);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  862  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  863  	/* initialize
+> system time */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  864  	ktime_get_real_
+> ts64(&now);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  865  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  866  	/* lower 32
+> bits of tv_sec are safe until y2106 */
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  867  	stmmac_init_sys
+> time(priv, priv->ptpaddr, (u32)now.tv_sec, now.tv_nsec);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  868  
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  869  	return 0;
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  870  }
+> a6da2bbb0005e6 Holger Assmann     2021-11-
+> 21  871  EXPORT_SYMBOL_GPL(stmmac_init_tstamp_counter);
+> a6da2bbb0005e6 Holger Assmann     2021-11-21  872  
+> 
 
