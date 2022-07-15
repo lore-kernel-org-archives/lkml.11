@@ -2,173 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDA9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:32:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E632C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiGOUcZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        id S231286AbiGOUeK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229691AbiGOUcW (ORCPT
+        with ESMTP id S230044AbiGOUeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:32:22 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D67D186E1
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:32:19 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id fy29so9761487ejc.12
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:32:19 -0700 (PDT)
+        Fri, 15 Jul 2022 16:34:08 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B68011A3F
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:34:05 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id y8so7732064eda.3
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:34:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kohlschutter-com.20210112.gappssmtp.com; s=20210112;
-        h=from:content-transfer-encoding:mime-version:subject:message-id:date
-         :cc:to;
-        bh=QyhOR01DoxGCYnC4bLLESVLmV3qWJRFD3wmuOiKUM+s=;
-        b=Z6VzxmO6hGDfHH8LKcLYuVI2nHVAeXPXEXU8HNTLXXfNsSamzoe7i1tvTSpIqGwnRX
-         eb7uCb86aYA6r3Ymrl/fR2gyC+47oOTKX+SPPBtB3y+avXE52ROk7wcBBUrNBqtCLMlZ
-         KGRP7NVaSEBG2ZRN3jrjcWJRx2mtwJT++GeRcCN381prDLZR977xf9Bi/9Qji60mBZAP
-         Zi1UhzdRx3SYrHNE7l61cl/03Pe7GLS5B09Es0Ykf6YZDP8et4SjN7IOSByRn85s3ePC
-         dzwy99tLcPsDy/MS9DPZu+YSExOjhogvC9DZ1TrU3sNesAfiB72SoZByHsVCfI9Rd/Rq
-         JjVQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wihsb0n6gcsXnN/ZX11aE7ujpg1ZGkFIavm0CFhkvw8=;
+        b=f20Of98/kyuGYRFOXnXeZH0cyAjXmxX6SdDKxnduL83h1e+eQJFgFYNrupiC5rjI99
+         zfZgW2XIVud3Nu7477yRKYqPn19f31T+sIGEFFf4chcFXm8tKWzSlyVQKNGcVzg6QURp
+         hUDWdHTcKLrv4ZDQxebHE/vURHEoGW8/H+WaLNfKD1ZmL73B5mjRFJV8Z5LCVWHTnqat
+         jEkMqoYcElP40Ofav3JDSzz9tMuhv7O978dLrYOMW5y8oJZAPXt9AQvBZyP7qd64xV3c
+         26dY+X9oYxiHw6Rk+EMiaKjU5wlYvBpMpEmw2pm/BnwontL3YTnj+eVrVyCjxBpdHGOE
+         J8/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:content-transfer-encoding:mime-version
-         :subject:message-id:date:cc:to;
-        bh=QyhOR01DoxGCYnC4bLLESVLmV3qWJRFD3wmuOiKUM+s=;
-        b=fUonVOFu/raEiLescnBMR61g+R19CCE3z2hD992U0Otph1/rDj9ofP3J3/S9J2JqRP
-         0sk0pWNYoxT/47apaUwIGos0JSaT10tYCbpmptMsOfhLf0rDPaQPM3ak0h4Rl4QcnVE7
-         ETraT0pBkFTP3LR2aiUwkvFTm4vwBfe1rzh2oIwOv0ODbxmjDQFnKlkt50/NQe2B6ytx
-         Ny9uOaRigg9VlKv+x5C+yyKaSFNoUZbjZhBZU1rUdhIOYKLI7UZ+kYzqHCzmgpUK3WkZ
-         FcnFtLGZtBvrX6+YPKMzc4zWlwlKj1joCHctLl+J580r4V+jeXTGEtC2+k0gniqte0LV
-         APRw==
-X-Gm-Message-State: AJIora9WzfHTYXXcawrQPzy9ekBhcIAB3UBUUkgox/w388v+TnMvdR6a
-        hew/vbp2iHFG3g2FsPURBlxK0A==
-X-Google-Smtp-Source: AGRyM1snP/L4DiOZS/0MJdzbFUPKreO0jk3IPQtyANLnH4rMZRf2ATr75Ln58SBsVbEfxUEbkunwCg==
-X-Received: by 2002:a17:906:5343:b0:722:ea54:fe67 with SMTP id j3-20020a170906534300b00722ea54fe67mr15579245ejo.181.1657917138169;
-        Fri, 15 Jul 2022 13:32:18 -0700 (PDT)
-Received: from smtpclient.apple (ip5b434222.dynamic.kabel-deutschland.de. [91.67.66.34])
-        by smtp.gmail.com with ESMTPSA id a15-20020a1709066d4f00b00715705dd23asm2375834ejt.89.2022.07.15.13.32.16
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jul 2022 13:32:17 -0700 (PDT)
-From:   =?utf-8?Q?Christian_Kohlsch=C3=BCtter?= 
-        <christian@kohlschutter.com>
-Content-Type: text/plain;
-        charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: [PATCH] regulator: core: Resolve supply name earlier to prevent
- double-init
-Message-Id: <3B4AE882-0C28-41E3-9466-F8E301567627@kohlschutter.com>
-Date:   Fri, 15 Jul 2022 22:32:16 +0200
-Cc:     Robin Murphy <robin.murphy@arm.com>, wens@kernel.org,
-        =?utf-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Linux MMC List <linux-mmc@vger.kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-X-Mailer: Apple Mail (2.3696.100.31)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wihsb0n6gcsXnN/ZX11aE7ujpg1ZGkFIavm0CFhkvw8=;
+        b=QU5xq/S2w5QApc2UTCj0wLtmG0DYXbJ+kwNPbwdmYF0E0FB3/3+Ri8yXtwKIyoJjo+
+         J7JB0xxlpXW4wYsHMUcgetTigvFnlFC3+RFxP3k1daWzEoaGT4x5ZpTJDh9vLRS1lXjO
+         YIjWh5vkqwZ2vCLJhzKubem8zU+0cgKQSlDCYJMov3bnPyqOS6LQm9S8slpWTBGeeOVT
+         mUM37e4rvjeHU9nLu9RYu2N+Bzjrvy11bJ0XCRzpithxPWmknCqTsLsdU3YOYhxq9O3G
+         +t3zCQO6/4/Fg1IXJBPPeg/G3zMZJ6VaGUuy5+3chA9rPYWknuyZYoCNIyTlEMrEBo7P
+         clhQ==
+X-Gm-Message-State: AJIora999vv2sFU6yJL0NLmsItyiRCfj5jlCH8QdrG/sDpohzJ3CbcEG
+        3YmJaS8h0NBGKeGlPgAIHzM=
+X-Google-Smtp-Source: AGRyM1vdCnsNftrR848qgWz3Aqx3x+Fk2pl+eTrwo1Khhu/1iF4kficM7cMbE24EebvUmyG49engEQ==
+X-Received: by 2002:a05:6402:3297:b0:43a:9233:23b4 with SMTP id f23-20020a056402329700b0043a923323b4mr21231003eda.397.1657917243605;
+        Fri, 15 Jul 2022 13:34:03 -0700 (PDT)
+Received: from localhost.localdomain (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.googlemail.com with ESMTPSA id t21-20020aa7d4d5000000b0043a5bcf80a2sm3465243edr.60.2022.07.15.13.34.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 13:34:03 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH] regmap: permit to set reg_update_bits with bulk implementation
+Date:   Fri, 15 Jul 2022 22:10:32 +0200
+Message-Id: <20220715201032.19507-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previously, an unresolved regulator supply reference upon calling
-regulator_register on an always-on or boot-on regulator caused
-set_machine_constraints to be called twice.
+A regmap may still require to set a custom reg_update_bits instead of
+relying to the regmap_bus_read/write general function.
 
-This in turn may initialize the regulator twice, leading to voltage
-glitches that are timing-dependent. A simple, unrelated configuration
-change may be enough to hide this problem, only to be surfaced by
-chance.
+Permit to set it in the map if provided by the regmap config.
 
-One such example is the SD-Card voltage regulator in a NanoPI R4S that
-would not initialize reliably unless the registration flow was just
-complex enough to allow the regulator to properly reset between calls.
-
-Fix this by re-arranging regulator_register, trying resolve the
-regulator's supply early enough that set_machine_constraints does not
-need to be called twice.
-
-Signed-off-by: Christian Kohlsch=C3=BCtter <christian@kohlschutter.com>
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 ---
- drivers/regulator/core.c | 42 ++++++++++++++++++++++++++--------------
- 1 file changed, 28 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index c4d844ffad7a..728840827e9c 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -5433,7 +5433,34 @@ regulator_register(const struct regulator_desc =
-*regulator_desc,
- 	BLOCKING_INIT_NOTIFIER_HEAD(&rdev->notifier);
- 	INIT_DELAYED_WORK(&rdev->disable_work, regulator_disable_work);
-=20
--	/* preform any regulator specific init */
-+	/* set regulator constraints */
-+	if (init_data)
-+		rdev->constraints =3D kmemdup(&init_data->constraints,
-+					    sizeof(*rdev->constraints),
-+					    GFP_KERNEL);
-+	else
-+		rdev->constraints =3D =
-kzalloc(sizeof(*rdev->constraints),
-+					    GFP_KERNEL);
-+
-+	if (init_data && init_data->supply_regulator)
-+		rdev->supply_name =3D init_data->supply_regulator;
-+	else if (regulator_desc->supply_name)
-+		rdev->supply_name =3D regulator_desc->supply_name;
-+
-+	if ((rdev->supply_name && !rdev->supply) && rdev->constraints
-+		&& (rdev->constraints->always_on || =
-rdev->constraints->boot_on)) {
-+		/* Try to resolve the name of the supplying regulator =
-here first
-+		 * so we prevent double-initializing the regulator, =
-which may
-+		 * cause timing-specific voltage brownouts/glitches that =
-are
-+		 * hard to debug.
-+		 */
-+		ret =3D regulator_resolve_supply(rdev);
-+		if (ret)
-+			rdev_dbg(rdev, "unable to resolve supply early: =
-%pe\n",
-+					 ERR_PTR(ret));
-+	}
-+
-+	/* perform any regulator specific init */
- 	if (init_data && init_data->regulator_init) {
- 		ret =3D init_data->regulator_init(rdev->reg_data);
- 		if (ret < 0)
-@@ -5459,24 +5486,11 @@ regulator_register(const struct regulator_desc =
-*regulator_desc,
- 		    (unsigned long) atomic_inc_return(&regulator_no));
- 	dev_set_drvdata(&rdev->dev, rdev);
-=20
--	/* set regulator constraints */
--	if (init_data)
--		rdev->constraints =3D kmemdup(&init_data->constraints,
--					    sizeof(*rdev->constraints),
--					    GFP_KERNEL);
--	else
--		rdev->constraints =3D =
-kzalloc(sizeof(*rdev->constraints),
--					    GFP_KERNEL);
- 	if (!rdev->constraints) {
- 		ret =3D -ENOMEM;
- 		goto wash;
- 	}
-=20
--	if (init_data && init_data->supply_regulator)
--		rdev->supply_name =3D init_data->supply_regulator;
--	else if (regulator_desc->supply_name)
--		rdev->supply_name =3D regulator_desc->supply_name;
--
- 	ret =3D set_machine_constraints(rdev);
- 	if (ret =3D=3D -EPROBE_DEFER) {
- 		/* Regulator might be in bypass mode and so needs its =
-supply
---=20
+If this is accepted, this is needed for net-next tree so a signed tags
+is needed, if it's not a problem.
+
+ drivers/base/regmap/regmap.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
+index 0caa5690c560..fee221c5008c 100644
+--- a/drivers/base/regmap/regmap.c
++++ b/drivers/base/regmap/regmap.c
+@@ -882,6 +882,8 @@ struct regmap *__regmap_init(struct device *dev,
+ 
+ 	if (config && config->read && config->write) {
+ 		map->reg_read  = _regmap_bus_read;
++		if (config->reg_update_bits)
++			map->reg_update_bits = config->reg_update_bits;
+ 
+ 		/* Bulk read/write */
+ 		map->read = config->read;
+-- 
 2.36.1
 
