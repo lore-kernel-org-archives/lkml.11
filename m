@@ -2,75 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F276CCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:47:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5986C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234652AbiGOLro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41122 "EHLO
+        id S234687AbiGOLrr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:47:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234538AbiGOLrm (ORCPT
+        with ESMTP id S234580AbiGOLrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:47:42 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5A9E88F12;
-        Fri, 15 Jul 2022 04:47:40 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E705B1474;
-        Fri, 15 Jul 2022 04:47:40 -0700 (PDT)
-Received: from [10.57.11.112] (unknown [10.57.11.112])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48E533F73D;
-        Fri, 15 Jul 2022 04:47:39 -0700 (PDT)
-Message-ID: <deddd9cc-f517-cff9-e304-e1f09c6784b7@arm.com>
-Date:   Fri, 15 Jul 2022 12:47:37 +0100
+        Fri, 15 Jul 2022 07:47:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DEBF89A93;
+        Fri, 15 Jul 2022 04:47:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34B3CB82B72;
+        Fri, 15 Jul 2022 11:47:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A567C341C6;
+        Fri, 15 Jul 2022 11:47:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657885659;
+        bh=8pAt/EJziwJeBex/Oeo6RgjbtM2GLBwfpHRN/ZjIqwI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=McJkORLjvYNFldM9l8kt9HPlNnM3lYAsDQEj1hukwO5p8EQIN/TG2ejIb3/iQ9Gzr
+         OrBvJ2B7rYOhSt9PtwnPelubVad092XWojCfWfz2pEqE5cGi5Dsrc6/qc10br6SY7L
+         OrCwq9YTbx8ERQCHNSjIyLLEFxc7Js1NpZz05cylUREbk7VhCA7TlPD422axqun5YR
+         DSQex7es1tchmP9cNXQXyyzIjXdswnPfZ8De6JJTHa8pH+tr3kjq6ULchkpGmjLRWP
+         wi1lnYM4CoSGCUB2/LILferLs5VYRnKGy1oG7KWfVa/YUsN6wMAqeI/4iuz3wgWgpM
+         vQcjW4w06D6Pw==
+Date:   Fri, 15 Jul 2022 17:17:35 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: phy: mediatek: tphy: add compatible for
+ mt8188
+Message-ID: <YtFT171BBEXKMTpo@matsya>
+References: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH] cpufreq: schedutil: Move max CPU capacity to sugov_policy
-Content-Language: en-US
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     Viresh Kumar <viresh.kumar@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>
-References: <20220711124229.16516-1-lukasz.luba@arm.com>
- <1198724e-d94f-0b7c-9c4a-90595f8426d2@arm.com>
- <CAJZ5v0gh78z3tw6simaZ5S6dmGvDc-OE6t02N8vQYk-2eoFQgA@mail.gmail.com>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <CAJZ5v0gh78z3tw6simaZ5S6dmGvDc-OE6t02N8vQYk-2eoFQgA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220708065834.25424-1-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 08-07-22, 14:58, Chunfeng Yun wrote:
+> Add compatible for mt8188
 
+Applied, thanks
 
-On 7/15/22 12:44, Rafael J. Wysocki wrote:
-> On Fri, Jul 15, 2022 at 10:47 AM Lukasz Luba <lukasz.luba@arm.com> wrote:
->>
->> Hi Rafael,
->>
->> gentle ping.
->>
->> On 7/11/22 13:42, Lukasz Luba wrote:
->>> There is no need to keep the max CPU capacity in the per_cpu instance.
->>> Furthermore, there is no need to check and update that variable
->>> (sg_cpu->max) everytime in the frequency change request, which is part
->>> of hot path. Instead use struct sugov_policy to store that information.
->>> Initialize the max CPU capacity during the setup and start callback.
->>> We can do that since all CPUs in the same frequency domain have the same
->>> max capacity (capacity setup and thermal pressure are based on that).
->>>
->>> Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
->>> ---
->>>    kernel/sched/cpufreq_schedutil.c | 30 +++++++++++++++---------------
->>>    1 file changed, 15 insertions(+), 15 deletions(-)
->>
->> The patch got Ack from Viresh.
->> Could you take it?
-> 
-> Yes, it's there in my queue.  Same for the EM changes.
-
-Thank you Rafael!
+-- 
+~Vinod
