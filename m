@@ -2,106 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF23C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:16:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D35C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234609AbiGOPQW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:16:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53726 "EHLO
+        id S234857AbiGOPRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 11:17:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiGOPQR (ORCPT
+        with ESMTP id S234766AbiGOPRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:16:17 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23D3326EC;
-        Fri, 15 Jul 2022 08:16:16 -0700 (PDT)
+        Fri, 15 Jul 2022 11:17:51 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50237CB7D
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:17:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657898176; x=1689434176;
-  h=from:to:cc:subject:date:message-id:mime-version:
+  t=1657898270; x=1689434270;
+  h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=WRHSubit+Lk19ufdasQNizHHZwCF18420UwzZxf6a8w=;
-  b=LE4/cLSbfI0y/0abW/EijQzbYytTUCLQzkcUe/qBf5RcHTOF+ecmwKjc
-   emD7hTXDHOwlgXbRubGih5EUw/NyVYa61xX0VxiB/+hwhGtEmC7etNiW1
-   yDRQkCedpMRvsQgX0riLKuYAZB8p/vn7Dfc1FJkfebw/05S/O2IU9535K
-   LEwq4b4rk5ia4on2eSmtHrvMgVjJnpXQMrKo4o32CxNPiDDiN3KYB0h9I
-   nO4n8Jp54PdpJQsaiHCTzU6zNUqp/kQO3R80LV661HqQok/e3xMmV9V6H
-   00IX4cI+KJIYNMItWRAoKRSG52kUcn2LO+nbLLejxHjislMpKSQDI5T6b
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="286955082"
+  bh=xBqlCX55IhT2QfviA38MnGgKqYqsK8K97exNB1Y7Q3g=;
+  b=GYQ0/B1/CAPKz+ZavFLOIgOLPgjeEi5PTHBnYWb5YZL2AQu/5yITz2us
+   ZuilfyVIbqNqiDUF/9NTs1kmBrvERBWups8mFYe4FCNSMfRevaNEeEM1R
+   mkeo+7Fbz/7xHqifgVHL2fiQMYkGypeUG9hb21inxGLyhPDuLHpwZCtCU
+   W7ZyvpHv4j5rk+1WMgGf4AXgLnBJRzV45gG76l+GXc2AMIPuJZv8uB88N
+   9HDwAJFlw01STBgyyqD1iHt3kWvx9bA/ufmZDZOFugfdFMv0+XAC72iEL
+   tTvTTP75r1fieH7mXXRV6kPkr+oCQjoMiCSGdtX819020ocNP11mI8wqb
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="266230266"
 X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="286955082"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 08:16:16 -0700
+   d="scan'208";a="266230266"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 08:17:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="723109285"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga004.jf.intel.com with ESMTP; 15 Jul 2022 08:16:13 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26FFGBwn012966;
-        Fri, 15 Jul 2022 16:16:11 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        platform-driver-x86@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH] x86/olpc: fix 'logical not is only applied to the left hand side'
-Date:   Fri, 15 Jul 2022 17:15:36 +0200
-Message-Id: <20220715151536.67401-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
+   d="scan'208";a="738689322"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 15 Jul 2022 08:17:49 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCN4e-00001P-SW;
+        Fri, 15 Jul 2022 15:17:48 +0000
+Date:   Fri, 15 Jul 2022 18:01:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Subject: [gustavoars:testing/for-next-fam1] BUILD SUCCESS
+ e5b2fb004c584fe93ddde56fff6e699416096298
+Message-ID: <62d13ae2.VnGg5iFyb3zOPeEi%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The bitops compile-time optimization series revealed one more
-problem in olpc-xo1-sci.c:send_ebook_state(), resulted in GCC
-warnings:
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/gustavoars/linux.git testing/for-next-fam1
+branch HEAD: e5b2fb004c584fe93ddde56fff6e699416096298  scsi: aacraid: Use struct_size() in code related to struct sgmapraw
 
-arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: warning: logical not is only applied to the left hand side of comparison [-Wlogical-not-parentheses]
-   83 |         if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-      |                                                               ^~
-arch/x86/platform/olpc/olpc-xo1-sci.c:83:13: note: add parentheses around left hand side expression to silence this warning
+elapsed time: 1723m
 
-Despite this code working as intended, this redundant double
-negation of boolean value, together with comparing to `char`
-with no explicit conversion to bool, makes compilers think
-the author made some unintentional logical mistakes here.
-Make it the other way around and negate the char instead
-to silence the warnings.
+configs tested: 117
+configs skipped: 4
 
-Fixes: d2aa37411b8e ("x86/olpc/xo1/sci: Produce wakeup events for buttons and switches")
-Cc: stable@vger.kernel.org # 3.5+
-Reported-by: Guenter Roeck <linux@roeck-us.net>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- arch/x86/platform/olpc/olpc-xo1-sci.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The following configs have been built successfully.
+More configs may be tested in the coming days.
 
-diff --git a/arch/x86/platform/olpc/olpc-xo1-sci.c b/arch/x86/platform/olpc/olpc-xo1-sci.c
-index f03a6883dcc6..89f25af4b3c3 100644
---- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-+++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-@@ -80,7 +80,7 @@ static void send_ebook_state(void)
- 		return;
- 	}
- 
--	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-+	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
- 		return; /* Nothing new to report. */
- 
- 	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
+gcc tested configs:
+arm64                            allyesconfig
+arm                                 defconfig
+arm                              allyesconfig
+i386                          randconfig-c001
+sparc                             allnoconfig
+arm                           h3600_defconfig
+mips                         cobalt_defconfig
+sh                        sh7785lcr_defconfig
+m68k                       m5275evb_defconfig
+arm                        oxnas_v6_defconfig
+arm                        clps711x_defconfig
+powerpc                      pcm030_defconfig
+m68k                          atari_defconfig
+arc                          axs103_defconfig
+powerpc                     pq2fads_defconfig
+arm                             ezx_defconfig
+sh                             sh03_defconfig
+m68k                        m5272c3_defconfig
+arc                                 defconfig
+arm                         at91_dt_defconfig
+sh                           se7343_defconfig
+sh                             espt_defconfig
+powerpc                 mpc8540_ads_defconfig
+alpha                             allnoconfig
+arm                           viper_defconfig
+sh                        edosk7705_defconfig
+x86_64                                  kexec
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+riscv                    nommu_virt_defconfig
+riscv                          rv32_defconfig
+riscv                    nommu_k210_defconfig
+riscv                             allnoconfig
+x86_64                        randconfig-c001
+csky                              allnoconfig
+arc                               allnoconfig
+powerpc                           allnoconfig
+mips                             allyesconfig
+powerpc                          allmodconfig
+sh                               allmodconfig
+m68k                             allyesconfig
+m68k                             allmodconfig
+arc                              allyesconfig
+alpha                            allyesconfig
+i386                             allyesconfig
+i386                                defconfig
+x86_64                        randconfig-a006
+x86_64                        randconfig-a004
+x86_64                        randconfig-a002
+x86_64                        randconfig-a011
+x86_64                        randconfig-a013
+x86_64                        randconfig-a015
+i386                          randconfig-a012
+i386                          randconfig-a014
+i386                          randconfig-a016
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                           allyesconfig
+x86_64                          rhel-8.3-func
+x86_64                           rhel-8.3-syz
+x86_64                         rhel-8.3-kunit
+
+clang tested configs:
+mips                          ath79_defconfig
+arm                            dove_defconfig
+arm                           spitz_defconfig
+powerpc                 mpc836x_rdk_defconfig
+powerpc                 mpc8560_ads_defconfig
+powerpc                     tqm8560_defconfig
+powerpc                          g5_defconfig
+powerpc                    gamecube_defconfig
+powerpc                  mpc885_ads_defconfig
+powerpc                    mvme5100_defconfig
+arm                        vexpress_defconfig
+arm                   milbeaut_m10v_defconfig
+s390                             alldefconfig
+powerpc                   lite5200b_defconfig
+arm                      pxa255-idp_defconfig
+arm                          pcm027_defconfig
+arm                       cns3420vb_defconfig
+mips                      malta_kvm_defconfig
+powerpc                        fsp2_defconfig
+hexagon                             defconfig
+powerpc                      ppc44x_defconfig
+mips                           ip28_defconfig
+powerpc                     ppa8548_defconfig
+powerpc                     kilauea_defconfig
+powerpc                          allyesconfig
+mips                       rbtx49xx_defconfig
+mips                        omega2p_defconfig
+arm                          moxart_defconfig
+powerpc                     mpc512x_defconfig
+mips                     cu1000-neo_defconfig
+arm                         orion5x_defconfig
+powerpc                      pmac32_defconfig
+arm                         socfpga_defconfig
+riscv                            alldefconfig
+x86_64                        randconfig-k001
+x86_64                        randconfig-a005
+x86_64                        randconfig-a003
+x86_64                        randconfig-a001
+i386                          randconfig-a002
+i386                          randconfig-a006
+i386                          randconfig-a004
+x86_64                        randconfig-a012
+x86_64                        randconfig-a014
+x86_64                        randconfig-a016
+i386                          randconfig-a011
+i386                          randconfig-a013
+i386                          randconfig-a015
+hexagon              randconfig-r045-20220714
+hexagon              randconfig-r041-20220714
+hexagon              randconfig-r045-20220715
+s390                 randconfig-r044-20220715
+hexagon              randconfig-r041-20220715
+riscv                randconfig-r042-20220715
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
