@@ -2,72 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C3EC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DBCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:50:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbiGOIum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
+        id S232730AbiGOIuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232157AbiGOIuh (ORCPT
+        with ESMTP id S229759AbiGOIus (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:50:37 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2599820FB;
-        Fri, 15 Jul 2022 01:50:36 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LklR42Qs2zFpxk;
-        Fri, 15 Jul 2022 16:49:36 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 15 Jul 2022 16:50:04 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
- 2022 16:50:03 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
-CC:     <khalasa@piap.pl>, <mchehab@kernel.org>
-Subject: [PATCH -next] media: ar0521: fix error return code in ar0521_power_on()
-Date:   Fri, 15 Jul 2022 16:59:24 +0800
-Message-ID: <20220715085924.1881607-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Jul 2022 04:50:48 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8A7A823A8
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:41 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id y11so6770354lfs.6
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 01:50:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0L6cELyn7jvpoaX0deTVVc+dWskWPIjbhl9EKXQMb1o=;
+        b=Kt8R6I1PuFUBffIBgqNZBnpQOYHhVItlnRTdxNrnr5lRw3hbimOCwO44clT2b2K000
+         kGLvEiYvFMDviW86zkrJrS1dUooT5Zqrq7QBFIo2QDSVf1a5Qgk3dOZFOfib8C75Qv2y
+         iY42VXFxFqUZnULVf0GOlGIP7fho1/If41i+w81UOjqfLL8FeW1kQw4Xogm69g8WVV6n
+         PZws8mg+tB3FgXthGdzkGPlUicJk1qVbIt+WA3axKUCeQ94F4YPY/jnnVAEOphUbdwJl
+         4VRD4QRacv730iubjTfAztBa4pG4rdCOGoY7HPLNLHZVMk9pHj6SC62GTm+gvn2DAvAs
+         rfng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0L6cELyn7jvpoaX0deTVVc+dWskWPIjbhl9EKXQMb1o=;
+        b=3NekkWTAM9OUHpjAj5vLXFM6RqhoTtNUJ0CMkqpjb0BVvOHKXI3GR/OUw2EX+h0zQL
+         8kUkTQcBD6dCwN/zTMWmEVsH95O5rK4fgk1XiQosm4R4xL3fUsTqIaalqDpBJItOaxzX
+         Wio7PnCKDVjJjcCwtj8YCZkc/5nzXT2BWUr2QWACy9MD/GolOC78NSPDT58hCCd9JqvI
+         T0Ym8D9+cn7NcohYxPQSSxPEmkllFQOGfZFXLnAbu4nY3SP3BNzkALHcnFdcNCUOBSyA
+         GeuF4Du/vggItl+RvUEGwzfCwb3FpvLedlp7nXQEfyJdpF4Lw1OKgl981UOogaQmCe9w
+         UmXA==
+X-Gm-Message-State: AJIora/chHgNhLDTrVsiHuxeYTL3jN3gNY5S4HS9/DNcWAArXlu8Kpkn
+        GEcY2UE7gDV9J/hWURlYpejPTYsQtYW+NA==
+X-Google-Smtp-Source: AGRyM1vqKZl8Z6F8ovOnVdk5GvmZ1W9G+FpqJ213NmovMavpUEN59ihFQZtqiTv7PuPjA0WpGZcM9w==
+X-Received: by 2002:a05:6512:130f:b0:47f:bf0b:234 with SMTP id x15-20020a056512130f00b0047fbf0b0234mr7753030lfu.351.1657875040038;
+        Fri, 15 Jul 2022 01:50:40 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id e4-20020a2e9e04000000b0025d773448basm667846ljk.23.2022.07.15.01.50.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 01:50:39 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
+        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: [net-next: PATCH v2 0/8] DSA: switch to fwnode_/device_
+Date:   Fri, 15 Jul 2022 10:50:04 +0200
+Message-Id: <20220715085012.2630214-1-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Return error code if ar0521_write_regs() fails in ar0521_power_on().
+Hi,
 
-Fixes: 852b50aeed15 ("media: On Semi AR0521 sensor driver")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/media/i2c/ar0521.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+This is a re-spin of the DSA migration to fwnode_/device_ API.
+As agreed, the ACPI-specific patches were kept aside for now,
+until the MDIOSerialBus is submitted and accepted in the ACPI
+Specification.
 
-diff --git a/drivers/media/i2c/ar0521.c b/drivers/media/i2c/ar0521.c
-index c7bdfc69b9be..e850c92d847e 100644
---- a/drivers/media/i2c/ar0521.c
-+++ b/drivers/media/i2c/ar0521.c
-@@ -757,8 +757,9 @@ static int ar0521_power_on(struct device *dev)
- 	usleep_range(4500, 5000); /* min 45000 clocks */
- 
- 	for (cnt = 0; cnt < ARRAY_SIZE(initial_regs); cnt++)
--		if (ar0521_write_regs(sensor, initial_regs[cnt].data,
--				      initial_regs[cnt].count))
-+		ret = ar0521_write_regs(sensor, initial_regs[cnt].data,
-+					initial_regs[cnt].count);
-+		if (ret)
- 			goto off;
- 
- 	ret = ar0521_write_reg(sensor, AR0521_REG_SERIAL_FORMAT,
+The patchset addresses all comments from the first version,
+mostly related to usage of proper device_ helpers. Also,
+as it was suggested, fwnode_dev_node_match() routine
+was taken out of the network code and introduced as a generic
+one in drivers/base/property.c
+
+The details can be found in the changelog below. Any comments or
+remarks will be appreciated.
+
+Each patch was tested on:
+* On EspressoBIN
+* On SolidRun CN913x CEx7 Eval Board
+
+IMPORTANT NOTE:
+This patchset is rebased on top of the one from Russell
+(https://lore.kernel.org/all/Ys7RdzGgHbYiPyB1@shell.armlinux.org.uk/),
+so a care should be taken, when merging to the net-next tree.
+
+Best regards,
+Marcin
+
+Changelog v1->v2:
+1/8
+  * Drop unnecessary check in fixed_phy_get_gpiod()
+  * Improve line breaking
+  * Use device_set_node & dev_fwnode
+
+2/8
+  * Switch to fwnode_property_count_u32 and fix comparison
+    in if statement.
+
+3/8
+  * Drop dn usage entirely and use dp->fwnode only. Update
+    all dependent drivers to use to_of_node.
+  * Use device_set_node, dev_fwnode & device_get_named_child_node
+  * Replace '_of' routines suffix with '_fw'
+
+4/8
+  * Use device_set_node
+
+5/8
+  * New patch
+
+6/8 
+  * Use device_match_fwnode
+  * Restore EXPORT_SYMBOL()
+
+7/8
+  * Get rid of of_mdiobus_register_device 
+
+8/8
+  * Use dev_fwnode in mv88e6xxx_probe 
+  * Simplify condition checks in mv88e6xxx_probe as suggested by Andy
+
+Marcin Wojtas (8):
+  net: phy: fixed_phy: switch to fwnode_ API
+  net: mdio: switch fixed-link PHYs API to fwnode_
+  net: dsa: switch to device_/fwnode_ APIs
+  net: mvpp2: initialize port fwnode pointer
+  device property: introduce fwnode_dev_node_match
+  net: core: switch to fwnode_find_net_device_by_node()
+  net: mdio: introduce fwnode_mdiobus_register_device()
+  net: dsa: mv88e6xxx: switch to device_/fwnode_ APIs
+
+ include/linux/etherdevice.h                     |   1 +
+ include/linux/fwnode_mdio.h                     |  22 ++++
+ include/linux/of_net.h                          |   6 -
+ include/linux/phy_fixed.h                       |   4 +-
+ include/linux/property.h                        |   2 +
+ include/net/dsa.h                               |   2 +-
+ net/dsa/dsa_priv.h                              |   4 +-
+ drivers/base/property.c                         |  22 ++++
+ drivers/net/dsa/mt7530.c                        |   2 +-
+ drivers/net/dsa/mv88e6xxx/chip.c                |  57 ++++-----
+ drivers/net/dsa/qca8k.c                         |   2 +-
+ drivers/net/dsa/realtek/rtl8365mb.c             |   2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c |   2 +-
+ drivers/net/mdio/fwnode_mdio.c                  | 129 ++++++++++++++++++++
+ drivers/net/mdio/of_mdio.c                      | 111 +----------------
+ drivers/net/phy/fixed_phy.c                     |  39 +++---
+ net/core/net-sysfs.c                            |  25 ++--
+ net/dsa/dsa2.c                                  | 101 ++++++++-------
+ net/dsa/port.c                                  |  70 ++++++-----
+ net/dsa/slave.c                                 |   7 +-
+ 20 files changed, 328 insertions(+), 282 deletions(-)
+
 -- 
-2.25.1
+2.29.0
 
