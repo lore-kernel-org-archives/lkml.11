@@ -2,189 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43786C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E0E6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 11:51:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234789AbiGOLvb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 07:51:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45440 "EHLO
+        id S234818AbiGOLvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 07:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiGOLva (ORCPT
+        with ESMTP id S234795AbiGOLvf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 07:51:30 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CBF89EA6;
-        Fri, 15 Jul 2022 04:51:29 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id t1so7411588lft.8;
-        Fri, 15 Jul 2022 04:51:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=nq5biTcYU0sP0Qw3BPqHawRXCZS98d4s9Brinnk8GgI=;
-        b=iWeawgYVaHiYI6ypcIojWNdNAYNjac9kqCaGb9jAZBzoJXLnV2U47dKqhWzA07OUe/
-         kuUEIx9lLgXXMbvcwpBnsfIVAzzvsw4mgDsl+SyuQyIkt0w5m3+7AQQviwz4t85ABGHG
-         6coLlGTQMbPtgv+c7b3V3/P7/lrsOmv2ygCtTbAPOqbi+TTRiqkxGdRMe4NoDSmZ8aGU
-         SZB9kSy1ebhfiLMa4Wqy0GJ2Qo4r5jzbx6RpZBHC2JTLE2wKreM+iZONVTiUl9A0+18Y
-         KQ89LjLm5z2+D+cAv6ZxwNVk8Yx+CrsRJwiEaD75PfcmpzyMQuCCvQVYFnFo1eEDgNDR
-         CNYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nq5biTcYU0sP0Qw3BPqHawRXCZS98d4s9Brinnk8GgI=;
-        b=MeJOixY8U8ubfrp52W5WHzzWMcH6mxytI3xIL7mf15SiPRvarvSw2hM7SIs7RAkp2T
-         oilalUItKK1O/Qo958m3DyZ/INAPIjnHxpaLoGk5uy+vpEj5DC6iVguR9umIE06zuA4v
-         AXcSudlG/uEavNprj/tHsK/DlAJwfuoP+3krFy5BNIQxJ8pgOLN+x+pSYujaDE0icD4M
-         dN2w2fQI0ItLNWCB+59aIPgL1S1Jf7Jj7lMIIIgBzJ1ZCz+VToZMvudXQmeywY+DHXb1
-         YIILHMIB6rNeWXnY72pv4SPrzaV+UBRaU6cRW3aOnPk9o0XuQS6pEloXKSDeDmE7R9Pk
-         Zgew==
-X-Gm-Message-State: AJIora9nf9rNZj7fkelmgdXfiR81u/VE32TSAiaVO48b95PuyJVXodMu
-        H0M1TU7+x1lCuyo8J5UtaME=
-X-Google-Smtp-Source: AGRyM1u4k9x5ieDhOv0BKdrv3SbEJ+Ffy/LH7cq4/TK7YmKkwhxRbX1BlE8RHwikcRgwYjdwxl69Cw==
-X-Received: by 2002:ac2:5469:0:b0:489:f9d3:4285 with SMTP id e9-20020ac25469000000b00489f9d34285mr7673440lfn.308.1657885887299;
-        Fri, 15 Jul 2022 04:51:27 -0700 (PDT)
-Received: from mobilestation ([95.79.140.178])
-        by smtp.gmail.com with ESMTPSA id v1-20020ac258e1000000b0047da6e495b1sm874365lfo.4.2022.07.15.04.51.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 04:51:26 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 14:51:24 +0300
-From:   Serge Semin <fancer.lancer@gmail.com>
-To:     Stephen Boyd <sboyd@kernel.org>
-Cc:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-clk@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v8 0/7] clk/resets: baikal-t1: Add DDR/PCIe resets and
- xGMAC/SATA fixes
-Message-ID: <20220715115124.g5d33oarvbojnlnh@mobilestation>
-References: <20220712121505.5671-1-Sergey.Semin@baikalelectronics.ru>
- <20220712121613.rvb2s4i3ls6nlkbu@mobilestation>
+        Fri, 15 Jul 2022 07:51:35 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E302889EAF;
+        Fri, 15 Jul 2022 04:51:33 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LkqPy2cJKz1L8vs;
+        Fri, 15 Jul 2022 19:48:54 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
+ 2022 19:51:30 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <hawk@kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <martin.lau@linux.dev>, <song@kernel.org>, <yhs@fb.com>,
+        <john.fastabend@gmail.com>, <kpsingh@kernel.org>, <sdf@google.com>,
+        <bigeasy@linutronix.de>, <imagedong@tencent.com>,
+        <petrm@nvidia.com>, <arnd@arndb.de>, <dsahern@kernel.org>,
+        <talalahmad@google.com>, <keescook@chromium.org>,
+        <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
+Subject: [PATCH v4,bpf-next] bpf: Don't redirect packets with invalid pkt_len
+Date:   Fri, 15 Jul 2022 19:55:59 +0800
+Message-ID: <20220715115559.139691-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220712121613.rvb2s4i3ls6nlkbu@mobilestation>
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping!
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
-On Tue, Jul 12, 2022 at 03:16:16PM +0300, Serge Semin wrote:
-> Hi @Stephen.
-> 
-> Philipp has completed the reset-related patches review. Could you
-> please merge the series in so it would make it into the kernel v5.20?
-> 
-> -Sergey
-> 
-> On Tue, Jul 12, 2022 at 03:14:58PM +0300, Serge Semin wrote:
-> > Folks! It has been over four months since the first series submission for
-> > review. Please merge it in.
-> > 
-> > Short summary regarding this patchset. The series starts from fixing of
-> > the clocks glitching cause by the Renesas 5P49V6901 chip in some
-> > circumstances. Afterwards a few more modifications are introduced to
-> > finally finish the Baikal-T1 CCU unit support up and prepare the code
-> > before adding the Baikal-T1 PCIe/xGMAC support. First of all it turned out
-> > I specified wrong DW xGMAC PTP reference clock divider in my initial
-> > patches. It must be 8, not 10. Secondly I was wrong to add a joint xGMAC
-> > Ref and PTP clock instead of having them separately defined.  The SoC
-> > manual describes these clocks as separate fixed clock wrappers. Finally
-> > in order to close the SoC clock/reset support up we need to add the DDR
-> > and PCIe interfaces reset controls support. It's done in two steps. First
-> > I've moved the reset-controls-related code into a dedicated module. Then
-> > the DDR/PCIe reset-control functionality is added. As the series
-> > finalization we've decided to convert the Baikal-T1 clock/reset source
-> > drivers to mainly being the platform device driver and pre-initialize the
-> > basic clocks only at the early kernel boot stages.
-> > 
-> > Link: https://lore.kernel.org/linux-pci/20220324010905.15589-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v2:
-> > - Resubmit the series with adding @Philipp to the list of the recipients.
-> > 
-> > Link: https://lore.kernel.org/linux-pci/20220330144320.27039-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v3:
-> > - No comments. Just resend the series.
-> > - Rebased from v5.17 onto v5.18-rc3.
-> > 
-> > Link: https://lore.kernel.org/linux-clk/20220503205722.24755-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v4:
-> > - Completely split the CCU Dividers and Resets functionality up. (@Stephen)
-> > - Add a new fixes patch: "clk: baikal-t1: Actually enable SATA internal
-> >   ref clock".
-> > - Add a new fixes patch: "reset: Fix devm bulk optional exclusive control
-> >   getter".
-> > - Add a new fixes patch: "clk: vc5: Fix 5P49V6901 outputs disabling when
-> >   enabling FOD".
-> > - Add a new feagure patch: "clk: baikal-t1: Convert to platform device
-> >   driver".
-> > - Change the internal clock ID to the XGMAC-referred name.
-> > - Rebase onto the kernel v5.18.
-> > 
-> > Link: https://lore.kernel.org/lkml/20220610072124.8714-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v5:
-> > - Just resend.
-> > - Rebase onto the kernel v5.19-rcX.
-> > 
-> > Link: https://lore.kernel.org/linux-clk/20220624141853.7417-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v6:
-> > - Drop the patch
-> >   [PATCH RESEND v5 1/8] reset: Fix devm bulk optional exclusive control getter
-> >   since it has already been accepted by @Philipp.
-> > - Refactor the reset-control code to support the linear reset IDs only.
-> >   (@Philipp)
-> > - Combine the reset-related code into a single file. (@Philipp)
-> > - Drop CCU_DIV_RST_MAP() macro. It's no longer used.
-> > 
-> > Link: https://lore.kernel.org/linux-clk/20220708192725.9501-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v7:
-> > - Fix "Alignment should match open parenthesis" warning for the
-> >   pr_err() method invocations. (@Philipp)
-> > - Drop empty line from the sys_rst_info structure initialization block.
-> >   (@Philipp)
-> > 
-> > Link: https://lore.kernel.org/linux-clk/20220711154433.15415-1-Sergey.Semin@baikalelectronics.ru/
-> > Changelog v8:
-> > - Fix "sef-deasserted" spelling in the CLK_BT1_CCU_RST config help
-> >   text. (@Randy)
-> > 
-> > Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-> > Cc: Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>
-> > Cc: Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>
-> > Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-> > Cc: linux-clk@vger.kernel.org
-> > Cc: linux-mips@vger.kernel.org
-> > Cc: linux-kernel@vger.kernel.org
-> > 
-> > Serge Semin (7):
-> >   clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
-> >   clk: baikal-t1: Fix invalid xGMAC PTP clock divider
-> >   clk: baikal-t1: Add shared xGMAC ref/ptp clocks internal parent
-> >   clk: baikal-t1: Add SATA internal ref clock buffer
-> >   clk: baikal-t1: Move reset-controls code into a dedicated module
-> >   clk: baikal-t1: Add DDR/PCIe directly controlled resets support
-> >   clk: baikal-t1: Convert to platform device driver
-> > 
-> >  drivers/clk/baikal-t1/Kconfig       |  12 +-
-> >  drivers/clk/baikal-t1/Makefile      |   1 +
-> >  drivers/clk/baikal-t1/ccu-div.c     |  84 +++++++--
-> >  drivers/clk/baikal-t1/ccu-div.h     |  17 +-
-> >  drivers/clk/baikal-t1/ccu-pll.h     |   8 +
-> >  drivers/clk/baikal-t1/ccu-rst.c     | 217 +++++++++++++++++++++++
-> >  drivers/clk/baikal-t1/ccu-rst.h     |  67 +++++++
-> >  drivers/clk/baikal-t1/clk-ccu-div.c | 263 ++++++++++++++++------------
-> >  drivers/clk/baikal-t1/clk-ccu-pll.c | 128 +++++++++++---
-> >  drivers/clk/clk-versaclock5.c       |   2 +-
-> >  include/dt-bindings/reset/bt1-ccu.h |   9 +
-> >  11 files changed, 647 insertions(+), 161 deletions(-)
-> >  create mode 100644 drivers/clk/baikal-t1/ccu-rst.c
-> >  create mode 100644 drivers/clk/baikal-t1/ccu-rst.h
-> > 
-> > -- 
-> > 2.35.1
-> > 
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+v3: modify debug print
+v2: need move checking to convert___skb_to_skb and add debug info
+v1: should not check len in fast path
+
+ include/linux/skbuff.h | 8 ++++++++
+ net/bpf/test_run.c     | 3 +++
+ net/core/dev.c         | 1 +
+ 3 files changed, 12 insertions(+)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index f6a27ab19202..82e8368ba6e6 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2459,6 +2459,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
+ 
+ #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+ 
++static inline void skb_assert_len(struct sk_buff *skb)
++{
++#ifdef CONFIG_DEBUG_NET
++	if (WARN_ONCE(!skb->len, "%s\n", __func__))
++		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
++#endif /* CONFIG_DEBUG_NET */
++}
++
+ /*
+  *	Add data to an sk_buff
+  */
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 2ca96acbc50a..dc9dc0bedca0 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ {
+ 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ 
++	if (!skb->len)
++		return -EINVAL;
++
+ 	if (!__skb)
+ 		return 0;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index d588fd0a54ce..716df64fcfa5 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ 	bool again = false;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_assert_len(skb);
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+ 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
+-- 
+2.17.1
+
