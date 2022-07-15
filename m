@@ -2,97 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57703C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50EAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:19:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbiGOMQo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 08:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34228 "EHLO
+        id S232731AbiGOMTr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 08:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbiGOMQm (ORCPT
+        with ESMTP id S229577AbiGOMTn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 08:16:42 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B0532F64A;
-        Fri, 15 Jul 2022 05:16:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657887401; x=1689423401;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7orHDdnehrqRlxB1JS1kp4d9GAAR3NEIVdEeTd0qlyU=;
-  b=FBCKb+lKdXa1G9mLXcrxiHjcCL4UsQ1NWWWnixyR5PM/4QPH9v4ML5Xs
-   BCZ2hOUnYOnaCrHq6dPakjfSqZUJIA0Xk2eMy/V/o1JSVJg2vOyy58t/+
-   ujZ2HMUxQfAOBWmSK4raEdY8QzkMrAm7cPPnlxn7rVQGMT9SbRrjyCbHR
-   9mYupIVoLkzavOUokpFN5kQv+Nl2aNe4a/cC+tUNfyF4NVblPuDzWc1rw
-   Arpc5GmaENFpREXwnnVFY6qZvEe6h55M6bVKpMg4ABC+/iTpGx1vPRdRJ
-   6i392/PnRWQ27XDc7QmmnJWQqFBOAGZy9+lDrlWstbwQcG36E7B7wBR+m
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="285804401"
-X-IronPort-AV: E=Sophos;i="5.92,273,1650956400"; 
-   d="scan'208";a="285804401"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 05:16:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,273,1650956400"; 
-   d="scan'208";a="723065193"
-Received: from linux.intel.com ([10.54.29.200])
-  by orsmga004.jf.intel.com with ESMTP; 15 Jul 2022 05:16:40 -0700
-Received: from P12HL01TMIN.png.intel.com (P12HL01TMIN.png.intel.com [10.158.65.216])
-        by linux.intel.com (Postfix) with ESMTP id DAE87580970;
-        Fri, 15 Jul 2022 05:16:37 -0700 (PDT)
-From:   Wong Vee Khee <vee.khee.wong@linux.intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Subject: [PATCH net 1/1] net: stmmac: remove redunctant disable xPCS EEE call
-Date:   Fri, 15 Jul 2022 20:24:02 +0800
-Message-Id: <20220715122402.1017470-1-vee.khee.wong@linux.intel.com>
+        Fri, 15 Jul 2022 08:19:43 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5D45B6173F
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 05:19:42 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.92,273,1650898800"; 
+   d="scan'208";a="127988338"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 15 Jul 2022 21:19:41 +0900
+Received: from localhost.localdomain (unknown [10.226.92.160])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 81666429692B;
+        Fri, 15 Jul 2022 21:19:38 +0900 (JST)
+From:   Biju Das <biju.das.jz@bp.renesas.com>
+To:     michael@walle.cc
+Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        miquel.raynal@bootlin.com, p.yadav@ti.com,
+        quic_c_sbhanu@quicinc.com, richard@nod.at,
+        tudor.ambarus@microchip.com, vigneshr@ti.com,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH 1/2] mtd: spi-nor: introduce SNOR_ID3()
+Date:   Fri, 15 Jul 2022 13:19:34 +0100
+Message-ID: <20220712072304.icesvrfmem5lgr6i@ti.com> (raw)
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220510140232.3519184-2-michael@walle.cc>
+References: <20220510140232.3519184-2-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220715121934.FXGL61W7k7UD0uoatk8HcwwreBE8RY13_Md1DZXwWn4@z>
 
-Disable is done in stmmac_init_eee() on the event of MAC link down.
-Since setting enable/disable EEE via ethtool will eventually trigger
-a MAC down, removing this redunctant call in stmmac_ethtool.c to avoid
-calling xpcs_config_eee() twice.
+On 10/05/22 04:02PM, Michael Walle wrote:
+> Up until now, flashes were defined by specifying the JEDEC ID, the
+> sector size and the number of sectors. This can be read by parsing the
+> SFDP, we don't have to specify it. Thus provide a new macro SNOR_ID3()
+> which just takes the JEDEC ID and implicitly set .parse_sfdp = true. All
+> new flashes which have SFDP should use this macro.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Fixes: d4aeaed80b0e ("net: stmmac: trigger PCS to turn off on link down")
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 --------
- 1 file changed, 8 deletions(-)
+Tested the macro with Renesas AT25QL128A serial nor flash. So,
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index abfb3cd5958d..9c3055ee2608 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -803,14 +803,6 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
- 		netdev_warn(priv->dev,
- 			    "Setting EEE tx-lpi is not supported\n");
- 
--	if (priv->hw->xpcs) {
--		ret = xpcs_config_eee(priv->hw->xpcs,
--				      priv->plat->mult_fact_100ns,
--				      edata->eee_enabled);
--		if (ret)
--			return ret;
--	}
--
- 	if (!edata->eee_enabled)
- 		stmmac_disable_eee_mode(priv);
- 
--- 
-2.25.1
-
+Tested-by: Biju Das <biju.das.jz@bp.renesas.com>
