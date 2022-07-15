@@ -2,101 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E057FCCA47C
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44458C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230094AbiGOPhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        id S230092AbiGOPjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 11:39:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiGOPhS (ORCPT
+        with ESMTP id S229902AbiGOPjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:37:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDC2558E4;
-        Fri, 15 Jul 2022 08:37:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE8F5620C4;
-        Fri, 15 Jul 2022 15:37:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3225C34115;
-        Fri, 15 Jul 2022 15:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657899436;
-        bh=+TdpH4LmJ65RSDe8U7gFREpB+3xhVtMCKYTl6PjP6AQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZDVxByyE06Yf/5CCHEZTotbv5fbyiY/Qsc/fUy21vl9mi0YZsXBvHSSaPscGE4B3J
-         xDN/mU+5+sxfbv/nTtpG0vr6QaftZJbfq5HGOY5XDk0FXlAK/h6ctZGZAAH4dCYf3b
-         kJAecfM0aRxl9xOh72MsfM1chbID98RZ0jPk0GQs=
-Date:   Fri, 15 Jul 2022 17:37:13 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Phil Auld <pauld@redhat.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Barry Song <21cnbao@gmail.com>,
-        Tian Tao <tiantao6@hisilicon.com>,
-        Yury Norov <yury.norov@gmail.com>, stable@vger.kernel.org
-Subject: Re: [PATCH v5] drivers/base: fix userspace break from using
- bin_attributes for cpumap and cpulist
-Message-ID: <YtGJqYrbSPq9q19U@kroah.com>
-References: <20220715134924.3466194-1-pauld@redhat.com>
+        Fri, 15 Jul 2022 11:39:02 -0400
+X-Greylist: delayed 2776 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 08:39:01 PDT
+Received: from mx0a-00190b01.pphosted.com (mx0a-00190b01.pphosted.com [IPv6:2620:100:9001:583::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21723222B4;
+        Fri, 15 Jul 2022 08:39:00 -0700 (PDT)
+Received: from pps.filterd (m0050093.ppops.net [127.0.0.1])
+        by m0050093.ppops.net-00190b01. (8.17.1.5/8.17.1.5) with ESMTP id 26FEPHU2013883;
+        Fri, 15 Jul 2022 15:52:43 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=n3/u7Xb/IhKRXOG6IcljUKALO6zCGBgcAdJo43NbcvE=;
+ b=ohQlKxLyIIUqtetRW+ExkQHKkClWIfI3NFlMd0L2aLTn2Am8HVNxbA3QLI5doKZbgFTY
+ c74tRZtx1gbyJPuNOM2A+sNtpXfQnZlA17fGAOtHxMLb7CRq1Ccw70KbGsM1ACwrxI4T
+ rKwtoLbgJyKVs8to+AtlrfEmkZLqbPoJsQHjArqHn3+Ai+2OGKbm7FUVgIIxFAv0Grjn
+ OrWDdrF/LeEbJj4L+Z8OKqjldbRcAv4FVkTDAFPxicvzjoJ/x+oZThGRGY9dO7zqS43R
+ Rzv7VSAolGdGJkuXoVubEDU87uLhrntg079KgzEc2PumIfXtY4F5n+gy8v5FSGigeGIX 7g== 
+Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
+        by m0050093.ppops.net-00190b01. (PPS) with ESMTPS id 3haty51v06-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Jul 2022 15:52:42 +0100
+Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
+        by prod-mail-ppoint3.akamai.com (8.17.1.5/8.17.1.5) with ESMTP id 26FC4lQO032668;
+        Fri, 15 Jul 2022 10:52:41 -0400
+Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
+        by prod-mail-ppoint3.akamai.com (PPS) with ESMTP id 3h7q6pq355-1;
+        Fri, 15 Jul 2022 10:52:41 -0400
+Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
+        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 21DB8600E6;
+        Fri, 15 Jul 2022 14:52:41 +0000 (GMT)
+Message-ID: <ab77d779-31a6-62f7-a81c-97d6b9a35018@akamai.com>
+Date:   Fri, 15 Jul 2022 10:52:40 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715134924.3466194-1-pauld@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2] EDAC/ie31200: Add Skylake-S support
+Content-Language: en-US
+To:     Josh Hant <joshuahant@gmail.com>
+Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <8e44d499-ad55-d90a-d4e6-2a97aa6d0c41@akamai.com>
+ <20220712102121.20812-1-joshuahant@gmail.com>
+From:   Jason Baron <jbaron@akamai.com>
+In-Reply-To: <20220712102121.20812-1-joshuahant@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-15_07,2022-07-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 adultscore=0 bulkscore=0
+ malwarescore=0 mlxlogscore=999 phishscore=0 suspectscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207150065
+X-Proofpoint-GUID: VYuJZ7Yu-c3A4TP0qw9DDnYQRnTdAlgr
+X-Proofpoint-ORIG-GUID: VYuJZ7Yu-c3A4TP0qw9DDnYQRnTdAlgr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-15_07,2022-07-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 impostorscore=0 bulkscore=0 spamscore=0
+ adultscore=0 malwarescore=0 clxscore=1011 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207150065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 09:49:24AM -0400, Phil Auld wrote:
-> Using bin_attributes with a 0 size causes fstat and friends to return that
-> 0 size. This breaks userspace code that retrieves the size before reading
-> the file. Rather than reverting 75bd50fa841 ("drivers/base/node.c: use
-> bin_attribute to break the size limitation of cpumap ABI") let's put in a
-> size value at compile time.
-> 
-> For cpulist the maximum size is on the order of
-> 	NR_CPUS * (ceil(log10(NR_CPUS)) + 1)/2
-> 
-> which for 8192 is 20480 (8192 * 5)/2. In order to get near that you'd need
-> a system with every other CPU on one node. For example: (0,2,4,8, ... ).
-> To simplify the math and support larger NR_CPUS in the future we are using
-> (NR_CPUS * 7)/2. We also set it to a min of PAGE_SIZE to retain the older
-> behavior for smaller NR_CPUS.
-> 
-> The cpumap file the size works out to be NR_CPUS/4 + NR_CPUS/32 - 1
-> (or NR_CPUS * 9/32 - 1) including the ","s.
-> 
-> Add a set of macros for these values to cpumask.h so they can be used in
-> multiple places. Apply these to the handful of such files in
-> drivers/base/topology.c as well as node.c.
-> 
-> As an example, on an 80 cpu 4-node system (NR_CPUS == 8192):
-> 
-> before:
-> 
-> -r--r--r--. 1 root root 0 Jul 12 14:08 system/node/node0/cpulist
-> -r--r--r--. 1 root root 0 Jul 11 17:25 system/node/node0/cpumap
-> 
-> after:
-> 
-> -r--r--r--. 1 root root 28672 Jul 13 11:32 system/node/node0/cpulist
-> -r--r--r--. 1 root root  4096 Jul 13 11:31 system/node/node0/cpumap
-> 
-> CONFIG_NR_CPUS = 16384
-> -r--r--r--. 1 root root 57344 Jul 13 14:03 system/node/node0/cpulist
-> -r--r--r--. 1 root root  4607 Jul 13 14:02 system/node/node0/cpumap
-> 
-> The actual number of cpus doesn't matter for the reported size since they
-> are based on NR_CPUS.
-> 
-> Fixes: 75bd50fa841 ("drivers/base/node.c: use bin_attribute to break the size limitation of cpumap ABI")
-> Fixes: bb9ec13d156 ("topology: use bin_attribute to break the size limitation of cpumap ABI")
 
-Nit, use the full 12 characters otherwise our tools will complain.  I'll
-go fix it up by hand...
 
-thanks for sticking with this.
+On 7/12/22 06:21, Josh Hant wrote:
+> Add device IDs for Skylake-S CPUs according to datasheet.
+> 
+> Signed-off-by: Josh Hant <joshuahant@gmail.com>
+> ---
+> Hi Jason,
+> 
+> Sorry for the late response. I added the missing check you asked for. I
+> kept the documentation the same for now. I found the register in table 3
+> of the original document I linked. If you would rather I provide the one
+> you linked, I'll do that in the next patch.
 
-greg k-h
+Yes, I think the link I had was useful, for example it had register offsets
+for things like ECCERRLOG which I didn't see in the reference you linked.
+Maybe just include both?
+
+
+> 
+> I confirmed that the name and size in /proc/meminfo is consistent with
+> what is in /sys/devices/system/edac/mc/mc0.
+
+Ok, great. Yeah let's just add the extra documentation link and then the
+patch seems fine.
+
+Thanks,
+
+-Jason
+
+> 
+> Thanks
+> -Josh
+>  drivers/edac/ie31200_edac.c | 27 ++++++++++++++++++---------
+>  1 file changed, 18 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/edac/ie31200_edac.c b/drivers/edac/ie31200_edac.c
+> index 9a9ff5ad611a..3d322603bce8 100644
+> --- a/drivers/edac/ie31200_edac.c
+> +++ b/drivers/edac/ie31200_edac.c
+> @@ -20,11 +20,14 @@
+>   * 0c08: Xeon E3-1200 v3 Processor DRAM Controller
+>   * 1918: Xeon E3-1200 v5 Skylake Host Bridge/DRAM Registers
+>   * 5918: Xeon E3-1200 Xeon E3-1200 v6/7th Gen Core Processor Host Bridge/DRAM Registers
+> + * 190f: 6th Gen Core Dual-Core Processor Host Bridge/DRAM Registers
+> + * 191f: 6th Gen Core Quad-Core Processor Host Bridge/DRAM Registers
+>   * 3e..: 8th/9th Gen Core Processor Host Bridge/DRAM Registers
+>   *
+>   * Based on Intel specification:
+>   * https://urldefense.com/v3/__https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e3-1200v3-vol-2-datasheet.pdf__;!!GjvTz_vk!R59Q1Bnf9RyI0ZIv2OAIqpD_lPa6_sdWaeFoH595ZLDCCri1SLs1ZCbrgr53QjTZAyLVmoiv9oZ-6raD$ 
+>   * https://urldefense.com/v3/__http://www.intel.com/content/www/us/en/processors/xeon/xeon-e3-1200-family-vol-2-datasheet.html__;!!GjvTz_vk!R59Q1Bnf9RyI0ZIv2OAIqpD_lPa6_sdWaeFoH595ZLDCCri1SLs1ZCbrgr53QjTZAyLVmoiv9m6NRBGA$ 
+> + * https://urldefense.com/v3/__https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/desktop-6th-gen-core-family-datasheet-vol-2.pdf__;!!GjvTz_vk!R59Q1Bnf9RyI0ZIv2OAIqpD_lPa6_sdWaeFoH595ZLDCCri1SLs1ZCbrgr53QjTZAyLVmoiv9gF6-zMQ$ 
+>   * https://urldefense.com/v3/__https://www.intel.com/content/www/us/en/processors/core/7th-gen-core-family-mobile-h-processor-lines-datasheet-vol-2.html__;!!GjvTz_vk!R59Q1Bnf9RyI0ZIv2OAIqpD_lPa6_sdWaeFoH595ZLDCCri1SLs1ZCbrgr53QjTZAyLVmoiv9q7dFz1H$ 
+>   * https://urldefense.com/v3/__https://www.intel.com/content/www/us/en/products/docs/processors/core/8th-gen-core-family-datasheet-vol-2.html__;!!GjvTz_vk!R59Q1Bnf9RyI0ZIv2OAIqpD_lPa6_sdWaeFoH595ZLDCCri1SLs1ZCbrgr53QjTZAyLVmoiv9vbMAhyi$ 
+>   *
+> @@ -53,15 +56,17 @@
+>  #define ie31200_printk(level, fmt, arg...) \
+>  	edac_printk(level, "ie31200", fmt, ##arg)
+> 
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_1 0x0108
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_2 0x010c
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_3 0x0150
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_4 0x0158
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_5 0x015c
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_6 0x0c04
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_7 0x0c08
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_8 0x1918
+> -#define PCI_DEVICE_ID_INTEL_IE31200_HB_9 0x5918
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_1  0x0108
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_2  0x010c
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_3  0x0150
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_4  0x0158
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_5  0x015c
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_6  0x0c04
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_7  0x0c08
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_8  0x190F
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_9  0x1918
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_10 0x191F
+> +#define PCI_DEVICE_ID_INTEL_IE31200_HB_11 0x5918
+> 
+>  /* Coffee Lake-S */
+>  #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK 0x3e00
+> @@ -80,6 +85,8 @@
+>  #define DEVICE_ID_SKYLAKE_OR_LATER(did)                                        \
+>  	(((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_8) ||                        \
+>  	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_9) ||                        \
+> +	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_10) ||                       \
+> +	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_11) ||                       \
+>  	 (((did) & PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK) ==                 \
+>  	  PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK))
+> 
+> @@ -577,6 +584,8 @@ static const struct pci_device_id ie31200_pci_tbl[] = {
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_7),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_8),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_9),      PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+> +	{ PCI_VEND_DEV(INTEL, IE31200_HB_10),     PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+> +	{ PCI_VEND_DEV(INTEL, IE31200_HB_11),     PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_1),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_2),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+>  	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_3),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
+> --
+> 2.34.3
+> 
