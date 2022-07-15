@@ -2,91 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68385C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE6EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 16:39:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiGOQjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 12:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56754 "EHLO
+        id S234293AbiGOQja (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 12:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234293AbiGOQjJ (ORCPT
+        with ESMTP id S234625AbiGOQjY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 12:39:09 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 439F6CE03;
-        Fri, 15 Jul 2022 09:39:08 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id k30so6980852edk.8;
-        Fri, 15 Jul 2022 09:39:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XvhJn0S9vThyG29jKQokHXLUcesyw2+MD4EcSS/waNs=;
-        b=VP6d032bLh9GUakmfJFN/99OsICffhB7LIxn0V2jLbf5WK1vT82XPIpJGW0+po4I39
-         y+VD1rCISE0JYfjYStuCfzYvku9iOd+EbMhvW2TI766DvBhbdlW6vcjwfAF05m8obMbp
-         T9v0SiZ2XjTgN0cg7oubmXYchbA83ECyP53M5GrSFod2wsQKvcSO6kePuly7/ySRaf1Y
-         E+7ypRhbUVSSZa/S9gaXqqdC0JwD8kMj3IBk9H3q3rzZQqw4ydcpUMN/oQY16FKI8YKA
-         JrmeBr/lUZa0jUDVwSOAZNLtoZhFREuDJMfCmPVbdfWEmF+BaKpX4aR/NGu+O6vV3jip
-         ykfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XvhJn0S9vThyG29jKQokHXLUcesyw2+MD4EcSS/waNs=;
-        b=VWnXKyb26E6Geu6e8lKb+4P7zs2GWv95Av2NvyWyj3h86k5rHxScUwGJGNTDgfxbOB
-         TFYYi4MDMUFzFyo92yl+189jGEMU36PcCC4ABccVOPDBnSuX94GiX/rdbTo2Ne29WS/5
-         BO4d0j9qo+dLT+dIlZtM258E6wkhVRFytSUR0WP1Z0st1B72nsfe1BJvZ0HHWWyLs+UC
-         pQpc9ZU5j0dcKd/mPk9BuAsjG8MWUzH7g2eOu1jhaX49wVfvizGQdCAmhenhRPxsrVQw
-         YcHVCNgRz28tdZKpZrysqe76qSAzL30Rc9pn7TV22oW4BWe0v10jfloq135Lq9QWfxIH
-         TEjg==
-X-Gm-Message-State: AJIora8NyWXRGDAA46VNbAeYX4BkRa10Y5O714QnnJSP/n0Z+ZxE4pxK
-        pSOWFOHVc+kXLL/PFiE1TtrjAfZmZMk=
-X-Google-Smtp-Source: AGRyM1vpPD+akTTTBupGIXyQOUMc6Rc3zoPpZqKTi9XIVgT8lPhTPbWAFcPXq4mMNqnAInTnHJ6nJQ==
-X-Received: by 2002:a05:6402:26c3:b0:43a:a846:b2c1 with SMTP id x3-20020a05640226c300b0043aa846b2c1mr20252243edd.133.1657903146842;
-        Fri, 15 Jul 2022 09:39:06 -0700 (PDT)
-Received: from kwango.redhat.com (ip-94-112-17-81.bb.vodafone.cz. [94.112.17.81])
-        by smtp.gmail.com with ESMTPSA id t6-20020aa7d706000000b0043a85d7d15esm3045460edq.12.2022.07.15.09.39.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 09:39:06 -0700 (PDT)
-From:   Ilya Dryomov <idryomov@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     ceph-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Ceph fix for 5.19-rc7
-Date:   Fri, 15 Jul 2022 18:38:45 +0200
-Message-Id: <20220715163845.14481-1-idryomov@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        Fri, 15 Jul 2022 12:39:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A9E71CB1A;
+        Fri, 15 Jul 2022 09:39:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1DEAB82D22;
+        Fri, 15 Jul 2022 16:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79381C341C0;
+        Fri, 15 Jul 2022 16:39:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657903159;
+        bh=v7W8lmq4cb+ya0haAmh+BoGKkNN9ocmTb1w4z46LtBw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=AJfdaQWmT971HaDv5gCayR4VjfTQHkAb3MocBP1OV8ONJCoO1yAhzVagg1+7u2YEF
+         nBKzwFWXZqszDvLNbeQda6e9EGFGtOX7evXM8rMz5mpvDDPIMZ9XRZrjwnNIrCgAw/
+         bvpLNN1nOJ0LsyxOHWim+4+1MXjP56uxNH1G0NKb4ULGwt9vEASQWz2J+FzVeYO8DU
+         sHILGSL6pBIArtc+PO+6an2tUT8aH9A1ZLPfQU7mGMbNCMucWhK19XYqSuOaNI2rC0
+         +KI/jLj7Js5uknoGonlZw6e4ns8HJiEhxdvte5DBKSeIV79znF/ScC+xakxmtwWwiZ
+         SVT3J1dww9Eew==
+Date:   Fri, 15 Jul 2022 11:39:17 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org
+Subject: Re: [PATCH] arm: ioremap: Fix compilation of code which use
+ pci_remap_iospace() without CONFIG_MMU
+Message-ID: <20220715163917.GA1138832@bhelgaas>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220715080412.j3wgvzlv5evp5zbb@pali>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus,
+On Fri, Jul 15, 2022 at 10:04:12AM +0200, Pali Rohár wrote:
+> On Thursday 14 July 2022 15:04:43 Bjorn Helgaas wrote:
+> > [+cc linux-pci, update Lorenzo's email addr]
+> > 
+> > Hi Pali,
+> > 
+> > Thanks for cc'ing me.  I think your previous notes didn't include
+> > linux-pci or me, so I missed them.
+> 
+> https://lore.kernel.org/r/20211205123209.lyx76daqdwzqwex4@pali/
 
-The following changes since commit 32346491ddf24599decca06190ebca03ff9de7f8:
-
-  Linux 5.19-rc6 (2022-07-10 14:40:51 -0700)
-
-are available in the Git repository at:
-
-  https://github.com/ceph/ceph-client.git tags/ceph-for-5.19-rc7
-
-for you to fetch changes up to fac47b43c760ea90e64b895dba60df0327be7775:
-
-  netfs: do not unlock and put the folio twice (2022-07-14 10:10:12 +0200)
-
-----------------------------------------------------------------
-A folio locking fixup that Xiubo and David cooperated on, marked for
-stable.  Most of it is in netfs but I picked it up into ceph tree on
-agreement with David.
-
-----------------------------------------------------------------
-Xiubo Li (1):
-      netfs: do not unlock and put the folio twice
-
- Documentation/filesystems/netfs_library.rst |  8 +++++---
- fs/afs/file.c                               |  2 +-
- fs/ceph/addr.c                              | 11 ++++++-----
- fs/netfs/buffered_read.c                    | 17 ++++++++++-------
- include/linux/netfs.h                       |  2 +-
- 5 files changed, 23 insertions(+), 17 deletions(-)
+Sorry I missed it!
