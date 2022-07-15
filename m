@@ -2,183 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B03C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiGOTJX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 15:09:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
+        id S230499AbiGOTKF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 15:10:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiGOTJT (ORCPT
+        with ESMTP id S229626AbiGOTKB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 15:09:19 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAEC13D47
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 12:09:18 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31c8bb90d09so55821627b3.8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 12:09:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bpg96p9CI9yLaQw3VjuOVFIoT69AC7E3OsyVn7VvpkQ=;
-        b=fawt43s9lWKSGEk4xJU0OI7i1mjn821E5ZvRrpLHMKajZfiWvU/QaXMR7zmawKrJsD
-         ToIrGV1QMzqRimiwaWZMiIHBttDe3IJFC1VvFLODmZagp7jIq4Ye2CZh+Wvb3Be+TVdx
-         k4hmorXYWxsu5HeWyRaRCRxd9/G2xSMI+Gwz3OPlHGChS2FtWWaR7t+t2dmGJWnEdPnI
-         n5CvmbVJkgshfYYCRi6niHpx3IAR9wrNEK5EkEoaKGqEE3B+pC7E8EW36aH+LDJUd9tR
-         v4xeVx7wqniEscy3iBlGJ83ceqBjdtlslH3hZeEtdl/zsdscb+G9S4UM2R97ux4yRm4s
-         MpBA==
+        Fri, 15 Jul 2022 15:10:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C42C53DBE5
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 12:10:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657912199;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YwoLVFK6VIqRxOLsO1/EQV9lnSFDUSQaM1LO6cP8vkU=;
+        b=TfJcolO7pijnOg/h/DZd0ZA2iI9ANvqBovNXGiNbuEgb04FyR4i3h6JOcM9gQklbnGffA9
+        p182UmdGKhQEzWQqWVAf4B+miKJN8n2j2KZK5P2e7BGmlE9VqmPouxLm167YAZ2dB4anpY
+        Con7c7bkLKsi/qUYfAoEhubYowanrPU=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-378-U4TX0dV6OdODP5z44GRNog-1; Fri, 15 Jul 2022 15:09:51 -0400
+X-MC-Unique: U4TX0dV6OdODP5z44GRNog-1
+Received: by mail-qv1-f71.google.com with SMTP id d18-20020a0cfe92000000b0047342562073so3490616qvs.1
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 12:09:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bpg96p9CI9yLaQw3VjuOVFIoT69AC7E3OsyVn7VvpkQ=;
-        b=LD/w+wnYCJGVZr69reItdgGC5UIEWyGXnYeJPeXQmxuK5sSOhKOKfrOmBQHwi2WKIj
-         YRVmdfESHw0/5ugpExftKtvWWydVVmKj9ihj5ienqmE6iShS+7pUZvJZEZ6Qm0sSZhr7
-         YoUc407+GeP062ErheXQGGcN44YGYkXu+RhCwA3BZn/QEE2rjmTm51bu0CbN+Y6IvIQk
-         B3RXtXOmltpETD+E+5BJ56xvpT5gvjI+cyJyU1P5SlxLAG0oiyHw6kHPfktKc4qeK58/
-         rfPC4u60MzUoSfmnYPXdjmuvb43J68N5qAzd/+NilvkwZ75XQ4rYZ65C3nS1/bpeq2oo
-         HfQg==
-X-Gm-Message-State: AJIora9gJavuxRqD5STDxwPQi7pQL0Cjf1kzO8EydSJ83lmGSvPiJdfs
-        1lJIc/l8fNzV/pgwG1Wozzx8TNi8uGoWpFB0TLIflw==
-X-Google-Smtp-Source: AGRyM1vN2LqHTDjMlYuo3H+Q7AhUL4oobllgeOabaBsvYfExZr1oaQmkTvS6Saay4e+jN/u3yvJyWjfGeKwXxqNWouU=
-X-Received: by 2002:a81:17ca:0:b0:31c:9a75:1f2b with SMTP id
- 193-20020a8117ca000000b0031c9a751f2bmr18251239ywx.83.1657912157915; Fri, 15
- Jul 2022 12:09:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <1656618906-29881-1-git-send-email-radhey.shyam.pandey@amd.com>
- <Yr66xEMB/ORr0Xcp@lunn.ch> <MN0PR12MB59531DFD084FA947084D91B6B7819@MN0PR12MB5953.namprd12.prod.outlook.com>
- <CAGETcx_BUR3EPDLgp9v0Uk9N=8BtYRjFyhpJTQa9kEMHtkgdwQ@mail.gmail.com> <MN0PR12MB59539E587A8B46FDC190FB7AB78B9@MN0PR12MB5953.namprd12.prod.outlook.com>
-In-Reply-To: <MN0PR12MB59539E587A8B46FDC190FB7AB78B9@MN0PR12MB5953.namprd12.prod.outlook.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 15 Jul 2022 12:08:42 -0700
-Message-ID: <CAGETcx9dh1hfqoFSRwNf3fGbH5Wsdhah8RT5R-JrGOS-rDFX3g@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make MDIO
- producer ethernet node to probe first
-To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "git (AMD-Xilinx)" <git@amd.com>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:organization:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=YwoLVFK6VIqRxOLsO1/EQV9lnSFDUSQaM1LO6cP8vkU=;
+        b=7P0LR41qLqjMntGP8afwnOPLot2001Th8xAc66E2rHFF518INl7NjxJ7t06LvhIpi9
+         S2uSuP+UpvkspPoyEwsnzhTSiohJArRpETB2oCPhXJnPkFvxLGgqKB7sDrzdm+CvNUqG
+         k40zc9q/6EtaEKDvUqMJu/UwWMOXL8hAi9ReAIkJ+GH6xinH2gtDhHjMKVs1tQUOOvsG
+         VIP2gcd6ZPdgACDV7ghCp8snMPpV1U7mHRzjkZMT2G28Vc7f6Wmsphcn7wBkJKDHSbq8
+         uuaa2JWkiSo1RUo0cFtMz1NZ/v19INtWYRfzzrr+QfSPkV4pVHDfwoNZSCXtJiZBlwQQ
+         Q+XQ==
+X-Gm-Message-State: AJIora9aZIaS3wvF1o7ycRUsMeXDVb0Fn54UU/wqhzQ4F/HhaKlEMCSS
+        uT05Sahrh1Sa/Pt/rqG6iUtzbILNgoDxqb2gkui5N0iqJ7z3lwQ4xMox1QEC25KmpsNGdnvk9NB
+        cue/JBmGAXVii77ngd96Qk+LN
+X-Received: by 2002:a05:6214:3009:b0:473:990:6d08 with SMTP id ke9-20020a056214300900b0047309906d08mr13082704qvb.121.1657912190540;
+        Fri, 15 Jul 2022 12:09:50 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uohAkD70j3BSA3vDDBqmY1M2p1cVekKFciRB3de2UGHqsYQMYVH4O+M/IUZxKTSkZXjTdv5A==
+X-Received: by 2002:a05:6214:3009:b0:473:990:6d08 with SMTP id ke9-20020a056214300900b0047309906d08mr13082681qvb.121.1657912190247;
+        Fri, 15 Jul 2022 12:09:50 -0700 (PDT)
+Received: from [192.168.8.138] ([141.154.49.182])
+        by smtp.gmail.com with ESMTPSA id f4-20020ac80684000000b0031eca8c88f6sm4017257qth.51.2022.07.15.12.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 12:09:49 -0700 (PDT)
+Message-ID: <44d6fc01654b16f9cdd6b517999ddec76038d547.camel@redhat.com>
+Subject: Re: [PATCH] drm/nouveau/bios: set info only when the return is not 0
+From:   Lyude Paul <lyude@redhat.com>
+To:     Tom Rix <trix@redhat.com>, bskeggs@redhat.com, kherbst@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch, nathan@kernel.org,
+        ndesaulniers@google.com
+Cc:     dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Date:   Fri, 15 Jul 2022 15:09:48 -0400
+In-Reply-To: <91194b7190081545a8eeb10d20e24de864dfe259.camel@redhat.com>
+References: <20220702153904.1696595-1-trix@redhat.com>
+         <91194b7190081545a8eeb10d20e24de864dfe259.camel@redhat.com>
+Organization: Red Hat Inc.
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 12:00 PM Pandey, Radhey Shyam
-<radhey.shyam.pandey@amd.com> wrote:
->
-> > -----Original Message-----
-> > From: Saravana Kannan <saravanak@google.com>
-> > Sent: Wednesday, July 6, 2022 12:28 AM
-> > To: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> > Cc: Andrew Lunn <andrew@lunn.ch>; nicolas.ferre@microchip.com;
-> > claudiu.beznea@microchip.com; davem@davemloft.net;
-> > edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
-> > hkallweit1@gmail.com; linux@armlinux.org.uk;
-> > gregkh@linuxfoundation.org; rafael@kernel.org; netdev@vger.kernel.org;
-> > linux-kernel@vger.kernel.org; git (AMD-Xilinx) <git@amd.com>
-> > Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase make
-> > MDIO producer ethernet node to probe first
-> >
-> > On Tue, Jul 5, 2022 at 11:49 AM Pandey, Radhey Shyam
-> > <radhey.shyam.pandey@amd.com> wrote:
-> > >
-> > > > -----Original Message-----
-> > > > From: Andrew Lunn <andrew@lunn.ch>
-> > > > Sent: Friday, July 1, 2022 2:44 PM
-> > > > To: Pandey, Radhey Shyam <radhey.shyam.pandey@amd.com>
-> > > > Cc: nicolas.ferre@microchip.com; claudiu.beznea@microchip.com;
-> > > > davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> > > > pabeni@redhat.com; hkallweit1@gmail.com; linux@armlinux.org.uk;
-> > > > gregkh@linuxfoundation.org; rafael@kernel.org;
-> > saravanak@google.com;
-> > > > netdev@vger.kernel.org; linux-kernel@vger.kernel.org; git
-> > > > (AMD-Xilinx) <git@amd.com>
-> > > > Subject: Re: [PATCH net-next v2] net: macb: In shared MDIO usecase
-> > > > make MDIO producer ethernet node to probe first
-> > > >
-> > > > On Fri, Jul 01, 2022 at 01:25:06AM +0530, Radhey Shyam Pandey wrote:
-> > > > > In shared MDIO suspend/resume usecase for ex. with MDIO producer
-> > > > > (0xff0c0000) eth1 and MDIO consumer(0xff0b0000) eth0 there is a
-> > > > > constraint that ethernet interface(ff0c0000) MDIO bus producer has
-> > > > > to be resumed before the consumer ethernet interface(ff0b0000).
-> > > > >
-> > > > > However above constraint is not met when GEM0(ff0b0000) is resumed
-> > first.
-> > > > > There is phy_error on GEM0 and interface becomes non-functional on
-> > > > resume.
-> > > > >
-> > > > > suspend:
-> > > > > [ 46.477795] macb ff0c0000.ethernet eth1: Link is Down [
-> > > > > 46.483058] macb ff0c0000.ethernet: gem-ptp-timer ptp clock
-> > unregistered.
-> > > > > [ 46.490097] macb ff0b0000.ethernet eth0: Link is Down [
-> > > > > 46.495298] macb ff0b0000.ethernet: gem-ptp-timer ptp clock
-> > unregistered.
-> > > > >
-> > > > > resume:
-> > > > > [ 46.633840] macb ff0b0000.ethernet eth0: configuring for
-> > > > > phy/sgmii link mode macb_mdio_read -> pm_runtime_get_sync(GEM1)
-> > it
-> > > > > return -
-> > > > EACCES error.
-> > > > >
-> > > > > The suspend/resume is dependent on probe order so to fix this
-> > > > > dependency ensure that MDIO producer ethernet node is always
-> > > > > probed first followed by MDIO consumer ethernet node.
-> > > > >
-> > > > > During MDIO registration find out if MDIO bus is shared and check
-> > > > > if MDIO producer platform node(traverse by 'phy-handle' property)
-> > > > > is bound. If not bound then defer the MDIO consumer ethernet node
-> > probe.
-> > > > > Doing it ensures that in suspend/resume MDIO producer is resumed
-> > > > > followed by MDIO consumer ethernet node.
-> > > >
-> > > > I don't think there is anything specific to MACB here. There are
-> > > > Freescale boards which have an MDIO bus shared by two interfaces etc.
-> > > >
-> > > > Please try to solve this in a generic way, not specific to one MAC
-> > > > and MDIO combination.
-> > >
-> > > Thanks for the review.  I want to get your thoughts on the outline of
-> > > the generic solution. Is the current approach fine and we can extend
-> > > it for all shared MDIO use cases/ or do we see any limitations?
-> > >
-> > > a) Figure out if the MDIO bus is shared.  (new binding or reuse
-> > > existing)
-> > > b) If the MDIO bus is shared based on DT property then figure out if
-> > > the MDIO producer platform device is probed. If not, defer MDIO
-> > > consumer MDIO bus registration.
-> >
-> > Radhey,
-> >
-> > I think Andrew added me because he's pointing you towards fw_devlink.
-> >
-> > Andrew,
-> >
-> > I have intentionally not added phy-handle support to fw_devlink because it
-> > would also prevent the generic driver from binding/cause issues with DSA. I
-> > have some high level ideas on fixing that but haven't gotten around to it yet.
->
-> Thanks, just want to understand on implementation when phy-handle support is
-> added to fw_devlink. Does it ensure that supplier node is probed first? Or it uses
-> device_link framework to specify suspend/resume dependency and don't care
-> on consumer/producer probe order.
+On Mon, 2022-07-04 at 17:32 -0400, Lyude Paul wrote:
+> Reviewed-by: Lyude Paul <lyude@redhat.com>
+> 
+> Currently on flakey internet in the back of a car, so I probably won't be
+> able
+> to push this until I get back tonight or early tomorrow
 
-fw_devlink will enforce probe ordering and suspend/resume ordering.
-Btw, fw_devlink uses device links underneath. It just used the
-firmware (Eg: DT) to figure out the dependencies. That's why it's
-called fw_devlink.
+Whoops! Slipped my mind when I got back, but I just remembered it now so I
+will go ahead and push :). apologies for the delay!
 
--Saravana
+> 
+> On Sat, 2022-07-02 at 11:39 -0400, Tom Rix wrote:
+> > clang static analysis reports
+> > drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c:68:17: warning: The right
+> > operand of '*' is a garbage value [core.UndefinedBinaryOperatorResult]
+> >         switch (!!data * *ver) {
+> >                        ^ ~~~~
+> > A switch statement with only a default should be reduced to an if.
+> > 
+> > If nvbios_pmuEp() returns 0, via the data variable, the output info
+> > parameter
+> > is not used.  So set info only when data is not 0.
+> > 
+> > The struct nvbios_pmuE only has the type and data elements.  Since both of
+> > these
+> > are explicitly set, memset is not needed.  So remove it.
+> > 
+> > Signed-off-by: Tom Rix <trix@redhat.com>
+> > ---
+> >  drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c | 5 +----
+> >  1 file changed, 1 insertion(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c
+> > b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c
+> > index b4a308f3cf7b..49e2664a734c 100644
+> > --- a/drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c
+> > +++ b/drivers/gpu/drm/nouveau/nvkm/subdev/bios/pmu.c
+> > @@ -64,12 +64,9 @@ nvbios_pmuEp(struct nvkm_bios *bios, int idx, u8 *ver,
+> > u8
+> > *hdr,
+> >              struct nvbios_pmuE *info)
+> >  {
+> >         u32 data = nvbios_pmuEe(bios, idx, ver, hdr);
+> > -       memset(info, 0x00, sizeof(*info));
+> > -       switch (!!data * *ver) {
+> > -       default:
+> > +       if (data) {
+> >                 info->type = nvbios_rd08(bios, data + 0x00);
+> >                 info->data = nvbios_rd32(bios, data + 0x02);
+> > -               break;
+> >         }
+> >         return data;
+> >  }
+> 
+
+-- 
+Cheers,
+ Lyude Paul (she/her)
+ Software Engineer at Red Hat
+
