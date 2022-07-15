@@ -2,126 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3169FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADD2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 22:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232358AbiGOWXh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 18:23:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S232677AbiGOWXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 18:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232498AbiGOWXe (ORCPT
+        with ESMTP id S232508AbiGOWXj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 18:23:34 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E73D362A65
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:23:31 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id bf13so5563487pgb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 15:23:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=h08OBDtouOlnPaz6Mk89TkUqXNC6lVw4WMryRnoY4iQ=;
-        b=SWBq670YGdUDUrz+LfGaVqhLNtXSduF+1kAy8tHbqCMHxzTK2rLblqfH6+CYEvdUam
-         v/yPvYMRRAlLYRePmgUlEhwaZDQzzCUf0nqX9tCSngUrFJ3YHZC9ejmTonEQ50Z+I/Yj
-         c1sewCP8LAbIU2jpaun7nKp+rgKHD72Lizf+bO4mumGPe2vWfA67JxK3kb+IEdYq8TNn
-         pIdzdO2OTit8/qw1V54APG3u1c8H1kvrqDVs+q/aXt73IJUVDKz0ARo02W3lSYb3Qefq
-         EDluaP4iCN+GLO9VxvShkAf0mAA5qQAoOdTV4B8ZwfWJRk5kK9g44irFj6vG73BckUH8
-         N1Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=h08OBDtouOlnPaz6Mk89TkUqXNC6lVw4WMryRnoY4iQ=;
-        b=M5sSGULnGSfPfv8rwY3oWgju1bN/QJw5PafwNFRpwAYXLYprXiKGuvQU32DJ6ubOGx
-         4jOaHv+rnGXL3LQOsTjWplLxDYAmL3u8OQMIwlECKUgKcA2oG3jV3AbHL4o5zkXmJHze
-         lInbtKhph67g/mVwspSDS36vwY1633iEfYTVS80YR9Z3gzJS0F8Gw1L1Z01PSt33kPxv
-         nMPzm9ZeVpz5vCdCDU0kSe8A4/H9PlYbqrxKAeFFW5T2FzrzOpc2Cs2KxJlHb02sSEjl
-         +abKpixeuXvjg6+45p/c5HESiTzKJNy963UE9389gCM0VZoI/Y7OQh60KXWOmL2taNPr
-         FS1g==
-X-Gm-Message-State: AJIora8zR1CuxWcMYeRpJ4Y5Hz/4JhI2cjniB/Sz2oDXTzNPCjsY0dqw
-        4UHpmtW1x3GrecrcHA0rzR1unA==
-X-Google-Smtp-Source: AGRyM1t7Ufq+16dtrPJCG7vL3sPupbfNcIcgSZ5v9myXTI8I39QsDiDTWJovZbADGjskDpoUBCWLQQ==
-X-Received: by 2002:a65:5688:0:b0:3c2:1015:988e with SMTP id v8-20020a655688000000b003c21015988emr14079913pgs.280.1657923811299;
-        Fri, 15 Jul 2022 15:23:31 -0700 (PDT)
-Received: from google.com ([2620:15c:2d:3:e72f:c983:e093:d463])
-        by smtp.gmail.com with ESMTPSA id s15-20020a170902ea0f00b0016bf803341asm1972182plg.146.2022.07.15.15.23.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 15:23:30 -0700 (PDT)
-Date:   Fri, 15 Jul 2022 15:23:25 -0700
-From:   Isaac Manjarres <isaacmanjarres@google.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Fri, 15 Jul 2022 18:23:39 -0400
+Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE4541A7;
+        Fri, 15 Jul 2022 15:23:35 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 90C58C022; Sat, 16 Jul 2022 00:23:33 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657923813; bh=PA1XLzA+X+7Omx/bLhTMXHBWmn+90LA2dEeJ5jfpAvg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WUJBYGl+CgPAzZc8RMrI6fXDv7ua37rO5Pmj7gVOC+1wytTZOnsdCF+B71Q4BtFsO
+         PGyg5C8RfUniW5WvH1lgGuOgjmb4sVVm4FP51Gbot9ai36g2kpvFeg08UBoclGoerT
+         ybMN8inxYEmOL8J0UjEVdeWW9XD8HHQnFBp5UzbRPWy4mgr2owuVS3C5JL5ydGDHpT
+         lLWBlqoUmtjj8u0o+uDMzJoxYpjnX8LMEey2Zbc1vUg2mpGi3f6azj+wHsq+Ih3iEk
+         SYSYfvcpZ5YPTgJPL8Bh0/jdWxRZ1OotmInLQNurRTSktIANssTkHHSQJcIPk4Wl9h
+         1kHWwUcZumKGg==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 246B1C009;
+        Sat, 16 Jul 2022 00:23:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1657923812; bh=PA1XLzA+X+7Omx/bLhTMXHBWmn+90LA2dEeJ5jfpAvg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VfUMDNihhK0WiIVpdCa40ke/0w0jNUShNaLNI6EvWrDYSCWqJwrk5xvDhIl8GN7ru
+         b46YKkqbsrzLGou3BeuZm1fWLpX5AaUtSn6jq6QHEwoGoJ++4mm/2OEukBTiYtxah+
+         b1pUu29AyYq31TQTYSRYrw9XaNrGdDK+i7hXonr3A4yGSJTZZlTy0dMSQ809FRDeb4
+         NGCnasGXs0vGCrKYCoW/qHGT2M3Gl4i0teZh9vfFhIUFA00814SicWL83owsUNVHGo
+         9igP884sOxZrRwmHhQVrfdC9ZLWynuatSUPyMtzz76xaaff+yz93v0dpmqO0C1y1Vj
+         lnkAtAQOJs6mw==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 2bb1e746;
+        Fri, 15 Jul 2022 22:23:24 +0000 (UTC)
+Date:   Sat, 16 Jul 2022 07:23:09 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Tyler Hicks <tyhicks@linux.microsoft.com>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "David S. Miller" <davem@davemloft.net>,
-        Saravana Kannan <saravanak@google.com>, kernel-team@android.com
-Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
- ARCH_KMALLOC_MINALIGN
-Message-ID: <YtHo3Xu33jovwpFt@google.com>
-References: <YlaOIbSA7B/G9222@arm.com>
- <YlkV7NtatO7KFusX@gondor.apana.org.au>
- <CAMj1kXFW_zC-U5Ox9_=4gKCwWOmkR7wPNb6UQhiz8viNWTRU-w@mail.gmail.com>
- <YlkkGpVx8rhcsBot@gondor.apana.org.au>
- <YllALIgZcQJ6asdA@arm.com>
- <YlllpH+PB8XVUn6h@arm.com>
- <YlvLqkIdrCp/rOsG@gondor.apana.org.au>
- <YlvSEHul1Rv3Ap34@arm.com>
- <YlvTNQGh+MfZFWKW@gondor.apana.org.au>
- <YlxATW56ZoNtmxlk@arm.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net/9p: Initialize the iounit field during fid
+ creation
+Message-ID: <YtHozaPd8UV4fRX8@codewreck.org>
+References: <20220710141402.803295-1-tyhicks@linux.microsoft.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YlxATW56ZoNtmxlk@arm.com>
+In-Reply-To: <20220710141402.803295-1-tyhicks@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Apr 17, 2022 at 05:29:01PM +0100, Catalin Marinas wrote:
-> On Sun, Apr 17, 2022 at 04:43:33PM +0800, Herbert Xu wrote:
-> > On Sun, Apr 17, 2022 at 09:38:40AM +0100, Catalin Marinas wrote:
-> > > I don't think we need to do anything here. A structure like:
-> > > 
-> > > struct x {
-> > > 	char y;
-> > > 	char z[] CRYPTO_MINALIGN_ATTR;
-> > > };
-> > > 
-> > > is already of size 128. Without CRYPTO_MINALIGN_ATTR, its size would be
-> > > 1 but otherwise the whole structure inherits the alignment of its
-> > > member and this translates into an aligned size.
-> > 
-> > No we should not lie to the compiler,
+Tyler Hicks wrote on Sun, Jul 10, 2022 at 09:14:02AM -0500:
+> Ensure that the fid's iounit field is set to zero when a new fid is
+> created. Certain 9P operations, such as OPEN and CREATE, allow the
+> server to reply with an iounit size which the client code assigns to the
+> p9_fid struct shortly after the fid is created by p9_fid_create(). On
+> the other hand, an XATTRWALK operation doesn't allow for the server to
+> specify an iounit value. The iounit field of the newly allocated p9_fid
+> struct remained uninitialized in that case. Depending on allocation
+> patterns, the iounit value could have been something reasonable that was
+> carried over from previously freed fids or, in the worst case, could
+> have been arbitrary values from non-fid related usages of the memory
+> location.
 > 
-> We won't if we ensure that a structure with sizeof() >= 128 is aligned
-> to 128.
+> The bug was detected in the Windows Subsystem for Linux 2 (WSL2) kernel
+> after the uninitialized iounit field resulted in the typical sequence of
+> two getxattr(2) syscalls, one to get the size of an xattr and another
+> after allocating a sufficiently sized buffer to fit the xattr value, to
+> hit an unexpected ERANGE error in the second call to getxattr(2). An
+> uninitialized iounit field would sometimes force rsize to be smaller
+> than the xattr value size in p9_client_read_once() and the 9P server in
+> WSL refused to chunk up the READ on the attr_fid and, instead, returned
+> ERANGE to the client. The virtfs server in QEMU seems happy to chunk up
+> the READ and this problem goes undetected there.
 > 
-Right. kmalloc() should return a 128 byte aligned pointer as long as
-the size of the allocation is >= 128 bytes, and the kmalloc-192 cache
-isn't present. So, the current behavior that crypto is relying on
-wouldn't change, so I agree with Catalin that we wouldn't be lying to
-the compiler if we move forward with getting rid of kmalloc-192.
+> Fixes: ebf46264a004 ("fs/9p: Add support user. xattr")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Tyler Hicks <tyhicks@linux.microsoft.com>
 
-FWIW, I did a comparison on my machine with and without kmalloc-192, and
-the amount of memory usage that increased from allocations being redirected to
-kmalloc-256 was about 0.4-0.5 MB, which doesn't seem too bad.
+Thanks for the v2, looks good to me and tested quickly so I've queued it
+up.
+(and thanks all the fixes lately and for the reminder, too many patches
+lately I thought I had already taken it... Feel free to send 'pings' on
+the list)
 
-> > we have code elsewhere
-> > that uses the alignment to compute the amount of extra padding
-> > needed to create greater padding.  If CRYPTO_MINALIGN is misleading
-> > then that calculation will fall apart.
-I don't think it would be misleading. If all of your allocations
-are >= CRYPTO_MINALIGN == ARCH_DMA_MINALIGN in size, and
-kmalloc()--with kmalloc-192 removed--returns buffers that are aligned to a
-power of 2, and are big enough to accomodate your allocation, then wouldn't
-they always be CYRPTO_MINALIGN'ed, so your calculation would still be fine?
+Since the next merge window is close (probably starts next week-ish) I
+won't bother with a separate PR for 5.19; it's been 12 years it can wait
+another week.
 
---Isaac
+--
+Dominique
