@@ -2,75 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B2CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9367EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232626AbiGOIdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        id S231356AbiGOIeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiGOIdf (ORCPT
+        with ESMTP id S232729AbiGOIeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:33:35 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CCD1E8;
-        Fri, 15 Jul 2022 01:33:33 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oCGl9-000ndq-8p; Fri, 15 Jul 2022 18:33:16 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:33:15 +0800
-Date:   Fri, 15 Jul 2022 16:33:15 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Yang Shen <shenyang39@huawei.com>,
-        Zhou Wang <wangzhou1@hisilicon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH] crypto: hisilicon/zip: Use the bitmap API to allocate
- bitmaps
-Message-ID: <YtEmS//eV3Ok08BD@gondor.apana.org.au>
-References: <49a1b5bf6e8f7c2ad06a0e2dbc35e00169d4ebe2.1657383385.git.christophe.jaillet@wanadoo.fr>
+        Fri, 15 Jul 2022 04:34:14 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E88A29C83;
+        Fri, 15 Jul 2022 01:34:14 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6D8E96601A3F;
+        Fri, 15 Jul 2022 09:34:11 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657874052;
+        bh=GqdfRsVfLCo2VWTEZGi7k9cm/HFoOJvuQH77gu2Dunk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=KDykdN7WZCR7CkUpY6NB2K+XHNXANiCEgbnbDDyNtLQO+Qv9R7uewhqvy+GEBUG+m
+         zF0dpvL03LKbH0xuWIZTe0YM9siRdZPpvMPwmXml/sWj7pZgzyVIuQ7LMKvzr4B1Gy
+         +o2wih/tmqc/VMear4eT7zwT5JJsM+/JmLQ9l2wbJ2C6JaK46t85ICGq3y+thP4oij
+         SdAhjQoblPVlXJr9gi1X5H2A5EVGDu54+XGwNL40UItP0cinnqzLoW3mY2pFCIT2WY
+         KZ8u9J1TpPTDdnJrIliFzslcKliKjGlIerzie0waovd8PpYSPUVI+jpDOeMjc7lFya
+         DDOQ6Kybdxq2Q==
+Message-ID: <6d8aeee4-9732-1c62-67e0-6e8f56373aa6@collabora.com>
+Date:   Fri, 15 Jul 2022 10:34:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <49a1b5bf6e8f7c2ad06a0e2dbc35e00169d4ebe2.1657383385.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RESEND] media: mediatek: vcodec: Add to support VP9 inner racing
+ mode
+Content-Language: en-US
+To:     Mingjia Zhang <mingjia.zhang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+Cc:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Steve Cho <stevecho@chromium.org>, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, srv_heupstream@mediatek.com,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220715064938.5812-1-mingjia.zhang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220715064938.5812-1-mingjia.zhang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 09, 2022 at 06:16:46PM +0200, Christophe JAILLET wrote:
-> Use bitmap_zalloc()/bitmap_free() instead of hand-writing them.
+Il 15/07/22 08:49, Mingjia Zhang ha scritto:
+> In order to reduce decoder latency, enable VP9 inner racing mode.
+> Send lat trans buffer information to core when trigger lat to work,
+> need not to wait until lat decode done.
 > 
-> It is less verbose and it improves the semantic.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Signed-off-by: mingjia zhang <mingjia.zhang@mediatek.com>
 > ---
->  drivers/crypto/hisilicon/zip/zip_crypto.c | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/crypto/hisilicon/zip/zip_crypto.c b/drivers/crypto/hisilicon/zip/zip_crypto.c
-> index 67869513e48c..7bf53877e508 100644
-> --- a/drivers/crypto/hisilicon/zip/zip_crypto.c
-> +++ b/drivers/crypto/hisilicon/zip/zip_crypto.c
-> @@ -606,8 +606,7 @@ static int hisi_zip_create_req_q(struct hisi_zip_ctx *ctx)
->  		req_q = &ctx->qp_ctx[i].req_q;
->  		req_q->size = QM_Q_DEPTH;
->  
-> -		req_q->req_bitmap = kcalloc(BITS_TO_LONGS(req_q->size),
-> -					    sizeof(long), GFP_KERNEL);
-> +		req_q->req_bitmap = bitmap_zalloc(req_q->size, GFP_KERNEL);
->  		if (!req_q->req_bitmap) {
->  			ret = -ENOMEM;
->  			if (i == 0)
+> CTS/GTS test pass
 
-You should add an include for linux/bitmap.h instead of relying
-on implicit inclusion through some random header file.
-
-The same goes for all your other patches too.
+CTS/GTS passing is a good indication but, please, test with GStreamer (and
+show the output, as well!).
 
 Thanks,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+Angelo
+
+> ---
+>   .../vcodec/vdec/vdec_vp9_req_lat_if.c         | 64 ++++++++++++-------
+>   1 file changed, 40 insertions(+), 24 deletions(-)
+> 
