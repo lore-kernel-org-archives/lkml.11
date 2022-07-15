@@ -2,158 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7405DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED89C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbiGOGKw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 02:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
+        id S230269AbiGOGK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 02:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230178AbiGOGKj (ORCPT
+        with ESMTP id S230201AbiGOGKs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 02:10:39 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98223DBD2
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:10:38 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31c972f5f84so33607597b3.1
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:10:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=/Ia+O9M0Pz2+/05x4XoBRaUcJqadaj8Ww7ydsZGTIyc=;
-        b=AsFH83JSc75pqQLjhwbkNC5eEmbVMfMhBpPhg7rjc25BQstmijhQMgTA+PPbxJYlqN
-         QPVHh8kifhnzc58ChmI3fgEyNUKltfrMrL+ztxu2EOY7NCdrkHxnV8NMvG/wC3CD+uXU
-         dAxvUDRaBJDjKtmTWDjl5DPdd+gPLE/+RiY4lPMa2oGT1tRuMwcgcIPgFOqRKpNBMp9d
-         Khxf6sFE2z9CYuQWyepW9GSGfVixtwjnqotLqhBTyVuYzQxt7DIX7fontQfVBdI7aFon
-         MuJbSY7lOoXOx555VBK2EWAbxAa10joar+VP9GpSz11xwuxaKieYJDSmFvWw+Kh7aS+7
-         lQpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=/Ia+O9M0Pz2+/05x4XoBRaUcJqadaj8Ww7ydsZGTIyc=;
-        b=IL9pj2braW+3We8haBl6qLMHLZn6wdw5DUJ+RIUFCNPaYAzHcvSKeElQUoAJxBh+qM
-         BRz4/CbBk3gNCkLBOopJ2bNEg1dtkXkRZv7WnvcK8eCNjRQWd0cH+c+l/kX8dCxq5Yxi
-         K0td37XCJPSCrJagwqhSojwt4aefuBjY2qk7noa4DfTy4wMxrHyv/aCDlx+6+bDLeD5h
-         q0onp2IXRa51V353r/ClvGe9rV8GoVOxbnLMzNtg6CUkUWJCFnyl13xL6A6MH7RZg2kJ
-         NLzp35idvUC+fmBowM0cbFVokMl/U2G9c3E42OUmEQtZnOQ/2qvwKJMVFuVOCJV/5mbT
-         6mZQ==
-X-Gm-Message-State: AJIora8lm9HJyfBY42uwIQgb/ls8By0FrLd4HHFvyfoC0ah3EdkPnSM/
-        u4NfZMNHEVeczUeQArMgNPF3Mpe8kKPTFXxOUQ==
-X-Google-Smtp-Source: AGRyM1vQf/Bx1CweucDNGXThIQceIJF3jerLq31SSlQ4DRKoZzzVX77BCd9Mi+GQ+qVz+MEqdkAvXKVOyWEjNha+Qg==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:f010:455b:62ce:19e])
- (user=kaleshsingh job=sendgmr) by 2002:a0d:f647:0:b0:31d:17cc:3337 with SMTP
- id g68-20020a0df647000000b0031d17cc3337mr14046493ywf.100.1657865438690; Thu,
- 14 Jul 2022 23:10:38 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 23:10:11 -0700
-In-Reply-To: <20220715061027.1612149-1-kaleshsingh@google.com>
-Message-Id: <20220715061027.1612149-3-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220715061027.1612149-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v4 02/18] arm64: stacktrace: Factor out on_accessible_stack_common()
-From:   Kalesh Singh <kaleshsingh@google.com>
-To:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
-        madvenka@linux.microsoft.com
-Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
-        kaleshsingh@google.com, james.morse@arm.com,
-        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        catalin.marinas@arm.com, andreyknvl@gmail.com,
-        russell.king@oracle.com, vincenzo.frascino@arm.com,
-        mhiramat@kernel.org, ast@kernel.org, drjones@redhat.com,
-        wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com,
-        yuzenghui@huawei.com, ardb@kernel.org, oupton@google.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, android-mm@google.com,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 15 Jul 2022 02:10:48 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59017735BF
+        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:10:45 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657865443;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=34AfcYpevfLpsDQXx/FrfkJftZBZGpSvDOrexHkg1Ig=;
+        b=pt1XvMFaFcgmDP+bDSKk87KCLSwA9Vwnmvss/Ga7S2kJPU4FdC5p5otm5tnKzA93gLfaBM
+        2sqv1+BQ3ZE4FS2N844tja4oiFUieKjhCIz23HjvEBD14JNdNKHEM9USJ3J3js2R1muLkR
+        c0t2YSwBNBuNDU115qFOydbpJ74WJsPyCk+KRXBdxPXTwZaSSkL8U0I6Cvi2CfN+T+DfQ1
+        ZxeMrEuCeBx1eK4EoBIgcgTl71rwCi13v2Zs/s/fSjDTSxj/zaRxZRuc9WXrFqbkp9YnTU
+        UJzEY6tdLva6wE3goE7njDeVJthkKUahGKEysV5GRPZRJG6hXbfhYxVv7fP91w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657865443;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=34AfcYpevfLpsDQXx/FrfkJftZBZGpSvDOrexHkg1Ig=;
+        b=s8p4KjZQTCDnVdlw0A8f3hsaM1Am+lI8UlfF0y7SwE35QRP0d0Z54Ij668d/viwRBSr0uR
+        Ux7SvrXmnTPXSyAQ==
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        linux-kernel@vger.kernel.org,
+        Todd Brandt <todd.e.brandt@linux.intel.com>
+Subject: [PATCH v3] printk: do not wait for consoles when suspended
+Date:   Fri, 15 Jul 2022 08:16:42 +0206
+Message-Id: <20220715061042.373640-2-john.ogness@linutronix.de>
+In-Reply-To: <20220715061042.373640-1-john.ogness@linutronix.de>
+References: <20220715061042.373640-1-john.ogness@linutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move common on_accessible_stack checks to stacktrace/common.h. This is
-used in the implementation of the nVHE hypervisor unwinder later in
-this series.
+The console_stop() and console_start() functions call pr_flush().
+When suspending, these functions are called by the serial subsystem
+while the serial port is suspended. In this scenario, if there are
+any pending messages, a call to pr_flush() will always result in a
+timeout because the serial port cannot make forward progress. This
+causes longer suspend and resume times.
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+Add a check in pr_flush() so that it will immediately timeout if
+the consoles are suspended.
+
+Fixes: 3b604ca81202 ("printk: add pr_flush()")
+Reported-by: Todd Brandt <todd.e.brandt@linux.intel.com>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Tested-by: Todd Brandt <todd.e.brandt@linux.intel.com>
 ---
- arch/arm64/include/asm/stacktrace.h        |  8 ++------
- arch/arm64/include/asm/stacktrace/common.h | 18 ++++++++++++++++++
- 2 files changed, 20 insertions(+), 6 deletions(-)
+ v3: add more details to commit message and comment
 
-diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
-index 79f455b37c84..a4f8b84fb459 100644
---- a/arch/arm64/include/asm/stacktrace.h
-+++ b/arch/arm64/include/asm/stacktrace.h
-@@ -56,7 +56,6 @@ static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
- 			struct stack_info *info) { return false; }
- #endif
+ v2: only avoid wait if suspended
+
+ kernel/printk/printk.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index b49c6ff6dca0..a1a81fd9889b 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3380,6 +3380,7 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 		diff = 0;
  
--
- /*
-  * We can only safely access per-cpu stacks from current in a non-preemptible
-  * context.
-@@ -65,8 +64,8 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
- 				       unsigned long sp, unsigned long size,
- 				       struct stack_info *info)
- {
--	if (info)
--		info->type = STACK_TYPE_UNKNOWN;
-+	if (on_accessible_stack_common(tsk, sp, size, info))
-+		return true;
- 
- 	if (on_task_stack(tsk, sp, size, info))
- 		return true;
-@@ -74,12 +73,9 @@ static inline bool on_accessible_stack(const struct task_struct *tsk,
- 		return false;
- 	if (on_irq_stack(sp, size, info))
- 		return true;
--	if (on_overflow_stack(sp, size, info))
--		return true;
- 	if (on_sdei_stack(sp, size, info))
- 		return true;
- 
- 	return false;
- }
--
- #endif	/* __ASM_STACKTRACE_H */
-diff --git a/arch/arm64/include/asm/stacktrace/common.h b/arch/arm64/include/asm/stacktrace/common.h
-index 64ae4f6b06fe..f58b786460d3 100644
---- a/arch/arm64/include/asm/stacktrace/common.h
-+++ b/arch/arm64/include/asm/stacktrace/common.h
-@@ -62,6 +62,9 @@ struct unwind_state {
- 	struct task_struct *task;
- };
- 
-+static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
-+				     struct stack_info *info);
+ 		console_lock();
 +
- static inline bool on_stack(unsigned long sp, unsigned long size,
- 			    unsigned long low, unsigned long high,
- 			    enum stack_type type, struct stack_info *info)
-@@ -80,6 +83,21 @@ static inline bool on_stack(unsigned long sp, unsigned long size,
- 	return true;
- }
+ 		for_each_console(c) {
+ 			if (con && con != c)
+ 				continue;
+@@ -3389,11 +3390,19 @@ static bool __pr_flush(struct console *con, int timeout_ms, bool reset_on_progre
+ 			if (printk_seq < seq)
+ 				diff += seq - printk_seq;
+ 		}
+-		console_unlock();
  
-+static inline bool on_accessible_stack_common(const struct task_struct *tsk,
-+					      unsigned long sp,
-+					      unsigned long size,
-+					      struct stack_info *info)
-+{
-+	if (info)
-+		info->type = STACK_TYPE_UNKNOWN;
+-		if (diff != last_diff && reset_on_progress)
++		/*
++		 * If consoles are suspended, it cannot be expected that they
++		 * make forward progress, so timeout immediately. @diff is
++		 * still used to return a valid flush status.
++		 */
++		if (console_suspended)
++			remaining = 0;
++		else if (diff != last_diff && reset_on_progress)
+ 			remaining = timeout_ms;
+ 
++		console_unlock();
 +
-+	/*
-+	 * Both the kernel and nvhe hypervisor make use of
-+	 * an overflow_stack
-+	 */
-+	return on_overflow_stack(sp, size, info);
-+}
-+
- static inline void unwind_init_common(struct unwind_state *state,
- 				      struct task_struct *task)
- {
+ 		if (diff == 0 || remaining == 0)
+ 			break;
+ 
 -- 
-2.37.0.170.g444d1eabd0-goog
+2.30.2
 
