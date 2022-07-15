@@ -2,98 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CEAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A49CCA480
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230514AbiGOTsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 15:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49730 "EHLO
+        id S231163AbiGOTtL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 15:49:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiGOTsr (ORCPT
+        with ESMTP id S231175AbiGOTtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 15:48:47 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A5C624C;
-        Fri, 15 Jul 2022 12:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657914524; x=1689450524;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=MilUhzh+T5K7OKYmpSSzhAgM8qxY12ZE5AeVvwctYIg=;
-  b=ENLwp5TQ06MUqVsAaPm700pEs0mdqrZQRSSeOYviXkBea3L1EvJuaUA4
-   O2NB9xVtQg2Uy1Ge6rzaLSe6e3OEjx0+rIBTeQYmVtLuVtyu+ZYz0o/Xl
-   w5BJ4tCDrSGmp0Q7aEHLXJKZAFVSOnGVu+wj/xOIu/VxKt/SlYZ436HxY
-   o9xZ/rD9gsq2G2XtO+AcBtDzLBTYEdiZ3Q/RTB1jOTctZ4DDsBlvoWmSH
-   lTMVnURUMmd75z6VomrkmRW4JWOujgL4Qb8VjKxNWyW5l/UjbZjlk3Klc
-   bSXHw4QUpcoG3VtBNHZhpgFZyeVLuUPz9EeifumapwjwZaqhmtO/QlbY5
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="266298361"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="266298361"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:48:44 -0700
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="664319203"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 12:48:42 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oCRIl-001JDk-2o;
-        Fri, 15 Jul 2022 22:48:39 +0300
-Date:   Fri, 15 Jul 2022 22:48:39 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-Cc:     rafael@kernel.org, srinivas.pandruvada@linux.intel.com,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] powercap: RAPL: Add Power Limit4 support for Alder
- Lake-N and Raptor Lake-P
-Message-ID: <YtHEl73BL1BRyl9r@smile.fi.intel.com>
-References: <20220715165228.28044-1-sumeet.r.pawnikar@intel.com>
+        Fri, 15 Jul 2022 15:49:04 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A321113E94;
+        Fri, 15 Jul 2022 12:49:02 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id oy13so10734990ejb.1;
+        Fri, 15 Jul 2022 12:49:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=nyNdhj7h4w1RZhYEVhON8j8fAKw3816cfmCoVqpY7Vc=;
+        b=OfnD2D1APF5Ahz+MfALD3wa03aF1C6CkiZ6G8icXCCRnwZW/btDn5A1wm0WlILrylj
+         yEtmwd36pSHI4lV63maegknIJpnrBDiRTNvjuOoGtg+dDqoNfiGbQj9TfMdSRBeFvTKd
+         m4U4H9b7/iEcE+YmJAfQ5ZXTlYextHCdZT8z3Wc7pL+VIaoyA1C2//na2fIlWC0is8vD
+         44dsw/pL0uNwWmCkpz/W1McXo8IJMUpR/VdjvNnDAyZSopegRWQQwtBdmYdZT4DEVMWx
+         CrfLSV043WbQTVIV7Ry+KWHzgBbGhFWHrDIn12GAeoq3JY+a9WftFRP+tATkafIpTry+
+         VVRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=nyNdhj7h4w1RZhYEVhON8j8fAKw3816cfmCoVqpY7Vc=;
+        b=gdlLHmcZW13OsucqSIj3GHvmZyDZpOqT9kUFLZt8mDyjLTJyZloMSRDra8LjYFulfq
+         2PAnCuRgUE6xgqLxPbzzx4VhVn8bw+kSNvuFWbnBBC+hJLaqN1JZP7JF6t90fA+/v8/Z
+         oOk5dbA/VsrAdVyB25jVzJsvAROMmnCC5n0Zs1j7dYM1/bj4pFZGtjSWGxBCA6+Wg1c4
+         nXR8720cu7Nzqy76XmqbJSpNSs5IQsZPjXvbVSJDTvjsVJd0OICqN0zLIxkGvazGs45E
+         3WeC3IpOge1mkluISOJ8X7ZNpfbq2z286SMvl5v+IVA5VIaA2JkYa0wQMWcQIMS00K94
+         jnpw==
+X-Gm-Message-State: AJIora8LNp2Cpgr7YnuY5/gyEPqoHQYrbFdQGdtBdJW4+gWGtxYnmXop
+        KdCJfNo84ybn4yBwm1DOsLw=
+X-Google-Smtp-Source: AGRyM1vWakNrsj+lGhP9My202oySEsrWktklkZej+gdmR5ILzJTYXJMroOm6suyydpwM2+38eQWwqA==
+X-Received: by 2002:a17:907:6da9:b0:72b:58ca:e3a8 with SMTP id sb41-20020a1709076da900b0072b58cae3a8mr15104929ejc.342.1657914540973;
+        Fri, 15 Jul 2022 12:49:00 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id kv14-20020a17090778ce00b0072b85a735afsm2305276ejc.113.2022.07.15.12.49.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 12:49:00 -0700 (PDT)
+Message-ID: <62d1c4ac.1c69fb81.a2fa0.5669@mx.google.com>
+X-Google-Original-Message-ID: <YtG/QmRUVNgSDA19@Ansuel-xps.>
+Date:   Fri, 15 Jul 2022 21:25:54 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH] net: dsa: qca8k: move driver to qca dir
+References: <20220713205350.18357-1-ansuelsmth@gmail.com>
+ <20220714220354.795c8992@kernel.org>
+ <62d12418.1c69fb81.90737.3a8e@mx.google.com>
+ <20220715123743.419537e7@kernel.org>
+ <62d1c288.1c69fb81.45988.55fe@mx.google.com>
+ <20220715124717.5472ceb3@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220715165228.28044-1-sumeet.r.pawnikar@intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20220715124717.5472ceb3@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 10:22:28PM +0530, Sumeet Pawnikar wrote:
-> Add Alder Lake-N and Raptor Lake-P to the list of processor models
-> for which Power Limit4 is supported by the Intel RAPL driver.
+On Fri, Jul 15, 2022 at 12:47:17PM -0700, Jakub Kicinski wrote:
+> On Fri, 15 Jul 2022 21:16:46 +0200 Christian Marangi wrote:
+> > > > Or should I just propose the move and the code split in one series?  
+> > > 
+> > > Yup that's what I prefer.
+> > 
+> > Ok no problem, if the current merged commit is a problem, np for me with
+> > a revert! (it was really to prevent sending a bigger series, sorry for
+> > the mess)
 > 
-> Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Oh, I didn't realize Dave already merged it. No worries, it's not a big
+> deal. Would be great to prioritize getting the split done next. If both
+> are merged for before 5.19 final is cut - it doesn't really matter if
+> they were one series or two.
 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
-You may not convert people's review into a tag without their consent.
-But taking into account this is trivial patch, it's fine. Just follow
-the rules next time.
-
-Also, where is v1? What are the differences to it?
-
-> ---
->  drivers/powercap/intel_rapl_msr.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/powercap/intel_rapl_msr.c b/drivers/powercap/intel_rapl_msr.c
-> index 9d23984d8931..bc6adda58883 100644
-> --- a/drivers/powercap/intel_rapl_msr.c
-> +++ b/drivers/powercap/intel_rapl_msr.c
-> @@ -140,7 +140,9 @@ static const struct x86_cpu_id pl4_support_ids[] = {
->  	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_TIGERLAKE_L, X86_FEATURE_ANY },
->  	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE, X86_FEATURE_ANY },
->  	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_L, X86_FEATURE_ANY },
-> +	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_N, X86_FEATURE_ANY },
->  	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE, X86_FEATURE_ANY },
-> +	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE_P, X86_FEATURE_ANY },
->  	{}
->  };
+I'm just working on that... hoping to send a patch soon, just need to
+investigate regmap bulk read/write changes...
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+	Ansuel
