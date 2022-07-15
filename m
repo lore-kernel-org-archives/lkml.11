@@ -2,84 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9602BC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:10:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229875AbiGOTKW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 15:10:22 -0400
+        id S231156AbiGOTKb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 15:10:31 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230505AbiGOTKS (ORCPT
+        with ESMTP id S231142AbiGOTKU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 15:10:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E488E3CBD3;
-        Fri, 15 Jul 2022 12:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AFA360A54;
-        Fri, 15 Jul 2022 19:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D52E5C3411E;
-        Fri, 15 Jul 2022 19:10:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657912215;
-        bh=9L63cBTgXa+KsEQqG1D/NEZqIihhpwJ9sTIMALvPoFU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=l8PIW8asO8HNtRdM0+6aTNa44bhpDaE4I6Dv+RoM7FvzyI8vAvRKULdqrLR7kKUTJ
-         erpBCFrzQeX1CKP37jhhLOmWXvf5IqwuwpcLDO/+4ikhUE89QKPLNK+0Niv1lc0r0x
-         0sWwKCael7lVoS4YL+ocFMjKWi941iTzum9oYjvxQFYI2OJpsn9A0aRX+ZMzfW1zfS
-         hA2my5vbMtduWLLdKRxo96/ea+kPlLkuRQoVRyoNxnY7kmddiorGVgBOP4wSiBLp0r
-         WwHysl6+LpQBUJ+RL7Zxk/37pGpAG0nehVKxGknqLYLF+onFht5wPx4zwmDeuo719W
-         zJFXn5fJnp/pg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B247AE4521F;
-        Fri, 15 Jul 2022 19:10:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 15 Jul 2022 15:10:20 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E474A42AC3;
+        Fri, 15 Jul 2022 12:10:18 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-31c8a1e9e33so55870927b3.5;
+        Fri, 15 Jul 2022 12:10:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0eFPkxDRT819KSGBw+2IxjOO0RG/iHGVi8eAb/xqty0=;
+        b=f/4f6JFFnBU9uTKjuUmeSdJ/6vp/353/HUJvdgH72g+VRfZy6xjLgyy50GWODcB9qC
+         QSUphY6kFh7qSjOSb+3dQw0IEc3DMISeYErWmjW+kD/LonaJmtvnnKAZU5BywZUC2kn8
+         dWHsNEMx/Y/Mb89k5SrUBchJNiCuoxJF2x/2AUu3y7vqnIrsFcSwAx1tMjwxw5QNsdCX
+         UFvWf7lUphXKSi4mvpQKWB809WW/B1CCz5LBxnRQ3coPwdhBRXjxLjw2JAka7aHtlBwk
+         kjyQd0SUHlXdepEs6O1E813chUKsXzYhHrwTLL4wMzyMkIES2JdNHgFdzEi8/cWCrRGy
+         Q3rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0eFPkxDRT819KSGBw+2IxjOO0RG/iHGVi8eAb/xqty0=;
+        b=kZLgdYHIhvfTRAfArFCyHUkiLhLOQvSfyvyaYcBOiGwaJkmvxgUPoQq8d0NJbA5lNz
+         zqUvaG4CYwLkpdnUIXDwcM6DkARrrwSWMb7L1xFF22dlZxx/K+CiSkVuSPQh2fpZgW+s
+         vTJPNRQ1bAZ9LgA6YCTd5MBoocQdtVIxdbpnuPVQT/5Gg6Q94b2wvuXRnB9ici7LB6MZ
+         1JUml11PrlY5pi8Vc/82OB7r6jP8YMdDCRs317Ri+Z4H8mpvapGNcvgM5/sNJ42rGso9
+         ReQc8l4VMz9kyYGEdz1HdZn5lLqfJygOilFMkFLbLaVon9r+Qa85e4OAaRZGeIw2/IS6
+         Mltw==
+X-Gm-Message-State: AJIora+6jQlVKbyMEpuUVI1sblBtbkXZ1EJdZafBhjdQIXNU8tMykHH7
+        wQGIE6BP8I90C79vseKq5Kc38s1P/finEJajFh/fmxiaSoE=
+X-Google-Smtp-Source: AGRyM1u0LfZ/5A73nKyjWxon9iGrwvZUGBIxQ1+PoIrjIXnaMtBrTrN8qxeJAwr/pBi1AmwazSDMtzOwsUqXDHdyBmU=
+X-Received: by 2002:a81:108f:0:b0:31c:d7ae:9ff1 with SMTP id
+ 137-20020a81108f000000b0031cd7ae9ff1mr17042253ywq.18.1657912218072; Fri, 15
+ Jul 2022 12:10:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v2 0/3] Use lightweigt version of bpftool
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165791221572.3895.16901953403677326761.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Jul 2022 19:10:15 +0000
-References: <20220714024612.944071-1-pulehui@huawei.com>
-In-Reply-To: <20220714024612.944071-1-pulehui@huawei.com>
-To:     Pu Lehui <pulehui@huawei.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, quentin@isovalent.com, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, jean-philippe@linaro.org
+References: <20220715224443.46ce75ca@canb.auug.org.au> <87fsj2v3oq.wl-tiwai@suse.de>
+In-Reply-To: <87fsj2v3oq.wl-tiwai@suse.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 15 Jul 2022 21:09:41 +0200
+Message-ID: <CAHp75Vf1O0AEkdNvAoGQ-nM9Pbx-nFtA5-GH=z=TZF_xTgfY3A@mail.gmail.com>
+Subject: Re: linux-next: build failure after merge of the sound tree
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>,
+        Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+On Fri, Jul 15, 2022 at 5:39 PM Takashi Iwai <tiwai@suse.de> wrote:
+>
+> On Fri, 15 Jul 2022 14:44:43 +0200,
+> Stephen Rothwell wrote:
+> >
+> > Hi all,
+> >
+> > After merging the sound tree, today's linux-next build (powerpc
+> > allyesconfig) failed like this:
+> >
+> > sound/pci/hda/cs35l41_hda.c: In function 'cs35l41_get_acpi_sub_string':
+> > sound/pci/hda/cs35l41_hda.c:693:43: error: invalid use of undefined type 'struct acpi_device'
+> >   693 |         status = acpi_evaluate_object(adev->handle, "_SUB", NULL, &buffer);
+> >       |                                           ^~
+> >
+> > Caused by commit
+> >
+> >   d60b05b4c780 ("ALSA: hda: cs35l41: Allow compilation test on non-ACPI configurations")
+> >
+> > along with commit
+> >
+> >   eef375960210 ("ALSA: hda: cs35l41: Support reading subsystem id from ACPI")
+> >
+> > I have reverted commit d60b05b4c780 for today.
+>
+> Thanks.  Now I reverted the commit on for-next branch as a workaround,
+> too.
 
-This series was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+Thanks! OTOH it means it's working well :-)
 
-On Thu, 14 Jul 2022 10:46:09 +0800 you wrote:
-> Currently, samples/bpf, tools/runqslower and bpf/iterators use bpftool
-> for vmlinux.h, skeleton, and static linking only. We can uselightweight
-> bootstrap version of bpftool to handle these, and it will be faster.
-> 
-> v2:
-> - make libbpf and bootstrap bpftool independent. and make it simple.
-> 
-> [...]
+Nevertheless, I have prepared a series to deduplicate this _SUB code
+and I think the ACPI would stay as a compile dependency because of
+that change anyway.
 
-Here is the summary with links:
-  - [bpf-next,v2,1/3] samples: bpf: Fix cross-compiling error by using bootstrap bpftool
-    https://git.kernel.org/bpf/bpf-next/c/2e4966288c16
-  - [bpf-next,v2,2/3] tools: runqslower: build and use lightweight bootstrap version of bpftool
-    https://git.kernel.org/bpf/bpf-next/c/3a2a58c4479a
-  - [bpf-next,v2,3/3] bpf: iterators: build and use lightweight bootstrap version of bpftool
-    https://git.kernel.org/bpf/bpf-next/c/3848636b4a88
 
-You are awesome, thank you!
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+With Best Regards,
+Andy Shevchenko
