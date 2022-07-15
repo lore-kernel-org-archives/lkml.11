@@ -2,164 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCD5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 12:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232262AbiGOM1i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 08:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
+        id S233289AbiGOM1z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 08:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbiGOM1e (ORCPT
+        with ESMTP id S229782AbiGOM1x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 08:27:34 -0400
-Received: from mailout1.rbg.tum.de (mailout1.rbg.tum.de [131.159.0.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F6C3820D1;
-        Fri, 15 Jul 2022 05:27:33 -0700 (PDT)
-Received: from mailrelay1.rbg.tum.de (mailrelay1.in.tum.de [131.159.254.14])
-        by mailout1.rbg.tum.de (Postfix) with ESMTPS id 6FD8F98;
-        Fri, 15 Jul 2022 14:27:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=in.tum.de;
-        s=20220209; t=1657888050;
-        bh=zGE/jDIo1cfQsc+MnjdwsHIGgAF/4RlBe+yR6eNgnes=;
-        h=Subject:From:In-Reply-To:Date:Cc:References:To:From;
-        b=Ry/i9d/zyiTV+xWdRYvKVN/SbuXo5p5zNUtP2m5Y8UgSv5RQQydATc1Paj2mXm2r4
-         hphlL3ROKc3e2BtI/OO2ZbCQKKLOzjKOQ62oSrq3PTMKIdB8D3SD2BV/aPonr531i3
-         1YGQoZpNQqVXnlKQ0rexqAUQUH61WXoPOce1qJpBcnrycK8PSoD5k8BAB81YOq+GKT
-         MxV4uJhGqbHNvANs1HSE6pS/POjflssPArH4K9ALazQs1FFwnrVhI7rx6q5Pw1hO2N
-         qHTfUmvDgXZzei3loZ6anYsqkJBH2Etf2xbhARMR3W0blbU71woE8jtsDdXJ4M33V+
-         5nuy5w85gsfCA==
-Received: by mailrelay1.rbg.tum.de (Postfix, from userid 112)
-        id 6E438DD0; Fri, 15 Jul 2022 14:27:30 +0200 (CEST)
-Received: from mailrelay1.rbg.tum.de (localhost [127.0.0.1])
-        by mailrelay1.rbg.tum.de (Postfix) with ESMTP id 404A4DCD;
-        Fri, 15 Jul 2022 14:27:30 +0200 (CEST)
-Received: from mail.in.tum.de (mailproxy.in.tum.de [IPv6:2a09:80c0::78])
-        by mailrelay1.rbg.tum.de (Postfix) with ESMTPS id 3B74B5B5;
-        Fri, 15 Jul 2022 14:27:30 +0200 (CEST)
-Received: by mail.in.tum.de (Postfix, from userid 112)
-        id 355A54A0215; Fri, 15 Jul 2022 14:27:30 +0200 (CEST)
-Received: (Authenticated sender: heidekrp)
-        by mail.in.tum.de (Postfix) with ESMTPSA id 3B3BB4A0129;
-        Fri, 15 Jul 2022 14:27:29 +0200 (CEST)
-        (Extended-Queue-bit xtech_mr@fff.in.tum.de)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
-Subject: Re: [PATCH RFC] tools/memory-model: Adjust ctrl dependency definition
-From:   =?utf-8?Q?Paul_Heidekr=C3=BCger?= <Paul.Heidekrueger@in.tum.de>
-In-Reply-To: <YrnFCSjESpeQdciv@rowland.harvard.edu>
-Date:   Fri, 15 Jul 2022 14:27:28 +0200
-Cc:     clang-built-linux <llvm@lists.linux.dev>,
-        linux-toolchains@vger.kernel.org,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Will Deacon <will@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        David Howells <dhowells@redhat.com>,
-        Jade Alglave <j.alglave@ucl.ac.uk>,
-        Luc Maranget <luc.maranget@inria.fr>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Palmer Dabbelt <palmer@dabbelt.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Marco Elver <elver@google.com>,
-        Charalampos Mainas <charalampos.mainas@gmail.com>,
-        Pramod Bhatotia <pramod.bhatotia@in.tum.de>,
-        Soham Chakraborty <s.s.chakraborty@tudelft.nl>,
-        Martin Fink <martin.fink@in.tum.de>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <20F4C097-24B4-416B-95EE-AC11F5952B44@in.tum.de>
-References: <20220615114330.2573952-1-paul.heidekrueger@in.tum.de>
- <YqnpshlsAHg7Uf9G@rowland.harvard.edu>
- <50B9D7C1-B11D-4583-9814-BFFF2C80D8CA@in.tum.de>
- <YrHUkfDWsexHRUKj@rowland.harvard.edu>
- <04B4DBD6-1262-4905-9E85-9466FC104895@in.tum.de>
- <YrnFCSjESpeQdciv@rowland.harvard.edu>
-To:     Alan Stern <stern@rowland.harvard.edu>
-X-Mailer: Apple Mail (2.3696.100.31)
+        Fri, 15 Jul 2022 08:27:53 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B6CC820D1;
+        Fri, 15 Jul 2022 05:27:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657888072; x=1689424072;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=w074g1tOYcgeAMYykMXyZe6g/HWtwmXYOmJTBgqRCRA=;
+  b=eEhXXZ9w/mBhYw4YurongBdtQHUQVNjjJYJThs7aJXMxxRdn1NmwaxOo
+   D47xktdc2wskDwnFXNjgSXAMzdosdFyMnBx1qURZy+inE/t0rfLS3PQFf
+   skRRzwya7znoouImMRTpkPQoTQxD+72X9XtcyUkKMxTg5rXwri2QFRkcu
+   i+nf6Fiog6K0ouz+bctmTThB4gf59LWO0RPqu9Ekg2id5r3PC3t6LdE/A
+   VcAwVWMxfbuLhy9Vm8M4+Oa5BRvL8q9HYGtrBRBdwOLoLUP52Or2J/rfA
+   eWpvuLjxVQQn4tX46++i2yL1btWZnq5Sayh8MJNAIasaL9j7JBaOzxgZW
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="286521370"
+X-IronPort-AV: E=Sophos;i="5.92,273,1650956400"; 
+   d="scan'208";a="286521370"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 05:27:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,273,1650956400"; 
+   d="scan'208";a="923489361"
+Received: from skxmcp01.bj.intel.com ([10.240.193.86])
+  by fmsmga005.fm.intel.com with ESMTP; 15 Jul 2022 05:27:50 -0700
+From:   Yu Zhang <yu.c.zhang@linux.intel.com>
+To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
+        jmattson@google.com, joro@8bytes.org, wanpengli@tencent.com,
+        kvm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Fix the #PF injection logic for smaller MAXPHYADDR in nested.
+Date:   Fri, 15 Jul 2022 19:42:09 +0800
+Message-Id: <20220715114211.53175-1-yu.c.zhang@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alan Stern <stern@rowland.harvard.edu> wrote:
+KVM shall inject the #PF directly to L2 when L2 has a smaller MAXPHYADDR
+and L1 has no desire to intercept it, yet currently the #PF will be
+delivered to L1 anyway.
 
-> On Mon, Jun 27, 2022 at 11:47:43AM +0200, Paul Heidekr=C3=BCger wrote:
->>> On 21. Jun 2022, at 16:24, Alan Stern <stern@rowland.harvard.edu> =
-wrote:
->>>=20
->>> On Tue, Jun 21, 2022 at 01:59:27PM +0200, Paul Heidekr=C3=BCger =
-wrote:
->>>> OK. So, LKMM limits the scope of control dependencies to its =
-arm(s), hence
->>>> there is a control dependency from the last READ_ONCE() before the =
-loop
->>>> exists to the WRITE_ONCE().
->>>>=20
->>>> But then what about the following:
->>>>=20
->>>>> int *x, *y;
->>>>>=20
->>>>> int foo()
->>>>> {
->>>>> 	/* More code */
->>>>>=20
->>>>> 	if(READ_ONCE(x))
->>>>> 		return 42;
->>>>>=20
->>>>> 	/* More code */
->>>>>=20
->>>>> 	WRITE_ONCE(y, 42);
->>>>>=20
->>>>> 	/* More code */
->>>>>=20
->>>>> 	return 0;
->>>>> }
->>>>=20
->>>> The READ_ONCE() determines whether the WRITE_ONCE() will be =
-executed at all,
->>>> but the WRITE_ONCE() doesn't lie in the if condition's arm.
->>>=20
->>> So in this case the LKMM would not recognize that there's a control=20=
+Patch 1 fixes this, by initializing the 'fault' variable.
+Patch 2 is just a cleanup for the comments.
 
->>> dependency, even though it clearly exists.
->>=20
->> Oh, that's unfortunate.
->>=20
->> Then I would still argue that the "at all" definition is misleading. =
-This
->=20
-> I agree, and I would welcome a patch improving the definition. Perhaps=20=
+Yu Zhang (2):
+  KVM: X86: Initialize 'fault' in kvm_fixup_and_inject_pf_error().
+  KVM: X86: Fix the comments in prepare_vmcs02_rare()
 
-> something along the lines of what I wrote earlier in this email =
-thread.
+ arch/x86/kvm/vmx/nested.c | 8 ++++----
+ arch/x86/kvm/x86.c        | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-I have just been thinking about how to word this patch; am I correct in
-assuming that the LKMM does not deal with loop conditions? Or in other
-words, there is no way for a loop condition to impose a ctrl dependency =
-on
-any WRITE_ONCE's in the loop body? It are only if and switch statements =
-the
-LKMM is concerned with in the case of ctrl dependencies?
-
-Many thanks,
-Paul
-
->> time in the other direction as I had initially proposed though, as =
-the above
->> example is a case where "at all" holds true, but LKMM doesn't cover =
-it. Or
->> do you think that caveating this in litmus-tests.txt, e.g. via the =
-patch we
->> had recently worked out [1], is enough?
->=20
-> No, the explanation should be improved.
->=20
-> Alan
-
+-- 
+2.25.1
 
