@@ -2,70 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CF83C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A415BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230003AbiGOSZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 14:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47788 "EHLO
+        id S230114AbiGOS1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 14:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGOSZg (ORCPT
+        with ESMTP id S229513AbiGOS1W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 14:25:36 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50B0675B8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 11:25:35 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:47016)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oCQ0N-00GNfN-14; Fri, 15 Jul 2022 12:25:35 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47774 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oCQ0M-00C0xe-4w; Fri, 15 Jul 2022 12:25:34 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Uros Bizjak <ubizjak@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, Alexey Gladkov <legion@kernel.org>
-References: <20220713155405.80663-1-ubizjak@gmail.com>
-Date:   Fri, 15 Jul 2022 13:25:27 -0500
-In-Reply-To: <20220713155405.80663-1-ubizjak@gmail.com> (Uros Bizjak's message
-        of "Wed, 13 Jul 2022 17:54:03 +0200")
-Message-ID: <87ilnyz10o.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 15 Jul 2022 14:27:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 332CE67CA2;
+        Fri, 15 Jul 2022 11:27:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3A5C6232B;
+        Fri, 15 Jul 2022 18:27:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92F95C34115;
+        Fri, 15 Jul 2022 18:27:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657909638;
+        bh=GLrIOUKfTCEiitR+k/dayuHMYy8E4I2pvFk24p8afZA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=jfZGg70EGZ58zaDDn8ZKKNJ8DPyDu0cAcpK/AV7rGjYSqpmQotBcWt0MgwPOkhep0
+         pAYxNSAtmitca9ADEZoaQJ0IJD3UrZ5iPwUfV3JOSWUl6i/cvE261pirar6sgIjY1t
+         iT6n2bxgn81JNrPKzAMPg+MHWDVbgmtelLQe0pycRpH5zQn7IIDq3h86fb0WmjpmBD
+         uNK96PLwO+cq3NzoacPSPLbZbf2ajetQ8iela16p3uWFLra+7JAGgnmpp5f2S+wPt6
+         CKIJ9hC+1Sq0bRYCkqw8svNte0bM0tC948wdr87usqzTnRIYj49UFYk+ajYRDOvMhp
+         MaglZ3Q/Xe+ZQ==
+Date:   Fri, 15 Jul 2022 13:27:15 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Jim Quinlan <jim2101024@gmail.com>
+Cc:     linux-pci@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v1 0/4] PCI: brcmstb: Re-submit reverted patchset
+Message-ID: <20220715182715.GA1145359@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oCQ0M-00C0xe-4w;;;mid=<87ilnyz10o.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+c8LVUlqZsyYj+hQijEsgfPB7eQK9MRD8=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH 0/2] ucount: Fix and improve atomic_long_inc_below
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220701162726.31346-1-jim2101024@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Uros Bizjak <ubizjak@gmail.com> writes:
+On Fri, Jul 01, 2022 at 12:27:21PM -0400, Jim Quinlan wrote:
+> A submission [1] was made to enable a PCIe root port to turn on regulators
+> for downstream devices.  It was accepted.  Months later, a regression was
+> discovered on an RPi CM4 [2].  The patchset was reverted [3] as the fix
+> came too late in the release cycle.  The regression in question is
+> triggered only when the PCIe RC DT node has no root port subnode, which is
+> a perfectly reasonsable configuration.
+> ...
 
-> The series fixes wrong argument type and improves atomic_long_inc_below
-> by using atomic_long_try_cmpxchg instead of atomic_long_cmpxchg.
->
-> Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
-> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+> Jim Quinlan (4):
+>   PCI: brcmstb: Split brcm_pcie_setup() into two funcs
+>   PCI: brcmstb: Add mechanism to turn on subdev regulators
+>   PCI: brcmstb: oAdd control of subdevice voltage regulators
+>   PCI: brcmstb: Do not turn off WOL regulators on suspend
+> 
+>  drivers/pci/controller/pcie-brcmstb.c | 257 +++++++++++++++++++++++---
+>  1 file changed, 227 insertions(+), 30 deletions(-)
 
-The bug fix at least looks correct.  I haven't reviewed the
-atomic_long_try_cmpxchg yet.
+I'm assuming there's a v2 coming soonish?  We should see -rc7 this
+weekend and likely a final v5.19 release on July 24, so v5.20 material
+should be tidied up by then.
 
-Thanks,
-Eric
-
-
->
-> Uros Bizjak (2):
->   ucount: Fix atomic_long_inc_below argument type
->   ucount: Use atomic_long_try_cmpxchg in atomic_long_inc_below
->
->  kernel/ucount.c | 16 +++++++---------
->  1 file changed, 7 insertions(+), 9 deletions(-)
+Bjorn
