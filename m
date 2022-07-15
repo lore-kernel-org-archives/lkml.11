@@ -2,159 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6E8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09836CCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 14:55:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230367AbiGOOwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 10:52:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
+        id S229923AbiGOOz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 10:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229725AbiGOOwC (ORCPT
+        with ESMTP id S229559AbiGOOzy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 10:52:02 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BCA2785A9;
-        Fri, 15 Jul 2022 07:51:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657896718; x=1689432718;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZzyuoiCwqpLweGYOkG0+rKJpPglqwnxzM5a+WQyzOag=;
-  b=ZrSgvAFG8gkVc/meiW3eflT0A5FGXO0eK3uBAZmg8TH076LXjl2TQNiS
-   lllq6urSMj0UZ0OJMlEJMPMlb2gMktPYm1j4BC5DFr08ixZm0AtZB6QX0
-   Bpa0SoXsvHZniez3JpR+zTgC1UAvWOR8jKnpuRw2U/mSoTmi9NigfGbtO
-   NPrjU2VMqOLN9U8rxnoEYA0ldxQj9rXXGgPVJ15UIgaj2mo/ElvtyXrhG
-   NUp518FinAFbrB+hVQiXlxrRwoXY4yr4CcSuoYg4zfqh6giiySv79dUTm
-   6hb4DJj+eyVpaZQ6je7SVTghzSnJQgk358+Qyz8fduGMTwquYc4Ds+De+
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10408"; a="265600278"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="265600278"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 07:51:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="654357301"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga008.fm.intel.com with ESMTP; 15 Jul 2022 07:51:52 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26FEpnoA007626;
-        Fri, 15 Jul 2022 15:51:49 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Turner <mattst88@gmail.com>,
-        Brian Cain <bcain@quicinc.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Kees Cook <keescook@chromium.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Marco Elver <elver@google.com>, Borislav Petkov <bp@suse.de>,
-        Tony Luck <tony.luck@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, kernel test robot <lkp@intel.com>,
-        linux-alpha@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-arch@vger.kernel.org, llvm@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 6/9] bitops: let optimize out non-atomic bitops on compile-time constants
-Date:   Fri, 15 Jul 2022 16:50:53 +0200
-Message-Id: <20220715145053.64569-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <YtF3YIBA0Dd4KXZ+@yury-laptop>
-References: <20220624121313.2382500-1-alexandr.lobakin@intel.com> <20220624121313.2382500-7-alexandr.lobakin@intel.com> <20220715000402.GA512558@roeck-us.net> <20220715132633.61480-1-alexandr.lobakin@intel.com> <8c949bd4-d25a-d5f5-49be-59d52e4b6c9d@roeck-us.net> <YtF3YIBA0Dd4KXZ+@yury-laptop>
+        Fri, 15 Jul 2022 10:55:54 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22FDA46DB7;
+        Fri, 15 Jul 2022 07:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=yMChqUS1P9k9RZ7lev7X/u1NHY9UHpOS0k0M7hpJ0Qw=; b=MYUg6HZk4WnUkQqe4YgjDIUM/q
+        t/2trymMgvlTjfP0FiCehzgdFSAO6ZYEkhJD3xXNcWD65PIO3PISrX3nQJ5XJdmapJVn3ZmZMkSIT
+        M5vk3A6QusizEJPsQw/PDLbzDJl4irHntn6X+2OEePX0v/hs1NfHFO1tXGUY03jGL2OuGPB97e1jL
+        C3X0OT//Bur/WEsZUHkZXJ6ftPy4bLEnDPBXfGfLBowzSRH327Z6jADPHA6iyrQ1Q/ae6FqgR7DMN
+        gGGxdMvL44G5BnZb0fY/7vmU+Tz+fjZ9JQy7wBTMm2zdwyZOI4A8UuTysK6A7f+9dlEwSYvUr78gD
+        KjadXi4A==;
+Received: from 201-42-109-188.dsl.telesp.net.br ([201.42.109.188] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oCMiv-000KCj-0j; Fri, 15 Jul 2022 16:55:21 +0200
+Message-ID: <17fb8d12-60f9-09d5-91fa-09d5a5a9a4fd@igalia.com>
+Date:   Fri, 15 Jul 2022 11:55:04 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 1/2] powerpc/pci: Add config option for using OF 'reg'
+ for PCI domain
+Content-Language: en-US
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Bjorn Helgaas <helgaas@kernel.org>,
+        Guowen Shan <gshan@redhat.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220706102148.5060-1-pali@kernel.org>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220706102148.5060-1-pali@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
-Date: Fri, 15 Jul 2022 07:19:12 -0700
+On 06/07/2022 07:21, Pali Rohár wrote:
+> [...] 
+> Fix this issue and introduce a new option CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG.
+> When this option is disabled then powerpc kernel would assign PCI domains
+> in the similar way like it is doing kernel for other architectures,
+> starting from zero and also how it was done prior that commit.
 
-> On Fri, Jul 15, 2022 at 06:49:46AM -0700, Guenter Roeck wrote:
-> > On 7/15/22 06:26, Alexander Lobakin wrote:
-> > > From: Guenter Roeck <linux@roeck-us.net>
-> > > Date: Thu, 14 Jul 2022 17:04:02 -0700
-> > > 
-> > > > On Fri, Jun 24, 2022 at 02:13:10PM +0200, Alexander Lobakin wrote:
-> > > > > Currently, many architecture-specific non-atomic bitop
-> > > > > implementations use inline asm or other hacks which are faster or
-> > > 
-> > > [...]
-> > > 
-> > > > > Cc: Mark Rutland <mark.rutland@arm.com>
-> > > > > Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-> > > > > Reviewed-by: Marco Elver <elver@google.com>
-> > > > 
-> > > > Building i386:allyesconfig ... failed
-> > > > --------------
-> > > > Error log:
-> > > > arch/x86/platform/olpc/olpc-xo1-sci.c: In function 'send_ebook_state':
-> > > > arch/x86/platform/olpc/olpc-xo1-sci.c:83:63: error: logical not is only applied to the left hand side of comparison
-> > > 
-> > > Looks like a trigger, not a cause... Anyway, this construct:
-> > > 
-> > > 	unsigned char state;
-> > > 
-> > > 	[...]
-> > > 
-> > > 	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-> > > 
-> > > doesn't look legit enough.
-> > > That redundant double-negation [of boolean value], together with
-> > > comparing boolean to char, provokes compilers to think the author
-> > > made logical mistakes here, although it works as expected.
-> > > Could you please try (if it's not automated build which you can't
-> > > modify) the following:
-> > > 
-> > 
-> > Agreed, the existing code seems wrong. The change below looks correct
-> > and fixes the problem. Feel free to add
-> > 
-> > Reviewed-and-tested-by: Guenter Roeck <linux@roeck-us.net>
-> > 
-> > to the real patch.
-> > 
-> > Thanks,
-> > Guenter
-> > 
-> > > --- a/arch/x86/platform/olpc/olpc-xo1-sci.c
-> > > +++ b/arch/x86/platform/olpc/olpc-xo1-sci.c
-> > > @@ -80,7 +80,7 @@ static void send_ebook_state(void)
-> > >   		return;
-> > >   	}
-> > > -	if (!!test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == state)
-> > > +	if (test_bit(SW_TABLET_MODE, ebook_switch_idev->sw) == !!state)
-> > >   		return; /* Nothing new to report. */
-> > >   	input_report_switch(ebook_switch_idev, SW_TABLET_MODE, state);
-> > > ---
-> > > 
-> > > We'd take it into the bitmap tree then. The series revealed
-> > > a fistful of existing code issues already :)
-> 
-> Would you like me to add your signed-off-by and apply, or you prefer
-> to send it out as a patch?
+I found this sentence a bit weird, "in the similar way like it is doing
+kernel for other architectures", but other than that:
 
-I'm sending it in a couple minutes :)
+Reviewed-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+
+Thanks for the improvement!
+Cheers,
+
+
+Guilherme
+
 
 > 
-> Thanks,
-> Yury
-
-Thanks,
-Olek
+> This option is by default enabled for powernv and pseries platform for which
+> was that commit originally intended.
+> 
+> With this change upgrading kernels from LTS 4.4 version does not change PCI
+> domain on smaller embedded platforms with fixed number of PCIe controllers.
+> And also ensure that PCI domain zero is present as before that commit.
+> 
+> Fixes: 63a72284b159 ("powerpc/pci: Assign fixed PHB number based on device-tree properties")
+> Signed-off-by: Pali Rohár <pali@kernel.org>
+> ---
+> Changes in v2:
+> * Enable CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG by default on powernv and pseries
+> ---
+>  arch/powerpc/Kconfig             | 11 +++++++++++
+>  arch/powerpc/kernel/pci-common.c |  4 ++--
+>  2 files changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index f66084bc1dfe..053a88e84049 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -386,6 +386,17 @@ config PPC_OF_PLATFORM_PCI
+>  	depends on PCI
+>  	depends on PPC64 # not supported on 32 bits yet
+>  
+> +config PPC_PCI_DOMAIN_FROM_OF_REG
+> +	bool "Use OF reg property for PCI domain"
+> +	depends on PCI
+> +	default y if PPC_PSERIES || PPC_POWERNV
+> +	help
+> +	  By default PCI domain for host bridge during its registration is
+> +	  chosen as the lowest unused PCI domain number.
+> +
+> +	  When this option is enabled then PCI domain can be determined
+> +	  also from lower bits of the OF / Device Tree 'reg' property.
+> +
+>  config ARCH_SUPPORTS_UPROBES
+>  	def_bool y
+>  
+> diff --git a/arch/powerpc/kernel/pci-common.c b/arch/powerpc/kernel/pci-common.c
+> index 068410cd54a3..7f959df34833 100644
+> --- a/arch/powerpc/kernel/pci-common.c
+> +++ b/arch/powerpc/kernel/pci-common.c
+> @@ -74,7 +74,6 @@ void __init set_pci_dma_ops(const struct dma_map_ops *dma_ops)
+>  static int get_phb_number(struct device_node *dn)
+>  {
+>  	int ret, phb_id = -1;
+> -	u32 prop_32;
+>  	u64 prop;
+>  
+>  	/*
+> @@ -83,7 +82,8 @@ static int get_phb_number(struct device_node *dn)
+>  	 * reading "ibm,opal-phbid", only present in OPAL environment.
+>  	 */
+>  	ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
+> -	if (ret) {
+> +	if (ret && IS_ENABLED(CONFIG_PPC_PCI_DOMAIN_FROM_OF_REG)) {
+> +		u32 prop_32;
+>  		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+>  		prop = prop_32;
+>  	}
