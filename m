@@ -2,141 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D12FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:00:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DF2CCA486
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 07:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231313AbiGOHAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 03:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36562 "EHLO
+        id S231434AbiGOHE6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 03:04:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231389AbiGOHAH (ORCPT
+        with ESMTP id S229671AbiGOHEx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 03:00:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 860A266B8D
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 00:00:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1657868400;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FBVMsqeudLUDrKPrFs7ovavMecKqXiLCpPEb6YK8LdQ=;
-        b=KRcS37JJThPoF3hQqtw87s1fXSDlQrKDj9qZpUIrNTo8GTgDjAIbVmdspSSYcC/k0lBYHw
-        HPQIvy+NXvQ7Jd3re/Js6TUoLuOOImmNcoyusV6Q0Tn/omNFNuwl+jzDaxgzXtZeK5yFou
-        jhzpZoGtCDKkR7hjzd7Wrtt3laxoUw8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-588-KYS2k0DwPzSjzfpz40n7NA-1; Fri, 15 Jul 2022 02:59:57 -0400
-X-MC-Unique: KYS2k0DwPzSjzfpz40n7NA-1
-Received: by mail-wm1-f69.google.com with SMTP id 23-20020a05600c229700b003a2eda0c59cso1519253wmf.7
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:59:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=FBVMsqeudLUDrKPrFs7ovavMecKqXiLCpPEb6YK8LdQ=;
-        b=vFczTHTkz7Gk8h5/hSfty96PG6G4pCPts8ne5EL5GidRbj+ocmTxZ/uAcgPMaEpkgY
-         gqWV4UPTcChLMR7YQQVObC8MFuPh3onVgiS5kmiTiLhMulWxY8dHARs0df/W0Lq7EGTt
-         oXv4ZaGS3X12Hmairb6jJBZpestBp8ivBg/DkN1sjKGouoiHPq92yVswkMLgbr/nqmIu
-         bUQiYvludPkWd36qMYByv3txHgUBz+phKjvnuFkbqvzsAwW8ywNxd2sJbQUwnXAh+I7U
-         CK/ynSWa3Q3rPdQ7MCEe/RMwU9bA7wdJgtZT5THALAYAEyGp+3Uss+1V1M/LNVWgOkxx
-         lcUQ==
-X-Gm-Message-State: AJIora91ziecqIfy/1qtRCCTfWApbQOOWZXeCuV0w9BcIpyiJsFZIxm1
-        J8YQTMa8doWYSrMGZyf+qFkuB2QCKgkEKLNulaFwiQ08sEuIS270g0NZSYlajiJn3QQHBptwPz7
-        tgtSFE+xWPGhNb8/ntUCWTBqP
-X-Received: by 2002:a5d:4d46:0:b0:21d:8196:6181 with SMTP id a6-20020a5d4d46000000b0021d81966181mr11294034wru.459.1657868396087;
-        Thu, 14 Jul 2022 23:59:56 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uAYCTgRNGQGhKCVMDYlzGS8cDv/34uFpAiy8Z6B2ARTEizEox1Diyk4fPX2N1E5/NRTO5Psw==
-X-Received: by 2002:a5d:4d46:0:b0:21d:8196:6181 with SMTP id a6-20020a5d4d46000000b0021d81966181mr11294020wru.459.1657868395855;
-        Thu, 14 Jul 2022 23:59:55 -0700 (PDT)
-Received: from [192.168.1.165] (22.red-79-153-172.dynamicip.rima-tde.net. [79.153.172.22])
-        by smtp.gmail.com with ESMTPSA id p19-20020a05600c359300b003a300452f7fsm5389311wmq.32.2022.07.14.23.59.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jul 2022 23:59:55 -0700 (PDT)
-Message-ID: <5f9b35b4-09fa-a8a9-3181-cd8cd7898d03@redhat.com>
-Date:   Fri, 15 Jul 2022 08:59:53 +0200
+        Fri, 15 Jul 2022 03:04:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A5F28710;
+        Fri, 15 Jul 2022 00:04:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DC4E622DF;
+        Fri, 15 Jul 2022 07:04:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B6DDC341C0;
+        Fri, 15 Jul 2022 07:04:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657868689;
+        bh=fB3cZrFYSSlYpdZvSkPeRkIzufM1+WRnGX6PfDVugV0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AH00MRGb2tAoZ6/5N86OHuy4e4bz8jeTMzkDgiqxSXLQEJFoHFneHd5C5n8oP9EQ8
+         pyo89wNzP+p4SO1VSizFoOEsPkgvWOzzcA7FnD5/OpMB2MpyrSzZ7sKtIi3vmKJmcY
+         vsGrljKEnRqsklBkKGpIRNJKkQgPU91QccRmgIJKGb9qbZfZabljunnrpvNDjXqHzH
+         SH3msGmJ03qWYbeBnxqz7dTZThBCO8/pUjNa32hL4TopEp0Y9raGZpNFjUHRFf/Rwu
+         Oy+1U/zV0nBhlK7SZW6ADmElt93CIuCjLwQ+nVagfkXD76sKXiTzfMS3NoW3LG03TH
+         heaFuqZQO1Ksg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan+linaro@kernel.org>)
+        id 1oCFNe-0004yv-Dm; Fri, 15 Jul 2022 09:04:54 +0200
+From:   Johan Hovold <johan+linaro@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Halaney <ahalaney@redhat.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 2/4] arm64: dts: qcom: sc8280xp: fix USB interrupts
+Date:   Fri, 15 Jul 2022 09:02:46 +0200
+Message-Id: <20220715070248.19078-3-johan+linaro@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220715070248.19078-1-johan+linaro@kernel.org>
+References: <20220715070248.19078-1-johan+linaro@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 4/9] drm: selftest: convert drm_format selftest to
- KUnit
-Content-Language: en-US
-To:     Daniel Latypov <dlatypov@google.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     =?UTF-8?Q?Ma=c3=adra_Canal?= <maira.canal@usp.br>,
-        Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
-        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
-        leandro.ribeiro@collabora.com, n@nfraprado.net,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        David Airlie <airlied@linux.ie>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        michal.winiarski@intel.com,
-        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        David Gow <davidgow@google.com>, brendanhiggins@google.com,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-References: <20220708203052.236290-1-maira.canal@usp.br>
- <20220708203052.236290-5-maira.canal@usp.br>
- <20220714235137.GA485839@roeck-us.net>
- <CAGS_qxrhy3=pST9f85fvxubKQShOq1XF6ZHALzMhXDOf5gnaUg@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAGS_qxrhy3=pST9f85fvxubKQShOq1XF6ZHALzMhXDOf5gnaUg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/15/22 02:03, Daniel Latypov wrote:
-> On Thu, Jul 14, 2022 at 4:51 PM Guenter Roeck <linux@roeck-us.net> wrote:
->>
->> On Fri, Jul 08, 2022 at 05:30:47PM -0300, Maíra Canal wrote:
->>> Considering the current adoption of the KUnit framework, convert the
->>> DRM format selftest to the KUnit API.
->>>
->>> Tested-by: David Gow <davidgow@google.com>
->>> Acked-by: Daniel Latypov <dlatypov@google.com>
->>> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
->>> Signed-off-by: Maíra Canal <maira.canal@usp.br>
->>
->> This patch results in:
->>
->> Building powerpc:allmodconfig ... failed
->> --------------
->> Error log:
->> drivers/gpu/drm/tests/drm_format_test.c: In function 'igt_check_drm_format_min_pitch':
->> drivers/gpu/drm/tests/drm_format_test.c:271:1: error: the frame size of 3712 bytes is larger than 2048 bytes
->>
->> presumably due to function nesting.
-> 
-> This can happen when there's a lot of KUNIT_EXPECT_* calls in a single function.
-> See [1] for some related context.
-> There were a number of patches that went into 5.18 ([2] and others) to
-> try and mitigate this, but it's not always enough.
-> 
-> Ideally the compiler would see that the stack-local variables used in
-> these macros don't need to stick around, but it doesn't always
-> happen...
+The two single-port SC8280XP USB controllers do not have an hs_phy_irq
+interrupt. Instead they have a pwr_event interrupt which is distinct
+from the former and not yet supported by the driver.
 
-Thanks Daniel for the explanation.
+Fix the USB node interrupt names so that they match the devicetree
+binding.
 
-> One workaround would be to split up the test case functions into smaller chunks.
->
+Also fix the pwr_event interrupt of the second controller which should
+be 811 as noticed by Andrew Halaney.
 
-Maíra,
+Fixes: 152d1faf1e2f ("arm64: dts: qcom: add SC8280XP platform")
+Reviewed-by: Andrew Halaney <ahalaney@redhat.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+---
+ arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-Could you please look at splitting in smaller chunks to mitigate this issue ?
-
+diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+index 45cc7d714fd2..f002a63d8507 100644
+--- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+@@ -1875,8 +1875,10 @@ usb_0: usb@a6f8800 {
+ 					      <&pdc 14 IRQ_TYPE_EDGE_BOTH>,
+ 					      <&pdc 15 IRQ_TYPE_EDGE_BOTH>,
+ 					      <&pdc 138 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "hs_phy_irq", "dp_hs_phy_irq",
+-					  "dm_hs_phy_irq", "ss_phy_irq";
++			interrupt-names = "pwr_event",
++					  "dp_hs_phy_irq",
++					  "dm_hs_phy_irq",
++					  "ss_phy_irq";
+ 
+ 			power-domains = <&gcc USB30_PRIM_GDSC>;
+ 
+@@ -1921,12 +1923,14 @@ usb_1: usb@a8f8800 {
+ 					  <&gcc GCC_USB30_SEC_MASTER_CLK>;
+ 			assigned-clock-rates = <19200000>, <200000000>;
+ 
+-			interrupts-extended = <&intc GIC_SPI 136 IRQ_TYPE_LEVEL_HIGH>,
++			interrupts-extended = <&intc GIC_SPI 811 IRQ_TYPE_LEVEL_HIGH>,
+ 					      <&pdc 12 IRQ_TYPE_EDGE_BOTH>,
+ 					      <&pdc 13 IRQ_TYPE_EDGE_BOTH>,
+ 					      <&pdc 136 IRQ_TYPE_LEVEL_HIGH>;
+-			interrupt-names = "hs_phy_irq", "dp_hs_phy_irq",
+-					  "dm_hs_phy_irq", "ss_phy_irq";
++			interrupt-names = "pwr_event",
++					  "dp_hs_phy_irq",
++					  "dm_hs_phy_irq",
++					  "ss_phy_irq";
+ 
+ 			power-domains = <&gcc USB30_SEC_GDSC>;
+ 
 -- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+2.35.1
 
