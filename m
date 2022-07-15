@@ -2,203 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36701C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC6BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:16:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbiGOXPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:15:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
+        id S231876AbiGOXQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:16:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiGOXPw (ORCPT
+        with ESMTP id S229580AbiGOXQH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:15:52 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17EC190D90
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:15:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1657926952; x=1689462952;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=WXUsaMRz28YkxL2UeAKB2Sj+cOJis/PzsUxzi3i8ndg=;
-  b=wB1yA28YxK06p0nL7yJiABaiKHliv1tVSx5el1rIbgZefnCVljxRLP5r
-   p3NMXXsZKiBI9DTpNnvNnvueTym8C3DxefDeK/CGHOEyGNzppAHphdeAg
-   hI7lmWZiImpp6Y2yJouU0UKiNYR+N2u2/cCRGrqIUgF87MdLeW8tMHKsq
-   0=;
-Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 15 Jul 2022 16:15:51 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 16:15:51 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 15 Jul 2022 16:15:51 -0700
-Received: from [10.110.97.72] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Fri, 15 Jul
- 2022 16:15:50 -0700
-Message-ID: <2e0f02f3-0e0e-8690-a58e-bb74a21ab63e@quicinc.com>
-Date:   Fri, 15 Jul 2022 16:15:49 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] mtd: spi-nor: winbond: add support for W25Q512NW-IQ/IN
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-CC:     <clg@kaod.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mtd@lists.infradead.org>, <p.yadav@ti.com>,
-        <quic_ggregory@quicinc.com>, <quic_jiles@quicinc.com>,
-        <tudor.ambarus@microchip.com>
-References: <20220710145721.1207157-1-quic_jaehyoo@quicinc.com>
- <20220711095042.2095360-1-michael@walle.cc>
- <a42fbef2-3eff-9e88-233e-a805cfbe2376@quicinc.com>
- <4972a85d04e39ebb7b4a5872f6632c45@walle.cc>
- <2260955b-354d-ceda-cadc-49453bfca3e4@quicinc.com>
- <00f0c9d480ef5a414f1c34492661bd9e@walle.cc>
- <63cedfce-34bb-ed63-3871-75a6c3dd5d73@quicinc.com>
- <6be710bb5c1bf0449e54a54b78f6f7a0@walle.cc>
- <47c01d768ea56edc9a2f9d317af7b495@walle.cc>
- <114fcde6-bdf7-68ee-d031-35a916027aee@quicinc.com>
- <b42cb229-f241-6e29-a138-29023ce316d9@quicinc.com>
- <c628e868-5c73-ca4b-1f99-60cc149806bf@quicinc.com>
- <b00410c825486ec406ed1ae773b11792@walle.cc>
-From:   Jae Hyun Yoo <quic_jaehyoo@quicinc.com>
-In-Reply-To: <b00410c825486ec406ed1ae773b11792@walle.cc>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+        Fri, 15 Jul 2022 19:16:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904F790D91
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:16:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3608761EC7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 23:16:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DDCEC34115;
+        Fri, 15 Jul 2022 23:16:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1657926965;
+        bh=PQ0OvovNHWNVJ85AlTJ9HsJZHtFm/Fz/eC48nptvWGM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dVHsWaaMbB8kKs74a1Ng3goJkI/2IZoWuPWCk2k55eTGRd4Z2/SxFEwZk1ZphJTnf
+         0MuLb6PiWnk2Swd4G8LbGPaRVPHnHa5XFSqHoLynIl5fk4Pv7ny4DYi+zQWYlz7fGR
+         6/ssD7chfkoii1+588UZ4ot8BcvGEqf22WoRwR68=
+Date:   Fri, 15 Jul 2022 16:16:04 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Hugh Dickins <hughd@google.com>
+Subject: Re: [PATCH] mm/mmap: Fix locking issues in vma_expand()
+Message-Id: <20220715161604.a0cce6cd71742b38042aa055@linux-foundation.org>
+In-Reply-To: <20220715184913.v75xv2na4dgz3ayb@revolver>
+References: <20220712144926.4190769-1-Liam.Howlett@oracle.com>
+        <20220715184913.v75xv2na4dgz3ayb@revolver>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Fri, 15 Jul 2022 18:49:21 +0000 Liam Howlett <liam.howlett@oracle.com> wrote:
 
-On 7/15/2022 4:03 PM, Michael Walle wrote:
-> Hi,
 > 
-> Am 2022-07-16 00:35, schrieb Jae Hyun Yoo:
->> On 7/15/2022 1:15 PM, Jae Hyun Yoo wrote:
->>> On 7/14/2022 7:30 AM, Jae Hyun Yoo wrote:
->>>> On 7/14/2022 7:21 AM, Michael Walle wrote:
->>>>> Am 2022-07-14 16:16, schrieb Michael Walle:
->>>>>> Am 2022-07-14 15:47, schrieb Jae Hyun Yoo:
->>>>>>> On 7/14/2022 12:41 AM, Michael Walle wrote:
->>>>>>>> What does "doesn't boot at all" mean? Are there any kernel startup
->>>>>>>> messages?
->>>>>>>
->>>>>>> I'm sharing the error messages below.
->>>>>>
->>>>>> Thanks.
->>>>>>
->>>>>>> [    0.748594] spi-nor spi0.0: w25q512nwq (65536 Kbytes)
->>>>>>> [    0.865216] spi-aspeed-smc 1e620000.spi: CE0 read buswidth:4 
->>>>>>> [0x406c0741]
->>>>>>> [    0.872833] ------------[ cut here ]------------
->>>>>>> [    0.877984] WARNING: CPU: 1 PID: 1 at drivers/mtd/mtdcore.c:583
->>>>>>> add_mtd_device+0x28c/0x53c
->>>>>>> [    0.887237] CPU: 1 PID: 1 Comm: swapper/0 Not tainted
->>>>>>> 5.15.43-AUTOINC-dirty-23801a6 #1
->>>>>>
->>>>>> Could you please try it on the latest (vanilla) linux-next?
->>>>>
->>>>> or spi-nor/next [1] as there are quite a lot of changes. The
->>>>> patches shall be based on that.
->>>>
->>>> Okay. Let me try that. I tested it using 5.15.43 with back-ported
->>>> spi-nor patches from the latest. I'll back-port more changes from
->>>> the spi-nor/next and will test the INFO(0xef6020, 0, 0, 0) setting
->>>> again.
->>>
->>> I tested the setting again after cherry picking all SPI relating changes
->>> from the 'for-next' branch of
->>> git://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi repository.
->>>
->>> No luck! It's still making the same warning dump at 'add_mtd_device'
->>> since 'mtd->erasesize' is checked as 0.
->>>
->>> I traced it further to check if the erasesize is properly parsed from
->>> the sfdp and checked that erase map seems parsed and initialized
->>> correctly in 'spi_nor_parse_bfpt' but problem is, a target
->>> mtd->erasesize is not properly selected in 'spi_nor_select_erase' since
->>> the 'wanted_size' variable is initialized as sector size of info table
->>> so a selected target mtd->erasesize is also 0 so looks like it's the
->>> reason why it can't initialize mtd device if we use
->>> INFO(0xef6020, 0, 0, 0).
->>>
->>> Also, checked that the mtd->erasesize is set to 4096 if I enable
->>> CONFIG_MTD_SPI_NOR_USE_4K_SECTORS so the SPI flash can be initialized 
->>> with the INFO(0xef6020, 0, 0, 0) setting but, it should cover even when
->>> the configuration is not enabled. I think, this patch should go as it
->>> is. The erasesize selecting issue could be fixed using a separate
->>> patch.
->>>
->>> Are you still sure that the INFO(0xef6020, 0, 0, 0) works in the
->>> latest spi-next?
->>
->> I also tried to fix the issue and made a fix like below.
->>
->> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
->> index 502967c76c5f..f8a020f80a56 100644
->> --- a/drivers/mtd/spi-nor/core.c
->> +++ b/drivers/mtd/spi-nor/core.c
->> @@ -2117,7 +2117,7 @@ spi_nor_select_uniform_erase(struct
->> spi_nor_erase_map *map,
->>                  * If the current erase size is the one, stop here:
->>                  * we have found the right uniform Sector Erase command.
->>                  */
->> -               if (tested_erase->size == wanted_size) {
->> +               if (wanted_size && tested_erase->size == wanted_size) {
->>                         erase = tested_erase;
->>                         break;
->>                 }
->>
->> Tested that it makes the INFO(0xef6020, 0, 0, 0) setting work and a
->> selected mtd->erasesize is 65536 which is what I expected for this
->> device.
->>
->> Not sure if it's a right fix or not. Please review and let me know if
->> it's good to submit or not.
+> Andrew,
 > 
-> Ahh, I think I know whats going wrong here. Thanks!
-> 
-> 4bait will set the erase size to 0 if there is no corresponding
-> opcode for the 4byte erase. So you'll end up with
-> et[0]: 4096 - 21h
-> et[1]: 0 - FFh
-> et[2]: 65536 - DCh
-> et[3]: --
-> 
-> And spi_nor_select_uniform_erase() will select et[1].
-> 
-> Could you try the following:
-> 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index ce5d69317d46..a2c8de250e01 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -2113,6 +2113,10 @@ spi_nor_select_uniform_erase(struct 
-> spi_nor_erase_map *map,
-> 
->                  tested_erase = &map->erase_type[i];
-> 
-> +               /* Skip masked erase types. */
-> +               if (!tested_erase->size)
-> +                       continue;
+> I think in my confusing post about ignoring the previous version of this
+> patch, you may have missed this completed solution?
 
-Yes, it also works. Do you want me to update this patch with adding this
-fix? Or is it good to go as is so that the INFO table can be replaced
-with SNOR_ID3 later after the fix is merged?
-
-Thanks,
-Jae
-
-> +
->                  /*
->                   * If the current erase size is the one, stop here:
->                   * we have found the right uniform Sector Erase command.
-> 
-> 
-> -michael
+Nope, this one is in -mm already. 
+https://git.kernel.org/pub/scm/linux/kernel/git/akpm/25-new.git/tree/patches/mm-mmap-use-advanced-maple-tree-api-for-mmap_region-fix.patch
