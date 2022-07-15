@@ -2,63 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F417CCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:50:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C3EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:50:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbiGOIui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:50:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S232631AbiGOIum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230479AbiGOIug (ORCPT
+        with ESMTP id S232157AbiGOIuh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:50:36 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035DB820EC;
+        Fri, 15 Jul 2022 04:50:37 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2599820FB;
         Fri, 15 Jul 2022 01:50:36 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oCH1r-000o2I-Up; Fri, 15 Jul 2022 18:50:33 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Fri, 15 Jul 2022 16:50:32 +0800
-Date:   Fri, 15 Jul 2022 16:50:32 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Eric Biggers <ebiggers@kernel.org>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jason@zx2c4.com
-Subject: Re: [PATCH 0/2] crypto: make the sha1 library optional
-Message-ID: <YtEqWH2JzolCfLRA@gondor.apana.org.au>
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LklR42Qs2zFpxk;
+        Fri, 15 Jul 2022 16:49:36 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 15 Jul 2022 16:50:04 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 15 Jul
+ 2022 16:50:03 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>
+CC:     <khalasa@piap.pl>, <mchehab@kernel.org>
+Subject: [PATCH -next] media: ar0521: fix error return code in ar0521_power_on()
+Date:   Fri, 15 Jul 2022 16:59:24 +0800
+Message-ID: <20220715085924.1881607-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220709211849.210850-1-ebiggers@kernel.org>
-X-Newsgroups: apana.lists.os.linux.cryptoapi,apana.lists.os.linux.kernel,apana.lists.os.linux.netdev
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Eric Biggers <ebiggers@kernel.org> wrote:
-> This series makes it possible to build the kernel without SHA-1 support,
-> although for now this is only possible in minimal configurations, due to
-> the uses of SHA-1 in the networking subsystem.
-> 
-> Eric Biggers (2):
->  crypto: move lib/sha1.c into lib/crypto/
->  crypto: make the sha1 library optional
-> 
-> crypto/Kconfig          | 1 +
-> init/Kconfig            | 1 +
-> lib/Makefile            | 2 +-
-> lib/crypto/Kconfig      | 3 +++
-> lib/crypto/Makefile     | 3 +++
-> lib/{ => crypto}/sha1.c | 0
-> net/ipv6/Kconfig        | 1 +
-> 7 files changed, 10 insertions(+), 1 deletion(-)
-> rename lib/{ => crypto}/sha1.c (100%)
-> 
-> 
-> base-commit: 79e6e2f3f3ff345947075341781e900e4f70db81
+Return error code if ar0521_write_regs() fails in ar0521_power_on().
 
-All applied.  Thanks.
+Fixes: 852b50aeed15 ("media: On Semi AR0521 sensor driver")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/media/i2c/ar0521.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/i2c/ar0521.c b/drivers/media/i2c/ar0521.c
+index c7bdfc69b9be..e850c92d847e 100644
+--- a/drivers/media/i2c/ar0521.c
++++ b/drivers/media/i2c/ar0521.c
+@@ -757,8 +757,9 @@ static int ar0521_power_on(struct device *dev)
+ 	usleep_range(4500, 5000); /* min 45000 clocks */
+ 
+ 	for (cnt = 0; cnt < ARRAY_SIZE(initial_regs); cnt++)
+-		if (ar0521_write_regs(sensor, initial_regs[cnt].data,
+-				      initial_regs[cnt].count))
++		ret = ar0521_write_regs(sensor, initial_regs[cnt].data,
++					initial_regs[cnt].count);
++		if (ret)
+ 			goto off;
+ 
+ 	ret = ar0521_write_reg(sensor, AR0521_REG_SERIAL_FORMAT,
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.25.1
+
