@@ -2,104 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8746CCCA480
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4060C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 18:21:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229448AbiGOSSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 14:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S229653AbiGOSVN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 14:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiGOSSW (ORCPT
+        with ESMTP id S229537AbiGOSUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 14:18:22 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D4CE5B781;
-        Fri, 15 Jul 2022 11:18:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657909101; x=1689445101;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=nccjUybTT96SnZWYYYafTO6dYVit851GuJJi+EmcEcc=;
-  b=N56/p7RRVfw/BGsOJE5Z2DEvqHEMlLPuCynDF//7JRdRZDjPzt7GkFko
-   W3AAzm33qmVYyv/h84wP1iK8I8hz/F9SjEOd8UDgCkt/RAtfrbrhahNk9
-   CdF5OQTy+ZFKQjqjT22ijo+zFnlJVnW+/ulotOE9zhLx+QOnbKGH036o8
-   bscTVgGih2ThoCtQ1QME7VIM9e/iii9T7vqzaAytOf3IpXif3/EMXiWfK
-   Bu4rGCWn8NDKyjd7CBdg6QNOQYgrEf8U29y9NUWzzbLGQe9+h79OOqcVY
-   AuxlV6npRu/ylCWMspZU62KjC8SJ/Esvjmidf5/JiOHyZvooUtZHtTAvO
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="284628046"
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="284628046"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 11:18:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
-   d="scan'208";a="842606182"
-Received: from linux.intel.com ([10.54.29.200])
-  by fmsmga006.fm.intel.com with ESMTP; 15 Jul 2022 11:18:20 -0700
-Received: from rjingar-desk5.amr.corp.intel.com (unknown [10.213.176.154])
-        by linux.intel.com (Postfix) with ESMTP id 6BEBB580812;
-        Fri, 15 Jul 2022 11:18:20 -0700 (PDT)
-From:   Rajvi Jingar <rajvi.jingar@linux.intel.com>
-To:     rafael.j.wysocki@intel.com, bhelgaas@google.com
-Cc:     rajvi.jingar@linux.intel.com, david.e.box@linux.intel.com,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v3 1/2] PCI/PM: refactor pci_pm_suspend_noirq()
-Date:   Fri, 15 Jul 2022 11:18:08 -0700
-Message-Id: <20220715181809.232147-1-rajvi.jingar@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 15 Jul 2022 14:20:53 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7746050A
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 11:20:52 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:41140)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oCPvm-001XGR-Ov; Fri, 15 Jul 2022 12:20:50 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47566 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oCPvl-006d1V-Qv; Fri, 15 Jul 2022 12:20:50 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Hangyu Hua <hbh25y@gmail.com>
+Cc:     akpm@linux-foundation.org, songmuchun@bytedance.com,
+        longman@redhat.com, roman.gushchin@linux.dev, legion@kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220715062301.19311-1-hbh25y@gmail.com>
+Date:   Fri, 15 Jul 2022 13:20:23 -0500
+In-Reply-To: <20220715062301.19311-1-hbh25y@gmail.com> (Hangyu Hua's message
+        of "Fri, 15 Jul 2022 14:23:01 +0800")
+Message-ID: <87v8ryz194.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-XM-SPF: eid=1oCPvl-006d1V-Qv;;;mid=<87v8ryz194.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX19CcuBbg2Xt2eAPCP9wCMd7QXP6AefhaWQ=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] ipc: mqueue: fix possible memory leak in init_mqueue_fs()
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The state of the device is saved during pci_pm_suspend_noirq(), if it
-has not already been saved, regardless of the skip_bus_pm flag value. So
-skip_bus_pm check is removed before saving the device state.
+Hangyu Hua <hbh25y@gmail.com> writes:
 
-Signed-off-by: Rajvi Jingar <rajvi.jingar@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- v1->v2: no change
- v2->v3: no change
----
- drivers/pci/pci-driver.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+> commit db7cfc380900 ("ipc: Free mq_sysctls if ipc namespace creation
+> failed")
+>
+> Here's a similar memory leak to the one fixed by the patch above.
+> retire_mq_sysctls need to be called when init_mqueue_fs fails after
+> setup_mq_sysctls.
 
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index 49238ddd39ee..1f64de3e5280 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -867,20 +867,14 @@ static int pci_pm_suspend_noirq(struct device *dev)
- 		}
- 	}
- 
--	if (pci_dev->skip_bus_pm) {
-+	if (!pci_dev->state_saved) {
-+		pci_save_state(pci_dev);
- 		/*
--		 * Either the device is a bridge with a child in D0 below it, or
--		 * the function is running for the second time in a row without
--		 * going through full resume, which is possible only during
--		 * suspend-to-idle in a spurious wakeup case.  The device should
--		 * be in D0 at this point, but if it is a bridge, it may be
--		 * necessary to save its state.
-+		 * If the device is a bridge with a child in D0 below it, it needs to
-+		 * stay in D0, so check skip_bus_pm to avoid putting it into a
-+		 * low-power state in that case.
- 		 */
--		if (!pci_dev->state_saved)
--			pci_save_state(pci_dev);
--	} else if (!pci_dev->state_saved) {
--		pci_save_state(pci_dev);
--		if (pci_power_manageable(pci_dev))
-+		if (!pci_dev->skip_bus_pm && pci_power_manageable(pci_dev))
- 			pci_prepare_to_sleep(pci_dev);
- 	}
- 
--- 
-2.25.1
+Alex can you review this change?
 
+> Fixes: dc55e35f9e81 ("ipc: Store mqueue sysctls in the ipc namespace")
+> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+> ---
+>  ipc/mqueue.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+> index 12ad7860bb88..83370fef8879 100644
+> --- a/ipc/mqueue.c
+> +++ b/ipc/mqueue.c
+> @@ -1746,6 +1746,7 @@ static int __init init_mqueue_fs(void)
+>  	unregister_filesystem(&mqueue_fs_type);
+>  out_sysctl:
+>  	kmem_cache_destroy(mqueue_inode_cachep);
+> +	retire_mq_sysctls(&init_ipc_ns);
+>  	return error;
+>  }
+
+Thanks,
+Eric
