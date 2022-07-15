@@ -2,148 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F260EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 06:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiGOGNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 02:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S230442AbiGOGQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 02:16:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231244AbiGOGMX (ORCPT
+        with ESMTP id S230367AbiGOGPp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 02:12:23 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D77F73907
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:11:50 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31d436816e1so33745347b3.15
-        for <linux-kernel@vger.kernel.org>; Thu, 14 Jul 2022 23:11:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=C+9RN60EOV8842FFgmBAy6PrpfwWqW7C+czhzeS/rR4=;
-        b=YBfbYLBhEFURhCK4QKUC8bI/R6G7EXpPYpXv8EgvXFE5JI8iCfdDD/zhxXUPJ1FCj2
-         HobAgwdJcz8iCJZ3Nf6qUn5/JFvFqTXwTbxs1Vp8JQ5DiIGMNOmoxWd8ZFtzh4zWdbW2
-         UXXqKfjRvUH0FaeGEFgQrLpiSfFzw/8JrEAdOPLimA7QNNMLXVfCXV7aWgjExnRC71PE
-         st+L76+Nt2+hlQM0Y7sQ2cwdVY2C1xVk2yx3eg9khBifSFQMmA4ZOR9Djwd7LeLopeWE
-         xiMe9XRODecY4NQkbUkZ8/WtMreqsn6dA6vGRjB7aYLob2bWXnsgyxD5ML6TZoiDhcWj
-         CuIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=C+9RN60EOV8842FFgmBAy6PrpfwWqW7C+czhzeS/rR4=;
-        b=bXpU0Rs/Dsi8K2EzZeD3uz0j1Yb3fJUeImAi0pXTI0wn3ID9C20e5NeaLhl2vxxMcv
-         rumQK8NesuNwsmlWB1KX0U/mOyvTnVQA+lKHTEc5Bf1sgDxEIFo3H1RKv9LNF2nkDtcT
-         +d/ViKdmsrOpVOaiQbd6Sc6SqatahYgAGkfBdlYwnc5lR5h3UefbkNTIyxY0OgMhv3/5
-         1HruJ9aiTSQ1nupqsXP9cr4f22yHjOVaQmrI1kz2g+oizLXNvLQk+sXuPWLn7nzh4QIK
-         TSpmy2Exb5dyIPW/puvxrzkPnX8ZcP9reYroAOq5dZJsLe8mUC6sutDbj57IgTDAGBQI
-         ZnFA==
-X-Gm-Message-State: AJIora/Nm9Ep2+h4pzSEwKgWpIZaQzamcrNGjO9JQLFXuGJ4LADr4qhV
-        YsOXlYRp0ea71wcrMulPxBTRwAIedyOtjO+sVg==
-X-Google-Smtp-Source: AGRyM1vmpZrg9C65GGAVW8i3cJzkzgqCICriOC0RsFfWEe5JJODK8w4KS6U/1MhBLlAvC1UTH/ak2+fLI6MXcu3Qzw==
-X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:f010:455b:62ce:19e])
- (user=kaleshsingh job=sendgmr) by 2002:a5b:44d:0:b0:66f:ad5a:9d0b with SMTP
- id s13-20020a5b044d000000b0066fad5a9d0bmr10986561ybp.79.1657865509675; Thu,
- 14 Jul 2022 23:11:49 -0700 (PDT)
-Date:   Thu, 14 Jul 2022 23:10:27 -0700
-In-Reply-To: <20220715061027.1612149-1-kaleshsingh@google.com>
-Message-Id: <20220715061027.1612149-19-kaleshsingh@google.com>
-Mime-Version: 1.0
-References: <20220715061027.1612149-1-kaleshsingh@google.com>
-X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v4 18/18] KVM: arm64: Dump nVHE hypervisor stack on panic
-From:   Kalesh Singh <kaleshsingh@google.com>
-To:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
-        madvenka@linux.microsoft.com
-Cc:     will@kernel.org, qperret@google.com, tabba@google.com,
-        kaleshsingh@google.com, james.morse@arm.com,
-        alexandru.elisei@arm.com, suzuki.poulose@arm.com,
-        catalin.marinas@arm.com, andreyknvl@gmail.com,
-        russell.king@oracle.com, vincenzo.frascino@arm.com,
-        mhiramat@kernel.org, ast@kernel.org, drjones@redhat.com,
-        wangkefeng.wang@huawei.com, elver@google.com, keirf@google.com,
-        yuzenghui@huawei.com, ardb@kernel.org, oupton@google.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, android-mm@google.com,
-        kernel-team@android.com
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 15 Jul 2022 02:15:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5845F774B1;
+        Thu, 14 Jul 2022 23:14:30 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1657865668;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SEFrGRzx2HRmzhJ7UPpw8gHa4O4qj4ywFqjMDBC7ZXg=;
+        b=DUixPfAjTwHcZ91MSA7eJganvqbUgueXazFi+F1VBlI8C/krnKmID0y5WVAHljpGP8s8Nh
+        kAMrhh1laSaViMucwqFzRZ3L1Hbue11PPQ89k7F6ceU6i02Ruc4uzrKldELGEhrBPXYpSh
+        EhjWZ6dR0fnxrBHvgSZX3ipXAcl7IgFC83Voh/j5YEWSsVBUHpXm5rx/DyFQQUlBaDNCBH
+        d27RZuI/IvZmM1m03YnTwd3tZeUJX9tZb92VpKmxSjtWl3GadEcTbTLlSUlIWUHyvlsnay
+        qq+AzH7F2OtwEq3l+06dfOA5cSyN4Qv9Lin6utPnsb04GcVYde/suiTlb4zk5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1657865668;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SEFrGRzx2HRmzhJ7UPpw8gHa4O4qj4ywFqjMDBC7ZXg=;
+        b=VhykZswD1fCTN4vsmaBG/oZCrHvXluGEhdQmSywaFUKeqVY9BE4UurdnzBZ86f4x4sVqJo
+        jEDCXaqELswn29AQ==
+To:     todd.e.brandt@linux.intel.com,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Petr Mladek <pmladek@suse.com>, rafael.j.wysocki@intel.com,
+        len.brown@intel.com
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: PNP0501 serial driver takes almost 2 seconds to suspend/resume
+ (printk issue)
+In-Reply-To: <472f7fc2d44d781edb64f19f9970fe50eec79c1f.camel@linux.intel.com>
+References: <12fb98fe27e23e3f74a139e5e8eb83a97a343372.camel@linux.intel.com>
+ <51b9e2cc3baf61a604bd239b736ec2d12f1f6695.camel@linux.intel.com>
+ <87czegxccb.fsf@jogness.linutronix.de>
+ <045ebee30af2b80aaeace1dab18ecd113e3f17c7.camel@linux.intel.com>
+ <87tu7qvx1q.fsf@jogness.linutronix.de>
+ <CAHp75VfyzMNMO2NRwXwSjAmQqBbdRG3+SzyFDG+90dmvmg1xLQ@mail.gmail.com>
+ <87o7xwbuoy.fsf@jogness.linutronix.de> <Ysvbp8vz7R9hDNqx@alley>
+ <Ysv3JNs4RwE7kAou@google.com> <87ilo1wdac.fsf@jogness.linutronix.de>
+ <c60f5634e8605cb4c2ef4646b6e511e6135bea48.camel@linux.intel.com>
+ <7d79e9877d63cdb74144f38d8736959281b562cc.camel@linux.intel.com>
+ <875yk0908j.fsf@jogness.linutronix.de>
+ <472f7fc2d44d781edb64f19f9970fe50eec79c1f.camel@linux.intel.com>
+Date:   Fri, 15 Jul 2022 08:20:27 +0206
+Message-ID: <8735f2x5q4.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On hyp_panic(), unwind and dump the nVHE hypervisor stack trace.
-In protected nVHE mode, hypervisor stacktraces are only produced
-if CONFIG_PROTECTED_NVHE_STACKTRACE is enabled.
+On 2022-07-14, Todd Brandt <todd.e.brandt@linux.intel.com> wrote:
+> I ran with your fix on 30 systems. On the 7 machines where this
+> problem appears, the patch fixes it completely. On the 23 machines
+> where this problem does not appear, there are no issues or
+> regressions.
+>
+> Fix verified, thank you!
 
-Example backtrace:
+I have posted [0] an official patch for 5.19-rc7. For the posted
+version, I added more information to the commit message and comments.
 
-[  126.862960] kvm [371]: nVHE hyp panic at: [<ffff8000090a51d0>] __kvm_nvhe_recursive_death+0x10/0x34!
-[  126.869920] kvm [371]: Protected nVHE HYP call trace:
-[  126.870528] kvm [371]:  [<ffff8000090a5570>] __kvm_nvhe_hyp_panic+0xac/0xf8
-[  126.871342] kvm [371]:  [<ffff8000090a55cc>] __kvm_nvhe_hyp_panic_bad_stack+0x10/0x10
-[  126.872174] kvm [371]:  [<ffff8000090a51e4>] __kvm_nvhe_recursive_death+0x24/0x34
-[  126.872971] kvm [371]:  [<ffff8000090a51e4>] __kvm_nvhe_recursive_death+0x24/0x34
-. . .
-[  126.927314] kvm [371]:  [<ffff8000090a51e4>] __kvm_nvhe_recursive_death+0x24/0x34
-[  126.927727] kvm [371]:  [<ffff8000090a51e4>] __kvm_nvhe_recursive_death+0x24/0x34
-[  126.928137] kvm [371]:  [<ffff8000090a4de4>] __kvm_nvhe___kvm_vcpu_run+0x30/0x40c
-[  126.928561] kvm [371]:  [<ffff8000090a7b64>] __kvm_nvhe_handle___kvm_vcpu_run+0x30/0x48
-[  126.928984] kvm [371]:  [<ffff8000090a78b8>] __kvm_nvhe_handle_trap+0xc4/0x128
-[  126.929385] kvm [371]:  [<ffff8000090a6864>] __kvm_nvhe___host_exit+0x64/0x64
-[  126.929804] kvm [371]: ---- End of Protected nVHE HYP call trace ----
+Todd, thanks for reporting and testing!
 
-Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
----
- arch/arm64/kvm/handle_exit.c     | 4 ++++
- arch/arm64/kvm/hyp/nvhe/switch.c | 5 +++++
- 2 files changed, 9 insertions(+)
+John
 
-diff --git a/arch/arm64/kvm/handle_exit.c b/arch/arm64/kvm/handle_exit.c
-index f66c0142b335..ef8b57953aa2 100644
---- a/arch/arm64/kvm/handle_exit.c
-+++ b/arch/arm64/kvm/handle_exit.c
-@@ -17,6 +17,7 @@
- #include <asm/kvm_emulate.h>
- #include <asm/kvm_mmu.h>
- #include <asm/debug-monitors.h>
-+#include <asm/stacktrace/nvhe.h>
- #include <asm/traps.h>
- 
- #include <kvm/arm_hypercalls.h>
-@@ -353,6 +354,9 @@ void __noreturn __cold nvhe_hyp_panic_handler(u64 esr, u64 spsr,
- 				(void *)panic_addr);
- 	}
- 
-+	/* Dump the nVHE hypervisor backtrace */
-+	kvm_nvhe_dump_backtrace(hyp_offset);
-+
- 	/*
- 	 * Hyp has panicked and we're going to handle that by panicking the
- 	 * kernel. The kernel offset will be revealed in the panic so we're
-diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/switch.c
-index 6db801db8f27..a50cfd39dedb 100644
---- a/arch/arm64/kvm/hyp/nvhe/switch.c
-+++ b/arch/arm64/kvm/hyp/nvhe/switch.c
-@@ -25,6 +25,7 @@
- #include <asm/fpsimd.h>
- #include <asm/debug-monitors.h>
- #include <asm/processor.h>
-+#include <asm/stacktrace/nvhe.h>
- 
- #include <nvhe/fixed_config.h>
- #include <nvhe/mem_protect.h>
-@@ -375,6 +376,10 @@ asmlinkage void __noreturn hyp_panic(void)
- 		__sysreg_restore_state_nvhe(host_ctxt);
- 	}
- 
-+	/* Prepare to dump kvm nvhe hyp stacktrace */
-+	kvm_nvhe_prepare_backtrace((unsigned long)__builtin_frame_address(0),
-+				   _THIS_IP_);
-+
- 	__hyp_do_panic(host_ctxt, spsr, elr, par);
- 	unreachable();
- }
--- 
-2.37.0.170.g444d1eabd0-goog
-
+[0] https://lore.kernel.org/lkml/20220715061042.373640-1-john.ogness@linutronix.de
