@@ -2,114 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4DFFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77287C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 19:40:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230078AbiGOTjc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 15:39:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42738 "EHLO
+        id S230158AbiGOTj6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 15:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGOTjb (ORCPT
+        with ESMTP id S229448AbiGOTj4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 15:39:31 -0400
-Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D05D13D1A;
-        Fri, 15 Jul 2022 12:39:31 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 09F343200D0E;
-        Fri, 15 Jul 2022 15:39:29 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 15 Jul 2022 15:39:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1657913969; x=1658000369; bh=vvnov30v3c
-        CA2/+HpVJAC1RG0rtOfKvgTbe1umHi+vI=; b=NTzMn1Pifdmp4VPIulbx8zQFKH
-        CAQfwJYfECBd4jbfM65uay90fz1OViqQ9zLXMhI1qdkHJfGH8qwEkay9tfYHTzVP
-        Kd9SVk3Aqfzayd1Qxz3dH6cGlcW9R+papSIS0mTh7snQaxi2paXUDS5XGsWeCEkK
-        eElEu5obqBdg8+qRU4w83Vp2FvFUnuqcaDT++OW1cytPCfxyYfbQG8O+p6ORpP7I
-        ZwgcVIZKzGXetIAGYirDg/3WNFqMBdbQHplJ6cCAblFpuNntIbewqwI0547MYRnG
-        ApEnHzTarBkKt7GvZWG9mmxm11bXL7XSB5RF1pZ8ur5SX9oVG3kMoY3Auxdg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1657913969; x=1658000369; bh=vvnov30v3cCA2/+HpVJAC1RG0rtO
-        fKvgTbe1umHi+vI=; b=Pw8AC5dKC4DqPaFbyFZpF+ZpGtWqmDuAxzD/34xvXtLp
-        5W15EIqRSnHOMMxqQzn53hBOwlZKGm7tWvMa7uqX1ItKMLuxoY+FO0OB38qoFqoB
-        n7AEBCCNLdIzJGgF1ryV3eyXJFxiAptK2mLtUIeDK+xIzMOnkVxnEwwMkCk3uAsf
-        ZlNIny9nlBA/QowWa88bHhYcmFEsBFZw3WYr3csJDVxXRD23KckOGPuJBaDCulTk
-        AG+9x6s9kM3kvtnvflXYoIO6iBXInvlALg+9PJmueKwEV0dTItrj/M29r5/v2ato
-        54Q3On+6XV+e8i5+ruDgAKcUfVQaMMVW+3qkLiN9Yg==
-X-ME-Sender: <xms:ccLRYjCoiSUN63ON_mfms8vyWNIIr5FyL5HVe5Sfkdxuy8eZemVfFQ>
-    <xme:ccLRYpjY7ZyAUxVn-wLJN0nsBANnilhWBMcJIexcukBX86kDaLo3MpelsQAgNOgF8
-    k1ufaGP4sHy0Ro23A>
-X-ME-Received: <xmr:ccLRYukgXvVIAaez72e6DRJdToNfacXTeBzhg5pFWbaYVpIvl3uzOkfpVMuF9CNMPqGMlE0ummPiYbXAPjAdqAQcnJzdK60LiQ5U8chp7qeZssvsI3BDQa-ltJ0G>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudekuddgudegvdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:ccLRYlzFVLRRTGo967KEZn0DGLBG2_LpVNOtfAOqhsQvMl5MQto1ew>
-    <xmx:ccLRYoR0fOZDXwxCbcpKkOs3Exc8h69egJPsJHHUPOYOP-osb5fT5g>
-    <xmx:ccLRYobQQlbcfHk5Nmh8-xlUM9NK0o1G2jLhM2Dr2jdREPBZaPkQWg>
-    <xmx:ccLRYtL3S6q3w8LHT6C165tNZuaDlqMFvL8x2nyP0Njpm3zXFVvowA>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 15 Jul 2022 15:39:29 -0400 (EDT)
-Date:   Fri, 15 Jul 2022 12:39:27 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: Re: [PATCH v2 2/5] tools include: add dis-asm-compat.h to handle
- version differences
-Message-ID: <20220715193927.x6xy4h7n5rrh2ndc@awork3.anarazel.de>
-References: <20220622231624.t63bkmkzphqvh3kx@alap3.anarazel.de>
- <20220703212551.1114923-1-andres@anarazel.de>
- <20220703212551.1114923-3-andres@anarazel.de>
- <fc1be6d4-446b-2b34-21cb-5e364742c3a2@isovalent.com>
+        Fri, 15 Jul 2022 15:39:56 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC0B6F7E3;
+        Fri, 15 Jul 2022 12:39:54 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id mf4so10711449ejc.3;
+        Fri, 15 Jul 2022 12:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=XEKfpFw02gqf7NoXFh68+SxWr6u5EljMHt08x8BZg0o=;
+        b=ZsIi3huAGfDp3Exh9GR+u5CC9waovw/IDhbPSEf+KU8vE/TIVnbCC8Atk7lV7lV/NV
+         YxGfOh5faYadDFFQ4jwmanc15Jgt4CCeErWtkcmqQTgjSjvZhI+hRUuDqJgxJYWSie6h
+         zLa3pJyh076AYypxrNpWF6hQ6guw8Kb+PSVAjIGkcjxPssq0KgV77AlxDwjXFZ9HrsWl
+         fxrEPxE9NlheiJ9/xVSdZJdVwogn1UnABnZJx696IexvSKplUVof0fObReDfrjdXulHy
+         0o7Lt/hoM0p6z0azvBQKBRP/1RatDiOnkuFgLcbkUBmLRGlXxGjfOUqqJR5rqhqj890N
+         3cUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=XEKfpFw02gqf7NoXFh68+SxWr6u5EljMHt08x8BZg0o=;
+        b=4/9cPk+YI8Is52RlnaIw8v4mTtUDy17m/+ElO5sWTfUOajFjx3bYcRv4GPq8smWq3c
+         uolm2V5MvRC3TVvqUHtfgMGGyU26x3dP+Q7V2FRzbthXuF3bLEBKtY1zEx8w5IC4EArZ
+         T6xPY0+bDmDpvZPnk2WVBDi7m5yQhNIwEjWr0aXSQx0C8+9a5q1sjdFfVtGRPfRSSgXP
+         r5le17XjwQzdtvNw0ETl4Spj70kERPwiQzROrWf5qyYdLj+1AxIgyNOJRuGPRbmjnqnR
+         C+66fB3apuuefONUYgw+lbZqvmN6QFiV8HYLRh/PaUURMBACHK9gBc0KyzVk5Kav2Tx6
+         tlgw==
+X-Gm-Message-State: AJIora+Vf+ai9YUkFdWYnNfliRrJQ4hzwm5MNSNeJp08ExeFhMNi8n+r
+        rUGYl+rbuMnS2RlptjkQwkM=
+X-Google-Smtp-Source: AGRyM1uv7pIljfKIzkcmPHgcUK0HUNToL1Vrm6lC05TLtSu2p0JomsVFKl1lE1vSw8YDQZ5UstWRdA==
+X-Received: by 2002:a17:906:c10:b0:6f4:6c70:b00f with SMTP id s16-20020a1709060c1000b006f46c70b00fmr15133333ejf.660.1657913993070;
+        Fri, 15 Jul 2022 12:39:53 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id 10-20020a170906318a00b0072aac739089sm2367472ejy.98.2022.07.15.12.39.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jul 2022 12:39:52 -0700 (PDT)
+Message-ID: <62d1c288.1c69fb81.45988.55fe@mx.google.com>
+X-Google-Original-Message-ID: <YtG9Hp5nqZY2REGy@Ansuel-xps.>
+Date:   Fri, 15 Jul 2022 21:16:46 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [net-next PATCH] net: dsa: qca8k: move driver to qca dir
+References: <20220713205350.18357-1-ansuelsmth@gmail.com>
+ <20220714220354.795c8992@kernel.org>
+ <62d12418.1c69fb81.90737.3a8e@mx.google.com>
+ <20220715123743.419537e7@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <fc1be6d4-446b-2b34-21cb-5e364742c3a2@isovalent.com>
+In-Reply-To: <20220715123743.419537e7@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 2022-07-05 14:44:07 +0100, Quentin Monnet wrote:
-> > diff --git a/tools/include/tools/dis-asm-compat.h b/tools/include/tools/dis-asm-compat.h
-> > new file mode 100644
-> > index 000000000000..d1d003ee3e2f
-> > --- /dev/null
-> > +++ b/tools/include/tools/dis-asm-compat.h
-> > @@ -0,0 +1,53 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
+On Fri, Jul 15, 2022 at 12:37:43PM -0700, Jakub Kicinski wrote:
+> On Fri, 15 Jul 2022 03:57:46 +0200 Christian Marangi wrote:
+> > > Does the split mean that this code will move again?
+> > > If so perhaps better to put this patch in the series 
+> > > that does the split? We're ~2 weeks away from the merge 
+> > > window so we don't want to end up moving the same code
+> > > twice in two consecutive releases.  
+> > 
+> > What to you mean with "will move again"?
+> >  
+> > The code will be split to qca8k-common.c and qca8k-8xxx.c
+> > And later qca8k-ipq4019.c will be proposed. 
+> > 
+> > So the files will all stay in qca/ dir.
+> > 
+> > Or should I just propose the move and the code split in one series?
 > 
-> Any chance you could contribute this wrapper as dual-licenced
-> (GPL-2.0-only OR BSD-2-Clause), for better compatibility with the rest
-> of bpftool's code?
+> Yup that's what I prefer.
+>
 
-Happy to do that from my end - however, right now it includes
-linux/compiler.h, which is GPL-2.0. I don't know what the policy around that
-is - is it just a statement about the licence of the header itself, or does it
-effectively include its dependencies?
+Ok no problem, if the current merged commit is a problem, np for me with
+a revert! (it was really to prevent sending a bigger series, sorry for
+the mess)
 
-FWIW, linux/compiler.h is also included from bpftool.
+> > Tell me what do you prefer.
 
-If preferrable, I can replace the linux/compiler.h include by just using
-__attribute__((__unused__)) directly or by using a (void) cast to avoid the
-unused-parameter pedantry.
-
-Greetings,
-
-Andres Freund
+-- 
+	Ansuel
