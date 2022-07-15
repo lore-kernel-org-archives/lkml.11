@@ -2,35 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88BA5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B384C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 23:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232691AbiGOX0a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 19:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53090 "EHLO
+        id S232776AbiGOX0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 19:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232224AbiGOX0N (ORCPT
+        with ESMTP id S232406AbiGOX0O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 19:26:13 -0400
-X-Greylist: delayed 3800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:49 PDT
+        Fri, 15 Jul 2022 19:26:14 -0400
+X-Greylist: delayed 3818 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 15 Jul 2022 16:25:55 PDT
 Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07B8951D4
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:49 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADB193681
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 16:25:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=crudebyte.com; s=lizzy; h=Cc:To:Subject:Date:From:References:In-Reply-To:
         Message-Id:Content-Type:Content-Transfer-Encoding:MIME-Version:Content-ID:
-        Content-Description; bh=HRgmsvyQc5R1HqZKiatrCeJDIA/6CkbTdpYiY2zKJhY=; b=Rq8Ur
-        FXiEZjgbvLBKHRYMhXFkV36zqPA0exg1NpNzlek1Qkbup154jUInbQ9KzFnnAy1DZXMM0f6Zdih1H
-        yEatOg4iZF+fb66Ivo+CwYQC5E1xXOs7j5SzlJdTACI3dNU5CKPefBhW+oZ8gWbhvw9kr+D51TTnD
-        RpSY+x6d03BH0xsxW1urFLmbBUXcDxa1vlf35WynvV4nTzlxKEcUQCf6S8ViCVsajA6H1QV4mWpCK
-        RkGrHAdsXxZW5nsXy1Qz8wHhoaN/vwXuA6e8AXh2nG8TdI7eFBvQzme4idLIRfeoxXWGL0IkVOQ2Q
-        64hJ8faeq+AMHRjCE8Uzta1nrbiOQ==;
-Message-Id: <ce9d58cc48a3bb65d4ed5b906eb5f0311030fddd.1657920926.git.linux_oss@crudebyte.com>
+        Content-Description; bh=Hw21+wotN9D+Z0hozfXdxMixZLaL8X+liJ1Yr85K26w=; b=bqWSW
+        qbwnSAzZLNuFJSgHqSN5Y4TsADurVnQgQSFB2/HIn4nBAUBs3+WkBLrMm2qzJ2UPi4321tNQydAd2
+        RB4XN5OzHSU+prD1liYj2ZUzkZ+19AUtxiBM1cjz6+Tbemc/8bfEi9sDRuy5knxsYMVObjiX8L4VU
+        m5L6tghyISEgbPk6x0KjG/nRnQlUy5tZLIMhGHGtySTQWla0Gv/HjHK0gGWcTF/QoI8RF1mkW8+Pl
+        0gYP4wFQQHGP/au1wFlnxiztj8ugX1k1LJqbLyoXUG/VIN4X9b+FAEVxIAvrSp8XfKK36ldXaViou
+        0srlmunzvZRDYfticUqCBCeZXfQmg==;
+Message-Id: <6e0f8699c793357f0c6e6fb3bbab249142b9ef6c.1657920926.git.linux_oss@crudebyte.com>
 In-Reply-To: <cover.1657920926.git.linux_oss@crudebyte.com>
 References: <cover.1657920926.git.linux_oss@crudebyte.com>
 From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-Date:   Fri, 15 Jul 2022 23:32:20 +0200
-Subject: [PATCH v6 04/11] net/9p: add trans_maxsize to struct p9_client
+Date:   Fri, 15 Jul 2022 23:32:15 +0200
+Subject: [PATCH v6 02/11] 9p/trans_virtio: turn amount of sg lists into
+ runtime info
 To:     v9fs-developer@lists.sourceforge.net
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Dominique Martinet <asmadeus@codewreck.org>,
@@ -41,66 +42,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new field 'trans_maxsize' optionally allows transport to
-update it to reflect the actual maximum msize supported by
-allocated transport channel.
+The size of scatter/gather lists used by the virtio transport is
+currently hard coded. Refactor this to using a runtime variable.
 
 Signed-off-by: Christian Schoenebeck <linux_oss@crudebyte.com>
 ---
- include/net/9p/client.h |  2 ++
- net/9p/client.c         | 12 ++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+ net/9p/trans_virtio.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/9p/client.h b/include/net/9p/client.h
-index ec1d1706f43c..f5718057fca4 100644
---- a/include/net/9p/client.h
-+++ b/include/net/9p/client.h
-@@ -87,6 +87,7 @@ struct p9_req_t {
-  * struct p9_client - per client instance state
-  * @lock: protect @fids and @reqs
-  * @msize: maximum data size negotiated by protocol
-+ * @trans_maxsize: actual maximum msize supported by transport channel
-  * @proto_version: 9P protocol version to use
-  * @trans_mod: module API instantiated with this client
-  * @status: connection state
-@@ -101,6 +102,7 @@ struct p9_req_t {
- struct p9_client {
- 	spinlock_t lock;
- 	unsigned int msize;
-+	unsigned int trans_maxsize;
- 	unsigned char proto_version;
- 	struct p9_trans_module *trans_mod;
- 	enum p9_trans_status status;
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 8bba0d9cf975..20054addd81b 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -1031,6 +1031,14 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 		goto free_client;
+diff --git a/net/9p/trans_virtio.c b/net/9p/trans_virtio.c
+index 2693e618080c..18bdfa64b934 100644
+--- a/net/9p/trans_virtio.c
++++ b/net/9p/trans_virtio.c
+@@ -36,7 +36,7 @@
+ #include <linux/virtio_9p.h>
+ #include "trans_common.h"
+ 
+-#define VIRTQUEUE_NUM	128
++#define VIRTQUEUE_DEFAULT_NUM	128
+ 
+ /* a single mutex to manage channel initialization and attachment */
+ static DEFINE_MUTEX(virtio_9p_lock);
+@@ -54,6 +54,7 @@ static atomic_t vp_pinned = ATOMIC_INIT(0);
+  * @vc_wq: wait queue for waiting for thing to be added to ring buf
+  * @p9_max_pages: maximum number of pinned pages
+  * @sg: scatter gather list which is used to pack a request (protected?)
++ * @sg_n: amount of elements in sg array
+  * @chan_list: linked list of channels
+  *
+  * We keep all per-channel information in a structure.
+@@ -78,6 +79,7 @@ struct virtio_chan {
+ 	unsigned long p9_max_pages;
+ 	/* Scatterlist: can be too big for stack. */
+ 	struct scatterlist *sg;
++	size_t sg_n;
+ 	/**
+ 	 * @tag: name to identify a mount null terminated
+ 	 */
+@@ -270,12 +272,12 @@ p9_virtio_request(struct p9_client *client, struct p9_req_t *req)
+ 	out_sgs = in_sgs = 0;
+ 	/* Handle out VirtIO ring buffers */
+ 	out = pack_sg_list(chan->sg, 0,
+-			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
++			   chan->sg_n, req->tc.sdata, req->tc.size);
+ 	if (out)
+ 		sgs[out_sgs++] = chan->sg;
+ 
+ 	in = pack_sg_list(chan->sg, out,
+-			  VIRTQUEUE_NUM, req->rc.sdata, req->rc.capacity);
++			  chan->sg_n, req->rc.sdata, req->rc.capacity);
+ 	if (in)
+ 		sgs[out_sgs + in_sgs++] = chan->sg + out;
+ 
+@@ -447,14 +449,14 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 
+ 	/* out data */
+ 	out = pack_sg_list(chan->sg, 0,
+-			   VIRTQUEUE_NUM, req->tc.sdata, req->tc.size);
++			   chan->sg_n, req->tc.sdata, req->tc.size);
+ 
+ 	if (out)
+ 		sgs[out_sgs++] = chan->sg;
+ 
+ 	if (out_pages) {
+ 		sgs[out_sgs++] = chan->sg + out;
+-		out += pack_sg_list_p(chan->sg, out, VIRTQUEUE_NUM,
++		out += pack_sg_list_p(chan->sg, out, chan->sg_n,
+ 				      out_pages, out_nr_pages, offs, outlen);
  	}
  
-+	/*
-+	 * transport will get a chance to increase trans_maxsize (if
-+	 * necessary) and it may update trans_maxsize in create() function
-+	 * below accordingly to reflect the actual maximum size supported by
-+	 * the allocated transport channel
-+	 */
-+	clnt->trans_maxsize = clnt->trans_mod->maxsize;
-+
- 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
- 		 clnt, clnt->trans_mod, clnt->msize, clnt->proto_version);
+@@ -466,13 +468,13 @@ p9_virtio_zc_request(struct p9_client *client, struct p9_req_t *req,
+ 	 * allocated memory and payload onto the user buffer.
+ 	 */
+ 	in = pack_sg_list(chan->sg, out,
+-			  VIRTQUEUE_NUM, req->rc.sdata, in_hdr_len);
++			  chan->sg_n, req->rc.sdata, in_hdr_len);
+ 	if (in)
+ 		sgs[out_sgs + in_sgs++] = chan->sg + out;
  
-@@ -1038,8 +1046,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 	if (err)
- 		goto put_trans;
+ 	if (in_pages) {
+ 		sgs[out_sgs + in_sgs++] = chan->sg + out + in;
+-		in += pack_sg_list_p(chan->sg, out + in, VIRTQUEUE_NUM,
++		in += pack_sg_list_p(chan->sg, out + in, chan->sg_n,
+ 				     in_pages, in_nr_pages, offs, inlen);
+ 	}
  
--	if (clnt->msize > clnt->trans_mod->maxsize) {
--		clnt->msize = clnt->trans_mod->maxsize;
-+	if (clnt->msize > clnt->trans_maxsize) {
-+		clnt->msize = clnt->trans_maxsize;
- 		pr_info("Limiting 'msize' to %d as this is the maximum "
- 			"supported by transport %s\n",
- 			clnt->msize, clnt->trans_mod->name
+@@ -574,13 +576,14 @@ static int p9_virtio_probe(struct virtio_device *vdev)
+ 		goto fail;
+ 	}
+ 
+-	chan->sg = kmalloc_array(VIRTQUEUE_NUM,
++	chan->sg = kmalloc_array(VIRTQUEUE_DEFAULT_NUM,
+ 				 sizeof(struct scatterlist), GFP_KERNEL);
+ 	if (!chan->sg) {
+ 		pr_err("Failed to allocate virtio 9P channel\n");
+ 		err = -ENOMEM;
+ 		goto out_free_chan_shallow;
+ 	}
++	chan->sg_n = VIRTQUEUE_DEFAULT_NUM;
+ 
+ 	chan->vdev = vdev;
+ 
+@@ -593,7 +596,7 @@ static int p9_virtio_probe(struct virtio_device *vdev)
+ 	chan->vq->vdev->priv = chan;
+ 	spin_lock_init(&chan->lock);
+ 
+-	sg_init_table(chan->sg, VIRTQUEUE_NUM);
++	sg_init_table(chan->sg, chan->sg_n);
+ 
+ 	chan->inuse = false;
+ 	if (virtio_has_feature(vdev, VIRTIO_9P_MOUNT_TAG)) {
+@@ -777,7 +780,7 @@ static struct p9_trans_module p9_virtio_trans = {
+ 	 * that are not at page boundary, that can result in an extra
+ 	 * page in zero copy.
+ 	 */
+-	.maxsize = PAGE_SIZE * (VIRTQUEUE_NUM - 3),
++	.maxsize = PAGE_SIZE * (VIRTQUEUE_DEFAULT_NUM - 3),
+ 	.def = 1,
+ 	.owner = THIS_MODULE,
+ };
 -- 
 2.30.2
 
