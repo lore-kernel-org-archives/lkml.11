@@ -2,125 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45DB9C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50925C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 08:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232791AbiGOIhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 04:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
+        id S232892AbiGOIjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 04:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiGOIhx (ORCPT
+        with ESMTP id S230300AbiGOIi6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 04:37:53 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D388148F;
-        Fri, 15 Jul 2022 01:37:52 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id bp15so7764195ejb.6;
-        Fri, 15 Jul 2022 01:37:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=J+9HGyAEN1pJBy/DvkM1mQBg4p/Yv310qvcslrhu09s=;
-        b=JC/CN8/YNPAb3xeJKIC11lCCMeEU/VxDQx2T1pDL52lQoM/jzoztfMlEhLRro3Vhlb
-         kY60LkLuxx9rha+J+HJZ2973tRFMSnzPvLsTj4waeut50jKWsnppfI+9ZeM90YbcgWZQ
-         b+6YTajzdkdwH9xDX7fn4630x2iF7LJ+wSDOd8uIGMPxIRojPS/cW8F06gu/S+QQahAx
-         J/Bn6dOyezVJz7uxTxETNKu99SWsYMTZedE3SvqvRJ1kvBWVOoDNNf4bJveeiV9zCVdp
-         67DfvfiTKKYrX4eWYHszXNRg9I7MmQwaefT1U323W9km3Tudb2D5w5XomdX/IcbKS/pI
-         hKLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=J+9HGyAEN1pJBy/DvkM1mQBg4p/Yv310qvcslrhu09s=;
-        b=Osy+JyvSLbIXXSmrkd7cQgS+l6WXecDodQzhDQqgSQfID7uF4lO8Oa2aMJOMXhI06G
-         C80uw8agVhP1EG/qS4cGZHFTw0Yg+J9YmOwW8c1OQeDzY6AA2Pv23q/W/fEakcSFb+yU
-         MCLmRmzW04bqWy9z10lDtMQBEv8fLCoGgetyzEoI8+zVpSy0Gcl8wz4bflzNo7m/8Zpe
-         N+T5MklQ0PjbpggkKBaAk98IZ0Cnnj6EDBFNTfxOFsOCn+fzbS5gaGZishBzrJDaOYui
-         O56jpdRcpyjSHuAZGWl2YvSvo4wXlNRjlLmjQzrmIR3/bJozqWEFIz3ObYcPpFW1CQEH
-         UqMg==
-X-Gm-Message-State: AJIora8QnsK4G+J8qtPjklaNDVNyUmjekDl6/WJuw0jgCpOOfKGGvtdY
-        M+3ni4Gn/oGuFYfudjDpiHM=
-X-Google-Smtp-Source: AGRyM1sOd2xLAIMyNxCPTpgA4BENx/7gDvju2Nyj7biBYkl+P8YLZQvFrPHxlxBgGXTUrPNSDK3JdQ==
-X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id e8-20020a17090658c800b006fe91d518d2mr12658988ejs.190.1657874270785;
-        Fri, 15 Jul 2022 01:37:50 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id p19-20020a056402075300b0043a7cdfac46sm2385948edy.23.2022.07.15.01.37.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jul 2022 01:37:50 -0700 (PDT)
-Message-ID: <62d1275e.1c69fb81.f16fe.51e0@mx.google.com>
-X-Google-Original-Message-ID: <YtDMqUgQ3X4utM6Z@Ansuel-xps.>
-Date:   Fri, 15 Jul 2022 04:10:49 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Eric Biggers' <ebiggers@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] crypto: lib/arc4 - expose library interface
-References: <20220714051221.22525-1-ansuelsmth@gmail.com>
- <YtDLMmwffn6p/rSV@sol.localdomain>
- <872b3792d96946b48236120a057b99bc@AcuMS.aculab.com>
+        Fri, 15 Jul 2022 04:38:58 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFBC222AE;
+        Fri, 15 Jul 2022 01:38:56 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id D9A7C6601A3F;
+        Fri, 15 Jul 2022 09:38:53 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1657874335;
+        bh=xceY5L9JgEvByY8nXCTLgaBCnqvDhcWlIlGmTkrx17k=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TqlX6/gCeHEiZoI0yoHG+QC5sbGN3BKmS5kgMokC+Wf5J2LWsFFqOi2HA2YX4wuh4
+         rn2kkegT3gCv1F/+wbt5Q4rebneP3gep0ampKjPzTQgNdl9ohLXHiDhP5foQ0DC+uj
+         iB8aHJkjpB553i7OjjqK9xJu6JBSOEe5Nkd8RXFU19cJjbPbiPQKijjToAwgol3dOI
+         E/GbVxqPcHnq7YLmp0bWRWnae/8rvz4bC6F6wgv8R/h4038I6OrUizvscjwZPu9mbP
+         9vj2L9BH6MkfET0UMPcaqt4hXWZjCX1aFSBvAeXb2CiD1350CTuc9EAIWrKrmd4uMm
+         6+28pJslpu5CQ==
+Message-ID: <86c06111-9c9d-804e-32ec-df4f3d4a8376@collabora.com>
+Date:   Fri, 15 Jul 2022 10:38:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <872b3792d96946b48236120a057b99bc@AcuMS.aculab.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v13 3/3] mmc: mediatek: add support for SDIO eint wakup
+ IRQ
+Content-Language: en-US
+To:     Axe Yang <axe.yang@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Yong Mao <yong.mao@mediatek.com>
+References: <20220623090445.1401-1-axe.yang@mediatek.com>
+ <20220623090445.1401-4-axe.yang@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220623090445.1401-4-axe.yang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 07:39:48AM +0000, David Laight wrote:
-> From: Eric Biggers
-> > Sent: 15 July 2022 03:05
-> > 
-> > On Thu, Jul 14, 2022 at 07:12:21AM +0200, Christian Marangi wrote:
-> > > Permit to compile the arc4 crypto lib without any user. This is required
-> > > by the backports project [1] that require this lib for any wireless
-> > > driver.
-> > >
-> > > [1] https://backports.wiki.kernel.org/index.php/Main_Page
-> > >
-> > > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> > > ---
-> > >  lib/crypto/Kconfig | 6 +++++-
-> > >  1 file changed, 5 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-> > > index 2082af43d51f..2dfc785a7817 100644
-> > > --- a/lib/crypto/Kconfig
-> > > +++ b/lib/crypto/Kconfig
-> > > @@ -6,7 +6,11 @@ config CRYPTO_LIB_AES
-> > >  	tristate
-> > >
-> > >  config CRYPTO_LIB_ARC4
-> > > -	tristate
-> > > +	tristate "ARC4 library interface"
-> > > +	help
-> > > +	  Enable the ARC4 library interface. This interface is mainly
-> > > +	  used by wireless drivers and is required by the backports
-> > > +	  project.
-> > >
-> > >  config CRYPTO_ARCH_HAVE_LIB_BLAKE2S
-> > >  	bool
-> > 
-> > I don't think this is appropriate for upstream, as the upstream kernel doesn't
-> > support out-of-tree code.  This is also an internal API that can change from one
-> > kernel version to the next.
+Il 23/06/22 11:04, Axe Yang ha scritto:
+> Add support for eint IRQ when MSDC is used as an SDIO host. This
+> feature requires SDIO device support async IRQ function. With this
+> feature, SDIO host can be awakened by SDIO card in suspend state,
+> without additional pin.
 > 
-> Out-of-tree code always has to allow for arbitrary changes to
-> kernel interfaces between kernel versions.
-> So the fact that the API might change isn't relevant.
-> The continual API changes keep some of us in a job :-)
+> MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
+> turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
+> resume, switch GPIO function back to DAT1 mode then turn on clock.
 > 
-> (It has to be said that if I needed RC4 I'd probably add a local copy.)
->
+> Some device tree property should be added or modified in MSDC node
+> to support SDIO eint IRQ. Pinctrls "state_eint" is mandatory. Since
+> this feature depends on asynchronous interrupts, "wakeup-source",
+> "keep-power-in-suspend" and "cap-sdio-irq" flags are necessary, and
+> the interrupts list should be extended(the interrupt named with
+> sdio_wakeup):
+>          &mmcX {
+> 		...
+> 		interrupt-names = "msdc", "sdio_wakeup";
+> 		interrupts-extended = <...>,
+>                                	      <&pio xxx IRQ_TYPE_LEVEL_LOW>;
+>                  ...
+>                  pinctrl-names = "default", "state_uhs", "state_eint";
+>                  ...
+>                  pinctrl-2 = <&mmc2_pins_eint>;
+>                  ...
+>                  cap-sdio-irq;
+> 		keep-power-in-suspend;
+> 		wakeup-source;
+>                  ...
+>          };
+> 
+> Co-developed-by: Yong Mao <yong.mao@mediatek.com>
+> Signed-off-by: Yong Mao <yong.mao@mediatek.com>
+> Signed-off-by: Axe Yang <axe.yang@mediatek.com>
 
-Wonder if I can ask you some advice about the topic... I understand that
-this cannot be merged upstream.
-
-So the correct solution would be having a copy of the arc4 lib in
-backports?
-
--- 
-	Ansuel
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
