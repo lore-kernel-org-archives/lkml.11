@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 461CAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:42:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43BCCC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 15:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231782AbiGOPma (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 11:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44696 "EHLO
+        id S235177AbiGOPme (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 11:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiGOPmS (ORCPT
+        with ESMTP id S233196AbiGOPmU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 11:42:18 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DDA51A03
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:42:16 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VJPnC1Z_1657899731;
-Received: from e18g06460.et15sqa.tbsite.net(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VJPnC1Z_1657899731)
+        Fri, 15 Jul 2022 11:42:20 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD17751A03
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 08:42:19 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0VJPnC30_1657899734;
+Received: from e18g06460.et15sqa.tbsite.net(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0VJPnC30_1657899734)
           by smtp.aliyun-inc.com;
-          Fri, 15 Jul 2022 23:42:12 +0800
+          Fri, 15 Jul 2022 23:42:15 +0800
 From:   Gao Xiang <hsiangkao@linux.alibaba.com>
 To:     linux-erofs@lists.ozlabs.org, Chao Yu <chao@kernel.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Gao Xiang <hsiangkao@linux.alibaba.com>,
         Yue Hu <huyue2@coolpad.com>
-Subject: [PATCH v2 01/16] erofs: get rid of unneeded `inode', `map' and `sb'
-Date:   Fri, 15 Jul 2022 23:41:48 +0800
-Message-Id: <20220715154203.48093-2-hsiangkao@linux.alibaba.com>
+Subject: [PATCH v2 03/16] erofs: introduce `z_erofs_parse_out_bvecs()'
+Date:   Fri, 15 Jul 2022 23:41:50 +0800
+Message-Id: <20220715154203.48093-4-hsiangkao@linux.alibaba.com>
 X-Mailer: git-send-email 2.24.4
 In-Reply-To: <20220715154203.48093-1-hsiangkao@linux.alibaba.com>
 References: <20220715154203.48093-1-hsiangkao@linux.alibaba.com>
@@ -36,163 +36,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since commit 5c6dcc57e2e5 ("erofs: get rid of
-`struct z_erofs_collector'"), these arguments can be dropped as well.
+`z_erofs_decompress_pcluster()' is too long therefore it'd be better
+to introduce another helper to parse decompressed pages (or laterly,
+decompressed bvecs.)
 
-No logic changes.
+BTW, since `decompressed_bvecs' is too long as a part of the function
+name, `out_bvecs' is used instead.
 
 Reviewed-by: Yue Hu <huyue2@coolpad.com>
 Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
 ---
- fs/erofs/zdata.c | 42 +++++++++++++++++++-----------------------
- 1 file changed, 19 insertions(+), 23 deletions(-)
+ fs/erofs/zdata.c | 81 +++++++++++++++++++++++++-----------------------
+ 1 file changed, 43 insertions(+), 38 deletions(-)
 
 diff --git a/fs/erofs/zdata.c b/fs/erofs/zdata.c
-index 724bb57075f6..1b6816dd235f 100644
+index c7be447ac64d..c183cd0bc42b 100644
 --- a/fs/erofs/zdata.c
 +++ b/fs/erofs/zdata.c
-@@ -404,10 +404,9 @@ static void z_erofs_try_to_claim_pcluster(struct z_erofs_decompress_frontend *f)
- 	f->mode = COLLECT_PRIMARY;
+@@ -778,18 +778,58 @@ static bool z_erofs_page_is_invalidated(struct page *page)
+ 	return !page->mapping && !z_erofs_is_shortlived_page(page);
  }
  
--static int z_erofs_lookup_pcluster(struct z_erofs_decompress_frontend *fe,
--				   struct inode *inode,
--				   struct erofs_map_blocks *map)
-+static int z_erofs_lookup_pcluster(struct z_erofs_decompress_frontend *fe)
++static int z_erofs_parse_out_bvecs(struct z_erofs_pcluster *pcl,
++				   struct page **pages, struct page **pagepool)
++{
++	struct z_erofs_pagevec_ctor ctor;
++	enum z_erofs_page_type page_type;
++	int i, err = 0;
++
++	z_erofs_pagevec_ctor_init(&ctor, Z_EROFS_NR_INLINE_PAGEVECS,
++				  pcl->pagevec, 0);
++	for (i = 0; i < pcl->vcnt; ++i) {
++		struct page *page = z_erofs_pagevec_dequeue(&ctor, &page_type);
++		unsigned int pagenr;
++
++		/* all pages in pagevec ought to be valid */
++		DBG_BUGON(!page);
++		DBG_BUGON(z_erofs_page_is_invalidated(page));
++
++		if (z_erofs_put_shortlivedpage(pagepool, page))
++			continue;
++
++		if (page_type == Z_EROFS_VLE_PAGE_TYPE_HEAD)
++			pagenr = 0;
++		else
++			pagenr = z_erofs_onlinepage_index(page);
++
++		DBG_BUGON(pagenr >= pcl->nr_pages);
++		/*
++		 * currently EROFS doesn't support multiref(dedup),
++		 * so here erroring out one multiref page.
++		 */
++		if (pages[pagenr]) {
++			DBG_BUGON(1);
++			SetPageError(pages[pagenr]);
++			z_erofs_onlinepage_endio(pages[pagenr]);
++			err = -EFSCORRUPTED;
++		}
++		pages[pagenr] = page;
++	}
++	z_erofs_pagevec_ctor_exit(&ctor, true);
++	return err;
++}
++
+ static int z_erofs_decompress_pcluster(struct super_block *sb,
+ 				       struct z_erofs_pcluster *pcl,
+ 				       struct page **pagepool)
  {
-+	struct erofs_map_blocks *map = &fe->map;
- 	struct z_erofs_pcluster *pcl = fe->pcl;
- 	unsigned int length;
+ 	struct erofs_sb_info *const sbi = EROFS_SB(sb);
+ 	unsigned int pclusterpages = z_erofs_pclusterpages(pcl);
+-	struct z_erofs_pagevec_ctor ctor;
+ 	unsigned int i, inputsize, outputsize, llen, nr_pages;
+ 	struct page *pages_onstack[Z_EROFS_VMAP_ONSTACK_PAGES];
+ 	struct page **pages, **compressed_pages, *page;
  
-@@ -449,10 +448,9 @@ static int z_erofs_lookup_pcluster(struct z_erofs_decompress_frontend *fe,
- 	return 0;
- }
+-	enum z_erofs_page_type page_type;
+ 	bool overlapped, partial;
+ 	int err;
  
--static int z_erofs_register_pcluster(struct z_erofs_decompress_frontend *fe,
--				     struct inode *inode,
--				     struct erofs_map_blocks *map)
-+static int z_erofs_register_pcluster(struct z_erofs_decompress_frontend *fe)
- {
-+	struct erofs_map_blocks *map = &fe->map;
- 	bool ztailpacking = map->m_flags & EROFS_MAP_META;
- 	struct z_erofs_pcluster *pcl;
- 	struct erofs_workgroup *grp;
-@@ -494,7 +492,7 @@ static int z_erofs_register_pcluster(struct z_erofs_decompress_frontend *fe,
- 	} else {
- 		pcl->obj.index = map->m_pa >> PAGE_SHIFT;
+@@ -823,42 +863,7 @@ static int z_erofs_decompress_pcluster(struct super_block *sb,
+ 	for (i = 0; i < nr_pages; ++i)
+ 		pages[i] = NULL;
  
--		grp = erofs_insert_workgroup(inode->i_sb, &pcl->obj);
-+		grp = erofs_insert_workgroup(fe->inode->i_sb, &pcl->obj);
- 		if (IS_ERR(grp)) {
- 			err = PTR_ERR(grp);
- 			goto err_out;
-@@ -520,10 +518,9 @@ static int z_erofs_register_pcluster(struct z_erofs_decompress_frontend *fe,
- 	return err;
- }
+-	err = 0;
+-	z_erofs_pagevec_ctor_init(&ctor, Z_EROFS_NR_INLINE_PAGEVECS,
+-				  pcl->pagevec, 0);
+-
+-	for (i = 0; i < pcl->vcnt; ++i) {
+-		unsigned int pagenr;
+-
+-		page = z_erofs_pagevec_dequeue(&ctor, &page_type);
+-
+-		/* all pages in pagevec ought to be valid */
+-		DBG_BUGON(!page);
+-		DBG_BUGON(z_erofs_page_is_invalidated(page));
+-
+-		if (z_erofs_put_shortlivedpage(pagepool, page))
+-			continue;
+-
+-		if (page_type == Z_EROFS_VLE_PAGE_TYPE_HEAD)
+-			pagenr = 0;
+-		else
+-			pagenr = z_erofs_onlinepage_index(page);
+-
+-		DBG_BUGON(pagenr >= nr_pages);
+-
+-		/*
+-		 * currently EROFS doesn't support multiref(dedup),
+-		 * so here erroring out one multiref page.
+-		 */
+-		if (pages[pagenr]) {
+-			DBG_BUGON(1);
+-			SetPageError(pages[pagenr]);
+-			z_erofs_onlinepage_endio(pages[pagenr]);
+-			err = -EFSCORRUPTED;
+-		}
+-		pages[pagenr] = page;
+-	}
+-	z_erofs_pagevec_ctor_exit(&ctor, true);
++	err = z_erofs_parse_out_bvecs(pcl, pages, pagepool);
  
--static int z_erofs_collector_begin(struct z_erofs_decompress_frontend *fe,
--				   struct inode *inode,
--				   struct erofs_map_blocks *map)
-+static int z_erofs_collector_begin(struct z_erofs_decompress_frontend *fe)
- {
-+	struct erofs_map_blocks *map = &fe->map;
- 	struct erofs_workgroup *grp;
- 	int ret;
- 
-@@ -541,19 +538,19 @@ static int z_erofs_collector_begin(struct z_erofs_decompress_frontend *fe,
- 		goto tailpacking;
- 	}
- 
--	grp = erofs_find_workgroup(inode->i_sb, map->m_pa >> PAGE_SHIFT);
-+	grp = erofs_find_workgroup(fe->inode->i_sb, map->m_pa >> PAGE_SHIFT);
- 	if (grp) {
- 		fe->pcl = container_of(grp, struct z_erofs_pcluster, obj);
- 	} else {
- tailpacking:
--		ret = z_erofs_register_pcluster(fe, inode, map);
-+		ret = z_erofs_register_pcluster(fe);
- 		if (!ret)
- 			goto out;
- 		if (ret != -EEXIST)
- 			return ret;
- 	}
- 
--	ret = z_erofs_lookup_pcluster(fe, inode, map);
-+	ret = z_erofs_lookup_pcluster(fe);
- 	if (ret) {
- 		erofs_workgroup_put(&fe->pcl->obj);
- 		return ret;
-@@ -663,7 +660,7 @@ static int z_erofs_do_read_page(struct z_erofs_decompress_frontend *fe,
- 	if (!(map->m_flags & EROFS_MAP_MAPPED))
- 		goto hitted;
- 
--	err = z_erofs_collector_begin(fe, inode, map);
-+	err = z_erofs_collector_begin(fe);
- 	if (err)
- 		goto err_out;
- 
-@@ -1259,13 +1256,13 @@ static void z_erofs_decompressqueue_endio(struct bio *bio)
- 	bio_put(bio);
- }
- 
--static void z_erofs_submit_queue(struct super_block *sb,
--				 struct z_erofs_decompress_frontend *f,
-+static void z_erofs_submit_queue(struct z_erofs_decompress_frontend *f,
- 				 struct page **pagepool,
- 				 struct z_erofs_decompressqueue *fgq,
- 				 bool *force_fg)
- {
--	struct erofs_sb_info *const sbi = EROFS_SB(sb);
-+	struct super_block *sb = f->inode->i_sb;
-+	struct address_space *mc = MNGD_MAPPING(EROFS_SB(sb));
- 	z_erofs_next_pcluster_t qtail[NR_JOBQUEUES];
- 	struct z_erofs_decompressqueue *q[NR_JOBQUEUES];
- 	void *bi_private;
-@@ -1317,7 +1314,7 @@ static void z_erofs_submit_queue(struct super_block *sb,
- 			struct page *page;
- 
- 			page = pickup_page_for_submission(pcl, i++, pagepool,
--							  MNGD_MAPPING(sbi));
-+							  mc);
- 			if (!page)
- 				continue;
- 
-@@ -1369,15 +1366,14 @@ static void z_erofs_submit_queue(struct super_block *sb,
- 	z_erofs_decompress_kickoff(q[JQ_SUBMIT], *force_fg, nr_bios);
- }
- 
--static void z_erofs_runqueue(struct super_block *sb,
--			     struct z_erofs_decompress_frontend *f,
-+static void z_erofs_runqueue(struct z_erofs_decompress_frontend *f,
- 			     struct page **pagepool, bool force_fg)
- {
- 	struct z_erofs_decompressqueue io[NR_JOBQUEUES];
- 
- 	if (f->owned_head == Z_EROFS_PCLUSTER_TAIL)
- 		return;
--	z_erofs_submit_queue(sb, f, pagepool, io, &force_fg);
-+	z_erofs_submit_queue(f, pagepool, io, &force_fg);
- 
- 	/* handle bypass queue (no i/o pclusters) immediately */
- 	z_erofs_decompress_queue(&io[JQ_BYPASS], pagepool);
-@@ -1475,7 +1471,7 @@ static int z_erofs_read_folio(struct file *file, struct folio *folio)
- 	(void)z_erofs_collector_end(&f);
- 
- 	/* if some compressed cluster ready, need submit them anyway */
--	z_erofs_runqueue(inode->i_sb, &f, &pagepool,
-+	z_erofs_runqueue(&f, &pagepool,
- 			 z_erofs_get_sync_decompress_policy(sbi, 0));
- 
- 	if (err)
-@@ -1524,7 +1520,7 @@ static void z_erofs_readahead(struct readahead_control *rac)
- 	z_erofs_pcluster_readmore(&f, rac, 0, &pagepool, false);
- 	(void)z_erofs_collector_end(&f);
- 
--	z_erofs_runqueue(inode->i_sb, &f, &pagepool,
-+	z_erofs_runqueue(&f, &pagepool,
- 			 z_erofs_get_sync_decompress_policy(sbi, nr_pages));
- 	erofs_put_metabuf(&f.map.buf);
- 	erofs_release_pages(&pagepool);
+ 	overlapped = false;
+ 	compressed_pages = pcl->compressed_pages;
 -- 
 2.24.4
 
