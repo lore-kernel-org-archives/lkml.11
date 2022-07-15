@@ -2,147 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3244CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2456C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 13:49:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233866AbiGONos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 09:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
+        id S229587AbiGONtX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 09:49:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiGONop (ORCPT
+        with ESMTP id S229669AbiGONtK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 09:44:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A95147BAE
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 06:44:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C8EF623D5
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:44:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA350C34115;
-        Fri, 15 Jul 2022 13:44:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657892682;
-        bh=8BPiocY7scDyLEcAlQjPC++udc/2v52MfXgPwsWJmaM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U/7omktuc5K9bv7/vVtx7s2hZGuEbq0x4Dh4gwEpveYMluuJqTFobMI6tTQq11MLB
-         gIQ9PaLyEE9Muo+wlE9HzsHn1dKUYJC7GRQWYiJQ52ZMnxahn1VyzKEraFZtTIW/h6
-         1FuC6wRdT1JG5zL75xUh52YjQ27H+tseApcbggAtffCJre2UsHzQJVRw7N3Ivn0kqK
-         yBF60fvKOtN94xRY7MzDB95QGSINMLmbfbknA1Z4mEjxXOkqiWApUvyyyNd0/K06uX
-         6FgysEEhgFN/3+LHriZH+Kloq/Td8aj4sdmOX18TkCAxSkScaj6bIcdEuxzoQ6DJiw
-         U1ooy1Ii1DwUQ==
-Date:   Fri, 15 Jul 2022 21:35:43 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     anup@brainfault.org, Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, ryabinin.a.a@gmail.com, glider@google.com,
-        andreyknvl@gmail.com, dvyukov@google.com,
-        vincenzo.frascino@arm.com, alexandre.ghiti@canonical.com,
-        Atish Patra <atishp@rivosinc.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com
-Subject: Re: [PATCH v4 0/2] use static key to optimize pgtable_l4_enabled
-Message-ID: <YtFtL3+/3FNkalZ5@xhacker>
-References: <CAAhSdy0mkwacNMVa_jFZmZ+NRPBa1TpKUQGpzr6Z9_wfoq1R4g@mail.gmail.com>
- <mhng-17913c13-57bd-42f9-9136-b4eb9632253c@palmer-mbp2014>
+        Fri, 15 Jul 2022 09:49:10 -0400
+Received: from out1.migadu.com (out1.migadu.com [IPv6:2001:41d0:2:863f::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0019E240BC;
+        Fri, 15 Jul 2022 06:49:08 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 21:48:31 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1657892947;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9s4Mr1J+0suKDIGr85spAp3Op0wmtujQR9qtd1lm93Q=;
+        b=UPA7Px3FUyKI8wo6pTCUJG/aCYmUHN6Kz0zd9pwiVfRVba+VNSajQ7NJVAl1E6bop6whKW
+        r68p6r8hhd5aPz0AB87AzxqioLBg+R2cHl6cXRAngXUweWsvDbwoeZ6Oho0AOnfSIuzMcd
+        RuUh1DcNzb7Sf5qdpPDttYRrRqUsr/0=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Tao Zhou <tao.zhou@linux.dev>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org, Tao Zhou <tao.zhou@linux.dev>
+Subject: Re: [PATCH V5 01/16] rv: Add Runtime Verification (RV) interface
+Message-ID: <YtFwL+x9ruIZytW4@geo.homenetwork>
+References: <cover.1657745645.git.bristot@kernel.org>
+ <442b03c687c298b25c79aa5a16ec7fb2aef0f2c9.1657745645.git.bristot@kernel.org>
+ <Ys/J5fLaojYeiVzL@geo.homenetwork>
+ <3758d3bd-7272-e907-a51a-44a21d757674@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <mhng-17913c13-57bd-42f9-9136-b4eb9632253c@palmer-mbp2014>
+In-Reply-To: <3758d3bd-7272-e907-a51a-44a21d757674@kernel.org>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 01, 2022 at 08:48:25PM -0700, Palmer Dabbelt wrote:
-> On Sat, 25 Jun 2022 21:33:07 PDT (-0700), anup@brainfault.org wrote:
-> > On Sat, May 21, 2022 at 8:13 PM Jisheng Zhang <jszhang@kernel.org> wrote:
-> > > 
-> > > The pgtable_l4|[l5]_enabled check sits at hot code path, performance
-> > > is impacted a lot. Since pgtable_l4|[l5]_enabled isn't changed after
-> > > boot, so static key can be used to solve the performance issue[1].
-> > > 
-> > > An unified way static key was introduced in [2], but it only targets
-> > > riscv isa extension. We dunno whether SV48 and SV57 will be considered
-> > > as isa extension, so the unified solution isn't used for
-> > > pgtable_l4[l5]_enabled now.
-> > > 
-> > > patch1 fixes a NULL pointer deference if static key is used a bit earlier.
-> > > patch2 uses the static key to optimize pgtable_l4|[l5]_enabled.
-> > > 
-> > > [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/011164.html
-> > > [2] https://lore.kernel.org/linux-riscv/20220517184453.3558-1-jszhang@kernel.org/T/#t
-> > > 
-> > > Since v3:
-> > >  - fix W=1 call to undeclared function 'static_branch_likely' error
-> > > 
-> > > Since v2:
-> > >  - move the W=1 warning fix to a separate patch
-> > >  - move the unified way to use static key to a new patch series.
-> > > 
-> > > Since v1:
-> > >  - Add a W=1 warning fix
-> > >  - Fix W=1 error
-> > >  - Based on v5.18-rcN, since SV57 support is added, so convert
-> > >    pgtable_l5_enabled as well.
-> > > 
-> > > 
-> > > 
-> > > Jisheng Zhang (2):
-> > >   riscv: move sbi_init() earlier before jump_label_init()
-> > >   riscv: turn pgtable_l4|[l5]_enabled to static key for RV64
+On Fri, Jul 15, 2022 at 01:47:28PM +0200,
+Daniel Bristot de Oliveira wrote:
+
+> On 7/14/22 09:46, Tao Zhou wrote:
+> > On Wed, Jul 13, 2022 at 11:17:17PM +0200,
+> > Daniel Bristot de Oliveira <bristot@kernel.org> wrote:
 > > 
-> > I have tested both these patches on QEMU RV64 and RV32.
+> > [...]
 > > 
-> > Tested-by: Anup Patel <anup@brainfault.org>
+> >> +void put_task_monitor_slot(int slot)
+> >> +{
+> >> +	lockdep_assert_held(&rv_interface_lock);
+> >> +
+> >> +	if (slot < 0 || slot > RV_PER_TASK_MONITORS) {
 > > 
-> > Thanks,
-> > Anup
-> 
-> Thanks for testing these.  Unfortunatly they're failing for me under my
-> kasan+sparsemem-vmemmap config, which looks like a defconfig with
-> 
->    CONFIG_KASAN=y
->    # CONFIG_FLATMEM_MANUAL is not set
->    CONFIG_SPARSEMEM_MANUAL=y
->    CONFIG_SPARSEMEM=y
->    # CONFIG_SPARSEMEM_VMEMMAP is not set
-
-Hi Palmer,
-
-Thank you for the hint, I find the reason: SPARSEMEM is the key, KASAN
-doesn't matter. To fix this issue, we need to move
-riscv_finalise_pgtable_lx() after sparse_init(). I will send out a
-newer version soon.
-
-> 
-> Nothing's really jumping out and I'm not sure that's a super compelling
-> configuration, but IIRC it's found a handful of issues before so I'm not
-> sure it's sane to just toss it.
-> 
-> I've put this all on the riscv-pgtable_static_key branch of
-> kernel.org/palmer/linux .  If nobody has the time to look then I'll try and
-> give it another shot, but I'm pretty buried right now so happy to have the
-> help.
-
-Let me know if you want a seperate patch against
-riscv-pgtable_static_key branch.
-
-Thanks
-
-> 
+> > slot is the array index that should be 0 here. The up bound is not bigger
+> > than 0 because the element of array now is RV_PER_TASK_MONITORS. 
 > > 
-> > > 
-> > >  arch/riscv/include/asm/pgalloc.h    | 16 ++++----
-> > >  arch/riscv/include/asm/pgtable-32.h |  3 ++
-> > >  arch/riscv/include/asm/pgtable-64.h | 60 ++++++++++++++++++---------
-> > >  arch/riscv/include/asm/pgtable.h    |  5 +--
-> > >  arch/riscv/kernel/cpu.c             |  4 +-
-> > >  arch/riscv/kernel/setup.c           |  2 +-
-> > >  arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
-> > >  arch/riscv/mm/kasan_init.c          | 16 ++++----
-> > >  8 files changed, 104 insertions(+), 66 deletions(-)
-> > > 
-> > > --
-> > > 2.34.1
-> > > 
+> > So up bound check is 'slot > RV_PER_TASK_MONITORS-1'.
+> 
+> fixed! (slot >= RV...)
+> 
+> > [...]
+> > 
+> >> +/*
+> >> + * interface for enabling/disabling a monitor.
+> >> + */
+> >> +static ssize_t monitor_enable_write_data(struct file *filp, const char __user *user_buf,
+> >> +					 size_t count, loff_t *ppos)
+> >> +{
+> >> +	struct rv_monitor_def *mdef = filp->private_data;
+> >> +	int retval;
+> >> +	bool val;
+> >> +
+> >> +	retval = kstrtobool_from_user(user_buf, count, &val);
+> >> +	if (retval)
+> >> +		return retval;
+> >> +
+> >> +	retval = count;
+> >> +
+> >> +	mutex_lock(&rv_interface_lock);
+> >> +
+> >> +	if (val)
+> >> +		retval = enable_monitor(mdef);
+> >> +	else
+> >> +		retval = disable_monitor(mdef);
+> >> +
+> >> +	mutex_unlock(&rv_interface_lock);
+> >> +
+> >> +	return retval ? retval : count;
+> > 
+> > Feel that this can be written `return retval ? : count;`
+> 
+> 
+> why not...
+> 
+> > [...]
+> > 
+> >> +static void *enabled_monitors_start(struct seq_file *m, loff_t *pos)
+> >> +{
+> >> +	struct rv_monitor_def *m_def;
+> >> +	loff_t l;
+> >> +
+> >> +	mutex_lock(&rv_interface_lock);
+> >> +
+> >> +	if (list_empty(&rv_monitors_list))
+> >> +		return NULL;
+> >> +
+> >> +	m_def = list_entry(&rv_monitors_list, struct rv_monitor_def, list);
+> >> +
+> >> +	for (l = 0; l <= *pos; ) {
+> >> +		m_def = enabled_monitors_next(m, m_def, &l);
+> >> +		if (!m_def)
+> >> +			break;
+> > 
+> > Is this check is inversed. enabled_monitors_start() will stop at first
+> > enabled monitor, then enabled_monitors_next() do loop to next. Check
+> > like the above, enabled_monitors_start() will loop to the last monitor.
+> > But I doubt myself I do not mention/see it. Sorry for these.
+> > 
+> > the check is:
+> > 
+> >   if (m_def)
+> >      break;
+> > 
+> > [...]
+> 
+> 
+> see kernel/trace/trace_events.c:s_start...
+
+I presumed @l changed in function enabled_monitors_next() will
+impack on the @*pos of enabled_monitors_start(). But it's not.
+@l is increased by 1 in enabled_monitors_next() and is used to
+check with @*pos passed as parameter argument of enabled_monitors_start().
+Absolutely I lost here.. Thanks.
+
+> >> +static ssize_t
+> >> +enabled_monitors_write(struct file *filp, const char __user *user_buf,
+> >> +		      size_t count, loff_t *ppos)
+> >> +{
+> >> +	char buff[MAX_RV_MONITOR_NAME_SIZE + 2];
+> >> +	struct rv_monitor_def *mdef;
+> >> +	int retval = -EINVAL;
+> >> +	bool enable = true;
+> >> +	char *ptr = buff;
+> >> +	int len;
+> >> +
+> >> +	if (count < 1 || count > MAX_RV_MONITOR_NAME_SIZE + 2)
+> > 
+> > @count would not include '\0'. That the max val of @count is
+> > MAX_RV_MONITOR_NAME_SIZE+1. So the up bound check of @count is
+> > `count > MAX_RV_MONITOR_NAME_SIZE + 1`.
+> 
+> Fixed for v6...
+> 
+> -- Daniel
