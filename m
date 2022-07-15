@@ -2,68 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 512C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 01:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B9BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 01:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240653AbiGOBxs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 14 Jul 2022 21:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S240965AbiGOBym (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 14 Jul 2022 21:54:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbiGOBxj (ORCPT
+        with ESMTP id S231929AbiGOByl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 14 Jul 2022 21:53:39 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD5C6412;
-        Thu, 14 Jul 2022 18:53:38 -0700 (PDT)
-Received: from fsav412.sakura.ne.jp (fsav412.sakura.ne.jp [133.242.250.111])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26F1rEKt060561;
-        Fri, 15 Jul 2022 10:53:14 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav412.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp);
- Fri, 15 Jul 2022 10:53:13 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav412.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26F1rDtv060554
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 15 Jul 2022 10:53:13 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <03304bf8-d153-698f-0376-9e9a0ec1048e@I-love.SAKURA.ne.jp>
-Date:   Fri, 15 Jul 2022 10:53:12 +0900
+        Thu, 14 Jul 2022 21:54:41 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDC1F24F36;
+        Thu, 14 Jul 2022 18:54:39 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id e16so3412972pfm.11;
+        Thu, 14 Jul 2022 18:54:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=ukuk4UUTau+M7hloRbOEtJ/RljdTGD7URDkjl7/1nZU=;
+        b=VmP0wFGqB1AlcvqLtcnfEFilpp7NXdUTh85ygKrSB4mi1CoCUviCJrePqN9O4C8Hwn
+         RY7Ag0QHziv3kcjWF1gdK+eM8cbHxb6Z/SuoHNDMotG9NodgdKL9gV57bbqzMNimRS5F
+         jUV/FZ8N5hVF27UiMZdS9vZH0xeXonRwilVzduHIpST4BnLIuBrxbsTmHWhx3jcYfY8G
+         OKImIBYNlMD8JPLY2Nb17ml9sKzFEtYYh5gzTEaSVZz58SygCYp0+1WV5u4t+Bsq4bTe
+         +38T+OWb6okMBKTsSS74u99i9SMfb6+T8ooJGehACGwhjvaYP90USD6pGFa7bRGVWoWT
+         sL5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=ukuk4UUTau+M7hloRbOEtJ/RljdTGD7URDkjl7/1nZU=;
+        b=ZX9mLcYUxGKSFLJFTJTaIwKVxiiHccmTLK8kUs7iWmYQs97w4PmDpqToavJXz1n8iE
+         Ze8FCvdC/8vD+bl+b3P1ky2MynyU1hC4v/YEz9tPJ7aR6RVVI7R24j/TEhmMY8fGPLFL
+         UnqFvAScG0yh1ECufhDWDh30SS1iZcdsI7Lm1npZyvtYquKhZI52QZ4G9bp7VbqA2dy0
+         IyNe/l4POQz3a2YYzbgHknan8BnWNUQee05Xyd8dNxsd29Vrw1mPfcD6T37C2f2XrYNI
+         p3HfO+DubBWLT0xHYMgiuOaXLuWvt/L+DUJTTihdzReHIYxQ9XdxmRwhpJkFHHn7MlV9
+         r0wg==
+X-Gm-Message-State: AJIora9cIPoPyBp0qNwMeqfbkQi7O+KpyRBzDC6WyT5Oxo++iUuhTH7k
+        m9/wiiZcvIUeIYsT4dK+gV8vjmX6OtK8fDEhS8b5s5t050sbxRs=
+X-Google-Smtp-Source: AGRyM1vrifDFY3bikPBsvz7LwbrJQoyRLXnB1BpXInbo4fN0lh0lOVCEejbSFgkMQh0indMvihZC2h4bQadUMDUGzns=
+X-Received: by 2002:a05:6a02:113:b0:412:a7c0:da8e with SMTP id
+ bg19-20020a056a02011300b00412a7c0da8emr10350315pgb.113.1657850079268; Thu, 14
+ Jul 2022 18:54:39 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [syzbot] possible deadlock in start_this_handle (3)
-Content-Language: en-US
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Jan Kara <jack@suse.cz>, linux-mm@kvack.org, jack@suse.com,
-        linux-ext4@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tytso@mit.edu,
-        linux-fsdevel@vger.kernel.org
-References: <000000000000471c2905e3c2c2c2@google.com>
- <20220714141813.yi5p4o2tiyvkao6b@quack3>
- <534fa596-0c29-0f1e-b292-53ad9c3dbbe3@I-love.SAKURA.ne.jp>
- <20220715013908.ayyimue5yhfwonho@google.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <20220715013908.ayyimue5yhfwonho@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Fri, 15 Jul 2022 09:54:28 +0800
+Message-ID: <CAMhUBj=bs8rbiPGX1qOv9FSU8m=TdRZqqJGvRcynKbaWwf_A-A@mail.gmail.com>
+Subject: [BUG] media: cx88-alsa: Found a bug at the probe time
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/15 10:39, Shakeel Butt wrote:
->> I think mem_cgroup_print_oom_meminfo() should use GFP_ATOMIC, for it will fall into
->> infinite loop if kmalloc(GFP_NOFS) under oom_lock reached __alloc_pages_may_oom() path.
-> 
-> I would prefer GFP_NOWAIT. This is printing info for memcg OOMs and if
-> the system is low on memory then memcg OOMs has lower importance than
-> the system state.
+Hello,
 
-Since killing a process in some memcg likely helps solving global OOM state,
-system OOM condition might not be reported when memory allocation by
-mem_cgroup_print_oom_meminfo() caused system OOM condition.
+I found a bug in the driver cx88-alsa.
 
-Therefore, we don't need to discard output from memcg OOM condition.
+When the driver fails in the function snd_cx88_create() at the probe
+time, it will cause a UAF bug as follows:
 
+[   24.343899] Trying to free already-free IRQ 0
+[   24.344815] WARNING: CPU: 7 PID: 389 at kernel/irq/manage.c:1895
+free_irq+0x3a4/0x7c0
+[   24.348448] RIP: 0010:free_irq+0x3a4/0x7c0
+[   24.356716] Call Trace:
+[   24.357124]  snd_cx88_dev_free+0x71/0x100 [cx88_alsa]
+[   24.358008]  release_card_device+0x7d/0x190
+[   24.358699]  device_release+0x97/0x1c0
+[   24.359022]  kobject_put+0x144/0x1c0
+[   24.359329]  snd_card_free+0xec/0x150
+[   24.360078]  cx88_audio_initdev+0x8f4/0xce0 [cx88_alsa]
+
+Since I'm not familiar with the driver, could you please give me some
+hints to fix it?
+
+regards,
+
+Zheyu Ma
