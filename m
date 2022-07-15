@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A176C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA36C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231893AbiGOUog (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:44:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
+        id S231905AbiGOUol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231172AbiGOUnm (ORCPT
+        with ESMTP id S231765AbiGOUnz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:43:42 -0400
-Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80F1088CF6
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:13 -0700 (PDT)
-Received: by mail-pl1-x649.google.com with SMTP id z9-20020a170903018900b0016c39b2c1ffso2603243plg.12
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:13 -0700 (PDT)
+        Fri, 15 Jul 2022 16:43:55 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83DA98AB3E
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:15 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id c18-20020a170903235200b0016c37f6d48cso2601831plh.19
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=+/Hl6diEcpv68R5ZyPgxncUp9rh4Fpf21LQcaLalimI=;
-        b=FC0ju37p+E7liqnc4QvCx8YksJDlX3SEDPJZQCjJ9NM7lo7DhYgwlsOWyFImudR+3C
-         wLrVHyNKArsfRlEYh7YELRgseYxZ7NbmJr6F7GZZAk3MaqGiN/u3M7SktqSUw5j/eir7
-         I8MhxwXDDcH5ODfwkNtr8p4YcFiJzQJe5QyHRwnklJoKbcPtXcQ6wIHdcVvVGlaejni+
-         7uE6ircmjv6egRz7Km6R0EatynA4wMDaL5STDf0k4hK+Jq+a2qdNCSl+QjrC+qXWakCw
-         /Z7zYC5goZzVsMv885TqramLAlQHPJ6p+fWxzwpfSEQabwTm9prFNaIIZb9TGj8TbGka
-         wULA==
+        bh=jy1PZAUQ0P4jHoHWuSaxEGbHwtNYkzT5sbHzv9tiaz0=;
+        b=QRbphJ9UpDJAJGVrLJPN/Bq9pRrqAck2RRoRtrSiPyVx9Bxnfv6fC7rnvH/SmUrRA8
+         v4hXcRPU9c/dEwHiaNGuCeWHy7AWuG8wcZGBUyUx0efbE4NEqresgauWo0yA8tX733VV
+         0LRiXdRYRCyTDUfzB5ntSAy0/q1IBbdAbcIFXH86oruj+kkFmAs1Rt9Behvf1/mbRIyy
+         m+CbVfqzTtYDnIZhVA617J8cdlxFfjyQcTHasOIeqfzds6mUxvuZQHEyZnNMvUm8cRSM
+         pCYdPtSacDQ+/n5Q/pqwoUAVLpMnBJsu6Y+GZk5u4PQVXyWPgsryLq8UHRtB/kqEJ4RG
+         XdCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=+/Hl6diEcpv68R5ZyPgxncUp9rh4Fpf21LQcaLalimI=;
-        b=cVHd8Eljf++G64MrVhESq0XlGi0zbM8aXRCw7PkmaDgZP4atv9r0Pv/7ahjokbLMGv
-         C3MEha8+GcYIykMNYcb+y1N3cW+kXIXY7TsVoFXpkRQzT8lAVJolxc3eeFzaCmZiDbgg
-         FvZjTkzUoJRk8Uy9xVYuFdnKcp0zP1fBGkXTFuXduJqUxPhe3G3GMcchMoNwzDM7atMP
-         Raia+Z0VVsthZqxJ183qikdZW/xxWHPqmGywiolN7EUeztjj+s9LmwUCWx21CvW2lExz
-         dK/BqSNQ5Wh7Z7vc4Dap/oxPz8fboNtRe7fhnlciVo94UbjZqm+Oq41MwZ0UZwl82wf9
-         UgxA==
-X-Gm-Message-State: AJIora/4DPWpI5iwnX+TzIq+JJdcNHDDJaLjr/MgGnaiW7pbYu/I23MW
-        KVGLDeEg+a5R1BCUTFQr9cYVB3F0vPc=
-X-Google-Smtp-Source: AGRyM1vcO8jYRjq9TX4fOwss+c/pHBOk+ai+EFZgri7cHuMtD7JFri6OxYrNuLLu1npI2t2mL6cELq/R4/o=
+        bh=jy1PZAUQ0P4jHoHWuSaxEGbHwtNYkzT5sbHzv9tiaz0=;
+        b=qGhpyBe1fVrw+81b9zjgnRl5fGGmB39obvI585UrTlUrnfR5FSUpG2W/9Da5MtI/+s
+         Pkcmw1D3fIJAbkby8kuzt+WsVDgZiL1ZVJDrfNFLoVveZwo5CU2Z3SDgf/mK8L+N0MZ+
+         1MJTcD+oKhC1pHgfJ28O/B2Am+WFbMTWByVVqrku9f6fa12MZor6RwiLrz9MDtD8j8rf
+         TPALMBMYpx8pEiZfP+0oX9g4xEV25Tt+ewdJ/NbDMHessOiSIwIeC/ZFqLqyoLFGJkpi
+         1wETwyqKAu6g+Mtv7z+14MIFLlpfRlpijYMxWmjz8IuYo9GvDbQDnnU8W/2orablySQF
+         LI9Q==
+X-Gm-Message-State: AJIora9VyjnyjeAoqLxwYZLfG3YkdnhgsGqGjgqLA/RlQI5wa9T3Ojbe
+        SVoB73YGomJrINKn1k07sv+R199MjAE=
+X-Google-Smtp-Source: AGRyM1vDu/zPVPoJh4NE3/Bj7Xwte2rQwtVsYEmcZxGzijgsrvf3qY2quN9UBlJTHTeP22uSNV945y8qmJo=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:aa7:9e84:0:b0:52a:e224:a0d0 with SMTP id
- p4-20020aa79e84000000b0052ae224a0d0mr15921474pfq.13.1657917793159; Fri, 15
- Jul 2022 13:43:13 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a05:6a00:4211:b0:52a:c86e:aba3 with SMTP id
+ cd17-20020a056a00421100b0052ac86eaba3mr16138144pfb.41.1657917782880; Fri, 15
+ Jul 2022 13:43:02 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 15 Jul 2022 20:42:25 +0000
+Date:   Fri, 15 Jul 2022 20:42:19 +0000
 In-Reply-To: <20220715204226.3655170-1-seanjc@google.com>
-Message-Id: <20220715204226.3655170-24-seanjc@google.com>
+Message-Id: <20220715204226.3655170-18-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220715204226.3655170-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v2 23/24] KVM: selftests: Use uapi header to get VMX and SVM
- exit reasons/codes
+Subject: [PATCH v2 17/24] KVM: nVMX: Add a helper to identify low-priority #DB traps
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,107 +67,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Include the vmx.h and svm.h uapi headers that KVM so kindly provides
-instead of manually defining all the same exit reasons/code.
+Add a helper to identify "low"-priority #DB traps, i.e. trap-like #DBs
+that aren't TSS T flag #DBs, and tweak the related code to operate on any
+queued exception.  A future commit will separate exceptions that are
+intercepted by L1, i.e. cause nested VM-Exit, from those that do NOT
+trigger nested VM-Exit.  I.e. there will be multiple exception structs
+and multiple invocations of the helpers.
+
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- .../selftests/kvm/include/x86_64/svm_util.h   |  7 +--
- .../selftests/kvm/include/x86_64/vmx.h        | 51 +------------------
- 2 files changed, 4 insertions(+), 54 deletions(-)
+ arch/x86/kvm/vmx/nested.c | 23 +++++++++++++++++------
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/include/x86_64/svm_util.h b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-index a339b537a575..7aee6244ab6a 100644
---- a/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/svm_util.h
-@@ -9,15 +9,12 @@
- #ifndef SELFTEST_KVM_SVM_UTILS_H
- #define SELFTEST_KVM_SVM_UTILS_H
+diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
+index a0a4eddce445..c3fc8b484785 100644
+--- a/arch/x86/kvm/vmx/nested.c
++++ b/arch/x86/kvm/vmx/nested.c
+@@ -3859,14 +3859,24 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
+  * from the emulator (because such #DBs are fault-like and thus don't trigger
+  * actions that fire on instruction retire).
+  */
+-static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
++static unsigned long vmx_get_pending_dbg_trap(struct kvm_queued_exception *ex)
+ {
+-	if (!vcpu->arch.exception.pending ||
+-	    vcpu->arch.exception.vector != DB_VECTOR)
++	if (!ex->pending || ex->vector != DB_VECTOR)
+ 		return 0;
  
-+#include <asm/svm.h>
+ 	/* General Detect #DBs are always fault-like. */
+-	return vcpu->arch.exception.payload & ~DR6_BD;
++	return ex->payload & ~DR6_BD;
++}
 +
- #include <stdint.h>
- #include "svm.h"
- #include "processor.h"
++/*
++ * Returns true if there's a pending #DB exception that is lower priority than
++ * a pending Monitor Trap Flag VM-Exit.  TSS T-flag #DBs are not emulated by
++ * KVM, but could theoretically be injected by userspace.  Note, this code is
++ * imperfect, see above.
++ */
++static bool vmx_is_low_priority_db_trap(struct kvm_queued_exception *ex)
++{
++	return vmx_get_pending_dbg_trap(ex) & ~DR6_BT;
+ }
  
--#define SVM_EXIT_EXCP_BASE	0x040
--#define SVM_EXIT_HLT		0x078
--#define SVM_EXIT_MSR		0x07c
--#define SVM_EXIT_VMMCALL	0x081
--
- struct svm_test_data {
- 	/* VMCB */
- 	struct vmcb *vmcb; /* gva */
-diff --git a/tools/testing/selftests/kvm/include/x86_64/vmx.h b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-index 99fa1410964c..e4206f69b716 100644
---- a/tools/testing/selftests/kvm/include/x86_64/vmx.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/vmx.h
-@@ -8,6 +8,8 @@
- #ifndef SELFTEST_KVM_VMX_H
- #define SELFTEST_KVM_VMX_H
+ /*
+@@ -3878,8 +3888,9 @@ static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
+  */
+ static void nested_vmx_update_pending_dbg(struct kvm_vcpu *vcpu)
+ {
+-	unsigned long pending_dbg = vmx_get_pending_dbg_trap(vcpu);
++	unsigned long pending_dbg;
  
-+#include <asm/vmx.h>
-+
- #include <stdint.h>
- #include "processor.h"
- #include "apic.h"
-@@ -100,55 +102,6 @@
- #define VMX_EPT_VPID_CAP_AD_BITS		0x00200000
- 
- #define EXIT_REASON_FAILED_VMENTRY	0x80000000
--#define EXIT_REASON_EXCEPTION_NMI	0
--#define EXIT_REASON_EXTERNAL_INTERRUPT	1
--#define EXIT_REASON_TRIPLE_FAULT	2
--#define EXIT_REASON_INTERRUPT_WINDOW	7
--#define EXIT_REASON_NMI_WINDOW		8
--#define EXIT_REASON_TASK_SWITCH		9
--#define EXIT_REASON_CPUID		10
--#define EXIT_REASON_HLT			12
--#define EXIT_REASON_INVD		13
--#define EXIT_REASON_INVLPG		14
--#define EXIT_REASON_RDPMC		15
--#define EXIT_REASON_RDTSC		16
--#define EXIT_REASON_VMCALL		18
--#define EXIT_REASON_VMCLEAR		19
--#define EXIT_REASON_VMLAUNCH		20
--#define EXIT_REASON_VMPTRLD		21
--#define EXIT_REASON_VMPTRST		22
--#define EXIT_REASON_VMREAD		23
--#define EXIT_REASON_VMRESUME		24
--#define EXIT_REASON_VMWRITE		25
--#define EXIT_REASON_VMOFF		26
--#define EXIT_REASON_VMON		27
--#define EXIT_REASON_CR_ACCESS		28
--#define EXIT_REASON_DR_ACCESS		29
--#define EXIT_REASON_IO_INSTRUCTION	30
--#define EXIT_REASON_MSR_READ		31
--#define EXIT_REASON_MSR_WRITE		32
--#define EXIT_REASON_INVALID_STATE	33
--#define EXIT_REASON_MWAIT_INSTRUCTION	36
--#define EXIT_REASON_MONITOR_INSTRUCTION 39
--#define EXIT_REASON_PAUSE_INSTRUCTION	40
--#define EXIT_REASON_MCE_DURING_VMENTRY	41
--#define EXIT_REASON_TPR_BELOW_THRESHOLD 43
--#define EXIT_REASON_APIC_ACCESS		44
--#define EXIT_REASON_EOI_INDUCED		45
--#define EXIT_REASON_EPT_VIOLATION	48
--#define EXIT_REASON_EPT_MISCONFIG	49
--#define EXIT_REASON_INVEPT		50
--#define EXIT_REASON_RDTSCP		51
--#define EXIT_REASON_PREEMPTION_TIMER	52
--#define EXIT_REASON_INVVPID		53
--#define EXIT_REASON_WBINVD		54
--#define EXIT_REASON_XSETBV		55
--#define EXIT_REASON_APIC_WRITE		56
--#define EXIT_REASON_INVPCID		58
--#define EXIT_REASON_PML_FULL		62
--#define EXIT_REASON_XSAVES		63
--#define EXIT_REASON_XRSTORS		64
--#define LAST_EXIT_REASON		64
- 
- enum vmcs_field {
- 	VIRTUAL_PROCESSOR_ID		= 0x00000000,
++	pending_dbg = vmx_get_pending_dbg_trap(&vcpu->arch.exception);
+ 	if (pending_dbg)
+ 		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS, pending_dbg);
+ }
+@@ -3949,7 +3960,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
+ 	 * prioritize SMI over MTF and trap-like #DBs.
+ 	 */
+ 	if (vcpu->arch.exception.pending &&
+-	    !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
++	    !vmx_is_low_priority_db_trap(&vcpu->arch.exception)) {
+ 		if (block_nested_exceptions)
+ 			return -EBUSY;
+ 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
 -- 
 2.37.0.170.g444d1eabd0-goog
 
