@@ -2,111 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4252EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FEEC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235706AbiGORVM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 13:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56920 "EHLO
+        id S235745AbiGORVU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 13:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235674AbiGORVI (ORCPT
+        with ESMTP id S235688AbiGORVR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 13:21:08 -0400
-Received: from mail-yb1-f174.google.com (mail-yb1-f174.google.com [209.85.219.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC0B7BE00;
-        Fri, 15 Jul 2022 10:21:07 -0700 (PDT)
-Received: by mail-yb1-f174.google.com with SMTP id y195so9594413yby.0;
-        Fri, 15 Jul 2022 10:21:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FXO9HHeJnu/ftHXZZquFI+I2jU4V4gvvQkgnXPEuw2E=;
-        b=itF3OA81B+WUW3CIUrqeZ9JDxIUG/MuO7jloORGouF+sC7lDo8uflrrT1SVWna8xd6
-         r7SnadgLRFLf3niqiM4LQwAbbtUMsB7GZ7kTdqG3UPx4GTePrbmZgH4OCNX1YLKp4GoQ
-         4CjlayIlXXvUJIGyfRW/JniAXofJRSkSlLgmJAXjwbb09drcqHJcI9yEhtQqUfgyl63i
-         NjIrb1/MZcl788iHVWDRYHSJRyu+5WEsZ9C55lkdQ39wbZFb4JYp4lm+Sjl9m8/zOEvp
-         erSpKRS3V2Q1ZcE+OM73VNmdUAUWlqRkCzePIGuptqoV00Rr1b1jdeW1CX/NWKvn4bYB
-         EvYg==
-X-Gm-Message-State: AJIora+3xMhx3rtlLlYrhRBMItLA+adAQFuMK5fiBqxHJUFCbd2rQCav
-        mz2o8Tsw4QZap1PrnX03ZHDzZHYrXdP9wrlvhk0=
-X-Google-Smtp-Source: AGRyM1sjI3GMJPwqcC1ilY1D10Oj4epnBsiNC/Xts3uiCvsAiPeDAq1UA9wJf5bfs4hEIWQnBoSonuR+sWm4aDMWwV8=
-X-Received: by 2002:a05:6902:154f:b0:66e:e2d3:ce1 with SMTP id
- r15-20020a056902154f00b0066ee2d30ce1mr14135181ybu.365.1657905666289; Fri, 15
- Jul 2022 10:21:06 -0700 (PDT)
+        Fri, 15 Jul 2022 13:21:17 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2BD7C187
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:21:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657905676; x=1689441676;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hUJ/HOMYhff+1zyQR004AphFyjB6ihhUjjIgPU7Cmy8=;
+  b=Bykx2U1uHF10w+0Ake/xDe7+NE64PxrkxPOHxiLrcTyLXXuSxJ+iQqhs
+   VwFQmzUATeHKsr8y0eshLrcqxe5qc8BeDWGqErSpZXdZSXhDqnCGWApt/
+   h3bNqqWsDDkJKUvJP+giIIC2PSPLGsREhNHaKY6hmP2teGwIUsLskmanU
+   Kr6jz6p+mew9ILUwE9q4g/e1tcFXSKT530OMjz98BqgZg0nKWgXVFxHJa
+   Wu4N0qnEP81bfmcQnXF3aTbvwWMS61plwQORH4++8Wg6WXEErcS3oE2T4
+   fq3LDMSDR1u+PPia5ertNtX2n9cBS12CbE7A03GggSbHdmByphopjLkhZ
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="349810574"
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="349810574"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 10:21:15 -0700
+X-IronPort-AV: E=Sophos;i="5.92,274,1650956400"; 
+   d="scan'208";a="600565028"
+Received: from kjhoig-mobl.amr.corp.intel.com (HELO desk) ([10.209.99.4])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 10:21:14 -0700
+Date:   Fri, 15 Jul 2022 10:21:13 -0700
+From:   Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Daniel Sneddon <daniel.sneddon@linux.intel.com>,
+        antonio.gomez.iglesias@linux.intel.com,
+        Josh Poimboeuf <jpoimboe@kernel.org>
+Subject: Re: [PATCH v2] x86/bugs: Warn when "ibrs" mitigation is selected on
+ Enhanced IBRS parts
+Message-ID: <20220715172113.74t65hgxi2o32wv6@desk>
+References: <0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com>
+ <2a5eaf54583c2bfe0edc4fea64006656256cca17.1657814857.git.pawan.kumar.gupta@linux.intel.com>
+ <YtD6V5i0rS3szVIX@kroah.com>
 MIME-Version: 1.0
-References: <0af6e95f8da395f75c5a58363d8b1b40483252c8.1657187391.git.viresh.kumar@linaro.org>
-In-Reply-To: <0af6e95f8da395f75c5a58363d8b1b40483252c8.1657187391.git.viresh.kumar@linaro.org>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 15 Jul 2022 19:20:55 +0200
-Message-ID: <CAJZ5v0i9+xyqcp+Ohmjh8J45xXqdGvNgFQ6WSx8NLcNMYS_khA@mail.gmail.com>
-Subject: Re: [PATCH V3] cpufreq: Warn users while freeing active policy
-To:     Viresh Kumar <viresh.kumar@linaro.org>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YtD6V5i0rS3szVIX@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 7, 2022 at 11:58 AM Viresh Kumar <viresh.kumar@linaro.org> wrote:
->
-> With the new design in place, the show() and store() callbacks check if
-> the policy is active or not before proceeding any further to avoid
-> potential races. And in order to guarantee that cpufreq_policy_free()
-> must be called after clearing the policy->cpus mask, i.e. by marking the
-> policy inactive.
->
-> In order to avoid introducing a bug around this later, print a warning
-> message if we end up freeing an active policy.
->
-> Also update cpufreq_online() a bit to make sure we clear the cpus mask
-> for each error case before calling cpufreq_policy_free().
->
-> Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
-> ---
-> V3: BUG_ON() -> pr_warn()
->
->  drivers/cpufreq/cpufreq.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-> index 73432360e6e9..954eef26685f 100644
-> --- a/drivers/cpufreq/cpufreq.c
-> +++ b/drivers/cpufreq/cpufreq.c
-> @@ -1273,6 +1273,13 @@ static void cpufreq_policy_free(struct cpufreq_policy *policy)
->         unsigned long flags;
->         int cpu;
->
-> +       /*
-> +        * The callers must ensure the policy is inactive by now, to avoid any
-> +        * races with show()/store() callbacks.
-> +        */
-> +       if (unlikely(!policy_is_inactive(policy)))
-> +               pr_warn("%s: Freeing active policy\n", __func__);
-> +
->         /* Remove policy from list */
->         write_lock_irqsave(&cpufreq_driver_lock, flags);
->         list_del(&policy->policy_list);
-> @@ -1527,8 +1534,6 @@ static int cpufreq_online(unsigned int cpu)
->         for_each_cpu(j, policy->real_cpus)
->                 remove_cpu_dev_symlink(policy, j, get_cpu_device(j));
->
-> -       cpumask_clear(policy->cpus);
-> -
->  out_offline_policy:
->         if (cpufreq_driver->offline)
->                 cpufreq_driver->offline(policy);
-> @@ -1538,6 +1543,7 @@ static int cpufreq_online(unsigned int cpu)
->                 cpufreq_driver->exit(policy);
->
->  out_free_policy:
-> +       cpumask_clear(policy->cpus);
->         up_write(&policy->rwsem);
->
->         cpufreq_policy_free(policy);
-> --
+On Fri, Jul 15, 2022 at 07:25:43AM +0200, Greg KH wrote:
+> On Thu, Jul 14, 2022 at 04:15:35PM -0700, Pawan Gupta wrote:
+> > IBRS mitigation for spectre_v2 forces write to MSR_IA32_SPEC_CTRL at
+> > every kernel entry/exit. On Enhanced IBRS parts setting
+> > MSR_IA32_SPEC_CTRL[IBRS] only once at boot is sufficient. MSR writes at
+> > every kernel entry/exit incur unnecessary performance loss.
+> > 
+> > When Enhanced IBRS feature is present, print a warning about this
+> > unnecessary performance loss.
+> > 
+> > Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+> > ---
+> > v1->v2: Instead of changing the mitigation, print a warning about the
+> >         perf loss.
+> > 
+> > v1: https://lore.kernel.org/lkml/0456b35fb9ef957d9a9138e0913fb1a3fd445dff.1657747493.git.pawan.kumar.gupta@linux.intel.com/
+> > 
+> >  arch/x86/kernel/cpu/bugs.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> 
+> <formletter>
+> 
+> This is not the correct way to submit patches for inclusion in the
+> stable kernel tree.  Please read:
+>     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
+> 
+> </formletter>
 
-Applied as 5.20 material, thanks!
+Sorry, I CCed stable@ by mistake. This version just adds a warning, it
+is not intended to be backported.
+
+Thanks,
+Pawan
