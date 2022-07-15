@@ -2,58 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 474B1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:43:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B63C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 20:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231639AbiGOUnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 16:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S231574AbiGOUnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 16:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230361AbiGOUmp (ORCPT
+        with ESMTP id S231566AbiGOUmt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 16:42:45 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5918788754
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:41 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id mm6-20020a17090b358600b001ef7bd409b0so2673385pjb.8
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:41 -0700 (PDT)
+        Fri, 15 Jul 2022 16:42:49 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973F987F63
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:45 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id d10-20020a170902ceca00b0016bea2dc145so2576682plg.7
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 13:42:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=zAIzwNL1ZGu8Ha11sVgZyzB6yTaoLkRwOERB20vi4nY=;
-        b=EurqSh6MJ6wlyS4+Sh9tJwu/HEy7rGSJQqpYhUR61nkdiH3KH4Cw7LjzlQUCUeyjz2
-         PyS9gmEIRy2ETWOx0ZHY4LxVBDcPBtfwR1Hdzuv+hXiQMZTLwJ8a4PcReR5HJp1mQtgY
-         SwAEN7qHDCj+XfF8MIl41meeJIheLHre8taVSiRaxyy3mY8iHYI3Jzfn2rErlwA8vItm
-         HXy6o4uPQmNtDGIBE5+Znqc4VmDmlHNzlXz64yOtu5lodDhKNagxwhdk1N2NpbEMNsW2
-         6f3X8yLQ0QHrVAjFK8gDd3UWc6XOVpfqND19h4o2DC/1RRgcEfzMmOWLdSTXEBKGmm/W
-         vCKg==
+        bh=iNAk41tsUidTro9q8ZhzpvrmhAAQBQ9Auq7TykB2O7k=;
+        b=AOqLpJxVuh5bfFX7HjNUVWHjX8WUmZZlVreIDVpmWFszzrEKn/6Q5oMYVsR0iD56lL
+         8OavSYfIbOdtxLPsSxTqk0+js2AaonIwXPDXa6EW2lMdTCz/rYO14U5Ge7WWEGlQOpyh
+         F1F5AcMoVLXj+dUrKpfA/4HgiPrwqGEUhS7Jr+k6pJFxuRgONJeXOk6YUcMc5eS/hbfn
+         7O/LbWWJZTS62LTiNoQAFCL4vUUzXBcZaeT1MAWPL/LtkT3DpVxfxiqUiaU7k3zugKou
+         KH7UKG7G9+Lea/xH0QVLEEHY21Vlkodd31qv1K+2ktEFpr+9+5IwBZxLmyVQYSXWzY9w
+         dUUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=zAIzwNL1ZGu8Ha11sVgZyzB6yTaoLkRwOERB20vi4nY=;
-        b=lYMpo5hvZ5rvIVXgd05i7nEmtkgdLDll4go0bb4Ekj0h+h6L4jhnQNzK9PPzBzDra3
-         hLdlqU5yeGUCaxnOmJlWpU11siSiZDdn0ksr+k0Vb8H4tGJqkjnn6u6TmyWv1JvAVFLA
-         A7DDVjIqgSNlxUXYsxtr8+7EF3qFcij3I+SGuofr+LvBPtSbzSpwC+UzRZrVXyNQqVOB
-         sUkuanuZf253/KdU5lKI4rrAnH+kyHkWmY+E7RBPx7AGZKBNezAvgM3UX/7sgCHJJ6h1
-         VlWApFQo2/hEePLZYTDsWpBw0Qm0YC5LgX9AN0yWqoEI89M1rNL5nB9uriOuPa4gjihJ
-         9Ovw==
-X-Gm-Message-State: AJIora+IvPny/IahK+M5MdfLKViQgBpQf4PgzW5e+kZMQCdef6jgKFcb
-        aBDp7U24TPoM/O8tfIO0/QOjqIRrhH4=
-X-Google-Smtp-Source: AGRyM1uLYHwhtfSSMyTwaaAREVO1MvQ8DKjdD7vBMLSLZxa1wqqAoAF4oD9QamDDzVQgKp2AyyCQ6i36jCA=
+        bh=iNAk41tsUidTro9q8ZhzpvrmhAAQBQ9Auq7TykB2O7k=;
+        b=i8AMGOwu0TB0n4DltoSO+YQCyhhOu85KaVBIwGK7VaYqsxniAci6+fZ0QI9d+tMgtL
+         yeyDm9XPW9E/s6xmAgem4CzICI4c1fB/kT4YaH13SS5mFnPjx2TCizGqo+ymn8F8CLp7
+         kbX097Vu3yO3olyzdqqxv5Y3gSFRkO68wreBLU3i4SecvNCJpFa8EASzLS0GuoB/peRS
+         j4jDnAGl8T888km1Piri7SQaLnN7t8ucNxuoF3d9RntTRIoN59kcJWjMWHsWI2DZZcY7
+         uBzcfmg5laiI56p/YYvvRYNcO+oZINr6X4CZdqiDWiWDLGER6fk7QK9/M/BilN4H2wPr
+         SK0A==
+X-Gm-Message-State: AJIora9x2icJ1u2/O+hCHuKVuVSO0zSg+ZKPFi/za6U6qaQo7Mtq6BlE
+        TALt1PDQPJNh6WLp5K10bd/1ESAtgqo=
+X-Google-Smtp-Source: AGRyM1tsoX3vE8EAQuWM9f010GpKCLZT6AjFx+Rkk4JwsaX0b0mfooLowEqtouv7f3Bl2TR5fsxEljTByo0=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:902:c245:b0:16b:e818:b75c with SMTP id
- 5-20020a170902c24500b0016be818b75cmr15675585plg.101.1657917760703; Fri, 15
- Jul 2022 13:42:40 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:902:d191:b0:16b:ea2d:60f2 with SMTP id
+ m17-20020a170902d19100b0016bea2d60f2mr15049037plb.24.1657917764585; Fri, 15
+ Jul 2022 13:42:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Fri, 15 Jul 2022 20:42:06 +0000
+Date:   Fri, 15 Jul 2022 20:42:08 +0000
 In-Reply-To: <20220715204226.3655170-1-seanjc@google.com>
-Message-Id: <20220715204226.3655170-5-seanjc@google.com>
+Message-Id: <20220715204226.3655170-7-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220715204226.3655170-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.0.170.g444d1eabd0-goog
-Subject: [PATCH v2 04/24] KVM: nVMX: Treat General Detect #DB (DR7.GD=1) as fault-like
+Subject: [PATCH v2 06/24] KVM: x86: Treat #DBs from the emulator as fault-like
+ (code and DR7.GD=1)
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -67,86 +68,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Exclude General Detect #DBs, which have fault-like behavior but also have
-a non-zero payload (DR6.BD=1), from nVMX's handling of pending debug
-traps.  Opportunistically rewrite the comment to better document what is
-being checked, i.e. "has a non-zero payload" vs. "has a payload", and to
-call out the many caveats surrounding #DBs that KVM dodges one way or
-another.
+Add a dedicated "exception type" for #DBs, as #DBs can be fault-like or
+trap-like depending the sub-type of #DB, and effectively defer the
+decision of what to do with the #DB to the caller.
 
-Cc: Oliver Upton <oupton@google.com>
-Cc: Peter Shier <pshier@google.com>
-Fixes: 684c0422da71 ("KVM: nVMX: Handle pending #DB when injecting INIT VM-exit")
+For the emulator's two calls to exception_type(), treat the #DB as
+fault-like, as the emulator handles only code breakpoint and general
+detect #DBs, both of which are fault-like.
+
+For event injection, which uses exception_type() to determine whether to
+set EFLAGS.RF=1 on the stack, keep the current behavior of not setting
+RF=1 for #DBs.  Intel and AMD explicitly state RF isn't set on code #DBs,
+so exempting by failing the "== EXCPT_FAULT" check is correct.  The only
+other fault-like #DB is General Detect, and despite Intel and AMD both
+strongly implying (through omission) that General Detect #DBs should set
+RF=1, hardware (multiple generations of both Intel and AMD), in fact does
+not.  Through insider knowledge, extreme foresight, sheer dumb luck, or
+some combination thereof, KVM correctly handled RF for General Detect #DBs.
+
+Fixes: 38827dbd3fb8 ("KVM: x86: Do not update EFLAGS on faulting emulation")
+Cc: stable@vger.kernel.org
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/vmx/nested.c | 36 +++++++++++++++++++++++++-----------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+ arch/x86/kvm/x86.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 05c34a72c266..2409ed8dbc71 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3846,16 +3846,29 @@ static void nested_vmx_inject_exception_vmexit(struct kvm_vcpu *vcpu,
- }
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4efdb61e60ba..37d686dbb6aa 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -529,6 +529,7 @@ static int exception_class(int vector)
+ #define EXCPT_TRAP		1
+ #define EXCPT_ABORT		2
+ #define EXCPT_INTERRUPT		3
++#define EXCPT_DB		4
  
- /*
-- * Returns true if a debug trap is pending delivery.
-+ * Returns true if a debug trap is (likely) pending delivery.  Infer the class
-+ * of a #DB (trap-like vs. fault-like) from the exception payload (to-be-DR6).
-+ * Using the payload is flawed because code breakpoints (fault-like) and data
-+ * breakpoints (trap-like) set the same bits in DR6 (breakpoint detected), i.e.
-+ * this will return false positives if a to-be-injected code breakpoint #DB is
-+ * pending (from KVM's perspective, but not "pending" across an instruction
-+ * boundary).  ICEBP, a.k.a. INT1, is also not reflected here even though it
-+ * too is trap-like.
-  *
-- * In KVM, debug traps bear an exception payload. As such, the class of a #DB
-- * exception may be inferred from the presence of an exception payload.
-+ * KVM "works" despite these flaws as ICEBP isn't currently supported by the
-+ * emulator, Monitor Trap Flag is not marked pending on intercepted #DBs (the
-+ * #DB has already happened), and MTF isn't marked pending on code breakpoints
-+ * from the emulator (because such #DBs are fault-like and thus don't trigger
-+ * actions that fire on instruction retire).
-  */
--static inline bool vmx_pending_dbg_trap(struct kvm_vcpu *vcpu)
-+static inline unsigned long vmx_get_pending_dbg_trap(struct kvm_vcpu *vcpu)
+ static int exception_type(int vector)
  {
--	return vcpu->arch.exception.pending &&
--			vcpu->arch.exception.nr == DB_VECTOR &&
--			vcpu->arch.exception.payload;
-+	if (!vcpu->arch.exception.pending ||
-+	    vcpu->arch.exception.nr != DB_VECTOR)
-+		return 0;
+@@ -539,8 +540,14 @@ static int exception_type(int vector)
+ 
+ 	mask = 1 << vector;
+ 
+-	/* #DB is trap, as instruction watchpoints are handled elsewhere */
+-	if (mask & ((1 << DB_VECTOR) | (1 << BP_VECTOR) | (1 << OF_VECTOR)))
++	/*
++	 * #DBs can be trap-like or fault-like, the caller must check other CPU
++	 * state, e.g. DR6, to determine whether a #DB is a trap or fault.
++	 */
++	if (mask & (1 << DB_VECTOR))
++		return EXCPT_DB;
 +
-+	/* General Detect #DBs are always fault-like. */
-+	return vcpu->arch.exception.payload & ~DR6_BD;
- }
++	if (mask & ((1 << BP_VECTOR) | (1 << OF_VECTOR)))
+ 		return EXCPT_TRAP;
  
- /*
-@@ -3867,9 +3880,10 @@ static inline bool vmx_pending_dbg_trap(struct kvm_vcpu *vcpu)
-  */
- static void nested_vmx_update_pending_dbg(struct kvm_vcpu *vcpu)
- {
--	if (vmx_pending_dbg_trap(vcpu))
--		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS,
--			    vcpu->arch.exception.payload);
-+	unsigned long pending_dbg = vmx_get_pending_dbg_trap(vcpu);
+ 	if (mask & ((1 << DF_VECTOR) | (1 << MC_VECTOR)))
+@@ -8785,6 +8792,12 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 		unsigned long rflags = static_call(kvm_x86_get_rflags)(vcpu);
+ 		toggle_interruptibility(vcpu, ctxt->interruptibility);
+ 		vcpu->arch.emulate_regs_need_sync_to_vcpu = false;
 +
-+	if (pending_dbg)
-+		vmcs_writel(GUEST_PENDING_DBG_EXCEPTIONS, pending_dbg);
- }
++		/*
++		 * Note, EXCPT_DB is assumed to be fault-like as the emulator
++		 * only supports code breakpoints and general detect #DB, both
++		 * of which are fault-like.
++		 */
+ 		if (!ctxt->have_exception ||
+ 		    exception_type(ctxt->exception.vector) == EXCPT_TRAP) {
+ 			kvm_pmu_trigger_event(vcpu, PERF_COUNT_HW_INSTRUCTIONS);
+@@ -9701,6 +9714,16 @@ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
  
- static bool nested_vmx_preemption_timer_pending(struct kvm_vcpu *vcpu)
-@@ -3926,7 +3940,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 	 * while delivering the pending exception.
- 	 */
- 
--	if (vcpu->arch.exception.pending && !vmx_pending_dbg_trap(vcpu)) {
-+	if (vcpu->arch.exception.pending && !vmx_get_pending_dbg_trap(vcpu)) {
- 		if (vmx->nested.nested_run_pending)
- 			return -EBUSY;
- 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
+ 	/* try to inject new event if pending */
+ 	if (vcpu->arch.exception.pending) {
++		/*
++		 * Fault-class exceptions, except #DBs, set RF=1 in the RFLAGS
++		 * value pushed on the stack.  Trap-like exception and all #DBs
++		 * leave RF as-is (KVM follows Intel's behavior in this regard;
++		 * AMD states that code breakpoint #DBs excplitly clear RF=0).
++		 *
++		 * Note, most versions of Intel's SDM and AMD's APM incorrectly
++		 * describe the behavior of General Detect #DBs, which are
++		 * fault-like.  They do _not_ set RF, a la code breakpoints.
++		 */
+ 		if (exception_type(vcpu->arch.exception.nr) == EXCPT_FAULT)
+ 			__kvm_set_rflags(vcpu, kvm_get_rflags(vcpu) |
+ 					     X86_EFLAGS_RF);
 -- 
 2.37.0.170.g444d1eabd0-goog
 
