@@ -2,194 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10870CCA47F
-	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 18 Jul 2022 12:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234669AbiGRMun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 18 Jul 2022 08:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41484 "EHLO
+        id S234436AbiGRMuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 18 Jul 2022 08:50:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233493AbiGRMum (ORCPT
+        with ESMTP id S232986AbiGRMuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 18 Jul 2022 08:50:42 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719DD6397;
-        Mon, 18 Jul 2022 05:50:40 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 1F56033BE8;
-        Mon, 18 Jul 2022 12:50:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1658148639; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9QeNU7i1Z8jOANG2Muly2d9TTzEZo5jKEBQhnd4Wbho=;
-        b=aXCE0L5kmo7kN4TNty5IXSebf6+/gMTsHbMU8UHhLiD5s6Q/GymEAj8WT2fCYooe+u+H3E
-        8nzTlsJbn7jQhxaPDdbi1pWLoddkmSVa0BJt6HMf381Wq3CsFTB4fA5yx7Pe5rFABuYmRx
-        s4bd2JA1tX19hRCZ+8nHXLxtMpYt9yQ=
-Received: from suse.cz (unknown [10.100.201.202])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id BD6AD2C141;
-        Mon, 18 Jul 2022 12:50:38 +0000 (UTC)
-Date:   Mon, 18 Jul 2022 14:50:36 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Song Liu <song@kernel.org>
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, daniel@iogearbox.net,
-        kernel-team@fb.com, jolsa@kernel.org, rostedt@goodmis.org
-Subject: Re: [PATCH v3 bpf-next 1/4] ftrace: add
- modify_ftrace_direct_multi_nolock
-Message-ID: <YtVXHDfV8HDwAm6G@alley>
-References: <20220718001405.2236811-1-song@kernel.org>
- <20220718001405.2236811-2-song@kernel.org>
+        Mon, 18 Jul 2022 08:50:54 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64B29220EE
+        for <linux-kernel@vger.kernel.org>; Mon, 18 Jul 2022 05:50:49 -0700 (PDT)
+X-QQ-mid: bizesmtp68t1658148616t7bhdokv
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Mon, 18 Jul 2022 20:50:13 +0800 (CST)
+X-QQ-SSF: 01000000002000E0U000C00A0000000
+X-QQ-FEAT: 7EdZ+jItOgQ0M+YFKI/1jLmKSWgXwzWjw+WakznY+pAmmCGIbajVHS6xM0CZp
+        /AfsMMw/WjziiNOG9kp9UHiemgMkFAiwCJfRzV50qoJTnAMK6L+bLiafkL7dmXmuzuKi25y
+        MyOq6rSQq4PyYmLtC3WcgWuYYP5gdJPsXAppSXUTuePNYsD0lRz+11YMDDs3293ZhTPgM47
+        prOd7lZpeVbyEka34sZKU4jjcoKgxEJO0k7kYskF44UfTp6h30juXI8CE2Qfz6FfgcrMB43
+        RK11UhCvMFVqej07ERFG68sPgeBcObH903z6GoDOgK1t4cRhFS7sxmsXxXtl7+VKtkC+uOx
+        THv2Nz1PZwy76o4ZvQj07kBiuWiqMxTLecp5qqy6x6sNOyyhO4Ex0ank8BrcwFqchsISO4r
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     mingo@redhat.com
+Cc:     tglx@linutronix.de, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, hpa@zytor.com, akpm@linux-foundation.org,
+        mick@ics.forth.gr, kirill.shtuemov@linux.intel.com,
+        david@redhat.com, rppt@kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] x86: Fix comment typo
+Date:   Fri, 15 Jul 2022 12:48:09 +0800
+Message-Id: <20220715044809.20572-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220718001405.2236811-2-song@kernel.org>
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun 2022-07-17 17:14:02, Song Liu wrote:
-> This is similar to modify_ftrace_direct_multi, but does not acquire
-> direct_mutex. This is useful when direct_mutex is already locked by the
-> user.
-> 
-> --- a/kernel/trace/ftrace.c
-> +++ b/kernel/trace/ftrace.c
-> @@ -5691,22 +5691,8 @@ int unregister_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-> @@ -5717,12 +5703,8 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  	int i, size;
->  	int err;
->  
-> -	if (check_direct_multi(ops))
-> +	if (WARN_ON_ONCE(!mutex_is_locked(&direct_mutex)))
->  		return -EINVAL;
+The double `with' is duplicated in line 39, remove one.
 
-IMHO, it is better to use:
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/x86/kernel/aperture_64.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-	lockdep_assert_held_once(&direct_mutex);
+diff --git a/arch/x86/kernel/aperture_64.c b/arch/x86/kernel/aperture_64.c
+index 7a5630d904b2..4feaa670d578 100644
+--- a/arch/x86/kernel/aperture_64.c
++++ b/arch/x86/kernel/aperture_64.c
+@@ -36,7 +36,7 @@
+ /*
+  * Using 512M as goal, in case kexec will load kernel_big
+  * that will do the on-position decompress, and could overlap with
+- * with the gart aperture that is used.
++ * the gart aperture that is used.
+  * Sequence:
+  * kernel_small
+  * ==> kexec (with kdump trigger path or gart still enabled)
+-- 
+2.35.1
 
-It will always catch the problem when called without the lock and
-lockdep is enabled.
-
-> -	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> -		return -EINVAL;
-> -
-> -	mutex_lock(&direct_mutex);
->  
->  	/* Enable the tmp_ops to have the same functions as the direct ops */
->  	ftrace_ops_init(&tmp_ops);
-> @@ -5730,7 +5712,7 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  
->  	err = register_ftrace_function(&tmp_ops);
->  	if (err)
-> -		goto out_direct;
-> +		return err;
->  
->  	/*
->  	 * Now the ftrace_ops_list_func() is called to do the direct callers.
-> @@ -5754,7 +5736,64 @@ int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
->  	/* Removing the tmp_ops will add the updated direct callers to the functions */
->  	unregister_ftrace_function(&tmp_ops);
->  
-> - out_direct:
-> +	return err;
-> +}
-> +
-> +/**
-> + * modify_ftrace_direct_multi_nolock - Modify an existing direct 'multi' call
-> + * to call something else
-> + * @ops: The address of the struct ftrace_ops object
-> + * @addr: The address of the new trampoline to call at @ops functions
-> + *
-> + * This is used to unregister currently registered direct caller and
-> + * register new one @addr on functions registered in @ops object.
-> + *
-> + * Note there's window between ftrace_shutdown and ftrace_startup calls
-> + * where there will be no callbacks called.
-> + *
-> + * Caller should already have direct_mutex locked, so we don't lock
-> + * direct_mutex here.
-> + *
-> + * Returns: zero on success. Non zero on error, which includes:
-> + *  -EINVAL - The @ops object was not properly registered.
-> + */
-> +int modify_ftrace_direct_multi_nolock(struct ftrace_ops *ops, unsigned long addr)
-> +{
-> +	if (check_direct_multi(ops))
-> +		return -EINVAL;
-> +	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> +		return -EINVAL;
-> +
-> +	return __modify_ftrace_direct_multi(ops, addr);
-> +}
-> +EXPORT_SYMBOL_GPL(modify_ftrace_direct_multi_nolock);
-> +
-> +/**
-> + * modify_ftrace_direct_multi - Modify an existing direct 'multi' call
-> + * to call something else
-> + * @ops: The address of the struct ftrace_ops object
-> + * @addr: The address of the new trampoline to call at @ops functions
-> + *
-> + * This is used to unregister currently registered direct caller and
-> + * register new one @addr on functions registered in @ops object.
-> + *
-> + * Note there's window between ftrace_shutdown and ftrace_startup calls
-> + * where there will be no callbacks called.
-> + *
-> + * Returns: zero on success. Non zero on error, which includes:
-> + *  -EINVAL - The @ops object was not properly registered.
-> + */
-> +int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-> +{
-> +	int err;
-> +
-> +	if (check_direct_multi(ops))
-> +		return -EINVAL;
-> +	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&direct_mutex);
-> +	err = __modify_ftrace_direct_multi(ops, addr);
->  	mutex_unlock(&direct_mutex);
->  	return err;
->  }
-
-I would personally do:
-
-int __modify_ftrace_direct_multi(struct ftrace_ops *ops,
-			unsigned long addr, bool lock)
-{
-	int err;
-
-	if (check_direct_multi(ops))
-		return -EINVAL;
-	if (!(ops->flags & FTRACE_OPS_FL_ENABLED))
-		return -EINVAL;
-
-	if (lock)
-		mutex_lock(&direct_mutex);
-
-	err = __modify_ftrace_direct_multi(ops, addr);
-
-	if (lock)
-		mutex_unlock(&direct_mutex);
-
-	return err;
-}
-
-int modify_ftrace_direct_multi(struct ftrace_ops *ops, unsigned long addr)
-{
-	__modify_ftrace_direct_multi(ops, addr, true);
-}
-
-int modify_ftrace_direct_multi_nolock(struct ftrace_ops *ops, unsigned long addr)
-{
-	__modify_ftrace_direct_multi(ops, addr, false);
-}
-
-To avoid duplication of the checks. But it is a matter of taste.
-
-Best Regards,
-Petr
