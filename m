@@ -2,201 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2678C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:02:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E596CCA482
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 17:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235515AbiGORCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 13:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45640 "EHLO
+        id S235554AbiGORHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 13:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235394AbiGORCS (ORCPT
+        with ESMTP id S235394AbiGORHm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 13:02:18 -0400
+        Fri, 15 Jul 2022 13:07:42 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 160B282F86
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:02:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A209A13E0D
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 10:07:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6E7662223
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 17:02:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59449C34115;
-        Fri, 15 Jul 2022 17:02:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D1276226D
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 17:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1AEC34115;
+        Fri, 15 Jul 2022 17:07:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657904536;
-        bh=RneAB0zwL0Agua+ah8JJepJ4SyYzz9VQDMDzjZbNKm4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ewKkhklagPG8bQsRIeV3HeDAxKqJKsZpn4wuGiaNLGKmjYwWs6iDNwf6G+5acFVzZ
-         nG9wSPVDoxMoluF8DqomLr8B8IUG3RQQ6Oz9hiWwB3BwknxTNP3fNRKp/nkC8800Ec
-         JRL6S5V5HqPSR/bZCeSBObFRW5bTniT3msAfPWcsfSgYa7JuP9/SMvJ3y82TXydOEj
-         oyUYKn7QMBvzwH730YcR2yCM1u2Ivh/yeLSWEsISJp3z4Xc5OfHU6xBxGndI/maZOp
-         +a97+6bMd8Rypk9eK8NoDLIa+VD956MR8efgMH6NCPqf//Y+564ZNPQ6LG9vVfHLZ3
-         St0qO1l9uYHXA==
-Date:   Sat, 16 Jul 2022 00:53:18 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Emil Renner Berthing <emil.renner.berthing@canonical.com>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kasan-dev@googlegroups.com, Anup Patel <anup@brainfault.org>
-Subject: Re: [PATCH v5 2/2] riscv: turn pgtable_l4|[l5]_enabled to static key
- for RV64
-Message-ID: <YtGbfmEl7/IkQxZp@xhacker>
-References: <20220715134847.2190-1-jszhang@kernel.org>
- <20220715134847.2190-3-jszhang@kernel.org>
- <CAJM55Z8JCePV8YRheyrsO1qQie79NM_-w-cYbNaJy-HLOtPfrw@mail.gmail.com>
+        s=k20201202; t=1657904860;
+        bh=aggAZRjimU1oJPtRHtLMPAK6iTKXIlW41DBUfmAz8qI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U19kf46l/YYlZcR9ZNwU59Pd+entD/+0E42IdwLJFyTvElEzF8tmSew0f/9PSprgT
+         WeFOpO4fsrwt20+WWwEtNDGz9yLdg28CBv1BTPKrPhw9RJJn1MAdYd4quRbCadhuhJ
+         qnrNzyp2dJbYeSX24E/VaPy+MIjINjRjWHqa6X3fCh3Hm/inmQueUiF4375kuWbPNF
+         86Orwu7OjmZILw3eS+JHKH9Mi9io5viMs3LIOfIzM8RHMQrFwqcT1PE5+D9jFmgann
+         5hpz3JW6h30aP5xnm4d0OE4P7qfm2uOXci+V9gF2nxi11cp5+xUpAfSrutjX4g1x0Y
+         q961dkZXCvNJA==
+From:   SeongJae Park <sj@kernel.org>
+To:     Yuanzheng Song <songyuanzheng@huawei.com>
+Cc:     sj@kernel.org, akpm@linux-foundation.org, damon@lists.linux.dev,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mm/damon/reclaim: fix 'enabled' is incorrectly set because 'system_wq' is not initialized
+Date:   Fri, 15 Jul 2022 17:07:36 +0000
+Message-Id: <20220715170736.126498-1-sj@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220715061609.48463-1-songyuanzheng@huawei.com>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAJM55Z8JCePV8YRheyrsO1qQie79NM_-w-cYbNaJy-HLOtPfrw@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 05:04:38PM +0200, Emil Renner Berthing wrote:
-> On Fri, 15 Jul 2022 at 15:59, Jisheng Zhang <jszhang@kernel.org> wrote:
-> > On a specific HW platform, pgtable_l4|[l5]_enabled won't change after
-> > boot, and the check sits at hot code path, this characteristic makes it
-> > suitable for optimization with static key.
-> >
-> > _pgtable_l4|[l5]_enabled is used very early during boot, even is used
-> > with MMU off, so the static key mechanism isn't ready. For this case,
-> > we use another static key _pgtable_lx_ready to indicate whether we
-> > have finalised pgtable_l4|[l5]_enabled or not, then fall back to
-> > _pgtable_l4|[l5]_enabled_early bool.
-> >
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > Reviewed-by: Anup Patel <anup@brainfault.org>
-> > ---
-> >  arch/riscv/include/asm/pgalloc.h    | 16 ++++----
-> >  arch/riscv/include/asm/pgtable-32.h |  3 ++
-> >  arch/riscv/include/asm/pgtable-64.h | 60 ++++++++++++++++++---------
-> >  arch/riscv/include/asm/pgtable.h    |  5 +--
-> >  arch/riscv/kernel/cpu.c             |  4 +-
-> >  arch/riscv/mm/init.c                | 64 ++++++++++++++++++-----------
-> >  arch/riscv/mm/kasan_init.c          | 16 ++++----
-> >  7 files changed, 103 insertions(+), 65 deletions(-)
-> >
-> > diff --git a/arch/riscv/include/asm/pgalloc.h b/arch/riscv/include/asm/pgalloc.h
-> > index 947f23d7b6af..0280eeb4756f 100644
-> > --- a/arch/riscv/include/asm/pgalloc.h
-> > +++ b/arch/riscv/include/asm/pgalloc.h
-> > @@ -41,7 +41,7 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
-> >
-> >  static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
-> >  {
-> > -       if (pgtable_l4_enabled) {
-> > +       if (pgtable_l4_enabled()) {
-> >                 unsigned long pfn = virt_to_pfn(pud);
-> >
-> >                 set_p4d(p4d, __p4d((pfn << _PAGE_PFN_SHIFT) | _PAGE_TABLE));
-> > @@ -51,7 +51,7 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
-> >  static inline void p4d_populate_safe(struct mm_struct *mm, p4d_t *p4d,
-> >                                      pud_t *pud)
-> >  {
-> > -       if (pgtable_l4_enabled) {
-> > +       if (pgtable_l4_enabled()) {
-> >                 unsigned long pfn = virt_to_pfn(pud);
-> >
-> >                 set_p4d_safe(p4d,
-> > @@ -61,7 +61,7 @@ static inline void p4d_populate_safe(struct mm_struct *mm, p4d_t *p4d,
-> >
-> >  static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, p4d_t *p4d)
-> >  {
-> > -       if (pgtable_l5_enabled) {
-> > +       if (pgtable_l5_enabled()) {
-> >                 unsigned long pfn = virt_to_pfn(p4d);
-> >
-> >                 set_pgd(pgd, __pgd((pfn << _PAGE_PFN_SHIFT) | _PAGE_TABLE));
-> > @@ -71,7 +71,7 @@ static inline void pgd_populate(struct mm_struct *mm, pgd_t *pgd, p4d_t *p4d)
-> >  static inline void pgd_populate_safe(struct mm_struct *mm, pgd_t *pgd,
-> >                                      p4d_t *p4d)
-> >  {
-> > -       if (pgtable_l5_enabled) {
-> > +       if (pgtable_l5_enabled()) {
-> >                 unsigned long pfn = virt_to_pfn(p4d);
-> >
-> >                 set_pgd_safe(pgd,
-> > @@ -82,7 +82,7 @@ static inline void pgd_populate_safe(struct mm_struct *mm, pgd_t *pgd,
-> >  #define pud_alloc_one pud_alloc_one
-> >  static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long addr)
-> >  {
-> > -       if (pgtable_l4_enabled)
-> > +       if (pgtable_l4_enabled())
-> >                 return __pud_alloc_one(mm, addr);
-> >
-> >         return NULL;
-> > @@ -91,7 +91,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long addr)
-> >  #define pud_free pud_free
-> >  static inline void pud_free(struct mm_struct *mm, pud_t *pud)
-> >  {
-> > -       if (pgtable_l4_enabled)
-> > +       if (pgtable_l4_enabled())
-> >                 __pud_free(mm, pud);
-> >  }
-> >
-> > @@ -100,7 +100,7 @@ static inline void pud_free(struct mm_struct *mm, pud_t *pud)
-> >  #define p4d_alloc_one p4d_alloc_one
-> >  static inline p4d_t *p4d_alloc_one(struct mm_struct *mm, unsigned long addr)
-> >  {
-> > -       if (pgtable_l5_enabled) {
-> > +       if (pgtable_l5_enabled()) {
-> >                 gfp_t gfp = GFP_PGTABLE_USER;
-> >
-> >                 if (mm == &init_mm)
-> > @@ -120,7 +120,7 @@ static inline void __p4d_free(struct mm_struct *mm, p4d_t *p4d)
-> >  #define p4d_free p4d_free
-> >  static inline void p4d_free(struct mm_struct *mm, p4d_t *p4d)
-> >  {
-> > -       if (pgtable_l5_enabled)
-> > +       if (pgtable_l5_enabled())
-> >                 __p4d_free(mm, p4d);
-> >  }
-> >
-> > diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
-> > index 59ba1fbaf784..1ef52079179a 100644
-> > --- a/arch/riscv/include/asm/pgtable-32.h
-> > +++ b/arch/riscv/include/asm/pgtable-32.h
-> > @@ -17,6 +17,9 @@
-> >
-> >  #define MAX_POSSIBLE_PHYSMEM_BITS 34
-> >
-> > +#define pgtable_l5_enabled() 0
-> > +#define pgtable_l4_enabled() 0
-> > +
-> >  /*
-> >   * rv32 PTE format:
-> >   * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
-> > diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
-> > index 5c2aba5efbd0..edfff00d8ca3 100644
-> > --- a/arch/riscv/include/asm/pgtable-64.h
-> > +++ b/arch/riscv/include/asm/pgtable-64.h
-> > @@ -8,18 +8,38 @@
-> >
-> >  #include <linux/bits.h>
-> >  #include <linux/const.h>
-> > +#include <linux/jump_label.h>
-> >  #include <asm/errata_list.h>
-> >
-> > -extern bool pgtable_l4_enabled;
-> > -extern bool pgtable_l5_enabled;
-> > +extern bool _pgtable_l5_enabled_early;
-> > +extern bool _pgtable_l4_enabled_early;
-> > +extern struct static_key_false _pgtable_l5_enabled;
-> > +extern struct static_key_false _pgtable_l4_enabled;
-> > +extern struct static_key_false _pgtable_lx_ready;
+Hello Yuanzheng,
+
+
+On Fri, 15 Jul 2022 06:16:09 +0000 Yuanzheng Song <songyuanzheng@huawei.com> wrote:
+
+> The 'enabled' will be incorrectly set because the 'system_wq'
+> might not initialized yet. This results in 'enabled=true',
+> but the 'damon_reclaim_timer' is inactive. So fix it by moving
+> the judgment logic of the 'damon_reclaim_initialized' to the
+> start position of the enable_store().
+
+Thank you for this patch!
+
+In the case, however, 'damon_reclaim_init()' will activate
+'damon_reclaim_timer', which will check the 'enabled' and start DAMON later.
+So 'enabled' will inconsistently set while DAMON_RECLAIM is not really enabled
+for a moment, but those will eventually be consistent.  This patch could reduce
+the duration of the inconsistent state.
+
+However, this would break boot-time DAMON_RECLAIM enabling, which adds
+'damon_reclaim.enabled=true' to the kernel parameter, as this change will set
+'enabled' as 'false' in the early 'damon_reclaim_enabled_store()', so that the
+later 'damon_reclaim_initialized()' activated 'damon_reclaim_timer' shows
+'enabled' as 'false' and therefore doesn't start DAMON.
+
+If there is anything I'm missing, please let me know.
+
+
+Thanks,
+SJ
+
 > 
-> It amounts to the same, but I wonder if we ought to use the
-> DECLARE_STATIC_KEY_FALSE macro here.
-
-Thanks for the hint, will send out a newer version soon. Before
-that, I will wait a bit for other review feedbacks.
-
-Thanks
+> Fixes: 294928293813 ("mm/damon/reclaim: schedule 'damon_reclaim_timer' only after 'system_wq' is initialized")
+> Signed-off-by: Yuanzheng Song <songyuanzheng@huawei.com>
+> ---
+>  mm/damon/reclaim.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+> 
+> diff --git a/mm/damon/reclaim.c b/mm/damon/reclaim.c
+> index e69b807fefe4..b13d5a02bf2e 100644
+> --- a/mm/damon/reclaim.c
+> +++ b/mm/damon/reclaim.c
+> @@ -374,13 +374,14 @@ static bool damon_reclaim_initialized;
+>  static int damon_reclaim_enabled_store(const char *val,
+>  		const struct kernel_param *kp)
+>  {
+> -	int rc = param_set_bool(val, kp);
+> -
+> -	if (rc < 0)
+> -		return rc;
+> +	int rc;
+>  
+>  	/* system_wq might not initialized yet */
+>  	if (!damon_reclaim_initialized)
+> +		return -EINVAL;
+> +
+> +	rc = param_set_bool(val, kp);
+> +	if (rc < 0)
+>  		return rc;
+>  
+>  	schedule_delayed_work(&damon_reclaim_timer, 0);
+> -- 
+> 2.25.1
