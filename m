@@ -2,75 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DA56C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 05:18:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 934FFCCA47C
+	for <linux-kernel@archiver.kernel.org>; Fri, 15 Jul 2022 05:20:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229609AbiGOFSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 01:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
+        id S229723AbiGOFU2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 01:20:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGOFSm (ORCPT
+        with ESMTP id S229492AbiGOFUY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 01:18:42 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A04678DDF;
-        Thu, 14 Jul 2022 22:18:29 -0700 (PDT)
-X-UUID: 966e386179a44cd09227cb36ffe41646-20220715
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:3b012936-3323-4a76-a289-338e7d945338,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:100
-X-CID-INFO: VERSION:1.1.8,REQID:3b012936-3323-4a76-a289-338e7d945338,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:100
-X-CID-META: VersionHash:0f94e32,CLOUDID:be470d33-b9e4-42b8-b28a-6364427c76bb,C
-        OID:8d3c919cfca6,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 966e386179a44cd09227cb36ffe41646-20220715
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <tinghan.shen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1561564; Fri, 15 Jul 2022 13:18:24 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
- Fri, 15 Jul 2022 13:18:23 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 15 Jul 2022 13:18:22 +0800
-From:   Tinghan Shen <tinghan.shen@mediatek.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>
-CC:     <linux-remoteproc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v1 0/2] Add support for MT8188 SCP
-Date:   Fri, 15 Jul 2022 13:18:19 +0800
-Message-ID: <20220715051821.30707-1-tinghan.shen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Fri, 15 Jul 2022 01:20:24 -0400
+Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05BF3796A3;
+        Thu, 14 Jul 2022 22:20:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=inria.fr; s=dc;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=zO43hikXt0XV2hT6fYiuYzmsqvmr44gi7YAHVOdw6qY=;
+  b=Ujpob+adTWG6OU7Rjosi+l0EP6AZRUFKPAvJG9QJnPKKLflW7e5U8Lve
+   xsfqeF/zLzruSSAYdlKuG84punOx5Jw8zDC9lPwdzpOWjwn5gNTc9l4fX
+   JFKbwj9GVh3hxIQAaXjqFXx5TiXlcQS5BiOGoS/4AyV3LK9+VP/GaMnHO
+   Q=;
+Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=julia.lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
+X-IronPort-AV: E=Sophos;i="5.92,272,1650924000"; 
+   d="scan'208";a="19373232"
+Received: from 150.122.68.85.rev.sfr.net (HELO hadrien) ([85.68.122.150])
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 07:20:21 +0200
+Date:   Fri, 15 Jul 2022 07:20:19 +0200 (CEST)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To:     Steve French <smfrench@gmail.com>
+cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors <kernel-janitors@vger.kernel.org>,
+        Yu Zhe <yuzhe@nfschina.com>
+Subject: Re: Is casting a void ptr to something else considered bad kernel
+ coding style
+In-Reply-To: <CAH2r5msuc3-1V+dh5NdwnE6uBoN+7_cf=m6kwrFrTnwArND0LQ@mail.gmail.com>
+Message-ID: <alpine.DEB.2.22.394.2207150717570.3006@hadrien>
+References: <CAH2r5msuc3-1V+dh5NdwnE6uBoN+7_cf=m6kwrFrTnwArND0LQ@mail.gmail.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-Tinghan Shen (2):
-  dt-bindings: remoteproc: mediatek: Add binding for mt8188 scp
-  remoteproc: Support MT8188 SCP
 
- .../devicetree/bindings/remoteproc/mtk,scp.yaml     |  2 ++
- drivers/remoteproc/mtk_scp.c                        | 13 +++++++++++++
- 2 files changed, 15 insertions(+)
+On Thu, 14 Jul 2022, Steve French wrote:
 
--- 
-2.18.0
+> For examples like this where a pointer which is (void *) is cast to
+> something else, is this considered bad coding style in kernel C
+> programming?
+>
+> It may be that leaving the (unnecessary) cast in, although it is not
+> required for C, makes the code clearer in some cases.
+>
+> Any opinions on changes to remove casts of void pointers for kernel
+> code (which I have recently seen suggested)?
+>
+> for example:
+>
+> --- a/fs/cifs/smb2pdu.c
+> +++ b/fs/cifs/smb2pdu.c
+> @@ -354,7 +354,7 @@ fill_small_buf(__le16 smb2_command, struct cifs_tcon *tcon,
+>                void *buf,
+>                unsigned int *total_len)
+>  {
+> -       struct smb2_pdu *spdu = (struct smb2_pdu *)buf;
+> +       struct smb2_pdu *spdu = buf;
 
+There would seem to be not much point to this (the original cast), since
+the type is immediately explicit in the variable declaration.
+
+It would also make for tiresome editing if the type should change, and it
+reduces readability by adding a lot of characters that don't give useful
+information.
+
+julia
