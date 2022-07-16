@@ -2,89 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86927C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6706EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243336AbiGSNNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55434 "EHLO
+        id S243541AbiGSNNt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:13:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243313AbiGSNMM (ORCPT
+        with ESMTP id S243500AbiGSNNc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:12:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BE8419B9;
-        Tue, 19 Jul 2022 05:29:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E392B60DE0;
-        Tue, 19 Jul 2022 12:29:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF68FC341C6;
-        Tue, 19 Jul 2022 12:29:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233784;
-        bh=1rsOjCzTzZZGjsOkD4VV/Yi0b4wpzhVrNjevvk3ABTM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B7YiVPHPq+/BIewCuIuothP172iHYQpS4WpgY+BiRyEsPrZrSHoWvDxhgtaHGzrWO
-         JLjif9vG2qINdlggH3PF8/eDELsTQ+/OGgkeWqdrWPI3Jxft/90t4J9JdDmrln+8wt
-         WwzzNjxzkpYsugtuThhxPb6IxQres3zz6d/05xOQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 209/231] x86: Clear .brk area at early boot
-Date:   Tue, 19 Jul 2022 13:54:54 +0200
-Message-Id: <20220719114731.488525670@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-References: <20220719114714.247441733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 09:13:32 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D965120B1;
+        Tue, 19 Jul 2022 05:30:18 -0700 (PDT)
+X-QQ-mid: bizesmtp82t1658233738tg1qho8c
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:28:57 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000C00A0000020
+X-QQ-FEAT: DoD8xN2rKozhiQNtJHhOlHcWfNXQgthF76gR62nSuR1BQTbE1ZbBHWLk/AJ8s
+        3j545u/dr3eNqhYXeYVm2v+4KNQyOOWslAx7CTrKPP2O1NvncR0wIt3AhiBw+gAbYWOUkx8
+        CvjypKcwNVCjo9V4rrUuk9rWeXRoSUTSeiK3uFPh2aMVQGxlMejZiQIqtVxSaipvo03yHDK
+        lhFAzTAsZOdbEeSnc/tHCCDnDYtpwh/mesTjJiZ3PXQsdAAwTIpShY0osvIQds5KVrNm226
+        W3xgeqWdhka821B6mpJ5ukHNT4uDC7ypa8iKpfBIrxL9iLWl4lo6Gq9jzOZ7xJ7pKaLV67k
+        +ACoW+kbIpHJbWEUv0jYSZtT4fNudrcdmJLjEYso2+fB2R5i3XpGatvKFRVGCFnBkasWU1N
+        AtDwevQ/f8k=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     svens@linux.ibm.com
+Cc:     wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
+        gor@linux.ibm.com, agordeev@linux.ibm.com,
+        borntraeger@linux.ibm.com, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] s390/net: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:27:00 +0800
+Message-Id: <20220716042700.39915-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+The double `the' is duplicated in the comment, remove one.
 
-[ Upstream commit 38fa5479b41376dc9d7f57e71c83514285a25ca0 ]
-
-The .brk section has the same properties as .bss: it is an alloc-only
-section and should be cleared before being used.
-
-Not doing so is especially a problem for Xen PV guests, as the
-hypervisor will validate page tables (check for writable page tables
-and hypervisor private bits) before accepting them to be used.
-
-Make sure .brk is initially zero by letting clear_bss() clear the brk
-area, too.
-
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220630071441.28576-3-jgross@suse.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- arch/x86/kernel/head64.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/s390/net/qeth_core_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index 2e10a33778cf..92eae95f1a0b 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -425,6 +425,8 @@ void __init clear_bss(void)
- {
- 	memset(__bss_start, 0,
- 	       (unsigned long) __bss_stop - (unsigned long) __bss_start);
-+	memset(__brk_base, 0,
-+	       (unsigned long) __brk_limit - (unsigned long) __brk_base);
- }
- 
- static unsigned long get_cmd_line_ptr(void)
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index 9e54fe76a9b2..35d4b398c197 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -3565,7 +3565,7 @@ static void qeth_flush_buffers(struct qeth_qdio_out_q *queue, int index,
+ 			if (!atomic_read(&queue->set_pci_flags_count)) {
+ 				/*
+ 				 * there's no outstanding PCI any more, so we
+-				 * have to request a PCI to be sure the the PCI
++				 * have to request a PCI to be sure the PCI
+ 				 * will wake at some time in the future then we
+ 				 * can flush packed buffers that might still be
+ 				 * hanging around, which can happen if no
 -- 
 2.35.1
-
-
 
