@@ -2,63 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 081B2CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1688EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230379AbiGPSSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 14:18:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
+        id S231229AbiGPSTE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 14:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229505AbiGPSS3 (ORCPT
+        with ESMTP id S230015AbiGPSTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 14:18:29 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780601F2CA;
-        Sat, 16 Jul 2022 11:18:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=aPXoFoWmveORE5T3jhdpJeFi6gh3kcxqL21fiA/rcrE=; b=ORnqkDdw5hJSe9n2uHPg8waKXM
-        nCu0iF9wxeYs9aeHCj6hKz4tiwuBDRVgTEhB33vqqWkHxzKEXCkOR559C1TM2n6kyNzXYV95UTKh9
-        8miugPGkrG4vpnzgp8MlT+c/RFNoFQP8X5+XQQChmKeFd1nXXAqD3X1KF4uGK0rkjsXo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oCmMo-00AZ8Z-Ng; Sat, 16 Jul 2022 20:18:14 +0200
-Date:   Sat, 16 Jul 2022 20:18:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 13/47] net: phy: aquantia: Add some
- additional phy interfaces
-Message-ID: <YtMA5v8oXvxgdTap@lunn.ch>
-References: <20220715215954.1449214-1-sean.anderson@seco.com>
- <20220715215954.1449214-14-sean.anderson@seco.com>
+        Sat, 16 Jul 2022 14:19:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783FDCE1E;
+        Sat, 16 Jul 2022 11:18:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 30BD3B80C85;
+        Sat, 16 Jul 2022 18:18:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 943B1C34115;
+        Sat, 16 Jul 2022 18:18:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657995536;
+        bh=9AbXPRBr5uZ4dK0zA9NCwEvirkJr7WqQ+79fBtM453I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XjAv2iWm7xWVQh2LHkcmBOuXRak21Vg8U7keqOtoUC+Wjq+/f8s70j4W6XTUg04uq
+         chxjHeA40+x9BYgsfpc/be0WvIc2iqiPIJD6ZPqPkOj7v5b1ev1IAkcdqqiVUmj5Mp
+         BsKMISsMPM+zRPHLreE2Y9sfGvyxZJFvcQr9Mi3Qnn8t0FniUvC5LnWOt1Xpl7QsCi
+         Tu/tRLnN6BIBO1krfQ2hNlnWlhvZDhIpzQrmOm7dlbZPvW53hixPGsZHast8MvOjCe
+         9VgbdGHMjrDrmi9O7FTs04thXxuK4aQOYMXi5xxMb43fqfq2htzrj1gjoirXkeq6p/
+         KpCERiBkRxdhQ==
+Date:   Sat, 16 Jul 2022 19:28:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Zheyu Ma <zheyuma97@gmail.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: isl29028: Fix the warning in
+ isl29028_remove()
+Message-ID: <20220716192850.2becdc44@jic23-huawei>
+In-Reply-To: <20220715132909.480548-1-zheyuma97@gmail.com>
+References: <20220715132909.480548-1-zheyuma97@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220715215954.1449214-14-sean.anderson@seco.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 05:59:20PM -0400, Sean Anderson wrote:
-> These are documented in the AQR115 register reference. I haven't tested
-> them, but perhaps they'll be useful to someone.
+On Fri, 15 Jul 2022 21:29:09 +0800
+Zheyu Ma <zheyuma97@gmail.com> wrote:
+
+> The driver uses managed resource API to register the iio device, so it
+> is unnecessarg to unregister the device manually.
 > 
-> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> The following log reveals it:
+> 
+> [   32.374955] isl29028 0-0010: remove
+> [   32.376861] general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN PTI
+> [   32.377676] KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
+> [   32.379432] RIP: 0010:kernfs_find_and_get_ns+0x28/0xe0
+> [   32.385461] Call Trace:
+> [   32.385807]  sysfs_unmerge_group+0x59/0x110
+> [   32.386110]  dpm_sysfs_remove+0x58/0xc0
+> [   32.386391]  device_del+0x296/0xe50
+> [   32.386959]  cdev_device_del+0x1d/0xd0
+> [   32.387231]  devm_iio_device_unreg+0x27/0xb0
+> [   32.387542]  devres_release_group+0x319/0x3d0
+> [   32.388162]  i2c_device_remove+0x93/0x1f0
+> 
+> Fixes: 2db5054ac28d ("staging: iio: isl29028: add runtime power management support")
+> Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Unfortunately the fix still leaves the release order as not mirroring the ordering
+in probe.  As such, I think the right fix is to not use devm_iio_device_register()
+but rather use the non managed form.
 
-    Andrew
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/light/isl29028.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
+> index 9de3262aa688..505235903bd8 100644
+> --- a/drivers/iio/light/isl29028.c
+> +++ b/drivers/iio/light/isl29028.c
+> @@ -641,8 +641,6 @@ static int isl29028_remove(struct i2c_client *client)
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  	struct isl29028_chip *chip = iio_priv(indio_dev);
+>  
+> -	iio_device_unregister(indio_dev);
+> -
+>  	pm_runtime_disable(&client->dev);
+>  	pm_runtime_set_suspended(&client->dev);
+>  
+
