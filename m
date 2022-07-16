@@ -2,75 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E133C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3592CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231956AbiGPIYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 04:24:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50490 "EHLO
+        id S231985AbiGPI1g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 04:27:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231883AbiGPIYA (ORCPT
+        with ESMTP id S230366AbiGPI1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 04:24:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 034691C93E
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 01:23:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22AA160EE1
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:23:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF5EC34114;
-        Sat, 16 Jul 2022 08:23:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1657959837;
-        bh=5dE+ypv3zng6jNf0Fnl5tGw2xHsfI3mi20S2F7wJInQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=c2D6gGShhwj9YiyxsKgNCGrteonGBfPqQ6fQ3SM0x4SdzrmcwyvKnhHCFMgk2Sxnz
-         i4vupKpDJfNhkv93RrixQBd1nJBfYgK1LP63bEqdX8Q6FrurQFmz6y/fcNv4uNUzYn
-         uoYdsu8jxQ8acgPOK7u6OgIlzhfPa8rKop/0b8gc=
-Date:   Sat, 16 Jul 2022 10:23:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Gaosheng Cui <cuigaosheng1@huawei.com>
-Cc:     srinivas.kandagatla@linaro.org, linux-kernel@vger.kernel.org,
-        gongruiqi1@huawei.com, wangweiyang2@huawei.com
-Subject: Re: [PATCH -next] nvmem: core: Fix memleak in nvmem_register()
-Message-ID: <YtJ1mthCP+4laqOn@kroah.com>
-References: <20220716075352.2622809-1-cuigaosheng1@huawei.com>
+        Sat, 16 Jul 2022 04:27:34 -0400
+Received: from elvis.franken.de (elvis.franken.de [193.175.24.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DE726402CC
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 01:27:32 -0700 (PDT)
+Received: from uucp (helo=alpha)
+        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
+        id 1oCd99-0006P8-00; Sat, 16 Jul 2022 10:27:31 +0200
+Received: by alpha.franken.de (Postfix, from userid 1000)
+        id 9C699C0671; Sat, 16 Jul 2022 09:37:48 +0200 (CEST)
+Date:   Sat, 16 Jul 2022 09:37:48 +0200
+From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] char: remove VR41XX related char driver
+Message-ID: <20220716073748.GA9148@alpha.franken.de>
+References: <20220715142437.137411-1-tsbogend@alpha.franken.de>
+ <YtJP+k5JBbqS5QgY@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220716075352.2622809-1-cuigaosheng1@huawei.com>
+In-Reply-To: <YtJP+k5JBbqS5QgY@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 03:53:52PM +0800, Gaosheng Cui wrote:
-> dev_set_name will alloc memory for nvmem->dev.kobj.name in
-> nvmem_register, when nvmem_validate_keepouts failed, nvmem's
-> memory will be freed and return, but nobody will free memory
-> for nvmem->dev.kobj.name, there will be memleak, so using
-> kfree_const(nvmem->dev.kobj.name) to fix it.
+On Sat, Jul 16, 2022 at 07:43:22AM +0200, Greg Kroah-Hartman wrote:
+> On Fri, Jul 15, 2022 at 04:24:36PM +0200, Thomas Bogendoerfer wrote:
+> > Commit d3164e2f3b0a ("MIPS: Remove VR41xx support") removed support
+> > for MIPS VR41xx platform, so remove exclusive drivers for this
+> > platform, too.
+> > 
+> > Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+> > ---
+> >  drivers/char/Kconfig  |   5 -
+> >  drivers/char/Makefile |   1 -
+> >  drivers/char/tb0219.c | 358 ------------------------------------------
+> >  3 files changed, 364 deletions(-)
+> >  delete mode 100644 drivers/char/tb0219.c
 > 
-> Fixes: de0534df9347 ("nvmem: core: fix error handling while validating keepout regions")
-> Signed-off-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-> ---
->  drivers/nvmem/core.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-> index 1e3c754efd0d..6c75c9afa5f3 100644
-> --- a/drivers/nvmem/core.c
-> +++ b/drivers/nvmem/core.c
-> @@ -833,6 +833,7 @@ struct nvmem_device *nvmem_register(const struct nvmem_config *config)
->  		rval = nvmem_validate_keepouts(nvmem);
->  		if (rval) {
->  			ida_free(&nvmem_ida, nvmem->id);
-> +			kfree_const(nvmem->dev.kobj.name);
->  			kfree(nvmem);
+> This does not apply to my tree, what tree did you make it against?
 
-Something is really wrong, you should never be touching the name pointer
-of a kobject directly like this.  Also the device structure itself
-should be cleaning up the memory, not a kfree.  So this feels wrong...
+I've used linux-next.
 
-greg k-h
+> Nothing has touched the drivers/char/tb0219.c file in a very long time,
+
+there is commit c9d86760342f ("fs: do not set no_llseek in fops") in
+linux-next, which touches it.
+
+> perhaps you might want to wait for this driver removal series until
+> after d3164e2f3b0a is merged into Linus's tree?
+
+I'll respin against your tree.
+
+Thomas.
+
+-- 
+Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
+good idea.                                                [ RFC1925, 2.3 ]
