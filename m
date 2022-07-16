@@ -2,116 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6611C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 14:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44086C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 14:12:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231684AbiGPOLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 10:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34790 "EHLO
+        id S231748AbiGPOME convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 10:12:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229538AbiGPOLP (ORCPT
+        with ESMTP id S231528AbiGPOMD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 10:11:15 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BFE13F20;
-        Sat, 16 Jul 2022 07:11:14 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 084231FD7A;
-        Sat, 16 Jul 2022 14:11:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1657980673; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=oWtSQ3iq/eBfO8cWY36mPzg837zTY4BQyIHIDxunfnc=;
-        b=DqZIO+BtiutLzd0dvPdk4yLD73rbqsDwOsatqhzBZ1RKmm3RtkpUtNWqFqBnM6yDisUTyx
-        4g/aUYH+eNv8qbhLCYwkcba0MaLXmgcrD4iLikMfB5MIvMBR3XGu+bUaHYt9RVRom4Pzmx
-        YXRzq6mq6ZMO1pOvtUGBIEBxaw+SlrY=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CDFC81351D;
-        Sat, 16 Jul 2022 14:11:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id jqgrMQDH0mI6XgAAMHmgww
-        (envelope-from <dsterba@suse.com>); Sat, 16 Jul 2022 14:11:12 +0000
-Date:   Sat, 16 Jul 2022 16:06:20 +0200
-From:   David Sterba <dsterba@suse.com>
-To:     torvalds@linux-foundation.org
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        willy@infradead.org
-Subject: [GIT PULL] Btrfs fixes for 5.19-rc7
-Message-ID: <cover.1657976305.git.dsterba@suse.com>
-Mail-Followup-To: David Sterba <dsterba@suse.com>,
-        torvalds@linux-foundation.org, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, willy@infradead.org
+        Sat, 16 Jul 2022 10:12:03 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB78210
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 07:12:00 -0700 (PDT)
+Received: from p508fdc54.dip0.t-ipconnect.de ([80.143.220.84] helo=phil.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oCiWP-0000Zy-Tj; Sat, 16 Jul 2022 16:11:53 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     Dao Lu <daolu@rivosinc.com>, linux-kernel@vger.kernel.org,
+        Conor Dooley <mail@conchuod.ie>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>, Guo Ren <guoren@kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Qinglin Pan <panqinglin2020@iscas.ac.cn>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Rob Herring <robh@kernel.org>,
+        Tsukasa OI <research_trasio@irq.a4lg.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>
+Subject: Re: [PATCH v4] arch/riscv: add Zihintpause support
+Date:   Sat, 16 Jul 2022 16:11:41 +0200
+Message-ID: <8823276.lOV4Wx5bFT@phil>
+In-Reply-To: <18a1126c-393e-9c52-4b30-caee01975ad1@conchuod.ie>
+References: <20220620201530.3929352-1-daolu@rivosinc.com> <18a1126c-393e-9c52-4b30-caee01975ad1@conchuod.ie>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Am Montag, 11. Juli 2022, 22:44:21 CEST schrieb Conor Dooley:
+> On 20/06/2022 21:15, Dao Lu wrote:
+> > [PATCH v4] arch/riscv: add Zihintpause support
+> 
+> A little ornery/pedantic maybe, but the "arch/" isn't needed.
+> Guess it can easily be fixed on application or if there's a
+> v5 so there's prob no need to resend.
 
-due to a recent report [1] we need to revert the radix tree to xarray
-conversion patches. There's a problem with sleeping under spinlock, when
-xa_insert could allocate memory under pressure. We use GFP_NOFS so this
-is a real problem that we unfortunately did not discover during review.
+I noticed that the patch prefix on riscv is all over the place
+in a lot of cases. There are
 
-I'm sorry to do such change at rc6 time but the revert is IMO the safer
-option, there are patches to use mutex instead of the spin locks but
-that would need more testing.  The revert branch has been tested on a
-few setups, all seem ok.  The conversion to xarray will be revisited in
-the future.
+- RISC-V:
+-riscv:
+- now arch/riscv:
 
-[1] https://lore.kernel.org/linux-btrfs/cover.1657097693.git.fdmanana@suse.com/
+and probably even more.
 
-Note about the xarray API:
+I guess someone should just decide on one prefix that then
+gets used (and slightly enforced) all the time.
 
-The possible sleeping is documented next to xa_insert, however there's
-no runtime check for that, like is eg. in radix_tree_preload.  The
-context does not need to be atomic so it's not as simple as
+Even just modifying applied patches to one specific prefix should
+already solve the issue in a short time, as I guess most people will
+just get the appicable prefix from a "git log" ;-) .
 
-  might_sleep_if(gfpflags_allow_blocking(gfp));
 
-or
+Heiko
 
-  WARN_ON_ONCE(gfpflags_allow_blocking(gfp));
+> > Implement support for the ZiHintPause extension.
+> > 
+> > The PAUSE instruction is a HINT that indicates the current hart’s rate
+> > of instruction retirement should be temporarily reduced or paused.
+> > 
+> > Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> > Tested-by: Heiko Stuebner <heiko@sntech.de>
+> > Signed-off-by: Dao Lu <daolu@rivosinc.com>
+> > ---
+> > 
+> > v1 -> v2:
+> >  Remove the usage of static branch, use PAUSE if toolchain supports it
+> > v2 -> v3:
+> >  Added the static branch back, cpu_relax() behavior is kept the same for
+> > systems that do not support ZiHintPause
+> > v3 -> v4:
+> >  Adopted the newly added unified static keys for extensions
+> > ---
+> >  arch/riscv/Makefile                     |  4 ++++
+> >  arch/riscv/include/asm/hwcap.h          |  5 +++++
+> >  arch/riscv/include/asm/vdso/processor.h | 21 ++++++++++++++++++---
+> >  arch/riscv/kernel/cpu.c                 |  1 +
+> >  arch/riscv/kernel/cpufeature.c          |  1 +
+> >  5 files changed, 29 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/arch/riscv/Makefile b/arch/riscv/Makefile
+> > index 34cf8a598617..6ddacc6f44b9 100644
+> > --- a/arch/riscv/Makefile
+> > +++ b/arch/riscv/Makefile
+> > @@ -56,6 +56,10 @@ riscv-march-$(CONFIG_RISCV_ISA_C)	:= $(riscv-march-y)c
+> >  toolchain-need-zicsr-zifencei := $(call cc-option-yn, -march=$(riscv-march-y)_zicsr_zifencei)
+> >  riscv-march-$(toolchain-need-zicsr-zifencei) := $(riscv-march-y)_zicsr_zifencei
+> >  
+> > +# Check if the toolchain supports Zihintpause extension
+> > +toolchain-supports-zihintpause := $(call cc-option-yn, -march=$(riscv-march-y)_zihintpause)
+> > +riscv-march-$(toolchain-supports-zihintpause) := $(riscv-march-y)_zihintpause
+> > +
+> >  KBUILD_CFLAGS += -march=$(subst fd,,$(riscv-march-y))
+> >  KBUILD_AFLAGS += -march=$(riscv-march-y)
+> >  
+> > diff --git a/arch/riscv/include/asm/hwcap.h b/arch/riscv/include/asm/hwcap.h
+> > index e48eebdd2631..dc47019a0b38 100644
+> > --- a/arch/riscv/include/asm/hwcap.h
+> > +++ b/arch/riscv/include/asm/hwcap.h
+> > @@ -8,6 +8,7 @@
+> >  #ifndef _ASM_RISCV_HWCAP_H
+> >  #define _ASM_RISCV_HWCAP_H
+> >  
+> > +#include <asm/errno.h>
+> >  #include <linux/bits.h>
+> >  #include <uapi/asm/hwcap.h>
+> >  
+> > @@ -54,6 +55,7 @@ extern unsigned long elf_hwcap;
+> >  enum riscv_isa_ext_id {
+> >  	RISCV_ISA_EXT_SSCOFPMF = RISCV_ISA_EXT_BASE,
+> >  	RISCV_ISA_EXT_SVPBMT,
+> > +	RISCV_ISA_EXT_ZIHINTPAUSE,
+> >  	RISCV_ISA_EXT_ID_MAX = RISCV_ISA_EXT_MAX,
+> >  };
+> >  
+> > @@ -64,6 +66,7 @@ enum riscv_isa_ext_id {
+> >   */
+> >  enum riscv_isa_ext_key {
+> >  	RISCV_ISA_EXT_KEY_FPU,		/* For 'F' and 'D' */
+> > +	RISCV_ISA_EXT_KEY_ZIHINTPAUSE,
+> >  	RISCV_ISA_EXT_KEY_MAX,
+> >  };
+> >  
+> > @@ -83,6 +86,8 @@ static __always_inline int riscv_isa_ext2key(int num)
+> >  		return RISCV_ISA_EXT_KEY_FPU;
+> >  	case RISCV_ISA_EXT_d:
+> >  		return RISCV_ISA_EXT_KEY_FPU;
+> > +	case RISCV_ISA_EXT_ZIHINTPAUSE:
+> > +		return RISCV_ISA_EXT_KEY_ZIHINTPAUSE;
+> >  	default:
+> >  		return -EINVAL;
+> >  	}
+> > diff --git a/arch/riscv/include/asm/vdso/processor.h b/arch/riscv/include/asm/vdso/processor.h
+> > index 134388cbaaa1..1e4f8b4aef79 100644
+> > --- a/arch/riscv/include/asm/vdso/processor.h
+> > +++ b/arch/riscv/include/asm/vdso/processor.h
+> > @@ -4,15 +4,30 @@
+> >  
+> >  #ifndef __ASSEMBLY__
+> >  
+> > +#include <linux/jump_label.h>
+> >  #include <asm/barrier.h>
+> > +#include <asm/hwcap.h>
+> >  
+> >  static inline void cpu_relax(void)
+> >  {
+> > +	if (!static_branch_likely(&riscv_isa_ext_keys[RISCV_ISA_EXT_KEY_ZIHINTPAUSE])) {
+> >  #ifdef __riscv_muldiv
+> > -	int dummy;
+> > -	/* In lieu of a halt instruction, induce a long-latency stall. */
+> > -	__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
+> > +		int dummy;
+> > +		/* In lieu of a halt instruction, induce a long-latency stall. */
+> > +		__asm__ __volatile__ ("div %0, %0, zero" : "=r" (dummy));
+> >  #endif
+> > +	} else {
+> > +		/*
+> > +		 * Reduce instruction retirement.
+> > +		 * This assumes the PC changes.
+> > +		 */
+> > +#ifdef __riscv_zihintpause
+> > +		__asm__ __volatile__ ("pause");
+> > +#else
+> > +		/* Encoding of the pause instruction */
+> > +		__asm__ __volatile__ (".4byte 0x100000F");
+> > +#endif
+> > +	}
+> >  	barrier();
+> >  }
+> >  
+> > diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
+> > index fba9e9f46a8c..a123e92b14dd 100644
+> > --- a/arch/riscv/kernel/cpu.c
+> > +++ b/arch/riscv/kernel/cpu.c
+> > @@ -89,6 +89,7 @@ int riscv_of_parent_hartid(struct device_node *node)
+> >  static struct riscv_isa_ext_data isa_ext_arr[] = {
+> >  	__RISCV_ISA_EXT_DATA(sscofpmf, RISCV_ISA_EXT_SSCOFPMF),
+> >  	__RISCV_ISA_EXT_DATA(svpbmt, RISCV_ISA_EXT_SVPBMT),
+> > +	__RISCV_ISA_EXT_DATA(zihintpause, RISCV_ISA_EXT_ZIHINTPAUSE),
+> >  	__RISCV_ISA_EXT_DATA("", RISCV_ISA_EXT_MAX),
+> >  };
+> >  
+> > diff --git a/arch/riscv/kernel/cpufeature.c b/arch/riscv/kernel/cpufeature.c
+> > index 1b3ec44e25f5..708df2c0bc34 100644
+> > --- a/arch/riscv/kernel/cpufeature.c
+> > +++ b/arch/riscv/kernel/cpufeature.c
+> > @@ -198,6 +198,7 @@ void __init riscv_fill_hwcap(void)
+> >  			} else {
+> >  				SET_ISA_EXT_MAP("sscofpmf", RISCV_ISA_EXT_SSCOFPMF);
+> >  				SET_ISA_EXT_MAP("svpbmt", RISCV_ISA_EXT_SVPBMT);
+> > +				SET_ISA_EXT_MAP("zihintpause", RISCV_ISA_EXT_ZIHINTPAUSE);
+> >  			}
+> >  #undef SET_ISA_EXT_MAP
+> >  		}
+> 
 
-Some kind of development time debugging/assertion aid would be nice.
 
-----------------------------------------------------------------
-The following changes since commit b3a3b0255797e1d395253366ba24a4cc6c8bdf9c:
 
-  btrfs: zoned: drop optimization of zone finish (2022-07-08 19:18:00 +0200)
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kdave/linux.git for-5.19-rc7-tag
-
-for you to fetch changes up to 088aea3b97e0ae5a2a86f5d142ad10fec8a1b80f:
-
-  Revert "btrfs: turn delayed_nodes_tree into an XArray" (2022-07-15 19:15:19 +0200)
-
-----------------------------------------------------------------
-David Sterba (4):
-      Revert "btrfs: turn fs_roots_radix in btrfs_fs_info into an XArray"
-      Revert "btrfs: turn fs_info member buffer_radix into XArray"
-      Revert "btrfs: turn name_cache radix tree into XArray in send_ctx"
-      Revert "btrfs: turn delayed_nodes_tree into an XArray"
-
- fs/btrfs/ctree.h             |  18 ++---
- fs/btrfs/delayed-inode.c     |  84 ++++++++++----------
- fs/btrfs/disk-io.c           | 179 ++++++++++++++++++++++++-------------------
- fs/btrfs/extent-tree.c       |   2 +-
- fs/btrfs/extent_io.c         | 122 +++++++++++++++++------------
- fs/btrfs/inode.c             |  15 ++--
- fs/btrfs/send.c              |  40 +++++-----
- fs/btrfs/tests/btrfs-tests.c |  24 +++++-
- fs/btrfs/transaction.c       | 112 +++++++++++++++------------
- 9 files changed, 340 insertions(+), 256 deletions(-)
