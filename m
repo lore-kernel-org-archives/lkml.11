@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 256FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03197C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbiGPXSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38898 "EHLO
+        id S233029AbiGPXSh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232810AbiGPXSA (ORCPT
+        with ESMTP id S231490AbiGPXR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:18:00 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A191222BD3
+        Sat, 16 Jul 2022 19:17:59 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0364D22BCC
         for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:44 -0700 (PDT)
-Message-ID: <20220716230953.858048083@linutronix.de>
+Message-ID: <20220716230953.738288030@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013462;
+        s=2020; t=1658013459;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Jzk1Ro7moQj4/ZNdqGDe6vOHP2eSGjateMVY4xuPVLw=;
-        b=ABOqAJ8ZC4ybwE0awspMk33HahjgcjGnviUBghK+dC9qnrV8SnCm6lTrZMxLuZYupBjdo5
-        Hzl79sPZcu8H5By4Ta/YWxKPOR98XlsQNkXAwNbu6+nGGB3HtP4RbT6urZBuBh+Q/byCMC
-        c8e1nlgTJBOIxuehEm3qtVTaUogEwUOBFtXCJQp8iwlrQi14uhorOuxqPX/fRn0B+XcsCb
-        zeYe6VWHF8ime4A3WbJQv1cnXneJM6BJWPSPA+KtZ5Tv0dLRsd+aBRz9xd3zBOn58vs+up
-        cwfBwHa5E1lyiYppeElTRdCes0zp6ZlspRAuR6u9CfJkCNaZVui9SP5l3fOhkQ==
+         references:references; bh=sFncniQWCWFsoBIPdxcaL179NgZVykSQzUetuwoc3AM=;
+        b=PL93QLSh3uV4HEBJbTcb7BC8MtTc9SjR+uT3D8LvzsJn8zwmSgojcfEEozpAFiOuP5zxBZ
+        bqpqyMDtE1t+72rRcKCL87pt01ejps5pRPj+MmPqRq4BDGsGDWI/6VQ7ztBgh0L/y5R7Vn
+        7amUunaJxj+O2qHlkxajDijm3UsWHaIttoMBWbZ+erWBREx9sa+Mcuw7LkjUV6zfV4Up15
+        YuF90HLR8XTGv+Yisk/FRG8eYKciQ0YbGFhfiSBZenEMaCbaHeG5lb0eA54QkIPmzYVSPz
+        52cw72YkHQvzbxSI1ju1UpHAUMIibcQmg0P6s9SwhZ1MyfMFvKSZbeoylb+2yQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013462;
+        s=2020e; t=1658013459;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Jzk1Ro7moQj4/ZNdqGDe6vOHP2eSGjateMVY4xuPVLw=;
-        b=5EUd6EGPJWOJ58Rki0DfMwZwyqF9oxESgWMLkJkvEILhwWyMNNcx9fj+0aX+ajxMHp4A2v
-        EBtK/o0Q4h6wJHAg==
+         references:references; bh=sFncniQWCWFsoBIPdxcaL179NgZVykSQzUetuwoc3AM=;
+        b=OK/agc9RiD69sFyUzsaN7zbo1HHl/VF89+eGNZcPi5/CX/96OhlLPD2zF+pvCRssvY0yNk
+        Mv0oCBIRK5BVs9AQ==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -45,122 +45,91 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 20/38] x86/alternatives: Provide text_poke_[copy|set]_locked()
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [patch 18/38] mm/vmalloc: Provide huge page mappings
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:42 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:38 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The upcoming call thunk patching must hold text_mutex and needs access to
-text_poke_copy() and text_poke_set(), which take text_mutex.
+From: Peter Zijlstra <peterz@infradead.org>
 
-Provide _locked postfixed variants to expose the inner workings.
+Provide VM_HUGE_VMAP, which unconditionally tries to use huge
+mappings. Unlike VM_ALLOW_HUGE_VMAP it doesn't care about the number
+of NUMA nodes or the size of the allocation.
 
+If the page allocator fails to provide huge pages, it will silently
+fall back.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/include/asm/text-patching.h |    2 +
- arch/x86/kernel/alternative.c        |   48 +++++++++++++++++++++--------------
- 2 files changed, 32 insertions(+), 18 deletions(-)
+ include/linux/vmalloc.h |    3 ++-
+ mm/vmalloc.c            |   33 +++++++++++++++++++--------------
+ 2 files changed, 21 insertions(+), 15 deletions(-)
 
---- a/arch/x86/include/asm/text-patching.h
-+++ b/arch/x86/include/asm/text-patching.h
-@@ -45,6 +45,8 @@ extern void *text_poke(void *addr, const
- extern void text_poke_sync(void);
- extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
- extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
-+extern void *text_poke_copy_locked(void *addr, const void *opcode, size_t len);
-+extern void *text_poke_set_locked(void *addr, int c, size_t len);
- extern void *text_poke_set(void *addr, int c, size_t len);
- extern int poke_int3_handler(struct pt_regs *regs);
- extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -1225,6 +1225,26 @@ void *text_poke_kgdb(void *addr, const v
- 	return __text_poke(text_poke_memcpy, addr, opcode, len);
- }
+--- a/include/linux/vmalloc.h
++++ b/include/linux/vmalloc.h
+@@ -27,10 +27,11 @@ struct notifier_block;		/* in notifier.h
+ #define VM_FLUSH_RESET_PERMS	0x00000100	/* reset direct map and flush TLB on unmap, can't be freed in atomic context */
+ #define VM_MAP_PUT_PAGES	0x00000200	/* put pages and free array in vfree */
+ #define VM_ALLOW_HUGE_VMAP	0x00000400      /* Allow for huge pages on archs with HAVE_ARCH_HUGE_VMALLOC */
++#define VM_HUGE_VMAP		0x00000800      /* Force for huge pages on archs with HAVE_ARCH_HUGE_VMALLOC */
  
-+void *text_poke_copy_locked(void *addr, const void *opcode, size_t len)
-+{
-+	unsigned long start = (unsigned long)addr;
-+	size_t patched = 0;
-+
-+	if (WARN_ON_ONCE(core_kernel_text(start)))
-+		return NULL;
-+
-+	while (patched < len) {
-+		unsigned long ptr = start + patched;
-+		size_t s;
-+
-+		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
-+
-+		__text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
-+		patched += s;
-+	}
-+	return addr;
-+}
-+
- /**
-  * text_poke_copy - Copy instructions into (an unused part of) RX memory
-  * @addr: address to modify
-@@ -1239,23 +1259,29 @@ void *text_poke_kgdb(void *addr, const v
-  */
- void *text_poke_copy(void *addr, const void *opcode, size_t len)
- {
-+	mutex_lock(&text_mutex);
-+	addr = text_poke_copy_locked(addr, opcode, len);
-+	mutex_unlock(&text_mutex);
-+	return addr;
-+}
-+
-+void *text_poke_set_locked(void *addr, int c, size_t len)
-+{
- 	unsigned long start = (unsigned long)addr;
- 	size_t patched = 0;
- 
- 	if (WARN_ON_ONCE(core_kernel_text(start)))
+ #if (defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)) && \
+ 	!defined(CONFIG_KASAN_VMALLOC)
+-#define VM_DEFER_KMEMLEAK	0x00000800	/* defer kmemleak object creation */
++#define VM_DEFER_KMEMLEAK	0x00001000	/* defer kmemleak object creation */
+ #else
+ #define VM_DEFER_KMEMLEAK	0
+ #endif
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -3099,23 +3099,28 @@ void *__vmalloc_node_range(unsigned long
  		return NULL;
- 
--	mutex_lock(&text_mutex);
- 	while (patched < len) {
- 		unsigned long ptr = start + patched;
- 		size_t s;
- 
- 		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
- 
--		__text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
-+		__text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
- 		patched += s;
  	}
--	mutex_unlock(&text_mutex);
- 	return addr;
- }
  
-@@ -1270,22 +1296,8 @@ void *text_poke_copy(void *addr, const v
-  */
- void *text_poke_set(void *addr, int c, size_t len)
- {
--	unsigned long start = (unsigned long)addr;
--	size_t patched = 0;
--
--	if (WARN_ON_ONCE(core_kernel_text(start)))
--		return NULL;
--
- 	mutex_lock(&text_mutex);
--	while (patched < len) {
--		unsigned long ptr = start + patched;
--		size_t s;
--
--		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
--
--		__text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
--		patched += s;
--	}
-+	addr = text_poke_set_locked(addr, c, len);
- 	mutex_unlock(&text_mutex);
- 	return addr;
- }
+-	if (vmap_allow_huge && (vm_flags & VM_ALLOW_HUGE_VMAP)) {
+-		unsigned long size_per_node;
++	if (vmap_allow_huge && (vm_flags & (VM_HUGE_VMAP|VM_ALLOW_HUGE_VMAP))) {
+ 
+-		/*
+-		 * Try huge pages. Only try for PAGE_KERNEL allocations,
+-		 * others like modules don't yet expect huge pages in
+-		 * their allocations due to apply_to_page_range not
+-		 * supporting them.
+-		 */
++		if (vm_flags & VM_ALLOW_HUGE_VMAP) {
++			unsigned long size_per_node;
+ 
+-		size_per_node = size;
+-		if (node == NUMA_NO_NODE)
+-			size_per_node /= num_online_nodes();
+-		if (arch_vmap_pmd_supported(prot) && size_per_node >= PMD_SIZE)
++			/*
++			 * Try huge pages. Only try for PAGE_KERNEL allocations,
++			 * others like modules don't yet expect huge pages in
++			 * their allocations due to apply_to_page_range not
++			 * supporting them.
++			 */
++
++			size_per_node = size;
++			if (node == NUMA_NO_NODE)
++				size_per_node /= num_online_nodes();
++			if (arch_vmap_pmd_supported(prot) && size_per_node >= PMD_SIZE)
++				shift = PMD_SHIFT;
++			else
++				shift = arch_vmap_pte_supported_shift(size_per_node);
++		} else {
+ 			shift = PMD_SHIFT;
+-		else
+-			shift = arch_vmap_pte_supported_shift(size_per_node);
++		}
+ 
+ 		align = max(real_align, 1UL << shift);
+ 		size = ALIGN(real_size, 1UL << shift);
 
