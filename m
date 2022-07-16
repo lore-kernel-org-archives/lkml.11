@@ -2,280 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E12EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 06:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD164C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 06:39:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiGPGbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 02:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50892 "EHLO
+        id S230429AbiGPGjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 02:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiGPGar (ORCPT
+        with ESMTP id S229436AbiGPGjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 02:30:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C3A7237E0;
-        Fri, 15 Jul 2022 23:30:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2284B82F5A;
-        Sat, 16 Jul 2022 06:30:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3717EC341C6;
-        Sat, 16 Jul 2022 06:30:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657953022;
-        bh=NIsqe4xQPHE3ShaS0YRrY2EAUa8dUIeun3mP4KWXa/E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HqF7U19y7OXgwUJ9R93a7jpa7xpd7Stz2PjsBEryt7+/s6gFTB/oF/0o+qZDwV8Kd
-         agj/e92ME0WJEJMMmHnwYobIWGmuz2eJb1Q9ZtLPt2wUikqzVa6IpPWBZZ0ArvuHgE
-         AMVe2q1+McJJ73dn9qquIhYbV3OMd+qjJMcnjkTNfCRujeQ+twJMDJJ3O2g9GwXgjp
-         ZCVXHvCEWYi1Jzkmt8mIaabcwN2ZBDrVBpRpJ2/hDHlJ9f+8GB3zkrwublCqT3KWF/
-         WlHHJn1wpptiy61zuCxPbzN/F1LDdk7/jIa0D4sllVdfsqUUJo5JbjwQz5fnB2abkg
-         gZkQXnfFxzDyw==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-crypto@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Jason A . Donenfeld " <Jason@zx2c4.com>
-Subject: [PATCH v2 2/3] crypto: lib - move __crypto_xor into utils
-Date:   Fri, 15 Jul 2022 23:29:19 -0700
-Message-Id: <20220716062920.210381-3-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220716062920.210381-1-ebiggers@kernel.org>
-References: <20220716062920.210381-1-ebiggers@kernel.org>
+        Sat, 16 Jul 2022 02:39:04 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454FF15732
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 23:39:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657953543; x=1689489543;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=R4qBAeJ9nvPzfc6yO948nK00aQXCW0kQtvjCqbr84lw=;
+  b=jMF5kh9f+eIUSQGaa4G0HrXGjfNaMsR/ZFKak5sK+/0jYFkdEtibpFyC
+   +hhorrS9xYACAoOe277MRG28m+2tBz77kZd/3J6ANqLeqv1HeD+XGIw6s
+   B1UcGbBtuuaKc8Glyw+59j3Zg/jJWfQ72hXRmgz8aUtSF/Z6giRJRJp0R
+   kM7Xj3SVseWvcLDC66TJQbsk3IYUZBCBXEF0jgICQKKt4/fVpmqVq0h3z
+   OExmnL+C/eXEBcELawZnOd6ADXw++u82Jz5HA2DB+6xNp/jpAql6pWpQD
+   r6q11NrIdllYl+LapTnXpebXsRxRNbLeuvyCOZ81yoeu5Bg8z7aVLSN6X
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="349917111"
+X-IronPort-AV: E=Sophos;i="5.92,276,1650956400"; 
+   d="scan'208";a="349917111"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2022 23:39:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,276,1650956400"; 
+   d="scan'208";a="664452341"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Jul 2022 23:39:01 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCbS8-0001EW-Fn;
+        Sat, 16 Jul 2022 06:39:00 +0000
+Date:   Sat, 16 Jul 2022 14:38:55 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Atish Patra <atishp@rivosinc.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Atish Patra <Atish.Patra@wdc.com>, linux-kernel@vger.kernel.org
+Subject: [atishp04:kvm_perf_rfc 20/24]
+ arch/riscv/include/asm/kvm_vcpu_pmu.h:28:21: error: use of undeclared
+ identifier 'RISCV_MAX_COUNTERS'
+Message-ID: <202207161459.vX2e7oiS-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+tree:   https://github.com/atishp04/linux kvm_perf_rfc
+head:   84a3fd7f92957f64c411595a9efcc2eed18db2be
+commit: bb00c153861bc5d86bab2b4335f3f0e1ca970925 [20/24] RISC-V: KVM: Add skeleton support for perf
+config: riscv-randconfig-r042-20220715 (https://download.01.org/0day-ci/archive/20220716/202207161459.vX2e7oiS-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 07022e6cf9b5b3baa642be53d0b3c3f1c403dbfd)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv-linux-gnu
+        # https://github.com/atishp04/linux/commit/bb00c153861bc5d86bab2b4335f3f0e1ca970925
+        git remote add atishp04 https://github.com/atishp04/linux
+        git fetch --no-tags atishp04 kvm_perf_rfc
+        git checkout bb00c153861bc5d86bab2b4335f3f0e1ca970925
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv prepare
 
-CRYPTO_LIB_CHACHA depends on CRYPTO for __crypto_xor, defined in
-crypto/algapi.c.  This is a layering violation because the dependencies
-should only go in the other direction (crypto/ => lib/crypto/).  Also
-the correct dependency would be CRYPTO_ALGAPI, not CRYPTO.  Fix this by
-moving __crypto_xor into the utils module in lib/crypto/.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Note that CRYPTO_LIB_CHACHA_GENERIC selected XOR_BLOCKS, which is
-unrelated and unnecessary.  It was perhaps thought that XOR_BLOCKS was
-needed for __crypto_xor, but that's not the case.
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- crypto/algapi.c     | 71 -------------------------------------
- lib/crypto/Kconfig  |  3 +-
- lib/crypto/Makefile |  2 +-
- lib/crypto/utils.c  | 85 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 87 insertions(+), 74 deletions(-)
- create mode 100644 lib/crypto/utils.c
+   In file included from arch/riscv/kernel/asm-offsets.c:12:
+   In file included from arch/riscv/include/asm/kvm_host.h:21:
+>> arch/riscv/include/asm/kvm_vcpu_pmu.h:28:21: error: use of undeclared identifier 'RISCV_MAX_COUNTERS'
+           struct kvm_pmc pmc[RISCV_MAX_COUNTERS];
+                              ^
+   arch/riscv/include/asm/kvm_vcpu_pmu.h:34:27: error: use of undeclared identifier 'RISCV_MAX_COUNTERS'
+           DECLARE_BITMAP(used_pmc, RISCV_MAX_COUNTERS);
+                                    ^
+   2 errors generated.
+   make[2]: *** [scripts/Makefile.build:117: arch/riscv/kernel/asm-offsets.s] Error 1
+   make[2]: Target '__build' not remade because of errors.
+   make[1]: *** [Makefile:1200: prepare0] Error 2
+   make[1]: Target 'prepare' not remade because of errors.
+   make: *** [Makefile:219: __sub-make] Error 2
+   make: Target 'prepare' not remade because of errors.
 
-diff --git a/crypto/algapi.c b/crypto/algapi.c
-index d1c99288af3e0d..5c69ff8e8fa5c1 100644
---- a/crypto/algapi.c
-+++ b/crypto/algapi.c
-@@ -997,77 +997,6 @@ void crypto_inc(u8 *a, unsigned int size)
- }
- EXPORT_SYMBOL_GPL(crypto_inc);
- 
--void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
--{
--	int relalign = 0;
--
--	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
--		int size = sizeof(unsigned long);
--		int d = (((unsigned long)dst ^ (unsigned long)src1) |
--			 ((unsigned long)dst ^ (unsigned long)src2)) &
--			(size - 1);
--
--		relalign = d ? 1 << __ffs(d) : size;
--
--		/*
--		 * If we care about alignment, process as many bytes as
--		 * needed to advance dst and src to values whose alignments
--		 * equal their relative alignment. This will allow us to
--		 * process the remainder of the input using optimal strides.
--		 */
--		while (((unsigned long)dst & (relalign - 1)) && len > 0) {
--			*dst++ = *src1++ ^ *src2++;
--			len--;
--		}
--	}
--
--	while (IS_ENABLED(CONFIG_64BIT) && len >= 8 && !(relalign & 7)) {
--		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
--			u64 l = get_unaligned((u64 *)src1) ^
--				get_unaligned((u64 *)src2);
--			put_unaligned(l, (u64 *)dst);
--		} else {
--			*(u64 *)dst = *(u64 *)src1 ^ *(u64 *)src2;
--		}
--		dst += 8;
--		src1 += 8;
--		src2 += 8;
--		len -= 8;
--	}
--
--	while (len >= 4 && !(relalign & 3)) {
--		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
--			u32 l = get_unaligned((u32 *)src1) ^
--				get_unaligned((u32 *)src2);
--			put_unaligned(l, (u32 *)dst);
--		} else {
--			*(u32 *)dst = *(u32 *)src1 ^ *(u32 *)src2;
--		}
--		dst += 4;
--		src1 += 4;
--		src2 += 4;
--		len -= 4;
--	}
--
--	while (len >= 2 && !(relalign & 1)) {
--		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
--			u16 l = get_unaligned((u16 *)src1) ^
--				get_unaligned((u16 *)src2);
--			put_unaligned(l, (u16 *)dst);
--		} else {
--			*(u16 *)dst = *(u16 *)src1 ^ *(u16 *)src2;
--		}
--		dst += 2;
--		src1 += 2;
--		src2 += 2;
--		len -= 2;
--	}
--
--	while (len--)
--		*dst++ = *src1++ ^ *src2++;
--}
--EXPORT_SYMBOL_GPL(__crypto_xor);
--
- unsigned int crypto_alg_extsize(struct crypto_alg *alg)
- {
- 	return alg->cra_ctxsize +
-diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index b09d9d6546cbc3..7e9683e9f5c636 100644
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -36,7 +36,7 @@ config CRYPTO_ARCH_HAVE_LIB_CHACHA
- 
- config CRYPTO_LIB_CHACHA_GENERIC
- 	tristate
--	select XOR_BLOCKS
-+	select CRYPTO_LIB_UTILS
- 	help
- 	  This symbol can be depended upon by arch implementations of the
- 	  ChaCha library interface that require the generic code as a
-@@ -46,7 +46,6 @@ config CRYPTO_LIB_CHACHA_GENERIC
- 
- config CRYPTO_LIB_CHACHA
- 	tristate "ChaCha library interface"
--	depends on CRYPTO
- 	depends on CRYPTO_ARCH_HAVE_LIB_CHACHA || !CRYPTO_ARCH_HAVE_LIB_CHACHA
- 	select CRYPTO_LIB_CHACHA_GENERIC if CRYPTO_ARCH_HAVE_LIB_CHACHA=n
- 	help
-diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index b956b3bae26aaf..c852f067ab0601 100644
---- a/lib/crypto/Makefile
-+++ b/lib/crypto/Makefile
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- obj-$(CONFIG_CRYPTO_LIB_UTILS)			+= libcryptoutils.o
--libcryptoutils-y				:= memneq.o
-+libcryptoutils-y				:= memneq.o utils.o
- 
- # chacha is used by the /dev/random driver which is always builtin
- obj-y						+= chacha.o
-diff --git a/lib/crypto/utils.c b/lib/crypto/utils.c
-new file mode 100644
-index 00000000000000..f20bdb2ae88771
---- /dev/null
-+++ b/lib/crypto/utils.c
-@@ -0,0 +1,85 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Crypto library utility functions
-+ *
-+ * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
-+ */
-+
-+#include <crypto/algapi.h>
-+#include <asm/unaligned.h>
-+
-+/*
-+ * XOR @len bytes from @src1 and @src2 together, writing the result to @dst
-+ * (which may alias one of the sources).  Don't call this directly; call
-+ * crypto_xor() or crypto_xor_cpy() instead.
-+ */
-+void __crypto_xor(u8 *dst, const u8 *src1, const u8 *src2, unsigned int len)
-+{
-+	int relalign = 0;
-+
-+	if (!IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
-+		int size = sizeof(unsigned long);
-+		int d = (((unsigned long)dst ^ (unsigned long)src1) |
-+			 ((unsigned long)dst ^ (unsigned long)src2)) &
-+			(size - 1);
-+
-+		relalign = d ? 1 << __ffs(d) : size;
-+
-+		/*
-+		 * If we care about alignment, process as many bytes as
-+		 * needed to advance dst and src to values whose alignments
-+		 * equal their relative alignment. This will allow us to
-+		 * process the remainder of the input using optimal strides.
-+		 */
-+		while (((unsigned long)dst & (relalign - 1)) && len > 0) {
-+			*dst++ = *src1++ ^ *src2++;
-+			len--;
-+		}
-+	}
-+
-+	while (IS_ENABLED(CONFIG_64BIT) && len >= 8 && !(relalign & 7)) {
-+		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
-+			u64 l = get_unaligned((u64 *)src1) ^
-+				get_unaligned((u64 *)src2);
-+			put_unaligned(l, (u64 *)dst);
-+		} else {
-+			*(u64 *)dst = *(u64 *)src1 ^ *(u64 *)src2;
-+		}
-+		dst += 8;
-+		src1 += 8;
-+		src2 += 8;
-+		len -= 8;
-+	}
-+
-+	while (len >= 4 && !(relalign & 3)) {
-+		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
-+			u32 l = get_unaligned((u32 *)src1) ^
-+				get_unaligned((u32 *)src2);
-+			put_unaligned(l, (u32 *)dst);
-+		} else {
-+			*(u32 *)dst = *(u32 *)src1 ^ *(u32 *)src2;
-+		}
-+		dst += 4;
-+		src1 += 4;
-+		src2 += 4;
-+		len -= 4;
-+	}
-+
-+	while (len >= 2 && !(relalign & 1)) {
-+		if (IS_ENABLED(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)) {
-+			u16 l = get_unaligned((u16 *)src1) ^
-+				get_unaligned((u16 *)src2);
-+			put_unaligned(l, (u16 *)dst);
-+		} else {
-+			*(u16 *)dst = *(u16 *)src1 ^ *(u16 *)src2;
-+		}
-+		dst += 2;
-+		src1 += 2;
-+		src2 += 2;
-+		len -= 2;
-+	}
-+
-+	while (len--)
-+		*dst++ = *src1++ ^ *src2++;
-+}
-+EXPORT_SYMBOL_GPL(__crypto_xor);
+
+vim +/RISCV_MAX_COUNTERS +28 arch/riscv/include/asm/kvm_vcpu_pmu.h
+
+    25	
+    26	/* PMU data structure per vcpu */
+    27	struct kvm_pmu {
+  > 28		struct kvm_pmc pmc[RISCV_MAX_COUNTERS];
+    29		/* Number of the virtual firmware counters available */
+    30		int num_fw_ctrs;
+    31		/* Number of the virtual hardware counters available */
+    32		int num_hw_ctrs;
+    33		/* Bit map of all the virtual counter used */
+    34		DECLARE_BITMAP(used_pmc, RISCV_MAX_COUNTERS);
+    35	};
+    36	
+
 -- 
-2.37.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
