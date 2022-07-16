@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B68FFC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79436C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233069AbiGPXR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39318 "EHLO
+        id S232985AbiGPXSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232725AbiGPXRk (ORCPT
+        with ESMTP id S232965AbiGPXRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:17:40 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF7922BE7
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:28 -0700 (PDT)
-Message-ID: <20220716230953.265188514@linutronix.de>
+        Sat, 16 Jul 2022 19:17:41 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D6423174
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:32 -0700 (PDT)
+Message-ID: <20220716230953.385846695@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013446;
+        s=2020; t=1658013449;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=3supOg+sDQQOfSp9ifUSIygdjymw6D8ncsEppKfmHZA=;
-        b=lprSnZOrYsVcKhla+weKD3GW8WaOjVFwhF5vQ7tqfZr7swIkUCxUaWUEmFfVrlVmf+P2Dl
-        iBkimFBI6lVycjhXXYg3zoBkiocSn1AIOAl04A00I7oaarB1ExIr15g8LFG+UhXvxi4h60
-        rQzpNxoqDS0lQpA1mFgMXsjoWdSiFEnp07CX2uG3ezJJkdx1slb0RDpC7VG1YnfmnlIyZ1
-        VrtL2GWlu2Z6PDWQklZL5fkTL0O6djafREywpx18Ligr1JBEWofhHDTkEQ9I56OANqWhxD
-        Fo4Dij2OfRM9xFAFjFUgOeVOApqT9CKKcKI6uyH5hsTcuKnTrK9lKSesZPi6kA==
+         references:references; bh=HpmwuGNovGo47P809SY+5iM/RPE9nY5KEl2jrra4VzI=;
+        b=skFOje2PrLR0pdzlqKwbqANdn8WzvZLOy8Phznr0Jo/t1Bocx31+VVWh9hN5dFsEpuXdff
+        BCapJFj4JPfdDoKHCGo7zOrSX3qnMQLA1r+6B9M3+747uP1Q6e5cOVQDura2n1qjQSL8WP
+        1L9QwUyy2E0Q6hG+r9FAprnCBPyzSSkQ/E+LulTvNYhjBPwCEcA89Coh7DnKaUrcug6K3f
+        0i85XosdVhbFsSm0jAaV/DaQXER+fJJP3XqXfUTRN10eoBQvH96Dxoscm/CIlEA9YSX68/
+        5dMqn6cgcmHOxGA5x2KvOhEsX4AntonvlOTfx3hYt0J4gtINm3xGXBq0wENGzA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013446;
+        s=2020e; t=1658013449;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=3supOg+sDQQOfSp9ifUSIygdjymw6D8ncsEppKfmHZA=;
-        b=NYy2oXk2xptMAHSOgKlFJOeSqUAAOCZIiYPMmqpSGFiXoEU6nWjlfbJ1ADNlu0rCgNzxiL
-        0zGgfqqGJDYk+SBg==
+         references:references; bh=HpmwuGNovGo47P809SY+5iM/RPE9nY5KEl2jrra4VzI=;
+        b=Y6ouY3ChRBWW4VLRhuyDj7T4uHASNMiMDjeRWDOZ05p/XoU+ZQBP6Z08vCEW75PuhBQ1mD
+        rTjeAuMs85bj3TCg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -47,97 +47,47 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [patch 10/38] objtool: Add --hacks=skylake
+Subject: [patch 12/38] x86/entry: Make sync_regs() invocation a tail call
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:25 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:29 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-Make the call/func sections selectable via the --hacks option.
+No point in having a call there. Spare the call/ret overhead.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- scripts/Makefile.lib                    |    3 ++-
- tools/objtool/builtin-check.c           |    7 ++++++-
- tools/objtool/check.c                   |   18 ++++++++++--------
- tools/objtool/include/objtool/builtin.h |    1 +
- 4 files changed, 19 insertions(+), 10 deletions(-)
+ arch/x86/entry/entry_64.S |    7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
---- a/scripts/Makefile.lib
-+++ b/scripts/Makefile.lib
-@@ -231,7 +231,8 @@ objtool := $(objtree)/tools/objtool/objt
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -1060,11 +1060,8 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	UNTRAIN_RET
  
- objtool_args =								\
- 	$(if $(CONFIG_HAVE_JUMP_LABEL_HACK), --hacks=jump_label)	\
--	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)		\
-+	$(if $(CONFIG_HAVE_NOINSTR_HACK), --hacks=noinstr)              \
-+	$(if $(CONFIG_CALL_DEPTH_TRACKING), --hacks=skylake)            \
- 	$(if $(CONFIG_X86_KERNEL_IBT), --ibt)				\
- 	$(if $(CONFIG_FTRACE_MCOUNT_USE_OBJTOOL), --mcount)		\
- 	$(if $(CONFIG_UNWINDER_ORC), --orc)				\
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -57,12 +57,17 @@ static int parse_hacks(const struct opti
- 		found = true;
- 	}
+ 	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+-.Lerror_entry_from_usermode_after_swapgs:
+-
+ 	/* Put us onto the real thread stack. */
+-	call	sync_regs
+-	RET
++	jmp	sync_regs
  
-+	if (!str || strstr(str, "skylake")) {
-+		opts.hack_skylake = true;
-+		found = true;
-+	}
-+
- 	return found ? 0 : -1;
- }
+ 	/*
+ 	 * There are two places in the kernel that can potentially fault with
+@@ -1122,7 +1119,7 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+ 	mov	%rax, %rdi
+-	jmp	.Lerror_entry_from_usermode_after_swapgs
++	jmp	sync_regs
+ SYM_CODE_END(error_entry)
  
- const struct option check_options[] = {
- 	OPT_GROUP("Actions:"),
--	OPT_CALLBACK_OPTARG('h', "hacks", NULL, NULL, "jump_label,noinstr", "patch toolchain bugs/limitations", parse_hacks),
-+	OPT_CALLBACK_OPTARG('h', "hacks", NULL, NULL, "jump_label,noinstr,skylake", "patch toolchain bugs/limitations", parse_hacks),
- 	OPT_BOOLEAN('i', "ibt", &opts.ibt, "validate and annotate IBT"),
- 	OPT_BOOLEAN('m', "mcount", &opts.mcount, "annotate mcount/fentry calls for ftrace"),
- 	OPT_BOOLEAN('n', "noinstr", &opts.noinstr, "validate noinstr rules"),
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -4372,15 +4372,17 @@ int check(struct objtool_file *file)
- 			goto out;
- 		warnings += ret;
- 
--		ret = create_direct_call_sections(file);
--		if (ret < 0)
--			goto out;
--		warnings += ret;
-+		if (opts.hack_skylake) {
-+			ret = create_direct_call_sections(file);
-+			if (ret < 0)
-+				goto out;
-+			warnings += ret;
- 
--		ret = create_sym_thunk_sections(file);
--		if (ret < 0)
--			goto out;
--		warnings += ret;
-+			ret = create_sym_thunk_sections(file);
-+			if (ret < 0)
-+				goto out;
-+			warnings += ret;
-+		}
- 	}
- 
- 	if (opts.mcount) {
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -14,6 +14,7 @@ struct opts {
- 	bool dump_orc;
- 	bool hack_jump_label;
- 	bool hack_noinstr;
-+	bool hack_skylake;
- 	bool ibt;
- 	bool mcount;
- 	bool noinstr;
+ SYM_CODE_START_LOCAL(error_return)
 
