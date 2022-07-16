@@ -2,74 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C67CCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 11:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DB5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 11:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230472AbiGPLmV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 07:42:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37828 "EHLO
+        id S230245AbiGPLuP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 07:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiGPLmT (ORCPT
+        with ESMTP id S229472AbiGPLuM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 07:42:19 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C257C13D63;
-        Sat, 16 Jul 2022 04:42:18 -0700 (PDT)
-Received: from zn.tnic (p200300ea9729766f329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:766f:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id B7A2F1EC02AD;
-        Sat, 16 Jul 2022 13:42:12 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1657971732;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=TrWzbl6mvGD+VhoF3wfcgTYjQ8begmaufTzu3BvWSfI=;
-        b=C1ExD3plau1kTCEQtER4H4Afs2+xeOeYPdQkVI3hVtoyEHvXXh4x8ST6pfJ8nCPkw5vdB6
-        V/2P5mRnswj3HgN4AytzdE54tUOQgR8o4d6HIrp5I000qDMrxEZopxWIJ4elhwERZ9O4iV
-        6zUwd1IRMq3uG3UdGZ568ut+/m+6Clo=
-Date:   Sat, 16 Jul 2022 13:42:08 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Chuck Zmudzinski <brchuckz@netscape.net>
-Cc:     Juergen Gross <jgross@suse.com>, xen-devel@lists.xenproject.org,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        jbeulich@suse.com, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "# 5 . 17" <stable@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Subject: Re: [PATCH 0/3] x86: make pat and mtrr independent from each other
-Message-ID: <YtKkECIpM5q+TCT9@zn.tnic>
-References: <20220715142549.25223-1-jgross@suse.com>
- <7bf307c7-0b05-781b-a2a3-19b47589eb8a@netscape.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <7bf307c7-0b05-781b-a2a3-19b47589eb8a@netscape.net>
+        Sat, 16 Jul 2022 07:50:12 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54F6421E18
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 04:50:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=liusong@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VJUDiDf_1657972181;
+Received: from localhost(mailfrom:liusong@linux.alibaba.com fp:SMTPD_---0VJUDiDf_1657972181)
+          by smtp.aliyun-inc.com;
+          Sat, 16 Jul 2022 19:50:06 +0800
+From:   Liu Song <liusong@linux.alibaba.com>
+To:     kbusch@kernel.org, axboe@fb.com, hch@lst.de, sagi@grimberg.me
+Cc:     linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nvme-pci: remove useless assignment in nvme_pci_setup_prps
+Date:   Sat, 16 Jul 2022 19:49:41 +0800
+Message-Id: <1657972181-72398-1-git-send-email-liusong@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 07:32:46AM -0400, Chuck Zmudzinski wrote:
-> Can you confirm that with this patch series you are trying
-> to fix that regression?
+From: Liu Song <liusong@linux.alibaba.com>
 
-Yes, this patchset is aimed to fix the whole situation but please don't
-do anything yet - I need to find time and look at the whole approach
-before you can test it. Just be patient and we'll ping you when the time
-comes.
+If prp_list is NULL, nvme_unmap_sg will be performed, and the assignment
+to first_dma is meaningless, so remove it.
 
-Thx.
+Signed-off-by: Liu Song <liusong@linux.alibaba.com>
+---
+ drivers/nvme/host/pci.c | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 193b447..3872e33 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -670,7 +670,6 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
+ 
+ 	prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
+ 	if (!prp_list) {
+-		iod->first_dma = dma_addr;
+ 		iod->npages = -1;
+ 		return BLK_STS_RESOURCE;
+ 	}
 -- 
-Regards/Gruss,
-    Boris.
+1.8.3.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
