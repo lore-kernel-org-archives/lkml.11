@@ -2,206 +2,232 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 380C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:39:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D25E3CCA482
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiGPWjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 18:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
+        id S232022AbiGPWjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 18:39:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPWi7 (ORCPT
+        with ESMTP id S229501AbiGPWju (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 18:38:59 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99B7F582
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 15:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658011138; x=1689547138;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/wqSAkyYRXMbf5WbLaFtlDIFoQFv7gNDOg5kXrOmvkg=;
-  b=GIBlvLCmme6KiDal0OG1HS8lnPGb7DEXcj2AfXJX4wbSVKjmQJcrGT4b
-   EiZrDEiRF+1RvHQsKrYml5NyLs+GllMv1K/JXfQmz049H/HLOxczTUZTM
-   iRSCgWNblHxxWuZFN+p9owSqRsFeZ896g41KQ7a9TV/D4zVvdDbHA6Kzs
-   mM6aW7cALUjK1UQvTTxa+ykZo+LBm+8Pd9S/6gK+y5dWrJcJ4786f1Mr9
-   YmvldjW3GJk3YN+IMTE5MxG/f7D777BihCEOognSBZH27kWuQBUGW2JCS
-   GDOlnbJaC+UeD328ct8FOxByccCKiTZrTbWt+8Jw+Jna0szqTG1F9UosC
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="283575347"
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="283575347"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 15:38:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="923904340"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 16 Jul 2022 15:38:57 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCqR6-0002Fh-ST;
-        Sat, 16 Jul 2022 22:38:56 +0000
-Date:   Sun, 17 Jul 2022 06:38:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/urgent] BUILD SUCCESS
- bcf163150cd37348a0cb59e95c916a83a9344b0e
-Message-ID: <62d33df5.WZTtzw/Nq4iRs52V%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Sat, 16 Jul 2022 18:39:50 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F49192A8;
+        Sat, 16 Jul 2022 15:39:49 -0700 (PDT)
+Received: from mercury (unknown [185.209.196.172])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: sre)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id DA7546601656;
+        Sat, 16 Jul 2022 23:39:47 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658011188;
+        bh=COEr5uOxMkI3kPNEax0jj1+fGc37yVW4MCquaThpdzI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=JB5nMFWMpC6G9dcujK7dvS0SOFU99Z8xDvdj6318RD7PoIOMdQoqqXVqT9tAnM669
+         eQy9KLM0jmoYp33WaoUS2KTrsn3YkfKSpGKffufXC/1IUJFutZrABbnIBM0zLmO1zY
+         BHAbtHczFv0dmW+hcv53T+L7xXt38grZVEmY0Z5jTO1Ywg7QmzuaNZHqiEGGWU4bQU
+         IXDnA2RoECqO1Mlnu0ka1rXBlNF2mRHTe8NOIgPlrEzXgAw4rgUkMAyztEtvxuKIna
+         U3H6jlANxPR9c8iPxyZkoZMyePlfLtgpQxg+/eyJvsEJ2xb9cCFm8XjiMwKccjYzas
+         DR8FbiCBITAiw==
+Received: by mercury (Postfix, from userid 1000)
+        id 790E91060428; Sun, 17 Jul 2022 00:39:45 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 00:39:45 +0200
+From:   Sebastian Reichel <sebastian.reichel@collabora.com>
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     jic23@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
+        lee.jones@linaro.org, lgirdwood@gmail.com, broonie@kernel.org,
+        lars@metafoo.de, andy.shevchenko@gmail.com,
+        linus.walleij@linaro.org, brgl@bgdev.pl, michael@walle.cc,
+        samuel@sholland.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH v5 11/13] power: axp20x_battery: Add constant charge
+ current table
+Message-ID: <20220716223945.o6ilrbrlvdszcwfa@mercury.elektranox.org>
+References: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
+ <20220706101902.4984-12-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="aaa3fkkzmlof3mir"
+Content-Disposition: inline
+In-Reply-To: <20220706101902.4984-12-aidanmacdonald.0x0@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/urgent
-branch HEAD: bcf163150cd37348a0cb59e95c916a83a9344b0e  x86/bugs: Remove apostrophe typo
 
-elapsed time: 727m
+--aaa3fkkzmlof3mir
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-configs tested: 129
-configs skipped: 74
+Hi,
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+On Wed, Jul 06, 2022 at 11:19:00AM +0100, Aidan MacDonald wrote:
+> Add a table-based lookup method for constant charge current,
+> which is necessary when the setting cannot be represented as
+> a linear range.
+>=20
+> This also replaces the hard-coded 300 mA default ccc setting
+> if the DT-specified value is unsupported; the minimum value
+> for the device is now set exactly instead of relying on the
+> value being rounded down to a supported value.
+>=20
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
 
-gcc tested configs:
-arm64                            allyesconfig
-arm                                 defconfig
-arm                              allyesconfig
-i386                          randconfig-c001
-powerpc              randconfig-c003-20220717
-arm                     eseries_pxa_defconfig
-mips                      loongson3_defconfig
-x86_64                           alldefconfig
-powerpc                 mpc837x_rdb_defconfig
-powerpc                       holly_defconfig
-arm                        mvebu_v7_defconfig
-powerpc                 mpc85xx_cds_defconfig
-parisc                generic-32bit_defconfig
-sh                         ap325rxa_defconfig
-arm                          gemini_defconfig
-arm                           sama5_defconfig
-xtensa                              defconfig
-xtensa                  nommu_kc705_defconfig
-arm                            mps2_defconfig
-mips                           jazz_defconfig
-arm                          simpad_defconfig
-arm                       multi_v4t_defconfig
-arm                      integrator_defconfig
-openrisc                            defconfig
-mips                        vocore2_defconfig
-csky                                defconfig
-loongarch                           defconfig
-sh                               alldefconfig
-mips                             allyesconfig
-xtensa                    xip_kc705_defconfig
-powerpc                     tqm8555_defconfig
-sh                        sh7785lcr_defconfig
-sh                           se7750_defconfig
-arm                        spear6xx_defconfig
-powerpc                     tqm8548_defconfig
-arm                         lpc18xx_defconfig
-sh                          urquell_defconfig
-mips                       bmips_be_defconfig
-ia64                             alldefconfig
-openrisc                 simple_smp_defconfig
-sh                           se7721_defconfig
-m68k                        mvme147_defconfig
-sh                          polaris_defconfig
-powerpc                  storcenter_defconfig
-arc                            hsdk_defconfig
-sh                   secureedge5410_defconfig
-powerpc                    sam440ep_defconfig
-mips                         tb0226_defconfig
-riscv                    nommu_virt_defconfig
-riscv                          rv32_defconfig
-riscv                    nommu_k210_defconfig
-riscv                             allnoconfig
-i386                   debian-10.3-kselftests
-i386                              debian-10.3
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-m68k                             allyesconfig
-m68k                             allmodconfig
-arc                              allyesconfig
-alpha                            allyesconfig
-powerpc                           allnoconfig
-powerpc                          allmodconfig
-sh                               allmodconfig
-i386                             allyesconfig
-i386                                defconfig
-x86_64                        randconfig-a006
-x86_64                        randconfig-a004
-x86_64                        randconfig-a002
-i386                          randconfig-a005
-i386                          randconfig-a001
-i386                          randconfig-a003
-x86_64                        randconfig-a015
-x86_64                        randconfig-a013
-x86_64                        randconfig-a011
-i386                          randconfig-a012
-i386                          randconfig-a014
-i386                          randconfig-a016
-x86_64                    rhel-8.3-kselftests
-um                           x86_64_defconfig
-um                             i386_defconfig
-x86_64                              defconfig
-x86_64                           allyesconfig
-x86_64                               rhel-8.3
-x86_64                          rhel-8.3-func
-x86_64                           rhel-8.3-syz
-x86_64                         rhel-8.3-kunit
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 
-clang tested configs:
-powerpc                     tqm5200_defconfig
-mips                        qi_lb60_defconfig
-powerpc                     kilauea_defconfig
-mips                      pic32mzda_defconfig
-mips                           mtx1_defconfig
-powerpc                      ppc64e_defconfig
-powerpc                  mpc885_ads_defconfig
-powerpc                    mvme5100_defconfig
-arm                        multi_v5_defconfig
-arm                       imx_v4_v5_defconfig
-riscv                          rv32_defconfig
-mips                        workpad_defconfig
-arm                        mvebu_v5_defconfig
-arm                         bcm2835_defconfig
-powerpc                    socrates_defconfig
-powerpc               mpc834x_itxgp_defconfig
-mips                      malta_kvm_defconfig
-mips                           ip28_defconfig
-mips                     loongson1c_defconfig
-arm                         orion5x_defconfig
-x86_64                        randconfig-k001
-x86_64                        randconfig-a005
-x86_64                        randconfig-a003
-x86_64                        randconfig-a001
-i386                          randconfig-a002
-i386                          randconfig-a006
-i386                          randconfig-a004
-x86_64                        randconfig-a012
-x86_64                        randconfig-a014
-x86_64                        randconfig-a016
-i386                          randconfig-a011
-i386                          randconfig-a013
-i386                          randconfig-a015
-hexagon              randconfig-r045-20220716
-hexagon              randconfig-r045-20220715
-s390                 randconfig-r044-20220715
-hexagon              randconfig-r041-20220716
-hexagon              randconfig-r041-20220715
-riscv                randconfig-r042-20220715
-hexagon              randconfig-r045-20220717
-s390                 randconfig-r044-20220717
-hexagon              randconfig-r041-20220717
-riscv                randconfig-r042-20220717
+-- Sebastian
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>  drivers/power/supply/axp20x_battery.c | 59 +++++++++++++++++++++------
+>  1 file changed, 47 insertions(+), 12 deletions(-)
+>=20
+> diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply=
+/axp20x_battery.c
+> index 9106077c0dbb..401779d84d2b 100644
+> --- a/drivers/power/supply/axp20x_battery.c
+> +++ b/drivers/power/supply/axp20x_battery.c
+> @@ -61,6 +61,14 @@ struct axp20x_batt_ps;
+>  struct axp_data {
+>  	int	ccc_scale;
+>  	int	ccc_offset;
+> +	/*
+> +	 * Lookup table for constant charge current, if provided this is used
+> +	 * instead of ccc_scale/ccc_offset.
+> +	 *
+> +	 * The table is indexed by the field AXP20X_CHRG_CTRL1_TGT_CURR so it
+> +	 * must have AXP20X_CHRG_CTRL1_TGT_CURR+1 elements.
+> +	 */
+> +	const int *ccc_table;
+>  	bool	has_fg_valid;
+>  	int	(*get_max_voltage)(struct axp20x_batt_ps *batt, int *val);
+>  	int	(*set_max_voltage)(struct axp20x_batt_ps *batt, int val);
+> @@ -176,7 +184,10 @@ static int axp20x_get_constant_charge_current(struct=
+ axp20x_batt_ps *axp,
+> =20
+>  	*val &=3D AXP20X_CHRG_CTRL1_TGT_CURR;
+> =20
+> -	*val =3D *val * axp->data->ccc_scale + axp->data->ccc_offset;
+> +	if (axp->data->ccc_table)
+> +		*val =3D axp->data->ccc_table[*val];
+> +	else
+> +		*val =3D *val * axp->data->ccc_scale + axp->data->ccc_offset;
+> =20
+>  	return 0;
+>  }
+> @@ -389,16 +400,35 @@ static int axp20x_battery_set_max_voltage(struct ax=
+p20x_batt_ps *axp20x_batt,
+>  				  AXP20X_CHRG_CTRL1_TGT_VOLT, val);
+>  }
+> =20
+> +static int axp20x_get_constant_charge_current_sel(struct axp20x_batt_ps =
+*axp_batt,
+> +						  int charge_current)
+> +{
+> +	int i;
+> +
+> +	if (axp_batt->data->ccc_table) {
+> +		for (i =3D AXP20X_CHRG_CTRL1_TGT_CURR; i >=3D 0; i--) {
+> +			if (axp_batt->data->ccc_table[i] <=3D charge_current)
+> +				return i;
+> +		}
+> +
+> +		return -EINVAL;
+> +	}
+> +
+> +	i =3D (charge_current - axp_batt->data->ccc_offset) / axp_batt->data->c=
+cc_scale;
+> +	if (i > AXP20X_CHRG_CTRL1_TGT_CURR || i < 0)
+> +		return -EINVAL;
+> +
+> +	return i;
+> +}
+> +
+>  static int axp20x_set_constant_charge_current(struct axp20x_batt_ps *axp=
+_batt,
+>  					      int charge_current)
+>  {
+>  	if (charge_current > axp_batt->max_ccc)
+>  		return -EINVAL;
+> =20
+> -	charge_current =3D (charge_current - axp_batt->data->ccc_offset) /
+> -		axp_batt->data->ccc_scale;
+> -
+> -	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
+> +	charge_current =3D axp20x_get_constant_charge_current_sel(axp_batt, cha=
+rge_current);
+> +	if (charge_current < 0)
+>  		return -EINVAL;
+> =20
+>  	return regmap_update_bits(axp_batt->regmap, AXP20X_CHRG_CTRL1,
+> @@ -410,14 +440,14 @@ static int axp20x_set_max_constant_charge_current(s=
+truct axp20x_batt_ps *axp,
+>  {
+>  	bool lower_max =3D false;
+> =20
+> -	charge_current =3D (charge_current - axp->data->ccc_offset) /
+> -		axp->data->ccc_scale;
+> -
+> -	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
+> +	charge_current =3D axp20x_get_constant_charge_current_sel(axp, charge_c=
+urrent);
+> +	if (charge_current < 0)
+>  		return -EINVAL;
+> =20
+> -	charge_current =3D charge_current * axp->data->ccc_scale +
+> -		axp->data->ccc_offset;
+> +	if (axp->data->ccc_table)
+> +		charge_current =3D axp->data->ccc_table[charge_current];
+> +	else
+> +		charge_current =3D charge_current * axp->data->ccc_scale + axp->data->=
+ccc_offset;
+> =20
+>  	if (charge_current > axp->max_ccc)
+>  		dev_warn(axp->dev,
+> @@ -629,7 +659,12 @@ static int axp20x_power_probe(struct platform_device=
+ *pdev)
+>  								   ccc)) {
+>  			dev_err(&pdev->dev,
+>  				"couldn't set constant charge current from DT: fallback to minimum v=
+alue\n");
+> -			ccc =3D 300000;
+> +
+> +			if (axp20x_batt->data->ccc_table)
+> +				ccc =3D axp20x_batt->data->ccc_table[0];
+> +			else
+> +				ccc =3D axp20x_batt->data->ccc_offset;
+> +
+>  			axp20x_batt->max_ccc =3D ccc;
+>  			axp20x_set_constant_charge_current(axp20x_batt, ccc);
+>  		}
+> --=20
+> 2.35.1
+>=20
+
+--aaa3fkkzmlof3mir
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmLTPiUACgkQ2O7X88g7
++pqb5w//Rj1zJNtTfSRun6rF3+mFEo/1sWS/1ofixrlrahfM2EIqy6heMUeRHLSA
+rr1orplBrlIP0hbbebdgtM27KKAJbjvY2I6yMlJTN8iQa2fNp/vJjOIFDjIbMWgc
+W2RwBbwcF3lU65jsB4iUtFWxfxPipsEbfB2BBbZV+KaRDoFNu6WIUH37N31FWGJu
+tvpPjtXcVinNTfZJiSenQ+HtuhtneTTDA7RinllMa1y7LU7LAIa48kuvl/e20v4l
+H8KzpkkYuPVC+vF4sCKJ33zprLUNRoV4GwOnSRpkODV1HEMjAQZMF/dZJ3NQ8W14
+Xxb2ip+SaRTAD0TLDZl1B/5uLuFEZF2XSAB54wvGIrs6FOH+adjRKlc9SrqVClig
+ZEv0qlpVzRTQ+3Z0D6cfV94yJ0yPSE7ivZj1wvtjUWEaTdKAQYc43ZQyvHDg7pjy
+hD87zEEAsNKlxP27Y2lFbnaB00nbYNdtNKhMoDmhBH2SxllE3rjeOA2y2BHJrLeZ
+ThltuMfKPpGDTKxxt7/Qxh94tbCxRXQGZM1DD9U9XMxwe922Hy7Ws523gH2FrdTG
+gPKtZ4TSlFYu5LVWrMyiJ5YhBTxu8MUs1dz/qakuUC/1KFD+OiBLaLBY4a/Pg/To
+yq1ZpXkVH3LCISl/3305reZf6hy4f7heSRJt+k99NKypRPDlGUM=
+=u+Wk
+-----END PGP SIGNATURE-----
+
+--aaa3fkkzmlof3mir--
