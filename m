@@ -2,68 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6994C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 16:57:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F6DCCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:00:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231859AbiGPQ5n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 12:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53104 "EHLO
+        id S231998AbiGPRAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 13:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231772AbiGPQ5m (ORCPT
+        with ESMTP id S231918AbiGPRAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 12:57:42 -0400
-Received: from smtpbg.qq.com (unknown [43.155.67.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 712F01EEF6;
-        Sat, 16 Jul 2022 09:57:36 -0700 (PDT)
-X-QQ-mid: bizesmtp65t1657990605t8bp26sw
-Received: from dengVM.. ( [117.176.186.166])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 17 Jul 2022 00:56:34 +0800 (CST)
-X-QQ-SSF: 01000000002000305000B00A0000000
-X-QQ-FEAT: BYUemv+qiN3/9/vLY1i02sXWgxukErvdo4j5XnjFneZ0Pjwt1A9kwMxja9+il
-        SPkFx/dYqCecn6eKrcemypcEuoZGvBRJijdCzyJNwb/Zfv8ir9OskP2L6kxPM5fsdDmBmpQ
-        tOvBoYXhBJKZbghdUlKtyRZaFtrBpraYLedQD6Hp9YkB12bYOrQJXnExWD0WUFdKiRhgSZJ
-        JsBSZOWGBmmgdzz7orlJ8m+4EI/T9CTXhrsc5M53uhcm4uIMQF61U/HO5IzRoH2IJSe4OOk
-        VkoZV/9GT6JZwhR8nBxB0ZXxFcQ9OY0hv0AQX436mrTCB/DUcl3eKyxIMvbNEyMNe3oxoYn
-        FDYclbUmhyTFPrkgbEQ5Hm7wxvIr0ppbnxNbh4tO6QNo5VoqU4=
-X-QQ-GoodBg: 0
-From:   shaom Deng <dengshaomin@cdjrlc.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net
-Cc:     paulus@samba.org, linux-crypto@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        shaom Deng <dengshaomin@cdjrlc.com>
-Subject: [PATCH] cyrpto:delete the rebundant word "block" in comments
-Date:   Sun, 17 Jul 2022 00:56:33 +0800
-Message-Id: <20220716165633.17822-1-dengshaomin@cdjrlc.com>
-X-Mailer: git-send-email 2.34.1
+        Sat, 16 Jul 2022 13:00:15 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60D31F621
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:00:13 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ez10so14001020ejc.13
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:00:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nlL1rfSKI0VufnuFia5XzM700DvI42sQqODIGzcOV3g=;
+        b=Ke9bp0sUSuPEIDm0LtBj8Yoo6Pr1BExYCtWeEgwK15DD2jj1LrH8Ex65+G+6Mc7TWo
+         9LI2TAdrTxAHt6cw4cHGHEZo0BUT5YLhxN49rWZMQ2UpbNHeT60Bio4egn4me/uGRZwg
+         L1hH3WDXE3SDr0lknjXKyu835PNThnwnt4y5c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nlL1rfSKI0VufnuFia5XzM700DvI42sQqODIGzcOV3g=;
+        b=wOUNDe7xdEDGBtgzy6O7/uR9rDcM8RrfybtKVIitb5eFvPCgAb7+Hr8x4l/Xuq7gCm
+         GnmqWUC7w1pHSvosvQVQuWYSGDrnsz38suc4YRtBCV4Zn7MnTjn7w/wCOizYN8pSr7Ho
+         KMFeBngAe2xry4/VFsz6kh3wriQxe2Xrm4gGnL/q/djfVenCmR8FJhgZoMCR1Zl1Grza
+         g4zyTzQmAzpE2vFnDAjc85mSPPOCAIaOsopZcm4RTvcgXQUF7b/p5RXMu59S906PzUdM
+         T/9IDlOfYk4Ec57dWX+r6tugL/WMnzbHdnwzXPf/JyO7lb6D5CCjNnsJTzAFvAP6cY75
+         qSrg==
+X-Gm-Message-State: AJIora+bNys3OwjC0SETfDU/Ou5qjvb3xR5Z9qxaxNBUngbQe6X79tul
+        HvL6+rEKWcf/Aioc06xT0MGnKIQdTyMa0A==
+X-Google-Smtp-Source: AGRyM1tWWYfkDfPVknIhjjXLp2cJ4Nj+CO7JP3LppjfbZbI5+vIgQieND7kAKWcWrYM3jHPRAWEUbQ==
+X-Received: by 2002:a17:907:c27:b0:72b:8118:b899 with SMTP id ga39-20020a1709070c2700b0072b8118b899mr19143718ejc.739.1657990812172;
+        Sat, 16 Jul 2022 10:00:12 -0700 (PDT)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-80-182-13-224.pool80182.interbusiness.it. [80.182.13.224])
+        by smtp.gmail.com with ESMTPSA id g3-20020a170906538300b0072b14836087sm3363135ejo.103.2022.07.16.10.00.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 10:00:11 -0700 (PDT)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jeroen Hofstee <jhofstee@victronenergy.com>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [RFC PATCH 0/5] can: slcan: extend supported features (step 2)
+Date:   Sat, 16 Jul 2022 19:00:02 +0200
+Message-Id: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-there is rebundant word "block" in comments, so remove it
+With this series I try to finish the task, started with the series [1],
+of completely removing the dependency of the slcan driver from the
+userspace slcand/slcan_attach applications.
 
-Signed-off-by: shaom Deng <dengshaomin@cdjrlc.com>
----
- arch/powerpc/crypto/aes-spe-glue.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The series, however, still lacks a patch for sending the bitrate setting
+command to the adapter:
 
-diff --git a/arch/powerpc/crypto/aes-spe-glue.c b/arch/powerpc/crypto/aes-spe-glue.c
-index e8dfe9fb0266..efab78a3a8f6 100644
---- a/arch/powerpc/crypto/aes-spe-glue.c
-+++ b/arch/powerpc/crypto/aes-spe-glue.c
-@@ -28,7 +28,7 @@
-  * instructions per clock cycle using one 32/64 bit unit (SU1) and one 32
-  * bit unit (SU2). One of these can be a memory access that is executed via
-  * a single load and store unit (LSU). XTS-AES-256 takes ~780 operations per
-- * 16 byte block block or 25 cycles per byte. Thus 768 bytes of input data
-+ * 16 byte block or 25 cycles per byte. Thus 768 bytes of input data
-  * will need an estimated maximum of 20,000 cycles. Headroom for cache misses
-  * included. Even with the low end model clocked at 667 MHz this equals to a
-  * critical time window of less than 30us. The value has been chosen to
+slcan_attach -b <btr> <dev>
+
+Without at least this patch the task cannot be considered truly completed.
+
+The idea I got is that this can only happen through the ethtool API.
+Among the various operations made available by this interface I would
+have used the set_regs (but only the get_regs has been developed), or,
+the set_eeprom, even if the setting would not be stored in an eeprom.
+IMHO it would take a set_regs operation with a `struct ethtool_wregs'
+parameter similar to `struct ethtool_eeprom' without the magic field:
+
+struct ethtool_wregs {
+	__u32	cmd;
+	__u32	offset;
+	__u32	len;
+	__u8	data[0];
+};
+
+But I am not the expert and if there was an alternative solution already
+usable, it would be welcome.
+
+The series also contains patches that remove the legacy stuff (slcan_devs,
+SLCAN_MAGIC, ...) and do some module cleanup.
+
+The series has been created on top of the patches:
+
+can: slcan: convert comments to network style comments
+can: slcan: slcan_init() convert printk(LEVEL ...) to pr_level()
+can: slcan: fix whitespace issues
+can: slcan: convert comparison to NULL into !val
+can: slcan: clean up if/else
+can: slcan: use scnprintf() as a hardening measure
+can: slcan: do not report txerr and rxerr during bus-off
+can: slcan: do not sleep with a spin lock held
+
+applied to linux-next.
+
+[1] https://lore.kernel.org/all/20220628163137.413025-1-dario.binacchi@amarulasolutions.com/
+
+
+Dario Binacchi (5):
+  can: slcan: remove useless header inclusions
+  can: slcan: remove legacy infrastructure
+  can: slcan: change every `slc' occurrence in `slcan'
+  can: slcan: use the generic can_change_mtu()
+  can: slcan: send the listen-only command to the adapter
+
+ drivers/net/can/slcan/slcan-core.c | 465 +++++++++--------------------
+ 1 file changed, 134 insertions(+), 331 deletions(-)
+
 -- 
-2.34.1
+2.32.0
 
