@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3D36C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 05:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E51AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 05:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbiGPFAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 01:00:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S230239AbiGPFHO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 01:07:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229448AbiGPFAl (ORCPT
+        with ESMTP id S229448AbiGPFHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 01:00:41 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026A440BD6;
-        Fri, 15 Jul 2022 22:00:34 -0700 (PDT)
-X-QQ-mid: bizesmtp65t1657947577tegsdf7s
-Received: from localhost.localdomain ( [223.86.65.215])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sat, 16 Jul 2022 12:59:35 +0800 (CST)
-X-QQ-SSF: 01000000002000E0U000B00A0000000
-X-QQ-FEAT: PXJK6C+SdL1zWBD2r1dwXVWoJNFGSxML4kNGB47Zd/vMvHzldRq1HCJXarKEW
-        UmWtuorVig3z4d2+/wTKtMKvNj38eVh7uKRzSWxxWhIN8pdJWXVvs95rwhrkFbkxdUceivp
-        GctfELb/61rM6FwAyZrxhnLps69L7fqO2d4oD7jY+b0d6J2/O1bHhx5lN9rum4kXrM4B5ql
-        ABb33lz1HSobucNDQQ4FsrHKBz3qjC76kpOoq6vQbWn0Hyh1aYuItGEyJIwV8C7bg0NsviS
-        hcqT4ij0mMYVC2/HmQLga0fL2/gRk2PNkqD7D+AJo6BJvAp8YxGR9vEq83pOxDbTuPxVNn6
-        GwigwVMdnYYW6xBQnAAfHJh22aF0g==
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     mchehab@kernel.org
-Cc:     mirela.rabulea@nxp.com, shawnguo@kernel.org,
-        s.hauer@pengutronix.de, linux-imx@nxp.com, kernel@pengutronix.de,
-        festevam@gmail.com, linux-media@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] media: imx-jpeg: Remove unnecessary memset() after dma_alloc_coherent()
-Date:   Sat, 16 Jul 2022 20:25:43 +0800
-Message-Id: <20220716122543.34218-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Sat, 16 Jul 2022 01:07:11 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09AB48AB2C
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 22:07:11 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id e9-20020a056e020b2900b002dc6c27849cso3844448ilu.8
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 22:07:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wsNtLY4uf8Mk90EQSUPSsoQBuXCjz2+6TE1cEUqJH04=;
+        b=IYgdAqGGbCNwwnwgIC8ZGOXTYzoXErr0tYuD6qKv2/aMW+QVUXt1hZTdOZVPP1NV5c
+         Q3U4XygIJoIAs0f4iuGHktYzQb42tNoM91Q1ydyLSL6mGzFcY68/QGuovZWd8Ovl3Cik
+         ulVOUJml0BhKSqDPPNIjNhQf+h90bXfyq2w80gLAZhwiVDQ9oDxz6CBaHGAEJ1+nLDIJ
+         nDmbfAJZGUVj7+1NDxzfqzJB1c76gS1mS/njUKkX7GO1eizzbLUShpMSXJcTJEniwK00
+         zBw1nzMo5TqUU256/Zfywo2wFBIV/kiTfPGz0K4ifZ6DxERdsN4a/cQdHklwmQmzy/LF
+         h1dg==
+X-Gm-Message-State: AJIora8eGFw6yak1CJInP6kgqV0yeXY2fMmRsZCeJbVRN1NFT/GvbFU0
+        WuRqSFEWj3b/BDHcrPJ2HXX4i0MwBPxVZumIIoWFpHJvVy6R
+X-Google-Smtp-Source: AGRyM1vDmPGPZK9UW3EJJufd+UAOmWjx4eE1a8jxhRfollVXY+LyMq8EeKITAcWHs4k7QSS83fWcm7HFA9TFy3mELpo+/zr+x+gB
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-Received: by 2002:a05:6e02:1c89:b0:2dc:7f32:793b with SMTP id
+ w9-20020a056e021c8900b002dc7f32793bmr9193085ill.189.1657948030189; Fri, 15
+ Jul 2022 22:07:10 -0700 (PDT)
+Date:   Fri, 15 Jul 2022 22:07:10 -0700
+In-Reply-To: <20220716045105.1420-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000065485805e3e51b42@google.com>
+Subject: Re: [syzbot] INFO: trying to register non-static key in ieee80211_do_stop
+From:   syzbot <syzbot+eceab52db7c4b961e9d6@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The `dma_alloc_coherent()' already zeroes out memory for us, so we don't
-need the redundant memset().
+Hello,
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c | 1 -
- 1 file changed, 1 deletion(-)
+syzbot has tested the proposed patch but the reproducer is still triggering an issue:
+SYZFATAL: executor failed NUM times: executor NUM: failed to write control pipe: write |NUM: broken pipe
 
-diff --git a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-index 32fd04a3d8bb..482177ee01b6 100644
---- a/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-+++ b/drivers/media/platform/nxp/imx-jpeg/mxc-jpeg.c
-@@ -519,7 +519,6 @@ static bool mxc_jpeg_alloc_slot_data(struct mxc_jpeg_dev *jpeg,
- 				     GFP_ATOMIC);
- 	if (!cfg_stm)
- 		goto err;
--	memset(cfg_stm, 0, MXC_JPEG_MAX_CFG_STREAM);
- 	jpeg->slot_data[slot].cfg_stream_vaddr = cfg_stm;
- 
- skip_alloc:
--- 
-2.35.1
+2022/07/16 05:06:15 SYZFATAL: executor failed 11 times: executor 5: failed to write control pipe: write |1: broken pipe
+SYZFAIL: wrong response packet
+ (errno 16: Device or resource busy)
+loop exited with status 67
+
+
+Tested on:
+
+commit:         9b59ec8d Merge tag 'riscv-for-linus-5.19-rc7' of git:/..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=17e216dc080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=8a04cbcc193add96
+dashboard link: https://syzkaller.appspot.com/bug?extid=eceab52db7c4b961e9d6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=1292a4fc080000
 
