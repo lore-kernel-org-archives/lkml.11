@@ -2,94 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E46C9C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242157AbiGSMxx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:53:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36842 "EHLO
+        id S242174AbiGSMyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:54:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241569AbiGSMxb (ORCPT
+        with ESMTP id S238118AbiGSMxd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:53:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E14991CEF;
-        Tue, 19 Jul 2022 05:21:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id C7C94CE1BE6;
-        Tue, 19 Jul 2022 12:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7EBEC341C6;
-        Tue, 19 Jul 2022 12:20:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233257;
-        bh=7ZYWiRyY+pdBvXiE3F4IZL5+o6eMslmSkCprIoHSkHs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UOEfQDM+BxtRLR058Ho3aumfaiin3saR9uXzexQyByrquNSHw41jyR1QF6E28b2rw
-         /nMbldtiiAPYWaZEP/cWeGA9S9RsDzAtr4XAG+zK8nrnfts642N7MiiIsaXxI+JuSh
-         rMZvTFB8ASAKRlWtAzMnzCSDovWl4m7zcDXNkpmc=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Tommy Pettersson <ptp@lysator.liu.se>,
-        Ciprian Craciun <ciprian.craciun@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 5.18 032/231] nilfs2: fix incorrect masking of permission flags for symlinks
-Date:   Tue, 19 Jul 2022 13:51:57 +0200
-Message-Id: <20220719114716.801823071@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-References: <20220719114714.247441733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:53:33 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B530D91CD4;
+        Tue, 19 Jul 2022 05:20:57 -0700 (PDT)
+X-QQ-mid: bizesmtp67t1658233253tqmac519
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:20:51 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: DoD8xN2rKozy7eJFzlPaHWPsUxHWUwNDxTWrfpazRFpt+uKhsC0TgieNkVJ0j
+        LNsIl3D5UlzeehNGmb57CxoEzjQZH32gmw5MiWiU1JwHi+JHjQhVjprlSvLigYmqFmhCk2U
+        KcaFfe/PF28Jr5JvdYFpY25U6CwPM4QfC1wJG1Y97wRT0dryV56YbDZXWNYRn81Vtbbk7Ar
+        GCcAonoMgav7yzC5q3yAsLUwNiB2ZZxRbaOkLQFHgBGaFD/1e4lEJEqO32ApTzaK992ntPh
+        q0II6GIe5n6PW3CzFaGy39Ee0nPqbgdazR4qzV/c0mGBoaXw0H651oj4kIWueorALlqgo29
+        JUQc48hi3keTELeIJmipW9Z4VZtCYGBbhVu+F/meqGZlFytctYNhID9DotPrDEqlnDjmlqB
+        Ws55ZvQkmSc=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     linux@roeck-us.net
+Cc:     wim@linux-watchdog.org, linux-watchdog@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] watchdog: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:18:56 +0800
+Message-Id: <20220716041856.34449-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryusuke Konishi <konishi.ryusuke@gmail.com>
+The double `and' is duplicated in the comment, remove one.
 
-commit 5924e6ec1585445f251ea92713eb15beb732622a upstream.
-
-The permission flags of newly created symlinks are wrongly dropped on
-nilfs2 with the current umask value even though symlinks should have 777
-(rwxrwxrwx) permissions:
-
- $ umask
- 0022
- $ touch file && ln -s file symlink; ls -l file symlink
- -rw-r--r--. 1 root root 0 Jun 23 16:29 file
- lrwxr-xr-x. 1 root root 4 Jun 23 16:29 symlink -> file
-
-This fixes the bug by inserting a missing check that excludes
-symlinks.
-
-Link: https://lkml.kernel.org/r/1655974441-5612-1-git-send-email-konishi.ryusuke@gmail.com
-Signed-off-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Reported-by: Tommy Pettersson <ptp@lysator.liu.se>
-Reported-by: Ciprian Craciun <ciprian.craciun@gmail.com>
-Tested-by: Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- fs/nilfs2/nilfs.h |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/watchdog/booke_wdt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/nilfs2/nilfs.h
-+++ b/fs/nilfs2/nilfs.h
-@@ -198,6 +198,9 @@ static inline int nilfs_acl_chmod(struct
- 
- static inline int nilfs_init_acl(struct inode *inode, struct inode *dir)
+diff --git a/drivers/watchdog/booke_wdt.c b/drivers/watchdog/booke_wdt.c
+index 5e4dc1a0f2c6..75da5cd02615 100644
+--- a/drivers/watchdog/booke_wdt.c
++++ b/drivers/watchdog/booke_wdt.c
+@@ -74,7 +74,7 @@ static unsigned long long period_to_sec(unsigned int period)
+ /*
+  * This procedure will find the highest period which will give a timeout
+  * greater than the one required. e.g. for a bus speed of 66666666 and
+- * and a parameter of 2 secs, then this procedure will return a value of 38.
++ * a parameter of 2 secs, then this procedure will return a value of 38.
+  */
+ static unsigned int sec_to_period(unsigned int secs)
  {
-+	if (S_ISLNK(inode->i_mode))
-+		return 0;
-+
- 	inode->i_mode &= ~current_umask();
- 	return 0;
- }
-
+-- 
+2.35.1
 
