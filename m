@@ -2,147 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9641AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 20:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEB6C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 20:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231672AbiGPUue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 16:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
+        id S231998AbiGPU5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 16:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPUu3 (ORCPT
+        with ESMTP id S229501AbiGPU5j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 16:50:29 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E778A15834;
-        Sat, 16 Jul 2022 13:50:28 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id t3so10516803edd.0;
-        Sat, 16 Jul 2022 13:50:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:from:subject
-         :content-transfer-encoding;
-        bh=xDymI6Bo6g9MRK0Ron1ut4TejlsEm125nYddx1oLxOo=;
-        b=Zf7M8lPX/jD0/tW1X5+ql3adpH2XmwwLS562v11J0S1U8eUG3xqFjcKaOh3jhyTer+
-         YeuLCAVCOMzrqpTU0KwgOzJ2UhuWL4C9E7GjCExMbT/ICPFvN51vevApAvCrMq2o/2Mj
-         l+mq/SOKlF38H/pmIr/Qux4xG1IjUXhljxQ9f+Oa01KZbiJVdjxy1qh7AGxELuisnYyJ
-         TPxQ+CKX/vBbpILoqegKoGTuEurdJmhR88DWkZQ9OEYKNA0Y/V2pxI0vR0WrpN59b149
-         kz4aH1Lrw//COdzdCnnpsdBcO94kf41ELJ7AIVfJZvHZO8dtSttkl3n9ANkm29W7f8UI
-         ziGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :from:subject:content-transfer-encoding;
-        bh=xDymI6Bo6g9MRK0Ron1ut4TejlsEm125nYddx1oLxOo=;
-        b=0VKhW7O6SJicN2FK63NkJLeYFKAoB4tvVFC1BgPWmXbHAZ8y6/Zs+VcUC9m8NZNuaF
-         EhEIDVFabBf8KyIgaPZtjC2L03S6BsRvxBQ7+wpXwO9HSoBN1wNlJ4Xj3WJzwWCw6XLw
-         a81zEJN/ZNdxbhOBIswHrzZ1vWit51d5G8iHP39Ko94Wm+UnCFFKRXZghxhllZFd7oGi
-         BVyoGQh3WmQXernKgGQJIwHvkD3mxnsqmE+jilKq3NethxSdfzYCBtMmhQ2EQIAqNqqd
-         lGLM4gPdIHCKoACopG3SUvGGndPZS6X/1sApNG5I/C7dJMvL8t9bZXlQUSGFzVnwuZoK
-         Balw==
-X-Gm-Message-State: AJIora/HWTPynk74B68m+RP57IHRMYZpcw8C9/VnmQbZarlTitQXYkFa
-        GGkylxqWuvQgSaC2x2k4PYwskxzxw7U=
-X-Google-Smtp-Source: AGRyM1sy0vcOpE9os5kzoxF2dE/RfkbrCMtXsq56v8+6jwIoniBUxzDFjoARMA/gIWtLoZDXec5Wsg==
-X-Received: by 2002:a50:fa91:0:b0:43a:4f13:4767 with SMTP id w17-20020a50fa91000000b0043a4f134767mr28085957edr.10.1658004627468;
-        Sat, 16 Jul 2022 13:50:27 -0700 (PDT)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id e14-20020a170906314e00b00711d546f8a8sm3517783eje.139.2022.07.16.13.50.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jul 2022 13:50:26 -0700 (PDT)
-Message-ID: <696cb2da-20b9-b3dd-46d9-de4bf91a1506@gmail.com>
-Date:   Sat, 16 Jul 2022 22:50:26 +0200
+        Sat, 16 Jul 2022 16:57:39 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A2E1C10A
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 13:57:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658005058; x=1689541058;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=NbZSQDIhF1WK4gTQXnAWuTTrGqcT5/UgIa62bZA/NgM=;
+  b=hZhLD6lec44kthd4pqsNLPGRi1CIFH2PPfnFa+0iq1Ce9KdgSxjt30f2
+   wLBVYzr1tiobQuHE0Ec0V28hRbAadOe75gDkW/b4Og0lSAAQq2+5aGZFA
+   zgvq9+ppICt4zdwv1eFUWe05XNZK9nXAAeXTE+fQewYRAP46CXxzKqkYD
+   tFnbxik1OcUUGhKQjo/ICBxCAi5ziOo1YQ2CxpzuR0a6Wgum4x48M2b3b
+   jJcTXIwPjZzycbmf5BZeb1xFBQIxBPcYroW7PtqATYflkhErSYT/Fx3gK
+   brDnAd0BFLpivZPYxW0oSW54SL8O7tYdODVw93dFCWOGHKoqqZLc+UfoE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="266413726"
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="266413726"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 13:57:38 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="739030727"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Jul 2022 13:57:37 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCor2-000295-Nz;
+        Sat, 16 Jul 2022 20:57:36 +0000
+Date:   Sun, 17 Jul 2022 04:56:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/090-spi-hid 17/18]
+ drivers/hid/dockchannel-hid/dockchannel-hid.c:304:28: error: implicit
+ declaration of function 'FIELD_PREP'
+Message-ID: <202207170409.ZBilnoON-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-Subject: fw_devlink=on breaks probing devices when of_platform_populate() is
- used
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/AsahiLinux/linux bits/090-spi-hid
+head:   2902ed1bd2d6ac439a835c53841122c7f3455a6c
+commit: e24c3dd5875015f606e146e07ede25ae4d866fcc [17/18] hid: Add Apple DockChannel HID transport driver
+config: openrisc-randconfig-c032-20220715 (https://download.01.org/0day-ci/archive/20220717/202207170409.ZBilnoON-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/e24c3dd5875015f606e146e07ede25ae4d866fcc
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/090-spi-hid
+        git checkout e24c3dd5875015f606e146e07ede25ae4d866fcc
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=openrisc SHELL=/bin/bash
 
-I added of_platform_populate() calls in mtd subsystem in the commit
-bcdf0315a61a2 ("mtd: call of_platform_populate() for MTD partitions"):
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bcdf0315a61a29eb753a607d3a85a4032de72d94
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-I recently backported that commit in OpenWrt to kernels 5.10 and 5.15.
-We started receiving reports that probing Ethernet devices stopped
-working in kernel 5.15. I bisected it down to the kernel 5.13 change:
+All errors (new ones prefixed by >>):
 
-commit ea718c699055c8566eb64432388a04974c43b2ea (refs/bisect/bad)
-Author: Saravana Kannan <saravanak@google.com>
-Date:   Tue Mar 2 13:11:32 2021 -0800
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_cmd':
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:304:28: error: implicit declaration of function 'FIELD_PREP' [-Werror=implicit-function-declaration]
+     304 |         iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
+         |                            ^~~~~~~~~~
+   In file included from include/linux/device.h:15,
+                    from drivers/hid/dockchannel-hid/dockchannel-hid.c:10:
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ready':
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:570:37: warning: format '%ld' expects argument of type 'long int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
+     570 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:570:17: note: in expansion of macro 'dev_err'
+     570 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:570:70: note: format string is defined here
+     570 |                 dev_err(dchid->dev, "Bad length for ready message: %ld\n", length);
+         |                                                                    ~~^
+         |                                                                      |
+         |                                                                      long int
+         |                                                                    %d
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_packet_work':
+>> drivers/hid/dockchannel-hid/dockchannel-hid.c:826:20: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
+     826 |         int type = FIELD_GET(FLAGS_GROUP, shdr->flags);
+         |                    ^~~~~~~~~
+         |                    FOLL_GET
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:830:37: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
+     830 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:830:17: note: in expansion of macro 'dev_err'
+     830 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:830:68: note: format string is defined here
+     830 |                 dev_err(dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                                                  ~~^
+         |                                                                    |
+         |                                                                    long int
+         |                                                                  %d
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dchid_handle_ack':
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:856:44: warning: format '%ld' expects argument of type 'long int', but argument 4 has type 'unsigned int' [-Wformat=]
+     856 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/dev_printk.h:110:30: note: in definition of macro 'dev_printk_index_wrap'
+     110 |                 _p_func(dev, fmt, ##__VA_ARGS__);                       \
+         |                              ^~~
+   include/linux/dev_printk.h:144:56: note: in expansion of macro 'dev_fmt'
+     144 |         dev_printk_index_wrap(_dev_err, KERN_ERR, dev, dev_fmt(fmt), ##__VA_ARGS__)
+         |                                                        ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:856:17: note: in expansion of macro 'dev_err'
+     856 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                 ^~~~~~~
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:856:75: note: format string is defined here
+     856 |                 dev_err(iface->dchid->dev, "Bad sub header length (%d > %ld)\n",
+         |                                                                         ~~^
+         |                                                                           |
+         |                                                                           long int
+         |                                                                         %d
+   drivers/hid/dockchannel-hid/dockchannel-hid.c: In function 'dockchannel_hid_probe':
+   drivers/hid/dockchannel-hid/dockchannel-hid.c:976:14: warning: variable 'defer' set but not used [-Wunused-but-set-variable]
+     976 |         bool defer = false;
+         |              ^~~~~
+   cc1: some warnings being treated as errors
 
-     Revert "Revert "driver core: Set fw_devlink=on by default""
 
-     This reverts commit 3e4c982f1ce75faf5314477b8da296d2d00919df.
+vim +/FIELD_PREP +304 drivers/hid/dockchannel-hid/dockchannel-hid.c
 
-     Since all reported issues due to fw_devlink=on should be addressed by
-     this series, revert the revert. fw_devlink=on Take II.
+   293	
+   294	static int dchid_cmd(struct dchid_iface *iface, u32 type, u32 req,
+   295			     void *data, size_t size, void *resp_buf, size_t resp_size)
+   296	{
+   297		int ret;
+   298		int report_id = *(u8*)data;
+   299	
+   300		mutex_lock(&iface->out_mutex);
+   301	
+   302		WARN_ON(iface->out_report != -1);
+   303		iface->out_report = report_id;
+ > 304		iface->out_flags = FIELD_PREP(FLAGS_GROUP, type) | FIELD_PREP(FLAGS_REQ, req);
+   305		iface->resp_buf = resp_buf;
+   306		iface->resp_size = resp_size;
+   307		reinit_completion(&iface->out_complete);
+   308	
+   309		ret = dchid_send(iface, iface->out_flags, data, size);
+   310		if (ret < 0)
+   311			goto done;
+   312	
+   313		if (!wait_for_completion_timeout(&iface->out_complete, msecs_to_jiffies(1000))) {
+   314			dev_err(iface->dchid->dev, "output report 0x%x to iface  %d (%s) timed out\n",
+   315				report_id, iface->index, iface->name);
+   316			ret = -ETIMEDOUT;
+   317			goto done;
+   318		}
+   319	
+   320		ret = iface->resp_size;
+   321		if (iface->retcode) {
+   322			dev_err(iface->dchid->dev,
+   323				"output report 0x%x to iface %d (%s) failed with err 0x%x\n",
+   324				report_id, iface->index, iface->name, iface->retcode);
+   325			ret = -EIO;
+   326		}
+   327	
+   328	done:
+   329		iface->tx_seq++;
+   330		iface->out_report = -1;
+   331		iface->out_flags = 0;
+   332		iface->resp_buf = NULL;
+   333		iface->resp_size = 0;
+   334		mutex_unlock(&iface->out_mutex);
+   335		return ret;
+   336	}
+   337	
 
-     Signed-off-by: Saravana Kannan <saravanak@google.com>
-     Link: https://lore.kernel.org/r/20210302211133.2244281-4-saravanak@google.com
-     Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-For me with above commit kernel just never calls bcm4908_enet_probe().
-Reverting it from the top of 5.13.19 and 5.15.50 fixes it. I believe the
-same issue happens with other drivers.
-
-Critical detail is that in DT Ethernet block node references NVMEM cell
-of MTD partition (see below).
-
-Could you help me dealing with this issue, please? Can you see something
-obvious breaking fw_devlink=on + of_platform_populate() case? Can I
-provide some extra information to help fixing it?
-
-
-Relevant DT part:
-
-partitions {
-	compatible = "fixed-partitions";
-	#address-cells = <1>;
-	#size-cells = <1>;
-
-	partition@0 {
-		compatible = "nvmem-cells";
-		reg = <0x0 0x100000>;
-		label = "bootloader";
-
-		#address-cells = <1>;
-		#size-cells = <1>;
-		ranges = <0 0x0 0x100000>;
-
-		base_mac_addr: mac@106a0 {
-			reg = <0x106a0 0x6>;
-		};
-	};
-
-	partition@100000 {
-		reg = <0x100000 0x5700000>;
-		label = "firmware";
-	};
-};
-
-ethernet@2000 {
-	compatible = "brcm,bcm4908-enet";
-	reg = <0x2000 0x1000>;
-
-	interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>,
-			<GIC_SPI 87 IRQ_TYPE_LEVEL_HIGH>;
-	interrupt-names = "rx", "tx";
-
-	nvmem-cells = <&base_mac_addr>;
-	nvmem-cell-names = "mac-address";
-};
-
-OpenWrt bug report:
-https://github.com/openwrt/openwrt/issues/10232
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
