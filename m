@@ -2,125 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F76BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CED3CCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiGPPQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 11:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35842 "EHLO
+        id S231543AbiGPPTM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 11:19:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPPQK (ORCPT
+        with ESMTP id S229501AbiGPPTK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 11:16:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D810819C2D;
-        Sat, 16 Jul 2022 08:16:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94F93B80975;
-        Sat, 16 Jul 2022 15:16:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44D7AC34114;
-        Sat, 16 Jul 2022 15:16:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657984564;
-        bh=p0ZERu/ntozV2jIJ9K3owHwDHVMMNjdKN6/6/nsZnRg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MexK30k8DpvmHYXPEtaJ+RjUzl9lcGG9GS6ClxZPTJIPDtbfJGgJzPH83Jk2zG7sa
-         jICbXCCZp5cOXx8P7D5RwrJPUyEgdrgikZ+G3LtTJ9HxtURNe0MQpCBe5nCOA7GZ7j
-         +DfVEQgjaQuVyrz2yUjnfhMm6ZYQwa/q0XDhg6lBBWa1CNK3hCzLN/w07zsWFIpgoL
-         ExjssNBUldoy8ke9HBv7MTrFxaURvX3VkZiPdio1q4M3d7s+vIDmncdEWD5dI7jcc1
-         ADVzGBG9y/rgeBb/mf2Cuo1ETbVPnPawUXQG+vPJo2cqq5xAZbCqX9JAMkh8VW41J8
-         Ro/cRUyTpArdQ==
-Date:   Sat, 16 Jul 2022 16:25:56 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH v1] iio: trigger: move trig->owner init to trigger
- allocate() stage
-Message-ID: <20220716162556.2e919bf7@jic23-huawei>
-In-Reply-To: <20220713170436.32330fa6@jic23-huawei>
-References: <20220601174837.20292-1-ddrokosov@sberdevices.ru>
-        <20220604145955.2a1108ca@jic23-huawei>
-        <20220701115823.vywhifktaxcr72cc@CAB-WSD-L081021.sigma.sbrf.ru>
-        <20220713170436.32330fa6@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 16 Jul 2022 11:19:10 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC1841CB0D
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:19:09 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-10c0d96953fso12892166fac.0
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:19:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xkpLQm8YJg8MMZ7rkQZ7L5IADrikvYdUPwyFUfpYqQ0=;
+        b=wPpbqdIdTr857Ho5pJfVfJTPoDIjyuKOW3Z9Jnp6Jzt6xBQcMepq8krPZewxa4uepa
+         3e6kT1paPJJU0DhsWR8B1DfNqe2skY1cgG94VK2QMRekNoIHkYJ9eLxAZ9Al28AhSV15
+         o1Hz9+aLHiQGkpBN4o2Gk2fN22B+ziw4XnAy47iYE8+weim7dS9mrEStoHidffVNc6lY
+         f3wvX7ci4Z17h8rtvOc2EbYS4g2jamHw458QviY1ihIZMiWTg0etwdik7EMN80iOIQ0q
+         8HV7lFRWTak1uAIT/amDRNqXHwDCdqmK67tBypN7StyrMOvpgN2XEXxAfM1plksiT4Sj
+         iEyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xkpLQm8YJg8MMZ7rkQZ7L5IADrikvYdUPwyFUfpYqQ0=;
+        b=rU2u6YCiHD6uEsg7R7Uf8UXdPCXC/jxmZ/cBTNGgDRUU+6zt6IRmFB0H9j63aXl5f0
+         NHGUcze6zESV+aUYom1aoL4TV9ma4dri8lN63hMr1+TXAnMwsyCchEluzhuXyAKErFOY
+         jl56MEKGjDlFiallSPYGac4G4jI91UQWbmjY/FVH/iM/JIpd1yun6yWIpEHKC0mee4Hy
+         3tBTVpvW+okFD9fjr0oJfUbrBGB3hK0y+xZ26GQwK6NY59ahB4oO3Byduwh1mhoquW80
+         2L0g561cy1FWSFOGRmjaxoA3DXUAtTYw2oRVrlQuHGH+fg3FXKaEBs0m4d0kACOe3T59
+         gRXA==
+X-Gm-Message-State: AJIora//S1Cs8ld21s2kA0KkKa+H//ngGqdqt3xzLEs0fCYCRtP13Qct
+        uAI4Us9NtD/8G4KYKrzEueQmsQ==
+X-Google-Smtp-Source: AGRyM1usNH6IyfMi+TO7ZirPYH8Wauz14R2Z48dKwzipsRBvYLV1Aptq8xcDyIsJz9Hbkkwx2e4TIg==
+X-Received: by 2002:a05:6870:8905:b0:10c:e400:75c1 with SMTP id i5-20020a056870890500b0010ce40075c1mr9631804oao.91.1657984749267;
+        Sat, 16 Jul 2022 08:19:09 -0700 (PDT)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id m21-20020a4ad515000000b00425beedad70sm3035254oos.32.2022.07.16.08.19.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 08:19:08 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-arm-msm@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] arm64: defconfig: Enable Qualcomm SC8280XP providers
+Date:   Sat, 16 Jul 2022 10:18:52 -0500
+Message-Id: <165798474063.1679948.12897299312975095223.b4-ty@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220707161014.3178798-1-bjorn.andersson@linaro.org>
+References: <20220707161014.3178798-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 17:04:36 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On Fri, 1 Jul 2022 11:59:59 +0000
-> Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+On Thu, 7 Jul 2022 09:10:13 -0700, Bjorn Andersson wrote:
+> The Qualcomm SC8280XP need the global clock controller, interconnect
+> provider and TLMM pinctrl in order to boot. Enable these as builtin, as
+> they are needed in order to provide e.g. UART.
 > 
-> > Hello Jonathan,
-> > 
-> > This patch has been on the mailing list for one month already, but no
-> > comments from other IIO reviewers. What do you think we should do with it?
-> > Is it a helpful change or not?  
-> 
-> Given I'm way behind and timing in cycle, I'm probably going to kick this
-> back to start of the next cycle. Sorry for delay,
-Applied to the togreg branch of iio.git.
-
-I'm unlikely to do another pull request this cycle unless there is a delay in
-the release for some reason (and probably not even if there is), so this
-is queued up for next cycle.  As such it'll sit exposed only in the testing
-branch until I rebase on rc1.
-
-Thanks,
-
-Jonathan
-
-> 
-> Jonathan
-> 
-> > 
-> > On Sat, Jun 04, 2022 at 02:59:55PM +0100, Jonathan Cameron wrote:  
-> > > On Wed, 1 Jun 2022 17:48:32 +0000
-> > > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
-> > >     
-> > > > To provide a new IIO trigger to the IIO core, usually driver executes the
-> > > > following pipeline: allocate()/register()/get(). Before, IIO core assigned
-> > > > trig->owner as a pointer to the module which registered this trigger at
-> > > > the register() stage. But actually the trigger object is owned by the
-> > > > module earlier, on the allocate() stage, when trigger object is
-> > > > successfully allocated for the driver.
-> > > > 
-> > > > This patch moves trig->owner initialization from register()
-> > > > stage of trigger initialization pipeline to allocate() stage to
-> > > > eliminate all misunderstandings and time gaps between trigger object
-> > > > creation and owner acquiring.
-> > > > 
-> > > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>    
-> > > 
-> > > Hi Dmitry,
-> > > 
-> > > I 'think' this is fine, but its in the high risk category that I'd like
-> > > to keep it on list for a few weeks before applying.
-> > > 
-> > > Note I'm still keen that in general we keep the flow such that
-> > > we do allocate()/register()/get() as there is no guarantee that the get()
-> > > will never do anything that requires the trigger to be registered, even
-> > > though that is true today.  Which is another way of saying I'm still
-> > > keen we fix up any cases that sneak in after your fix up set dealt with
-> > > the current ones.
-> > > 
-> > > Thanks for following up on this!
-> > > 
-> > > Jonathan
-> > >     
-> >   
 > 
 
+Applied, thanks!
+
+[1/1] arm64: defconfig: Enable Qualcomm SC8280XP providers
+      commit: 4cf02f2e0d4dff38dcfe43a168801306aed714dd
+
+Best regards,
+-- 
+Bjorn Andersson <bjorn.andersson@linaro.org>
