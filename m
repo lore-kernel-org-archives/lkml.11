@@ -2,83 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33300CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57084C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:34:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232141AbiGPPdB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 11:33:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45566 "EHLO
+        id S232206AbiGPPeV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 11:34:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPPc7 (ORCPT
+        with ESMTP id S229501AbiGPPeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 11:32:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3871EACD;
-        Sat, 16 Jul 2022 08:32:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A325EB8090C;
-        Sat, 16 Jul 2022 15:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2311C34114;
-        Sat, 16 Jul 2022 15:32:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657985576;
-        bh=Fsb9/P/keB7qnvgsRy6sGL+85mVi6LM3d8slXwrJvwM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PPFpcOrt52ueYzaqnmYuw9eKJLzc3RIL4BdHTKjwREeoY1R3fk9RPOWpySM8YQgmF
-         NVXox/QKw2AQXeIxo68EhxiZBhSFnPqM8T7fAbKOj2bN/pE4IzPcdBQxZltkdME8EO
-         oldF3oqcyqKNXuP3rnhX7bFpqIlqtDBH8oM7wP7ZspGBfaiVwMhkC5sWP7wZvY5BBD
-         aipmqIFgKgQh3NTIvSb84ChFv+K8J2o9klFALLcuyUzhdY7qVG1gMUeowJzMjVrTKZ
-         PNsk24eyQUbpurUNg1lmwqhobonxpwXqkmH4OQ1Y6RlWaExbuEwS8gujQr3KEDPCoa
-         eW2baAuzKIsOA==
-Date:   Sat, 16 Jul 2022 16:42:49 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Gwendal Grignou <gwendal@chromium.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v2 2/2] iio: proximity: sx_common: Allow IIO core to
- take care of firmware node
-Message-ID: <20220716164249.4cb9c942@jic23-huawei>
-In-Reply-To: <YsG5qCQMXKHm3DWm@smile.fi.intel.com>
-References: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
-        <20220615114746.2767-2-andriy.shevchenko@linux.intel.com>
-        <CAPUE2use-nt7LRQ0g_L7EW7wWfPQ-c7LinRoyx_WeMzLfdWOag@mail.gmail.com>
-        <YsG5qCQMXKHm3DWm@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 16 Jul 2022 11:34:19 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFF1F1DA4B;
+        Sat, 16 Jul 2022 08:34:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:To:From:Date:Sender:Reply-To:Cc:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wOpN4Xcrm1wWfOr3I3YP/LITpvpz8YcLjWLbz+//1Fg=; b=tB3vlOW8KjBf1503ZZOl4AMcSm
+        2zgrOZlMyXQx5taC7Z3Wn0ql7nCVlPZ0jY2c6WTrZTQnKMj9OqioZFIc+Jo8zHa/aeEB5nxEpMPka
+        utB1j2CM0vclX7z7u4TBAcjMwr4tyrWn0C4K9E4flGeEVIvgVdAlnYW5jRRY+V+D0WvF8qV09OWRB
+        J4QFz+ZwfJTDdZGLqdrqzbXhGPvkCwkXkpiur9TB+71DBkJLbc0vWWkJ6ofha2XfSJIAGxOj0cDj5
+        vy66LNTtASl4Tcr314ty0NBQk4fkuPQaEy7OfThgMhdfYQoOdgctEJTWDJACQLKGmNVu++JrKk1if
+        9abj4y1g==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oCjo4-00BA99-Uc; Sat, 16 Jul 2022 15:34:13 +0000
+Date:   Sat, 16 Jul 2022 16:34:12 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Sterba <dsterba@suse.com>, torvalds@linux-foundation.org,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [GIT PULL] Btrfs fixes for 5.19-rc7
+Message-ID: <YtLadOkHl0lDNwbM@casper.infradead.org>
+References: <cover.1657976305.git.dsterba@suse.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1657976305.git.dsterba@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 3 Jul 2022 18:45:44 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-
-> On Wed, Jun 29, 2022 at 10:07:40AM -0700, Gwendal Grignou wrote:
-> > On Wed, Jun 15, 2022 at 4:47 AM Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com> wrote:  
-> > >
-> > > IIO core correctly will take care of firmware node if it's not set in
-> > > the driver. Drop ACPI and OF specifics from the driver and allow IIO
-> > > core to handle this.
-> > >
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
-> > Reviewed-by: Gwendal Grignou <gwendal@chromium.org>  
+On Sat, Jul 16, 2022 at 04:06:20PM +0200, David Sterba wrote:
+> Note about the xarray API:
 > 
-> Thanks!
+> The possible sleeping is documented next to xa_insert, however there's
+> no runtime check for that, like is eg. in radix_tree_preload.  The
+> context does not need to be atomic so it's not as simple as
 > 
-> Jonathan, I guess we are ready with this series. What do you think?
+>   might_sleep_if(gfpflags_allow_blocking(gfp));
 > 
-Gwendal's happy and seems straight forwards to me.
+> or
+> 
+>   WARN_ON_ONCE(gfpflags_allow_blocking(gfp));
+> 
+> Some kind of development time debugging/assertion aid would be nice.
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-Note, unlikely to make this cycle so I'll probably hold it in testing only
-until I can rebase on rc1.
+Are you saying that
+https://git.infradead.org/users/willy/xarray.git/commitdiff/c195d497ca1ff673c2e6935152a0a5b6be2efdc9
 
-Thanks,
-
-Jonathan
+is wrong?  It's been in linux-next for the last week since you drew it
+to my attention that this would be useful.
