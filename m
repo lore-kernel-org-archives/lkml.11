@@ -2,107 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC7FCC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D55FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:30:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240372AbiGSMah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50914 "EHLO
+        id S236193AbiGSMal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240494AbiGSM3f (ORCPT
+        with ESMTP id S240546AbiGSM3k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:29:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9EC3691CB;
-        Tue, 19 Jul 2022 05:11:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44AC6B81B82;
-        Tue, 19 Jul 2022 12:11:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 964F7C341CF;
-        Tue, 19 Jul 2022 12:11:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232674;
-        bh=Xm0MwoDW/hV6tsQcoq3CJwBjGnfYANhsNhn7svWmwSM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fTKqVGnyofBZNQ5wHyQIeMDaJELnjyetFKgGTPwV23U2ReUAfr4kbrbxlc8rSClgp
-         kBoOUc8byOJei/BOuAldeZYGVLH6+mOxRi5H9KY4Q/jcVF+9MpJZz6a5bERJybO+EQ
-         IUZzPadJzizd8dqg+8su+0FbqiRvMbjpTAyBLSgE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Jan Beulich <jbeulich@suse.com>, Paul Durrant <paul@xen.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 008/167] xen/netback: avoid entering xenvif_rx_next_skb() with an empty rx queue
-Date:   Tue, 19 Jul 2022 13:52:20 +0200
-Message-Id: <20220719114657.512129756@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114656.750574879@linuxfoundation.org>
-References: <20220719114656.750574879@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:29:40 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A121691E5
+        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:11:18 -0700 (PDT)
+X-QQ-mid: bizesmtp71t1658232648tu95v5nq
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:10:46 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000000
+X-QQ-FEAT: WKaXkSLX6oOMxAmviYlNwWMv0TGdduPbzjHTO13LpUEcMocSaLByA3yu89Ts0
+        n+ccWHkn7zegKCtYtTWm5WfhHBFSmYdhZc7sgYjIHla9C5H17pGbCG7xu0sW12+8M/JGNy2
+        gCQvXAjwbl+GEXJWWF9AWXe75EwPDyEFq2C8IZSAoZkbCpiwMbFkwryekJndBs7vs6iCEgr
+        L02r5aiDNchyx/HpFMJx4Ks8Xsc/7qo7IJsw8k6qjAQr5xrZoCDpaouqH65tPn75su0Wg1u
+        5FeeDWlURjKll6ONUT+pbywPeT3mrdTjcxnF5BJKop6vvUqRyO9kRs6jkb3BL962brhPto3
+        bsCZZaBE+44mwQWPY20ItApVIWfY3vR/HvmRTtMXL8r1+OcRMIQA7EFCcoWJ32uKHBk8efh
+        TfmRjq4Y++Q=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     daniel@ffwll.ch
+Cc:     jani.nikula@linux.intel.com, joonas.lahtinen@linux.intel.com,
+        rodrigo.vivi@intel.com, tvrtko.ursulin@linux.intel.com,
+        airlied@linux.ie, ramalingam.c@intel.com,
+        thomas.hellstrom@linux.intel.com, matthew.auld@intel.com,
+        dan.carpenter@oracle.com, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] drm/i915/gt: Remove unneeded semicolon
+Date:   Sat, 16 Jul 2022 12:08:45 +0800
+Message-Id: <20220716040845.32045-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juergen Gross <jgross@suse.com>
+The semicolon after a code block end symbol `}' is unneeded, remove
+it.
 
-commit 94e8100678889ab428e68acadf042de723f094b9 upstream.
-
-xenvif_rx_next_skb() is expecting the rx queue not being empty, but
-in case the loop in xenvif_rx_action() is doing multiple iterations,
-the availability of another skb in the rx queue is not being checked.
-
-This can lead to crashes:
-
-[40072.537261] BUG: unable to handle kernel NULL pointer dereference at 0000000000000080
-[40072.537407] IP: xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.537534] PGD 0 P4D 0
-[40072.537644] Oops: 0000 [#1] SMP NOPTI
-[40072.537749] CPU: 0 PID: 12505 Comm: v1-c40247-q2-gu Not tainted 4.12.14-122.121-default #1 SLE12-SP5
-[40072.537867] Hardware name: HP ProLiant DL580 Gen9/ProLiant DL580 Gen9, BIOS U17 11/23/2021
-[40072.537999] task: ffff880433b38100 task.stack: ffffc90043d40000
-[40072.538112] RIP: e030:xenvif_rx_skb+0x23/0x590 [xen_netback]
-[40072.538217] RSP: e02b:ffffc90043d43de0 EFLAGS: 00010246
-[40072.538319] RAX: 0000000000000000 RBX: ffffc90043cd7cd0 RCX: 00000000000000f7
-[40072.538430] RDX: 0000000000000000 RSI: 0000000000000006 RDI: ffffc90043d43df8
-[40072.538531] RBP: 000000000000003f R08: 000077ff80000000 R09: 0000000000000008
-[40072.538644] R10: 0000000000007ff0 R11: 00000000000008f6 R12: ffffc90043ce2708
-[40072.538745] R13: 0000000000000000 R14: ffffc90043d43ed0 R15: ffff88043ea748c0
-[40072.538861] FS: 0000000000000000(0000) GS:ffff880484600000(0000) knlGS:0000000000000000
-[40072.538988] CS: e033 DS: 0000 ES: 0000 CR0: 0000000080050033
-[40072.539088] CR2: 0000000000000080 CR3: 0000000407ac8000 CR4: 0000000000040660
-[40072.539211] Call Trace:
-[40072.539319] xenvif_rx_action+0x71/0x90 [xen_netback]
-[40072.539429] xenvif_kthread_guest_rx+0x14a/0x29c [xen_netback]
-
-Fix that by stopping the loop in case the rx queue becomes empty.
-
-Cc: stable@vger.kernel.org
-Fixes: 98f6d57ced73 ("xen-netback: process guest rx packets in batches")
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Reviewed-by: Jan Beulich <jbeulich@suse.com>
-Reviewed-by: Paul Durrant <paul@xen.org>
-Link: https://lore.kernel.org/r/20220713135322.19616-1-jgross@suse.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- drivers/net/xen-netback/rx.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/gpu/drm/i915/gt/intel_migrate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/xen-netback/rx.c
-+++ b/drivers/net/xen-netback/rx.c
-@@ -495,6 +495,7 @@ void xenvif_rx_action(struct xenvif_queu
- 	queue->rx_copy.completed = &completed_skbs;
+diff --git a/drivers/gpu/drm/i915/gt/intel_migrate.c b/drivers/gpu/drm/i915/gt/intel_migrate.c
+index 2c35324b5f68..a69b244f14d0 100644
+--- a/drivers/gpu/drm/i915/gt/intel_migrate.c
++++ b/drivers/gpu/drm/i915/gt/intel_migrate.c
+@@ -645,7 +645,7 @@ static int scatter_list_length(struct scatterlist *sg)
+ 	while (sg && sg_dma_len(sg)) {
+ 		len += sg_dma_len(sg);
+ 		sg = sg_next(sg);
+-	};
++	}
  
- 	while (xenvif_rx_ring_slots_available(queue) &&
-+	       !skb_queue_empty(&queue->rx_queue) &&
- 	       work_done < RX_BATCH_SIZE) {
- 		xenvif_rx_skb(queue);
- 		work_done++;
-
+ 	return len;
+ }
+-- 
+2.35.1
 
