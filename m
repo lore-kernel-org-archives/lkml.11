@@ -2,88 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BB7C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B35C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231883AbiGPRjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 13:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
+        id S231462AbiGPRne (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 13:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230313AbiGPRjJ (ORCPT
+        with ESMTP id S229501AbiGPRnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 13:39:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83DD10FC0;
-        Sat, 16 Jul 2022 10:39:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D466611A6;
-        Sat, 16 Jul 2022 17:39:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6B92C34114;
-        Sat, 16 Jul 2022 17:39:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657993144;
-        bh=k8F15ykDf5m+r4/I7RU3R8rqaaAe0MvqtE3T6MXh/to=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kHN2y5iBaPDyznSfGD+B0FZebCnxFNJTZUfhljzHRaZFdjArTKoYH3dhOzgQhbaFj
-         qU+pf5QqG6IX/BHcd6NeQdcNRa7InJrk1FNCpZoupQO177qxVHg6f1uWBKJWdngpKO
-         kreFeKArz+UMOteMWfRLHt8nBDudvIlD9IKW067UzkPqHY9esrLs897JH8UNeJ0fnk
-         sxb5mCt22PE9q6gBsDHiURYvQz3t5wNky1WYyGkVYC6C6d5sM+gP3x/2BFWY/fK6Pe
-         +HwkYPttHxZQ7XLC2AYNiL3uMkNQ9LsnoON+Tsx7o9sI/XDX2uuhnUuYhMcbl6i2zB
-         1a/x1gMw282Cg==
-Date:   Sat, 16 Jul 2022 18:48:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Fred Eckert <Frede@cmslaser.com>
-Subject: Re: [PATCH v2 0/2] iio: Implement and utilize register structures
- for ISA drivers
-Message-ID: <20220716184857.7ad17421@jic23-huawei>
-In-Reply-To: <cover.1657213745.git.william.gray@linaro.org>
-References: <cover.1657213745.git.william.gray@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 16 Jul 2022 13:43:32 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDFA1C108
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:43:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657993411; x=1689529411;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=1KVXMHQMW6RKfp8RUFLESXDiTcg/Sa7+X74MV9ssqV4=;
+  b=SGLQZ1Z4FaqHngC+8Lw6/+xBAuHYvnsVLIcrmQ2asM3JZow6KdA0ZY23
+   X6qrh7Fzrg8XJNSrzPL6259KX3/hNjlJ8YbWjtwGewR9QtEO1smn++kq3
+   IdzRwCuADDLHjvFAS56a7P2XAK5kH8g4vwKmEKU3cl/gWzigNYCzY5LLB
+   plqwVOdWmkmglC8WF/Kou5tPr6oawQ/9ufBXpd11ms1IAtw6WVK7Z32T4
+   Zj3kaAGIckwLk5o6/2XV6WGMmvOs020xL5RGT3mmJLsjW4gyaZz6UIKgU
+   UJqjShOqTG0Zxzl1+ZZAnLrn/BYYFx7TWCzDjyYoiKg0BpszCCGIkRg7Y
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="269016686"
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="269016686"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 10:43:30 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="842851551"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga006.fm.intel.com with ESMTP; 16 Jul 2022 10:43:28 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oClp9-0001tu-V7;
+        Sat, 16 Jul 2022 17:43:27 +0000
+Date:   Sun, 17 Jul 2022 01:42:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <jth@kernel.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Subject: [ammarfaizi2-block:axboe/linux-block/for-next 96/112]
+ fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted blk_opf_t
+Message-ID: <202207170156.khJQtN9O-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu,  7 Jul 2022 13:21:23 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/for-next
+head:   b1fc9e8ad3d2d294d15e87d57af00890cd23cfc4
+commit: e46b5970496705127f9ae494c66e0242773097e8 [96/112] fs/zonefs: Use the enum req_op type for tracing request operations
+config: mips-randconfig-s033-20220715 (https://download.01.org/0day-ci/archive/20220717/202207170156.khJQtN9O-lkp@intel.com/config)
+compiler: mips-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/e46b5970496705127f9ae494c66e0242773097e8
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block axboe/linux-block/for-next
+        git checkout e46b5970496705127f9ae494c66e0242773097e8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash fs/zonefs/
 
-> Changes in v2:
->  - Rename 'ad' member to 'ssr_ad' to indicate access to Software Strobe
->    Register as well; relevant comments updated
->  - Dereference DAC channel address via array subscripts in the
->    stx104_write_raw() function in order to match rest of code
->  - Replace struct cio_dac_reg with direct u16 pointer to the DAC
->    address; this greatly simplifies the cio-dac patch
-> 
-> The STX104 and CIO-DAC drivers were updated to use I/O memory accessor
-> calls such as ioread8()/iowrite8() in previous patch series [1]. This
-> patch series is a continuation of the effort to improve the code
-> readability and reduce magic numbers by implementing and utilizing named
-> register data structures.
-Series applied to the togreg branch of iio.git.  Given timing in cycle, I'll
-only push that out as testing (for 0-day etc) and then rebase it after rc1.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
 
-Jonathan
+sparse warnings: (new ones prefixed by >>)
+   fs/zonefs/super.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, fs/zonefs/trace.h):
+>> fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted blk_opf_t
+>> fs/zonefs/./trace.h:22:1: sparse: sparse: cast to restricted blk_opf_t
+>> fs/zonefs/./trace.h:22:1: sparse: sparse: restricted blk_opf_t degrades to integer
+>> fs/zonefs/./trace.h:22:1: sparse: sparse: restricted blk_opf_t degrades to integer
 
-> 
-> [1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
-> 
-> William Breathitt Gray (2):
->   iio: adc: stx104: Implement and utilize register structures
->   iio: dac: cio-dac: Cleanup indexing for DAC writes
-> 
->  drivers/iio/adc/stx104.c  | 74 ++++++++++++++++++++++++++-------------
->  drivers/iio/dac/cio-dac.c | 10 +++---
->  2 files changed, 55 insertions(+), 29 deletions(-)
-> 
-> 
-> base-commit: 338222d8e1121bcb78a86fb39982eddcc367a5bc
+vim +22 fs/zonefs/./trace.h
 
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  21  
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27 @22  TRACE_EVENT(zonefs_zone_mgmt,
+ff07a02e9e8e64 Bart Van Assche    2022-07-14  23  	    TP_PROTO(struct inode *inode, enum req_op op),
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  24  	    TP_ARGS(inode, op),
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  25  	    TP_STRUCT__entry(
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  26  			     __field(dev_t, dev)
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  27  			     __field(ino_t, ino)
+e46b5970496705 Bart Van Assche    2022-07-14  28  			     __field(enum req_op, op)
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  29  			     __field(sector_t, sector)
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  30  			     __field(sector_t, nr_sectors)
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  31  	    ),
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  32  	    TP_fast_assign(
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  33  			   __entry->dev = inode->i_sb->s_dev;
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  34  			   __entry->ino = inode->i_ino;
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  35  			   __entry->op = op;
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  36  			   __entry->sector = ZONEFS_I(inode)->i_zsector;
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  37  			   __entry->nr_sectors =
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  38  				   ZONEFS_I(inode)->i_zone_size >> SECTOR_SHIFT;
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  39  	    ),
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  40  	    TP_printk("bdev=(%d,%d), ino=%lu op=%s, sector=%llu, nr_sectors=%llu",
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  41  		      show_dev(__entry->dev), (unsigned long)__entry->ino,
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  42  		      blk_op_str(__entry->op), __entry->sector,
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  43  		      __entry->nr_sectors
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  44  	    )
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  45  );
+62ab1aadcccd03 Johannes Thumshirn 2021-01-27  46  
+
+:::::: The code at line 22 was first introduced by commit
+:::::: 62ab1aadcccd037a7ced4ed99b4d46d2b4190183 zonefs: add tracepoints for file operations
+
+:::::: TO: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+:::::: CC: Damien Le Moal <damien.lemoal@wdc.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
