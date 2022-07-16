@@ -2,108 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FE9CCA481
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 09:38:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 09:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232628AbiGPJil (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 05:38:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33922 "EHLO
+        id S232488AbiGPJjQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 05:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbiGPJi0 (ORCPT
+        with ESMTP id S232955AbiGPJjF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 05:38:26 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 873682AC69;
-        Sat, 16 Jul 2022 02:38:24 -0700 (PDT)
-X-UUID: 5623aa6d38944c0b8e44e05aaff7df5c-20220716
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:69382fb9-822e-4d45-9aad-ccbbd7bd5e22,OB:0,LO
-        B:0,IP:0,URL:5,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
-        ON:release,TS:5
-X-CID-META: VersionHash:0f94e32,CLOUDID:d1947464-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:1,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 5623aa6d38944c0b8e44e05aaff7df5c-20220716
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw01.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1827923550; Sat, 16 Jul 2022 17:38:18 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Sat, 16 Jul 2022 17:38:16 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Sat, 16 Jul 2022 17:38:15 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sat, 16 Jul 2022 05:39:05 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A70E19026;
+        Sat, 16 Jul 2022 02:38:54 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 15F583467D;
+        Sat, 16 Jul 2022 09:38:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657964333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rjjB2Tj1v7P2/Hzk3+SDyFTeccso1IKFKW5WqPOEy9o=;
+        b=FYLcjTomd9RwzKd0WH1grD27nlv90mrvwHhBqMpTwZ84b+ud/KCg/G66kuAwXewZT9WNZU
+        KUoXV78aY9h0pGD3tU6wC1NUWMnnTut96DlEP8y9eH50+DJF9g9B7MqJejwpseg6NN+3AP
+        aztwoEHqp/val4a46OzLLJze3puCCvw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657964333;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rjjB2Tj1v7P2/Hzk3+SDyFTeccso1IKFKW5WqPOEy9o=;
+        b=4zswoA0zLnplqlg+Z+74ZePirnVjDWStv2fDsZyruYBHwedU1AwvfDaucAqi2kwIgvOWD+
+        zq/RYOljlEdPZGDQ==
+Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 592212C141;
+        Sat, 16 Jul 2022 09:38:51 +0000 (UTC)
+Date:   Sat, 16 Jul 2022 11:38:50 +0200
+From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Pratyush Yadav <p.yadav@ti.com>, linux-sunxi@lists.linux.dev,
         Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-CC:     Yong Wu <yong.wu@mediatek.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Irui Wang <irui.wang@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH 4/5] media: mediatek: vcodec: Fix bitstream crop information error
-Date:   Sat, 16 Jul 2022 17:38:07 +0800
-Message-ID: <20220716093808.29894-5-irui.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220716093808.29894-1-irui.wang@mediatek.com>
-References: <20220716093808.29894-1-irui.wang@mediatek.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
+Subject: Re: [PATCH 1/2] mtd: spi-nor: When a flash memory is missing do not
+ report an error
+Message-ID: <20220716093850.GL17705@kitsune.suse.cz>
+References: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
+ <d8de86aa0331be697fbef33d5ab2c57a@walle.cc>
+ <20220714205529.GE17705@kitsune.suse.cz>
+ <33abf7b84860049c4a22605578303ff2@walle.cc>
+ <20220714220744.GF17705@kitsune.suse.cz>
+ <20220715092017.2ftoyzm22i4amrbt@ti.com>
+ <20220716082027.GK17705@kitsune.suse.cz>
+ <c6955eed3a445f4b87920fe0d47e7230@walle.cc>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c6955eed3a445f4b87920fe0d47e7230@walle.cc>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Usually, the real bitstream width and height will set to driver
-by vidioc_s_fmt, and vidioc_try_fmt() does align to get the
-buffer width and height, driver calculate the encoded bitstream
-crop information through them. The aligned resolution will be set
-as real resolution now if user didn't set crop info by
-V4L2_SEL_TGT_CROP, and the encoded bitstream may exist green line
-because of crop information error.
+On Sat, Jul 16, 2022 at 11:30:12AM +0200, Michael Walle wrote:
+> Am 2022-07-16 10:20, schrieb Michal Suchánek:
+> 
+> > > So if DT says there isn't a flash on a specific CS when there is, then
+> > > DT should be fixed to describe the flash, and then we can probe it.
+> > > You
+> > > both seem to be saying the same thing here, and I agree.
+> > 
+> > The disagreement is about the situation when there is sometimes a flash
+> > chip.
+> 
+> No. The disagreement is what should happen if the DT says there is
+> a device but there isn't. Which right now is an error and it should
+> stay that way. Your hardware description says there is a flash
+> but it cannot be probed, so it is an error. What about a board
+> which has an actual error and the flash isn't responding? You
+> trade one use case for another.
 
-Signed-off-by: Irui Wang <irui.wang@mediatek.com>
----
- drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+And what if you have a SATA controller with a bad cable?
 
-diff --git a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-index 25e816863597..c310bb1dbbcf 100644
---- a/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-+++ b/drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc.c
-@@ -503,13 +503,13 @@ static int vidioc_venc_s_fmt_out(struct file *file, void *priv,
- 		f->fmt.pix.pixelformat = fmt->fourcc;
- 	}
- 
--	ret = vidioc_try_fmt_out(ctx, f, fmt);
-+	q_data->visible_width = f->fmt.pix_mp.width;
-+	q_data->visible_height = f->fmt.pix_mp.height;
-+	q_data->fmt = fmt;
-+	ret = vidioc_try_fmt_out(ctx, f, q_data->fmt);
- 	if (ret)
- 		return ret;
- 
--	q_data->fmt = fmt;
--	q_data->visible_width = f->fmt.pix_mp.width;
--	q_data->visible_height = f->fmt.pix_mp.height;
- 	q_data->coded_width = f->fmt.pix_mp.width;
- 	q_data->coded_height = f->fmt.pix_mp.height;
- 
--- 
-2.18.0
+Or a bad connection to a mmc card?
 
+Then the kernel also does not say there is an error and simply does not
+see the device.
+
+This is normal. Not all devices that can potentially exist do exist. It
+is up to the user to decide if it's an error that the device is missing.
+
+> Also I've looked at the PHY subsystem and there, if a PHY is described
+> in the DT but isn't there, the following error will be printed:
+>   dev_err(&mdio->dev, "MDIO device at address %d is missing.\n", addr);
+> 
+> And that is for a bus which can even be automatically be
+> probed/detected.
+
+If there is no use case for having a card with unpopulated PHY then it
+makes sense.
+
+Here we do have a use case so the comparison is moot.
+
+Thanks
+
+Michal
