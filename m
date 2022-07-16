@@ -2,96 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C29E6C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 07:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CED5C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 07:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231797AbiGPHoY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 03:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
+        id S231390AbiGPHvL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 03:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231563AbiGPHoQ (ORCPT
+        with ESMTP id S229436AbiGPHvJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 03:44:16 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17FCE26569;
-        Sat, 16 Jul 2022 00:44:09 -0700 (PDT)
-X-UUID: 35b5ba66e8f3402b88142ce45e42302b-20220716
-X-CID-UNFAMILIAR: 1
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:fbc36ce3-00fa-4c43-9dcd-a1e76e874d1d,OB:10,L
-        OB:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,
-        ACTION:release,TS:100
-X-CID-INFO: VERSION:1.1.8,REQID:fbc36ce3-00fa-4c43-9dcd-a1e76e874d1d,OB:10,LOB
-        :0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,
-        ACTION:quarantine,TS:100
-X-CID-META: VersionHash:0f94e32,CLOUDID:87997364-0b3f-4b2c-b3a6-ed5c044366a0,C
-        OID:be9d0dc91414,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:1,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 35b5ba66e8f3402b88142ce45e42302b-20220716
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <jianjun.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 670306153; Sat, 16 Jul 2022 15:44:04 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Sat, 16 Jul 2022 15:44:03 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 16 Jul 2022 15:44:02 +0800
-From:   Jianjun Wang <jianjun.wang@mediatek.com>
-To:     Bjorn Helgaas <bhelgaas@google.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-pci@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Jianjun Wang <jianjun.wang@mediatek.com>,
-        <Rex-BC.Chen@mediatek.com>, <TingHan.Shen@mediatek.com>,
-        <Liju-clr.Chen@mediatek.com>, <Jian.Yang@mediatek.com>
-Subject: [PATCH 1/2] dt-bindings: PCI: mediatek-gen3: Add support for MT8188 and MT8195
-Date:   Sat, 16 Jul 2022 15:43:48 +0800
-Message-ID: <20220716074349.28655-2-jianjun.wang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220716074349.28655-1-jianjun.wang@mediatek.com>
-References: <20220716074349.28655-1-jianjun.wang@mediatek.com>
+        Sat, 16 Jul 2022 03:51:09 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11B6E165B6;
+        Sat, 16 Jul 2022 00:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657957868; x=1689493868;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=4kybbQfKyma5R7luiQh44ufZEmN4Kly6z7nCh2v/Ij4=;
+  b=YgXGnqbd14hbOoAiUKsPgrb+JahmMLYgdw4zVgKhKwBGLTIeziH1WbCm
+   VKWjveq9wk0axAq7KCcNDprGMGAKShpFWq1DDHvimBsB2rcY56m9rI74h
+   WOg2UYF/axBx+5+dGVcTTk5ozLEObGrkOsWLtuGN6w/XL1LgEOADfMqq+
+   zZiAMB6ijwmi+8KrysbOXWi1FIqJJLUy6hzQcKHjdS5+cT73NIvz0PPU/
+   iiRe9M+laVPcjwC6JvIY9hfjvCtNImFxsWko9iQVkDCIkxm7oFNRMQUeo
+   SGliBUGSCXuv3Da/1qv5gmxShRB6AHz9nLppRaxzIx/7vpQoLIlaQQQUD
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10409"; a="284717619"
+X-IronPort-AV: E=Sophos;i="5.92,276,1650956400"; 
+   d="scan'208";a="284717619"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 00:51:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,276,1650956400"; 
+   d="scan'208";a="738917041"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by fmsmga001.fm.intel.com with ESMTP; 16 Jul 2022 00:51:03 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCcZq-0001HI-NV;
+        Sat, 16 Jul 2022 07:51:02 +0000
+Date:   Sat, 16 Jul 2022 15:50:41 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, l.stach@pengutronix.de
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        laurent.pinchart@ideasonboard.com, marex@denx.de,
+        paul.elder@ideasonboard.com, aford173@gmail.com,
+        Markus.Niebel@ew.tq-group.com, alexander.stein@ew.tq-group.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, aisheng.dong@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH V2 6/6] arm64: dts: imx8mp: add VPU blk ctrl node
+Message-ID: <202207161526.eF3Q4LDD-lkp@intel.com>
+References: <20220713063653.2584488-7-peng.fan@oss.nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713063653.2584488-7-peng.fan@oss.nxp.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-MT8188 and MT8195 are ARM platform SoCs with the same PCIe IP as MT8192.
+Hi "Peng,
 
-Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
----
- .../devicetree/bindings/pci/mediatek-pcie-gen3.yaml      | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml b/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
-index 0499b94627ae..67d2ba25e336 100644
---- a/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
-+++ b/Documentation/devicetree/bindings/pci/mediatek-pcie-gen3.yaml
-@@ -48,7 +48,14 @@ allOf:
- 
- properties:
-   compatible:
--    const: mediatek,mt8192-pcie
-+    oneOf:
-+      - items:
-+          - enum:
-+              - mediatek,mt8188-pcie
-+              - mediatek,mt8195-pcie
-+          - const: mediatek,mt8192-pcie
-+      - items:
-+          - const: mediatek,mt8192-pcie
- 
-   reg:
-     maxItems: 1
+[auto build test ERROR on shawnguo/for-next]
+[also build test ERROR on linus/master v5.19-rc6 next-20220715]
+[cannot apply to robh/for-next]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220713-143746
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/shawnguo/linux.git for-next
+config: arm64-buildonly-randconfig-r003-20220714 (https://download.01.org/0day-ci/archive/20220716/202207161526.eF3Q4LDD-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 5e61b9c556267086ef9b743a0b57df302eef831b)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/be95b11efe846d01a6f40eda8a8c7750f53155e4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Peng-Fan-OSS/imx-add-i-MX8MP-hdmi-blk-ctrl-hdcp-hrv-and-vpu-blk-ctrl/20220713-143746
+        git checkout be95b11efe846d01a6f40eda8a8c7750f53155e4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> Error: arch/arm64/boot/dts/freescale/imx8mp.dtsi:1181.26-27 syntax error
+   FATAL ERROR: Unable to parse input tree
+
 -- 
-2.18.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
