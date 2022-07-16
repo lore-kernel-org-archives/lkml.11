@@ -2,91 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEEDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:13:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 921F5CCA481
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238899AbiGSMNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35522 "EHLO
+        id S238981AbiGSMNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238887AbiGSMMZ (ORCPT
+        with ESMTP id S238912AbiGSMMe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:12:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08B3D52DDE;
-        Tue, 19 Jul 2022 05:03:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87C1E616FD;
-        Tue, 19 Jul 2022 12:03:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68971C341C6;
-        Tue, 19 Jul 2022 12:03:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658232224;
-        bh=XqlTd4nTiZWMDUpAlCHbBSebnj0dDtBFRM1zS2k8yng=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmpsL+b0GxkbzHi2grOpn8saiODxcV2OABU1T45ciIf4i+9g/05MRq+yUTFcuEusg
-         KRbaRhfAAnfGtYKrAHq4PKCyzhBEJkonK7lTF/iBgIti9SeYA0EVE9IXGejR1zEW+K
-         bwUkjuvPvXb5KhPslkkYP7miavsn4C1eY/A7KfdY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 54/71] ASoC: ops: Fix off by one in range control validation
-Date:   Tue, 19 Jul 2022 13:54:17 +0200
-Message-Id: <20220719114557.567108171@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114552.477018590@linuxfoundation.org>
-References: <20220719114552.477018590@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:12:34 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D88252DED;
+        Tue, 19 Jul 2022 05:03:48 -0700 (PDT)
+X-QQ-mid: bizesmtp63t1658232196tpkrid79
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:03:15 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: aY2i9zFuVEdYQaK9NrWPr3TcjKUZd4OaaQJYTAEmIEOF7x3r499XB6Wj2cXFI
+        omRP31bjPKvsZ6uxADKQoDKUS3dj58z5/7aWdxX1USMbn37qgT81Jcpc8Nr807fwHQl37mN
+        W2HRLjAGTlhDiApZQTXllvvDU85Tt0Ktgr76fs5CnqwN4lJtoTtjsL18Pcamu5JCu+xqYZl
+        ZldkhVPZFio0Y9Or4e7X1/X4/+NwSAiVQMbcEJ0iAifCZF4hgryT1mBJDRxvPpUNKABArmX
+        9VBHXtBnRhVrGS8WXGhe3icI/EbH40a4co4ODQ/8YqbNOkTt5kAPiBJbG/k4xywiQvYUF89
+        3M3cOyyw5mM1e1oIT6xELt8G0A28aJx9NGgg8CCraxLgs5OYdOPnxv6knHkANzEn1trFO7f
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     zajec5@gmail.com
+Cc:     hauke@hauke-m.de, tsbogend@alpha.franken.de,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] MIPS: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:01:19 +0800
+Message-Id: <20220716040119.31221-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Brown <broonie@kernel.org>
+Fix the typo `s/that that/than that/' in line 72.
 
-[ Upstream commit 5871321fb4558c55bf9567052b618ff0be6b975e ]
-
-We currently report that range controls accept a range of 0..(max-min) but
-accept writes in the range 0..(max-min+1). Remove that extra +1.
-
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20220604105246.4055214-1-broonie@kernel.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- sound/soc/soc-ops.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/bcm47xx/prom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/soc-ops.c b/sound/soc/soc-ops.c
-index 7a37312c8e0c..453b61b42dd9 100644
---- a/sound/soc/soc-ops.c
-+++ b/sound/soc/soc-ops.c
-@@ -530,7 +530,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 		return -EINVAL;
- 	if (mc->platform_max && tmp > mc->platform_max)
- 		return -EINVAL;
--	if (tmp > mc->max - mc->min + 1)
-+	if (tmp > mc->max - mc->min)
- 		return -EINVAL;
+diff --git a/arch/mips/bcm47xx/prom.c b/arch/mips/bcm47xx/prom.c
+index 0a63721d0fbf..ab203e66ba0d 100644
+--- a/arch/mips/bcm47xx/prom.c
++++ b/arch/mips/bcm47xx/prom.c
+@@ -69,7 +69,7 @@ static __init void prom_init_mem(void)
+ 	 * call them at the beginning of the boot.
+ 	 *
+ 	 * BCM47XX uses 128MB for addressing the ram, if the system contains
+-	 * less that that amount of ram it remaps the ram more often into the
++	 * less than that amount of ram it remaps the ram more often into the
+ 	 * available space.
+ 	 */
  
- 	if (invert)
-@@ -551,7 +551,7 @@ int snd_soc_put_volsw_range(struct snd_kcontrol *kcontrol,
- 			return -EINVAL;
- 		if (mc->platform_max && tmp > mc->platform_max)
- 			return -EINVAL;
--		if (tmp > mc->max - mc->min + 1)
-+		if (tmp > mc->max - mc->min)
- 			return -EINVAL;
- 
- 		if (invert)
 -- 
 2.35.1
-
-
 
