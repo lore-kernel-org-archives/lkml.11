@@ -2,124 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A6F2CCA47F
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 01:27:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 565F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 01:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231187AbiGPB1k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 21:27:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        id S231311AbiGPBdB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 21:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230072AbiGPB1g (ORCPT
+        with ESMTP id S230072AbiGPBc7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 21:27:36 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7028AEDB
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 18:27:34 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31dfe25bd47so18406817b3.18
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 18:27:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=oNUmtpieKLTpKC9Phy1E+O2Qwr+LcgpjVlKPKz6ZsMY=;
-        b=o3YYx9oRz4vs+i20GvTWtA2fo2ETFMeVSiAqrPAjMumbgk6QsUfn/L2857Y1U4kr91
-         vklLL5DSuzEDM920bdCqKAMwVm4TZrdIbmt15k1jgJIHxfR2M3E7zYEP8JAC7UfjbOPP
-         BUfsSW6TIpP5Zd+0767BBU6jYGQIuKTH6NuHwbuI8Ok0AGwudcmQcNEJKE0uPakdLJha
-         BSQHl/QlbT7Tx2Gt4EzHMIkcAgxAelFpUjH17w/t9BXELeqSi0tBgNQP9F0wr/k6HFmy
-         H0kpyAk/8g5j0lUBzM1Q5DdfBFyv+9bdMt4D3AGxguc5NSFR9q3njhxZLt3co38DKu8I
-         5FYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=oNUmtpieKLTpKC9Phy1E+O2Qwr+LcgpjVlKPKz6ZsMY=;
-        b=zSr3Wk7PXtElL0ZxU1mWwygqR0ZTpXj30wGchg/0FRRn593Y/0b28lvHXj3fTatP+T
-         OYvyaQl13vaxLvzEYdyKRgt4QjZM2hO5UzCe0sQCgqcGCDMXBPNqX0YJvD9YT/VPARd6
-         1C2jeEeri+kxeWdd/5Kn2GA+GOU03vOnoGVjpphLDnEk4uAsL4aIvDaN7q8Pcv92m4OJ
-         oa+SXhx/M0uTOY/xH+Ok37IH/rC12qxn7NiI9Tm036YoEeKyEPkLIzZgiV2VWjzDJxpo
-         hIFvHQXKm6WvNWR0u+ioEkzE/c19ESPMhWnbf5bfkxZEs5diOz45zoOkEgIAjUdPSV/y
-         Lbvw==
-X-Gm-Message-State: AJIora/n8r4Y3XOGncOkHY8ux3stfbJXWrSSiF93ohQwhpOvr1kn1e4Y
-        I3vceCTr2/Jt9ZAu+akp7S8L6pA7kHxaEg==
-X-Google-Smtp-Source: AGRyM1tgce6Og74FBQ8kWDBrQFEYIJs1vYjRR78miz5377H8QoZuC/el3NaKqVJGVtRTP4sANPPWTE2wuKnhCw==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
- (user=shakeelb job=sendgmr) by 2002:a25:e74d:0:b0:66e:5c8e:609 with SMTP id
- e74-20020a25e74d000000b0066e5c8e0609mr16394088ybh.585.1657934854024; Fri, 15
- Jul 2022 18:27:34 -0700 (PDT)
-Date:   Sat, 16 Jul 2022 01:27:31 +0000
-In-Reply-To: <CALvZod5hJ8VJ4E9jhqjCKc8au8_b-h_q+g=2pbQVUSBvappE6g@mail.gmail.com>
-Message-Id: <20220716012731.2zz7hpg3qbhwgeqd@google.com>
-Mime-Version: 1.0
-References: <xm26fsjotqda.fsf@google.com> <20220629165542.da7fc8a2a5dbd53cf99572aa@linux-foundation.org>
- <CALvZod5KX7XEHR9h_jFHf5pJcYB+dODEeaLKrQLtSy9EUqgvWw@mail.gmail.com>
- <20220629192435.df27c0dbb07ef72165e1de5e@linux-foundation.org> <CALvZod5hJ8VJ4E9jhqjCKc8au8_b-h_q+g=2pbQVUSBvappE6g@mail.gmail.com>
-Subject: Re: [RESEND RFC PATCH] epoll: autoremove wakers even more aggressively
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Benjamin Segall <bsegall@google.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Roman Penyaev <rpenyaev@suse.de>,
-        Jason Baron <jbaron@akamai.com>,
-        Khazhismel Kumykov <khazhy@google.com>, Heiher <r@hev.cc>
-Content-Type: text/plain; charset="us-ascii"
+        Fri, 15 Jul 2022 21:32:59 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7464746D99
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 18:32:57 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ll9fs6PGszlVmw;
+        Sat, 16 Jul 2022 09:31:17 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Jul 2022 09:32:55 +0800
+Subject: Re: [PATCH] mm/hugetlb: avoid corrupting page->mapping in
+ hugetlb_mcopy_atomic_pte
+To:     Axel Rasmussen <axelrasmussen@google.com>,
+        Peter Xu <peterx@redhat.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Linux MM <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220712130542.18836-1-linmiaohe@huawei.com>
+ <20220713102357.8328614813db01b569650ffd@linux-foundation.org>
+ <a47922cf-eb30-1ad9-fc96-1896254564ef@huawei.com>
+ <YtA7svbn4MtuT7qJ@xz-m1.local>
+ <402ae708-4c86-8feb-75c4-9339e1deac3b@huawei.com>
+ <YtFfHU3fb/ncCG6O@xz-m1.local>
+ <CAJHvVcgFY2uXM=CkxYmHc32Vqb5qmr8vFv0dpFk-2=Ef+Kssqw@mail.gmail.com>
+ <YtGe2qIO038e627p@xz-m1.local>
+ <CAJHvVcji14hUsqg=yrtevEqwMtZi7Xwyj4yUnLMaZi0DBqPTHA@mail.gmail.com>
+ <YtGmPI41S4w9iwr9@xz-m1.local>
+ <CAJHvVchMbJjOp4U+5K83YN0XHMRKfGzTLgCnzKd8mjYMQPRWaw@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <6fecf875-260e-a9c5-df24-9b0d13970057@huawei.com>
+Date:   Sat, 16 Jul 2022 09:32:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+MIME-Version: 1.0
+In-Reply-To: <CAJHvVchMbJjOp4U+5K83YN0XHMRKfGzTLgCnzKd8mjYMQPRWaw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jun 30, 2022 at 07:59:05AM -0700, Shakeel Butt wrote:
-> On Wed, Jun 29, 2022 at 7:24 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> >
-> > On Wed, 29 Jun 2022 18:12:46 -0700 Shakeel Butt <shakeelb@google.com> wrote:
-> >
-> > > On Wed, Jun 29, 2022 at 4:55 PM Andrew Morton <akpm@linux-foundation.org> wrote:
-> > > >
-> > > > On Wed, 15 Jun 2022 14:24:23 -0700 Benjamin Segall <bsegall@google.com> wrote:
-> > > >
-> > > > > If a process is killed or otherwise exits while having active network
-> > > > > connections and many threads waiting on epoll_wait, the threads will all
-> > > > > be woken immediately, but not removed from ep->wq. Then when network
-> > > > > traffic scans ep->wq in wake_up, every wakeup attempt will fail, and
-> > > > > will not remove the entries from the list.
-> > > > >
-> > > > > This means that the cost of the wakeup attempt is far higher than usual,
-> > > > > does not decrease, and this also competes with the dying threads trying
-> > > > > to actually make progress and remove themselves from the wq.
-> > > > >
-> > > > > Handle this by removing visited epoll wq entries unconditionally, rather
-> > > > > than only when the wakeup succeeds - the structure of ep_poll means that
-> > > > > the only potential loss is the timed_out->eavail heuristic, which now
-> > > > > can race and result in a redundant ep_send_events attempt. (But only
-> > > > > when incoming data and a timeout actually race, not on every timeout)
-> > > > >
-> > > >
-> > > > Thanks.  I added people from 412895f03cbf96 ("epoll: atomically remove
-> > > > wait entry on wake up") to cc.  Hopefully someone there can help review
-> > > > and maybe test this.
-> > > >
-> > > >
-> > >
-> > > Thanks Andrew. Just wanted to add that we are seeing this issue in
-> > > production with real workloads and it has caused hard lockups.
-> > > Particularly network heavy workloads with a lot of threads in
-> > > epoll_wait() can easily trigger this issue if they get killed
-> > > (oom-killed in our case).
-> >
-> > Hard lockups are undesirable.  Is a cc:stable justified here?
+On 2022/7/16 1:51, Axel Rasmussen wrote:
+> On Fri, Jul 15, 2022 at 10:39 AM Peter Xu <peterx@redhat.com> wrote:
+>>
+>> On Fri, Jul 15, 2022 at 10:28:44AM -0700, Axel Rasmussen wrote:
+>>> On Fri, Jul 15, 2022 at 10:07 AM Peter Xu <peterx@redhat.com> wrote:
+>>>>
+>>>> On Fri, Jul 15, 2022 at 09:45:37AM -0700, Axel Rasmussen wrote:
+>>>>> I agree we should either:
+>>>>> - Update the UFFD selftest to exercise this case
+>>>>> - Or, don't allow it, update vma_can_userfault() to also require VM_SHARED
+>>>>> for VM_UFFD_MINOR registration.
+>>>>>
+>>>>> The first one is unfortunately not completely straightforward as Peter
+>>>>> described. I would say it's probably not worth holding up this fix while we
+>>>>> wait for it to happen?
+>>>>
+>>>> Agreed, Andrew has already queued it.  It actually is a real fix since we
+>>>> never forbid the user running private mappings upon minor faults, so
+>>>> it's literally a bug in kernel irrelevant of the kselftest.
+>>>>
+>>>>>
+>>>>> I don't really have a strong preference between the two. The second option
+>>>>> is what I originally proposed in the first version of the minor fault
+>>>>> series, so going back to that isn't a problem at least from my perspective.
+>>>>> If in the future we find a real use case for this, we could always easily
+>>>>> re-enable it and add selftests for it at that point.
+>>>>
+>>>> I'd go for fixing the test case if possible.  Mike, would it be fine if we
+>>>> go back to /dev/hugepages path based approach in the test case?
+>>>
+>>> One possible alternative, can we use memfd_create() with MFD_HUGE_*?
+>>> This afaict lets us have an fd so we can create two mappings,
+>>> without having to mount hugetlbfs, pass in a path to the test, ...
+>>
+>> Sounds good. :) We can also rework the shared hugetlb too.  Wanna post a
+>> patch?  I can do that too, let me know otherwise.  Thanks!
 > 
-> Not for now as I don't know if we can blame a patch which might be the
-> source of this behavior.
+> Sure, I'll take a whack at it.
 
-I am able to repro the epoll hard lockup on next-20220715 with Ben's
-patch reverted. The repro is a simple TCP server and tens of clients
-communicating over loopback. Though to cause the hard lockup I have to
-create a couple thousand threads in epoll_wait() in server and also
-reduce the kernel.watchdog_thresh. With Ben's patch the repro does not
-cause the hard lockup even with kernel.watchdog.thresh=1.
+Many thanks for all of your hard work. :)
 
-Please add:
+> 
+>>
+>> --
+>> Peter Xu
+>>
+> .
+> 
 
-Tested-by: Shakeel Butt <shakeelb@google.com>
