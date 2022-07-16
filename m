@@ -2,121 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6894C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:34:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75BB7C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231772AbiGPRel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 13:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
+        id S231883AbiGPRjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 13:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiGPRek (ORCPT
+        with ESMTP id S230313AbiGPRjJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 13:34:40 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B841903C
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:39 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id v12so10042062edc.10
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8iDiDQdK0Y4Twyf2w6H2yrqrbuVdQeYS04yw6GP8uk4=;
-        b=heW9Qr2XiyY6OqRlLdI2V+LEMMLgw6QKsr5CvO05pRXWfqknCGfEu1MOaT3LQ796sI
-         YOm74UnqUxNmDzHVdAddwWqtIRm6ry2PynKXbKgn7j885PGSl1OXlWeH/5Ie8ljVLmz4
-         NpcIen2TBlI7yD07+24+irawf+bg2LFZA6CIw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8iDiDQdK0Y4Twyf2w6H2yrqrbuVdQeYS04yw6GP8uk4=;
-        b=fHPbROXYVqNTWdpglJzqa2ccoaaf+vrh4J7h6+RuC/fRb1CB9T4ZUpPOa/RM2UYGhZ
-         rrRCHgzTa/EN5khAOoG6fdDx2cK9Gi9o9RprHckq0aIWYhpEQVPjyL4SxS3eqoX8/On0
-         bopnSg14PPbKt+5QazGfNjEQFVmRqz7ZFyLNi5VfC6QKXtq/i+s3iXdZRYVL6ebgxxVb
-         GJuYrignY2BoKGNdj5xv2gbbiRarVGDXY8yNTwOgquhHyvIaU8PQK/1MQ+AC8vteRrvQ
-         MkujK/yFYvFpuIm5wuHREsRPMbOpVJOGdOBWd5xQif+CBEBjGkVheopCJvHTV3xrCR8y
-         N87g==
-X-Gm-Message-State: AJIora/5kdz7+Uut6umBwU6xsPDAT4OQUWexYu5oC03k2Je8Qe2Pd17S
-        Ub1dmU4uMbniO1899+9seAZ1uSMTrCvb6yGp
-X-Google-Smtp-Source: AGRyM1uQow1KBICMnyRD32ZYuXHvTnkkFNKBe6oXGis+/9X+VK5ybYSfPWc57b2RQ+yYYcAfVfz4qQ==
-X-Received: by 2002:a05:6402:268e:b0:43a:8f91:582 with SMTP id w14-20020a056402268e00b0043a8f910582mr26725790edd.419.1657992877386;
-        Sat, 16 Jul 2022 10:34:37 -0700 (PDT)
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
-        by smtp.gmail.com with ESMTPSA id q10-20020a1709063d4a00b0072b3182368fsm3404301ejf.77.2022.07.16.10.34.34
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jul 2022 10:34:35 -0700 (PDT)
-Received: by mail-wr1-f54.google.com with SMTP id bk26so10898863wrb.11
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:34 -0700 (PDT)
-X-Received: by 2002:a05:6000:1f8c:b0:21d:7e98:51ba with SMTP id
- bw12-20020a0560001f8c00b0021d7e9851bamr16322329wrb.442.1657992873956; Sat, 16
- Jul 2022 10:34:33 -0700 (PDT)
+        Sat, 16 Jul 2022 13:39:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83DD10FC0;
+        Sat, 16 Jul 2022 10:39:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D466611A6;
+        Sat, 16 Jul 2022 17:39:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6B92C34114;
+        Sat, 16 Jul 2022 17:39:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657993144;
+        bh=k8F15ykDf5m+r4/I7RU3R8rqaaAe0MvqtE3T6MXh/to=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kHN2y5iBaPDyznSfGD+B0FZebCnxFNJTZUfhljzHRaZFdjArTKoYH3dhOzgQhbaFj
+         qU+pf5QqG6IX/BHcd6NeQdcNRa7InJrk1FNCpZoupQO177qxVHg6f1uWBKJWdngpKO
+         kreFeKArz+UMOteMWfRLHt8nBDudvIlD9IKW067UzkPqHY9esrLs897JH8UNeJ0fnk
+         sxb5mCt22PE9q6gBsDHiURYvQz3t5wNky1WYyGkVYC6C6d5sM+gP3x/2BFWY/fK6Pe
+         +HwkYPttHxZQ7XLC2AYNiL3uMkNQ9LsnoON+Tsx7o9sI/XDX2uuhnUuYhMcbl6i2zB
+         1a/x1gMw282Cg==
+Date:   Sat, 16 Jul 2022 18:48:57 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Fred Eckert <Frede@cmslaser.com>
+Subject: Re: [PATCH v2 0/2] iio: Implement and utilize register structures
+ for ISA drivers
+Message-ID: <20220716184857.7ad17421@jic23-huawei>
+In-Reply-To: <cover.1657213745.git.william.gray@linaro.org>
+References: <cover.1657213745.git.william.gray@linaro.org>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220714205646.4023495-1-ndesaulniers@google.com> <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
-In-Reply-To: <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Sat, 16 Jul 2022 10:34:17 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wh6iW0Fv9mbtX9k2=9Kc9pFEEX7unWzmN7vqB4qXhBL+w@mail.gmail.com>
-Message-ID: <CAHk-=wh6iW0Fv9mbtX9k2=9Kc9pFEEX7unWzmN7vqB4qXhBL+w@mail.gmail.com>
-Subject: Re: [PATCH] ubsan: disable UBSAN_DIV_ZERO for clang
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, Marco Elver <elver@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        clang-built-linux <llvm@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 4:15 PM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> There are still the "__ubsan_handle_load_invalid_value() with UACCESS
-> enabled" messages, but those are misfeatures of the kvm cmpxchg
-> implementation.
+On Thu,  7 Jul 2022 13:21:23 -0400
+William Breathitt Gray <william.gray@linaro.org> wrote:
 
-Ok, so it really is independent of the non-optimal kvm cmpxchg implementation.
+> Changes in v2:
+>  - Rename 'ad' member to 'ssr_ad' to indicate access to Software Strobe
+>    Register as well; relevant comments updated
+>  - Dereference DAC channel address via array subscripts in the
+>    stx104_write_raw() function in order to match rest of code
+>  - Replace struct cio_dac_reg with direct u16 pointer to the DAC
+>    address; this greatly simplifies the cio-dac patch
+> 
+> The STX104 and CIO-DAC drivers were updated to use I/O memory accessor
+> calls such as ioread8()/iowrite8() in previous patch series [1]. This
+> patch series is a continuation of the effort to improve the code
+> readability and reduce magic numbers by implementing and utilizing named
+> register data structures.
+Series applied to the togreg branch of iio.git.  Given timing in cycle, I'll
+only push that out as testing (for 0-day etc) and then rebase it after rc1.
 
-The kvm code is fine - yes, it runs a bit too much code under the
-CLAC/STAC pair, but that "too much code" really is just a few local
-variable assignments.
+Thanks,
 
-So any reasonable compiler will keep them in registers, and even if
-that's not the case, it would just be a stack spill or reload with AC
-set, which is not really a problem.
+Jonathan
 
-But calling out to external functions within that SMAP region is
-invalid, and objdump warns about it.  Because we really want to
-minimize the area where user accesses are ok, and it's a "don't do
-this, you now lost the SMAP protection".
+> 
+> [1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
+> 
+> William Breathitt Gray (2):
+>   iio: adc: stx104: Implement and utilize register structures
+>   iio: dac: cio-dac: Cleanup indexing for DAC writes
+> 
+>  drivers/iio/adc/stx104.c  | 74 ++++++++++++++++++++++++++-------------
+>  drivers/iio/dac/cio-dac.c | 10 +++---
+>  2 files changed, 55 insertions(+), 29 deletions(-)
+> 
+> 
+> base-commit: 338222d8e1121bcb78a86fb39982eddcc367a5bc
 
-ANYWAY.
-
-The reason the clang build warns - but the gcc build does not - is
-simply that clang code generation is just nasty.
-
-I decided to make a non-kernel test-case so that clang people can look
-at it without having to worry about any kernel code issues or the
-details of the SMAP rules, and it really shows how clang generates
-horribly pointless and wrong code.
-
-I'm not sure what the right thing to do is to get this sorted out, but
-I created an "issue" on github for this:
-
-    https://github.com/llvm/llvm-project/issues/56568
-
-in the hope that this can get fixed. Because it's very clearly a clang
-misfeature, where clang basically generates insane code that violates
-the rules we try to enforce with objdump.
-
-Nick / Nathan / clang-built-linux people - if there are other better
-ways than that github issue thing to make people aware of this, that
-would be lovely, and please forward that issue to the right people.
-
-                         Linus
