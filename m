@@ -2,114 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0125C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17DCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231627AbiGPIHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 04:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S231713AbiGPINX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 04:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiGPIG6 (ORCPT
+        with ESMTP id S229497AbiGPINT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 04:06:58 -0400
-Received: from conuserg-08.nifty.com (conuserg-08.nifty.com [210.131.2.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45C43DBF7;
-        Sat, 16 Jul 2022 01:06:56 -0700 (PDT)
-Received: from grover.sesame ([133.106.62.13]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 26G85cuH025507;
-        Sat, 16 Jul 2022 17:05:38 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 26G85cuH025507
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1657958739;
-        bh=Mish1EGS9OnRhZSErhkuI8lcWASUDHcpplqcuJEg0Yo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Bzx+XMKaxm97o5XUo6aMJRA8K/U3rT1KtcFSxBqphtBQfigNJJPOjbdno5i6U1BZ1
-         bRJP14MWq4P6BQY/d6px4oAz3HmVlWGKLNPmEXUVl9fELse86XGvHKRPvD2nVGJpaT
-         X4Ssg403z5UngUCg+MhW43RsiapxsZYWEjIsfwDvH8Xk+57kNF1GPE8oIMBn92gwjm
-         Mt5EWpqHswFp0X3edZyibvgYYbatCkl6ozBuZM0+8AEYESD0GP0/xqRQOLiw7H0a6h
-         wK5J0JKTfAGty3mWfC2QGXJRNFzGlbm2/c6lIoFn52akgCChd1uiuMkWLX6B1BUpGA
-         aeHJYv8EJmLyA==
-X-Nifty-SrcIP: [133.106.62.13]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] kbuild: remove RCS_TAR_IGNORE
-Date:   Sat, 16 Jul 2022 17:05:30 +0900
-Message-Id: <20220716080530.119961-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sat, 16 Jul 2022 04:13:19 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93311CB11
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 01:13:17 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id s21so7500333pjq.4
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 01:13:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1P8qGPqtLup1zCD2NBNT17hEogDJpB8QEo6UaLfvv0o=;
+        b=Za/r1Bas6Hj9UBtwuo1lLNZ3ZyZMtKO+l1B9Y0JYO7wB6rPOvBrxmZC8IX8TnRNS8v
+         x7lSB2226nubmuT3SYS5phSH95jSvUzuzbA8O1tKfLC/7Ia+WX4yzYZohO9nHYdKTlmr
+         jNBrYKmTekEUUT1f8yXjZgliQfOZzLMhuKVuf552osnUwA5V8Hjd75t1e1GPfr3Cq6oX
+         T0E1NQDefyIAZ04o8WgzQWtirp/wi27NY55bOxrxzvhyGpJwBzqMvV2i/TREbDeMT2rJ
+         NWElPZqYguenrKXiJQfiarT56ACITUw3qfAju5hkp7b9cbME9MvNScQnIYV5Wx/5FJpT
+         qsBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1P8qGPqtLup1zCD2NBNT17hEogDJpB8QEo6UaLfvv0o=;
+        b=cCZtnxlw7Jmu35JtiB1lgWr3ZqZTYlYBDy5xPGdJqxVAeV531jgUrJNiOszZ4gj0pO
+         p+WDiFfcrF6d5JEjXjAG5ltznrYMOC0jqPemq9MmmMnKRum4NoA7EvTwjSzGziiXwWVK
+         Fjygs+0DuC5lXPIlPirf9v9yK8y1f1q+kEl1jc/koKHQRt4goCF8qrhOmiSnpf19w/a4
+         oRqA76nn8AsshTWVuI0mWyWwMVUHhXHWy4K7tTk5KKwZWeaHxMPW+GOKorcLxijrShm/
+         /TI2qG4wykogEHV4EKiZrM3bC2sGEf4wM0YAd904zvr7Dd3BYC1VMXE4YhwIgrR+KNje
+         Lijw==
+X-Gm-Message-State: AJIora86y6vBW3ivdsARJgwtA5T1mDaWFn+QPm06Zo+5sLPhb7VIF2Kq
+        i7en+dibJwbEmGvOsCuzJg==
+X-Google-Smtp-Source: AGRyM1tnZq+/bLJYqGjgFo6Lzwy5BZtlWW05MsVDzdFLwTY1up1XNNTabOhGYPk+qtDSvW9aUsFfJg==
+X-Received: by 2002:a17:90a:7ac4:b0:1ef:a606:4974 with SMTP id b4-20020a17090a7ac400b001efa6064974mr27026041pjl.51.1657959197244;
+        Sat, 16 Jul 2022 01:13:17 -0700 (PDT)
+Received: from localhost.localdomain ([144.202.91.207])
+        by smtp.gmail.com with ESMTPSA id o62-20020a625a41000000b0052b4f4c6a8fsm645838pfb.209.2022.07.16.01.13.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 01:13:16 -0700 (PDT)
+From:   Zheyu Ma <zheyuma97@gmail.com>
+To:     peter.senna@gmail.com, martin.donnelly@ge.com,
+        martyn.welch@collabora.co.uk, andrzej.hajda@intel.com,
+        narmstrong@baylibre.com, robert.foss@linaro.org,
+        Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
+        jernej.skrabec@gmail.com, airlied@linux.ie, daniel@ffwll.ch
+Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Zheyu Ma <zheyuma97@gmail.com>
+Subject: [PATCH] drm/bridge: megachips: Fix a null pointer dereference bug
+Date:   Sat, 16 Jul 2022 16:13:04 +0800
+Message-Id: <20220716081304.2762135-1-zheyuma97@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts the 20-year-old commit [1], hard-coding '--exclude .git'
-instead of '--exclude CVS'.
+When removing the module we will get the following warning:
 
-RCS_TAR_IGNORE is used for packaging the mainline kernel, so I cannot
-imagine other version control systems would be used.
+[   31.911505] i2c-core: driver [stdp2690-ge-b850v3-fw] unregistered
+[   31.912484] general protection fault, probably for non-canonical address 0xdffffc0000000001: 0000 [#1] PREEMPT SMP KASAN PTI
+[   31.913338] KASAN: null-ptr-deref in range [0x0000000000000008-0x000000000000000f]
+[   31.915280] RIP: 0010:drm_bridge_remove+0x97/0x130
+[   31.921825] Call Trace:
+[   31.922533]  stdp4028_ge_b850v3_fw_remove+0x34/0x60 [megachips_stdpxxxx_ge_b850v3_fw]
+[   31.923139]  i2c_device_remove+0x181/0x1f0
 
-I keep RCS_FIND_IGNORE because it is used for external modules, e.g.
-'make clean M=...', where git may not be used.
+The two bridges (stdp2690, stdp4028) do not probe at the same time, so
+the driver does not call ge_b850v3_resgiter() when probing, causing the
+driver to try to remove the object that has not been initialized.
 
-[1]: https://git.kernel.org/pub/scm/linux/kernel/git/history/history.git/commit/?id=c2dd03a9e2d8bf508f6b3d9ee327c37a928b3351
+Fix this by checking whether both the bridges are probed.
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
 ---
+ drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- Makefile                 | 5 +----
- scripts/Makefile.package | 2 +-
- scripts/package/mkspec   | 2 +-
- 3 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/Makefile b/Makefile
-index 80b19675ae91..8b166766b4ef 100644
---- a/Makefile
-+++ b/Makefile
-@@ -552,13 +552,10 @@ export KBUILD_AFLAGS_KERNEL KBUILD_CFLAGS_KERNEL
- export PAHOLE_FLAGS
+diff --git a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+index cce98bf2a4e7..c68a4cdf4625 100644
+--- a/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
++++ b/drivers/gpu/drm/bridge/megachips-stdpxxxx-ge-b850v3-fw.c
+@@ -296,7 +296,9 @@ static void ge_b850v3_lvds_remove(void)
+ 	 * This check is to avoid both the drivers
+ 	 * removing the bridge in their remove() function
+ 	 */
+-	if (!ge_b850v3_lvds_ptr)
++	if (!ge_b850v3_lvds_ptr ||
++		!ge_b850v3_lvds_ptr->stdp2690_i2c ||
++		!ge_b850v3_lvds_ptr->stdp4028_i2c)
+ 		goto out;
  
- # Files to ignore in find ... statements
--
-+# (Take care of various version control systems for external modules?)
- export RCS_FIND_IGNORE := \( -name SCCS -o -name BitKeeper -o -name .svn -o    \
- 			  -name CVS -o -name .pc -o -name .hg -o -name .git \) \
- 			  -prune -o
--export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn \
--			 --exclude CVS --exclude .pc --exclude .hg --exclude .git
--
- # ===========================================================================
- # Rules shared between *config targets and build targets
- 
-diff --git a/scripts/Makefile.package b/scripts/Makefile.package
-index 5017f6b2da80..d9c91ebcf2bf 100644
---- a/scripts/Makefile.package
-+++ b/scripts/Makefile.package
-@@ -45,7 +45,7 @@ if test "$(objtree)" != "$(srctree)"; then \
- 	false; \
- fi ; \
- $(srctree)/scripts/setlocalversion --save-scmversion; \
--tar -I $(KGZIP) -c $(RCS_TAR_IGNORE) -f $(2).tar.gz \
-+tar -I $(KGZIP) -c --exclude=.git -f $(2).tar.gz \
- 	--transform 's:^:$(2)/:S' $(TAR_CONTENT) $(3); \
- rm -f $(objtree)/.scmversion
- 
-diff --git a/scripts/package/mkspec b/scripts/package/mkspec
-index 54906174bda2..97efc85b845c 100755
---- a/scripts/package/mkspec
-+++ b/scripts/package/mkspec
-@@ -29,7 +29,7 @@ fi
- 
- PROVIDES="$PROVIDES kernel-$KERNELRELEASE"
- __KERNELRELEASE=$(echo $KERNELRELEASE | sed -e "s/-/_/g")
--EXCLUDES="$RCS_TAR_IGNORE --exclude=*vmlinux* --exclude=*.mod \
-+EXCLUDES="--exclude=.git --exclude=*vmlinux* --exclude=*.mod \
- --exclude=*.o --exclude=*.ko --exclude=*.cmd --exclude=Documentation \
- --exclude=.config.old --exclude=.missing-syscalls.d --exclude=*.s"
- 
+ 	drm_bridge_remove(&ge_b850v3_lvds_ptr->bridge);
 -- 
-2.34.1
+2.25.1
 
