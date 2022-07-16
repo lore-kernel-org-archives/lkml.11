@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5943FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BA8C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233145AbiGPXSN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
+        id S233157AbiGPXSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiGPXRo (ORCPT
+        with ESMTP id S230489AbiGPXRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:17:44 -0400
+        Sat, 16 Jul 2022 19:17:51 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 123AA23BCD
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:34 -0700 (PDT)
-Message-ID: <20220716230953.500517388@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 835B722512
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:38 -0700 (PDT)
+Message-ID: <20220716230953.619868339@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013452;
+        s=2020; t=1658013456;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=QqAiRodBnzoFq0Uv7yhac721jXiH8ElvZylHXExmCIo=;
-        b=rc1Ng1Bc0mSzCZ/ImhA9uf8toqbfvxb+B6ftlfcWG2JyuRJudFt2g7sSsCzqjtYkEj14DI
-        QPvFMvBcJb6wRR9dqB9aD2kkVIg5F5z9es74kovLN9hxHidtN5xAH9bmqFnm6X4hHfMaHe
-        GyyETPaiceyyDHB1Evwmp4Qyc4aHqJqIINX5CrbDAArAGTNzkzyAwKZIdF+6KRcCC7a4MP
-        AMHMu/jbLzNJAuQJVaQxOZB3TTeX8yCJTzCewDNIrG+X2ndUPEPKOg65QPP4Idi8ZBdtJE
-        AFdrioCjAKEUF1y2Ccxcg22gBstUtfw4QMup4ftqKotH9l/IOiBKUsOqzUMNyA==
+         references:references; bh=b2tVGWEEQxEmKYvEfnlf9eVD7BzXQkIgf4CQYJfSWA0=;
+        b=O7UhPxkCkQ737zainAw9aArz/bddAcpJHPpiD5Kp9M06wleZTQfXgKqex/jnpymI24hM6Z
+        pHp4/VaBZ1nFNw8I9aByaY+wi5ZNvE2VbtGNnNmt9/9B9n25wCQqYIxXJR1Vr7YsQsHaYD
+        ysVTkZMsDXnOjp3rrvt5extlWht2WG7n/hzF/eEoxm+otTc6g+ERiTvTRF838F/cXMni09
+        jKDhMKLDD4VAioO3tT9wiMIJWmZ/aCsMSq/siLBQ/hBXXLvS0ixCsKeUTxPDZ2RGgL3Ijs
+        c7hQIDLhpu9ORGAwo2S+Yh5Y4pn85grwGXekmfbZU2rTSiN0FQbZ9grthbhf4Q==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013452;
+        s=2020e; t=1658013456;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=QqAiRodBnzoFq0Uv7yhac721jXiH8ElvZylHXExmCIo=;
-        b=h3EmeZaBUFDKVEHqcnwlhn/N/0VIM4S+ifGV9IOeuhi+KU5NpQAvw512pb2glCrTBLzpD9
-        g7STLvCrOC9Cz0Aw==
+         references:references; bh=b2tVGWEEQxEmKYvEfnlf9eVD7BzXQkIgf4CQYJfSWA0=;
+        b=CZ1DNdoIuzBl9Kb+DEaHZJzoEGs0pd4Dzz4uhF8KABrtdFczi0jr29Z2877TXr23Ow/qON
+        9fbK9FEBsGbTFRBw==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -46,39 +46,82 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 14/38] x86/Kconfig: Add CONFIG_CALL_THUNKS
+Subject: [patch 16/38] modules: Make struct module_layout unconditionally available
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:32 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:35 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In preparation for mitigating the Intel SKL RSB underflow issue in
-software, add a new configuration symbol which allows to build the
-required call thunk infrastructure conditionally.
+To simplify the upcoming call thunk code it's desired to expose struct
+module_layout even on !MDOULES builds. This spares conditionals and
+#ifdeffery.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/Kconfig |    8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/linux/module.h |   44 ++++++++++++++++++++++----------------------
+ 1 file changed, 22 insertions(+), 22 deletions(-)
 
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2439,6 +2439,14 @@ config CC_HAS_SLS
- config CC_HAS_RETURN_THUNK
- 	def_bool $(cc-option,-mfunction-return=thunk-extern)
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -67,6 +67,28 @@ struct module_version_attribute {
+ 	const char *version;
+ };
  
-+config HAVE_CALL_THUNKS
-+	def_bool y
-+	depends on RETHUNK && OBJTOOL
++struct mod_tree_node {
++	struct module *mod;
++	struct latch_tree_node node;
++};
 +
-+config CALL_THUNKS
-+	def_bool n
-+	select MODULE_ALLOC
++struct module_layout {
++	/* The actual code + data. */
++	void *base;
++	/* Total size. */
++	unsigned int size;
++	/* The size of the executable code.  */
++	unsigned int text_size;
++	/* Size of RO section of the module (text+rodata) */
++	unsigned int ro_size;
++	/* Size of RO after init section */
++	unsigned int ro_after_init_size;
 +
- menuconfig SPECULATION_MITIGATIONS
- 	bool "Mitigations for speculative execution vulnerabilities"
- 	default y
++#ifdef CONFIG_MODULES_TREE_LOOKUP
++	struct mod_tree_node mtn;
++#endif
++};
++
+ extern ssize_t __modver_version_show(struct module_attribute *,
+ 				     struct module_kobject *, char *);
+ 
+@@ -316,28 +338,6 @@ enum module_state {
+ 	MODULE_STATE_UNFORMED,	/* Still setting it up. */
+ };
+ 
+-struct mod_tree_node {
+-	struct module *mod;
+-	struct latch_tree_node node;
+-};
+-
+-struct module_layout {
+-	/* The actual code + data. */
+-	void *base;
+-	/* Total size. */
+-	unsigned int size;
+-	/* The size of the executable code.  */
+-	unsigned int text_size;
+-	/* Size of RO section of the module (text+rodata) */
+-	unsigned int ro_size;
+-	/* Size of RO after init section */
+-	unsigned int ro_after_init_size;
+-
+-#ifdef CONFIG_MODULES_TREE_LOOKUP
+-	struct mod_tree_node mtn;
+-#endif
+-};
+-
+ #ifdef CONFIG_MODULES_TREE_LOOKUP
+ /* Only touch one cacheline for common rbtree-for-core-layout case. */
+ #define __module_layout_align ____cacheline_aligned
 
