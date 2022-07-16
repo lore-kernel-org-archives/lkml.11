@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52707C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 256FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233054AbiGPXST (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
+        id S232125AbiGPXSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233089AbiGPXRw (ORCPT
+        with ESMTP id S232810AbiGPXSA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:17:52 -0400
+        Sat, 16 Jul 2022 19:18:00 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150A922530
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:40 -0700 (PDT)
-Message-ID: <20220716230953.680326814@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A191222BD3
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:44 -0700 (PDT)
+Message-ID: <20220716230953.858048083@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013457;
+        s=2020; t=1658013462;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Gik5ycS44UWfcpIctkiTE3e/YDYlUOruM5e3iQXUL0g=;
-        b=X807HrVwl4RC2I76VLm1mwNFcLukNwIJy98zK5GuKfgtZf78axpgJZQWCpN+TOlzWC7ftR
-        LtYqIgn/J1aBEXXH103KQVkF9zwYkdibcM35upniyt2knLFbZWZ06H4RG5Lln3768u5Gw2
-        Y2SRVNMu6fHvgffnewmw86eCkEfstW6tYMlutpTFZsAUF5ueHmuoiFAm5ORKmqLBAHHZjo
-        zBCMeLvQGzJ/NHyNgtttC4hKxegc0OHeUmELscK+O5/7B/ClV7qUUhDmnJk2aNIkYZk+th
-        dWgiAqX1xI2XjVXT3t0th/uszclhma45tc8XZD4rHeubm7Usb8hEeJ0JN7YdMQ==
+         references:references; bh=Jzk1Ro7moQj4/ZNdqGDe6vOHP2eSGjateMVY4xuPVLw=;
+        b=ABOqAJ8ZC4ybwE0awspMk33HahjgcjGnviUBghK+dC9qnrV8SnCm6lTrZMxLuZYupBjdo5
+        Hzl79sPZcu8H5By4Ta/YWxKPOR98XlsQNkXAwNbu6+nGGB3HtP4RbT6urZBuBh+Q/byCMC
+        c8e1nlgTJBOIxuehEm3qtVTaUogEwUOBFtXCJQp8iwlrQi14uhorOuxqPX/fRn0B+XcsCb
+        zeYe6VWHF8ime4A3WbJQv1cnXneJM6BJWPSPA+KtZ5Tv0dLRsd+aBRz9xd3zBOn58vs+up
+        cwfBwHa5E1lyiYppeElTRdCes0zp6ZlspRAuR6u9CfJkCNaZVui9SP5l3fOhkQ==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013457;
+        s=2020e; t=1658013462;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Gik5ycS44UWfcpIctkiTE3e/YDYlUOruM5e3iQXUL0g=;
-        b=QqaQ2T5Dv6mWQOTLxLrNYUm+MJF5Ji3sORMs+v8m7dX0/HQBtK0TPd61XAHx09Fow5UZjr
-        oicTaWnbsQyvabDA==
+         references:references; bh=Jzk1Ro7moQj4/ZNdqGDe6vOHP2eSGjateMVY4xuPVLw=;
+        b=5EUd6EGPJWOJ58Rki0DfMwZwyqF9oxESgWMLkJkvEILhwWyMNNcx9fj+0aX+ajxMHp4A2v
+        EBtK/o0Q4h6wJHAg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -46,33 +46,121 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 17/38] module: Add arch_data to module_layout
+Subject: [patch 20/38] x86/alternatives: Provide text_poke_[copy|set]_locked()
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:37 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:42 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the upcoming call depth tracking it's required to store extra
-information in the module layout. Add a pointer.
+The upcoming call thunk patching must hold text_mutex and needs access to
+text_poke_copy() and text_poke_set(), which take text_mutex.
+
+Provide _locked postfixed variants to expose the inner workings.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- include/linux/module.h |    3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/include/asm/text-patching.h |    2 +
+ arch/x86/kernel/alternative.c        |   48 +++++++++++++++++++++--------------
+ 2 files changed, 32 insertions(+), 18 deletions(-)
 
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -87,6 +87,9 @@ struct module_layout {
- #ifdef CONFIG_MODULES_TREE_LOOKUP
- 	struct mod_tree_node mtn;
- #endif
-+#ifdef CONFIG_CALL_THUNKS
-+	void *arch_data;
-+#endif
- };
+--- a/arch/x86/include/asm/text-patching.h
++++ b/arch/x86/include/asm/text-patching.h
+@@ -45,6 +45,8 @@ extern void *text_poke(void *addr, const
+ extern void text_poke_sync(void);
+ extern void *text_poke_kgdb(void *addr, const void *opcode, size_t len);
+ extern void *text_poke_copy(void *addr, const void *opcode, size_t len);
++extern void *text_poke_copy_locked(void *addr, const void *opcode, size_t len);
++extern void *text_poke_set_locked(void *addr, int c, size_t len);
+ extern void *text_poke_set(void *addr, int c, size_t len);
+ extern int poke_int3_handler(struct pt_regs *regs);
+ extern void text_poke_bp(void *addr, const void *opcode, size_t len, const void *emulate);
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -1225,6 +1225,26 @@ void *text_poke_kgdb(void *addr, const v
+ 	return __text_poke(text_poke_memcpy, addr, opcode, len);
+ }
  
- extern ssize_t __modver_version_show(struct module_attribute *,
++void *text_poke_copy_locked(void *addr, const void *opcode, size_t len)
++{
++	unsigned long start = (unsigned long)addr;
++	size_t patched = 0;
++
++	if (WARN_ON_ONCE(core_kernel_text(start)))
++		return NULL;
++
++	while (patched < len) {
++		unsigned long ptr = start + patched;
++		size_t s;
++
++		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
++
++		__text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
++		patched += s;
++	}
++	return addr;
++}
++
+ /**
+  * text_poke_copy - Copy instructions into (an unused part of) RX memory
+  * @addr: address to modify
+@@ -1239,23 +1259,29 @@ void *text_poke_kgdb(void *addr, const v
+  */
+ void *text_poke_copy(void *addr, const void *opcode, size_t len)
+ {
++	mutex_lock(&text_mutex);
++	addr = text_poke_copy_locked(addr, opcode, len);
++	mutex_unlock(&text_mutex);
++	return addr;
++}
++
++void *text_poke_set_locked(void *addr, int c, size_t len)
++{
+ 	unsigned long start = (unsigned long)addr;
+ 	size_t patched = 0;
+ 
+ 	if (WARN_ON_ONCE(core_kernel_text(start)))
+ 		return NULL;
+ 
+-	mutex_lock(&text_mutex);
+ 	while (patched < len) {
+ 		unsigned long ptr = start + patched;
+ 		size_t s;
+ 
+ 		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
+ 
+-		__text_poke(text_poke_memcpy, (void *)ptr, opcode + patched, s);
++		__text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
+ 		patched += s;
+ 	}
+-	mutex_unlock(&text_mutex);
+ 	return addr;
+ }
+ 
+@@ -1270,22 +1296,8 @@ void *text_poke_copy(void *addr, const v
+  */
+ void *text_poke_set(void *addr, int c, size_t len)
+ {
+-	unsigned long start = (unsigned long)addr;
+-	size_t patched = 0;
+-
+-	if (WARN_ON_ONCE(core_kernel_text(start)))
+-		return NULL;
+-
+ 	mutex_lock(&text_mutex);
+-	while (patched < len) {
+-		unsigned long ptr = start + patched;
+-		size_t s;
+-
+-		s = min_t(size_t, PAGE_SIZE * 2 - offset_in_page(ptr), len - patched);
+-
+-		__text_poke(text_poke_memset, (void *)ptr, (void *)&c, s);
+-		patched += s;
+-	}
++	addr = text_poke_set_locked(addr, c, len);
+ 	mutex_unlock(&text_mutex);
+ 	return addr;
+ }
 
