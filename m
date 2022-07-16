@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F29CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D41C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:06:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231787AbiGPSGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 14:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58946 "EHLO
+        id S232151AbiGPSGT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 14:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiGPSGP (ORCPT
+        with ESMTP id S230250AbiGPSGQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 14:06:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F07618B05;
-        Sat, 16 Jul 2022 11:06:15 -0700 (PDT)
+        Sat, 16 Jul 2022 14:06:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A69A18B25;
+        Sat, 16 Jul 2022 11:06:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2937B80B98;
-        Sat, 16 Jul 2022 18:06:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 99511C34114;
-        Sat, 16 Jul 2022 18:06:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7E9C611D2;
+        Sat, 16 Jul 2022 18:06:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 481EFC3411C;
+        Sat, 16 Jul 2022 18:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657994772;
-        bh=MW0ni3zhBevoxu7s6uA4QvzuwcXiC1tBzMsJecCdHBA=;
+        s=k20201202; t=1657994775;
+        bh=ErY+x+l1LxgP8vns1PTyMC67lV1YusR54eG9lc9pwbs=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=esxwRxyketusb6ICx9Qh0EQ0tiw4ZSD2BIabT3A+V1bqV9giuNLnL0VemlwyM+8Ok
-         tS/FX8mU913W1npeqBACG7kDAeJG6xveEMLAUWL/K4DkI2RdEQZlnIgJ3GWA5ReMFh
-         z2erTdjupduZkHwzts1DVDiSSRBJmiRjgsUx+u2WjBkHAr43igZgKJRf0FwUXleirZ
-         JthiT3V3cBQsAgpYUCT6PFhETqPivryhkTF7N3fW+/PBRiexCb6Uk7ZADIl/bSUPuJ
-         zLcDDy0bzcx56mYwmulVBuLwJTsPUdm3APG4W4BIqYfe2CbGMD3f9kPQddGTNJ1Tjh
-         CW5w5Qy3+uoRw==
+        b=Zt0YRwy40YotigFmtARIWDqkycrii/SKugPecQBwlGXTYu8kSj+W1WuT+adMmwBek
+         eE70eoZ8MHgRj53uf1pf6rc8oXiTl6RvqOd5lpZYjlIH590c5KSirym6QhJRaGPO15
+         4K1iC30Og0Zv9KgPLUbNG0hsZjmLVDX5pxyuxgDH5znPPq+aqt/XfiZkWf0LEMYpfw
+         DFhrJazRZNk7UNLZkCaBEBy/V56hl7JrMgtjen4lCp4tKzaq54+rbL9DMdCRb56u/w
+         uNrMdG2NlnIxmOhr8lucY9UrfhCG17CZmkWyxfgjRrMlHr3IF3tph2o0aEu+7jfkB7
+         lUMtYfY1CyZ3Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 86714E45227;
-        Sat, 16 Jul 2022 18:06:12 +0000 (UTC)
-Subject: Re: [GIT PULL] s390 updates for 5.19-rc7
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 26993E4522F;
+        Sat, 16 Jul 2022 18:06:15 +0000 (UTC)
+Subject: Re: [GIT PULL] ACPI fix for v5.19-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YtHff24djpjhFL66@tuxmaker.boeblingen.de.ibm.com>
-References: <YtHff24djpjhFL66@tuxmaker.boeblingen.de.ibm.com>
-X-PR-Tracked-List-Id: <linux-s390.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YtHff24djpjhFL66@tuxmaker.boeblingen.de.ibm.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.19-6
-X-PR-Tracked-Commit-Id: 2f23256c0ea20627c91ea2d468cda945f68c3395
+In-Reply-To: <CAJZ5v0gDqO1fu=i9MOWuryMG7XNp+qMTTSRzNGyxY-+Jrx3wFQ@mail.gmail.com>
+References: <CAJZ5v0gDqO1fu=i9MOWuryMG7XNp+qMTTSRzNGyxY-+Jrx3wFQ@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAJZ5v0gDqO1fu=i9MOWuryMG7XNp+qMTTSRzNGyxY-+Jrx3wFQ@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.19-rc7
+X-PR-Tracked-Commit-Id: fbd74d16890b9f5d08ea69b5282b123c894f8860
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c658cabbfd32527060c2367f405bafb4e5815c6e
-Message-Id: <165799477254.6229.14891942357540935080.pr-tracker-bot@kernel.org>
-Date:   Sat, 16 Jul 2022 18:06:12 +0000
-To:     Alexander Gordeev <agordeev@linux.ibm.com>
+X-PR-Merge-Commit-Id: 16c957f089d520893b0b08e06641329fbcec492d
+Message-Id: <165799477515.6229.13663817194486669317.pr-tracker-bot@kernel.org>
+Date:   Sat, 16 Jul 2022 18:06:15 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 15 Jul 2022 23:43:27 +0200:
+The pull request you sent on Fri, 15 Jul 2022 20:39:30 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.19-6
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.19-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c658cabbfd32527060c2367f405bafb4e5815c6e
+https://git.kernel.org/torvalds/c/16c957f089d520893b0b08e06641329fbcec492d
 
 Thank you!
 
