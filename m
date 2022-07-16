@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54C1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C855C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232920AbiGPXSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40222 "EHLO
+        id S233216AbiGPXSt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233100AbiGPXR6 (ORCPT
+        with ESMTP id S233130AbiGPXSC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:17:58 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94B522B2E
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:42 -0700 (PDT)
-Message-ID: <20220716230953.797450674@linutronix.de>
+        Sat, 16 Jul 2022 19:18:02 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58CFE2409C
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:49 -0700 (PDT)
+Message-ID: <20220716230953.918740143@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013461;
+        s=2020; t=1658013464;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Gd8NwNu0ThhW0QIu3FBYrL07cfGnrA/dNAI5sapg5h4=;
-        b=0O24DsJodMkB5DrVniuZ4ogXsrq9F1bYco2YpjBQGKf+eecMM8rY85pVx1I/GadFtI62gr
-        dTM8eMRJeDwEw7lwUNNrPzWOp7GYZ8jfEPKhNyZSSgN8jrekY2JSr60ANa2pakJL2EAT4e
-        X2q824R+a5cANkpk9QvYidykE69ATDuY8zf9WI/ycMH4Z4hzInpgXan320MlWmMWmrzCou
-        xexzhHemoJ5jtG7kn5Z/U7R/HNif/qplGITBm6aZ31YFp2l1Dm9GnwXAyrjW+2NkpZm9OH
-        Wr/PWb3p9A5dzY+JzIAK0IKa5nxYp3qfNHTs3jY6ioajGrf5Ds1mmUsgDJXOaA==
+         references:references; bh=/h0ZE3KOnMvzgiDFOYx6/4OXuRqRs3WRg7RaeD3nrMY=;
+        b=A9iZ8Od0A9eYHT4eukFRfhAJ79PiHYnUG7+WTvD0VkBMWvNFZTTRtnJZnH1lTMZrTW+mso
+        eyz+x3IkDHY1jPe8Sg8XnnIUnqOZhbWI+IAjQ2ytxiCZ5lmbXESygdD7QFuIxEXKHe9pau
+        fcjWp3hBTqaNLJpE0cpeNpGD88ODnmrCOil9AXb1h/aWJSM2JGf4dHrq09ppgSP+Ls7xPg
+        p+ohZTC9PqKDb6etzmMsYhXs1Gi6aFrePhZbYmauTsQGOyOAfvQN7CnaJxcvhwtKXfr5jo
+        MG0ptkQJ/waBXBldXXXLjLG6F4YtUR7zasHR5quzAPUKfqHq5hi3erLOuNHMpA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013461;
+        s=2020e; t=1658013464;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Gd8NwNu0ThhW0QIu3FBYrL07cfGnrA/dNAI5sapg5h4=;
-        b=gWxtHbQ2jxPqv72i7D8iswJsg0w+AneZOt2jcgCU3+AzgemDt1n5OCvA9fGElCshbOCGkr
-        lplWgFJrplByDHAA==
+         references:references; bh=/h0ZE3KOnMvzgiDFOYx6/4OXuRqRs3WRg7RaeD3nrMY=;
+        b=aUPrudRtQHSyrbnyMPkrBQnTg0pB/OEBjtFWxlSDNsjncYJSExM7N8fNA5Ru2E92ORvC4A
+        fM04bIPi4f46RvCg==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -46,64 +46,56 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 19/38] x86/module: Provide __module_alloc()
+Subject: [patch 21/38] x86/entry: Make some entry symbols global
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:40 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:43 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Provide a function to allocate from module space with large TLBs. This is
-required for callthunks as otherwise the ITLB pressure kills performance.
+paranoid_entry(), error_entry() and xen_error_entry() have to be
+exempted from call accounting by thunk patching because they are
+before UNTRAIN_RET.
+
+Expose them so they are available in the alternative code.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/include/asm/module.h |    2 ++
- arch/x86/mm/module_alloc.c    |   10 ++++++++--
- 2 files changed, 10 insertions(+), 2 deletions(-)
+ arch/x86/entry/entry_64.S |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/include/asm/module.h
-+++ b/arch/x86/include/asm/module.h
-@@ -13,4 +13,6 @@ struct mod_arch_specific {
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -326,7 +326,8 @@ SYM_CODE_END(ret_from_fork)
  #endif
- };
+ .endm
  
-+extern void *__module_alloc(unsigned long size, unsigned long vmflags);
-+
- #endif /* _ASM_X86_MODULE_H */
---- a/arch/x86/mm/module_alloc.c
-+++ b/arch/x86/mm/module_alloc.c
-@@ -39,7 +39,7 @@ static unsigned long int get_module_load
- }
- #endif
+-SYM_CODE_START_LOCAL(xen_error_entry)
++SYM_CODE_START(xen_error_entry)
++	ANNOTATE_NOENDBR
+ 	UNWIND_HINT_FUNC
+ 	PUSH_AND_CLEAR_REGS save_ret=1
+ 	ENCODE_FRAME_POINTER 8
+@@ -904,7 +905,8 @@ SYM_CODE_END(xen_failsafe_callback)
+  * R14 - old CR3
+  * R15 - old SPEC_CTRL
+  */
+-SYM_CODE_START_LOCAL(paranoid_entry)
++SYM_CODE_START(paranoid_entry)
++	ANNOTATE_NOENDBR
+ 	UNWIND_HINT_FUNC
+ 	PUSH_AND_CLEAR_REGS save_ret=1
+ 	ENCODE_FRAME_POINTER 8
+@@ -1039,7 +1041,8 @@ SYM_CODE_END(paranoid_exit)
+ /*
+  * Switch GS and CR3 if needed.
+  */
+-SYM_CODE_START_LOCAL(error_entry)
++SYM_CODE_START(error_entry)
++	ANNOTATE_NOENDBR
+ 	UNWIND_HINT_FUNC
  
--void *module_alloc(unsigned long size)
-+void *__module_alloc(unsigned long size, unsigned long vmflags)
- {
- 	gfp_t gfp_mask = GFP_KERNEL;
- 	void *p;
-@@ -47,10 +47,11 @@ void *module_alloc(unsigned long size)
- 	if (PAGE_ALIGN(size) > MODULES_LEN)
- 		return NULL;
- 
-+	vmflags |= VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK;
- 	p = __vmalloc_node_range(size, MODULE_ALIGN,
- 				 MODULES_VADDR + get_module_load_offset(),
- 				 MODULES_END, gfp_mask, PAGE_KERNEL,
--				 VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK,
-+				 vmflags,
- 				 NUMA_NO_NODE, __builtin_return_address(0));
- 
- 	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
-@@ -60,3 +61,8 @@ void *module_alloc(unsigned long size)
- 
- 	return p;
- }
-+
-+void *module_alloc(unsigned long size)
-+{
-+	return __module_alloc(size, 0);
-+}
+ 	PUSH_AND_CLEAR_REGS save_ret=1
 
