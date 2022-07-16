@@ -2,65 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA94C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 03:04:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B07C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 03:26:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231512AbiGPDEu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 23:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
+        id S229692AbiGPD0F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 23:26:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230012AbiGPDEs (ORCPT
+        with ESMTP id S229436AbiGPD0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 23:04:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE0F017056
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 20:04:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F134B82EEA
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 03:04:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA81C34115;
-        Sat, 16 Jul 2022 03:04:43 +0000 (UTC)
-Date:   Fri, 15 Jul 2022 23:04:41 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [ammarfaizi2-block:rostedt/linux-trace/ftrace/core 30/30]
- include/linux/cpumask.h:95:42: warning: function
- 'trace_event_get_offsets_foo_bar' might be a candidate for 'gnu_printf'
- format attribute
-Message-ID: <20220715230441.64c89d63@gandalf.local.home>
-In-Reply-To: <202207160905.GmOfByea-lkp@intel.com>
-References: <202207160905.GmOfByea-lkp@intel.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 15 Jul 2022 23:26:03 -0400
+Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E8FC709AB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 20:25:59 -0700 (PDT)
+Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
+        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
+        id 1oCYQx-001439-9i; Sat, 16 Jul 2022 13:25:36 +1000
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Sat, 16 Jul 2022 11:25:35 +0800
+Date:   Sat, 16 Jul 2022 11:25:35 +0800
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     Isaac Manjarres <isaacmanjarres@google.com>
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Will Deacon <will@kernel.org>, Marc Zyngier <maz@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saravana Kannan <saravanak@google.com>, kernel-team@android.com
+Subject: Re: [PATCH 07/10] crypto: Use ARCH_DMA_MINALIGN instead of
+ ARCH_KMALLOC_MINALIGN
+Message-ID: <YtIvr7t8A/OlIXrT@gondor.apana.org.au>
+References: <YlkV7NtatO7KFusX@gondor.apana.org.au>
+ <CAMj1kXFW_zC-U5Ox9_=4gKCwWOmkR7wPNb6UQhiz8viNWTRU-w@mail.gmail.com>
+ <YlkkGpVx8rhcsBot@gondor.apana.org.au>
+ <YllALIgZcQJ6asdA@arm.com>
+ <YlllpH+PB8XVUn6h@arm.com>
+ <YlvLqkIdrCp/rOsG@gondor.apana.org.au>
+ <YlvSEHul1Rv3Ap34@arm.com>
+ <YlvTNQGh+MfZFWKW@gondor.apana.org.au>
+ <YlxATW56ZoNtmxlk@arm.com>
+ <YtHo3Xu33jovwpFt@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtHo3Xu33jovwpFt@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 16 Jul 2022 09:09:15 +0800
-kernel test robot <lkp@intel.com> wrote:
+On Fri, Jul 15, 2022 at 03:23:25PM -0700, Isaac Manjarres wrote:
+>
+> isn't present. So, the current behavior that crypto is relying on
+> wouldn't change, so I agree with Catalin that we wouldn't be lying to
+> the compiler if we move forward with getting rid of kmalloc-192.
 
-> All warnings (new ones prefixed by >>):
-> 
->    In file included from include/trace/define_trace.h:102,
->                     from samples/trace_events/trace-events-sample.h:608,
->                     from samples/trace_events/trace-events-sample.c:12:
->    samples/trace_events/./trace-events-sample.h: In function 'trace_event_get_offsets_foo_bar':
-> >> include/linux/cpumask.h:95:42: warning: function 'trace_event_get_offsets_foo_bar' might be a candidate for 'gnu_printf' format attribute [-Wsuggest-attribute=format]  
->       95 | #define cpu_possible_mask ((const struct cpumask *)&__cpu_possible_mask)
->          |                                          ^~~~~~~
+There is no guarantee that crypto will always be allocating
+structures > 128 bytes.
 
-Please quiet the gnu_printf warning. I actually missed a real build issue
-from the kernel test robot in the last patch set because it was the needle
-in the gnu_printf haystack :-p
+But thanks for the reminder, I do need to push the patches along.
 
-That is, after having 10 of these warnings, I missed the one that actually
-mattered.
-
--- Steve
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
