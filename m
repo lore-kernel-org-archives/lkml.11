@@ -2,78 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C70DCCA481
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 01:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A4C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 01:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiGPBkp convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 15 Jul 2022 21:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
+        id S231603AbiGPBvT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 15 Jul 2022 21:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiGPBkn (ORCPT
+        with ESMTP id S230003AbiGPBvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 15 Jul 2022 21:40:43 -0400
-Received: from relay3.hostedemail.com (smtprelay0013.hostedemail.com [216.40.44.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8257691CC4
-        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 18:40:42 -0700 (PDT)
-Received: from omf07.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id 46EA234AD8;
-        Sat, 16 Jul 2022 01:40:40 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf07.hostedemail.com (Postfix) with ESMTPA id EC0D22002F;
-        Sat, 16 Jul 2022 01:40:36 +0000 (UTC)
-Message-ID: <e3b59b09c958e420b74aab9f51d6eca0c63005ca.camel@perches.com>
-Subject: Re: [PATCH] mediatek: mt7601u: fix clang -Wformat warning
-From:   Joe Perches <joe@perches.com>
-To:     Justin Stitt <justinstitt@google.com>
-Cc:     Jakub Kicinski <kubakici@wp.pl>, Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Date:   Fri, 15 Jul 2022 18:40:36 -0700
-In-Reply-To: <CAFhGd8pJyRYq-3VrKM+6+k0AysfYbVJEJm3FMFt9eAysAKDUpQ@mail.gmail.com>
-References: <20220711212932.1501592-1-justinstitt@google.com>
-         <84e873c27f2426ce003e650004fe856bf72c634b.camel@perches.com>
-         <CAFhGd8pJyRYq-3VrKM+6+k0AysfYbVJEJm3FMFt9eAysAKDUpQ@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Fri, 15 Jul 2022 21:51:18 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA99175BB
+        for <linux-kernel@vger.kernel.org>; Fri, 15 Jul 2022 18:51:16 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LlB1Y3TdFzVfhQ;
+        Sat, 16 Jul 2022 09:47:29 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Jul 2022 09:51:13 +0800
+Received: from zelda.huawei.com (10.175.103.14) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 16 Jul 2022 09:51:12 +0800
+From:   Wang Jingjin <wangjingjin1@huawei.com>
+To:     <maarten.lankhorst@linux.intel.com>, <mripard@kernel.org>,
+        <tzimmermann@suse.de>, <airlied@linux.ie>, <daniel@ffwll.ch>,
+        <dave.stevenson@raspberrypi.com>
+CC:     <maxime@cerno.tech>, <dri-devel@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>, <zhengbin13@huawei.com>,
+        Wang Jingjin <wangjingjin1@huawei.com>
+Subject: [PATCH -next] drm/vc4: Add explicit declaration of 'drmm_of_get_bridge'
+Date:   Sat, 16 Jul 2022 10:07:41 +0800
+Message-ID: <20220716020741.4124893-1-wangjingjin1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Stat-Signature: 9arxp8zrxrtfhr9woubqw46ao9rxwyoi
-X-Rspamd-Server: rspamout08
-X-Rspamd-Queue-Id: EC0D22002F
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX188ldYAO7JJ3DMtC38rgMW1rKWpcluwGBk=
-X-HE-Tag: 1657935636-65764
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.14]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 2022-07-15 at 17:08 -0700, Justin Stitt wrote:
-> On Thu, Jul 14, 2022 at 11:33 PM Joe Perches <joe@perches.com> wrote:
-> > 
-> > On Mon, 2022-07-11 at 14:29 -0700, Justin Stitt wrote:
-> > > When building with Clang we encounter this warning:
-> > > > drivers/net/wireless/mediatek/mt7601u/debugfs.c:92:6: error: format
-> > > > specifies type 'unsigned char' but the argument has type 'int'
-> > > > [-Werror,-Wformat] dev->ee->reg.start + dev->ee->reg.num - 1);
-[]
-> > I suggest s/%hh/%/ for all the uses here, not just this one.
-> 
-> I also contemplated this change but I think it might be a bit out of
-> scope for https://github.com/ClangBuiltLinux/linux/issues/378  -- What
-> do you think?
+Fix the error of implicit declaration of function 'drmm_of_get_bridge':
 
-It would not be out of scope.
+drivers/gpu/drm/vc4/vc4_dpi.c:278:11: error: implicit declaration of function ‘drmm_of_get_bridge’; did you mean ‘devm_drm_of_get_bridge’? [-Werror=implicit-function-declaration]
+  bridge = drmm_of_get_bridge(drm, dev->of_node, 0, 0);
 
-> It could be argued that every single instance of %hh[dux] should be
-> replaced with %[dux].
+Fixes: 055af0235aef ("drm/vc4: dpi: Switch to drmm_of_get_bridge")
+Signed-off-by: Wang Jingjin <wangjingjin1@huawei.com>
+---
+ include/drm/drm_bridge.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-All the vsprintf ones, but not the scanf ones.
+diff --git a/include/drm/drm_bridge.h b/include/drm/drm_bridge.h
+index dba5d81e3b4a..6b65b0dfb4fb 100644
+--- a/include/drm/drm_bridge.h
++++ b/include/drm/drm_bridge.h
+@@ -959,6 +959,14 @@ static inline struct drm_bridge *devm_drm_of_get_bridge(struct device *dev,
+ {
+ 	return ERR_PTR(-ENODEV);
+ }
++
++static inline struct drm_bridge *drmm_of_get_bridge(struct drm_device *drm,
++						     struct device_node *node,
++						     u32 port,
++						     u32 endpoint)
++{
++	return ERR_PTR(-ENODEV);
++}
+ #endif
+
+ #endif
+--
+2.25.1
 
