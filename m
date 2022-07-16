@@ -2,103 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07799CCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbiGPPl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 11:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50300 "EHLO
+        id S232358AbiGPPvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 11:51:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPPl6 (ORCPT
+        with ESMTP id S229867AbiGPPvX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 11:41:58 -0400
-Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792E41EAC3;
-        Sat, 16 Jul 2022 08:41:57 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 26GFfUl4024720;
-        Sun, 17 Jul 2022 00:41:31 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 26GFfUl4024720
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1657986091;
-        bh=9l6AqfAq1fUXeNREScyW3EFRwBhnW1ZJsI1ajN6AmNc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=s8e1j334nemy0KPJqqC318cG7Oxxo/QQ9jkbsFB0Y4QIk9zd7FE1+U1Wj36+0dJT4
-         bpaFl5g5KeWyxFLriF4HZNlDuGdJR4AtETNCnfiRl/xO0G+VvfNzmbcQl2ndJ4IcCV
-         rQq8nmGKFWyduNV0nbTjMFa+lGHZrjraw80Fnt9i+6anXmt50KlK7pMyCYnio8vcoy
-         BFzPcuSbRn0phYPYt7a1xBq8DhcTpoNNLuy3u2+eV8hyCBXQ1l/9W+9OOE52SOguGc
-         1cZoSbB0FBo6PhK1b9Ees4MbOd88fDve/FBNJYcusok7aXndNJxch7q9Ky45Jq/BDV
-         6Dp1lXd3ZEADQ==
-X-Nifty-SrcIP: [209.85.221.43]
-Received: by mail-wr1-f43.google.com with SMTP id e15so5385469wro.5;
-        Sat, 16 Jul 2022 08:41:31 -0700 (PDT)
-X-Gm-Message-State: AJIora8rm2GaoWVbz/Np9WeWmcFyXHgBqOqOnFkO9RK90BBvAKhPCLDi
-        9phiLC4ppndcbC8Uh4POOXq3TFtxziMzmfiKxf0=
-X-Google-Smtp-Source: AGRyM1t/dRQnd1fMOKpDQNUmKgzbpoxiL6/bhf+qufAWI8vS4tLK4bRl60YwqvphGURlbQHT0V1t+NmA0H97qvjtOpU=
-X-Received: by 2002:adf:d1e2:0:b0:21d:d40b:d816 with SMTP id
- g2-20020adfd1e2000000b0021dd40bd816mr6497954wrd.682.1657986089724; Sat, 16
- Jul 2022 08:41:29 -0700 (PDT)
+        Sat, 16 Jul 2022 11:51:23 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB56118B0C
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:51:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1657986682; x=1689522682;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=LaO484dNnKjtU1b9v96aU9pgzCv4lbAKkmwsfMZ3azw=;
+  b=Qdi5JtWTa8RwoixBmpDJef8cVa1s6Pc973SGssdUz4iaKCRbHt5tE5Yo
+   UQVI0lLKkvx3uyQrtcDTGM0DkjFa38J05ZAnbIjhp89XFUxIQZjR9md8y
+   e4iv+NoqQshTmuOWANlfXxGibBb9ONxl71vGrbYckNcu8U+myolXPXdjS
+   rfFPMQdiMkZu+KGaRGF/GwMs8re+vOa8FDPagBSHeAfifv/lcsHoPrMhM
+   xahtHux7Is/5WEva8Coe2YP6fj3vRWFyYu6+z2GjZdoh65DcfHt7GfcHI
+   BbAkoGz2lH4Keb6lXXY8dOGhgWmSK0/yfLW+YgTWZ1Mjg3qKLCQhK8u23
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="266394148"
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="266394148"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 08:51:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="629438321"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 16 Jul 2022 08:51:20 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCk4d-0001lK-Vh;
+        Sat, 16 Jul 2022 15:51:19 +0000
+Date:   Sat, 16 Jul 2022 23:50:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning:
+ no previous prototype for '__ashldi3'
+Message-ID: <202207162318.iryfcTQP-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220714050243.16411-1-masahiroy@kernel.org> <20220714050243.16411-4-masahiroy@kernel.org>
-In-Reply-To: <20220714050243.16411-4-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sun, 17 Jul 2022 00:40:51 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQqSWaLJV7cGDtq3hscqwh2eWUaRs-XgB8v4-mS2bVAQA@mail.gmail.com>
-Message-ID: <CAK7LNAQqSWaLJV7cGDtq3hscqwh2eWUaRs-XgB8v4-mS2bVAQA@mail.gmail.com>
-Subject: Re: [PATCH 4/4] kbuild: error out if $(INSTALL_MOD_PATH) contains %
- or :
-To:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Cc:     Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 14, 2022 at 2:03 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> If the directory pass given to INSTALL_MOD_PATH contains % or :,
+Hi Masahiro,
 
-A typo.
+FYI, the error/warning still remains.
 
-directory pass  ->  directory path
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9b59ec8d50a1f28747ceff9a4f39af5deba9540e
+commit: f78b25ee922ef6faf59a258af1b9388ca894cfd9 mips: decompressor: do not copy source files while building
+date:   8 months ago
+config: mips-randconfig-r012-20220715 (https://download.01.org/0day-ci/archive/20220716/202207162318.iryfcTQP-lkp@intel.com/config)
+compiler: mipsel-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f78b25ee922ef6faf59a258af1b9388ca894cfd9
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout f78b25ee922ef6faf59a258af1b9388ca894cfd9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+Note: functions only called from assembly code should be annotated with the asmlinkage attribute
+All warnings (new ones prefixed by >>):
+
+   In file included from arch/mips/boot/compressed/ashldi3.c:2:
+>> arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning: no previous prototype for '__ashldi3' [-Wmissing-prototypes]
+       9 | long long notrace __ashldi3(long long u, word_type b)
+         |                   ^~~~~~~~~
 
 
+vim +/__ashldi3 +9 arch/mips/boot/compressed/../../../../lib/ashldi3.c
 
+b35cd9884fa5d8 Palmer Dabbelt 2017-05-23  8  
+b35cd9884fa5d8 Palmer Dabbelt 2017-05-23 @9  long long notrace __ashldi3(long long u, word_type b)
 
+:::::: The code at line 9 was first introduced by commit
+:::::: b35cd9884fa5d81c9d5e7f57c9d03264ae2bd835 lib: Add shared copies of some GCC library routines
 
-> the module_install fails.
->
-> % is used in pattern rules, and : as the separator of dependencies.
->
-> Bail out with a clearer error message.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
->
->  scripts/Makefile.modinst | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/scripts/Makefile.modinst b/scripts/Makefile.modinst
-> index 16a02e9237d3..a4c987c23750 100644
-> --- a/scripts/Makefile.modinst
-> +++ b/scripts/Makefile.modinst
-> @@ -18,6 +18,9 @@ INSTALL_MOD_DIR ?= extra
->  dst := $(MODLIB)/$(INSTALL_MOD_DIR)
->  endif
->
-> +$(foreach x, % :, $(if $(findstring $x, $(dst)), \
-> +       $(error module installation path cannot contain '$x')))
-> +
->  suffix-y                               :=
->  suffix-$(CONFIG_MODULE_COMPRESS_GZIP)  := .gz
->  suffix-$(CONFIG_MODULE_COMPRESS_XZ)    := .xz
-> --
-> 2.34.1
->
-
+:::::: TO: Palmer Dabbelt <palmer@dabbelt.com>
+:::::: CC: Palmer Dabbelt <palmer@dabbelt.com>
 
 -- 
-Best Regards
-Masahiro Yamada
+0-DAY CI Kernel Test Service
+https://01.org/lkp
