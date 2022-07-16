@@ -2,162 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E60A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 14:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4309ECCA482
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 14:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230321AbiGPOqo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 10:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50856 "EHLO
+        id S230140AbiGPOua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 10:50:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiGPOqm (ORCPT
+        with ESMTP id S229473AbiGPOu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 10:46:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E48193E1;
-        Sat, 16 Jul 2022 07:46:41 -0700 (PDT)
+        Sat, 16 Jul 2022 10:50:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17869F3F;
+        Sat, 16 Jul 2022 07:50:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A57026114B;
-        Sat, 16 Jul 2022 14:46:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D40C34114;
-        Sat, 16 Jul 2022 14:46:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5C1BB80A08;
+        Sat, 16 Jul 2022 14:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46922C34114;
+        Sat, 16 Jul 2022 14:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657982800;
-        bh=4QvxNZ2FXer/MBSeMYgiz4DE9IC/aVS4+NEw/i4U0Ko=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rQ+/yDpHD//TaP3shmZ7TDgyJPkg7FsWk6bTFHqWFhOJgdT2hRbYVbB4Snk03n+ye
-         Mj11rhvoPsjsYwpoEAf0uy2WYHGFWMBsLJO4UXrwSqIqDKopN4DgW983sW1TwUVpGf
-         d4tziTHjvSDKCxFvzkx3CS31hCrNxoWEJVBfON1xDTUpteEQes6dZb2gaa/w6wj06d
-         +Lm/bJPyP3/fDYYcOh8gMivy2qhRh7p9xtwjSkdHkTuRcJu+XCNRMd1Bya5WRUVlUN
-         0lAxaKV6uRW7Zxrbd9mDm7oAMVik8/wQsCSpdAEFfmJalwSk+UEKDyTaIALbm8x4UA
-         Nv60f5440OTlQ==
-Date:   Sat, 16 Jul 2022 15:56:33 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 1/2] iio: Add new event type gesture and use
- direction for single and double tap
-Message-ID: <20220716155633.244b9243@jic23-huawei>
-In-Reply-To: <CAM+2EuJWEOn-Vtaox=G3zXcd+zpx=mAhY1YHuNJx2XpAyPB1xg@mail.gmail.com>
-References: <20220613191706.31239-1-jagathjog1996@gmail.com>
-        <20220613191706.31239-2-jagathjog1996@gmail.com>
-        <20220619135427.4ffc2d3d@jic23-huawei>
-        <CAM+2EuJWEOn-Vtaox=G3zXcd+zpx=mAhY1YHuNJx2XpAyPB1xg@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        s=k20201202; t=1657983022;
+        bh=NGGWpUHcEC9+bYxY+zgYgLByRAr/mR69cowRWdBo/0I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SO2Xky1+d9rereWiZRoQQudL02luIZhodAJF+jW6YFdJIPdSkpg1eIwpVOu53J8hm
+         M1ZQpebdnZpYmxne4bwBKAuogNhD2zDLh5y8MDc0ZtPjo8H18r0IbFLST3c6LbNtnD
+         DGsshF5MmPEMHrm4BS0YEeC7OQjjYv47riVF7bZP23pgQ4wj7TNVbdoI62yDNgNwyJ
+         D8Z908VwuDCkZ7IxBaODUPTUDDddQQ4PRQwS2OQgqH5t+cpiI+DXeh3geZpwILhF2y
+         PyiziJoMtdmnf6+qCAduXmQOuRKt9yBWTnyEc9vJfiwIWiaiJ74o2kRHUXo6dIBgd5
+         IpzYuVD1UG1Iw==
+Received: by pali.im (Postfix)
+        id 30724A52; Sat, 16 Jul 2022 16:50:19 +0200 (CEST)
+Date:   Sat, 16 Jul 2022 16:50:19 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 3/4] ARM: dts: armada-38x: Fix compatible string for
+ gpios
+Message-ID: <20220716145019.nps3oh4a22fsuzup@pali>
+References: <20220714115515.5748-1-pali@kernel.org>
+ <20220714183328.4137-1-pali@kernel.org>
+ <20220714183328.4137-3-pali@kernel.org>
+ <20220716144028.rzwcn4wl5uyxepjd@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220716144028.rzwcn4wl5uyxepjd@pengutronix.de>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 26 Jun 2022 18:51:54 +0530
-Jagath Jog J <jagathjog1996@gmail.com> wrote:
-
-> Hi Jonathan,
-> 
-> Sorry for the delay in replying.
-> 
-> On Sun, Jun 19, 2022 at 6:15 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Tue, 14 Jun 2022 00:47:05 +0530
-> > Jagath Jog J <jagathjog1996@gmail.com> wrote:
+On Saturday 16 July 2022 16:40:28 Uwe Kleine-König wrote:
+> On Thu, Jul 14, 2022 at 08:33:27PM +0200, Pali Rohár wrote:
+> > Armada 38x supports per CPU interrupts for gpios, like Armada XP. Pre-XP
+> > variants like Armada 370 do not support per CPU interrupts for gpios.
+> > 
+> > So change compatible string for Armada 38x from "marvell,armada-370-gpio"
+> > which indicates pre-XP variant to "marvell,armadaxp-gpio" which indicates
+> > XP variant or new.
+> > 
+> > Driver gpio-mvebu.c which handles both pre-XP and XP variants already
+> > provides support for per CPU interrupts on XP and newer variants.
+> > 
+> > Signed-off-by: Pali Rohár <pali@kernel.org>
+> > Fixes: 7cb2acb3fbae ("ARM: dts: mvebu: Add PWM properties for armada-38x")
+> > ---
+> >  arch/arm/boot/dts/armada-38x.dtsi | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
+> > index df3c8d1d8f64..9343de6947b3 100644
+> > --- a/arch/arm/boot/dts/armada-38x.dtsi
+> > +++ b/arch/arm/boot/dts/armada-38x.dtsi
+> > @@ -292,7 +292,7 @@
+> >  			};
 > >  
-> > > Add new event type for tap called gesture and the direction can be used
-> > > to differentiate single and double tap. This may be used by accelerometer
-> > > sensors to express single and double tap events. For directional tap,
-> > > modifiers like IIO_MOD_(X/Y/Z) can be used along with singletap and
-> > > doubletap direction.
-> > >
-> > > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>  
-> >
-> > Hi,
-> >
-> > With fresh eyes I think we need to rethink the use of _period to make sure
-> > we have 'space' for another very like ABI element which is the maximum
-> > time between events for them to be considered a double tap.
-> >
-> > Jonathan
-> >  
-> > > ---
-> > >  Documentation/ABI/testing/sysfs-bus-iio | 24 ++++++++++++++++++++++++
-> > >  drivers/iio/industrialio-event.c        |  5 ++++-
-> > >  include/uapi/linux/iio/types.h          |  3 +++
-> > >  tools/iio/iio_event_monitor.c           |  8 +++++++-
-> > >  4 files changed, 38 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> > > index 3e00d7f7ee22..4eaf85e01911 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-iio
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> > > @@ -2035,3 +2035,27 @@ Description:
-> > >               Available range for the forced calibration value, expressed as:
-> > >
-> > >               - a range specified as "[min step max]"
-> > > +
-> > > +What:                /sys/.../events/in_accel_gesture_singletap_en
-> > > +What:                /sys/.../events/in_accel_gesture_doubletap_en
-> > > +KernelVersion:       5.19
-> > > +Contact:     linux-iio@vger.kernel.org
-> > > +Description:
-> > > +             Device generates an event on a single or double tap.
-> > > +
-> > > +What:                /sys/.../events/in_accel_gesture_singletap_value
-> > > +What:                /sys/.../events/in_accel_gesture_doubletap_value
-> > > +KernelVersion:       5.19
-> > > +Contact:     linux-iio@vger.kernel.org
-> > > +Description:
-> > > +             Specifies the threshold value that the device is comparing
-> > > +             against to generate the tap gesture event. Units and exact
-> > > +             meaning of value are device specific.  
-> >
-> > I'm fine with this one being device specific, as likely a complex alg
-> > involved.
-> >  
-> > > +
-> > > +What:                /sys/.../events/in_accel_gesture_doubletap_period
-> > > +KernelVersion:       5.19
-> > > +Contact:     linux-iio@vger.kernel.org
-> > > +Description:
-> > > +             Minimum time period between before and after the double tap
-> > > +             event. Units and exact meaning of period value are device
-> > > +             specific.  
-> >
-> > I think the units need to be standard.  Also would this work better
-> > as a description?
-> >
-> >         Minimum time in seconds between the two taps making up a double
-> >         tap event.  
+> >  			gpio0: gpio@18100 {
+> > -				compatible = "marvell,armada-370-gpio",
+> > +				compatible = "marvell,armadaxp-gpio",
+> >  					     "marvell,orion-gpio";
 > 
-> The values for the time between the two taps are not in terms of seconds,
-> here period value is in terms of data samples which depends on
-> the data rate.
-
-These time based controls in IIO are always defined in seconds. You'll have
-to correct for the data rate in the driver.
-
-Either just make the available options change with data rate, or have the
-driver do a 'nearest possible' choice based on what was requested and what
-is possible at the current data rate.
-
-It's more complex but it gives a consistent ABI across devices that work
-in many different ways.
-
-Jonathan
-
+> If you can treat the XP variant as 370 and everything that is supposed
+> to work on 370 works then, then maybe the right incarnation is:
 > 
-> >
-> > Raises a question though. How would we specify the maximum time? I.e.
-> > if taps are further apart than Xseconds, they are reported as two single
-> > taps.
-> >
-> > Maybe reusing period here isn't a good idea and we need to have new ABI for
-> > this?
-> >
-> >
-> >
-> >  
+> 	compatible = "marvell,armadaxp-gpio", "marvell,armada-370-gpio", "marvell,orion-gpio";
+> 
+> ?
+
+For pre-XP variants is "marvell,orion-gpio" enough and for XP + post-XP
+is needed "marvell,armadaxp-gpio" (with possible "marvell,orion-gpio"
+for backward compatibility).
+
+So I do not see reason why to add "marvell,armada-370-gpio" nor what
+value it brings.
+
+> Best regards
+> Uwe
+> 
+> -- 
+> Pengutronix e.K.                           | Uwe Kleine-König            |
+> Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
 
