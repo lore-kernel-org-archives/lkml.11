@@ -2,131 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FB0C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05782CCA480
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:41:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232300AbiGPPka (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 11:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49464 "EHLO
+        id S232332AbiGPPle (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 11:41:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPPk2 (ORCPT
+        with ESMTP id S229501AbiGPPld (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 11:40:28 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 842F51DA51
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657986027; x=1689522027;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3+Q56tLKJMFDFsOu0GDE7jbsgW+WfJ3G0g1FA/kUqFg=;
-  b=QF0LihRBenbLuk/aA+0T7xu/5tdPUw9QVgA/uZHCq+v1vMBl2FshATp5
-   zxFYGbCL9UYvDWQzMpH6k1abaoD6eppETFxODnll1gqrr64Um9fLl9isi
-   KRZsB6yesAoJjKazMOjBI13zRSnTe2WqPi0hPtzT7tFMc1Tt8SruWHIsd
-   nRrsYElNw3+Ex+CiG1tmr+i8r6l7CAxbDu9X4AtFyWwZFZbAsF1YxPn+f
-   BA0+ccJIU+Qj3kwUGCJ0+IFXbiFXFGmdoSpKGj1aod/EM2Ng+oSQWNXkj
-   3TLOVIq6cP94G4WUbUNx4MFCEzG54bw4jfWO38hNC6wEe9M1VbtLq052v
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="286008142"
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="286008142"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 08:40:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="699536895"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Jul 2022 08:40:25 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCjtz-0001k9-Ki;
-        Sat, 16 Jul 2022 15:40:19 +0000
-Date:   Sat, 16 Jul 2022 23:40:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bart Van Assche <bvanassche@acm.org>
-Cc:     kbuild-all@lists.01.org, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Ryusuke Konishi <konishi.ryusuke@gmail.com>
-Subject: [ammarfaizi2-block:axboe/linux-block/for-next 91/112]
- include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted
- blk_opf_t
-Message-ID: <202207162314.Jz305X9h-lkp@intel.com>
+        Sat, 16 Jul 2022 11:41:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9231DA51;
+        Sat, 16 Jul 2022 08:41:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D9D6B80AB9;
+        Sat, 16 Jul 2022 15:41:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F38EC34114;
+        Sat, 16 Jul 2022 15:41:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657986090;
+        bh=u/RKJ6oT43C5tacik6enadpoU+M83shrDq4oCRky09Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Td3MKs+VV2MR0gd+gXcPIwTeIHB+pa9ZYRGy0sYlof7buXRVWABwtCbAfQF2v9RwL
+         0jOXbaYKd1XyUrG4vHEepNK24IkHP6Zq83Z+ceJ6Xi6EcDCIEwVg59IWoqCDKo2TlW
+         /T8+Omm/AWv+6Eetf/uJ0JTF2ou95MASsH8BG4b7eZnK6GuEOCNcv4JTP0ObO0Y4IS
+         2MPfAu7qvbg7tlsl0lXyuarA2X3WRrecxGNyZll/MktylOs4d+KNu44X4HQoK+Jyet
+         PHpIQDk07rPw9cIuM/eJDlZAHNu8LvYtpErDx+FL089S6DzlyLBBsCFfzJ2X+dfdcZ
+         nCuqWM9DdK6jg==
+Date:   Sat, 16 Jul 2022 16:51:21 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Message-ID: <20220716165121.3f0120df@jic23-huawei>
+In-Reply-To: <20220701134734.nfc6xa4q7rhfi3r7@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
+        <20220616104211.9257-3-ddrokosov@sberdevices.ru>
+        <20220619132703.5cf3b090@jic23-huawei>
+        <20220701134734.nfc6xa4q7rhfi3r7@CAB-WSD-L081021.sigma.sbrf.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block axboe/linux-block/for-next
-head:   b1fc9e8ad3d2d294d15e87d57af00890cd23cfc4
-commit: ed4512590bd5839f8ea9eef1626b0f4db626b1d1 [91/112] fs/nilfs2: Use the enum req_op and blk_opf_t types
-config: mips-randconfig-s033-20220715 (https://download.01.org/0day-ci/archive/20220716/202207162314.Jz305X9h-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 12.1.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-39-gce1a6720-dirty
-        # https://github.com/ammarfaizi2/linux-block/commit/ed4512590bd5839f8ea9eef1626b0f4db626b1d1
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block axboe/linux-block/for-next
-        git checkout ed4512590bd5839f8ea9eef1626b0f4db626b1d1
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=mips SHELL=/bin/bash fs/nilfs2/ fs/zonefs/./
+On Fri, 1 Jul 2022 13:49:10 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+> Hello Jonathan,
+> 
+> Sorry for the delayed response.
+> 
+> On Sun, Jun 19, 2022 at 01:27:03PM +0100, Jonathan Cameron wrote:
+> > On Thu, 16 Jun 2022 10:42:14 +0000
+> > Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+> >   
+> > > MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+> > > sensitivity consumer applications. It has dynamical user selectable full
+> > > scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+> > > with output data rates from 1Hz to 1000Hz.
+> > > 
+> > > Datasheet can be found at following URL:
+> > > https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+> > > 
+> > > This driver supports following MSA311 features:
+> > >     - IIO interface
+> > >     - Different power modes: NORMAL and SUSPEND (using pm_runtime)
+> > >     - ODR (Output Data Rate) selection
+> > >     - Scale and samp_freq selection
+> > >     - IIO triggered buffer, IIO reg access
+> > >     - NEW_DATA interrupt + trigger
+> > > 
+> > > Below features to be done:
+> > >     - Motion Events: ACTIVE, TAP, ORIENT, FREEFALL
+> > >     - Low Power mode
+> > > 
+> > > Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>  
+> > Hi Dmitry,
+> > 
+> > A few things I missed before + I'm still not happy with the runtime
+> > pm handling.  One case that isn't covered well is !CONFIG_RUNTIME_PM
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> 
+> ...
+> 
+> > > +static irqreturn_t msa311_buffer_thread(int irq, void *p)
+> > > +{
+> > > +	struct iio_poll_func *pf = p;
+> > > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > > +	struct msa311_priv *msa311 = iio_priv(indio_dev);
+> > > +	struct device *dev = &msa311->i2c->dev;
+> > > +	const struct iio_chan_spec *chan;
+> > > +	__le16 axis;
+> > > +	int bit = 0, err, i = 0;
+> > > +
+> > > +	/* Ensure correct alignment of time stamp when present */
+> > > +	struct {
+> > > +		__le16 channels[MSA311_SI_Z + 1];
+> > > +		s64 ts __aligned(8);
+> > > +	} buf;
+> > > +
+> > > +	memset(&buf, 0, sizeof(buf));
+> > > +
+> > > +	mutex_lock(&msa311->lock);
+> > > +
+> > > +	for_each_set_bit(bit, indio_dev->active_scan_mask,
+> > > +			 indio_dev->masklength) {
+> > > +		chan = &msa311_channels[bit];  
+> > 
+> > Nothing to do with your driver, but feels like it's worth
+> > exploring a
+> > 	for_each_chan_in_iio_scan(struct iio_chan_spec, struct iio_dev) macro.
+> > 
+> > I'll add that to my todo list.
+> >   
+> 
+> If you don't mind, I can prepare such a patch.
+
+I had a look at this whilst travelling and it's a lot more complex than I
+thought it would be because of gaps in the scan_index in some drivers (not
+all channels have scan indexes and not all scan indexes are used)
+
+If we write such a thing we need to resolve that in the core and I suspect
+it will require creation of an indirection structure that lets us
+do scan_index based look up of channels.  Whilst that works in many drivers
+because there is a nice 1 to 1 mapping, there are exceptions.
+Hence I think we would be looking at:
+
+1) Check at registration time on whether scan_index == location in
+iio_dev->channels, if so set another pointer say iio_dev->channels_linear =
+iio_dev->channels.
+2) If not, create a lookup table and make iio_dev->channels_linear
+point to that.
+3) Finally introduce a macro that uses channels_linear.
+
+What fun ;)
+
+Jonathan
+ 
 
 
-sparse warnings: (new ones prefixed by >>)
-   fs/nilfs2/segment.c: note: in included file (through include/trace/trace_events.h, include/trace/define_trace.h, include/trace/events/nilfs2.h):
->> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->> include/trace/events/nilfs2.h:191:1: sparse: sparse: cast to restricted blk_opf_t
->> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
->> include/trace/events/nilfs2.h:191:1: sparse: sparse: restricted blk_opf_t degrades to integer
-
-vim +191 include/trace/events/nilfs2.h
-
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  190  
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06 @191  TRACE_EVENT(nilfs2_mdt_submit_block,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  192  	    TP_PROTO(struct inode *inode,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  193  		     unsigned long ino,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  194  		     unsigned long blkoff,
-ed4512590bd583 Bart Van Assche 2022-07-14  195  		     enum req_op mode),
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  196  
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  197  	    TP_ARGS(inode, ino, blkoff, mode),
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  198  
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  199  	    TP_STRUCT__entry(
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  200  		    __field(struct inode *, inode)
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  201  		    __field(unsigned long, ino)
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  202  		    __field(unsigned long, blkoff)
-ed4512590bd583 Bart Van Assche 2022-07-14  203  		    __field(enum req_op, mode)
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  204  	    ),
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  205  
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  206  	    TP_fast_assign(
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  207  		    __entry->inode = inode;
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  208  		    __entry->ino = ino;
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  209  		    __entry->blkoff = blkoff;
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  210  		    __entry->mode = mode;
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  211  		    ),
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  212  
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  213  	    TP_printk("inode = %p ino = %lu blkoff = %lu mode = %x",
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  214  		      __entry->inode,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  215  		      __entry->ino,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  216  		      __entry->blkoff,
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  217  		      __entry->mode)
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  218  );
-a9cd207c23ca4f Hitoshi Mitake  2015-11-06  219  
-
-:::::: The code at line 191 was first introduced by commit
-:::::: a9cd207c23ca4fa5bd5f1092e867e87542e349a3 nilfs2: add tracepoints for analyzing reading and writing metadata files
-
-:::::: TO: Hitoshi Mitake <mitake.hitoshi@lab.ntt.co.jp>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
