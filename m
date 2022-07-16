@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E5CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 658C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233080AbiGPXSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
+        id S233136AbiGPXSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:18:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233070AbiGPXRm (ORCPT
+        with ESMTP id S233026AbiGPXRv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:17:42 -0400
+        Sat, 16 Jul 2022 19:17:51 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1767237DE
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:33 -0700 (PDT)
-Message-ID: <20220716230953.442937066@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DEBA222B6
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:37 -0700 (PDT)
+Message-ID: <20220716230953.558921214@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013451;
+        s=2020; t=1658013454;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Ithq52Gx+iixg96k39i55L8lXk6+1urMKhPljXhhy5M=;
-        b=RD2ZTbVGxpgYx2xHnJLhKdrR9TpRyheRmkAEzrEOEWkzDB4Ukw+t2vJTuhQO1WwKUXJo4q
-        KbcJAeqltspsDr7gDwj64eWufE2h15/ccwSZpKV2wm2mUhh7O/GHjH6RbgTBT8Fwt33EVZ
-        qezVc1BUikkMIM85qxt4UFPGfQ6jToBEqdNd+HXHVB6do5kLexhr4qR75u3VUNUqbfZ4df
-        29JO3pBgXM3rR+UoT3Yd/B5dD2rr9zcqD0lATCoVzGS1jai9u50OLpwn/AwO0e1tdmFF+5
-        Z3C9wBgZWfbuBIVHPdgyaMZLrO2qiICGYEGN+X/Q8RkDMAm/EdYAm89RceiyQw==
+         references:references; bh=38u937fwI+dedrnZIykHKHbxdYzLzIUKpcUX1dAfXdw=;
+        b=z1m9Uz3ZPv3XGE2Kk3qMGigHQ181tfTp2tUkxLDVCbvdScqcqFpz0YjDpoUAXOWqZNv3xH
+        KfUDwXf4Zf8s8tGQYAFZqPRaPTFCcsxAH8V3gih2u7AJHgsMRt0Prt/7WaisvbpG9upIK4
+        XNNxDxx39Q6AhI0DSE/Ea9gOAul4u4/P+tbc0mVgbeYtZjY4G+V624w0j5r45NTbwLNMo6
+        T6NzRKZtIenozgHnsxmx1EmFv2a3F9ZMTSytroy/XlT8nnHpysu8kbVsyGIgClG51RaaFh
+        tYeuI18ip1a8FqWIEAm7DkHzzlwCuFg+xnzakpvNpkdJrVOaa2CGAVAUftKzAg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013451;
+        s=2020e; t=1658013454;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=Ithq52Gx+iixg96k39i55L8lXk6+1urMKhPljXhhy5M=;
-        b=RXE/Y2xi68Iu624evLhKupppsTCt/fYBAR++Lhsf2/IqVwseeEu1DuhI8cqxV+2yeznLln
-        yj5jUB0y+f6HtfCA==
+         references:references; bh=38u937fwI+dedrnZIykHKHbxdYzLzIUKpcUX1dAfXdw=;
+        b=lYfKPWqq4rcPPTgJ0f25hz/DFP5uvORIW8N12pn5I9dGQHSLWoczbHolBGXEJSzLnVJ3L4
+        81ygoox59GWTmDDQ==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -46,194 +46,87 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 13/38] x86/modules: Make module_alloc() generally available
+Subject: [patch 15/38] x86/retbleed: Add X86_FEATURE_CALL_DEPTH
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:30 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:34 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-module_alloc() allocates from the module region which is also available
-when CONFIG_MODULES=n. Non module builds should be able to allocate from
-that region nevertheless e.g. for creating call thunks.
+Intel SKL CPUs fall back to other predictors when the RSB underflows. The
+only microcode mitigation is IBRS which is insanely expensive. It comes
+with performance drops of up to 30% depending on the workload.
 
-Split the code out and make it possible to select for !MODULES builds.
+A way less expensive, but nevertheless horrible mitigation is to track the
+call depth in software and overeagerly fill the RSB when returns underflow
+the software counter.
+
+Provide a configuration symbol and a CPU misfeature bit.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/Kconfig           |    3 ++
- arch/x86/kernel/module.c   |   58 ------------------------------------------
- arch/x86/mm/Makefile       |    2 +
- arch/x86/mm/module_alloc.c |   62 +++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 67 insertions(+), 58 deletions(-)
+ arch/x86/Kconfig                         |   13 +++++++++++++
+ arch/x86/include/asm/cpufeatures.h       |    1 +
+ arch/x86/include/asm/disabled-features.h |    9 ++++++++-
+ 3 files changed, 22 insertions(+), 1 deletion(-)
 
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -2236,6 +2236,9 @@ config RANDOMIZE_MEMORY_PHYSICAL_PADDING
+@@ -2498,6 +2498,19 @@ config CPU_UNRET_ENTRY
+ 	help
+ 	  Compile the kernel with support for the retbleed=unret mitigation.
  
- 	  If unsure, leave at the default value.
- 
-+config MODULE_ALLOC
-+	def_bool MODULES
++config CALL_DEPTH_TRACKING
++	bool "Mitigate RSB underflow with call depth tracking"
++	depends on CPU_SUP_INTEL && HAVE_CALL_THUNKS
++	select CALL_THUNKS
++	default y
++	help
++	  Compile the kernel with call depth tracking to mitigate the Intel
++	  SKL Return-Speculation-Buffer (RSB) underflow issue. The mitigation
++	  is off by default and needs to be enabled on the kernel command line
++	  via the retbleed=stuff option. For non-affected systems the overhead
++	  of this option is marginal as the call depth tracking is using
++	  run-time generated call thunks and call patching.
 +
- config HOTPLUG_CPU
- 	def_bool y
- 	depends on SMP
---- a/arch/x86/kernel/module.c
-+++ b/arch/x86/kernel/module.c
-@@ -8,21 +8,14 @@
+ config CPU_IBPB_ENTRY
+ 	bool "Enable IBPB on kernel entry"
+ 	depends on CPU_SUP_AMD
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -302,6 +302,7 @@
+ #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
+ #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
+ #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
++#define X86_FEATURE_CALL_DEPTH		(11*32+16) /* "" Call depth tracking for RSB stuffing */
  
- #include <linux/moduleloader.h>
- #include <linux/elf.h>
--#include <linux/vmalloc.h>
- #include <linux/fs.h>
- #include <linux/string.h>
- #include <linux/kernel.h>
--#include <linux/kasan.h>
- #include <linux/bug.h>
--#include <linux/mm.h>
--#include <linux/gfp.h>
- #include <linux/jump_label.h>
--#include <linux/random.h>
- #include <linux/memory.h>
- 
- #include <asm/text-patching.h>
--#include <asm/page.h>
--#include <asm/setup.h>
- #include <asm/unwind.h>
- 
- #if 0
-@@ -36,57 +29,6 @@ do {							\
- } while (0)
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -69,6 +69,12 @@
+ # define DISABLE_UNRET		(1 << (X86_FEATURE_UNRET & 31))
  #endif
  
--#ifdef CONFIG_RANDOMIZE_BASE
--static unsigned long module_load_offset;
--
--/* Mutex protects the module_load_offset. */
--static DEFINE_MUTEX(module_kaslr_mutex);
--
--static unsigned long int get_module_load_offset(void)
--{
--	if (kaslr_enabled()) {
--		mutex_lock(&module_kaslr_mutex);
--		/*
--		 * Calculate the module_load_offset the first time this
--		 * code is called. Once calculated it stays the same until
--		 * reboot.
--		 */
--		if (module_load_offset == 0)
--			module_load_offset =
--				(get_random_int() % 1024 + 1) * PAGE_SIZE;
--		mutex_unlock(&module_kaslr_mutex);
--	}
--	return module_load_offset;
--}
--#else
--static unsigned long int get_module_load_offset(void)
--{
--	return 0;
--}
--#endif
--
--void *module_alloc(unsigned long size)
--{
--	gfp_t gfp_mask = GFP_KERNEL;
--	void *p;
--
--	if (PAGE_ALIGN(size) > MODULES_LEN)
--		return NULL;
--
--	p = __vmalloc_node_range(size, MODULE_ALIGN,
--				 MODULES_VADDR + get_module_load_offset(),
--				 MODULES_END, gfp_mask, PAGE_KERNEL,
--				 VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK,
--				 NUMA_NO_NODE, __builtin_return_address(0));
--
--	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
--		vfree(p);
--		return NULL;
--	}
--
--	return p;
--}
--
- #ifdef CONFIG_X86_32
- int apply_relocate(Elf32_Shdr *sechdrs,
- 		   const char *strtab,
---- a/arch/x86/mm/Makefile
-+++ b/arch/x86/mm/Makefile
-@@ -59,3 +59,5 @@ obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_enc
- 
- obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_identity.o
- obj-$(CONFIG_AMD_MEM_ENCRYPT)	+= mem_encrypt_boot.o
-+
-+obj-$(CONFIG_MODULE_ALLOC)	+= module_alloc.o
---- /dev/null
-+++ b/arch/x86/mm/module_alloc.c
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <linux/kasan.h>
-+#include <linux/mm.h>
-+#include <linux/moduleloader.h>
-+#include <linux/mutex.h>
-+#include <linux/random.h>
-+#include <linux/vmalloc.h>
-+
-+#include <asm/setup.h>
-+#include <asm/page.h>
-+
-+#ifdef CONFIG_RANDOMIZE_BASE
-+static unsigned long module_load_offset;
-+
-+/* Mutex protects the module_load_offset. */
-+static DEFINE_MUTEX(module_kaslr_mutex);
-+
-+static unsigned long int get_module_load_offset(void)
-+{
-+	if (kaslr_enabled()) {
-+		mutex_lock(&module_kaslr_mutex);
-+		/*
-+		 * Calculate the module_load_offset the first time this
-+		 * code is called. Once calculated it stays the same until
-+		 * reboot.
-+		 */
-+		if (module_load_offset == 0)
-+			module_load_offset =
-+				(get_random_int() % 1024 + 1) * PAGE_SIZE;
-+		mutex_unlock(&module_kaslr_mutex);
-+	}
-+	return module_load_offset;
-+}
++#ifdef CONFIG_CALL_DEPTH_TRACKING
++# define DISABLE_CALL_DEPTH_TRACKING	0
 +#else
-+static unsigned long int get_module_load_offset(void)
-+{
-+	return 0;
-+}
++# define DISABLE_CALL_DEPTH_TRACKING	(1 << (X86_FEATURE_CALL_DEPTH & 31))
 +#endif
 +
-+void *module_alloc(unsigned long size)
-+{
-+	gfp_t gfp_mask = GFP_KERNEL;
-+	void *p;
-+
-+	if (PAGE_ALIGN(size) > MODULES_LEN)
-+		return NULL;
-+
-+	p = __vmalloc_node_range(size, MODULE_ALIGN,
-+				 MODULES_VADDR + get_module_load_offset(),
-+				 MODULES_END, gfp_mask, PAGE_KERNEL,
-+				 VM_FLUSH_RESET_PERMS | VM_DEFER_KMEMLEAK,
-+				 NUMA_NO_NODE, __builtin_return_address(0));
-+
-+	if (p && (kasan_alloc_module_shadow(p, size, gfp_mask) < 0)) {
-+		vfree(p);
-+		return NULL;
-+	}
-+
-+	return p;
-+}
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ # define DISABLE_ENQCMD		0
+ #else
+@@ -101,7 +107,8 @@
+ #define DISABLED_MASK8	(DISABLE_TDX_GUEST)
+ #define DISABLED_MASK9	(DISABLE_SGX)
+ #define DISABLED_MASK10	0
+-#define DISABLED_MASK11	(DISABLE_RETPOLINE|DISABLE_RETHUNK|DISABLE_UNRET)
++#define DISABLED_MASK11	(DISABLE_RETPOLINE|DISABLE_RETHUNK|DISABLE_UNRET| \
++			 DISABLE_CALL_DEPTH_TRACKING)
+ #define DISABLED_MASK12	0
+ #define DISABLED_MASK13	0
+ #define DISABLED_MASK14	0
 
