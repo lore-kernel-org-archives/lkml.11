@@ -2,126 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 691FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 21:28:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A7CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 21:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229501AbiGPV2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 17:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        id S230379AbiGPVb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 17:31:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230351AbiGPV2s (ORCPT
+        with ESMTP id S229619AbiGPVb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 17:28:48 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36186655F;
-        Sat, 16 Jul 2022 14:28:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658006927; x=1689542927;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NgZ4seBUGAZrP1z2/pQzfp6BeM2VbnyWXo2RxyFi9hk=;
-  b=JuMziDH0v5fe//Bw0ah3NpOuveUIczpJmDkjkKDfCl8pyXbrIB0EtkbE
-   RoQRizYjymDS8k5ErAcRYMJZIwDvqNlk5vkpD3ArCSb1u0tqlqQiH7dqJ
-   DCFqwkh0Sh+maPp9kQgLqACPMKIffUFMdQuH9uKuW69skCtjK3z3GPiQj
-   nhCqksKLKo72XPD2K4pjGU+EMDtGUAxesT8II2EiQJ0/Hn/35Ok0T9a4M
-   ldGgGkbUc/rTVJTzFFtxjjLprtPYf/coY9dFMrEMMuN+4fmckzzrl6fPn
-   qsz5Yk0/MK+w7y8s3PlTmQ8vGeLk6Mr12pGzKhKS74+g2z3AyTen/PMf4
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="265792647"
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="265792647"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 14:28:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="654782025"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by fmsmga008.fm.intel.com with ESMTP; 16 Jul 2022 14:28:42 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCpL3-0002AS-92;
-        Sat, 16 Jul 2022 21:28:37 +0000
-Date:   Sun, 17 Jul 2022 05:27:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Irui Wang <irui.wang@mediatek.com>,
-        Hans Verkuil <hverkuil@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        angelogioacchino.delregno@collabora.com,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>
-Cc:     kbuild-all@lists.01.org, linux-media@vger.kernel.org,
-        Yong Wu <yong.wu@mediatek.com>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Irui Wang <irui.wang@mediatek.com>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        srv_heupstream@mediatek.com, linux-mediatek@lists.infradead.org,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-Subject: Re: [PATCH 1/5] media: mediatek: vcodec: Add encoder driver support
- for 34-bit iova
-Message-ID: <202207170508.vBteKVVR-lkp@intel.com>
-References: <20220716093808.29894-2-irui.wang@mediatek.com>
+        Sat, 16 Jul 2022 17:31:28 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 397D255A7
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 14:31:28 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:53112)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oCpNl-003XHC-Sw; Sat, 16 Jul 2022 15:31:25 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:48014 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oCpNk-0096qh-SE; Sat, 16 Jul 2022 15:31:25 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Keno Fischer <keno@juliacomputing.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mingo@kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Jann Horn <jannh@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        "Robert O'Callahan" <roc@pernos.co>, Kyle Huey <khuey@pernos.co>,
+        Oleg Nesterov <oleg@redhat.com>
+References: <20220421150248.667412396@infradead.org>
+        <20220421150654.817117821@infradead.org>
+        <87czhap9dy.fsf@email.froward.int.ebiederm.org>
+        <878rrrh32q.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b7v9yk.fsf_-_@email.froward.int.ebiederm.org>
+        <87k0b0apne.fsf_-_@email.froward.int.ebiederm.org>
+        <87a6bv6dl6.fsf_-_@email.froward.int.ebiederm.org>
+        <87r13gd4xy.fsf_-_@email.froward.int.ebiederm.org>
+        <87edyvgs2s.fsf@email.froward.int.ebiederm.org>
+        <CABV8kRxQNPUzLaJ1tFF8H-E_iqCkz0+Ac5rPBurnmA3GcofMmQ@mail.gmail.com>
+        <875yk22j5z.fsf@email.froward.int.ebiederm.org>
+Date:   Sat, 16 Jul 2022 16:29:49 -0500
+In-Reply-To: <875yk22j5z.fsf@email.froward.int.ebiederm.org> (Eric
+        W. Biederman's message of "Tue, 12 Jul 2022 15:03:04 -0500")
+Message-ID: <87pmi4ycdu.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220716093808.29894-2-irui.wang@mediatek.com>
+Content-Type: text/plain
+X-XM-SPF: eid=1oCpNk-0096qh-SE;;;mid=<87pmi4ycdu.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+/Vjcg1LG+PkIixgXe8YCIN4VRwU6Ap+E=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH 0/3] ptrace: Stop supporting SIGKILL for PTRACE_EVENT_EXIT
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Irui,
+"Eric W. Biederman" <ebiederm@xmission.com> writes:
 
-Thank you for the patch! Perhaps something to improve:
+> Keno Fischer <keno@juliacomputing.com> writes:
+>
+>> Hi Eric,
+>>
+>> On Fri, Jul 8, 2022 at 6:25 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>>> > Recently I had a conversation where it was pointed out to me that
+>>> > SIGKILL sent to a tracee stropped in PTRACE_EVENT_EXIT is quite
+>>> > difficult for a tracer to handle.
+>>> >
+>>>
+>>> RR folks any comments?
+>>>
+>>> Did I properly understand what Keno Fischer was asking for when we
+>>> talked in person?
+>>
+>> Yes, this is indeed what I had in mind. I have not yet had the opportunity
+>> to try out your patch series (sorry), but from visual inspection, it does indeed
+>> do what I wanted, which is to make sure that a tracee stays in
+>> PTRACE_EVENT_EXIT for the tracer to inspect, even if there is another
+>> SIGKILL incoming simultaneously (since otherwise it may be impossible
+>> for the tracer to observe the PTRACE_EVENT_EXIT if two SIGKILLs
+>> come in rapid succession). I will try to take this series for a proper spin
+>> shortly.
+>
+> Thanks,
+>
+> I haven't yet figured out how to get the rr test suite to run
+> successfully.  Something about my test machine and lack of perf counters
+> seems to be causing problems.  So if you can perform the testing on your
+> side that would be fantastic.
 
-[auto build test WARNING on media-tree/master]
-[also build test WARNING on robh/for-next linus/master v5.19-rc6 next-20220715]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Ok.  I finally found a machine where I can run rr and the rr test suite.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Irui-Wang/support-mt8188-h264-encoder/20220716-235804
-base:   git://linuxtv.org/media_tree.git master
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220717/202207170508.vBteKVVR-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/cfa5713276c701af0193ab5371d6678515cea42f
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Irui-Wang/support-mt8188-h264-encoder/20220716-235804
-        git checkout cfa5713276c701af0193ab5371d6678515cea42f
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/media/platform/mediatek/vcodec/
+It looks like there are a couple of the rr 5.5.0 test that fail on
+Linus's lastest kernel simply because of changes in kernel behavior.  In
+particular clone_cleartid_coredump, and fcntl_rw_hints.  The
+clone_cleartid_coredump appears to fail because SIGSEGV no longer kills
+all processes that share an mm.  Which was a deliberate change.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+With the lastest development version of rr, only detach_sigkill appears
+to be failing on Linus's latest.  That failure appears to be independent
+of the patches in question as well.  When run manually the
+detach_sigkill test succeeds so I am not quite certain what is going on,
+any thoughts?
 
-All warnings (new ones prefixed by >>):
+As for my patchset it looks like it does not cause any new test failures
+for rr so I will plan on getting it into linux-next shortly.
 
->> drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c:194: warning: expecting prototype for struct venc_h264_vsi_64. Prototype was for struct venc_h264_vsi_34 instead
+Eric
 
-
-vim +194 drivers/media/platform/mediatek/vcodec/venc/venc_h264_if.c
-
-   184	
-   185	/**
-   186	 * struct venc_h264_vsi_64 - Structure for VPU driver control and info share
-   187	 *                           Used for 64 bit iova sharing
-   188	 * @config: h264 encoder configuration
-   189	 * @work_bufs: working buffer information in VPU side
-   190	 */
-   191	struct venc_h264_vsi_34 {
-   192		struct venc_h264_vpu_config_ext config;
-   193		struct venc_h264_vpu_buf_34 work_bufs[VENC_H264_VPU_WORK_BUF_MAX];
- > 194	};
-   195	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
