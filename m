@@ -2,145 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72DDACCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:29:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6894C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 17:34:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231651AbiGPR31 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 13:29:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42144 "EHLO
+        id S231772AbiGPRel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 13:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229558AbiGPR3Z (ORCPT
+        with ESMTP id S229558AbiGPRek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 13:29:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC17658C;
-        Sat, 16 Jul 2022 10:29:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99DC3611A6;
-        Sat, 16 Jul 2022 17:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AB4C34114;
-        Sat, 16 Jul 2022 17:29:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657992564;
-        bh=s8zWDI7l/NEtm0Ui8Ues2MDYedJLomU5WQ+1kwrGMTc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RzYkRM9JYVwJFJLryAPipOhrM/XTg33zf9V5Qw46GjTEvCx+MR1Nf+91hJyf4jnu8
-         VQgnvKCuVquFBKAZYJvBZpaz/RLgxT0AnbB39bsxVSwKe/nzD2WqCXNhdjizKnJJO9
-         KKUbH9rCWRPBaAjha1TwQ+YG81Zv1+4Qhy9JYQHVeQid7O7/Ei0OIzEHxQzBoYwWRf
-         EZusq9rIeWXhGTf8F1vw6ELestdytxXTej/AQymc4lr0O/g5pBo0LD6uvOUCS0DZWD
-         miOTetATkThg/oN6H15XWhJ0PVToeZE9g+/xtDJknHM4kJXkynWV31h7ejxjxUvKC9
-         tEhQdIKH0pKjg==
-Date:   Sat, 16 Jul 2022 18:39:16 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     ChiYuan Huang <u0084500@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        cy_huang <cy_huang@richtek.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 2/2] iio: adc: Add rtq6056 support
-Message-ID: <20220716183916.7b40d9d5@jic23-huawei>
-In-Reply-To: <CADiBU39KYyd9=JK5wLRN1yKn9hxRHVSOATkWrPMpAdTJY04ZxQ@mail.gmail.com>
-References: <1657116702-24161-1-git-send-email-u0084500@gmail.com>
-        <1657116702-24161-3-git-send-email-u0084500@gmail.com>
-        <20220707183027.342f6c88@jic23-huawei>
-        <CADiBU3_KQ=WvD-1E4SODkdEY254_b-covw-0SHcAaF3XQqdbaQ@mail.gmail.com>
-        <CADiBU39KYyd9=JK5wLRN1yKn9hxRHVSOATkWrPMpAdTJY04ZxQ@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        Sat, 16 Jul 2022 13:34:40 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03B841903C
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:39 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id v12so10042062edc.10
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8iDiDQdK0Y4Twyf2w6H2yrqrbuVdQeYS04yw6GP8uk4=;
+        b=heW9Qr2XiyY6OqRlLdI2V+LEMMLgw6QKsr5CvO05pRXWfqknCGfEu1MOaT3LQ796sI
+         YOm74UnqUxNmDzHVdAddwWqtIRm6ry2PynKXbKgn7j885PGSl1OXlWeH/5Ie8ljVLmz4
+         NpcIen2TBlI7yD07+24+irawf+bg2LFZA6CIw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8iDiDQdK0Y4Twyf2w6H2yrqrbuVdQeYS04yw6GP8uk4=;
+        b=fHPbROXYVqNTWdpglJzqa2ccoaaf+vrh4J7h6+RuC/fRb1CB9T4ZUpPOa/RM2UYGhZ
+         rrRCHgzTa/EN5khAOoG6fdDx2cK9Gi9o9RprHckq0aIWYhpEQVPjyL4SxS3eqoX8/On0
+         bopnSg14PPbKt+5QazGfNjEQFVmRqz7ZFyLNi5VfC6QKXtq/i+s3iXdZRYVL6ebgxxVb
+         GJuYrignY2BoKGNdj5xv2gbbiRarVGDXY8yNTwOgquhHyvIaU8PQK/1MQ+AC8vteRrvQ
+         MkujK/yFYvFpuIm5wuHREsRPMbOpVJOGdOBWd5xQif+CBEBjGkVheopCJvHTV3xrCR8y
+         N87g==
+X-Gm-Message-State: AJIora/5kdz7+Uut6umBwU6xsPDAT4OQUWexYu5oC03k2Je8Qe2Pd17S
+        Ub1dmU4uMbniO1899+9seAZ1uSMTrCvb6yGp
+X-Google-Smtp-Source: AGRyM1uQow1KBICMnyRD32ZYuXHvTnkkFNKBe6oXGis+/9X+VK5ybYSfPWc57b2RQ+yYYcAfVfz4qQ==
+X-Received: by 2002:a05:6402:268e:b0:43a:8f91:582 with SMTP id w14-20020a056402268e00b0043a8f910582mr26725790edd.419.1657992877386;
+        Sat, 16 Jul 2022 10:34:37 -0700 (PDT)
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com. [209.85.221.54])
+        by smtp.gmail.com with ESMTPSA id q10-20020a1709063d4a00b0072b3182368fsm3404301ejf.77.2022.07.16.10.34.34
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 16 Jul 2022 10:34:35 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id bk26so10898863wrb.11
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 10:34:34 -0700 (PDT)
+X-Received: by 2002:a05:6000:1f8c:b0:21d:7e98:51ba with SMTP id
+ bw12-20020a0560001f8c00b0021d7e9851bamr16322329wrb.442.1657992873956; Sat, 16
+ Jul 2022 10:34:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220714205646.4023495-1-ndesaulniers@google.com> <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
+In-Reply-To: <CAHk-=wgf=mrK7KzNh23dGtegSfJZx=423dCwF0hVTPOjfQ7jtQ@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Sat, 16 Jul 2022 10:34:17 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wh6iW0Fv9mbtX9k2=9Kc9pFEEX7unWzmN7vqB4qXhBL+w@mail.gmail.com>
+Message-ID: <CAHk-=wh6iW0Fv9mbtX9k2=9Kc9pFEEX7unWzmN7vqB4qXhBL+w@mail.gmail.com>
+Subject: Re: [PATCH] ubsan: disable UBSAN_DIV_ZERO for clang
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Tom Rix <trix@redhat.com>, Marco Elver <elver@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        clang-built-linux <llvm@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jul 14, 2022 at 4:15 PM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> There are still the "__ubsan_handle_load_invalid_value() with UACCESS
+> enabled" messages, but those are misfeatures of the kvm cmpxchg
+> implementation.
 
-> > > > +
-> > > > +static int rtq6056_probe(struct i2c_client *i2c)
-> > > > +{
-> > > > +     struct iio_dev *indio_dev;
-> > > > +     struct rtq6056_priv *priv;
-> > > > +     struct device *dev = &i2c->dev;
-> > > > +     struct regmap *regmap;
-> > > > +     unsigned int vendor_id, shunt_resistor_uohm;
-> > > > +     int ret;
-> > > > +
-> > > > +     if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> > > > +             return -EOPNOTSUPP;
-> > > > +
-> > > > +     indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
-> > > > +     if (!indio_dev)
-> > > > +             return -ENOMEM;
-> > > > +
-> > > > +     priv = iio_priv(indio_dev);
-> > > > +     priv->dev = dev;
-> > > > +     priv->vshuntct_us = priv->vbusct_us = 1037;
-> > > > +     priv->avg_sample = 1;
-> > > > +     i2c_set_clientdata(i2c, priv);
-> > > > +
-> > > > +     regmap = devm_regmap_init_i2c(i2c, &rtq6056_regmap_config);
-> > > > +     if (IS_ERR(regmap))
-> > > > +             return dev_err_probe(dev, PTR_ERR(regmap),
-> > > > +                                  "Failed to init regmap\n");
-> > > > +
-> > > > +     priv->regmap = regmap;
-> > > > +
-> > > > +     ret = regmap_read(regmap, RTQ6056_REG_MANUFACTID, &vendor_id);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to get manufacturer info\n");
-> > > > +
-> > > > +     if (vendor_id != RTQ6056_VENDOR_ID)
-> > > > +             return dev_err_probe(dev, -ENODEV,
-> > > > +                                  "Invalid vendor id 0x%04x\n", vendor_id);
-> > > > +
-> > > > +     ret = devm_regmap_field_bulk_alloc(dev, regmap, priv->rm_fields,
-> > > > +                                        rtq6056_reg_fields, F_MAX_FIELDS);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret, "Failed to init regmap field\n");
-> > > > +
-> > > > +     /*
-> > > > +      * By default, configure average sample as 1, bus and shunt conversion
-> > > > +      * timea as 1037 microsecond, and operating mode to all on.
-> > > > +      */
-> > > > +     ret = regmap_write(regmap, RTQ6056_REG_CONFIG, RTQ6056_DEFAULT_CONFIG);
-> > > > +     if (ret)
-> > > > +             return dev_err_probe(dev, ret,
-> > > > +                                  "Failed to enable continuous sensing\n");
-> > > > +
-> > > > +     pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
-> > > > +     pm_runtime_use_autosuspend(dev);
-> > > > +     pm_runtime_set_active(dev);
-> > > > +     pm_runtime_mark_last_busy(dev);
-> > > > +     pm_runtime_enable(dev);  
-> > >
-> > > Look at whether you can use devm_pm_runtime_enable()
-> > > Note it handles disabling autosuspend for you.
-> > >
-> > > When using runtime_pm() you want to ensure that the device works without
-> > > runtime pm support being enabled.  As such, you turn the device on before
-> > > enabling runtime_pm() and (this is missing I think) turn it off after disabling
-> > > runtime pm.  So I'd expect a devm_add_action_or_reset() call to unwind
-> > > setting the device into continuous sending above.
-> > >  
-> > If so, I think it's better to configure the device keep in off state
-> > in probe stage.
-> > The calling order may need to be changed as below
-> > devm_add_action_or_reset...
-> >
-> > pm_runtime_set_autosuspend_delay
-> > pm_runtime_use_auto_suspend
-> > devm_pm_runtime_enable
-> >  
-> Ah, not correct. How about if 'PM_RUNTIME' is not enabled?
-> Do we need to consider about this case?
-> 
-> If yes, the original flow about 'pm_runtime' is correct.
-I don't follow.  Perhaps next version will make it clear what you mean.
+Ok, so it really is independent of the non-optimal kvm cmpxchg implementation.
 
-Jonathan
+The kvm code is fine - yes, it runs a bit too much code under the
+CLAC/STAC pair, but that "too much code" really is just a few local
+variable assignments.
+
+So any reasonable compiler will keep them in registers, and even if
+that's not the case, it would just be a stack spill or reload with AC
+set, which is not really a problem.
+
+But calling out to external functions within that SMAP region is
+invalid, and objdump warns about it.  Because we really want to
+minimize the area where user accesses are ok, and it's a "don't do
+this, you now lost the SMAP protection".
+
+ANYWAY.
+
+The reason the clang build warns - but the gcc build does not - is
+simply that clang code generation is just nasty.
+
+I decided to make a non-kernel test-case so that clang people can look
+at it without having to worry about any kernel code issues or the
+details of the SMAP rules, and it really shows how clang generates
+horribly pointless and wrong code.
+
+I'm not sure what the right thing to do is to get this sorted out, but
+I created an "issue" on github for this:
+
+    https://github.com/llvm/llvm-project/issues/56568
+
+in the hope that this can get fixed. Because it's very clearly a clang
+misfeature, where clang basically generates insane code that violates
+the rules we try to enforce with objdump.
+
+Nick / Nathan / clang-built-linux people - if there are other better
+ways than that github issue thing to make people aware of this, that
+would be lovely, and please forward that issue to the right people.
+
+                         Linus
