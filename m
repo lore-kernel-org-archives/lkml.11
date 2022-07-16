@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2100EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:19:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233117AbiGPXTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:19:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39668 "EHLO
+        id S233295AbiGPXTd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:19:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233105AbiGPXSb (ORCPT
+        with ESMTP id S233194AbiGPXSe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:18:31 -0400
+        Sat, 16 Jul 2022 19:18:34 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0352F2316D
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:18:00 -0700 (PDT)
-Message-ID: <20220716230954.395957513@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A67722521
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:18:04 -0700 (PDT)
+Message-ID: <20220716230954.531875572@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013477;
+        s=2020; t=1658013480;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=NshALtucQnymJ2WeE+UdxR6xGfxJcgehG3zhGvwcNYE=;
-        b=cmNoIR/Nd13Op6eENfywnX5YX3Z7qMI1LTE0yMmp3CE0xfzSHEnZcTK+ZqDax/a0EGxz3g
-        vDPO0hmznLDoCQzjpvuI0Mx+DbiXq6RaXS1qUHH3MIbULdBZXzaCK0dgJeQ2HtmxFkyz78
-        IN0WeM/iFuGCQ9tV3/4V3Dj6oa5hdFSpAreybu9fS9OVtpyHmEmB4zdFAnEL8hDSVYd/PJ
-        4rxlyWOqRNjhwQ4BFmC0+J+m78uTqiBhLPC+ybedZ2b2qJu7Lwu3vMkeeqB2gi1xgaPwcY
-        gWTyj9HxtuoxRvbD06qBoakP7p9ShJRv7W+KrLlopgpcVdqhBi43nIymV3OnfQ==
+         references:references; bh=n/x/B8Fp0Zw1KyBer7r29adRRpTb/pJqU9PpL7Cx/VI=;
+        b=g6C2o++/uTV7cr+0ZZ3+X1pSHMQ2ov/nbYmTaNVTZv4NIDNY06tWRjhHe/vxoNFqyIkG9m
+        g1f8CeJ+s1qahgOsdMWCeKVL6EIulZsQOe3UjCZt/lXDhJu3wLQjUyKea311cq4gr+rzhu
+        PWMYJ9pmKHjmZeLGogOyU+E5DoFfsnsDK7B+svxQybkm5W1hsrM6gXUNzQSGZ1Ab9+2a29
+        0qgy3MaQfU+zBJsXUlIRifGRIs5A4T/HB5B8x4GtRG/ORkjC6G6uoFIh+A1QruVmLz0C0o
+        lb6Guz2hXMA1vL6wvH0BJ3UHdT0mMwcRc6kWBS+/hQL3eGKc43MXt8JQv1Y4gg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013477;
+        s=2020e; t=1658013480;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=NshALtucQnymJ2WeE+UdxR6xGfxJcgehG3zhGvwcNYE=;
-        b=Bgn4iEM4KKgMrcLrRw90Qr6YklxVs4CQalimSI3lbrqSjbRpxI4PKKhUARgAzusucdIX7m
-        dN5TN+aDzngGK8Bw==
+         references:references; bh=n/x/B8Fp0Zw1KyBer7r29adRRpTb/pJqU9PpL7Cx/VI=;
+        b=QugiXolVRHGq7pGLiEqOkpR+DA+aFx3u/3BOdtTSeNFGzi1ZSLd4Ohbi5miisZ+aEZOxIG
+        NtxWMyuULqud9wCQ==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -45,253 +45,181 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [patch 29/38] x86/retpoline: Add SKL retthunk retpolines
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [patch 31/38] x86/calldepth: Add ret/call counting for debug
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:56 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:18:00 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+Add a debuigfs mechanism to validate the accounting, e.g. vs. call/ret
+balance and to gather statistics about the stuffing to call ratio.
 
-Ensure that retpolines do the proper call accounting so that the return
-accounting works correctly.
-
-Specifically; retpolines are used to replace both 'jmp *%reg' and
-'call *%reg', however these two cases do not have the same accounting
-requirements. Therefore split things up and provide two different
-retpoline arrays for SKL.
-
-The 'jmp *%reg' case needs no accounting, the
-__x86_indirect_jump_thunk_array[] covers this. The retpoline is
-changed to not use the return thunk; it's a simple call;ret construct.
-
-[ strictly speaking it should do:
-	andq $(~0x1f), PER_CPU_VAR(__x86_call_depth)
-  but we can argue this can be covered by the fuzz we already have
-  in the accounting depth (12) vs the RSB depth (16) ]
-
-The 'call *%reg' case does need accounting, the
-__x86_indirect_call_thunk_array[] covers this. Again, this retpoline
-avoids the use of the return-thunk, in this case to avoid double
-accounting.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/include/asm/nospec-branch.h |   12 +++++
- arch/x86/kernel/alternative.c        |   43 +++++++++++++++++++--
- arch/x86/lib/retpoline.S             |   71 +++++++++++++++++++++++++++++++----
- arch/x86/net/bpf_jit_comp.c          |    5 +-
- 4 files changed, 119 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |   32 +++++++++++++++++++--
+ arch/x86/kernel/callthunks.c         |   51 +++++++++++++++++++++++++++++++++++
+ arch/x86/lib/retpoline.S             |    7 ++++
+ 3 files changed, 86 insertions(+), 4 deletions(-)
 
 --- a/arch/x86/include/asm/nospec-branch.h
 +++ b/arch/x86/include/asm/nospec-branch.h
-@@ -252,6 +252,8 @@
- 
- typedef u8 retpoline_thunk_t[RETPOLINE_THUNK_SIZE];
- extern retpoline_thunk_t __x86_indirect_thunk_array[];
-+extern retpoline_thunk_t __x86_indirect_call_thunk_array[];
-+extern retpoline_thunk_t __x86_indirect_jump_thunk_array[];
- 
- extern void __x86_return_thunk(void);
- extern void zen_untrain_ret(void);
-@@ -283,6 +285,16 @@ static inline void x86_set_skl_return_th
- #include <asm/GEN-for-each-reg.h>
- #undef GEN
- 
-+#define GEN(reg)						\
-+	extern retpoline_thunk_t __x86_indirect_call_thunk_ ## reg;
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
-+
-+#define GEN(reg)						\
-+	extern retpoline_thunk_t __x86_indirect_jump_thunk_ ## reg;
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
-+
- #ifdef CONFIG_X86_64
- 
- /*
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -377,6 +377,38 @@ static int emit_indirect(int op, int reg
- 	return i;
- }
- 
-+static int emit_call_track_retpoline(void *addr, struct insn *insn, int reg, u8 *bytes)
-+{
-+	u8 op = insn->opcode.bytes[0];
-+	int i = 0;
-+
-+	if (insn->length == 6)
-+		bytes[i++] = 0x2e; /* CS-prefix */
-+
-+	switch (op) {
-+	case CALL_INSN_OPCODE:
-+		__text_gen_insn(bytes+i, op, addr+i,
-+				__x86_indirect_call_thunk_array[reg],
-+				CALL_INSN_SIZE);
-+		i += CALL_INSN_SIZE;
-+		break;
-+
-+	case JMP32_INSN_OPCODE:
-+		__text_gen_insn(bytes+i, op, addr+i,
-+				__x86_indirect_jump_thunk_array[reg],
-+				JMP32_INSN_SIZE);
-+		i += JMP32_INSN_SIZE;
-+		break;
-+
-+	default:
-+		BUG();
-+	}
-+
-+	WARN_ON_ONCE(i != insn->length);
-+
-+	return i;
-+}
-+
- /*
-  * Rewrite the compiler generated retpoline thunk calls.
-  *
-@@ -408,11 +440,16 @@ static int patch_retpoline(void *addr, s
- 	/* If anyone ever does: CALL/JMP *%rsp, we're in deep trouble. */
- 	BUG_ON(reg == 4);
- 
-+	op = insn->opcode.bytes[0];
-+
- 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE) &&
--	    !cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE))
-+	    !cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
-+		if (cpu_feature_enabled(X86_FEATURE_CALL_DEPTH)) {
-+			i += emit_call_track_retpoline(addr, insn, reg, bytes);
-+			return i;
-+		}
- 		return -1;
--
--	op = insn->opcode.bytes[0];
-+	}
- 
- 	/*
- 	 * Convert:
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -13,17 +13,18 @@
- 
- 	.section .text.__x86.indirect_thunk
- 
--.macro RETPOLINE reg
-+
-+.macro POLINE reg
- 	ANNOTATE_INTRA_FUNCTION_CALL
- 	call    .Ldo_rop_\@
--.Lspec_trap_\@:
--	UNWIND_HINT_EMPTY
--	pause
--	lfence
--	jmp .Lspec_trap_\@
-+	int3
- .Ldo_rop_\@:
- 	mov     %\reg, (%_ASM_SP)
- 	UNWIND_HINT_FUNC
-+.endm
-+
-+.macro RETPOLINE reg
-+	POLINE \reg
- 	RET
- .endm
- 
-@@ -53,7 +54,6 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
+@@ -77,6 +77,23 @@
   */
  
- #define __EXPORT_THUNK(sym)	_ASM_NOKPROBE(sym); EXPORT_SYMBOL(sym)
--#define EXPORT_THUNK(reg)	__EXPORT_THUNK(__x86_indirect_thunk_ ## reg)
- 
- 	.align RETPOLINE_THUNK_SIZE
- SYM_CODE_START(__x86_indirect_thunk_array)
-@@ -65,10 +65,65 @@ SYM_CODE_START(__x86_indirect_thunk_arra
- 	.align RETPOLINE_THUNK_SIZE
- SYM_CODE_END(__x86_indirect_thunk_array)
- 
--#define GEN(reg) EXPORT_THUNK(reg)
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_thunk_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
+ #ifdef CONFIG_CALL_DEPTH_TRACKING
 +
-+#ifdef CONFIG_CALL_DEPTH_TRACKING
-+.macro CALL_THUNK reg
-+	.align RETPOLINE_THUNK_SIZE
-+
-+SYM_INNER_LABEL(__x86_indirect_call_thunk_\reg, SYM_L_GLOBAL)
-+	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
-+
-+	CALL_DEPTH_ACCOUNT
-+	POLINE \reg
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
-+.endm
-+
-+	.align RETPOLINE_THUNK_SIZE
-+SYM_CODE_START(__x86_indirect_call_thunk_array)
-+
-+#define GEN(reg) CALL_THUNK reg
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
-+
-+	.align RETPOLINE_THUNK_SIZE
-+SYM_CODE_END(__x86_indirect_call_thunk_array)
-+
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_call_thunk_ ## reg)
- #include <asm/GEN-for-each-reg.h>
- #undef GEN
- 
-+.macro JUMP_THUNK reg
-+	.align RETPOLINE_THUNK_SIZE
-+
-+SYM_INNER_LABEL(__x86_indirect_jump_thunk_\reg, SYM_L_GLOBAL)
-+	UNWIND_HINT_EMPTY
-+	ANNOTATE_NOENDBR
-+	POLINE \reg
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
-+.endm
-+
-+	.align RETPOLINE_THUNK_SIZE
-+SYM_CODE_START(__x86_indirect_jump_thunk_array)
-+
-+#define GEN(reg) JUMP_THUNK reg
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
-+
-+	.align RETPOLINE_THUNK_SIZE
-+SYM_CODE_END(__x86_indirect_jump_thunk_array)
-+
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_jump_thunk_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
-+#undef GEN
++#ifdef CONFIG_CALL_THUNKS_DEBUG
++# define CALL_THUNKS_DEBUG_INC_CALLS				\
++	incq	%gs:__x86_call_count;
++# define CALL_THUNKS_DEBUG_INC_RETS				\
++	incq	%gs:__x86_ret_count;
++# define CALL_THUNKS_DEBUG_INC_STUFFS				\
++	incq	%gs:__x86_stuffs_count;
++# define CALL_THUNKS_DEBUG_INC_CTXSW				\
++	incq	%gs:__x86_ctxsw_count;
++#else
++# define CALL_THUNKS_DEBUG_INC_CALLS
++# define CALL_THUNKS_DEBUG_INC_RETS
++# define CALL_THUNKS_DEBUG_INC_STUFFS
++# define CALL_THUNKS_DEBUG_INC_CTXSW
 +#endif
- /*
-  * This function name is magical and is used by -mfunction-return=thunk-extern
-  * for the compiler to generate JMPs to it.
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -417,7 +417,10 @@ static void emit_indirect_jump(u8 **ppro
- 		EMIT2(0xFF, 0xE0 + reg);
- 	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
- 		OPTIMIZER_HIDE_VAR(reg);
--		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
-+		if (cpu_feature_enabled(X86_FEATURE_CALL_DEPTH))
-+			emit_jump(&prog, &__x86_indirect_jump_thunk_array[reg], ip);
-+		else
-+			emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
- 	} else {
- 		EMIT2(0xFF, 0xE0 + reg);
- 	}
++
+ #define CREDIT_CALL_DEPTH					\
+ 	movq	$-1, PER_CPU_VAR(__x86_call_depth);
+ 
+@@ -88,10 +105,12 @@
+ #define RESET_CALL_DEPTH_FROM_CALL				\
+ 	mov	$0xfc, %rax;					\
+ 	shl	$56, %rax;					\
+-	movq	%rax, PER_CPU_VAR(__x86_call_depth);
++	movq	%rax, PER_CPU_VAR(__x86_call_depth);		\
++	CALL_THUNKS_DEBUG_INC_CALLS
+ 
+ #define INCREMENT_CALL_DEPTH					\
+-	sarq	$5, %gs:__x86_call_depth
++	sarq	$5, %gs:__x86_call_depth;			\
++	CALL_THUNKS_DEBUG_INC_CALLS
+ #else
+ #define CREDIT_CALL_DEPTH
+ #define RESET_CALL_DEPTH
+@@ -127,7 +146,8 @@
+ 	dec	reg;				\
+ 	jnz	771b;				\
+ 						\
+-	CREDIT_CALL_DEPTH
++	CREDIT_CALL_DEPTH			\
++	CALL_THUNKS_DEBUG_INC_CTXSW
+ 
+ #ifdef __ASSEMBLY__
+ 
+@@ -274,6 +294,12 @@ static inline void x86_set_skl_return_th
+ }
+ 
+ DECLARE_PER_CPU(u64, __x86_call_depth);
++#ifdef CONFIG_CALL_THUNKS_DEBUG
++DECLARE_PER_CPU(u64, __x86_call_count);
++DECLARE_PER_CPU(u64, __x86_ret_count);
++DECLARE_PER_CPU(u64, __x86_stuffs_count);
++DECLARE_PER_CPU(u64, __x86_ctxsw_count);
++#endif
+ #else
+ static inline void x86_set_skl_return_thunk(void) {}
+ #endif
+--- a/arch/x86/kernel/callthunks.c
++++ b/arch/x86/kernel/callthunks.c
+@@ -3,6 +3,7 @@
+ #define pr_fmt(fmt) "callthunks: " fmt
+ 
+ #include <linux/btree.h>
++#include <linux/debugfs.h>
+ #include <linux/memory.h>
+ #include <linux/moduleloader.h>
+ #include <linux/set_memory.h>
+@@ -32,6 +33,13 @@ static int __init debug_thunks(char *str
+ 	return 1;
+ }
+ __setup("debug-callthunks", debug_thunks);
++
++DEFINE_PER_CPU(u64, __x86_call_count);
++DEFINE_PER_CPU(u64, __x86_ret_count);
++DEFINE_PER_CPU(u64, __x86_stuffs_count);
++DEFINE_PER_CPU(u64, __x86_ctxsw_count);
++EXPORT_SYMBOL_GPL(__x86_ctxsw_count);
++
+ #else
+ #define prdbg(fmt, args...)	do { } while(0)
+ #endif
+@@ -530,3 +538,46 @@ void callthunks_module_free(struct modul
+ 	mutex_unlock(&text_mutex);
+ }
+ #endif /* CONFIG_MODULES */
++
++#if defined(CONFIG_CALL_THUNKS_DEBUG) && defined(CONFIG_DEBUG_FS)
++static int callthunks_debug_show(struct seq_file *m, void *p)
++{
++	unsigned long cpu = (unsigned long)m->private;
++
++	seq_printf(m, "C: %16llu R: %16llu S: %16llu X: %16llu\n,",
++		   per_cpu(__x86_call_count, cpu),
++		   per_cpu(__x86_ret_count, cpu),
++		   per_cpu(__x86_stuffs_count, cpu),
++		   per_cpu(__x86_ctxsw_count, cpu));
++	return 0;
++}
++
++static int callthunks_debug_open(struct inode *inode, struct file *file)
++{
++	return single_open(file, callthunks_debug_show, inode->i_private);
++}
++
++static const struct file_operations dfs_ops = {
++	.open		= callthunks_debug_open,
++	.read		= seq_read,
++	.llseek		= seq_lseek,
++	.release	= single_release,
++};
++
++static int __init callthunks_debugfs_init(void)
++{
++	struct dentry *dir;
++	unsigned long cpu;
++
++	dir = debugfs_create_dir("callthunks", NULL);
++	for_each_possible_cpu(cpu) {
++		void *arg = (void *)cpu;
++		char name [10];
++
++		sprintf(name, "cpu%lu", cpu);
++		debugfs_create_file(name, 0644, dir, arg, &dfs_ops);
++	}
++	return 0;
++}
++__initcall(callthunks_debugfs_init);
++#endif
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -202,13 +202,18 @@ EXPORT_SYMBOL(__x86_return_thunk)
+ 	.align 64
+ SYM_FUNC_START(__x86_return_skl)
+ 	ANNOTATE_NOENDBR
+-	/* Keep the hotpath in a 16byte I-fetch */
++	/*
++	 * Keep the hotpath in a 16byte I-fetch for the non-debug
++	 * case.
++	 */
++	CALL_THUNKS_DEBUG_INC_RETS
+ 	shlq	$5, PER_CPU_VAR(__x86_call_depth)
+ 	jz	1f
+ 	ANNOTATE_UNRET_SAFE
+ 	ret
+ 	int3
+ 1:
++	CALL_THUNKS_DEBUG_INC_STUFFS
+ 	.rept	16
+ 	ANNOTATE_INTRA_FUNCTION_CALL
+ 	call	2f
 
