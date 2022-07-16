@@ -2,160 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE00C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CACC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 08:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231793AbiGPINo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 04:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
+        id S231776AbiGPIRq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 04:17:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229497AbiGPINn (ORCPT
+        with ESMTP id S229479AbiGPIRo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 04:13:43 -0400
-Received: from conssluserg-03.nifty.com (conssluserg-03.nifty.com [210.131.2.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCA8311;
-        Sat, 16 Jul 2022 01:13:41 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 26G8DIfZ029242;
-        Sat, 16 Jul 2022 17:13:18 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 26G8DIfZ029242
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1657959199;
-        bh=+v1uQMo3ZvSGLmyQ08/uYCDWhLeGHbb+CTN6DjFWfno=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=TQsEstghDthg8mhcEQtKay7sVd894ZCIceJqFvoWrKxe6AC9W0MtETPaSXseMru3j
-         PFdGCMyIXx9zPJXZkvHPOAoQ2obIAV/WMApJ7NxL2tR1hMd8FujR/npYL6n8fPOkG9
-         Womk1TLl4zyWNU4TkvIVzqPqABSjlRtC7MiBsLxRUFt6peiZQKiX4XKoAzBwekDxbO
-         Cb0oXNozlWWcrkPPZp1sqP7X5HUtvOSW7gbXDJl0k1qaq6WRQ58MJmC8jq8pAu81uz
-         zkoVZgxzqYv3tgRZUSAZ51KqBT+8NEbPhgnHbEr0u9gKzIVu7areR8iEd9Bhgw4BCm
-         o98n+53YN7epg==
-X-Nifty-SrcIP: [209.85.221.43]
-Received: by mail-wr1-f43.google.com with SMTP id r14so9675602wrg.1;
-        Sat, 16 Jul 2022 01:13:18 -0700 (PDT)
-X-Gm-Message-State: AJIora95OyzQnn7TwwA/4XNfygwGAcXdnbJWpUe45qtF/pLey904OM8B
-        rFtH68d7r7YTcNeIipa1IN6owLwt1P8/UAQ+874=
-X-Google-Smtp-Source: AGRyM1tFDgDUOKrocw3ze5eE6GIC91t1YbhGR1tyjE4wXbjW08NtqHFzsdP4Fgnwub89UXf8TNq75evk0g5D5iJJUiA=
-X-Received: by 2002:a05:6000:104c:b0:21d:87bf:63a2 with SMTP id
- c12-20020a056000104c00b0021d87bf63a2mr15224596wrx.461.1657959197095; Sat, 16
- Jul 2022 01:13:17 -0700 (PDT)
+        Sat, 16 Jul 2022 04:17:44 -0400
+Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F25A2B1BC
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 01:17:41 -0700 (PDT)
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220716081738epoutp030cd7525a920b2312399521c7081411ae~CQVfF1K_p1856018560epoutp03t
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:17:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220716081738epoutp030cd7525a920b2312399521c7081411ae~CQVfF1K_p1856018560epoutp03t
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1657959458;
+        bh=YbtmWAQttKWyKsaH/PRmfTFaX/+xfLODvAEqAlXazk0=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=SSSYvy5uYsZ1/iF4LX9ZkTu3XpMD9wHH4laUznRHErrMp5f7G8pBWdaNbMrMQuHry
+         g/jK52EVn9qyEu+a6SAFsUeIYNnCu7dm/c8+YOxfDoGtYZGH183qX4BWk7mXVDnigF
+         8nj/4Jm8c7eQ3KrhsTf8MJ8b+VoyMXJOmIvmIcJM=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220716081737epcas2p14b9444641e87705850b82ed1f0bde8e2~CQVe1Lu631119211192epcas2p1K;
+        Sat, 16 Jul 2022 08:17:37 +0000 (GMT)
+Received: from epsmges2p2.samsung.com (unknown [182.195.36.101]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4LlLgj2xt0z4x9Px; Sat, 16 Jul
+        2022 08:17:37 +0000 (GMT)
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D5.D5.09650.12472D26; Sat, 16 Jul 2022 17:17:37 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220716081736epcas2p346100e67cf44b1dbb79f6e2a4ab07dbf~CQVd2O1O-3136731367epcas2p3q;
+        Sat, 16 Jul 2022 08:17:36 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220716081736epsmtrp15f8c8e54330152542ebe72956590543d~CQVd1bCLd1145911459epsmtrp10;
+        Sat, 16 Jul 2022 08:17:36 +0000 (GMT)
+X-AuditID: b6c32a46-0a3ff700000025b2-e0-62d274214053
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        C7.71.08905.02472D26; Sat, 16 Jul 2022 17:17:36 +0900 (KST)
+Received: from perf.dsn.sec.samsung.com (unknown [10.229.95.91]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220716081736epsmtip15700a69fbf6e5e8e578bbafb94e9a81a~CQVdklF4R1154611546epsmtip1C;
+        Sat, 16 Jul 2022 08:17:36 +0000 (GMT)
+From:   Youngmin Nam <youngmin.nam@samsung.com>
+To:     masahiroy@kernel.org, michal.lkml@markovi.net,
+        ndesaulniers@google.com
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hosung0.kim@samsung.com, d7271.choe@samsung.com,
+        Youngmin Nam <youngmin.nam@samsung.com>
+Subject: [PATCH] Makefile.extrawarn: add -Wformat-insufficient-args for
+ clang build
+Date:   Sat, 16 Jul 2022 17:45:32 +0900
+Message-Id: <20220716084532.2324050-1-youngmin.nam@samsung.com>
+X-Mailer: git-send-email 2.34.0
 MIME-Version: 1.0
-References: <20220623144357.297252-1-dmitry.baryshkov@linaro.org> <CAL_JsqLi31FPBdYPzEW__UmfMTur-0428okopFYVaCbwm045gg@mail.gmail.com>
-In-Reply-To: <CAL_JsqLi31FPBdYPzEW__UmfMTur-0428okopFYVaCbwm045gg@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sat, 16 Jul 2022 17:12:38 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASMUoPh8sBWWjenf8p6R1kv80ar17-qN-wH9zjNMtnfrQ@mail.gmail.com>
-Message-ID: <CAK7LNASMUoPh8sBWWjenf8p6R1kv80ar17-qN-wH9zjNMtnfrQ@mail.gmail.com>
-Subject: Re: [PATCH v3] kbuild: Enable DT schema checks for %.dtb targets
-To:     Rob Herring <robh@kernel.org>
-Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Tom Rini <trini@konsulko.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkk+LIzCtJLcpLzFFi42LZdljTVFex5FKSwYW/ohbX9k5kt/h6/RG7
+        xZ9dO5gsLu+aw2bx8MENVouFZ6ItPkz4z2Sx+MAndgcOjwWbSj02repk87jbZuPRt2UVo8fn
+        TXIBrFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJuam2Si4+AbpumTlA
+        hygplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCswL9IoTc4tL89L18lJLrAwNDIxM
+        gQoTsjPWPHjAWPCKo2LqmhnsDYyX2LsYOTkkBEwk9n2/yQRiCwnsYJT4djeqi5ELyP7EKLH4
+        wwp2COcbo0TL6lWsMB3Tty9ihUjsBeroOwjlfGWUWHemnRmkik1AV2LbiX+MILaIgJfEtTmf
+        GUGKmAXmMEpMf/AdLCEsECpx+usHsAYWAVWJBSdugNm8AvYSHzoeAR3FAbROXuLPKwGIsKDE
+        yZlPWEBsZqBw89bZzCAzJQQusUvs62+BeshFom/lBiYIW1ji1fEtUHEpiZf9bVB2scSTs0sZ
+        IZobGCV2L37NApEwlpj1rJ0RZDGzgKbE+l36EDcoSxy5BbWXT6Lj8F92iDCvREebEESjmsSv
+        KRsYIWwZoIErmCFsD4lZZ16xQ4I3VuL6tTPsExjlZyH5ZhaSb2Yh7F3AyLyKUSy1oDg3PbXY
+        qMAIHqnJ+bmbGMFpUcttB+OUtx/0DjEycTAeYpTgYFYS4e0+dC5JiDclsbIqtSg/vqg0J7X4
+        EKMpMHgnMkuJJucDE3NeSbyhiaWBiZmZobmRqYG5kjivV8qGRCGB9MSS1OzU1ILUIpg+Jg5O
+        qQamq+qt26/W107wbrx6arfMjcmfzil1lyWbr1qTNelPUEfHli4FX/0tG+sWh+S9mPb64/OP
+        wS2vbI8e5u71yc51nSMgqOV6Rmfd2UW/ZzSserniyRf7x3e2ZOSnbJb+MvO9wvlrtWn5l3N7
+        zd3t5J37X/1NFjAVE/1wPFrKNvbQv91vH0rlcbZwLjwgacxstsjNo/nSlINrhZ4u4djWd+SO
+        sbuZ32cJV4ZNkkmC36tqIkQqzt65XFHtnWn7N5y3Y0v24g/vYkVnvvGQz7vTMfvsopiLc/1W
+        toqqiC9If3T8xKbDHRdYA2OWL7q1r958zyaW68py/unrVli6vPSqKWG6a6YpZtW/wZRR1eip
+        yRZpJZbijERDLeai4kQAAmA3rhQEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrILMWRmVeSWpSXmKPExsWy7bCSnK5CyaUkg+s3lCyu7Z3IbvH1+iN2
+        iz+7djBZXN41h83i4YMbrBYLz0RbfJjwn8li8YFP7A4cHgs2lXpsWtXJ5nG3zcajb8sqRo/P
+        m+QCWKO4bFJSczLLUov07RK4MtY8eMBY8IqjYuqaGewNjJfYuxg5OSQETCSmb1/E2sXIxSEk
+        sJtR4tbu9cwQCRmJ2ysvs0LYwhL3W45AFX1mlLgyeSJYEZuArsS2E/8YQWwRAT+J/mfTwYqY
+        BRYwSmy8cRosISwQLLHk904WEJtFQFViwYkbYM28AvYSHzoeMXUxcgBtkJf480oAIiwocXLm
+        E7ByZqBw89bZzBMY+WYhSc1CklrAyLSKUTK1oDg3PbfYsMAwL7Vcrzgxt7g0L10vOT93EyM4
+        VLU0dzBuX/VB7xAjEwfjIUYJDmYlEd7uQ+eShHhTEiurUovy44tKc1KLDzFKc7AoifNe6DoZ
+        LySQnliSmp2aWpBaBJNl4uCUamASda1kfpxS5V9ecMBIcWtOzum2R868k/2nmj63nXonq4Wt
+        o/SZ8wFvU478wgWKKpd6zdL1VyxdfDzywLaN4ivXyk+T/LDxUm1ftZv7uq1mrsJ2izgVDrzb
+        uvqW0cyub4ovQ198cnC//r9xJ1Nx6t8rx3MfvZ1z7mDtJ4PbDOuPySQtvOGu8cbSyajldanF
+        B/U1hiuOxc26mVKy9iTL7J1xQg9mfy3TNvJ8k19x6WSws2J4ae0u4U/Tp4TuWbX1pYozo21N
+        POOvW//v/jTL+LP7xFFuaaebwV943taEHVmZ62vQGrbmc7VgoqbYbsUQsew5mjcrpl3lDcme
+        3ljSpnfB+8XHy7uKuzmEpt8S+79KiaU4I9FQi7moOBEAGM/T38QCAAA=
+X-CMS-MailID: 20220716081736epcas2p346100e67cf44b1dbb79f6e2a4ab07dbf
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220716081736epcas2p346100e67cf44b1dbb79f6e2a4ab07dbf
+References: <CGME20220716081736epcas2p346100e67cf44b1dbb79f6e2a4ab07dbf@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 8:02 AM Rob Herring <robh@kernel.org> wrote:
->
-> On Thu, Jun 23, 2022 at 8:44 AM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> >
-> > It is possible to build a single dtb, but not with DT schema validation
-> > enabled. Enable the schema validation to run for %.dtb and %.dtbo
-> > targets. Anyone building a dtb for a specific platform *should* pay
-> > attention to schema warnings.
-> >
-> > This could be supported with a separate %.dt.yaml target instead.
-> > However, the .dt.yaml format is considered an intermediate format and
-> > could possibly go away at some point if schema checking is integrated
-> > into dtc. Also, the plan is to enable the schema checks by default once
-> > platforms are free of warnings, and this is a move in that direction.
-> >
-> > This patch differs from the previous one ([1]) in the fact that it
-> > requires specifying VALIDATE_DT=1 to run the checks while doing the
-> > build. Thus default build procedures would not obtain additional build
-> > dependency, while maintainers can still build a single DTB file an get
-> > only corresponding warnings.
->
-> I'd rather this be a kconfig option, so that eventually 'make
-> allmodconfig; make dtbs' also runs the schema checks. If something can
-> be enabled for allmodconfig, then builders will automatically start
-> testing it. Though the extra dependency is a problem here.
+The -Wformat-insufficient-args for clang is useful to detect the situation
+when the total number is unmatched between format specifiers and arguments.
 
+Originally, this option is enabled by default(Link[1]), but it is disabled by
+-Wno-format explicitly so that we can't detect this unmatched situation.
 
-The dependency on libyaml is gone.
+We can enable it by adding this option after -Wno-format.
 
-As for the dependency on dt-schema, is it a good idea to
-pull it into the kernel tree somewhere,
-like we periodically sync scripts/dtc/ with its upstream?
+Link[1]: https://releases.llvm.org/13.0.0/tools/clang/docs/DiagnosticsReference.html#wformat-insufficient-args
+Signed-off-by: Youngmin Nam <youngmin.nam@samsung.com>
+---
+ scripts/Makefile.extrawarn | 1 +
+ 1 file changed, 1 insertion(+)
 
-Any other problematic tool dependency?
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index f5f0d6f09053..c23d7c286bad 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -48,6 +48,7 @@ else
+ ifdef CONFIG_CC_IS_CLANG
+ KBUILD_CFLAGS += -Wno-initializer-overrides
+ KBUILD_CFLAGS += -Wno-format
++KBUILD_CFLAGS += -Wformat-insufficient-args
+ KBUILD_CFLAGS += -Wno-sign-compare
+ KBUILD_CFLAGS += -Wno-format-zero-length
+ KBUILD_CFLAGS += $(call cc-disable-warning, pointer-to-enum-cast)
+-- 
+2.34.0
 
-
-
-
-
->
-> >
-> > [1] https://lore.kernel.org/all/20210913145146.766080-1-robh@kernel.org/
-> >
-> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> > Cc: Tom Rini <trini@konsulko.com>
-> > Cc: Masahiro Yamada <masahiroy@kernel.org>
-> > Cc: linux-kbuild@vger.kernel.org
-> > Co-developed-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> > ---
-> >  Makefile | 18 ++++++++++++++----
-> >  1 file changed, 14 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/Makefile b/Makefile
-> > index c43d825a3c4c..0942922384c4 100644
-> > --- a/Makefile
-> > +++ b/Makefile
-> > @@ -1365,11 +1365,17 @@ endif
-> >
-> >  ifneq ($(dtstree),)
-> >
-> > -%.dtb: include/config/kernel.release scripts_dtc
-> > -       $(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
-> > +ifneq ($(VALIDATE_DT),)
-> > +DT_YAML = $(dtstree)/$*.dt.yaml
->
-> .dt.yaml files are deprecated now. This probably doesn't do anything.
-
-Right, this causes a build error.
-
-
-masahiro@grover:~/ref/linux$ make ARCH=arm64 VALIDATE_DT=1
-arm/foundation-v8.dtb
-arch/arm64/Makefile:36: Detected assembler with broken .inst;
-disassembly will be unreliable
-  DTC     arch/arm64/boot/dts/arm/foundation-v8.dtb
-  CHECK   arch/arm64/boot/dts/arm/foundation-v8.dtb
-/home/masahiro/ref/linux/arch/arm64/boot/dts/arm/foundation-v8.dtb:
-sysreg@10000: '#address-cells' is a required property
-From schema: /home/masahiro/ref/linux/Documentation/devicetree/bindings/arm/vexpress-sysreg.yaml
-/home/masahiro/ref/linux/arch/arm64/boot/dts/arm/foundation-v8.dtb:
-sysreg@10000: '#size-cells' is a required property
-From schema: /home/masahiro/ref/linux/Documentation/devicetree/bindings/arm/vexpress-sysreg.yaml
-make[1]: *** No rule to make target
-'arch/arm64/boot/dts/arm/foundation-v8.dt.yaml'.  Stop.
-make: *** [Makefile:1379: arm/foundation-v8.dtb] Error 2
-
-
-
-
-
-
-
---
-Best Regards
-
-Masahiro Yamada
