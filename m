@@ -2,72 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27073C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 682CFCCA479
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232279AbiGPSGU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 14:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58964 "EHLO
+        id S229941AbiGPSGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 14:06:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiGPSGS (ORCPT
+        with ESMTP id S231985AbiGPSGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 16 Jul 2022 14:06:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFFDA18B05
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 11:06:17 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CDB718B25;
+        Sat, 16 Jul 2022 11:06:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F308B80B98
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 18:06:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 15169C34114;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0023B8090C;
+        Sat, 16 Jul 2022 18:06:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 67595C341C6;
         Sat, 16 Jul 2022 18:06:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1657994775;
-        bh=OG13SM2olcWyuxnxdoFKu9rmal0vBENVDxE4dey4Y2s=;
+        bh=4wN3caMpsCVo6qzk/qaznsXpbywaRyG9+vDPRUCJYS4=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=arQuJorHUo0kJ0uLHoqUat6vv6mP4E/yXow3xyOGKuFEn/l9mZc9xZmCQzvL9zUzE
-         tq3kuHrkSjGTdc0CcNoh6fqKXO3VLrVJav7Fc0LqgNw53+LbhI/bO3dKbTrmrqClRy
-         BGAKWJE5xtc6fWWvrtL4fB6E/pDmPbeqy15mbKDtumYuD1gIBntqr7ICxTzU8OFUOq
-         14Q0kOpBn4I7eNWvynjrioxcVX4mycOPF64sk+jsUjRwVggjpYnZaHByNjiOM/AdBL
-         Wm2xOzpvyKW2lakXDDgr9PBIFg5SyzEsfWG4XMCbChUKNe6Y4vMTQVsWoRef+xFa7c
-         drnhgGy2FiGcw==
+        b=SXqLOLJng6euB7wZEDx7Ti20/gi3GvM00dwO4H12Fi+KhG5MfkcJNPIZtkThQ9n5P
+         fzhB734CCriGPWCngvRFvvGzMwV0O2Jj29y1CwCnAvveVnzhbakXzOB2+DmC8+7GDn
+         Gga2cwqqqzQl+9K5XCepEzeYjm7s+tK8XOev8g+ie+GaRit/bLDeyG2IuZjcZBwASp
+         pPO4JQ+OB2Vn55frMt1PKf1PmIJMnRpx0xMFmKQ15w4MF8xdve1QRY1zvDuAJV3W5D
+         DWlwIf6mT4Ov1xwWJ6TrYW/2Sp2I/jwwcv8oIkfydYpnICduc6+74bBDwpG/feDO1I
+         2CEMPly+lqqlA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F38DFE45224;
-        Sat, 16 Jul 2022 18:06:14 +0000 (UTC)
-Subject: Re: [GIT PULL] printk fixup for 5.19-rc7
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 48DA8E45227;
+        Sat, 16 Jul 2022 18:06:15 +0000 (UTC)
+Subject: Re: [GIT PULL] Power management fix for v5.19-rc7
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YtGzI9tWpB2wpioB@alley>
-References: <YtGzI9tWpB2wpioB@alley>
+In-Reply-To: <CAJZ5v0iVmVvMK3iv0gcTeWQzbfCWrNhRw+j+-YSPtbQcNMH52g@mail.gmail.com>
+References: <CAJZ5v0iVmVvMK3iv0gcTeWQzbfCWrNhRw+j+-YSPtbQcNMH52g@mail.gmail.com>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YtGzI9tWpB2wpioB@alley>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19-rc7
-X-PR-Tracked-Commit-Id: 1ac8ec2731a5ae0f283d103873be7b945ba97e90
+X-PR-Tracked-Message-Id: <CAJZ5v0iVmVvMK3iv0gcTeWQzbfCWrNhRw+j+-YSPtbQcNMH52g@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.19-rc7
+X-PR-Tracked-Commit-Id: 5a5adb1528e59e8a4b23ffa7dda4849b61e97cf8
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: be9b7b6acfeae47778f829d9d176ab1f9269593e
-Message-Id: <165799477499.6229.3810708695795755123.pr-tracker-bot@kernel.org>
-Date:   Sat, 16 Jul 2022 18:06:14 +0000
-To:     Petr Mladek <pmladek@suse.com>
+X-PR-Merge-Commit-Id: ab6efe68a736748cf922a7641751583a3c783cb1
+Message-Id: <165799477529.6229.8790280749383521748.pr-tracker-bot@kernel.org>
+Date:   Sat, 16 Jul 2022 18:06:15 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Jan Kara <jack@suse.cz>, Peter Zijlstra <peterz@infradead.org>,
-        Todd Brandt <todd.e.brandt@linux.intel.com>,
-        linux-kernel@vger.kernel.org
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 15 Jul 2022 20:34:11 +0200:
+The pull request you sent on Fri, 15 Jul 2022 20:40:36 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/printk/linux.git tags/printk-for-5.19-rc7
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git pm-5.19-rc7
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/be9b7b6acfeae47778f829d9d176ab1f9269593e
+https://git.kernel.org/torvalds/c/ab6efe68a736748cf922a7641751583a3c783cb1
 
 Thank you!
 
