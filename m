@@ -2,118 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB7FCCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 09:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E76CBCCA485
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 09:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232213AbiGPJdw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 05:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54520 "EHLO
+        id S232251AbiGPJe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 05:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232100AbiGPJdo (ORCPT
+        with ESMTP id S231927AbiGPJe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 05:33:44 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49AF4182;
-        Sat, 16 Jul 2022 02:33:40 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id x18-20020a17090a8a9200b001ef83b332f5so13722442pjn.0;
-        Sat, 16 Jul 2022 02:33:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xhq++96SwqP8iCLJj1mxjf4nsafc6aa4I9geuOUsTYc=;
-        b=arQXmVNjfmYBDpNRP5PRNWJoI8kfTbc5ypG0ZQEZDHfwB8FX3FTfhpHVNwRCERCZdR
-         kK7A7fU20oJR6WneJQb8VqwOa5cffhmvzxj+qfyb0+JLNVGJRZ0XsZmX1SKtv7L7V+n2
-         vtdgpsw3g/PFkNb7W0d406eVRYjY2ouuxnzMsy6pI8+7vEU+56+jTMxoNr1FeNQqfpWP
-         fKfyr35Oe78cXWxxXxXngBPY6eRotbwcLmElAhiA3mxvVgYX2d4bbPJw2JbYsUyQEYvJ
-         s/iRQ7ilUZk1qwHgfsGrRrkcknx/yJrF7PLiiKA/57v1TeNeUOoM+bIrj2a8yJ/DovOW
-         Sayg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xhq++96SwqP8iCLJj1mxjf4nsafc6aa4I9geuOUsTYc=;
-        b=V36ucEBkKQcSuMJGAh+/OnnOBEEHjA5NSOVbxaoV5sWbMO8m+MWg4sxQZQraw5p6j/
-         NwHjEsRRxrfw5Dcmt5tm81r2XHbdBSoGvE5gWi5GWzjuF5SSnJvUSOPkhS5EtoiPBZVv
-         KMPRbcww8T2C6ufEEvoosXb42CgBSg3S9W3ahyVo/AVw9+BXDleYBVGfl7+X79yqrUXb
-         zL8R5q2WTDpFr+8UXALvnmVw2ZcoPUMglMelWZE96P5VAC+T5VEixsSLmBj68P3ZCwtn
-         4NzQ+/U4aatBvFKMOZkpJ+6AMrNXjjGDLbmnvrTa4/4PND9wKIoCsXGC9XJhyxocW8uh
-         cYbg==
-X-Gm-Message-State: AJIora/99K1BZl15jewVC/4U83aqdmeXFWSJmGgzUrFPwNKJOArWXCTr
-        9vpvHCZamwJtq6hSS23HvJE=
-X-Google-Smtp-Source: AGRyM1sCsMunfbPOuymvkXTYD/IzPE6crrGnwwbagMZeRKOYiRRbdJW7sSMgIpbhgwrbS+WipRyRqg==
-X-Received: by 2002:a17:902:eec2:b0:16c:9837:cd4 with SMTP id h2-20020a170902eec200b0016c98370cd4mr15342704plb.132.1657964019824;
-        Sat, 16 Jul 2022 02:33:39 -0700 (PDT)
-Received: from debian.me (subs32-116-206-28-23.three.co.id. [116.206.28.23])
-        by smtp.gmail.com with ESMTPSA id 199-20020a6218d0000000b0052abc2438f1sm5352747pfy.55.2022.07.16.02.33.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jul 2022 02:33:38 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 60BCD103840; Sat, 16 Jul 2022 16:33:33 +0700 (WIB)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Martin Liska <mliska@suse.cz>, Andi Kleen <ak@linux.intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linux-kbuild@vger.kernel.org, Bagas Sanjaya <bagasdotme@gmail.com>
-Subject: [PATCH 3/4] Documentation: lto: use bullet lists for external link references list
-Date:   Sat, 16 Jul 2022 16:32:49 +0700
-Message-Id: <20220716093249.19326-4-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220716093249.19326-1-bagasdotme@gmail.com>
-References: <20220716093249.19326-1-bagasdotme@gmail.com>
+        Sat, 16 Jul 2022 05:34:26 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C4EFA;
+        Sat, 16 Jul 2022 02:34:19 -0700 (PDT)
+X-UUID: 7c3d04953ac4499f80cfcfc984a6bbb7-20220716
+X-CID-UNFAMILIAR: 1
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:3d1e8b93-3694-41e6-a6da-1ac5f70148d7,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Release_Ham,A
+        CTION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:3d1e8b93-3694-41e6-a6da-1ac5f70148d7,OB:0,LOB:
+        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:100,FILE:0,RULE:Spam_GS981B3D,A
+        CTION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:83d5a6d7-5d6d-4eaf-a635-828a3ee48b7c,C
+        OID:68c961e9a692,Recheck:0,SF:28|16|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: 7c3d04953ac4499f80cfcfc984a6bbb7-20220716
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1846794100; Sat, 16 Jul 2022 17:34:13 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Sat, 16 Jul 2022 17:34:11 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Sat, 16 Jul 2022 17:34:10 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        <angelogioacchino.delregno@collabora.com>,
+        <nicolas.dufresne@collabora.com>, <wenst@chromium.org>,
+        kyrie wu <kyrie.wu@mediatek.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        Tomasz Figa <tfiga@chromium.org>, <xia.jiang@mediatek.com>,
+        <maoguang.meng@mediatek.com>, <srv_heupstream@mediatek.com>
+Subject: [V5,0/8] Support multi-hardware jpeg decoder for MT8195
+Date:   Sat, 16 Jul 2022 17:34:00 +0800
+Message-ID: <20220716093408.29734-1-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to the FAQ, use bullet lists in References section since it
-contains list of external reference links.
+From: kyrie wu <kyrie.wu@mediatek.com>
 
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+This series adds support for multi hardware jpeg decoding,
+by first adding use of_platform_populate to manage each hardware
+information: interrupt, clock, register bases and power.
+Secondly add decoding work queue to deal with the decoding requests
+of multi-hardware at the same time. Lastly, add output picture
+reorder function interface to eliminate the out of order images.
+
+This series has been tested with both MT8195.
+Decoding worked for this chip.
+
+Patch 1 Adds jpeg decoder dt-bindings for mt8195
+
+Patches 2 jpeg decoder builds three module for using Multi-HW,
+export some functions to make them visible by other modules.
+
+Patch 3 use of_platform_populate to manage multi-hardware.
+
+Patch 4 add jpeg decoding timeout function to judge hardware timeout.
+
+Patch 5 add decoding work queue to deal with multi-hardware decoding
+at the same time.
+
+Patch 6 add output picture reorder function to order images.
+
+Patch 7 refactor jpegdec func interface for HW working.
+
+Patch 8 add stop cmd function to deal with EOS operation.
+
 ---
- Documentation/kbuild/lto-build.rst | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+This series patches dependent on:
+media_stage tree:
+[1]
+https://git.linuxtv.org/media_stage.git/commit/?id=b3627647f9ea7473d10fb08a95fd7c4133a17ca4
 
-diff --git a/Documentation/kbuild/lto-build.rst b/Documentation/kbuild/lto-build.rst
-index 9e3e14042dda4c..3fb17342e72fd6 100644
---- a/Documentation/kbuild/lto-build.rst
-+++ b/Documentation/kbuild/lto-build.rst
-@@ -56,17 +56,20 @@ FAQs:
- References:
- -----------
- 
--Presentation on Kernel LTO
--(note, performance numbers/details totally outdated.)
--http://halobates.de/kernel-lto.pdf
-+* Presentation on Kernel LTO
-+  (note, performance numbers/details totally outdated.)
- 
--Generic gcc LTO:
--http://www.ucw.cz/~hubicka/slides/labs2013.pdf
--http://www.hipeac.net/system/files/barcelona.pdf
-+  http://halobates.de/kernel-lto.pdf
- 
--Somewhat outdated too:
--http://gcc.gnu.org/projects/lto/lto.pdf
--http://gcc.gnu.org/projects/lto/whopr.pdf
-+* Generic gcc LTO:
-+
-+  * http://www.ucw.cz/~hubicka/slides/labs2013.pdf
-+  * http://www.hipeac.net/system/files/barcelona.pdf
-+
-+* Somewhat outdated too (from GCC site):
-+
-+  * http://gcc.gnu.org/projects/lto/lto.pdf
-+  * http://gcc.gnu.org/projects/lto/whopr.pdf
- 
- Happy Link-Time-Optimizing!
- 
+patch1 new jpegdec dt-bindings included files
+[2] MM IOMMU binding:
+https://patchwork.kernel.org/project/linux-mediatek/patch/20220217113453.13658-2-yong.wu@mediatek.com/
+
+[3] MT8195 power domain:
+https://patchwork.kernel.org/project/linux-mediatek/list/?series=580579
+
+Changes compared with v4:
+- some modifications for patch v4's review comments.
+- fix Gstreamer test errors.
+
+Changes compared with v3:
+- some modifications for patch v3's review comments.
+
+Changes compared with v2:
+- add stop cmd function.
+- some modifications for patch v1's review comments.
+
+Changes compared with v1:
+- new yaml file for mt8195 jpeg decoder.
+- some modifications for patch v1's review comments.
+
+kyrie wu (8):
+  dt-bindings: mediatek: Add mediatek,mt8195-jpgdec compatible
+  media: mtk-jpegdec: export jpeg decoder functions
+  media: mtk-jpegdec: manage jpegdec multi-hardware
+  media: mtk-jpegdec: add jpegdec timeout func interface
+  media: mtk-jpegdec: add jpeg decode worker interface
+  media: mtk-jpegdec: add output pic reorder interface
+  media: mtk-jpegdec: refactor jpegdec func interface
+  mtk-jpegdec: add stop cmd interface for jpgdec
+
+ .../media/mediatek,mt8195-jpegdec.yaml        | 160 +++++++++
+ drivers/media/platform/mediatek/jpeg/Makefile |   5 +-
+ .../platform/mediatek/jpeg/mtk_jpeg_core.c    | 232 ++++++++++++-
+ .../platform/mediatek/jpeg/mtk_jpeg_core.h    |  46 +++
+ .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.c  | 317 ++++++++++++++++--
+ .../platform/mediatek/jpeg/mtk_jpeg_dec_hw.h  |   3 +-
+ .../platform/mediatek/jpeg/mtk_jpeg_dec_reg.h |   1 +
+ 7 files changed, 732 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,mt8195-jpegdec.yaml
+
 -- 
-An old man doll... just what I always wanted! - Clara
+2.18.0
 
