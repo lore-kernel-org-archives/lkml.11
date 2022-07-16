@@ -2,70 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ECEBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B40C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238958AbiGSNRP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:17:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41384 "EHLO
+        id S243499AbiGSNRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243428AbiGSNRD (ORCPT
+        with ESMTP id S243466AbiGSNRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88B0C6CB7
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:33:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9AC609FB
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 12:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD69DC341C6;
-        Tue, 19 Jul 2022 12:33:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658234010;
-        bh=zMjMlllVXscrTLNHeZlKujE+ppPXXBHLhhQnH2WdWto=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=imxImUOsaU0Ko+4DaRV05N1SyAnPI24Yi3FaBc+lajx6fgzUX6P4sAuEkPwhOcgdu
-         ZV5lSvkqSsgkwW7X9/bGHs18f2Ghakm8e+fLqXlSI9iOQP/n4weAs1WqWLa83Ee821
-         Vc2LwFpNz/MuysRW2Ntb4qzs2iI1xGkav/R46PH4=
-Date:   Tue, 19 Jul 2022 14:17:31 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Linux Phy <linux-phy@lists.infradead.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL]: Generic phy updates for v5.20
-Message-ID: <Ytag21DYusQ1S6qs@kroah.com>
-References: <YtY8Ggzsqa1MwjL5@matsya>
+        Tue, 19 Jul 2022 09:17:12 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4033C7AC8;
+        Tue, 19 Jul 2022 05:33:33 -0700 (PDT)
+X-QQ-mid: bizesmtp75t1658233983tjylqyrq
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:33:02 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000C00A0000020
+X-QQ-FEAT: l48D28I/3+29Yf2UJQ43owyP/FUIs34xsI2CDRUIMKP7D/nFh1M7kG/F0Jklp
+        eJSaBjWVPPXf8niwpyaHjw0IRKOCuzMeFLVCyXj9Ef/5MoXv8zG1JgnWESZCZkLuPC7f77c
+        KWg1yiBlHoEIQ9joAsd/7IRHylbP5jTFDLkHldhzwaoiYgmWJ92qMzn+7SnPb/XdSrryfU/
+        VG8c5g0KxfeJpMhO5mCIPOJ+fa7Z3i9oDXLCAqd+cBR5BUjk5vz/yhzOiENeplBhIBzNf0F
+        XGeoFRDefaVnUb7PuEx8TI4AYfUCJKlGsw7/IZL8DqDcZjgbpodO7iGmvbBomBB6lDkSIx3
+        G4wxuGzXq/lWB/uIlTCPoF2iqeqpQrrwLuo7attYWizDN17h8Sztt3XsXDp0tgFNjcmaY1O
+        6wt4y2LZlVI=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     mchehab@kernel.org
+Cc:     yong.deng@magewell.com, wens@csie.org, jernej.skrabec@gmail.com,
+        samuel@sholland.org, linux-media@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] media: sun6i-csi: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:31:02 +0800
+Message-Id: <20220716043102.40894-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtY8Ggzsqa1MwjL5@matsya>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 10:37:38AM +0530, Vinod Koul wrote:
-> Hello Greg,
-> 
-> Please pull to receive Generic phy updates for v5.20. This contains
-> bunch of new support for devices in existing drivers, as well as new
-> drivers. Also the big Qualcomm qmp phy cleanup is part of this pull
-> request.
-> 
-> The following changes since commit f2906aa863381afb0015a9eb7fefad885d4e5a56:
-> 
->   Linux 5.19-rc1 (2022-06-05 17:18:54 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy.git tags/phy-for-5.20
-> 
-> for you to fetch changes up to 08680588d340eaad2d5028d6f24a055a118d4e7e:
-> 
->   dt-bindings: phy: mediatek: tphy: add compatible for mt8188 (2022-07-15 17:20:04 +0530)
+The double `the' is duplicated in the comment, remove one.
 
-Pulled and pushed out, thanks.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-greg k-h
+diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+index 1d46e113d01d..74d64a20ba5b 100644
+--- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
++++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_video.c
+@@ -177,7 +177,7 @@ static int sun6i_video_start_streaming(struct vb2_queue *vq, unsigned int count)
+ 
+ 	/*
+ 	 * CSI will lookup the next dma buffer for next frame before the
+-	 * the current frame done IRQ triggered. This is not documented
++	 * current frame done IRQ triggered. This is not documented
+ 	 * but reported by Ondřej Jirman.
+ 	 * The BSP code has workaround for this too. It skip to mark the
+ 	 * first buffer as frame done for VB2 and pass the second buffer
+-- 
+2.35.1
+
