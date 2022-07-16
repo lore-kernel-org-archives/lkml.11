@@ -2,508 +2,510 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA01CCA482
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2BAC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232005AbiGPMdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 08:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39138 "EHLO
+        id S232054AbiGPMgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 08:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231994AbiGPMdf (ORCPT
+        with ESMTP id S230313AbiGPMgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 08:33:35 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0656E1EC72;
-        Sat, 16 Jul 2022 05:33:34 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id w7so5294250ply.12;
-        Sat, 16 Jul 2022 05:33:34 -0700 (PDT)
+        Sat, 16 Jul 2022 08:36:51 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04E761EC4A;
+        Sat, 16 Jul 2022 05:36:50 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id w12so9362207edd.13;
+        Sat, 16 Jul 2022 05:36:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:content-language:to
-         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=MKS3K/qu7LZc/Loe5tqCkJETrf4FLpRaiv4LThbOSeI=;
-        b=d6nlbBXlzrrkVZOAMz5SnOzcoJbjKl5R3wMiQAm4svIDGnmO3NeqAfFOznwWdjSuZP
-         NIn1R0K+Rr1CW7cg4kaKXx+0QO7iCjB9AgEw5prpY/S+XEepwEFl3VUOf1xqx7fKg00S
-         2Ld5jqaf4mDW0sTaz9/YOa8zmJX/kjCfCGzGy+vY5xjDSMbeF0tYAyVt1lWEya8uQrm+
-         00wdD7FYwud1tUJHAWGwkWbRU/0jWIt6m3MDA3wSUi2pCCCQBLDe+KzMQ5JpHs4G/Lu2
-         6kWS1bgHmY5MDkWj92zWE2SIcJG7MkRkReq27mtRofsKgn11Rjp7oWkUEcSDCKJHZCMh
-         q00g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=RzS75DaySAPPLZ/r3IeLLMoRoANcaKHz+gywFUT12Uo=;
+        b=DmMTjVMMMRFSys6f8QAovH+nrKZGVkoFWbn/aM0O7T1JRM9dM3sOYGCbF8m5LWe8CW
+         GmCXpXvOrenZSOX1JIQI7ZEpPm9o6fgOB6d++WL5bnRlXg+PBjQ/sT2bs1frdQ0mecmL
+         FEJjn4AyLM0rCWVpaug7FK8Vl2/6e1cX3GvgimdxicM9DFW4E4BqZT8pRmzo0iQJ0//H
+         RNB5Lz/1rNfZE03J3Z8Vcbfo9+SNObKtUS2tuU7dq+NIOQttHAz2LCrmWFdTGPhMeGxT
+         k6ml2eifWr/vQIzdxJoAzgnQeBmxbshGvg/7dflLx3mm1hsVbWDLGvMk/Lzj4FA4nwO1
+         YLww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=MKS3K/qu7LZc/Loe5tqCkJETrf4FLpRaiv4LThbOSeI=;
-        b=EuRI8Hx6imzhGtgkDDNyLblDSGCemQZeizr887WfdHEY1bypWNo1uGQaRApWgX5Ntb
-         GapDHRgaGIhcJ33wG1qvGqDRMaEnJBy13XF48N0ixBb1f5PZI1tloh2ZbtRUU7ct5dGE
-         mxh+4YiA4v4Jf33A/qyySPLj4NIbVOcaXGUOHeIchw5dIAoBYy1J4MNXH1CmUWARdPjz
-         BL6XO+Vq1zqnY4tU9XrvCvBaG01Q0u+bPHUTo/6Jo+SXNV1nQ1BbRnXXYf3e8C4CiyQr
-         kCFWHoJooj8LOaKzacn+5zzpAOyu66CokZvOcuEsAVXHkA9kP612ySGvaeu8lYB/x7sG
-         dDdg==
-X-Gm-Message-State: AJIora8JQglZAXNQvPESmcxe0TjW0XKQZNTa7m2gBZ3pyBmAbKq5uQxG
-        cRLW1ZZtrcll4EisfOptzkLIHEb5Lp1PwQ==
-X-Google-Smtp-Source: AGRyM1sKafAftYprPFaOv0roY7UuXnpxUxTmll9YfRRTwu8eUvMwIOuiN2is4UKUukPtbVRrTWgTLQ==
-X-Received: by 2002:a17:903:260e:b0:16b:deaf:970a with SMTP id jd14-20020a170903260e00b0016bdeaf970amr18075425plb.121.1657974813149;
-        Sat, 16 Jul 2022 05:33:33 -0700 (PDT)
-Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r5-20020aa79885000000b00525442ac579sm5736021pfl.212.2022.07.16.05.33.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jul 2022 05:33:14 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Message-ID: <df046bcd-d8be-6606-a1fa-6399e5da534f@roeck-us.net>
-Date:   Sat, 16 Jul 2022 05:32:55 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=RzS75DaySAPPLZ/r3IeLLMoRoANcaKHz+gywFUT12Uo=;
+        b=6RGJ6f2Vti59ASG9m2+HhiL6BYFhqbrs8o48F/T2gx1HkTbSvIKqJ+j2DvYwmUjQPB
+         eyFQhPyNET/oa13/C3Utoaq4+LeijW6XOZ0plw2Spz/CGo3vxiFfjybVB4HrPgdvWEp5
+         V6t0G5MNdLoHFDD9SBjtvgT0xwsb9nZNhqdPJgUMOi97Ydj5cLCOTCbkLVoftFhjKrEa
+         aaAKD13/pvOdRWZX6yEK/fhbcGtR8ND8JiVMzHvCrqXstpc4WM/wJuAcdpStkp29yb1/
+         hHObnHEnxhZsSXCcLrCRoQI0F4Mn2o3xuFmQPjhMDMJEAU6EOZ2zdGUqfziOYK16QJ+z
+         g+6A==
+X-Gm-Message-State: AJIora+K2F0BbbGw1ot84q48Ygbg+nJKouAxmizN81sLqZMhHWlnJnRP
+        +lSQhbcZqM+oCMi/+ICCttc=
+X-Google-Smtp-Source: AGRyM1soiC4STnZwNWHjFVdpX55vhasWCInA54iKqr1vSMJZSwa/tTlAsxYsYTtiSZax+YTabI85Iw==
+X-Received: by 2002:a05:6402:520c:b0:43a:aba8:84ae with SMTP id s12-20020a056402520c00b0043aaba884aemr26346200edd.198.1657975008433;
+        Sat, 16 Jul 2022 05:36:48 -0700 (PDT)
+Received: from jernej-laptop.localnet (89-212-118-115.static.t-2.net. [89.212.118.115])
+        by smtp.gmail.com with ESMTPSA id t17-20020a056402021100b0043a735add09sm4597002edv.21.2022.07.16.05.36.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 05:36:47 -0700 (PDT)
+From:   Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To:     Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Cc:     linux-media <linux-media@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+Subject: Re: [PATCH v2 7/8] cedrus: Use vb2_find_buffer
+Date:   Sat, 16 Jul 2022 14:36:46 +0200
+Message-ID: <2188083.iZASKD2KPV@jernej-laptop>
+In-Reply-To: <CAAEAJfDuX9Dq6QCtZhO_yoBZh6mgtePx5SwjeQgzZjkUiG8-zw@mail.gmail.com>
+References: <20220711211141.349902-1-ezequiel@vanguardiasur.com.ar> <5da2b3547f86e74c86a95300df82609a0cf7406e.camel@ndufresne.ca> <CAAEAJfDuX9Dq6QCtZhO_yoBZh6mgtePx5SwjeQgzZjkUiG8-zw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Content-Language: en-US
-To:     Alexey Klimov <klimov.linux@gmail.com>,
-        linux-watchdog@vger.kernel.org
-Cc:     wim@linux-watchdog.org, oneukum@suse.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        atishp@rivosinc.com, atishp@atishpatra.org, yury.norov@gmail.com,
-        aklimov@redhat.com, atomlin@redhat.com
-References: <20220715234442.3910204-1-klimov.linux@gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v4] watchdog: add driver for StreamLabs USB watchdog
- device
-In-Reply-To: <20220715234442.3910204-1-klimov.linux@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/15/22 16:44, Alexey Klimov wrote:
-> Driver supports StreamLabs usb watchdog device. The device plugs
-> into 9-pin usb header and connects to reset pins and reset button
-> pins on desktop PC.
-> 
-> USB commands used to communicate with device were reverse
-> engineered using usbmon.
-> 
-> Signed-off-by: Alexey Klimov <klimov.linux@gmail.com>
+Dne petek, 15. julij 2022 ob 13:48:34 CEST je Ezequiel Garcia napisal(a):
+> Hi Nicolas,
+>=20
+> Thanks a lot for the test and the bug report.
+>=20
+> On Thu, Jul 14, 2022 at 4:26 PM Nicolas Dufresne <nicolas@ndufresne.ca>=20
+wrote:
+> > Hi Ezequiel,
+> >=20
+> > I started testing with these patches and found some NULL dreferences, s=
+ee
+> > my comment inline...
+> >=20
+> > Le lundi 11 juillet 2022 =E0 18:11 -0300, Ezequiel Garcia a =E9crit :
+> > > Use the newly introduced vb2_find_buffer API to get a vb2_buffer
+> > > given a buffer timestamp.
+> > >=20
+> > > Cc: Maxime Ripard <mripard@kernel.org>
+> > > Cc: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
+> > > Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
+> > > Signed-off-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+> > > Acked-by: Tomasz Figa <tfiga@chromium.org>
+> > > ---
+> > >=20
+> > >  drivers/staging/media/sunxi/cedrus/cedrus.h   | 24 ++++++-----
+> > >  .../staging/media/sunxi/cedrus/cedrus_h264.c  | 16 +++----
+> > >  .../staging/media/sunxi/cedrus/cedrus_h265.c  | 16 +++----
+> > >  .../staging/media/sunxi/cedrus/cedrus_mpeg2.c | 28 ++++--------
+> > >  .../staging/media/sunxi/cedrus/cedrus_vp8.c   | 43 ++++-------------=
+=2D-
+> > >  5 files changed, 46 insertions(+), 81 deletions(-)
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus.h
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus.h index
+> > > 3bc094eb497f..c054dbe3d3bc 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus.h
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus.h
+> > > @@ -233,19 +233,23 @@ static inline dma_addr_t cedrus_buf_addr(struct
+> > > vb2_buffer *buf,> >=20
+> > >  }
+> > > =20
+> > >  static inline dma_addr_t cedrus_dst_buf_addr(struct cedrus_ctx *ctx,
+> > >=20
+> > > -                                          int index, unsigned int
+> > > plane)
+> > > +                                          struct vb2_buffer *buf,
+> > > +                                          unsigned int plane)
+> > >=20
+> > >  {
+> > >=20
+> > > -     struct vb2_buffer *buf =3D NULL;
+> > > -     struct vb2_queue *vq;
+> > > -
+> > > -     if (index < 0)
+> > > -             return 0;
+> > > +     return buf ? cedrus_buf_addr(buf, &ctx->dst_fmt, plane) : 0;
+> > > +}
+> > >=20
+> > > -     vq =3D v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
+> > > V4L2_BUF_TYPE_VIDEO_CAPTURE);
+> > > -     if (vq)
+> > > -             buf =3D vb2_get_buffer(vq, index);
+> > > +static inline void cedrus_write_ref_buf_addr(struct cedrus_ctx *ctx,
+> > > +                                          struct vb2_queue *q,
+> > > +                                          u64 timestamp,
+> > > +                                          u32 luma_reg,
+> > > +                                          u32 chroma_reg)
+> > > +{
+> > > +       struct cedrus_dev *dev =3D ctx->dev;
+> > > +       struct vb2_buffer *buf =3D vb2_find_buffer(q, timestamp);
+> > >=20
+> > > -     return buf ? cedrus_buf_addr(buf, &ctx->dst_fmt, plane) : 0;
+> > > +       cedrus_write(dev, luma_reg, cedrus_dst_buf_addr(ctx, buf, 0));
+> > > +       cedrus_write(dev, chroma_reg, cedrus_dst_buf_addr(ctx, buf, 1=
+));
+> > >=20
+> > >  }
+> > > =20
+> > >  static inline struct cedrus_buffer *
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c index
+> > > d8fb93035470..0559efeac125 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h264.c
+> > > @@ -111,16 +111,16 @@ static void cedrus_write_frame_list(struct
+> > > cedrus_ctx *ctx,> >=20
+> > >       for (i =3D 0; i < ARRAY_SIZE(decode->dpb); i++) {
+> > >      =20
+> > >               const struct v4l2_h264_dpb_entry *dpb =3D &decode->dpb[=
+i];
+> > >               struct cedrus_buffer *cedrus_buf;
+> > >=20
+> > > -             int buf_idx;
+> > > +             struct vb2_buffer *buf;
+> > >=20
+> > >               if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
+> > >              =20
+> > >                       continue;
+> > >=20
+> > > -             buf_idx =3D vb2_find_timestamp(cap_q, dpb->reference_ts=
+, 0);
+> > > -             if (buf_idx < 0)
+> > > +             buf =3D vb2_find_buffer(cap_q, dpb->reference_ts);
+> > > +             if (!buf)
+> > >=20
+> > >                       continue;
+> > >=20
+> > > -             cedrus_buf =3D vb2_to_cedrus_buffer(cap_q->bufs[buf_idx=
+]);
+> > > +             cedrus_buf =3D vb2_to_cedrus_buffer(buf);
+> > >=20
+> > >               position =3D cedrus_buf->codec.h264.position;
+> > >               used_dpbs |=3D BIT(position);
+> > >=20
+> > > @@ -186,7 +186,7 @@ static void _cedrus_write_ref_list(struct cedrus_=
+ctx
+> > > *ctx,> >=20
+> > >               const struct v4l2_h264_dpb_entry *dpb;
+> > >               const struct cedrus_buffer *cedrus_buf;
+> > >               unsigned int position;
+> > >=20
+> > > -             int buf_idx;
+> > > +             struct vb2_buffer *buf;
+> > >=20
+> > >               u8 dpb_idx;
+> > >              =20
+> > >               dpb_idx =3D ref_list[i].index;
+> > >=20
+> > > @@ -195,11 +195,11 @@ static void _cedrus_write_ref_list(struct
+> > > cedrus_ctx *ctx,> >=20
+> > >               if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
+> > >              =20
+> > >                       continue;
+> > >=20
+> > > -             buf_idx =3D vb2_find_timestamp(cap_q, dpb->reference_ts=
+, 0);
+> > > -             if (buf_idx < 0)
+> > > +             buf =3D vb2_find_buffer(cap_q, dpb->reference_ts);
+> > > +             if (!buf)
+> > >=20
+> > >                       continue;
+> > >=20
+> > > -             cedrus_buf =3D vb2_to_cedrus_buffer(cap_q->bufs[buf_idx=
+]);
+> > > +             cedrus_buf =3D vb2_to_cedrus_buffer(buf);
+> > >=20
+> > >               position =3D cedrus_buf->codec.h264.position;
+> > >              =20
+> > >               sram_array[i] |=3D position << 1;
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c index
+> > > 44f385be9f6c..60cc13e4d0a9 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_h265.c
+> > > @@ -102,14 +102,14 @@ static void
+> > > cedrus_h265_frame_info_write_single(struct cedrus_ctx *ctx,> >=20
+> > >                                               unsigned int index,
+> > >                                               bool field_pic,
+> > >                                               u32 pic_order_cnt[],
+> > >=20
+> > > -                                             int buffer_index)
+> > > +                                             struct vb2_buffer *buf)
+> > >=20
+> > >  {
+> > > =20
+> > >       struct cedrus_dev *dev =3D ctx->dev;
+> > >=20
+> > > -     dma_addr_t dst_luma_addr =3D cedrus_dst_buf_addr(ctx, buffer_in=
+dex,
+> > > 0);
+> > > -     dma_addr_t dst_chroma_addr =3D cedrus_dst_buf_addr(ctx,
+> > > buffer_index, 1); +     dma_addr_t dst_luma_addr =3D
+> > > cedrus_dst_buf_addr(ctx, buf, 0); +     dma_addr_t dst_chroma_addr =3D
+> > > cedrus_dst_buf_addr(ctx, buf, 1);> >=20
+> > >       dma_addr_t mv_col_buf_addr[2] =3D {
+> > >=20
+> > > -             cedrus_h265_frame_info_mv_col_buf_addr(ctx, buffer_inde=
+x,
+> > > 0),
+> > > -             cedrus_h265_frame_info_mv_col_buf_addr(ctx, buffer_inde=
+x,
+> > > +             cedrus_h265_frame_info_mv_col_buf_addr(ctx, buf->index,
+> > > 0),
+> > > +             cedrus_h265_frame_info_mv_col_buf_addr(ctx, buf->index,
+> > >=20
+> > >                                                      field_pic ? 1 : =
+0)
+> >=20
+> > Previously, -1 would be passed to
+> > cedrus_h265_frame_info_mv_col_buf_addr(),
+> > which would not find a buffer at that index, and would return 0. Now the
+> > code will crash with a NULL pointer deref.
+>=20
+> Is it really correct to pass -1 to cedrus_h265_frame_info_mv_col_buf_addr?
+> It seems it get casted into an unsigned type and then used to calculate
+> an address for DMA.
 
-Please run checkpatch --strict and fix what it reports.
+I totally agree that this is a latent bug and it should be fixed. H264 chec=
+ks=20
+for negative value, but not HEVC. Current code just makes out of bounds rea=
+d,=20
+which is tolerated, but yours causes NULL pointer dereference, which is not.
 
-> ---
-> 
-> Changes since v3:
-> 	-- added nowayout module param;
-> 	-- removed usb_set_intfdata(intf, NULL) in ->disconnect since
-> 	usb_unbind_interface() should take care of it;
-> 	-- keep the usb_streamlabs_wdt_stop_cmd() in ->disconnect().
-> 	Disconnect can be triggered via sysfs or on module removing,
-> 	it looks like we want to stop the watchdog on such events;
-> 	Should it also be stopped in ->disconnect() only if !nowayout?
-> 	-- rebased, cleanups, URL correction;
-> 	-- migrated to managed (devm_*) interfaces;
-> 	-- error in usb_streamlabs_wdt_validate_response() changed
-> 	to -EPROTO;
-> 	-- added entry in MAINTAINERS file;
-> 	-- const struct usb_device_id and watchdog_ops;
-> 
-> Previous version:
-> https://lore.kernel.org/lkml/20170217092523.23358-1-klimov.linux@gmail.com/
-> 
->   MAINTAINERS                       |   6 +
->   drivers/watchdog/Kconfig          |  15 ++
->   drivers/watchdog/Makefile         |   1 +
->   drivers/watchdog/streamlabs_wdt.c | 311 ++++++++++++++++++++++++++++++
->   4 files changed, 333 insertions(+)
->   create mode 100644 drivers/watchdog/streamlabs_wdt.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a5f65e7a113d..717d39a2d874 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -19120,6 +19120,12 @@ W:	http://www.stlinux.com
->   F:	Documentation/networking/device_drivers/ethernet/stmicro/
->   F:	drivers/net/ethernet/stmicro/stmmac/
->   
-> +STREAMLABS USB WATCHDOG DRIVER
-> +M:	Alexey Klimov <klimov.linux@gmail.com>
-> +L:	linux-watchdog@vger.kernel.org
-> +S:	Maintained
-> +F:	drivers/watchdog/streamlabs_wdt.c
-> +
->   SUN3/3X
->   M:	Sam Creasey <sammy@sammy.net>
->   S:	Maintained
-> diff --git a/drivers/watchdog/Kconfig b/drivers/watchdog/Kconfig
-> index 32fd37698932..64b7f947b196 100644
-> --- a/drivers/watchdog/Kconfig
-> +++ b/drivers/watchdog/Kconfig
-> @@ -2171,6 +2171,21 @@ config USBPCWATCHDOG
->   
->   	  Most people will say N.
->   
-> +config USB_STREAMLABS_WATCHDOG
-> +	tristate "StreamLabs USB watchdog driver"
-> +	depends on USB
-> +	help
-> +	  This is the driver for the USB Watchdog dongle from StreamLabs.
-> +	  If you correctly connect reset pins to motherboard Reset pin and
-> +	  to Reset button then this device will simply watch your kernel to make
-> +	  sure it doesn't freeze, and if it does, it reboots your computer
-> +	  after a certain amount of time.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called streamlabs_wdt.
-> +
-> +	  Most people will say N. Say yes or M if you want to use such usb device.
-> +
->   config KEEMBAY_WATCHDOG
->   	tristate "Intel Keem Bay SoC non-secure watchdog"
->   	depends on ARCH_KEEMBAY || (ARM64 && COMPILE_TEST)
-> diff --git a/drivers/watchdog/Makefile b/drivers/watchdog/Makefile
-> index c324e9d820e9..2d601da9b5bd 100644
-> --- a/drivers/watchdog/Makefile
-> +++ b/drivers/watchdog/Makefile
-> @@ -33,6 +33,7 @@ obj-$(CONFIG_WDTPCI) += wdt_pci.o
->   
->   # USB-based Watchdog Cards
->   obj-$(CONFIG_USBPCWATCHDOG) += pcwd_usb.o
-> +obj-$(CONFIG_USB_STREAMLABS_WATCHDOG) += streamlabs_wdt.o
->   
->   # ALPHA Architecture
->   
-> diff --git a/drivers/watchdog/streamlabs_wdt.c b/drivers/watchdog/streamlabs_wdt.c
-> new file mode 100644
-> index 000000000000..f2b782f3c98e
-> --- /dev/null
-> +++ b/drivers/watchdog/streamlabs_wdt.c
-> @@ -0,0 +1,311 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * StreamLabs USB Watchdog driver
-> + *
-> + * Copyright (c) 2016-2017,2022 Alexey Klimov <klimov.linux@gmail.com>
-> + */
-> +
-> +#include <linux/errno.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/slab.h>
-> +#include <linux/types.h>
-> +#include <linux/usb.h>
-> +#include <linux/watchdog.h>
-> +#include <asm/byteorder.h>
-> +
-> +/*
-> + * USB Watchdog device from Streamlabs:
-> + * https://www.stream-labs.com/products/devices/watch-dog/
-> + *
-> + * USB commands have been reverse engineered using usbmon.
-> + */
-> +
-> +#define DRIVER_AUTHOR "Alexey Klimov <klimov.linux@gmail.com>"
-> +#define DRIVER_DESC "StreamLabs USB watchdog driver"
-> +#define DRIVER_NAME "usb_streamlabs_wdt"
-> +
-> +MODULE_AUTHOR(DRIVER_AUTHOR);
-> +MODULE_DESCRIPTION(DRIVER_DESC);
-> +MODULE_LICENSE("GPL");
-> +
-> +#define USB_STREAMLABS_WATCHDOG_VENDOR	0x13c0
-> +#define USB_STREAMLABS_WATCHDOG_PRODUCT	0x0011
-> +
-> +/*
-> + * one buffer is used for communication, however transmitted message is only
-> + * 32 bytes long
-> + */
-> +#define BUFFER_TRANSFER_LENGTH	32
-> +#define BUFFER_LENGTH		64
-> +#define USB_TIMEOUT		350
-> +
-> +#define STREAMLABS_CMD_START	0xaacc
-> +#define STREAMLABS_CMD_STOP	0xbbff
-> +
-> +/* timeout values are taken from windows program */
-> +#define STREAMLABS_WDT_MIN_TIMEOUT	1
-> +#define STREAMLABS_WDT_MAX_TIMEOUT	46
-> +
-> +struct streamlabs_wdt {
-> +	struct watchdog_device wdt_dev;
-> +	struct usb_interface *intf;
-> +	struct mutex lock;
-> +	u8 *buffer;
-> +};
-> +
-> +static bool nowayout = WATCHDOG_NOWAYOUT;
-> +module_param(nowayout, bool, 0);
-> +MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
-> +			__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
-> +
-> +/*
-> + * This function is used to check if watchdog actually changed
-> + * its state to disabled that is reported in first two bytes of response
-> + * message.
-> + */
-> +static int usb_streamlabs_wdt_check_stop(u16 *buf)
-> +{
-> +	if (buf[0] != cpu_to_le16(STREAMLABS_CMD_STOP))
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int usb_streamlabs_wdt_validate_response(u8 *buf)
-> +{
-> +	/*
-> +	 * If watchdog device understood the command it will acknowledge
-> +	 * with values 1,2,3,4 at indexes 10, 11, 12, 13 in response message
-> +	 * when response treated as 8bit message.
-> +	 */
-> +	if (buf[10] != 1 || buf[11] != 2 || buf[12] != 3 || buf[13] != 4)
-> +		return -EPROTO;
-> +
-> +	return 0;
-> +}
-> +
-> +static void usb_streamlabs_wdt_prepare_buf(u16 *buf, u16 cmd,
-> +						unsigned long timeout_msec)
-> +{
-> +	/*
-> +	 * remaining elements expected to be zero everytime during
-> +	 * communication
-> +	 */
-> +	buf[0] = cpu_to_le16(cmd);
-> +	buf[1] = cpu_to_le16(0x8000);
-> +	buf[3] = cpu_to_le16(timeout_msec);
-> +	buf[5] = 0x0;
-> +	buf[6] = 0x0;
-> +}
-> +
-> +static int usb_streamlabs_wdt_cmd(struct streamlabs_wdt *wdt, u16 cmd)
-> +{
-> +	struct usb_device *usbdev;
-> +	unsigned long timeout_msec;
-> +	int retval;
-> +	int size;
-> +
-> +	if (unlikely(!wdt->intf))
-> +		return -ENODEV;
-> +
-> +	usbdev = interface_to_usbdev(wdt->intf);
-> +	timeout_msec = wdt->wdt_dev.timeout * MSEC_PER_SEC;
-> +
-> +	usb_streamlabs_wdt_prepare_buf((u16 *) wdt->buffer, cmd, timeout_msec);
-> +
-> +	/* send command to watchdog */
-> +	retval = usb_interrupt_msg(usbdev, usb_sndintpipe(usbdev, 0x02),
-> +					wdt->buffer, BUFFER_TRANSFER_LENGTH,
-> +					&size, USB_TIMEOUT);
-> +	if (retval)
-> +		return retval;
-> +
-> +	if (size != BUFFER_TRANSFER_LENGTH)
-> +		return -EIO;
-> +
-> +	/* and read response from watchdog */
-> +	retval = usb_interrupt_msg(usbdev, usb_rcvintpipe(usbdev, 0x81),
-> +					wdt->buffer, BUFFER_LENGTH,
-> +					&size, USB_TIMEOUT);
+I suggest that following check is added in cedrus_h265_frame_info_write_dpb=
+():
 
-How do you know this is the response to the current command
-and not the response to some previous command ? If there are
-unread messages queued in the receive pipe which were never retrieved
-you might just retrieve those old messages.
+if (buffer_index < 0)
+ continue;
 
-At the very least there needs to be an explanation why this doesn't
-happen (if it doesn't).
+I can send it as a fix so it gets backported and you update this patch so a=
+bove=20
+if is changed to NULL pointer check.
 
-> +	if (retval)
-> +		return retval;
-> +
-> +	if (size != BUFFER_LENGTH)
-> +		return -EIO;
-> +
-> +	/* check if watchdog actually acked/recognized command */
-> +	return usb_streamlabs_wdt_validate_response(wdt->buffer);
-> +}
-> +
-> +static int usb_streamlabs_wdt_stop_cmd(struct streamlabs_wdt *wdt)
-> +{
-> +	/* how many times to re-send stop cmd */
-> +	int retry_counter = 10;
-> +	int retval;
-> +
-> +	/*
-> +	 * Transition from enabled to disabled state in this device
-> +	 * for stop command doesn't happen immediately. Usually, 2 or 3
-> +	 * (sometimes even 4) stop commands should be sent until
-> +	 * watchdog answers 'I'm stopped!'.
-> +	 * Retry only stop command if watchdog fails to answer correctly
-> +	 * about its state. After 10 attempts go out and return error.
-> +	 */
-> +
-> +	do {
-> +		retval = usb_streamlabs_wdt_cmd(wdt, STREAMLABS_CMD_STOP);
-> +		if (retval)
-> +			break;
-> +
-> +		retval = usb_streamlabs_wdt_check_stop((u16 *) wdt->buffer);
-> +
+Do you all agree? Nicolas, do you prefer to send such patch, since you're f=
+irst=20
+who noticed something odd with the code?
 
-Does it really make sense to keep resending immediately, or would it be
-better to wait a bit in between ? Also, I am a bit concerned that the
-"response" message retrieved in usb_streamlabs_wdt_cmd() may actually
-be the response to some previous command.
+Best regards,
+Jernej
 
-> +	} while (retval && --retry_counter >= 0);
-> +
-> +	return retry_counter > 0 ? retval : -EIO;
-> +}
-> +
-> +static int usb_streamlabs_wdt_start(struct watchdog_device *wdt_dev)
-> +{
-> +	struct streamlabs_wdt *streamlabs_wdt = watchdog_get_drvdata(wdt_dev);
-> +	int retval;
-> +
-> +	mutex_lock(&streamlabs_wdt->lock);
-> +	retval = usb_streamlabs_wdt_cmd(streamlabs_wdt, STREAMLABS_CMD_START);
-> +	mutex_unlock(&streamlabs_wdt->lock);
-> +
-> +	return retval;
-> +}
-> +
-> +static int usb_streamlabs_wdt_stop(struct watchdog_device *wdt_dev)
-> +{
-> +	struct streamlabs_wdt *streamlabs_wdt = watchdog_get_drvdata(wdt_dev);
-> +	int retval;
-> +
-> +	mutex_lock(&streamlabs_wdt->lock);
-> +	retval = usb_streamlabs_wdt_stop_cmd(streamlabs_wdt);
-> +	mutex_unlock(&streamlabs_wdt->lock);
-> +
-> +	return retval;
-> +}
-> +
-> +static const struct watchdog_info streamlabs_wdt_ident = {
-> +	.options	= WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
-> +	.identity	= DRIVER_NAME,
-> +};
-> +
-> +static const struct watchdog_ops usb_streamlabs_wdt_ops = {
-> +	.owner	= THIS_MODULE,
-> +	.start	= usb_streamlabs_wdt_start,
-> +	.stop	= usb_streamlabs_wdt_stop,
-> +};
-> +
-> +static int usb_streamlabs_wdt_probe(struct usb_interface *intf,
-> +					const struct usb_device_id *id)
-> +{
-> +	struct usb_device *usbdev = interface_to_usbdev(intf);
-> +	struct streamlabs_wdt *streamlabs_wdt;
-> +	int retval;
-> +
-> +	/*
-> +	 * USB IDs of this device appear to be weird/unregistered. Hence, do
-> +	 * an additional check on product and manufacturer.
-> +	 * If there is similar device in the field with same values then
-> +	 * there is stop command in probe() below that checks if the device
-> +	 * behaves as a watchdog.
-> +	 */
-> +	if (!usbdev->product || !usbdev->manufacturer
-> +		|| strncmp(usbdev->product, "USBkit", 6)
-> +		|| strncmp(usbdev->manufacturer, "STREAM LABS", 11))
-> +		return -ENODEV;
-> +
-> +	streamlabs_wdt = devm_kzalloc(&intf->dev, sizeof(struct streamlabs_wdt),
-> +								GFP_KERNEL);
-> +	if (!streamlabs_wdt)
-> +		return -ENOMEM;
-> +
-> +	streamlabs_wdt->buffer = devm_kzalloc(&intf->dev, BUFFER_LENGTH,
-> +								GFP_KERNEL);
-> +	if (!streamlabs_wdt->buffer)
-> +		return -ENOMEM;
-> +
-> +	mutex_init(&streamlabs_wdt->lock);
-> +
-> +	streamlabs_wdt->wdt_dev.info = &streamlabs_wdt_ident;
-> +	streamlabs_wdt->wdt_dev.ops = &usb_streamlabs_wdt_ops;
-> +	streamlabs_wdt->wdt_dev.timeout = STREAMLABS_WDT_MAX_TIMEOUT;
-> +	streamlabs_wdt->wdt_dev.max_timeout = STREAMLABS_WDT_MAX_TIMEOUT;
-> +	streamlabs_wdt->wdt_dev.min_timeout = STREAMLABS_WDT_MIN_TIMEOUT;
-> +	streamlabs_wdt->wdt_dev.parent = &intf->dev;
-> +
-> +	streamlabs_wdt->intf = intf;
-> +	usb_set_intfdata(intf, &streamlabs_wdt->wdt_dev);
-> +	watchdog_set_drvdata(&streamlabs_wdt->wdt_dev, streamlabs_wdt);
-> +	watchdog_set_nowayout(&streamlabs_wdt->wdt_dev, nowayout);
-> +
-> +	retval = usb_streamlabs_wdt_stop(&streamlabs_wdt->wdt_dev);
-> +	if (retval)
-> +		return -ENODEV;
-> +
-> +	retval = devm_watchdog_register_device(&intf->dev,
-> +						&streamlabs_wdt->wdt_dev);
-> +	if (retval) {
-> +		dev_err(&intf->dev, "failed to register watchdog device\n");
-> +		return retval;
-> +	}
-> +
-> +	dev_info(&intf->dev, "StreamLabs USB watchdog driver loaded.\n");
-> +	return 0;
-> +}
-> +
-> +static int usb_streamlabs_wdt_suspend(struct usb_interface *intf,
-> +					pm_message_t message)
-> +{
-> +	struct streamlabs_wdt *streamlabs_wdt = usb_get_intfdata(intf);
-> +
-> +	if (watchdog_active(&streamlabs_wdt->wdt_dev))
-> +		return usb_streamlabs_wdt_stop(&streamlabs_wdt->wdt_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static int usb_streamlabs_wdt_resume(struct usb_interface *intf)
-> +{
-> +	struct streamlabs_wdt *streamlabs_wdt = usb_get_intfdata(intf);
-> +
-> +	if (watchdog_active(&streamlabs_wdt->wdt_dev))
-> +		return usb_streamlabs_wdt_start(&streamlabs_wdt->wdt_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static void usb_streamlabs_wdt_disconnect(struct usb_interface *intf)
-> +{
-> +	struct streamlabs_wdt *streamlabs_wdt = usb_get_intfdata(intf);
-> +
-> +	mutex_lock(&streamlabs_wdt->lock);
-> +	usb_streamlabs_wdt_stop_cmd(streamlabs_wdt);
-> +	/* Stop sending messages to the device */
-> +	streamlabs_wdt->intf = NULL;
-> +	mutex_unlock(&streamlabs_wdt->lock);
-> +}
+>=20
+> static inline dma_addr_t
+> cedrus_h265_frame_info_mv_col_buf_addr(struct cedrus_ctx *ctx,
+>                                        unsigned int index, unsigned int
+> field) {
+>         return ctx->codec.h265.mv_col_buf_addr + index *
+>                ctx->codec.h265.mv_col_buf_unit_size +
+>                field * ctx->codec.h265.mv_col_buf_unit_size / 2;
+> }
+>=20
+> Fixing the driver to go back to the previous behavior is trivial,
+> but this looks odd.
+>=20
+> Jernej, Paul, any thoughts?
+>=20
+> Thanks,
+> Ezequiel
+>=20
+> > >       };
+> > >       u32 offset =3D VE_DEC_H265_SRAM_OFFSET_FRAME_INFO +
+> > >=20
+> > > @@ -141,7 +141,7 @@ static void cedrus_h265_frame_info_write_dpb(stru=
+ct
+> > > cedrus_ctx *ctx,> >=20
+> > >       unsigned int i;
+> > >      =20
+> > >       for (i =3D 0; i < num_active_dpb_entries; i++) {
+> > >=20
+> > > -             int buffer_index =3D vb2_find_timestamp(vq,
+> > > dpb[i].timestamp, 0); +             struct vb2_buffer *buf =3D
+> > > vb2_find_buffer(vq, dpb[i].timestamp);> >=20
+> > >               u32 pic_order_cnt[2] =3D {
+> > >              =20
+> > >                       dpb[i].pic_order_cnt[0],
+> > >                       dpb[i].pic_order_cnt[1]
+> > >=20
+> > > @@ -149,7 +149,7 @@ static void cedrus_h265_frame_info_write_dpb(stru=
+ct
+> > > cedrus_ctx *ctx,> >=20
+> > >               cedrus_h265_frame_info_write_single(ctx, i,
+> > >               dpb[i].field_pic,
+> > >              =20
+> > >                                                   pic_order_cnt,
+> > >=20
+> > > -                                                 buffer_index);
+> > > +                                                 buf);
+> > >=20
+> > >       }
+> > > =20
+> > >  }
+> > >=20
+> > > @@ -616,7 +616,7 @@ static void cedrus_h265_setup(struct cedrus_ctx
+> > > *ctx,
+> > >=20
+> > >       cedrus_h265_frame_info_write_single(ctx, output_pic_list_index,
+> > >      =20
+> > >                                           slice_params->pic_struct !=
+=3D 0,
+> > >                                           pic_order_cnt,
+> > >=20
+> > > -                                         run->dst->vb2_buf.index);
+> > > +                                         &run->dst->vb2_buf);
+> > >=20
+> > >       cedrus_write(dev, VE_DEC_H265_OUTPUT_FRAME_IDX,
+> > >       output_pic_list_index);
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_mpeg2.c
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus_mpeg2.c index
+> > > 5dad2f296c6d..22d6cae9a710 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_mpeg2.c
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_mpeg2.c
+> > > @@ -54,13 +54,9 @@ static void cedrus_mpeg2_setup(struct cedrus_ctx
+> > > *ctx, struct cedrus_run *run)> >=20
+> > >       const struct v4l2_ctrl_mpeg2_picture *pic;
+> > >       const struct v4l2_ctrl_mpeg2_quantisation *quantisation;
+> > >       dma_addr_t src_buf_addr, dst_luma_addr, dst_chroma_addr;
+> > >=20
+> > > -     dma_addr_t fwd_luma_addr, fwd_chroma_addr;
+> > > -     dma_addr_t bwd_luma_addr, bwd_chroma_addr;
+> > >=20
+> > >       struct cedrus_dev *dev =3D ctx->dev;
+> > >       struct vb2_queue *vq;
+> > >       const u8 *matrix;
+> > >=20
+> > > -     int forward_idx;
+> > > -     int backward_idx;
+> > >=20
+> > >       unsigned int i;
+> > >       u32 reg;
+> > >=20
+> > > @@ -123,27 +119,19 @@ static void cedrus_mpeg2_setup(struct cedrus_ctx
+> > > *ctx, struct cedrus_run *run)> >=20
+> > >       cedrus_write(dev, VE_DEC_MPEG_PICBOUNDSIZE, reg);
+> > >      =20
+> > >       /* Forward and backward prediction reference buffers. */
+> > >=20
+> > > -
+> > >=20
+> > >       vq =3D v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
+> > >       V4L2_BUF_TYPE_VIDEO_CAPTURE);
+> > >=20
+> > > -     forward_idx =3D vb2_find_timestamp(vq, pic->forward_ref_ts, 0);
+> > > -     fwd_luma_addr =3D cedrus_dst_buf_addr(ctx, forward_idx, 0);
+> > > -     fwd_chroma_addr =3D cedrus_dst_buf_addr(ctx, forward_idx, 1);
+> > > -
+> > > -     cedrus_write(dev, VE_DEC_MPEG_FWD_REF_LUMA_ADDR, fwd_luma_addr);
+> > > -     cedrus_write(dev, VE_DEC_MPEG_FWD_REF_CHROMA_ADDR,
+> > > fwd_chroma_addr);
+> > > -
+> > > -     backward_idx =3D vb2_find_timestamp(vq, pic->backward_ref_ts, 0=
+);
+> > > -     bwd_luma_addr =3D cedrus_dst_buf_addr(ctx, backward_idx, 0);
+> > > -     bwd_chroma_addr =3D cedrus_dst_buf_addr(ctx, backward_idx, 1);
+> > > -
+> > > -     cedrus_write(dev, VE_DEC_MPEG_BWD_REF_LUMA_ADDR, bwd_luma_addr);
+> > > -     cedrus_write(dev, VE_DEC_MPEG_BWD_REF_CHROMA_ADDR,
+> > > bwd_chroma_addr);
+> > > +     cedrus_write_ref_buf_addr(ctx, vq, pic->forward_ref_ts,
+> > > +                               VE_DEC_MPEG_FWD_REF_LUMA_ADDR,
+> > > +                               VE_DEC_MPEG_FWD_REF_CHROMA_ADDR);
+> > > +     cedrus_write_ref_buf_addr(ctx, vq, pic->backward_ref_ts,
+> > > +                               VE_DEC_MPEG_BWD_REF_LUMA_ADDR,
+> > > +                               VE_DEC_MPEG_BWD_REF_CHROMA_ADDR);
+> > >=20
+> > >       /* Destination luma and chroma buffers. */
+> > >=20
+> > > -     dst_luma_addr =3D cedrus_dst_buf_addr(ctx, run->dst->vb2_buf.in=
+dex,
+> > > 0);
+> > > -     dst_chroma_addr =3D cedrus_dst_buf_addr(ctx,
+> > > run->dst->vb2_buf.index, 1); +     dst_luma_addr =3D
+> > > cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 0); +     dst_chroma_addr
+> > > =3D cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 1);> >=20
+> > >       cedrus_write(dev, VE_DEC_MPEG_REC_LUMA, dst_luma_addr);
+> > >       cedrus_write(dev, VE_DEC_MPEG_REC_CHROMA, dst_chroma_addr);
+> > >=20
+> > > diff --git a/drivers/staging/media/sunxi/cedrus/cedrus_vp8.c
+> > > b/drivers/staging/media/sunxi/cedrus/cedrus_vp8.c index
+> > > f4016684b32d..196cf692186d 100644
+> > > --- a/drivers/staging/media/sunxi/cedrus/cedrus_vp8.c
+> > > +++ b/drivers/staging/media/sunxi/cedrus/cedrus_vp8.c
+> > > @@ -661,7 +661,6 @@ static void cedrus_vp8_setup(struct cedrus_ctx *c=
+tx,
+> > >=20
+> > >       dma_addr_t luma_addr, chroma_addr;
+> > >       dma_addr_t src_buf_addr;
+> > >       int header_size;
+> > >=20
+> > > -     int qindex;
+> > >=20
+> > >       u32 reg;
+> > >      =20
+> > >       cedrus_engine_enable(ctx, CEDRUS_CODEC_VP8);
+> > >=20
+> > > @@ -805,43 +804,17 @@ static void cedrus_vp8_setup(struct cedrus_ctx
+> > > *ctx,
+> > >=20
+> > >       reg |=3D VE_VP8_LF_DELTA0(slice->lf.mb_mode_delta[0]);
+> > >       cedrus_write(dev, VE_VP8_MODE_LF_DELTA, reg);
+> > >=20
+> > > -     luma_addr =3D cedrus_dst_buf_addr(ctx, run->dst->vb2_buf.index,=
+ 0);
+> > > -     chroma_addr =3D cedrus_dst_buf_addr(ctx, run->dst->vb2_buf.inde=
+x,
+> > > 1);
+> > > +     luma_addr =3D cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 0);
+> > > +     chroma_addr =3D cedrus_dst_buf_addr(ctx, &run->dst->vb2_buf, 1);
+> > >=20
+> > >       cedrus_write(dev, VE_VP8_REC_LUMA, luma_addr);
+> > >       cedrus_write(dev, VE_VP8_REC_CHROMA, chroma_addr);
+> > >=20
+> > > -     qindex =3D vb2_find_timestamp(cap_q, slice->last_frame_ts, 0);
+> > > -     if (qindex >=3D 0) {
+> > > -             luma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 0);
+> > > -             chroma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 1);
+> > > -             cedrus_write(dev, VE_VP8_FWD_LUMA, luma_addr);
+> > > -             cedrus_write(dev, VE_VP8_FWD_CHROMA, chroma_addr);
+> > > -     } else {
+> > > -             cedrus_write(dev, VE_VP8_FWD_LUMA, 0);
+> > > -             cedrus_write(dev, VE_VP8_FWD_CHROMA, 0);
+> > > -     }
+> > > -
+> > > -     qindex =3D vb2_find_timestamp(cap_q, slice->golden_frame_ts, 0);
+> > > -     if (qindex >=3D 0) {
+> > > -             luma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 0);
+> > > -             chroma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 1);
+> > > -             cedrus_write(dev, VE_VP8_BWD_LUMA, luma_addr);
+> > > -             cedrus_write(dev, VE_VP8_BWD_CHROMA, chroma_addr);
+> > > -     } else {
+> > > -             cedrus_write(dev, VE_VP8_BWD_LUMA, 0);
+> > > -             cedrus_write(dev, VE_VP8_BWD_CHROMA, 0);
+> > > -     }
+> > > -
+> > > -     qindex =3D vb2_find_timestamp(cap_q, slice->alt_frame_ts, 0);
+> > > -     if (qindex >=3D 0) {
+> > > -             luma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 0);
+> > > -             chroma_addr =3D cedrus_dst_buf_addr(ctx, qindex, 1);
+> > > -             cedrus_write(dev, VE_VP8_ALT_LUMA, luma_addr);
+> > > -             cedrus_write(dev, VE_VP8_ALT_CHROMA, chroma_addr);
+> > > -     } else {
+> > > -             cedrus_write(dev, VE_VP8_ALT_LUMA, 0);
+> > > -             cedrus_write(dev, VE_VP8_ALT_CHROMA, 0);
+> > > -     }
+> > > +     cedrus_write_ref_buf_addr(ctx, cap_q, slice->last_frame_ts,
+> > > +                               VE_VP8_FWD_LUMA, VE_VP8_FWD_CHROMA);
+> > > +     cedrus_write_ref_buf_addr(ctx, cap_q, slice->golden_frame_ts,
+> > > +                               VE_VP8_BWD_LUMA, VE_VP8_BWD_CHROMA);
+> > > +     cedrus_write_ref_buf_addr(ctx, cap_q, slice->alt_frame_ts,
+> > > +                               VE_VP8_ALT_LUMA, VE_VP8_ALT_CHROMA);
+> > >=20
+> > >       cedrus_write(dev, VE_H264_CTRL, VE_H264_CTRL_VP8 |
+> > >      =20
+> > >                    VE_H264_CTRL_DECODE_ERR_INT |
 
-Tis leaves the watchdog device in place even though it has been disconnected.
-This is, at the very least, unusual, and doesn't really make sense.
-Please explain. Also, wWhat happens when it is reconnected ?
 
-Guenter
 
-> +
-> +static const struct usb_device_id usb_streamlabs_wdt_device_table[] = {
-> +	{ USB_DEVICE(USB_STREAMLABS_WATCHDOG_VENDOR, USB_STREAMLABS_WATCHDOG_PRODUCT) },
-> +	{ }	/* Terminating entry */
-> +};
-> +
-> +MODULE_DEVICE_TABLE(usb, usb_streamlabs_wdt_device_table);
-> +
-> +static struct usb_driver usb_streamlabs_wdt_driver = {
-> +	.name		= DRIVER_NAME,
-> +	.probe		= usb_streamlabs_wdt_probe,
-> +	.disconnect	= usb_streamlabs_wdt_disconnect,
-> +	.suspend	= usb_streamlabs_wdt_suspend,
-> +	.resume		= usb_streamlabs_wdt_resume,
-> +	.reset_resume	= usb_streamlabs_wdt_resume,
-> +	.id_table	= usb_streamlabs_wdt_device_table,
-> +};
-> +
-> +module_usb_driver(usb_streamlabs_wdt_driver);
 
