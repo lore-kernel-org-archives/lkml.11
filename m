@@ -2,88 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4932FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB7CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:33:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230429AbiGPMaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 08:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37606 "EHLO
+        id S231964AbiGPMdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 08:33:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229479AbiGPMaT (ORCPT
+        with ESMTP id S231744AbiGPMdX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 08:30:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA511EC48;
-        Sat, 16 Jul 2022 05:30:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E50CD60FEF;
-        Sat, 16 Jul 2022 12:30:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93421C34114;
-        Sat, 16 Jul 2022 12:30:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657974618;
-        bh=LnUHuOaNQ5KqAKAllWWoZ6SXQjJBD+lBOGMjjEHXNxM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lKdioBztS5V9tonS5DE9kY5op86kZ38N82srNWZdQ24Ko80HEBsscngI6cqvOKxEy
-         vUdR8Z1Ph1+Zi+7z/W5h9j5j48/Mc0yKJ7aXjwMY90utvHupCn2Bl6Fh7nt3rv5/mz
-         LEybawNgDPylQ3DJNcAtZZmadoW0tSf3YGWtAa7r9aPgrBKC2/GBuvN/glpwn6zhBT
-         5J+4powA0N5jlXXuF9kDEZHigLt2+lcl4UmNYAkPkRQ0bf54zmhdOrMEES591Ss6Aw
-         rsRShZKeFS3fxp3up9PZxlcej2PWwF+XkOKxRulQ6mEj8tDL5eKXwBMUdBdf3NYVlR
-         kitBL7HjO/qkA==
-Date:   Sat, 16 Jul 2022 14:30:13 +0200
-From:   Wolfram Sang <wsa@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] i2c: scmi: Replace open coded
- device_get_match_data()
-Message-ID: <YtKvVc6lxmo1yk6O@shikoro>
-Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220708120958.74034-1-andriy.shevchenko@linux.intel.com>
+        Sat, 16 Jul 2022 08:33:23 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA741EC4A
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 05:33:22 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id b2so5295197plx.7
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 05:33:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:in-reply-to:references:subject:message-id:date
+         :mime-version:content-transfer-encoding;
+        bh=o4csOc+rtB7OUTKym0l3RxG2wfhS0254EiN6uhE/JmQ=;
+        b=2/NMJ6WlCAOj0nNYy32FujAraP5+NrISPHGUKecmoPyVl0OmmKR7kcJtpqR2NakGmc
+         0WizbndmcjewSnvT2dCOGwQ55qmZvdkgVdqn6MNMtwd8FhHd3OIxrwrVkgbnc4u3rYqU
+         4pFS7Xm4X8gnvSq6RgbyJ+iTYt7FKx9o5W8PMRQWde8uRJKASZ46F5Q8x/mGWWQ9HxQM
+         klVQzScTANxG7U1YYRAPJ+sk63GH/qwoilViwM8XLfOXr4SDQvL18CNDWzY2/ZK18G9M
+         VnFHeRwYu+p/QqyYxDyuBNiCzkkDAy6FwZnlwAODYvGsdle8+AqV8snnXy39hhJot2Rz
+         zJmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=o4csOc+rtB7OUTKym0l3RxG2wfhS0254EiN6uhE/JmQ=;
+        b=IqcCVCR2Vf9pB/Qiu4D+jromJ6xXP+p5pjfc1JU+u/3r0ZM7ijrjGMzrLBAzLuTMLY
+         GhoFfXNmJpaGNujGzfk8k5BUWt6yBPP/UDez59f+DtXFWQNWbZv+MSW27t8Elk70ke2h
+         Cu6V2VG2K3p6PWr93nT8UgpUZmMqncTJcJhE3L2YzuM2qGpLS4if9Zij3VmXP4uxtA1j
+         7nIVBQ1vUezC46W11oBoNmna0HYBcKTtnR4v3BQGK/LVSMOfLvAW3x59ruEExFy3/HXP
+         4pFHQlhSQ6QZJpMlH3RSlJ2f3A5/AHchDwTN1HFn7buk9zKp9SI1xIW9deGA7JJen57K
+         qL6A==
+X-Gm-Message-State: AJIora/sizXtiJbM0Cg1TeROERStzp/SKoV1oTcC4oOuVaRhPORGvo5R
+        iEewrVydZzsYxaN7EqKV6vSuxw==
+X-Google-Smtp-Source: AGRyM1uwCugYrV5gHHxlWUC3M6QBVGA2S0E6AOVw+P1TjDFHQj6fdRDNZcz5gfmUIsb3poGJB2SxEQ==
+X-Received: by 2002:a17:90b:4c8c:b0:1ef:bff6:c964 with SMTP id my12-20020a17090b4c8c00b001efbff6c964mr20722243pjb.36.1657974801892;
+        Sat, 16 Jul 2022 05:33:21 -0700 (PDT)
+Received: from [127.0.1.1] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id k10-20020a17090a39ca00b001ef8ac4c681sm7654278pjf.0.2022.07.16.05.33.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 05:33:21 -0700 (PDT)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     13667453960@163.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yijiangshan@kylinos.cn
+In-Reply-To: <20220712094350.1379942-1-13667453960@163.com>
+References: <20220712094350.1379942-1-13667453960@163.com>
+Subject: Re: [PATCH] mtip32xx: replace ternary operator with min_t()
+Message-Id: <165797480045.362401.4678527786770696731.b4-ty@kernel.dk>
+Date:   Sat, 16 Jul 2022 06:33:20 -0600
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Sblb2DLXLMvW8rmG"
-Content-Disposition: inline
-In-Reply-To: <20220708120958.74034-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, 12 Jul 2022 17:43:50 +0800, Jiangshan Yi wrote:
+> From: Jiangshan Yi <yijiangshan@kylinos.cn>
+> 
+> Fix the following coccicheck warning:
+> 
+> drivers/block/mtip32xx/mtip32xx.c:2264: WARNING opportunity for min().
+> drivers/block/mtip32xx/mtip32xx.c:2328: WARNING opportunity for min().
+> drivers/block/mtip32xx/mtip32xx.c:2357: WARNING opportunity for min().
+> 
+> [...]
 
---Sblb2DLXLMvW8rmG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Applied, thanks!
 
-On Fri, Jul 08, 2022 at 03:09:58PM +0300, Andy Shevchenko wrote:
-> Replace open coded device_get_match_data() in acpi_smbus_cmi_add().
->=20
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+[1/1] mtip32xx: replace ternary operator with min_t()
+      (no commit info)
 
-Applied to for-next, thanks!
+Best regards,
+-- 
+Jens Axboe
 
 
---Sblb2DLXLMvW8rmG
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLSr1UACgkQFA3kzBSg
-Kbb4WA//XKtPMKHNyUVQAG6T/Bb2TeL1TU0f4R6inGJgy1q4ycJrQqWny2TLvSUJ
-cY/0Mbp3NCJPY9xU1Sa+ef6jXNSnEm4SZXeorrQFJ6PLRpaOQtK7jQBqaL55W6x2
-u9kGeEv43f0Ugx2zu79uYGM6ZZj0OZzuXsv+VesBAlhtymC/e03A8NN0/POXB16B
-ES/tLnvh09EcC4WlB0lampBtwuk4JbMraOTFznetWlfDh2/unTnfHzL4J6sMkdeB
-zfjnhBbKBJfqset1MNLp0tZPSVD8udE+0Pcoek+o0J+4d91+AYGzoaOZtn1CeQuI
-bkc2+jDxga+xaUGqmRjG3tw4KFBGQ3uwwSrrbWKs89Tu64hKa+7j3zOU3f6NJphd
-0v/Jskpsw8751043lx0cEVtsnZU2ZVCIO54zMdI3y7AyA8LAChwH2oGbFsGVE33E
-9w+Z+gA2Ib9hJngY99/pAUiXoYfquSiwRdDRfAaXhiZWHSfzixIeUmKsD+bfcddt
-j8DcH9z92UAds1x+aJlN6W97EFwfDiD3JLvyYLlvtzd+ii+FiFEOY1HATvV+BnKI
-vNLQZBvQ9uySBXcNK5gzPj47Io3Wf4CnRrnZJLGA4Ili3rQkkaTP94WqCR61BgGX
-RHlPH4A66CWOt/dUqrFf3xsP4+VGbRTt0nOnbv6GFsddpZ7wFxA=
-=si1x
------END PGP SIGNATURE-----
-
---Sblb2DLXLMvW8rmG--
