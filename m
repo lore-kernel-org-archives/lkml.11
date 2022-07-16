@@ -2,136 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44CE6CCA480
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 16:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50126C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 16:35:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230376AbiGPQdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 12:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43196 "EHLO
+        id S230426AbiGPQff (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 12:35:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230090AbiGPQc7 (ORCPT
+        with ESMTP id S229683AbiGPQfe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 12:32:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB8D1C90E;
-        Sat, 16 Jul 2022 09:32:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sat, 16 Jul 2022 12:35:34 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684691EC7B
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 09:35:32 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 082CB611A1;
-        Sat, 16 Jul 2022 16:32:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C692DC34114;
-        Sat, 16 Jul 2022 16:32:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657989177;
-        bh=cJp2wu2WDji8FHYk3HEiYWSkBLJcHvkpVMIut/q0nEo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fu0H7PJ3J6TzGG2svZjDCdtHIgFhyHABQVfE4G4nmx2qkO1WTZ68zxj9lCeWM7b/T
-         lUmb48OFzT8TuiX7fCs5W4MEHHXYVKpBeTyKWJtio4opOzAUajMUvSIvj38RBa2I4o
-         Yd3e4hktpLfUjpfnQn3hhHpVveKImcKZNIdDIiRnROg0+XP4tueuLF8F2hMo8KgHnM
-         7kRzRgk9RuU3lNy7b0URZO/b7smzqaf81rQ+u1MScEiTYuT2pZuTW/u/xWuvjH/BfD
-         jZLnx8ZoiBtNVfDJkGxr7n6ieuTNtt1cuPJl8PzWRvVa1KshejE9DKHr86PTvXZO41
-         TeVMisr3Rfh0w==
-Date:   Sat, 16 Jul 2022 17:42:49 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Claudiu Beznea <claudiu.beznea@microchip.com>
-Cc:     <eugen.hristev@microchip.com>, <lars@metafoo.de>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2 00/19] iio: adc: at91-sama5d2_adc: add support for
- temperature sensor
-Message-ID: <20220716174249.687af22b@jic23-huawei>
-In-Reply-To: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
-References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F0837202E4;
+        Sat, 16 Jul 2022 16:35:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1657989330; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ou8Rl3rKdNin3iFI14DAAcINBGak3oEAgpZ2DwPHU24=;
+        b=h2RyGvFZRNu1j239mKDyQg+j7qJ/jd7VwXWZgEFZyK9SHH3Yg7cTBC0MhwLFrfkg0Bg/XK
+        kOUrPpE5EcgMxvhAw9n5jZpoPuN2+Z0d28R0eyGtXst7y/YUwJNZgB59kz5W2MRSsGhzJW
+        zdtef5jJRiqQ058zvI09cl6+/wJcl3I=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1657989330;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ou8Rl3rKdNin3iFI14DAAcINBGak3oEAgpZ2DwPHU24=;
+        b=h3HhjFZuj75cKW79F2SYwnpVgjphh1wfpkaUmhihoh9HRjQTIpvR2xUEozkj3RjoNPESIQ
+        H1hifNVornz8VhDg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 94E591351D;
+        Sat, 16 Jul 2022 16:35:30 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id YKsHI9Lo0mIjBgAAMHmgww
+        (envelope-from <nstange@suse.de>); Sat, 16 Jul 2022 16:35:30 +0000
+From:   Nicolai Stange <nstange@suse.de>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, xen-devel@lists.xenproject.org,
+        linux-kernel@vger.kernel.org, jpoimboe@redhat.com,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: Re: Build warnings in Xen 5.15.y and 5.10.y with retbleed backports
+References: <Ys2jlGMqAe6+h1SX@kroah.com>
+        <ddcdd531-fc33-39df-a69f-5352d7a1c8af@oracle.com>
+        <Ys3MI7cv2yKj9RFc@kroah.com>
+        <1b8fee7f-5af2-332e-d2c9-ceecd6ff487b@oracle.com>
+Date:   Sat, 16 Jul 2022 18:35:29 +0200
+In-Reply-To: <1b8fee7f-5af2-332e-d2c9-ceecd6ff487b@oracle.com> (Boris
+        Ostrovsky's message of "Tue, 12 Jul 2022 16:22:41 -0400")
+Message-ID: <875yjxrp66.fsf@linux.fritz.box>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 28 Jun 2022 18:16:12 +0300
-Claudiu Beznea <claudiu.beznea@microchip.com> wrote:
+Hi,
 
-> Hi,
-> 
-> The following series add support for temperature sensor available on
-> SAMA7G5.
-> 
-> Temperature sensor available on SAMA7G5 provides 2 outputs VTEMP and VBG.
-> VTEMP is proportional to the absolute temperature voltage and VBG is a
-> quasi-temperature independent voltage. Both are necessary in computing
-> the temperature (for better accuracy). Also, for better accuracy the
-> following settings were imposed when measusing the temperature:
-> oversampling rate of 256, sampling frequency of 10MHz, a startup time of
-> 512 ticks, MR.tracktim=0xf, EMR.trackx=0x3.
-> 
-> For computing the temperature measured by ADC calibration data is
-> necessary. This is provided via OTP memory available on SAMA7G5.
-> 
-> Patches 1/19-4/19 provides some fixes.
-> Patches 5/19-16/19 prepares for the addition of temperature sensor
-> support.
-> Patch 17/16 adds the temperature sensor support.
-> 
-> Along with temperature sensor support I took the chance and added
-> runtime PM support in this series, too (handled in patch 19/19).
-> 
-> The rest of patches in this series are minor cleanups.
+I see a patch for this has been queued up for 5.10 already ([1]), I'm
+just sharing my findings in support of this patch here -- it doesn't
+merely exchange one warning for another, but fixes a real issue and
+should perhaps get applied to other stable branches as well.
 
-Other than the use of MEGA in patch 17, I'm fine with this now, but
-would like to leave more time for Eugen and others to comment if they
-wish.  Given timing, I'm afraid this is very unlikely to make the next
-merge window anyway now, so we have lots of time.
+TL;DR: for this particular warning, objtool would exit early and fail to
+create any .orc_unwind* ELF sections for head_64.o, which are consumed
+by the ORC unwinder at runtime.
 
-Sorry for the delay in my reviewing v2. Pesky covid.
 
-Jonathan
+Boris Ostrovsky <boris.ostrovsky@oracle.com> writes:
 
-> 
-> Thank you,
-> Claudiu Beznea
-> 
-> Changes in v2:
-> - addressed review comments
-> - with this, new patches were intruced in this series: 2/19, 4/19,
->   8/19, 9,19
-> - runtime pm support has been adapted to work also when CONFIG_PM
->   is not enabled
-> - collected tags
-> 
-> Claudiu Beznea (19):
->   iio: adc: at91-sama5d2_adc: fix AT91_SAMA5D2_MR_TRACKTIM_MAX
->   iio: adc: at91-sama5d2_adc: check return status for pressure and touch
->   iio: adc: at91-sama5d2_adc: lock around oversampling and sample freq
->   iio: adc: at91-sama5d2_adc: disable/prepare buffer on suspend/resume
->   iio: adc: at91-sama5d2_adc: exit from write_raw() when buffers are
->     enabled
->   iio: adc: at91-sama5d2_adc: handle different EMR.OSR for different hw
->     versions
->   iio: adc: at91-sama5d2_adc: move the check of oversampling in its
->     function
->   iio: adc: at91-sama5d2_adc: drop AT91_OSR_XSAMPLES defines
->   iio: adc: at91-sama5d2_adc: add .read_avail() chan_info ops
->   iio: adc: at91-sama5d2_adc: adjust osr based on specific platform data
->   iio: adc: at91-sama5d2_adc: add 64 and 256 oversampling ratio
->   iio: adc: at91-sama5d2_adc: move oversampling storage in its function
->   iio: adc: at91-sama5d2_adc: update trackx on emr
->   iio: adc: at91-sama5d2_adc: add startup and tracktim as parameter for
->     at91_adc_setup_samp_freq()
->   iio: adc: at91-sama5d2_adc: lock around at91_adc_read_info_raw()
->   dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature
->     channel
->   iio: adc: at91-sama5d2_adc: add support for temperature sensor
->   iio: adc: at91-sama5d2_adc: add empty line after functions
->   iio: adc: at91-sama5d2_adc: add runtime pm support
-> 
->  drivers/iio/adc/at91-sama5d2_adc.c            | 683 +++++++++++++++---
->  .../dt-bindings/iio/adc/at91-sama5d2_adc.h    |   3 +
->  2 files changed, 566 insertions(+), 120 deletions(-)
-> 
+> On 7/12/22 3:31 PM, Greg KH wrote:
+>> On Tue, Jul 12, 2022 at 03:19:39PM -0400, Boris Ostrovsky wrote:
+>>>
+>>> On 7/12/22 12:38 PM, Greg KH wrote:
+>>>> Hi all,
+>>>>
+>>>> I'm seeing the following build warning:
+>>>> 	arch/x86/kernel/head_64.o: warning: objtool: xen_hypercall_mmu_update=
+(): can't find starting instruction
+>>>> in the 5.15.y and 5.10.y retbleed backports.
 
+The reason for this is that with RET being multibyte, it can cross those
+"xen_hypecall_*" symbol boundaries, because ...
+
+>>>>
+>>>> I don't know why just this one hypercall is being called out by objtoo=
+l,
+>>>> and this warning isn't in 5.18 and Linus's tree due to I think commit
+>>>> 5b2fc51576ef ("x86/ibt,xen: Sprinkle the ENDBR") being there.
+>>>>
+>>>> But, is this a ret call that we "forgot" here?  It's a "real" ret in
+>>>> Linus's branch:
+>>>>
+>>>> .pushsection .noinstr.text, "ax"
+>>>> 	.balign PAGE_SIZE
+>>>> SYM_CODE_START(hypercall_page)
+>>>> 	.rept (PAGE_SIZE / 32)
+>>>> 		UNWIND_HINT_FUNC
+>>>> 		ANNOTATE_NOENDBR
+>>>> 		ANNOTATE_UNRET_SAFE
+>>>> 		ret
+>>>> 		/*
+>>>> 		 * Xen will write the hypercall page, and sort out ENDBR.
+>>>> 		 */
+>>>> 		.skip 31, 0xcc
+>>>> 	.endr
+>>>>
+>>>> while 5.15.y and older has:
+>>>> .pushsection .text
+>>>> 	.balign PAGE_SIZE
+>>>> SYM_CODE_START(hypercall_page)
+>>>> 	.rept (PAGE_SIZE / 32)
+>>>> 		UNWIND_HINT_FUNC
+>>>> 		.skip 31, 0x90
+
+... the "31" is no longer correct, ...
+
+>>>> 		ANNOTATE_UNRET_SAFE
+>>>> 		RET
+
+... as with RET occupying more than one byte, the resulting hypercall
+entry's total size won't add up to 32 anymore.
+
+Note that those xen_hypercall_* symbols' values are getting statically
+calculated as 'hypercall page + n * 32' in the HYPERCALL() #define from
+xen-head.S. So there's a mismatch and with RET =3D=3D 'ret; int3', the
+resulting .text effectively becomes
+
+    101e:       90                      nop
+    101f:       c3                      ret=20=20=20=20
+
+0000000000001020 <xen_hypercall_mmu_update>:
+    1020:       cc                      int3=20=20=20
+    1021:       90                      nop
+    1022:       90                      nop
+
+
+This is probably already not what has been intended, but because 'ret'
+and 'int3' both are single-byte encoded, objtool would still be able to
+find at least some "starting instruction" at this point.
+
+But with RET =3D=3D 'jmp __x86_return_thunk', it becomes
+
+    101e:       90                      nop
+    101f:       e9                      .byte 0xe9
+
+0000000000001020 <xen_hypercall_mmu_update>:
+    1020:       00 00                   add    %al,(%rax)
+    1022:       00 00                   add    %al,(%rax)
+    1024:       90                      nop
+
+Here the 'e9 00 00 00 00' jmp crosses the symbol boundary and objtool
+errors out.
+
+>>>> 	.endr
+>>>>
+>>>> So should the "ret" remain or be turned into "RET" in mainline right
+>>>> now?
+>>>
+>>>
+>>> It doesn't matter --- this is overwritten by the hypervisor during
+>>> initialization when Xen fills in actual hypercall code.
+
+It does makes a difference though: even though objtool reports only a
+warning, it still exits early in this particular case and won't create
+any of the .orc_unwind* or .return_sites sections for head_64.o as it's
+supposed to.
+
+The significance of not having .orc_unwind* for head_64.o is that the
+reliable stacktracing implementation would mark the swapper tasks'
+stacktraces as unreliable at runtime, because the ORC unwinder would
+fail to recognize their final secondary_startup_64() from head_64.o as
+being the end. Note that livepatching relies on reliable stacktraces
+when transitioning tasks.
+
+
+>>>
+>>>
+>>> So f4b4bc10b0b85ec66f1a9bf5dddf475e6695b6d2 added 'ret' to make objtool=
+ happy and then 14b476e07fab6 replaced 'ret' with RET as part of SLS fixes.=
+ The latter was not really necessary but harmless.
+>>>
+>>>
+>>> So it can be 'ret', RET, or anything else that tools don't complain abo=
+ut. It will not be executed.
+>> Cool, thanks.
+>> But what about the objtool warning that I now see?  Is that "real"?
+>
+>
+>
+> It's not real in the sense that the code there is not real, it will be ov=
+erwritten. (Originally the whole page was 'nop's)
+>
+>
+> I am getting a different error BTW:
+>
+> 	arch/x86/kernel/head_64.o: warning: objtool: .text+0x5: unreachable inst=
+ruction
+>
+
+I think this one is (mostly?) harmless, at least as as far as the
+.orc_unwind* generation is concerned. Josh would know more.
+
+
+Thanks,
+
+Nicolai
+
+[1] https://lore.kernel.org/r/Ys+8ZYxkDmSCcDWv@kroah.com
+
+>
+>
+>> I don't run any Xen systems, so I can't test any of this myself.
+>
+>
+> You can't test any changes to that code --- it is rewritten when Xen gues=
+t is running.
+>
+>
+> We probably do want to shut up objtool. Josh, any suggestions?
+>
+>
+> -boris
+>
+
+--=20
+SUSE Software Solutions Germany GmbH, Frankenstra=C3=9Fe 146, 90461 N=C3=BC=
+rnberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+(HRB 36809, AG N=C3=BCrnberg)
