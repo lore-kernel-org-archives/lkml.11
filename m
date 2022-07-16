@@ -2,199 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3DADCCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BB3FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232406AbiGPWGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 18:06:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57798 "EHLO
+        id S232448AbiGPWJC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 18:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiGPWGw (ORCPT
+        with ESMTP id S229579AbiGPWI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 18:06:52 -0400
-Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172FE1B784;
-        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
-Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-10bffc214ffso14614834fac.1;
-        Sat, 16 Jul 2022 15:06:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
-        b=ok0iPES9kQ9HZOaMtVuYihJm71d8eraNHSmuA1jbl+xp4lKn30+ZV+s4G+OZ/EoOMh
-         O/tWWSRV9QCEUMbz0jGkcl/gaSZhHUnr8eYQWc4Ch8SYRo14sgBll2w9dicmHq0HK4BO
-         V4nsANhW2MjbDcihpGAcb44B6quHsLuCWBxC7xG8xEa9/TEmEm3CDE/k63d0mQujve7P
-         S1safR2csWc4PKOoNo+Q2+AupB3mmsIgXMr+F+UCBHSl6nkKqD6M+OyoygZ5Wg6hGtu2
-         kjrgKoibqfIIZNptXldMBEVPqkLPvSLGVs7akdunWXlzEEJ5agdSNGNBM0+27EowBOXT
-         LtJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jFXTa/SH7cE+B+NIP6axrNxpESGy99suDlQCA7kSd50=;
-        b=aKF/gC4VQb8cQmSl/OetNTEmPKTzONSmuXB80ER2pAkjEVLlon+esAC69dc1QQ2Yi3
-         c3yqjAhEpe06pd0dGPYcSx7e6fCvGm/IhPRClkwW0eaAObLxwo9gRGM6j5esGUCJj/ZY
-         lLXzofwEwE1KOn1IDWVVEf5bEbBjoMPdxhHAuNgjSg0BnMwzFkc1nbM3maNsIu3UbKFF
-         RKET3ryB4ftWH3SUs5y2iW/Jr/dEOB951/yhWXJsPwTVgJwny3G7RjGwFxpkrgcIPnf9
-         l0pOuJIPPA2sNk9tJLCwqdW8OWOC22i7lA60vmszWa1gnZ9R8UNcNcW+TeA1cNFTBL++
-         D+Rg==
-X-Gm-Message-State: AJIora+OmfzyKj4EXbtSmlu4XzAvCsVqIfQ/lhCVKNAAG2IsJMLXHPNL
-        KHiE9BiBhr/KzuGLTOQCatSBJ9GNhbINKB7QVYM=
-X-Google-Smtp-Source: AGRyM1sogW/U6Kbdivuues1D57lbscRCybveYUagL0BSa4+nUew2O/9Z4Ej6ADDSf5l7q6cHGTtFQWZ2kKxScZEW0Bo=
-X-Received: by 2002:a05:6870:311b:b0:10d:96:733a with SMTP id
- v27-20020a056870311b00b0010d0096733amr6882683oaa.190.1658009210333; Sat, 16
- Jul 2022 15:06:50 -0700 (PDT)
+        Sat, 16 Jul 2022 18:08:59 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A5D5F90
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 15:08:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658009338; x=1689545338;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=t5GpY4jgF18n1WGAjUgHPB/dhzS3yRLUknQv4wWEc0E=;
+  b=LI5ZhyqrrOUiZRLFNH3TXojIxfGBxZa61IGpWymBDRhJSvNEc7BkVB84
+   D2pkBhISF6zDKE3+47c/i4crewRkxkIKFMBSt3Ngk/fWq8oe+wx98bNAT
+   MQ4pJ1EU4dDGP1oZECGTeq+AJ+n+3Mj0Z1CiZc8UZU7w4expvpGGlwJz1
+   E0jPE4nsRh4k09ZhfN0/p40TXWZ6TJ5ualLc+ZbaBnASqIHBWWJtedgNi
+   ejV5HBOU6i8aHff/a8INokzJ5sobylZ5cum4askPBCiqcsDYYWoOnRaPu
+   O5eL368j+WX9anZXOcHWjdyEq6CCgje9n+5z/uAX5k2yrvS1A18x0PtZp
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="286031621"
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="286031621"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 15:08:57 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="594084211"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 16 Jul 2022 15:08:56 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCpy3-0002De-Nt;
+        Sat, 16 Jul 2022 22:08:55 +0000
+Date:   Sun, 17 Jul 2022 06:08:42 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Kefeng Wang <wangkefeng.wang@huawei.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: drivers/bus/fsl-mc/dprc.c:494:9: warning: 'strncpy' specified bound
+ 16 equals destination size
+Message-ID: <202207170606.cuF9v1tA-lkp@intel.com>
 MIME-Version: 1.0
-References: <CAO4mrfcUYjEi69mcSt_vXyb3VGFTAAq3dyNeWueucgw0DGABfg@mail.gmail.com>
- <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
-In-Reply-To: <CAO4mrfcB0d+qbwtfndzqcrL+QEQgfOmJYQMAdzwxRePmP8TY1A@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Sat, 16 Jul 2022 18:06:08 -0400
-Message-ID: <CADvbK_dWMO0XdAf950Q14pUv99ahS1MRnOtppvosU2w33sO=kw@mail.gmail.com>
-Subject: Re: BUG: unable to handle kernel NULL pointer dereference in sctp_sched_dequeue_common
-To:     Wei Chen <harperchen1110@gmail.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 2:52 AM Wei Chen <harperchen1110@gmail.com> wrote:
->
-> Dear Linux Developer,
->
-> Recently when using our tool to fuzz kernel, the following crash was triggered:
->
-> HEAD commit:  c5eb0a61238d Linux 5.18-rc6
-> git tree: upstream
-> compiler: clang 12.0.0
-> console output:
-> https://drive.google.com/file/d/1zbd9t-NNorzTXESdQ3bxE-q9uLu-Bm9d/view?usp=sharing
-> Syzlang reproducer:
-> https://drive.google.com/file/d/18wnwTf53Ln4K8e4G9d8hS4-e0URQKHet/view?usp=sharing
-> C reproducer: https://drive.google.com/file/d/1ttiMq0WYi46zFP1II8O9eee_dvDweIb6/view?usp=sharing
-> kernel config: https://drive.google.com/file/d/1fITkvcuglspvuhI0mhXUndx112fJmcOZ/view?usp=sharing
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: Wei Chen <harperchen1110@gmail.com>
->
-> BUG: kernel NULL pointer dereference, address: 0000000000000000
-> #PF: supervisor read access in kernel mode
-> #PF: error_code(0x0000) - not-present page
-> PGD 12f83067 P4D 12f83067 PUD 0
-> Oops: 0000 [#1] PREEMPT SMP
-> CPU: 0 PID: 13 Comm: ksoftirqd/0 Not tainted 5.18.0-rc6 #12
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> 1.13.0-1ubuntu1.1 04/01/2014
-> RIP: 0010:__list_del_entry_valid+0x26/0x80
-> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
-> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
-> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
-> RSP: 0018:ffff888007313720 EFLAGS: 00010217
-> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
-> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
-> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
-> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
-> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
-> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> Call Trace:
->  <TASK>
->  sctp_sched_dequeue_common+0x1c/0x90
->  sctp_sched_prio_dequeue+0x67/0x80
->  __sctp_outq_teardown+0x299/0x380
->  sctp_outq_free+0x15/0x20
->  sctp_association_free+0xc3/0x440
->  sctp_do_sm+0x1ca7/0x2210
->  sctp_assoc_bh_rcv+0x1f6/0x340
-sctp_stream_init() is also called in processing SCTP_CMD_PEER_INIT
-generated in sctp_sf_do_5_1C_ack(). At that time some chunk might be
-already in the outq and stream outq. Failure in sctp_stream_init() will
-cause stream->out to be freed, which still holds some schedule information.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   c5fe7a97f20c7f3070ac870144515c0fabc6b999
+commit: dd03762ab608e058c8f390ad9cf667e490089796 arm64: Enable KCSAN
+date:   7 months ago
+config: arm64-randconfig-r003-20220717 (https://download.01.org/0day-ci/archive/20220717/202207170606.cuF9v1tA-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dd03762ab608e058c8f390ad9cf667e490089796
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout dd03762ab608e058c8f390ad9cf667e490089796
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/bus/fsl-mc/
 
-So 2 things should be done when this happens:
-1. call sctp_stream_free() in err path to avoid memleak in
-SCTP_SO(stream, i)->ext in sctp_stream_init().
-2. set asoc->outqueue.sched back to &sctp_sched_fcfs to fix the
-scheduler's dequeue crash.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Will prepare a fix.
-Thanks.
+All warnings (new ones prefixed by >>):
 
->  sctp_inq_push+0x98/0xb0
->  sctp_rcv+0x134e/0x16b0
->  sctp6_rcv+0x1b/0x30
->  ip6_protocol_deliver_rcu+0x5b7/0x930
->  ip6_input+0x80/0x140
->  ip6_rcv_finish+0x16e/0x1d0
->  ipv6_rcv+0x72/0x110
->  __netif_receive_skb+0x66/0x140
->  process_backlog+0x13d/0x230
->  __napi_poll+0x4b/0x310
->  net_rx_action+0x1ae/0x410
->  __do_softirq+0x16e/0x30f
->  run_ksoftirqd+0x23/0x30
->  smpboot_thread_fn+0x210/0x370
->  kthread+0x124/0x160
->  ret_from_fork+0x1f/0x30
->  </TASK>
-> Modules linked in:
-> Dumping ftrace buffer:
->    (ftrace buffer empty)
-> CR2: 0000000000000000
-> ---[ end trace 0000000000000000 ]---
-> RIP: 0010:__list_del_entry_valid+0x26/0x80
-> Code: 00 00 00 00 55 48 89 e5 48 89 fe 48 ba 00 01 00 00 00 00 ad de
-> 48 8b 0f 48 39 d1 74 22 48 8b 46 08 48 83 c2 22 48 39 d0 74 25 <48> 8b
-> 10 48 39 f2 75 2d 48 8b 51 08 48 39 f2 75 37 b0 01 5d c3 48
-> RSP: 0018:ffff888007313720 EFLAGS: 00010217
-> RAX: 0000000000000000 RBX: ffff88800c6283e8 RCX: 0000000000000000
-> RDX: dead000000000122 RSI: ffff88800c6283e8 RDI: ffff88800c6283e8
-> RBP: ffff888007313720 R08: ffffffff84399732 R09: ffffffff84392a74
-> R10: 0000000000000042 R11: ffff8880072a2f80 R12: ffff8880138be238
-> R13: ffff888016cdb000 R14: ffff888016cdb5a0 R15: ffff888016cdb000
-> FS:  0000000000000000(0000) GS:ffff88807dc00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000000000000 CR3: 0000000012f82000 CR4: 0000000000750ef0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> PKRU: 55555554
-> ----------------
-> Code disassembly (best guess):
->    0: 00 00                          add    %al,(%rax)
->    2: 00 00                          add    %al,(%rax)
->    4: 55                               push   %rbp
->    5: 48 89 e5                     mov    %rsp,%rbp
->    8: 48 89 fe                      mov    %rdi,%rsi
->    b: 48 ba 00 01 00 00 00 movabs $0xdead000000000100,%rdx
->   12: 00 ad de
->   15: 48 8b 0f                     mov    (%rdi),%rcx
->   18: 48 39 d1                    cmp    %rdx,%rcx
->   1b: 74 22                         je     0x3f
->   1d: 48 8b 46 08               mov    0x8(%rsi),%rax
->   21: 48 83 c2 22               add    $0x22,%rdx
->   25: 48 39 d0                    cmp    %rdx,%rax
->   28: 74 25                         je     0x4f
-> * 2a: 48 8b 10                   mov    (%rax),%rdx <-- trapping instruction
->   2d: 48 39 f2                    cmp    %rsi,%rdx
->   30: 75 2d                        jne    0x5f
->   32: 48 8b 51 08              mov    0x8(%rcx),%rdx
->   36: 48 39 f2                    cmp    %rsi,%rdx
->   39: 75 37                        jne    0x72
->   3b: b0 01                        mov    $0x1,%al
->   3d: 5d                             pop    %rbp
->   3e: c3                             retq
->   3f: 48                              rex.W
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj':
+   drivers/bus/fsl-mc/dprc.c:453:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
+     453 |         strncpy(obj_desc->type, rsp_params->type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c:455:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
+     455 |         strncpy(obj_desc->label, rsp_params->label, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_set_obj_irq':
+>> drivers/bus/fsl-mc/dprc.c:494:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
+     494 |         strncpy(cmd_params->obj_type, obj_type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj_region':
+   drivers/bus/fsl-mc/dprc.c:567:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
+     567 |         strncpy(cmd_params->obj_type, obj_type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/strncpy +494 drivers/bus/fsl-mc/dprc.c
+
+31c889653c10dd drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-03-05  460  
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  461  /**
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  462   * dprc_set_obj_irq() - Set IRQ information for object to trigger an interrupt.
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  463   * @mc_io:	Pointer to MC portal's I/O object
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  464   * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  465   * @token:	Token of DPRC object
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  466   * @obj_type:	Type of the object to set its IRQ
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  467   * @obj_id:	ID of the object to set its IRQ
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  468   * @irq_index:	The interrupt index to configure
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  469   * @irq_cfg:	IRQ configuration
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  470   *
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  471   * Return:	'0' on Success; Error code otherwise.
+e9bf3f206bd5e6 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-24  472   */
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  473  int dprc_set_obj_irq(struct fsl_mc_io *mc_io,
+ba72f25b2588e1 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-25  474  		     u32 cmd_flags,
+ba72f25b2588e1 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-25  475  		     u16 token,
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  476  		     char *obj_type,
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  477  		     int obj_id,
+ba72f25b2588e1 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-25  478  		     u8 irq_index,
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  479  		     struct dprc_irq_cfg *irq_cfg)
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  480  {
+5b04cedeca1888 drivers/bus/fsl-mc/dprc.c         Ioana Ciornei    2018-03-15  481  	struct fsl_mc_command cmd = { 0 };
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  482  	struct dprc_cmd_set_obj_irq *cmd_params;
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  483  
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  484  	/* prepare command */
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  485  	cmd.header = mc_encode_cmd_header(DPRC_CMDID_SET_OBJ_IRQ,
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  486  					  cmd_flags,
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  487  					  token);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  488  	cmd_params = (struct dprc_cmd_set_obj_irq *)cmd.params;
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  489  	cmd_params->irq_val = cpu_to_le32(irq_cfg->val);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  490  	cmd_params->irq_index = irq_index;
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  491  	cmd_params->irq_addr = cpu_to_le64(irq_cfg->paddr);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  492  	cmd_params->irq_num = cpu_to_le32(irq_cfg->irq_num);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  493  	cmd_params->obj_id = cpu_to_le32(obj_id);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22 @494  	strncpy(cmd_params->obj_type, obj_type, 16);
+9989b59961a8ad drivers/staging/fsl-mc/bus/dprc.c Ioana Radulescu  2016-06-22  495  	cmd_params->obj_type[15] = '\0';
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  496  
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  497  	/* send command to mc*/
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  498  	return mc_send_command(mc_io, &cmd);
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  499  }
+c9d57ea0b6fb0b drivers/staging/fsl-mc/bus/dprc.c Laurentiu Tudor  2017-11-17  500  EXPORT_SYMBOL_GPL(dprc_set_obj_irq);
+1ee695fab32e25 drivers/staging/fsl-mc/bus/dprc.c J. German Rivera 2015-09-23  501  
+
+:::::: The code at line 494 was first introduced by commit
+:::::: 9989b59961a8ad55d92df4588b556f0c6c838ec7 staging: fsl-mc: convert mc command build/parse to use C structs
+
+:::::: TO: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+:::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
