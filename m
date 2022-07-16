@@ -2,44 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09F15C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:15:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC11EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 13:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243023AbiGSNPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 09:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40100 "EHLO
+        id S243366AbiGSNPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 09:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243649AbiGSNOW (ORCPT
+        with ESMTP id S243542AbiGSNOA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 09:14:22 -0400
+        Tue, 19 Jul 2022 09:14:00 -0400
 Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A86AC06C4
-        for <linux-kernel@vger.kernel.org>; Tue, 19 Jul 2022 05:31:13 -0700 (PDT)
-X-QQ-mid: bizesmtp90t1658233841t731ph7i
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD92991CF2;
+        Tue, 19 Jul 2022 05:30:56 -0700 (PDT)
+X-QQ-mid: bizesmtp87t1658233653tkyknpj6
 Received: from localhost.localdomain ( [171.223.96.21])
         by bizesmtp.qq.com (ESMTP) with 
-        id ; Tue, 19 Jul 2022 20:30:38 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000C00A0000000
-X-QQ-FEAT: Hom130/y8pliHFW6ARnu1U0PvZa/t/jTN7WyuojEkuSKiy17//NNpqs05KuKe
-        61w1S3S30z1NYxkQlKS8UtwL2DCJsO1rT08BRgTmbJbrD7tt9++ce1rszrNze5E4s8aDdLq
-        1LQTE4X7rZBXFEA+kBLs33pnYCRiA5kf3KvhmOLW9SdsqSyH1YGMMuI81NPbMS681p197Vm
-        i2y4Y0JmaGgCddTQBtYLksm3E8Vs55Lp/nqNhWNg13lRJdKKg/EbCCpj0C49LzL29e9L1u3
-        M8DZbCXq7fwBzdsXzve2A0RX9lsfJZzmsv919jMazws3P1FEASUejN+fkhgGdNH2xe6MrJT
-        q1ELOdsFWQRGLO61NXPyt+cVdhWaMukABQHIaRyYJqkg+1nq9FmE5AX31u3+I/Hlmboywlx
-        Sto3KYdwP98=
+        id ; Tue, 19 Jul 2022 20:27:32 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000C00A0000020
+X-QQ-FEAT: 0AHoP94G71VNcRvqrE44TIGCI91Hf/fhA9+UmUPYEiA0BScjVDDUB7VKoETS9
+        uDkKwlBq210vc9pQw6Wg+cUKUeTsnJ+hFIaw9DBFg9iw+fWhjMLj3ifkFxtFbdrzJ99ZsVT
+        8AejSUoUsw+b1x4OUE1IxJKbmcbiFq1r1day/lpGiwXXAvEUMoxkS4bAdya/VPuJsiBXAHS
+        Rh/FNHDYgC4Zw5uTuOSKBatd0SjgVrOjkvfwVhOHTqGq3Rrb8lGgHOs/ZZW6Iq+ER1Bzqv7
+        f7opRZgYdwjjSDjeakaEMzbQ7JP4N+fwJ0JHVymIbbTGsRj39Y5iexYCQlGK8n0qERnhcjE
+        LVoC2qWEG2pzO4i0MTm7wOIiIWXVBVlSXYZHXDu3lkNY6kQJYc6QyzW+VhcMEZVJC31guJ0
 X-QQ-GoodBg: 0
 From:   Jason Wang <wangborong@cdjrlc.com>
-To:     daniel@ffwll.ch
-Cc:     alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, evan.quan@amd.com,
-        mario.limonciello@amd.com, Hawking.Zhang@amd.com,
-        andrey.grodzovsky@amd.com, solomon.chiu@amd.com,
-        kai.heng.feng@canonical.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] drm/amdgpu: Fix comment typo
-Date:   Sat, 16 Jul 2022 12:28:41 +0800
-Message-Id: <20220716042841.40555-1-wangborong@cdjrlc.com>
+To:     leon@kernel.org
+Cc:     jgg@ziepe.ca, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] RDMA: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:25:18 +0800
+Message-Id: <20220716042518.37360-1-wangborong@cdjrlc.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,26 +43,26 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `to' is duplicated in the comment, remove one.
+The double `the' is duplicated in the comment, remove one.
 
 Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c | 2 +-
+ drivers/infiniband/core/roce_gid_mgmt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-index e3d139708160..b45cd7cbbea8 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -80,7 +80,7 @@
-  * - 3.24.0 - Add high priority compute support for gfx9
-  * - 3.25.0 - Add support for sensor query info (stable pstate sclk/mclk).
-  * - 3.26.0 - GFX9: Process AMDGPU_IB_FLAG_TC_WB_NOT_INVALIDATE.
-- * - 3.27.0 - Add new chunk to to AMDGPU_CS to enable BO_LIST creation.
-+ * - 3.27.0 - Add new chunk to AMDGPU_CS to enable BO_LIST creation.
-  * - 3.28.0 - Add AMDGPU_CHUNK_ID_SCHEDULED_DEPENDENCIES
-  * - 3.29.0 - Add AMDGPU_IB_FLAG_RESET_GDS_MAX_WAVE_ID
-  * - 3.30.0 - Add AMDGPU_SCHED_OP_CONTEXT_PRIORITY_OVERRIDE.
+diff --git a/drivers/infiniband/core/roce_gid_mgmt.c b/drivers/infiniband/core/roce_gid_mgmt.c
+index 68197e576433..e958c43dd28f 100644
+--- a/drivers/infiniband/core/roce_gid_mgmt.c
++++ b/drivers/infiniband/core/roce_gid_mgmt.c
+@@ -250,7 +250,7 @@ static bool upper_device_filter(struct ib_device *ib_dev, u32 port,
+ 
+ /**
+  * is_upper_ndev_bond_master_filter - Check if a given netdevice
+- * is bond master device of netdevice of the the RDMA device of port.
++ * is bond master device of netdevice of the RDMA device of port.
+  * @ib_dev:		IB device to check
+  * @port:		Port to consider for adding default GID
+  * @rdma_ndev:		Pointer to rdma netdevice
 -- 
 2.35.1
 
