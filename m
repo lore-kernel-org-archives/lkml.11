@@ -2,232 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D25E3CCA482
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A6CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 22:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232022AbiGPWjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 18:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46054 "EHLO
+        id S232151AbiGPWkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 18:40:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229501AbiGPWju (ORCPT
+        with ESMTP id S232040AbiGPWkC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 18:39:50 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F49192A8;
-        Sat, 16 Jul 2022 15:39:49 -0700 (PDT)
-Received: from mercury (unknown [185.209.196.172])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: sre)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id DA7546601656;
-        Sat, 16 Jul 2022 23:39:47 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658011188;
-        bh=COEr5uOxMkI3kPNEax0jj1+fGc37yVW4MCquaThpdzI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=JB5nMFWMpC6G9dcujK7dvS0SOFU99Z8xDvdj6318RD7PoIOMdQoqqXVqT9tAnM669
-         eQy9KLM0jmoYp33WaoUS2KTrsn3YkfKSpGKffufXC/1IUJFutZrABbnIBM0zLmO1zY
-         BHAbtHczFv0dmW+hcv53T+L7xXt38grZVEmY0Z5jTO1Ywg7QmzuaNZHqiEGGWU4bQU
-         IXDnA2RoECqO1Mlnu0ka1rXBlNF2mRHTe8NOIgPlrEzXgAw4rgUkMAyztEtvxuKIna
-         U3H6jlANxPR9c8iPxyZkoZMyePlfLtgpQxg+/eyJvsEJ2xb9cCFm8XjiMwKccjYzas
-         DR8FbiCBITAiw==
-Received: by mercury (Postfix, from userid 1000)
-        id 790E91060428; Sun, 17 Jul 2022 00:39:45 +0200 (CEST)
-Date:   Sun, 17 Jul 2022 00:39:45 +0200
-From:   Sebastian Reichel <sebastian.reichel@collabora.com>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
-        lee.jones@linaro.org, lgirdwood@gmail.com, broonie@kernel.org,
-        lars@metafoo.de, andy.shevchenko@gmail.com,
-        linus.walleij@linaro.org, brgl@bgdev.pl, michael@walle.cc,
-        samuel@sholland.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v5 11/13] power: axp20x_battery: Add constant charge
- current table
-Message-ID: <20220716223945.o6ilrbrlvdszcwfa@mercury.elektranox.org>
-References: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
- <20220706101902.4984-12-aidanmacdonald.0x0@gmail.com>
+        Sat, 16 Jul 2022 18:40:02 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B93D91D0F3;
+        Sat, 16 Jul 2022 15:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658011201; x=1689547201;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T+U4/9gl2O2+RuxdizGkJmWvRwLv3yFNdA8/DkiNESE=;
+  b=Wrg/re6alFh2wx5LBfeg2aZw5UOrMgncM9ggJRAfdqyEz6Qv5fTSb1OE
+   QS1YmpBbUMBRHW3eGAanGs7WMK5AGL0IE15qcWWANHo9NFxkiCllP0So4
+   zSq0myOMthAYBhKEMO2292Y1HiZufED06IPz/14NFxuN9qAuNJPf0p9HU
+   f09bwOnD6k7yztvHFsIOw+FD69KYc95grxSZHTiIpLJ97jBRJsQBAEzaj
+   3dZSRtb3CHHhSXE20kXZmcFbZp+yDyCdVXbvl7tNuHRAD/S6vKG/x7bhf
+   /SxOLMeEQwbyftH7DlyFx28GjWWS7OxAgkCeIszD+TiS+amaIHclzNYxj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="266418302"
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="266418302"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 15:40:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
+   d="scan'208";a="596848246"
+Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 16 Jul 2022 15:39:57 -0700
+Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1oCqS4-0002Fr-UK;
+        Sat, 16 Jul 2022 22:39:56 +0000
+Date:   Sun, 17 Jul 2022 06:39:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Christian Marangi <ansuelsmth@gmail.com>
+Subject: Re: [net-next PATCH v2 3/5] net: ethernet: stmicro: stmmac: move dma
+ conf to dedicated struct
+Message-ID: <202207170636.Ism1wGe8-lkp@intel.com>
+References: <20220716184533.2962-4-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="aaa3fkkzmlof3mir"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220706101902.4984-12-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220716184533.2962-4-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Christian,
 
---aaa3fkkzmlof3mir
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thank you for the patch! Yet something to improve:
 
-Hi,
+[auto build test ERROR on net-next/master]
 
-On Wed, Jul 06, 2022 at 11:19:00AM +0100, Aidan MacDonald wrote:
-> Add a table-based lookup method for constant charge current,
-> which is necessary when the setting cannot be represented as
-> a linear range.
->=20
-> This also replaces the hard-coded 300 mA default ccc setting
-> if the DT-specified value is unsupported; the minimum value
-> for the device is now set exactly instead of relying on the
-> value being rounded down to a supported value.
->=20
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-> ---
+url:    https://github.com/intel-lab-lkp/linux/commits/Christian-Marangi/Add-MTU-change-with-stmmac-interface-running/20220717-025128
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 2acd1022549e210edc4cfc9fc65b07b88751f0d9
+config: arc-randconfig-r043-20220717 (https://download.01.org/0day-ci/archive/20220717/202207170636.Ism1wGe8-lkp@intel.com/config)
+compiler: arc-elf-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/acdac2fef543d7b7fc85c7a5627e5e833ee756d8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Christian-Marangi/Add-MTU-change-with-stmmac-interface-running/20220717-025128
+        git checkout acdac2fef543d7b7fc85c7a5627e5e833ee756d8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash
 
-Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
--- Sebastian
+All errors (new ones prefixed by >>):
 
->  drivers/power/supply/axp20x_battery.c | 59 +++++++++++++++++++++------
->  1 file changed, 47 insertions(+), 12 deletions(-)
->=20
-> diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply=
-/axp20x_battery.c
-> index 9106077c0dbb..401779d84d2b 100644
-> --- a/drivers/power/supply/axp20x_battery.c
-> +++ b/drivers/power/supply/axp20x_battery.c
-> @@ -61,6 +61,14 @@ struct axp20x_batt_ps;
->  struct axp_data {
->  	int	ccc_scale;
->  	int	ccc_offset;
-> +	/*
-> +	 * Lookup table for constant charge current, if provided this is used
-> +	 * instead of ccc_scale/ccc_offset.
-> +	 *
-> +	 * The table is indexed by the field AXP20X_CHRG_CTRL1_TGT_CURR so it
-> +	 * must have AXP20X_CHRG_CTRL1_TGT_CURR+1 elements.
-> +	 */
-> +	const int *ccc_table;
->  	bool	has_fg_valid;
->  	int	(*get_max_voltage)(struct axp20x_batt_ps *batt, int *val);
->  	int	(*set_max_voltage)(struct axp20x_batt_ps *batt, int val);
-> @@ -176,7 +184,10 @@ static int axp20x_get_constant_charge_current(struct=
- axp20x_batt_ps *axp,
-> =20
->  	*val &=3D AXP20X_CHRG_CTRL1_TGT_CURR;
-> =20
-> -	*val =3D *val * axp->data->ccc_scale + axp->data->ccc_offset;
-> +	if (axp->data->ccc_table)
-> +		*val =3D axp->data->ccc_table[*val];
-> +	else
-> +		*val =3D *val * axp->data->ccc_scale + axp->data->ccc_offset;
-> =20
->  	return 0;
->  }
-> @@ -389,16 +400,35 @@ static int axp20x_battery_set_max_voltage(struct ax=
-p20x_batt_ps *axp20x_batt,
->  				  AXP20X_CHRG_CTRL1_TGT_VOLT, val);
->  }
-> =20
-> +static int axp20x_get_constant_charge_current_sel(struct axp20x_batt_ps =
-*axp_batt,
-> +						  int charge_current)
-> +{
-> +	int i;
-> +
-> +	if (axp_batt->data->ccc_table) {
-> +		for (i =3D AXP20X_CHRG_CTRL1_TGT_CURR; i >=3D 0; i--) {
-> +			if (axp_batt->data->ccc_table[i] <=3D charge_current)
-> +				return i;
-> +		}
-> +
-> +		return -EINVAL;
-> +	}
-> +
-> +	i =3D (charge_current - axp_batt->data->ccc_offset) / axp_batt->data->c=
-cc_scale;
-> +	if (i > AXP20X_CHRG_CTRL1_TGT_CURR || i < 0)
-> +		return -EINVAL;
-> +
-> +	return i;
-> +}
-> +
->  static int axp20x_set_constant_charge_current(struct axp20x_batt_ps *axp=
-_batt,
->  					      int charge_current)
->  {
->  	if (charge_current > axp_batt->max_ccc)
->  		return -EINVAL;
-> =20
-> -	charge_current =3D (charge_current - axp_batt->data->ccc_offset) /
-> -		axp_batt->data->ccc_scale;
-> -
-> -	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
-> +	charge_current =3D axp20x_get_constant_charge_current_sel(axp_batt, cha=
-rge_current);
-> +	if (charge_current < 0)
->  		return -EINVAL;
-> =20
->  	return regmap_update_bits(axp_batt->regmap, AXP20X_CHRG_CTRL1,
-> @@ -410,14 +440,14 @@ static int axp20x_set_max_constant_charge_current(s=
-truct axp20x_batt_ps *axp,
->  {
->  	bool lower_max =3D false;
-> =20
-> -	charge_current =3D (charge_current - axp->data->ccc_offset) /
-> -		axp->data->ccc_scale;
-> -
-> -	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
-> +	charge_current =3D axp20x_get_constant_charge_current_sel(axp, charge_c=
-urrent);
-> +	if (charge_current < 0)
->  		return -EINVAL;
-> =20
-> -	charge_current =3D charge_current * axp->data->ccc_scale +
-> -		axp->data->ccc_offset;
-> +	if (axp->data->ccc_table)
-> +		charge_current =3D axp->data->ccc_table[charge_current];
-> +	else
-> +		charge_current =3D charge_current * axp->data->ccc_scale + axp->data->=
-ccc_offset;
-> =20
->  	if (charge_current > axp->max_ccc)
->  		dev_warn(axp->dev,
-> @@ -629,7 +659,12 @@ static int axp20x_power_probe(struct platform_device=
- *pdev)
->  								   ccc)) {
->  			dev_err(&pdev->dev,
->  				"couldn't set constant charge current from DT: fallback to minimum v=
-alue\n");
-> -			ccc =3D 300000;
-> +
-> +			if (axp20x_batt->data->ccc_table)
-> +				ccc =3D axp20x_batt->data->ccc_table[0];
-> +			else
-> +				ccc =3D axp20x_batt->data->ccc_offset;
-> +
->  			axp20x_batt->max_ccc =3D ccc;
->  			axp20x_set_constant_charge_current(axp20x_batt, ccc);
->  		}
-> --=20
-> 2.35.1
->=20
+   In file included from include/linux/build_bug.h:5,
+                    from include/linux/container_of.h:5,
+                    from include/linux/list.h:5,
+                    from include/linux/timer.h:5,
+                    from include/linux/workqueue.h:9,
+                    from include/net/pkt_cls.h:6,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:7:
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c: In function 'tc_setup_etf':
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:19: error: 'struct stmmac_priv' has no member named 'tx_queue'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |                   ^~
+   include/linux/compiler.h:58:52: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                    ^~~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:9: note: in expansion of macro 'if'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |         ^~
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:19: error: 'struct stmmac_priv' has no member named 'tx_queue'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |                   ^~
+   include/linux/compiler.h:58:61: note: in definition of macro '__trace_if_var'
+      58 | #define __trace_if_var(cond) (__builtin_constant_p(cond) ? (cond) : __trace_if_value(cond))
+         |                                                             ^~~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:9: note: in expansion of macro 'if'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |         ^~
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:19: error: 'struct stmmac_priv' has no member named 'tx_queue'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |                   ^~
+   include/linux/compiler.h:69:10: note: in definition of macro '__trace_if_value'
+      69 |         (cond) ?                                        \
+         |          ^~~~
+   include/linux/compiler.h:56:28: note: in expansion of macro '__trace_if_var'
+      56 | #define if(cond, ...) if ( __trace_if_var( !!(cond , ## __VA_ARGS__) ) )
+         |                            ^~~~~~~~~~~~~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1094:9: note: in expansion of macro 'if'
+    1094 |         if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+         |         ^~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1098:21: error: 'struct stmmac_priv' has no member named 'tx_queue'
+    1098 |                 priv->tx_queue[qopt->queue].tbs |= STMMAC_TBS_EN;
+         |                     ^~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c:1100:21: error: 'struct stmmac_priv' has no member named 'tx_queue'
+    1100 |                 priv->tx_queue[qopt->queue].tbs &= ~STMMAC_TBS_EN;
+         |                     ^~
 
---aaa3fkkzmlof3mir
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+vim +1094 drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
 
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmLTPiUACgkQ2O7X88g7
-+pqb5w//Rj1zJNtTfSRun6rF3+mFEo/1sWS/1ofixrlrahfM2EIqy6heMUeRHLSA
-rr1orplBrlIP0hbbebdgtM27KKAJbjvY2I6yMlJTN8iQa2fNp/vJjOIFDjIbMWgc
-W2RwBbwcF3lU65jsB4iUtFWxfxPipsEbfB2BBbZV+KaRDoFNu6WIUH37N31FWGJu
-tvpPjtXcVinNTfZJiSenQ+HtuhtneTTDA7RinllMa1y7LU7LAIa48kuvl/e20v4l
-H8KzpkkYuPVC+vF4sCKJ33zprLUNRoV4GwOnSRpkODV1HEMjAQZMF/dZJ3NQ8W14
-Xxb2ip+SaRTAD0TLDZl1B/5uLuFEZF2XSAB54wvGIrs6FOH+adjRKlc9SrqVClig
-ZEv0qlpVzRTQ+3Z0D6cfV94yJ0yPSE7ivZj1wvtjUWEaTdKAQYc43ZQyvHDg7pjy
-hD87zEEAsNKlxP27Y2lFbnaB00nbYNdtNKhMoDmhBH2SxllE3rjeOA2y2BHJrLeZ
-ThltuMfKPpGDTKxxt7/Qxh94tbCxRXQGZM1DD9U9XMxwe922Hy7Ws523gH2FrdTG
-gPKtZ4TSlFYu5LVWrMyiJ5YhBTxu8MUs1dz/qakuUC/1KFD+OiBLaLBY4a/Pg/To
-yq1ZpXkVH3LCISl/3305reZf6hy4f7heSRJt+k99NKypRPDlGUM=
-=u+Wk
------END PGP SIGNATURE-----
+b60189e0392fa0 Jose Abreu 2019-12-18  1086  
+430b383c737ca0 Jose Abreu 2020-01-13  1087  static int tc_setup_etf(struct stmmac_priv *priv,
+430b383c737ca0 Jose Abreu 2020-01-13  1088  			struct tc_etf_qopt_offload *qopt)
+430b383c737ca0 Jose Abreu 2020-01-13  1089  {
+430b383c737ca0 Jose Abreu 2020-01-13  1090  	if (!priv->dma_cap.tbssel)
+430b383c737ca0 Jose Abreu 2020-01-13  1091  		return -EOPNOTSUPP;
+430b383c737ca0 Jose Abreu 2020-01-13  1092  	if (qopt->queue >= priv->plat->tx_queues_to_use)
+430b383c737ca0 Jose Abreu 2020-01-13  1093  		return -EINVAL;
+430b383c737ca0 Jose Abreu 2020-01-13 @1094  	if (!(priv->tx_queue[qopt->queue].tbs & STMMAC_TBS_AVAIL))
+430b383c737ca0 Jose Abreu 2020-01-13  1095  		return -EINVAL;
+430b383c737ca0 Jose Abreu 2020-01-13  1096  
+430b383c737ca0 Jose Abreu 2020-01-13  1097  	if (qopt->enable)
+430b383c737ca0 Jose Abreu 2020-01-13  1098  		priv->tx_queue[qopt->queue].tbs |= STMMAC_TBS_EN;
+430b383c737ca0 Jose Abreu 2020-01-13  1099  	else
+430b383c737ca0 Jose Abreu 2020-01-13  1100  		priv->tx_queue[qopt->queue].tbs &= ~STMMAC_TBS_EN;
+430b383c737ca0 Jose Abreu 2020-01-13  1101  
+430b383c737ca0 Jose Abreu 2020-01-13  1102  	netdev_info(priv->dev, "%s ETF for Queue %d\n",
+430b383c737ca0 Jose Abreu 2020-01-13  1103  		    qopt->enable ? "enabled" : "disabled", qopt->queue);
+430b383c737ca0 Jose Abreu 2020-01-13  1104  	return 0;
+430b383c737ca0 Jose Abreu 2020-01-13  1105  }
+430b383c737ca0 Jose Abreu 2020-01-13  1106  
 
---aaa3fkkzmlof3mir--
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
