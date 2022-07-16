@@ -2,104 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A26EBC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 113DBC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 15:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232358AbiGPPvY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 11:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
+        id S232383AbiGPPx7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 11:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiGPPvX (ORCPT
+        with ESMTP id S229865AbiGPPx4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 11:51:23 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB56118B0C
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 08:51:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1657986682; x=1689522682;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=LaO484dNnKjtU1b9v96aU9pgzCv4lbAKkmwsfMZ3azw=;
-  b=Qdi5JtWTa8RwoixBmpDJef8cVa1s6Pc973SGssdUz4iaKCRbHt5tE5Yo
-   UQVI0lLKkvx3uyQrtcDTGM0DkjFa38J05ZAnbIjhp89XFUxIQZjR9md8y
-   e4iv+NoqQshTmuOWANlfXxGibBb9ONxl71vGrbYckNcu8U+myolXPXdjS
-   rfFPMQdiMkZu+KGaRGF/GwMs8re+vOa8FDPagBSHeAfifv/lcsHoPrMhM
-   xahtHux7Is/5WEva8Coe2YP6fj3vRWFyYu6+z2GjZdoh65DcfHt7GfcHI
-   BbAkoGz2lH4Keb6lXXY8dOGhgWmSK0/yfLW+YgTWZ1Mjg3qKLCQhK8u23
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10410"; a="266394148"
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="266394148"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2022 08:51:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.92,277,1650956400"; 
-   d="scan'208";a="629438321"
-Received: from lkp-server02.sh.intel.com (HELO ff137eb26ff1) ([10.239.97.151])
-  by orsmga001.jf.intel.com with ESMTP; 16 Jul 2022 08:51:20 -0700
-Received: from kbuild by ff137eb26ff1 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1oCk4d-0001lK-Vh;
-        Sat, 16 Jul 2022 15:51:19 +0000
-Date:   Sat, 16 Jul 2022 23:50:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Subject: arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning:
- no previous prototype for '__ashldi3'
-Message-ID: <202207162318.iryfcTQP-lkp@intel.com>
+        Sat, 16 Jul 2022 11:53:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 015016261;
+        Sat, 16 Jul 2022 08:53:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0404661177;
+        Sat, 16 Jul 2022 15:53:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B31F5C34114;
+        Sat, 16 Jul 2022 15:53:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657986831;
+        bh=qKwOLqXKlfuxhy0Xj2JK6pTSgZmrElwNz+8WZgNuzn4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lzdz6+rdGZDJjMe/JE8tXoIyR52SOSrq+r5DoJ2QzhlgQPr9eAjYmiMOXOrWYgLRs
+         WqEfTmREp8eLnAXuVxyzaQPmomyKmgxZ9bdbrUlBlbcCrvbMXjFNHALUH5OtU1b2un
+         As03lE+S3jgXoQ9IZLZhYyEXMWBvB+AlVKoF29Yg5Was9+R9+d9/3n79/8QTdvzsiZ
+         n8leYOechUGH7n+ixhbziX1NnBh2Z0/T7nO5hL230jGPgSNc+/PO/9p2kumb9gq/IE
+         XuTeqMDll/BKOfFqUhvuCM7S1TqIw2Q+1Ml2CKclfDcwp/kKXuWCf1r0TN5sWRtJzU
+         FrhEWHkc/Mddg==
+Date:   Sat, 16 Jul 2022 17:03:44 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: pressure: bmp280: Add support for BMP380
+ sensor family
+Message-ID: <20220716170344.0470eaae@jic23-huawei>
+In-Reply-To: <2d8bbc776ef21a90576b6201cd84736f00c67957.camel@gmail.com>
+References: <20220625150921.47769-1-ang.iglesiasg@gmail.com>
+        <20220625164623.42ed8e1d@jic23-huawei>
+        <2d8bbc776ef21a90576b6201cd84736f00c67957.camel@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Masahiro,
+On Mon, 27 Jun 2022 17:42:49 +0200
+Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
 
-FYI, the error/warning still remains.
+> On s=C3=A1b, 2022-06-25 at 16:46 +0100, Jonathan Cameron wrote:
+> > On Sat, 25 Jun 2022 17:09:12 +0200
+> > Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+> >  =20
+> > > Adds compatibility with the new generation of this sensor, the
+> > > BMP380
+> > >=20
+> > > Included basic sensor initialization to do pressure and temp
+> > > measurements and allows tuning oversampling settings for each
+> > > channel
+> > > The compensation algorithms are adapted from the device datasheet
+> > > and
+> > > the repository https://github.com/BoschSensortec/BMP3-Sensor-API
+> > >=20
+> > > Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com> =20
+> >=20
+> > Hi Angel,
+> >=20
+> > A few comments inline, but mostly looks good to me.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   9b59ec8d50a1f28747ceff9a4f39af5deba9540e
-commit: f78b25ee922ef6faf59a258af1b9388ca894cfd9 mips: decompressor: do not copy source files while building
-date:   8 months ago
-config: mips-randconfig-r012-20220715 (https://download.01.org/0day-ci/archive/20220716/202207162318.iryfcTQP-lkp@intel.com/config)
-compiler: mipsel-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=f78b25ee922ef6faf59a258af1b9388ca894cfd9
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout f78b25ee922ef6faf59a258af1b9388ca894cfd9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-Note: functions only called from assembly code should be annotated with the asmlinkage attribute
-All warnings (new ones prefixed by >>):
-
-   In file included from arch/mips/boot/compressed/ashldi3.c:2:
->> arch/mips/boot/compressed/../../../../lib/ashldi3.c:9:19: warning: no previous prototype for '__ashldi3' [-Wmissing-prototypes]
-       9 | long long notrace __ashldi3(long long u, word_type b)
-         |                   ^~~~~~~~~
+First a process comment.  Cut out anything you agree with.
+Too many emails to read so focus on the bits where there are questions
+or they will get missed.  Reviewers are happy to assume you agree
+with them if you don't say otherwise :)
 
 
-vim +/__ashldi3 +9 arch/mips/boot/compressed/../../../../lib/ashldi3.c
+> >=20
+> > Jonathan
+...
 
-b35cd9884fa5d8 Palmer Dabbelt 2017-05-23  8  
-b35cd9884fa5d8 Palmer Dabbelt 2017-05-23 @9  long long notrace __ashldi3(long long u, word_type b)
+>=20
+> > > +
+> > > +#define BMP380_FILTER_MASK=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0GENMASK(3, 1)
+> > > +#define BMP380_FILTER_OFF=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A00
+> > > +#define BMP380_FILTER_1X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0BIT(1)
+> > > +#define BMP380_FILTER_3X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0BIT(2)
+> > > +#define BMP380_FILTER_7X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0(BIT(2) | BIT(1))
+> > > +#define BMP380_FILTER_15X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0BIT(3)
+> > > +#define BMP380_FILTER_31X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0(BIT(3) | BIT(1))
+> > > +#define BMP380_FILTER_63X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0(BIT(3) | BIT(2))
+> > > +#define BMP380_FILTER_127X=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0(BIT(3) | BIT(2) | BIT(1)) =20
+> >=20
+> > these are values, 0,1,2,3,4,5,6,7 not a bunch of bits.
+> > So use with FIELD_PREP() =20
+>=20
+> Should I convert the values to a enumeration or simply declare the
+> macros with the values? Thanks in advance
 
-:::::: The code at line 9 was first introduced by commit
-:::::: b35cd9884fa5d81c9d5e7f57c9d03264ae2bd835 lib: Add shared copies of some GCC library routines
+Slight preference for defines with the values.
 
-:::::: TO: Palmer Dabbelt <palmer@dabbelt.com>
-:::::: CC: Palmer Dabbelt <palmer@dabbelt.com>
+J
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
