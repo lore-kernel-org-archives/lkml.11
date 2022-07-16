@@ -2,99 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F39CCCCA479
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:44:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E54EC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 12:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231994AbiGPMos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 08:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45672 "EHLO
+        id S232075AbiGPMqW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 08:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbiGPMor (ORCPT
+        with ESMTP id S232016AbiGPMqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 08:44:47 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D1F41FCCA;
-        Sat, 16 Jul 2022 05:44:46 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id 2DEEAC01D; Sat, 16 Jul 2022 14:44:45 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657975485; bh=IA4QPpfoiFnQ2zfDlGVbxad+iB79l2GmGj2fr9NMdbI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=G0uAyt4wTJPwOceVj+tlHrPj+xmBFviQ7X72SyBqhVvgLf0Vq68vGLIIDf6wGXHpv
-         /ZoOJrTDJ/7Blr/3hNrEUTHLHuxb6tTD1oYo8LbV1YmKnk3onzxQ66NJe//OyrfuQv
-         0AQf7Kri+WDki7x02bSb8nUbNMHAMedqQX8y+qSsL3SeSu/z1XecxwH39UGDC5l1zU
-         wjsCW0VEeD3bkxcIO0tbLGva8SwAYSUiyXzVLp+NXCxzP7arfxRS/3ttAOW+noskG+
-         DmHYsL8U+iRGezh0eAytTnlufMGiOUo4SaizZE/4yoyZW8VLqeSQL5RhExfZoGvirN
-         7VQ7QSgT6Se5w==
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 6FD49C009;
-        Sat, 16 Jul 2022 14:44:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1657975484; bh=IA4QPpfoiFnQ2zfDlGVbxad+iB79l2GmGj2fr9NMdbI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tZk+QlpZgl3gWazkAqaUwVdiv4ez3fRI+jeHGHtsI3erIAIMwdA1jmZx0ebHfbWVU
-         1aaY/JAS2JZxpjfcFKv2fJZ/TAfJC+BQzWw9ZaSyvSV87MkX5KMbR2Ix2hSrRQ0y0N
-         ahAxOvyFc8X+Blr3uZfPBQwYVgsZ6M51BORkdeLkWuxpfa2o8X/nzKuiIwSMEjAPv/
-         bKfltFQLMLeKaKoiFv58lsooYIFQcb1NPSK7SgJ8bAzXEmtAWkIMiz0wIEJjcevcTZ
-         Cpwyj2Naba4imZ5BnXZtnHiWM2OiOXFvOzH7EaYHkiJUCjzup7BBaEYS8iBlJZNGsX
-         oo7aT4BxhUpUg==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 0e23bbef;
-        Sat, 16 Jul 2022 12:44:39 +0000 (UTC)
-Date:   Sat, 16 Jul 2022 21:44:24 +0900
-From:   Dominique Martinet <asmadeus@codewreck.org>
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     v9fs-developer@lists.sourceforge.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Nikolay Kichukov <nikolay@oldum.net>
-Subject: Re: [PATCH v6 00/11] remove msize limit in virtio transport
-Message-ID: <YtKyqPx/FX1BbDqW@codewreck.org>
-References: <cover.1657920926.git.linux_oss@crudebyte.com>
- <6713865.4mp09fW1HV@silver>
- <YtKm4M8W+rL+buNj@codewreck.org>
- <4065120.gss6piHCF5@silver>
+        Sat, 16 Jul 2022 08:46:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FE3B1FCD0
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 05:46:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1657975578;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=6jdgBr8qPyYQ7wIItqpQ8nbtb9ewBI0uvepqAzRBm0w=;
+        b=RPyy9rqh2TBJrRkEyXATULKq6W5rfv7Vg8lSdk+zsTeSEcwgcpv5kXgQCcEmofadbsivzf
+        LMbWFKLmf2i5CCIwPA+RMJHMkywyg0EDI7IaL8wrMTllIt4yZjUJnQ3Yv7Okj4fjqzwIaz
+        SqfVmfvbz1YcU3Tt27sct5jpXhtgROk=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-649-jVl0NklINweQDDm3TzrjdQ-1; Sat, 16 Jul 2022 08:46:15 -0400
+X-MC-Unique: jVl0NklINweQDDm3TzrjdQ-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A4A358037B7;
+        Sat, 16 Jul 2022 12:46:14 +0000 (UTC)
+Received: from gshan.redhat.com (vpn2-54-37.bne.redhat.com [10.64.54.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id ED01E492C3B;
+        Sat, 16 Jul 2022 12:46:10 +0000 (UTC)
+From:   Gavin Shan <gshan@redhat.com>
+To:     kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, seanjc@google.com,
+        pbonzini@redhat.com, maz@kernel.org, shuah@kernel.org,
+        oliver.upton@linux.dev, shan.gavin@gmail.com
+Subject: [PATCH v2] KVM: selftests: Fix target thread to be migrated in rseq_test
+Date:   Sat, 16 Jul 2022 22:45:37 +0800
+Message-Id: <20220716144537.3436743-1-gshan@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <4065120.gss6piHCF5@silver>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christian Schoenebeck wrote on Sat, Jul 16, 2022 at 02:10:05PM +0200:
-> > OTOH, linux got softiwarp merged in as RDMA_SIW which works perfectly
-> > with my rdma applications, after fixing/working around a couple of bugs
-> > on the server I'm getting hangs that I can't reproduce with debug on
-> > current master so this isn't exactly great, not sure where it goes
-> > wrong :|
-> > At least with debug still enabled I'm not getting any new hang with your
-> > patches, so let's call it ok...?
-> 
-> Well, I would need more info to judge or resolve that, like which patch 
-> exactly broke RDMA behaviour for you?
+In rseq_test, there are two threads, which are thread group leader
+and migration worker. The migration worker relies on sched_setaffinity()
+to force migration on the thread group leader. Unfortunately, we
+have wrong parameter (0) passed to sched_getaffinity(). It's actually
+forcing migration on the migration worker instead of the thread group
+leader. It also means migration can happen on the thread group leader
+at any time, which eventually leads to failure as the following logs
+show.
 
-I wouldn't have troubles if I knew that, I don't have access to the
-hardware I last used 9p/rdma on so it might very well be a softiwarp
-compatibility problem, server version, or anything else.
+  host# uname -r
+  5.19.0-rc6-gavin+
+  host# # cat /proc/cpuinfo | grep processor | tail -n 1
+  processor    : 223
+  host# pwd
+  /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
+  host# for i in `seq 1 100`;                \
+        do echo "--------> $i"; ./rseq_test; done
+  --------> 1
+  --------> 2
+  --------> 3
+  --------> 4
+  --------> 5
+  --------> 6
+  ==== Test Assertion Failure ====
+    rseq_test.c:265: rseq_cpu == cpu
+    pid=3925 tid=3925 errno=4 - Interrupted system call
+       1  0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
+       2  0x0000ffffb044affb: ?? ??:0
+       3  0x0000ffffb044b0c7: ?? ??:0
+       4  0x0000000000401a6f: _start at ??:?
+    rseq CPU = 4, sched CPU = 27
 
-At the very least I'm not getting new errors and the server does receive
-everyhing we sent, so as far as these patches are concerned I don't
-think we're making anything worse.
+This fixes the issue by passing correct parameter, tid of the group
+thread leader, to sched_setaffinity().
 
+Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
+Signed-off-by: Gavin Shan <gshan@redhat.com>
+---
+ tools/testing/selftests/kvm/rseq_test.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-I'll get back to you once I hear back from former employer (if they can
-have someone run some tests, confirm it works and/or bisect that), I
-really spent too much time trying to get the old adapter I got working
-already...
+diff --git a/tools/testing/selftests/kvm/rseq_test.c b/tools/testing/selftests/kvm/rseq_test.c
+index 4158da0da2bb..c83ac7b467f8 100644
+--- a/tools/testing/selftests/kvm/rseq_test.c
++++ b/tools/testing/selftests/kvm/rseq_test.c
+@@ -38,6 +38,7 @@ static __thread volatile struct rseq __rseq = {
+  */
+ #define NR_TASK_MIGRATIONS 100000
+ 
++static pid_t rseq_tid;
+ static pthread_t migration_thread;
+ static cpu_set_t possible_mask;
+ static int min_cpu, max_cpu;
+@@ -106,7 +107,8 @@ static void *migration_worker(void *ign)
+ 		 * stable, i.e. while changing affinity is in-progress.
+ 		 */
+ 		smp_wmb();
+-		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
++		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask),
++				      &allowed_mask);
+ 		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
+ 			    errno, strerror(errno));
+ 		smp_wmb();
+@@ -231,6 +233,7 @@ int main(int argc, char *argv[])
+ 	vm = vm_create_default(VCPU_ID, 0, guest_code);
+ 	ucall_init(vm, NULL);
+ 
++	rseq_tid = gettid();
+ 	pthread_create(&migration_thread, NULL, migration_worker, 0);
+ 
+ 	for (i = 0; !done; i++) {
+-- 
+2.23.0
 
-All I can say is that there's no error anywhere, I've finally reproduced
-it once with debug and I can confirm the server sent the reply and
-didn't get any error in ibv_post_send() so the message should have been
-sent, but the client just never processed it.
-Next step would be to add/enable some logs on the client see if it
-actually received something or not and go from there, but I'd like to
-see something that works first...
-
---
-Dominique
