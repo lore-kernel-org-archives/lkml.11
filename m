@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF19AC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:18:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9747C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 23:19:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232987AbiGPXSz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 19:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38702 "EHLO
+        id S233183AbiGPXTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 19:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233128AbiGPXSC (ORCPT
+        with ESMTP id S232986AbiGPXSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 19:18:02 -0400
+        Sat, 16 Jul 2022 19:18:04 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9762523BF1
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:49 -0700 (PDT)
-Message-ID: <20220716230953.977047812@linutronix.de>
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5768E240B6
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 16:17:51 -0700 (PDT)
+Message-ID: <20220716230954.095980377@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658013465;
+        s=2020; t=1658013469;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=oPPu+jFTcgeESCfOqjttTTcYWEzNGD5UiaAKckbHmr0=;
-        b=pIV9Yx9mr7gx9fADTXXrnpkLGro7vX+pdJsuS/V4ImbfKmT/4IYDH0nMKD8EQsr3cyWByN
-        nbGSlcu2S3JV7Z9Z2xq3EV16WiBKO9Tj0qT0hYqqQIgXLbSSqwFEf1JMiCUYBwB+v09Agr
-        53N6Kd094/Jw555/M/KAfP3BvkwaZUjq4mz4Q/fn+WrJnco8EMfMvHaNrOdlGMQeSDeXh2
-        oeZT4TUSAK9FYJ5093NRAMLHCf3v2toOlpQ54hC+Mp6IJXotQKHpcr4gHXXlS2qHAxoux1
-        EquiMkZ6DX8Xty2zX2YUXONfRy2JSatfpKmKpFqN7wduwZzNMrTQWWkTeJ3jmA==
+         references:references; bh=TLRAvZyLEqsQnwkoOe77XpgKA72Xpqcnn5aNrBgcecY=;
+        b=zu68aOfoTqg7NypD3iZoMno0+P25QhX7HLERWL4CZTTSaxsTUfvg4Z+FAVZj/gf1yTDIOt
+        m9yMKN/2AzBe0fIWHNyi7f1hC5fqxe1b4ENRp63p1zpJJNeHRkIYewLA1lVwBFzsT+RcVI
+        90J6W4K2GWoWLjWGy7W+eOrMnAQ1WEuhoYL2AC2uINHrxgAMV40xqPgZgTwiGcESbYy4Ej
+        c9ujKGfN7fBRJdjZeryA+CykR1NJ234iJt9BqCHM24h+U8uOVojDnlWfyb1sj7nQM1LFa0
+        QDxAp87oNzkwiLPRxvqECQFsNrhr8Fut7cSERXYkSTpXgW0peG0JWfapnx9TXg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658013465;
+        s=2020e; t=1658013469;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         references:references; bh=oPPu+jFTcgeESCfOqjttTTcYWEzNGD5UiaAKckbHmr0=;
-        b=i/kNQGMQ1jH4nLjWWcOmPYC1HlRpD49P2EDwpgi0S2rlHT5JqmIlI5vVNR90A33ob7uFrq
-        gVpEgyyvvchGY+Bw==
+         references:references; bh=TLRAvZyLEqsQnwkoOe77XpgKA72Xpqcnn5aNrBgcecY=;
+        b=bDKQoKtEz/awFA0KCCwZ5LGnaiaLhvF3ypOdgvTOzoN/FOQEp1pvTHrWBg7l/HaOZv1hKf
+        ppuZ84PmuQK7ZHAA==
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
@@ -45,81 +45,148 @@ Cc:     x86@kernel.org, Linus Torvalds <torvalds@linux-foundation.org>,
         Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
         Joao Moreira <joao.moreira@intel.com>,
         Joseph Nuzman <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [patch 22/38] x86/paravirt: Make struct paravirt_call_site
- unconditionally available
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [patch 24/38] module: Add layout for callthunks tracking
 References: <20220716230344.239749011@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 17 Jul 2022 01:17:45 +0200 (CEST)
+Date:   Sun, 17 Jul 2022 01:17:48 +0200 (CEST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For the upcoming call thunk patching it's less ifdeffery when the data
-structure is unconditionally available. The code can then be trivially
-fenced off with IS_ENABLED().
+From: Peter Zijlstra <peterz@infradead.org>
 
+Various things will need to be able to tell if a specific address is a
+callthunk or not (ORC, BPF, static_call). In order to answer this
+question in the face of modules it is necessary to (quickly) find the
+module associated with a specific (callthunk) address.
+
+Extend the __module_address() infrastructure with knowledge of the
+(per module) callthunk range.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- arch/x86/include/asm/paravirt.h       |    4 ++--
- arch/x86/include/asm/paravirt_types.h |   20 ++++++++++++--------
- 2 files changed, 14 insertions(+), 10 deletions(-)
+ include/linux/module.h      |   21 +++++++++++++++++++--
+ kernel/module/internal.h    |    8 ++++++++
+ kernel/module/main.c        |    6 ++++++
+ kernel/module/tree_lookup.c |   17 ++++++++++++++++-
+ 4 files changed, 49 insertions(+), 3 deletions(-)
 
---- a/arch/x86/include/asm/paravirt.h
-+++ b/arch/x86/include/asm/paravirt.h
-@@ -4,13 +4,13 @@
- /* Various instructions on x86 need to be replaced for
-  * para-virtualization: those hooks are defined here. */
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -424,6 +424,9 @@ struct module {
+ 	/* Core layout: rbtree is accessed frequently, so keep together. */
+ 	struct module_layout core_layout __module_layout_align;
+ 	struct module_layout init_layout;
++#ifdef CONFIG_CALL_THUNKS
++	struct module_layout thunk_layout;
++#endif
+ #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
+ 	struct module_layout data_layout;
+ #endif
+@@ -590,9 +593,23 @@ static inline bool within_module_init(un
+ 	       addr < (unsigned long)mod->init_layout.base + mod->init_layout.size;
+ }
  
-+#include <asm/paravirt_types.h>
+-static inline bool within_module(unsigned long addr, const struct module *mod)
++static inline bool within_module_thunk(unsigned long addr,
++				       const struct module *mod)
++{
++#ifdef CONFIG_CALL_THUNKS
++	return (unsigned long)mod->thunk_layout.base <= addr &&
++	       addr < (unsigned long)mod->thunk_layout.base + mod->thunk_layout.size;
++#else
++	return false;
++#endif
++}
 +
- #ifdef CONFIG_PARAVIRT
- #include <asm/pgtable_types.h>
- #include <asm/asm.h>
- #include <asm/nospec-branch.h>
++static inline bool within_module(unsigned long addr,
++				 const struct module *mod)
+ {
+-	return within_module_init(addr, mod) || within_module_core(addr, mod);
++	return within_module_core(addr, mod)  ||
++	       within_module_thunk(addr, mod) ||
++	       within_module_init(addr, mod);
+ }
  
--#include <asm/paravirt_types.h>
--
- #ifndef __ASSEMBLY__
- #include <linux/bug.h>
- #include <linux/types.h>
---- a/arch/x86/include/asm/paravirt_types.h
-+++ b/arch/x86/include/asm/paravirt_types.h
-@@ -2,6 +2,17 @@
- #ifndef _ASM_X86_PARAVIRT_TYPES_H
- #define _ASM_X86_PARAVIRT_TYPES_H
+ /* Search for module by name: must be in a RCU-sched critical section. */
+--- a/kernel/module/internal.h
++++ b/kernel/module/internal.h
+@@ -219,6 +219,14 @@ static inline struct module *mod_find(un
+ }
+ #endif /* CONFIG_MODULES_TREE_LOOKUP */
  
-+#ifndef __ASSEMBLY__
-+/* These all sit in the .parainstructions section to tell us what to patch. */
-+struct paravirt_patch_site {
-+	u8 *instr;		/* original instructions */
-+	u8 type;		/* type of this instruction */
-+	u8 len;			/* length of original instruction */
-+};
++#if defined(CONFIG_MODULES_TREE_LOOKUP) && defined(CONFIG_CALL_THUNKS)
++void mod_tree_insert_thunk(struct module *mod);
++void mod_tree_remove_thunk(struct module *mod);
++#else
++static inline void mod_tree_insert_thunk(struct module *mod) { }
++static inline void mod_tree_remove_thunk(struct module *mod) { }
 +#endif
 +
-+#ifdef CONFIG_PARAVIRT
+ void module_enable_ro(const struct module *mod, bool after_init);
+ void module_enable_nx(const struct module *mod);
+ void module_enable_x(const struct module *mod);
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -1154,6 +1154,7 @@ static void free_module(struct module *m
+ 	 */
+ 	mutex_lock(&module_mutex);
+ 	mod->state = MODULE_STATE_UNFORMED;
++	mod_tree_remove_thunk(mod);
+ 	mutex_unlock(&module_mutex);
+ 
+ 	/* Remove dynamic debug info */
+@@ -2770,6 +2771,10 @@ static int load_module(struct load_info
+ 	if (err < 0)
+ 		goto free_modinfo;
+ 
++	mutex_lock(&module_mutex);
++	mod_tree_insert_thunk(mod);
++	mutex_unlock(&module_mutex);
 +
- /* Bitmask of what can be clobbered: usually at least eax. */
- #define CLBR_EAX  (1 << 0)
- #define CLBR_ECX  (1 << 1)
-@@ -584,16 +595,9 @@ unsigned long paravirt_ret0(void);
+ 	flush_module_icache(mod);
  
- #define paravirt_nop	((void *)_paravirt_nop)
+ 	/* Setup CFI for the module. */
+@@ -2859,6 +2864,7 @@ static int load_module(struct load_info
+ 	mutex_lock(&module_mutex);
+ 	/* Unlink carefully: kallsyms could be walking list. */
+ 	list_del_rcu(&mod->list);
++	mod_tree_remove_thunk(mod);
+ 	mod_tree_remove(mod);
+ 	wake_up_all(&module_wq);
+ 	/* Wait for RCU-sched synchronizing before releasing mod->list. */
+--- a/kernel/module/tree_lookup.c
++++ b/kernel/module/tree_lookup.c
+@@ -66,11 +66,26 @@ static noinline void __mod_tree_insert(s
+ 	latch_tree_insert(&node->node, &tree->root, &mod_tree_ops);
+ }
  
--/* These all sit in the .parainstructions section to tell us what to patch. */
--struct paravirt_patch_site {
--	u8 *instr;		/* original instructions */
--	u8 type;		/* type of this instruction */
--	u8 len;			/* length of original instruction */
--};
--
- extern struct paravirt_patch_site __parainstructions[],
- 	__parainstructions_end[];
+-static void __mod_tree_remove(struct mod_tree_node *node, struct mod_tree_root *tree)
++static noinline void __mod_tree_remove(struct mod_tree_node *node, struct mod_tree_root *tree)
+ {
+ 	latch_tree_erase(&node->node, &tree->root, &mod_tree_ops);
+ }
  
- #endif	/* __ASSEMBLY__ */
--
-+#endif  /* CONFIG_PARAVIRT */
- #endif	/* _ASM_X86_PARAVIRT_TYPES_H */
++#ifdef CONFIG_CALL_THUNKS
++void mod_tree_insert_thunk(struct module *mod)
++{
++	mod->thunk_layout.mtn.mod = mod;
++	if (mod->thunk_layout.size)
++		__mod_tree_insert(&mod->thunk_layout.mtn, &mod_tree);
++}
++
++void mod_tree_remove_thunk(struct module *mod)
++{
++	if (mod->thunk_layout.size)
++		__mod_tree_remove(&mod->thunk_layout.mtn, &mod_tree);
++}
++#endif
++
+ /*
+  * These modifications: insert, remove_init and remove; are serialized by the
+  * module_mutex.
 
