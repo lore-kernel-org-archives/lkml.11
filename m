@@ -2,71 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E96C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB5BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 16 Jul 2022 18:29:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231613AbiGPS0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 14:26:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41488 "EHLO
+        id S230501AbiGPS3T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 14:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231548AbiGPS0Q (ORCPT
+        with ESMTP id S229505AbiGPS3R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 14:26:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20ABF192AF;
-        Sat, 16 Jul 2022 11:26:16 -0700 (PDT)
+        Sat, 16 Jul 2022 14:29:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9249117582
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 11:29:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BED7AB80C94;
-        Sat, 16 Jul 2022 18:26:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 726C5C34114;
-        Sat, 16 Jul 2022 18:26:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1657995973;
-        bh=vEIPtwSra6H2rxOkPVfL4UFO+7o+280dJ4Dh4bnd2RA=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=FBHImOLH5lDByXd8vcRYXd6+DGR2L0N+HJcDFWMW0oRAlHaNA9oOoN/f6Yo0h89Id
-         c9LMJ0DmSH6n7JfZR1/oreL2xCnWjn0x1LMYnvEof0e98C8JVVZicmC00jfBU+wg0h
-         66HTRGBWBdEnAzmFt9hpfkX1ASYQRk5h31ZRcYxkA/Cu2i8Pa4iv0RFoRckPfv8jfB
-         /7OolKFOYWZkzoFlHkJxItI8svOqcUwXA5HrkSsfRi1npRR/y9ojQl7tXZfejrGotn
-         ABJbEO6NYD0KuDj9zrM7OFzTK90XgQEL1u82ZLt5S05qhFQMJ5y/MREpNIR3sFPhNZ
-         W4pL3CkpX3IgA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5F47CE45227;
-        Sat, 16 Jul 2022 18:26:13 +0000 (UTC)
-Subject: Re: [GIT PULL] TTY/Serial driver fixes for 5.19-rc7
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YtJZegRfm6IsdY/i@kroah.com>
-References: <YtJZegRfm6IsdY/i@kroah.com>
-X-PR-Tracked-List-Id: <linux-serial.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YtJZegRfm6IsdY/i@kroah.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.19-rc7
-X-PR-Tracked-Commit-Id: a501ab75e7624d133a5a3c7ec010687c8b961d23
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8c91723ac9c60840e3a9819e5f767af3e7ca2660
-Message-Id: <165799597338.16639.16094206371245420578.pr-tracker-bot@kernel.org>
-Date:   Sat, 16 Jul 2022 18:26:13 +0000
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jiri Slaby <jslaby@suse.cz>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, linux-serial@vger.kernel.org
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BD63611D6
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 18:29:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFF38C34114;
+        Sat, 16 Jul 2022 18:29:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="SWNlm1B0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1657996153;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kozS06OyS0xBHMQiwrn8PPEbEmlJYFwVaVSdQVH4P/Q=;
+        b=SWNlm1B0KYnwKsdoqsVERfUtBJwBgzSA7Q8zagEE7G3tkxFfL9Ew3fHSnDosziwVbtDd3o
+        L8UPbF3sg86CPwBsbeSxQE+RxzNGd0owwYTpbUGAIFDiZhw/u31zpDP28b9+sVT1OJszIf
+        3PnRH3k1e427PXlmwoniHf8wj9CXFlc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 8a3e529f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Sat, 16 Jul 2022 18:29:12 +0000 (UTC)
+Date:   Sat, 16 Jul 2022 20:29:12 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Uros Bizjak <ubizjak@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] random: Use try_cmpxchg in _credit_init_bits
+Message-ID: <YtMDeHO93SQh0ufA@zx2c4.com>
+References: <20220714182822.25142-1-ubizjak@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220714182822.25142-1-ubizjak@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sat, 16 Jul 2022 08:23:54 +0200:
+Hi Uros,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/tty.git tags/tty-5.19-rc7
+On Thu, Jul 14, 2022 at 08:28:22PM +0200, Uros Bizjak wrote:
+> Use try_cmpxchg instead of cmpxchg (*ptr, old, new) == old in
+> _credit_init_bits. x86 CMPXCHG instruction returns success in ZF flag,
+> so this change saves a compare after cmpxchg (and related move
+> instruction in front of cmpxchg).
+> 
+> Also, try_cmpxchg implicitly assigns old *ptr value to "old"
+> when cmpxchg fails, enabling further code simplifications.
+> 
+> No functional change intended.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8c91723ac9c60840e3a9819e5f767af3e7ca2660
+Applied as:
+  https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git/commit/?id=6a66e096619e3a737297eb2f9f535a287af43a95
 
-Thank you!
+Thanks for the patch.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Jason
