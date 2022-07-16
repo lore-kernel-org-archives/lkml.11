@@ -2,86 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2B0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 19 Jul 2022 12:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242006AbiGSMwP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 19 Jul 2022 08:52:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50238 "EHLO
+        id S241902AbiGSMwS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 19 Jul 2022 08:52:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241884AbiGSMuu (ORCPT
+        with ESMTP id S241612AbiGSMuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 19 Jul 2022 08:50:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F2538B2;
-        Tue, 19 Jul 2022 05:20:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 396B561632;
-        Tue, 19 Jul 2022 12:20:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE00C341C6;
-        Tue, 19 Jul 2022 12:20:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658233205;
-        bh=RWkPFg8iPnAEXeqTb59I7ltWN+uZfUb1z3BOSRgLz8g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wsdf2jxl6LgbF+9n3OrtE38+FqE/54tJF020zJbOgBuKbT3PLrM2vFRqnaWyWhhF2
-         pGqdPq4L+mMTcVQQcaAUoS4jpiWydyJ6o+FE4+52wCSqnxp6xuDKGjUfHuFJ6Qjimo
-         nC6AQbYDdvmsDYU5+ODdFCOjey0CMB8Yi8B1aPcw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 043/231] net/mlx5e: kTLS, Fix build time constant test in RX
-Date:   Tue, 19 Jul 2022 13:52:08 +0200
-Message-Id: <20220719114717.904906292@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220719114714.247441733@linuxfoundation.org>
-References: <20220719114714.247441733@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Tue, 19 Jul 2022 08:50:55 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4025926C;
+        Tue, 19 Jul 2022 05:20:01 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1658233113tf3r0e4k
+Received: from localhost.localdomain ( [171.223.96.21])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 19 Jul 2022 20:18:32 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: bQsUcYFpAAZCL2K0fSWXqSFtpi8ZcffXy0TgbFPYGm0V4LCUMvUBbQin92pm6
+        nrtiZHhtFFcJLhNG8O4Sn+pV4ThKUbAdyoYuX06CE6OtxxYUpQ2mpcq0Ig9Fs4/ltV5+5QX
+        IE5wHbNJysFeDsdqcWtUVPQMOb6YBddIe8HyWRn7UIrC9Zo1siUUutohpux3cEviUVrl/4Y
+        RPJRk3aMVxgYN0jabtH9bo+5IEJ3N/EfI166UkOp28zSKXzmPnwkELIfFhwKDEJRaPGzyLO
+        qi55iIaOViJabhfPzFP08Ht0ut1WqHIzMdERy55bEg5uu3kH00WYEYr0qjcPadvZUlqELdm
+        R1nI/hGYeSX1hvtuKs0KWpeC4Pqc4NI3o+Qd6PxPCA8N1pS37zAJcRqR/QsBcxpHUB7X4gy
+        mQJI3hrZcE0=
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     maz@kernel.org
+Cc:     tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
+        tglx@linutronix.de, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] irqchip/mips-gic: Fix comment typo
+Date:   Sat, 16 Jul 2022 12:16:19 +0800
+Message-Id: <20220716041619.33629-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+The double `the' is duplicated in the comment, remove one.
 
-[ Upstream commit 2ec6cf9b742a5c18982861322fa5de6510f8f57e ]
-
-Use the correct constant (TLS_DRIVER_STATE_SIZE_RX) in the comparison
-against the size of the private RX TLS driver context.
-
-Fixes: 1182f3659357 ("net/mlx5e: kTLS, Add kTLS RX HW offload support")
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Maxim Mikityanskiy <maximmi@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/irqchip/irq-mips-gic.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 96064a2033f7..f3f2aeb1bc21 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -231,8 +231,7 @@ mlx5e_set_ktls_rx_priv_ctx(struct tls_context *tls_ctx,
- 	struct mlx5e_ktls_offload_context_rx **ctx =
- 		__tls_driver_ctx(tls_ctx, TLS_OFFLOAD_CTX_DIR_RX);
+diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
+index 8a9efb6ae587..9464af4b53e7 100644
+--- a/drivers/irqchip/irq-mips-gic.c
++++ b/drivers/irqchip/irq-mips-gic.c
+@@ -494,7 +494,7 @@ static int gic_irq_domain_map(struct irq_domain *d, unsigned int virq,
+ 	map = GIC_MAP_PIN_MAP_TO_PIN | gic_cpu_pin;
  
--	BUILD_BUG_ON(sizeof(struct mlx5e_ktls_offload_context_rx *) >
--		     TLS_OFFLOAD_CONTEXT_SIZE_RX);
-+	BUILD_BUG_ON(sizeof(priv_rx) > TLS_DRIVER_STATE_SIZE_RX);
- 
- 	*ctx = priv_rx;
- }
+ 	/*
+-	 * If adding support for more per-cpu interrupts, keep the the
++	 * If adding support for more per-cpu interrupts, keep the
+ 	 * array in gic_all_vpes_irq_cpu_online() in sync.
+ 	 */
+ 	switch (intr) {
 -- 
 2.35.1
-
-
 
