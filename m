@@ -2,84 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B880EC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8918C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232579AbiGQOsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 10:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
+        id S230232AbiGQOtT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:49:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiGQOsN (ORCPT
+        with ESMTP id S233151AbiGQOtQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 10:48:13 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF062E0
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 07:48:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zg3lKm07i/XRUKG1J5yBXuQWVN/SwXdMkJ8fAyjZVmo=; b=iywJmjKFHgq/ARQuh+atQwVIvA
-        FILkIUajNEfJ1DFe5/u66Z+kUlvfCYCh4t2aMqCWNHfWmd5kjMI68LD6/DKT1QFs5gYGNROYhHp7C
-        vVulUjHl1Zzj0E3qB0iE980E96nM0AQFq/sgtrq9qPx1Qdz45IavU+8LnQGrJjZxewAut+mBm8gwT
-        BChXAKgFkxSD2c2tj8/drGrftRAOQNxEQDgJl7VicsiStrcLHCxfe2kBmrZbUTXnK804qO7b1k2Ld
-        u8jLuiPLe9cIs+B+kQTccWEIV+pgOevQf8KIg8G83n5EHRByb59aMgVdYc0biY1OJ/VgM88pxSUmI
-        B7jsnvrg==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oD5Yp-00BtUa-Oc; Sun, 17 Jul 2022 14:47:55 +0000
-Date:   Sun, 17 Jul 2022 15:47:55 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Li Hongyu <lihongyu1999@bupt.edu.cn>
-Cc:     "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Subject: Re: [PATCH] maple: change the pointer name from maple_enode to
- maple_enode_p
-Message-ID: <YtQhGyEw5Tn2eNPh@casper.infradead.org>
-References: <20220717120652.GA9281@38c3a67cb865>
+        Sun, 17 Jul 2022 10:49:16 -0400
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BF66439;
+        Sun, 17 Jul 2022 07:49:15 -0700 (PDT)
+Received: by mail-pj1-f41.google.com with SMTP id a15so9681683pjs.0;
+        Sun, 17 Jul 2022 07:49:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MBqBRgrfgPQGc4/jdSwIFgnWOJuS+NlWZm/Y/rNo1tY=;
+        b=AtWaRYWfkxg8hQctM5pMBpV4cIQbrMTg7OBzcjNIdIHriz4HxAcVF2W3kbSm7Z6qeo
+         5rOKaHBTO91kQCg9KbcGDYhzaKlO4g8O8xdRlkVkoUkZqOsC4ly7Vrg6fEsY9chWN1g8
+         Qs4kSsLcaSJXNndfAGUQDpZxy1rIDqkyCggwbjKfxWTnmht+nL0JHY1PTDfFojI4sE4j
+         D4Rfirn6TXiphpBJWdIURH44eg58fFxs37rWHggY/i3fXTXi7DdN9LM0vudnfiCCGwJe
+         KVMSnqh/2XXiYXpHqyXZ74n8+g/HC/bvV9Re06QhBGRzAxO1Drk+Lj83MVnZzK5g3JZ6
+         vVFg==
+X-Gm-Message-State: AJIora8dJ6rtQYHffiQxcxVy9iAn849g4RdBC/7Y+XP52iof+hMPG577
+        ETDyEZoj8vLvJyd8IM4B44c=
+X-Google-Smtp-Source: AGRyM1vKlS5JO91dnrQ13ldmYHdfA/q1yTYeHEWzfgJZ/HDGTDHezfDGiHirtSxHBdrdjdCBfqjKTw==
+X-Received: by 2002:a17:903:24e:b0:16b:9fa2:41e5 with SMTP id j14-20020a170903024e00b0016b9fa241e5mr23860146plh.127.1658069354999;
+        Sun, 17 Jul 2022 07:49:14 -0700 (PDT)
+Received: from ?IPV6:2601:647:4000:d7:feaa:14ff:fe9d:6dbd? ([2601:647:4000:d7:feaa:14ff:fe9d:6dbd])
+        by smtp.gmail.com with ESMTPSA id a18-20020a170902b59200b0016bcc35000asm7264431pls.302.2022.07.17.07.49.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Jul 2022 07:49:13 -0700 (PDT)
+Message-ID: <d4efe597-94b0-5878-fb54-1c6deb915659@acm.org>
+Date:   Sun, 17 Jul 2022 07:49:12 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220717120652.GA9281@38c3a67cb865>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC] block: Add a NULL check in blk_mq_free_rqs()
+Content-Language: en-US
+To:     Gautam Menghani <gautammenghani201@gmail.com>, axboe@kernel.dk
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        skhan@linuxfoundation.org
+References: <20220717102242.219424-1-gautammenghani201@gmail.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220717102242.219424-1-gautammenghani201@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 09:12:42PM +0900, Li Hongyu wrote:
-> The current name of the pointer to struct maple_enode is also
-> maple_enode. This is correct from the grammar point but can be
-> comfusing. Besides it seems in Linux it prefers typedef struct foo
-> *foo_p;, e.g. typedef struct cpumask *cpumask_var_t; and typedef
-> struct cgraph_node *cgraph_node_ptr;. I use re to search in the
-> Linux project and cannot find another example in typedef struct
-> foo *foo; style.
+On 7/17/22 03:22, Gautam Menghani wrote:
+> Syzbot reported a general protection fault in the function
+> blk_mq_clear_rq_mapping() in the file block/blk-mq.c.
+> The issue is that the variable drv_tags is NULL, and this
+> originates from the struct blk_mq_tag_set. The dashboard link for this
+> issue is :
+> syzkaller.appspot.com/bug?id=c3ce4caa4fc58c156d4903984131cdfa38eee354
 > 
-> This also results in a bug in the bindings of the
-> rust-for-linux subsystem, which can be seen in this github issue.
+> This patch fixes the above bug, but there is another syzbot bug which is
+> related to this and getting triggered after the call to
+> blk_mq_clear_rq_mapping(). As a result, I cannot determine if the issue
+> is really solved. The link to other issue:
+> syzkaller.appspot.com/bug?id=7643cea70f1d0ce15f5f4bc39488918837ad4233
 > 
-> https://github.com/Rust-for-Linux/linux/issues/795
+> Please provide feedback/suggestions on the same.
 > 
-> The struct pointer maple_enode and maple_pnode are not used. It is
-> safe to change it to a new name.
-> 
-> Signed-off-by: Li Hongyu <lihongyu1999@bupt.edu.cn>
+> Signed-off-by: Gautam Menghani <gautammenghani201@gmail.com>
 > ---
->  include/linux/maple_tree.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>   block/blk-mq.c | 3 ++-
+>   1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/linux/maple_tree.h b/include/linux/maple_tree.h
-> index 2c9dede989c7..4886e019a2b5 100644
-> --- a/include/linux/maple_tree.h
-> +++ b/include/linux/maple_tree.h
-> @@ -72,8 +72,8 @@
->   *   0x010 : 32 bit values, type in 0-2, slot in 3-6
->   *   0x110 : 64 bit values, type in 0-2, slot in 3-6
->   */
-> -typedef struct maple_enode *maple_enode; /* encoded node */
-> -typedef struct maple_pnode *maple_pnode; /* parent node */
-> +typedef struct maple_enode *maple_enode_p; /* encoded node */
-> +typedef struct maple_pnode *maple_pnode_p; /* parent node */
+> diff --git a/block/blk-mq.c b/block/blk-mq.c
+> index 93d9d60980fb..c1dd1b78b95c 100644
+> --- a/block/blk-mq.c
+> +++ b/block/blk-mq.c
+> @@ -3092,7 +3092,8 @@ void blk_mq_free_rqs(struct blk_mq_tag_set *set, struct blk_mq_tags *tags,
+>   		}
+>   	}
+>   
+> -	blk_mq_clear_rq_mapping(drv_tags, tags);
+> +	if (drv_tags)
+> +		blk_mq_clear_rq_mapping(drv_tags, tags);
+>   
+>   	while (!list_empty(&tags->page_list)) {
+>   		page = list_first_entry(&tags->page_list, struct page, lru);
 
-If this is the only change needed, then clearly they're not being used,
-so just delete them?
+I don't see how drv_tags could be NULL without triggering a race 
+condition. Please take a look at the nbd driver to see whether the root 
+cause is perhaps in that driver instead of in the block layer core.
+
+Thanks,
+
+Bart.
