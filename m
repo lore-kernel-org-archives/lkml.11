@@ -2,83 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89190C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 23:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3893C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 23:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231408AbiGQXdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 19:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41352 "EHLO
+        id S231146AbiGQXpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 19:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229818AbiGQXdt (ORCPT
+        with ESMTP id S229535AbiGQXpH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 19:33:49 -0400
-X-Greylist: delayed 1327 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 17 Jul 2022 16:33:48 PDT
-Received: from tartarus.angband.pl (tartarus.angband.pl [51.83.246.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F69A100A;
-        Sun, 17 Jul 2022 16:33:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=angband.pl;
-        s=tartarus; h=Subject:Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=g9c6Fw5wegV7nRqLgN+7yazf4jmfsQdfONU8hlkeEdI=; b=X3mu+6Pz5w36at7DZfspAK8G7v
-        XcvdCLxE18vzw/UEz46gBPs8kOxSDI/1rXQiV13AEtMjF2fWyYsGLhgKiHEzRr8u11fNncPlB+cuS
-        ge/+r4IOSwEmOmYZUl6YUnJBFLT3TJBO8TCbkPZbriJ/ES7MVpBv9Lwk05qVQM8ujids=;
-Received: from 89-73-149-240.dynamic.chello.pl ([89.73.149.240] helo=barad-dur.angband.pl)
-        by tartarus.angband.pl with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <kilobyte@angband.pl>)
-        id 1oDDPw-002l3o-RJ; Mon, 18 Jul 2022 01:11:20 +0200
-Received: from [2a02:a31c:8144:c400::4] (helo=valinor.angband.pl)
-        by barad-dur.angband.pl with esmtp (Exim 4.94.2)
-        (envelope-from <kilobyte@angband.pl>)
-        id 1oDDPu-0007TW-WF; Mon, 18 Jul 2022 01:11:15 +0200
-Received: from kilobyte by valinor.angband.pl with local (Exim 4.96)
-        (envelope-from <kilobyte@valinor.angband.pl>)
-        id 1oDDPr-0008aZ-0d;
-        Mon, 18 Jul 2022 01:11:11 +0200
-From:   Adam Borowski <kilobyte@angband.pl>
-To:     David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Adam Borowski <kilobyte@angband.pl>
-Date:   Mon, 18 Jul 2022 01:11:05 +0200
-Message-Id: <20220717231105.33005-1-kilobyte@angband.pl>
-X-Mailer: git-send-email 2.36.1
+        Sun, 17 Jul 2022 19:45:07 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37DD4FD1D;
+        Sun, 17 Jul 2022 16:45:05 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LmMCB63PXz4xhn;
+        Mon, 18 Jul 2022 09:44:54 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658101499;
+        bh=kQL7s0bv0QVHOf6xNkEQ6iRj458x4B3GPPXuqjZxsDI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=G9/V5bsYQdzT8lFlBqsJgYbE3dK4DCoDdyXL2f6eaU6ntUfOygHABeUCbQbW4QNUD
+         wvSgw9eBM2hJaduED9ml1DITLUHnMrlPZ6rDi53PPtGA6rb5bT9V/p1R4n+gdlzOPj
+         fwWM0GexHRPyUYE0QCQO/p3vlnYhbQNMoBWYYpVGuZWrhAdBVLOHcIs/+LRKMzle0y
+         lIW8O9r0Xt2vDy7aWDXS25JPjOfvBwqwi6b995CNhmqN8wfYhAnIPx7UlpfeZzExX2
+         jbs+QbU8PsOIU5jgfKnEslfl3UDxvcLcIujcIOQDLpdqy7ZS7+BaiyBGdz8XXvSbkI
+         pKKzU/b4E1Jpg==
+Date:   Mon, 18 Jul 2022 09:44:53 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Dave Airlie <airlied@linux.ie>
+Cc:     Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>,
+        Arunpravin Paneer Selvam <Arunpravin.PaneerSelvam@amd.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: manual merge of the drm tree with the
+ drm-misc-fixes tree
+Message-ID: <20220718094453.2f1a1f09@canb.auug.org.au>
+In-Reply-To: <6e60d396-2a52-d1fa-f125-3c585605b531@amd.com>
+References: <20220711124742.3b151992@canb.auug.org.au>
+        <6e60d396-2a52-d1fa-f125-3c585605b531@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 89.73.149.240
-X-SA-Exim-Mail-From: kilobyte@angband.pl
-Subject: [PATCH] certs: make system keyring depend on x509 parser
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on tartarus.angband.pl)
+Content-Type: multipart/signed; boundary="Sig_/8YejglQrq3zPUgCrXSL0TSk";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This code requires x509_load_certificate_list() to be built-in.
+--Sig_/8YejglQrq3zPUgCrXSL0TSk
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: 60050ffe3d770dd1df5b641aa48f49d07a54bd84
-Signed-off-by: Adam Borowski <kilobyte@angband.pl>
----
-Otherwise, we get a build failure.
+Hi all,
 
- certs/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, 11 Jul 2022 10:05:45 +0200 Christian K=C3=B6nig <christian.koenig@a=
+md.com> wrote:
+>
+> Am 11.07.22 um 04:47 schrieb Stephen Rothwell:
+> >
+> > Today's linux-next merge of the drm tree got a conflict in:
+> >
+> >    drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c
+> >
+> > between commit:
+> >
+> >    925b6e59138c ("Revert "drm/amdgpu: add drm buddy support to amdgpu"")
+> >
+> > from the drm-misc-fixes tree and commit:
+> >
+> >    5e3f1e7729ec ("drm/amdgpu: fix start calculation in amdgpu_vram_mgr_=
+new")
+> >
+> > from the drm tree.
+> >
+> > This is a mess :-(  I have just reverted the above revert before mergin
+> > the drm tree for today, please fix it up. =20
+>=20
+> Sorry for the noise, the patch "5e3f1e7729ec ("drm/amdgpu: fix start
+> calculation in amdgpu_vram_mgr_new")" and another one is going to be
+> reverted from the drm tree as well.
+>=20
+> It's just that -fixes patches where faster than -next patches.
 
-diff --git a/certs/Kconfig b/certs/Kconfig
-index 476755703cf8..bf9b511573d7 100644
---- a/certs/Kconfig
-+++ b/certs/Kconfig
-@@ -43,6 +43,7 @@ config SYSTEM_TRUSTED_KEYRING
- 	bool "Provide system-wide ring of trusted keys"
- 	depends on KEYS
- 	depends on ASYMMETRIC_KEY_TYPE
-+	depends on X509_CERTIFICATE_PARSER
- 	help
- 	  Provide a system keyring to which trusted keys can be added.  Keys in
- 	  the keyring are considered to be trusted.  Keys may be added at will
--- 
-2.36.1
+Here we are a week later, -rc7 has been released and as far as I can
+tell (though I may have missed it), this is still a problem :-(
 
+I am still reverting 925b6e59138c (which is now in Linus' tree).
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/8YejglQrq3zPUgCrXSL0TSk
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLUnvUACgkQAVBC80lX
+0Gw6agf9GW4WNGxB7WRUxFOdrFlVRBxgU93UbVTP5tRDPx9AiZiDEOVvGTI6/QlL
+z8HL2oxR4QCqQBI3JeY+jGbOY/0DCn2OwtaKe1bTCYtdNbprgZxeTi4/x7dru2V9
+Db8ypw5hqiNrXsLSE+RR+t2joQj3jkmnvNK4PXM78LyuXkt31TbrkBCU/vVtVjp6
+xcnIlDP2jtiuPAbh1EZf/fPG3/fYKid+g35eSDLV2Y4gc0/CNUuP+D9dh4DaLAzW
+bBOEa40Wq3QLSysAhGf4lxGbxFwQQBkLURC/XP71PWMMfvqmhmPqlgtXqVRiux5C
+nJQ3xEsLCLYUe/CCd7XEEC8RzBZtuA==
+=qitT
+-----END PGP SIGNATURE-----
+
+--Sig_/8YejglQrq3zPUgCrXSL0TSk--
