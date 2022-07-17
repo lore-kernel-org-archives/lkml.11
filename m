@@ -2,115 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E31EC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 01:06:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4F60C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 01:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232448AbiGQBGY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 21:06:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
+        id S232508AbiGQBML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 21:12:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229941AbiGQBGX (ORCPT
+        with ESMTP id S232457AbiGQBMI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 16 Jul 2022 21:06:23 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A5E711801
-        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 18:06:21 -0700 (PDT)
-Received: from [10.20.42.19] (unknown [10.20.42.19])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxn9GFYNNiHRYkAA--.6968S3;
-        Sun, 17 Jul 2022 09:06:13 +0800 (CST)
-Subject: Re: [PATCH V15 00/15] irqchip: Add LoongArch-related irqchip drivers
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        loongarch@lists.linux.dev, Hanjun Guo <guohanjun@huawei.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-References: <1657868751-30444-1-git-send-email-lvjianmin@loongson.cn>
- <87less52bx.wl-maz@kernel.org>
-From:   Jianmin Lv <lvjianmin@loongson.cn>
-Message-ID: <6e9def1e-31fe-787d-1b2b-a328424352f0@loongson.cn>
-Date:   Sun, 17 Jul 2022 09:06:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux loongarch64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        Sat, 16 Jul 2022 21:12:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2B30315A1A
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 18:12:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658020327;
+        h=from:from:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Yvkpx482WEOx0k7AE4fGPI+kXMmx+3JjLrAm+UsDHkI=;
+        b=YxKIY4ULoeufN+OkFBFI9G4C+YwIVikNlwr2BeapEuCO3+usA682oRZG+R/dsE6vZt3p99
+        9aWa9fx65z+4fLAXmPNHQHvXOrJCdYU5yaJDczhgfTNdS5D224iOR4EtWW5L3Duugf7qXl
+        9w4hXqYtPobUcZg0QlWxHSfklVfJucw=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-394-9s9Nyz0tNK2LeBZoTUn9Mw-1; Sat, 16 Jul 2022 21:12:03 -0400
+X-MC-Unique: 9s9Nyz0tNK2LeBZoTUn9Mw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 521652932498;
+        Sun, 17 Jul 2022 01:12:03 +0000 (UTC)
+Received: from [10.64.54.37] (vpn2-54-37.bne.redhat.com [10.64.54.37])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F3C4A40E8B04;
+        Sun, 17 Jul 2022 01:11:59 +0000 (UTC)
+Reply-To: Gavin Shan <gshan@redhat.com>
+Subject: Re: [PATCH v2] KVM: selftests: Fix target thread to be migrated in
+ rseq_test
+To:     oliver.upton@linux.dev, kvmarm@lists.cs.columbia.edu
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, seanjc@google.com,
+        pbonzini@redhat.com, maz@kernel.org, shuah@kernel.org,
+        shan.gavin@gmail.com
+References: <20220716144537.3436743-1-gshan@redhat.com>
+ <385aa28ad559874da8429c40a68570df@linux.dev>
+From:   Gavin Shan <gshan@redhat.com>
+Message-ID: <4bdaa1cd-39f4-97d7-ba33-ee5cdc7d609e@redhat.com>
+Date:   Sun, 17 Jul 2022 13:11:39 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.0
 MIME-Version: 1.0
-In-Reply-To: <87less52bx.wl-maz@kernel.org>
+In-Reply-To: <385aa28ad559874da8429c40a68570df@linux.dev>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dxn9GFYNNiHRYkAA--.6968S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxJr15XrWxtrWfCF1xKFyrCrg_yoW5JFWUpF
-        W7WFW2ka1UArWUAw1kJ3yFqa4Sv3s3Kr97Jan3uw4UCrnxuw1DX347tFs3uFy7Cr4DK3W0
-        9ayrtws5Wa1DAaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvE1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2
-        jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8JVW8Jr1le2I262IYc4CY6c
-        8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_
-        JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvEwIxGrw
-        ACjI8F5VA0II8E6IAqYI8I648v4I1lc7I2V7IY0VAS07AlzVAYIcxG8wCY02Avz4vE-syl
-        42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW5Wr1UJr1l4I8I3I0E4IkC6x0Yz7
-        v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF
-        1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIx
-        AIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVW8JVW3JwCI
-        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
-        evJa73UjIFyTuYvjfUF9a9DUUUU
-X-CM-SenderInfo: 5oymxthqpl0qxorr0wxvrqhubq/
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Oliver,
+
+On 7/17/22 7:48 AM, oliver.upton@linux.dev wrote:
+> 
+> Thanks for cleaning this up.
+> 
+
+Thanks for your review.
+
+> July 16, 2022 7:45 AM, "Gavin Shan" <gshan@redhat.com> wrote:
+>> In rseq_test, there are two threads, which are thread group leader
+>> and migration worker. The migration worker relies on sched_setaffinity()
+>> to force migration on the thread group leader.
+> 
+> It may be clearer to describe it as a vCPU thread and a migration worker
+> thread. The meat of this test is to catch a regression in KVM.
+> 
+>> Unfortunately, we have
+> 
+> s/we have/the test has the/
+> 
+>> wrong parameter (0) passed to sched_getaffinity().
+> 
+> wrong PID
+> 
+
+Yep, it's much clearer to describe it as vCPU thread and migration worker.
+
+>> It's actually
+>> forcing migration on the migration worker instead of the thread group
+>> leader.
+> 
+> What's missing is _why_ the migration worker is getting moved around by
+> the call. Perhaps instead it is better to state what a PID of 0 implies,
+> for those of us who haven't read their manpages in a while ;-)
+> 
+
+Yes, it's good idea. I will have something like below in next revision :)
+
+     In rseq_test, there are two threads, which are vCPU thread and migration
+     worker separately. Unfortunately, the test has the wrong PID passed to
+     sched_setaffinity() in the migration worker. It forces migration on the
+     migration worker because zeroed PID represents the calling thread, which
+     is the migration worker itself. It means the vCPU thread is never enforced
+     to migration and it can migrate at any time, which eventually leads to
+     failure as the following logs show.
+         :
+         :
+     Fix the issue by passing correct parameter, TID of the vCPU thread, to
+     sched_setaffinity() in the migration worker.
 
 
-On 2022/7/17 上午2:39, Marc Zyngier wrote:
-> On Fri, 15 Jul 2022 08:05:36 +0100,
-> Jianmin Lv <lvjianmin@loongson.cn> wrote:
+>> It also means migration can happen on the thread group leader
+>> at any time, which eventually leads to failure as the following logs
+>> show.
 >>
->> LoongArch is a new RISC ISA, which is a bit like MIPS or RISC-V.
->> LoongArch includes a reduced 32-bit version (LA32R), a standard 32-bit
->> version (LA32S) and a 64-bit version (LA64). LoongArch use ACPI as its
->> boot protocol LoongArch-specific interrupt controllers (similar to APIC)
->> are already added in the ACPI Specification 6.5(which may be published in
->> early June this year and the board is reviewing the draft).
+>> host# uname -r
+>> 5.19.0-rc6-gavin+
+>> host# # cat /proc/cpuinfo | grep processor | tail -n 1
+>> processor : 223
+>> host# pwd
+>> /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
+>> host# for i in `seq 1 100`; \
+>> do echo "--------> $i"; ./rseq_test; done
+>> --------> 1
+>> --------> 2
+>> --------> 3
+>> --------> 4
+>> --------> 5
+>> --------> 6
+>> ==== Test Assertion Failure ====
+>> rseq_test.c:265: rseq_cpu == cpu
+>> pid=3925 tid=3925 errno=4 - Interrupted system call
+>> 1 0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
+>> 2 0x0000ffffb044affb: ?? ??:0
+>> 3 0x0000ffffb044b0c7: ?? ??:0
+>> 4 0x0000000000401a6f: _start at ??:?
+>> rseq CPU = 4, sched CPU = 27
 >>
->> Currently, LoongArch based processors (e.g. Loongson-3A5000) can only
->> work together with LS7A chipsets. The irq chips in LoongArch computers
->> include CPUINTC (CPU Core Interrupt Controller), LIOINTC (Legacy I/O
->> Interrupt Controller), EIOINTC (Extended I/O Interrupt Controller),
->> HTVECINTC (Hyper-Transport Vector Interrupt Controller), PCH-PIC (Main
->> Interrupt Controller in LS7A chipset), PCH-LPC (LPC Interrupt Controller
->> in LS7A chipset) and PCH-MSI (MSI Interrupt Controller).
+>> This fixes the issue by passing correct parameter, tid of the group
+>> thread leader, to sched_setaffinity().
 > 
-> [...]
+> Kernel commit messages should have an imperative tone:
 > 
-> Compiling this series for loongarch with loongson3_defconfig on top of
-> 5.19-rc3 results in the following:
-> 
-> loongarch64-linux-ld: drivers/irqchip/irq-loongson-eiointc.o: in function `.L60':
-> irq-loongson-eiointc.c:(.init.text+0x4c): undefined reference to `pch_msi_acpi_init'
-> loongarch64-linux-ld: drivers/irqchip/irq-loongson-htvec.o: in function `pch_msi_parse_madt':
-> irq-loongson-htvec.c:(.init.text+0x14): undefined reference to `pch_msi_acpi_init'
-> make: *** [Makefile:1164: vmlinux] Error 1
-> 
-> I *really* would have expected this series to be in a better shape
-> after over 15 rounds, but it looks like I'm expecting too much. I
-> haven't investigated the breakage, but this should (at the very least)
-> pass the defconfig test and optional drivers not being selected.
-> 
-> The corresponding MIPS configuration seems to build fine.
-> 
-> 	M.
+> Fix the issue by ...
 > 
 
-Hi, Marc
+Ok. I've been having my style for long time. Actually, the style was
+shared by some one when I worked for IBM long time ago. I will bear
+it in mind to use imperative expression since now on :)
 
-Sorry for that first, pch_msi_acpi_init is defined in pch_msi driver 
-which is compiled depend on CONFIG_PCI, and I test the patches each time 
-with PCI patches and other(or else, kernel can not be boot), so I'm ok 
-for testing the patches. The PCI patches has been accepted by PCI 
-maintainers and will be merged in this merge window.
+All your comments will be fixed in next revision, but I would delay
+the posting a bit to see Sean or Paolo have more comments. In that
+case, I can fix all of them at once.
 
-I don't know how to deal with this situation. Should I add *#ifdef 
-CONFIG_PCI* at position of calling pch_msi_acpi_init or some other way?
+>> Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
+>> Signed-off-by: Gavin Shan <gshan@redhat.com>
+> 
+> With the comments on the commit message addressed:
+> 
+> Reviewed-by: Oliver Upton <oliver.upton@linux.dev>
+> 
 
-Thanks sincerely.
+Thanks again for your time on this.
+
+Thanks,
+Gavin
 
