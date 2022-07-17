@@ -2,131 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1B6CCA47B
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF902C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 14:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233025AbiGQN77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 09:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S233027AbiGQOBK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 10:01:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230232AbiGQN76 (ORCPT
+        with ESMTP id S229656AbiGQOBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 09:59:58 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C24BE1400C;
-        Sun, 17 Jul 2022 06:59:56 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id k30so12076063edk.8;
-        Sun, 17 Jul 2022 06:59:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LbXvWfEaQpT3EOvVscba33ymf3op3INZ0urZAjVoQ+c=;
-        b=GOZVLSmxUnmmok7nuMBDud3xiCRYe8eu91x9Qvgxc9cJaBQehuLzC3GA6UqGhwru53
-         BHuY1Kk/C6M+StYzq7IsGg0gOcozgvgbA5Kj2hht9Nav7qPpTWi2k9XSlljKSO+JpJMX
-         Z3Qu9EiRiTn2OIs0tiU7fWX5zVSlzz28tET+tAmXA2y1J7HU7xOF/jJy7ENI8BX6BPXD
-         wHbrmfH7vtJeMT1SfokQhDGBil4sC2dPZfNPVTvOAgXco60vf+iR5YJDthf+rgUV/FT6
-         A+l7WkBrCBx6yEvA/l3Oyt1Evqp+HUgzgYv4l43DAlW5yzcWWIGsHJlF9WgAt/FyIeff
-         8GWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LbXvWfEaQpT3EOvVscba33ymf3op3INZ0urZAjVoQ+c=;
-        b=7dgKVAqFUJKiyWLWSJtM6VIT+uybUfq1tPKKPjs8JajjMDnOPmmERy9sKNWquiQoWi
-         qN5oiMTMUedp5J3zeHDNjWVRX+sHxQl9pvoMcYMqyod5sPL3gzm9m4B+nxv9TFtxirMZ
-         o2aLi3b4nsJSnCIK73LYWy6sdPDavuDN/dqURbPA1GU59nmvlp+7NHLgt9AwUDhprJMw
-         1pfme4SRLoGeZJFRdRejZtPcphww7RTHEuPetV+EECbOfuJsm/t+Hj+pQTVX7G2Mfwky
-         sdvFZ/npThr3UyYJRyXShsPHhOP0witj7H0Vx0PVS4uI3mkWadwwEP6nW4uRdYXKvFW0
-         cHnA==
-X-Gm-Message-State: AJIora/EZFIN86r3rQ4EmAjnOfS3mhASn8EkmxH6w3kbkcSH/Q/oWTgZ
-        F7laHLFBBWsEuHRCiR2MG3E=
-X-Google-Smtp-Source: AGRyM1slHNXAJnCxBZ/BWP8T3k0+2yJe1JC18WCLjCcfhqljeNhmrcHHXAAzZTZUlJ/j1k5rsI/uVw==
-X-Received: by 2002:aa7:dd16:0:b0:43a:e850:a245 with SMTP id i22-20020aa7dd16000000b0043ae850a245mr30728413edv.127.1658066395289;
-        Sun, 17 Jul 2022 06:59:55 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id p4-20020a05640243c400b0043b5fb04e76sm1297707edc.27.2022.07.17.06.59.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 06:59:54 -0700 (PDT)
-Date:   Sun, 17 Jul 2022 16:59:51 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     netdev@kapio-technology.com
-Cc:     Ido Schimmel <idosch@nvidia.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <20220717135951.ho4raw3bzwlgixpb@skbuf>
-References: <20220708091550.2qcu3tyqkhgiudjg@skbuf>
- <e3ea3c0d72c2417430e601a150c7f0dd@kapio-technology.com>
- <20220708115624.rrjzjtidlhcqczjv@skbuf>
- <723e2995314b41ff323272536ef27341@kapio-technology.com>
- <YsqPWK67U0+Iw2Ru@shredder>
- <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
- <Ys69DiAwT0Md+6ai@shredder>
- <648ba6718813bf76e7b973150b73f028@kapio-technology.com>
- <20220717125718.mj7b3j3jmltu6gm5@skbuf>
- <a6ec816279b282a4ea72252a7400d5b3@kapio-technology.com>
+        Sun, 17 Jul 2022 10:01:09 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0766BBF4B
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 07:01:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 23DB3CE0E93
+        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 14:01:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E8DC3411E;
+        Sun, 17 Jul 2022 14:01:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658066464;
+        bh=kPrXq4s7FhU3O3sAvSQWtL6Um5wrTy7pKXsIY4QLLFY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Che6jrwXT6JA0zNNg+mc9qinJh124uoQmoSrjHDE79mePwkMl4735T0cQDW7mY0xd
+         Kss7csZ0/+1RdOmHz1z99bxT2Lc09hS+6P+y2TKN9L/7QmroAqB/HGWxKOpK0hjDg4
+         JqsYS1F59j44yIUZH2eDhMcHQrnTKi0Rx1hfRMsqe3CeOf8H16ITgFPAABF8d4luYQ
+         KxDGmyG0/qK9VEa6IrAJph+fkDq+VWLJGMMTeu3tvcCGxV1Vhtl9sMGIx6T2Os8ZM4
+         /s75HCgsdNeaxEmUnMBf/Qo7yFblrKRLuqMFl2P67wwO0ber0l95E7qpP+TYVkZ6gs
+         ANp7RiLJy8VQQ==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 0237040374; Sun, 17 Jul 2022 11:01:01 -0300 (-03)
+Date:   Sun, 17 Jul 2022 11:01:01 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Cc:     cclaudio@linux.ibm.com, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] perf trace: Fix SIGSEGV when processing syscall args
+Message-ID: <YtQWHTddjHhsqnOZ@kernel.org>
+References: <20220707090900.572584-1-naveen.n.rao@linux.vnet.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a6ec816279b282a4ea72252a7400d5b3@kapio-technology.com>
+In-Reply-To: <20220707090900.572584-1-naveen.n.rao@linux.vnet.ibm.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 03:09:10PM +0200, netdev@kapio-technology.com wrote:
-> On 2022-07-17 14:57, Vladimir Oltean wrote:
-> > On Sun, Jul 17, 2022 at 02:21:47PM +0200, netdev@kapio-technology.com
-> > wrote:
-> > > On 2022-07-13 14:39, Ido Schimmel wrote:
-> > > > On Wed, Jul 13, 2022 at 09:09:58AM +0200, netdev@kapio-technology.com
-> > > > wrote:
-> > > 
-> > > >
-> > > > What are "Storm Prevention" and "zero-DPV" FDB entries?
-> > > 
-> > > They are both FDB entries that at the HW level drops all packets
-> > > having a
-> > > specific SA, thus using minimum resources.
-> > > (thus the name "Storm Prevention" aka, protection against DOS
-> > > attacks. We
-> > > must remember that we operate with CPU based learning.)
-> > 
-> > DPV means Destination Port Vector, and an ATU entry with a DPV of 0
-> > essentially means a FDB entry pointing nowhere, so it will drop the
-> > packet. That's a slight problem with Hans' implementation, the bridge
-> > thinks that the locked FDB entry belongs to port X, but in reality it
-> > matches on all bridged ports (since it matches by FID). FID allocation
-> > in mv88e6xxx is slightly strange, all VLAN-unaware bridge ports,
-> > belonging to any bridge, share the same FID, so the FDB databases are
-> > not exactly isolated from each other.
+Em Thu, Jul 07, 2022 at 02:39:00PM +0530, Naveen N. Rao escreveu:
+> On powerpc, 'perf trace' is crashing with a SIGSEGV when trying to
+> process a perf.data file created with 'perf trace record -p':
 > 
-> But if the locked port is vlan aware and has a pvid, it should not block
-> other ports.
+>   #0  0x00000001225b8988 in syscall_arg__scnprintf_augmented_string <snip> at builtin-trace.c:1492
+>   #1  syscall_arg__scnprintf_filename <snip> at builtin-trace.c:1492
+>   #2  syscall_arg__scnprintf_filename <snip> at builtin-trace.c:1486
+>   #3  0x00000001225bdd9c in syscall_arg_fmt__scnprintf_val <snip> at builtin-trace.c:1973
+>   #4  syscall__scnprintf_args <snip> at builtin-trace.c:2041
+>   #5  0x00000001225bff04 in trace__sys_enter <snip> at builtin-trace.c:2319
+> 
+> That points to the below code in tools/perf/builtin-trace.c:
+> 	/*
+> 	 * If this is raw_syscalls.sys_enter, then it always comes with the 6 possible
+> 	 * arguments, even if the syscall being handled, say "openat", uses only 4 arguments
+> 	 * this breaks syscall__augmented_args() check for augmented args, as we calculate
+> 	 * syscall->args_size using each syscalls:sys_enter_NAME tracefs format file,
+> 	 * so when handling, say the openat syscall, we end up getting 6 args for the
+> 	 * raw_syscalls:sys_enter event, when we expected just 4, we end up mistakenly
+> 	 * thinking that the extra 2 u64 args are the augmented filename, so just check
+> 	 * here and avoid using augmented syscalls when the evsel is the raw_syscalls one.
+> 	 */
+> 	if (evsel != trace->syscalls.events.sys_enter)
+> 		augmented_args = syscall__augmented_args(sc, sample, &augmented_args_size, trace->raw_augmented_syscalls_args_size);
+> 
+> As the comment points out, we should not be trying to augment the args
+> for raw_syscalls. However, when processing a perf.data file, we are not
+> initializing those properly. Fix the same.
 
-I don't understand what you want to say by that. It will block all other
-packets with the same MAC SA that are classified to the same FID.
-In case of VLAN-aware bridges, the mv88e6xxx driver allocates a new FID
-for each VID (see mv88e6xxx_atu_new). In other words, if a locked port
-is VLAN-aware and has a pvid, then whatever the PVID may be, all ports
-in that same VLAN are still blocked in the same way.
+Thanks, applied.
 
-> Besides the fid will be zero with vlan unaware afaik, and all with
-> zero fid do not create locked entries.
+- Arnaldo
 
-If by 0 you mean 1 (MV88E6XXX_FID_BRIDGED), then you are correct: ports
-with FID 0 (MV88E6XXX_FID_STANDALONE) should not create locked FDB
-entries, because they are, well, standalone and not bridged.
-Again I don't exactly see the relevance though.
+ 
+> Reported-by: Claudio Carvalho <cclaudio@linux.ibm.com>
+> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+> ---
+>  tools/perf/builtin-trace.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+> index 897fc504918b91..f075cf37a65ef8 100644
+> --- a/tools/perf/builtin-trace.c
+> +++ b/tools/perf/builtin-trace.c
+> @@ -4280,6 +4280,7 @@ static int trace__replay(struct trace *trace)
+>  		goto out;
+>  
+>  	evsel = evlist__find_tracepoint_by_name(session->evlist, "raw_syscalls:sys_enter");
+> +	trace->syscalls.events.sys_enter = evsel;
+>  	/* older kernels have syscalls tp versus raw_syscalls */
+>  	if (evsel == NULL)
+>  		evsel = evlist__find_tracepoint_by_name(session->evlist, "syscalls:sys_enter");
+> @@ -4292,6 +4293,7 @@ static int trace__replay(struct trace *trace)
+>  	}
+>  
+>  	evsel = evlist__find_tracepoint_by_name(session->evlist, "raw_syscalls:sys_exit");
+> +	trace->syscalls.events.sys_exit = evsel;
+>  	if (evsel == NULL)
+>  		evsel = evlist__find_tracepoint_by_name(session->evlist, "syscalls:sys_exit");
+>  	if (evsel &&
+> 
+> base-commit: 52f28b7bac75da9b8508f17438c9a8d83ab48e5d
+> -- 
+> 2.36.1
+
+-- 
+
+- Arnaldo
