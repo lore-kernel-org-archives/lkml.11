@@ -2,190 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F592CCA481
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 15:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1EBACCA47B
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 15:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbiGQPEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 11:04:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
+        id S232929AbiGQPGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 11:06:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiGQPEX (ORCPT
+        with ESMTP id S232837AbiGQPGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 11:04:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A9E1055B;
-        Sun, 17 Jul 2022 08:04:22 -0700 (PDT)
+        Sun, 17 Jul 2022 11:06:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C129713DCE;
+        Sun, 17 Jul 2022 08:06:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1F03B80E18;
-        Sun, 17 Jul 2022 15:04:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD50BC3411E;
-        Sun, 17 Jul 2022 15:04:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F1036123A;
+        Sun, 17 Jul 2022 15:06:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C1D3AC341C0;
+        Sun, 17 Jul 2022 15:06:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658070259;
-        bh=BxuIeHHjKT+QK1LwDy/gj0wFfMVCa2LuSM5eUhYt+GE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=atuzkpNQ/XRR++UOciAGLH7C+M5MiCZItNh8JcRbFDT6uLbRu066f8shCDVt2KZTV
-         G5DCwuB8InttFqL/9TyF8QNB40msPAP2el9nyJK26GP9POLfg1ASz65XT1u4zBrWYV
-         051P93Gx6sW52t/uwXdNCm5c8H0A24sGe7I2LiAhC4ldoWjAyMmPt7NOfCUaeaECg/
-         xE3nLpwOchcdiEBfCRdWwEWkhWXsDuBZ/SPDZWMweMHq/QBHBs35GwqXyk0wlCn870
-         sfBeHjs0NVl9rPw4M415qsy59BgtcQMGhBUtqNeKjzZy+9TlG3purKiB49JVGf2P2b
-         FftupYWp2WEJg==
-Date:   Sun, 17 Jul 2022 16:14:12 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomer Maimon <tmaimon77@gmail.com>
-Cc:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
-        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
-        <benjaminfair@google.com>, <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <j.neuschaefer@gmx.net>,
-        <zhengbin13@huawei.com>, <openbmc@lists.ozlabs.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: adc: npcm: Add NPCM8XX support
-Message-ID: <20220717161412.69b2743e@jic23-huawei>
-In-Reply-To: <20220713172132.0bc5002d@jic23-huawei>
-References: <20220713132640.215916-1-tmaimon77@gmail.com>
-        <20220713132640.215916-3-tmaimon77@gmail.com>
-        <20220713172132.0bc5002d@jic23-huawei>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1658070376;
+        bh=uHz6l4fPCB3bfzUuiROJnNUABy8HWalz/vuxbRJmINE=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=MoozFb0rQXjJya/3X+YiM/khVQVfb7UP1oiJHF2giLcUveobq6vsjbCHWoc0POqCn
+         6Ep/g9JX2QsYFQbt9ZRIj80OhEI/c46CG3vYyGEGqwJx3MUiJHKEjECSSxhKcxRLyc
+         pQBgY/afwC3DcFkHn+OtQVQMiifa0ZGQOV7ipnUKLpjdrcS0xnt4uFEqLp/Nj5QIvK
+         wGUlbk5YQPXaB0AZcDg3ncYjh42aoQ/iejCW9oQXnO2bsbX9Cz6zA+7DeBXY6xhbJ3
+         4BWUr464/FATbrmd7OvZK0VK6eTAyHj6rPqc8gWkDXM+zyCgytfJIW3pKk7HnRDPIu
+         a2NwIOVExiLcA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF068E45225;
+        Sun, 17 Jul 2022 15:06:16 +0000 (UTC)
+Subject: Re: [git pull] Input updates for v5.19-rc6
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <YtOW6KABn6sd9ZDZ@google.com>
+References: <YtOW6KABn6sd9ZDZ@google.com>
+X-PR-Tracked-List-Id: <linux-input.vger.kernel.org>
+X-PR-Tracked-Message-Id: <YtOW6KABn6sd9ZDZ@google.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc6
+X-PR-Tracked-Commit-Id: 2a96271fb66c499e4a89d76a89d3d01170c10bef
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 8ad4b6fa0f874ec8ec6e92a90116e3ab43cded6c
+Message-Id: <165807037670.25191.2550981057682198131.pr-tracker-bot@kernel.org>
+Date:   Sun, 17 Jul 2022 15:06:16 +0000
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 17:21:32 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+The pull request you sent on Sat, 16 Jul 2022 21:58:16 -0700:
 
-> On Wed, 13 Jul 2022 16:26:40 +0300
-> Tomer Maimon <tmaimon77@gmail.com> wrote:
-> 
-> > Adding ADC NPCM8XX support to NPCM ADC driver.
-> > ADC NPCM8XX uses a different resolution and voltage reference.
-> > 
-> > As part of adding NPCM8XX support:
-> > - Add NPCM8XX specific compatible string.
-> > - Add data to handle architecture-specific ADC parameters.
-> > 
-> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>  
-> missing 
-> 
-> #include <linux/property.h> 
-> 
-> So in current IIO togreg tree this doesn't build.  I could fix it up
-> but given we are very late in cycle and I'd like to give this a little
-> more time on list for Andy to take another look if he wishes, chances
-> are this won't make it in until early next cycle.
-> 
-Applied to the togreg branch of iio.git and pushed out as testing for
-now only as I'll be rebaseing on rc1 once available.
+> git://git.kernel.org/pub/scm/linux/kernel/git/dtor/input.git tags/input-for-v5.19-rc6
 
-Thanks,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/8ad4b6fa0f874ec8ec6e92a90116e3ab43cded6c
 
-Jonathan
+Thank you!
 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/adc/npcm_adc.c | 35 ++++++++++++++++++++++++++++-------
-> >  1 file changed, 28 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-> > index f7bc0bb7f112..4c7ebcd57b88 100644
-> > --- a/drivers/iio/adc/npcm_adc.c
-> > +++ b/drivers/iio/adc/npcm_adc.c
-> > @@ -16,6 +16,12 @@
-> >  #include <linux/uaccess.h>
-> >  #include <linux/reset.h>
-> >  
-> > +struct npcm_adc_info {
-> > +	u32 data_mask;
-> > +	u32 internal_vref;
-> > +	u32 res_bits;
-> > +};
-> > +
-> >  struct npcm_adc {
-> >  	bool int_status;
-> >  	u32 adc_sample_hz;
-> > @@ -34,6 +40,7 @@ struct npcm_adc {
-> >  	 * has finished.
-> >  	 */
-> >  	struct mutex lock;
-> > +	const struct npcm_adc_info *data;
-> >  };
-> >  
-> >  /* ADC registers */
-> > @@ -52,13 +59,21 @@ struct npcm_adc {
-> >  #define NPCM_ADCCON_CH(x)		((x) << 24)
-> >  #define NPCM_ADCCON_DIV_SHIFT		1
-> >  #define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
-> > -#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
-> >  
-> >  #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
-> >  
-> >  /* ADC General Definition */
-> > -#define NPCM_RESOLUTION_BITS		10
-> > -#define NPCM_INT_VREF_MV		2000
-> > +static const struct npcm_adc_info npxm7xx_adc_info = {
-> > +	.data_mask = GENMASK(9, 0),
-> > +	.internal_vref = 2048,
-> > +	.res_bits = 10,
-> > +};
-> > +
-> > +static const struct npcm_adc_info npxm8xx_adc_info = {
-> > +	.data_mask = GENMASK(11, 0),
-> > +	.internal_vref = 1229,
-> > +	.res_bits = 12,
-> > +};
-> >  
-> >  #define NPCM_ADC_CHAN(ch) {					\
-> >  	.type = IIO_VOLTAGE,					\
-> > @@ -129,7 +144,8 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
-> >  	if (ret < 0)
-> >  		return ret;
-> >  
-> > -	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
-> > +	*val = ioread32(info->regs + NPCM_ADCDATA);
-> > +	*val &= info->data->data_mask;
-> >  
-> >  	return 0;
-> >  }
-> > @@ -157,9 +173,9 @@ static int npcm_adc_read_raw(struct iio_dev *indio_dev,
-> >  			vref_uv = regulator_get_voltage(info->vref);
-> >  			*val = vref_uv / 1000;
-> >  		} else {
-> > -			*val = NPCM_INT_VREF_MV;
-> > +			*val = info->data->internal_vref;
-> >  		}
-> > -		*val2 = NPCM_RESOLUTION_BITS;
-> > +		*val2 = info->data->res_bits;
-> >  		return IIO_VAL_FRACTIONAL_LOG2;
-> >  	case IIO_CHAN_INFO_SAMP_FREQ:
-> >  		*val = info->adc_sample_hz;
-> > @@ -176,7 +192,8 @@ static const struct iio_info npcm_adc_iio_info = {
-> >  };
-> >  
-> >  static const struct of_device_id npcm_adc_match[] = {
-> > -	{ .compatible = "nuvoton,npcm750-adc", },
-> > +	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
-> > +	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
-> >  	{ /* sentinel */ }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, npcm_adc_match);
-> > @@ -196,6 +213,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
-> >  		return -ENOMEM;
-> >  	info = iio_priv(indio_dev);
-> >  
-> > +	info->data = device_get_match_data(dev);
-> > +	if (!info->data)
-> > +		return -EINVAL;
-> > +
-> >  	mutex_init(&info->lock);
-> >  
-> >  	info->dev = &pdev->dev;  
-> 
-
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
