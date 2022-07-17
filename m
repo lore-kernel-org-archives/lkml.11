@@ -2,88 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D3CCCA48B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB512CCA488
 	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 03:48:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232932AbiGQDsT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 16 Jul 2022 23:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58898 "EHLO
+        id S233024AbiGQDsX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 16 Jul 2022 23:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232755AbiGQDsI (ORCPT
+        with ESMTP id S232775AbiGQDsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 16 Jul 2022 23:48:08 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AD117E36;
-        Sat, 16 Jul 2022 20:48:07 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id f65so7801046pgc.12;
-        Sat, 16 Jul 2022 20:48:07 -0700 (PDT)
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C0E17E37
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 20:48:08 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id r22-20020a056830419600b0061c6edc5dcfso6644920otu.12
+        for <linux-kernel@vger.kernel.org>; Sat, 16 Jul 2022 20:48:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Z0QE6TqiTLpNVLq0d6Tn+LJm8jdHQlIKPBhpl1b1IvI=;
-        b=Hm/XZDORe8w/23YWh1ILjh5kveofdNCqQ0V7yu07TXBiadO710B4sQcFi584OFzxTg
-         MbAbTUZxhED4dxph0IUuYzrgaFeGgk+qs59KYL9dU6a4gT/Amg2JYMnVB+1qPNu3XDlL
-         R1CV6eXisR3zOqmF9wvS27nea+FsemZ6R9CtRQEC1ZE1UZ5Oq9V1E8Rb387rHvGuzrRw
-         9f/WdSbAJJzOIdI8t7bcdfwGoHSSV3KG0XUyDKKLroc6HTzX7n2UnG5JsSj8jenqMBhN
-         jVjVpUyZ5psvEY4DhPxJ1H2wqVxDINPWNUkibUyXCa1/AgSOx41fMuH/SKmrwwavgqDu
-         u9Tg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Yi8AkrlIqU4lv5oV/rNtUh5JaYHyOIwQpcON7vVHGsA=;
+        b=zr9iL6oISXOb1as1eSfmmqY3qOK3BV9grw3z5lf/C/WPw4ac1n1v8ar0WGrTWVBhVi
+         vIGNlI8SxWlKUK85JILoOVAnX4f4uK9Ua6tVeWX12b/1yc2RcCI5LS7WJikmdUPEOEOR
+         wCRaTAnWuwj46FQLcvRtEW0iqFszCpJmRj2EtpuTF4iq3AWA2/8caHFN+nNsrgpvFyab
+         lG+ApzwU4ZSCEPjX9MLHrocKe8TZObRh45ble4Zi78SlEssrh6q4IAwwyyK6QVEKtIK2
+         xAq6Nfo64ioTQi+hVFLXsWbVL6i2H8iYxYwE4try/xt9QZsSSuCLPL22RSTGFRWhX0iM
+         vUWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Z0QE6TqiTLpNVLq0d6Tn+LJm8jdHQlIKPBhpl1b1IvI=;
-        b=Do6klEJY8Ym8UPzVOxIkeHwhZR0UPMHnd0U5x/qPesYSA+1tJv1b0fOtOOZsMNZPLK
-         V8qK28PhocpJrTov6/SU0+KO1CCjHc5trVEN29Gp6yoFpXneUN4dbCxUT9LlhpafS8CT
-         tamKSjJea1m4Jmx1nmmpdKiimBvQakLa37qbRgpIjEc5fyOsJZ3YCmKbci8JYHhRIgng
-         gaUA6JIB9Ie7BaOuNNREKZT1OnAAsGI78kAxGFb0ZBE7T69Ltrid0jgQ/7de6j6m8cgC
-         iIfemrQOfH3zHBdAJsPVlXCDAUEb9J6NUptWL+T/IVueamDrobdwVF1DLGAL9HukeP7u
-         sIag==
-X-Gm-Message-State: AJIora8gg7Mz9BKyfsU/Gp66UwLgXvCkpGlNZVROAznJxhNb0BxXNv/6
-        p56chyrY2biOonVeAm5qaypK8H0Ed73bPtmwFQ==
-X-Google-Smtp-Source: AGRyM1ts9KqXoDY4UHuc4G3SVfNilEGzmKzpCb1uTJFtaEWLMKAvCulqjjlSB/KMEm3RW8jR0HClTPzAZCj2jB06jKU=
-X-Received: by 2002:a05:6a02:113:b0:412:a7c0:da8e with SMTP id
- bg19-20020a056a02011300b00412a7c0da8emr19808019pgb.113.1658029687199; Sat, 16
- Jul 2022 20:48:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Yi8AkrlIqU4lv5oV/rNtUh5JaYHyOIwQpcON7vVHGsA=;
+        b=yrax1mE3dVPwTV450is+/ucvbM0SexmUDaR4rufdB7dewcdRss5KCwGXlL4Sgbs1s6
+         ucK821PhlNCuWR9hwRh/xLYFwGnSHduJxnzrZ7FF1HA/rKYiotWXnL+1JrSUw1h4tlB0
+         59PrPMo9DCqphfa/E1J7+hx6GC6o9JttMtMja3CqPcM9OUgo4EoekITrHfEwqJyyTkmQ
+         g3uZc5C4J8ZnJL0uEit/8/XENA1BmpdoaOG61NzOW68rqaB62x8XauECTLgLACskmfRr
+         H4B9AX2GC5vIyx2jIKi88aW8B2zzmXbol14O/fLaRFzQJmbnE1EZAF/p+JZuz1UczvFd
+         rs2g==
+X-Gm-Message-State: AJIora8EqXIwMC0NrCgmmciBh518X3ozsie6jUitxVaqDyvDOnJhwfUP
+        8/qlDUDLLcRzACUrip6FxUWFlQ==
+X-Google-Smtp-Source: AGRyM1uUNBzlqa+eRg79c4zphI886hA7vGx8j8GA62jnmV2U5UdRidnlfYZUfKxTntxitQF3Ies2VQ==
+X-Received: by 2002:a9d:198c:0:b0:60c:7ecc:5c19 with SMTP id k12-20020a9d198c000000b0060c7ecc5c19mr8638762otk.160.1658029687487;
+        Sat, 16 Jul 2022 20:48:07 -0700 (PDT)
+Received: from ripper.. (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id e65-20020aca3744000000b0033a169f9282sm3004515oia.52.2022.07.16.20.48.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jul 2022 20:48:07 -0700 (PDT)
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Vinod Koul <vkoul@kernel.org>, Wolfram Sang <wsa@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/3] i2c: qcom-geni: Use the correct return value
+Date:   Sat, 16 Jul 2022 20:50:25 -0700
+Message-Id: <20220717035027.2135106-2-bjorn.andersson@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220717035027.2135106-1-bjorn.andersson@linaro.org>
+References: <20220717035027.2135106-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Sun, 17 Jul 2022 11:47:56 +0800
-Message-ID: <CAMhUBjn=k-4DV0-u_30_rNQc9n__ZkwVFaLwfP1CP-uk1LjMpg@mail.gmail.com>
-Subject: [BUG] most: usb: Found a bug at the probe time
-To:     sumit.semwal@linaro.org, christian.koenig@amd.com
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-media <linux-media@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The introduction of GPI support moved things around and instead of
+returning the result from geni_i2c_xfer() the number of messages in the
+request was returned, ignoring the actual result. Fix this.
 
-I found a bug in the most usb driver.
+Fixes: d8703554f4de ("i2c: qcom-geni: Add support for GPI DMA")
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+---
+ drivers/i2c/busses/i2c-qcom-geni.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-When the driver fails at
+diff --git a/drivers/i2c/busses/i2c-qcom-geni.c b/drivers/i2c/busses/i2c-qcom-geni.c
+index 6ac402ea58fb..3bec7c782824 100644
+--- a/drivers/i2c/busses/i2c-qcom-geni.c
++++ b/drivers/i2c/busses/i2c-qcom-geni.c
+@@ -688,7 +688,7 @@ static int geni_i2c_xfer(struct i2c_adapter *adap,
+ 	pm_runtime_put_autosuspend(gi2c->se.dev);
+ 	gi2c->cur = NULL;
+ 	gi2c->err = 0;
+-	return num;
++	return ret;
+ }
+ 
+ static u32 geni_i2c_func(struct i2c_adapter *adap)
+-- 
+2.35.1
 
-    mdev->conf = kcalloc(num_endpoints, sizeof(*mdev->conf), GFP_KERNEL);
-
-I got the following warning message:
-
-
-[   15.406256] kobject: '(null)' (ffff8881068f8000): is not
-initialized, yet kobject_put() is being called.
-[   15.406986] WARNING: CPU: 3 PID: 396 at lib/kobject.c:720
-kobject_put+0x6e/0x1c0
-[   15.410120] RIP: 0010:kobject_put+0x6e/0x1c0
-[   15.410470] Code: 01 75 29 4c 89 f8 48 c1 e8 03 80 3c 28 00 74 08
-4c 89 ff e8 14 2e 73 ff 49 8b 37 48 c7 c7 c0 fc de 85 4c 89 fa e8 e2
-61 21 ff <0f> 0b 49 8d 5f 38 48 89 df be 04 00 00 00 e8 df 2e 73 ff b8
-ff ff
-[   15.416529] Call Trace:
-[   15.416896]  hdm_probe+0xf3d/0x1090 [most_usb]
-
-Since I'm not familiar with the driver, I ask for your help to solve
-the warning.
-
-regards,
-
-Zheyu Ma
