@@ -2,145 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4B6C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 15:03:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F592CCA481
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 15:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232207AbiGQPD2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 11:03:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
+        id S231370AbiGQPEZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 11:04:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230334AbiGQPD1 (ORCPT
+        with ESMTP id S229601AbiGQPEX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 11:03:27 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC5C13DCC;
-        Sun, 17 Jul 2022 08:03:26 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id os14so17168875ejb.4;
-        Sun, 17 Jul 2022 08:03:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=Dv/p7nIIHn8hT8UchBSA1/4q6QSRvBvNjEZvxKQbyo8=;
-        b=mI3kAqolKJgIMErLRLmU220y2pf1R3sVUCBZ48ZmrtB9/qm4CWeIBjsaUqo6TrqNng
-         yl7MTD2nmTkTbkA1Cz64bJnNezfsstOddleBs2IRYZXxR2JHYtQHBx5xI0xEWP/w1lqH
-         GHS674QDl1KZ/c69QdmmiA6fyj9RRVXH+P+WPHUOHENXxKstvGWeou3Uv54thCkm1YWP
-         Z1PGTT+QcuppkLjB6RRhVdrDJqH+RGtWkBJWUmUutcWbIkS5Z5N2aXTQ4v7c+JknP4u0
-         qfN0OXt6cUmY3wcEur23i5aFHVxOZ8K9T0Z2Oq0KklazzFei0gIV87SozXvwSCz20C6m
-         Y9Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=Dv/p7nIIHn8hT8UchBSA1/4q6QSRvBvNjEZvxKQbyo8=;
-        b=vQNGbQs3109hCqiTIbI7B4dy9egk7XKoApN0C3BCIzU71quYlJ8cj5l7S8908NkWn6
-         WubZM9wo6Q2wTW6Yxv7vd7o8kJreTLpYNpmlVhyTLUTP0wvV9bBC4gOWNlg3jAdrKr/N
-         bSLmr3NNusn+8bRYb2sHhor9laP96ZkHQmOWsdVJkDiAPJ1SvvrIXfesnxdQ5HqD8Mbt
-         5ZlTlhDgoNjEDTKKRRJ8V7oVA4s1YE2P/5Vk+ld6b/qvkylehKfxWbyebQKNYnMeNkpU
-         0O3FPzhwG1DXECocjC8+r1NzCXtq4+xP8G23szdQwXXpPanUKbb23mZhLZ4V5rkoAd09
-         01ZQ==
-X-Gm-Message-State: AJIora9ARzC667pYT4jxnY+e4zBr2Q+VzNUz1MUGgY/NpnEY2rntcQJF
-        WSJ9lmPif5us+508JC4UNOkyRfUdldkzIzQhNpLOV1KR9/8YzA+a
-X-Google-Smtp-Source: AGRyM1uOuPqlK5ptYLbZNVxzFCT39fPMVgLt6uh8ewQOJiucginsvXn8XqJj3WtSh7l0p/ZWCB2s1ggEe/mcOj0OuP4=
-X-Received: by 2002:a17:907:c27:b0:72b:8118:b899 with SMTP id
- ga39-20020a1709070c2700b0072b8118b899mr22465859ejc.739.1658070204720; Sun, 17
- Jul 2022 08:03:24 -0700 (PDT)
+        Sun, 17 Jul 2022 11:04:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A9E1055B;
+        Sun, 17 Jul 2022 08:04:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1F03B80E18;
+        Sun, 17 Jul 2022 15:04:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD50BC3411E;
+        Sun, 17 Jul 2022 15:04:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658070259;
+        bh=BxuIeHHjKT+QK1LwDy/gj0wFfMVCa2LuSM5eUhYt+GE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=atuzkpNQ/XRR++UOciAGLH7C+M5MiCZItNh8JcRbFDT6uLbRu066f8shCDVt2KZTV
+         G5DCwuB8InttFqL/9TyF8QNB40msPAP2el9nyJK26GP9POLfg1ASz65XT1u4zBrWYV
+         051P93Gx6sW52t/uwXdNCm5c8H0A24sGe7I2LiAhC4ldoWjAyMmPt7NOfCUaeaECg/
+         xE3nLpwOchcdiEBfCRdWwEWkhWXsDuBZ/SPDZWMweMHq/QBHBs35GwqXyk0wlCn870
+         sfBeHjs0NVl9rPw4M415qsy59BgtcQMGhBUtqNeKjzZy+9TlG3purKiB49JVGf2P2b
+         FftupYWp2WEJg==
+Date:   Sun, 17 Jul 2022 16:14:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
+        <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
+        <benjaminfair@google.com>, <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <j.neuschaefer@gmx.net>,
+        <zhengbin13@huawei.com>, <openbmc@lists.ozlabs.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] iio: adc: npcm: Add NPCM8XX support
+Message-ID: <20220717161412.69b2743e@jic23-huawei>
+In-Reply-To: <20220713172132.0bc5002d@jic23-huawei>
+References: <20220713132640.215916-1-tmaimon77@gmail.com>
+        <20220713132640.215916-3-tmaimon77@gmail.com>
+        <20220713172132.0bc5002d@jic23-huawei>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-From:   Wei Chen <harperchen1110@gmail.com>
-Date:   Sun, 17 Jul 2022 23:02:49 +0800
-Message-ID: <CAO4mrfdjv2TZf7dc=ei61NBmLePLUGCJ9WbmvWGWa8Q4o=bRkw@mail.gmail.com>
-Subject: WARNING in floppy_interrupt
-To:     efremov@linux.com, axboe@kernel.dk, linux-kernel@vger.kernel.org
-Cc:     linux-block@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dear Linux Developer,
+On Wed, 13 Jul 2022 17:21:32 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Recently when using our tool to fuzz kernel, the following crash was triggered:
+> On Wed, 13 Jul 2022 16:26:40 +0300
+> Tomer Maimon <tmaimon77@gmail.com> wrote:
+> 
+> > Adding ADC NPCM8XX support to NPCM ADC driver.
+> > ADC NPCM8XX uses a different resolution and voltage reference.
+> > 
+> > As part of adding NPCM8XX support:
+> > - Add NPCM8XX specific compatible string.
+> > - Add data to handle architecture-specific ADC parameters.
+> > 
+> > Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>  
+> missing 
+> 
+> #include <linux/property.h> 
+> 
+> So in current IIO togreg tree this doesn't build.  I could fix it up
+> but given we are very late in cycle and I'd like to give this a little
+> more time on list for Andy to take another look if he wishes, chances
+> are this won't make it in until early next cycle.
+> 
+Applied to the togreg branch of iio.git and pushed out as testing for
+now only as I'll be rebaseing on rc1 once available.
 
-HEAD commit: fc74e0a40e4f Linux 5.16-rc7
-git tree: upstream
-compiler: clang 12.0.0
-console output:
-https://drive.google.com/file/d/1bTS1Khxq5ZVwEPK-QIzGMJ24DcBhlZNW/view?usp=sharing
-Syzlang reproducer:
-https://drive.google.com/file/d/11TW-_hd6xARpzEv05ZzN5njdyKjPV4ku/view?usp=sharing
-C reproducer: https://drive.google.com/file/d/1vLLyr50AtjVUYr3ZFyypwB0WcNa0dloj/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1L16y3aFu5mPQbKNsc7eQc6RH55YRd1zd/view?usp=sharing
+Thanks,
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: Wei Chen <harperchen1110@gmail.com>
+Jonathan
 
-WARNING: CPU: 0 PID: 38 at drivers/block/floppy.c:1000
-floppy_interrupt+0x694/0x6d0
-Modules linked in:
-CPU: 0 PID: 38 Comm: kworker/u2:2 Not tainted 5.16.0-rc7 #4
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Workqueue: floppy floppy_work_workfn
-RIP: 0010:floppy_interrupt+0x694/0x6d0
-Code: 21 0c 31 ed 48 c7 c7 00 a6 f4 8a 48 c7 c2 6d c1 52 8c 48 c7 c1
-e0 a4 f4 8a 31 c0 e8 9d 68 26 05 e9 e7 fd ff ff e8 1c 38 ac fc <0f> 0b
-e9 63 fb ff ff 89 d9 80 e1 07 38 c1 0f 8c a6 fa ff ff 48 89
-RSP: 0018:ffffc90000007d28 EFLAGS: 00010046
-RAX: ffffffff84d5d9d4 RBX: 0000000000000001 RCX: ffff8880149523c0
-RDX: 0000000080010000 RSI: 0000000000000001 RDI: 0000000000000000
-RBP: 0000000000000000 R08: ffffffff84d5d530 R09: fffffbfff1a56ead
-R10: fffffbfff1a56ead R11: 0000000000000000 R12: dffffc0000000000
-R13: 0000000000000000 R14: ffffffff84d65f30 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff888063c00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007efe73921000 CR3: 000000000c88e000 CR4: 0000000000752ef0
-DR0: 00000000200000c0 DR1: 0000000020000080 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000600
-PKRU: 55555554
-Call Trace:
- <IRQ>
- __handle_irq_event_percpu+0x20a/0x6d0
- handle_irq_event+0x10a/0x300
- handle_edge_irq+0x245/0xbe0
- __common_interrupt+0xce/0x1e0
- common_interrupt+0x9f/0xc0
- </IRQ>
- <TASK>
- asm_common_interrupt+0x1e/0x40
-RIP: 0010:reset_fdc+0x36b/0x520
-Code: 80 cb 80 48 8d 2c ed 70 a9 f7 90 48 89 e8 48 c1 e8 03 42 80 3c
-30 00 74 08 48 89 ef e8 1e d9 f6 fc 8b 55 00 83 c2 04 89 d8 ee <e9> aa
-00 00 00 e8 6b b4 ab fc 48 8d 1c ed 6d a9 f7 90 48 89 d8 48
-RSP: 0018:ffffc90000cbfc28 EFLAGS: 00000202
-RAX: 0000000090f7a981 RBX: ffffffff90f7a981 RCX: ffff8880149523c0
-RDX: 00000000000003f4 RSI: 0000000000000062 RDI: 0000000000000044
-RBP: ffffffff90f7a970 R08: ffffffff84d65d27 R09: fffffbfff1ff5bd0
-R10: fffffbfff1ff5bd0 R11: 0000000000000000 R12: 0000000000000000
-R13: 1ffffffff21ef52f R14: dffffc0000000000 R15: ffffffff90f7a978
- process_one_work+0x853/0x1140
- worker_thread+0xac1/0x1320
- kthread+0x410/0x500
- ret_from_fork+0x1f/0x30
- </TASK>
-----------------
-Code disassembly (best guess):
-   0: 80 cb 80              or     $0x80,%bl
-   3: 48 8d 2c ed 70 a9 f7 lea    -0x6f085690(,%rbp,8),%rbp
-   a: 90
-   b: 48 89 e8              mov    %rbp,%rax
-   e: 48 c1 e8 03          shr    $0x3,%rax
-  12: 42 80 3c 30 00        cmpb   $0x0,(%rax,%r14,1)
-  17: 74 08                je     0x21
-  19: 48 89 ef              mov    %rbp,%rdi
-  1c: e8 1e d9 f6 fc        callq  0xfcf6d93f
-  21: 8b 55 00              mov    0x0(%rbp),%edx
-  24: 83 c2 04              add    $0x4,%edx
-  27: 89 d8                mov    %ebx,%eax
-  29: ee                    out    %al,(%dx)
-* 2a: e9 aa 00 00 00        jmpq   0xd9 <-- trapping instruction
-  2f: e8 6b b4 ab fc        callq  0xfcabb49f
-  34: 48 8d 1c ed 6d a9 f7 lea    -0x6f085693(,%rbp,8),%rbx
-  3b: 90
-  3c: 48 89 d8              mov    %rbx,%rax
-  3f: 48                    rex.W
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/adc/npcm_adc.c | 35 ++++++++++++++++++++++++++++-------
+> >  1 file changed, 28 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
+> > index f7bc0bb7f112..4c7ebcd57b88 100644
+> > --- a/drivers/iio/adc/npcm_adc.c
+> > +++ b/drivers/iio/adc/npcm_adc.c
+> > @@ -16,6 +16,12 @@
+> >  #include <linux/uaccess.h>
+> >  #include <linux/reset.h>
+> >  
+> > +struct npcm_adc_info {
+> > +	u32 data_mask;
+> > +	u32 internal_vref;
+> > +	u32 res_bits;
+> > +};
+> > +
+> >  struct npcm_adc {
+> >  	bool int_status;
+> >  	u32 adc_sample_hz;
+> > @@ -34,6 +40,7 @@ struct npcm_adc {
+> >  	 * has finished.
+> >  	 */
+> >  	struct mutex lock;
+> > +	const struct npcm_adc_info *data;
+> >  };
+> >  
+> >  /* ADC registers */
+> > @@ -52,13 +59,21 @@ struct npcm_adc {
+> >  #define NPCM_ADCCON_CH(x)		((x) << 24)
+> >  #define NPCM_ADCCON_DIV_SHIFT		1
+> >  #define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
+> > -#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
+> >  
+> >  #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
+> >  
+> >  /* ADC General Definition */
+> > -#define NPCM_RESOLUTION_BITS		10
+> > -#define NPCM_INT_VREF_MV		2000
+> > +static const struct npcm_adc_info npxm7xx_adc_info = {
+> > +	.data_mask = GENMASK(9, 0),
+> > +	.internal_vref = 2048,
+> > +	.res_bits = 10,
+> > +};
+> > +
+> > +static const struct npcm_adc_info npxm8xx_adc_info = {
+> > +	.data_mask = GENMASK(11, 0),
+> > +	.internal_vref = 1229,
+> > +	.res_bits = 12,
+> > +};
+> >  
+> >  #define NPCM_ADC_CHAN(ch) {					\
+> >  	.type = IIO_VOLTAGE,					\
+> > @@ -129,7 +144,8 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
+> >  	if (ret < 0)
+> >  		return ret;
+> >  
+> > -	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
+> > +	*val = ioread32(info->regs + NPCM_ADCDATA);
+> > +	*val &= info->data->data_mask;
+> >  
+> >  	return 0;
+> >  }
+> > @@ -157,9 +173,9 @@ static int npcm_adc_read_raw(struct iio_dev *indio_dev,
+> >  			vref_uv = regulator_get_voltage(info->vref);
+> >  			*val = vref_uv / 1000;
+> >  		} else {
+> > -			*val = NPCM_INT_VREF_MV;
+> > +			*val = info->data->internal_vref;
+> >  		}
+> > -		*val2 = NPCM_RESOLUTION_BITS;
+> > +		*val2 = info->data->res_bits;
+> >  		return IIO_VAL_FRACTIONAL_LOG2;
+> >  	case IIO_CHAN_INFO_SAMP_FREQ:
+> >  		*val = info->adc_sample_hz;
+> > @@ -176,7 +192,8 @@ static const struct iio_info npcm_adc_iio_info = {
+> >  };
+> >  
+> >  static const struct of_device_id npcm_adc_match[] = {
+> > -	{ .compatible = "nuvoton,npcm750-adc", },
+> > +	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
+> > +	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
+> >  	{ /* sentinel */ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, npcm_adc_match);
+> > @@ -196,6 +213,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
+> >  		return -ENOMEM;
+> >  	info = iio_priv(indio_dev);
+> >  
+> > +	info->data = device_get_match_data(dev);
+> > +	if (!info->data)
+> > +		return -EINVAL;
+> > +
+> >  	mutex_init(&info->lock);
+> >  
+> >  	info->dev = &pdev->dev;  
+> 
 
-Best,
-Wei
