@@ -2,155 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C64C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 13:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4747FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 17 Jul 2022 13:55:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232994AbiGQNu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 17 Jul 2022 09:50:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
+        id S233014AbiGQNzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 17 Jul 2022 09:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229463AbiGQNu0 (ORCPT
+        with ESMTP id S229463AbiGQNzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 17 Jul 2022 09:50:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 192B4DF3D
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 06:50:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7793B80CB1
-        for <linux-kernel@vger.kernel.org>; Sun, 17 Jul 2022 13:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59E6DC3411E;
-        Sun, 17 Jul 2022 13:50:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658065822;
-        bh=r4OtP5qi4xLZm5P9voZF9u/u7x7JIjetBs6lCML3t/8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Cvxs7Iq4Cn7rQw+rMo+yx+UKSbbfJE0j41sK/c0tmRuzEL0pKokYS8xCnXzLzpujy
-         /gn2sgiZAy/xC8CfNM6K+miemL0zR62zJhk3OV2nKEAdrnFfeqe498kv43lWZiJfQ9
-         20E0IqyBM9eG9jJBtOLh0dKMRIEIq1RnVqYXp8073mIyhnNSmGKw2om+2muHoj0yVc
-         T8wwn2XGU/sih2Y7yodtSa4VYUYcmU4NAqmNDk9dSFHfWlwk2/NmBEdWiCleuIctEG
-         Jv0isaeD3RBDDMEwYuBBSNH2gxlozOyyABuhikbW6Dmm495XzNS5XQxaiypbs9w3qV
-         vPmcx+YH4f4Fg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id BF8DB40374; Sun, 17 Jul 2022 10:50:19 -0300 (-03)
-Date:   Sun, 17 Jul 2022 10:50:19 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Adrian Hunter <adrian.hunter@intel.com>,
-        Borislav Petkov <bp@suse.de>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
+        Sun, 17 Jul 2022 09:55:01 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FD5F13CFE;
+        Sun, 17 Jul 2022 06:54:57 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id m9so8169037ljp.9;
+        Sun, 17 Jul 2022 06:54:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=B3sTi4q00kD+o63dF5volyJSGlu0r+NSukbZgl5yU5Y=;
+        b=NFLcWrEWmQ66emExXZ4oWY+UFzI0Ms5DBBLa1+AXu44OGQd9kqNAeLNMyxpOqt2Tpx
+         SCkUd1f3lGX/KqhWNKmCo949+PU5BZYJFBZbuWUMrHP9Gu6Om8bLtLKLpGd7JIXTgM3w
+         PBBXD0xTreljjkSj3IKHeb5RP56BYG9To/ib+mF4IJWS1vmv01VwOhAfliWfNZwBHM2F
+         GDDdA4SarcpRRhaD2XQTqIorkdbMHSI1avOcQfBxuHt+uf839/9+N4lBtoOjPdqtGJnp
+         d8/4nxURztbWyGbqPf9WIn/V5ECITcDVDJJqP1nH7P6tHx/ttJqCViXRbR94mDRyFYBG
+         jCRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=B3sTi4q00kD+o63dF5volyJSGlu0r+NSukbZgl5yU5Y=;
+        b=EYf+79x5YgyoqUieprjjI3fNAYMAW43Fq/GAT7iEHO+PsOJMPU5Ulu8TMpSSFhovrZ
+         8KRlblhidEcFnCx9/iGAXD0E90+SEYi+GGPNbcFg7S+OzsNjljj7HM63nkplXhJ5NMzg
+         rZC+kC5J/fS9R3h9rc7GeheXESbUM0SMAb3GdMGoG/PQRYo27J8Z8ZMEL2m+Jt6gd1iu
+         PGH1gW+whk5zDkv4VQF/rX5YQKnNfmb9obv1MchhcuKM+DIaDWsCEtsij6Xg8WMYTBO9
+         Lf6oPL30vdu/P2g86KpipJg8cnblrKh+vRPyn9f5cklrLopr8hKuYCjcZviXxyhFq4xa
+         Jj3g==
+X-Gm-Message-State: AJIora+O1jREPqXjU8y91ZJHDx8Fc/HQ7SWtydfcIx1gywRblAyNZ7fK
+        4r6/JZjdNv1kcOy3c/4W81IacA9JGzQ=
+X-Google-Smtp-Source: AGRyM1vixsJrMK+W6Oq6pBHBsjSU/j13+wVk8ihBXsz6A/6OlrAVoRfflqAZ7eCUGmTgxxpRG+2S+Q==
+X-Received: by 2002:a2e:a789:0:b0:25d:7a05:d179 with SMTP id c9-20020a2ea789000000b0025d7a05d179mr10724069ljf.64.1658066095137;
+        Sun, 17 Jul 2022 06:54:55 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id x11-20020a2e7c0b000000b0025d73516a24sm1614427ljc.83.2022.07.17.06.54.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jul 2022 06:54:54 -0700 (PDT)
+Date:   Sun, 17 Jul 2022 15:58:12 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] tools arch x86: Sync the msr-index.h copy with the
- kernel sources
-Message-ID: <YtQTm9wsB3hxQWvy@kernel.org>
+Subject: Re: [PATCH v3 3/9] iio: adc: mcp3911: use correct formula for AD
+ conversion
+Message-ID: <YtQVdNdMVDyOSEW8@gmail.com>
+References: <20220704172116.195841-1-marcus.folkesson@gmail.com>
+ <20220704172116.195841-4-marcus.folkesson@gmail.com>
+ <20220716181837.4b0b8870@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="BXWMr910dC9HA4nc"
 Content-Disposition: inline
+In-Reply-To: <20220716181837.4b0b8870@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tldr; Just FYI, I'm carrying this on the perf tools tree.
 
-- Arnaldo
+--BXWMr910dC9HA4nc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Full explanation:
+Hi,
 
-There used not to be copies, with tools/ code using kernel headers
-directly. From time to time tools/perf/ broke due to legitimate kernel
-hacking. At some point Linus complained about such direct usage. Then we
-adopted the current model.
+On Sat, Jul 16, 2022 at 06:18:37PM +0100, Jonathan Cameron wrote:
+> On Mon,  4 Jul 2022 19:21:10 +0200
+> Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
+>=20
+> > The ADC conversion is actually not rail-to-rail but with a factor 1.5.
+> > Make use of this factor when calculating actual voltage.
+> >=20
+> > Fixes: 3a89b289df5d ("iio: adc: add support for mcp3911")
+> > Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ?  I doubt I gave a tag (mostly because I don't give tags to patches
+> I'll pick up and give a SoB on.
+>=20
+> Note that tags have to be given explicitly in full form before you can
+> add them to a patch.  If in doubt (people often given handwavey responses)
+> then ask people to give an explicit tag.
 
-The way these headers are used in perf are not restricted to just
-including them to compile something.
+Sorry for that. I will remove the tag.
+I interpreted your "Otherwise looks good to me." as an acked-by.
 
-There are sometimes used in scripts that convert defines into string
-tables, etc, so some change may break one of these scripts, or new MSRs
-may use some different #define pattern, etc.
+I will only go for explicit tags forward.=20
 
-E.g.:
+Thanks,
+Marcus Folkesson
 
-  $ ls -1 tools/perf/trace/beauty/*.sh | head -5
-  tools/perf/trace/beauty/arch_errno_names.sh
-  tools/perf/trace/beauty/drm_ioctl.sh
-  tools/perf/trace/beauty/fadvise.sh
-  tools/perf/trace/beauty/fsconfig.sh
-  tools/perf/trace/beauty/fsmount.sh
-  $
-  $ tools/perf/trace/beauty/fadvise.sh
-  static const char *fadvise_advices[] = {
-  	[0] = "NORMAL",
-  	[1] = "RANDOM",
-  	[2] = "SEQUENTIAL",
-  	[3] = "WILLNEED",
-  	[4] = "DONTNEED",
-  	[5] = "NOREUSE",
-  };
-  $
+>=20
+> Jonathan
 
-The tools/perf/check-headers.sh script, part of the tools/ build
-process, points out changes in the original files.
+--BXWMr910dC9HA4nc
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So its important not to touch the copies in tools/ when doing changes in
-the original kernel headers, that will be done later, when
-check-headers.sh inform about the change to the perf tools hackers.
+-----BEGIN PGP SIGNATURE-----
 
----
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmLUFW0ACgkQiIBOb1ld
+UjKfbw//aC0VsEbKL59Ib6fWVdn4UI4iYkoQcLp2fKG3e6JGnTp2azF2LQHe8u/2
+gzYunEEc/v7NCyD2s1r81+Ww+YODjDMbFlIXk83Dd8A8qKIxdQ/6AzMEPyeFHjN0
+xggoeKXl5nUMF+5m94LZ7VvX3jW+0AKqEI6/jZ5FXjmk8uq0NH4goPaI0UdaCIj/
+MNeVJH09wboZ8ad67V5Jg4witlh0mNXAj08Y6EASSYs6TrWnZPgqwdPoTfJOt3fI
+69pAGvr9gPmYi1POKm31Wrm1pMi1zI6hLWarF7evFLA9lZix2TJP/buPdDgceski
+TzpU+P3bH4PYv1UoIg4FsrKRPpfQIQGaNLvBeuwmaFBdXcRlFMigoeN2DxNZyomH
+HyYxBcfghDLpbdAnbO7R08xH3dvH/R4p16mnUqwenb1CheLFb7TvU4ulS17kL1qa
+rAWMV2dSHFpssdEytSyYA7ofwNgssCfB/tHpZ1q7Tsi5C7VrejAoC74uKxzT0j9/
+GoHS36q+Hddkm8gJYE8XGQfMiITb7tRpg+V7QsUuuvdEEvaGkYpCBNVb78RiSHwL
+d8YvSiCtRHoORRpPqPw5jupVzTXWLtfgy6G8SOME5eeziVo3F+iIOMJhPud/sMJC
+yp1MRS/2YLXPpNomYY+RQQKnoT4dRj26AGhv+IDeFL9rcqMID1E=
+=EfKq
+-----END PGP SIGNATURE-----
 
-To pick up the changes from these csets:
-
-  4ad3278df6fe2b08 ("x86/speculation: Disable RRSBA behavior")
-  d7caac991feeef1b ("x86/cpu/amd: Add Spectral Chicken")
-
-That cause no changes to tooling:
-
-  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
-  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
-  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
-  $ diff -u before after
-  $
-
-Just silences this perf build warning:
-
-  Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
-  diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
-
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Link: https://lore.kernel.org/lkml/
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/arch/x86/include/asm/msr-index.h | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/tools/arch/x86/include/asm/msr-index.h b/tools/arch/x86/include/asm/msr-index.h
-index 2eab6a3a8a8c8f88..cc615be27a54b2da 100644
---- a/tools/arch/x86/include/asm/msr-index.h
-+++ b/tools/arch/x86/include/asm/msr-index.h
-@@ -95,6 +95,7 @@
- #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
- #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
- #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
-+#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
- #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
- #define ARCH_CAP_SSB_NO			BIT(4)	/*
- 						 * Not susceptible to Speculative Store Bypass
-@@ -576,6 +577,9 @@
- /* Fam 17h MSRs */
- #define MSR_F17H_IRPERF			0xc00000e9
- 
-+#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
-+#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
-+
- /* Fam 16h MSRs */
- #define MSR_F16H_L2I_PERF_CTL		0xc0010230
- #define MSR_F16H_L2I_PERF_CTR		0xc0010231
--- 
-2.36.1
-
+--BXWMr910dC9HA4nc--
